@@ -1,0 +1,10 @@
+{
+  "packages": [
+    "packages/*"
+  ],
+  "pack": {
+    "ignore": "contentstack-management"
+  },
+  "npmClient": "npm", 
+  "version": "independent"
+}
