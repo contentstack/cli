@@ -1,0 +1,12 @@
+*-debug.log
+*-error.log
+/.nyc_output
+/dist
+/tmp
+/yarn.lock
+node_modules
+<<<<<<< HEAD
+=======
+logs
+>>>>>>> 84d0a9d93fc8401436b690eb2a13119a9fb9b324
+coverage
