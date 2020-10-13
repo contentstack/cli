@@ -1,0 +1,8 @@
+node_modules
+.todo
+logs
+contents
+lerna-debug.log
+.DS_Store
+contentTest
+build
