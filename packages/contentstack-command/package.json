@@ -1,0 +1,29 @@
+{
+  "name": "@contentstack/cli-command",
+  "version": "0.0.1",
+  "description": "Base class for Contentstack command",
+  "main": "index.js",
+  "scripts": {
+    "test": "nyc mocha --forbid-only \\\"test/**/*.test.js\\\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/contentstack/cli.git"
+  },
+  "author": "***REMOVED*** @***REMOVED***",
+  "license": "MIT",
+  "bugs": "https://github.com/contentstack/cli/issues",
+  "homepage": "https://github.com/contentstack/cli#readme",
+  "dependencies": {
+    "@contentstack/management": "^1.0.0",
+    "@oclif/command": "^1.8.0",
+    "configstore": "^5.0.1",
+    "contentstack": "^3.10.1"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  }
+}
