@@ -1,0 +1,66 @@
+{
+  "name": "@contentstack/cli-cm-bulk-publish",
+  "description": "Contentstack bulk publish script",
+  "version": "0.0.20",
+  "author": "Abhinav Gupta @abhinav-from-contentstack",
+  "bugs": "https://github.com/abhinav-from-contentstack/bulk-publish/issues",
+  "dependencies": {
+    "@contentstack/cli": "latest",
+    "@contentstack/cli-command": "latest",
+    "@contentstack/management": "latest",
+    "@oclif/command": "^1.7.0",
+    "@oclif/config": "^1.16.0",
+    "axios": "^0.19.2",
+    "bluebird": "^3.7.2",
+    "configstore": "^5.0.1",
+    "lodash": "^4.17.15",
+    "nock": "^13.0.2",
+    "path": "^0.12.7",
+    "request": "^2.88.2",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.22.2",
+    "@oclif/plugin-help": "^3.1.0",
+    "@oclif/test": "^1.2.6",
+    "chai": "^4.2.0",
+    "eslint": "^5.16.0",
+    "eslint-config-oclif": "^3.1.0",
+    "globby": "^10.0.2",
+    "mocha": "^5.2.0",
+    "nyc": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json",
+    "/src",
+    "/yarn.lock"
+  ],
+  "homepage": "https://github.com/contentstack/cli",
+  "keywords": [
+    "oclif-plugin"
+  ],
+  "license": "MIT",
+  "oclif": {
+    "commands": "./src/commands",
+    "bin": "csdx",
+    "devPlugins": [
+      "@oclif/plugin-help"
+    ],
+    "hooks": {
+      "validateConfig": "./src/hooks/config.js"
+    }
+  },
+  "repository": "https://github.com/contentstack/cli",
+  "scripts": {
+    "pack": "npm pack && mv *.tgz ../../build",
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
+    "posttest": "eslint .",
+    "version": "oclif-dev readme && git add README.md"
+  }
+}

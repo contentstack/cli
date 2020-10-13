@@ -1,0 +1,26 @@
+{
+  "name": "root",
+  "dependencies": {
+    "@contentstack/cli": "file:build/contentstack-cli.tgz"
+  },
+  "devDependencies": {
+    "lerna": "^3.16.4"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "private": true,
+  "scripts": {
+    "clean:build": "rm -rf ./build"
+  },
+  "standard": {
+    "env": "mocha",
+    "ignore": [
+      "**/node_modules/**",
+      "packages/*/lib/**"
+    ]
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

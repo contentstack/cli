@@ -1,0 +1,9 @@
+"master_locale": {
+    // master locale of the stack
+    "name": "English - United States",
+    "code": "en-us"
+  },
+  // Stack API KEY
+  "source_stack": "dummy_value",            // mandatory
+  // Path where the exported data will be stored (relative path)
+  "data": "Path"
