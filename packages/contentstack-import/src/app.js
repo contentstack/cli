@@ -58,9 +58,11 @@ let singleExport = (moduleName, types, config) => {
     let exportedModule = require('./lib/import/' + moduleName)
     exportedModule.start(config).then(function () {
       addlogs(config, moduleName + ' imported successfully!', 'success')
+    addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'success')
     }).catch(function (error) {
       addlogs(config, 'Failed to migrate ' + moduleName, 'error')
       addlogs(config, error, 'error')
+    addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'error')
     })
   } else {
     addlogs(config, 'Please provide valid module name.', 'error')
@@ -85,10 +87,12 @@ let allExport = async (config, types) => {
     concurrency: 1
   }).then(function () {
     addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported succesfully!'), 'success')
-    addlogs(config, 'The log for this is stored at' + config.oldPath + '/logs/import', 'success')
+    addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'success')
   }).catch(function (error) {    
     addlogs(config, chalk.red('Failed to migrate stack: ' + config.target_stack + '. Please check error logs for more info'), 'error')
     addlogs(config, error, 'error')
+    addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'error')
+
   })
 }
 
