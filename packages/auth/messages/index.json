@@ -32,7 +32,7 @@
     "flagIgnoreDescription": "Ignores if token not present. Command shows show list of available aliases with multi select option to delete tokens from that list."
   },
   "logout": {
-    "promptConfirmLogout": "Are you sure you want to log out? (Y/N):",
+    "promptConfirmLogout": "Are you sure you want to log out? (Y/N)",
     "msgLoggingOut": "Logging out from Contentstack...",
     "msgLogOutSuccess": "You have logged out from Contentstack successfully!",
     "errorFailedLogout": "Failed to logout due to following error: ",
