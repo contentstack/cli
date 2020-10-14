@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-auth",
   "description": "Contentstack CLI plugin for authentication",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "publishConfig": {

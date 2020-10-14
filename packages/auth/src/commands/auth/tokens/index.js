@@ -50,7 +50,7 @@ class TokenIndex extends Command {
   }
 }
 
-TokenIndex.description = `Use to list all existing management tokens 
+TokenIndex.description = `List all management tokens stored 
 `
 TokenIndex.aliases = ['tokens']
 
