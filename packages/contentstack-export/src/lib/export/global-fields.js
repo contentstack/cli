@@ -38,7 +38,7 @@ ExportGlobalFields.prototype = {
   start: function (credentialConfig) {
     const self = this
     config = credentialConfig
-    addlogs(config, 'Starting Global Fields export')
+    addlogs(config, 'Starting Global Fields export', 'success')
     return new Promise(function (resolve, reject) {
       try {
         return self.getGlobalFields(null, config).then(function (result) {
