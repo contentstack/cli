@@ -28,7 +28,7 @@ function ExportWebhooks() {
 }
 
 ExportWebhooks.prototype.start = function (credentialConfig) {
-  addlogs(config, chalk.white('Starting webhooks export'))
+  addlogs(config, 'Starting webhooks export', 'success')
   let self = this
   config = credentialConfig
   client = stack.Client(config)
@@ -49,11 +49,11 @@ ExportWebhooks.prototype.start = function (credentialConfig) {
         addlogs(config, chalk.green('All the webhooks have been exported successfully'), 'success')
         return resolve()
       }
-      addlogs(config, 'No webhooks were found in the Stack', '')
+      addlogs(config, 'No webhooks were found in the Stack', 'success')
       return resolve()
     }).catch(function (error) {
       if (error.statusCode === 401) {
-        addlogs(config, chalk.red('You are not allowed to export webhooks, Unless you provide email and password in config'))
+        addlogs(config, chalk.red('You are not allowed to export webhooks, Unless you provide email and password in config'), 'error')
         return resolve()
       }
       addlogs(config, error, 'error')
