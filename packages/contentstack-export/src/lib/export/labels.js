@@ -27,7 +27,7 @@ function ExportLabels() {
 }
 
 ExportLabels.prototype.start = function (credentialConfig) {
-  addlogs(config, chalk.white('Starting labels export'))
+  addlogs(config, 'Starting labels export', 'success')
   let self = this
   config = credentialConfig
   client = stack.Client(config)
@@ -40,12 +40,12 @@ ExportLabels.prototype.start = function (credentialConfig) {
       if (response.items.length !== 0) {
         response.items.forEach(function (label) {
           delete label['stackHeaders']
-          addlogs(config, chalk.white(label.name + ' labels was exported successfully'))
+          addlogs(config, chalk.white(label.name + ' labels was exported successfully'), 'success')
           self.labels[label.uid] = label
         })
-        addlogs(config, chalk.green('All the labels have been exported successfully'))
+        addlogs(config, chalk.green('All the labels have been exported successfully'), 'success')
       } else {
-        addlogs(config, 'No labels, other than master-labels were found in the Stack') 
+        addlogs(config, 'No labels, other than master-labels were found in the Stack', 'success')
       }
       helper.writeFile(path.join(labelsFolderPath, labelConfig.fileName), self.labels)
       return resolve()

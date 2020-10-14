@@ -117,8 +117,8 @@ EntriesCommand.examples = [
   'csdx cm:bulk-publish:entries -c [PATH TO CONFIG FILE]',
   '',
   'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:entries --retryFailed [PATH TO LOG FILE]',
-  'csdx cm:bulk-publish:entries -r [PATH TO LOG FILE]'
+  'csdx cm:bulk-publish:entries --retryFailed [LOG FILE NAME]',
+  'csdx cm:bulk-publish:entries -r [LOG FILE NAME]'
 ]
 
 module.exports = EntriesCommand
