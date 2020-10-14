@@ -1,5 +1,4 @@
-const figlet = require('figlet')
-const {cli} = require('cli-ux')
+
 const {UserConfig} = require('../util/user-config')
 const ContentstackClient = require('../util/contentstack-client')
 const debug = require('debug')('hooks:init')
