@@ -15,7 +15,7 @@
     "promptToken": "Paste your %s token",
     "promptAPIKey": "Paste your stack API Key",
     "promptConfirmReplaceToken": "Alias with \"%s\" is already exists, do you want to replace?",
-    "commandDescription": "Adds management/delivery tokens to your session to use it with further Contentstack/CLI command",
+    "commandDescription": "Adds management/delivery tokens to your session to use it with further CLI command",
     "flagAliasDesc": "Alias to the token for referring it with other commands.",
     "apiAliasDesc": "Stack API key for the token you are going to store",
     "flagForceDescription": "Exclude confirmation to replace existing alias",
