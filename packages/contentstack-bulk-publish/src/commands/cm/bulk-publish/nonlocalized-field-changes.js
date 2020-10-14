@@ -108,8 +108,8 @@ NonlocalizedFieldChangesCommand.examples = [
   'csdx cm:bulk-publish:nonlocalized-field-changes -c [PATH TO CONFIG FILE]',
   '',
   'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:nonlocalized-field-changes --retryFailed [PATH TO LOG FILE]',
-  'csdx cm:bulk-publish:nonlocalized-field-changes -r [PATH TO LOG FILE]'
+  'csdx cm:bulk-publish:nonlocalized-field-changes --retryFailed [LOG FILE NAME]',
+  'csdx cm:bulk-publish:nonlocalized-field-changes -r [LOG FILE NAME]'
 ]
 
 module.exports = NonlocalizedFieldChangesCommand
