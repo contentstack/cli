@@ -113,7 +113,7 @@ class CrossPublishCommand extends Command {
 CrossPublishCommand.description = `Publish entries and assets from one environment to other environments
 The cross-publish command is used for publishing entries and assets from one evironment to other environments
 
-Content Types, Environments and Locales are required for executing the command successfully
+Content Type, Environment, Destination Environment(s) and Locale are required for executing the command successfully
 But, if retryFailed flag is set, then only a logfile is required
 `
 
@@ -139,8 +139,8 @@ CrossPublishCommand.examples = [
   'csdx cm:bulk-publish:cross-publish -c [PATH TO CONFIG FILE]',
   '',
   'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:cross-publish --retryFailed [PATH TO LOG FILE]',
-  'csdx cm:bulk-publish:cross-publish -r [PATH TO LOG FILE]'
+  'csdx cm:bulk-publish:cross-publish --retryFailed [LOG FILE NAME]',
+  'csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]'
 ]
 
 module.exports = CrossPublishCommand
