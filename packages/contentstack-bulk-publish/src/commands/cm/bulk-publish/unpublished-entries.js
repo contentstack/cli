@@ -89,7 +89,7 @@ class UnpublishedEntriesCommand extends Command {
 UnpublishedEntriesCommand.description = `Publish unpublished entries from the source environment, to other environments and locales
 The unpublished-entries command is used for publishing unpublished entries from the source environment, to other environments and locales
 
-Content Types, Environments and Locales are required for executing the command successfully
+Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the command successfully
 But, if retryFailed flag is set, then only a logfile is required
 `
 
@@ -114,8 +114,8 @@ UnpublishedEntriesCommand.examples = [
   'csdx cm:bulk-publish:unpublished-entries -c [PATH TO CONFIG FILE]',
   '',
   'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:unpublished-entries --retryFailed [PATH TO LOG FILE]',
-  'csdx cm:bulk-publish:unpublished-entries -r [PATH TO LOG FILE]'
+  'csdx cm:bulk-publish:unpublished-entries --retryFailed [LOG FILE NAME]',
+  'csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]'
 ]
 
 module.exports = UnpublishedEntriesCommand
