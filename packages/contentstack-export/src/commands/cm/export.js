@@ -91,7 +91,7 @@ class ExportCommand extends Command {
   }
 }
 
-ExportCommand.description = `Export utils for exporting the content from stack
+ExportCommand.description = `Export content from a stack
 ...
 Export content from one stack to another
 `
@@ -99,16 +99,16 @@ ExportCommand.examples = [
   'csdx cm:export -A',
   'csdx cm:export -A -l \'master-language\' -s \'stack_ApiKey\' -d \'path/of/export/destination/dir\'',
   'csdx cm:export -A -c \'path/of/config/dir\'',
-  'csdx cm:export -a \'alias of managment_token\'',
-  'csdx cm:export -a "alias of managment_token"  -l "master-language" -d "path/of/export/destination/dir"',
-  'csdx cm:export -a "alias of managment_token" -c "path/of/config/file"',
+  'csdx cm:export -a \'management_token_alias\'',
+  'csdx cm:export -a "management_token_alias" -l "master-language" -d "path/of/export/destination/dir"',
+  'csdx cm:export -a "management_token_alias" -c "path/of/config/file"',
   'csdx cm:export -A -m "single module name"',
 ]
 
 ExportCommand.flags = {
-  config: flags.string({char: 'c', description: '[optional]path of the config'}),
-  'master-lang': flags.string({char: 'l', description: 'code of the source stacks master Language'}),
-  'stack-uid': flags.string({char: 's', description: 'API key of source stack'}),
+  config: flags.string({char: 'c', description: '[optional] path of the config'}),
+  'master-lang': flags.string({char: 'l', description: "code of the source stack's master Language"}),
+  'stack-uid': flags.string({char: 's', description: 'API key of the source stack'}),
   data: flags.string({char: 'd', description: 'path or location to store the data'}),
   'management-token-alias': flags.string({char: 'a', description: 'alias of the management token'}),
   'auth-token': flags.boolean({char: 'A', description: 'to use auth token'}),

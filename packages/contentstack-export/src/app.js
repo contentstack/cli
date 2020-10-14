@@ -4,6 +4,7 @@ var util = require('./lib/util')
 var login = require('./lib/util/login')
 var {addlogs} = require('./lib/util/log')
 const chalk = require('chalk')
+let path = require('path')
 
 exports.initial = function (config) {
   config = util.buildAppConfig(config)
@@ -36,10 +37,11 @@ var singleExport = (moduleName, types, config) => {
     var exportedModule = require('./lib/export/' + moduleName)
     exportedModule.start(config).then(function () {
       addlogs(config, moduleName + ' was exported successfully!', 'success')
+      addlogs(config, 'The log for this is stored at ' + path.join(config.data , 'logs', 'export'), 'success')
     }).catch(function (error) {
       addlogs(config, 'Failed to migrate ' + moduleName, 'error')
       addlogs(config, error, 'error')
-      addlogs(config, 'The log for this is stored at ' + config.data + '/logs', 'success')
+      addlogs(config, 'The log for this is stored at ' + path.join(config.data , 'logs', 'export'), 'error')
     })
   } else {
     addlogs(config, 'Please provide valid module name.', 'error')
@@ -64,9 +66,9 @@ var allExport = async (config, types) => {
     concurrency: 1,
   }).then(function () {
     addlogs(config, chalk.green('Stack: ' + config.source_stack + ' has been exported succesfully!'), 'success')
-    addlogs(config, 'The log for this is stored at ' + config.data + '/logs', 'success')
+    addlogs(config, 'The log for this is stored at ' + path.join(config.data , 'logs', 'export'), 'success')
   }).catch(function () {
     addlogs(config, chalk.red('Failed to migrate stack: ' + config.source_stack + '. Please check error logs for more info'), 'error')
-    addlogs(config, 'The log for this is stored at ' + config.data + '/logs', 'success')
+    addlogs(config, 'The log for this is stored at ' + path.join(config.data , 'logs', 'export'), 'error')
   })
 }
