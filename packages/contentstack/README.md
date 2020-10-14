@@ -691,7 +691,7 @@ EXAMPLES
   csdx cm:export -A -m "single module name"
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.0.27/src/commands/cm/export.js)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.0.1/src/commands/cm/export.js)_
 
 ## `csdx cm:import`
 
