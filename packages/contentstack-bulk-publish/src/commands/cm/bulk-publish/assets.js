@@ -85,7 +85,7 @@ class AssetsCommand extends Command {
 AssetsCommand.description = `Publish assets to specified environments
 The assets command is used for publishing assets from the specified stack, to the specified environments
 
-Environment/s are required for executing the command successfully
+Environment(s) and Locale(s) are required for executing the command successfully
 But, if retryFailed flag is set, then only a logfile is required
 `
 
@@ -109,8 +109,8 @@ AssetsCommand.examples = [
   'csdx cm:bulk-publish:assets -c [PATH TO CONFIG FILE]',
   '',
   'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:assets --retryFailed [PATH TO LOG FILE]',
-  'csdx cm:bulk-publish:assets -r [PATH TO LOG FILE]'
+  'csdx cm:bulk-publish:assets --retryFailed [LOG FILE NAME]',
+  'csdx cm:bulk-publish:assets -r [LOG FILE NAME]'
 ]
 
 module.exports = AssetsCommand
