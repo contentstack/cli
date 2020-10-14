@@ -13,7 +13,7 @@ const debug = require('debug')('hooks:analytics')
  */
 let uuid = getUUID()
 const googleAnalyticsConf = {
-  trackingID: 'UA-169821045-2',
+  trackingID: '',
   cid: uuid,
 }
 
