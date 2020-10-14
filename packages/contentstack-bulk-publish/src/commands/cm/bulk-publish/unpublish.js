@@ -109,8 +109,14 @@ class UnpublishCommand extends Command {
 UnpublishCommand.description = `Unpublish entries of given Content Types from given environment
 The unpublish command is used for unpublishing entries from given environment
 
-Content Types, Environments and Locales are required for executing the command successfully
+Environment (Source Environment) and Locale are required for executing the command successfully
 But, if retryFailed flag is set, then only a logfile is required
+
+A Content Type can be specified for publishing entries, but if no content-type(s) is/are specified and --onlyAssets is not used,
+then all entries from all content types will be unpublished from the source environment
+
+--onlyAssets can be used to unpublish only assets and --onlyEntries can be used to unpublish only entries.
+(--onlyAssets and --onlyEntries cannot be used together at the same time)
 `
 
 UnpublishCommand.flags = {
@@ -136,8 +142,18 @@ UnpublishCommand.examples = [
   'csdx cm:bulk-publish:unpublish -c [PATH TO CONFIG FILE]',
   '',
   'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:unpublish --retryFailed [PATH TO LOG FILE]',
-  'csdx cm:bulk-publish:unpublish -r [PATH TO LOG FILE]'
+  'csdx cm:bulk-publish:unpublish --retryFailed [LOG FILE NAME]',
+  'csdx cm:bulk-publish:unpublish -r [LOG FILE NAME]',
+  '',
+  'No content type',
+  'csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all content types and assets from the source environment)',
+  '',
+  'Using --onlyAssets',
+  'csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyAssets (Will unpublish only assets from the source environment)',
+  '',
+  'Using --onlyEntries',
+  'csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only entries, all entries, from the source environment)',
+  'csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only entries, (from CONTENT TYPE) from the source environment)',
 ]
 
 module.exports = UnpublishCommand
