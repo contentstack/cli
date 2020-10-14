@@ -19,7 +19,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-auth/0.0.1 darwin-x64 node-v10.19.0
+@contentstack/cli-auth/0.0.2 darwin-x64 node-v10.19.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -50,7 +50,7 @@ ALIASES
   $ csdx login
 ```
 
-_See code: [src/commands/auth/login.js](https://github.com/contentstack/cli/blob/v0.0.1/src/commands/auth/login.js)_
+_See code: [src/commands/auth/login.js](https://github.com/contentstack/cli/blob/v0.0.2/src/commands/auth/login.js)_
 
 ## `csdx auth:logout`
 
@@ -67,11 +67,11 @@ ALIASES
   $ csdx logout
 ```
 
-_See code: [src/commands/auth/logout.js](https://github.com/contentstack/cli/blob/v0.0.1/src/commands/auth/logout.js)_
+_See code: [src/commands/auth/logout.js](https://github.com/contentstack/cli/blob/v0.0.2/src/commands/auth/logout.js)_
 
 ## `csdx auth:tokens`
 
-Use to list all existing management tokens
+Lists all existing tokens added to the session
 
 ```
 USAGE
@@ -91,11 +91,11 @@ ALIASES
   $ csdx tokens
 ```
 
-_See code: [src/commands/auth/tokens/index.js](https://github.com/contentstack/cli/blob/v0.0.1/src/commands/auth/tokens/index.js)_
+_See code: [src/commands/auth/tokens/index.js](https://github.com/contentstack/cli/blob/v0.0.2/src/commands/auth/tokens/index.js)_
 
 ## `csdx auth:tokens:add`
 
-Adds management/delivery tokens to your session to use it with further Contentstack/CLI command
+Adds management/delivery tokens to your session to use it with further CLI command
 
 ```
 USAGE
@@ -119,7 +119,7 @@ ALIASES
   $ csdx tokens:add
 ```
 
-_See code: [src/commands/auth/tokens/add.js](https://github.com/contentstack/cli/blob/v0.0.1/src/commands/auth/tokens/add.js)_
+_See code: [src/commands/auth/tokens/add.js](https://github.com/contentstack/cli/blob/v0.0.2/src/commands/auth/tokens/add.js)_
 
 ## `csdx auth:tokens:remove`
 
@@ -139,7 +139,7 @@ ALIASES
   $ csdx tokens:remove
 ```
 
-_See code: [src/commands/auth/tokens/remove.js](https://github.com/contentstack/cli/blob/v0.0.1/src/commands/auth/tokens/remove.js)_
+_See code: [src/commands/auth/tokens/remove.js](https://github.com/contentstack/cli/blob/v0.0.2/src/commands/auth/tokens/remove.js)_
 
 ## `csdx auth:whoami`
 
@@ -153,5 +153,5 @@ ALIASES
   $ csdx whoami
 ```
 
-_See code: [src/commands/auth/whoami.js](https://github.com/contentstack/cli/blob/v0.0.1/src/commands/auth/whoami.js)_
+_See code: [src/commands/auth/whoami.js](https://github.com/contentstack/cli/blob/v0.0.2/src/commands/auth/whoami.js)_
 <!-- commandsstop -->
