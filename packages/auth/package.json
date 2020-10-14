@@ -9,20 +9,13 @@
   },
   "dependencies": {
     "@contentstack/cli-command": "latest",
-    "@contentstack/management": "1.0.0",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
-    "axios": "^0.19.2",
-    "bluebird": "^3.7.2",
     "chalk": "^4.0.0",
     "cli-ux": "^5.4.6",
     "configstore": "^5.0.1",
     "debug": "^4.1.1",
-    "inquirer": "^7.1.0",
-    "nock": "^13.0.2",
-    "request": "^2.88.2",
-    "sinon": "^9.1.0",
-    "winston": "^3.3.3"
+    "inquirer": "^7.1.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
@@ -33,9 +26,8 @@
     "eslint-config-oclif": "^3.1.0",
     "globby": "^10.0.2",
     "mocha": "^8.0.1",
-    "mochawesome": "^6.1.1",
     "nyc": "^14.1.1",
-    "nock": "^13.0.2"
+    "sinon": "^9.1.0"
   },
   "engines": {
     "node": ">=8.0.0"

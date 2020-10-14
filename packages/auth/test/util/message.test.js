@@ -6,7 +6,7 @@ describe('Messages Util', () => {
   test
   .it('Should fetch messages for "add" topic', async () => {
     const messages = new Messages('add').msgs
-    assert.equal(messages.promptTokenAlias, 'Please provide alias to store token')
+    assert.equal(messages.promptTokenAlias, 'Provide alias to store token')
   })
 
   test
