@@ -90,7 +90,7 @@ EntryEditsCommand.description = `Publish edited entries from a specified Content
 The entry-edits command is used for publishing entries from the specified content types, to the
 specified environments and locales
 
-Content Types, Environments and Locales are required for executing the command successfully
+Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command successfully
 But, if retryFailed flag is set, then only a logfile is required
 `
 
@@ -115,8 +115,8 @@ EntryEditsCommand.examples = [
   'csdx cm:bulk-publish:entry-edits -c [PATH TO CONFIG FILE]',
   '',
   'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:entry-edits --retryFailed [PATH TO LOG FILE]',
-  'csdx cm:bulk-publish:entry-edits -r [PATH TO LOG FILE]'
+  'csdx cm:bulk-publish:entry-edits --retryFailed [LOG FILE NAME]',
+  'csdx cm:bulk-publish:entry-edits -r [LOG FILE NAME]'
 ]
 
 module.exports = EntryEditsCommand
