@@ -737,7 +737,7 @@ EXAMPLES
   csdx cm:import -A -m "single module name"
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.0-beta/src/commands/cm/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.0.24/src/commands/cm/import.js)_
 
 ## `csdx config:get:region`
 
