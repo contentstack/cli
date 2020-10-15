@@ -125,7 +125,6 @@ async function getSyncEntries(stack, config, locale, queryParams, bulkUnpublish,
   return new Promise(async (resolve, reject) => {
     try {
       let tokenDetails = command.getToken(config.alias)
-      debugger
       const conf = {
         uri: `${config.cda}/v${defaults.apiVersion}/stacks/sync?${paginationToken ? `pagination_token=${paginationToken}` : 'init=true'}${queryParams}`,
         headers: {
@@ -134,7 +133,6 @@ async function getSyncEntries(stack, config, locale, queryParams, bulkUnpublish,
         },
       }
       const entriesResponse = await req(conf)
-      debugger
       if (entriesResponse.items.length > 0) {
         bulkAction(stack, entriesResponse.items, bulkUnpublish, environment, locale)
       }
