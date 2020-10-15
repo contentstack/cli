@@ -4,9 +4,6 @@
 	"version": "0.1.0-beta",
 	"author": "Contentstack",
 	"bugs": "https://github.com/contentstack/cli/issues",
-	"publishConfig": {
-		"registry": "https://npm.pkg.github.com/"
-	},
 	"dependencies": {
 		"@contentstack/management": "1.0.0",
 		"@oclif/command": "^1.6.1",
@@ -48,7 +45,7 @@
 	],
 	"homepage": "https://github.com/contentstack/cli",
 	"keywords": [
-		"oclif-plugin"
+		"contentstack","cli","plugin"
 	],
 	"license": "MIT",
 	"scripts": {

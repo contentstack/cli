@@ -1,12 +1,9 @@
 {
   "name": "@contentstack/cli-auth",
   "description": "Contentstack CLI plugin for authentication activities",
-  "version": "0.1.0-beta",
+  "version": "0.1.1-beta",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "dependencies": {
     "@contentstack/cli-command": "0.1.0-beta",
     "@oclif/command": "^1.6.1",
@@ -40,7 +37,7 @@
   ],
   "homepage": "https://github.com/contentstack/cli",
   "keywords": [
-    "oclif-plugin"
+    "contentstack","cli", "plugin"
   ],
   "license": "MIT",
   "oclif": {
