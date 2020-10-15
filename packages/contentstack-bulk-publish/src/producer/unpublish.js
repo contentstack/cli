@@ -184,12 +184,16 @@ async function start({retryFailed, bulkUnpublish, contentType, locale, environme
       locale,
     }
     filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
-    if (onlyAssets)
-      filter.type = 'asset_published'
-    if (onlyEntries)
-      filter.type = 'entry_published'
-    if (contentType)
+    if (contentType) {
       filter.content_type_uid = contentType
+    }
+    if (onlyAssets) {
+      filter.type = 'asset_published'
+      delete filter.content_type_uid
+    }
+    if (onlyEntries) {
+      filter.type = 'entry_published'
+    }
     setConfig(config, bulkUnpublish)
     const queryParams = getQueryParams(filter)
     try {
