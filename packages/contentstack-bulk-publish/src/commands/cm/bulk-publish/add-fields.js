@@ -109,8 +109,8 @@ AddFieldsCommand.examples = [
   'csdx cm:bulk-publish:add-fields -c [PATH TO CONFIG FILE]',
   '',
   'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:add-fields --retryFailed [PATH TO LOG FILE]',
-  'csdx cm:bulk-publish:add-fields -r [PATH TO LOG FILE]'
+  'csdx cm:bulk-publish:add-fields --retryFailed [LOG FILE NAME]',
+  'csdx cm:bulk-publish:add-fields -r [LOG FILE NAME]'
 ]
 
 module.exports = AddFieldsCommand
