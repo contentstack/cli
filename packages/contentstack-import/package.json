@@ -1,7 +1,7 @@
 {
 	"name": "@contentstack/cli-cm-import",
-	"description": "It is contentstack import utils",
-	"version": "0.0.23",
+	"description": "Export content from a stack",
+	"version": "0.0.24",
 	"author": "contentstack",
 	"bugs": "https://github.com/contentstack/cli/issues",
 	"dependencies": {
