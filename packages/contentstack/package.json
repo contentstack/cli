@@ -8,9 +8,9 @@
   },
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-auth": "0.1.0-beta",
+    "@contentstack/cli-auth": "0.1.1-beta",
     "@contentstack/cli-command": "0.1.0-beta",
-    "@contentstack/cli-cm-bulk-publish": "0.1.0-beta",
+    "@contentstack/cli-cm-bulk-publish": "0.1.1-beta",
     "@contentstack/cli-cm-export": "0.1.0-beta",
     "@contentstack/cli-cm-import": "0.1.0-beta",
     "@contentstack/management": "1.0.0",
@@ -54,8 +54,8 @@
   ],
   "homepage": "https://github.com/contentstack/cli",
   "keywords": [
-    "oclif"
-  ],
+		"contentstack","cli","plugin", "contentstack-cli-core"
+	],
   "license": "MIT",
   "main": "src/index.js",
   "oclif": {
