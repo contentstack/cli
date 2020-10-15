@@ -59,29 +59,23 @@ class RevertCommand extends Command {
 }
 
 RevertCommand.description = `Revert publish operations by using a log file
-...
 The revert command is used for reverting all publish operations performed using bulk-publish script.
-
-Here is a detailed description for all the available flags
------------------------------------------------------------------------------------------------------------
---retryFailed or -r : This flag is used to retry publishing entries or assets, that failed to publish in a previous
-attempt. A log file for the previous session will be required for processing the failed elements. 
-
-NOTE: When retryFailed flag is set, all other flags will be ignored
-
-EXAMPLE : cm:bulk-publish:revert --retryFailed [PATH TO LOG FILE]
-EXAMPLE : cm:bulk-publish:revert -r [PATH TO LOG FILE]
------------------------------------------------------------------------------------------------------------
---logFile or -l : logFile to be used for revert
-
-EXAMPLE : cm:bulk-publish:revert --logFile [PATH TO LOG FILE]
-EXAMPLE : cm:bulk-publish:revert -l [PATH TO LOG FILE]
------------------------------------------------------------------------------------------------------------
+A log file name is required to execute revert command
 `
 
 RevertCommand.flags = {
   retryFailed: flags.string({char: 'r', description: 'retry publishing failed entries from the logfile'}),
   logFile: flags.string({char: 'l', description: 'logfile to be used to revert'}),
 }
+
+RevertCommand.examples = [
+  'Using --logFile',
+  'cm:bulk-publish:revert --logFile [LOG FILE NAME]',
+  'cm:bulk-publish:revert -l [LOG FILE NAME]',
+  '',
+  'Using --retryFailed',
+  'cm:bulk-publish:revert --retryFailed [LOG FILE NAME]',
+  'cm:bulk-publish:revert -r [LOG FILE NAME]',
+]
 
 module.exports = RevertCommand
