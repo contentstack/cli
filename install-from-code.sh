@@ -19,6 +19,7 @@ LIGHTPURPLE='\033[1;35m'
 LIGHTCYAN='\033[1;36m'
 WHITE='\033[1;37m'
 
+echo 'This is out dated script we will update it soon.'
 
 mkdir -p build || { echo -e '\e[31mFailed to create build folder.' && exit 1; }
 cp -r dependency build

@@ -1,11 +1,8 @@
 @contentstack/cli-cm-import
 =================================
 
-Use import commands to import the exported content into the stack. 
+Use import commands to import the exported content into the stack.
 
-[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/@contentstack/contentstack-import.svg)](https://npmjs.org/package/@contentstack/contentstack-import)
-[![Downloads/week](https://img.shields.io/npm/dw/@contentstack/contentstack-import.svg)](https://npmjs.org/package/@contentstack/contentstack-import)
 [![License](https://img.shields.io/npm/l/@contentstack/contentstack-import.svg)](https://github.com/contentstack/cli/blob/master/package.json)
 
 <!-- toc -->
@@ -19,7 +16,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-import/0.0.24 linux-x64 node-v12.13.1
+@contentstack/cli-cm-import/0.1.0-beta darwin-x64 node-v10.19.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -61,5 +58,5 @@ EXAMPLES
   csdx cm:import -A -m "single module name"
 ```
 
-_See code: [src/commands/cm/import.js](https://github.com/contentstack/cli/blob/v0.0.24/src/commands/cm/import.js)_
+_See code: [src/commands/cm/import.js](https://github.com/contentstack/cli/blob/v0.1.0-beta/src/commands/cm/import.js)_
 <!-- commandsstop -->
