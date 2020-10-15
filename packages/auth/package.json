@@ -1,14 +1,14 @@
 {
   "name": "@contentstack/cli-auth",
-  "description": "Contentstack CLI plugin for authentication",
-  "version": "0.0.2",
-  "author": "contentstack",
+  "description": "Contentstack CLI plugin for authentication activities",
+  "version": "0.1.0-beta",
+  "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
   "dependencies": {
-    "@contentstack/cli-command": "latest",
+    "@contentstack/cli-command": "0.1.0-beta",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
     "chalk": "^4.0.0",
