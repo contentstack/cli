@@ -1,7 +1,7 @@
 @contentstack/cli
 ===
 
-Contentstack Command-line Interface (CLI)
+Use Contentstack Command-line Interface to command Contentstack for executing a set of operations from the terminal. To get started with CLI, refer to the [CLI documentation](https://www.contentstack.com/docs/developers/cli/).
 
 [![License](https://img.shields.io/npm/l/cli.svg)](https://github.com/contentstack/contentstack-cli-new/blob/master/package.json)
 
