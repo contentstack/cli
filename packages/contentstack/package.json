@@ -1,18 +1,18 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "0.1.0-beta",
+  "version": "0.1.1-beta1",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run"
   },
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-auth": "0.1.1-beta",
-    "@contentstack/cli-command": "0.1.0-beta",
-    "@contentstack/cli-cm-bulk-publish": "0.1.1-beta",
-    "@contentstack/cli-cm-export": "0.1.0-beta",
-    "@contentstack/cli-cm-import": "0.1.0-beta",
+    "@contentstack/cli-auth": "0.1.1-beta1",
+    "@contentstack/cli-command": "0.1.1-beta1",
+    "@contentstack/cli-cm-bulk-publish": "0.1.1-beta1",
+    "@contentstack/cli-cm-export": "0.1.1-beta1",
+    "@contentstack/cli-cm-import": "0.1.1-beta1",
     "@contentstack/management": "1.0.0",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
@@ -94,6 +94,6 @@
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "test": "nyc mocha \"test/**/*.test.js\"  ",
     "test-report": "nyc --reporter=html mocha \"test/**/*.test.js\"",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "oclif-dev readme --multi && git add README.md"
   }
 }
