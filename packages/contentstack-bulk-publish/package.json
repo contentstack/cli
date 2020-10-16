@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-bulk-publish",
   "description": "Contentstack CLI plugin for bulk publish actions",
-  "version": "0.1.1-beta",
+  "version": "0.1.1-beta1",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
@@ -49,7 +49,8 @@
     ],
     "hooks": {
       "validateConfig": "./src/hooks/config.js"
-    }
+    },
+    "repositoryPrefix": "<%- repo %>/blob/v<%- version %>/packages/contentstack-bulk-publish/<%- commandPath %>"
   },
   "repository": "https://github.com/contentstack/cli",
   "scripts": {
