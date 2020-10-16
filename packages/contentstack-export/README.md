@@ -1,9 +1,9 @@
 @contentstack/cli-cm-export
 ===================
 
-Use contentstack-export package to export the content from a stack
+It is Contentstack’s CLI plugin to export content from the stack. To learn how to export and import content in Contentstack, refer to the [Migration guide](https://www.contentstack.com/docs/developers/cli/migration/). 
 
-[![License](https://img.shields.io/npm/l/contentstack-export.svg)](https://github.com/contentstack/cli/blob/master/package.json)
+[![License](https://img.shields.io/npm/l/contentstack-export.svg)](https://github.com/contentstack/cli/blob/main/package.json)
 
 <!-- toc -->
 * [Usage](#usage)

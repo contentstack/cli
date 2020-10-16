@@ -1,7 +1,7 @@
 @contentstack/cli-cm-import
 =================================
 
-Use import commands to import the exported content into the stack.
+It is Contentstack’s CLI plugin to import content in the stack. To learn how to export and import content in Contentstack, refer to the [Migration guide](https://www.contentstack.com/docs/developers/cli/migration/). 
 
 [![License](https://img.shields.io/npm/l/@contentstack/contentstack-import.svg)](https://github.com/contentstack/cli/blob/master/package.json)
 
