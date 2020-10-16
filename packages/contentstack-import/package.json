@@ -1,13 +1,13 @@
 {
 	"name": "@contentstack/cli-cm-import",
 	"description": "Contentstack CLI plugin to import content into stack",
-	"version": "0.1.0-beta",
+	"version": "0.1.1-beta1",
 	"author": "Contentstack",
 	"bugs": "https://github.com/contentstack/cli/issues",
 	"dependencies": {
 		"@contentstack/management": "1.0.0",
 		"@oclif/command": "^1.6.1",
-		"@contentstack/cli-command": "0.1.0-beta",
+		"@contentstack/cli-command": "0.1.1-beta1",
 		"@oclif/config": "^1.15.1",
 		"axios": "^0.19.2",
 		"bluebird": "3.5.1",
@@ -57,7 +57,8 @@
 		"bin": "csdx",
 		"devPlugins": [
 			"@oclif/plugin-help"
-		]
+		],
+		"repositoryPrefix": "<%- repo %>/blob/v<%- version %>/packages/contentstack-import/<%- commandPath %>"
 	},
 	"repository": "https://github.com/contentstack/cli"
 }
