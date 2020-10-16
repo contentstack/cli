@@ -285,41 +285,43 @@ function start({contentTypes, locales, environments, retryFailed, bulkPublish}, 
     }
     process.exit(0)  
   })
-  if (retryFailed) {
-    if (typeof retryFailed === 'string') {
-      if (!validateFile(retryFailed, ['bulk-add-fields', 'add-fields'])) {
-        return false
-      }
 
-      bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
-      setConfig(config, bulkPublish)
-
-      if (bulkPublish) {
-        retryFailedLogs(retryFailed, queue, 'bulk')
-      } else {
-        retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish')
-      }
-    }
-  } else {
-    setConfig(config, bulkPublish)  
-    for (let i = 0; i < contentTypes.length; i += 1) {
-      getContentTypeSchema(stack, contentTypes[i])
-      .then(async schema => {
-        stack.counterFinalValue = locales.length
-        stack.counter = 0
-        for (let j = 0; j < locales.length; j += 1) {
-          try {
-            stack.counter += 1
-            await getEntries(stack, config, schema, contentTypes[i], locales[j], bulkPublish, environments)
-          } catch (err) {
-            console.log(`Failed to get Entries with contentType ${contentTypes[i]} and locale ${locales[j]}`)
-          }
+  try {
+    if (retryFailed) {
+      if (typeof retryFailed === 'string') {
+        if (!validateFile(retryFailed, ['bulk-add-fields', 'add-fields'])) {
+          return false
         }
-      })
-      .catch(err => {
-        console.log(`Failed to fetch schema${JSON.stringify(err)}`)
-      })
+
+        bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
+        setConfig(config, bulkPublish)
+
+        if (bulkPublish) {
+          await retryFailedLogs(retryFailed, queue, 'bulk')
+        } else {
+          await retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish')
+        }
+      }
+    } else {
+      setConfig(config, bulkPublish)  
+      for (let i = 0; i < contentTypes.length; i += 1) {
+        getContentTypeSchema(stack, contentTypes[i])
+        .then(async schema => {
+          for (let j = 0; j < locales.length; j += 1) {
+            try {
+              await getEntries(stack, config, schema, contentTypes[i], locales[j], bulkPublish, environments)
+            } catch (err) {
+              console.log(`Failed to get Entries with contentType ${contentTypes[i]} and locale ${locales[j]}`)
+            }
+          }
+        })
+        .catch(err => {
+          console.log(`Failed to fetch schema${JSON.stringify(err)}`)
+        })
+      }
     }
+  } catch(error) {
+    throw error
   }
 }
 
