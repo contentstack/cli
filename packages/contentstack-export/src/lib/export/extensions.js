@@ -47,7 +47,7 @@ ExportExtensions.prototype.start = function (mergeConfig) {
         addlogs(config, chalk.green('All the extensions have been exported successfully'), 'success')
         return resolve()
       }
-      addlogs(config, chalk.white('No extensions were found in the Stack'))
+      addlogs(config, 'No extensions were found in the Stack', 'success')
       return resolve()
     }).catch(error => {
       addlogs(config, error, 'error')
