@@ -1,9 +1,9 @@
 @contentstack/cli-cm-bulk-publish
 ============
 
-Contentstack CLI plugin for bulk publish actions.
+It is Contentstack’s CLI plugin to perform bulk publish/unpublish operations on entries and assets in Contentstack. Refer to the [Bulk Publish and Unpublish documentation](https://www.contentstack.com/docs/developers/cli/bulk-publish-and-unpublish) to learn more about its commands.
 
-[![License](https://img.shields.io/npm/l/bulk-publish.svg)](https://github.com/abhinav-from-contentstack/bulk-publish/blob/master/package.json)
+[![License](https://img.shields.io/npm/l/bulk-publish.svg)](https://github.com/contentstack/contentstack-cli-new/blob/master/package.json)
 
 <!-- toc -->
 * [Usage](#usage)
