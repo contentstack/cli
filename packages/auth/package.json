@@ -1,11 +1,11 @@
 {
   "name": "@contentstack/cli-auth",
   "description": "Contentstack CLI plugin for authentication activities",
-  "version": "0.1.1-beta1",
+  "version": "0.1.1-beta.1",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "0.1.1-beta1",
+    "@contentstack/cli-command": "0.1.1-beta.1",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
     "chalk": "^4.0.0",
