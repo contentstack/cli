@@ -105,9 +105,10 @@ UnpublishedEntriesCommand.flags = {
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
 }
 
-UnpublishedEntriesCommand.usage = 'cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l [LOCALES] -a [MANAGEMENT TOKEN ALIAS]'
-
 UnpublishedEntriesCommand.examples = [
+  'General Usage',
+  'csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS]',
+  '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
   'csdx cm:bulk-publish:unpublished-entries --config [PATH TO CONFIG FILE]',
