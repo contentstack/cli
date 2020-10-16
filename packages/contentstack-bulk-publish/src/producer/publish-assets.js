@@ -98,7 +98,8 @@ async function start({retryFailed, bulkPublish, environments, folderUid, locales
     }
     process.exit(0)  
   })
-  if (retryFailed) {
+
+  try {
     if (retryFailed) {
       if (!validateFile(retryFailed, ['publish-assets', 'bulk-publish-assets'])) {
         return false
@@ -108,20 +109,22 @@ async function start({retryFailed, bulkPublish, environments, folderUid, locales
       setConfig(config, bulkPublish)
 
       if (bulkPublish) {
-        retryFailedLogs(retryFailed, queue, 'bulk')
+        await retryFailedLogs(retryFailed, queue, 'bulk')
       } else {
-        retryFailedLogs(retryFailed, {assetQueue: queue}, 'publish')
+        await retryFailedLogs(retryFailed, {assetQueue: queue}, 'publish')
+      }
+    } else if (folderUid) {
+      setConfig(config, bulkPublish)
+      for (let loc = 0; loc < locales.length; loc += 1) {
+        try {
+          await getAssets(stack, folderUid, bulkPublish, environments, locales[loc])
+        } catch(error) {
+          throw error
+        }
       }
     }
-  } else if (folderUid) {
-    setConfig(config, bulkPublish)
-    for (let loc = 0; loc < locales.length; loc += 1) {
-      try {
-        await getAssets(stack, folderUid, bulkPublish, environments, locales[loc])
-      } catch(error) {
-        throw error
-      }
-    }
+  } catch (error) {
+    throw error
   }
 }
 
