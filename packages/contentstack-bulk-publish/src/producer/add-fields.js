@@ -274,7 +274,7 @@ async function getEntries(stack, config, schema, contentType, locale, bulkPublis
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-loop-func */
 
-function start({contentTypes, locales, environments, retryFailed, bulkPublish}, stack, config) {
+async function start({contentTypes, locales, environments, retryFailed, bulkPublish}, stack, config) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)
