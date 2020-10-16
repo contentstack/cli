@@ -130,9 +130,10 @@ CrossPublishCommand.flags = {
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
 }
 
-CrossPublishCommand.usage = 'cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [ENVIRONMENT] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]'
-
 CrossPublishCommand.examples = [
+  'General Usage',
+  'csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]',
+  '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
   'csdx cm:bulk-publish:cross-publish --config [PATH TO CONFIG FILE]',
