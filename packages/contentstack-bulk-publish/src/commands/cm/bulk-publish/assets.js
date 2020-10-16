@@ -100,9 +100,10 @@ AssetsCommand.flags = {
   locales: flags.string({char: 'l', description: 'Locales to which assets need to be published', multiple: true }),
 }
 
-AssetsCommand.usage = 'cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -u [FOLDER_UID] --[no-]bulkPublish -a [MANAGEMENT TOKEN ALIAS]'
-
 AssetsCommand.examples = [
+  'General Usage',
+  'csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS]',
+  '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
   'csdx cm:bulk-publish:assets --config [PATH TO CONFIG FILE]',
