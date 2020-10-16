@@ -162,30 +162,35 @@ async function start({retryFailed, bulkPublish, filter, deliveryToken, destEnv, 
     }
     process.exit(0)
   })
-  if (retryFailed) {
-    if (typeof retryFailed === 'string' && retryFailed.length > 0) {
-      if (!validateFile(retryFailed, ['cross-publish', 'bulk-cross-publish'])) {
-        return false
+
+  try {
+    if (retryFailed) {
+      if (typeof retryFailed === 'string' && retryFailed.length > 0) {
+        if (!validateFile(retryFailed, ['cross-publish', 'bulk-cross-publish'])) {
+          return false
+        }
+
+        bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
+        setConfig(config, bulkPublish)
+
+        if (bulkPublish) {
+          await retryFailedLogs(retryFailed, queue, 'bulk')
+        } else {
+          await retryFailedLogs(retryFailed, {entryQueue, assetQueue}, 'publish')
+        }
       }
-
-      bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
-      setConfig(config, bulkPublish)
-
-      if (bulkPublish) {
-        retryFailedLogs(retryFailed, queue, 'bulk')
-      } else {
-        retryFailedLogs(retryFailed, {entryQueue, assetQueue}, 'publish')
+    } else {
+      setConfig(config, bulkPublish)  
+      filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
+      const queryParams = getQueryParams(filter)
+      try {
+        await getSyncEntries(stack, config, queryParams, bulkPublish, filter, deliveryToken, destEnv)
+      } catch (error) {
+        throw error
       }
     }
-  } else {
-    setConfig(config, bulkPublish)  
-    filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
-    const queryParams = getQueryParams(filter)
-    try {
-      await getSyncEntries(stack, config, queryParams, bulkPublish, filter, deliveryToken, destEnv)
-    } catch (error) {
-      throw error
-    }
+  } catch(error) {
+    throw error
   }
 }
 

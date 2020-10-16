@@ -124,11 +124,10 @@ async function start({retryFailed, bulkPublish, publishAllContentTypes, contentT
         
         bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
         setConfig(config, bulkPublish)
-
         if (bulkPublish) {
-          retryFailedLogs(retryFailed, queue, 'bulk')
+          await retryFailedLogs(retryFailed, queue, 'bulk')
         } else {
-          retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish')
+          await retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish')
         }
       }
     } else {
