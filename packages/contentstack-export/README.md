@@ -1,9 +1,9 @@
 @contentstack/cli-cm-export
 ===================
 
-Use contentstack-export package to export the content from a stack
+It is Contentstack’s CLI plugin to export content from the stack. To learn how to export and import content in Contentstack, refer to the [Migration guide](https://www.contentstack.com/docs/developers/cli/migration/). 
 
-[![License](https://img.shields.io/npm/l/contentstack-export.svg)](https://github.com/contentstack/cli/blob/master/package.json)
+[![License](https://img.shields.io/npm/l/contentstack-export.svg)](https://github.com/contentstack/cli/blob/main/package.json)
 
 <!-- toc -->
 * [Usage](#usage)
@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-export/0.1.0-beta darwin-x64 node-v10.19.0
+@contentstack/cli-cm-export/0.1.1-beta1 darwin-x64 node-v10.19.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -58,5 +58,5 @@ EXAMPLES
   csdx cm:export -A -m "single module name"
 ```
 
-_See code: [src/commands/cm/export.js](https://github.com/contentstack/cli/blob/v0.1.0-beta/src/commands/cm/export.js)_
+_See code: [src/commands/cm/export.js](https://github.com/contentstack/cli/blob/v0.1.1-beta1/packages/contentstack-export/src/commands/cm/export.js)_
 <!-- commandsstop -->
