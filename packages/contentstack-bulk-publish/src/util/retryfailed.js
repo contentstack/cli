@@ -28,6 +28,6 @@ module.exports = async (filename, queue, Type) => {
       }
     });
   } else {
-    console.log('NO FAILURE LOGS WERE FOUND');
+    throw new Error('NO FAILURE LOGS WERE FOUND');
   }
 };
