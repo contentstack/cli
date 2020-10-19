@@ -25,7 +25,7 @@ ALIASES
   $ csdx login
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta1/packages/auth/src/commands/auth/login.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/login.js)_
 
 ## `csdx auth:logout`
 
@@ -42,7 +42,7 @@ ALIASES
   $ csdx logout
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta1/packages/auth/src/commands/auth/logout.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/logout.js)_
 
 ## `csdx auth:tokens`
 
@@ -66,7 +66,7 @@ ALIASES
   $ csdx tokens
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta1/packages/auth/src/commands/auth/tokens/index.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/tokens/index.js)_
 
 ## `csdx auth:tokens:add`
 
@@ -94,7 +94,7 @@ ALIASES
   $ csdx tokens:add
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta1/packages/auth/src/commands/auth/tokens/add.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/tokens/add.js)_
 
 ## `csdx auth:tokens:remove`
 
@@ -114,7 +114,7 @@ ALIASES
   $ csdx tokens:remove
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta1/packages/auth/src/commands/auth/tokens/remove.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/tokens/remove.js)_
 
 ## `csdx auth:whoami`
 
@@ -128,4 +128,4 @@ ALIASES
   $ csdx whoami
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta1/packages/auth/src/commands/auth/whoami.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/whoami.js)_
