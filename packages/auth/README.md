@@ -3,7 +3,7 @@
 
 It is Contentstack’s CLI plugin to perform authentication-related activities. To get started with authenticating yourself with the CLI, refer to the [CLI’s Authentication documentation](https://www.contentstack.com/docs/developers/cli/authentication)
 
-[![License](https://img.shields.io/npm/l/cli.svg)](https://github.com/contentstack/cli/blob/master/package.json)
+[![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
 * [Usage](#usage)
