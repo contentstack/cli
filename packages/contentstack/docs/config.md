@@ -15,7 +15,7 @@ USAGE
   $ csdx config:get:region
 ```
 
-_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta1/src/commands/config/get/region.js)_
+_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/config/get/region.js)_
 
 ## `csdx config:set:region [REGION]`
 
@@ -45,4 +45,4 @@ EXAMPLES
   --name="India"
 ```
 
-_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta1/src/commands/config/set/region.js)_
+_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/config/set/region.js)_
