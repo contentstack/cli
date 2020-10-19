@@ -23,14 +23,14 @@ module.exports = {
   },
   "publish_entries": {
     "contentTypes": [
-      "eng1"
+      "placeholder content type"
     ],
     "locales": [
-      "en-us",
+      "placeholder locale",
     ],
     "bulkPublish": true,
     "environments": [
-      "demo"
+      "placeholder env"
     ],
     "publishAllContentTypes": false
   },
