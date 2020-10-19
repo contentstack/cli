@@ -95,12 +95,12 @@ Once you export content from the source stack, import it to your destination sta
 `
 ImportCommand.examples = [
   `csdx cm:import -A`, 
-  `csdx cm:import -A -l "master-language" -s "stack_ApiKey" -d "path/of/export/destination/dir"`,
-  `csdx cm:import -A -c "path/of/config/dir"`,
-  `csdx cm:import -a "management_token_alias"`,
-  `csdx cm:import -a "management_token_alias" -l "master-language" -d "path/of/export/destination/dir"`,
-  `csdx cm:import -a "management_token_alias" -c "path/of/config/file"`,
-  `csdx cm:import -A -m "single module name"`,
+  `csdx cm:import -A -l <master_language> -s <stack_ApiKey> -d <path/of/export/destination/dir>`,
+  `csdx cm:import -A -c <path/of/config/dir>`,
+  `csdx cm:import -a <management_token_alias>`,
+  `csdx cm:import -a <management_token_alias> -l <master-language> -d <path/of/export/destination/dir>`,
+  `csdx cm:import -a <management_token_alias> -c <path/of/config/file>`,
+  `csdx cm:import -A -m <single module name>`,
 ]
 ImportCommand.flags = {
   config: flags.string({char: 'c', description: '[optional] path of config file'}),
