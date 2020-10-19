@@ -12,7 +12,7 @@ function doesFileExistInLogsDirectory(filename) {
   if (files.indexOf(filename) !== -1) {
     return true;
   }
-  console.log(chalk.red(`Error: ${filename} doesn't exist in logs directory at ${logsDir}`));
+  throw new Error(`${filename} doesn't exist in logs directory at ${logsDir}`)
 }
 
 function validateFile(filename, types) {
@@ -20,13 +20,11 @@ function validateFile(filename, types) {
     const [timestamp, logType, status] = filename.split('.');
 
     if (!timestamp || !logType || !status) {
-      console.log(chalk.red(`Error: ${filename} is not a valid log file or the log name has been changed`));
-      return false;
+      throw new Error(`${filename} is not a valid log file or the log name has been changed`)
     }
 
     if (status !== 'success' && status !== 'error') {
-      console.log(chalk.red(`Error: ${filename} is not a valid log file or the log name has been changed`));
-      return false;
+      throw new Error(`${filename} is not a valid log file or the log name has been changed`)
     }
 
     if (logType) {
@@ -52,20 +50,17 @@ function validateFile(filename, types) {
           if (types && types.length > 0) {
 
             if(status !=='error') {
-              console.log(chalk.red('Error: The given log file is not an error log file.'));
-              return false;
+              throw new Error('Error: The given log file is not an error log file.')
             }
 
             if(types.indexOf(logType) === -1) {
-              console.log(chalk.red('Error: For this operation, the log file should be of the following types'));
-              types.forEach((type) => { console.log(chalk.red("\t" + type)); });
-              return false;
+              let validTypes = '' + types.join(', ')
+              throw new Error(`For this operation, the log file should be of the following types: ${validTypes}`)
             }
           }
           return true;
         default:
-          console.log(chalk.red(`Error: ${filename} is not a valid log file or the log name has been changed`));
-          return false;
+          throw new Error(`${filename} is not a valid log file or the log name has been changed`)
       }
     }
   }
