@@ -133,9 +133,10 @@ UnpublishCommand.flags = {
   onlyEntries: flags.boolean({description: 'Unpublish only entries', default: false}),
 }
 
-UnpublishCommand.usage = 'cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]'
-
 UnpublishCommand.examples = [
+  'General Usage',
+  'csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]',
+  '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
   'csdx cm:bulk-publish:unpublish --config [PATH TO CONFIG FILE]',
