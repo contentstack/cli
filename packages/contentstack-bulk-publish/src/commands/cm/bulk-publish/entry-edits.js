@@ -106,9 +106,10 @@ EntryEditsCommand.flags = {
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }), 
 }
 
-EntryEditsCommand.usage = 'cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]'
-
 EntryEditsCommand.examples = [
+  'General Usage',
+  'csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
+  '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
   'csdx cm:bulk-publish:entry-edits --config [PATH TO CONFIG FILE]',

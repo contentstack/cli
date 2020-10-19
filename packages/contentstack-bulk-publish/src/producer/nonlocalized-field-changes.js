@@ -304,43 +304,45 @@ async function start({retryFailed, bulkPublish, sourceEnv, contentTypes, environ
     }
     process.exit(0)  
   })
-  if (retryFailed) {
-    if (typeof retryFailed === 'string') {
-      if (!validateFile(retryFailed, ['nonlocalized-field-changes', 'bulk-nonlocalized-field-changes'])) {
-        return false
-      }
 
-      bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
-      setConfig(config, bulkPublish)
+  try {
+    if (retryFailed) {
+      if (typeof retryFailed === 'string') {
+        if (!validateFile(retryFailed, ['nonlocalized-field-changes', 'bulk-nonlocalized-field-changes'])) {
+          return false
+        }
 
-      if (bulkPublish) {
-        retryFailedLogs(retryFailed, queue, 'bulk')
-      } else {
-        retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish')
-      }
-    }
-  } else {
-    setConfig(config, bulkPublish)  
-    try {
-      const masterLocale = 'en-us'
-      const languages = await getLanguages(stack)
-      // const {contentTypes} = config.nonlocalized_field_changes
-      stack.counterFinalValue = contentTypes.length
-      stack.counter = 0
-      for (let i = 0; i < contentTypes.length; i += 1) {
-        try {
-          /* eslint-disable no-await-in-loop */
-          const schema = await getContentTypeSchema(stack, contentTypes[i])
-          stack.counter += 1
-          await getEntries(stack, schema, contentTypes[i], languages, masterLocale, bulkPublish, environments, sourceEnv)
-          /* eslint-enable no-await-in-loop */
-        } catch (error) {
-          throw error
+        bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
+        setConfig(config, bulkPublish)
+
+        if (bulkPublish) {
+          await retryFailedLogs(retryFailed, queue, 'bulk')
+        } else {
+          await retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish')
         }
       }
-    } catch (error) {
-      throw error
+    } else {
+      setConfig(config, bulkPublish)  
+      try {
+        const masterLocale = 'en-us'
+        const languages = await getLanguages(stack)
+        // const {contentTypes} = config.nonlocalized_field_changes
+        for (let i = 0; i < contentTypes.length; i += 1) {
+          try {
+            /* eslint-disable no-await-in-loop */
+            const schema = await getContentTypeSchema(stack, contentTypes[i])
+            await getEntries(stack, schema, contentTypes[i], languages, masterLocale, bulkPublish, environments, sourceEnv)
+            /* eslint-enable no-await-in-loop */
+          } catch (error) {
+            throw error
+          }
+        }
+      } catch (error) {
+        throw error
+      }
     }
+  } catch(error) {
+    throw error
   }
 }
 
