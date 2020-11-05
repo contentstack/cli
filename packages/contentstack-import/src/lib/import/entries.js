@@ -20,6 +20,7 @@ const extension_supress = require('../util/extensionsUidReplace')
 const util = require('../util')
 let config = util.getConfig()
 const stack = require('../util/contentstack-management-sdk')
+const { add } = require('lodash')
 let client
 
 let reqConcurrency = config.concurrency
@@ -165,9 +166,15 @@ importEntries.prototype = {
                 }
               }
               addlogs(config, chalk.green('Entries have been imported successfully!'), 'success')
-              return resolve()
-           // })
-         // })
+              if (config.entriesPublish) {
+              return self.publish(langs).then(function () {
+                addlogs(config, chalk.green('All entries publish'), 'success')
+                return resolve()
+                }).catch(errors => {
+                  return reject(errors)
+                })
+            }
+            return resolve()
         })
       }).catch(function (error) {
         return reject(error)
@@ -259,18 +266,18 @@ importEntries.prototype = {
               .then(entryToUpdate => {
                 Object.assign(entryToUpdate, _.cloneDeep(requestObject.json.entry))
                 return entryToUpdate.update({locale: entryToUpdate.locale}).then(async result => {   
-                  if (config.entriesPublish) {
-                    if (entries[eUid].publish_details.length > 0) {
-                      if (self.mappedUids.hasOwnProperty(eUid)) {
-                         publishEntryUid = self.mappedUids[eUid]
-                      } else {
-                         publishEntryUid = createdEntries.uid
-                      }
-                      await self.publish(publishEntryUid, ctUid, lang, entries[eUid])
-                      // .then(function () {
-                      // })
-                    }
-                  }
+                  // if (config.entriesPublish) {
+                  //   if (entries[eUid].publish_details.length > 0) {
+                  //     if (self.mappedUids.hasOwnProperty(eUid)) {
+                  //        publishEntryUid = self.mappedUids[eUid]
+                  //     } else {
+                  //        publishEntryUid = createdEntries.uid
+                  //     }
+                  //     await self.publish(publishEntryUid, ctUid, lang, entries[eUid])
+                  //     // .then(function () {
+                  //     // })
+                  //   }
+                  // }
                   return           
                 }).catch(function (err) {
                   let error = JSON.parse(err.message)
@@ -320,18 +327,18 @@ importEntries.prototype = {
                   }
                 }
 
-                if (config.entriesPublish) {
-                  if (entries[eUid].publish_details.length > 0) {
-                    if (self.mappedUids.hasOwnProperty(eUid)) {
-                       publishEntryUid = self.mappedUids[eUid]
-                    } else {
-                       publishEntryUid = createdEntries.uid
-                    }
-                    await self.publish(publishEntryUid, ctUid, lang, entries[eUid])
-                    // .then(function () {
-                    // })
-                  }
-                }
+                // if (config.entriesPublish) {
+                //   if (entries[eUid].publish_details.length > 0) {
+                //     if (self.mappedUids.hasOwnProperty(eUid)) {
+                //        publishEntryUid = self.mappedUids[eUid]
+                //     } else {
+                //        publishEntryUid = createdEntries.uid
+                //     }
+                //     await self.publish(publishEntryUid, ctUid, lang, entries[eUid])
+                //     // .then(function () {
+                //     // })
+                //   }
+                // }
                 return;
               }).catch(function (error) {                
                 // let error = JSON.parse(err.message)
@@ -504,14 +511,14 @@ importEntries.prototype = {
                   break;
                 }
               }
-              if (config.entriesPublish) {
-                if (entry.publish_details.length > 0) {
-                  let entryUid = response
-                return self.publish(entryUid.uid, ctUid, lang, entry).then(function () {
-                  return
-                  })
-                }
-              }
+              // if (config.entriesPublish) {
+              //   if (entry.publish_details.length > 0) {
+              //     let entryUid = response
+              //   return self.publish(entryUid.uid, ctUid, lang, entry).then(function () {
+              //     return
+              //     })
+              //   }
+              // }
               refsUpdatedUids.push(response.uid)
             })
             .catch(function (error) {
@@ -802,37 +809,83 @@ importEntries.prototype = {
       })
     })
   },
-  publish: function (eUid, ctUid, lang, entryObj) {
+  publish: function (langs) {
     let self = this
     let envId = []
     let locales = []
     let requestObject = {
         entry: {}
     }
+
+
+    let contentTypeUids = Object.keys(self.ctSchemas)
+    let entryMapper = helper.readFile(entryUidMapperPath)
     
-    return new Promise(function (resolve, reject) {
-      _.forEach(entryObj.publish_details, function (pubObject) {
-        if (self.environment.hasOwnProperty(pubObject.environment)) {
-          envId.push(self.environment[pubObject.environment].name)
-          let idx = _.indexOf(locales, pubObject.locale)
-          if (idx === -1) {
-            locales.push(pubObject.locale)
-          }
-        }
-      })
-      requestObject.entry['environments'] = envId
-      requestObject.entry['locales'] = locales
+
+    return new Promise(async function (resolve, reject) {
+    let counter = 0
+    return Promise.map(langs, function () {
+      let lang = langs[counter]
+    return Promise.map(contentTypeUids, function (ctUid) {
+      let eFilePath = path.resolve(ePath, ctUid, lang + '.json')
+      let entries = helper.readFile(eFilePath)
       
-      client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry(eUid).publish({ publishDetails: requestObject.entry, locale: lang})
-      .then(result => {
-        addlogs(config, chalk.green('Entry ' + eUid + ' published successfully in ' + ctUid + ' content type'), 'success')
-        return resolve()
+      
+      let eUids = Object.keys(entries)
+      let batches = []
+
+      if(eUids.length > 0) {
+        for (let i = 0; i < eUids.length; i += entryBatchLimit) {
+          batches.push(eUids.slice(i, i + entryBatchLimit))
+        }
+      } else {
+        counter++
+        return
+      }
+
+      
+      return Promise.map(batches, async function (batch) {
+        const promises =  Promise.map(batch, async function (eUid) {
+          _.forEach(entries[eUid].publish_details, function (pubObject) {
+            if (self.environment.hasOwnProperty(pubObject.environment)) {
+              envId.push(self.environment[pubObject.environment].name)
+              let idx = _.indexOf(locales, pubObject.locale)
+              if (idx === -1) {
+                locales.push(pubObject.locale)
+              }
+            }
+          })
+          let entryUid = entryMapper[eUid]
+          requestObject.entry['environments'] = envId
+          requestObject.entry['locales'] = locales
+          return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry(entryUid).publish({ publishDetails: requestObject.entry, locale: lang})
+          .then(result => {
+            addlogs(config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
+            return
+          }).catch(function (err) {
+            addlogs(config, 'Entry not published', 'error')
+            return
+          })
+        })
+        const result = await Promise.all(promises)
+      },{
+        concurrency: 1
+      }).then(function () {
+        addlogs(config, 'Entries published successfully in ' + ctUid + ' content type', 'success')
       })
-      .catch(function (err) {
-        let error = JSON.parse(err.message)
-        return reject(error)
-      })
+    },{
+      concurrency: 1
+    }).then(function () {
+      counter++
     })
+  }, {
+    concurrency: 1
+  }).then(function () {
+    return resolve()
+  }).catch(error => {
+      return reject(error)
+  })
+})
   },
 }
 
