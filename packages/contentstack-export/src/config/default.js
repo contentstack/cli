@@ -30,6 +30,15 @@ module.exports = {
     labels: {
       dirName: 'labels',
       fileName: 'labels.json',
+      validKeys: [
+        'stackHeaders',
+        'uid',
+        'urlPath',
+        'created_at',
+        'updated_at',
+        'created_by',
+        'updated_by'
+      ]
     },
     webhooks: {
       dirName: 'webhooks',
