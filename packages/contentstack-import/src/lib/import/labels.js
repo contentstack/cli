@@ -71,12 +71,17 @@ importLabels.prototype = {
           // return self.createLabels(self.labels[labelUid]);
           return client.stack({api_key: config.target_stack, management_token: config.management_token}).label().create(requestOption)
           .then(function (response) {
-            self.labelUidMapper[labelUid] = response;
+            self.labelUidMapper[labelUid] = response.uid;
             helper.writeFile(labelUidMapperPath, self.labelUidMapper);
             return;
           }).catch(function (error) {
             self.fails.push(label);
-            addlogs(config, chalk.red('Label: \'' + label.name + '\' failed to be imported\n' + JSON.stringify(error)), 'error');
+            // addlogs(config, chalk.red('Label: \'' + label.name + '\' failed to be imported\n'), 'error');
+            if(error.errors.name) {
+            addlogs(config, chalk.red('Label: \'' + label.name + '\'  already exist'), 'error');
+            } else {
+            addlogs(config, chalk.red('Label: \'' + label.name + '\' failed to be imported\n'), 'error');
+            }
             return;
           });
         } else {
