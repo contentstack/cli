@@ -129,7 +129,7 @@ importLabels.prototype = {
             }
           }
 
-          return client.stack({api_key: config.target_stack, management_token: config.management_token}).label(newLabelUid.uid).fetch()
+          return client.stack({api_key: config.target_stack, management_token: config.management_token}).label(newLabelUid).fetch()
           .then(function (response) {
             Object.assign(response, _.cloneDeep(label))
             response.update().then((result) => {              
