@@ -863,6 +863,7 @@ importEntries.prototype = {
             addlogs(config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
             return
           }).catch(function (err) {
+            console.log("Line no 866", err)
             addlogs(config, 'Entry not published', 'error')
             return
           })
