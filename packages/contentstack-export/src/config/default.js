@@ -30,7 +30,7 @@ module.exports = {
     labels: {
       dirName: 'labels',
       fileName: 'labels.json',
-      validKeys: [
+      invalidKeys: [
         'stackHeaders',
         'uid',
         'urlPath',
