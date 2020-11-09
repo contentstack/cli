@@ -480,8 +480,8 @@ importEntries.prototype = {
         for (let i = 0; i < entries.length; i += entryBatchLimit) {
           batches.push(entries.slice(i, i + entryBatchLimit))
         }
-        return Promise.map(batches, function (batch, index) {
-          return Promise.map(batch, function (entry) {
+        return Promise.map(batches, async function (batch, index) {
+          return Promise.map(batch, async function (entry) {
             entry.uid = self.mappedUids[entry.uid]
             if (refsUpdatedUids.indexOf(entry.uid) !== -1) {
               addlogs(config, 'Entry: ' + entry.uid + ' in Content Type: ' + ctUid + ' in lang: ' +
@@ -497,6 +497,7 @@ importEntries.prototype = {
                 entry: entry
               }
             }
+	 let promiseResult = new Promise((resolve, reject) => {	  
 
             client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry(entry.uid).fetch(requestObject.qs)
             .then(entryResponse => {
@@ -520,6 +521,7 @@ importEntries.prototype = {
               //   }
               // }
               refsUpdatedUids.push(response.uid)
+	      return resolve()
             })
             .catch(function (error) {
               addlogs(config, chalk.red('Entry Uid: ' + entry.uid + ' of Content Type: ' + ctUid +
@@ -532,7 +534,10 @@ importEntries.prototype = {
                 locale: lang,
                 error: error
               })
-            }) 
+	      return reject()	    
+            })
+	 })
+		await promiseResult
           }, {
             concurrency: reqConcurrency
           }).then(function () {
@@ -675,15 +680,16 @@ importEntries.prototype = {
         updatedExtensionUidsSchemas.push(_contentTypeSchema)
       }
 
-      return Promise.map(updatedExtensionUidsSchemas, function (schema) {
-       client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(schema.uid).fetch()
+      return Promise.map(updatedExtensionUidsSchemas, async function (schema) {
+       let promise = new Promise((resolve, reject) => {
+        client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(schema.uid).fetch()
         .then(contentTypeResponse => {
           contentTypeResponse.schema = schema.schema
             contentTypeResponse.update()
           .then(UpdatedcontentType => {
             modifiedSchemasUids.push(schema.uid)
             //addlogs(config, (chalk.white('Content type: \'' + schema.uid + '\' has been restored to its previous glory!'))
-            return
+             return resolve()
           }).catch(function (error) {
             addlogs(config, chalk.red('Failed to re-update ' + schema.uid), 'error')
             addlogs(config, error, 'error')
@@ -691,6 +697,9 @@ importEntries.prototype = {
         }).catch(function (error) {
           addlogs(config, error, 'error') 
         })
+	})
+	   await promise
+	   
       }, {
         concurrency: reqConcurrency
       }).then(function () {
