@@ -168,7 +168,7 @@ importEntries.prototype = {
               addlogs(config, chalk.green('Entries have been imported successfully!'), 'success')
               if (config.entriesPublish) {
               return self.publish(langs).then(function () {
-                addlogs(config, chalk.green('All entries publish'), 'success')
+                addlogs(config, chalk.green('All the entries have been published successfully'), 'success')
                 return resolve()
                 }).catch(errors => {
                   return reject(errors)
@@ -872,7 +872,7 @@ importEntries.prototype = {
             addlogs(config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
             return
           }).catch(function (err) {
-            addlogs(config, 'Entry not published', 'error')
+            addlogs(config, 'Entry ' + eUid + ' not published successfully in ' + ctUid + ' content type', 'error')
             return
           })
         })
