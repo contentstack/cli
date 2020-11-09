@@ -42,7 +42,7 @@ ExportLabels.prototype.start = function (credentialConfig) {
           addlogs(config, label.name + ' labels was exported successfully', 'success')
           self.labels[label.uid] = label
           let deleteItems = config.modules.labels.invalidKeys 
-          deleteItems.forEach(e => delete label[e]);
+          deleteItems.forEach(e => delete label[e])
         })
         addlogs(config, chalk.green('All the labels have been exported successfully'), 'success')
       } else {
