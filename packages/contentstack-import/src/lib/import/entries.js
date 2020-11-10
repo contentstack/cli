@@ -854,7 +854,8 @@ importEntries.prototype = {
 
       
       return Promise.map(batches, async function (batch) {
-        const promises =  Promise.map(batch, async function (eUid) {
+        return Promise.map(batch, async function (eUid) {
+	//Promise.map(batch, async function (eUid) {
           _.forEach(entries[eUid].publish_details, function (pubObject) {
             if (self.environment.hasOwnProperty(pubObject.environment)) {
               envId.push(self.environment[pubObject.environment].name)
@@ -867,16 +868,26 @@ importEntries.prototype = {
           let entryUid = entryMapper[eUid]
           requestObject.entry['environments'] = envId
           requestObject.entry['locales'] = locales
-          return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry(entryUid).publish({ publishDetails: requestObject.entry, locale: lang})
+	  let publishPromiseResult = new Promise((resolve, reject) => {
+          client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry(entryUid).publish({ publishDetails: requestObject.entry, locale: lang})
           .then(result => {
             addlogs(config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
-            return
+            return resolve()
           }).catch(function (err) {
             addlogs(config, 'Entry ' + eUid + ' not published successfully in ' + ctUid + ' content type', 'error')
-            return
+            return reject(err)
           })
-        })
-        const result = await Promise.all(promises)
+	})
+	    await publishPromiseResult	
+         }, {
+            concurrency: reqConcurrency
+          }).then(function () {
+          }).catch(function (error) {
+            // error while executing entry in batch
+            addlogs(config, error, 'error')
+            throw error
+          })
+      //  const result = await Promise.all(promises)
       },{
         concurrency: 1
       }).then(function () {
