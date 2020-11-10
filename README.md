@@ -42,3 +42,7 @@ $ csdx --help
 ## Documentation
 
 To get a more detailed documentation for every command, visit the [CLI section](https://www.contentstack.com/docs/developers/cli) in our docs.
+
+## Useful Plugins
+
+- [Generate TypeScript typings from a Stack](https://github.com/Contentstack-Solutions/contentstack-cli-tsgen)
