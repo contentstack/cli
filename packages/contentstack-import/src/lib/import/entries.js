@@ -609,19 +609,21 @@ importEntries.prototype = {
 
       helper.writeFile(modifiedSchemaPath, modifiedSchemas)
 
-      return Promise.map(supressedSchemas, function (schema) {
-
+      return Promise.map(supressedSchemas, async function (schema) {
+	let supressPromiseResult = new Promise((resolve, reject) => {
         client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(schema.uid).fetch()
         .then(contentTypeResponse => {       
           Object.assign(contentTypeResponse, _.cloneDeep(schema))
           return contentTypeResponse.update()
         })
         .then(UpdatedcontentType => {
-          return
+          return resolve()
         }).catch(function (error) {
           addlogs(config, chalk.red('Failed to modify mandatory field of \'' + schema.uid + '\' content type'), 'error')
-          throw error
+          return reject(error)
         })
+	})
+	  await supressPromiseResult
         // update 5 content types at a time
       }, {
         concurrency: reqConcurrency
