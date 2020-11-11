@@ -7,8 +7,8 @@ class Queue extends EventEmitter {
     this.count = 0;
     this.store = [];
     this.config = {};
-    this.delay = 3
-    this.requestBatchSize = 5
+    this.delay = 1
+    this.requestBatchSize = 2
     this.on('dequeue', this.check);
   }
 
