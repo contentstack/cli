@@ -98,6 +98,7 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
         return resolve()
       }
       await getEntries(stack, contentType, environmentUid, locale, bulkPublish, environments, skipCount)
+      return resolve()
     })
     .catch(error => {
       reject(error)
