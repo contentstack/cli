@@ -266,19 +266,7 @@ importEntries.prototype = {
               return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry(self.mappedUids[eUid]).fetch()
               .then(entryToUpdate => {
                 Object.assign(entryToUpdate, _.cloneDeep(requestObject.json.entry))
-                return entryToUpdate.update({locale: entryToUpdate.locale}).then(async result => {   
-                  // if (config.entriesPublish) {
-                  //   if (entries[eUid].publish_details.length > 0) {
-                  //     if (self.mappedUids.hasOwnProperty(eUid)) {
-                  //        publishEntryUid = self.mappedUids[eUid]
-                  //     } else {
-                  //        publishEntryUid = createdEntries.uid
-                  //     }
-                  //     await self.publish(publishEntryUid, ctUid, lang, entries[eUid])
-                  //     // .then(function () {
-                  //     // })
-                  //   }
-                  // }
+                return entryToUpdate.update({locale: entryToUpdate.locale}).then(async result => {
                   return           
                 }).catch(function (err) {
                   let error = JSON.parse(err.message)
@@ -327,19 +315,6 @@ importEntries.prototype = {
                     self.uniqueUids[eUid].content_type = ctUid
                   }
                 }
-
-                // if (config.entriesPublish) {
-                //   if (entries[eUid].publish_details.length > 0) {
-                //     if (self.mappedUids.hasOwnProperty(eUid)) {
-                //        publishEntryUid = self.mappedUids[eUid]
-                //     } else {
-                //        publishEntryUid = createdEntries.uid
-                //     }
-                //     await self.publish(publishEntryUid, ctUid, lang, entries[eUid])
-                //     // .then(function () {
-                //     // })
-                //   }
-                // }
                 return;
               }).catch(function (error) {                
                 // let error = JSON.parse(err.message)
@@ -513,14 +488,6 @@ importEntries.prototype = {
                   break;
                 }
               }
-              // if (config.entriesPublish) {
-              //   if (entry.publish_details.length > 0) {
-              //     let entryUid = response
-              //   return self.publish(entryUid.uid, ctUid, lang, entry).then(function () {
-              //     return
-              //     })
-              //   }
-              // }
               refsUpdatedUids.push(response.uid)
 	      return resolve()
             })
@@ -611,12 +578,7 @@ importEntries.prototype = {
       helper.writeFile(modifiedSchemaPath, modifiedSchemas)
 
       return Promise.map(supressedSchemas, async function (schema) {
-	//let supressPromiseResult = new Promise((resolve, reject) => {
        let contentTypeResponse = client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(schema.uid)
-       // .then(contentTypeResponse => {       
-        //  Object.assign(contentTypeResponse, _.cloneDeep(schema))
-        //  return contentTypeResponse.update()
-        //})
         Object.assign(contentTypeResponse, _.cloneDeep(schema))
         return contentTypeResponse.update()
         .then(UpdatedcontentType => {
@@ -624,13 +586,7 @@ importEntries.prototype = {
         }).catch(function (error) {
           addlogs(config, chalk.red('Failed to modify mandatory field of \'' + schema.uid + '\' content type'), 'error')
           return
-        })
-	//})
-	 //try {
-	  //  await supressPromiseResult.catch(e => console.log('Error: ', e.message));
-	 //} catch(e) {
-	  // console.log("error+++++", e)	
-	 //}	      
+        })	      
         // update 5 content types at a time
       }, {
         concurrency: reqConcurrency
@@ -864,7 +820,7 @@ importEntries.prototype = {
       
       return Promise.map(batches, async function (batch) {
         return Promise.map(batch, async function (eUid) {
-	//Promise.map(batch, async function (eUid) {
+	if(entries[eUid].publish_details && entries[eUid].publish_details > 0) {
           _.forEach(entries[eUid].publish_details, function (pubObject) {
             if (self.environment.hasOwnProperty(pubObject.environment)) {
               envId.push(self.environment[pubObject.environment].name)
@@ -887,7 +843,10 @@ importEntries.prototype = {
             return reject(err)
           })
 	})
-	    await publishPromiseResult	
+	   await publishPromiseResult
+	} else {
+	  return
+	}	
          }, {
             concurrency: reqConcurrency
           }).then(function () {
