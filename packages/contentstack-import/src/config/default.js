@@ -53,7 +53,7 @@ module.exports = {
         'url',
         'status',
       ],
-      assetBatchLimit: 5,
+      assetBatchLimit: 1,
     },
     content_types: {
       dirName: 'content_types',
@@ -66,7 +66,7 @@ module.exports = {
         'singleton',
         'description',
       ],
-      limit: 100,
+      limit: 100,    
     },
     entries: {
       dirName: 'entries',
@@ -325,6 +325,7 @@ module.exports = {
     stacks: '/stacks/',
     labels: '/labels/',
   },
+  requestLimit:5,	
   preserveStackVersion: false,
   entriesPublish: true,
   concurrency: 1
