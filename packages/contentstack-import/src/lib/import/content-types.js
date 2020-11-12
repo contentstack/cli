@@ -19,6 +19,7 @@ let stack = require('../util/contentstack-management-sdk')
 
 let config = require('../../config/default')
 let reqConcurrency = config.concurrency
+let requestLimit = config.requestLimit
 let contentTypeConfig = config.modules.content_types
 let globalFieldConfig = config.modules.globalfields
 let globalfieldsFolderPath
@@ -84,21 +85,26 @@ importContentTypes.prototype = {
         // seed 3 content types at a time
         concurrency: reqConcurrency,
       }).then(function () {
-        let batches = []        
+        let batches = []     
         let lenObj = self.contentTypes        
-        for (let i = 0; i < lenObj.length; i += 7) {
-          batches.push(lenObj.slice(i, i + 7))
+        for (let i = 0; i < lenObj.length; i += requestLimit-1) {
+          batches.push(lenObj.slice(i, i + requestLimit-1))
         }
         
-        return Promise.map(batches, function (batch) {
-          return Promise.map(batch, function (contentType) {
-          return self.updateContentTypes(contentType).then(function () {
-            addlogs(config, contentType.uid + ' was updated successfully!', 'success')
-            return
-          }).catch(function (err) {
-            return reject()
-          })
-        })
+        return Promise.map(batches, async function (batch) { 	
+         return Promise.map(batch, async function (contentType) {
+         await self.updateContentTypes(contentType)
+         addlogs(config, contentType.uid + ' was updated successfully!', 'success')
+         },
+        {
+          concurrency: reqConcurrency
+        }).then(function () {
+           return 
+	}).catch(e => {
+			
+	})	
+	}, {
+          concurrency: reqConcurrency
         }).then(function () {
           // eslint-disable-next-line quotes
           if (field_rules_ct.length > 0) {
@@ -177,25 +183,23 @@ importContentTypes.prototype = {
   updateContentTypes: function (contentType) {
     let self = this
     return new Promise(function (resolve, reject) {
+       setTimeout(function(){
        let requestObject = _.cloneDeep(self.requestOptions)
       if (contentType.field_rules) {
         field_rules_ct.push(contentType.uid)
         delete contentType.field_rules
       }
       supress(contentType.schema)
-      requestObject.json.content_type = contentType
-      client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(contentType.uid).fetch()
-      .then(contentTypeResponse => {
-        Object.assign(contentTypeResponse, _.cloneDeep(contentType))
+      requestObject.json.content_type = contentType     
+     let contentTypeResponse = client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(contentType.uid)
+	Object.assign(contentTypeResponse, _.cloneDeep(contentType))
         contentTypeResponse.update()
-      })
       .then(UpdatedcontentType => {
         return resolve()
       }).catch(err => {
-        let error = JSON.parse(err.message)
-        addlogs(config, error, 'error')
+        addlogs(config, err, 'error')
         return reject()
-      })
+      })}, 1000)    
     })
   },
 
