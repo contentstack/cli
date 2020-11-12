@@ -43,7 +43,7 @@ let publishEntryUid
 
 let masterLanguage = config.master_locale
 let skipFiles = ['__master.json', '__priority.json', 'schema.json']
-let entryBatchLimit = eConfig.batchLimit || 16
+let entryBatchLimit = config.requestLimit || 16
 
 function importEntries() {
   let self = this
@@ -127,8 +127,8 @@ importEntries.prototype = {
         langs.push(self.languages[i].code)
       }
 
-      return self.supressFields().then(async function () {
-        let counter = 0
+     return self.supressFields().then(async function () {		
+	let counter = 0
         return Promise.map(langs, async function () {
           let lang = langs[counter]
           if ((config.hasOwnProperty('onlylocales') && config.onlylocales.indexOf(lang) !== -1) || !
@@ -177,6 +177,7 @@ importEntries.prototype = {
             return resolve()
         })
       }).catch(function (error) {
+	      console.log("dbcdbchdchd")
         return reject(error)
       })
     }).catch(error => {
@@ -610,20 +611,26 @@ importEntries.prototype = {
       helper.writeFile(modifiedSchemaPath, modifiedSchemas)
 
       return Promise.map(supressedSchemas, async function (schema) {
-	let supressPromiseResult = new Promise((resolve, reject) => {
-        client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(schema.uid).fetch()
-        .then(contentTypeResponse => {       
-          Object.assign(contentTypeResponse, _.cloneDeep(schema))
-          return contentTypeResponse.update()
-        })
+	//let supressPromiseResult = new Promise((resolve, reject) => {
+       let contentTypeResponse = client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(schema.uid)
+       // .then(contentTypeResponse => {       
+        //  Object.assign(contentTypeResponse, _.cloneDeep(schema))
+        //  return contentTypeResponse.update()
+        //})
+        Object.assign(contentTypeResponse, _.cloneDeep(schema))
+        return contentTypeResponse.update()
         .then(UpdatedcontentType => {
-          return resolve()
+          return
         }).catch(function (error) {
           addlogs(config, chalk.red('Failed to modify mandatory field of \'' + schema.uid + '\' content type'), 'error')
-          return reject(error)
+          return
         })
-	})
-	  await supressPromiseResult
+	//})
+	 //try {
+	  //  await supressPromiseResult.catch(e => console.log('Error: ', e.message));
+	 //} catch(e) {
+	  // console.log("error+++++", e)	
+	 //}	      
         // update 5 content types at a time
       }, {
         concurrency: reqConcurrency
