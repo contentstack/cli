@@ -325,7 +325,7 @@ module.exports = {
     stacks: '/stacks/',
     labels: '/labels/',
   },
-  requestLimit:5,	
+  rateLimit:5,	
   preserveStackVersion: false,
   entriesPublish: true,
   concurrency: 1
