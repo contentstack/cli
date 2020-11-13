@@ -43,7 +43,7 @@ let publishEntryUid
 
 let masterLanguage = config.master_locale
 let skipFiles = ['__master.json', '__priority.json', 'schema.json']
-let entryBatchLimit = config.requestLimit || 16
+let entryBatchLimit = config.rateLimit || 10
 
 function importEntries() {
   let self = this
@@ -226,8 +226,8 @@ importEntries.prototype = {
           let batches = []
 
           // Run entry creation in batches of ~16~ entries
-          for (let i = 0; i < eUids.length; i += entryBatchLimit) {
-            batches.push(eUids.slice(i, i + entryBatchLimit))
+          for (let i = 0; i < eUids.length; i += Math.round(entryBatchLimit/3)) {
+            batches.push(eUids.slice(i, i + Math.round(entryBatchLimit/3)))
           }
 
           return Promise.map(batches, async function (batch) {
@@ -453,8 +453,8 @@ importEntries.prototype = {
         })
 
         // Run entry creation in batches of ~16~ entries
-        for (let i = 0; i < entries.length; i += entryBatchLimit) {
-          batches.push(entries.slice(i, i + entryBatchLimit))
+        for (let i = 0; i < entries.length; i += Math.round(entryBatchLimit/3)) {
+          batches.push(entries.slice(i, i + Math.round(entryBatchLimit/3)))
         }
         return Promise.map(batches, async function (batch, index) {
           return Promise.map(batch, async function (entry) {
