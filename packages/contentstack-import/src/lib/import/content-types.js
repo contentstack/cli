@@ -19,7 +19,7 @@ let stack = require('../util/contentstack-management-sdk')
 
 let config = require('../../config/default')
 let reqConcurrency = config.concurrency
-let requestLimit = config.requestLimit
+let requestLimit = config.rateLimit
 let contentTypeConfig = config.modules.content_types
 let globalFieldConfig = config.modules.globalfields
 let globalfieldsFolderPath
@@ -86,9 +86,10 @@ importContentTypes.prototype = {
         concurrency: reqConcurrency,
       }).then(function () {
         let batches = []     
-        let lenObj = self.contentTypes        
-        for (let i = 0; i < lenObj.length; i += requestLimit-1) {
-          batches.push(lenObj.slice(i, i + requestLimit-1))
+        let lenObj = self.contentTypes
+	//var a = Math.round(2.60);      
+        for (let i = 0; i < lenObj.length; i += Math.round(requestLimit/3)) {
+          batches.push(lenObj.slice(i, i + Math.round(requestLimit/3)))
         }
         
         return Promise.map(batches, async function (batch) { 	
