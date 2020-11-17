@@ -10,9 +10,8 @@
   "dependencies": {
     "@contentstack/cli-auth": "0.1.1-beta.1",
     "@contentstack/cli-command": "0.1.1-beta.1",
+    "@contentstack/cli-cm-clone": "0.1.0-beta",
     "@contentstack/cli-cm-bulk-publish": "0.1.1-beta.1",
-    "@contentstack/cli-cm-export": "0.1.2-beta.2",
-    "@contentstack/cli-cm-import": "0.1.2-beta.2",
     "@contentstack/management": "1.0.0",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
@@ -72,9 +71,8 @@
       "@oclif/plugin-not-found",
       "@oclif/plugin-plugins",
       "@contentstack/cli-auth",
-      "@contentstack/cli-cm-export",
-      "@contentstack/cli-cm-import",
-      "@contentstack/cli-cm-bulk-publish"
+      "@contentstack/cli-cm-bulk-publish",
+      "@contentstack/cli-cm-clone"
     ],
     "hooks": {
       "prerun": [
