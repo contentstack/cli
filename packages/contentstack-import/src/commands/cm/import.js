@@ -31,14 +31,15 @@ class ImportCommand extends Command {
     host.cma = cmaMainURL[1]
     host.cda = cdaMainURL[1]
 
+
+    if(rateLimit !== undefined && isNaN(rateLimit)) {
+      this.log(rateLimit + " is not a number, Please provide number as a rate limit");
+      return
+    }
+
     if(rateLimit === undefined && grateLimit !== undefined) {
       rateLimit = grateLimit
     }
-
-    if(isNaN(rateLimit)){
-      this.log(rateLimit + " is not a number");
-      return
-   }
 
     if (alias && alias !== undefined) {
       let managementTokens = this.getToken(alias)
