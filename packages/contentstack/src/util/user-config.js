@@ -92,8 +92,8 @@ class UserConfig {
    * @returns {object} ratelimit object with limit property
    */
   setCustomRateLimit(rateLimitObject) {
-    if(isNaN(rateLimitObject)) {
-      throw new TypeError(rateLimitObject + " is not a number")
+    if(rateLimitObject !== undefined && isNaN(rateLimitObject)) {
+      throw new TypeError(rateLimitObject + " is not a number, Please provide number as a rate limit")
    } else {
     config.set('rate-limit', rateLimitObject)
     return rateLimitObject
