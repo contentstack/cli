@@ -18,28 +18,16 @@ class ImportCommand extends Command {
     const data = flags.data
     const moduleName = flags.module
     const masterLang = flags['master-lang']
-    let rateLimit = flags['rate-limit']
     let targetStack = flags['stack-uid']
     const alias = flags['management-token-alias']
     const authToken = flags['auth-token']
     let _authToken = credStore.get('authtoken')
-    let grateLimit = credStore.get('rate-limit')
     let host = this.config.userConfig.getRegion()
 
     let cmaMainURL = host.cma.split('//')
     let cdaMainURL = host.cda.split('//')
     host.cma = cmaMainURL[1]
     host.cda = cdaMainURL[1]
-
-
-    if(rateLimit !== undefined && isNaN(rateLimit)) {
-      this.log(rateLimit + " is not a number, Please provide number as a rate limit");
-      return
-    }
-
-    if(rateLimit === undefined && grateLimit !== undefined) {
-      rateLimit = grateLimit
-    }
 
     if (alias && alias !== undefined) {
       let managementTokens = this.getToken(alias)
@@ -50,8 +38,7 @@ class ImportCommand extends Command {
             extConfig,
             managementTokens,
             moduleName,
-            host,
-            rateLimit
+            host,    
           )
         } else if (masterLang && data) {
           parameterWithMToken(
@@ -59,15 +46,13 @@ class ImportCommand extends Command {
             managementTokens,
             data,
             moduleName,
-            host,
-            rateLimit
+            host,           
           )
         } else {
           withoutParameterMToken(
             managementTokens,
             moduleName,
-            host,
-            rateLimit
+            host,          
           )
         } 
       } else {
@@ -80,7 +65,6 @@ class ImportCommand extends Command {
           _authToken,
           moduleName,
           host,
-          rateLimit
         )
       } else if (masterLang && targetStack && data) {
         parametersWithAuthToken(
@@ -90,14 +74,12 @@ class ImportCommand extends Command {
           data,
           moduleName,
           host,
-          rateLimit
         )
       } else {
         withoutParametersWithAuthToken(
           _authToken,
           moduleName,
           host,
-          rateLimit
         )
       }
     } else  {
@@ -148,10 +130,6 @@ ImportCommand.flags = {
     char: 'm', 
     description: '[optional] specific module name'
   }),
-  'rate-limit': flags.string({
-    char: 'r', 
-    description: '[optional] rate limit'
-  })
 }
 
 module.exports = ImportCommand
