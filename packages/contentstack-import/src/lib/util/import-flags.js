@@ -9,14 +9,11 @@ let _ = require('lodash')
 const {cli} = require('cli-ux')
 let message = require('../../../messages/index.json')
 
-exports.configWithMToken = function (config, managementTokens, moduleName, host, rateLimit) {
+exports.configWithMToken = function (config, managementTokens, moduleName, host) {
   let externalConfig = require(config)
   defaultConfig.management_token = managementTokens.token
   if (moduleName && moduleName !== undefined) {
     defaultConfig.moduleName = moduleName
-  }
-  if(rateLimit && rateLimit !== undefined) {
-    defaultConfig.rateLimit = rateLimit
   }
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
@@ -24,15 +21,12 @@ exports.configWithMToken = function (config, managementTokens, moduleName, host,
   initial(defaultConfig)
 }
 
-exports.parameterWithMToken = function (masterLang, managementTokens, data, moduleName, host, rateLimit) {
+exports.parameterWithMToken = function (masterLang, managementTokens, data, moduleName, host) {
   var masterloc = {master_locale: {code: masterLang}}
   defaultConfig.management_token = managementTokens.token  
   defaultConfig.target_stack = managementTokens.apiKey
   if (moduleName && moduleName !== undefined) {
     defaultConfig.moduleName = moduleName
-  }
-  if(rateLimit && rateLimit !== undefined) {
-    defaultConfig.rateLimit = rateLimit
   }
   defaultConfig.data = data
   defaultConfig.host = host.cma
@@ -42,7 +36,7 @@ exports.parameterWithMToken = function (masterLang, managementTokens, data, modu
 }
 
 // using ManagemetToken
-exports.withoutParameterMToken = async (managementTokens, moduleName, host, rateLimit) => {
+exports.withoutParameterMToken = async (managementTokens, moduleName, host) => {
   const masterLocale = await cli.prompt(message.promptMessageList.promptMasterLocale)
   const exporteddata = await cli.prompt(message.promptMessageList.promptPathStoredData)
   var masterloc = {master_locale: {code: masterLocale}}
@@ -51,9 +45,6 @@ exports.withoutParameterMToken = async (managementTokens, moduleName, host, rate
   if (moduleName && moduleName !== undefined) {
     defaultConfig.moduleName = moduleName
   }
-  if(rateLimit && rateLimit !== rateLimit) {
-    defaultConfig.rateLimit = rateLimit
-  }
   defaultConfig.data = exporteddata
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
@@ -61,14 +52,11 @@ exports.withoutParameterMToken = async (managementTokens, moduleName, host, rate
   initial(defaultConfig)
 }
 
-exports.configWithAuthToken = function (config, _authToken, moduleName, host, rateLimit) {
+exports.configWithAuthToken = function (config, _authToken, moduleName, host) {
   let externalConfig = require(config)
   defaultConfig.auth_token = _authToken
   if (moduleName && moduleName !== undefined) {
     defaultConfig.moduleName = moduleName
-  }
-  if(rateLimit && rateLimit != undefined) {
-    defaultConfig.rateLimit = rateLimit
   }
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
@@ -76,15 +64,12 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host, ra
   initial(defaultConfig)
 }
 
-exports.parametersWithAuthToken = function (masterLang, _authToken, targetStack, data, moduleName, host, rateLimit) {
+exports.parametersWithAuthToken = function (masterLang, _authToken, targetStack, data, moduleName, host) {
   var masterloc = {master_locale: {code: masterLang}}
   defaultConfig.auth_token = _authToken
   defaultConfig.target_stack = targetStack
   if (moduleName && moduleName !== undefined) {
     defaultConfig.moduleName = moduleName
-  }
-  if(rateLimit && rateLimit !== undefined) {
-    defaultConfig.rateLimit = rateLimit
   }
   defaultConfig.data = data
   defaultConfig.host = host.cma
@@ -93,7 +78,7 @@ exports.parametersWithAuthToken = function (masterLang, _authToken, targetStack,
   initial(defaultConfig)
 }
 
-exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, rateLimit) => {
+exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host) => {
 
   const masterLocale = await cli.prompt(message.promptMessageList.promptMasterLocale)
   const stackUid = await cli.prompt(message.promptMessageList.promptTargetStack)
@@ -104,9 +89,6 @@ exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, ra
   defaultConfig.data = exporteddata
   if (moduleName && moduleName !== undefined) {
     defaultConfig.moduleName = moduleName
-  }
-  if(rateLimit && rateLimit !== undefined) {
-    defaultConfig.rateLimit = rateLimit
   }
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda  
