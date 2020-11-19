@@ -6,6 +6,8 @@ const Configstore = require('configstore')
 const config = new Configstore('contentstack_cli')
 const url = require('url')
 const defaultRegion = {cma: 'https://api.contentstack.io', cda: 'https://cdn.contentstack.io', name: 'NA'}
+const defaultRateLimit = 5
+
 
 class ContentstackCommand extends Command {
 
@@ -32,7 +34,13 @@ class ContentstackCommand extends Command {
     if (this._region) return this._region
     this._region = config.get('region')
     if (this._region) return this._region
-    return defaultRegion
+    // return defaultRegion
+  }
+
+  get rateLimit() {
+    this._rateLimit = config.get('rate-limit')
+    if (this._rateLimit) return this._rateLimit
+    return defaultRateLimit
   }
 
   get cmaHost() {
