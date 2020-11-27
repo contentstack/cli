@@ -12,12 +12,14 @@ const chalk = require('chalk')
 
 let login = require('./lib/util/login')
 let util = require('./lib/util/index')
-let {addlogs} = require('./lib/util/log')
+let {addlogs,log} = require('./lib/util/log')
 
-exports.initial = function (configData) { 
-
+exports.initial = function (configData) {
+  console.time('profiling')
   let config = util.initialization(configData)
+ 
   config.oldPath = config.data
+  addlogs(config, chalk.red(" starting----------------------"), 'error')
   if (config && config !== undefined) {
     login(config)
     .then(function () {
@@ -71,7 +73,8 @@ let singleExport = (moduleName, types, config) => {
 
 let allExport = async (config, types) => {
   let counter = 0
-  Bluebird.map(types, function (type) {
+  Bluebird.mapSeries(types, function (type) {
+    console.timeLog('profiling')
     if (config.preserveStackVersion) {
       let exportedModule = require('./lib/import/' + types[counter])
       counter++
@@ -83,9 +86,8 @@ let allExport = async (config, types) => {
     } else {
       counter++
     }
-  }, {
-    concurrency: 1
   }).then(function () {
+    console.timeEnd('profiling')
     addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported succesfully!'), 'success')
     addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'success')
   }).catch(function (error) {    
