@@ -38,71 +38,81 @@ function getQueryParams(filter) {
 }
 
 async function bulkAction(stack, items, bulkPublish, filter, destEnv) {
-  for (let index = 0; index < items.length; index++) {
-    changedFlag = true
-    if (items[index].data.publish_details) {
-      items[index].data.publish_details.version = items[index].data._version
+  return new Promise(async resolve => {
+    for (let index = 0; index < items.length; index++) {
+      changedFlag = true
+
+      if (!items[index].data.publish_details) {
+        // adding this condition because sometimes
+        // item.data.publish_details.locale failes because publish_details is undefined
+        items[index].data.publish_details = {}
+      }
+
+      if (items[index].data.publish_details) {
+        items[index].data.publish_details.version = items[index].data._version
+      }
+
+      if (bulkPublish) {
+        if (bulkPublishSet.length < 10 && items[index].type === 'entry_published') {
+          bulkPublishSet.push({
+            uid: items[index].data.uid,
+            content_type: items[index].content_type_uid,
+            locale: items[index].data.publish_details.locale || 'en-us',
+            version: items[index].data._version,
+            publish_details: [items[index].data.publish_details] || [],
+          })
+        }
+
+        if (bulkPublishAssetSet.length < 10 && items[index].type === 'asset_published') {
+          bulkPublishAssetSet.push({
+            uid: items[index].data.uid,
+            version: items[index].data._version,
+            publish_details: [items[index].data.publish_details] || [],
+          })
+        }
+
+        if (bulkPublishAssetSet.length === 10) {
+          await queue.Enqueue({
+            assets: bulkPublishAssetSet, Type: 'asset', locale: filter.locale, environments: destEnv, stack: stack
+          })
+          bulkPublishAssetSet = []
+        }
+
+        if (bulkPublishSet.length === 10) {
+          await queue.Enqueue({
+            entries: bulkPublishSet, locale: filter.locale, Type: 'entry', environments: destEnv, stack: stack
+          })
+          bulkPublishSet = []
+        }
+
+        if (index === items.length - 1 && bulkPublishAssetSet.length <= 10 && bulkPublishAssetSet.length > 0) {
+          await queue.Enqueue({
+            assets: bulkPublishAssetSet, Type: 'asset', locale: filter.locale, environments: destEnv, stack: stack
+          })
+          bulkPublishAssetSet = []
+        }
+
+        if (index === items.length - 1 && bulkPublishSet.length <= 10 && bulkPublishSet.length > 0) {
+          await queue.Enqueue({
+            entries: bulkPublishSet, locale: filter.locale, Type: 'entry', environments: destEnv, stack: stack
+          })
+          bulkPublishSet = []
+        }
+      } else {
+        if (items[index].type === 'entry_published') {
+          await entryQueue.Enqueue({
+            content_type: items[index].content_type_uid, publish_details: [items[index].data.publish_details], environments: destEnv, entryUid: items[index].data.uid, locale: items[index].data.publish_details.locale || 'en-us', Type: 'entry', stack: stack
+          })
+        }
+        if (items[index].type === 'asset_published') {
+          await assetQueue.Enqueue({
+            assetUid: items[index].data.uid, publish_details: [items[index].data.publish_details], environments: destEnv, Type: 'asset', stack: stack
+          })
+        }
+      }
     }
-
-    if (bulkPublish) {
-      if (bulkPublishSet.length < 10 && items[index].type === 'entry_published') {
-        bulkPublishSet.push({
-          uid: items[index].data.uid,
-          content_type: items[index].content_type_uid,
-          locale: items[index].data.publish_details.locale || 'en-us',
-          version: items[index].data._version,
-          publish_details: [items[index].data.publish_details] || [],
-        })
-      }
-
-      if (bulkPublishAssetSet.length < 10 && items[index].type === 'asset_published') {
-        bulkPublishAssetSet.push({
-          uid: items[index].data.uid,
-          version: items[index].data._version,
-          publish_details: [items[index].data.publish_details] || [],
-        })
-      }
-
-      if (bulkPublishAssetSet.length === 10) {
-        await queue.Enqueue({
-          assets: bulkPublishAssetSet, Type: 'asset', locale: filter.locale, environments: destEnv, stack: stack
-        })
-        bulkPublishAssetSet = []
-      }
-
-      if (bulkPublishSet.length === 10) {
-        await queue.Enqueue({
-          entries: bulkPublishSet, locale: filter.locale, Type: 'entry', environments: destEnv, stack: stack
-        })
-        bulkPublishSet = []
-      }
-
-      if (index === items.length - 1 && bulkPublishAssetSet.length <= 10 && bulkPublishAssetSet.length > 0) {
-        await queue.Enqueue({
-          assets: bulkPublishAssetSet, Type: 'asset', locale: filter.locale, environments: destEnv, stack: stack
-        })
-        bulkPublishAssetSet = []
-      }
-
-      if (index === items.length - 1 && bulkPublishSet.length <= 10 && bulkPublishSet.length > 0) {
-        await queue.Enqueue({
-          entries: bulkPublishSet, locale: filter.locale, Type: 'entry', environments: destEnv, stack: stack
-        })
-        bulkPublishSet = []
-      }
-    } else {
-      if (items[index].type === 'entry_published') {
-        await entryQueue.Enqueue({
-          content_type: items[index].content_type_uid, publish_details: [items[index].data.publish_details], environments: destEnv, entryUid: items[index].data.uid, locale: items[index].data.publish_details.locale || 'en-us', Type: 'entry', stack: stack
-        })
-      }
-      if (items[index].type === 'asset_published') {
-        await assetQueue.Enqueue({
-          assetUid: items[index].data.uid, publish_details: [items[index].data.publish_details], environments: destEnv, Type: 'asset', stack: stack
-        })
-      }
-    }
-  }
+    return resolve()
+  })
 }
 
 async function getSyncEntries(stack, config, queryParams, bulkPublish, filter, deliveryToken, destEnv, paginationToken = null) {
@@ -118,20 +128,20 @@ async function getSyncEntries(stack, config, queryParams, bulkPublish, filter, d
       }
       const entriesResponse = await req(conf)
       if (entriesResponse.items.length > 0) {
-        bulkAction(stack, entriesResponse.items, bulkPublish, filter, destEnv)
+        await bulkAction(stack, entriesResponse.items, bulkPublish, filter, destEnv)
       }
       if (!entriesResponse.pagination_token) {
         if (!changedFlag) console.log('No Entries/Assets Found published on specified environment')
         return resolve()
       }
-      setTimeout(() => {
-        getSyncEntries(stack, config, queryParams, bulkPublish, filter, deliveryToken, destEnv, entriesResponse.pagination_token)
+      setTimeout(async () => {
+        await getSyncEntries(stack, config, queryParams, bulkPublish, filter, deliveryToken, destEnv, entriesResponse.pagination_token)
       }, 3000)
     } catch (error) {
       reject(error)
     }
   })
-  // return true
+  return resolve()
 }
 
 function setConfig(conf, bp) {
