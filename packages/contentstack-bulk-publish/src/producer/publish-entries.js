@@ -51,7 +51,7 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
             bulkPublishSet = []
           }
 
-          if (index === entriesResponse.items.length - 1 && bulkPublishSet.length <= 10) {
+          if (index === entriesResponse.items.length - 1 && bulkPublishSet.length <= 10 && bulkPublishSet.length > 0) {
             await queue.Enqueue({
               entries: bulkPublishSet, locale, Type: 'entry', environments: environments, stack: stack
             })
@@ -69,6 +69,7 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
         return resolve()
       }
       await getEntries(stack, contentType, locale, bulkPublish, environments, skipCount)
+      return resolve()
     })
     .catch(error => reject(error))
   })
