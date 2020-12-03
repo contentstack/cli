@@ -80,7 +80,8 @@
     ],
     "hooks": {
       "prerun": [
-        "./src/hooks/prerun/print-region"
+        "./src/hooks/prerun/print-region",
+        "./src/hooks/prerun/analytics"
       ],
       "init": [
         "./src/hooks/init"
