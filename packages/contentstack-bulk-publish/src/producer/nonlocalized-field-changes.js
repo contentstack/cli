@@ -276,7 +276,8 @@ async function getEntries(stack, schema, contentType, languages, masterLocale, b
         bulkPublishSet = []
         return resolve()
       }
-      return getEntries(stack, schema, contentType, languages, masterLocale, bulkPublish, environments, skipCount)
+      await getEntries(stack, schema, contentType, languages, masterLocale, bulkPublish, environments, skipCount)
+      return resolve()
     })
     .catch(error => reject(error))
     return resolve()
