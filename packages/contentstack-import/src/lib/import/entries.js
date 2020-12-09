@@ -14,8 +14,8 @@ const helper = require('../util/fs')
 const {addlogs} = require('../util/log')
 const lookupReplaceAssets = require('../util/lookupReplaceAssets')
 const lookupReplaceEntries = require('../util/lookupReplaceEntries')
-const supress = require('../util/supress-mandatory-fields')
-const extension_supress = require('../util/extensionsUidReplace')
+const suppress = require('../util/supress-mandatory-fields')
+const extension_suppress = require('../util/extensionsUidReplace')
 const util = require('../util')
 let config = util.getConfig()
 const stack = require('../util/contentstack-management-sdk')
@@ -123,13 +123,12 @@ importEntries.prototype = {
       // if mandatory reference fields are not filed in entries then avoids the error
       // Also remove field visibility rules
       return self.supressFields().then(async function () {
-        let counter = 0
         let mappedAssetUids = helper.readFile(mappedAssetUidPath) || {}
         let mappedAssetUrls = helper.readFile(mappedAssetUrlPath) || {}
 
         // Step 2: Iterate over available languages to create entries in each.
         for (let index = 0; index < langs.length; index++) {
-          let lang = langs[counter]
+          let lang = langs[index]
           if ((config.hasOwnProperty('onlylocales') && config.onlylocales.indexOf(lang) !== -1) || !config.hasOwnProperty('onlylocales')) {
             try {
               // eslint-disable-next-line no-await-in-loop
@@ -140,18 +139,15 @@ importEntries.prototype = {
               await self.repostEntries(lang)
 
               addlogs(config, 'Successfully imported \'' + lang + '\' entries!', 'success')
-              counter++
             } catch (error) {
               addlogs(config, 'Failed to import entries for language \'' + lang + '\'', 'error')
-              counter++
             }
           } else {
             addlogs(config, lang + ' has not been configured for import, thus skipping it', 'success')
-            counter++
           }
         }
         // Step 3: Revert all the changes done in content type in step 1
-        await self.unSupressFields()
+        await self.unSuppressFields()
         await self.removeBuggedEntries()
         let ct_field_visibility_uid = helper.readFile(path.join(ctPath + '/field_rules_uid.json'))
         let ct_files = fs.readdirSync(ctPath)
@@ -208,7 +204,7 @@ importEntries.prototype = {
         }
         if (fs.existsSync(eFilePath)) {
           let entries = helper.readFile(eFilePath)
-          if (!_.isPlainObject(entries)) {
+          if (!_.isPlainObject(entries) || _.isEmpty(entries)) {
             addlogs(config, chalk.white('No entries were found for Content type:\'' + ctUid + '\' in \'' + lang +
               '\' language!'), 'success')
             return resolve()
@@ -277,7 +273,7 @@ importEntries.prototype = {
                 }
               } else {
                 try {
-                  entryResponse = await stack.contentType(ctUid).entry().create(requestObject.json)
+                  let entryResponse = await stack.contentType(ctUid).entry().create(requestObject.json)
                   self.success[ctUid] = self.success[ctUid] || []
                   self.success[ctUid].push(entries[eUid])
                   if (!self.mappedUids.hasOwnProperty(eUid)) {
@@ -295,7 +291,7 @@ importEntries.prototype = {
                     }
                   }
                   return
-                } catch (err) {
+                } catch (error) {
                   if (error.hasOwnProperty('error_code') && error.error_code === 119) {
                     if (error.errors.title) {
                       addlogs(config, 'Entry ' + eUid + ' already exist, skip to avoid creating a duplicate entry', 'error')
@@ -336,8 +332,12 @@ importEntries.prototype = {
           }, {
             concurrency: reqConcurrency,
           }).then(function () {
-            addlogs(config, 'Entries created successfully in ' + ctUid + ' content type in ' + lang +
+            if (self.success && self.success[ctUid] && self.success[ctUid].length > 0)
+              addlogs(config, self.success[ctUid].length + ' entries created successfully in ' + ctUid + ' content type in ' + lang +
               ' locale!', 'success')
+            if (self.fails && self.fails[ctUid] && self.fails[ctUid].length > 0)
+              addlogs(config, self.fails[ctUid].length + ' entries failed to create in ' + ctUid + ' content type in ' + lang +
+              ' locale!', 'error')
             self.success[ctUid] = []
             self.fails[ctUid] = []
           })
@@ -497,7 +497,6 @@ importEntries.prototype = {
           addlogs(config, 'Imported entries of Content Type: \'' + ctUid + '\' in language: \'' + lang +
             '\' successfully!', 'success')
         }).catch(function (error) {
-          console.log('error>>>>>>', error)
           // error while updating entries with references
           addlogs(config, chalk.red('Failed while importing entries of Content Type: \'' + ctUid + '\' in language: \'' +
             lang + '\' successfully!'), 'error')
@@ -520,13 +519,13 @@ importEntries.prototype = {
     let self = this
     return new Promise(function (resolve, reject) {
       let modifiedSchemas = []
-      let supressedSchemas = []
+      let suppressedSchemas = []
 
       for (let uid in self.ctSchemas) {
         if (uid) {
           let contentTypeSchema = _.cloneDeep(self.ctSchemas[uid])
           let flag = {
-            supressed: false,
+            suppressed: false,
             references: false,
           }
           if (contentTypeSchema.field_rules) {
@@ -534,10 +533,10 @@ importEntries.prototype = {
           }
 
           // Set mandatory or unique flag to false
-          supress(contentTypeSchema.schema, flag)
-          // check if supress modified flag
-          if (flag.supressed) {
-            supressedSchemas.push(contentTypeSchema)
+          suppress(contentTypeSchema.schema, flag)
+          // Check if suppress modified flag
+          if (flag.suppressed) {
+            suppressedSchemas.push(contentTypeSchema)
             modifiedSchemas.push(self.ctSchemas[uid])
           }
 
@@ -546,15 +545,16 @@ importEntries.prototype = {
           }
 
           // Replace extensions with new UID
-          extension_supress(contentTypeSchema.schema, config.preserveStackVersion)
+          extension_suppress(contentTypeSchema.schema, config.preserveStackVersion)
         }
       }
 
-      // write modified schema on back file
+      // write modified schema in backup file
       helper.writeFile(modifiedSchemaPath, modifiedSchemas)
 
-      return Promise.map(supressedSchemas, async function (schema) {
+      return Promise.map(suppressedSchemas, async function (schema) {
         try {
+          // eslint-disable-next-line camelcase
           let contentTypeResponse = client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(schema.uid)
           Object.assign(contentTypeResponse, _.cloneDeep(schema))
           return await contentTypeResponse.update()
@@ -562,13 +562,13 @@ importEntries.prototype = {
           addlogs(config, chalk.red('Failed to modify mandatory field of \'' + schema.uid + '\' content type'), 'error')
           return error
         }
-        // update 5 content types at a time
       }, {
+        // update reqConcurrency content types at a time
         concurrency: reqConcurrency,
       }).then(function () {
         return resolve()
       }).catch(function (error) {
-        addlogs(config, chalk.red('Error while supressing mandatory field schemas'), 'error')
+        addlogs(config, chalk.red('Error while suppressing mandatory field schemas'), 'error')
         return reject(error)
       })
     })
@@ -605,7 +605,7 @@ importEntries.prototype = {
       })
     })
   },
-  unSupressFields: function () {
+  unSuppressFields: function () {
     let self = this
     return new Promise(async function (resolve, reject) {
       let modifiedSchemas = helper.readFile(modifiedSchemaPath)
@@ -617,7 +617,7 @@ importEntries.prototype = {
           if (_contentTypeSchema.field_rules) {
             delete _contentTypeSchema.field_rules
           }
-          extension_supress(_contentTypeSchema.schema, config.preserveStackVersion)
+          extension_suppress(_contentTypeSchema.schema, config.preserveStackVersion)
           updatedExtensionUidsSchemas.push(_contentTypeSchema)
         }
       }
@@ -807,21 +807,23 @@ importEntries.prototype = {
                 }
 
                 let entryUid = entryMapper[eUid]
-                requestObject.entry.environments = envId
-                requestObject.entry.locales = locales
-                let publishPromiseResult = new Promise((resolve, reject) => {
-                  client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry(entryUid).publish({publishDetails: requestObject.entry, locale: lang})
-                  // eslint-disable-next-line max-nested-callbacks
-                  .then(result => {
-                    addlogs(config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
-                    return resolve(result)
-                  // eslint-disable-next-line max-nested-callbacks
-                  }).catch(function (err) {
-                    addlogs(config, 'Entry ' + eUid + ' not published successfully in ' + ctUid + ' content type', 'error')
-                    return reject(err)
+                if (entryUid) {
+                  requestObject.entry.environments = envId
+                  requestObject.entry.locales = locales
+                  let publishPromiseResult = new Promise((resolve, reject) => {
+                    client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry(entryUid).publish({publishDetails: requestObject.entry, locale: lang})
+                    // eslint-disable-next-line max-nested-callbacks
+                    .then(result => {
+                      addlogs(config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
+                      return resolve(result)
+                    // eslint-disable-next-line max-nested-callbacks
+                    }).catch(function (err) {
+                      addlogs(config, 'Entry ' + eUid + ' not published successfully in ' + ctUid + ' content type', 'error')
+                      return reject(err)
+                    })
                   })
-                })
-                await publishPromiseResult
+                  await publishPromiseResult
+                }
               }
             }, {
               concurrency: reqConcurrency,
@@ -847,6 +849,7 @@ importEntries.prototype = {
       }).then(function () {
         return resolve()
       }).catch(error => {
+        console.log(error)
         return reject(error)
       })
     })
