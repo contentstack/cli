@@ -113,7 +113,7 @@ importAssets.prototype = {
                       return self.publish(assetsUid, self.assets[assetUid]).then(function () {
 
                       }).catch(error => {
-
+                        console.log(error)
                       })
                     }
                   }
@@ -409,9 +409,12 @@ importAssets.prototype = {
         addlogs(config, 'Asset ' + assetUid + ' published successfully', 'success')
         return resolve()
       }).catch(function (err) {
-        let error = JSON.parse(err.message)
-        addlogs(config, chalk.red('Asset ' + assetUid + ' not published, ' + error.errorMessage), 'error')
-        return reject(error)
+        if (err && err.message) {
+          let error = JSON.parse(err.message)
+          addlogs(config, chalk.red('Asset ' + assetUid + ' not published, ' + error.errorMessage), 'error')
+          return reject(err)
+        }
+        return reject(err)
       })
     })
   },
