@@ -103,26 +103,19 @@ importAssets.prototype = {
 
               return self.uploadAsset(assetPath, self.assets[assetUid], uidContainer, urlContainer).then(function () {
                 self.uidMapping[assetUid] = uidContainer[assetUid]
-                self.urlMapping[self.assets[assetUid].url] = urlContainer[self.assets[
-                assetUid].url]
+                self.urlMapping[self.assets[assetUid].url] = urlContainer[self.assets[assetUid].url]
 
-                if (config.entriesPublish) {
-                  if (self.assets[assetUid].publish_details.length > 0) {
-                    let assetsUid = uidContainer[assetUid]
-                    if (self.assets[assetUid].publish_details.length !== 0) {
-                      return self.publish(assetsUid, self.assets[assetUid]).then(function () {
-
-                      }).catch(error => {
-                        console.log(error)
-                      })
-                    }
-                  }
+                if (config.entriesPublish && self.assets[assetUid].publish_details.length > 0) {
+                  let assetsUid = uidContainer[assetUid]
+                  return self.publish(assetsUid, self.assets[assetUid]).catch(error => {
+                    console.log(error)
+                  })
                 }
-
                 // assetUid has been successfully uploaded
                 // log them onto /mapper/assets/success.json
               }).catch(function (error) {
                 addlogs(config, chalk.red('Asset upload failed \n' + error, 'error'))
+                return error
                 // asset failed to upload
                 // log them onto /mapper/assets/fail.json
               })
@@ -135,6 +128,7 @@ importAssets.prototype = {
             helper.writeFile(self.urlMapperPath, self.urlMapping)
             // completed uploading assets
             addlogs(config, 'Completed asset import of batch no: ' + (index + 1), 'success')
+            return index + 1
             // TODO: if there are failures, retry
           })
         }, {
@@ -144,7 +138,7 @@ importAssets.prototype = {
           if (numberOfSuccessfulAssetUploads > 0) {
             addlogs(config, chalk.green(numberOfSuccessfulAssetUploads + ' assets uploaded successfully!'), 'success')
           }
-          // TODO: if there are failures, retry
+          // TODO: if there are failures, retry 
           return resolve()
         }).catch(function () {
           return reject()
@@ -317,8 +311,9 @@ importAssets.prototype = {
           let error = JSON.parse(err.message)
           if (error.errors.authorization || error.errors.api_key) {
             addlogs(config, chalk.red('Api_key or management_token is not valid'), 'error')
+            return reject(error)
           }
-          return reject(error)
+          return error
         })
       }, {
         concurrency: 1,
