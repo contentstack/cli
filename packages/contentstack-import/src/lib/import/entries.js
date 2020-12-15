@@ -172,7 +172,6 @@ importEntries.prototype = {
       }).catch(function (error) {
         return reject(error)
       })
-    }).catch(error => {
     })
   },
 
@@ -270,6 +269,7 @@ importEntries.prototype = {
                     entry: entries[eUid],
                     error: error,
                   })
+                  return err
                 }
               } else {
                 try {
@@ -360,7 +360,7 @@ importEntries.prototype = {
     return new Promise(function (resolve) {
       self.createdEntriesWOUid = helper.readFile(createdEntriesWOUidPath)
       self.failedWO = []
-      if (_.isArray(self.createdEntriesWOUid) && self.createdEntriesWOUid.length) {
+      if (_.isArray(self.createdEntriesWOUid) && self.createdEntriesWOUid.length > 0) {
         return Promise.map(self.createdEntriesWOUid, function (entry) {
           return self.fetchEntry(entry)
         }, {
@@ -423,6 +423,7 @@ importEntries.prototype = {
             return _entry
           } catch (error) {
             console.error(error)
+            return error
           }
         })
 
@@ -476,7 +477,7 @@ importEntries.prototype = {
                 return reject()
               })
             })
-            await promiseResult
+            await promiseResult()
           }, {
             concurrency: reqConcurrency,
           }).then(function () {
@@ -575,7 +576,7 @@ importEntries.prototype = {
   },
   fetchEntry: function (query) {
     let self = this
-    return new Promise(function (resolve) {
+    return new Promise(function (resolve, reject) {
       let requestObject = {
         qs: {
           query: {
@@ -587,7 +588,7 @@ importEntries.prototype = {
 
       return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(query.content_type).entry().query(requestObject.qs).find()
       .then(function (response) {
-        if (!response.body.entries.length) {
+        if (response.body.entries.length < 0) {
           addlogs(config, 'Unable to map entry WO uid: ' + query.entry.uid, 'error')
           // log.debug('Request:\n' + JSON.stringify(requestObject))
           self.failedWO.push(query)
@@ -600,14 +601,14 @@ importEntries.prototype = {
         helper.writeFile(_ePath, entries)
         addlogs(config, 'Completed mapping entry wo uid: ' + query.entry.uid + ': ' + response.body.entries[0].uid, 'success')
         return resolve()
-      }).catch(function () {
-        return resolve()
+      }).catch(function (error) {
+        return reject(error)
       })
     })
   },
   unSuppressFields: function () {
     let self = this
-    return new Promise(async function (resolve, reject) {
+    return new Promise( function (resolve, reject) {
       let modifiedSchemas = helper.readFile(modifiedSchemaPath)
       let modifiedSchemasUids = []
       let updatedExtensionUidsSchemas = []
@@ -723,24 +724,24 @@ importEntries.prototype = {
     let self = this
     return new Promise(function (resolve, reject) {
       if (schema.field_rules) {
-        let field_rules_array = []
-        for (let k = 0; k < schema.field_rules.length; k++) {
-          for (let i = 0; i < schema.field_rules[k].conditions.length; i++) {
+        let fieldRuleLength = schema.field_rules.length
+        for (let k = 0; k < fieldRuleLength; k++) {
+          let fieldRuleConditionLength = schema.field_rules[k].conditions.length
+          for (let i = 0; i < fieldRuleConditionLength; i++) {
             if (schema.field_rules[k].conditions[i].operand_field === 'reference') {
-              let field_rules_value = schema.field_rules[k].conditions[i].value
-              field_rules_array = field_rules_value.split('.')
-              let updated_value = []
-              for (let j = 0; j < field_rules_array.length; j++) {
-                let splited_field_rules_value = field_rules_array[j]
-                let old_uid = helper.readFile(path.join(entryUidMapperPath))
-                if (old_uid.hasOwnProperty(splited_field_rules_value)) {
-                  updated_value.push(old_uid[splited_field_rules_value])
+              let fieldRulesValue = schema.field_rules[k].conditions[i].value
+              let fieldRulesArray = fieldRulesValue.split('.')
+              let updatedValue = []
+              for (let j = 0; j < fieldRulesArray.length; j++) {
+                let splitedFieldRulesValue = fieldRulesArray[j]
+                let oldUid = helper.readFile(path.join(entryUidMapperPath))
+                if (oldUid.hasOwnProperty(splitedFieldRulesValue)) {
+                  updatedValue.push(oldUid[splitedFieldRulesValue])
                 } else {
-                  updated_value.push(field_rules_array[j])
+                  updatedValue.push(fieldRulesArray[j])
                 }
               }
-              let append_all_values = updated_value.join('.')
-              schema.field_rules[k].conditions[i].value = append_all_values
+              schema.field_rules[k].conditions[i].value = updatedValue.join('.')
             }
           }
         }
@@ -754,6 +755,7 @@ importEntries.prototype = {
         contentTypeResponse.update()
         return resolve()
       }).catch(function (error) {
+        return reject(error)
       })
     })
   },
