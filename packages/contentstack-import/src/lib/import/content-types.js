@@ -102,9 +102,8 @@ importContentTypes.prototype = {
           {
             concurrency: reqConcurrency,
           }).then(function () {
-
           }).catch(e => {
-
+            console.log('Something went wrong while migrating content type batch', e)
           })
         }, {
           concurrency: reqConcurrency,
