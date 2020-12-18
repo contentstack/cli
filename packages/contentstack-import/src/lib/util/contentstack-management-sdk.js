@@ -9,6 +9,7 @@ exports.Client = function (config) {
     api_key: config.target_stack,
     maxContentLength: 100000000,
     maxBodyLength: 1000000000,
+    timeout: 60000
     logHandler: (level, data) => {}
   }
   const client = contentstacksdk.client(option)
