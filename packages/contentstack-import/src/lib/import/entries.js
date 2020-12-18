@@ -105,7 +105,7 @@ importEntries.prototype = {
      * @return promise
   */
   start: async function (credentialConfig) {
-=    let self = this
+    let self = this
     config = credentialConfig
     client = stack.Client(config)
     addlogs(config, 'Migrating entries', 'success')
