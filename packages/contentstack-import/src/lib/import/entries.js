@@ -72,7 +72,7 @@ function importEntries() {
   this.fails = []
 
   let files = fs.readdirSync(ctPath)
-
+  this.environment = helper.readFile(environmentPath)
   for (let index in files) {
     if (index) {
       try {
@@ -105,7 +105,7 @@ importEntries.prototype = {
      * @return promise
   */
   start: async function (credentialConfig) {
-    let self = this
+=    let self = this
     config = credentialConfig
     client = stack.Client(config)
     addlogs(config, 'Migrating entries', 'success')
@@ -477,7 +477,7 @@ importEntries.prototype = {
                 return reject()
               })
             })
-            await promiseResult()
+            await promiseResult
           }, {
             concurrency: reqConcurrency,
           }).then(function () {
@@ -487,6 +487,7 @@ importEntries.prototype = {
             helper.writeFile(path.join(eFolderPath, 'refsUpdateFailed.json'), refsUpdateFailed)
             addlogs(config, 'Completed re-post entries batch no: ' + (index + 1) + ' successfully!', 'success')
           }).catch(function (error) {
+            console.log('491: ', error)
             // error while executing entry in batch
             addlogs(config, chalk.red('Failed re-post entries at batch no: ' + (index + 1)), 'error')
             throw error
@@ -588,7 +589,7 @@ importEntries.prototype = {
 
       return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(query.content_type).entry().query(requestObject.qs).find()
       .then(function (response) {
-        if (response.body.entries.length < 0) {
+        if (response.body.entries.length <= 0) {
           addlogs(config, 'Unable to map entry WO uid: ' + query.entry.uid, 'error')
           // log.debug('Request:\n' + JSON.stringify(requestObject))
           self.failedWO.push(query)
@@ -639,8 +640,8 @@ importEntries.prototype = {
               return error
             })
           }).catch(function (error) {
-            reject(error)
             addlogs(config, error, 'error')
+            return reject(error)
           })
         })
       }, {
@@ -790,15 +791,13 @@ importEntries.prototype = {
             return
           }
 
-          let environment = helper.readFile(environmentPath)
-
           return Promise.map(batches, async function (batch) {
             return Promise.map(batch, async function (eUid) {
               let entry = entries[eUid]
               if (entry.publish_details && entry.publish_details.length > 0) {
-                for (const pubObject of entry.publish_details) {
-                  if (pubObject.environment && environment[pubObject.environment]) {
-                    envId.push(environment[pubObject.environment].name)
+                _.forEach(entries[eUid].publish_details, function (pubObject) {
+                  if (self.environment.hasOwnProperty(pubObject.environment)) {
+                    envId.push(self.environment[pubObject.environment].name)
                   }
                   if (pubObject.locale) {
                     let idx = _.indexOf(locales, pubObject.locale)
@@ -806,7 +805,7 @@ importEntries.prototype = {
                       locales.push(pubObject.locale)
                     }
                   }
-                }
+                })
 
                 let entryUid = entryMapper[eUid]
                 if (entryUid) {
@@ -826,6 +825,8 @@ importEntries.prototype = {
                   })
                   await publishPromiseResult
                 }
+              } else {
+                return
               }
             }, {
               concurrency: reqConcurrency,
