@@ -38,6 +38,13 @@ function importAssets() {
 }
 
 importAssets.prototype = {
+  delay: function (milliseconds) {
+    return new Promise(function (resolve, reject) {
+      setTimeout(function () {
+        return resolve()
+      }, milliseconds)
+    })
+  },
   start: function (credential) {
     addlogs(config, 'Migrating assets', 'success')
     let self = this
@@ -73,6 +80,7 @@ importAssets.prototype = {
 
       return self.importFolders().then(function () {
         return Promise.map(batches, function (batch, index) {
+          await self.delay(500)
           return Promise.map(batch, function (assetUid) {
             if (self.uidMapping.hasOwnProperty(assetUid)) {
               addlogs(config, 'Skipping upload of asset: ' + assetUid + '. Its mapped to: ' + self.uidMapping[
@@ -138,7 +146,7 @@ importAssets.prototype = {
           if (numberOfSuccessfulAssetUploads > 0) {
             addlogs(config, chalk.green(numberOfSuccessfulAssetUploads + ' assets uploaded successfully!'), 'success')
           }
-          // TODO: if there are failures, retry 
+          // TODO: if there are failures, retry
           return resolve()
         }).catch(function () {
           return reject()
