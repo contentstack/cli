@@ -1,0 +1,38 @@
+//note that we are using @contentstack/cli-command instead of @oclif/command
+import {Command, flags} from '@contentstack/cli-command'
+<%_ const klass = _.upperFirst(_.camelCase(name)) _%>
+
+export default class <%- klass %> extends Command {
+  static description = 'sample plugin using Contentstack'
+
+<%_ if (name === 'hello') { _%>
+  static examples = [
+    `$ <%- cmd %>
+hello world from ./src/<%- name %>.ts!
+`,
+  ]
+
+<%_ } _%>
+  static flags = {
+    help: flags.help({char: 'h'}),
+    // flag with a value (-n, --name=VALUE)
+    name: flags.string({char: 'n', description: 'name to print'}),
+    // flag with no value (-f, --force)
+    force: flags.boolean({char: 'f'}),
+  }
+
+  static args = [{name: 'file'}]
+
+  async run() {
+    const {args, flags} = this.parse(<%- klass %>)
+
+    let currentRegion = this.region
+    let managementClient = this.managementAPIClient
+
+    this.log(`The current region configured is ${currentRegion}`)
+
+    if (args.file && flags.force) {
+      this.log(`you input --force and --file: ${args.file}`)
+    }
+  }
+}
