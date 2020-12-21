@@ -852,7 +852,7 @@ importEntries.prototype = {
       }).then(function () {
         return resolve()
       }).catch(error => {
-        console.log(error)
+        //console.log(error)
         return reject(error)
       })
     })
