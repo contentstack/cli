@@ -79,8 +79,8 @@ importAssets.prototype = {
       }
 
       return self.importFolders().then(function () {
-        return Promise.map(batches, function (batch, index) {
-          await self.delay(500)
+        return Promise.map(batches, async function (batch, index) {
+          //await self.delay(500)
           return Promise.map(batch, function (assetUid) {
             if (self.uidMapping.hasOwnProperty(assetUid)) {
               addlogs(config, 'Skipping upload of asset: ' + assetUid + '. Its mapped to: ' + self.uidMapping[
