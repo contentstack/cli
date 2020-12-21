@@ -4,7 +4,6 @@ const yosay = require('yosay')
 const _ = require('lodash')
 const path = require('path')
 const sortPjson = require('sort-pjson')
-const fixpack = require('@oclif/fixpack')
 const fs = require('fs')
 const nps = require('nps-utils')
 
@@ -13,12 +12,6 @@ const rmrf = isWindows ? 'rimraf' : 'rm -rf'
 const rmf = isWindows ? 'rimraf' : 'rm -f'
 
 module.exports = class extends Generator {
-
-  constructor(args, opts) {
-    super(args, opts)
-    this.path = opts.path
-  }
-
 	pjson = {
 		scripts: {},
 		engines: {},
@@ -55,7 +48,7 @@ module.exports = class extends Generator {
     .join('\n') + '\n'
 	}
 
-	_writePlugin() {	
+	_writePlugin() {
     const bin = this._bin
     const cmd = `${bin} hello`
     const opts = {...this, _, bin, cmd}
@@ -73,24 +66,9 @@ module.exports = class extends Generator {
     }
   }
 
-  _writeExtension(type) {
-    let baseDir = path.join(__dirname, '../my-templates/', type)
-    debugger
-    // copy base files
-    this.fs.copy(this.templatePath(`base/LICENSE`), this.destinationPath('LICENSE'))
-    this.fs.copy(this.templatePath(`base/.eslintrc.json`), this.destinationPath('.eslintrc.json'))
-    this.fs.copy(this.templatePath(`base/gulpfile.js`), this.destinationPath('gulpfile.js'))
-    this.fs.copy(this.templatePath(`base/README.md`), this.destinationPath('README.md'))
-    // copy type specific files
-    this.fs.copy(this.templatePath(path.join(baseDir, 'source/index.html')), this.destinationPath('source/index.html'))
-    this.fs.copy(this.templatePath(path.join(baseDir, 'source/index.js')), this.destinationPath('source/index.js'))
-    this.fs.copy(this.templatePath(path.join(baseDir, 'source/style.css')), this.destinationPath('source/style.css'))
-  }
-
 	async prompting() {
 		const defaults = {
-			name: 'extension-template',
-      description: 'A starter template for creating an experience extension',
+			name: 'name',
 			version: '0.0.0',
 			license: 'MIT',
       dependencies: {},
@@ -99,11 +77,6 @@ module.exports = class extends Generator {
         ...this.pjson.engines,
       }
 		}
-
-    if (this.path) {
-      this.destinationRoot(path.resolve(this.path))
-      process.chdir(this.destinationRoot())
-    }
 
 		let prompts = [
 			{
@@ -142,26 +115,6 @@ module.exports = class extends Generator {
 				when: !this.pjson.author,
 			},
 			{
-        type: 'list',
-        name: 'type',
-        message: 'Select the type of widget to be created',
-        choices: [
-          {name: 'Dashboard widget', value: 'dashboard-widget'},
-          {name: 'Custom Field', value: 'custom-field'},
-          {name: 'Custom Widget', value: 'custom-widget'},
-        ],
-      },
-      {
-				type: 'list',
-				name: 'width',
-				message: 'Select the width',
-				choices: [
-          {name: 'Half', value: 'half'},
-          {name: 'Full', value: 'full'},
-        ],
-				when: (answers) => answers.type === 'dashboardWidget',
-			},
-			{
         type: 'confirm',
         name: 'typescript',
         message: 'TypeScript',
@@ -171,28 +124,39 @@ module.exports = class extends Generator {
 
 		this.answers = await this.prompt(prompts)
 
-    this.pjson.scripts.build = 'npx gulp build'
+		this.options = {
+			typescript: this.answers.typescript
+		}
+
+		this.ts = this.options.typescript
+
+		if (this.ts) {
+      this.pjson.scripts.prepack = nps.series(`${rmrf} lib`, 'tsc -b')
+      if (this.eslint) {
+        this.pjson.scripts.posttest = 'eslint . --ext .ts --config .eslintrc'
+      }
+    }
 
 		this.pjson.keywords = defaults.keywords || 'contentstack'
+    this.pjson.homepage = defaults.homepage || `https://github.com/${this.pjson.repository}`
+    this.pjson.bugs = defaults.bugs || `https://github.com/${this.pjson.repository}/issues`
 
 		this.pjson.name = this.answers.name || defaults.name
     this.pjson.description = this.answers.description || defaults.description
     this.pjson.license = this.answers.license || defaults.license
     this.pjson.version = this.answers.version || defaults.version
-    this.pjson.main = 'gulpfile.js'
     this.pjson.author = this.answers.author || defaults.author
     this.pjson.engines.node = defaults.engines.node
 	}
 
 	writing() {
-    if (!this.path) {
-  		let dir = path.join(process.cwd(), this.answers.name)
-  		// if (!fs.existsSync(dir)) fs.mkdirSync(dir)
-  		this.destinationRoot(dir)
-  		process.chdir(this.destinationRoot())
-    }
+		let dir = path.join(process.cwd(), this.answers.name)
+		if (!fs.existsSync(dir)) fs.mkdirSync(dir)
 
-		this.sourceRoot(path.join(__dirname, '../my-templates'))
+		this.destinationRoot(dir)
+		process.chdir(this.destinationRoot())
+
+		this.sourceRoot(path.join(__dirname, '../templates'))
 
 		this.pjson.oclif = {
       commands: `./${this.ts ? 'lib' : 'src'}/commands`,
@@ -227,39 +191,56 @@ module.exports = class extends Generator {
     this.pjson.files = _.uniq((this.pjson.files || []).sort())
 
     this.fs.writeJSON(this.destinationPath('./package.json'), sortPjson(this.pjson))
-    this._writeExtension(this.answers.type)
+    this.fs.copyTpl(this.templatePath('editorconfig'), this.destinationPath('.editorconfig'), this)
+    this.fs.copyTpl(this.templatePath('README.md.ejs'), this.destinationPath('README.md'), this)
+
+    if (this.pjson.license === 'MIT') {
+      this.fs.copyTpl(this.templatePath('LICENSE.mit'), this.destinationPath('LICENSE'), this)
+    }
+
+    this.fs.write(this.destinationPath('.gitignore'), this._gitignore())
+    this._writePlugin()
 	}
 
 	install() {
-		// const dependencies = []
+		const dependencies = []
 		const devDependencies = []
 
 		const dev = {'save-dev': true}
 		const save = {save: true}
 
-    devDependencies.push(
-      "@babel/cli@^7.5.0",
-      "@babel/core@^7.5.4",
-      "@babel/preset-env@^7.5.4",
-      "eslint@^7.15.0",
-      "eslint-config-airbnb-base@^13.1.0",
-      "eslint-config-standard@^16.0.2",
-      "eslint-plugin-import@^2.22.1",
-      "eslint-plugin-node@^11.1.0",
-      "eslint-plugin-promise@^4.2.1",
-      "gulp@^4.0.0",
-      "gulp-babel@^8.0.0",
-      "gulp-clean-css@^4.2.0",
-      "gulp-eslint@^6.0.0",
-      "gulp-inline@^0.1.3",
-      "gulp-stylelint@^7.0.0",
-      "gulp-uglify@^3.0.0",
-      "stylelint@^13.2.0",
-      "stylelint-config-standard@^20.0.0"
+		dependencies.push(	
+      '@contentstack/cli-command',
+      '@oclif/config@^1',
+      '@oclif/command@^1',
     )
 
+    devDependencies.push(
+      '@oclif/dev-cli@^1',
+      '@oclif/plugin-help@^3',
+      'globby@^10',
+    )
+
+    devDependencies.push(
+      'mocha@^5',
+      'nyc@^14',
+      'chai@^4',
+      '@oclif/test@^1',  
+    )
+
+    if (this.ts) {
+      dependencies.push(
+        'tslib@^1',
+      )
+      devDependencies.push(
+        '@types/node@^10',
+        'typescript@^3.3',
+        'ts-node@^8',
+      )
+    }
+
     return Promise.all([
-    	// this.npmInstall(dependencies, {...save}),
+    	this.npmInstall(dependencies, {...save}),
     	this.npmInstall(devDependencies, {...dev, ignoreScripts: true}),
     ]).then(() => {})
 	}
