@@ -84,6 +84,7 @@ let allExport = async (config, types) => {
   }).then(function () {
     console.timeEnd('profiling')
     addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported succesfully!'), 'success')
+    addlogs(config, 'Backup folder location: ' + path.join(config.data, '/'), 'success')
     addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'success')
   }).catch(function (error) {
     addlogs(config, chalk.red('Failed to migrate stack: ' + config.target_stack + '. Please check error logs for more info'), 'error')
