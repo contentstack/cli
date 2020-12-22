@@ -21,10 +21,7 @@ class StackCloneCommand extends Command {
     }
     config.host = host
     const cloneHandler = new CloneHandler(config)
-    // cloneHandler.cloneTypeSelection()
-    cloneHandler.createNewStack("blt2b4991176c6c1d25")
-
-    // cloneHandler.organizationSelection("export")  
+    cloneHandler.organizationSelection("export")  
   }
 }
 
