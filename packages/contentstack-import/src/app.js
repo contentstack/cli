@@ -71,19 +71,12 @@ let allExport = async (config, types) => {
   let counter = 0
   Bluebird.mapSeries(types, function (type) {
     console.timeLog('profiling')
-    if (config.preserveStackVersion) {
-      let exportedModule = require('./lib/import/' + types[counter])
-      counter++
-      return exportedModule.start(config)
-    } if (!config.preserveStackVersion && type !== 'stack') {
-      let exportedModule = require('./lib/import/' + types[counter])
-      counter++
-      return exportedModule.start(config)
-    }
+    let exportedModule = require('./lib/import/' + type)
     counter++
+    return exportedModule.start(config)
   }).then(function () {
     console.timeEnd('profiling')
-    addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported succesfully!'), 'success')
+    addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported successfully!'), 'success')
     addlogs(config, 'Backup folder location: ' + path.join(config.data, '/'), 'success')
     addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'success')
   }).catch(function (error) {
@@ -117,7 +110,7 @@ function createBackup(backupDirPath, config) {
 }
 
 process.on('unhandledRejection', (error, promise) => {
-  console.log('unhandledRejection', reason)
+  console.log('unhandledRejection', error)
   throw error
 })
 
