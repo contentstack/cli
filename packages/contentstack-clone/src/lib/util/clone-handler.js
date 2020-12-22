@@ -51,7 +51,7 @@ let structureList = ['locales',
   'global-fields',
   'content-types',
   'labels',]
-let master_locale = "en-us"
+let master_locale
 let backupPath
 let functionList = []
 
@@ -59,7 +59,6 @@ class CloneHandler {
   constructor(opt) {
     config = opt
     client = sdkInstance.Client(config)
-    config.target_stack = "bltc50038e2b7a66220"
   }
 
   async organizationSelection(params) {
