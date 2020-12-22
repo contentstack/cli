@@ -115,3 +115,13 @@ function createBackup(backupDirPath, config) {
     })
   })
 }
+
+process.on('unhandledRejection', (error, promise) => {
+  console.log('unhandledRejection', reason)
+  throw error
+})
+
+process.on('uncaughtException', error => {
+  console.log('uncaughtException', error)
+  process.exit(1)
+})
