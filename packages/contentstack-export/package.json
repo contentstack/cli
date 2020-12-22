@@ -45,7 +45,9 @@
 	],
 	"homepage": "https://github.com/contentstack/cli",
 	"keywords": [
-		"contentstack","cli","plugin"
+		"contentstack",
+		"cli",
+		"plugin"
 	],
 	"license": "MIT",
 	"scripts": {

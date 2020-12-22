@@ -1,6 +1,7 @@
 const contentstacksdk = require('@contentstack/management')
 
 exports.Client = function (config) {
+  // console.log("manament stack", config);
   const option = {
     host: config.host,
     authtoken: config.auth_token,
