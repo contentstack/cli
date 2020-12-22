@@ -65,21 +65,25 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host) {
   initial(defaultConfig)
 }
 
-exports.parametersWithAuthToken = function (masterLang, _authToken, targetStack, data, moduleName, host) {
+exports.parametersWithAuthToken = function (masterLang, _authToken, targetStack, data, moduleName, host, backupdir) {
   var masterloc = {master_locale: {code: masterLang}}
   defaultConfig.auth_token = _authToken
   defaultConfig.target_stack = targetStack
-  if (moduleName && moduleName !== undefined) {
+  if (moduleName && moduleName !== undefined && backupdir === undefined) {
     defaultConfig.moduleName = moduleName
+  } else if (moduleName && moduleName !== undefined && backupdir !== undefined) {
+    defaultConfig.moduleName = moduleName
+    defaultConfig.useBackedupDir = backupdir
   }
   defaultConfig.data = data
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
   defaultConfig = _.merge(defaultConfig, masterloc)
+  // console.log("Line no+++++++wwww", defaultConfig)
   initial(defaultConfig)
 }
 
-exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host) => {
+exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, backupdir) => {
 
   const masterLocale = await cli.prompt(message.promptMessageList.promptMasterLocale)
   const stackUid = await cli.prompt(message.promptMessageList.promptTargetStack)
@@ -88,9 +92,13 @@ exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host) =>
   defaultConfig.auth_token = _authToken
   defaultConfig.target_stack = stackUid
   defaultConfig.data = exporteddata
-  if (moduleName && moduleName !== undefined) {
+  if (moduleName && moduleName !== undefined && backupdir === undefined) {
     defaultConfig.moduleName = moduleName
+  } else if (moduleName && moduleName !== undefined && backupdir !== undefined) {
+    defaultConfig.moduleName = moduleName
+    defaultConfig.useBackedupDir = backupdir
   }
+
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda  
   defaultConfig = _.merge(defaultConfig, masterloc)

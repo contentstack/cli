@@ -42,7 +42,9 @@
 	],
 	"homepage": "https://github.com/contentstack/cli",
 	"keywords": [
-		"contentstack","cli","plugin"
+		"contentstack",
+		"cli",
+		"plugin"
 	],
 	"scripts": {
 		"pack": "npm pack && mv *.tgz ../../build",
