@@ -50,6 +50,7 @@ importContentTypes.prototype = {
     contentTypesFolderPath = path.resolve(config.data, contentTypeConfig.dirName)
     mapperFolderPath = path.join(config.data, 'mapper', 'content_types')
     globalFieldMapperFolderpath =  helper.readFile(path.join(config.data, 'mapper', 'global_fields', 'success.json'))
+    globalFieldPendingpath =  helper.readFile(path.join(config.data, 'mapper', 'global_fields', 'pending_global_fields.js'))
     globalFieldUpdateFile =  path.join(config.data, 'mapper', 'global_fields', 'success.json')
     fileNames = fs.readdirSync(path.join(contentTypesFolderPath))
     self.globalfields = helper.readFile(path.resolve(globalfieldsFolderPath, globalFieldConfig.fileName))
@@ -89,15 +90,17 @@ importContentTypes.prototype = {
         for (let i = 0; i < lenObj.length; i += 7) {
           batches.push(lenObj.slice(i, i + 7))
         }
-        
         return Promise.map(batches, function (batch) {
           return Promise.map(batch, function (contentType) {
+            
           return self.updateContentTypes(contentType).then(function () {
             addlogs(config, contentType.uid + ' was updated successfully!', 'success')
             return
           }).catch(function (err) {
             return reject()
           })
+        }).catch(function (err) {
+          return reject()
         })
         }).then(function () {
           // eslint-disable-next-line quotes
@@ -107,7 +110,7 @@ importContentTypes.prototype = {
             })
           }
         
-         if( _globalField_pending.length !== 0 ) {
+         if( globalFieldPendingpath.length !== 0 ) {
           return self.updateGlobalfields().then(function () {
             addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
             return resolve()
