@@ -9,9 +9,11 @@
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-auth": "0.1.1-beta.1",
-    "@contentstack/cli-command": "0.1.1-beta.1",
-    "@contentstack/cli-cm-clone": "0.1.0-beta",
     "@contentstack/cli-cm-bulk-publish": "0.1.1-beta.1",
+    "@contentstack/cli-cm-clone": "0.1.0-beta",
+    "@contentstack/cli-cm-export": "0.1.2-beta.2",
+    "@contentstack/cli-cm-import": "0.1.2-beta.2",
+    "@contentstack/cli-command": "0.1.1-beta.1",
     "@contentstack/management": "1.0.0",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
@@ -53,15 +55,24 @@
   ],
   "homepage": "https://github.com/contentstack/cli",
   "keywords": [
-		"contentstack","cli","plugin", "contentstack-cli-core"
-	],
+    "contentstack",
+    "cli",
+    "plugin",
+    "contentstack-cli-core"
+  ],
   "license": "MIT",
   "main": "src/index.js",
   "oclif": {
     "topics": {
-      "auth": {"description":"perform authentication-related activities"},
-      "cm": {"description":"perform content management activities"},
-      "config": {"description":"perform configuration related activities"}
+      "auth": {
+        "description": "perform authentication-related activities"
+      },
+      "cm": {
+        "description": "perform content management activities"
+      },
+      "config": {
+        "description": "perform configuration related activities"
+      }
     },
     "helpClass": "./src/help.js",
     "commands": "./src/commands",
@@ -71,6 +82,8 @@
       "@oclif/plugin-not-found",
       "@oclif/plugin-plugins",
       "@contentstack/cli-auth",
+      "@contentstack/cli-cm-export",
+      "@contentstack/cli-cm-import",
       "@contentstack/cli-cm-bulk-publish",
       "@contentstack/cli-cm-clone"
     ],

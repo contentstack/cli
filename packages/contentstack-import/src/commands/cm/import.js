@@ -20,6 +20,7 @@ class ImportCommand extends Command {
     let targetStack = flags['stack-uid']
     const data = flags.data
     const moduleName = flags.module
+    const backupdir = flags["backup-dir"]
     const alias = flags['management-token-alias']
     const authToken = flags['auth-token']
     let _authToken = credStore.get('authtoken')
@@ -29,7 +30,6 @@ class ImportCommand extends Command {
     let cdaMainURL = host.cda.split('//')
     host.cma = cmaMainURL[1]
     host.cda = cdaMainURL[1]
-
     if (alias && alias !== undefined) {
       let managementTokens = this.getToken(alias)
 
@@ -74,13 +74,15 @@ class ImportCommand extends Command {
           targetStack,
           data,
           moduleName,
-          host
+          host,
+          backupdir
         )
       } else {
         withoutParametersWithAuthToken(
           _authToken,
           moduleName,
-          host
+          host,
+          backupdir
         )
       }
     } else  {
@@ -109,7 +111,8 @@ ImportCommand.flags = {
   data: flags.string({char: 'd', description: 'path and location where data is stored'}),
   'management-token-alias': flags.string({char: 'a', description: 'alias of the management token'}),
   'auth-token': flags.boolean({char: 'A', description: 'to use auth token'}),
-  module: flags.string({char: 'm', description: '[optional] specific module name'})
+  module: flags.string({char: 'm', description: '[optional] specific module name'}),
+  "backup-dir": flags.string({char: 'b', description: '[optional] specific module name'})
 }
 
 module.exports = ImportCommand
