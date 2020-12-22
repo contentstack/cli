@@ -13,6 +13,7 @@ let stack = require('../util/contentstack-management-sdk')
 let client
 
 module.exports.login = config => {
+  // console.log("dncndjcndjcndj", config);
   client = stack.Client(config)
   return new Promise(function (resolve, reject) {
     if (config.email && config.password) {

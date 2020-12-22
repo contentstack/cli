@@ -21,9 +21,11 @@ exports.initial = function (configData) {
   if (config && config !== undefined) {
     login(config)
     .then(function () {
+      // console.log("confi import ke anderrrrr", config);
       if (fs.existsSync(config.data)) {
       let migrationBackupDirPath = path.join(process.cwd(), '_backup_' + Math.floor((Math.random() * 1000)))
       return createBackup(migrationBackupDirPath, config).then((basePath) => {
+        // console.log("returnwala value++++", basePath);
         config.data = basePath
         return util.sanitizeStack(config)
       }).catch(e=>{
@@ -58,11 +60,11 @@ let singleExport = (moduleName, types, config) => {
     let exportedModule = require('./lib/import/' + moduleName)
     exportedModule.start(config).then(function () {
       addlogs(config, moduleName + ' imported successfully!', 'success')
-    addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'success')
+    addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success')
     }).catch(function (error) {
       addlogs(config, 'Failed to migrate ' + moduleName, 'error')
       addlogs(config, error, 'error')
-    addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'error')
+    addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error')
     })
   } else {
     addlogs(config, 'Please provide valid module name.', 'error')
