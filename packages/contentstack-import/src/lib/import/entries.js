@@ -762,8 +762,6 @@ importEntries.prototype = {
   },
   publish: function (langs) {
     let self = this
-    let envId = []
-    let locales = []
     let requestObject = {
       entry: {},
     }
@@ -794,9 +792,11 @@ importEntries.prototype = {
           return Promise.map(batches, async function (batch) {
             return Promise.map(batch, async function (eUid) {
               let entry = entries[eUid]
+              let envId = []
+              let locales = []
               if (entry.publish_details && entry.publish_details.length > 0) {
                 _.forEach(entries[eUid].publish_details, function (pubObject) {
-                  if (self.environment.hasOwnProperty(pubObject.environment)) {
+                  if (self.environment.hasOwnProperty(pubObject.environment) && _.indexOf(envId, self.environment[pubObject.environment].name) === -1) {
                     envId.push(self.environment[pubObject.environment].name)
                   }
                   if (pubObject.locale) {
@@ -823,10 +823,10 @@ importEntries.prototype = {
                       return reject(err)
                     })
                   })
-                  await publishPromiseResult
+                  return publishPromiseResult
                 }
               } else {
-                return
+                return {}
               }
             }, {
               concurrency: reqConcurrency,
