@@ -88,7 +88,11 @@ function importEntries() {
       }
     }
   }
+  this.mappedAssetUids = helper.readFile(mappedAssetUidPath)
+  this.mappedAssetUrls = helper.readFile(mappedAssetUrlPath)
 
+  this.mappedAssetUids = this.mappedAssetUids || {}
+  this.mappedAssetUrls = this.mappedAssetUrls || {}
   this.requestOptionTemplate = {
     // /v3/content_types/
     uri: config.host + config.apis.content_types,
@@ -123,14 +127,11 @@ importEntries.prototype = {
       // if mandatory reference fields are not filed in entries then avoids the error
       // Also remove field visibility rules
       return self.supressFields().then(async function () {
-        let mappedAssetUids = helper.readFile(mappedAssetUidPath) || {}
-        let mappedAssetUrls = helper.readFile(mappedAssetUrlPath) || {}
-
         let counter = 0
         return Promise.map(langs, async function () {
           let lang = langs[counter]
           if ((config.hasOwnProperty('onlylocales') && config.onlylocales.indexOf(lang) !== -1) || !config.hasOwnProperty('onlylocales')) {
-            await self.createEntries(lang, mappedAssetUids, mappedAssetUrls)
+            await self.createEntries(lang, self.mappedAssetUids, self.mappedAssetUrls)
             // .then(async function () {
             await self.getCreatedEntriesWOUid()
             // .then(async function () {
@@ -148,6 +149,7 @@ importEntries.prototype = {
         }, {
           concurrency: 1,
         }).then(async function () {
+          // Step 3: Revert all the changes done in content type in step 1
           await self.unSuppressFields()
           await self.removeBuggedEntries()
           let ct_field_visibility_uid = helper.readFile(path.join(ctPath + '/field_rules_uid.json'))
@@ -193,7 +195,6 @@ importEntries.prototype = {
         //     addlogs(config, lang + ' has not been configured for import, thus skipping it', 'success')
         //   }
         // }
-        // Step 3: Revert all the changes done in content type in step 1
       }).catch(function (error) {
         console.log('publishing failed', error)
         return reject(error)
