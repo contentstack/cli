@@ -70,6 +70,7 @@ function importEntries() {
   this.success = []
   // Entries that failed to get created OR updated
   this.fails = []
+  this.languages = helper.readFile(lPath)
 
   let files = fs.readdirSync(ctPath)
   this.environment = helper.readFile(environmentPath)
@@ -113,12 +114,11 @@ importEntries.prototype = {
     config = credentialConfig
     client = stack.Client(config)
     addlogs(config, 'Migrating entries', 'success')
-    let languages = helper.readFile(lPath)
-    return new Promise(function (resolve, reject) {
+    return new Promise(async function (resolve, reject) {
       let langs = [masterLanguage.code]
-      for (let i in languages) {
+      for (let i in self.languages) {
         if (i)  {
-          langs.push(languages[i].code)
+          langs.push(self.languages[i].code)
         }
       }
 
