@@ -203,6 +203,7 @@ importEntries.prototype = {
   },
 
   createEntries: function (lang, mappedAssetUids, mappedAssetUrls) {
+    console.log(`create entries in ${lang}`)
     let self = this
     return new Promise(function (resolve, reject) {
       let contentTypeUids = Object.keys(self.ctSchemas)
@@ -231,7 +232,7 @@ importEntries.prototype = {
         if (fs.existsSync(eFilePath)) {
           let entries = helper.readFile(eFilePath)
           if (!_.isPlainObject(entries) || _.isEmpty(entries)) {
-            addlogs(config, chalk.white('No entries were found for Content type:\'' + ctUid + '\' in \'' + lang +
+            //addlogs(config, chalk.white('No entries were found for Content type:\'' + ctUid + '\' in \'' + lang +
               '\' language!'), 'success')
             return resolve()
           }
@@ -620,6 +621,7 @@ importEntries.prototype = {
     })
   },
   supressFields: async function () {
+    addlogs(config, chalk.red('Suppressing fields...'), 'success')
     let self = this
     return new Promise(function (resolve, reject) {
       let modifiedSchemas = []
@@ -863,6 +865,7 @@ importEntries.prototype = {
     })
   },
   publish: function (langs) {
+    console.log('publishing started here....')
     let self = this
     let requestObject = {
       entry: {},
@@ -877,6 +880,7 @@ importEntries.prototype = {
         let lang = langs[counter]
         return Promise.map(contentTypeUids, function (ctUid) {
           let eFilePath = path.resolve(ePath, ctUid, lang + '.json')
+          console.log('881:', eFilePath)
           let entries = helper.readFile(eFilePath)
 
           let eUids = Object.keys(entries)
@@ -917,7 +921,7 @@ importEntries.prototype = {
                     client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry(entryUid).publish({publishDetails: requestObject.entry, locale: lang})
                     // eslint-disable-next-line max-nested-callbacks
                     .then(result => {
-                      addlogs(config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
+                      //addlogs(config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
                       return resolve(result)
                     // eslint-disable-next-line max-nested-callbacks
                     }).catch(function (err) {
