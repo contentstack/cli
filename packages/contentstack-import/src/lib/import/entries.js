@@ -126,50 +126,76 @@ importEntries.prototype = {
         let mappedAssetUids = helper.readFile(mappedAssetUidPath) || {}
         let mappedAssetUrls = helper.readFile(mappedAssetUrlPath) || {}
 
-        // Step 2: Iterate over available languages to create entries in each.
-        for (let index = 0; index < langs.length; index++) {
-          let lang = langs[index]
+        let counter = 0
+        return Promise.map(langs, async function () {
+          let lang = langs[counter]
           if ((config.hasOwnProperty('onlylocales') && config.onlylocales.indexOf(lang) !== -1) || !config.hasOwnProperty('onlylocales')) {
-            try {
-              // eslint-disable-next-line no-await-in-loop
-              await self.createEntries(lang, mappedAssetUids, mappedAssetUrls)
-              // eslint-disable-next-line no-await-in-loop
-              await self.getCreatedEntriesWOUid()
-              // eslint-disable-next-line no-await-in-loop
-              await self.repostEntries(lang)
-
-              addlogs(config, 'Successfully imported \'' + lang + '\' entries!', 'success')
-            } catch (error) {
-              addlogs(config, 'Failed to import entries for language \'' + lang + '\'', 'error')
-            }
+            await self.createEntries(lang, mappedAssetUids, mappedAssetUrls)
+            // .then(async function () {
+            await self.getCreatedEntriesWOUid()
+            // .then(async function () {
+            await self.repostEntries(lang)
+            // .then(function () {
+            addlogs(config, 'Successfully imported \'' + lang + '\' entries!', 'success')
+            counter++
+            // })
+            // })
+            // })
           } else {
             addlogs(config, lang + ' has not been configured for import, thus skipping it', 'success')
+            counter++
           }
-        }
-        // Step 3: Revert all the changes done in content type in step 1
-        await self.unSuppressFields()
-        await self.removeBuggedEntries()
-        let ct_field_visibility_uid = helper.readFile(path.join(ctPath + '/field_rules_uid.json'))
-        let ct_files = fs.readdirSync(ctPath)
-        if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
-          for (let index = 0; index < ct_field_visibility_uid.length; index++) {
-            if (ct_files.indexOf(ct_field_visibility_uid[index] + '.json') > -1) {
-              let schema = require(path.resolve(ctPath, ct_field_visibility_uid[index]))
-              await self.field_rules_update(schema)
+        }, {
+          concurrency: 1,
+        }).then(async function () {
+          await self.unSuppressFields()
+          await self.removeBuggedEntries()
+          let ct_field_visibility_uid = helper.readFile(path.join(ctPath + '/field_rules_uid.json'))
+          let ct_files = fs.readdirSync(ctPath)
+          if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
+            for (let index = 0; index < ct_field_visibility_uid.length; index++) {
+              if (ct_files.indexOf(ct_field_visibility_uid[index] + '.json') > -1) {
+                let schema = require(path.resolve(ctPath, ct_field_visibility_uid[index]))
+                await self.field_rules_update(schema)
+              }
             }
           }
-        }
-        addlogs(config, chalk.green('Entries have been imported successfully!'), 'success')
-        if (config.entriesPublish) {
-          return self.publish(langs).then(function () {
-            addlogs(config, chalk.green('All the entries have been published successfully'), 'success')
-            return resolve()
-          }).catch(errors => {
-            return reject(errors)
-          })
-        }
-        return resolve()
+          addlogs(config, chalk.green('Entries have been imported successfully!'), 'success')
+          if (config.entriesPublish) {
+            return self.publish(langs).then(function () {
+              addlogs(config, chalk.green('All the entries have been published successfully'), 'success')
+              return resolve()
+            }).catch(errors => {
+              console.log('publishing failed', errors)
+              return reject(errors)
+            })
+          }
+          return resolve()
+        })
+
+        // Step 2: Iterate over available languages to create entries in each.
+        // for (let index = 0; index < langs.length; index++) {
+        //   let lang = langs[index]
+        //   if ((config.hasOwnProperty('onlylocales') && config.onlylocales.indexOf(lang) !== -1) || !config.hasOwnProperty('onlylocales')) {
+        //     try {
+        //       // eslint-disable-next-line no-await-in-loop
+        //       await self.createEntries(lang, mappedAssetUids, mappedAssetUrls)
+        //       // eslint-disable-next-line no-await-in-loop
+        //       await self.getCreatedEntriesWOUid()
+        //       // eslint-disable-next-line no-await-in-loop
+        //       await self.repostEntries(lang)
+
+        //       addlogs(config, 'Successfully imported \'' + lang + '\' entries!', 'success')
+        //     } catch (error) {
+        //       addlogs(config, 'Failed to import entries for language \'' + lang + '\'', 'error')
+        //     }
+        //   } else {
+        //     addlogs(config, lang + ' has not been configured for import, thus skipping it', 'success')
+        //   }
+        // }
+        // Step 3: Revert all the changes done in content type in step 1
       }).catch(function (error) {
+        console.log('publishing failed', error)
         return reject(error)
       })
     })
@@ -177,7 +203,7 @@ importEntries.prototype = {
 
   createEntries: function (lang, mappedAssetUids, mappedAssetUrls) {
     let self = this
-    return new Promise(async function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       let contentTypeUids = Object.keys(self.ctSchemas)
       if (fs.existsSync(entryUidMapperPath)) {
         self.mappedUids = helper.readFile(entryUidMapperPath)
@@ -224,7 +250,7 @@ importEntries.prototype = {
           for (let i = 0; i < eUids.length; i += Math.round(entryBatchLimit / 3)) {
             batches.push(eUids.slice(i, i + Math.round(entryBatchLimit / 3)))
           }
-          return Promise.map(batches, async function (batch) {
+          return Promise.map(batches, function (batch) {
             return Promise.map(batch, async function (eUid) {
               // if entry is already created
               if (createdEntries.hasOwnProperty(eUid)) {
@@ -609,7 +635,7 @@ importEntries.prototype = {
   },
   unSuppressFields: function () {
     let self = this
-    return new Promise( function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       let modifiedSchemas = helper.readFile(modifiedSchemaPath)
       let modifiedSchemasUids = []
       let updatedExtensionUidsSchemas = []
@@ -769,7 +795,7 @@ importEntries.prototype = {
     let contentTypeUids = Object.keys(self.ctSchemas)
     let entryMapper = helper.readFile(entryUidMapperPath)
 
-    return new Promise(async function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       let counter = 0
       return Promise.map(langs, function () {
         let lang = langs[counter]
@@ -823,7 +849,7 @@ importEntries.prototype = {
                       return reject(err)
                     })
                   })
-                  return publishPromiseResult
+                  await publishPromiseResult
                 }
               } else {
                 return {}
@@ -852,7 +878,7 @@ importEntries.prototype = {
       }).then(function () {
         return resolve()
       }).catch(error => {
-        //console.log(error)
+        // console.log(error)
         return reject(error)
       })
     })
