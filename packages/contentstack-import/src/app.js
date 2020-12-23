@@ -68,7 +68,6 @@ let singleExport = (moduleName, types, config) => {
 }
 
 let allExport = async (config, types) => {
-  let counter = 0
   Bluebird.mapSeries(types, function (type) {
     console.timeLog('profiling')
     let exportedModule = require('./lib/import/' + type)
