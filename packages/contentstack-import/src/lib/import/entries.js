@@ -232,8 +232,7 @@ importEntries.prototype = {
         if (fs.existsSync(eFilePath)) {
           let entries = helper.readFile(eFilePath)
           if (!_.isPlainObject(entries) || _.isEmpty(entries)) {
-            //addlogs(config, chalk.white('No entries were found for Content type:\'' + ctUid + '\' in \'' + lang +
-              '\' language!'), 'success')
+            //addlogs(config, chalk.white('No entries were found for Content type:\'' + ctUid + '\' in \'' + lang + '\' language!'), 'success')
             return resolve()
           }
           for (let eUid in entries) {
