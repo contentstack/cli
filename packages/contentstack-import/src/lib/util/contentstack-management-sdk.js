@@ -9,8 +9,8 @@ exports.Client = function (config) {
     maxBodyLength: 1000000000,
     logHandler: (level, data) => { },
     retryDelayOptions: {
-      base: 300,
-    },
+      base: 3000,
+    }
   }
   const client = contentstacksdk.client(option)
   return client
