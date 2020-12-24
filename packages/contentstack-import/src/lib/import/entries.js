@@ -518,7 +518,7 @@ importEntries.prototype = {
     })
   },
   supressFields: async function () {
-    addlogs(config, chalk.white('Supressing content type fields...'), 'success')
+    addlogs(config, chalk.white('Suppressing content type fields...'), 'success')
     let self = this
     return new Promise(function (resolve, reject) {
       let modifiedSchemas = []
