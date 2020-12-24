@@ -518,6 +518,7 @@ importEntries.prototype = {
     })
   },
   supressFields: async function () {
+    addlogs(config, chalk.white('Supressing content type fields...'), 'success')
     let self = this
     return new Promise(function (resolve, reject) {
       let modifiedSchemas = []
@@ -770,9 +771,8 @@ importEntries.prototype = {
     let contentTypeUids = Object.keys(self.ctSchemas)
     let entryMapper = helper.readFile(entryUidMapperPath)
 
-    return new Promise(async function (resolve, reject) {
-      let counter = 0
-      return Promise.map(langs, function () {
+    return new Promise(function (resolve, reject) {
+      return Promise.map(langs, function (_lang, counter) {
         let lang = langs[counter]
         return Promise.map(contentTypeUids, function (ctUid) {
           let eFilePath = path.resolve(ePath, ctUid, lang + '.json')
@@ -786,7 +786,6 @@ importEntries.prototype = {
               batches.push(eUids.slice(i, i + entryBatchLimit))
             }
           } else {
-            counter++
             return
           }
 
@@ -846,7 +845,7 @@ importEntries.prototype = {
         }, {
           concurrency: 1,
         }).then(function () {
-          counter++
+          return 
         })
       }, {
         concurrency: 1,
