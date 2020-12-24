@@ -70,7 +70,6 @@ function importEntries() {
   this.success = []
   // Entries that failed to get created OR updated
   this.fails = []
-  this.languages = helper.readFile(lPath)
 
   let files = fs.readdirSync(ctPath)
   this.environment = helper.readFile(environmentPath)
@@ -89,11 +88,7 @@ function importEntries() {
       }
     }
   }
-  this.mappedAssetUids = helper.readFile(mappedAssetUidPath)
-  this.mappedAssetUrls = helper.readFile(mappedAssetUrlPath)
 
-  this.mappedAssetUids = this.mappedAssetUids || {}
-  this.mappedAssetUrls = this.mappedAssetUrls || {}
   this.requestOptionTemplate = {
     // /v3/content_types/
     uri: config.host + config.apis.content_types,
@@ -114,11 +109,12 @@ importEntries.prototype = {
     config = credentialConfig
     client = stack.Client(config)
     addlogs(config, 'Migrating entries', 'success')
-    return new Promise(async function (resolve, reject) {
+    let languages = helper.readFile(lPath)
+    return new Promise(function (resolve, reject) {
       let langs = [masterLanguage.code]
-      for (let i in self.languages) {
+      for (let i in languages) {
         if (i)  {
-          langs.push(self.languages[i].code)
+          langs.push(languages[i].code)
         }
       }
 
@@ -127,85 +123,61 @@ importEntries.prototype = {
       // if mandatory reference fields are not filed in entries then avoids the error
       // Also remove field visibility rules
       return self.supressFields().then(async function () {
-        let counter = 0
-        return Promise.map(langs, async function () {
-          let lang = langs[counter]
-          if ((config.hasOwnProperty('onlylocales') && config.onlylocales.indexOf(lang) !== -1) || !config.hasOwnProperty('onlylocales')) {
-            await self.createEntries(lang, self.mappedAssetUids, self.mappedAssetUrls)
-            // .then(async function () {
-            await self.getCreatedEntriesWOUid()
-            // .then(async function () {
-            await self.repostEntries(lang)
-            // .then(function () {
-            addlogs(config, 'Successfully imported \'' + lang + '\' entries!', 'success')
-            counter++
-            // })
-            // })
-            // })
-          } else {
-            addlogs(config, lang + ' has not been configured for import, thus skipping it', 'success')
-            counter++
-          }
-        }, {
-          concurrency: 1,
-        }).then(async function () {
-          // Step 3: Revert all the changes done in content type in step 1
-          await self.unSuppressFields()
-          await self.removeBuggedEntries()
-          let ct_field_visibility_uid = helper.readFile(path.join(ctPath + '/field_rules_uid.json'))
-          let ct_files = fs.readdirSync(ctPath)
-          if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
-            for (let index = 0; index < ct_field_visibility_uid.length; index++) {
-              if (ct_files.indexOf(ct_field_visibility_uid[index] + '.json') > -1) {
-                let schema = require(path.resolve(ctPath, ct_field_visibility_uid[index]))
-                await self.field_rules_update(schema)
-              }
-            }
-          }
-          addlogs(config, chalk.green('Entries have been imported successfully!'), 'success')
-          if (config.entriesPublish) {
-            return self.publish(langs).then(function () {
-              addlogs(config, chalk.green('All the entries have been published successfully'), 'success')
-              return resolve()
-            }).catch(errors => {
-              console.log('publishing failed', errors)
-              return reject(errors)
-            })
-          }
-          return resolve()
-        })
+        let mappedAssetUids = helper.readFile(mappedAssetUidPath) || {}
+        let mappedAssetUrls = helper.readFile(mappedAssetUrlPath) || {}
 
         // Step 2: Iterate over available languages to create entries in each.
-        // for (let index = 0; index < langs.length; index++) {
-        //   let lang = langs[index]
-        //   if ((config.hasOwnProperty('onlylocales') && config.onlylocales.indexOf(lang) !== -1) || !config.hasOwnProperty('onlylocales')) {
-        //     try {
-        //       // eslint-disable-next-line no-await-in-loop
-        //       await self.createEntries(lang, mappedAssetUids, mappedAssetUrls)
-        //       // eslint-disable-next-line no-await-in-loop
-        //       await self.getCreatedEntriesWOUid()
-        //       // eslint-disable-next-line no-await-in-loop
-        //       await self.repostEntries(lang)
+        for (let index = 0; index < langs.length; index++) {
+          let lang = langs[index]
+          if ((config.hasOwnProperty('onlylocales') && config.onlylocales.indexOf(lang) !== -1) || !config.hasOwnProperty('onlylocales')) {
+            try {
+              // eslint-disable-next-line no-await-in-loop
+              await self.createEntries(lang, mappedAssetUids, mappedAssetUrls)
+              // eslint-disable-next-line no-await-in-loop
+              await self.getCreatedEntriesWOUid()
+              // eslint-disable-next-line no-await-in-loop
+              await self.repostEntries(lang)
 
-        //       addlogs(config, 'Successfully imported \'' + lang + '\' entries!', 'success')
-        //     } catch (error) {
-        //       addlogs(config, 'Failed to import entries for language \'' + lang + '\'', 'error')
-        //     }
-        //   } else {
-        //     addlogs(config, lang + ' has not been configured for import, thus skipping it', 'success')
-        //   }
-        // }
+              addlogs(config, 'Successfully imported \'' + lang + '\' entries!', 'success')
+            } catch (error) {
+              addlogs(config, 'Failed to import entries for language \'' + lang + '\'', 'error')
+            }
+          } else {
+            addlogs(config, lang + ' has not been configured for import, thus skipping it', 'success')
+          }
+        }
+        // Step 3: Revert all the changes done in content type in step 1
+        await self.unSuppressFields()
+        await self.removeBuggedEntries()
+        let ct_field_visibility_uid = helper.readFile(path.join(ctPath + '/field_rules_uid.json'))
+        let ct_files = fs.readdirSync(ctPath)
+        if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
+          for (let index = 0; index < ct_field_visibility_uid.length; index++) {
+            if (ct_files.indexOf(ct_field_visibility_uid[index] + '.json') > -1) {
+              let schema = require(path.resolve(ctPath, ct_field_visibility_uid[index]))
+              await self.field_rules_update(schema)
+            }
+          }
+        }
+        addlogs(config, chalk.green('Entries have been imported successfully!'), 'success')
+        if (config.entriesPublish) {
+          return self.publish(langs).then(function () {
+            addlogs(config, chalk.green('All the entries have been published successfully'), 'success')
+            return resolve()
+          }).catch(errors => {
+            return reject(errors)
+          })
+        }
+        return resolve()
       }).catch(function (error) {
-        console.log('publishing failed', error)
         return reject(error)
       })
     })
   },
 
   createEntries: function (lang, mappedAssetUids, mappedAssetUrls) {
-    console.log(`create entries in ${lang}`)
     let self = this
-    return new Promise(function (resolve, reject) {
+    return new Promise(async function (resolve, reject) {
       let contentTypeUids = Object.keys(self.ctSchemas)
       if (fs.existsSync(entryUidMapperPath)) {
         self.mappedUids = helper.readFile(entryUidMapperPath)
@@ -232,8 +204,9 @@ importEntries.prototype = {
         if (fs.existsSync(eFilePath)) {
           let entries = helper.readFile(eFilePath)
           if (!_.isPlainObject(entries) || _.isEmpty(entries)) {
-            //addlogs(config, chalk.white('No entries were found for Content type:\'' + ctUid + '\' in \'' + lang + '\' language!'), 'success')
-            return resolve()
+            addlogs(config, chalk.white('No entries were found for Content type:\'' + ctUid + '\' in \'' + lang +
+              '\' language!'), 'success')
+            return 
           }
           for (let eUid in entries) {
             if (eUid) {
@@ -251,7 +224,7 @@ importEntries.prototype = {
           for (let i = 0; i < eUids.length; i += Math.round(entryBatchLimit / 3)) {
             batches.push(eUids.slice(i, i + Math.round(entryBatchLimit / 3)))
           }
-          return Promise.map(batches, function (batch) {
+          return Promise.map(batches, async function (batch) {
             return Promise.map(batch, async function (eUid) {
               // if entry is already created
               if (createdEntries.hasOwnProperty(eUid)) {
@@ -285,10 +258,40 @@ importEntries.prototype = {
               if (self.mappedUids.hasOwnProperty(eUid)) {
                 let entryToUpdate = stack.contentType(ctUid).entry(eUid)
                 Object.assign(entryToUpdate, _.cloneDeep(entries[eUid]))
-                return entryToUpdate.update({ locale: entryToUpdate.locale }).then(async result => {
-                  return
-                }).catch(function (err) {
+                try {
+                  return await entryToUpdate.update({locale: entryToUpdate.locale})
+                } catch (err) {
                   let error = JSON.parse(err.message)
+                  addlogs(config, chalk.red('Error creating entry', JSON.stringify(error)), 'error')
+                  self.fails.push({
+                    content_type: ctUid,
+                    locale: lang,
+                    entry: entries[eUid],
+                    error: error,
+                  })
+                  return err
+                }
+              } else {
+                try {
+                  let entryResponse = await stack.contentType(ctUid).entry().create(requestObject.json)
+                  self.success[ctUid] = self.success[ctUid] || []
+                  self.success[ctUid].push(entries[eUid])
+                  if (!self.mappedUids.hasOwnProperty(eUid)) {
+                    self.mappedUids[eUid] = entryResponse.uid
+                    createdEntries = entryResponse
+                    // if its a non-master language, i.e. the entry isn't present in the master language
+                    if (lang !== masterLanguage) {
+                      self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
+                      if (self.uniqueUids[eUid].locales) {
+                        self.uniqueUids[eUid].locales.push(lang)
+                      } else {
+                        self.uniqueUids[eUid].locales = [lang]
+                      }
+                      self.uniqueUids[eUid].content_type = ctUid
+                    }
+                  }
+                  return
+                } catch (error) {
                   if (error.hasOwnProperty('error_code') && error.error_code === 119) {
                     if (error.errors.title) {
                       addlogs(config, 'Entry ' + eUid + ' already exist, skip to avoid creating a duplicate entry', 'error')
@@ -299,10 +302,10 @@ importEntries.prototype = {
                       content_type: ctUid,
                       locale: lang,
                       entry: entries[eUid],
-                      error: error
+                      error: error,
                     })
                     helper.writeFile(createdEntriesWOUidPath, self.createdEntriesWOUid)
-                    return;
+                    return
                   }
                   // TODO: if status code: 422, check the reason
                   // 429 for rate limit
@@ -311,114 +314,9 @@ importEntries.prototype = {
                     content_type: ctUid,
                     locale: lang,
                     entry: entries[eUid],
-                    error: error
+                    error: error,
                   })
-                })
-                // try {
-                //   return await entryToUpdate.update({locale: entryToUpdate.locale})
-                // } catch (err) {
-                //   let error = JSON.parse(err.message)
-                //   addlogs(config, chalk.red('Error creating entry', JSON.stringify(error)), 'error')
-                //   self.fails.push({
-                //     content_type: ctUid,
-                //     locale: lang,
-                //     entry: entries[eUid],
-                //     error: error,
-                //   })
-                //   return err
-                // }
-              } else {
-                return client.stack({ api_key: config.target_stack, management_token: config.management_token }).contentType(ctUid).entry().create(requestObject.json)
-                  .then(async entryResponse => {
-                    self.success[ctUid] = self.success[ctUid] || []
-                    self.success[ctUid].push(entries[eUid])
-                    if (!self.mappedUids.hasOwnProperty(eUid)) {
-                      self.mappedUids[eUid] = entryResponse.uid
-                      createdEntries = entryResponse
-                      // if its a non-master language, i.e. the entry isn't present in the master language
-                      if (lang !== masterLanguage) {
-                        self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
-                        if (self.uniqueUids[eUid].locales) {
-                          self.uniqueUids[eUid].locales.push(lang)
-                        } else {
-                          self.uniqueUids[eUid].locales = [lang]
-                        }
-                        self.uniqueUids[eUid].content_type = ctUid
-                      }
-                    }
-                    return;
-                  }).catch(function (error) {
-                    // let error = JSON.parse(err.message)
-                    if (error.hasOwnProperty('error_code') && error.error_code === 119) {
-                      if (error.errors.title) {
-                        addlogs(config, 'Entry ' + eUid + ' already exist, skip to avoid creating a duplicate entry', 'error')
-                      } else {
-                        addlogs(config, chalk.red('Error creating entry due to: ' + JSON.stringify(error)), 'error')
-                      }
-                      self.createdEntriesWOUid.push({
-                        content_type: ctUid,
-                        locale: lang,
-                        entry: entries[eUid],
-                        error: error
-                      })
-                      helper.writeFile(createdEntriesWOUidPath, self.createdEntriesWOUid)
-                      return;
-                    }
-                    // TODO: if status code: 422, check the reason
-                    // 429 for rate limit
-                    addlogs(config, chalk.red('Error creating entry', JSON.stringify(error)), 'error')
-                    self.fails.push({
-                      content_type: ctUid,
-                      locale: lang,
-                      entry: entries[eUid],
-                      error: error
-                    })
-                  })
-                // try {
-                //   let entryResponse = await stack.contentType(ctUid).entry().create(requestObject.json)
-                //   self.success[ctUid] = self.success[ctUid] || []
-                //   self.success[ctUid].push(entries[eUid])
-                //   if (!self.mappedUids.hasOwnProperty(eUid)) {
-                //     self.mappedUids[eUid] = entryResponse.uid
-                //     createdEntries = entryResponse
-                //     // if its a non-master language, i.e. the entry isn't present in the master language
-                //     if (lang !== masterLanguage) {
-                //       self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
-                //       if (self.uniqueUids[eUid].locales) {
-                //         self.uniqueUids[eUid].locales.push(lang)
-                //       } else {
-                //         self.uniqueUids[eUid].locales = [lang]
-                //       }
-                //       self.uniqueUids[eUid].content_type = ctUid
-                //     }
-                //   }
-                //   return
-                // } catch (error) {
-                //   if (error.hasOwnProperty('error_code') && error.error_code === 119) {
-                //     if (error.errors.title) {
-                //       addlogs(config, 'Entry ' + eUid + ' already exist, skip to avoid creating a duplicate entry', 'error')
-                //     } else {
-                //       addlogs(config, chalk.red('Error creating entry due to: ' + JSON.stringify(error)), 'error')
-                //     }
-                //     self.createdEntriesWOUid.push({
-                //       content_type: ctUid,
-                //       locale: lang,
-                //       entry: entries[eUid],
-                //       error: error,
-                //     })
-                //     helper.writeFile(createdEntriesWOUidPath, self.createdEntriesWOUid)
-                //     return
-                //   }
-                //   // TODO: if status code: 422, check the reason
-                //   // 429 for rate limit
-                //   addlogs(config, chalk.red('Error creating entry', JSON.stringify(error)), 'error')
-                //   self.fails.push({
-                //     content_type: ctUid,
-                //     locale: lang,
-                //     entry: entries[eUid],
-                //     error: error,
-                //   })
-                // }
+                }
               }
               // create/update 5 entries at a time
             }, {
@@ -620,7 +518,6 @@ importEntries.prototype = {
     })
   },
   supressFields: async function () {
-    addlogs(config, chalk.red('Suppressing fields...'), 'success')
     let self = this
     return new Promise(function (resolve, reject) {
       let modifiedSchemas = []
@@ -712,7 +609,7 @@ importEntries.prototype = {
   },
   unSuppressFields: function () {
     let self = this
-    return new Promise(function (resolve, reject) {
+    return new Promise( function (resolve, reject) {
       let modifiedSchemas = helper.readFile(modifiedSchemaPath)
       let modifiedSchemasUids = []
       let updatedExtensionUidsSchemas = []
@@ -864,7 +761,6 @@ importEntries.prototype = {
     })
   },
   publish: function (langs) {
-    console.log('publishing started here....')
     let self = this
     let requestObject = {
       entry: {},
@@ -873,13 +769,12 @@ importEntries.prototype = {
     let contentTypeUids = Object.keys(self.ctSchemas)
     let entryMapper = helper.readFile(entryUidMapperPath)
 
-    return new Promise(function (resolve, reject) {
+    return new Promise(async function (resolve, reject) {
       let counter = 0
       return Promise.map(langs, function () {
         let lang = langs[counter]
         return Promise.map(contentTypeUids, function (ctUid) {
           let eFilePath = path.resolve(ePath, ctUid, lang + '.json')
-          console.log('881:', eFilePath)
           let entries = helper.readFile(eFilePath)
 
           let eUids = Object.keys(entries)
@@ -920,7 +815,7 @@ importEntries.prototype = {
                     client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry(entryUid).publish({publishDetails: requestObject.entry, locale: lang})
                     // eslint-disable-next-line max-nested-callbacks
                     .then(result => {
-                      //addlogs(config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
+                      addlogs(config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
                       return resolve(result)
                     // eslint-disable-next-line max-nested-callbacks
                     }).catch(function (err) {
@@ -928,7 +823,7 @@ importEntries.prototype = {
                       return reject(err)
                     })
                   })
-                  await publishPromiseResult
+                  return publishPromiseResult
                 }
               } else {
                 return {}
@@ -957,7 +852,7 @@ importEntries.prototype = {
       }).then(function () {
         return resolve()
       }).catch(error => {
-        // console.log(error)
+        //console.log(error)
         return reject(error)
       })
     })
