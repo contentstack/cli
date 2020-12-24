@@ -10,7 +10,7 @@ exports.Client = function (config) {
     logHandler: (level, data) => { },
     retryDelayOptions: {
       base: 3000,
-    }
+    },
   }
   const client = contentstacksdk.client(option)
   return client
