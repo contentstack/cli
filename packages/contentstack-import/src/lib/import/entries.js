@@ -644,6 +644,7 @@ importEntries.prototype = {
             return reject(error)
           })
         })
+        await promise
       }, {
         concurrency: reqConcurrency,
       }).then(function () {
