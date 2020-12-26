@@ -9,6 +9,7 @@
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "async": "^3.2.0",
+    "bluebird": "^3.7.2",
     "child_process": "^1.0.2",
     "cli-progress": "^3.8.2",
     "configstore": "^5.0.1",

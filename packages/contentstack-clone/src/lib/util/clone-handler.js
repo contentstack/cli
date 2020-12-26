@@ -5,6 +5,7 @@ const _ = require('lodash')
 const fs = require('fs')
 const async = require("async");
 const ora = require("ora")
+const Promise = require('bluebird')
 let client = {}
 let config
 
@@ -62,7 +63,7 @@ class CloneHandler {
   }
 
   async organizationSelection(params) {
-    const spinner = ora('Loading Organisation').start()
+    const spinner = ora('Fetching Organisation').start()
     let fetchresult = client.organization().fetchAll({ limit: 100 })
     fetchresult
       .then(responses => {
@@ -84,7 +85,7 @@ class CloneHandler {
             if (params !== undefined && params === "newStack") {
               this.createNewStack(orgUid)
             } else {
-              const spinner = ora('Loading stack List').start()
+              const spinner = ora('Fetching stack List').start()
               let stackList = client.stack().query({ organization_uid: orgUid }).find()
               stackList
                 .then(stacklist => {
@@ -255,7 +256,7 @@ class CloneHandler {
           return;
         }
         console.log(`stdout: ${stdout}`)
-        spinner.succeed("Exported All the data")
+        spinner.succeed("Exported all modules")
         inquirer
           .prompt(stackCreationConfirmation)
           .then(seletedValue => {
@@ -271,6 +272,45 @@ class CloneHandler {
     }
 
   }
+
+  async testing() {
+    let arr = [1, 2, 3 ,4, 5, 6, 7, 8, 9]
+    // arr.forEach(async value => {
+    //   await this.test2(value)
+    // })
+    console.log('Start')
+    for (let i=0; i < arr.length; i++) {
+      var numFruit = await this.getNumFruit(arr[i])
+      console.log(numFruit)
+    }
+    console.log('End')
+
+    // Promise.map(arr, async value => {
+    //    await this.getNumFruit(value)
+    // },{
+    //   concurrency: 1
+    // }).then(function() {
+    //   console.log("Lst me yee print hona chayee");
+    // }).catch(reject)
+  }
+
+  getNumFruit = fruit => {
+    // return new Promise(resolve => setTimeout(resolve, 3000))
+    return this.setTime().then(v => "fruit")
+  }
+
+  async test2(data) {
+     await this.setTime()
+     .then(result => {
+       console.log("Last part");
+     })
+  }
+
+  async setTime() {
+      return new Promise(resolve => setTimeout(resolve, 3000))
+    
+  }
+
 }
 
 module.exports = {
