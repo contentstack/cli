@@ -5,10 +5,11 @@
 	"author": "Contentstack",
 	"bugs": "https://github.com/contentstack/cli/issues",
 	"dependencies": {
+		"@contentstack/cli-command": "0.1.1-beta.1",
 		"@contentstack/management": "1.0.0",
 		"@oclif/command": "^1.6.1",
 		"@oclif/config": "^1.15.1",
-		"@contentstack/cli-command": "0.1.1-beta.1",
+		"async": "^3.2.0",
 		"axios": "^0.19.2",
 		"bluebird": "^3.7.2",
 		"cli-ux": "^5.4.6",
