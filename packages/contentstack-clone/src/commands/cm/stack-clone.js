@@ -22,6 +22,8 @@ class StackCloneCommand extends Command {
     config.host = host
     const cloneHandler = new CloneHandler(config)
     cloneHandler.organizationSelection("export")  
+    // cloneHandler.testing("export")  
+
   }
 }
 
