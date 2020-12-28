@@ -389,7 +389,7 @@ importEntries.prototype = {
         if (!fs.existsSync(eSuccessFilePath)) {
           addlogs(config, 'Success file was not found at: ' + eSuccessFilePath, 'success')
           return
-          //return resolve()
+          // return resolve()
         }
 
         let entries = helper.readFile(eSuccessFilePath)
@@ -397,7 +397,7 @@ importEntries.prototype = {
         if (entries.length === 0) {
           addlogs(config, 'No entries were created to be updated in \'' + lang + '\' language!', 'success')
           return
-          //return resolve()
+          // return resolve()
         }
 
         // Keep track of entries that have their references updated
@@ -558,15 +558,16 @@ importEntries.prototype = {
       helper.writeFile(modifiedSchemaPath, modifiedSchemas)
 
       return Promise.map(suppressedSchemas, async function (schema) {
-        try {
-          // eslint-disable-next-line camelcase
-          let contentTypeResponse = client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(schema.uid)
-          Object.assign(contentTypeResponse, _.cloneDeep(schema))
-          return await contentTypeResponse.update()
-        } catch (error) {
+        let contentTypeResponse = client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(schema.uid)
+        Object.assign(contentTypeResponse, _.cloneDeep(schema))
+        return contentTypeResponse.update()
+        .then(UpdatedcontentType => {
+          return
+        }).catch(function (error) {
           addlogs(config, chalk.red('Failed to modify mandatory field of \'' + schema.uid + '\' content type'), 'error')
-          return error
-        }
+          return
+        })
+        // update 5 content types at a time
       }, {
         // update reqConcurrency content types at a time
         concurrency: reqConcurrency,
@@ -606,7 +607,7 @@ importEntries.prototype = {
         addlogs(config, 'Completed mapping entry wo uid: ' + query.entry.uid + ': ' + response.body.entries[0].uid, 'success')
         return resolve()
       }).catch(function (error) {
-        return reject(error)
+        return resolve()
       })
     })
   },
@@ -636,15 +637,15 @@ importEntries.prototype = {
             .then(UpdatedcontentType => {
               modifiedSchemasUids.push(schema.uid)
               addlogs(config, (chalk.white('Content type: \'' + schema.uid + '\' has been restored to its previous glory!')))
-              return UpdatedcontentType
+              return resolve()
             }).catch(function (error) {
               addlogs(config, chalk.red('Failed to re-update ' + schema.uid), 'error')
               addlogs(config, error, 'error')
-              return error
+              return reject(error)
             })
           }).catch(function (error) {
             addlogs(config, error, 'error')
-            return error
+            return reject(error)
           })
         })
         await promise
