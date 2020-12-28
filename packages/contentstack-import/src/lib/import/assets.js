@@ -109,15 +109,22 @@ importAssets.prototype = {
                 }
               }
 
-              return self.uploadAsset(assetPath, self.assets[assetUid], uidContainer, urlContainer).then(function () {
+              return self.uploadAsset(assetPath, self.assets[assetUid], uidContainer, urlContainer).then(async function () {
                 self.uidMapping[assetUid] = uidContainer[assetUid]
                 self.urlMapping[self.assets[assetUid].url] = urlContainer[self.assets[assetUid].url]
 
                 if (config.entriesPublish && self.assets[assetUid].publish_details.length > 0) {
                   let assetsUid = uidContainer[assetUid]
-                  return self.publish(assetsUid, self.assets[assetUid]).catch(error => {
-                    console.log(error)
-                  })
+                  try {
+                    return await self.publish(assetsUid, self.assets[assetUid])
+                  } catch (error) {
+                    return error
+                  }
+                  // return self.publish(assetsUid, self.assets[assetUid]).then(function () {
+                  //   return
+                  // }).catch(error => {
+                  //   return error
+                  // })
                 }
                 // assetUid has been successfully uploaded
                 // log them onto /mapper/assets/success.json
@@ -130,7 +137,7 @@ importAssets.prototype = {
             }
             addlogs(config, (currentAssetFolderPath + ' does not exist!'), 'error')
           }, {
-            concurrency: assetBatchLimit,
+            concurrency: 1,
           }).then(function () {
             helper.writeFile(self.uidMapperPath, self.uidMapping)
             helper.writeFile(self.urlMapperPath, self.urlMapping)
@@ -244,6 +251,7 @@ importAssets.prototype = {
         urlContainer[metadata.url] = response.url
         return resolve()
       }).catch(function (error) {
+        return reject(error)
       })
     })
   },
