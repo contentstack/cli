@@ -187,6 +187,7 @@ importEntries.prototype = {
               addlogs(config, chalk.green('All the entries have been published successfully'), 'success')
               return resolve()
             }).catch(errors => {
+              addlogs(config, chalk.error('Some entries might have failed to publish.'), 'error')
               return reject(errors)
             })
           }
@@ -364,9 +365,9 @@ importEntries.prototype = {
               self.fails[ctUid] = []
             })
           }
-        }
-        addlogs(config, chalk.red('Unable to find entry file path for ' + ctUid + ' content type!\nThe file \'' +
+          addlogs(config, chalk.red('Unable to find entry file path for ' + ctUid + ' content type!\nThe file \'' +
             eFilePath + '\' does not exist!'), 'error')
+        }
       }, {
         concurrency: reqConcurrency,
       }).then(function () {
@@ -859,18 +860,23 @@ importEntries.prototype = {
             }).catch(function (error) {
               // error while executing entry in batch
               addlogs(config, error, 'error')
-              throw error
+              return error
+              //throw error
             })
-            //  const result = await Promise.all(promises)
           }, {
             concurrency: 1,
           }).then(function () {
             addlogs(config, 'Entries published successfully in ' + ctUid + ' content type', 'success')
+          }).catch(function (error) {
+            addlogs(config, 'Failed some of the Entry publishing in ' + ctUid + ' content type, go through logs for details.', 'error')
+            return error
           })
         }, {
           concurrency: 1,
         }).then(function () {
 
+        }).catch(function (error) {
+          return error
         })
       }, {
         concurrency: 1,
