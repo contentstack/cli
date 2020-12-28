@@ -272,8 +272,8 @@ importEntries.prototype = {
                   return err
                 }
               } else {
-                try {
-                  let entryResponse = await stack.contentType(ctUid).entry().create(requestObject.json)
+                return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry().create(requestObject.json)
+                .then(async entryResponse => {
                   self.success[ctUid] = self.success[ctUid] || []
                   self.success[ctUid].push(entries[eUid])
                   if (!self.mappedUids.hasOwnProperty(eUid)) {
@@ -290,8 +290,8 @@ importEntries.prototype = {
                       self.uniqueUids[eUid].content_type = ctUid
                     }
                   }
-                  return
-                } catch (error) {
+                }).catch(function (error) {
+                  // let error = JSON.parse(err.message)
                   if (error.hasOwnProperty('error_code') && error.error_code === 119) {
                     if (error.errors.title) {
                       addlogs(config, 'Entry ' + eUid + ' already exist, skip to avoid creating a duplicate entry', 'error')
@@ -316,7 +316,53 @@ importEntries.prototype = {
                     entry: entries[eUid],
                     error: error,
                   })
-                }
+                })
+                // try {
+                //   console.log('creating entry...', eUid)
+                //   let entryResponse = await stack.contentType(ctUid).entry().create(requestObject.json)
+                //   self.success[ctUid] = self.success[ctUid] || []
+                //   self.success[ctUid].push(entries[eUid])
+                //   if (!self.mappedUids.hasOwnProperty(eUid)) {
+                //     self.mappedUids[eUid] = entryResponse.uid
+                //     createdEntries = entryResponse
+                //     // if its a non-master language, i.e. the entry isn't present in the master language
+                //     if (lang !== masterLanguage) {
+                //       self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
+                //       if (self.uniqueUids[eUid].locales) {
+                //         self.uniqueUids[eUid].locales.push(lang)
+                //       } else {
+                //         self.uniqueUids[eUid].locales = [lang]
+                //       }
+                //       self.uniqueUids[eUid].content_type = ctUid
+                //     }
+                //   }
+                //   return
+                // } catch (error) {
+                //   if (error.hasOwnProperty('error_code') && error.error_code === 119) {
+                //     if (error.errors.title) {
+                //       addlogs(config, 'Entry ' + eUid + ' already exist, skip to avoid creating a duplicate entry', 'error')
+                //     } else {
+                //       addlogs(config, chalk.red('Error creating entry due to: ' + JSON.stringify(error)), 'error')
+                //     }
+                //     self.createdEntriesWOUid.push({
+                //       content_type: ctUid,
+                //       locale: lang,
+                //       entry: entries[eUid],
+                //       error: error,
+                //     })
+                //     helper.writeFile(createdEntriesWOUidPath, self.createdEntriesWOUid)
+                //     return
+                //   }
+                //   // TODO: if status code: 422, check the reason
+                //   // 429 for rate limit
+                //   addlogs(config, chalk.red('Error creating entry', JSON.stringify(error)), 'error')
+                //   self.fails.push({
+                //     content_type: ctUid,
+                //     locale: lang,
+                //     entry: entries[eUid],
+                //     error: error,
+                //   })
+                // }
               }
               // create/update 5 entries at a time
             }, {
@@ -562,10 +608,9 @@ importEntries.prototype = {
         Object.assign(contentTypeResponse, _.cloneDeep(schema))
         return contentTypeResponse.update()
         .then(UpdatedcontentType => {
-          return
+
         }).catch(function (error) {
           addlogs(config, chalk.red('Failed to modify mandatory field of \'' + schema.uid + '\' content type'), 'error')
-          return
         })
         // update 5 content types at a time
       }, {
