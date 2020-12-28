@@ -206,187 +206,141 @@ importEntries.prototype = {
           if (!_.isPlainObject(entries) || _.isEmpty(entries)) {
             addlogs(config, chalk.white('No entries were found for Content type:\'' + ctUid + '\' in \'' + lang +
               '\' language!'), 'success')
-            return
-          }
-          for (let eUid in entries) {
-            if (eUid) {
-              // will replace all old asset uid/urls with new ones
-              entries[eUid] = lookupReplaceAssets({
-                content_type: self.ctSchemas[ctUid],
-                entry: entries[eUid],
-              }, mappedAssetUids, mappedAssetUrls, eLangFolderPath)
-            }
-          }
-          let eUids = Object.keys(entries)
-          let batches = []
-
-          // Run entry creation in batches of ~16~ entries
-          for (let i = 0; i < eUids.length; i += Math.round(entryBatchLimit / 3)) {
-            batches.push(eUids.slice(i, i + Math.round(entryBatchLimit / 3)))
-          }
-          return Promise.map(batches, async function (batch) {
-            return Promise.map(batch, async function (eUid) {
-              // if entry is already created
-              if (createdEntries.hasOwnProperty(eUid)) {
-                addlogs(config, ('Skipping ' + JSON.stringify({
-                  content_type: ctUid,
-                  locale: lang,
-                  oldEntryUid: eUid,
-                  newEntryUid: createdEntries[eUid],
-                }) + ' as it is already created'), 'success')
-                self.success[ctUid] = createdEntries[eUid]
-                // if its a non-master language, i.e. the entry isn't present in the master language
-                if (lang !== masterLanguage) {
-                  self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
-                  if (self.uniqueUids[eUid].locales) {
-                    self.uniqueUids[eUid].locales.push(lang)
-                  } else {
-                    self.uniqueUids[eUid].locales = [lang]
-                  }
-                  self.uniqueUids[eUid].content_type = ctUid
-                }
-                return
-              }
-              let requestObject = {
-                qs: {
-                  locale: lang,
-                },
-                json: {
+          } else {
+            for (let eUid in entries) {
+              if (eUid) {
+                // will replace all old asset uid/urls with new ones
+                entries[eUid] = lookupReplaceAssets({
+                  content_type: self.ctSchemas[ctUid],
                   entry: entries[eUid],
-                },
+                }, mappedAssetUids, mappedAssetUrls, eLangFolderPath)
               }
-              if (self.mappedUids.hasOwnProperty(eUid)) {
-                let entryToUpdate = stack.contentType(ctUid).entry(eUid)
-                Object.assign(entryToUpdate, _.cloneDeep(entries[eUid]))
-                try {
-                  return await entryToUpdate.update({locale: entryToUpdate.locale})
-                } catch (err) {
-                  let error = JSON.parse(err.message)
-                  addlogs(config, chalk.red('Error creating entry', JSON.stringify(error)), 'error')
-                  self.fails.push({
+            }
+            let eUids = Object.keys(entries)
+            let batches = []
+
+            // Run entry creation in batches of ~16~ entries
+            for (let i = 0; i < eUids.length; i += Math.round(entryBatchLimit / 3)) {
+              batches.push(eUids.slice(i, i + Math.round(entryBatchLimit / 3)))
+            }
+            return Promise.map(batches, async function (batch) {
+              return Promise.map(batch, async function (eUid) {
+                // if entry is already created
+                if (createdEntries.hasOwnProperty(eUid)) {
+                  addlogs(config, ('Skipping ' + JSON.stringify({
                     content_type: ctUid,
                     locale: lang,
-                    entry: entries[eUid],
-                    error: error,
-                  })
-                  return err
-                }
-              } else {
-                return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry().create(requestObject.json)
-                .then(async entryResponse => {
-                  self.success[ctUid] = self.success[ctUid] || []
-                  self.success[ctUid].push(entries[eUid])
-                  if (!self.mappedUids.hasOwnProperty(eUid)) {
-                    self.mappedUids[eUid] = entryResponse.uid
-                    createdEntries = entryResponse
-                    // if its a non-master language, i.e. the entry isn't present in the master language
-                    if (lang !== masterLanguage) {
-                      self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
-                      if (self.uniqueUids[eUid].locales) {
-                        self.uniqueUids[eUid].locales.push(lang)
-                      } else {
-                        self.uniqueUids[eUid].locales = [lang]
-                      }
-                      self.uniqueUids[eUid].content_type = ctUid
-                    }
-                  }
-                }).catch(function (error) {
-                  // let error = JSON.parse(err.message)
-                  if (error.hasOwnProperty('error_code') && error.error_code === 119) {
-                    if (error.errors.title) {
-                      addlogs(config, 'Entry ' + eUid + ' already exist, skip to avoid creating a duplicate entry', 'error')
+                    oldEntryUid: eUid,
+                    newEntryUid: createdEntries[eUid],
+                  }) + ' as it is already created'), 'success')
+                  self.success[ctUid] = createdEntries[eUid]
+                  // if its a non-master language, i.e. the entry isn't present in the master language
+                  if (lang !== masterLanguage) {
+                    self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
+                    if (self.uniqueUids[eUid].locales) {
+                      self.uniqueUids[eUid].locales.push(lang)
                     } else {
-                      addlogs(config, chalk.red('Error creating entry due to: ' + JSON.stringify(error)), 'error')
+                      self.uniqueUids[eUid].locales = [lang]
                     }
-                    self.createdEntriesWOUid.push({
+                    self.uniqueUids[eUid].content_type = ctUid
+                  }
+                  return
+                }
+                let requestObject = {
+                  qs: {
+                    locale: lang,
+                  },
+                  json: {
+                    entry: entries[eUid],
+                  },
+                }
+                if (self.mappedUids.hasOwnProperty(eUid)) {
+                  let entryToUpdate = stack.contentType(ctUid).entry(eUid)
+                  Object.assign(entryToUpdate, _.cloneDeep(entries[eUid]))
+                  try {
+                    return await entryToUpdate.update({locale: entryToUpdate.locale})
+                  } catch (err) {
+                    let error = JSON.parse(err.message)
+                    addlogs(config, chalk.red('Error creating entry', JSON.stringify(error)), 'error')
+                    self.fails.push({
                       content_type: ctUid,
                       locale: lang,
                       entry: entries[eUid],
                       error: error,
                     })
-                    helper.writeFile(createdEntriesWOUidPath, self.createdEntriesWOUid)
-                    return
+                    return err
                   }
-                  // TODO: if status code: 422, check the reason
-                  // 429 for rate limit
-                  addlogs(config, chalk.red('Error creating entry', JSON.stringify(error)), 'error')
-                  self.fails.push({
-                    content_type: ctUid,
-                    locale: lang,
-                    entry: entries[eUid],
-                    error: error,
+                } else {
+                  return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry().create(requestObject.json)
+                  .then(async entryResponse => {
+                    self.success[ctUid] = self.success[ctUid] || []
+                    self.success[ctUid].push(entries[eUid])
+                    if (!self.mappedUids.hasOwnProperty(eUid)) {
+                      self.mappedUids[eUid] = entryResponse.uid
+                      createdEntries = entryResponse
+                      // if its a non-master language, i.e. the entry isn't present in the master language
+                      if (lang !== masterLanguage) {
+                        self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
+                        if (self.uniqueUids[eUid].locales) {
+                          self.uniqueUids[eUid].locales.push(lang)
+                        } else {
+                          self.uniqueUids[eUid].locales = [lang]
+                        }
+                        self.uniqueUids[eUid].content_type = ctUid
+                      }
+                    }
+                  }).catch(function (error) {
+                    // let error = JSON.parse(err.message)
+                    if (error.hasOwnProperty('error_code') && error.error_code === 119) {
+                      if (error.errors.title) {
+                        addlogs(config, 'Entry ' + eUid + ' already exist, skip to avoid creating a duplicate entry', 'error')
+                      } else {
+                        addlogs(config, chalk.red('Error creating entry due to: ' + JSON.stringify(error)), 'error')
+                      }
+                      self.createdEntriesWOUid.push({
+                        content_type: ctUid,
+                        locale: lang,
+                        entry: entries[eUid],
+                        error: error,
+                      })
+                      helper.writeFile(createdEntriesWOUidPath, self.createdEntriesWOUid)
+                      return
+                    }
+                    // TODO: if status code: 422, check the reason
+                    // 429 for rate limit
+                    addlogs(config, chalk.red('Error creating entry', JSON.stringify(error)), 'error')
+                    self.fails.push({
+                      content_type: ctUid,
+                      locale: lang,
+                      entry: entries[eUid],
+                      error: error,
+                    })
                   })
-                })
-                // try {
-                //   console.log('creating entry...', eUid)
-                //   let entryResponse = await stack.contentType(ctUid).entry().create(requestObject.json)
-                //   self.success[ctUid] = self.success[ctUid] || []
-                //   self.success[ctUid].push(entries[eUid])
-                //   if (!self.mappedUids.hasOwnProperty(eUid)) {
-                //     self.mappedUids[eUid] = entryResponse.uid
-                //     createdEntries = entryResponse
-                //     // if its a non-master language, i.e. the entry isn't present in the master language
-                //     if (lang !== masterLanguage) {
-                //       self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
-                //       if (self.uniqueUids[eUid].locales) {
-                //         self.uniqueUids[eUid].locales.push(lang)
-                //       } else {
-                //         self.uniqueUids[eUid].locales = [lang]
-                //       }
-                //       self.uniqueUids[eUid].content_type = ctUid
-                //     }
-                //   }
-                //   return
-                // } catch (error) {
-                //   if (error.hasOwnProperty('error_code') && error.error_code === 119) {
-                //     if (error.errors.title) {
-                //       addlogs(config, 'Entry ' + eUid + ' already exist, skip to avoid creating a duplicate entry', 'error')
-                //     } else {
-                //       addlogs(config, chalk.red('Error creating entry due to: ' + JSON.stringify(error)), 'error')
-                //     }
-                //     self.createdEntriesWOUid.push({
-                //       content_type: ctUid,
-                //       locale: lang,
-                //       entry: entries[eUid],
-                //       error: error,
-                //     })
-                //     helper.writeFile(createdEntriesWOUidPath, self.createdEntriesWOUid)
-                //     return
-                //   }
-                //   // TODO: if status code: 422, check the reason
-                //   // 429 for rate limit
-                //   addlogs(config, chalk.red('Error creating entry', JSON.stringify(error)), 'error')
-                //   self.fails.push({
-                //     content_type: ctUid,
-                //     locale: lang,
-                //     entry: entries[eUid],
-                //     error: error,
-                //   })
-                // }
-              }
-              // create/update 5 entries at a time
+                }
+                // create/update 5 entries at a time
+              }, {
+                concurrency: 1,
+              }).then(function () {
+                helper.writeFile(successEntryLogPath, self.success[ctUid])
+                helper.writeFile(failedEntryLogPath, self.fails[ctUid])
+                helper.writeFile(entryUidMapperPath, self.mappedUids)
+                helper.writeFile(uniqueUidMapperPath, self.uniqueUids)
+                helper.writeFile(createdEntriesPath, createdEntries)
+              })
+              // process one batch at a time
             }, {
-              concurrency: reqConcurrency,
+              concurrency: 1,
             }).then(function () {
-              helper.writeFile(successEntryLogPath, self.success[ctUid])
-              helper.writeFile(failedEntryLogPath, self.fails[ctUid])
-              helper.writeFile(entryUidMapperPath, self.mappedUids)
-              helper.writeFile(uniqueUidMapperPath, self.uniqueUids)
-              helper.writeFile(createdEntriesPath, createdEntries)
+              if (self.success && self.success[ctUid] && self.success[ctUid].length > 0)
+                addlogs(config, self.success[ctUid].length + ' entries created successfully in ' + ctUid + ' content type in ' + lang +
+                ' locale!', 'success')
+              if (self.fails && self.fails[ctUid] && self.fails[ctUid].length > 0)
+                addlogs(config, self.fails[ctUid].length + ' entries failed to create in ' + ctUid + ' content type in ' + lang +
+                ' locale!', 'error')
+              self.success[ctUid] = []
+              self.fails[ctUid] = []
             })
-            // process one batch at a time
-          }, {
-            concurrency: reqConcurrency,
-          }).then(function () {
-            if (self.success && self.success[ctUid] && self.success[ctUid].length > 0)
-              addlogs(config, self.success[ctUid].length + ' entries created successfully in ' + ctUid + ' content type in ' + lang +
-              ' locale!', 'success')
-            if (self.fails && self.fails[ctUid] && self.fails[ctUid].length > 0)
-              addlogs(config, self.fails[ctUid].length + ' entries failed to create in ' + ctUid + ' content type in ' + lang +
-              ' locale!', 'error')
-            self.success[ctUid] = []
-            self.fails[ctUid] = []
-          })
+          }
         }
         addlogs(config, chalk.red('Unable to find entry file path for ' + ctUid + ' content type!\nThe file \'' +
             eFilePath + '\' does not exist!'), 'error')
@@ -500,7 +454,7 @@ importEntries.prototype = {
               let entryResponse = client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry(entry.uid)
               Object.assign(entryResponse, entry)
               delete entryResponse.publish_details
-              entryResponse.update()
+              return entryResponse.update()
               .then(response => {
                 for (let j = 0; j < entries.length; j++) {
                   if (entries[j].uid === response.uid) {
