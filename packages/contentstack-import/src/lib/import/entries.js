@@ -177,7 +177,7 @@ importEntries.prototype = {
 
   createEntries: function (lang, mappedAssetUids, mappedAssetUrls) {
     let self = this
-    return new Promise(async function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       let contentTypeUids = Object.keys(self.ctSchemas)
       if (fs.existsSync(entryUidMapperPath)) {
         self.mappedUids = helper.readFile(entryUidMapperPath)
@@ -206,7 +206,7 @@ importEntries.prototype = {
           if (!_.isPlainObject(entries) || _.isEmpty(entries)) {
             addlogs(config, chalk.white('No entries were found for Content type:\'' + ctUid + '\' in \'' + lang +
               '\' language!'), 'success')
-            return 
+            return
           }
           for (let eUid in entries) {
             if (eUid) {
@@ -388,14 +388,16 @@ importEntries.prototype = {
 
         if (!fs.existsSync(eSuccessFilePath)) {
           addlogs(config, 'Success file was not found at: ' + eSuccessFilePath, 'success')
-          return resolve()
+          return
+          //return resolve()
         }
 
         let entries = helper.readFile(eSuccessFilePath)
         entries = entries || []
         if (entries.length === 0) {
           addlogs(config, 'No entries were created to be updated in \'' + lang + '\' language!', 'success')
-          return resolve()
+          return
+          //return resolve()
         }
 
         // Keep track of entries that have their references updated
@@ -610,7 +612,7 @@ importEntries.prototype = {
   },
   unSuppressFields: function () {
     let self = this
-    return new Promise( function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       let modifiedSchemas = helper.readFile(modifiedSchemaPath)
       let modifiedSchemasUids = []
       let updatedExtensionUidsSchemas = []
@@ -633,8 +635,8 @@ importEntries.prototype = {
             contentTypeResponse.update()
             .then(UpdatedcontentType => {
               modifiedSchemasUids.push(schema.uid)
-              // addlogs(config, (chalk.white('Content type: \'' + schema.uid + '\' has been restored to its previous glory!'))
-              return resolve(UpdatedcontentType)
+              addlogs(config, (chalk.white('Content type: \'' + schema.uid + '\' has been restored to its previous glory!')))
+              return UpdatedcontentType
             }).catch(function (error) {
               addlogs(config, chalk.red('Failed to re-update ' + schema.uid), 'error')
               addlogs(config, error, 'error')
@@ -642,7 +644,7 @@ importEntries.prototype = {
             })
           }).catch(function (error) {
             addlogs(config, error, 'error')
-            return reject(error)
+            return error
           })
         })
         await promise
@@ -845,14 +847,14 @@ importEntries.prototype = {
         }, {
           concurrency: 1,
         }).then(function () {
-          return 
+
         })
       }, {
         concurrency: 1,
       }).then(function () {
         return resolve()
       }).catch(error => {
-        //console.log(error)
+        // console.log(error)
         return reject(error)
       })
     })
