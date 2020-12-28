@@ -3,7 +3,7 @@ const contentstacksdk = require('@contentstack/management')
 let delay = function (ms) {
   return new Promise(resolve => {
     setTimeout(() => {
-      console.log(`waited for ${ms} miliseconds`)
+      console.log(`waited for ${ms} milliseconds`)
       return resolve()
     }, ms)
   })
@@ -19,15 +19,15 @@ exports.Client = function (config) {
     logHandler: (level, data) => { },
     retryDelayOptions: {
       customBackoff: async function (retryCount, err) {
-        await delay(15000)
         console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>', err.message)
+        await delay(15000)
+        //console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>', err.message)
         if (retryCount < 5) {
           return 3000
         }
         return -1 // returning -1 will hold next retry for request
       },
     },
-
   }
   const client = contentstacksdk.client(option)
   return client
