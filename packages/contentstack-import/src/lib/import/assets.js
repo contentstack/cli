@@ -38,13 +38,6 @@ function importAssets() {
 }
 
 importAssets.prototype = {
-  delay: function (milliseconds) {
-    return new Promise(function (resolve, reject) {
-      setTimeout(function () {
-        return resolve()
-      }, milliseconds)
-    })
-  },
   start: function (credential) {
     addlogs(config, 'Migrating assets', 'success')
     let self = this
@@ -80,7 +73,6 @@ importAssets.prototype = {
 
       return self.importFolders().then(function () {
         return Promise.map(batches, async function (batch, index) {
-          //await self.delay(500)
           return Promise.map(batch, function (assetUid) {
             if (self.uidMapping.hasOwnProperty(assetUid)) {
               addlogs(config, 'Skipping upload of asset: ' + assetUid + '. Its mapped to: ' + self.uidMapping[
@@ -109,7 +101,7 @@ importAssets.prototype = {
                 }
               }
 
-              return self.uploadAsset(assetPath, self.assets[assetUid], uidContainer, urlContainer).then(async function () {
+              return self.uploadAsset(assetPath, self.assets[assetUid], uidContainer, urlContainer).then(async function () {  
                 self.uidMapping[assetUid] = uidContainer[assetUid]
                 self.urlMapping[self.assets[assetUid].url] = urlContainer[self.assets[assetUid].url]
 
@@ -120,11 +112,6 @@ importAssets.prototype = {
                   } catch (error) {
                     return error
                   }
-                  // return self.publish(assetsUid, self.assets[assetUid]).then(function () {
-                  //   return
-                  // }).catch(error => {
-                  //   return error
-                  // })
                 }
                 // assetUid has been successfully uploaded
                 // log them onto /mapper/assets/success.json
