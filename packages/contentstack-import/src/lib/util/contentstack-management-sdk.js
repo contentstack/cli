@@ -1,14 +1,5 @@
 const contentstacksdk = require('@contentstack/management')
 
-let delay = function (ms) {
-  return new Promise(function (resolve, reject) {
-    setTimeout(() => {
-      console.log(`waited for ${ms} milliseconds`)
-      return resolve()
-    }, ms)
-  })
-}
-
 exports.Client = function (config) {
   const option = {
     host: config.host,
@@ -17,25 +8,15 @@ exports.Client = function (config) {
     maxContentLength: 100000000,
     maxBodyLength: 1000000000,
     logHandler: (level, data) => { },
-    retryCondition: async error => {
-      await delay(15000)
-      console.log('retrying...............', error.response.status)
-      if (error.response && error.response.status === 429) {
+    retryCondition: error => {
+      // no async function should be used here
+      if (error.response && (error.response.status === 429 || error.response.status === 408)) {
         return true
       }
       return false
     },
     retryDelayOptions: {
-      base: 3000,
-      // customBackoff: async function (retryCount, err) {
-      // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>', err.message)
-      // await delay(15000)
-      // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>', err.message)
-      // if (retryCount < 5) {
-      // return 15000
-      // }
-      // return -1 // returning -1 will hold next retry for request
-      // },
+      base: 1000,
     },
   }
   const client = contentstacksdk.client(option)
