@@ -88,15 +88,6 @@ function importEntries() {
       }
     }
   }
-
-  this.requestOptionTemplate = {
-    // /v3/content_types/
-    uri: config.host + config.apis.content_types,
-    headers: config.headers,
-    json: {
-      entry: {},
-    },
-  }
 }
 
 importEntries.prototype = {
@@ -127,40 +118,16 @@ importEntries.prototype = {
         let mappedAssetUrls = helper.readFile(mappedAssetUrlPath) || {}
 
         // Step 2: Iterate over available languages to create entries in each.
-        // for (let index = 0; index < langs.length; index++) {
-        //   let lang = langs[index]
-        //   if ((config.hasOwnProperty('onlylocales') && config.onlylocales.indexOf(lang) !== -1) || !config.hasOwnProperty('onlylocales')) {
-        //     try {
-        //       // eslint-disable-next-line no-await-in-loop
-        //       await self.createEntries(lang, mappedAssetUids, mappedAssetUrls)
-        //       // eslint-disable-next-line no-await-in-loop
-        //       await self.getCreatedEntriesWOUid()
-        //       // eslint-disable-next-line no-await-in-loop
-        //       await self.repostEntries(lang)
-
-        //       addlogs(config, 'Successfully imported \'' + lang + '\' entries!', 'success')
-        //     } catch (error) {
-        //       addlogs(config, 'Failed to import entries for language \'' + lang + '\'', 'error')
-        //     }
-        //   } else {
-        //     addlogs(config, lang + ' has not been configured for import, thus skipping it', 'success')
-        //   }
-        // }
         let counter = 0
         return Promise.map(langs, async function () {
           let lang = langs[counter]
           if ((config.hasOwnProperty('onlylocales') && config.onlylocales.indexOf(lang) !== -1) || !config.hasOwnProperty('onlylocales')) {
             await self.createEntries(lang, mappedAssetUids, mappedAssetUrls)
-            // .then(async function () {
             await self.getCreatedEntriesWOUid()
-            // .then(async function () {
             await self.repostEntries(lang)
-            // .then(function () {
             addlogs(config, 'Successfully imported \'' + lang + '\' entries!', 'success')
             counter++
-            // })
-            // })
-            // })
+
           } else {
             addlogs(config, lang + ' has not been configured for import, thus skipping it', 'success')
             counter++
@@ -231,6 +198,7 @@ importEntries.prototype = {
             addlogs(config, chalk.white('No entries were found for Content type:\'' + ctUid + '\' in \'' + lang +
               '\' language!'), 'success')
           } else {
+            addlogs(config, `Creating entries for content type ${ctUid} in language ${lang} ...`, 'success')
             for (let eUid in entries) {
               if (eUid) {
                 // will replace all old asset uid/urls with new ones
@@ -295,6 +263,7 @@ importEntries.prototype = {
                     return err
                   }
                 } else {
+                  delete requestObject.json.entry.publish_details
                   return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry().create(requestObject.json)
                   .then(async entryResponse => {
                     self.success[ctUid] = self.success[ctUid] || []
@@ -314,7 +283,6 @@ importEntries.prototype = {
                       }
                     }
                   }).catch(function (error) {
-                    // let error = JSON.parse(err.message)
                     if (error.hasOwnProperty('error_code') && error.error_code === 119) {
                       if (error.errors.title) {
                         addlogs(config, 'Entry ' + eUid + ' already exist, skip to avoid creating a duplicate entry', 'error')
@@ -339,6 +307,7 @@ importEntries.prototype = {
                       entry: entries[eUid],
                       error: error,
                     })
+                    return
                   })
                 }
                 // create/update 5 entries at a time
@@ -365,7 +334,8 @@ importEntries.prototype = {
               self.fails[ctUid] = []
             })
           }
-          addlogs(config, chalk.red('Unable to find entry file path for ' + ctUid + ' content type!\nThe file \'' +
+        } else {
+          addlogs(config, chalk.white('Unable to find entry file path for ' + ctUid + ' content type!\nThe file \'' +
             eFilePath + '\' does not exist!'), 'error')
         }
       }, {
@@ -413,7 +383,6 @@ importEntries.prototype = {
         if (!fs.existsSync(eSuccessFilePath)) {
           addlogs(config, 'Success file was not found at: ' + eSuccessFilePath, 'success')
           return
-          // return resolve()
         }
 
         let entries = helper.readFile(eSuccessFilePath)
@@ -421,7 +390,6 @@ importEntries.prototype = {
         if (entries.length === 0) {
           addlogs(config, 'No entries were created to be updated in \'' + lang + '\' language!', 'success')
           return
-          // return resolve()
         }
 
         // Keep track of entries that have their references updated
@@ -513,7 +481,6 @@ importEntries.prototype = {
             helper.writeFile(path.join(eFolderPath, 'refsUpdateFailed.json'), refsUpdateFailed)
             addlogs(config, 'Completed re-post entries batch no: ' + (index + 1) + ' successfully!', 'success')
           }).catch(function (error) {
-            console.log('491: ', error)
             // error while executing entry in batch
             addlogs(config, chalk.red('Failed re-post entries at batch no: ' + (index + 1)), 'error')
             throw error
@@ -618,7 +585,6 @@ importEntries.prototype = {
       .then(function (response) {
         if (response.body.entries.length <= 0) {
           addlogs(config, 'Unable to map entry WO uid: ' + query.entry.uid, 'error')
-          // log.debug('Request:\n' + JSON.stringify(requestObject))
           self.failedWO.push(query)
           return resolve()
         }
@@ -707,17 +673,6 @@ importEntries.prototype = {
       }
 
       return Promise.map(bugged, function (entry) {
-        // let requestObject = {
-        //   uri: self.requestOptionTemplate.uri + entry.content_type + config.apis.entries + self.mappedUids[
-        //   entry.uid],
-        //   method: 'DELETE',
-        //   qs: {
-        //     locale: masterLanguage.code
-        //   },
-        //   headers: self.requestOptionTemplate.headers,
-        //   json: true
-        // }
-
         return client.stack({api_key: config.source_stack, management_token: config.management_token}).contentType(entry.content_type).entry(self.mappedUids[entry.uid]).delete({locale: masterLanguage.code})
         .then(function () {
           removed.push(self.mappedUids[entry.uid])
@@ -775,7 +730,7 @@ importEntries.prototype = {
           }
         }
       } else {
-        console.log('field_rules is not available')
+        addlogs(config, `field_rules is not available...`, 'error')
       }
 
       return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(schema.uid).fetch()
@@ -861,7 +816,6 @@ importEntries.prototype = {
               // error while executing entry in batch
               addlogs(config, error, 'error')
               return error
-              //throw error
             })
           }, {
             concurrency: 1,
@@ -883,7 +837,6 @@ importEntries.prototype = {
       }).then(function () {
         return resolve()
       }).catch(error => {
-        // console.log(error)
         return reject(error)
       })
     })
