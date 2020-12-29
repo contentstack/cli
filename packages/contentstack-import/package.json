@@ -5,7 +5,7 @@
 	"author": "Contentstack",
 	"bugs": "https://github.com/contentstack/cli/issues",
 	"dependencies": {
-		"@contentstack/management": "https://github-production-registry-package-file-4f11e5.s3.amazonaws.com/211841974/60360b80-49f2-11eb-9e42-17eddf35970b?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20201229%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20201229T105522Z&X-Amz-Expires=300&X-Amz-Signature=67f5dfdfed175c35f07a8ba1c9366a23778198f997acd8baab0a82f5ee1882fe&X-Amz-SignedHeaders=host&actor_id=0&key_id=0&repo_id=0&response-content-disposition=filename%3Dmanagement-1.2.3-npm.tgz&response-content-type=application%2Foctet-stream",
+		"@contentstack/management": "https://github-production-registry-package-file-4f11e5.s3.amazonaws.com/211841974/60360b80-49f2-11eb-9e42-17eddf35970b?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20201229%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20201229T130636Z&X-Amz-Expires=300&X-Amz-Signature=a363c68a386d3b17f68f66e47dd48e01ac4623135384986317168485f89be8e0&X-Amz-SignedHeaders=host&actor_id=0&key_id=0&repo_id=0&response-content-disposition=filename%3Dmanagement-1.2.3-npm.tgz&response-content-type=application%2Foctet-stream",
 		"@oclif/command": "^1.6.1",
 		"@contentstack/cli-command": "0.1.1-beta.1",
 		"@oclif/config": "^1.15.1",
