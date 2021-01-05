@@ -68,9 +68,10 @@ module.exports = class extends Generator {
 
 	async prompting() {
 		const defaults = {
-			name: 'name',
+			name: 'plugin-template',
 			version: '0.0.0',
 			license: 'MIT',
+      author: this.user.git.name(),
       dependencies: {},
 			engines: {
         node: '>=8.0.0',
@@ -110,10 +111,17 @@ module.exports = class extends Generator {
 			{
 				type: 'input',
 				name: 'author',
-				message: 'author',
+				message: 'Who is the GitHub owner of repository (https://github.com/OWNER/repo)',
 				default: defaults.author,
 				when: !this.pjson.author,
 			},
+      {
+        type: 'input',
+        name: 'repository',
+        message: 'What is the GitHub name of repository (https://github.com/owner/REPO)',
+        default: (answers) => (this.pjson.repository || answers.name || this.pjson.name).split('/').pop(),
+        when: !this.pjson.repository,
+      },
 			{
         type: 'confirm',
         name: 'typescript',
@@ -137,6 +145,7 @@ module.exports = class extends Generator {
       }
     }
 
+    this.pjson.repository = this.answers.repository || defaults.repository
 		this.pjson.keywords = defaults.keywords || 'contentstack'
     this.pjson.homepage = defaults.homepage || `https://github.com/${this.pjson.repository}`
     this.pjson.bugs = defaults.bugs || `https://github.com/${this.pjson.repository}/issues`
