@@ -247,7 +247,7 @@ importEntries.prototype = {
                   },
                 }
                 if (self.mappedUids.hasOwnProperty(eUid)) {
-                  let entryToUpdate = stack.contentType(ctUid).entry(eUid)
+                  let entryToUpdate = stack.contentType(ctUid).entry(self.mappedUids[eUid])
                   Object.assign(entryToUpdate, _.cloneDeep(entries[eUid]))
                   try {
                     return await entryToUpdate.update({locale: entryToUpdate.locale})
