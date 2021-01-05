@@ -7,8 +7,6 @@ env.register(require.resolve('../../generators/plugin.js'), `plugins:create`)
 class CreateCommand extends Command {
   async run() {
     const {flags} = this.parse(CreateCommand)
-    const name = flags.name || 'world'
-    // this.log(`create ${name} from ./src/commands/create.js`)
 
     await new Promise((resolve, reject) => {
     	env.run(`plugins:create`, {}, (error, results) => {
@@ -19,13 +17,10 @@ class CreateCommand extends Command {
   }
 }
 
-CreateCommand.description = `Describe the command here
-...
-Extra documentation goes here
+CreateCommand.description = `Generate plugin starter code
 `
 
 CreateCommand.flags = {
-  name: flags.string({char: 'n', description: 'name to print'}),
 }
 
 module.exports = CreateCommand
