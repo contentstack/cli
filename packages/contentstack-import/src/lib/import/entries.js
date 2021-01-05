@@ -104,7 +104,7 @@ importEntries.prototype = {
     return new Promise(function (resolve, reject) {
       let langs = [masterLanguage.code]
       for (let i in languages) {
-        if (i)  {
+        if (i) {
           langs.push(languages[i].code)
         }
       }
@@ -127,7 +127,6 @@ importEntries.prototype = {
             await self.repostEntries(lang)
             addlogs(config, 'Successfully imported \'' + lang + '\' entries!', 'success')
             counter++
-
           } else {
             addlogs(config, lang + ' has not been configured for import, thus skipping it', 'success')
             counter++
@@ -135,7 +134,7 @@ importEntries.prototype = {
         }, {
           concurrency: 1,
         }).then(async function () {
-        // Step 3: Revert all the changes done in content type in step 1
+          // Step 3: Revert all the changes done in content type in step 1
           await self.unSuppressFields()
           await self.removeBuggedEntries()
           let ct_field_visibility_uid = helper.readFile(path.join(ctPath + '/field_rules_uid.json'))
@@ -249,23 +248,7 @@ importEntries.prototype = {
                 if (self.mappedUids.hasOwnProperty(eUid)) {
                   let entryToUpdate = stack.contentType(ctUid).entry(self.mappedUids[eUid])
                   Object.assign(entryToUpdate, _.cloneDeep(entries[eUid]))
-                  try {
-                    return await entryToUpdate.update({locale: entryToUpdate.locale})
-                  } catch (err) {
-                    let error = JSON.parse(err.message)
-                    addlogs(config, chalk.red('Error creating entry', JSON.stringify(error)), 'error')
-                    self.fails.push({
-                      content_type: ctUid,
-                      locale: lang,
-                      entry: entries[eUid],
-                      error: error,
-                    })
-                    return err
-                  }
-                } else {
-                  delete requestObject.json.entry.publish_details
-                  return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry().create(requestObject.json)
-                  .then(async entryResponse => {
+                  return entryToUpdate.update({locale: entryToUpdate.locale}).then(async entryResponse => {
                     self.success[ctUid] = self.success[ctUid] || []
                     self.success[ctUid].push(entries[eUid])
                     if (!self.mappedUids.hasOwnProperty(eUid)) {
@@ -282,34 +265,64 @@ importEntries.prototype = {
                         self.uniqueUids[eUid].content_type = ctUid
                       }
                     }
-                  }).catch(function (error) {
-                    if (error.hasOwnProperty('error_code') && error.error_code === 119) {
-                      if (error.errors.title) {
-                        addlogs(config, 'Entry ' + eUid + ' already exist, skip to avoid creating a duplicate entry', 'error')
-                      } else {
-                        addlogs(config, chalk.red('Error creating entry due to: ' + JSON.stringify(error)), 'error')
-                      }
-                      self.createdEntriesWOUid.push({
-                        content_type: ctUid,
-                        locale: lang,
-                        entry: entries[eUid],
-                        error: error,
-                      })
-                      helper.writeFile(createdEntriesWOUidPath, self.createdEntriesWOUid)
-                      return
-                    }
-                    // TODO: if status code: 422, check the reason
-                    // 429 for rate limit
-                    addlogs(config, chalk.red('Error creating entry', JSON.stringify(error)), 'error')
+                  }).catch(function (err) {
+                    let error = JSON.parse(err.message)
+                    addlogs(config, chalk.red('Error updating entry', JSON.stringify(error)), 'error')
                     self.fails.push({
                       content_type: ctUid,
                       locale: lang,
                       entry: entries[eUid],
                       error: error,
                     })
-                    return
+                    return err
                   })
                 }
+                delete requestObject.json.entry.publish_details
+                return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry().create(requestObject.json)
+                .then(async entryResponse => {
+                  self.success[ctUid] = self.success[ctUid] || []
+                  self.success[ctUid].push(entries[eUid])
+                  if (!self.mappedUids.hasOwnProperty(eUid)) {
+                    self.mappedUids[eUid] = entryResponse.uid
+                    createdEntries = entryResponse
+                    // if its a non-master language, i.e. the entry isn't present in the master language
+                    if (lang !== masterLanguage) {
+                      self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
+                      if (self.uniqueUids[eUid].locales) {
+                        self.uniqueUids[eUid].locales.push(lang)
+                      } else {
+                        self.uniqueUids[eUid].locales = [lang]
+                      }
+                      self.uniqueUids[eUid].content_type = ctUid
+                    }
+                  }
+                }).catch(function (error) {
+                  if (error.hasOwnProperty('error_code') && error.error_code === 119) {
+                    if (error.errors.title) {
+                      addlogs(config, 'Entry ' + eUid + ' already exist, skip to avoid creating a duplicate entry', 'error')
+                    } else {
+                      addlogs(config, chalk.red('Error creating entry due to: ' + JSON.stringify(error)), 'error')
+                    }
+                    self.createdEntriesWOUid.push({
+                      content_type: ctUid,
+                      locale: lang,
+                      entry: entries[eUid],
+                      error: error,
+                    })
+                    helper.writeFile(createdEntriesWOUidPath, self.createdEntriesWOUid)
+                    return
+                  }
+                  // TODO: if status code: 422, check the reason
+                  // 429 for rate limit
+                  addlogs(config, chalk.red('Error creating entry', JSON.stringify(error)), 'error')
+                  self.fails.push({
+                    content_type: ctUid,
+                    locale: lang,
+                    entry: entries[eUid],
+                    error: error,
+                  })
+                })
+
                 // create/update 5 entries at a time
               }, {
                 concurrency: 1,
@@ -326,10 +339,10 @@ importEntries.prototype = {
             }).then(function () {
               if (self.success && self.success[ctUid] && self.success[ctUid].length > 0)
                 addlogs(config, self.success[ctUid].length + ' entries created successfully in ' + ctUid + ' content type in ' + lang +
-                ' locale!', 'success')
+                  ' locale!', 'success')
               if (self.fails && self.fails[ctUid] && self.fails[ctUid].length > 0)
                 addlogs(config, self.fails[ctUid].length + ' entries failed to create in ' + ctUid + ' content type in ' + lang +
-                ' locale!', 'error')
+                  ' locale!', 'error')
               self.success[ctUid] = []
               self.fails[ctUid] = []
             })
@@ -446,7 +459,7 @@ importEntries.prototype = {
               let entryResponse = client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry(entry.uid)
               Object.assign(entryResponse, entry)
               delete entryResponse.publish_details
-              return entryResponse.update()
+              return entryResponse.update({locale: lang})
               .then(response => {
                 for (let j = 0; j < entries.length; j++) {
                   if (entries[j].uid === response.uid) {
@@ -673,7 +686,7 @@ importEntries.prototype = {
       }
 
       return Promise.map(bugged, function (entry) {
-        return client.stack({api_key: config.source_stack, management_token: config.management_token}).contentType(entry.content_type).entry(self.mappedUids[entry.uid]).delete({locale: masterLanguage.code})
+        return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(entry.content_type).entry(self.mappedUids[entry.uid]).delete({locale: masterLanguage.code})
         .then(function () {
           removed.push(self.mappedUids[entry.uid])
           addlogs(config, 'Removed bugged entry from master ' + JSON.stringify(entry), 'success')
@@ -730,7 +743,7 @@ importEntries.prototype = {
           }
         }
       } else {
-        addlogs(config, `field_rules is not available...`, 'error')
+        addlogs(config, 'field_rules is not available...', 'error')
       }
 
       return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(schema.uid).fetch()
@@ -798,7 +811,7 @@ importEntries.prototype = {
                     .then(result => {
                       addlogs(config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
                       return resolve(result)
-                    // eslint-disable-next-line max-nested-callbacks
+                      // eslint-disable-next-line max-nested-callbacks
                     }).catch(function (err) {
                       addlogs(config, 'Entry ' + eUid + ' not published successfully in ' + ctUid + ' content type', 'error')
                       return reject(err)
