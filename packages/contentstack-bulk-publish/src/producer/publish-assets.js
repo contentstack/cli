@@ -62,6 +62,7 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, skip 
           return resolve(true)
         }
         await getAssets(stack, folder, bulkPublish, environments, locale, skip)
+        return resolve()
       } else {
         // throw new Error(JSON.stringify({errorMessage: "No Assets found"}))
       }
