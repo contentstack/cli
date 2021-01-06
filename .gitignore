@@ -7,5 +7,3 @@ lerna-debug.log
 contentTest
 build
 _backup*
-packages/contentstack-import/src/lib/import/test.js
-packages/contentstack-import/src/lib/import/hello.js
