@@ -1,10 +1,11 @@
 /* eslint-disable no-redeclare */
-var Bluebird = require('bluebird')
 var util = require('./lib/util')
 var login = require('./lib/util/login')
-var {addlogs} = require('./lib/util/log')
+var { addlogs } = require('./lib/util/log')
 const chalk = require('chalk')
 let path = require('path')
+let _ = require('lodash')
+const { config } = require('cli-ux')
 
 exports.initial = function (config) {
   config = util.buildAppConfig(config)
@@ -37,11 +38,11 @@ var singleExport = (moduleName, types, config) => {
     var exportedModule = require('./lib/export/' + moduleName)
     exportedModule.start(config).then(function () {
       addlogs(config, moduleName + ' was exported successfully!', 'success')
-      addlogs(config, 'The log for this is stored at ' + path.join(config.data , 'logs', 'export'), 'success')
+      addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success')
     }).catch(function (error) {
       addlogs(config, 'Failed to migrate ' + moduleName, 'error')
       addlogs(config, error, 'error')
-      addlogs(config, 'The log for this is stored at ' + path.join(config.data , 'logs', 'export'), 'error')
+      addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error')
     })
   } else {
     addlogs(config, 'Please provide valid module name.', 'error')
@@ -49,26 +50,24 @@ var singleExport = (moduleName, types, config) => {
 }
 
 var allExport = async (config, types) => {
-  var counter = 0
-  Bluebird.map(types, function (type) {
-    if (config.preserveStackVersion) {
-      var exportedModule = require('./lib/export/' + types[counter])
-      counter++
-      return exportedModule.start(config)
-    } else if(!config.preserveStackVersion && type !== 'stack')  {
-      var exportedModule = require('./lib/export/' + types[counter])
-      counter++
-      return exportedModule.start(config)
-    } else {
-      counter++
+  try {
+    for (let i = 0; i < types.length; i++) {
+      let type = types[i]
+      var exportedModule = require('./lib/export/' + type)
+      await exportedModule.start(config).then(result => {
+        if (type === 'stack') {
+          let master_locale = { master_locale: { code: result.master_locale } }
+          config = _.merge(config, master_locale)
+          return
+        }
+        return
+      })
     }
-  }, {
-    concurrency: 1,
-  }).then(function () {
     addlogs(config, chalk.green('Stack: ' + config.source_stack + ' has been exported succesfully!'), 'success')
-    addlogs(config, 'The log for this is stored at ' + path.join(config.data , 'logs', 'export'), 'success')
-  }).catch(function () {
+    addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success')
+  } catch (error) {
     addlogs(config, chalk.red('Failed to migrate stack: ' + config.source_stack + '. Please check error logs for more info'), 'error')
-    addlogs(config, 'The log for this is stored at ' + path.join(config.data , 'logs', 'export'), 'error')
-  })
+    addlogs(config, chalk.red(error.errorMessage), 'error')
+    addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error')
+  }
 }
