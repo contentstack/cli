@@ -14,7 +14,7 @@ class ExportCommand extends Command {
   async run() {
     const {flags} = this.parse(ExportCommand)
     const extConfig = flags.config
-    const masterLang = flags['master-lang']
+    // const masterLang = flags['master-lang']
     let sourceStack = flags['stack-uid']
     const alias = flags['management-token-alias']
     const authToken = flags['auth-token']
@@ -22,13 +22,12 @@ class ExportCommand extends Command {
     const moduleName = flags.module
     let _authToken = credStore.get('authtoken')
     let host = this.config.userConfig.getRegion()
-    let cmaMaiURL = host.cma.split('//')
-    let cdaMaiURL = host.cda.split('//')
-    host.cma = cmaMaiURL[1]
-    host.cda = cdaMaiURL[1]
+    let cmaHost = host.cma.split('//')
+    let cdaHost = host.cda.split('//')
+    host.cma = cmaHost[1]
+    host.cda = cdaHost[1]
 
     if (alias && alias !== undefined) {
-      // await this.config.runHook('validateManagementTokenAlias', {alias: alias})
       let managementTokens = this.getToken(alias)
       if (managementTokens && managementTokens !== undefined) {
         if (extConfig && extConfig !== undefined) {
@@ -37,21 +36,20 @@ class ExportCommand extends Command {
             managementTokens,
             host
           )
-        } else if (masterLang && data) {
-          sourceStack = managementTokens.apiKey
+        } else if (data) {
           parameterWithMToken(
-            masterLang,
             managementTokens,
-            sourceStack,
             data,
             moduleName,
-            host
+            host,
+            _authToken
           )
-        } else if (masterLang === undefined && data === undefined && sourceStack === undefined) {
+        } else if (data === undefined && sourceStack === undefined) {
           withoutParameterMToken(
             managementTokens,
             moduleName,
-            host
+            host,
+            _authToken
           )
         } else {
           this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage')
@@ -67,16 +65,15 @@ class ExportCommand extends Command {
           moduleName,
           host
         )
-      } else if (masterLang && sourceStack && data) {
+      } else if (sourceStack && data) {
         parametersWithAuthToken(
-          masterLang,
           _authToken,
           sourceStack,
           data,
           moduleName,
           host
         )
-      } else if (masterLang === undefined && data === undefined && sourceStack === undefined) {
+      } else if (data === undefined && sourceStack === undefined) {
         withoutParametersWithAuthToken(
           _authToken,
           moduleName,
@@ -107,7 +104,7 @@ ExportCommand.examples = [
 
 ExportCommand.flags = {
   config: flags.string({char: 'c', description: '[optional] path of the config'}),
-  'master-lang': flags.string({char: 'l', description: "code of the source stack's master Language"}),
+  // 'master-lang': flags.string({char: 'l', description: "code of the source stack's master Language"}),
   'stack-uid': flags.string({char: 's', description: 'API key of the source stack'}),
   data: flags.string({char: 'd', description: 'path or location to store the data'}),
   'management-token-alias': flags.string({char: 'a', description: 'alias of the management token'}),
