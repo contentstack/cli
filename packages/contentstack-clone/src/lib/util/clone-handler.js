@@ -67,7 +67,7 @@ class CloneHandler {
     let fetchresult = client.organization().fetchAll({ limit: 100 })
     fetchresult
       .then(responses => {
-        spinner.succeed()
+        spinner.succeed("Fetched Organisation")
         for (let i = 0; i < responses.items.length; i++) {
           orgUidList[responses.items[i].name] = responses.items[i].uid
           orgChoice[0].choices.push(responses.items[i].name)
@@ -93,23 +93,23 @@ class CloneHandler {
                     stackUidList[stacklist.items[j].name] = stacklist.items[j].api_key
                     stackChoice[0].choices.push(stacklist.items[j].name)
                   }
-              spinner.succeed()
-              this.stackSelection(params)    
-              }).catch(err => {
+                  spinner.succeed()
+                  this.stackSelection(params)
+                }).catch(err => {
                 })
             }
           })
       }).catch(err => {
-        
+
       })
   }
 
   stackSelection(params) {
-  
+
     if (params !== undefined && params === "import") {
       stackChoice[0].message = "Choose the stack in which data to be import "
     } else {
-      stackChoice[0].message = "Choose the stack from which data to be export " 
+      stackChoice[0].message = "Choose the stack from which data to be export "
     }
 
     inquirer
@@ -155,77 +155,77 @@ class CloneHandler {
         let cloneType = seletedValue.type
         if (cloneType === "structure") {
           let resultData = this.cmdExe(structureList[0], true)
-          resultData.then( data => {
+          resultData.then(data => {
             let files = fs.readdirSync(process.cwd())
             let regex = RegExp("_backup*")
-            for (let k=0; k < files.length; k++) {
+            for (let k = 0; k < files.length; k++) {
               if (regex.test(files[k])) {
                 backupPath = files[k]
                 break;
               }
             }
-            for (let i=1; i < structureList.length; i++) {
+            for (let i = 1; i < structureList.length; i++) {
               debugger
               functionList.push(this.cmdExe(structureList[i], false))
               debugger
             }
             async.series(functionList)
           })
-         
+
         } else {
           this.cmdExportImport("import")
         }
-       })
+      })
   }
 
   cmdExe(module, bollean) {
-  if (bollean) {
-    return new Promise(function (resolve, reject) {
-      const spinner = ora('Importing '+ module + " module").start()
-      exec("node bin/run cm:import -A -l " + master_locale + " -s " + config.target_stack + " -d " + "content -m " + module, (error, stdout, stderr) => {
-      if (error) {
-          console.log(`error: ${error.message}`)
-          return reject()
-        }
-        if (stderr) { 
-          console.log(`stderr: ${stderr}`)
-          return;
-        }
-        let indexStr = stdout.indexOf("region")
-        let lstIndex = indexStr+6
-        let strToRemove = stdout.substr(0, lstIndex)
-        stdout = stdout.replace(strToRemove,'');
-        spinner.succeed("Completed "+ module+ " module")
-        console.log(`${stdout}`)
-        return resolve()
+    if (bollean) {
+      return new Promise(function (resolve, reject) {
+        const spinner = ora('Importing ' + module + " module").start()
+        exec("node bin/run cm:import -A -l " + master_locale + " -s " + config.target_stack + " -d " + "content -m " + module, (error, stdout, stderr) => {
+          if (error) {
+            console.log(`error: ${error.message}`)
+            return reject()
+          }
+          if (stderr) {
+            console.log(`stderr: ${stderr}`)
+            return;
+          }
+          let indexStr = stdout.indexOf("region")
+          let lstIndex = indexStr + 6
+          let strToRemove = stdout.substr(0, lstIndex)
+          stdout = stdout.replace(strToRemove, '');
+          spinner.succeed("Completed " + module + " module")
+          console.log(`${stdout}`)
+          return resolve()
+        })
       })
-   })
-  } else {
-    return function (cb) {
-      const spinner = ora('Importing '+ module + " module").start()
-      exec("node bin/run cm:import -A -l " + master_locale + " -s " + config.target_stack + " -d " + "content -m " + module + " -b "+ backupPath, (error, stdout, stderr) => {
-        if (error) {
+    } else {
+      return function (cb) {
+        const spinner = ora('Importing ' + module + " module").start()
+        exec("node bin/run cm:import -A -l " + master_locale + " -s " + config.target_stack + " -d " + "content -m " + module + " -b " + backupPath, (error, stdout, stderr) => {
+          if (error) {
             console.log(`error: ${error.message}`)
             cb(error)
           }
-          if (stderr) { 
+          if (stderr) {
             console.log(`stderr: ${stderr}`)
             cb(null)
           }
           var last_element = structureList[structureList.length - 1];
           let indexStr = stdout.indexOf("region")
-          let lstIndex = indexStr+6
+          let lstIndex = indexStr + 6
           let strToRemove = stdout.substr(0, lstIndex)
-          stdout = stdout.replace(strToRemove,'');
-          spinner.succeed("Completed "+ module+ " module")
+          stdout = stdout.replace(strToRemove, '');
+          spinner.succeed("Completed " + module + " module")
           console.log(`${stdout}`)
           if (last_element === module) {
-            console.log("Please find the stack here: https://app.contentstack.com/#!/stack/"+config.target_stack+"/content-types?view_by=Alphabetical")
+            console.log("Please find the stack here: https://app.contentstack.com/#!/stack/" + config.target_stack + "/content-types?view_by=Alphabetical")
           }
           cb(null)
         })
       }
-  }
+    }
   }
 
   cmdExportImport(action) {
@@ -233,17 +233,17 @@ class CloneHandler {
       const spinner = ora('Importing all modules with structure and content').start()
       exec("node bin/run cm:import -A -l " + master_locale + " -s " + config.target_stack + " -d " + "content", (error, stdout, stderr) => {
         if (error) {
-            console.log(`error: ${error.message}`)
-            return reject()
-          }
-          if (stderr) { 
-            console.log(`stderr: ${stderr}`)
-            return;
-          }
-          console.log(`stdout: ${stdout}`)
-          spinner.succeed("Completed import with structure and content")
+          console.log(`error: ${error.message}`)
+          return reject()
+        }
+        if (stderr) {
+          console.log(`stderr: ${stderr}`)
           return;
-        })
+        }
+        console.log(`stdout: ${stdout}`)
+        spinner.succeed("Completed import with structure and content")
+        return;
+      })
     } else if (action !== undefined && action === "export") {
       const spinner = ora('Exporting all modules').start()
       exec("node bin/run cm:export -A -l " + "en-us -s " + config.source_stack + " -d " + "./content", (error, stdout, stderr) => {
@@ -273,43 +273,25 @@ class CloneHandler {
 
   }
 
-  async testing() {
-    let arr = [1, 2, 3 ,4, 5, 6, 7, 8, 9]
-    // arr.forEach(async value => {
-    //   await this.test2(value)
-    // })
-    console.log('Start')
-    for (let i=0; i < arr.length; i++) {
-      var numFruit = await this.getNumFruit(arr[i])
-      console.log(numFruit)
-    }
-    console.log('End')
-
-    // Promise.map(arr, async value => {
-    //    await this.getNumFruit(value)
-    // },{
-    //   concurrency: 1
-    // }).then(function() {
-    //   console.log("Lst me yee print hona chayee");
-    // }).catch(reject)
-  }
-
-  getNumFruit = fruit => {
-    // return new Promise(resolve => setTimeout(resolve, 3000))
-    return this.setTime().then(v => "fruit")
-  }
-
-  async test2(data) {
-     await this.setTime()
-     .then(result => {
-       console.log("Last part");
-     })
-  }
-
-  async setTime() {
-      return new Promise(resolve => setTimeout(resolve, 3000))
-    
-  }
+  // validateLogin() {
+  //   return new Promise(function (resolve, reject) {
+  //     inquirer
+  //       .prompt(validateLoginConnfirmatiom)
+  //       .then(reply => {
+  //         if (reply.authname === true) {
+  //           return resolve()
+  //         } else {
+  //           exec("node bin/run auth:login", (error, stdout, stderr) => {
+  //             if (error) {
+  //               console.error(`exec error: ${error}`);
+  //               return;
+  //             }
+  //             console.log(`Number of files ${stdout}`);
+  //           })
+  //         }
+  //       })
+  //   })
+  // }
 
 }
 
