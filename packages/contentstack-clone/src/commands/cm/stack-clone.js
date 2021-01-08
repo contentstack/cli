@@ -1,6 +1,4 @@
 const { Command, flags } = require('@oclif/command')
-let inquirer = require('inquirer')
-let sdkInstance = require('../../lib/util/contentstack-managment-sdk')
 const Configstore = require('configstore')
 const credStore = new Configstore('contentstack_cli')
 let config = require('../../lib/util/config/default')
@@ -11,19 +9,21 @@ const {CloneHandler} = require('../../lib/util/clone-handler')
 class StackCloneCommand extends Command {  
   async run() {
     let _authToken = credStore.get('authtoken')
-    config.auth_token = _authToken
-    let host = this.config.userConfig.getRegion()
-    if (host.cma.includes("https://") || host.cma.includes("http://") && host.cda.includes("https://") || host.cda.includes("http://")) {
-      let cmaMaiURL = host.cma.split('//')
-      let cdaMaiURL = host.cda.split('//')
-      host.cma = cmaMaiURL[1]
-      host.cda = cdaMaiURL[1]
+    if (_authToken && _authToken !== undefined) {
+      config.auth_token = _authToken
+      let host = this.config.userConfig.getRegion()
+      if (host.cma.includes("https://") || host.cma.includes("http://") && host.cda.includes("https://") || host.cda.includes("http://")) {
+        let cmaHost = host.cma.split('//')
+        let cdaHost = host.cda.split('//')
+        host.cma = cmaHost[1]
+        host.cda = cdaHost[1]
+      }
+      config.host = host
+      const cloneHandler = new CloneHandler(config)
+      cloneHandler.organizationSelection("export")  
+    } else {
+      console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login");
     }
-    config.host = host
-    const cloneHandler = new CloneHandler(config)
-    cloneHandler.organizationSelection("export")  
-    // cloneHandler.testing("export")  
-
   }
 }
 

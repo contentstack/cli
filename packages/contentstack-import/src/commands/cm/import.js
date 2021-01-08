@@ -26,34 +26,36 @@ class ImportCommand extends Command {
     let _authToken = credStore.get('authtoken')
     let host = this.config.userConfig.getRegion()
 
-    let cmaMainURL = host.cma.split('//')
-    let cdaMainURL = host.cda.split('//')
-    host.cma = cmaMainURL[1]
-    host.cda = cdaMainURL[1]
+    let cmaHost = host.cma.split('//')
+    let cdaHost = host.cda.split('//')
+    host.cma = cmaHost[1]
+    host.cda = cdaHost[1]
     if (alias && alias !== undefined) {
       let managementTokens = this.getToken(alias)
 
       if (managementTokens && managementTokens !== undefined) {
-        if (extConfig && extConfig !== undefined) {
+        if (extConfig && extConfig !== undefined && _authToken) {
           configWithMToken(
             extConfig,
             managementTokens,
             moduleName,
-            host
+            host,
+            _authToken
           )
-        } else if (masterLang && data) {
+        } else if (data) {
           parameterWithMToken(
-            masterLang,
             managementTokens,
             data,
             moduleName,
-            host
+            host,
+            _authToken
           )
         } else {
           withoutParameterMToken(
             managementTokens,
             moduleName,
-            host
+            host,
+            _authToken
           )
         } 
       } else {
@@ -67,9 +69,8 @@ class ImportCommand extends Command {
           moduleName,
           host
         )
-      } else if (masterLang && targetStack && data) {
+      } else if (targetStack && data) {
         parametersWithAuthToken(
-          masterLang,
           _authToken,
           targetStack,
           data,
@@ -112,7 +113,7 @@ ImportCommand.flags = {
   'management-token-alias': flags.string({char: 'a', description: 'alias of the management token'}),
   'auth-token': flags.boolean({char: 'A', description: 'to use auth token'}),
   module: flags.string({char: 'm', description: '[optional] specific module name'}),
-  "backup-dir": flags.string({char: 'b', description: '[optional] specific module name'})
+  "backup-dir": flags.string({char: 'b', description: '[optional] backup directory name when using specific module'})
 }
 
 module.exports = ImportCommand
