@@ -18,35 +18,31 @@ exports.configWithMToken = function (config, managementTokens, host) {
   initial(defaultConfig)
 }
 
-exports.parameterWithMToken = function (masterLang, managementTokens, sourceStack, data, moduleName, host) {
-  let masterloc = {master_locale: {code: masterLang}}
+exports.parameterWithMToken = function (managementTokens, data, moduleName, host) {
   defaultConfig.management_token = managementTokens.token
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
   if (moduleName && moduleName !== undefined) {
     defaultConfig.moduleName = moduleName
   }
-  defaultConfig.source_stack = sourceStack
+  defaultConfig.source_stack = managementTokens.apiKey
   defaultConfig.data = data
-  defaultConfig = _.merge(defaultConfig, masterloc)
   initial(defaultConfig)
 }
 
 // using ManagementToken
-exports.withoutParameterMToken = async (managementTokens, moduleName, host) => {
-  const masterLocale = await cli.prompt(message.promptMessageList.promptMasterLocale)
+exports.withoutParameterMToken = async (managementTokens, moduleName, host, _authToken) => {
   const stackUid = managementTokens.apiKey
   const pathOfExport = await cli.prompt(message.promptMessageList.promptPathStoredData)
-  let masterloc = {master_locale: {code: masterLocale}}
   defaultConfig.management_token = managementTokens.token
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
+  defaultConfig.auth_token = _authToken
   if (moduleName && moduleName !== undefined) {
     defaultConfig.moduleName = moduleName
   }
   defaultConfig.source_stack = stackUid
   defaultConfig.data = pathOfExport
-  defaultConfig = _.merge(defaultConfig, masterloc)
   initial(defaultConfig)
 }
 
@@ -63,7 +59,7 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host) {
 }
 
 exports.parametersWithAuthToken = function (masterLang, _authToken, sourceStack, data, moduleName, host) {
-  let masterloc = {master_locale: {code: masterLang}}
+  // let masterloc = {master_locale: {code: masterLang}}
   defaultConfig.auth_token = _authToken
   defaultConfig.source_stack = sourceStack
   if (moduleName && moduleName !== undefined) {
@@ -72,15 +68,13 @@ exports.parametersWithAuthToken = function (masterLang, _authToken, sourceStack,
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
   defaultConfig.data = data
-  defaultConfig = _.merge(defaultConfig, masterloc)
+  // defaultConfig = _.merge(defaultConfig, masterloc)
   initial(defaultConfig)
 }
 
 exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host) => {
-  const masterLocale = await cli.prompt(message.promptMessageList.promptMasterLocale)
   const stackUid = await cli.prompt(message.promptMessageList.promptSourceStack)
   const pathOfExport = await cli.prompt(message.promptMessageList.promptPathStoredData)
-  let masterloc = {master_locale: {code: masterLocale}}
   defaultConfig.auth_token = _authToken
   defaultConfig.source_stack = stackUid
   if (moduleName && moduleName !== undefined) {
@@ -89,6 +83,5 @@ exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host) =>
   defaultConfig.data = pathOfExport
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
-  defaultConfig = _.merge(defaultConfig, masterloc)
   initial(defaultConfig)
 }

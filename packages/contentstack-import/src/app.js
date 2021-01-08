@@ -12,6 +12,8 @@ const chalk = require('chalk')
 
 let login = require('./lib/util/login')
 let util = require('./lib/util/index')
+const stack = require('./lib/util/contentstack-management-sdk')
+ 
 let {addlogs} = require('./lib/util/log')
 
 exports.initial = function (configData) { 
@@ -21,7 +23,6 @@ exports.initial = function (configData) {
   if (config && config !== undefined) {
     login(config)
     .then(function () {
-      // console.log("confi import ke anderrrrr", config);
       if (fs.existsSync(config.data)) {
       let migrationBackupDirPath = path.join(process.cwd(), '_backup_' + Math.floor((Math.random() * 1000)))
       return createBackup(migrationBackupDirPath, config).then((basePath) => {
@@ -73,31 +74,43 @@ let singleExport = (moduleName, types, config) => {
 
 let allExport = async (config, types) => {
   let counter = 0
-  Bluebird.map(types, function (type) {
-    if (config.preserveStackVersion) {
-      let exportedModule = require('./lib/import/' + types[counter])
-      counter++
-      return exportedModule.start(config)
-    } else if(!config.preserveStackVersion && type !== 'stack')  {
-      let exportedModule = require('./lib/import/' + types[counter])
-      counter++
-      return exportedModule.start(config)
-    } else {
-      counter++
+  try {
+    for (let i = 0; i < types.length; i++) {
+      let type = types[i]
+      var exportedModule = require('./lib/import/' + type)
+      if (i === 0 && !config.master_locale) {
+        await stackDetails(config).then(stackResponse => {
+          let master_locale = { code: stackResponse.master_locale }
+          config['master_locale'] = master_locale
+          return
+        }).catch(error => {
+          console.log("Error to fetch the stack details" + error);
+        })
+      }
+      await exportedModule.start(config).then(result => {
+        return
+      })
     }
-  }, {
-    concurrency: 1
-  }).then(function () {
     addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported succesfully!'), 'success')
     addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'success')
-  }).catch(function (error) {    
+  } catch (error) {
     addlogs(config, chalk.red('Failed to migrate stack: ' + config.target_stack + '. Please check error logs for more info'), 'error')
     addlogs(config, error, 'error')
     addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'error')
-
-  })
+  }
 }
 
+let stackDetails = async (credentialConfig) => {
+  let client = stack.Client(credentialConfig)
+  return new Promise((resolve, reject) => {
+    return client.stack({api_key: credentialConfig.target_stack}).fetch()
+    .then(response => {
+      return resolve(response)
+    }).catch(error => {
+      return reject(error)
+    })
+  })
+}
 
 function createBackup (backupDirPath, config) {
   return new Promise((resolve, reject) => {
