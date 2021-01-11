@@ -56,8 +56,18 @@ exports.initial = function (configData) {
 }
 
 
-let singleExport = (moduleName, types, config) => {
+let singleExport = async (moduleName, types, config) => {
   if (types.indexOf(moduleName) > -1) {
+    if (!config.master_locale) {
+      await stackDetails(config).then(stackResponse => {
+        let master_locale = { code: stackResponse.master_locale }
+        config['master_locale'] = master_locale
+        return
+      }).catch(error => {
+        console.log("Error to fetch the stack details" + error);
+      })
+    }
+    console.log("config", config);
     let exportedModule = require('./lib/import/' + moduleName)
     exportedModule.start(config).then(function () {
       addlogs(config, moduleName + ' imported successfully!', 'success')
@@ -73,7 +83,6 @@ let singleExport = (moduleName, types, config) => {
 }
 
 let allExport = async (config, types) => {
-  let counter = 0
   try {
     for (let i = 0; i < types.length; i++) {
       let type = types[i]
