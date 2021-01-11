@@ -26,7 +26,7 @@ let contentTypesFolderPath
 let mapperFolderPath
 let globalFieldMapperFolderpath
 let globalFieldUpdateFile
-let skipFiles = ['__master.json', '__priority.json', 'schema.json']
+let skipFiles = ['__master.json', '__priority.json', 'schema.json', '.DS_Store']
 let fileNames
 let field_rules_ct = []
 let client
@@ -54,8 +54,10 @@ importContentTypes.prototype = {
     globalFieldUpdateFile =  path.join(config.data, 'mapper', 'global_fields', 'success.json')
     fileNames = fs.readdirSync(path.join(contentTypesFolderPath))
     self.globalfields = helper.readFile(path.resolve(globalfieldsFolderPath, globalFieldConfig.fileName))
+    console.log("filename", fileNames);
     for (let index in fileNames) {
       if (skipFiles.indexOf(fileNames[index]) === -1) {
+        console.log("dscdncdncdn");
         self.contentTypes.push(helper.readFile(path.join(contentTypesFolderPath, fileNames[index])))
       }
     }
@@ -122,34 +124,6 @@ importContentTypes.prototype = {
         }).catch(error => {
           return reject(error)
         }) 
-        // content type seeidng completed
-        // return Promise.map(self.contentTypes, function (contentType) {
-        //   return self.updateContentTypes(contentType).then(function () {
-        //     log.success(chalk.white(contentType.uid + ' was updated successfully!'))
-        //     return
-        //   }).catch(function (err) {
-        //     return reject()
-        //   })
-        // }).then(function () {
-        //   // eslint-disable-next-line quotes
-        //   if (field_rules_ct.length > 0) {
-        //     fs.writeFile(contentTypesFolderPath + '/field_rules_uid.json', JSON.stringify(field_rules_ct), function (err) {
-        //       if (err) throw err
-        //     })
-        //   }
-        
-        //  if( _globalField_pending.length !== 0 ) {
-        //   return self.updateGlobalfields().then(function () {
-        //     log.success(chalk.green('Content types have been imported successfully!'))
-        //     return resolve()
-        //   }).catch(reject)
-        //  }  else {
-        //     log.success(chalk.green('Content types have been imported successfully!'))
-        //     return resolve()
-        //  } 
-        // }).catch(error => {
-        //   return reject(error)
-        // })
       }).catch(error => {
         return reject(error)
       })
