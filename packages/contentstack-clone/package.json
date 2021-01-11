@@ -12,6 +12,7 @@
     "bluebird": "^3.7.2",
     "child_process": "^1.0.2",
     "cli-progress": "^3.8.2",
+    "cli-ux": "^5.5.1",
     "configstore": "^5.0.1",
     "inquirer": "^7.3.3",
     "ora": "^5.1.0"

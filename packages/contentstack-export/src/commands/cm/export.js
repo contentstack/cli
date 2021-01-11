@@ -14,7 +14,6 @@ class ExportCommand extends Command {
   async run() {
     const {flags} = this.parse(ExportCommand)
     const extConfig = flags.config
-    // const masterLang = flags['master-lang']
     let sourceStack = flags['stack-uid']
     const alias = flags['management-token-alias']
     const authToken = flags['auth-token']
