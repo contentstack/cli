@@ -2,6 +2,7 @@ let inquirer = require('inquirer')
 let sdkInstance = require('../../lib/util/contentstack-managment-sdk')
 const { exec } = require("child_process")
 const _ = require('lodash')
+let cli = require("cli-ux")
 const fs = require('fs')
 const async = require("async");
 const ora = require("ora")
@@ -63,11 +64,13 @@ class CloneHandler {
   }
 
   async organizationSelection(params) {
-    const spinner = ora('Fetching Organization').start()
+    // const spinner = ora('Fetching Organization').start()
+    cli.cli.action.start('Fetching Organization')
     let fetchresult = client.organization().fetchAll({ limit: 100 })
     fetchresult
       .then(responses => {
-        spinner.succeed("Fetched Organization")
+        // spinner.succeed("Fetched Organization")
+        cli.cli.action.stop("Completed fetching organization")
         for (let i = 0; i < responses.items.length; i++) {
           orgUidList[responses.items[i].name] = responses.items[i].uid
           orgChoice[0].choices.push(responses.items[i].name)
@@ -85,7 +88,8 @@ class CloneHandler {
             if (params !== undefined && params === "newStack") {
               this.createNewStack(orgUid)
             } else {
-              const spinner = ora('Fetching stack List').start()
+              // const spinner = ora('Fetching stack List').start()
+              cli.cli.action.start('Fetching stack List')
               let stackList = client.stack().query({ organization_uid: orgUid }).find()
               stackList
                 .then(stacklist => {
@@ -93,7 +97,8 @@ class CloneHandler {
                     stackUidList[stacklist.items[j].name] = stacklist.items[j].api_key
                     stackChoice[0].choices.push(stacklist.items[j].name)
                   }
-                  spinner.succeed()
+                  // spinner.succeed()
+                  cli.cli.action.stop()
                   this.stackSelection(params)
                 }).catch(err => {
                 })
@@ -134,11 +139,13 @@ class CloneHandler {
       .prompt(stackName)
       .then(inputvalue => {
         let stack = { name: inputvalue.stack }
-        const spinner = ora('Creating New stack').start()
+        // const spinner = ora('Creating New stack').start()
+        cli.cli.action.start("Creating New stack")
         let newStack = client.stack().create({ stack }, { organization_uid: orgUid })
         newStack
           .then(result => {
-            spinner.succeed("New Stack created Successfully name as " + result.name)
+            cli.cli.action.stop()
+            // spinner.succeed("New Stack created Successfully name as " + result.name)
             config.target_stack = result.api_key
             master_locale = result.master_locale
             this.cloneTypeSelection()
@@ -181,8 +188,9 @@ class CloneHandler {
   cmdExe(module, bollean) {
     if (bollean) {
       return new Promise(function (resolve, reject) {
-        const spinner = ora('Importing ' + module + " module").start()
-        exec("node bin/run cm:import -A -l " + master_locale + " -s " + config.target_stack + " -d " + "content -m " + module, (error, stdout, stderr) => {
+        // const spinner = ora('Importing ' + module + " module").start()
+        cli.cli.action.start('Importing ' + module + ' module')
+        exec("node bin/run cm:import -A " + " -s " + config.target_stack + " -d " + "content -m " + module, (error, stdout, stderr) => {
           if (error) {
             console.log(`error: ${error.message}`)
             return reject()
@@ -195,15 +203,16 @@ class CloneHandler {
           let lstIndex = indexStr + 6
           let strToRemove = stdout.substr(0, lstIndex)
           stdout = stdout.replace(strToRemove, '');
-          spinner.succeed("Completed " + module + " module")
+          cli.cli.action.stop()
+          // spinner.succeed("Completed " + module + " module")
           console.log(`${stdout}`)
           return resolve()
         })
       })
     } else {
       return function (cb) {
-        const spinner = ora('Importing ' + module + " module").start()
-        exec("node bin/run cm:import -A -l " + master_locale + " -s " + config.target_stack + " -d " + "content -m " + module + " -b " + backupPath, (error, stdout, stderr) => {
+        cli.cli.action.start('Importing ' + module + ' module')
+        exec("node bin/run cm:import -A " + "-s " + config.target_stack + " -d " + "content -m " + module + " -b " + backupPath, (error, stdout, stderr) => {
           if (error) {
             console.log(`error: ${error.message}`)
             cb(error)
@@ -217,7 +226,7 @@ class CloneHandler {
           let lstIndex = indexStr + 6
           let strToRemove = stdout.substr(0, lstIndex)
           stdout = stdout.replace(strToRemove, '');
-          spinner.succeed("Completed " + module + " module")
+          cli.cli.action.stop()
           console.log(`${stdout}`)
           if (last_element === module) {
             console.log("Please find the stack here: https://app.contentstack.com/#!/stack/" + config.target_stack + "/content-types?view_by=Alphabetical")
@@ -230,8 +239,9 @@ class CloneHandler {
 
   cmdExportImport(action) {
     if (action !== undefined && action === "import") {
-      const spinner = ora('Importing all modules with structure and content').start()
-      exec("node bin/run cm:import -A -l " + master_locale + " -s " + config.target_stack + " -d " + "content", (error, stdout, stderr) => {
+      // const spinner = ora('Importing all modules with structure and content').start()
+      cli.cli.action.start('Importing all modules with structure and content')
+      exec("node bin/run cm:import -A " + "-s " + config.target_stack + " -d " + "content", (error, stdout, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`)
           return reject()
@@ -241,12 +251,13 @@ class CloneHandler {
           return;
         }
         console.log(`stdout: ${stdout}`)
-        spinner.succeed("Completed import with structure and content")
+        cli.cli.action.stop('Completed import with structure and content')
+        // spinner.succeed("Completed import with structure and content")
         return;
       })
     } else if (action !== undefined && action === "export") {
-      const spinner = ora('Exporting all modules').start()
-      exec("node bin/run cm:export -A -l " + "en-us -s " + config.source_stack + " -d " + "./content", (error, stdout, stderr) => {
+      cli.cli.action.start('Exporting all modules')
+      exec("node bin/run cm:export -A " + "-s " + config.source_stack + " -d " + "./content", (error, stdout, stderr) => {
         if (error) {
           console.log(`error: ${error.message}`)
           return;
@@ -256,7 +267,7 @@ class CloneHandler {
           return;
         }
         console.log(`stdout: ${stdout}`)
-        spinner.succeed("Exported all modules")
+        cli.cli.action.stop()
         inquirer
           .prompt(stackCreationConfirmation)
           .then(seletedValue => {
