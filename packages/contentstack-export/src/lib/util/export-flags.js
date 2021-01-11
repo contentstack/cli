@@ -58,8 +58,7 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host) {
   initial(defaultConfig)
 }
 
-exports.parametersWithAuthToken = function (masterLang, _authToken, sourceStack, data, moduleName, host) {
-  // let masterloc = {master_locale: {code: masterLang}}
+exports.parametersWithAuthToken = function (_authToken, sourceStack, data, moduleName, host) {
   defaultConfig.auth_token = _authToken
   defaultConfig.source_stack = sourceStack
   if (moduleName && moduleName !== undefined) {
@@ -68,7 +67,6 @@ exports.parametersWithAuthToken = function (masterLang, _authToken, sourceStack,
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
   defaultConfig.data = data
-  // defaultConfig = _.merge(defaultConfig, masterloc)
   initial(defaultConfig)
 }
 
