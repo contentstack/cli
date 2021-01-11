@@ -11,7 +11,7 @@ let config
 
 let orgChoice = [{
   type: 'list',
-  name: 'organisation',
+  name: 'Organization',
   message: 'Choose Organization ...',
   choices: [],
 }]
@@ -51,7 +51,7 @@ let structureList = ['locales',
   'webhooks',
   'global-fields',
   'content-types',
-  'labels',]
+  'labels']
 let master_locale
 let backupPath
 let functionList = []
@@ -63,25 +63,25 @@ class CloneHandler {
   }
 
   async organizationSelection(params) {
-    const spinner = ora('Fetching Organisation').start()
+    const spinner = ora('Fetching Organization').start()
     let fetchresult = client.organization().fetchAll({ limit: 100 })
     fetchresult
       .then(responses => {
-        spinner.succeed("Fetched Organisation")
+        spinner.succeed("Fetched Organization")
         for (let i = 0; i < responses.items.length; i++) {
           orgUidList[responses.items[i].name] = responses.items[i].uid
           orgChoice[0].choices.push(responses.items[i].name)
         }
         if (params !== undefined && params === "export") {
-          orgChoice[0].message = "Choose the Organisation from which data to be export"
+          orgChoice[0].message = "Choose the Organization from which data to be export"
         } else {
-          orgChoice[0].message = "Choose the Organisation in which data to be import"
+          orgChoice[0].message = "Choose the Organization in which data to be import"
         }
         //call function here
         inquirer
           .prompt(orgChoice)
           .then(answers => {
-            let orgUid = orgUidList[answers.organisation]
+            let orgUid = orgUidList[answers.Organization]
             if (params !== undefined && params === "newStack") {
               this.createNewStack(orgUid)
             } else {
