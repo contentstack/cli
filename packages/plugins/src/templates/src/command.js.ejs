@@ -6,7 +6,7 @@ class <%- klass %> extends Command {
     const {flags} = this.parse(<%- klass %>)
     const name = flags.name || 'world'
     this.log(`hello ${name} from <%- path.replace(/\\/g, '\\\\') %>`)
-    let currentRegion = this.region
+    let currentRegion = this.region.name
     let managementClient = this.managementAPIClient
     this.log(`The current region configured is ${currentRegion}`)
   }
