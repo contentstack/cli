@@ -16,7 +16,6 @@ class ImportCommand extends Command {
   async run() {
     const {flags} = this.parse(ImportCommand)
     const extConfig = flags.config
-    const masterLang = flags['master-lang']
     let targetStack = flags['stack-uid']
     const data = flags.data
     const moduleName = flags.module
@@ -107,7 +106,6 @@ ImportCommand.examples = [
 ]
 ImportCommand.flags = {
   config: flags.string({char: 'c', description: '[optional] path of config file'}),
-  'master-lang': flags.string({char: 'l', description: "code of the target stack's master language"}),
   'stack-uid': flags.string({char: 's', description: 'API key of the target stack'}),
   data: flags.string({char: 'd', description: 'path and location where data is stored'}),
   'management-token-alias': flags.string({char: 'a', description: 'alias of the management token'}),
