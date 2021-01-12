@@ -29,11 +29,10 @@ class StackCloneCommand extends Command {
 
 StackCloneCommand.description = `Describe the command here
 ...
-Extra documentation goes here
+It is an auto migration script
 `
 
 StackCloneCommand.flags = {
-  name: flags.string({ char: 'n', description: 'name to print' }),
 }
 
 module.exports = StackCloneCommand
