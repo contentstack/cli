@@ -54,10 +54,8 @@ importContentTypes.prototype = {
     globalFieldUpdateFile =  path.join(config.data, 'mapper', 'global_fields', 'success.json')
     fileNames = fs.readdirSync(path.join(contentTypesFolderPath))
     self.globalfields = helper.readFile(path.resolve(globalfieldsFolderPath, globalFieldConfig.fileName))
-    console.log("filename", fileNames);
     for (let index in fileNames) {
       if (skipFiles.indexOf(fileNames[index]) === -1) {
-        console.log("dscdncdncdn");
         self.contentTypes.push(helper.readFile(path.join(contentTypesFolderPath, fileNames[index])))
       }
     }
