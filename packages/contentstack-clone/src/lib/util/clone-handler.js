@@ -5,7 +5,6 @@ const _ = require('lodash')
 let cli = require("cli-ux")
 const fs = require('fs')
 const async = require("async");
-const ora = require("ora")
 const Promise = require('bluebird')
 let client = {}
 let config
@@ -185,10 +184,9 @@ class CloneHandler {
       })
   }
 
-  cmdExe(module, bollean) {
-    if (bollean) {
+  cmdExe(module, createBackupFolder) {
+    if (createBackupFolder) {
       return new Promise(function (resolve, reject) {
-        // const spinner = ora('Importing ' + module + " module").start()
         cli.cli.action.start('Importing ' + module + ' module')
         exec("node bin/run cm:import -A " + " -s " + config.target_stack + " -d " + "content -m " + module, (error, stdout, stderr) => {
           if (error) {
