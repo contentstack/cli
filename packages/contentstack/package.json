@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "0.1.1-beta.1",
+  "version": "0.1.1-beta.2",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run"
@@ -10,9 +10,9 @@
   "dependencies": {
     "@contentstack/cli-auth": "0.1.1-beta.1",
     "@contentstack/cli-command": "0.1.1-beta.1",
-    "@contentstack/cli-cm-bulk-publish": "0.1.1-beta.1",
-    "@contentstack/cli-cm-export": "0.1.2-beta.2",
-    "@contentstack/cli-cm-import": "0.1.2-beta.2",
+    "@contentstack/cli-cm-bulk-publish": "0.1.1-beta.2",
+    "@contentstack/cli-cm-export": "0.1.1-beta.2",
+    "@contentstack/cli-cm-import": "0.1.1-beta.2",
     "@contentstack/management": "1.1.2",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
