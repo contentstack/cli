@@ -74,17 +74,39 @@ module.exports = class extends Generator {
   }
 
   _writeExtension(type) {
+
     let baseDir = path.join(__dirname, '../my-templates/', type)
-    debugger
+
     // copy base files
     this.fs.copy(this.templatePath(`base/LICENSE`), this.destinationPath('LICENSE'))
     this.fs.copy(this.templatePath(`base/.eslintrc.json`), this.destinationPath('.eslintrc.json'))
     this.fs.copy(this.templatePath(`base/gulpfile.js`), this.destinationPath('gulpfile.js'))
     this.fs.copy(this.templatePath(`base/README.md`), this.destinationPath('README.md'))
+
+    switch(type) {
+      case 'dashboard-widget':
+      case 'custom-widget':
+        this.fs.copy(this.templatePath(path.join(baseDir, 'source/index.html')), this.destinationPath('source/index.html'))
+        // this.fs.copyTpl(this.templatePath(path.join(baseDir, 'source/index.ejs')), this.destinationPath('source/index.html'), this.answers)
+        this.fs.copy(this.templatePath(path.join(baseDir, 'source/index.js')), this.destinationPath('source/index.js'))
+        this.fs.copy(this.templatePath(path.join(baseDir, 'source/style.css')), this.destinationPath('source/style.css'))
+        break
+      case 'custom-field':
+        this.fs.copyTpl(this.templatePath('custom-field/source/index.ejs'), this.destinationPath('source/index.html'), this.answers)
+        this.fs.copy(this.templatePath(`custom-field/js/${this.answers.dataType}.js`), this.destinationPath(`source/${this.answers.dataType}.js`))
+        this.fs.copy(this.templatePath(path.join(baseDir, 'source/style.css')), this.destinationPath('source/style.css'))
+        break
+      }
+
+    // debugger
+    
     // copy type specific files
-    this.fs.copy(this.templatePath(path.join(baseDir, 'source/index.html')), this.destinationPath('source/index.html'))
-    this.fs.copy(this.templatePath(path.join(baseDir, 'source/index.js')), this.destinationPath('source/index.js'))
-    this.fs.copy(this.templatePath(path.join(baseDir, 'source/style.css')), this.destinationPath('source/style.css'))
+    
+    // this.fs.copy(this.templatePath(path.join(baseDir, 'source/index.html')), this.destinationPath('source/index.html'))
+    // this.fs.copyTpl(this.templatePath(path.join(baseDir, 'source/index.ejs')), this.destinationPath('source/index.html'), this.answers)   
+    
+    // this.fs.copy(this.templatePath(path.join(baseDir, 'source/index.js')), this.destinationPath('source/index.js'))
+    // this.fs.copy(this.templatePath(path.join(baseDir, 'source/style.css')), this.destinationPath('source/style.css'))
   }
 
 	async prompting() {
@@ -159,13 +181,22 @@ module.exports = class extends Generator {
           {name: 'Half', value: 'half'},
           {name: 'Full', value: 'full'},
         ],
-				when: (answers) => answers.type === 'dashboardWidget',
+				when: (answers) => answers.type === 'dashboard-widget',
 			},
-			{
-        type: 'confirm',
-        name: 'typescript',
-        message: 'TypeScript',
-        default: () => true,
+      {
+        type: 'list',
+        name: 'dataType',
+        message: 'Select the data type',
+        choices: [
+          {name: 'Number', value: 'number'},
+          {name: 'JSON', value: 'json'},
+          {name: 'Boolean', value: 'boolean'},
+          {name: 'File', value: 'file'},
+          {name: 'Text', value: 'text'},
+          {name: 'Reference', value: 'reference'},
+          {name: 'Date', value: 'date'},
+        ],
+        when: (answers) => answers.type === 'custom-field',
       }
 		]
 
@@ -213,10 +244,6 @@ module.exports = class extends Generator {
 
 		if (this.pjson.oclif && Array.isArray(this.pjson.oclif.plugins)) {
       this.pjson.oclif.plugins.sort()
-    }
-
-    if (this.ts) {
-      this.fs.copyTpl(this.templatePath('tsconfig.json'), this.destinationPath('tsconfig.json'), this)
     }
 
     if (this.fs.exists(this.destinationPath('./package.json'))) {
