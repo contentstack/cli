@@ -16,6 +16,17 @@ class ContentstackCommand extends Command {
     this._managementAPIClient = ContentstackManagementSDK.client({host:this.cmaHost})
     return this._managementAPIClient
   }
+
+  set managementAPIClient(params) {
+    console.log(params)
+    if(params && params.host) {
+      //can not set host explicitly as CLI runs under constant host coming from config
+      params.host = this.cmaHost
+    } else {
+      params.host = this.cmaHost
+    }
+    this._managementAPIClient = ContentstackManagementSDK.client(params)
+  }
   
   get email() {
     if (this._email) return this._email
