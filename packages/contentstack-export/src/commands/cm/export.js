@@ -103,7 +103,6 @@ ExportCommand.examples = [
 
 ExportCommand.flags = {
   config: flags.string({char: 'c', description: '[optional] path of the config'}),
-  // 'master-lang': flags.string({char: 'l', description: "code of the source stack's master Language"}),
   'stack-uid': flags.string({char: 's', description: 'API key of the source stack'}),
   data: flags.string({char: 'd', description: 'path or location to store the data'}),
   'management-token-alias': flags.string({char: 'a', description: 'alias of the management token'}),
