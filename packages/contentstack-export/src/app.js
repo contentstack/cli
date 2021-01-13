@@ -55,6 +55,7 @@ var allExport = async (config, types) => {
       let type = types[i]
       var exportedModule = require('./lib/export/' + type)
       await exportedModule.start(config).then(result => {
+        console.log("dkdkdkddk");
         if (type === 'stack') {
           let master_locale = { master_locale: { code: result.master_locale } }
           config = _.merge(config, master_locale)
