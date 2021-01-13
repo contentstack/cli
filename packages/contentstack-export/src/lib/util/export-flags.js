@@ -9,8 +9,9 @@ let {initial} = require('../../app')
 let _ = require('lodash')
 const {cli} = require('cli-ux')
 
-exports.configWithMToken = function (config, managementTokens, host) {
+exports.configWithMToken = function (config, managementTokens, host, _authToken) {
   let externalConfig = require(config)
+  defaultConfig.auth_token = _authToken
   defaultConfig.management_token = managementTokens.token
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
@@ -18,8 +19,9 @@ exports.configWithMToken = function (config, managementTokens, host) {
   initial(defaultConfig)
 }
 
-exports.parameterWithMToken = function (managementTokens, data, moduleName, host) {
+exports.parameterWithMToken = function (managementTokens, data, moduleName, host, _authToken) {
   defaultConfig.management_token = managementTokens.token
+  defaultConfig.auth_token = _authToken
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
   if (moduleName && moduleName !== undefined) {
