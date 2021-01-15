@@ -15,7 +15,6 @@ let util = require('./lib/util')
 let {addlogs, log} = require('./lib/util/log')
 
 exports.initial = function (configData) {
-  console.time('profiling')
   let config = util.initialization(configData)
 
   config.oldPath = config.data
@@ -70,12 +69,10 @@ let singleExport = (moduleName, types, config) => {
 let allExport = async (config, types) => {
   let counter = 0
   Bluebird.mapSeries(types, function (type) {
-    console.timeLog('profiling')
     let exportedModule = require('./lib/import/' + types[counter])
     counter ++;
     return exportedModule.start(config)
   }).then(function () {
-    console.timeEnd('profiling')
     addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported successfully!'), 'success')
     addlogs(config, 'Backup folder location: ' + path.join(config.data, '/'), 'success')
     addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'success')
