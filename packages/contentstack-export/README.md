@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-export/0.1.1-beta.1 darwin-x64 node-v10.19.0
+@contentstack/cli-cm-export/0.1.1-beta.2 darwin-x64 node-v14.9.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -50,13 +50,13 @@ DESCRIPTION
 
 EXAMPLES
   csdx cm:export -A
-  csdx cm:export -A -l 'master-language' -s 'stack_ApiKey' -d 'path/of/export/destination/dir'
-  csdx cm:export -A -c 'path/of/config/dir'
-  csdx cm:export -a 'management_token_alias'
-  csdx cm:export -a "management_token_alias" -l "master-language" -d "path/of/export/destination/dir"
-  csdx cm:export -a "management_token_alias" -c "path/of/config/file"
-  csdx cm:export -A -m "single module name"
+  csdx cm:export -A -l <master_language> -s <stack_ApiKey> -d <path/of/export/destination/dir>
+  csdx cm:export -A -c <path/to/config/dir>
+  csdx cm:export -a <management_token_alias>
+  csdx cm:export -a <management_token_alias> -l <master_language> -d <path/to/export/destination/dir>
+  csdx cm:export -a <management_token_alias> -c <path/to/config/file>
+  csdx cm:export -A -m <single module name>
 ```
 
-_See code: [src/commands/cm/export.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [src/commands/cm/export.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-export/src/commands/cm/export.js)_
 <!-- commandsstop -->
