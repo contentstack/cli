@@ -1,4 +1,3 @@
-// const {Command, flags} = require('@oclif/command')
 const {Command, flags} = require('@contentstack/cli-command')
 const {cli} = require('cli-ux')
 let _ = require('lodash')
@@ -16,10 +15,10 @@ class ImportCommand extends Command {
   async run() {
     const {flags} = this.parse(ImportCommand)
     const extConfig = flags.config
-    const masterLang = flags['master-lang']
-    let targetStack = flags['stack-uid']
     const data = flags.data
     const moduleName = flags.module
+    const masterLang = flags['master-lang']
+    let targetStack = flags['stack-uid']
     const alias = flags['management-token-alias']
     const authToken = flags['auth-token']
     let _authToken = credStore.get('authtoken')
@@ -39,7 +38,7 @@ class ImportCommand extends Command {
             extConfig,
             managementTokens,
             moduleName,
-            host
+            host,    
           )
         } else if (masterLang && data) {
           parameterWithMToken(
@@ -47,13 +46,13 @@ class ImportCommand extends Command {
             managementTokens,
             data,
             moduleName,
-            host
+            host,           
           )
         } else {
           withoutParameterMToken(
             managementTokens,
             moduleName,
-            host
+            host,          
           )
         } 
       } else {
@@ -65,7 +64,7 @@ class ImportCommand extends Command {
           extConfig,
           _authToken,
           moduleName,
-          host
+          host,
         )
       } else if (masterLang && targetStack && data) {
         parametersWithAuthToken(
@@ -74,13 +73,13 @@ class ImportCommand extends Command {
           targetStack,
           data,
           moduleName,
-          host
+          host,
         )
       } else {
         withoutParametersWithAuthToken(
           _authToken,
           moduleName,
-          host
+          host,
         )
       }
     } else  {
@@ -103,13 +102,34 @@ ImportCommand.examples = [
   `csdx cm:import -A -m <single module name>`,
 ]
 ImportCommand.flags = {
-  config: flags.string({char: 'c', description: '[optional] path of config file'}),
-  'master-lang': flags.string({char: 'l', description: "code of the target stack's master language"}),
-  'stack-uid': flags.string({char: 's', description: 'API key of the target stack'}),
-  data: flags.string({char: 'd', description: 'path and location where data is stored'}),
-  'management-token-alias': flags.string({char: 'a', description: 'alias of the management token'}),
-  'auth-token': flags.boolean({char: 'A', description: 'to use auth token'}),
-  module: flags.string({char: 'm', description: '[optional] specific module name'})
+  config: flags.string({
+    char: 'c', 
+    description: '[optional] path of config file'
+  }),
+  'master-lang': flags.string({
+    char: 'l', 
+    description: "code of the target stack's master language"
+  }),
+  'stack-uid': flags.string({
+    char: 's', 
+    description: 'API key of the target stack'
+  }),
+  data: flags.string({
+    char: 'd', 
+    description: 'path and location where data is stored'
+  }),
+  'management-token-alias': flags.string({
+    char: 'a', 
+    description: 'alias of the management token'
+  }),
+  'auth-token': flags.boolean({
+    char: 'A', 
+    description: 'to use auth token'
+  }),
+  module: flags.string({
+    char: 'm', 
+    description: '[optional] specific module name'
+  }),
 }
 
 module.exports = ImportCommand
