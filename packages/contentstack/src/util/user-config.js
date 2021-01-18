@@ -86,6 +86,21 @@ class UserConfig {
   }
 
   /**
+   *
+   * Set rateLimit to config store
+   * @param {object} rateLimitObject should contain rate limit property
+   * @returns {object} ratelimit object with limit property
+   */
+  // setCustomRateLimit(rateLimitObject) {
+  //   if(rateLimitObject !== undefined && isNaN(rateLimitObject)) {
+  //     throw new TypeError(rateLimitObject + " is not a number, Please provide number as a rate limit")
+  //  } else {
+  //   config.set('rate-limit', rateLimitObject)
+  //   return rateLimitObject
+  //  }
+  // }
+
+  /**
    * Validate given region JSON object
    * @param {*} regionObject JSON object needs to be validated
    * @returns {boolean} True if contains cma, cda and region property otherwise false
