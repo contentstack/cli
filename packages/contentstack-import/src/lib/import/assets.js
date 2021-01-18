@@ -21,7 +21,7 @@ let util = require('../util')
 let config = require('../../config/default')
 const assetsConfig = config.modules.assets
 let assetBatchLimit = (assetsConfig.hasOwnProperty('batchLimit') && typeof assetBatchLimit === 'number') ?
-    assetsConfig.assetBatchLimit : 2
+  assetsConfig.assetBatchLimit : 2
 let assetsFolderPath
 let mapperDirPath
 let environmentPath
@@ -52,12 +52,12 @@ importAssets.prototype = {
     self.assets = helper.readFile(path.join(assetsFolderPath, assetsConfig.fileName))
     self.environment = helper.readFile(environmentPath)
     if (fs.existsSync(self.uidMapperPath)) {
-    self.uidMapping = helper.readFile(self.uidMapperPath)
+      self.uidMapping = helper.readFile(self.uidMapperPath)
     }
     if (fs.existsSync(self.urlMapperPath)) {
       self.urlMapping = helper.readFile(self.urlMapperPath)
     }
-    
+
     mkdirp.sync(mapperDirPath)
 
     return new Promise(function (resolve, reject) {
@@ -72,7 +72,7 @@ importAssets.prototype = {
       }
 
       return self.importFolders().then(function () {
-        return Promise.map(batches, function (batch, index) {
+        return Promise.map(batches, async function (batch, index) {
           return Promise.map(batch, function (assetUid) {
             if (self.uidMapping.hasOwnProperty(assetUid)) {
               addlogs(config, 'Skipping upload of asset: ' + assetUid + '. Its mapped to: ' + self.uidMapping[
@@ -87,7 +87,7 @@ importAssets.prototype = {
               if (config.versioning) {
                 return self.uploadVersionedAssets(assetUid, currentAssetFolderPath).then(function () {
                 }).catch(function (error) {
-                  addlogs(config, (chalk.red('Asset upload failed to import\n' + error), 'error'))
+                  addlogs(config, (chalk.red('Asset upload failed \n' + error), 'error'))
                 })
               }
               let assetPath = path.resolve(currentAssetFolderPath, self.assets[assetUid].filename)
@@ -101,54 +101,53 @@ importAssets.prototype = {
                 }
               }
 
-              return self.uploadAsset(assetPath, self.assets[assetUid], uidContainer, urlContainer).then(function () {
+              return self.uploadAsset(assetPath, self.assets[assetUid], uidContainer, urlContainer).then(async function () {  
                 self.uidMapping[assetUid] = uidContainer[assetUid]
-                self.urlMapping[self.assets[assetUid].url] = urlContainer[self.assets[
-                assetUid].url]
+                self.urlMapping[self.assets[assetUid].url] = urlContainer[self.assets[assetUid].url]
 
-                if (config.entriesPublish) {
-                  if (self.assets[assetUid].publish_details.length > 0) {
-                    let assetsUid = uidContainer[assetUid]
-                    if(self.assets[assetUid].publish_details.length !== 0 ) {
-                      return self.publish(assetsUid, self.assets[assetUid]).then(function () {
-                        return
-                      }).catch(error => {
-                        return
-                      })
-                    }
+                if (config.entriesPublish && self.assets[assetUid].publish_details.length > 0) {
+                  let assetsUid = uidContainer[assetUid]
+                  try {
+                    return await self.publish(assetsUid, self.assets[assetUid])
+                  } catch (error) {
+                    return error
                   }
                 }
-                return
                 // assetUid has been successfully uploaded
                 // log them onto /mapper/assets/success.json
               }).catch(function (error) {
-                addlogs(config, chalk.red('Asset upload failed to import\n' + error, 'error'))
+                addlogs(config, chalk.red('Asset upload failed \n' + error, 'error'))
+                return error
                 // asset failed to upload
                 // log them onto /mapper/assets/fail.json
               })
             }
             addlogs(config, (currentAssetFolderPath + ' does not exist!'), 'error')
           }, {
-            concurrency: assetBatchLimit,
+            concurrency: 1,
           }).then(function () {
             helper.writeFile(self.uidMapperPath, self.uidMapping)
             helper.writeFile(self.urlMapperPath, self.urlMapping)
             // completed uploading assets
             addlogs(config, 'Completed asset import of batch no: ' + (index + 1), 'success')
+            return index + 1
             // TODO: if there are failures, retry
           })
         }, {
           concurrency: 1,
         }).then(function () {
-          addlogs(config, chalk.green('Asset import completed successfully!'), 'success')
+          let numberOfSuccessfulAssetUploads = Object.keys(self.uidMapping).length
+          if (numberOfSuccessfulAssetUploads > 0) {
+            addlogs(config, chalk.green(numberOfSuccessfulAssetUploads + ' assets uploaded successfully!'), 'success')
+          }
           // TODO: if there are failures, retry
           return resolve()
         }).catch(function () {
           return reject()
         })
-    }).catch(function (error) {
-      return reject()
-    })
+      }).catch(function (error) {
+        return reject()
+      })
     })
   },
   uploadVersionedAssets: function (uid, assetFolderPath) {
@@ -187,7 +186,7 @@ importAssets.prototype = {
         return self.updateAsset(assetPath, assetMetadata, filesStreamed, uidContainer, urlContainer)
         .then(function () {
           filesStreamed.push(assetMetadata.filename)
-        }).catch(error => {          
+        }).catch(error => {
         })
       }, {
         concurrency: 1,
@@ -239,6 +238,7 @@ importAssets.prototype = {
         urlContainer[metadata.url] = response.url
         return resolve()
       }).catch(function (error) {
+        return reject(error)
       })
     })
   },
@@ -246,7 +246,7 @@ importAssets.prototype = {
     // let self = this
     return new Promise(function (resolve, reject) {
       let requestOption = {}
-      
+
       if (metadata.hasOwnProperty('parent_uid') && typeof metadata.parent_uid === 'string') {
         requestOption.parent_uid = metadata.parent_uid
       }
@@ -275,7 +275,7 @@ importAssets.prototype = {
   },
 
   importFolders: function () {
-      let self = this
+    let self = this
     return new Promise(function (resolve, reject) {
       let mappedFolderPath = path.resolve(config.data, 'mapper', 'assets', 'folder-mapping.json')
       self.folderDetails = helper.readFile(path.resolve(assetsFolderPath, 'folders.json'))
@@ -299,24 +299,24 @@ importAssets.prototype = {
       let idx = 0
       return Promise.map(self.folderBucket, function () {
         let folder = self.folderBucket[idx]
-        if (createdFolders.hasOwnProperty(folder.json.asset.parent_uid)) { 
+        if (createdFolders.hasOwnProperty(folder.json.asset.parent_uid)) {
           // replace old uid with new
           folder.json.asset.parent_uid = createdFolders[folder.json.asset.parent_uid]
-        }        
+        }
         return client.stack({api_key: config.target_stack, management_token: config.management_token}).asset().folder().create(folder.json)
-        .then(response => {          
+        .then(response => {
           addlogs(config, 'Created folder: \'' + folder.json.asset.name + '\'', 'success')
           // { oldUid: newUid }
           createdFolders[folder.oldUid] = response.uid
           helper.writeFile(mappedFolderPath, createdFolders)
           idx++
-          return;
         }).catch(function (err) {
           let error = JSON.parse(err.message)
           if (error.errors.authorization || error.errors.api_key) {
             addlogs(config, chalk.red('Api_key or management_token is not valid'), 'error')
+            return reject(error)
           }
-          return reject(error)
+          return error
         })
       }, {
         concurrency: 1,
@@ -402,14 +402,17 @@ importAssets.prototype = {
       })
       requestObject.json.asset.environments = envId
       requestObject.json.asset.locales = locales
-      return client.stack({api_key: config.target_stack, management_token: config.management_token}).asset(assetUid).publish({ publishDetails: requestObject.json.asset})
+      return client.stack({api_key: config.target_stack, management_token: config.management_token}).asset(assetUid).publish({publishDetails: requestObject.json.asset})
       .then(function () {
-        addlogs(config, chalk.green('Asset ' + assetUid + ' published successfully'), 'success')
+        addlogs(config, 'Asset ' + assetUid + ' published successfully', 'success')
         return resolve()
       }).catch(function (err) {
-         let error = JSON.parse(err.message)
-         addlogs(config, chalk.red('Asset ' + assetUid + ' not published, '+ error.errorMessage), 'error')
-         return reject(error)
+        if (err && err.message) {
+          let error = JSON.parse(err.message)
+          addlogs(config, chalk.red('Asset ' + assetUid + ' not published, ' + error.errorMessage), 'error')
+          return reject(err)
+        }
+        return reject(err)
       })
     })
   },

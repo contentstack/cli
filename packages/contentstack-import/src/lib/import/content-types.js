@@ -15,21 +15,23 @@ let helper = require('../util/fs')
 let util = require('../util')
 let {addlogs} = require('../util/log')
 let supress = require('../util/extensionsUidReplace')
-let stack = require('../util/contentstack-management-sdk')
+let sdkInstance = require('../util/contentstack-management-sdk')
 
 let config = require('../../config/default')
 let reqConcurrency = config.concurrency
+let requestLimit = config.rateLimit
 let contentTypeConfig = config.modules.content_types
 let globalFieldConfig = config.modules.globalfields
-let globalfieldsFolderPath
+let globalFieldsFolderPath
 let contentTypesFolderPath
 let mapperFolderPath
-let globalFieldMapperFolderpath
+let globalFieldMapperFolderPath
 let globalFieldUpdateFile
 let skipFiles = ['__master.json', '__priority.json', 'schema.json']
 let fileNames
 let field_rules_ct = []
 let client
+let stack = {}
 
 function importContentTypes() {
   let self = this
@@ -45,20 +47,21 @@ importContentTypes.prototype = {
     addlogs(config, 'Migrating contenttypes', 'success')
     let self = this
     config = credentialConfig
-    client = stack.Client(config)
-    globalfieldsFolderPath = path.resolve(config.data, globalFieldConfig.dirName)
+    client = sdkInstance.Client(config)
+    stack = client.stack({api_key: config.target_stack, management_token: config.management_token})
+    globalFieldsFolderPath = path.resolve(config.data, globalFieldConfig.dirName)
     contentTypesFolderPath = path.resolve(config.data, contentTypeConfig.dirName)
     mapperFolderPath = path.join(config.data, 'mapper', 'content_types')
-    globalFieldMapperFolderpath =  helper.readFile(path.join(config.data, 'mapper', 'global_fields', 'success.json'))
-    globalFieldUpdateFile =  path.join(config.data, 'mapper', 'global_fields', 'success.json')
+    globalFieldMapperFolderPath = helper.readFile(path.join(config.data, 'mapper', 'global_fields', 'success.json'))
+    globalFieldUpdateFile = path.join(config.data, 'mapper', 'global_fields', 'success.json')
     fileNames = fs.readdirSync(path.join(contentTypesFolderPath))
-    self.globalfields = helper.readFile(path.resolve(globalfieldsFolderPath, globalFieldConfig.fileName))
+    self.globalfields = helper.readFile(path.resolve(globalFieldsFolderPath, globalFieldConfig.fileName))
     for (let index in fileNames) {
       if (skipFiles.indexOf(fileNames[index]) === -1) {
         self.contentTypes.push(helper.readFile(path.join(contentTypesFolderPath, fileNames[index])))
       }
     }
-  
+
     self.contentTypeUids = _.map(self.contentTypes, 'uid')
     self.createdContentTypeUids = []
     if (!fs.existsSync(mapperFolderPath)) {
@@ -84,21 +87,26 @@ importContentTypes.prototype = {
         // seed 3 content types at a time
         concurrency: reqConcurrency,
       }).then(function () {
-        let batches = []        
-        let lenObj = self.contentTypes        
-        for (let i = 0; i < lenObj.length; i += 7) {
-          batches.push(lenObj.slice(i, i + 7))
+        let batches = []
+        let lenObj = self.contentTypes
+        // var a = Math.round(2.60);
+        for (let i = 0; i < lenObj.length; i += Math.round(requestLimit / 3)) {
+          batches.push(lenObj.slice(i, i + Math.round(requestLimit / 3)))
         }
-        
-        return Promise.map(batches, function (batch) {
-          return Promise.map(batch, function (contentType) {
-          return self.updateContentTypes(contentType).then(function () {
+
+        return Promise.map(batches, async function (batch) {
+          return Promise.map(batch, async function (contentType) {
+            await self.updateContentTypes(contentType)
             addlogs(config, contentType.uid + ' was updated successfully!', 'success')
-            return
-          }).catch(function (err) {
-            return reject()
+          },
+          {
+            concurrency: reqConcurrency,
+          }).then(function () {
+          }).catch(e => {
+            console.log('Something went wrong while migrating content type batch', e)
           })
-        })
+        }, {
+          concurrency: reqConcurrency,
         }).then(function () {
           // eslint-disable-next-line quotes
           if (field_rules_ct.length > 0) {
@@ -106,19 +114,18 @@ importContentTypes.prototype = {
               if (err) throw err
             })
           }
-        
-         if( _globalField_pending.length !== 0 ) {
-          return self.updateGlobalfields().then(function () {
-            addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
-            return resolve()
-          }).catch(reject)
-         }  else {
-            addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
-            return resolve()
-         } 
+
+          if (_globalField_pending.length !== 0) {
+            return self.updateGlobalfields().then(function () {
+              addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
+              return resolve()
+            }).catch(reject)
+          }
+          addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
+          return resolve()
         }).catch(error => {
           return reject(error)
-        }) 
+        })
         // content type seeidng completed
         // return Promise.map(self.contentTypes, function (contentType) {
         //   return self.updateContentTypes(contentType).then(function () {
@@ -134,7 +141,7 @@ importContentTypes.prototype = {
         //       if (err) throw err
         //     })
         //   }
-        
+
         //  if( _globalField_pending.length !== 0 ) {
         //   return self.updateGlobalfields().then(function () {
         //     log.success(chalk.green('Content types have been imported successfully!'))
@@ -143,7 +150,7 @@ importContentTypes.prototype = {
         //  }  else {
         //     log.success(chalk.green('Content types have been imported successfully!'))
         //     return resolve()
-        //  } 
+        //  }
         // }).catch(error => {
         //   return reject(error)
         // })
@@ -160,7 +167,7 @@ importContentTypes.prototype = {
       body.content_type.title = uid
       let requestObject = _.cloneDeep(self.requestOptions)
       requestObject.json = body
-    return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType().create(requestObject.json)
+      return stack.contentType().create(requestObject.json)
       .then(result => {
         return resolve()
       })
@@ -177,25 +184,24 @@ importContentTypes.prototype = {
   updateContentTypes: function (contentType) {
     let self = this
     return new Promise(function (resolve, reject) {
-       let requestObject = _.cloneDeep(self.requestOptions)
-      if (contentType.field_rules) {
-        field_rules_ct.push(contentType.uid)
-        delete contentType.field_rules
-      }
-      supress(contentType.schema)
-      requestObject.json.content_type = contentType
-      client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(contentType.uid).fetch()
-      .then(contentTypeResponse => {
+      setTimeout(function () {
+        let requestObject = _.cloneDeep(self.requestOptions)
+        if (contentType.field_rules) {
+          field_rules_ct.push(contentType.uid)
+          delete contentType.field_rules
+        }
+        supress(contentType.schema)
+        requestObject.json.content_type = contentType
+        let contentTypeResponse = stack.contentType(contentType.uid)
         Object.assign(contentTypeResponse, _.cloneDeep(contentType))
         contentTypeResponse.update()
-      })
-      .then(UpdatedcontentType => {
-        return resolve()
-      }).catch(err => {
-        let error = JSON.parse(err.message)
-        addlogs(config, error, 'error')
-        return reject()
-      })
+        .then(UpdatedcontentType => {
+          return resolve()
+        }).catch(err => {
+          addlogs(config, err, 'error')
+          return reject()
+        })
+      }, 1000)
     })
   },
 
@@ -205,21 +211,21 @@ importContentTypes.prototype = {
       // eslint-disable-next-line no-undef
       return Promise.map(_globalField_pending, function (globalfield) {
         let lenGlobalField = (self.globalfields).length
-        let Obj = _.find(self.globalfields, { 'uid': globalfield});
-      return client.stack({api_key: config.target_stack, management_token: config.management_token}).globalField(globalfield).fetch()
+        let Obj = _.find(self.globalfields, {uid: globalfield})
+        let globalFieldObj = stack.globalField(globalfield)
+        Object.assign(globalFieldObj, _.cloneDeep(Obj))
+        return globalFieldObj.update()
         .then(globalFieldResponse => {
-          globalFieldResponse.schema = Obj.schema
-          globalFieldResponse.update()
-          let updateObjpos = _.findIndex(globalFieldMapperFolderpath, function (successobj) {
+          let updateObjpos = _.findIndex(globalFieldMapperFolderPath, function (successobj) {
             let global_field_uid = globalFieldResponse.uid
             return global_field_uid === successobj
           })
-          globalFieldMapperFolderpath.splice(updateObjpos, 1, Obj)
-          helper.writeFile(globalFieldUpdateFile, globalFieldMapperFolderpath)
+          globalFieldMapperFolderPath.splice(updateObjpos, 1, Obj)
+          helper.writeFile(globalFieldUpdateFile, globalFieldMapperFolderPath)
         }).catch(function (err) {
           let error = JSON.parse(err.message)
           // eslint-disable-next-line no-console
-          addlogs(config, chalk.red('Globalfield failed to update ' + JSON.stringify(error.errors)), 'error')
+          addlogs(config, chalk.red('Global Field failed to update ' + JSON.stringify(error.errors)), 'error')
         })
       }, {
         concurrency: reqConcurrency,
