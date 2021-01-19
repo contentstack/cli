@@ -38,7 +38,6 @@ exports.parameterWithMToken = function (masterLang, managementTokens, data, modu
 // using ManagemetToken
 exports.withoutParameterMToken = async (managementTokens, moduleName, host) => {
   const masterLocale = await cli.prompt(message.promptMessageList.promptMasterLocale)
-  // const stackUid = managementTokens.apiKey
   const exporteddata = await cli.prompt(message.promptMessageList.promptPathStoredData)
   var masterloc = {master_locale: {code: masterLocale}}
   defaultConfig.management_token = managementTokens.token
