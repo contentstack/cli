@@ -4,6 +4,7 @@ const yosay = require('yosay')
 const _ = require('lodash')
 const path = require('path')
 const sortPjson = require('sort-pjson')
+const fixpack = require('@oclif/fixpack')
 const fs = require('fs')
 const nps = require('nps-utils')
 
@@ -66,6 +67,18 @@ module.exports = class extends Generator {
     }
   }
 
+  _eslintignore() {
+    const existing = this.fs.exists(this.destinationPath('.eslintignore')) ? this.fs.read(this.destinationPath('.eslintignore')).split('\n') : []
+    return _([
+      this.ts && '/lib',
+    ])
+    .concat(existing)
+    .compact()
+    .uniq()
+    .sort()
+    .join('\n') + '\n'
+  } 
+
 	async prompting() {
 		const defaults = {
 			name: 'plugin-template',
@@ -78,6 +91,15 @@ module.exports = class extends Generator {
         ...this.pjson.engines,
       }
 		}
+
+    this.pjson = {
+      scripts: {},
+      engines: {},
+      devDependencies: {},
+      dependencies: {},
+      oclif: {},
+      // ...this.fs.readJSON('package.json', {}),
+    }
 
 		let prompts = [
 			{
@@ -127,16 +149,55 @@ module.exports = class extends Generator {
         name: 'typescript',
         message: 'TypeScript',
         default: () => true,
+      },
+      {
+        type: 'confirm',
+        name: 'eslint',
+        message: 'Do you want to use ESLint',
+        default: () => true,
+      },
+      {
+        type: 'confirm',
+        name: 'mocha',
+        message: 'Do you want to use Mocha',
+        default: () => true,
       }
 		]
 
 		this.answers = await this.prompt(prompts)
 
 		this.options = {
-			typescript: this.answers.typescript
+			typescript: this.answers.typescript,
+      mocha: this.answers.mocha,
+      eslint: this.answers.eslint
 		}
 
 		this.ts = this.options.typescript
+    this.eslint = this.options.eslint
+    this.mocha = this.options.mocha
+
+    this.pjson.repository = this.answers.repository || defaults.repository
+    this.pjson.keywords = defaults.keywords || ['contentstack', 'plugin', 'cli']
+    this.pjson.homepage = defaults.homepage || `https://github.com/${this.pjson.repository}`
+    this.pjson.bugs = defaults.bugs || `https://github.com/${this.pjson.repository}/issues`
+
+    this.pjson.name = this.answers.name || defaults.name
+    this.pjson.description = this.answers.description || defaults.description
+    this.pjson.license = this.answers.license || defaults.license
+    this.pjson.version = this.answers.version || defaults.version
+    this.pjson.author = this.answers.author || defaults.author
+    this.pjson.files = this.answers.files || defaults.files || [(this.ts ? '/lib' : '/src')]
+    this.pjson.engines.node = defaults.engines.node
+
+    if (this.eslint) {
+      this.pjson.scripts.posttest = 'eslint .'
+    }
+
+    if (this.mocha) {
+      this.pjson.scripts.test = `nyc ${this.ts ? '--extension .ts ' : ''}mocha --forbid-only "test/**/*.test.${this._ext}"`
+    } else {
+      this.pjson.scripts.test = 'echo NO TESTS'
+    }
 
 		if (this.ts) {
       this.pjson.scripts.prepack = nps.series(`${rmrf} lib`, 'tsc -b')
@@ -145,17 +206,11 @@ module.exports = class extends Generator {
       }
     }
 
-    this.pjson.repository = this.answers.repository || defaults.repository
-		this.pjson.keywords = defaults.keywords || ['contentstack', 'plugin', 'cli']
-    this.pjson.homepage = defaults.homepage || `https://github.com/${this.pjson.repository}`
-    this.pjson.bugs = defaults.bugs || `https://github.com/${this.pjson.repository}/issues`
-
-		this.pjson.name = this.answers.name || defaults.name
-    this.pjson.description = this.answers.description || defaults.description
-    this.pjson.license = this.answers.license || defaults.license
-    this.pjson.version = this.answers.version || defaults.version
-    this.pjson.author = this.answers.author || defaults.author
-    this.pjson.engines.node = defaults.engines.node
+    this.pjson.scripts.prepack = nps.series(this.pjson.scripts.prepack, 'oclif-dev manifest', 'oclif-dev readme')
+    this.pjson.scripts.postpack = `${rmf} oclif.manifest.json`
+    this.pjson.scripts.version = nps.series('oclif-dev readme', 'git add README.md')
+    this.pjson.files.push('/oclif.manifest.json')
+    this.pjson.files.push('/npm-shrinkwrap.json')
 	}
 
 	writing() {
@@ -190,6 +245,23 @@ module.exports = class extends Generator {
 
     if (this.ts) {
       this.fs.copyTpl(this.templatePath('tsconfig.json'), this.destinationPath('tsconfig.json'), this)
+      if (this.mocha) {
+        this.fs.copyTpl(this.templatePath('test/tsconfig.json'), this.destinationPath('test/tsconfig.json'), this)
+      }
+    }
+
+    if (this.eslint) {
+      const eslintignore = this._eslintignore()
+      if (eslintignore.trim()) this.fs.write(this.destinationPath('.eslintignore'), this._eslintignore())
+      if (this.ts) {
+        this.fs.copyTpl(this.templatePath('eslintrc.typescript'), this.destinationPath('.eslintrc'), this)
+      } else {
+        this.fs.copyTpl(this.templatePath('eslintrc'), this.destinationPath('.eslintrc'), this)
+      }
+    }
+    
+    if (this.mocha) {
+      this.fs.copyTpl(this.templatePath('test/mocha.opts'), this.destinationPath('test/mocha.opts'), this)
     }
 
     if (this.fs.exists(this.destinationPath('./package.json'))) {
@@ -237,6 +309,13 @@ module.exports = class extends Generator {
       '@oclif/test@^1',  
     )
 
+    if (this.mocha) {
+      devDependencies.push(
+        'mocha@^5',
+        'nyc@^14',
+        'chai@^4',
+      )
+    }
     if (this.ts) {
       dependencies.push(
         'tslib@^1',
@@ -246,6 +325,23 @@ module.exports = class extends Generator {
         'typescript@^3.3',
         'ts-node@^8',
       )
+      if (this.mocha) {
+        devDependencies.push(
+          '@types/chai@^4',
+          '@types/mocha@^5',
+        )
+      }
+    }
+    if (this.eslint) {
+      devDependencies.push(
+        'eslint@^5.13',
+        'eslint-config-oclif@^3.1',
+      )
+      if (this.ts) {
+        devDependencies.push(
+          'eslint-config-oclif-typescript@^0.1',
+        )
+      }
     }
 
     return Promise.all([
