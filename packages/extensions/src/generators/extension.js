@@ -182,7 +182,7 @@ module.exports = class extends Generator {
           {name: 'Full', value: 'full'},
         ],
 				when: (answers) => answers.type === 'dashboard-widget',
-			},
+      },
       {
         type: 'list',
         name: 'dataType',
