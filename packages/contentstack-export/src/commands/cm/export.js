@@ -20,7 +20,7 @@ class ExportCommand extends Command {
     const data = flags.data
     const moduleName = flags.module
     let _authToken = credStore.get('authtoken')
-    let host = this.config.userConfig.getRegion()
+    let host = this.region
     let cmaHost = host.cma.split('//')
     let cdaHost = host.cda.split('//')
     host.cma = cmaHost[1]
@@ -65,7 +65,7 @@ class ExportCommand extends Command {
           host
         )
       } else if (sourceStack && data) {
-        parametersWithAuthToken(
+        return parametersWithAuthToken(
           _authToken,
           sourceStack,
           data,
@@ -84,6 +84,7 @@ class ExportCommand extends Command {
     } else {
       this.log('Provide the alias for management token or auth token')
     }
+    // return
   }
 }
 
