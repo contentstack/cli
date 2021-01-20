@@ -17,7 +17,7 @@ const stack = require('./lib/util/contentstack-management-sdk')
 let {addlogs} = require('./lib/util/log')
 
 exports.initial = function (configData) { 
-
+  return new Promise(function (resolve, reject) {
   let config = util.initialization(configData)
   config.oldPath = config.data
   if (config && config !== undefined) {
@@ -26,7 +26,6 @@ exports.initial = function (configData) {
       if (fs.existsSync(config.data)) {
       let migrationBackupDirPath = path.join(process.cwd(), '_backup_' + Math.floor((Math.random() * 1000)))
       return createBackup(migrationBackupDirPath, config).then((basePath) => {
-        // console.log("returnwala value++++", basePath);
         config.data = basePath
         return util.sanitizeStack(config)
       }).catch(e=>{
@@ -36,13 +35,18 @@ exports.initial = function (configData) {
      .then(() => {
         let types = config.modules.types    
         if (config.moduleName && config.moduleName !== undefined) {
-          singleExport(config.moduleName, types, config)
+          singleExport(config.moduleName, types, config).then(() => {
+          return resolve()
+          })
         } else {
-          allExport(config, types)
+          allExport(config, types).then(() => {
+          return resolve()
+          })
         }
       }).catch(e=>{
         console.error(e)
-        process.exit(1)
+        return reject(e)
+        // process.exit(1)
       })
     } else {    
       let filename = path.basename(config.data)
@@ -53,10 +57,12 @@ exports.initial = function (configData) {
       return
     })
   }
+})
 }
 
 
 let singleExport = async (moduleName, types, config) => {
+  return new Promise(async (resolve, reject) => {
   if (types.indexOf(moduleName) > -1) {
     if (!config.master_locale) {
       await stackDetails(config).then(stackResponse => {
@@ -67,22 +73,26 @@ let singleExport = async (moduleName, types, config) => {
         console.log("Error to fetch the stack details" + error);
       })
     }
-    console.log("config", config);
     let exportedModule = require('./lib/import/' + moduleName)
     exportedModule.start(config).then(function () {
       addlogs(config, moduleName + ' imported successfully!', 'success')
     addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success')
+    return resolve()
     }).catch(function (error) {
       addlogs(config, 'Failed to migrate ' + moduleName, 'error')
       addlogs(config, error, 'error')
     addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error')
+    return reject()
     })
   } else {
     addlogs(config, 'Please provide valid module name.', 'error')
+    return reject()
   }
+})
 }
 
 let allExport = async (config, types) => {
+  return new Promise(async (resolve, reject) => {
   try {
     for (let i = 0; i < types.length; i++) {
       let type = types[i]
@@ -102,11 +112,14 @@ let allExport = async (config, types) => {
     }
     addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported succesfully!'), 'success')
     addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'success')
+    return resolve()
   } catch (error) {
     addlogs(config, chalk.red('Failed to migrate stack: ' + config.target_stack + '. Please check error logs for more info'), 'error')
     addlogs(config, error, 'error')
     addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'error')
+    return reject()
   }
+})
 }
 
 let stackDetails = async (credentialConfig) => {
