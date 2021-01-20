@@ -66,5 +66,6 @@
 		],
 		"repositoryPrefix": "<%- repo %>/blob/v<%- version %>/packages/contentstack-export/<%- commandPath %>"
 	},
+	"main": "./src/commands/cm/export.js",
 	"repository": "https://github.com/contentstack/cli"
 }
