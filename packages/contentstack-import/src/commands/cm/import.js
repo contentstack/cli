@@ -23,7 +23,7 @@ class ImportCommand extends Command {
     const alias = flags['management-token-alias']
     const authToken = flags['auth-token']
     let _authToken = credStore.get('authtoken')
-    let host = this.config.userConfig.getRegion()
+    let host = this.region
 
     let cmaHost = host.cma.split('//')
     let cdaHost = host.cda.split('//')

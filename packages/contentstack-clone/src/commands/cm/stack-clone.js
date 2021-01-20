@@ -1,13 +1,22 @@
-const { Command, flags } = require('@oclif/command')
+const { Command, flags } = require('@contentstack/cli-command')
 const Configstore = require('configstore')
 const credStore = new Configstore('contentstack_cli')
 let config = require('../../lib/util/config/default')
 const { exec } = require("child_process")
-const {CloneHandler} = require('../../lib/util/clone-handler') 
+const {CloneHandler} = require('../../lib/util/clone-handler')
+const { resolve } = require('bluebird')
+const { reject } = require('async')
 
 
-class StackCloneCommand extends Command {  
+// const export  = require('contentstack_cli')
+
+
+class StackCloneCommand extends Command { 
+  static flags = {
+    app: flags.string({required: true})
+  } 
   async run() {
+    let exportCmd  = require('@contentstack/cli-cm-export')
     let _authToken = credStore.get('authtoken')
     if (_authToken && _authToken !== undefined) {
       config.auth_token = _authToken
@@ -20,7 +29,7 @@ class StackCloneCommand extends Command {
       }
       config.host = host
       const cloneHandler = new CloneHandler(config)
-      cloneHandler.organizationSelection("export")  
+     cloneHandler.organizationSelection("export")  
     } else {
       console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login");
     }
@@ -33,6 +42,7 @@ It is an auto migration script
 `
 
 StackCloneCommand.flags = {
+  
 }
 
 module.exports = StackCloneCommand
