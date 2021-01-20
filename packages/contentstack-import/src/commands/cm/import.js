@@ -1,4 +1,3 @@
-// const {Command, flags} = require('@oclif/command')
 const {Command, flags} = require('@contentstack/cli-command')
 const {cli} = require('cli-ux')
 let _ = require('lodash')
@@ -66,7 +65,7 @@ class ImportCommand extends Command {
           extConfig,
           _authToken,
           moduleName,
-          host
+          host,
         )
       } else if (targetStack && data) {
         parametersWithAuthToken(
@@ -105,13 +104,34 @@ ImportCommand.examples = [
   `csdx cm:import -A -m <single module name>`,
 ]
 ImportCommand.flags = {
-  config: flags.string({char: 'c', description: '[optional] path of config file'}),
-  'stack-uid': flags.string({char: 's', description: 'API key of the target stack'}),
-  data: flags.string({char: 'd', description: 'path and location where data is stored'}),
-  'management-token-alias': flags.string({char: 'a', description: 'alias of the management token'}),
-  'auth-token': flags.boolean({char: 'A', description: 'to use auth token'}),
-  module: flags.string({char: 'm', description: '[optional] specific module name'}),
-  "backup-dir": flags.string({char: 'b', description: '[optional] backup directory name when using specific module'})
+  config: flags.string({
+    char: 'c', 
+    description: '[optional] path of config file'
+  }),
+  'stack-uid': flags.string({
+    char: 's', 
+    description: 'API key of the target stack'
+  }),
+  data: flags.string({
+    char: 'd', 
+    description: 'path and location where data is stored'
+  }),
+  'management-token-alias': flags.string({
+    char: 'a', 
+    description: 'alias of the management token'
+  }),
+  'auth-token': flags.boolean({
+    char: 'A', 
+    description: 'to use auth token'
+  }),
+  module: flags.string({
+    char: 'm', 
+    description: '[optional] specific module name'
+  }),
+  "backup-dir": flags.string({
+    char: 'b', 
+    description: '[optional] backup directory name when using specific module'
+  })
 }
 
 module.exports = ImportCommand
