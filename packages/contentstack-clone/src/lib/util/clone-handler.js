@@ -1,16 +1,17 @@
 let inquirer = require('inquirer')
-let sdkInstance = require('../../lib/util/contentstack-managment-sdk')
-const { exec } = require("child_process")
+const Configstore = require('configstore')
 const _ = require('lodash')
-let cli = require("cli-ux")
 const fs = require('fs')
-const async = require("async");
-const Promise = require('bluebird')
+let ora  = require('ora')
+const credStore = new Configstore('contentstack_cli')
+
+let sdkInstance = require('../../lib/util/contentstack-managment-sdk')
 let exportCmd  = require('@contentstack/cli-cm-export')
 let importCmd  = require('@contentstack/cli-cm-import')
-let ora        = require('ora')
+let region = credStore.get('region')
 let client = {}
 let config
+
 
 let orgChoice = [{
   type: 'list',
@@ -66,6 +67,7 @@ class CloneHandler {
   }
 
   async organizationSelection(params) {
+    return new Promise((resolve, reject) => {
     const spinner = ora('Fetching Organization').start()
     let fetchresult = client.organization().fetchAll({ limit: 100 })
     fetchresult
@@ -86,7 +88,12 @@ class CloneHandler {
           .then(answers => {
             let orgUid = orgUidList[answers.Organization]
             if (params !== undefined && params === "newStack") {
-              this.createNewStack(orgUid)
+               let createStack = this.createNewStack(orgUid)
+               createStack.then(() => {
+                 return resolve()
+               }).catch((error) => {
+                 return reject(error)
+               })
             } else {
               const spinner = ora('Fetching stack List').start()
               let stackList = client.stack().query({ organization_uid: orgUid }).find()
@@ -97,19 +104,25 @@ class CloneHandler {
                     stackChoice[0].choices.push(stacklist.items[j].name)
                   }
                   spinner.succeed("Fetched stack List")
-                  // cli.cli.action.stop()
-                  this.stackSelection(params)
-                }).catch(err => {
+                  let stackSelection = this.stackSelection(params)
+                  stackSelection.then(() => {
+
+                  }).catch((error) => {
+                    return reject(error)
+                  })
+                }).catch(error => {
+                  return reject(error)
                 })
             }
           })
       }).catch(err => {
-
+        return reject(err)
       })
+    })
   }
 
-  stackSelection(params) {
-
+  async stackSelection(params) {
+    return new Promise((resolve, reject) => {
     if (params !== undefined && params === "import") {
       stackChoice[0].message = "Choose the stack in which data to be import "
     } else {
@@ -126,14 +139,26 @@ class CloneHandler {
           stackName[0].default = stackSelected.stack
         }
         if (params !== undefined && params === "import") {
-          this.cloneTypeSelection()
+          let cloneTypeSelection = this.cloneTypeSelection()
+          cloneTypeSelection.then(() => {
+            return resolve()
+          }).catch((error) => {
+            return reject(error)
+          })
         } else {
-          this.cmdExportImport("export")
+          let cmdExportImport = this.cmdExportImport("export")
+          cmdExportImport.then(() => {
+            return resolve()
+          }).catch((error) => {
+            return reject(error)
+          })
         }
       })
-  }
+  })
+}
 
-  createNewStack(orgUid) {
+  async createNewStack(orgUid) {
+    return new Promise((resolve, reject) => {
     inquirer
       .prompt(stackName)
       .then(inputvalue => {
@@ -147,20 +172,23 @@ class CloneHandler {
             config.target_stack = result.api_key
             master_locale = result.master_locale
             this.cloneTypeSelection()
+            return resolve()
           }).catch(error => {
-            console.log("Error:", error);
+            return reject(error)
           })
       })
+    })
   }
 
-  cloneTypeSelection() {
+  async cloneTypeSelection() {
+    return new Promise((resolve, reject) => {
     inquirer
       .prompt(cloneTypeSelection)
       .then(seletedValue => {
         let cloneType = seletedValue.type
         if (cloneType === "structure") {
           let resultData = this.cmdExe(structureList[0], true)
-          resultData.then(data => {
+          resultData.then(() => {
             let files = fs.readdirSync(process.cwd())
             let regex = RegExp("_backup*")
             for (let k = 0; k < files.length; k++) {
@@ -175,15 +203,21 @@ class CloneHandler {
               debugger
             }
             async.series(functionList)
+            return resolve()
           })
-
         } else {
-          this.cmdExportImport("import")
+          let cmdExportImport = this.cmdExportImport("import")
+          cmdExportImport.then(() => {
+            return resolve()
+          }).catch((error) => {
+            return reject(error)
+          })
         }
       })
-  }
+  })
+}
 
-  cmdExe(module, createBackupFolder) {
+  async cmdExe(module, createBackupFolder) {
     if (createBackupFolder) {
       return new Promise(async function (resolve, reject) {
         const spinner = ora().start()
@@ -203,7 +237,11 @@ class CloneHandler {
           var last_element = structureList[structureList.length - 1];
           spinner.succeed('Import completed of ' + module)
           if (last_element === module) {
-            console.log("Please find the stack here: https://app.contentstack.com/#!/stack/" + config.target_stack + "/content-types?view_by=Alphabetical")
+             if (region.name === "EU") {
+              console.log("Please find the stack here: https://eu-app.contentstack.com/#!/stack/" + config.target_stack + "/content-types?view_by=Alphabetical")
+             } else {
+              console.log("Please find the stack here: https://app.contentstack.com/#!/stack/" + config.target_stack + "/content-types?view_by=Alphabetical")
+             }
           }
           cb(null)
         }).catch((error) => {
@@ -214,16 +252,17 @@ class CloneHandler {
   }
 
   async cmdExportImport(action) {
+    return new Promise((resolve, reject) => {
     if (action !== undefined && action === "import") {
       const spinner = ora().start()
       // cli.cli.action.start('Importing all modules with structure and content')
       let importstructureNcontent = importCmd.run(['-A', '-s',config.target_stack, '-d', './content'])
       importstructureNcontent.then(() => {
         spinner.succeed('Completed import with structure and content')
-        return
+        return resolve()
       }).catch(error => {
         console.log("Error:", error);
-         return 
+         return reject(error)
       })
     } else if (action !== undefined && action === "export") {
       const spinner = ora().start()
@@ -234,18 +273,30 @@ class CloneHandler {
           .prompt(stackCreationConfirmation)
           .then(seletedValue => {
             if (seletedValue.stackCreate !== true) {
-              this.organizationSelection("import")
+               let orgSelection = this.organizationSelection("import")
+               orgSelection.then(() => {
+                 return resolve()
+               }).catch(error => {
+                 return reject(error)
+               })
             } else {
-              this.organizationSelection("newStack")
+              let orgSelection = this.organizationSelection("newStack")
+              orgSelection.then(() => {
+                return resolve()
+              }).catch(error => {
+                return reject(error)
+              })
             }
           })
-      }).catch(err => {
+      }).catch(error => {
         console.log("errror", err);
+        return reject(error)
       })
     } else {
       console.log("Please provide the valid input")
     }
-  }
+  })
+}
 }
 
 module.exports = {
