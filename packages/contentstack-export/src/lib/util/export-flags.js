@@ -8,6 +8,7 @@ let message = require('../../../messages/index.json')
 let {initial} = require('../../app')
 let _ = require('lodash')
 const {cli} = require('cli-ux')
+const { resolve } = require('bluebird')
 
 exports.configWithMToken = function (config, managementTokens, host, _authToken) {
   let externalConfig = require(config)
@@ -61,15 +62,23 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host) {
 }
 
 exports.parametersWithAuthToken = function (_authToken, sourceStack, data, moduleName, host) {
-  defaultConfig.auth_token = _authToken
-  defaultConfig.source_stack = sourceStack
-  if (moduleName && moduleName !== undefined) {
-    defaultConfig.moduleName = moduleName
-  }
-  defaultConfig.host = host.cma
-  defaultConfig.cdn = host.cda
-  defaultConfig.data = data
-  initial(defaultConfig)
+  return new Promise(async(resolve, reject) => {
+    defaultConfig.auth_token = _authToken
+    defaultConfig.source_stack = sourceStack
+    if (moduleName && moduleName !== undefined) {
+      defaultConfig.moduleName = moduleName
+    }
+    defaultConfig.host = host.cma
+    defaultConfig.cdn = host.cda
+    defaultConfig.data = data
+    var exportStart = initial(defaultConfig)
+    exportStart.then(() => {
+      return resolve()
+    }).catch((error) => {
+      return reject(error)
+    })
+  })
+ 
 }
 
 exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host) => {
