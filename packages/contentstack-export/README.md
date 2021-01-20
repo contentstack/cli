@@ -40,7 +40,6 @@ OPTIONS
   -a, --management-token-alias=management-token-alias  alias of the management token
   -c, --config=config                                  [optional] path of the config
   -d, --data=data                                      path or location to store the data
-  -l, --master-lang=master-lang                        code of the source stack's master Language
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
 
@@ -50,10 +49,10 @@ DESCRIPTION
 
 EXAMPLES
   csdx cm:export -A
-  csdx cm:export -A -l 'master-language' -s 'stack_ApiKey' -d 'path/of/export/destination/dir'
+  csdx cm:export -A -s 'stack_ApiKey' -d 'path/of/export/destination/dir'
   csdx cm:export -A -c 'path/of/config/dir'
   csdx cm:export -a 'management_token_alias'
-  csdx cm:export -a "management_token_alias" -l "master-language" -d "path/of/export/destination/dir"
+  csdx cm:export -a "management_token_alias" -d "path/of/export/destination/dir"
   csdx cm:export -a "management_token_alias" -c "path/of/config/file"
   csdx cm:export -A -m "single module name"
 ```
