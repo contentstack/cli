@@ -6,6 +6,8 @@ const Configstore = require('configstore')
 const config = new Configstore('contentstack_cli')
 const url = require('url')
 const defaultRegion = {cma: 'https://api.contentstack.io', cda: 'https://cdn.contentstack.io', name: 'NA'}
+const defaultRateLimit = 5
+
 
 class ContentstackCommand extends Command {
 
@@ -13,6 +15,17 @@ class ContentstackCommand extends Command {
     if (this._managementAPIClient) return this._managementAPIClient
     this._managementAPIClient = ContentstackManagementSDK.client({host:this.cmaHost})
     return this._managementAPIClient
+  }
+
+  set managementAPIClient(params) {
+    console.log(params)
+    if(params && params.host) {
+      //can not set host explicitly as CLI runs under constant host coming from config
+      params.host = this.cmaHost
+    } else {
+      params.host = this.cmaHost
+    }
+    this._managementAPIClient = ContentstackManagementSDK.client(params)
   }
   
   get email() {
@@ -32,7 +45,13 @@ class ContentstackCommand extends Command {
     if (this._region) return this._region
     this._region = config.get('region')
     if (this._region) return this._region
-    return defaultRegion
+    // return defaultRegion
+  }
+
+  get rateLimit() {
+    this._rateLimit = config.get('rate-limit')
+    if (this._rateLimit) return this._rateLimit
+    return defaultRateLimit
   }
 
   get cmaHost() {
