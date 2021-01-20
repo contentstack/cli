@@ -1,6 +1,5 @@
 const contentstacksdk = require('@contentstack/management')
 
-
 exports.Client = function (config) {  
   const option = {
     host: config.host,
@@ -8,7 +7,17 @@ exports.Client = function (config) {
     api_key: config.target_stack,
     maxContentLength: 100000000,
     maxBodyLength: 1000000000,
-    logHandler: (level, data) => {}
+    logHandler: (level, data) => { },
+    retryCondition: error => {
+      // no async function should be used here
+      if (error.response && (error.response.status === 429 || error.response.status === 408)) {
+        return true
+      }
+      return false
+    },
+    retryDelayOptions: {
+      base: 1000,
+    },
   }
   const client = contentstacksdk.client(option)
   return client
