@@ -1,7 +1,8 @@
 {
   "name": "root",
   "dependencies": {
-    "@contentstack/cli": "file:build/contentstack-cli.tgz"
+    "@contentstack/cli": "file:build/contentstack-cli.tgz",
+    "@oclif/plugin-update": "^1.3.10"
   },
   "devDependencies": {
     "lerna": "^3.16.4"

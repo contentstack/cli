@@ -94,17 +94,10 @@ importContentTypes.prototype = {
         for (let i = 0; i < lenObj.length; i += Math.round(requestLimit / 3)) {
           batches.push(lenObj.slice(i, i + Math.round(requestLimit / 3)))
         }
-<<<<<<< HEAD
-        return Promise.map(batches, function (batch) {
-          return Promise.map(batch, function (contentType) {
-            
-          return self.updateContentTypes(contentType).then(function () {
-=======
 
         return Promise.map(batches, async function (batch) {
           return Promise.map(batch, async function (contentType) {
             await self.updateContentTypes(contentType)
->>>>>>> develop
             addlogs(config, contentType.uid + ' was updated successfully!', 'success')
           },
           {
@@ -113,14 +106,8 @@ importContentTypes.prototype = {
           }).catch(e => {
             console.log('Something went wrong while migrating content type batch', e)
           })
-<<<<<<< HEAD
-        }).catch(function (err) {
-          return reject()
-        })
-=======
         }, {
           concurrency: reqConcurrency,
->>>>>>> develop
         }).then(function () {
           // eslint-disable-next-line quotes
           if (field_rules_ct.length > 0) {
@@ -128,7 +115,6 @@ importContentTypes.prototype = {
               if (err) throw err
             })
           }
-<<<<<<< HEAD
         
          if( globalFieldPendingpath.length !== 0 ) {
           return self.updateGlobalfields().then(function () {
@@ -142,48 +128,6 @@ importContentTypes.prototype = {
         }).catch(error => {
           return reject(error)
         }) 
-=======
-
-          if (_globalField_pending.length !== 0) {
-            return self.updateGlobalfields().then(function () {
-              addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
-              return resolve()
-            }).catch(reject)
-          }
-          addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
-          return resolve()
-        }).catch(error => {
-          return reject(error)
-        })
-        // content type seeidng completed
-        // return Promise.map(self.contentTypes, function (contentType) {
-        //   return self.updateContentTypes(contentType).then(function () {
-        //     log.success(chalk.white(contentType.uid + ' was updated successfully!'))
-        //     return
-        //   }).catch(function (err) {
-        //     return reject()
-        //   })
-        // }).then(function () {
-        //   // eslint-disable-next-line quotes
-        //   if (field_rules_ct.length > 0) {
-        //     fs.writeFile(contentTypesFolderPath + '/field_rules_uid.json', JSON.stringify(field_rules_ct), function (err) {
-        //       if (err) throw err
-        //     })
-        //   }
-
-        //  if( _globalField_pending.length !== 0 ) {
-        //   return self.updateGlobalfields().then(function () {
-        //     log.success(chalk.green('Content types have been imported successfully!'))
-        //     return resolve()
-        //   }).catch(reject)
-        //  }  else {
-        //     log.success(chalk.green('Content types have been imported successfully!'))
-        //     return resolve()
-        //  }
-        // }).catch(error => {
-        //   return reject(error)
-        // })
->>>>>>> develop
       }).catch(error => {
         return reject(error)
       })
@@ -198,7 +142,7 @@ importContentTypes.prototype = {
       let requestObject = _.cloneDeep(self.requestOptions)
       requestObject.json = body
       return stack.contentType().create(requestObject.json)
-      .then(result => {
+      .then(() => {
         return resolve()
       })
       .catch(function (err) {
