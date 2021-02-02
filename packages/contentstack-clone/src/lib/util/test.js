@@ -4,7 +4,7 @@
 * MIT Licensed
 */
 
-let Stack = require('../util/contentstack-managment-sdk')
+let Stack = require('../util/contentstack-management-sdk')
 
 
 exports.firstClass = function () {
