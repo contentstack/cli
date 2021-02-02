@@ -58,7 +58,6 @@ let structureList = ['locales',
   'labels']
 let master_locale
 let backupPath
-let functionList = []
 
 class CloneHandler {
   constructor(opt) {
