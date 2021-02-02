@@ -5,10 +5,10 @@ const fs = require('fs')
 let ora  = require('ora')
 const credStore = new Configstore('contentstack_cli')
 
-let sdkInstance = require('../../lib/util/contentstack-managment-sdk')
+let sdkInstance = require('../../lib/util/contentstack-management-sdk')
 let exportCmd  = require('@contentstack/cli-cm-export')
 let importCmd  = require('@contentstack/cli-cm-import')
-let region = credStore.get('region')
+let region = this.region
 let client = {}
 let config
 
@@ -82,7 +82,7 @@ class CloneHandler {
         } else {
           orgChoice[0].message = "Choose the Organization in which data to be import"
         }
-        //call function here
+
         inquirer
           .prompt(orgChoice)
           .then(answers => {
@@ -136,7 +136,7 @@ class CloneHandler {
           config.target_stack = stackUidList[stackSelected.stack]
         } else {
           config.source_stack = stackUidList[stackSelected.stack]
-          stackName[0].default = stackSelected.stack
+          stackName[0].default = "Copy of "+ stackSelected.stack
         }
         if (params !== undefined && params === "import") {
           let cloneTypeSelection = this.cloneTypeSelection()
@@ -182,10 +182,11 @@ class CloneHandler {
 
   async cloneTypeSelection() {
     return new Promise((resolve, reject) => {
+    let functionList = []
     inquirer
       .prompt(cloneTypeSelection)
-      .then(seletedValue => {
-        let cloneType = seletedValue.type
+      .then(selectedValue => {
+        let cloneType = selectedValue.type
         if (cloneType === "structure") {
           let resultData = this.cmdExe(structureList[0], true)
           resultData.then(() => {
@@ -255,9 +256,8 @@ class CloneHandler {
     return new Promise((resolve, reject) => {
     if (action !== undefined && action === "import") {
       const spinner = ora().start()
-      // cli.cli.action.start('Importing all modules with structure and content')
-      let importstructureNcontent = importCmd.run(['-A', '-s',config.target_stack, '-d', './content'])
-      importstructureNcontent.then(() => {
+      let importStructureWithContent = importCmd.run(['-A', '-s',config.target_stack, '-d', './content'])
+      importStructureWithContent.then(() => {
         spinner.succeed('Completed import with structure and content')
         return resolve()
       }).catch(error => {
@@ -271,8 +271,8 @@ class CloneHandler {
         spinner.succeed()
         inquirer
           .prompt(stackCreationConfirmation)
-          .then(seletedValue => {
-            if (seletedValue.stackCreate !== true) {
+          .then(selectedValue => {
+            if (selectedValue.stackCreate !== true) {
                let orgSelection = this.organizationSelection("import")
                orgSelection.then(() => {
                  return resolve()
