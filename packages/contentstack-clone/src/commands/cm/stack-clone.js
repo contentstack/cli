@@ -16,7 +16,8 @@ class StackCloneCommand extends Command {
       host.cda = this.cdaHost
       config.host = host
       const cloneHandler = new CloneHandler(config)
-     let orgSelection = await cloneHandler.organizationSelection("export")
+      console.log("Line  noe++++++", cloneHandler);
+     let orgSelection = cloneHandler.organizationSelection("export")
      orgSelection.then(() => {
        console.log("Stack clone successfully");
      }).catch((error) => {
