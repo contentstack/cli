@@ -6,9 +6,10 @@
 let defaultConfig = require('../../config/default')
 let message = require('../../../messages/index.json')
 let {initial} = require('../../app')
+let path = require('path')
+const helper = require('../util/helper');
 let _ = require('lodash')
 const {cli} = require('cli-ux')
-const { resolve } = require('bluebird')
 
 exports.configWithMToken = function (config, managementTokens, host, _authToken) {
   let externalConfig = require(config)
@@ -50,7 +51,7 @@ exports.withoutParameterMToken = async (managementTokens, moduleName, host, _aut
 }
 
 exports.configWithAuthToken = function (config, _authToken, moduleName, host) {
-  let externalConfig = require(config)
+  let externalConfig = helper.readFile(path.resolve(config))
   defaultConfig.auth_token = _authToken
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda

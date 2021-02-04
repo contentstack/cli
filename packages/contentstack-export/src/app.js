@@ -29,7 +29,7 @@ exports.initial = async function (config) {
         addlogs(config, 'The log for this is stored at ' + config.data + '/export/logs', 'success')
       } else {
         let objKey = Object.keys(error.errors)
-        addlogs(config, chalk.red('Stack fail to export, ' + objKey + "" + error.errors[objKey][0]), 'error')
+        addlogs(config, chalk.red('Stack fail to export, ' + objKey + '' + error.errors[objKey][0]), 'error')
       }
     })
   })
