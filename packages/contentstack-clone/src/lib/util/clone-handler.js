@@ -85,6 +85,7 @@ class CloneHandler {
         inquirer
           .prompt(orgChoice)
           .then(answers => {
+            console.log("Linennooo+++", answers);
             let orgUid = orgUidList[answers.Organization]
             if (params !== undefined && params === "newStack") {
                let createStack = this.createNewStack(orgUid)
