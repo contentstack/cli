@@ -12,7 +12,6 @@
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "child_process": "^1.0.2",
-    "cli-progress": "^3.8.2",
     "configstore": "^5.0.1",
     "fancy-test": "^1.4.10",
     "inquirer": "^7.3.3",
