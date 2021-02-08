@@ -1,5 +1,5 @@
 {
-  "name": "@contentstack/plugins",
+  "name": "@contentstack/cli-plugins-plugin",
   "description": "plugins",
   "version": "0.0.0",
   "author": "contentstack",

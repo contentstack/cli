@@ -59,9 +59,7 @@ module.exports = class extends Generator {
     if (!fs.existsSync('src/commands')) {
       this.fs.copyTpl(this.templatePath(`src/command.${this._ext}.ejs`), commandPath, {...opts, name: 'hello', path: commandPath.replace(process.cwd(), '.')})
     }
-    if (this.ts) {
-      this.fs.copyTpl(this.templatePath('plugin/src/index.ts'), this.destinationPath('src/index.ts'), opts)
-    }
+    
     if (this.mocha && !fs.existsSync('test')) {
       this.fs.copyTpl(this.templatePath(`test/command.test.${this._ext}.ejs`), this.destinationPath(`test/commands/hello.test.${this._ext}`), {...opts, name: 'hello'})
     }
