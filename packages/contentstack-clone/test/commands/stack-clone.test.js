@@ -1,5 +1,5 @@
 const {expect, test} = require('@oclif/test')
-const assert = require('chai')
+const assets = require('chai')
 const {CloneHandler, client} = require('../../src/lib/util/clone-handler')
 const sinon = require('sinon')
 let config = require('../dummyConfig/index')
@@ -17,10 +17,6 @@ let questions = [{
 
 describe('stack Clone Test', () => {
 
-  beforeEach(() => {
-    sinon.reset();
-  });
-
   test
   .stub(CloneHandler.prototype, 'organizationSelection', sinon.stub().callsFake(function () {
     return Promise.resolve()
@@ -34,13 +30,13 @@ describe('stack Clone Test', () => {
 
 test
   .it('organizationSelection function', async () => {
-    console.log("Helloo friends+++++++", sinon.stub(inquirer, 'prompt').onCall(0).resolves({ Organization: "Rohit Personal" }));
-    // var spy = sinon.spy(messages, 'organizationSelection')
-    // const inquirerStub = sinon.stub(inquirer, 'prompt');
-    // inquirerStub.withArgs(questions).resolves({Organization:"Rohit Personal"})
-    // messages.organizationSelection('export');
-    expect(inquirer, 'prompt').to.equal({Organization:"Rohit Personal"});
-    // expect(spy.calledOnce).to.be.true
+    const orgStub = sinon.spy(messages, 'organizationSelection');
+    const spy2 = sinon.stub(inquirer, 'prompt')
+    spy2.withArgs(questions).resolves({
+      Organization: 'Rohit Mishra'
+    });
+    messages.organizationSelection('export')
+    inquirer.prompt.restore()
 })
 
 // test
@@ -60,12 +56,12 @@ test
 //   expect(spy.calledOnce).to.be.true
 // })
 
-// test
-// .it('createNewStack function', async () => {
-//   var spy = sinon.spy(messages, 'createNewStack')
-//   messages.createNewStack('dummyOrg');
-//   expect(spy.calledOnce).to.be.true
-// })
+test
+.it('createNewStack function', async () => {
+  var spy = sinon.spy(messages, 'createNewStack')
+  messages.createNewStack('dummyOrg');
+  expect(spy.calledOnce).to.be.true
+})
 
 // test
 // .it('cmdExportImport function', async () => {
