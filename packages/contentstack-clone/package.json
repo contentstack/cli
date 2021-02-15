@@ -11,6 +11,7 @@
     "@contentstack/management": "^1.1.1",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
+    "async": "^3.2.0",
     "child_process": "^1.0.2",
     "configstore": "^5.0.1",
     "fancy-test": "^1.4.10",
