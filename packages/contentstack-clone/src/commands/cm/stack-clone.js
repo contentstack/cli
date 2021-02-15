@@ -15,12 +15,12 @@ class StackCloneCommand extends Command {
       host.cda = this.cdaHost
       config.host = host
       const cloneHandler = new CloneHandler(config)
-     let orgSelection = cloneHandler.organizationSelection("export")
-     orgSelection.then(() => {
-       console.log("Stack clone successfully");
-     }).catch((error) => {
-       console.log("Error: ", error);
-     })
+      let orgSelection = cloneHandler.organizationSelection("export")
+      orgSelection.then(() => {
+        console.log("Stack clone successfully");
+      }).catch((error) => {
+        console.log("Error: ", error);
+      })
     } else {
       console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login");
     }
