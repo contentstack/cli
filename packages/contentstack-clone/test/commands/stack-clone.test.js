@@ -18,45 +18,46 @@ test
 
 test
   .it('cloneTypeSelection function', async () => {
-    var spy = sinon.spy(inquirer, 'prompt')
+    var spy = sinon.stub(inquirer, 'prompt')
     messages.cloneTypeSelection()
     // expect(spy.calledOnce).to.be.true
   })
+
 
 test
 .it('organizationSelection ', async () => {
     var orgSelectStub = sinon.spy(messages, 'organizationSelection')
     messages.organizationSelection("export")
-    // expect(orgSelectStub.calledOnce).to.be.true
+    expect(orgSelectStub.calledOnce).to.be.true
   })
 
 test
 .it('stackSelection Function', async () => {
  var spystackSelection = sinon.spy(messages, 'stackSelection');
-  messages.stackSelection('dummy');
-  // expect(spystackSelection.called).to.be.true
+  messages.stackSelection('import');
+  expect(spystackSelection.called).to.be.true
 })
 
 test
 .it('getStackChoices function', async () => {
   var spy = sinon.spy(messages, 'getStackChoices')
   messages.getStackChoices('dummyOrg', "export");
-  // expect(spy.calledOnce).to.be.true
+  expect(spy.calledOnce).to.be.true
 })
 
 test
 .it('createNewStack function', async () => {
   var spy = sinon.spy(messages, 'createNewStack')
   messages.createNewStack('dummyOrg');
-  // expect(spy.calledOnce).to.be.true
+  expect(spy.calledOnce).to.be.true
 })
 
-test
-.it('cmdExportImport function', async () => {
-  var spy = sinon.spy(messages, 'cmdExportImport')
-  messages.cmdExportImport('import');
-  // expect(spy.calledOnce).to.be.true
-})
+// test
+// .it('cmdExportImport function', async () => {
+//   var spy = sinon.spy(messages, 'cmdExportImport')
+//   messages.cmdExportImport('import');
+//   expect(spy.calledOnce).to.be.true
+// })
 
 test
 .it('cmdExe function', async () => {
