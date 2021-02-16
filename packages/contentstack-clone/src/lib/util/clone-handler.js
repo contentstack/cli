@@ -215,9 +215,9 @@ class CloneHandler {
           } else {
             let cmdExportImport = this.cmdExportImport("import")
             cmdExportImport.then(() => {
-              // return resolve()
+              return resolve()
             }).catch((error) => {
-              // return reject(error)
+              return reject(error)
             })
           }
     })
