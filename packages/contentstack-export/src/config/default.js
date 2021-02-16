@@ -37,12 +37,16 @@ module.exports = {
         'created_at',
         'updated_at',
         'created_by',
-        'updated_by'
-      ]
+        'updated_by',
+      ],
     },
     webhooks: {
       dirName: 'webhooks',
       fileName: 'webhooks.json',
+    },
+    workflows: {
+      dirName: 'workflows',
+      fileName: 'workflows.json',
     },
     globalfields: {
       dirName: 'global_fields',
