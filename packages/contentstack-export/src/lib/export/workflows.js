@@ -13,34 +13,37 @@ let {addlogs} = require('../util/log')
 
 const stack = require('../util/contentstack-management-sdk')
 let config = require('../../config/default')
-const labels = require('./labels')
-let workflowConfig = config.modules.workflows
+let workFlowConfig = config.modules.workflows
 let client
-let workflows = {}
 
-exports.start = function (credentialConfig) {
+function ExportWorkFlows() {
+  this.workflows = {}
+}
+
+ExportWorkFlows.prototype.start = function (credentialConfig) {
   addlogs(config, 'Starting workflow export', 'success')
   let self = this
+  config = credentialConfig
+  client = stack.Client(config)
+
+  let workflowsFolderPath = path.resolve(config.data, workFlowConfig.dirName)
+  mkdirp.sync(workflowsFolderPath)
   return new Promise(function (resolve, reject) {
-    config = credentialConfig
-    client = stack.Client(config)
-    let workflowFolderPath = path.resolve(config.data, workflowConfig.dirName)
-    mkdirp.sync(workflowFolderPath)
-    return client.stack({api_key: config.source_stack, management_token: config.management_token}).workflow().query().find()
+    return client.stack({api_key: config.source_stack, management_token: config.management_token}).workflow().fetchAll()
     .then(response => {
-      // eslint-disable-next-line no-negated-condition
       if (response.items.length !== 0) {
         response.items.forEach(function (workflow) {
           addlogs(config, workflow.name + ' workflow was exported successfully', 'success')
-          workflows[workflow.uid] = workflow
-          let deleteItems = config.modules.workflow.invalidKeys
+          self.workflows[workflow.uid] = workflow
+          let deleteItems = config.modules.workflows.invalidKeys
           deleteItems.forEach(e => delete workflow[e])
         })
-        addlogs(config, chalk.green('All the workflows have been exported successfully'), 'success')
-      } else {
+        addlogs(config, chalk.green('All the workflow have been exported successfully'), 'success')
+      }
+      if (response.items.length === 0) {
         addlogs(config, 'No workflow were found in the Stack', 'success')
       }
-      helper.writeFile(path.join(workflowFolderPath, workflowConfig.fileName), workflows)
+      helper.writeFile(path.join(workflowsFolderPath, workFlowConfig.fileName), self.workflows)
       return resolve()
     }).catch(function (error) {
       if (error.statusCode === 401) {
@@ -52,3 +55,5 @@ exports.start = function (credentialConfig) {
     })
   })
 }
+
+module.exports = new ExportWorkFlows()
