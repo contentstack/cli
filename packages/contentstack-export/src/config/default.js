@@ -10,6 +10,7 @@ module.exports = {
       'webhooks',
       'global-fields',
       'content-types',
+      'workflow',
       'entries',
       'labels',
     ],
@@ -47,6 +48,14 @@ module.exports = {
     workflows: {
       dirName: 'workflows',
       fileName: 'workflows.json',
+      invalidKeys: [
+        'stackHeaders',
+        'urlPath',
+        'created_at',
+        'updated_at',
+        'created_by',
+        'updated_by',
+      ],
     },
     globalfields: {
       dirName: 'global_fields',
