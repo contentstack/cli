@@ -5,9 +5,9 @@
 	"author": "Contentstack",
 	"bugs": "https://github.com/contentstack/cli/issues",
 	"dependencies": {
-		"@contentstack/management": "1.1.2",
-		"@oclif/command": "^1.6.1",
 		"@contentstack/cli-command": "0.1.1-beta.1",
+		"@contentstack/management": "file:../../dependency/contentstack-management-1.1.2.tgz",
+		"@oclif/command": "^1.6.1",
 		"@oclif/config": "^1.15.1",
 		"axios": "^0.19.2",
 		"bluebird": "3.5.1",
@@ -42,7 +42,9 @@
 	],
 	"homepage": "https://github.com/contentstack/cli",
 	"keywords": [
-		"contentstack","cli","plugin"
+		"contentstack",
+		"cli",
+		"plugin"
 	],
 	"scripts": {
 		"pack": "npm pack && mv *.tgz ../../build",
