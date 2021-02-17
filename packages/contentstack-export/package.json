@@ -5,10 +5,10 @@
 	"author": "Contentstack",
 	"bugs": "https://github.com/contentstack/cli/issues",
 	"dependencies": {
-		"@contentstack/management": "1.1.2",
+		"@contentstack/cli-command": "0.1.1-beta.1",
+		"@contentstack/management": "file:../../dependency/contentstack-management-1.1.2.tgz",
 		"@oclif/command": "^1.6.1",
 		"@oclif/config": "^1.15.1",
-		"@contentstack/cli-command": "0.1.1-beta.1",
 		"axios": "^0.19.2",
 		"bluebird": "^3.7.2",
 		"cli-ux": "^5.4.6",
@@ -45,7 +45,9 @@
 	],
 	"homepage": "https://github.com/contentstack/cli",
 	"keywords": [
-		"contentstack","cli","plugin"
+		"contentstack",
+		"cli",
+		"plugin"
 	],
 	"license": "MIT",
 	"scripts": {
