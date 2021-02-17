@@ -66,9 +66,9 @@ var allExport = async (config, types) => {
     concurrency: 1,
   }).then(function () {
     addlogs(config, chalk.green('Stack: ' + config.source_stack + ' has been exported succesfully!'), 'success')
-    addlogs(config, 'The log for this is stored at ' + path.join(config.data , 'logs', 'export'), 'success')
-  }).catch(function () {
+    addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success')
+  }).catch(function (error) {
     addlogs(config, chalk.red('Failed to migrate stack: ' + config.source_stack + '. Please check error logs for more info'), 'error')
-    addlogs(config, 'The log for this is stored at ' + path.join(config.data , 'logs', 'export'), 'error')
+    addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error')
   })
 }
