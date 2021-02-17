@@ -6,8 +6,6 @@ env.register(require.resolve('../../generators/plugin.js'), `plugins:create`)
 
 class CreateCommand extends Command {
   async run() {
-    const {flags} = this.parse(CreateCommand)
-
     await new Promise((resolve, reject) => {
     	env.run(`plugins:create`, {}, (error, results) => {
     		if (error) reject(error)
@@ -19,8 +17,5 @@ class CreateCommand extends Command {
 
 CreateCommand.description = `Generate plugin starter code
 `
-
-CreateCommand.flags = {
-}
 
 module.exports = CreateCommand
