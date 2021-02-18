@@ -1,4 +1,5 @@
 const {Command, flags} = require('@contentstack/cli-command')
+const chooseOrganization = require('../../chooseOrganization.js')
 const ContentstackManagementSDK = require('@contentstack/management')
 const fastcsv = require('fast-csv')
 const fs = require('fs')
@@ -26,16 +27,16 @@ class ExportToCsvCommand extends Command {
     
     switch(action) {
     	case 'Export Entries to CSV':
-    		const organization = await this.chooseOrganization() // prompt for organization
-				const stack = await this.chooseStack(organization.uid) // prompt for stack
-				const contentType = await this.chooseContentType(stack.apiKey) // prompt for content Type
-				const language = await this.chooseLanguage(stack.apiKey) // prompt for language
-				const entries = await this.getEntries(stack.apiKey, contentType.uid, language.code) // fetch entries
-				const environments = await this.getEnvironments(stack.apiKey) // fetch environments, because in publish details only env uid are available and we need env names
-				const flatEntries = this.cleanEntries(entries.items, language.code, environments, contentType.uid); // clean entries to be written to file
-				const dateTime = this.getDateTime()
-				const fileName = `${contentType.uid}_${language.code}_entries_export_${dateTime}.csv`
-				this.write(flatEntries, fileName) // write to file
+    		const organization = await chooseOrganization(this) // prompt for organization
+				// const stack = await this.chooseStack(organization.uid) // prompt for stack
+				// const contentType = await this.chooseContentType(stack.apiKey) // prompt for content Type
+				// const language = await this.chooseLanguage(stack.apiKey) // prompt for language
+				// const entries = await this.getEntries(stack.apiKey, contentType.uid, language.code) // fetch entries
+				// const environments = await this.getEnvironments(stack.apiKey) // fetch environments, because in publish details only env uid are available and we need env names
+				// const flatEntries = this.cleanEntries(entries.items, language.code, environments, contentType.uid); // clean entries to be written to file
+				// const dateTime = this.getDateTime()
+				// const fileName = `${contentType.uid}_${language.code}_entries_export_${dateTime}.csv`
+				// this.write(flatEntries, fileName) // write to file
 
     		// const tokenDetails = this.getToken(alias)
 
