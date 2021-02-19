@@ -13,6 +13,7 @@ const {configWithMToken,
 
 class ImportCommand extends Command {
   async run() {
+    
     const {flags} = this.parse(ImportCommand)
     const extConfig = flags.config
     let targetStack = flags['stack-uid']
@@ -28,6 +29,7 @@ class ImportCommand extends Command {
     let cdaHost = host.cda.split('//')
     host.cma = cmaHost[1]
     host.cda = cdaHost[1]
+  return new Promise(function (resolve, reject) {  
     if (alias && alias !== undefined) {
       let managementTokens = this.getToken(alias)
 
@@ -40,6 +42,9 @@ class ImportCommand extends Command {
             host,
             _authToken
           )
+          .then(() => {
+            return resolve()
+          })
         } else if (data) {
           parameterWithMToken(
             managementTokens,
@@ -48,6 +53,9 @@ class ImportCommand extends Command {
             host,
             _authToken
           )
+          .then(() => {
+            return resolve()
+          })
         } else {
           withoutParameterMToken(
             managementTokens,
@@ -55,6 +63,9 @@ class ImportCommand extends Command {
             host,
             _authToken
           )
+          .then(() => {
+            return resolve()
+          })
         } 
       } else {
         this.log('management Token is not present please add managment token first')
@@ -67,6 +78,9 @@ class ImportCommand extends Command {
           moduleName,
           host,
         )
+        .then(() => {
+          return resolve()
+        })
       } else if (targetStack && data) {
         parametersWithAuthToken(
           _authToken,
@@ -76,6 +90,9 @@ class ImportCommand extends Command {
           host,
           backupdir
         )
+        .then(() => {
+          return resolve()
+        })
       } else {
         withoutParametersWithAuthToken(
           _authToken,
@@ -83,11 +100,15 @@ class ImportCommand extends Command {
           host,
           backupdir
         )
+        .then(() => {
+          return resolve()
+        })
       }
     } else  {
       this.log('Provide alias for managementToken or authtoken')
     }
-  }
+  })
+}
 }
 
 ImportCommand.description = `Import script for importing the content into new stack
