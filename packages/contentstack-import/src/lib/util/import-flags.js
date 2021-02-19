@@ -8,6 +8,7 @@ let { initial } = require('../../app')
 let _ = require('lodash')
 const {cli} = require('cli-ux')
 let message = require('../../../messages/index.json')
+const { resolve, reject } = require('bluebird')
 
 exports.configWithMToken = function (config, managementTokens, moduleName, host, _authToken) {
   let externalConfig = require(config)
@@ -63,6 +64,7 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host) {
 }
 
 exports.parametersWithAuthToken = function (_authToken, targetStack, data, moduleName, host, backupdir) {
+  return new Promise(function (resolve, reject) {
   defaultConfig.auth_token = _authToken
   defaultConfig.target_stack = targetStack
   if (moduleName && moduleName !== undefined && backupdir === undefined) {
@@ -75,6 +77,12 @@ exports.parametersWithAuthToken = function (_authToken, targetStack, data, modul
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
   initial(defaultConfig)
+  .then(() => {
+    return resolve()
+  }).catch((error) => {
+    return reject()
+  })
+})
 }
 
 exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, backupdir) => {
