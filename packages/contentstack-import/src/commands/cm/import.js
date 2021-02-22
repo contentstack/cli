@@ -13,7 +13,6 @@ const {configWithMToken,
 
 class ImportCommand extends Command {
   async run() {
-    
     const {flags} = this.parse(ImportCommand)
     const extConfig = flags.config
     let targetStack = flags['stack-uid']
