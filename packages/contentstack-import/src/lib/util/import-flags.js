@@ -8,7 +8,6 @@ let { initial } = require('../../app')
 let _ = require('lodash')
 const {cli} = require('cli-ux')
 let message = require('../../../messages/index.json')
-const { resolve, reject } = require('bluebird')
 
 exports.configWithMToken = function (config, managementTokens, moduleName, host, _authToken) {
   let externalConfig = require(config)
@@ -59,6 +58,11 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host) {
   }
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
+  if (externalConfig.modules) {
+    defaultConfig.modules.types = externalConfig.modules
+    delete externalConfig.modules
+  }
+  
   defaultConfig = _.merge(defaultConfig, externalConfig)
   initial(defaultConfig)
 }
