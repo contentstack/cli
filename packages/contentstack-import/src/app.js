@@ -114,6 +114,7 @@ let allExport = async (config, types) => {
     addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'success')
     return resolve()
   } catch (error) {
+    console.log("line no 117++++", error);
     addlogs(config, chalk.red('Failed to migrate stack: ' + config.target_stack + '. Please check error logs for more info'), 'error')
     addlogs(config, error, 'error')
     addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'error')
