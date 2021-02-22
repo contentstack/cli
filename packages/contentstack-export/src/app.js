@@ -1,7 +1,7 @@
 /* eslint-disable no-redeclare */
 var util = require('./lib/util')
 var login = require('./lib/util/login')
-var { addlogs } = require('./lib/util/log')
+var {addlogs} = require('./lib/util/log')
 const chalk = require('chalk')
 let path = require('path')
 let _ = require('lodash')
@@ -24,6 +24,7 @@ exports.initial = async function (config) {
         })
       }
     }).catch(error => {
+      console.log("errror", error);
       if (error.errors.api_key) {
         addlogs(config, chalk.red('Stack Api key ' + error.errors.api_key[0], 'Please enter valid Key', 'error'))
         addlogs(config, 'The log for this is stored at ' + config.data + '/export/logs', 'success')
@@ -79,6 +80,7 @@ var allExport = async (config, types) => {
       addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success')
       return resolve()
     } catch (error) {
+      console.log("erroror", error);
       addlogs(config, chalk.red('Failed to migrate stack: ' + config.source_stack + '. Please check error logs for more info'), 'error')
       addlogs(config, chalk.red(error.errorMessage), 'error')
       addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error')
