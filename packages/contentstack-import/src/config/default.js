@@ -6,16 +6,18 @@ module.exports = {
   host: 'https://api.contentstack.io/v3',
   modules: {
     types: [
-      'locales',
+         
+      // 'locales',
       'environments',
-      'extensions',
-      'webhooks',
-      'global-fields',
       'assets',
-      'content-types',
-      'workflows',
-      'entries',
-      'labels',
+      'releases',
+      // 'extensions',
+      // 'webhooks',
+      // 'global-fields',
+      // 'content-types',
+      // 'workflows',
+      // 'entries',
+      // 'labels',
     ],
     locales: {
       dirName: 'locales',
@@ -41,6 +43,18 @@ module.exports = {
     webhooks: {
       dirName: 'webhooks',
       fileName: 'webhooks.json',
+    },
+    releases: {
+      dirName: 'releases',
+      fileName: 'releases.json',
+      invalidKeys: [
+        'stackHeaders',
+        'urlPath',
+        'created_at',
+        'updated_at',
+        'created_by',
+        'updated_by',
+      ],
     },
     workflows: {
       dirName: 'workflows',

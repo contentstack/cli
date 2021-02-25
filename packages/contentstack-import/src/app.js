@@ -33,9 +33,9 @@ exports.initial = function (configData) {
         .then(() => {
           let types = config.modules.types
           if (config.moduleName && config.moduleName !== undefined) {
-            singleExport(config.moduleName, types, config)
+            singleImport(config.moduleName, types, config)
           } else {
-            allExport(config, types)
+            allImport(config, types)
           }
         }).catch(e => {
           console.error(e)
@@ -50,7 +50,7 @@ exports.initial = function (configData) {
   }
 }
 
-let singleExport = (moduleName, types, config) => {
+let singleImport = (moduleName, types, config) => {
   if (types.indexOf(moduleName) > -1) {
     let exportedModule = require('./lib/import/' + moduleName)
     exportedModule.start(config).then(function () {
@@ -66,12 +66,14 @@ let singleExport = (moduleName, types, config) => {
   }
 }
 
-let allExport = async (config, types) => {
+let allImport = async (config, types) => {
   let counter = 0
   Bluebird.map(types, function (type) {
     let exportedModule = require('./lib/import/' + types[counter])
     counter ++;
     return exportedModule.start(config)
+  }, {
+    concurrency: 1,
   }).then(function () {
     addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported successfully!'), 'success')
     addlogs(config, 'Backup folder location: ' + path.join(config.data, '/'), 'success')
