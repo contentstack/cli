@@ -2,17 +2,18 @@ module.exports = {
   versioning: false,
   modules: {
     types: [
-      'stack',
+      'releases',
+      // 'stack',
       'assets',
-      'locales',
+      // 'locales',
       'environments',
-      'extensions',
-      'webhooks',
-      'global-fields',
-      'content-types',
-      'workflow',
-      'entries',
-      'labels',
+      // 'extensions',
+      // 'webhooks',
+      // 'global-fields',
+      // 'content-types',
+      // 'workflow',
+      // 'entries',
+      // 'labels',
     ],
     locales: {
       dirName: 'locales',
@@ -44,6 +45,19 @@ module.exports = {
     webhooks: {
       dirName: 'webhooks',
       fileName: 'webhooks.json',
+    },
+    releases: {
+      dirName: 'releases',
+      fileName: 'releases.json',
+      releasesList: 'releasesList.json',
+      invalidKeys: [
+        'stackHeaders',
+        'urlPath',
+        'created_at',
+        'updated_at',
+        'created_by',
+        'updated_by',
+      ],
     },
     workflows: {
       dirName: 'workflows',
