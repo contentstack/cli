@@ -77,7 +77,7 @@ class CloneHandler {
           //Import section starts from here
                 var stackCreateConfirmation = await inquirer.prompt(stackCreationConfirmation)
                 if (stackCreateConfirmation.stackCreate !== true) {
-                  let orgdetails = await this.getOrganizationChoices("import")
+                  let orgdetails = await this.getOrganizationChoices()
                   var orgSelected = await inquirer.prompt(orgChoice)
                   let stackDetails = this.getStack(orgSelected, params)
                   let stackSelected = await inquirer.prompt(stackChoice)
@@ -93,7 +93,7 @@ class CloneHandler {
                     })
                   })
                 } else {
-                  let orgdetails = this.getOrganizationChoices("newstack")
+                  let orgdetails = this.getOrganizationChoices()
                   orgdetails
                   .then(async ()=>{
                   var orgSelected = await inquirer.prompt(orgChoice)
@@ -163,24 +163,7 @@ class CloneHandler {
       }
     })
   }
-
-  async stackSelection(params) {
-    return new Promise(async (resolve, reject) => {
-      let stackSelected = await inquirer.prompt(stackChoice)
-      if (params !== undefined && params === "import") {
-        stackChoice.message = "Choose the stack in which data to be import "
-        config.target_stack = stackUidList[stackSelected.stack]
-        return resolve()
-      } else {
-        stackChoice.message = "Choose the stack from which data to be export "
-        config.source_stack = stackUidList[stackSelected.stack]
-        stackName.default = "Copy of " + stackSelected.stack
-        let cmdExport = this.cmdExport()
-        return resolve()
-      }
-    })
-  }
-
+  
   async createNewStack(orgUid) {
     return new Promise(async (resolve, reject) => {
       let inputvalue = await inquirer.prompt(stackName)
@@ -245,8 +228,6 @@ class CloneHandler {
     if (createBackupFolder) {
       return new Promise(function (resolve, reject) {
         const spinner = ora().start()
-
-        // let singleLineArg = ['-A', '-s', config.target_stack, '-d', './content', '-m', module]
         let singleLineArg = ['-A', '-s', config.target_stack, '-d', './content', '-m', module]
         importCmd.run(singleLineArg)
           .then((data) => {
