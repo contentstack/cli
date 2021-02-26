@@ -59,14 +59,14 @@ class CloneHandler {
   }
 
 
-  async start(params) {
+  async start() {
     return new Promise(async (resolve, reject) => {
       //export section starts from here
-      let orgdetails = this.getOrganizationChoices(params)
+      let orgdetails = this.getOrganizationChoices()
       orgdetails
       .then(async ()=>{
       var orgSelected = await inquirer.prompt(orgChoice)
-      let stackDetails = this.getStack(orgSelected, params)
+      let stackDetails = this.getStack(orgSelected)
       stackDetails
       .then(async ()=> {
       let stackSelected = await inquirer.prompt(stackChoice)
@@ -79,7 +79,7 @@ class CloneHandler {
                 if (stackCreateConfirmation.stackCreate !== true) {
                   let orgdetails = await this.getOrganizationChoices()
                   var orgSelected = await inquirer.prompt(orgChoice)
-                  let stackDetails = this.getStack(orgSelected, params)
+                  let stackDetails = this.getStack(orgSelected)
                   let stackSelected = await inquirer.prompt(stackChoice)
                   stackDetails
                   .then(()=> {
@@ -141,7 +141,7 @@ class CloneHandler {
     })
   }
 
-  getStack = async (answer, params) => {
+  getStack = async (answer) => {
     return new Promise(async (resolve, reject) => {
       try {
         let orgUid = orgUidList[answer.Organization]
