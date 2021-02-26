@@ -2,7 +2,6 @@ const { Command, flags } = require('@contentstack/cli-command')
 const Configstore = require('configstore')
 const credStore = new Configstore('contentstack_cli')
 const {CloneHandler} = require('../../lib/util/clone-handler')
-let config = require('../../lib/util/dummyconfig.json')
 
 class StackCloneCommand extends Command { 
   async run() {
@@ -14,7 +13,7 @@ class StackCloneCommand extends Command {
       host.cda = this.cdaHost
       config.host = host
       const cloneHandler = new CloneHandler(config)
-      let orgSelection = cloneHandler.start()
+      // let orgSelection = cloneHandler.start()
       orgSelection.then(() => {
       }).catch((error) => {
         console.log("Error: ", error);
@@ -25,8 +24,7 @@ class StackCloneCommand extends Command {
   }
 }
 
-StackCloneCommand.description = 
-`
+StackCloneCommand.description = `
 ...
 This plugin allows you to perform content migration tasks.
 By using this plugin, you can automate the content export and import operations for your stacks in your organization.

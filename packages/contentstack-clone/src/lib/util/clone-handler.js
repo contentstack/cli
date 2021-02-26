@@ -78,7 +78,7 @@ class CloneHandler {
                 var stackCreateConfirmation = await inquirer.prompt(stackCreationConfirmation)
                 if (stackCreateConfirmation.stackCreate !== true) {
                   let orgdetails = await this.getOrganizationChoices()
-                  var orgSelected = await inquirer.prompt(orgChoice)
+                  var orgSelected = await inquirer.prompt(orgdetails)
                   let stackDetails = this.getStack(orgSelected)
                   let stackSelected = await inquirer.prompt(stackChoice)
                   stackDetails
@@ -118,7 +118,7 @@ class CloneHandler {
     })
   }
 
-  getOrganizationChoices = async (params) => {
+  getOrganizationChoices = async () => {
     return new Promise(async (resolve, reject) => {
       let orgChoice = {
         type: 'list',
