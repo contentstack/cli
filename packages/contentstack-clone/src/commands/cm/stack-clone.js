@@ -2,6 +2,7 @@ const { Command, flags } = require('@contentstack/cli-command')
 const Configstore = require('configstore')
 const credStore = new Configstore('contentstack_cli')
 const {CloneHandler} = require('../../lib/util/clone-handler')
+let config = {}
 
 class StackCloneCommand extends Command { 
   async run() {
@@ -13,7 +14,7 @@ class StackCloneCommand extends Command {
       host.cda = this.cdaHost
       config.host = host
       const cloneHandler = new CloneHandler(config)
-      // let orgSelection = cloneHandler.start()
+      let orgSelection = cloneHandler.start()
       orgSelection.then(() => {
       }).catch((error) => {
         console.log("Error: ", error);
