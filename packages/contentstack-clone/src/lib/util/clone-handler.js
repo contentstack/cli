@@ -64,8 +64,8 @@ class CloneHandler {
       //export section starts from here
       let orgdetails = this.getOrganizationChoices()
       orgdetails
-      .then(async ()=>{
-      var orgSelected = await inquirer.prompt(orgChoice)
+      .then(async (orgdata)=>{
+      var orgSelected = await inquirer.prompt(orgdata)
       let stackDetails = this.getStack(orgSelected)
       stackDetails
       .then(async ()=> {
