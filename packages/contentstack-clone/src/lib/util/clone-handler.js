@@ -4,6 +4,8 @@ const _ = require('lodash')
 const fs = require('fs')
 let ora = require('ora')
 const async = require("async");
+const credStore = new Configstore('contentstack_cli')
+const path = require('path')
 
 let sdkInstance = require('../../lib/util/contentstack-management-sdk')
 let exportCmd = require('@contentstack/cli-cm-export')
@@ -11,14 +13,6 @@ let importCmd = require('@contentstack/cli-cm-import')
 let client = {}
 let config
 let functionList = []
-
-
-let stackChoice = {
-  type: 'list',
-  name: 'stack',
-  message: 'Choose Stack ...',
-  choices: [],
-}
 
 let stackCreationConfirmation = [{
   type: 'confirm',
@@ -42,6 +36,7 @@ let cloneTypeSelection = [{
 }]
 let orgUidList = {}
 let stackUidList = {}
+
 let structureList = ['locales',
   'environments',
   'extensions',
@@ -64,12 +59,12 @@ class CloneHandler {
       //export section starts from here
       let orgdetails = this.getOrganizationChoices()
       orgdetails
-      .then(async (orgdata)=>{
-      var orgSelected = await inquirer.prompt(orgdata)
+      .then(async (orgList)=>{
+      var orgSelected = await inquirer.prompt(orgList)
       let stackDetails = this.getStack(orgSelected)
       stackDetails
-      .then(async ()=> {
-      let stackSelected = await inquirer.prompt(stackChoice)
+      .then(async (stackList)=> {
+      let stackSelected = await inquirer.prompt(stackList)
       config.source_stack = stackUidList[stackSelected.stack]
       stackName.default = "Copy of " + stackSelected.stack
         let cmdExport = this.cmdExport()
@@ -77,34 +72,36 @@ class CloneHandler {
           //Import section starts from here
                 var stackCreateConfirmation = await inquirer.prompt(stackCreationConfirmation)
                 if (stackCreateConfirmation.stackCreate !== true) {
-                  let orgdetails = await this.getOrganizationChoices()
-                  var orgSelected = await inquirer.prompt(orgdetails)
-                  let stackDetails = this.getStack(orgSelected)
-                  let stackSelected = await inquirer.prompt(stackChoice)
-                  stackDetails
-                  .then(()=> {
-                  config.target_stack = stackUidList[stackSelected.stack]
-                  this.cloneTypeSelection()
-                    .then(()=>{
-                      console.log("Stack clone completed successfully ");
-                      return resolve()
-                    }).catch((error)=>{
-                      return reject()
-                    })
-                  })
-                } else {
                   let orgdetails = this.getOrganizationChoices()
                   orgdetails
-                  .then(async ()=>{
-                  var orgSelected = await inquirer.prompt(orgChoice)
+                  .then(async (orgList)=>{
+                  var orgSelected = await inquirer.prompt(orgList)
+                  let stackDetails = this.getStack(orgSelected)
+                  stackDetails
+                  .then(async (stackList)=> {
+                  let stackSelected = await inquirer.prompt(stackList)
+                  config.target_stack = stackUidList[stackSelected.stack]
+                  this.cloneTypeSelection()
+                    .then((msgData)=>{
+                      return resolve(msgData)
+                    }).catch((error)=>{
+                      return reject(error)
+                    })
+                  })
+                })
+              } else {
+                  let orgdetails = this.getOrganizationChoices()
+                  orgdetails
+                  .then(async (orgList)=>{
+                  var orgSelected = await inquirer.prompt(orgList)
                   let orgUid = orgUidList[orgSelected.Organization]
                   this.createNewStack(orgUid)
                   .then(()=>{
                     this.cloneTypeSelection()
-                    .then(()=>{
-                     return resolve()
+                    .then((msgData)=>{
+                     return resolve(msgData)
                     }).catch((error) => {
-                     return reject() 
+                     return reject(error) 
                     })
                   })
                 })
@@ -119,13 +116,13 @@ class CloneHandler {
   }
 
   getOrganizationChoices = async () => {
+    let orgChoice = {
+      type: 'list',
+      name: 'Organization',
+      message: '',
+      choices: [],
+    }
     return new Promise(async (resolve, reject) => {
-      let orgChoice = {
-        type: 'list',
-        name: 'Organization',
-        message: '',
-        choices: [],
-      }
       try {
         const spinner = ora('Fetching Organization').start()
         let organizations = await client.organization().fetchAll({ limit: 100 })
@@ -143,6 +140,12 @@ class CloneHandler {
 
   getStack = async (answer) => {
     return new Promise(async (resolve, reject) => {
+      let stackChoice = {
+        type: 'list',
+        name: 'stack',
+        message: 'Choose Stack ...',
+        choices: [],
+      }      
       try {
         let orgUid = orgUidList[answer.Organization]
         const spinner = ora('Fetching stack List').start()
@@ -154,7 +157,7 @@ class CloneHandler {
               stackChoice.choices.push(stacklist.items[j].name)
             }
             spinner.succeed("Fetched stack List")
-            return resolve(stacklist)
+            return resolve(stackChoice)
           }).catch(error => {
             return reject(error)
           })
@@ -163,7 +166,7 @@ class CloneHandler {
       }
     })
   }
-  
+
   async createNewStack(orgUid) {
     return new Promise(async (resolve, reject) => {
       let inputvalue = await inquirer.prompt(stackName)
@@ -186,75 +189,30 @@ class CloneHandler {
     return new Promise(async (resolve, reject) => {
       var selectedValue = await inquirer.prompt(cloneTypeSelection)
       let cloneType = selectedValue.type
+      config['data'] = path.join(__dirname.split("/src")[0], 'contents')
       if (cloneType === "structure") {
-        let resultData = this.cmdExe(structureList[0], true)
-        resultData.then(() => {
-          let files = fs.readdirSync(process.cwd())
-          let regex = RegExp("_backup*")
-          for (let k = 0; k < files.length; k++) {
-            if (regex.test(files[k])) {
-              backupPath = files[k]
-              break;
-            }
-          }
-          for (let i = 1; i < structureList.length; i++) {
-            functionList.push(this.cmdExe(structureList[i], false))
-          }
-
-          async.series(functionList,
-            function (err, results) {
-              if (results) {
-                return resolve("Stack clone completed")
-              }
-              if (err) {
-                return reject(err)
-              }
-            })
-
-        }).catch(error => {
+        config['modules'] = structureList
+        let cmdImport = this.cmdImport()
+        cmdImport.then(() => {
+          return resolve("Stack clone Structure completed")
+        }).catch((error) => {
           return reject(error)
         })
       } else {
         let cmdImport = this.cmdImport()
         cmdImport.then(() => {
-          return resolve("Stack clone completed")
+          return resolve("Stack clone completed with structure and content")
         }).catch((error) => {
           return reject(error)
         })
       }
     })
   }
-  cmdExe(module, createBackupFolder) {
-    if (createBackupFolder) {
-      return new Promise(function (resolve, reject) {
-        const spinner = ora().start()
-        let singleLineArg = ['-A', '-s', config.target_stack, '-d', './content', '-m', module]
-        importCmd.run(singleLineArg)
-          .then((data) => {
-            spinner.succeed()
-            return resolve()
-          }).catch((error) => {
-            return reject(error)
-          })
-      })
-    } else {
-      return function (cb) {
-        const spinner = ora().start()
-        let singleLineArg = ['-A', '-s', config.target_stack, '-d', './content', '-m', module, '-b', backupPath]
-        importCmd.run(singleLineArg)
-          .then((data) => {
-            spinner.succeed()
-            cb(null)
-          }).catch(error => {
-            cb(error)
-          })
-      }
-    }
-  }
 
   async cmdExport() {
     return new Promise((resolve, reject) => {
-      let exportData = exportCmd.run(['-A', '-s', config.source_stack, '-d', './content'])
+    //  let contentFolderPath =  __dirname.split("/src")[0]
+      let exportData = exportCmd.run(['-A', '-s', config.source_stack, '-d', __dirname.split("src")[0]+'contents'])
       exportData.then(async () => {
         return resolve()
       }).catch(error => {
@@ -265,10 +223,10 @@ class CloneHandler {
 
   async cmdImport() {
     return new Promise((resolve, reject) => {
-      const spinner = ora().start()
-      let importStructureWithContent = importCmd.run(['-A', '-s', config.target_stack, '-d', './content'])
+      // const spinner = ora().start()
+      let importStructureWithContent = importCmd.run(['-A', '-c', path.join(__dirname, 'dummyConfig.json')])
       importStructureWithContent.then(() => {
-        spinner.succeed('Completed import with structure and content')
+        // spinner.succeed('Completed import with structure and content')
         return resolve()
       }).catch(error => {
         return reject(error)
