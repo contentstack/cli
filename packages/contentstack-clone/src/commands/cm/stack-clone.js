@@ -2,7 +2,7 @@ const { Command, flags } = require('@contentstack/cli-command')
 const Configstore = require('configstore')
 const credStore = new Configstore('contentstack_cli')
 const {CloneHandler} = require('../../lib/util/clone-handler')
-let config = {}
+let config = require('../../lib/util/dummyConfig.json')
 
 class StackCloneCommand extends Command { 
   async run() {
