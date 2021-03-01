@@ -15,7 +15,7 @@ const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
 let config = require('../../config/default')
 let stack = require('../util/contentstack-management-sdk');
-const { result } = require('lodash');
+const { add } = require('lodash');
 
 let reqConcurrency = config.concurrency;
 let releasesConfig = config.modules.releases;
@@ -48,6 +48,8 @@ importReleases.prototype = {
     self.releases = helper.readFile(path.resolve(releasesFolderPath, releasesConfig.fileName));
     releasesMapperPath = path.resolve(config.data, 'mapper', 'releases');
     releasesUidMapperPath = path.resolve(config.data, 'mapper', 'releases', 'uid-mapping.json');
+    assetsUidMapperPath = path.resolve(config.data, 'mapper', 'assets', 'uid-mapping.json');
+    entriesUidMapperPath = path.resolve(config.data, 'mapper', 'entries', 'uid-mapping.json');
     releasesSuccessPath = path.resolve(config.data, 'releases', 'success.json');
     releasesFailsPath = path.resolve(config.data, 'releases', 'fails.json');
     mkdirp.sync(releasesMapperPath);
@@ -59,38 +61,41 @@ importReleases.prototype = {
       self.releasesUids = Object.keys(self.releases);
       return Promise.map(self.releasesUids, function (releaseUid) {
         let releases = self.releases[releaseUid];
+            self.assetsUids = helper.readFile(assetsUidMapperPath)
+            self.entriesUids = helper.readFile(entriesUidMapperPath)
 
         if (!self.releasesUidMapper.hasOwnProperty(releaseUid)) {
           let requestOption = {
             release: releases.releases
           };
           
-          return client.stack({ api_key: config.target_stack, management_token: config.management_token }).release().create(requestOption)
+          client.stack({ api_key: config.target_stack, management_token: config.management_token }).release().create(requestOption)
             .then(async function (response) {
-            
-              var promiseResult =  await Promise.all(
-                releases.items.map(async release => {
-                 let item = release
-                 console.log("Line no 75++++++++", item)
-                 response.item().create({item})
-                 .then((result) => {
-                   console.log("result part yahape hai");
-                 }).catch((error) => {
-                  console.log("Linennnoo no 81++++++", error);
-                 })
-                 console.log("result++++++", itemCreated);
-                 addlogs(config, chalk.white("Complete releases module"), 'success')
-                  return
-                })
-              )
               
-              // self.releaseItems(releaseUid, response.uid)
-              // .then(() => {
-              //   addlogs(config, chalk.white("complete releases module"), 'success')
-              // })
-              self.releasesUidMapper[releaseUid] = response.uid;
-              // helper.writeFile(releasesUidMapperPath, self.releasesUidMapper);
-              return;
+              if (releases.items.length !== 0 ) {
+               Promise.all(
+                  releases.items.map(async release => {
+                   let item = release
+                   if (item.content_type_uid === 'built_io_upload') {
+                    item.uid = self.assetsUids[item.uid] 
+                   } else {
+                    item.uid = self.entriesUids[item.uid]
+                   }
+                  response.item().create({item})
+                   .then(() => {
+                    // addlogs(config, chalk.white("Item added under "+ response.name), 'success')
+                   }).catch((error) => {
+                    addlogs(config, error, 'error') 
+                    addlogs(config, chalk.white("Fail to add items under "+ response.name), 'error')
+                   })
+                  })
+                )
+                .then(() => {
+                  self.releasesUidMapper[releaseUid] = response.uid;
+                  helper.writeFile(releasesUidMapperPath, self.releasesUidMapper);
+                  return;
+                })
+              }
             }).catch(function (error) {
               self.fails.push(releases);
               if (error.errors.name) {
@@ -111,7 +116,7 @@ importReleases.prototype = {
         concurrency: reqConcurrency
       }).then(function () {
         helper.writeFile(releasesSuccessPath, self.success);
-        addlogs(config, (chalk.green('Releases have been imported successfully!')), 'success');
+        addlogs(config, (chalk.green('All releases have been imported successfully!')), 'success');
         return resolve();
       }).catch(function (error) {
         helper.writeFile(releasesFailsPath, self.fails);
@@ -119,21 +124,6 @@ importReleases.prototype = {
         return reject(error);
       });
     });
-  },
-
-  releaseItems: function(oldUid, NewUid) {
-    new Promise(function(resolve, reject) {
-      let requestOption = {
-        items: releases
-      };
-      return client.stack({ api_key: config.target_stack, management_token: config.management_token }).release(NewUid).item().create({ items })
-      .then(async function (response) {
-        client.stack({ api_key: 'api_key'}).release('release_uid').item().create({ items })
-       .then((release) => console.log(release))
-      }).catch(function (error) {
-       
-      });
-    })
   }
 }
 module.exports = new importReleases();
