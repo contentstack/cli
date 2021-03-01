@@ -11,9 +11,9 @@ var path = require('path')
 var chalk = require('chalk')
 var {addlogs} = require('./log')
 var request = require('./request')
-// var config = require('../../config/');
 var defaultConfig = require('../../config/default')
 var config 
+
 exports.initialization = function(configData) {
   config = this.buildAppConfig(configData)
   var res = this.validateConfig(config)
