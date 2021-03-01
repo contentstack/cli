@@ -33,8 +33,7 @@ ExportReleases.prototype = {
     mkdirp.sync(releasesFolderPath)
     return new Promise(function (resolve, reject) {
       let releasesNameList = []
-      //   console.log("jdjjdjjddjdj", client.stack({api_key: config.source_stack, management_token: config.management_token}).release().query())
-      return client.stack({ api_key: config.source_stack, management_token: config.management_token }).release().query().find()
+      return client.stack({api_key: config.source_stack, management_token: config.management_token}).release().query().find()
       .then(async response => {
         if (response.items.length !== 0) {
           var promiseResult =  await Promise.all(
@@ -42,7 +41,6 @@ ExportReleases.prototype = {
               releasesNameList.push(release.name)
               const result = await release.item().findAll()
               self.releases[release.uid] = {'items': result.items, 'releases': release}
-              return
             })
           )
           addlogs(config, chalk.green('All the release have been exported successfully'), 'success')
