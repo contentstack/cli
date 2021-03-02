@@ -174,7 +174,7 @@ module.exports = class extends Generator {
     this.eslint = this.options.eslint
     this.mocha = this.options.mocha
 
-    this.pjson.repository = this.answers.repository || defaults.repository
+    this.pjson.repository = `https://github.com/${this.answers.repository}` || `https://github.com/${defaults.repository}`
     this.pjson.keywords = defaults.keywords || ['contentstack', 'plugin', 'cli']
     this.pjson.homepage = defaults.homepage || `https://github.com/${this.pjson.repository}`
     this.pjson.bugs = defaults.bugs || `https://github.com/${this.pjson.repository}/issues`
