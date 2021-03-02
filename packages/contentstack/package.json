@@ -15,7 +15,7 @@
     "@contentstack/cli-cm-import": "0.1.1-beta.3",
     "@contentstack/management": "1.1.2",
     "@contentstack/extensions": "0.0.0",
-    "@contentstack/plugins": "0.0.0",
+    "@contentstack/cli-plugins-plugin": "0.0.0",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
     "@oclif/errors": "^1.3.3",
@@ -78,7 +78,7 @@
       "@contentstack/cli-cm-import",
       "@contentstack/cli-cm-bulk-publish",
       "@contentstack/extensions",
-      "@contentstack/plugins"
+      "@contentstack/cli-plugins-plugin"
     ],
     "hooks": {
       "prerun": [
