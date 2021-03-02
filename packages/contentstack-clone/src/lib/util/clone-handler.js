@@ -189,7 +189,7 @@ class CloneHandler {
     return new Promise(async (resolve, reject) => {
       var selectedValue = await inquirer.prompt(cloneTypeSelection)
       let cloneType = selectedValue.type
-      config['data'] = path.join(__dirname.split("/src")[0], 'contents')
+      config['data'] = path.join(__dirname.split("src")[0], 'contents')
       if (cloneType === "structure") {
         config['modules'] = structureList
         let cmdImport = this.cmdImport()
