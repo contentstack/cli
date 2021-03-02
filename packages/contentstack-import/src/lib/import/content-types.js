@@ -161,6 +161,7 @@ importContentTypes.prototype = {
       setTimeout(function () {
         let requestObject = _.cloneDeep(self.requestOptions)
         if (contentType.field_rules) {
+         
           field_rules_ct.push(contentType.uid)
           delete contentType.field_rules
         }
