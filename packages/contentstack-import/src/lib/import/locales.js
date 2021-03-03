@@ -92,7 +92,6 @@ importLanguages.prototype = {
         concurrency: reqConcurrency,
       }).then(function () {
         // languages have imported successfully
-        console.log("dncjkdcdjkcnd", langUids);
         self.update_locales(langUids)
         helper.writeFile(langSuccessPath, self.success)
         addlogs(config, chalk.green('Languages have been imported successfully!'), 'success')
@@ -107,45 +106,20 @@ importLanguages.prototype = {
     })
   },
   update_locales: function (langUids) {
-    console.log("dnjdncjdcjdnc");
     let self = this
     Promise.all(
       langUids.map(async langUid => {
         let lang = self.languages[langUid]
-        console.log("lang", lang);
         let langobj = client.stack({api_key: config.target_stack, management_token: config.management_token}).locale(lang.code)
-        console.log("langon=je", langobj);
-        console.log("langon=je", lang);
         Object.assign(langobj, _.cloneDeep(lang))
-        console.log("cmdkcdncd", langobj);
         langobj.update()
         .then(()=>{
-          console.log("Successfullyyyyy");
         })
       })
     )
     .then(()=>{
-      console.log("SSSSSSSSSSSSSSSSSSS");
     }).catch((error) => {
-      console.log("errrrerere", error);
     })
-  // return client.stack({api_key: config.target_stack, management_token: config.management_token}).locale(lang.code).fetch()
-  //   // return request(requestOption)
-  //   .then(function (locale) {      
-  //     locale.code = lang.code
-  //     locale.fallback_locale = lang.fallback_locale
-  //     locale.name = lang.name
-  //     return locale.update()
-  //   }).catch(function (error) {
-  //     // let error = JSON.parse(err.message)
-  //     if (error.hasOwnProperty('errorCode') && error.errorCode === 247) {
-  //       addlogs(config, error.errors.code[0], 'error')
-  //       return
-  //     }
-  //     self.fails.push(lang)
-  //     addlogs(config, 'Language: \'' + lang.code + '\' failed to update\n', 'error')
-  //     return
-  //   })
   },
 }
 
