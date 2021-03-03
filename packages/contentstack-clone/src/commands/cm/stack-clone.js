@@ -25,9 +25,8 @@ class StackCloneCommand extends Command {
   }
 }
 
-StackCloneCommand.description = `
+StackCloneCommand.description = `This plugin allows you to perform content or only structure migration tasks
 ...
-This plugin allows you to perform content migration tasks.
 By using this plugin, you can automate the content export and import operations for your stacks in your organization.
 `
 
