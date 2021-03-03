@@ -9,10 +9,8 @@ class StackCloneCommand extends Command {
     let _authToken = credStore.get('authtoken')
     if (_authToken && _authToken !== undefined) {
       config.auth_token = _authToken
-      let host = this.region
-      host.cma = this.cmaHost
-      host.cda = this.cdaHost
-      config.host = host
+      config.host = this.cmaHost
+      config.cdn  = this.cdaHost
       const cloneHandler = new CloneHandler(config)
       let orgSelection = cloneHandler.start()
       orgSelection.then(() => {
