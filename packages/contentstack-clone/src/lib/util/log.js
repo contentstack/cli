@@ -91,6 +91,7 @@ function init (_logPath, logfileName) {
 }
 
 exports.addlogs = async (config, message, type) => {
+  console.log("config", config);
   if (type !== 'error') {
     init(config.oldPath, type).log(message)
   } else {
