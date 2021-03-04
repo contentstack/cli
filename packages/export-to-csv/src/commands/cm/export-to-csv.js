@@ -17,6 +17,7 @@ class ExportToCsvCommand extends Command {
     
     const action = await util.startupQuestions()
     // const action = 'Export Entries to CSV'
+    // const action = 'Export Organization Users to CSV'
     
     switch(action) {
       case 'Export Entries to CSV': {
@@ -46,7 +47,7 @@ class ExportToCsvCommand extends Command {
       }
       case 'Export Organization Users to CSV': {
         try {
-          const organization = await util.chooseOrganization(this.managementAPIClient) // prompt for organization
+          const organization = await util.chooseOrganization(this.managementAPIClient, action) // prompt for organization
           const orgUsers = await util.getOrgUsers(this.managementAPIClient, organization.uid)
           const orgRoles = await util.getOrgRoles(this.managementAPIClient, organization.uid)
           const mappedUsers = util.getMappedUsers(orgUsers)

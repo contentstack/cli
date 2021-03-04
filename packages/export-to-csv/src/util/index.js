@@ -4,9 +4,14 @@ const fastcsv = require('fast-csv')
 const fs = require('fs')
 const debug = require('debug')("export-to-csv")
 
-function chooseOrganization(managementAPIClient) {
+function chooseOrganization(managementAPIClient, action) {
 	return new Promise(async resolve => {
-		let organizations = await getOrganizations(managementAPIClient)
+		let organizations
+		if (action === 'Export Organization Users to CSV') {
+			organizations = await getOrganizationsWhereUserIsAdmin(managementAPIClient)
+		} else {
+			organizations = await getOrganizations(managementAPIClient)		
+		}
 		let orgList = Object.keys(organizations)
 		orgList.push(config.cancelString)
 			let chooseOrganization = [{
@@ -26,8 +31,28 @@ function chooseOrganization(managementAPIClient) {
 function getOrganizations(managementAPIClient) {
 	return new Promise(resolve => {
 		let result = {}
+
 		managementAPIClient.organization().fetchAll().then(organizations => {
+			debugger
 			organizations.items.forEach(org => {
+				result[org.name] = org.uid
+			})
+			resolve(result)
+		})
+	})
+}
+
+function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
+	return new Promise(resolve => {
+		let result = {}
+		managementAPIClient
+		.getUser({include_orgs_roles: true})
+		.then(response => {
+			let organizations = response.organizations.filter(org => {
+				const org_role = org.org_roles.shift()
+				return org_role.admin
+			})
+			organizations.forEach(org => {
 				result[org.name] = org.uid
 			})
 			resolve(result)
@@ -214,7 +239,8 @@ function getDateTime() {
 
 function write(command, entries, fileName) {
   const ws = fs.createWriteStream(fileName)
-  command.log(`Writing entries to file: ${fileName}`)
+  // eslint-disable-next-line no-undef
+  command.log(`Writing entries to file: ${process.cwd()}/${fileName}`)
   fastcsv
   .write(entries, {headers: true})
   .pipe(ws)
@@ -329,4 +355,5 @@ module.exports = {
   getMappedRoles: getMappedRoles,
   cleanOrgUsers: cleanOrgUsers,
   determineUserOrgRole: determineUserOrgRole,
+  getOrganizationsWhereUserIsAdmin: getOrganizationsWhereUserIsAdmin,
 }	
