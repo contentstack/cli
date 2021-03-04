@@ -27,6 +27,7 @@ let contentTypesFolderPath
 let mapperFolderPath
 let globalFieldMapperFolderPath
 let globalFieldUpdateFile
+let globalFieldPendingPath
 let skipFiles = ['__master.json', '__priority.json', 'schema.json', '.DS_Store']
 let fileNames
 let field_rules_ct = []
@@ -52,8 +53,8 @@ importContentTypes.prototype = {
     globalFieldsFolderPath = path.resolve(config.data, globalFieldConfig.dirName)
     contentTypesFolderPath = path.resolve(config.data, contentTypeConfig.dirName)
     mapperFolderPath = path.join(config.data, 'mapper', 'content_types')
-    globalFieldMapperFolderpath =  helper.readFile(path.join(config.data, 'mapper', 'global_fields', 'success.json'))
-    globalFieldPendingpath =  helper.readFile(path.join(config.data, 'mapper', 'global_fields', 'pending_global_fields.js'))
+    globalFieldMapperFolderPath =  helper.readFile(path.join(config.data, 'mapper', 'global_fields', 'success.json'))
+    globalFieldPendingPath =  helper.readFile(path.join(config.data, 'mapper', 'global_fields', 'pending_global_fields.js'))
     globalFieldUpdateFile =  path.join(config.data, 'mapper', 'global_fields', 'success.json')
     fileNames = fs.readdirSync(path.join(contentTypesFolderPath))
     self.globalfields = helper.readFile(path.resolve(globalFieldsFolderPath, globalFieldConfig.fileName))
@@ -116,11 +117,14 @@ importContentTypes.prototype = {
             })
           }
         
-         if( globalFieldPendingpath.length !== 0 ) {
+         if( globalFieldPendingPath.length !== 0 ) {
           return self.updateGlobalfields().then(function () {
             addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
             return resolve()
-          }).catch(reject)
+          }).catch((error) => {
+            addlogs(config, chalk.green('Error in GlobalFields'), 'success')
+            return reject()
+          })
          }  else {
             addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
             return resolve()
@@ -161,7 +165,6 @@ importContentTypes.prototype = {
       setTimeout(function () {
         let requestObject = _.cloneDeep(self.requestOptions)
         if (contentType.field_rules) {
-         
           field_rules_ct.push(contentType.uid)
           delete contentType.field_rules
         }
@@ -184,7 +187,7 @@ importContentTypes.prototype = {
     let self = this
     return new Promise(function (resolve, reject) {
       // eslint-disable-next-line no-undef
-      return Promise.map(_globalField_pending, function (globalfield) {
+      return Promise.map(globalFieldPendingPath, function (globalfield) {
         let lenGlobalField = (self.globalfields).length
         let Obj = _.find(self.globalfields, {uid: globalfield})
         let globalFieldObj = stack.globalField(globalfield)
