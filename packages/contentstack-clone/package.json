@@ -16,7 +16,8 @@
     "configstore": "^5.0.1",
     "fancy-test": "^1.4.10",
     "inquirer": "^7.3.3",
-    "ora": "^5.1.0"
+    "ora": "^5.1.0",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
