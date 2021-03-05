@@ -1,4 +1,4 @@
-const {Command, flags} = require('@contentstack/cli-command')
+const {Command} = require('@contentstack/cli-command')
 const util = require('../../util/index')
 const ContentstackManagementSDK = require('@contentstack/management')
 
@@ -11,13 +11,8 @@ class ExportToCsvCommand extends Command {
 	}
 
   async run() {
-    // const {flags} = this.parse(ExportToCsvCommand)
-    // const name = flags.name || 'world'
-    // this.log(`hello ${name} from ./src/commands/hello.js`)
     
     const action = await util.startupQuestions()
-    // const action = 'Export Entries to CSV'
-    // const action = 'Export Organization Users to CSV'
     
     switch(action) {
       case 'Export Entries to CSV': {
@@ -31,18 +26,6 @@ class ExportToCsvCommand extends Command {
 				const dateTime = util.getDateTime()
 				const fileName = `${contentType.uid}_${language.code}_entries_export_${dateTime}.csv`
 				util.write(this, flatEntries, fileName) // write to file
-
-        // const tokenDetails = this.getToken(alias)
-
-				// const stack = this.managementAPIClient.stack({api_key: tokenDetails.apiKey, management_token: tokenDetails.token})
-				// this.log('Fetching Entries')
-
-				// stack.contentType(contentType).entry().query({include_publish_details: true}).find()
-				// .then(async entries => {
-				// 	const environments = await this.getEnvironments(stack)
-				// 	const flatEntries = this.cleanEntries(entries.items, locale, environments, stack);
-				// 	this.write(flatEntries)
-				// })
         break;
       }
       case 'Export Organization Users to CSV': {
@@ -65,14 +48,7 @@ class ExportToCsvCommand extends Command {
   }
 }
 
-ExportToCsvCommand.description = `Describe the command here
-...
-Extra documentation goes here
+ExportToCsvCommand.description = `Export entries or organization users to csv using this command
 `
-
-ExportToCsvCommand.flags = {
-  file: flags.string({char: 'l', description: 'Language', default: 'en-us'}),
-  contentType: flags.string({char: 'c', description: 'Content Type'}),
-}
 
 module.exports = ExportToCsvCommand
