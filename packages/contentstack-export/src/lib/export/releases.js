@@ -9,13 +9,10 @@ const path = require('path')
 const chalk = require('chalk')
 
 let helper = require('../util/helper')
-let { addlogs } = require('../util/log')
-let _  = require('lodash')
+let {addlogs} = require('../util/log')
 
 const stack = require('../util/contentstack-management-sdk')
 let config = require('../../config/default')
-const { result } = require('lodash')
-const releases = require('../../../../contentstack-import/src/lib/import/releases')
 let releaseConfig = config.modules.releases
 let client
 
@@ -32,13 +29,11 @@ ExportReleases.prototype = {
     let releasesFolderPath = path.resolve(config.data, releaseConfig.dirName)
     mkdirp.sync(releasesFolderPath)
     return new Promise(function (resolve, reject) {
-      let releasesNameList = []
       return client.stack({api_key: config.source_stack, management_token: config.management_token}).release().query().find()
       .then(async response => {
         if (response.items.length !== 0) {
           var promiseResult =  await Promise.all(
             response.items.map(async release => {
-              releasesNameList.push(release.name)
               const result = await release.item().findAll()
               self.releases[release.uid] = {'items': result.items, 'releases': release}
             })
