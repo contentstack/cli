@@ -79,7 +79,6 @@ exports.parametersWithAuthToken = function (_authToken, sourceStack, data, modul
       return reject(error)
     })
   })
- 
 }
 
 exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host) => {
