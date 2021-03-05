@@ -48,18 +48,18 @@ class CloneHandler {
   async start() {
     return new Promise(async (resolve, reject) => {
       // export section starts from here
-      // let orgdetails = this.getOrganizationChoices()
-      // orgdetails
-      // .then(async (orgList)=>{
-      // var orgSelected = await inquirer.prompt(orgList)
-      // let stackDetails = this.getStack(orgSelected)
-      // stackDetails
-      // .then(async (stackList)=> {
-      // let stackSelected = await inquirer.prompt(stackList)
-      // config.source_stack = stackUidList[stackSelected.stack]
-      // stackName.default = "Copy of " + stackSelected.stack
-      //   let cmdExport = this.cmdExport()
-      //   cmdExport.then(async () => {
+      let orgdetails = this.getOrganizationChoices()
+      orgdetails
+      .then(async (orgList)=>{
+      var orgSelected = await inquirer.prompt(orgList)
+      let stackDetails = this.getStack(orgSelected)
+      stackDetails
+      .then(async (stackList)=> {
+      let stackSelected = await inquirer.prompt(stackList)
+      config.source_stack = stackUidList[stackSelected.stack]
+      stackName.default = "Copy of " + stackSelected.stack
+        let cmdExport = this.cmdExport()
+        cmdExport.then(async () => {
           //Import section starts from here
                 var stackCreateConfirmation = await inquirer.prompt(stackCreationConfirmation)
                 if (stackCreateConfirmation.stackCreate !== true) {
@@ -105,11 +105,11 @@ class CloneHandler {
                   return reject(error.errorMessage)
                 })
                 }
-          //     }).catch((error) => {
-          //       return reject(error)
-          //     })
-          //   })
-          // })
+              }).catch((error) => {
+                return reject(error)
+              })
+            })
+          })
     })
   }
 
