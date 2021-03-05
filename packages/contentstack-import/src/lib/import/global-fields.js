@@ -50,6 +50,7 @@ importGlobalFields.prototype = {
     globalfieldsMapperPath = path.resolve(config.data, 'mapper', 'global_fields')
     globalfieldsUidMapperPath = path.resolve(config.data, 'mapper', 'global_fields', 'uid-mapping.json')
     globalfieldsSuccessPath = path.resolve(config.data, 'mapper', 'global_fields', 'success.json')
+    globalFieldsPending = path.resolve(config.data, 'mapper', 'global_fields', 'pending_global_fields.js')
     globalfieldsFailsPath = path.resolve(config.data, 'mapper', 'global_fields', 'fails.json')
     self.globalfields = helper.readFile(path.resolve(globalfieldsFolderPath, globalfieldsConfig.fileName))
     if (fs.existsSync(globalfieldsUidMapperPath)) {
@@ -64,6 +65,7 @@ importGlobalFields.prototype = {
     return new Promise(function (resolve, reject) {
       if (self.globalfields === undefined) {
         addlogs(config, chalk.white('No globalfields Found'), 'success')
+        helper.writeFile(globalFieldsPending, _globalField_pending)
         return resolve()
       }
       let snipUids = Object.keys(self.globalfields)
@@ -114,6 +116,7 @@ importGlobalFields.prototype = {
       }).then(function () {
         // globalfields have imported successfully
         helper.writeFile(globalfieldsSuccessPath, self.success)
+        helper.writeFile(globalFieldsPending, _globalField_pending)
         addlogs(config, chalk.green('globalfields have been imported successfully!'), 'success')
         return resolve()
       }).catch(function (err) {
