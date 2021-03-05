@@ -3,6 +3,7 @@ const config = require('./config.js')
 const fastcsv = require('fast-csv')
 const fs = require('fs')
 const debug = require('debug')("export-to-csv")
+const directory = './data'
 
 function chooseOrganization(managementAPIClient, action) {
 	return new Promise(async resolve => {
@@ -33,7 +34,6 @@ function getOrganizations(managementAPIClient) {
 		let result = {}
 
 		managementAPIClient.organization().fetchAll().then(organizations => {
-			debugger
 			organizations.items.forEach(org => {
 				result[org.name] = org.uid
 			})
@@ -199,12 +199,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
     const envArr = []
     entry.publish_details.forEach(env => {
       envArr.push(JSON.stringify([environments[env['environment']], env['locale']]))
-      // envArr.push(JSON.stringify({ environment: environments[env['environment']], locale: env['locale']}))
     })
-    // for (let env in entry.publish_details) {
-    //  debugger
-    //  envArr.push([environments[env['environment']], env['locale']])
-    // }
     delete entry.publish_details
     if ('_workflow' in entry) {
       workflow = entry['_workflow']['name']
@@ -238,6 +233,11 @@ function getDateTime() {
 }
 
 function write(command, entries, fileName) {
+	if (!fs.existsSync(directory)) {
+		fs.mkdirSync(directory)
+	}
+	// eslint-disable-next-line no-undef
+	process.chdir(directory)
   const ws = fs.createWriteStream(fileName)
   // eslint-disable-next-line no-undef
   command.log(`Writing entries to file: ${process.cwd()}/${fileName}`)
