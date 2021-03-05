@@ -23,26 +23,13 @@ test
     // expect(spy.calledOnce).to.be.true
   })
 
-
-test
-.it('organizationSelection ', async () => {
-    var orgSelectStub = sinon.spy(messages, 'organizationSelection')
-    messages.organizationSelection("export")
-    expect(orgSelectStub.calledOnce).to.be.true
-  })
-
-test
-.it('stackSelection Function', async () => {
- var spystackSelection = sinon.spy(messages, 'stackSelection');
-  messages.stackSelection('import');
-  expect(spystackSelection.called).to.be.true
-})
-
-test
-.it('getStackChoices function', async () => {
-  var spy = sinon.spy(messages, 'getStackChoices')
-  messages.getStackChoices('dummyOrg', "export");
+  describe('stack Clone Test', () => {
+  test
+.it('start function', async () => {
+  var spy = sinon.spy(messages, 'start')
+  messages.start();
   expect(spy.calledOnce).to.be.true
+})
 })
 
 test
@@ -50,26 +37,5 @@ test
   var spy = sinon.spy(messages, 'createNewStack')
   messages.createNewStack('dummyOrg');
   expect(spy.calledOnce).to.be.true
-})
-
-// test
-// .it('cmdExportImport function', async () => {
-//   var spy = sinon.spy(messages, 'cmdExportImport')
-//   messages.cmdExportImport('import');
-//   expect(spy.calledOnce).to.be.true
-// })
-
-test
-.it('cmdExe function', async () => {
-  var spy = sinon.spy(messages, 'cmdExe')
-  messages.cmdExe('dummyNodule', 'dummyBackup');
-  // expect(spy.calledOnce).to.be.true
-})
-
-test
-.it('stackCreationConfirm function', async () => {
-  var stackCreationConfirm = sinon.spy(messages, 'stackCreationConfirm')
-  messages.stackCreationConfirm({stackCreate: false})
-  // expect(stackCreationConfirm.calledOnce).to.be.true
 })
 })
