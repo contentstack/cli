@@ -16,6 +16,7 @@ let {addlogs} = require('../util/log')
 let util = require('../util')
 let stack = require('../util/contentstack-management-sdk')
 let config = require('../../config/default')
+let _ = require('lodash')
 let reqConcurrency = config.concurrency
 let langConfig = config.modules.locales
 let langFolderPath
@@ -69,7 +70,6 @@ importLanguages.prototype = {
           
          return client.stack({api_key: config.target_stack, management_token: config.management_token}).locale().create(requestOption)
           .then(locale => {                    
-            self.update_locales(lang)
             self.success.push(locale.items)
             self.langUidMapper[langUid] = locale.uid
             helper.writeFile(langUidMapperPath, self.langUidMapper)
@@ -92,10 +92,12 @@ importLanguages.prototype = {
         concurrency: reqConcurrency,
       }).then(function () {
         // languages have imported successfully
+        self.update_locales(langUids)
         helper.writeFile(langSuccessPath, self.success)
         addlogs(config, chalk.green('Languages have been imported successfully!'), 'success')
         return resolve()
       }).catch(function (error) {
+        console.log("errerrer", error);
         // error while importing languages
         helper.writeFile(langFailsPath, self.fails)
         addlogs(config, chalk.red('Language import failed'), 'error')
@@ -103,24 +105,20 @@ importLanguages.prototype = {
       })
     })
   },
-  update_locales: function (lang) {
+  update_locales: function (langUids) {
     let self = this
-  return client.stack({api_key: config.target_stack, management_token: config.management_token}).locale(lang.code).fetch()
-    // return request(requestOption)
-    .then(function (locale) {      
-      locale.code = lang.code
-      locale.fallback_locale = lang.fallback_locale
-      locale.name = lang.name
-      return locale.update()
-    }).catch(function (error) {
-      // let error = JSON.parse(err.message)
-      if (error.hasOwnProperty('errorCode') && error.errorCode === 247) {
-        addlogs(config, error.errors.code[0], 'error')
-        return
-      }
-      self.fails.push(lang)
-      addlogs(config, 'Language: \'' + lang.code + '\' failed to update\n', 'error')
-      return
+    Promise.all(
+      langUids.map(async langUid => {
+        let lang = self.languages[langUid]
+        let langobj = client.stack({api_key: config.target_stack, management_token: config.management_token}).locale(lang.code)
+        Object.assign(langobj, _.cloneDeep(lang))
+        langobj.update()
+        .then(()=>{
+        })
+      })
+    )
+    .then(()=>{
+    }).catch((error) => {
     })
   },
 }
