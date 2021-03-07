@@ -15,45 +15,52 @@ class ImportCommand extends Command {
   async run() {
     const {flags} = this.parse(ImportCommand)
     const extConfig = flags.config
+    let targetStack = flags['stack-uid']
     const data = flags.data
     const moduleName = flags.module
-    const masterLang = flags['master-lang']
-    let targetStack = flags['stack-uid']
+    const backupdir = flags["backup-dir"]
     const alias = flags['management-token-alias']
     const authToken = flags['auth-token']
     let _authToken = credStore.get('authtoken')
-    let host = this.config.userConfig.getRegion()
-
-    let cmaMainURL = host.cma.split('//')
-    let cdaMainURL = host.cda.split('//')
-    host.cma = cmaMainURL[1]
-    host.cda = cdaMainURL[1]
-
+    let host = this.cmaHost
+    
+  return new Promise(function (resolve, reject) {  
     if (alias && alias !== undefined) {
       let managementTokens = this.getToken(alias)
 
       if (managementTokens && managementTokens !== undefined) {
-        if (extConfig && extConfig !== undefined) {
+        if (extConfig && extConfig !== undefined && _authToken) {
           configWithMToken(
             extConfig,
             managementTokens,
             moduleName,
-            host,    
+            host,
+            _authToken
           )
-        } else if (masterLang && data) {
+          .then(() => {
+            return resolve()
+          })
+        } else if (data) {
           parameterWithMToken(
-            masterLang,
             managementTokens,
             data,
             moduleName,
-            host,           
+            host,
+            _authToken
           )
+          .then(() => {
+            return resolve()
+          })
         } else {
           withoutParameterMToken(
             managementTokens,
             moduleName,
-            host,          
+            host,
+            _authToken
           )
+          .then(() => {
+            return resolve()
+          })
         } 
       } else {
         this.log('management Token is not present please add managment token first')
@@ -66,26 +73,37 @@ class ImportCommand extends Command {
           moduleName,
           host,
         )
-      } else if (masterLang && targetStack && data) {
+        .then(() => {
+          return resolve()
+        })
+      } else if (targetStack && data) {
         parametersWithAuthToken(
-          masterLang,
           _authToken,
           targetStack,
           data,
           moduleName,
           host,
+          backupdir
         )
+        .then(() => {
+          return resolve()
+        })
       } else {
         withoutParametersWithAuthToken(
           _authToken,
           moduleName,
           host,
+          backupdir
         )
+        .then(() => {
+          return resolve()
+        })
       }
     } else  {
       this.log('Provide alias for managementToken or authtoken')
     }
-  }
+  })
+}
 }
 
 ImportCommand.description = `Import script for importing the content into new stack
@@ -94,10 +112,10 @@ Once you export content from the source stack, import it to your destination sta
 `
 ImportCommand.examples = [
   `csdx cm:import -A`, 
-  `csdx cm:import -A -l <master_language> -s <stack_ApiKey> -d <path/of/export/destination/dir>`,
+  `csdx cm:import -A -s <stack_ApiKey> -d <path/of/export/destination/dir>`,
   `csdx cm:import -A -c <path/of/config/dir>`,
   `csdx cm:import -a <management_token_alias>`,
-  `csdx cm:import -a <management_token_alias> -l <master-language> -d <path/of/export/destination/dir>`,
+  `csdx cm:import -a <management_token_alias> -d <path/of/export/destination/dir>`,
   `csdx cm:import -a <management_token_alias> -c <path/of/config/file>`,
   `csdx cm:import -A -m <single module name>`,
 ]
@@ -105,10 +123,6 @@ ImportCommand.flags = {
   config: flags.string({
     char: 'c', 
     description: '[optional] path of config file'
-  }),
-  'master-lang': flags.string({
-    char: 'l', 
-    description: "code of the target stack's master language"
   }),
   'stack-uid': flags.string({
     char: 's', 
@@ -130,6 +144,10 @@ ImportCommand.flags = {
     char: 'm', 
     description: '[optional] specific module name'
   }),
+  "backup-dir": flags.string({
+    char: 'b', 
+    description: '[optional] backup directory name when using specific module'
+  })
 }
 
 module.exports = ImportCommand
