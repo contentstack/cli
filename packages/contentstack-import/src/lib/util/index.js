@@ -37,10 +37,10 @@ exports.validateConfig = function (config) {
     addlogs(config, chalk.red('Kindly provide Email and password'), 'error')
     return 'error'
   }
-   if(!config.languagesCode.includes(config.master_locale.code)) {
-    addlogs(config, chalk.red('Kindly provide valid master_locale code'), 'error')
-    return 'error'
-  }
+  //  if(!config.languagesCode.includes(config.master_locale.code)) {
+  //   addlogs(config, chalk.red('Kindly provide valid master_locale code'), 'error')
+  //   return 'error'
+  // }
 }
 
 exports.buildAppConfig = function (config) {
