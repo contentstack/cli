@@ -27,7 +27,8 @@ let contentTypesFolderPath
 let mapperFolderPath
 let globalFieldMapperFolderPath
 let globalFieldUpdateFile
-let skipFiles = ['__master.json', '__priority.json', 'schema.json']
+let globalFieldPendingPath
+let skipFiles = ['__master.json', '__priority.json', 'schema.json', '.DS_Store']
 let fileNames
 let field_rules_ct = []
 let client
@@ -52,8 +53,9 @@ importContentTypes.prototype = {
     globalFieldsFolderPath = path.resolve(config.data, globalFieldConfig.dirName)
     contentTypesFolderPath = path.resolve(config.data, contentTypeConfig.dirName)
     mapperFolderPath = path.join(config.data, 'mapper', 'content_types')
-    globalFieldMapperFolderPath = helper.readFile(path.join(config.data, 'mapper', 'global_fields', 'success.json'))
-    globalFieldUpdateFile = path.join(config.data, 'mapper', 'global_fields', 'success.json')
+    globalFieldMapperFolderPath =  helper.readFile(path.join(config.data, 'mapper', 'global_fields', 'success.json'))
+    globalFieldPendingPath =  helper.readFile(path.join(config.data, 'mapper', 'global_fields', 'pending_global_fields.js'))
+    globalFieldUpdateFile =  path.join(config.data, 'mapper', 'global_fields', 'success.json')
     fileNames = fs.readdirSync(path.join(contentTypesFolderPath))
     self.globalfields = helper.readFile(path.resolve(globalFieldsFolderPath, globalFieldConfig.fileName))
     for (let index in fileNames) {
@@ -114,46 +116,22 @@ importContentTypes.prototype = {
               if (err) throw err
             })
           }
-
-          if (_globalField_pending.length !== 0) {
-            return self.updateGlobalfields().then(function () {
-              addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
-              return resolve()
-            }).catch(reject)
-          }
-          addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
-          return resolve()
+        
+         if( globalFieldPendingPath.length !== 0 ) {
+          return self.updateGlobalfields().then(function () {
+            addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
+            return resolve()
+          }).catch((error) => {
+            addlogs(config, chalk.green('Error in GlobalFields'), 'success')
+            return reject()
+          })
+         }  else {
+            addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
+            return resolve()
+         } 
         }).catch(error => {
           return reject(error)
-        })
-        // content type seeidng completed
-        // return Promise.map(self.contentTypes, function (contentType) {
-        //   return self.updateContentTypes(contentType).then(function () {
-        //     log.success(chalk.white(contentType.uid + ' was updated successfully!'))
-        //     return
-        //   }).catch(function (err) {
-        //     return reject()
-        //   })
-        // }).then(function () {
-        //   // eslint-disable-next-line quotes
-        //   if (field_rules_ct.length > 0) {
-        //     fs.writeFile(contentTypesFolderPath + '/field_rules_uid.json', JSON.stringify(field_rules_ct), function (err) {
-        //       if (err) throw err
-        //     })
-        //   }
-
-        //  if( _globalField_pending.length !== 0 ) {
-        //   return self.updateGlobalfields().then(function () {
-        //     log.success(chalk.green('Content types have been imported successfully!'))
-        //     return resolve()
-        //   }).catch(reject)
-        //  }  else {
-        //     log.success(chalk.green('Content types have been imported successfully!'))
-        //     return resolve()
-        //  }
-        // }).catch(error => {
-        //   return reject(error)
-        // })
+        }) 
       }).catch(error => {
         return reject(error)
       })
@@ -168,7 +146,7 @@ importContentTypes.prototype = {
       let requestObject = _.cloneDeep(self.requestOptions)
       requestObject.json = body
       return stack.contentType().create(requestObject.json)
-      .then(result => {
+      .then(() => {
         return resolve()
       })
       .catch(function (err) {
@@ -209,7 +187,7 @@ importContentTypes.prototype = {
     let self = this
     return new Promise(function (resolve, reject) {
       // eslint-disable-next-line no-undef
-      return Promise.map(_globalField_pending, function (globalfield) {
+      return Promise.map(globalFieldPendingPath, function (globalfield) {
         let lenGlobalField = (self.globalfields).length
         let Obj = _.find(self.globalfields, {uid: globalfield})
         let globalFieldObj = stack.globalField(globalfield)
