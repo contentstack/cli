@@ -34,9 +34,9 @@ module.exports = function (config) {
       }).catch(reject);
     } else if (config.management_token) {
       return resolve()
-    } else if (config.auth_token) {                  
+    } else if (config.auth_token) {                 
       //  return resolve()
-      client.stack({api_key: config.target_stack, management_token: config.management_token}).users()
+      client.stack({api_key: config.target_stack, management_token: config.management_token}).fetch()
       .then(function () {
           return resolve()
       })

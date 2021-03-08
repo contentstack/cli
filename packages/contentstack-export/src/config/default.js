@@ -10,7 +10,7 @@ module.exports = {
       'webhooks',
       'global-fields',
       'content-types',
-      'workflow',
+      'workflows',
       'releases',
       'entries',
       'labels',
