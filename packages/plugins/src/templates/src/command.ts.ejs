@@ -1,9 +1,12 @@
-//note that we are using @contentstack/cli-command instead of @oclif/command
-import {Command, flags} from '@contentstack/cli-command'
+// note that we are using @contentstack/cli-command instead of @oclif/command
+const {Command, flags} = require('@contentstack/cli-command')
+
 <%_ const klass = _.upperFirst(_.camelCase(name)) _%>
 
 export default class <%- klass %> extends Command {
-  static description = 'sample plugin using Contentstack'
+
+  static description = 'Executes demo command from <%- path.replace(/\\/g, '\\\\') %>'
+  name = flags.name || 'world'
 
 <%_ if (name === 'hello') { _%>
   static examples = [
@@ -17,22 +20,22 @@ hello world from ./src/<%- name %>.ts!
     help: flags.help({char: 'h'}),
     // flag with a value (-n, --name=VALUE)
     name: flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    force: flags.boolean({char: 'f'}),
   }
 
   static args = [{name: 'file'}]
 
   async run() {
     const {args, flags} = this.parse(<%- klass %>)
+    const name = flags.name || 'world'
 
-    let currentRegion = this.region
-    let managementClient = this.managementAPIClient
+    const currentRegion = this.region.name
+    const managementClient = this.managementAPIClient
 
+    this.log(`hello ${name} from <%- path.replace(/\\/g, '\\\\') %>`)
     this.log(`The current region configured is ${currentRegion}`)
 
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
+    if (args.file) {
+      this.log(`you input argument: ${args.file}`)
     }
   }
 }
