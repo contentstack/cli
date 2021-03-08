@@ -88,7 +88,8 @@
       "@contentstack/cli-cm-import",
       "@contentstack/cli-cm-bulk-publish",
       "@contentstack/cli-plugins-plugin",
-      "@contentstack/cli-cm-clone"
+      "@contentstack/cli-cm-clone",
+      "@contentstack/export-to-csv",
     ],
     "hooks": {
       "prerun": [
