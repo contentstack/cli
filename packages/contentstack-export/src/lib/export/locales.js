@@ -16,6 +16,7 @@ const masterLocale = config.master_locale
 let requiredKeys = localeConfig.requiredKeys
 let stack = require('../util/contentstack-management-sdk')
 
+
 function ExportLocales() {
   this.qs = {
     include_count: true,

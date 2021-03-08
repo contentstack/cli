@@ -43,17 +43,16 @@ module.exports.login = config => {
       }
       return resolve(config)
     // eslint-disable-next-line no-else-return
-    } else if (config.auth_token) {
+    } else if (config.auth_token && !config.management_token) {
       client.stack({api_key: config.source_stack, management_token: config.management_token}).users()
       .then(function () {
         return resolve()
-      })
-      .catch(error => {
+      }).catch(error => {
         if (error.errors.api_key) {
           return reject(error)
         }
         addlogs(config, error.errorMessage, 'error')
-        return reject()
+        return reject(error)
       })
     } else if (config.management_token) {
       return resolve()
