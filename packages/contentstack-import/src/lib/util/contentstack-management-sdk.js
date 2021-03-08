@@ -1,6 +1,6 @@
 const contentstacksdk = require('@contentstack/management')
 
-exports.Client = function (config) {
+exports.Client = function (config) {  
   const option = {
     host: config.host,
     authtoken: config.auth_token,
