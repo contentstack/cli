@@ -36,6 +36,8 @@ let structureList = ['locales',
   'webhooks',
   'global-fields',
   'content-types',
+  'workflows',
+  'releases',
   'labels']
 let master_locale
 
