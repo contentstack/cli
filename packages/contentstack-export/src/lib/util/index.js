@@ -23,14 +23,10 @@ exports.validateConfig = function (config) {
   } else if (!config.email && !config.password && config.preserveStackVersion) {
     throw new Error('Kindly provide Email and password for stack details')
   }
-  
-  if(!config.languagesCode.includes(config.master_locale.code)) {
-     addlogs(config, chalk.red('Kindly provide valid master_locale code'), 'error')
-    process.exit()
-  }
 }
 
 exports.buildAppConfig = function (config) {
   config = _.merge(defaultConfig, config)
   return config
 }
+
