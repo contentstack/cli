@@ -814,7 +814,7 @@ importEntries.prototype = {
                       // eslint-disable-next-line max-nested-callbacks
                     }).catch(function (err) {
                       addlogs(config, 'Entry ' + eUid + ' not published successfully in ' + ctUid + ' content type', 'error')
-                      return reject(err)
+                      return reject(err.errorMessage)
                     })
                   })
                   return publishPromiseResult
