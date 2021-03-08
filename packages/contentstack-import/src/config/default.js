@@ -8,12 +8,14 @@ module.exports = {
     types: [
       'locales',
       'environments',
+      'assets',
       'extensions',
       'webhooks',
       'global-fields',
-      'assets',
       'content-types',
+      'workflows',
       'entries',
+      'releases',
       'labels',
     ],
     locales: {
@@ -40,6 +42,30 @@ module.exports = {
     webhooks: {
       dirName: 'webhooks',
       fileName: 'webhooks.json',
+    },
+    releases: {
+      dirName: 'releases',
+      fileName: 'releases.json',
+      invalidKeys: [
+        'stackHeaders',
+        'urlPath',
+        'created_at',
+        'updated_at',
+        'created_by',
+        'updated_by',
+      ],
+    },
+    workflows: {
+      dirName: 'workflows',
+      fileName: 'workflows.json',
+      invalidKeys: [
+        'stackHeaders',
+        'urlPath',
+        'created_at',
+        'updated_at',
+        'created_by',
+        'updated_by',
+      ],
     },
     assets: {
       dirName: 'assets',
