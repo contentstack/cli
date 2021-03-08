@@ -1,8 +1,8 @@
 {
   "name": "@contentstack/cli-command",
-  "version": "0.1.1-beta.2",
+  "version": "0.1.1-beta.3",
   "description": "Base class for Contentstack command",
-  "main": "index.js",
+  "main": "./src/index.js",
   "author": "Contentstack",
   "scripts": {
     "test": "nyc mocha --forbid-only \\\"test/**/*.test.js\\\""
@@ -11,6 +11,9 @@
     "type": "git",
     "url": "git+https://github.com/contentstack/cli.git"
   },
+  "files": [
+    "src"
+  ],
   "license": "MIT",
   "bugs": "https://github.com/contentstack/cli/issues",
   "homepage": "https://github.com/contentstack/cli#readme",
