@@ -7,7 +7,7 @@ exports.Client = function (config) {
     api_key: config.target_stack,
     maxContentLength: 100000000,
     maxBodyLength: 1000000000,
-    logHandler: (level, data) => { },
+    logHandler: (level, data) => {},
     retryCondition: error => {
       // no async function should be used here
       if (error.response && (error.response.status === 429 || error.response.status === 408)) {

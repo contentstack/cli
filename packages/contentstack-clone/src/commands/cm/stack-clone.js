@@ -3,6 +3,8 @@ const Configstore = require('configstore')
 const credStore = new Configstore('contentstack_cli')
 const {CloneHandler} = require('../../lib/util/clone-handler')
 let config = require('../../lib/util/dummyConfig.json')
+const path = require('path')
+const fs = require('fs');
 
 class StackCloneCommand extends Command { 
   async run() {
@@ -12,11 +14,9 @@ class StackCloneCommand extends Command {
       config.host = this.cmaHost
       config.cdn  = this.cdaHost
       const cloneHandler = new CloneHandler(config)
-      let orgSelection = cloneHandler.start()
-      orgSelection.then(() => {
-      }).catch((error) => {
-        console.log("Error: ", error);
-      })
+      let result = await cloneHandler.start()
+      fs.rmdirSync(path.join(__dirname.split("src")[0], 'contents'), { recursive: true });
+      console.log(result);
     } else {
       console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login");
     }
