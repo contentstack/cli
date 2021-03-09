@@ -18,7 +18,6 @@ class ContentstackCommand extends Command {
   }
 
   set managementAPIClient(params) {
-    console.log(params)
     if(params && params.host) {
       //can not set host explicitly as CLI runs under constant host coming from config
       params.host = this.cmaHost
