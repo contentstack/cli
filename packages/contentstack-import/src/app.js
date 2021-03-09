@@ -35,11 +35,11 @@ exports.initial = function (configData) {
      .then(() => {
         let types = config.modules.types    
         if (config.moduleName && config.moduleName !== undefined) {
-          singleExport(config.moduleName, types, config).then(() => {
+          singleImport(config.moduleName, types, config).then(() => {
           return resolve()
           })
         } else {
-          allExport(config, types).then(() => {
+          allImport(config, types).then(() => {
           return resolve()
           })
         }
@@ -61,7 +61,7 @@ exports.initial = function (configData) {
 }
 
 
-let singleExport = async (moduleName, types, config) => {
+let singleImport = async (moduleName, types, config) => {
   return new Promise(async (resolve, reject) => {
   if (types.indexOf(moduleName) > -1) {
     if (!config.master_locale) {
@@ -91,7 +91,7 @@ let singleExport = async (moduleName, types, config) => {
 })
 }
 
-let allExport = async (config, types) => {
+let allImport = async (config, types) => {
   return new Promise(async (resolve, reject) => {
   try {
     for (let i = 0; i < types.length; i++) {
