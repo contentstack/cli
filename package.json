@@ -1,7 +1,6 @@
 {
   "name": "root",
   "dependencies": {
-    "@contentstack/cli": "file:build/contentstack-cli.tgz"
   },
   "devDependencies": {
     "lerna": "^3.16.4"
