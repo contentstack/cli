@@ -6,6 +6,7 @@ let _ = require('lodash')
 var environmentsMock = require('../mock/environment')
 var extensionsMock = require('../mock/extensions')
 var localeMock = require('../mock/locales')
+var workflowMock = require('../mock/workflow')
 var globalFieldsMock = require('../mock/globalFields')
 var webhooksMock = require('../mock/webhook')
 var assetsMock = require('../mock/assets')
@@ -84,7 +85,7 @@ test
             query: function () {
               return {
                 find: function () {
-                  return Promise.resolve(localeMock)
+                  return Promise.resolve(workflowMock)
                 },
               }
             },
@@ -102,6 +103,36 @@ test
 .command(['cm:export',  '--auth-token', '-m',  'locales'])
 .it('runs method of Locales', ctx => {
 })
+
+test
+.stub(require('../../src/lib/util/contentstack-management-sdk'), 'Client', e => {
+  return {
+    stack: function () {
+      return {
+        workflow: function () {
+          // return {
+          // query: function () {
+          return {
+            findAll: function () {
+              return Promise.resolve(localeMock)
+            },
+          }
+          // },
+          // }
+        },
+      }
+    },
+  }
+})
+.stub(cli, 'prompt', name => async name => {
+  if (name === message.promptMessageList.promptMasterLocale) return 'en-us'
+  if (name === message.promptMessageList.promptSourceStack) return 'newstackUid'
+  if (name === message.promptMessageList.promptPathStoredData) return '../contents'
+})
+.command(['cm:export',  '--auth-token', '-m',  'workflows'])
+.it('runs method of workflows', ctx => {
+})
+
 
 // test
 // .stub(require('../../src/lib/util/contentstack-management-sdk'), 'Client', (e) => {
