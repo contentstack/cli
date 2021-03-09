@@ -5,7 +5,6 @@ const fs = require('fs')
 let ora = require('ora')
 const async = require("async");
 const path = require('path')
-const { addlogs } = require('../util/log');
 
 let sdkInstance = require('../../lib/util/contentstack-management-sdk')
 let exportCmd = require('@contentstack/cli-cm-export')
@@ -23,7 +22,7 @@ let stackCreationConfirmation = [{
 let stackName = {
   type: 'input',
   name: 'stack',
-  message: 'Please Enter New stack name, which you want to create for import!',
+  message: 'Please Enter New stack name, which you want to create for import ?',
   default: "ABC"
 }
 
@@ -84,7 +83,7 @@ class CloneHandler {
                     return reject( error.errorMessage)
                   })
                 }).catch((error)=>{
-                  return reject(error.errorMessage)
+                  return reject(error.errorMessage + " ")
                 })
               } else {
                   let orgdetails = this.getOrganizationChoices()
@@ -101,7 +100,7 @@ class CloneHandler {
                      return reject(error) 
                     })
                   }).catch((error)=>{
-                    return reject(error.errorMessage)
+                    return reject(error.errorMessage + ' Contact the Organization owner for Stack Creation access.')
                   })
                 }).catch((error) => {
                   return reject(error.errorMessage)
