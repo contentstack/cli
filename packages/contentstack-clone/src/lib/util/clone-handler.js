@@ -35,8 +35,6 @@ let structureList = ['locales',
   'webhooks',
   'global-fields',
   'content-types',
-  'workflows',
-  'releases',
   'labels']
 let master_locale
 
@@ -83,7 +81,7 @@ class CloneHandler {
                     return reject( error.errorMessage)
                   })
                 }).catch((error)=>{
-                  return reject(error.errorMessage + " ")
+                  return reject(error.errorMessage)
                 })
               } else {
                   let orgdetails = this.getOrganizationChoices()
