@@ -49,7 +49,7 @@ ExportWebhooks.prototype.start = function (credentialConfig) {
         addlogs(config, chalk.green('All the webhooks have been exported successfully'), 'success')
         return resolve()
       }
-      addlogs(config, 'No webhooks were found in the Stack', 'success')
+      addlogs(config, 'No webhooks found', 'success')
       return resolve()
     }).catch(function (error) {
       if (error.statusCode === 401) {
