@@ -82,10 +82,11 @@ importReleases.prototype = {
                     item.uid = self.entriesUids[item.uid]
                    }
                   response.item().create({item})
-                   .then(() => {
+                   .then((responseData) => {
+                    //  responseData.deploy({environment: ''})
                     // addlogs(config, chalk.white("Item added under "+ response.name), 'success')
                    }).catch((error) => {
-                    addlogs(config, error, 'error') 
+                    addlogs(config, error, 'error')
                     addlogs(config, chalk.white("Fail to add items under "+ response.name), 'error')
                    })
                   })
