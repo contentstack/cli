@@ -77,7 +77,7 @@ var allExport = async (config, types) => {
           return
         })
       }
-      addlogs(config, chalk.green('Stack: ' + config.source_stack + ' has been exported succesfully!'), 'success')
+      addlogs(config, chalk.green('The content of the ' + config.source_stack + ' has been exported succesfully!'), 'success')
       addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success')
       return resolve()
     } catch (error) {

@@ -73,7 +73,7 @@ ExportGlobalFields.prototype = {
       .then(globalFieldResponse => {
         try {
           if (globalFieldResponse.items.length === 0) {
-            addlogs(config, 'No Global Fields were found in the Stack', 'success')
+            addlogs(config, 'No global fields found', 'success')
             return resolve('No Global Fields')
           }
           globalFieldResponse.items.forEach(function (globalField) {
