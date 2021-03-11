@@ -46,7 +46,7 @@ ExportLocales.prototype.start = function (credentialConfig) {
     .then(localeResponse => {
       if (localeResponse.items.length !== 0) {
         localeResponse.items.forEach(function (locale) {
-          addlogs(credentialConfig, 'locale was exported successfully', 'success')
+          addlogs(credentialConfig, locale.name + ' locale was exported successfully', 'success')
           for (const key in locale) {
             if (requiredKeys.indexOf(key) === -1) {
               delete locale.key
