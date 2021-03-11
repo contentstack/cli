@@ -3,7 +3,7 @@
   "description": "plugins",
   "version": "0.0.0",
   "author": "contentstack",
-  "bugs": "https://github.com//plugins/issues",
+  "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
@@ -36,7 +36,7 @@
     "/src",
     "/yarn.lock"
   ],
-  "homepage": "https://github.com//plugins",
+  "homepage": "https://github.com/contentstack/cli",
   "keywords": [
     "oclif-plugin"
   ],
@@ -48,7 +48,7 @@
       "@oclif/plugin-help"
     ]
   },
-  "repository": "/plugins",
+  "repository": "contentstack/cli",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint .",
