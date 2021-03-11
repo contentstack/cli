@@ -46,7 +46,7 @@ ExportLabels.prototype.start = function (credentialConfig) {
         })
         addlogs(config, chalk.green('All the labels have been exported successfully'), 'success')
       } else {
-        addlogs(config, 'No labels, other than master-labels were found in the Stack', 'success')
+        addlogs(config, 'No labels found', 'success')
       }
       helper.writeFile(path.join(labelsFolderPath, labelConfig.fileName), self.labels)
       return resolve()
