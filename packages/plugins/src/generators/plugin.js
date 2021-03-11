@@ -280,7 +280,7 @@ module.exports = class extends Generator {
     this.fs.write(this.destinationPath('.gitignore'), this._gitignore())
     this._writePlugin()
 	}
-
+  
 	install() {
 		const dependencies = []
 		const devDependencies = []
@@ -289,7 +289,7 @@ module.exports = class extends Generator {
 		const save = {save: true}
 
 		dependencies.push(	
-      '@contentstack/cli-command',
+      '@contentstack/cli-command@^0',
       '@oclif/config@^1',
       '@oclif/command@^1',
     )
@@ -301,7 +301,7 @@ module.exports = class extends Generator {
     )
 
     devDependencies.push(
-      'mocha@^5',
+      'mocha@^8.3.1',
       'nyc@^14',
       'chai@^4',
       '@oclif/test@^1',  
@@ -309,7 +309,7 @@ module.exports = class extends Generator {
 
     if (this.mocha) {
       devDependencies.push(
-        'mocha@^5',
+        'mocha@^8.3.1',
         'nyc@^14',
         'chai@^4',
       )
