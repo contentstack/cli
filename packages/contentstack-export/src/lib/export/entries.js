@@ -180,8 +180,8 @@ exportEntries.prototype.getEntries = function (apiDetails) {
         })
       }
       if (apiDetails.skip > entriesList.items.length) {
-        addlogs(config, 'Completed exporting ' + apiDetails.content_type +
-            ' content type\'s entries in ' + apiDetails.locale + ' locale', 'success')
+        addlogs(config, 'Exported entries of ' + apiDetails.content_type +
+            ' to the ' + apiDetails.locale + ' language successfully', 'success')
         return resolve()
       }
       apiDetails.skip += limit
