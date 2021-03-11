@@ -15,14 +15,14 @@ let config
 let stackCreationConfirmation = [{
   type: 'confirm',
   name: 'stackCreate',
-  message: 'Do you want to create new stack ?',
+  message: 'Want to clone content into a new stack ?',
   initial: true
 }]
 
 let stackName = {
   type: 'input',
   name: 'stack',
-  message: 'Please Enter New stack name, which you want to create for import ?',
+  message: 'Enter name for the new stack to store the cloned content ?',
   default: "ABC"
 }
 
@@ -36,6 +36,7 @@ let structureList = ['locales',
   'global-fields',
   'content-types',
   'labels']
+var oraMessage  
 let master_locale
 
 class CloneHandler {
@@ -46,12 +47,14 @@ class CloneHandler {
 
   async start() {
     return new Promise(async (resolve, reject) => {
+      oraMessage = "Choose an organization where your source stack exists:"
       // export section starts from here
-      let orgdetails = this.getOrganizationChoices()
+      let orgdetails = this.getOrganizationChoices(oraMessage)
       orgdetails
       .then(async (orgList)=>{
+      var stackMessage = 'Select the source stack'  
       var orgSelected = await inquirer.prompt(orgList)
-      let stackDetails = this.getStack(orgSelected)
+      let stackDetails = this.getStack(orgSelected, stackMessage)
       stackDetails
       .then(async (stackList)=> {
       let stackSelected = await inquirer.prompt(stackList)
@@ -62,11 +65,13 @@ class CloneHandler {
           //Import section starts from here
                 var stackCreateConfirmation = await inquirer.prompt(stackCreationConfirmation)
                 if (stackCreateConfirmation.stackCreate !== true) {
-                  let orgdetails = this.getOrganizationChoices()
+                  oraMessage = 'Choose an organization where the destination stack exists: '
+                  let orgdetails = this.getOrganizationChoices(oraMessage)
                   orgdetails
                   .then(async (orgList)=>{
+                  var stackMessage = 'Select the source stack'  
                   var orgSelected = await inquirer.prompt(orgList)
-                  let stackDetails = this.getStack(orgSelected)
+                  let stackDetails = this.getStack(orgSelected, stackMessage)
                   stackDetails
                   .then(async (stackList)=> {
                   let stackSelected = await inquirer.prompt(stackList)
@@ -84,7 +89,8 @@ class CloneHandler {
                   return reject(error.errorMessage)
                 })
               } else {
-                  let orgdetails = this.getOrganizationChoices()
+                oraMessage = 'Choose an organization where you want to create a stack: '
+                  let orgdetails = this.getOrganizationChoices(oraMessage)
                   orgdetails
                   .then(async (orgList)=>{
                   var orgSelected = await inquirer.prompt(orgList)
@@ -112,15 +118,15 @@ class CloneHandler {
     })
   }
 
-  getOrganizationChoices = async () => {
+  getOrganizationChoices = async (oraMessage) => {
     let orgChoice = {
       type: 'list',
       name: 'Organization',
-      message: '',
+      message: oraMessage,
       choices: [],
     }
     return new Promise(async (resolve, reject) => {
-      const spinner = ora('Fetching Organization').start()
+      const spinner = ora("Fetching Organization").start()
       try {
         let organizations = await client.organization().fetchAll({ limit: 100 })
         spinner.succeed("Fetched Organization")
@@ -136,15 +142,15 @@ class CloneHandler {
     })
   }
 
-  getStack = async (answer) => {
+  getStack = async (answer, stkMessage) => {
     return new Promise(async (resolve, reject) => {
       let stackChoice = {
         type: 'list',
         name: 'stack',
-        message: 'Choose Stack ...',
+        message: stkMessage,
         choices: [],
       }
-      const spinner = ora('Fetching stack List').start()      
+      const spinner = ora('Fetching stacks').start()      
       try {
         let orgUid = orgUidList[answer.Organization]
         let stackList = client.stack().query({ organization_uid: orgUid }).find()
@@ -154,7 +160,7 @@ class CloneHandler {
               stackUidList[stacklist.items[j].name] = stacklist.items[j].api_key
               stackChoice.choices.push(stacklist.items[j].name)
             }
-            spinner.succeed("Fetched stack List")
+            spinner.succeed("Fetched stack")
             return resolve(stackChoice)
           }).catch(error => {
             spinner.fail()
@@ -191,13 +197,13 @@ class CloneHandler {
       let cloneTypeSelection = [{
         type: 'list',
         name: 'type',
-        message: 'Choose the type to clone the stack',
-        choices: ["structure", "structure and content"]
+        message: 'Choose the type of data to clone:',
+        choices: ["Structure (all modules except entries & assets)", "Structure with content (all modules including entries & assets)"]
       }]
       var selectedValue = await inquirer.prompt(cloneTypeSelection)
       let cloneType = selectedValue.type
       config['data'] = path.join(__dirname.split("src")[0], 'contents')
-      if (cloneType === "structure") {
+      if (cloneType === "Structure (all modules except entries & assets)") {
         config['modules'] = structureList
         let cmdImport = this.cmdImport()
         cmdImport.then(() => {
