@@ -97,7 +97,7 @@ ExportContentTypes.prototype = {
         helper.writeFile(path.join(contentTypesFolderPath, content_type.uid + '.json'),
           content_type)
       })
-      addlogs(config, chalk.green('Content type export completed successfully'), 'success')
+      addlogs(config, chalk.green('Content type(s) exported successfully'), 'success')
       return resolve()
     })
   },
