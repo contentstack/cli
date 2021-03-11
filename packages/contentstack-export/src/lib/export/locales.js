@@ -56,7 +56,7 @@ ExportLocales.prototype.start = function (credentialConfig) {
         })
         addlogs(credentialConfig, chalk.green('All the locales have been exported successfully'), 'success')
       } else if (localeResponse.items.length === 0) {
-        addlogs(credentialConfig, 'No locales, other than master-locale were found in the Stack', 'success')
+        addlogs(credentialConfig, 'No languages found except the master language', 'success')
       }
       helper.writeFile(path.join(localesFolderPath, localeConfig.fileName), self.locales)
       resolve()
