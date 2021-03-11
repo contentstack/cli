@@ -18,13 +18,13 @@ exports.initial = async function (config) {
       var types = config.modules.types
       if (config.moduleName && config.moduleName !== undefined) {
         singleExport(config.moduleName, types, config)
+        return resolve()
       } else {
         allExport(config, types).then(() => {
           return resolve()
         })
       }
     }).catch(error => {
-      console.log("errror", error);
       if (error.errors.api_key) {
         addlogs(config, chalk.red('Stack Api key ' + error.errors.api_key[0], 'Please enter valid Key', 'error'))
         addlogs(config, 'The log for this is stored at ' + config.data + '/export/logs', 'success')
@@ -63,6 +63,7 @@ var singleExport = async (moduleName, types, config) => {
 }
 
 var allExport = async (config, types) => {
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     try {
       for (let i = 0; i < types.length; i++) {
@@ -76,11 +77,10 @@ var allExport = async (config, types) => {
           return
         })
       }
-      addlogs(config, chalk.green('Stack: ' + config.source_stack + ' has been exported succesfully!'), 'success')
+      addlogs(config, chalk.green('The content of the ' + config.source_stack + ' has been exported succesfully!'), 'success')
       addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success')
       return resolve()
     } catch (error) {
-      console.log("erroror", error);
       addlogs(config, chalk.red('Failed to migrate stack: ' + config.source_stack + '. Please check error logs for more info'), 'error')
       addlogs(config, chalk.red(error.errorMessage), 'error')
       addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error')
