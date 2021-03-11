@@ -50,7 +50,7 @@ ExportEnvironments.prototype.start = function (mergConfig) {
         return resolve()
       }
       if (environmentResponse.items.length === 0) {
-        addlogs(config, 'No environments were found in the Stack', 'success')
+        addlogs(config, 'No environments found', 'success')
         return resolve()
       }
     }).catch(error => {
