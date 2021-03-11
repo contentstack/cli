@@ -35,11 +35,11 @@ exports.initial = function (configData) {
      .then(() => {
         let types = config.modules.types    
         if (config.moduleName && config.moduleName !== undefined) {
-          singleExport(config.moduleName, types, config).then(() => {
+          singleImport(config.moduleName, types, config).then(() => {
           return resolve()
           })
         } else {
-          allExport(config, types).then(() => {
+          allImport(config, types).then(() => {
           return resolve()
           })
         }
@@ -61,7 +61,7 @@ exports.initial = function (configData) {
 }
 
 
-let singleExport = async (moduleName, types, config) => {
+let singleImport = async (moduleName, types, config) => {
   return new Promise(async (resolve, reject) => {
   if (types.indexOf(moduleName) > -1) {
     if (!config.master_locale) {
@@ -91,7 +91,7 @@ let singleExport = async (moduleName, types, config) => {
 })
 }
 
-let allExport = async (config, types) => {
+let allImport = async (config, types) => {
   return new Promise(async (resolve, reject) => {
   try {
     for (let i = 0; i < types.length; i++) {
@@ -111,12 +111,16 @@ let allExport = async (config, types) => {
       })
     }
     addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported succesfully!'), 'success')
-    addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'success')
+    if (config.target_stack && config.source_stack) {
+      addlogs(config, 'The log for this is stored at' + path.join(config.data, 'logs', 'import'), 'success')
+    } else {
+      addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'success')
+    }
     return resolve()
   } catch (error) {
     addlogs(config, chalk.red('Failed to migrate stack: ' + config.target_stack + '. Please check error logs for more info'), 'error')
     addlogs(config, error, 'error')
-    addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'error')
+    addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error')
     return reject()
   }
 })
