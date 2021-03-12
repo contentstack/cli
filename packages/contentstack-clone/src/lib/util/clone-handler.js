@@ -47,7 +47,7 @@ class CloneHandler {
 
   async start() {
     return new Promise(async (resolve, reject) => {
-      oraMessage = "Choose an organization where your source stack exists:"
+      // oraMessage = "Choose an organization where your source stack exists:"
       // export section starts from here
       let orgdetails = this.getOrganizationChoices(oraMessage)
       orgdetails
@@ -69,7 +69,7 @@ class CloneHandler {
                   let orgdetails = this.getOrganizationChoices(oraMessage)
                   orgdetails
                   .then(async (orgList)=>{
-                  var stackMessage = 'Select the source stack'  
+                  var stackMessage = 'Choose the destination stack:'  
                   var orgSelected = await inquirer.prompt(orgList)
                   let stackDetails = this.getStack(orgSelected, stackMessage)
                   stackDetails
@@ -122,7 +122,7 @@ class CloneHandler {
     let orgChoice = {
       type: 'list',
       name: 'Organization',
-      message: oraMessage,
+      message: oraMessage !== undefined ? oraMessage : "Choose an organization",
       choices: [],
     }
     return new Promise(async (resolve, reject) => {
@@ -148,6 +148,7 @@ class CloneHandler {
         type: 'list',
         name: 'stack',
         message: stkMessage,
+        message: stkMessage !== undefined ? stkMessage : "Select the stack",
         choices: [],
       }
       const spinner = ora('Fetching stacks').start()      
