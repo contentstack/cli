@@ -46,7 +46,6 @@ exports.initial = function (configData) {
       }).catch(e=>{
         console.error(e)
         return reject(e)
-        // process.exit(1)
       })
     } else {    
       let filename = path.basename(config.data)
@@ -98,19 +97,17 @@ let allImport = async (config, types) => {
       let type = types[i]
       var exportedModule = require('./lib/import/' + type)
       if (i === 0 && !config.master_locale) {
-        await stackDetails(config).then(stackResponse => {
-          let master_locale = { code: stackResponse.master_locale }
-          config['master_locale'] = master_locale
-          return
-        }).catch(error => {
-          console.log("Error to fetch the stack details" + error);
-        })
+        var stackResponse = await stackDetails(config)
+        // console.log("Line no 101", stackResponse);
+        let master_locale = { code: stackResponse.master_locale }
+        config['master_locale'] = master_locale
+        config['stackName'] = stackResponse.name
       }
       await exportedModule.start(config).then(result => {
         return
       })
     }
-    addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported succesfully!'), 'success')
+    addlogs(config, chalk.green('Stack: ' + config.stackName + ' has been imported succesfully!'), 'success')
     if (config.target_stack && config.source_stack) {
       addlogs(config, 'The log for this is stored at' + path.join(config.data, 'logs', 'import'), 'success')
     } else {
