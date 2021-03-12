@@ -18,14 +18,17 @@ class ExportToCsvCommand extends Command {
       case 'Export Entries to CSV': {
         const organization = await util.chooseOrganization(this.managementAPIClient) // prompt for organization
 				const stack = await util.chooseStack(this.managementAPIClient, organization.uid) // prompt for stack
-				const contentType = await util.chooseContentType(this.managementAPIClient, stack.apiKey) // prompt for content Type
+				const contentTypes = await util.chooseContentType(this.managementAPIClient, stack.apiKey) // prompt for content Type
 				const language = await util.chooseLanguage(this.managementAPIClient, stack.apiKey) // prompt for language
-				const entries = await util.getEntries(this.managementAPIClient, stack.apiKey, contentType.uid, language.code) // fetch entries
 				const environments = await util.getEnvironments(this.managementAPIClient, stack.apiKey) // fetch environments, because in publish details only env uid are available and we need env names
-				const flatEntries = util.cleanEntries(entries.items, language.code, environments, contentType.uid); // clean entries to be wderitten to file
-				const dateTime = util.getDateTime()
-				const fileName = `${contentType.uid}_${language.code}_entries_export_${dateTime}.csv`
-				util.write(this, flatEntries, fileName) // write to file
+        while(contentTypes.length > 0) {
+          let contentType = contentTypes.shift()
+          let entries = await util.getEntries(this.managementAPIClient, stack.apiKey, contentType, language.code) // fetch entries
+          let flatEntries = util.cleanEntries(entries.items, language.code, environments, contentType); // clean entries to be wderitten to file
+          let dateTime = util.getDateTime()
+          let fileName = `${contentType}_${language.code}_entries_export_${dateTime}.csv`
+          util.write(this, flatEntries, fileName) // write to file
+        }
         break;
       }
       case 'Export Organization Users to CSV': {
