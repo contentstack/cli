@@ -258,7 +258,7 @@ function startupQuestions() {
       type: 'list',
       name: 'action',
       message: 'Choose Action',
-      choices: ['Export Entries to CSV', 'Export Organization Users to CSV', 'Exit'],
+      choices: ['Export entries to a .CSV file', 'Export organization users\' data to a .CSV file', 'Exit'],
     }]
     inquirer.prompt(actions).then(answers => {
       if(answers.action === 'Exit')
