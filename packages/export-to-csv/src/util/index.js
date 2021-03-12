@@ -11,7 +11,7 @@ const delimeter = (os.platform() === 'win32') ? '\\' : '/'
 function chooseOrganization(managementAPIClient, action) {
 	return new Promise(async resolve => {
 		let organizations
-		if (action === 'Export Organization Users to CSV') {
+		if (action === config.exportUsers) {
 			organizations = await getOrganizationsWhereUserIsAdmin(managementAPIClient)
 		} else {
 			organizations = await getOrganizations(managementAPIClient)		
@@ -260,7 +260,7 @@ function startupQuestions() {
       type: 'list',
       name: 'action',
       message: 'Choose Action',
-      choices: ['Export entries to a .CSV file', 'Export organization users\' data to a .CSV file', 'Exit'],
+      choices: [config.exportEntries, config.exportUsers, 'Exit'],
     }]
     inquirer.prompt(actions).then(answers => {
       if(answers.action === 'Exit')
@@ -277,7 +277,7 @@ function getOrgUsers(managementAPIClient, orgUid) {
 		.then(response => {
 			let organization = response.organizations.filter(org => org.uid === orgUid).pop()
 			if (!organization.getInvitations) { 
-				return reject(new Error('You need to be an admin for exporting this organization\'s users')) 
+				return reject(new Error(config.adminError)) 
 			}
 			organization.getInvitations().then(users => resolve(users))
 		})
@@ -304,7 +304,7 @@ function getOrgRoles(managementAPIClient, orgUid) {
 		.then(response => {
 			let organization = response.organizations.filter(org => org.uid === orgUid).pop()
 			if (!organization.roles) { 
-				return reject(new Error('You need to be an admin for exporting this organization\'s users')) 
+				return reject(new Error(config.adminError)) 
 			}
 			organization.roles().then(roles => resolve(roles))
 		})
