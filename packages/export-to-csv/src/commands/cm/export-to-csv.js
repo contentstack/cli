@@ -1,6 +1,7 @@
 const {Command} = require('@contentstack/cli-command')
 const util = require('../../util/index')
 const ContentstackManagementSDK = require('@contentstack/management')
+const config = require('../../util/config.js')
 
 class ExportToCsvCommand extends Command {
 
@@ -15,7 +16,7 @@ class ExportToCsvCommand extends Command {
     const action = await util.startupQuestions()
     
     switch(action) {
-      case 'Export Entries to CSV': {
+      case config.exportEntries: {
         const organization = await util.chooseOrganization(this.managementAPIClient) // prompt for organization
 				const stack = await util.chooseStack(this.managementAPIClient, organization.uid) // prompt for stack
 				const contentTypes = await util.chooseContentType(this.managementAPIClient, stack.apiKey) // prompt for content Type
@@ -31,7 +32,7 @@ class ExportToCsvCommand extends Command {
         }
         break;
       }
-      case 'Export Organization Users to CSV': {
+      case config.exportUsers: {
         try {
           const organization = await util.chooseOrganization(this.managementAPIClient, action) // prompt for organization
           const orgUsers = await util.getOrgUsers(this.managementAPIClient, organization.uid)
