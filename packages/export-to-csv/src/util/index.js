@@ -1,11 +1,12 @@
 const inquirer = require('inquirer')
+const os = require('os')
 const config = require('./config.js')
 const fastcsv = require('fast-csv')
 const mkdirp = require('mkdirp')
 const fs = require('fs')
 const debug = require('debug')("export-to-csv")
 const directory = './data'
-const delimeter = (os.platform() === 'win32') ? '\\' + '/'
+const delimeter = (os.platform() === 'win32') ? '\\' : '/'
 
 function chooseOrganization(managementAPIClient, action) {
 	return new Promise(async resolve => {
@@ -237,11 +238,11 @@ function getDateTime() {
 
 function write(command, entries, fileName) {
 	// eslint-disable-next-line no-undef
-	if (process.cwd().split('/').pop() !== 'data' && !fs.existsSync(directory)) {
+	if (process.cwd().split(delimeter).pop() !== 'data' && !fs.existsSync(directory)) {
 		mkdirp.sync(directory)
 	}
 	// eslint-disable-next-line no-undef
-	if (process.cwd().split('/').pop() !== 'data') {
+	if (process.cwd().split(delimeter).pop() !== 'data') {
 		// eslint-disable-next-line no-undef
 		process.chdir(directory)
 	}
