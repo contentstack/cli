@@ -1,6 +1,7 @@
 const inquirer = require('inquirer')
 const config = require('./config.js')
 const fastcsv = require('fast-csv')
+const mkdirp = require('mkdirp')
 const fs = require('fs')
 const debug = require('debug')("export-to-csv")
 const directory = './data'
@@ -99,21 +100,21 @@ function getStacks(managementAPIClient, orgUid) {
 function chooseContentType(managementAPIClient, stackApiKey) {
 	return new Promise(async resolve => {
 		let contentTypes = await getContentTypes(managementAPIClient, stackApiKey)
-		let contentTypesList = Object.keys(contentTypes)
-		contentTypesList.push(config.cancelString)
+		let contentTypesList = Object.values(contentTypes)
+		// contentTypesList.push(config.cancelString)
 
 		let chooseContentType = [{
-			type: 'list',
+			type: 'checkbox',
 			message: 'Choose Content Type',
 			choices: contentTypesList,
-			name: 'chosenContentType',
+			name: 'chosenContentTypes',
 			loop: false
 		}]
 
-		inquirer.prompt(chooseContentType).then(({chosenContentType}) => {
-			if (chosenContentType === config.cancelString)
-				exitProgram()
-			resolve({ name: chosenContentType, uid: contentTypes[chosenContentType] })
+		inquirer.prompt(chooseContentType).then(({chosenContentTypes}) => {
+			// if (chosenContentType === config.cancelString)
+			// 	exitProgram()
+			resolve(chosenContentTypes)
 		})
 	})
 }
@@ -177,6 +178,7 @@ function getEntries(managementAPIClient, stackApiKey, contentType, language) {
 
 function getEnvironments(managementAPIClient, stackApiKey) {
 	let result = {}
+	debugger
 	return managementAPIClient.stack({api_key: stackApiKey}).environment().query().find().then(environments => {
 		environments.items.forEach(env => { result[env['uid']] = env['name']})
 		return result
@@ -233,11 +235,15 @@ function getDateTime() {
 }
 
 function write(command, entries, fileName) {
-	if (!fs.existsSync(directory)) {
-		fs.mkdirSync(directory)
+	// eslint-disable-next-line no-undef
+	if (process.cwd().split('/').pop() !== 'data' && !fs.existsSync(directory)) {
+		mkdirp.sync(directory)
 	}
 	// eslint-disable-next-line no-undef
-	process.chdir(directory)
+	if (process.cwd().split('/').pop() !== 'data') {
+		// eslint-disable-next-line no-undef
+		process.chdir(directory)
+	}
   const ws = fs.createWriteStream(fileName)
   // eslint-disable-next-line no-undef
   command.log(`Writing entries to file: ${process.cwd()}/${fileName}`)
