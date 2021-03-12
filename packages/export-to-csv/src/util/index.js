@@ -5,6 +5,7 @@ const mkdirp = require('mkdirp')
 const fs = require('fs')
 const debug = require('debug')("export-to-csv")
 const directory = './data'
+const delimeter = (os.platform() === 'win32') ? '\\' + '/'
 
 function chooseOrganization(managementAPIClient, action) {
 	return new Promise(async resolve => {
