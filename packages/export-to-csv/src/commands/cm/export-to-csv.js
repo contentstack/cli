@@ -41,7 +41,7 @@ class ExportToCsvCommand extends Command {
           const mappedRoles = util.getMappedRoles(orgRoles)
           const listOfUsers = util.cleanOrgUsers(orgUsers, mappedUsers, mappedRoles)
           const dateTime = util.getDateTime()
-          const fileName = `${organization.name}_users_export_${dateTime}.csv`
+          const fileName = `${util.kebabize(organization.name)}_users_export_${dateTime}.csv`
           util.write(this, listOfUsers, fileName)
         } catch(error) {
           this.error(error)
