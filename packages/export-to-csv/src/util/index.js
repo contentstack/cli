@@ -344,7 +344,11 @@ function cleanOrgUsers(orgUsers, mappedUsers, mappedRoles) {
 		userList.push(formattedUser)
 	})
 	return userList
-} 
+}
+
+function kebabize(str) {
+   return str.split(' ').map((word) => word.toLowerCase()).join('-')
+}
 
 module.exports = {
 	chooseOrganization: chooseOrganization,
@@ -364,4 +368,5 @@ module.exports = {
   cleanOrgUsers: cleanOrgUsers,
   determineUserOrgRole: determineUserOrgRole,
   getOrganizationsWhereUserIsAdmin: getOrganizationsWhereUserIsAdmin,
+  kebabize: kebabize,
 }	
