@@ -47,7 +47,7 @@ class CloneHandler {
 
   async start() {
     return new Promise(async (resolve, reject) => {
-      // oraMessage = "Choose an organization where your source stack exists:"
+      oraMessage = "Choose an organization where your source stack exists:"
       // export section starts from here
       let orgdetails = this.getOrganizationChoices(oraMessage)
       orgdetails
@@ -199,7 +199,9 @@ class CloneHandler {
         type: 'list',
         name: 'type',
         message: 'Choose the type of data to clone:',
-        choices: ["Structure (all modules except entries & assets)", "Structure with content (all modules including entries & assets)"]
+        choices: ["Structure (all modules except entries & assets)", 
+                  "Structure with content (all modules including entries & assets)"
+                ]
       }]
       var selectedValue = await inquirer.prompt(cloneTypeSelection)
       let cloneType = selectedValue.type
