@@ -27,7 +27,9 @@ class ExportToCsvCommand extends Command {
           let entries = await util.getEntries(this.managementAPIClient, stack.apiKey, contentType, language.code) // fetch entries
           let flatEntries = util.cleanEntries(entries.items, language.code, environments, contentType); // clean entries to be wderitten to file
           let dateTime = util.getDateTime()
-          let fileName = `${contentType}_${language.code}_entries_export_${dateTime}.csv`
+          // let fileName = `${contentType}_${language.code}_entries_export_${dateTime}.csv`
+          let fileName = `${stack.name}_${contentType}_${language.code}_entries_export.csv`
+
           util.write(this, flatEntries, fileName) // write to file
         }
         break;
@@ -41,7 +43,9 @@ class ExportToCsvCommand extends Command {
           const mappedRoles = util.getMappedRoles(orgRoles)
           const listOfUsers = util.cleanOrgUsers(orgUsers, mappedUsers, mappedRoles)
           const dateTime = util.getDateTime()
-          const fileName = `${util.kebabize(organization.name)}_users_export_${dateTime}.csv`
+          // const fileName = `${util.kebabize(organization.name.replace(config.organizationNameRegex, ''))}_users_export_${dateTime}.csv`
+          const fileName = `${util.kebabize(organization.name.replace(config.organizationNameRegex, ''))}_users_export.csv`
+
           util.write(this, listOfUsers, fileName)
         } catch(error) {
           this.error(error)
