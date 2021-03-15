@@ -117,7 +117,7 @@ importContentTypes.prototype = {
             })
           }
         
-         if( globalFieldPendingPath.length !== 0 ) {
+         if(globalFieldPendingPath && globalFieldPendingPath.length !== 0) {
           return self.updateGlobalfields().then(function () {
             addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
             return resolve()
