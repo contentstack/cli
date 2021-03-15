@@ -246,12 +246,10 @@ function write(command, entries, fileName) {
 		// eslint-disable-next-line no-undef
 		process.chdir(directory)
 	}
-  const ws = fs.createWriteStream(fileName)
   // eslint-disable-next-line no-undef
-  command.log(`Writing entries to file: ${process.cwd()}/${fileName}`)
+  command.log(`Writing entries to file: ${process.cwd()}${delimeter}${fileName}`)
   fastcsv
-  .write(entries, {headers: true})
-  .pipe(ws)
+  .writeToPath(fileName, entries, {headers: true})
 }
 
 function startupQuestions() {
