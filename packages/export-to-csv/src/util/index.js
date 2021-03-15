@@ -1,14 +1,17 @@
 const inquirer = require('inquirer')
+const os = require('os')
 const config = require('./config.js')
 const fastcsv = require('fast-csv')
+const mkdirp = require('mkdirp')
 const fs = require('fs')
 const debug = require('debug')("export-to-csv")
 const directory = './data'
+const delimeter = (os.platform() === 'win32') ? '\\' : '/'
 
 function chooseOrganization(managementAPIClient, action) {
 	return new Promise(async resolve => {
 		let organizations
-		if (action === 'Export Organization Users to CSV') {
+		if (action === config.exportUsers) {
 			organizations = await getOrganizationsWhereUserIsAdmin(managementAPIClient)
 		} else {
 			organizations = await getOrganizations(managementAPIClient)		
@@ -99,21 +102,21 @@ function getStacks(managementAPIClient, orgUid) {
 function chooseContentType(managementAPIClient, stackApiKey) {
 	return new Promise(async resolve => {
 		let contentTypes = await getContentTypes(managementAPIClient, stackApiKey)
-		let contentTypesList = Object.keys(contentTypes)
-		contentTypesList.push(config.cancelString)
+		let contentTypesList = Object.values(contentTypes)
+		// contentTypesList.push(config.cancelString)
 
 		let chooseContentType = [{
-			type: 'list',
+			type: 'checkbox',
 			message: 'Choose Content Type',
 			choices: contentTypesList,
-			name: 'chosenContentType',
+			name: 'chosenContentTypes',
 			loop: false
 		}]
 
-		inquirer.prompt(chooseContentType).then(({chosenContentType}) => {
-			if (chosenContentType === config.cancelString)
-				exitProgram()
-			resolve({ name: chosenContentType, uid: contentTypes[chosenContentType] })
+		inquirer.prompt(chooseContentType).then(({chosenContentTypes}) => {
+			// if (chosenContentType === config.cancelString)
+			// 	exitProgram()
+			resolve(chosenContentTypes)
 		})
 	})
 }
@@ -177,6 +180,7 @@ function getEntries(managementAPIClient, stackApiKey, contentType, language) {
 
 function getEnvironments(managementAPIClient, stackApiKey) {
 	let result = {}
+	debugger
 	return managementAPIClient.stack({api_key: stackApiKey}).environment().query().find().then(environments => {
 		environments.items.forEach(env => { result[env['uid']] = env['name']})
 		return result
@@ -233,17 +237,19 @@ function getDateTime() {
 }
 
 function write(command, entries, fileName) {
-	if (!fs.existsSync(directory)) {
-		fs.mkdirSync(directory)
+	// eslint-disable-next-line no-undef
+	if (process.cwd().split(delimeter).pop() !== 'data' && !fs.existsSync(directory)) {
+		mkdirp.sync(directory)
 	}
 	// eslint-disable-next-line no-undef
-	process.chdir(directory)
-  const ws = fs.createWriteStream(fileName)
+	if (process.cwd().split(delimeter).pop() !== 'data') {
+		// eslint-disable-next-line no-undef
+		process.chdir(directory)
+	}
   // eslint-disable-next-line no-undef
-  command.log(`Writing entries to file: ${process.cwd()}/${fileName}`)
+  command.log(`Writing entries to file: ${process.cwd()}${delimeter}${fileName}`)
   fastcsv
-  .write(entries, {headers: true})
-  .pipe(ws)
+  .writeToPath(fileName, entries, {headers: true})
 }
 
 function startupQuestions() {
@@ -252,7 +258,7 @@ function startupQuestions() {
       type: 'list',
       name: 'action',
       message: 'Choose Action',
-      choices: ['Export Entries to CSV', 'Export Organization Users to CSV', 'Exit'],
+      choices: [config.exportEntries, config.exportUsers, 'Exit'],
     }]
     inquirer.prompt(actions).then(answers => {
       if(answers.action === 'Exit')
@@ -269,7 +275,7 @@ function getOrgUsers(managementAPIClient, orgUid) {
 		.then(response => {
 			let organization = response.organizations.filter(org => org.uid === orgUid).pop()
 			if (!organization.getInvitations) { 
-				return reject(new Error('You need to be an admin for exporting this organization\'s users')) 
+				return reject(new Error(config.adminError)) 
 			}
 			organization.getInvitations().then(users => resolve(users))
 		})
@@ -296,7 +302,7 @@ function getOrgRoles(managementAPIClient, orgUid) {
 		.then(response => {
 			let organization = response.organizations.filter(org => org.uid === orgUid).pop()
 			if (!organization.roles) { 
-				return reject(new Error('You need to be an admin for exporting this organization\'s users')) 
+				return reject(new Error(config.adminError)) 
 			}
 			organization.roles().then(roles => resolve(roles))
 		})
@@ -336,7 +342,11 @@ function cleanOrgUsers(orgUsers, mappedUsers, mappedRoles) {
 		userList.push(formattedUser)
 	})
 	return userList
-} 
+}
+
+function kebabize(str) {
+   return str.split(' ').map((word) => word.toLowerCase()).join('-')
+}
 
 module.exports = {
 	chooseOrganization: chooseOrganization,
@@ -356,4 +366,5 @@ module.exports = {
   cleanOrgUsers: cleanOrgUsers,
   determineUserOrgRole: determineUserOrgRole,
   getOrganizationsWhereUserIsAdmin: getOrganizationsWhereUserIsAdmin,
+  kebabize: kebabize,
 }	
