@@ -52,8 +52,11 @@ function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
 		.getUser({include_orgs_roles: true})
 		.then(response => {
 			let organizations = response.organizations.filter(org => {
-				const org_role = org.org_roles.shift()
-				return org_role.admin
+				if (org.org_roles) {
+					const org_role = org.org_roles.shift()
+					return org_role.admin
+				}
+				return false
 			})
 			organizations.forEach(org => {
 				result[org.name] = org.uid
