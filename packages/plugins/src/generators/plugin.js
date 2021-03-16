@@ -11,6 +11,7 @@ const nps = require('nps-utils')
 const isWindows = process.platform === 'win32'
 const rmrf = isWindows ? 'rimraf' : 'rm -rf'
 const rmf = isWindows ? 'rimraf' : 'rm -f'
+const invalidNameError = 'Please enter a name without spaces, use \'-\' or \'_\' instead'
 
 module.exports = class extends Generator {
 	pjson = {
@@ -90,6 +91,12 @@ module.exports = class extends Generator {
       }
 		}
 
+    async function validateName(input) {
+      if (input.split(' ').length > 1)
+        return invalidNameError
+      return true
+    }
+
     this.pjson = {
       scripts: {},
       engines: {},
@@ -105,6 +112,7 @@ module.exports = class extends Generator {
 				name: 'name',
 				message: 'npm package name',
 				default: defaults.name,
+        validate: validateName,
 				when: !this.pjson.name,
 			},
 			{
@@ -289,7 +297,7 @@ module.exports = class extends Generator {
 		const save = {save: true}
 
 		dependencies.push(	
-      '@contentstack/cli-command@^0',
+      '@contentstack/cli-command@latest',
       '@oclif/config@^1',
       '@oclif/command@^1',
     )
