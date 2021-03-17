@@ -73,8 +73,10 @@ importWorkflows.prototype = {
               self.fails.push(workflow);
               if (error.errors.name) {
                 addlogs(config, chalk.red('workflow: \'' + workflow.name + '\'  already exist'), 'error');
+              } else if (error.errors.workflow_stages[0].roles) {
+                addlogs(config, chalk.red('We do not import roles modules and roles are attached with this workflow'), 'error');
               } else {
-                addlogs(config, chalk.red('workflow: \'' + workflow.name + '\' failed to be imported\n'), 'error');
+                addlogs(config, chalk.red('workflow: \'' + workflow.name + '\'  already exist'), 'error');
               }
               return;
             });
