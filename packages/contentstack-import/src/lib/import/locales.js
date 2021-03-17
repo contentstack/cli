@@ -97,7 +97,6 @@ importLanguages.prototype = {
         addlogs(config, chalk.green('Languages have been imported successfully!'), 'success')
         return resolve()
       }).catch(function (error) {
-        console.log("errerrer", error);
         // error while importing languages
         helper.writeFile(langFailsPath, self.fails)
         addlogs(config, chalk.red('Language import failed'), 'error')
