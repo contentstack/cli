@@ -15,7 +15,12 @@ class StackCloneCommand extends Command {
       config.cdn  = this.cdaHost
       const cloneHandler = new CloneHandler(config)
       let result = await cloneHandler.start()
-      fs.rmdirSync(path.join(__dirname.split("src")[0], 'contents'), { recursive: true });
+      fs.rmdir(path.join(__dirname.split("src")[0], 'contents'), { recursive: true }, (err) => {
+        if (err) {
+            throw err;
+        }
+        console.log(`Stack cloning process have been completed successfully`);
+    });
     } else {
       console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login");
     }
