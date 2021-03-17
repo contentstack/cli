@@ -746,14 +746,14 @@ importEntries.prototype = {
         addlogs(config, 'field_rules is not available...', 'error')
       }
 
-      return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(schema.uid).fetch()
-      .then(contentTypeResponse => {
-        contentTypeResponse.schema = schema.schema
-        contentTypeResponse.update()
-        return resolve()
-      }).catch(function (error) {
-        return reject(error)
-      })
+      let ctObj = client.stack({ api_key: config.target_stack, management_token: config.management_token }).contentType(schema.uid)
+      Object.assign(ctObj, _.cloneDeep(schema))
+      ctObj.update()
+        .then(() => {
+          return resolve()
+        }).catch(function (error) {
+          return reject(error)
+        })
     })
   },
   publish: function (langs) {
