@@ -91,9 +91,11 @@ function init (_logPath, logfileName) {
 }
 
 exports.addlogs = async (config, message, type) => {
+  var configLogPath
+  config.source_stack && config.target_stack ? configLogPath = config.data : configLogPath = config.oldPath
   if (type !== 'error') {
-    init(config.oldPath, type).log(message)
+    init(configLogPath, type).log(message)
   } else {
-    init(config.oldPath, type).error(message)
+    init(configLogPath, type).error(message)
   }
 }
