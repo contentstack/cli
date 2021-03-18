@@ -60,6 +60,20 @@ importWorkflows.prototype = {
         let workflow = self.workflows[workflowUid];
 
         if (!self.workflowUidMapper.hasOwnProperty(workflowUid)) {
+          for (let index = 0; index < workflow.workflow_stages.length; index++) {
+            if (workflow.workflow_stages[index].SYS_ACL.users.uids.length > 0 && workflow.workflow_stages[index].SYS_ACL.users.uids[0] !== "$all") {
+              workflow.workflow_stages[index].SYS_ACL.users.uids = ["$all"]
+            }
+
+            if (workflow.workflow_stages[index].SYS_ACL.roles.uids.length > 0) {
+              workflow.workflow_stages[index].SYS_ACL.roles.uids = []
+            }
+
+            if (workflow.workflow_stages[index].next_available_stages.length > 0) {
+              workflow.workflow_stages[index].next_available_stages = ["$all"]
+            }
+          }
+
           let requestOption = {
             workflow: workflow
           };
@@ -73,8 +87,8 @@ importWorkflows.prototype = {
               self.fails.push(workflow);
               if (error.errors.name) {
                 addlogs(config, chalk.red('workflow: \'' + workflow.name + '\'  already exist'), 'error');
-              } else if (error.errors.workflow_stages[0].roles) {
-                addlogs(config, chalk.red('We do not import roles modules and roles are attached with this workflow'), 'error');
+              } else if (error.errors['workflow_stages.0.users']) {
+                addlogs(config, chalk.red("Failed to import Workflows as you've specified certain roles in the Stage transition and access rules section. We currently don't import roles to the stack."), 'error');
               } else {
                 addlogs(config, chalk.red('workflow: \'' + workflow.name + '\'  already exist'), 'error');
               }
