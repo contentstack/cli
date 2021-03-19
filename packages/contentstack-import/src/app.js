@@ -87,6 +87,7 @@ let singleImport = async (moduleName, types, config) => {
         addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success')
         return resolve()
       }).catch(function (error) {
+        console.log("Line no 90++++", error);
         addlogs(config, 'Failed to migrate ' + moduleName, 'error')
         addlogs(config, error, 'error')
         addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error')
@@ -169,10 +170,11 @@ let allImport = async (config, types) => {
           return
         })
       }
-      addlogs(config, chalk.green('Stack: ' + config.stackName + ' has been imported succesfully!'), 'success')
       if (config.target_stack && config.source_stack) {
+        addlogs(config, chalk.green('The data of the ' + config.sourceStackName + 'stack has been imported into ' + config.destinationStackName + ' stack successfully!'), 'success')
         addlogs(config, 'The log for this is stored at' + path.join(config.data, 'logs', 'import'), 'success')
       } else {
+        addlogs(config, chalk.green('Stack: ' + config.sourceStackName + ' has been imported succesfully!'), 'success')
         addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'success')
       }
       return resolve()
