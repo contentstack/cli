@@ -4,18 +4,18 @@ This plugin allows you to quickly import existing Stacks that are needed to run 
 <!-- usagestop -->
 ## Commands
 <!-- commands -->
-* [`csdx cm:seed`](#csdx-seed)
+* [`csdx cm:seed`](#csdx-cmseed)
 
 ## `csdx cm:seed`
 
-create a Stack from existing content types, entries, assets, etc.
+Create a Stack from existing content types, entries, assets, etc
 
 ```
 USAGE
-  $ csdx seed
+  $ csdx cm:seed
 
 OPTIONS
-  -r, --repo=repo  GitHub account or GitHub account and repository
+  -r, --repo=repo  GitHub account or GitHub account/repository
 
 EXAMPLES
   $ csdx cm:seed
@@ -23,7 +23,7 @@ EXAMPLES
   $ csdx cm:seed -r "account/repository"
 ```
 
-_See code: [src/commands/seed.ts](https://github.com/contentstack/cli/packages/contentstack-seed/blob/v1.0.5/src/commands/cm/seed.ts)_
+_See code: [src/commands/cm/seed.ts](https://github.com/contentstack/cli/blob/v1.0.5/src/commands/cm/seed.ts)_
 <!-- commandsstop -->
 
 ## Advanced Flags
