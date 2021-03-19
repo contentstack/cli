@@ -2,12 +2,12 @@ import {Command, flags} from '@contentstack/cli-command'
 import ContentModelSeeder, {ContentModelSeederOptions} from '../../seed'
 
 export default class SeedCommand extends Command {
-  static description = 'create a Stack from existing content types, entries, assets, etc.';
+  static description = 'Create a Stack from existing content types, entries, assets, etc.';
 
   static examples = [
-    '$ csdx seed',
-    '$ csdx seed -r "account"',
-    '$ csdx seed -r "account/repository"',
+    '$ csdx cm:seed',
+    '$ csdx cm:seed -r "account"',
+    '$ csdx cm:seed -r "account/repository"',
   ];
 
   static flags = {
