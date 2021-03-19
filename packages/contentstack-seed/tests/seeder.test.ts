@@ -3,11 +3,12 @@ jest.mock('../src/seed/contentstack/client')
 jest.mock('../src/seed/interactive')
 jest.mock('tmp')
 jest.mock('cli-ux')
+jest.mock('inquirer')
 
 import GitHubClient from '../src/seed/github/client'
 import ContentstackClient, {Organization} from '../src/seed/contentstack/client'
 import ContentModelSeeder, {ContentModelSeederOptions} from '../src/seed'
-import {inquireOrganization, inquireProceed, inquireStack} from '../src/seed/interactive'
+import {inquireOrganization, inquireProceed, inquireStack, inquireRepo} from '../src/seed/interactive'
 
 import * as tmp from 'tmp'
 import cli from 'cli-ux'
@@ -159,5 +160,28 @@ describe('ContentModelSeeder', () => {
 
     expect(result).toHaveProperty('organizationResponse')
     expect(result).toHaveProperty('stackResponse')
+  })
+
+  test('should test inquire GitHub repo and filter out not stacks', async () => {
+    const repos = [
+      {
+        name: 'stack-this-is-a-test',
+        html_url: 'account/stack-this-is-a-test',
+      }, {
+        name: 'stack-this-is-cool',
+        html_url: 'account/stack-this-is-cool',
+      }, {
+        name: 'ignore-this',
+        html_url: 'account/ignore-this',
+      },
+    ]
+
+    // @ts-ignore
+    GitHubClient.prototype.getAllRepos = jest.fn().mockResolvedValue(repos)
+
+    const seeder = new ContentModelSeeder(options)
+    await seeder.inquireGitHubRepo()
+
+    expect(inquireRepo).toBeCalled()
   })
 })
