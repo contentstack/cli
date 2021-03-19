@@ -17,6 +17,7 @@
     "fancy-test": "^1.4.10",
     "inquirer": "^7.3.3",
     "ora": "^5.1.0",
+    "rimraf": "^3.0.2",
     "winston": "^3.3.3"
   },
   "devDependencies": {
