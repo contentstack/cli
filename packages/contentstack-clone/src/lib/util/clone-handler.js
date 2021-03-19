@@ -59,6 +59,7 @@ class CloneHandler {
       .then(async (stackList)=> {
       let stackSelected = await inquirer.prompt(stackList)
       config.source_stack = stackUidList[stackSelected.stack]
+      config.sourceStackName = stackSelected.stack
       stackName.default = "Copy of " + stackSelected.stack
         let cmdExport = this.cmdExport()
         cmdExport.then(async () => {
@@ -76,6 +77,7 @@ class CloneHandler {
                   .then(async (stackList)=> {
                   let stackSelected = await inquirer.prompt(stackList)
                   config.target_stack = stackUidList[stackSelected.stack]
+                  config.destinationStackName = stackSelected.stack
                   this.cloneTypeSelection()
                     .then((msgData)=>{
                       return resolve(msgData)
@@ -184,6 +186,7 @@ class CloneHandler {
         .then(result => {
           spinner.succeed("New Stack created Successfully name as " + result.name)
           config.target_stack = result.api_key
+          config.destinationStackName = result.name
           master_locale = result.master_locale
           return resolve(result)
         }).catch(error => {
