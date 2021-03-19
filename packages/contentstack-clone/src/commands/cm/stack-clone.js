@@ -5,6 +5,7 @@ const {CloneHandler} = require('../../lib/util/clone-handler')
 let config = require('../../lib/util/dummyConfig.json')
 const path = require('path')
 const fs = require('fs');
+const rimraf = require('rimraf')
 
 class StackCloneCommand extends Command { 
   async run() {
@@ -15,7 +16,14 @@ class StackCloneCommand extends Command {
       config.cdn  = this.cdaHost
       const cloneHandler = new CloneHandler(config)
       let result = await cloneHandler.start()
-      fs.rmdirSync(path.join(__dirname.split("src")[0], 'contents'), { recursive: true });
+      var pathdir = path.join(__dirname.split("src")[0], 'contents')
+      rimraf(pathdir, function(err) {
+        if(err) {
+          console.log(err);
+        } else {
+          console.log("Stack cloning process have been completed successfully");
+        }
+      })
     } else {
       console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login");
     }
