@@ -13,7 +13,8 @@ const {configWithMToken,
 
 class ImportCommand extends Command {
   async run() {
-    const {flags} = this.parse(ImportCommand)
+    let self = this
+    const {flags} = self.parse(ImportCommand)
     const extConfig = flags.config
     let targetStack = flags['stack-uid']
     const data = flags.data
@@ -22,11 +23,11 @@ class ImportCommand extends Command {
     const alias = flags['management-token-alias']
     const authToken = flags['auth-token']
     let _authToken = credStore.get('authtoken')
-    let host = this.cmaHost
+    let host = self.cmaHost
     
   return new Promise(function (resolve, reject) {  
     if (alias && alias !== undefined) {
-      let managementTokens = this.getToken(alias)
+      let managementTokens = self.getToken(alias)
 
       if (managementTokens && managementTokens !== undefined) {
         if (extConfig && extConfig !== undefined && _authToken) {

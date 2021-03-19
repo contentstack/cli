@@ -15,7 +15,6 @@ module.exports = {
       'content-types',
       'workflows',
       'entries',
-      'releases',
       'labels',
     ],
     locales: {
