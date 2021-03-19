@@ -6,7 +6,7 @@ import {inquireOrganization, inquireProceed, inquireRepo, inquireStack} from '..
 import GitHubClient from './github/client'
 import GithubError from './github/error'
 
-const DEFAULT_OWNER = 'Contentstack-Solutions'
+const DEFAULT_OWNER = 'contentstack'
 const DEFAULT_STACK_PATTERN = 'stack-'
 
 export const ENGLISH_LOCALE = 'en-us'
@@ -162,7 +162,7 @@ export default class ContentModelSeeder {
       const repoResponse = await inquireRepo(stackRepos)
       this.ghRepo = repoResponse.choice
     } catch (error) {
-      cli.error(`Unable to find any Stack repositories within the '${this.options.gitHubPath}' GitHub account. Please re-run this command with a GitHub repository in the 'owner/repo' format. You can also re-run the command without command line arguments to pull from the official Stack list.`)
+      cli.error(`Unable to find any Stack repositories within the '${this.ghUsername}' GitHub account. Please re-run this command with a GitHub repository in the 'account/repo' format. You can also re-run the command without arguments to pull from the official Stack list.`)
     }
   }
 }
