@@ -26,7 +26,7 @@ class ExportToCsvCommand extends Command {
           let contentType = contentTypes.shift()
           let entries = await util.getEntries(this.managementAPIClient, stack.apiKey, contentType, language.code) // fetch entries
           let flatEntries = util.cleanEntries(entries.items, language.code, environments, contentType); // clean entries to be wderitten to file
-          let dateTime = util.getDateTime()
+          // let dateTime = util.getDateTime()
           // let fileName = `${contentType}_${language.code}_entries_export_${dateTime}.csv`
           let fileName = `${stack.name}_${contentType}_${language.code}_entries_export.csv`
 
@@ -37,12 +37,12 @@ class ExportToCsvCommand extends Command {
       case config.exportUsers: {
         try {
           const organization = await util.chooseOrganization(this.managementAPIClient, action) // prompt for organization
-          const orgUsers = await util.getOrgUsers(this.managementAPIClient, organization.uid)
-          const orgRoles = await util.getOrgRoles(this.managementAPIClient, organization.uid)
+          const orgUsers = await util.getOrgUsers(this.managementAPIClient, organization.uid, this)
+          const orgRoles = await util.getOrgRoles(this.managementAPIClient, organization.uid, this)
           const mappedUsers = util.getMappedUsers(orgUsers)
           const mappedRoles = util.getMappedRoles(orgRoles)
           const listOfUsers = util.cleanOrgUsers(orgUsers, mappedUsers, mappedRoles)
-          const dateTime = util.getDateTime()
+          // const dateTime = util.getDateTime()
           // const fileName = `${util.kebabize(organization.name.replace(config.organizationNameRegex, ''))}_users_export_${dateTime}.csv`
           const fileName = `${util.kebabize(organization.name.replace(config.organizationNameRegex, ''))}_users_export.csv`
 
