@@ -1,4 +1,5 @@
 const inquirer = require('inquirer')
+const axios = require('axios')
 const os = require('os')
 const config = require('./config.js')
 const fastcsv = require('fast-csv')
@@ -22,7 +23,8 @@ function chooseOrganization(managementAPIClient, action) {
 			type: 'list',
 			name: 'chosenOrg',
 			message: 'Choose an Organization',
-			choices: orgList
+			choices: orgList,
+			loop: false
 		}]
 		inquirer.prompt(chooseOrganization).then(({chosenOrg}) => {
 			if (chosenOrg === config.cancelString)
@@ -56,6 +58,8 @@ function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
 					const org_role = org.org_roles.shift()
 					return org_role.admin
 				}
+				if (org.is_owner === true)
+					return true
 				return false
 			})
 			organizations.forEach(org => {
@@ -183,7 +187,6 @@ function getEntries(managementAPIClient, stackApiKey, contentType, language) {
 
 function getEnvironments(managementAPIClient, stackApiKey) {
 	let result = {}
-	debugger
 	return managementAPIClient.stack({api_key: stackApiKey}).environment().query().find().then(environments => {
 		environments.items.forEach(env => { result[env['uid']] = env['name']})
 		return result
@@ -271,12 +274,18 @@ function startupQuestions() {
   })
 }
 
-function getOrgUsers(managementAPIClient, orgUid) {
+function getOrgUsers(managementAPIClient, orgUid, ecsv) {
 	return new Promise((resolve, reject) => {
 		managementAPIClient
 		.getUser({include_orgs_roles: true})
 		.then(response => {
 			let organization = response.organizations.filter(org => org.uid === orgUid).pop()
+			if (organization.is_owner === true) {
+				let cma = ecsv.region.cma
+				let authtoken = ecsv.authToken
+				return axios.get(`${cma}/v3/organizations/${organization.uid}/share`, { headers: { 'authtoken': authtoken }})
+				.then(response => resolve({ items: response.data.shares }))
+			}
 			if (!organization.getInvitations) { 
 				return reject(new Error(config.adminError)) 
 			}
@@ -298,12 +307,18 @@ function getMappedRoles(roles) {
 	return mappedRoles
 }
 
-function getOrgRoles(managementAPIClient, orgUid) {
+function getOrgRoles(managementAPIClient, orgUid, ecsv) {
 	return new Promise((resolve, reject) => {
 		managementAPIClient
 		.getUser({include_orgs_roles: true})
 		.then(response => {
 			let organization = response.organizations.filter(org => org.uid === orgUid).pop()
+			if (organization.is_owner === true) {
+				let cma = ecsv.region.cma
+				let authtoken = ecsv.authToken
+				return axios.get(`${cma}/v3/organizations/${organization.uid}/roles`, { headers: { 'authtoken': authtoken }})
+				.then(response => resolve({ items: response.data.roles }))
+			}
 			if (!organization.roles) { 
 				return reject(new Error(config.adminError)) 
 			}
