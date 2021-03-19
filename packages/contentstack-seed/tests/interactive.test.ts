@@ -2,15 +2,59 @@ jest.mock('inquirer')
 
 import * as inquirer from 'inquirer'
 import {Organization, Stack} from '../src/seed/contentstack/client'
-
 import * as interactive from '../src/seed/interactive'
+
+const account = 'account'
+const repo = 'repo'
+const ghPath = `${account}/${repo}`
 
 describe('interactive', () => {
   beforeEach(() => {
     jest.restoreAllMocks()
   })
 
-  test('should return check for no organizations', async () => {
+  test('should return error for no GitHub repos', async () => {
+    try {
+      expect.assertions(1)
+      const repos = [] as any[]
+      await interactive.inquireRepo(repos)
+    } catch (error) {
+      expect(error.message).toMatch(/No Repositories/)
+    }
+  })
+
+  test('should return first GitHub repo when user has access to only one', async () => {
+    const repos = [
+      {
+        html_url: ghPath,
+      },
+    ]
+
+    const response = await interactive.inquireRepo(repos)
+
+    expect(response).toStrictEqual({choice: repo})
+  })
+
+  test('should return multiple GitHub repos if they exist', async () => {
+    const repos = [
+      {
+        name: 'stack-this-is-a-test',
+        html_url: 'account/stack-this-is-a-test',
+      }, {
+        name: 'stack-this-is-cool',
+        html_url: 'account/stack-this-is-cool',
+      },
+    ]
+
+    // @ts-ignore
+    jest.spyOn(inquirer, 'prompt').mockImplementation(options => {
+      return options
+    })
+
+    await interactive.inquireRepo(repos)
+  })
+
+  test('should return error for no organizations', async () => {
     try {
       expect.assertions(1)
       const organizations: Organization[] = []
