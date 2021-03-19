@@ -1,6 +1,9 @@
 jest.mock('axios')
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import axios from 'axios'
+/* eslint-enable @typescript-eslint/no-unused-vars */
+
 import ContentstackClient, {CreateStackOptions} from '../src/seed/contentstack/client'
 
 const CMA_HOST = 'cs.api.com'

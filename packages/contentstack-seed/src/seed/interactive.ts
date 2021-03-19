@@ -140,7 +140,7 @@ export async function inquireStack(stacks: Stack[]): Promise<InquireStackRespons
 function formatStackName(name: string) {
   return name
   .replace('stack-', '')
-  .replace('-', ' ')
+  .replace(/-/g, ' ')
   .replace(/(?:^|\s)\S/g, match => {
     return match.toUpperCase()
   })
