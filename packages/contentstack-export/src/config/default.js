@@ -11,7 +11,6 @@ module.exports = {
       'global-fields',
       'content-types',
       'workflows',
-      'releases',
       'entries',
       'labels',
     ],
