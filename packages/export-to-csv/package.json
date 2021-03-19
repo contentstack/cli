@@ -5,10 +5,11 @@
   "author": "Abhinav Gupta @abhinav-from-contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "^0.1.1-beta.1",
-    "@contentstack/management": "^1.1.1",
+    "@contentstack/cli-command": "latest",
+    "@contentstack/management": "latest",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
+    "axios": "^0.21.1",
     "chalk": "^4.1.0",
     "fast-csv": "^4.3.6",
     "inquirer": "^7.3.3",
