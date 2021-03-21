@@ -11,6 +11,9 @@ const nps = require('nps-utils')
 const isWindows = process.platform === 'win32'
 const rmrf = isWindows ? 'rimraf' : 'rm -rf'
 const rmf = isWindows ? 'rimraf' : 'rm -f'
+
+const versionRegex = /^(\d+\.)?(\d+\.)?(\*|\d+)$/; // https://stackoverflow.com/questions/82064/a-regex-for-version-number-parsing
+
 const invalidNameError = 'Please enter a name without spaces, use \'-\' or \'_\' instead'
 
 module.exports = class extends Generator {
@@ -97,6 +100,13 @@ module.exports = class extends Generator {
       return true
     }
 
+    async function validateVersion(input) {
+      if (!input.match(versionRegex)) {
+        return 'Please Enter a valid version number X.X.X where X is an integer'
+      }
+      return true
+    }
+
     this.pjson = {
       scripts: {},
       engines: {},
@@ -127,6 +137,7 @@ module.exports = class extends Generator {
 				name: 'version',
 				message: 'version',
 				default: defaults.version,
+        validate: validateVersion,
 				when: !this.pjson.version,
 			},
 			{
@@ -184,8 +195,8 @@ module.exports = class extends Generator {
 
     this.pjson.repository = `https://github.com/${this.answers.repository}` || `https://github.com/${defaults.repository}`
     this.pjson.keywords = defaults.keywords || ['contentstack', 'plugin', 'cli']
-    this.pjson.homepage = defaults.homepage || `https://github.com/${this.pjson.repository}`
-    this.pjson.bugs = defaults.bugs || `https://github.com/${this.pjson.repository}/issues`
+    this.pjson.homepage = defaults.homepage || `${this.pjson.repository}`
+    this.pjson.bugs = defaults.bugs || `${this.pjson.repository}/issues`
 
     this.pjson.name = this.answers.name || defaults.name
     this.pjson.description = this.answers.description || defaults.description
