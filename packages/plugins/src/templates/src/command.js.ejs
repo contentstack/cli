@@ -4,15 +4,12 @@ const {Command, flags} = require('@contentstack/cli-command')
 
 class <%- klass %> extends Command {
   async run() {
-    const {flags, args} = this.parse(<%- klass %>)
+    const {flags} = this.parse(<%- klass %>)
     const name = flags.name || 'world'
     this.log(`hello ${name} from <%- path.replace(/\\/g, '\\\\') %>`)
     let currentRegion = this.region.name
     // eslint-disable-next-line no-unused-vars
     let managementClient = this.managementAPIClient
-    if (args.file) {
-      this.log(`you input argument: ${args.file}`)
-    }
     this.log(`The current region configured is ${currentRegion}`)
   }
 }
@@ -25,7 +22,5 @@ Extra documentation goes here
 <%- klass %>.flags = {
   name: flags.string({char: 'n', description: 'name to print'}),
 }
-
-<%- klass %>.args = [{name: 'file'}]
 
 module.exports = <%- klass %>
