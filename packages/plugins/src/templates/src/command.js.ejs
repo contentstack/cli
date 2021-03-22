@@ -14,7 +14,7 @@ class <%- klass %> extends Command {
   }
 }
 
-<%- klass %>.description = `Executes demo command from <%- path %>
+<%- klass %>.description = `Executes demo command from <%- path.replace(/\\/g, '\\\\') %>
 ...
 Extra documentation goes here
 `
