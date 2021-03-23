@@ -18,11 +18,7 @@ class StackCloneCommand extends Command {
       let result = await cloneHandler.start()
       var pathdir = path.join(__dirname.split("src")[0], 'contents')
       rimraf(pathdir, function(err) {
-        if(err) {
-          console.log(err);
-        } else {
-          console.log("Stack cloning process have been completed successfully");
-        }
+        console.log("Stack cloning process have been completed successfully");
       })
     } else {
       console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login");
