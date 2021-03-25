@@ -15,8 +15,8 @@
     "@contentstack/cli-cm-export": "0.1.1-beta.2",
     "@contentstack/cli-cm-import": "0.1.1-beta.3",
     "@contentstack/management": "1.1.2",
-    "@contentstack/cli-plugins-plugin": "0.0.0",
-    "@contentstack/export-to-csv": "0.0.0",
+    "@contentstack/cli-plugins-plugin": "0.1.0-beta",
+    "@contentstack/cli-cm-export-to-csv": "0.1.0-beta",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
     "@oclif/errors": "^1.3.3",
@@ -89,7 +89,7 @@
       "@contentstack/cli-cm-bulk-publish",
       "@contentstack/cli-plugins-plugin",
       "@contentstack/cli-cm-clone",
-      "@contentstack/export-to-csv"
+      "@contentstack/cli-cm-export-to-csv"
     ],
     "hooks": {
       "prerun": [
