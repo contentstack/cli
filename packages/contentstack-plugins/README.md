@@ -5,12 +5,9 @@ Contentstack allows developers to write plugins and add custom commands to the C
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
-<!-- toc -->
 * [Usage](#usage)
 * [Commands](#commands)
-<!-- tocstop -->
 # Usage
-<!-- usage -->
 ```sh-session
 $ npm install -g @contentstack/cli-plugins-plugin
 $ csdx COMMAND
@@ -22,12 +19,10 @@ USAGE
   $ csdx COMMAND
 ...
 ```
-<!-- usagestop -->
 # Commands
-<!-- commands -->
 * [`csdx plugins:create`](#csdx-pluginscreate)
 
-## `csdx plugins:create`
+### `csdx plugins:create`
 
 Generate plugin starter code
 
@@ -37,4 +32,3 @@ USAGE
 ```
 
 _See code: [src/commands/plugins/create.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-plugins/src/commands/plugins/create.js)_
-<!-- commandsstop -->
