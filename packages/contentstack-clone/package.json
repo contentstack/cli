@@ -1,14 +1,14 @@
 {
   "name": "@contentstack/cli-cm-clone",
   "description": "Contentstack stack clone plugin",
-  "version": "0.0.1",
-  "author": " @rohitmishra209",
+  "version": "0.1.0-beta-1",
+  "author": "Contentstack",
   "bugs": "https://github.com/rohitmishra209/cli-cm-clone/issues",
   "dependencies": {
-    "@contentstack/cli-cm-export": "^0.1.1-beta.1",
-    "@contentstack/cli-cm-import": "^0.1.1-beta.2",
-    "@contentstack/cli-command": "0.1.1-beta.1",
-    "@contentstack/management": "^1.1.1",
+    "@contentstack/cli-cm-export": "^0.1.1-beta.3",
+    "@contentstack/cli-cm-import": "^0.1.1-beta.4",
+    "@contentstack/cli-command": "0.1.0-beta",
+    "@contentstack/management": "^1.2.1-beta",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "async": "^3.2.0",
@@ -53,7 +53,7 @@
       "@oclif/plugin-help"
     ]
   },
-  "repository": "rohitmishra209/cli-cm-clone",
+  "repository": "https://github.com/contentstack/cli",
   "scripts": {
     "test": "nyc --reporter=html mocha \"test/**/*.test.js\"",
     "version": "oclif-dev readme && git add README.md"
