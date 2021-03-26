@@ -215,6 +215,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
       workflow = entry['_workflow']['name']
       delete entry['_workflow']
     }
+    entry = flatten(entry)
     entry['publish_details'] = envArr
     entry['_workflow'] = workflow
     entry['ACL'] = JSON.stringify({}) // setting ACL to empty obj
@@ -366,6 +367,31 @@ function kebabize(str) {
    return str.split(' ').map((word) => word.toLowerCase()).join('-')
 }
 
+// https://stackoverflow.com/questions/19098797/fastest-way-to-flatten-un-flatten-nested-json-objects
+function flatten(data) {
+    var result = {};
+    function recurse (cur, prop) {
+        if (Object(cur) !== cur) {
+            result[prop] = cur;
+        } else if (Array.isArray(cur)) {
+             for(var i=0, l=cur.length; i<l; i++)
+                 recurse(cur[i], prop + "[" + i + "]");
+            if (l == 0)
+                result[prop] = [];
+        } else {
+            var isEmpty = true;
+            for (var p in cur) {
+                isEmpty = false;
+                recurse(cur[p], prop ? prop+"."+p : p);
+            }
+            if (isEmpty && prop)
+                result[prop] = {};
+        }
+    }
+    recurse(data, "");
+    return result;
+}
+
 module.exports = {
 	chooseOrganization: chooseOrganization,
 	chooseStack: chooseStack,
@@ -385,4 +411,5 @@ module.exports = {
   determineUserOrgRole: determineUserOrgRole,
   getOrganizationsWhereUserIsAdmin: getOrganizationsWhereUserIsAdmin,
   kebabize: kebabize,
+  flatten: flatten,
 }	
