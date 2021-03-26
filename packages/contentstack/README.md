@@ -893,11 +893,10 @@ _See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blo
 
 ## `csdx cm:stack-clone`
 
-This command allows you to migrate data (structure or content or both) from one stack to another stack (either new or existing)
+Clone data (structure or content or both) of a stack into another stack
 
 ```
-This command allows you to migrate data (structure or content or both) from one stack to another stack (either new or existing)
-...
+Clone data (structure or content or both) of a stack into another stack
 Use this plugin to automate the process of cloning a stack in a few steps.
 
 
@@ -905,14 +904,13 @@ USAGE
   $ csdx cm:stack-clone
 
 DESCRIPTION
-  ...
   Use this plugin to automate the process of cloning a stack in a few steps.
 
 EXAMPLE
   csdx cm:stack-clone
 ```
 
-_See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/v0.1.0-beta-1/src/commands/cm/stack-clone.js)_
+_See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/v0.1.0-beta/src/commands/cm/stack-clone.js)_
 
 ## `csdx config:get:region`
 
@@ -1000,10 +998,10 @@ _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/
 
 ## `csdx plugins:create`
 
-Generate plugin starter code
+generate plugin starter code
 
 ```
-Generate plugin starter code
+generate plugin starter code
 
 
 USAGE
