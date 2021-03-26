@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-import/0.1.1-beta.4 linux-x64 node-v12.13.1
+@contentstack/cli-cm-import/0.1.1-beta.4 darwin-x64 node-v13.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -28,6 +28,8 @@ USAGE
 * [`csdx cm:import`](#csdx-cmimport)
 
 ## `csdx cm:import`
+
+Import script for importing the content into new stack
 
 ```
 USAGE
