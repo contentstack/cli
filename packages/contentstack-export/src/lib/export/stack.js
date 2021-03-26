@@ -8,10 +8,11 @@ var chalk = require('chalk')
 var mkdirp = require('mkdirp')
 var path = require('path')
 
-var request = require('../util/request')
 var app = require('../../app')
 var helper = require('../util/helper')
 var {addlogs} = require('../util/log')
+const stack = require('../util/contentstack-management-sdk')
+
 
 let config = require('../../config/default')
 
@@ -28,22 +29,33 @@ function ExportStack () {
 
 ExportStack.prototype.start = function (credentialConfig) {
   config = credentialConfig
-  addlogs(config, 'Exporting stack details', 'success')
-  let stackFolderPath = path.resolve(config.data, stackConfig.dirName)
-  let stackContentsFile = path.resolve(stackFolderPath, stackConfig.fileName)
-
-  // Create asset folder
-  mkdirp.sync(stackFolderPath)
-
-  return new Promise((resolve, reject) => {
-    return client.stack({api_key: config.source_stack}).fetch()
-    .then(response => {
-      helper.writeFile(stackContentsFile, response)
-      addlogs(config, 'Exported stack details successfully!', 'success')
-      return resolve()
+  client = stack.Client(config)
+  if (!config.preserveStackVersion && !config.hasOwnProperty("master_locale")) {
+    return new Promise((resolve, reject) => {
+      return client.stack({api_key: config.source_stack}).fetch()
+      .then(response => {
+        return resolve(response)
+      }).catch(error => {
+        return reject(error)
+      })
     })
-    .catch(reject)
-  })
+  } else if(config.preserveStackVersion) {
+    addlogs(config, 'Exporting stack details', 'success')
+    let stackFolderPath = path.resolve(config.data, stackConfig.dirName)
+    let stackContentsFile = path.resolve(stackFolderPath, stackConfig.fileName)
+  
+    mkdirp.sync(stackFolderPath)
+  
+    return new Promise((resolve, reject) => {
+      return client.stack({api_key: config.source_stack}).fetch()
+      .then(response => {
+        helper.writeFile(stackContentsFile, response)
+        addlogs(config, 'Exported stack details successfully!', 'success')
+        return resolve(response)
+      })
+      .catch(reject)
+    })
+  }
 }
 
 module.exports = new ExportStack()
