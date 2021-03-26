@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-command",
-  "version": "0.1.1-beta.3",
+  "version": "0.1.1-beta.2",
   "description": "Base class for Contentstack command",
   "main": "./src/index.js",
   "author": "Contentstack",
