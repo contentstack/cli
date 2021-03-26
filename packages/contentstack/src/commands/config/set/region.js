@@ -45,8 +45,8 @@ RegionCommand.args = [{
 
 RegionCommand.examples =  [
   '$ csdx config:set:region EU',
-  '$ csdx config:set:region --cma "https://in-cda.contentstack.com" --cda "https://in-api.contentstack.com" --name "India"',
-  '$ csdx config:set:region --cma="https://in-cda.contentstack.com" --cda="https://in-api.contentstack.com" --name="India"',
+  '$ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"',
+  '$ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com" --name="India"',
 ]
 
 RegionCommand.flags = {
