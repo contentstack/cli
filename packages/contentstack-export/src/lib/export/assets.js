@@ -50,7 +50,7 @@ ExportAssets.prototype = {
     return new Promise(function (resolve, reject) {
       return self.getAssetCount().then(function (count) {
         if (typeof count !== 'number' || count === 0) {
-          addlogs(config, 'There were no assets to be download', 'success')
+          addlogs(config, 'No assets found', 'success')
           return resolve()
         }
         const assetBatches = []
