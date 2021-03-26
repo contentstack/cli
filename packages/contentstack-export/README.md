@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-export/0.0.28 linux-x64 node-v12.13.1
+@contentstack/cli-cm-export/0.1.1-beta.3 linux-x64 node-v12.13.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -57,5 +57,5 @@ EXAMPLES
   csdx cm:export -A -m <single module name>
 ```
 
-_See code: [src/commands/cm/export.js](https://github.com/contentstack/cli/blob/v0.0.28/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [src/commands/cm/export.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-export/src/commands/cm/export.js)_
 <!-- commandsstop -->
