@@ -59,8 +59,5 @@
   "scripts": {
     "test": "nyc --reporter=html mocha \"test/**/*.test.js\"",
     "version": "oclif-dev readme && git add README.md"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
   }
 }
