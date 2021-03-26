@@ -5,6 +5,7 @@ exports.Client = function (config) {
     host: config.host,
     authtoken: config.auth_token,
     api_key: config.source_stack,
+    logHandler: (level, data) => {},
   }
 
   const client = contentstacksdk.client(option)
