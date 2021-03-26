@@ -15,7 +15,7 @@ class CreateCommand extends Command {
   }
 }
 
-CreateCommand.description = `Generate plugin starter code
+CreateCommand.description = `generate plugin starter code
 `
 
 module.exports = CreateCommand
