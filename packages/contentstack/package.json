@@ -74,6 +74,9 @@
       },
       "config": {
         "description": "perform configuration related activities"
+      },
+      "plugins": {
+        "description": "list installed plugins"
       }
     },
     "helpClass": "./src/help.js",
