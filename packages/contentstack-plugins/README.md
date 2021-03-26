@@ -1,7 +1,7 @@
 @contentstack/cli-plugins-plugin
 =======
 
-Contentstack allows developers to write plugins and add custom commands to the CLI to perform additional tasks using CLI. Refer to the [Plugins](https://www.contentstack.com/docs/developers/cli/create-custom-plugins-using-cli/) documentation to learn more.
+Contentstack allows developers to write plugins and add custom commands to the CLI to perform additional tasks using CLI.
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
