@@ -35,6 +35,7 @@ let structureList = ['locales',
   'webhooks',
   'global-fields',
   'content-types',
+  'workflows',
   'labels']
 var oraMessage  
 let master_locale
