@@ -228,6 +228,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
     delete entry.publish
     delete entry.unpublish
     delete entry.import
+    delete entry.publishRequest
     return entry
   })
 
