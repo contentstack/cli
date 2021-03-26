@@ -1,0 +1,61 @@
+{
+  "name": "@contentstack/cli-cm-export-to-csv",
+  "description": "Export entities to csv",
+  "version": "0.1.0-beta.1",
+  "author": "Abhinav Gupta @abhinav-from-contentstack",
+  "bugs": "https://github.com/contentstack/cli/issues",
+  "dependencies": {
+    "@contentstack/cli-command": "^0.1.1-beta.1",
+    "@contentstack/management": "^1.2.1",
+    "@oclif/command": "^1.8.0",
+    "@oclif/config": "^1.17.0",
+    "axios": "^0.21.1",
+    "chalk": "^4.1.0",
+    "fast-csv": "^4.3.6",
+    "inquirer": "^7.3.3",
+    "mkdirp": "^1.0.4"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.26.0",
+    "@oclif/plugin-help": "^3.2.1",
+    "@oclif/test": "^1.2.8",
+    "chai": "^4.2.0",
+    "debug": "^4.3.1",
+    "eslint": "^5.16.0",
+    "eslint-config-oclif": "^3.1.0",
+    "globby": "^10.0.2",
+    "mocha": "^8.3.1",
+    "nyc": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json",
+    "/src",
+    "/yarn.lock"
+  ],
+  "homepage": "https://github.com/contentstack/cli",
+  "keywords": [
+    "contentstack",
+    "cli",
+    "plugin"
+  ],
+  "license": "MIT",
+  "oclif": {
+    "commands": "./src/commands",
+    "bin": "csdx",
+    "devPlugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "repository": "contentstack/cli",
+  "scripts": {
+    "postpack": "rm -f oclif.manifest.json",
+    "posttest": "eslint .",
+    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "test": "nyc --reporter=html mocha --forbid-only \"test/**/*.test.js\"",
+    "version": "oclif-dev readme && git add README.md"
+  }
+}
