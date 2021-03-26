@@ -26,8 +26,7 @@ class StackCloneCommand extends Command {
   }
 }
 
-StackCloneCommand.description = `This command allows you to migrate data (structure or content or both) from one stack to another stack (either new or existing)
-...
+StackCloneCommand.description = `Clone data (structure or content or both) of a stack into another stack
 Use this plugin to automate the process of cloning a stack in a few steps.
 `
 
