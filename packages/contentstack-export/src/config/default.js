@@ -10,6 +10,7 @@ module.exports = {
       'webhooks',
       'global-fields',
       'content-types',
+      'workflows',
       'entries',
       'labels',
     ],
@@ -30,10 +31,44 @@ module.exports = {
     labels: {
       dirName: 'labels',
       fileName: 'labels.json',
+      invalidKeys: [
+        'stackHeaders',
+        'uid',
+        'urlPath',
+        'created_at',
+        'updated_at',
+        'created_by',
+        'updated_by',
+      ],
     },
     webhooks: {
       dirName: 'webhooks',
       fileName: 'webhooks.json',
+    },
+    releases: {
+      dirName: 'releases',
+      fileName: 'releases.json',
+      releasesList: 'releasesList.json',
+      invalidKeys: [
+        'stackHeaders',
+        'urlPath',
+        'created_at',
+        'updated_at',
+        'created_by',
+        'updated_by',
+      ],
+    },
+    workflows: {
+      dirName: 'workflows',
+      fileName: 'workflows.json',
+      invalidKeys: [
+        'stackHeaders',
+        'urlPath',
+        'created_at',
+        'updated_at',
+        'created_by',
+        'updated_by',
+      ],
     },
     globalfields: {
       dirName: 'global_fields',

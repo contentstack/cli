@@ -1,0 +1,9 @@
+{
+  "extends": [
+    "oclif",
+    "oclif-typescript"
+  ],
+	rules: {
+    "@typescript-eslint/no-unused-vars": "off"
+  }
+}
