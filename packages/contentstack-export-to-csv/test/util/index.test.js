@@ -3,6 +3,8 @@ const util = require('../../src/util')
 const ExportToCsvCommand = require('../../src/commands/cm/export-to-csv.js')
 const inquirer = require('inquirer')
 const config = require('../../src/util/config.js')
+const entries = require('../mock-data/entries.json')
+const mkdirp = require('mkdirp')
 
 // eslint-disable-next-line no-undef
 describe('test util functions', () => {
@@ -54,6 +56,25 @@ describe('test util functions', () => {
     let data = await util.chooseOrganization(ExportToCsvCommand.prototype.managementAPIClient)
     // as process.exit has been stubbed, chooseOrganization would continue executing
 		expect(data.name).to.equal(config.cancelString)
+  })
+
+  test
+  .stdout({print: true})
+  .stub(ExportToCsvCommand.prototype, 'managementAPIClient', () => {
+    const organizations = [{name: 'org1', uid: 'org1', org_roles: [{admin: true}]}, {name: 'org2', uid: 'org2', is_owner: true}, {name: 'org3', uid: 'org3'}]
+    return {
+      getUser: function() {
+        return new Promise(resolve => resolve({
+          organizations: organizations
+        }))
+      }
+    }
+  })
+  .stub(inquirer, 'prompt', () => new Promise(resolve => resolve({chosenOrg: 'org1'})))
+  .it('checks if chosen organization is returned when the action is exportUsers', async () => {
+    let data = await util.chooseOrganization(ExportToCsvCommand.prototype.managementAPIClient, config.exportUsers)
+    expect(data.name).to.equal('org1')
+    expect(data.uid).to.equal('org1')
   })
 
   // test chooseStack when a stack is chosen
@@ -138,11 +159,11 @@ describe('test util functions', () => {
       }
     }
   })
-  .stub(inquirer, 'prompt', () => new Promise(resolve => resolve({chosenContentType: 'ct1'})))
+  .stub(inquirer, 'prompt', () => new Promise(resolve => resolve({chosenContentTypes: ['ct1']})))
   .it('checks if chosen content type is returned', async () => {
     let data = await util.chooseContentType(ExportToCsvCommand.prototype.managementAPIClient, 'someStackApiKey')
-		expect(data.name).to.equal('ct1')
-		expect(data.uid).to.equal('ct1')
+    expect(data).to.be.an('array')
+		expect(data[0]).to.equal('ct1')
   })
 
   // test chooseContentType if the user selects cancel
@@ -246,6 +267,13 @@ describe('test util functions', () => {
   // test choose Languages when the user selects cancel
 
   // test write function
+  test
+  .stdout()
+  .stub(inquirer, 'prompt', () => new Promise(resolve => resolve({action: 'Export Entries to CSV'})))
+  .it('test write function', async () => {
+    let data = await util.startupQuestions()
+    expect(data).to.equal('Export Entries to CSV')
+  })
 
   // test startupQuestions
   test
@@ -298,7 +326,7 @@ describe('test util functions', () => {
     }
   })
   .it('check getOrgUsers response when user is not an admin of the organization', async () => {
-    let expectedError = new Error('You need to be an admin for exporting this organization\'s users')
+    let expectedError = new Error(config.adminError)
     try {
       await util.getOrgUsers(ExportToCsvCommand.prototype.managementAPIClient, 'orgUid1')
     } catch(error) {
@@ -368,7 +396,7 @@ describe('test util functions', () => {
     }
   })
   .it('check getOrgRoles response when user is not an admin of the organization', async () => {
-    let expectedError = new Error('You need to be an admin for exporting this organization\'s users')
+    let expectedError = new Error(config.adminError)
     try {
       await util.getOrgRoles(ExportToCsvCommand.prototype.managementAPIClient, 'orgUid1')
     } catch(error) {
@@ -393,5 +421,25 @@ describe('test util functions', () => {
 
     expect(roleName1).to.equal('role1')
     expect(roleName2).to.equal('Owner')
-  })  
+  })
+
+  // test cleanEntries
+  test
+  .stdout()
+  .it('test clean Entries', async () => {
+    const environments = [{name: 'env1', uid: 'env1'}, {name: 'env2', uid: 'env2'}, {name: 'env3', uid: 'env3'}]
+    const language = 'en-us'
+    const contentTypeUid = 'uid'
+
+    const filteredEntries = util.cleanEntries(entries.items, language, environments, contentTypeUid)
+
+    expect(entries).to.be.an('object')
+  })
+
+  // test getDateTime
+  test
+  .stdout()
+  .it('test getDateTime', async () => {
+    expect(util.getDateTime()).to.be.a('string')
+  })
 })
