@@ -39,13 +39,14 @@ ExportLabels.prototype.start = function (credentialConfig) {
     .then((response) => {
       if (response.items.length !== 0) {
         response.items.forEach(function (label) {
-          delete label['stackHeaders']
-          addlogs(config, chalk.white(label.name + ' labels was exported successfully'), 'success')
+          addlogs(config, label.name + ' labels was exported successfully', 'success')
           self.labels[label.uid] = label
+          let deleteItems = config.modules.labels.invalidKeys 
+          deleteItems.forEach(e => delete label[e])
         })
         addlogs(config, chalk.green('All the labels have been exported successfully'), 'success')
       } else {
-        addlogs(config, 'No labels, other than master-labels were found in the Stack', 'success')
+        addlogs(config, 'No labels found', 'success')
       }
       helper.writeFile(path.join(labelsFolderPath, labelConfig.fileName), self.labels)
       return resolve()
