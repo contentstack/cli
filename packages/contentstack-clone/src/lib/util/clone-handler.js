@@ -28,6 +28,7 @@ let stackName = {
 
 let orgUidList = {}
 let stackUidList = {}
+let masterLocaleList = {}
 
 let structureList = ['locales',
   'environments',
@@ -60,6 +61,7 @@ class CloneHandler {
       .then(async (stackList)=> {
       let stackSelected = await inquirer.prompt(stackList)
       config.source_stack = stackUidList[stackSelected.stack]
+      master_locale = masterLocaleList[stackSelected.stack]
       config.sourceStackName = stackSelected.stack
       stackName.default = "Copy of " + stackSelected.stack
         let cmdExport = this.cmdExport()
@@ -162,6 +164,7 @@ class CloneHandler {
           .then(async stacklist => {
             for (let j = 0; j < stacklist.items.length; j++) {
               stackUidList[stacklist.items[j].name] = stacklist.items[j].api_key
+              masterLocaleList[stacklist.items[j].name] = stacklist.items[j].master_locale
               stackChoice.choices.push(stacklist.items[j].name)
             }
             spinner.succeed("Fetched stack")
@@ -180,7 +183,7 @@ class CloneHandler {
   async createNewStack(orgUid) {
     return new Promise(async (resolve, reject) => {
       let inputvalue = await inquirer.prompt(stackName)
-      let stack = { name: inputvalue.stack }
+      let stack = { name: inputvalue.stack, master_locale: master_locale }
       const spinner = ora('Creating New stack').start()
       let newStack = client.stack().create({ stack }, { organization_uid: orgUid })
       newStack
@@ -188,7 +191,6 @@ class CloneHandler {
           spinner.succeed("New Stack created Successfully name as " + result.name)
           config.target_stack = result.api_key
           config.destinationStackName = result.name
-          master_locale = result.master_locale
           return resolve(result)
         }).catch(error => {
           spinner.fail()
