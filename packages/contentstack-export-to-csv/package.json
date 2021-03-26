@@ -38,7 +38,9 @@
   ],
   "homepage": "https://github.com/contentstack/cli",
   "keywords": [
-    "oclif-plugin"
+    "contentstack",
+    "cli",
+    "plugin"
   ],
   "license": "MIT",
   "oclif": {
