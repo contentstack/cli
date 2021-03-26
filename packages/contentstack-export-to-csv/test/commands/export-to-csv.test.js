@@ -5,6 +5,7 @@ const {test} = require('@oclif/test')
 // const ExportToCsvCommand = require('../../src/commands/cm/export-to-csv.js')
 // const ContentstackManagementSDK = require('@contentstack/management')
 const util = require('../../src/util')
+const config = require('../../src/util/config.js')
 
 // mock data for Export Entries to CSV
 const sampleEnvironments = {'envUid1': 'envName1', 'envUid2': 'envName2'}
@@ -16,7 +17,7 @@ const sampleEntries = require('../mock-data/entries.json')
 describe('export to csv', () => {
   test
   .stdout()
-  .stub(util, 'startupQuestions', () => new Promise(resolve => resolve('Export Entries to CSV')))
+  .stub(util, 'startupQuestions', () => new Promise(resolve => resolve(config.exportEntries)))
   .stub(util, 'chooseOrganization', () => new Promise(resolve => resolve({uid: 'sampleOrgUid', name: 'sampleOrg'})))
   .stub(util, 'chooseStack', () => new Promise(resolve => resolve({name: 'someStack', apiKey: 'sampleApiKey'})))
   .stub(util, 'chooseContentType', () => new Promise(resolve => resolve({name: 'someContentType', uid: 'sampleCtUid'})))
@@ -32,7 +33,7 @@ describe('export to csv', () => {
 
   test
   .stdout()
-  .stub(util, 'startupQuestions', () => new Promise(resolve => resolve('Export Organization Users to CSV')))
+  .stub(util, 'startupQuestions', () => new Promise(resolve => resolve(config.exportUsers)))
   .stub(util, 'chooseOrganization', () => new Promise(resolve => resolve({uid: 'sampleOrgUid', name: 'sampleOrg'})))
   .stub(util, 'getOrgUsers', () => new Promise(resolve => resolve({})))
   .stub(util, 'getOrgRoles', () => new Promise(resolve => resolve({})))
