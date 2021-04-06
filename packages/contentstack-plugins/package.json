@@ -1,0 +1,61 @@
+  {
+  "name": "@contentstack/cli-plugins-plugin",
+  "description": "Plugin for generating plugin bootstrap code",
+  "version": "0.1.0-beta",
+  "author": "contentstack",
+  "bugs": "https://github.com/contentstack/cli/issues",
+  "dependencies": {
+    "@oclif/command": "^1.8.0",
+    "@oclif/config": "^1.17.0",
+    "@oclif/fixpack": "^2.3.0",
+    "chalk": "^4.1.0",
+    "lodash": "^4.17.20",
+    "nps-utils": "^1.7.0",
+    "sort-pjson": "^1.0.3",
+    "yeoman-environment": "^2.10.3",
+    "yeoman-generator": "^4.12.0",
+    "yosay": "^2.0.2"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.25.1",
+    "@oclif/plugin-help": "^3.2.0",
+    "@oclif/test": "^1.2.8",
+    "chai": "^4.2.0",
+    "eslint": "^5.16.0",
+    "eslint-config-oclif": "^3.1.0",
+    "globby": "^10.0.2",
+    "mocha": "^5.2.0",
+    "nyc": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json",
+    "/src",
+    "/yarn.lock"
+  ],
+  "homepage": "https://github.com/contentstack/cli",
+  "keywords": [
+    "contentstack",
+    "cli",
+    "plugin"
+  ],
+  "license": "MIT",
+  "oclif": {
+    "commands": "./src/commands",
+    "bin": "csdx",
+    "devPlugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "repository": "contentstack/cli",
+  "scripts": {
+    "postpack": "rm -f oclif.manifest.json",
+    "posttest": "eslint .",
+    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
+    "version": "oclif-dev readme && git add README.md"
+  }
+}
