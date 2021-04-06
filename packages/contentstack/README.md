@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.3 darwin-x64 node-v14.9.0
+@contentstack/cli/0.1.1-beta.5 darwin-x64 node-v13.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -44,11 +44,15 @@ USAGE
 * [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
 * [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
 * [`csdx cm:export`](#csdx-cmexport)
+* [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
 * [`csdx cm:import`](#csdx-cmimport)
+* [`csdx cm:stack-clone`](#csdx-cmstack-clone)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMAND]`](#csdx-help-command)
 * [`csdx plugins`](#csdx-plugins)
+* [`csdx plugins:create`](#csdx-pluginscreate)
+* [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
 * [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
 * [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
 * [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
@@ -59,6 +63,8 @@ USAGE
 Login to Contentstack and save the session for further use
 
 ```
+Login to Contentstack and save the session for further use
+
 USAGE
   $ csdx auth:login
 
@@ -76,6 +82,8 @@ _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.
 Log out from Contentstack and clear the session
 
 ```
+Log out from Contentstack and clear the session
+
 USAGE
   $ csdx auth:logout
 
@@ -93,6 +101,9 @@ _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.
 Lists all existing tokens added to the session
 
 ```
+Lists all existing tokens added to the session 
+
+
 USAGE
   $ csdx auth:tokens
 
@@ -117,6 +128,9 @@ _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.
 Adds management/delivery tokens to your session to use it with further CLI command
 
 ```
+Adds management/delivery tokens to your session to use it with further CLI command
+by default it adds management token if either of management or delivery flags are not set
+
 USAGE
   $ csdx auth:tokens:add
 
@@ -145,6 +159,8 @@ _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.
 Removes stored tokens
 
 ```
+Removes stored tokens
+
 USAGE
   $ csdx auth:tokens:remove
 
@@ -165,6 +181,9 @@ _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.
 Display current users email address
 
 ```
+Display current users email address
+
+
 USAGE
   $ csdx auth:whoami
 
@@ -179,6 +198,9 @@ _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.
 Bulk Publish script for managing entries and assets
 
 ```
+Bulk Publish script for managing entries and assets
+
+
 USAGE
   $ csdx cm:bulk-publish
 ```
@@ -190,6 +212,13 @@ _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/c
 Add fields from updated content types to their respective entries
 
 ```
+Add fields from updated content types to their respective entries
+The add-fields command is used for updating already existing entries with the updated schema of their respective Content Type
+
+Content Types, Environments and Locales are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+
 USAGE
   $ csdx cm:bulk-publish:add-fields
 
@@ -241,6 +270,13 @@ _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/c
 Publish assets to specified environments
 
 ```
+Publish assets to specified environments
+The assets command is used for publishing assets from the specified stack, to the specified environments
+
+Environment(s) and Locale(s) are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+
 USAGE
   $ csdx cm:bulk-publish:assets
 
@@ -290,6 +326,9 @@ _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/c
 Clear the log folder
 
 ```
+Clear the log folder
+
+
 USAGE
   $ csdx cm:bulk-publish:clear
 
@@ -305,6 +344,18 @@ _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/c
 Generate configuration template
 
 ```
+Generate configuration template
+The configure command is used for generating a configuration file for bulk-publish script.
+
+Here is a detailed description for all the available flags
+
+-----------------------------------------------------------------------------------------------------------
+--alias or -a : Management token Alias for the stack in use.
+
+EXAMPLE : cm:bulk-publish:configure --alias [MANAGEMENT TOKEN Alias]
+EXAMPLE : cm:bulk-publish:configure -a [MANAGEMENT TOKEN Alias]
+
+
 USAGE
   $ csdx cm:bulk-publish:configure
 
@@ -330,6 +381,13 @@ _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/c
 Publish entries and assets from one environment to other environments
 
 ```
+Publish entries and assets from one environment to other environments
+The cross-publish command is used for publishing entries and assets from one evironment to other environments
+
+Content Type, Environment, Destination Environment(s) and Locale are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+
 USAGE
   $ csdx cm:bulk-publish:cross-publish
 
@@ -384,6 +442,14 @@ _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/c
 Publish entries from multiple content-types to multiple environments and locales
 
 ```
+Publish entries from multiple content-types to multiple environments and locales
+The entries command is used for publishing entries from the specified content types, to the
+specified environments and locales 
+
+Content Types, Environments and Locales are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+
 USAGE
   $ csdx cm:bulk-publish:entries
 
@@ -439,6 +505,14 @@ _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/c
 Publish edited entries from a specified Content Type to given locales and environments
 
 ```
+Publish edited entries from a specified Content Type to given locales and environments
+The entry-edits command is used for publishing entries from the specified content types, to the
+specified environments and locales
+
+Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+
 USAGE
   $ csdx cm:bulk-publish:entry-edits
 
@@ -493,6 +567,14 @@ _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/c
 Publish non-localized-fields for given Content Types, from a particular source environment to specified environments
 
 ```
+Publish non-localized-fields for given Content Types, from a particular source environment to specified environments
+The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types to
+the specified Environments
+
+Content Types, Environments and Source Environment are required for executing this command successfully.
+But, if retryFailed flag is set, then only a logfile is required
+
+
 USAGE
   $ csdx cm:bulk-publish:nonlocalized-field-changes
 
@@ -544,6 +626,11 @@ _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/c
 Revert publish operations by using a log file
 
 ```
+Revert publish operations by using a log file
+The revert command is used for reverting all publish operations performed using bulk-publish script.
+A log file name is required to execute revert command
+
+
 USAGE
   $ csdx cm:bulk-publish:revert
 
@@ -572,6 +659,19 @@ _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/c
 Unpublish entries of given Content Types from given environment
 
 ```
+Unpublish entries of given Content Types from given environment
+The unpublish command is used for unpublishing entries from given environment
+
+Environment (Source Environment) and Locale are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+A Content Type can be specified for publishing entries, but if no content-type(s) is/are specified and --onlyAssets is not used,
+then all entries from all content types will be unpublished from the source environment
+
+--onlyAssets can be used to unpublish only assets and --onlyEntries can be used to unpublish only entries.
+(--onlyAssets and --onlyEntries cannot be used together at the same time)
+
+
 USAGE
   $ csdx cm:bulk-publish:unpublish
 
@@ -648,6 +748,13 @@ _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/c
 Publish unpublished entries from the source environment, to other environments and locales
 
 ```
+Publish unpublished entries from the source environment, to other environments and locales
+The unpublished-entries command is used for publishing unpublished entries from the source environment, to other environments and locales
+
+Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+
 USAGE
   $ csdx cm:bulk-publish:unpublished-entries
 
@@ -700,6 +807,11 @@ _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/c
 Export content from a stack
 
 ```
+Export content from a stack
+...
+Export content from one stack to another
+
+
 USAGE
   $ csdx cm:export
 
@@ -708,7 +820,6 @@ OPTIONS
   -a, --management-token-alias=management-token-alias  alias of the management token
   -c, --config=config                                  [optional] path of the config
   -d, --data=data                                      path or location to store the data
-  -l, --master-lang=master-lang                        code of the source stack's master Language
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
 
@@ -718,30 +829,49 @@ DESCRIPTION
 
 EXAMPLES
   csdx cm:export -A
-  csdx cm:export -A -l <master_language> -s <stack_ApiKey> -d <path/of/export/destination/dir>
+  csdx cm:export -A -s <stack_ApiKey> -d <path/of/export/destination/dir>
   csdx cm:export -A -c <path/to/config/dir>
   csdx cm:export -a <management_token_alias>
-  csdx cm:export -a <management_token_alias> -l <master_language> -d <path/to/export/destination/dir>
+  csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
   csdx cm:export -a <management_token_alias> -c <path/to/config/file>
   csdx cm:export -A -m <single module name>
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-export/src/commands/cm/export.js)_
+
+## `csdx cm:export-to-csv`
+
+Export entries or organization users to csv using this command
+
+```
+Export entries or organization users to csv using this command
+
+
+USAGE
+  $ csdx cm:export-to-csv
+```
+
+_See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/v0.1.0-beta.1/src/commands/cm/export-to-csv.js)_
 
 ## `csdx cm:import`
 
 Import script for importing the content into new stack
 
 ```
+Import script for importing the content into new stack
+...
+Once you export content from the source stack, import it to your destination stack by using the cm:import command.
+
+
 USAGE
   $ csdx cm:import
 
 OPTIONS
   -A, --auth-token                                     to use auth token
   -a, --management-token-alias=management-token-alias  alias of the management token
+  -b, --backup-dir=backup-dir                          [optional] backup directory name when using specific module
   -c, --config=config                                  [optional] path of config file
   -d, --data=data                                      path and location where data is stored
-  -l, --master-lang=master-lang                        code of the target stack's master language
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the target stack
 
@@ -751,32 +881,59 @@ DESCRIPTION
 
 EXAMPLES
   csdx cm:import -A
-  csdx cm:import -A -l <master_language> -s <stack_ApiKey> -d <path/of/export/destination/dir>
+  csdx cm:import -A -s <stack_ApiKey> -d <path/of/export/destination/dir>
   csdx cm:import -A -c <path/of/config/dir>
   csdx cm:import -a <management_token_alias>
-  csdx cm:import -a <management_token_alias> -l <master-language> -d <path/of/export/destination/dir>
+  csdx cm:import -a <management_token_alias> -d <path/of/export/destination/dir>
   csdx cm:import -a <management_token_alias> -c <path/of/config/file>
   csdx cm:import -A -m <single module name>
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-import/src/commands/cm/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.4/packages/contentstack-import/src/commands/cm/import.js)_
+
+## `csdx cm:stack-clone`
+
+Clone data (structure or content or both) of a stack into another stack
+
+```
+Clone data (structure or content or both) of a stack into another stack
+Use this plugin to automate the process of cloning a stack in a few steps.
+
+
+USAGE
+  $ csdx cm:stack-clone
+
+DESCRIPTION
+  Use this plugin to automate the process of cloning a stack in a few steps.
+
+EXAMPLE
+  csdx cm:stack-clone
+```
+
+_See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/v0.1.0-beta.1/src/commands/cm/stack-clone.js)_
 
 ## `csdx config:get:region`
 
 Get current region set for CLI
 
 ```
+Get current region set for CLI
+
+
 USAGE
   $ csdx config:get:region
 ```
 
-_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/src/commands/config/get/region.js)_
+_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/src/commands/config/get/region.js)_
 
 ## `csdx config:set:region [REGION]`
 
 Set region for CLI
 
 ```
+Set region for CLI
+
+
 USAGE
   $ csdx config:set:region [REGION]
 
@@ -799,13 +956,15 @@ EXAMPLES
   --name="India"
 ```
 
-_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/src/commands/config/set/region.js)_
+_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/src/commands/config/set/region.js)_
 
 ## `csdx help [COMMAND]`
 
 display help for csdx
 
 ```
+display help for <%= config.bin %>
+
 USAGE
   $ csdx help [COMMAND]
 
@@ -823,6 +982,8 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3
 list installed plugins
 
 ```
+list installed plugins
+
 USAGE
   $ csdx plugins
 
@@ -833,13 +994,58 @@ EXAMPLE
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.9.0/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/index.ts)_
+
+## `csdx plugins:create`
+
+generate plugin starter code
+
+```
+generate plugin starter code
+
+
+USAGE
+  $ csdx plugins:create
+```
+
+_See code: [@contentstack/cli-plugins-plugin](https://github.com/contentstack/cli/blob/v0.1.0-beta/src/commands/plugins/create.js)_
+
+## `csdx plugins:inspect PLUGIN...`
+
+displays installation properties of a plugin
+
+```
+displays installation properties of a plugin
+
+USAGE
+  $ csdx plugins:inspect PLUGIN...
+
+ARGUMENTS
+  PLUGIN  [default: .] plugin to inspect
+
+OPTIONS
+  -h, --help     show CLI help
+  -v, --verbose
+
+EXAMPLE
+  $ csdx plugins:inspect myplugin
+```
+
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
 installs a plugin into the CLI
 
 ```
+installs a plugin into the CLI
+Can be installed from npm or a git url.
+
+Installation of a user-installed plugin will override a core plugin.
+
+e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in the CLI without the need to patch and update the whole CLI.
+
+
 USAGE
   $ csdx plugins:install PLUGIN...
 
@@ -869,13 +1075,19 @@ EXAMPLES
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.9.0/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
 links a plugin into the CLI for development
 
 ```
+links a plugin into the CLI for development
+Installation of a linked plugin will override a user-installed or core plugin.
+
+e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello' command will override the user-installed or core plugin implementation. This is useful for development work.
+
+
 USAGE
   $ csdx plugins:link PLUGIN
 
@@ -896,13 +1108,15 @@ EXAMPLE
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.9.0/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
 removes a plugin from the CLI
 
 ```
+removes a plugin from the CLI
+
 USAGE
   $ csdx plugins:uninstall PLUGIN...
 
@@ -918,13 +1132,15 @@ ALIASES
   $ csdx plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.9.0/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:update`
 
 update installed plugins
 
 ```
+update installed plugins
+
 USAGE
   $ csdx plugins:update
 
@@ -933,5 +1149,5 @@ OPTIONS
   -v, --verbose
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.9.0/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/update.ts)_
 <!-- commandsstop -->
