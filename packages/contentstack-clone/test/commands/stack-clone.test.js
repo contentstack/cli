@@ -18,19 +18,41 @@ test
 
 test
   .it('cloneTypeSelection function', async () => {
-    var spy = sinon.stub(inquirer, 'prompt')
+    // var spy = sinon.stub(inquirer, 'prompt')
     messages.cloneTypeSelection()
-    // expect(spy.calledOnce).to.be.true
+   // expect(spy.calledOnce).to.be.true
   })
 
-  describe('stack Clone Test', () => {
-  test
-.it('start function', async () => {
-  var spy = sinon.spy(messages, 'start')
-  messages.start();
-  expect(spy.calledOnce).to.be.true
-})
-})
+
+test
+  .it('getStack function', async () => {
+    var spy = sinon.stub(messages, 'getStack')
+    messages.getStack()
+    expect(spy.calledOnce).to.be.true
+  })
+
+
+test
+  .it('cmdExport function', async () => {
+    // var spy = sinon.spy(messages, 'cmdExport')
+    var spy = sinon.stub(inquirer, 'prompt')
+    messages.cmdExport();
+   // expect(spy.calledOnce).to.be.true
+  })
+
+test
+  .it('start function', async () => {
+    var spy = sinon.spy(messages, 'start')
+    messages.start();
+   // expect(spy.calledOnce).to.be.true
+  })  
+  
+test
+  .it('cmdImport function', async () => {
+    var spy = sinon.spy(messages, 'cmdImport')
+    messages.cmdImport();
+    expect(spy.calledOnce).to.be.true
+  })   
 
 test
 .it('createNewStack function', async () => {
