@@ -169,11 +169,12 @@ let allImport = async (config, types) => {
           return
         })
       }
-      addlogs(config, chalk.green('Stack: ' + config.stackName + ' has been imported succesfully!'), 'success')
       if (config.target_stack && config.source_stack) {
-        addlogs(config, 'The log for this is stored at' + path.join(config.data, 'logs', 'import'), 'success')
+        addlogs(config, chalk.green('The data of the ' + config.sourceStackName + ' stack has been imported into ' + config.destinationStackName + ' stack successfully!'), 'success')
+        addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'import'), 'success')
       } else {
-        addlogs(config, 'The log for this is stored at' + path.join(config.oldPath, 'logs', 'import'), 'success')
+        addlogs(config, chalk.green('Stack: ' + config.stackName + ' has been imported succesfully!'), 'success')
+        addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success')
       }
       return resolve()
     } catch (error) {

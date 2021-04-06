@@ -1,14 +1,14 @@
 {
   "name": "@contentstack/cli-cm-clone",
   "description": "Contentstack stack clone plugin",
-  "version": "0.1.0-beta",
-  "author": " @rohitmishra209",
+  "version": "0.1.0-beta.1",
+  "author": "Contentstack",
   "bugs": "https://github.com/rohitmishra209/cli-cm-clone/issues",
   "dependencies": {
-    "@contentstack/cli-cm-export": "^0.1.1-beta.1",
-    "@contentstack/cli-cm-import": "^0.1.1-beta.2",
-    "@contentstack/cli-command": "0.1.1-beta.1",
-    "@contentstack/management": "^1.1.1",
+    "@contentstack/cli-cm-export": "^0.1.1-beta.3",
+    "@contentstack/cli-cm-import": "^0.1.1-beta.4",
+    "@contentstack/cli-command": "0.1.0-beta",
+    "@contentstack/management": "^1.2.1",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "async": "^3.2.0",
@@ -17,6 +17,7 @@
     "fancy-test": "^1.4.10",
     "inquirer": "^7.3.3",
     "ora": "^5.1.0",
+    "rimraf": "^3.0.2",
     "winston": "^3.3.3"
   },
   "devDependencies": {
@@ -42,22 +43,21 @@
   ],
   "homepage": "https://github.com/rohitmishra209/cli-cm-clone",
   "keywords": [
-    "oclif-plugin"
+    "contentstack",
+    "cli",
+    "plugin"
   ],
   "license": "MIT",
   "oclif": {
     "commands": "./src/commands",
-    "bin": "oclif-example",
+    "bin": "csdx",
     "devPlugins": [
       "@oclif/plugin-help"
     ]
   },
-  "repository": "rohitmishra209/cli-cm-clone",
+  "repository": "https://github.com/contentstack/cli",
   "scripts": {
     "test": "nyc --reporter=html mocha \"test/**/*.test.js\"",
     "version": "oclif-dev readme && git add README.md"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
   }
 }
