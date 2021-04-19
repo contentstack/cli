@@ -28,15 +28,15 @@ export default class GitHubClient {
     return result
   }
 
-  constructor(public username: string) {
+  constructor(public username: string, defaultStackPattern: string) {
     this.gitHubRepoUrl = `https://api.github.com/repos/${username}`
-    this.gitHubUserUrl = `https://api.github.com/users/${username}`
+    this.gitHubUserUrl = `https://api.github.com/search/repositories?q=org%3A${username}+in:name+${defaultStackPattern}`
   }
 
   async getAllRepos(count = 100) {
     try {
-      const response = await axios.get(`${this.gitHubUserUrl}/repos?per_page=${count}&sort=full_name&type=public`)
-      return response.data
+      const response = await axios.get(`${this.gitHubUserUrl}&per_page=${count}`)
+      return response.data.items
     } catch (error) {
       throw this.buildError(error)
     }
