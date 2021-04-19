@@ -71,4 +71,4 @@ $ csdx cm:seed -r "account/repository"
 ```
 
 ## Documentation
-To get more detailed documentation of this command, visit the Seed command documentation on our docs.
+To get more detailed documentation of this command, visit the Seed command documentation on our [docs](https://www.contentstack.com/docs/developers/cli/import-content-using-the-seed-command/).
