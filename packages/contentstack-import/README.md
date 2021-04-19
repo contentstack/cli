@@ -29,8 +29,6 @@ USAGE
 
 ## `csdx cm:import`
 
-Import script for importing the content into new stack
-
 ```
 USAGE
   $ csdx cm:import
