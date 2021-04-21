@@ -16,7 +16,6 @@ const config: Configuration = {
         { displayName: 'Gatsby', configKey: 'gatsby' },
         { displayName: 'Angular', configKey: 'angular' },
         { displayName: 'Nuxt JS', configKey: 'nuxtjs' },
-        { displayName: 'React test', configKey: 'reacttest' },
     ],
     appLevelConfig: {
         nextjs: {
