@@ -49,19 +49,19 @@ export const setupEnvironments = async (
                             environment: environment.name
                         }
                         await envFileHandler(
-                            appConfig.appConfigKey,
+                            appConfig.appConfigKey || "",
                             environmentVariables,
                             clonedDirectory,
                             region
                         )
                     } else {
-                        cli.error('Failed to create delivery token for env ', environment.name)
+                        cli.log('Failed to create delivery token for env ', environment.name)
                     }
                 } catch (error) {
-                    cli.error(`Failed to setup env file for ${environment.name} \n ${error.stack}`)
+                    cli.log(`Failed to setup env file for ${environment.name} \n ${error.stack}`)
                 }
             } else {
-                cli.error('No environments name found for the environment')
+                cli.log('No environments name found for the environment')
             }
         }
     } else {
@@ -117,7 +117,7 @@ const envFileHandler = async (
             fileName = `.env.${environmentVariables.environment}.local`
             filePath = path.join(clonedDirectory, fileName)
             content = `API_KEY=${environmentVariables.api_key}\nDELIVERY_TOKEN=${environmentVariables.deliveryToken}\nENVIRONMENT=${environmentVariables.environment}\nREGION=${region.name}`
-            result = await writeEnvFile(content, filePaths)
+            result = await writeEnvFile(content, filePath)
             break
         case 'gatsby':
             fileName = `.env.${environmentVariables.environment}`
