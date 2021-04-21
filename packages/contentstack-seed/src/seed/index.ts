@@ -1,8 +1,8 @@
 import cli from 'cli-ux'
 import * as tmp from 'tmp'
 import * as importer from '../seed/importer'
-import ContentstackClient, {Organization} from '../seed/contentstack/client'
-import {inquireOrganization, inquireProceed, inquireRepo, inquireStack} from '../seed/interactive'
+import ContentstackClient, { Organization } from '../seed/contentstack/client'
+import { inquireOrganization, inquireProceed, inquireRepo, inquireStack } from '../seed/interactive'
 import GitHubClient from './github/client'
 import GithubError from './github/error'
 
@@ -44,7 +44,7 @@ export default class ContentModelSeeder {
   async run() {
     let api_key: string
 
-    const {organizationResponse, stackResponse} = await this.getInput()
+    const { organizationResponse, stackResponse } = await this.getInput()
 
     if (stackResponse.isNew && stackResponse.name) {
       api_key = await this.createStack(organizationResponse, stackResponse.name)
@@ -73,6 +73,7 @@ export default class ContentModelSeeder {
       master_locale: ENGLISH_LOCALE,
       tmpPath: tmpPath,
     })
+    return { api_key }
   }
 
   async getInput() {
@@ -97,7 +98,7 @@ export default class ContentModelSeeder {
       const stacks = await this.csClient.getStacks(organizationResponse.uid)
       const stackResponse = await inquireStack(stacks)
 
-      return {organizationResponse, stackResponse}
+      return { organizationResponse, stackResponse }
     }
   }
 

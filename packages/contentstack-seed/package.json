@@ -59,6 +59,9 @@
   },
   "repository": "contentstack/cli",
   "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json",
     "test": "jest",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
