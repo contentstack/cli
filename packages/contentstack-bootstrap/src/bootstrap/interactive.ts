@@ -3,7 +3,7 @@ import cli from 'cli-ux'
 import * as path from 'path'
 
 /**
- * Inquire starter app
+ * @description Inquire starter app
  */
 
 export async function inquireStarterApp(apps: Array<any>): Promise<string> {
@@ -23,7 +23,7 @@ export async function inquireStarterApp(apps: Array<any>): Promise<string> {
 }
 
 /**
- * Inquire clone destination directory
+ * @description Inquire clone destination directory
  */
 
 export async function inquireCloneDirectory(): Promise<string> {
@@ -41,6 +41,6 @@ export async function inquireCloneDirectory(): Promise<string> {
 
   // Ask for the custom path
   let selectedCustomPath = await inquirer.prompt([{ type: 'string', name: 'path', message: 'Provide the destionation path' }])
-  selectedCustomPath = path.join(process.cwd(), selectedCustomPath.path)
+  selectedCustomPath = path.resolve(selectedCustomPath.path)
   return selectedCustomPath
 }
