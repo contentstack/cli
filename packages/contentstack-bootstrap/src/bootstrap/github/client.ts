@@ -55,7 +55,7 @@ export default class GitHubClient {
     return response.data as Stream
   }
 
-  async extract(destination: string, stream: Stream): Promise<void> {
+  async extract(destination: string, stream: Stream): Promise<any> {
     return new Promise((resolve, reject) => {
       stream
         .pipe(zlib.createUnzip())
@@ -65,7 +65,9 @@ export default class GitHubClient {
             strip: 1,
           })
         )
-        .on('end', () => resolve())
+        .on('end', () => {
+          resolve('done')
+        })
         .on('error', reject)
     })
   }
