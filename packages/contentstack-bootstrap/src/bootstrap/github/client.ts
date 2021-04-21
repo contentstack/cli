@@ -43,9 +43,8 @@ export default class GitHubClient {
 
   async getLatest(destination: string): Promise<void> {
     const releaseStream = await this.streamRelease(this.gitTarBallUrl)
-    const destinationPath = path.join(destination, this.repo.name)
-    await mkdirp(destinationPath)
-    return this.extract(destinationPath, releaseStream)
+    await mkdirp(destination)
+    return this.extract(destination, releaseStream)
   }
 
   async streamRelease(url: string): Promise<Stream> {
