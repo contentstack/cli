@@ -141,6 +141,9 @@ module.exports = {
       dirName: 'stack',
       fileName: 'stack.json',
     },
+    dependency: {
+      entries: ['stack', 'locales', 'content-types'],
+    },
   },
   languagesCode: [
     'af-za',
