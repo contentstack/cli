@@ -12,7 +12,7 @@ const Promise = require('bluebird')
 const helper = require('../util/helper')
 // const log = require('../util/log')
 const stack = require('../util/contentstack-management-sdk')
-const {addlogs} = require('../util/log')
+const { addlogs } = require('../util/log')
 
 let config = require('../../config/default')
 const contentTypeConfig = config.modules.content_types
@@ -39,18 +39,22 @@ ExportContentTypes.prototype = {
     config = credentialConfig
     contentTypesFolderPath = path.resolve(config.data, contentTypeConfig.dirName)
     client = stack.Client(config)
+    // If content type id is provided then use it as part of query
+    if (config.contentType) {
+      self.requestOptions.qs.uid = config.contentType
+    }
     // Create folder for content types
     mkdirp.sync(contentTypesFolderPath)
     addlogs(config, 'Starting content type export', 'success')
     return new Promise(function (resolve, reject) {
       return self.getContentTypes().then(function () {
         return self.writeContentTypes()
-        .then(result => {
-          return resolve()
-        })
-        .catch(error => {
-          return reject(error)
-        })
+          .then(result => {
+            return resolve()
+          })
+          .catch(error => {
+            return reject(error)
+          })
       }).catch(reject)
     })
   },
@@ -64,29 +68,29 @@ ExportContentTypes.prototype = {
     }
 
     return new Promise(function (resolve, reject) {
-      client.stack({api_key: config.source_stack, management_token: config.management_token}).contentType().query(self.requestOptions.qs).find()
-      .then(contenttypeResponse => {
-        if (contenttypeResponse.items.length === 0) {
-          addlogs(config, 'No content types were found in the Stack', 'success')
-          return resolve()
-        }
-        contenttypeResponse.items.forEach(function (content_type) {
-          for (let key in content_type) {
-            if (validKeys.indexOf(key) === -1) {
-              delete content_type[key]
-            }
+      client.stack({ api_key: config.source_stack, management_token: config.management_token }).contentType().query(self.requestOptions.qs).find()
+        .then(contenttypeResponse => {
+          if (contenttypeResponse.items.length === 0) {
+            addlogs(config, 'No content types were found in the Stack', 'success')
+            return resolve()
           }
-          self.content_types.push(content_type)
-        })
+          contenttypeResponse.items.forEach(function (content_type) {
+            for (let key in content_type) {
+              if (validKeys.indexOf(key) === -1) {
+                delete content_type[key]
+              }
+            }
+            self.content_types.push(content_type)
+          })
 
-        skip += config.modules.content_types.limit
-        if (skip > contenttypeResponse.count) {
-          return resolve()
-        }
-        return self.getContentTypes(skip)
-        .then(resolve)
-        .catch(reject)
-      })
+          skip += config.modules.content_types.limit
+          if (skip > contenttypeResponse.count) {
+            return resolve()
+          }
+          return self.getContentTypes(skip)
+            .then(resolve)
+            .catch(reject)
+        })
     })
   },
   writeContentTypes: function () {
