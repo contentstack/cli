@@ -309,13 +309,48 @@ test
   }
 })
 .stub(cli, 'prompt', name => async name => {
-  if (name === message.promptMessageList.promptMasterLocale) return 'en-us'
   if (name === message.promptMessageList.promptSourceStack) return 'newstackUid'
-  if (name === message.promptMessageList.promptPathStoredData) return '../contents'
+  if (name === message.promptMessageList.promptPathStoredData) return '../contents-test'
 })
 .command(['cm:export',  '--auth-token', '-m',  'entries'])
 .it('runs method of environment', ctx => {
 })
+
+
+test
+.stub(require('../../src/lib/util/contentstack-management-sdk'), 'Client', e => {
+  return {
+    stack: function () {
+      return {
+        contentType: function () {
+          return {
+            entry: function () {
+              return {
+                query: function () {
+                  return {
+                    find: function () {
+                      return Promise.resolve(entriesMock)
+                    },
+                  }
+                },
+                fetch: function () {
+                  return Promise.resolve(entriesFetchMock)
+                },
+              }
+            },
+          }
+        },
+      }
+    },
+  }
+})
+.stub(cli, 'prompt', name => async name => {
+  if (name === message.promptMessageList.promptMasterLocale) return 'en-us'
+  if (name === message.promptMessageList.promptSourceStack) return 'newstackUid'
+  if (name === message.promptMessageList.promptPathStoredData) return '../contents'
+})
+.command(['cm:export',  '--auth-token', '-m',  'entries', '-t',  'author'])
+.it('Export entry of a specific type')
 
 // test
 // .stub(require('../../src/lib/util/contentstack-management-sdk'), 'Client', (e) => {
