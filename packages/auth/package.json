@@ -50,7 +50,6 @@
   },
   "repository": "https://github.com/contentstack/cli",
   "scripts": {
-    "pack": "npm pack && mv *.tgz ../../build/",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "npx eslint .",
     "prepack": "oclif-dev manifest && oclif-dev readme",
