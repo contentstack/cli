@@ -159,11 +159,9 @@ let allImport = async (config, types) => {
         let type = types[i]
         var exportedModule = require('./lib/import/' + type)
         if (i === 0 && !config.master_locale) {
-          var stackResponse = await stackDetails(config)
-          // console.log("Line no 101", stackResponse);
-          let master_locale = { code: stackResponse.master_locale }
+          var masterLocalResponse = await masterLocalDetails(config)
+          let master_locale = { code: masterLocalResponse.code }
           config['master_locale'] = master_locale
-          config['stackName'] = stackResponse.name
         }
         await exportedModule.start(config).then(result => {
           return
@@ -173,11 +171,12 @@ let allImport = async (config, types) => {
         addlogs(config, chalk.green('The data of the ' + config.sourceStackName + ' stack has been imported into ' + config.destinationStackName + ' stack successfully!'), 'success')
         addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'import'), 'success')
       } else {
-        addlogs(config, chalk.green('Stack: ' + config.stackName + ' has been imported succesfully!'), 'success')
+        addlogs(config, chalk.green('Stack: ' + config.sourceStackName + ' has been imported succesfully!'), 'success')
         addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success')
       }
       return resolve()
     } catch (error) {
+      console.log("Errrororo", error);
       addlogs(config, chalk.red('Failed to migrate stack: ' + config.target_stack + '. Please check error logs for more info'), 'error')
       addlogs(config, error, 'error')
       addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error')
@@ -186,12 +185,18 @@ let allImport = async (config, types) => {
   })
 }
 
-let stackDetails = async (credentialConfig) => {
+let masterLocalDetails = async (credentialConfig) => {
   let client = stack.Client(credentialConfig)
   return new Promise((resolve, reject) => {
-    return client.stack({ api_key: credentialConfig.target_stack }).fetch()
+    var result =  client.stack({ api_key: credentialConfig.target_stack, management_token: credentialConfig.management_token }).locale().query()
+      result.find()
       .then(response => {
-        return resolve(response)
+        var masterLocalObj = response.items.filter(obj => {
+            if (obj.fallback_locale === null) {
+              return obj
+            }
+            });
+        return resolve(masterLocalObj)
       }).catch(error => {
         return reject(error)
       })
