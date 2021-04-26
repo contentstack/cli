@@ -1,24 +1,25 @@
 /* eslint-disable complexity */
-const {Command, flags} = require('@contentstack/cli-command')
-const {configWithMToken,
+const { Command, flags } = require('@contentstack/cli-command')
+const { configWithMToken,
   parameterWithMToken,
   withoutParameterMToken,
   configWithAuthToken,
   parametersWithAuthToken,
   withoutParametersWithAuthToken,
 } = require('../../lib/util/export-flags')
-const Configstore  = require('configstore')
+const Configstore = require('configstore')
 const credStore = new Configstore('contentstack_cli')
 
 class ExportCommand extends Command {
   async run() {
-    const {flags} = this.parse(ExportCommand)
+    const { flags } = this.parse(ExportCommand)
     const extConfig = flags.config
     let sourceStack = flags['stack-uid']
     const alias = flags['management-token-alias']
     const authToken = flags['auth-token']
     const data = flags.data
     const moduleName = flags.module
+    const contentType = flags['content-type']
     let _authToken = credStore.get('authtoken')
     let host = this.region
     let cmaHost = host.cma.split('//')
@@ -33,7 +34,9 @@ class ExportCommand extends Command {
           configWithMToken(
             extConfig,
             managementTokens,
-            host
+            host,
+            moduleName,
+            contentType
           )
         } else if (data) {
           parameterWithMToken(
@@ -41,14 +44,16 @@ class ExportCommand extends Command {
             data,
             moduleName,
             host,
-            _authToken
+            _authToken,
+            contentType
           )
         } else if (data === undefined && sourceStack === undefined) {
           withoutParameterMToken(
             managementTokens,
             moduleName,
             host,
-            _authToken
+            _authToken,
+            contentType
           )
         } else {
           this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage')
@@ -62,7 +67,8 @@ class ExportCommand extends Command {
           extConfig,
           _authToken,
           moduleName,
-          host
+          host,
+          contentType
         )
       } else if (sourceStack && data) {
         return parametersWithAuthToken(
@@ -70,13 +76,15 @@ class ExportCommand extends Command {
           sourceStack,
           data,
           moduleName,
-          host
+          host,
+          contentType
         )
       } else if (data === undefined && sourceStack === undefined) {
         withoutParametersWithAuthToken(
           _authToken,
           moduleName,
-          host
+          host,
+          contentType
         )
       } else {
         this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage')
@@ -100,15 +108,17 @@ ExportCommand.examples = [
   'csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>',
   'csdx cm:export -a <management_token_alias> -c <path/to/config/file>',
   'csdx cm:export -A -m <single module name>',
+  'csdx cm:export -A -m <single module name> -t <content type>',
 ]
 
 ExportCommand.flags = {
-  config: flags.string({char: 'c', description: '[optional] path of the config'}),
-  'stack-uid': flags.string({char: 's', description: 'API key of the source stack'}),
-  data: flags.string({char: 'd', description: 'path or location to store the data'}),
-  'management-token-alias': flags.string({char: 'a', description: 'alias of the management token'}),
-  'auth-token': flags.boolean({char: 'A', description: 'to use auth token'}),
-  module: flags.string({char: 'm', description: '[optional] specific module name'}),
+  config: flags.string({ char: 'c', description: '[optional] path of the config' }),
+  'stack-uid': flags.string({ char: 's', description: 'API key of the source stack' }),
+  data: flags.string({ char: 'd', description: 'path or location to store the data' }),
+  'management-token-alias': flags.string({ char: 'a', description: 'alias of the management token' }),
+  'auth-token': flags.boolean({ char: 'A', description: 'to use auth token' }),
+  module: flags.string({ char: 'm', description: '[optional] specific module name' }),
+  'content-type': flags.string({ char: 't', description: '[optional] content type' }),
 }
 
 module.exports = ExportCommand
