@@ -42,6 +42,7 @@ OPTIONS
   -d, --data=data                                      path or location to store the data
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
+  -t, --content-type=content type                      Content type
 
 DESCRIPTION
   ...
@@ -55,6 +56,7 @@ EXAMPLES
   csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
   csdx cm:export -a <management_token_alias> -c <path/to/config/file>
   csdx cm:export -A -m <single module name>
+  csdx cm:export -A -m <single module name> -t <content-type>
 ```
 
 _See code: [src/commands/cm/export.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-export/src/commands/cm/export.js)_
