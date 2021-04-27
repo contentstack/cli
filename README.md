@@ -8,6 +8,8 @@ Currently, the CLI is in Beta and supports content management scripts through wh
 - Bulk publish content
 - Export content 
 - Import content
+- Clone Stack
+- Seed Stack from Github
 
 ## Installing CLI
 ### Prerequisites
@@ -33,7 +35,7 @@ $ csdx --help
 ## Namespaces
 **auth**: To perform [authentication-related](/packages/auth) activities
 
-**cm**: To perform content management activities such as [bulk publish](/packages/contentstack-bulk-publish), [import](/packages/contentstack-import), and [export](/packages/contentstack-export) content
+**cm**: To perform content management activities such as [bulk publish](/packages/contentstack-bulk-publish), [import](/packages/contentstack-import), and [export](/packages/contentstack-export), [export-to-csv] (/packages/contentstack-export-to-csv), [seed] (/packages/contentstack-seed)
 
 **help**: To list the helpful commands in CLI
 
