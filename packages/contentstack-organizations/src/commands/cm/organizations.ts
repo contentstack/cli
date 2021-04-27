@@ -29,7 +29,7 @@ hello world from ./src/hello.ts!
 
   async run() {
     const {args, flags} = this.parse(Organization)
-    const organizations = await this.fetch(flags.sort)
+    const organizations: any = await this.fetch(flags.sort)
     let something = ''
     const name = flags.name || 'world'
     const outputFormat = flags.output || 'json'
@@ -61,7 +61,7 @@ hello world from ./src/hello.ts!
 
   fetch(sort) {
     return new Promise(resolve => {
-      let params = {}
+      let params: any = {}
       if (sort) {
         if (sort[0] === '-') {
           params.desc = sort.split('-').pop()
@@ -69,7 +69,9 @@ hello world from ./src/hello.ts!
           params.asc = sort
         }
       }
+      debugger
       this.managementAPIClient.organization().fetchAll(params).then(response => {
+        debugger  
         let formattedResponse = response.items.map(org => {
           return {
             name: org.name,
@@ -98,12 +100,5 @@ hello world from ./src/hello.ts!
       output: flags.output,
       ...flags,
     })
-  }
-
-  sort(sortField) {
-    if (sortField[0] === '-') {
-      return '&desc=' + sortField
-    }
-    return '&asc=' + sortField
   }
 }
