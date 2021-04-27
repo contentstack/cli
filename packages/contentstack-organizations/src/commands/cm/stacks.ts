@@ -18,7 +18,7 @@ let tableConfig = {
   created_at: { extended: true }
 }
 
-export default class Organization extends Command {
+export default class Stack extends Command {
   get managementAPIClient() {
     this._managementAPIClient = ContentstackManagementSDK.client({host:this.cmaHost, authtoken: this.authToken})
     return this._managementAPIClient
@@ -43,7 +43,7 @@ hello world from ./src/hello.ts!
   static args = [{name: 'file'}]
 
   async run() {
-    const {args, flags} = this.parse(Organization)
+    const {args, flags} = this.parse(Stack)
     let stacks
     try {
       stacks = await this.fetch(flags)
@@ -75,17 +75,13 @@ hello world from ./src/hello.ts!
 
     const currentRegion = this.region.name
     const managementClient = this.managementAPIClient
-
-    if (args.file) {
-      this.log(`you input argument: ${args.file}`)
-    }
   }
 
   fetch(flags) {
     spinner = ora('Loading Stacks').start()
     return new Promise((resolve, reject) => {
       this.managementAPIClient.organization().fetchAll().then(async response => {
-        let stacks = []
+        let stacks: any = []
         let organizations = {}
         
         response.items.forEach(org => {
@@ -123,13 +119,9 @@ hello world from ./src/hello.ts!
     })
   }
 
-  format(s: String) {
-    return s.trim().split(' ').filter(element => element.length > 0)
-  }
-
   getStacks(orguid, organizations) {
     return new Promise(resolve => {
-      let stacks = []
+      let stacks: any = []
       this.managementAPIClient.stack({organization_uid: orguid}).query({query: {}}).find().then(stackResponse => {
         stackResponse.items.forEach(stack => {
           stacks.push({
@@ -158,7 +150,8 @@ hello world from ./src/hello.ts!
   validateProperties(data, flags) {
     let availableProperties = Object.keys(tableConfig)
     if (flags.sort) {
-      if(availableProperties.indexOf(flags.sort) === -1) {
+      debugger
+      if(availableProperties.indexOf(flags.sort) === -1 && availableProperties.indexOf(flags.sort.split('-').pop()) === -1) {
         throw new Error(`Please enter a valid column to sort by.\nThese are the valid columns:\n${availableProperties.join('\n')}`)
       }
     }

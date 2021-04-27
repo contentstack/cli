@@ -1,0 +1,24 @@
+{
+	"items": [{
+		"name": "mockStack1",
+		"api_key": "mockStackApiKey1",
+		"uid": "mockStack1",
+		"created_at": "today",
+		"updated_at": "tomorrow",
+		"org_uid": "mockOrg1"
+	},{
+		"name": "mockStack2",
+		"api_key": "mockStackApiKey2",
+		"uid": "mockStack2",
+		"created_at": "today",
+		"updated_at": "tomorrow",
+		"org_uid": "mockOrg2"
+	},{
+		"name": "mockStack3",
+		"api_key": "mockStackApiKey3",
+		"uid": "mockStack3",
+		"created_at": "today",
+		"updated_at": "tomorrow",
+		"org_uid": "mockOrg3"
+	}]
+}
