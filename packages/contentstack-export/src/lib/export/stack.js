@@ -32,9 +32,15 @@ ExportStack.prototype.start = function (credentialConfig) {
   client = stack.Client(config)
   if (!config.preserveStackVersion && !config.hasOwnProperty("master_locale")) {
     return new Promise((resolve, reject) => {
-      return client.stack({api_key: config.source_stack}).fetch()
+    var result =  client.stack({ api_key: credentialConfig.source_stack, management_token: credentialConfig.management_token }).locale().query()     
+    result.find()
       .then(response => {
-        return resolve(response)
+        var masterLocalObj = response.items.filter(obj => {
+            if (obj.fallback_locale === null) {
+              return obj
+            }
+            });
+        return resolve(masterLocalObj)
       }).catch(error => {
         return reject(error)
       })
