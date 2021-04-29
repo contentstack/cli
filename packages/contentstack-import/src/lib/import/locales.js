@@ -93,9 +93,14 @@ importLanguages.prototype = {
       }).then(function () {
         // languages have imported successfully
         self.update_locales(langUids)
-        helper.writeFile(langSuccessPath, self.success)
-        addlogs(config, chalk.green('Languages have been imported successfully!'), 'success')
-        return resolve()
+        .then(() => {
+          helper.writeFile(langSuccessPath, self.success)
+          addlogs(config, chalk.green('Languages have been imported successfully!'), 'success')
+          return resolve()
+        }).catch(function (error) {
+          return reject(error)
+        })
+       
       }).catch(function (error) {
         // error while importing languages
         helper.writeFile(langFailsPath, self.fails)
@@ -106,9 +111,15 @@ importLanguages.prototype = {
   },
   update_locales: function (langUids) {
     let self = this
+    return new Promise(function (resolve, reject) {
     Promise.all(
       langUids.map(async langUid => {
-        let lang = self.languages[langUid]
+        let lang = {}
+          let requireKeys = config.modules.locales.requiredKeys
+          let _lang = self.languages[langUid]
+          requireKeys.forEach(e => {
+            lang[e] = _lang[e]
+          })
         let langobj = client.stack({api_key: config.target_stack, management_token: config.management_token}).locale(lang.code)
         Object.assign(langobj, _.cloneDeep(lang))
         langobj.update()
@@ -117,8 +128,11 @@ importLanguages.prototype = {
       })
     )
     .then(()=>{
+      return resolve()
     }).catch((error) => {
+      return reject(error)
     })
+  })
   },
 }
 
