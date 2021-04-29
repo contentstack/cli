@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "0.1.1-beta.5",
+  "version": "0.1.1-beta.6",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run"
@@ -9,13 +9,14 @@
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-auth": "0.1.1-beta.1",
-    "@contentstack/cli-command": "0.1.1-beta.1",
     "@contentstack/cli-cm-bulk-publish": "0.1.1-beta.2",
-    "@contentstack/cli-cm-export": "0.1.1-beta.3",
-    "@contentstack/cli-cm-import": "0.1.1-beta.4",
-    "@contentstack/cli-plugins-plugin": "0.1.0-beta",
     "@contentstack/cli-cm-clone": "0.1.0-beta.1",
+    "@contentstack/cli-cm-export": "0.1.1-beta.3",
     "@contentstack/cli-cm-export-to-csv": "0.1.0-beta.1",
+    "@contentstack/cli-cm-import": "0.1.1-beta.4",
+    "@contentstack/cli-cm-seed": "1.0.6",
+    "@contentstack/cli-command": "0.1.1-beta.1",
+    "@contentstack/cli-plugins-plugin": "0.1.0-beta",
     "@contentstack/management": "1.2.1",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
@@ -92,7 +93,8 @@
       "@contentstack/cli-cm-bulk-publish",
       "@contentstack/cli-plugins-plugin",
       "@contentstack/cli-cm-clone",
-      "@contentstack/cli-cm-export-to-csv"
+      "@contentstack/cli-cm-export-to-csv",
+      "@contentstack/cli-cm-seed"
     ],
     "hooks": {
       "prerun": [
