@@ -90,6 +90,7 @@ const writeEnvFile = (content: string, fileName: string) => {
 
 /**
  * @description Create environment files for each app
+ * TBD: moving the content to config file
  */
 
 const envFileHandler = async (

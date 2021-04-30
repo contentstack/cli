@@ -24,7 +24,7 @@ describe('Github Client', function () {
     it('Git Tarball url creation', () => {
         const repo = GitHubClient.parsePath('contentstack/contentstack-nextjs-react-universal-demo');
         const gClient = new GitHubClient(repo);
-        expect(gClient.gitTarBallUrl).to.be.equal('https://github.com/contentstack/contentstack-nextjs-react-universal-demo/archive/master.tar.gz')
+        expect(gClient.gitTarBallUrl).to.be.equal('https://api.github.com/repos/contentstack/contentstack-nextjs-react-universal-demo/tarball/master')
     })
 
     it('Clone the source repo', async function () {

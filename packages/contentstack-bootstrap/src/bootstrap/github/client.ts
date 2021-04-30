@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import { Stream } from 'stream'
 import * as path from 'path'
 import * as zlib from 'zlib'
@@ -19,6 +19,10 @@ export default class GitHubClient {
 
   readonly repo: Repo;
 
+  readonly private: boolean;
+
+  readonly accessToken?: string;
+
   static parsePath(gitPath?: string): Repo {
     const result = {
       user: '',
@@ -36,9 +40,17 @@ export default class GitHubClient {
     return result
   }
 
-  constructor(repo: Repo) {
+  constructor(
+    repo: Repo,
+    privateRepo = false,
+    token?: string
+  ) {
     this.repo = repo
-    this.gitTarBallUrl = `https://github.com/${repo.user}/${repo.name}/archive/${repo.branch || DEFAULT_BRANCH}.tar.gz`
+    this.private = privateRepo
+    if (privateRepo) {
+      this.accessToken = token
+    }
+    this.gitTarBallUrl = `https://api.github.com/repos/${repo.user}/${repo.name}/tarball/${repo.branch || DEFAULT_BRANCH}`
   }
 
   async getLatest(destination: string): Promise<void> {
@@ -48,9 +60,21 @@ export default class GitHubClient {
   }
 
   async streamRelease(url: string): Promise<Stream> {
-    const response = await axios.get(url, {
+    const options: AxiosRequestConfig = {
       responseType: 'stream',
-    })
+    }
+
+    if (this.private) {
+      if (this.accessToken) {
+        options.headers = {
+          Authorization: `token ${this.accessToken}`
+        }
+      } else {
+        throw new GithubError('No Github access token found', 1)
+      }
+    }
+
+    const response = await axios.get(url, options)
 
     return response.data as Stream
   }
@@ -70,11 +94,5 @@ export default class GitHubClient {
         })
         .on('error', reject)
     })
-  }
-
-  private buildError(error: any) {
-    const message = error.response.data?.error_message || error.response.statusText
-    const status = error.response.status
-    return new GithubError(message, status)
   }
 }
