@@ -14,6 +14,7 @@ export interface BootstrapOptions {
   appConfig: AppConfig;
   managementAPIClient: any;
   region: any;
+  accessToken: string;
 }
 
 /**
@@ -22,7 +23,6 @@ export interface BootstrapOptions {
  * Create the stack from the source
  * Setup the environment
  * Ready to use!!
- * 
  */
 export default class Bootstrap {
   private readonly ghClient: GitHubClient;
@@ -45,8 +45,15 @@ export default class Bootstrap {
     this.appConfig = options.appConfig
     this.managementAPIClient = options.managementAPIClient
     this.repo = GitHubClient.parsePath(options.appConfig.source)
+    if (options.appConfig.branch) {
+      this.repo.branch = options.appConfig.branch
+    }
     this.cloneDirectory = path.join(options.cloneDirectory, this.repo.name)
-    this.ghClient = new GitHubClient(this.repo)
+    this.ghClient = new GitHubClient(
+      this.repo,
+      options.appConfig.private,
+      options.accessToken
+    )
   }
 
   async run(): Promise<any> {
@@ -65,7 +72,6 @@ export default class Bootstrap {
     }
 
     // seed plugin start
-    // TBD: using result values
     try {
       const result = await ContentStackSeed.run(['-r', this.appConfig.stack])
       if (result.api_key) {
