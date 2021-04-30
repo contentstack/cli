@@ -1,7 +1,12 @@
-import { Command } from '@contentstack/cli-command'
+import { Command, flags } from '@contentstack/cli-command'
 const ContentstackManagementSDK = require('@contentstack/management')
 import Bootstrap, { BootstrapOptions } from '../../bootstrap'
-import { inquireCloneDirectory, inquireStarterApp } from '../../bootstrap/interactive'
+import {
+  inquireCloneDirectory,
+  inquireApp,
+  inquireGithubAccessToken,
+  inquireAppType,
+} from '../../bootstrap/interactive'
 import config, { getAppLevelConfigByName, AppConfig } from '../../config'
 
 export default class BootstrapCommand extends Command {
@@ -11,7 +16,39 @@ export default class BootstrapCommand extends Command {
 
   static examples = [
     '$ csdx cm:bootstrap',
+    '$ csdx cm:bootstrap -a <app name>',
+    '$ csdx cm:bootstrap -d <path/to/setup/the/app>',
+    '$ csdx cm:bootstrap -t <github private repo token>',
+    '$ csdx cm:bootstrap -s <sampleapp or startapp>',
+    '$ csdx cm:bootstrap -s <sampleapp or startapp> -t <optional github private repo token> -a <app name> -d <path/to/setup/the/app>',
   ];
+
+  static flags = {
+    appName: flags.string({
+      char: 'a',
+      description: 'App name',
+      multiple: false,
+      required: false,
+    }),
+    directory: flags.string({
+      char: 'd',
+      description: 'Directory to setup the project',
+      multiple: false,
+      required: false,
+    }),
+    accessToken: flags.string({
+      char: 't',
+      description: 'Access token for private github repo',
+      multiple: false,
+      required: false,
+    }),
+    appType: flags.string({
+      char: 's',
+      description: 'Sample or Starter app',
+      multiple: false,
+      required: false,
+    }),
+  };
 
   get managementAPIClient() {
     this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this.authToken })
@@ -19,22 +56,50 @@ export default class BootstrapCommand extends Command {
   }
 
   async run() {
+    const { flags } = this.parse(BootstrapCommand)
+
     try {
       if (!this.authToken) {
         this.error('You need to login, first. See: auth:login --help', { exit: 2, suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'] })
       }
 
       // inquire user inputs
-      const selectedAppName = await inquireStarterApp(config.starterApps)
-      const appConfig: AppConfig = getAppLevelConfigByName(selectedAppName)
-      const cloneDirectory = await inquireCloneDirectory()
+      let appType = flags.appType as string
+      if (!appType) {
+        appType = await inquireAppType()
+      }
 
+      const selectedAppName = flags.appName as string
+      let selectedApp
+      if (!selectedAppName) {
+        if (appType === 'sampleapp') {
+          selectedApp = await inquireApp(config.sampleApps)
+        } else if (appType === 'starterapp') {
+          selectedApp = await inquireApp(config.starterApps)
+        } else {
+          this.error('Invalid app type provided ' + appType, { exit: 1 })
+        }
+      }
+      const appConfig: AppConfig = getAppLevelConfigByName(selectedApp.configKey)
+
+      let cloneDirectory = flags.directory as string
+      if (!cloneDirectory) {
+        cloneDirectory = await inquireCloneDirectory()
+      }
+
+      // Check the access token
+      let accessToken = flags.accessToken as string
+      if (appConfig.private && !accessToken) {
+        accessToken = await inquireGithubAccessToken()
+      }
+      
       // initiate bootstrsourceap
       const options: BootstrapOptions = {
         appConfig,
         cloneDirectory,
         managementAPIClient: this.managementAPIClient,
         region: this.region,
+        accessToken,
       }
       const bootstrap = new Bootstrap(options)
       await bootstrap.run()

@@ -1,21 +1,31 @@
 export interface Configuration {
     starterApps: Array<any>;
+    sampleApps: any;
     appLevelConfig: any;
 }
 
 export interface AppConfig {
     source: string;
     stack: string;
+    private?: boolean;
+    branch?: string;
     appConfigKey?: string;
 }
 
 const config: Configuration = {
-    starterApps: [
+    sampleApps: [
         { displayName: 'React JS', configKey: 'reactjs' },
         { displayName: 'Next JS', configKey: 'nextjs' },
         { displayName: 'Gatsby', configKey: 'gatsby' },
         { displayName: 'Angular', configKey: 'angular' },
         { displayName: 'Nuxt JS', configKey: 'nuxtjs' },
+    ],
+    starterApps: [
+        { displayName: 'React JS', configKey: 'reactjs-starter' },
+        { displayName: 'Next JS', configKey: 'nextjs-starter' },
+        { displayName: 'Gatsby', configKey: 'gatsby-starter' },
+        { displayName: 'Angular', configKey: 'angular-starter' },
+        { displayName: 'Nuxt JS', configKey: 'nuxt-starter' },
     ],
     appLevelConfig: {
         nextjs: {
@@ -42,13 +52,42 @@ const config: Configuration = {
             source: 'contentstack/contentstack-reactjs-universal-sample-app',
             stack: 'shafeeqd959/stack-test',
         },
+        'nuxt-starter': {
+            source: 'contentstack/contentstack-nuxtjs-starter-app',
+            stack: 'contentstack/stack-starter-app',
+            private: true,
+        },
+        'reactjs-starter': {
+            source: 'contentstack/contentstack-react-starter-app',
+            stack: 'contentstack/stack-starter-app',
+            private: true,
+            branch: 'main',
+        },
+        'nextjs-starter': {
+            source: 'contentstack/contentstack-nextjs-starter-app',
+            stack: 'contentstack/stack-starter-app',
+            private: true,
+        },
+        'gatsby-starter': {
+            source: 'contentstack/contentstack-gatsby-starter-app',
+            stack: 'contentstack/stack-starter-app',
+            private: true,
+            branch: 'main',
+        },
+        'angular-starter': {
+            source: 'contentstack/contentstack-angular-starter',
+            stack: 'contentstack/stack-starter-app',
+            private: true,
+            branch: 'main',
+        },
     },
 }
 export default config
 
-export function getAppLevelConfigByName(name: string): any {
-    const selectedApp = config.starterApps.filter(app => app.displayName === name)
-    const appConfigKey = Array.isArray(selectedApp) && selectedApp.length > 0 && selectedApp[0].configKey
+export function getAppLevelConfigByName(appConfigKey: string): any {
+    if (!config.appLevelConfig.hasOwnProperty(appConfigKey)) {
+        throw new Error('Invalid app name received, use cm:bootstrap see the list of apps supported')
+    }
     config.appLevelConfig[appConfigKey].appConfigKey = appConfigKey
     return config.appLevelConfig[appConfigKey]
 }
