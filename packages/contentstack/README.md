@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.6 darwin-x64 node-v13.14.0
+@contentstack/cli/0.1.1-beta.6 linux-x64 node-v12.18.4
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -49,6 +49,7 @@ USAGE
 * [`csdx cm:seed`](#csdx-cmseed)
 * [`csdx cm:stack-clone`](#csdx-cmstack-clone)
 * [`csdx config:get:region`](#csdx-configgetregion)
+* [`csdx config:set`](#csdx-configset)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMAND]`](#csdx-help-command)
 * [`csdx plugins`](#csdx-plugins)
@@ -58,6 +59,8 @@ USAGE
 * [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
 * [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
 * [`csdx plugins:update`](#csdx-pluginsupdate)
+* [`csdx reset`](#csdx-reset)
+* [`csdx view`](#csdx-view)
 
 ## `csdx auth:login`
 
@@ -948,6 +951,29 @@ USAGE
 
 _See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/src/commands/config/get/region.js)_
 
+## `csdx config:set`
+
+Describe the command here
+
+```
+Describe the command here
+...
+Extra documentation goes here
+
+
+USAGE
+  $ csdx config:set
+
+OPTIONS
+  -n, --name=name  name to print
+
+DESCRIPTION
+  ...
+  Extra documentation goes here
+```
+
+_See code: [src/commands/config/set/index.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/src/commands/config/set/index.js)_
+
 ## `csdx config:set:region [REGION]`
 
 Set region for CLI
@@ -1172,4 +1198,50 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/update.ts)_
+
+## `csdx reset`
+
+Describe the command here
+
+```
+Describe the command here
+...
+Extra documentation goes here
+
+
+USAGE
+  $ csdx reset
+
+OPTIONS
+  -n, --name=name  name to print
+
+DESCRIPTION
+  ...
+  Extra documentation goes here
+```
+
+_See code: [src/commands/reset.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/src/commands/reset.js)_
+
+## `csdx view`
+
+Describe the command here
+
+```
+Describe the command here
+...
+Extra documentation goes here
+
+
+USAGE
+  $ csdx view
+
+OPTIONS
+  -n, --name=name  name to print
+
+DESCRIPTION
+  ...
+  Extra documentation goes here
+```
+
+_See code: [src/commands/view.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/src/commands/view.js)_
 <!-- commandsstop -->
