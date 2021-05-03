@@ -175,7 +175,7 @@ let allImport = async (config, types) => {
       }
       return resolve()
     } catch (error) {
-      console.log("Line no 178+++++++", error);
+      console.log("errrorororo", error);
       addlogs(config, chalk.red('Failed to migrate stack: ' + config.target_stack + '. Please check error logs for more info'), 'error')
       addlogs(config, error, 'error')
       addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error')
