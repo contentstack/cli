@@ -2,6 +2,7 @@ import * as inquirer from 'inquirer'
 import cli from 'cli-ux'
 import * as path from 'path'
 import { AppConfig } from '../config'
+import messageHandler from '../messages'
 
 /**
  * @description Inquire starter app
@@ -17,7 +18,7 @@ export async function inquireApp(apps: Array<any>): Promise<any> {
   const actions = [{
     type: 'list',
     name: 'app',
-    message: 'Select an App',
+    message: messageHandler.parse('CLI_BOOTSTRAP_APP_SELECTION_ENQUIRY'),
     choices: [...appsPreview, 'Exit'],
   }]
   const selectedApp = await inquirer.prompt(actions)
@@ -36,7 +37,7 @@ export async function inquireCloneDirectory(): Promise<string> {
   const actions = [{
     type: 'list',
     name: 'path',
-    message: 'Where do you want to copy the source code?',
+    message: messageHandler.parse('CLI_BOOTSTRAP_APP_COPY_SOURCE_CODE_DESTINATION_TYPE_ENQUIRY'),
     choices: ['Current Folder', 'Other'],
   }]
 
@@ -46,14 +47,14 @@ export async function inquireCloneDirectory(): Promise<string> {
   }
 
   // Ask for the custom path
-  let selectedCustomPath = await inquirer.prompt([{ type: 'string', name: 'path', message: 'Provide the destionation path' }])
+  let selectedCustomPath = await inquirer.prompt([{ type: 'string', name: 'path', message: messageHandler.parse('CLI_BOOTSTRAP_APP_COPY_SOURCE_CODE_DESTINATION_ENQUIRY') }])
   selectedCustomPath = path.resolve(selectedCustomPath.path)
   return selectedCustomPath
 }
 
 export async function  inquireGithubAccessToken(): Promise<any> {
   // Ask for the access token
-  const accessToken = await inquirer.prompt([{ type: 'string', name: 'token', message: 'Note: Access token not created already, check out this link https://github.com/settings/tokens \n Provide github access token' }])
+  const accessToken = await inquirer.prompt([{ type: 'string', name: 'token', message: messageHandler.parse('CLI_BOOTSTRAP_NO_ACCESS_TOKEN_CREATED') }])
   return accessToken.token
 }
 
@@ -61,7 +62,7 @@ export async function inquireAppType(): Promise<string> {
   const actions = [{
     type: 'list',
     name: 'type',
-    message: 'Which type of app you want to clone?',
+    message: messageHandler.parse('CLI_BOOTSTRAP_TYPE_OF_APP_ENQUIRY'),
     choices: [{name: 'Sample App', value: 'sampleapp'}, {name: 'Starter App', value: 'starterapp'}],
   }]
 

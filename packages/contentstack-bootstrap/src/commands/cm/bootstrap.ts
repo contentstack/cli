@@ -8,7 +8,7 @@ import {
   inquireAppType,
 } from '../../bootstrap/interactive'
 import config, { getAppLevelConfigByName, AppConfig } from '../../config'
-
+import messageHandler from '../../messages'
 export default class BootstrapCommand extends Command {
   private _managementAPIClient: any;
 
@@ -60,7 +60,7 @@ export default class BootstrapCommand extends Command {
 
     try {
       if (!this.authToken) {
-        this.error('You need to login, first. See: auth:login --help', { exit: 2, suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'] })
+        this.error(messageHandler.parse('CLI_BOOTSTRAP_LOGIN_FAILED'), { exit: 2, suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'] })
       }
 
       // inquire user inputs
@@ -80,6 +80,11 @@ export default class BootstrapCommand extends Command {
           this.error('Invalid app type provided ' + appType, { exit: 1 })
         }
       }
+
+      if (!selectedApp) {
+        this.error(messageHandler.parse('CLI_BOOTSTRAP_INVALID_APP_NAME'), { exit: 1 })
+      }
+
       const appConfig: AppConfig = getAppLevelConfigByName(selectedApp.configKey)
 
       let cloneDirectory = flags.directory as string
