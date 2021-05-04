@@ -2,6 +2,7 @@ import cli from 'cli-ux'
 import * as fs from 'fs'
 import * as path from 'path'
 import { AppConfig } from '../config'
+import messageHandler from '../messages'
 
 interface EnviornmentVariables {
     api_key: string;
@@ -55,17 +56,17 @@ export const setupEnvironments = async (
                             region
                         )
                     } else {
-                        cli.log('Failed to create delivery token for env ', environment.name)
+                        cli.log(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_TOKEN_FOR_ENV', environment.name))
                     }
                 } catch (error) {
-                    cli.log(`Failed to setup env file for ${environment.name} \n ${error.stack}`)
+                    cli.log(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_ENV_FILE_FOR_ENV', environment.name))
                 }
             } else {
                 cli.log('No environments name found for the environment')
             }
         }
     } else {
-        cli.error('No environments found for the stack')
+        cli.error(messageHandler.parse('CLI_BOOTSTRAP_APP_ENV_NOT_FOUND_FOR_THE_STACK'))
     }
 }
 
@@ -144,7 +145,7 @@ const envFileHandler = async (
             result = await writeEnvFile(content, filePath)
             break
         default:
-            cli.error('No app found with the given name')
+            cli.error(messageHandler.parse('CLI_BOOTSTRAP_INVALID_APP_NAME'))
     }
 
     return result

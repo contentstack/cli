@@ -1,3 +1,4 @@
+import messageHandler from './messages'
 export interface Configuration {
     starterApps: Array<any>;
     sampleApps: any;
@@ -86,7 +87,7 @@ export default config
 
 export function getAppLevelConfigByName(appConfigKey: string): any {
     if (!config.appLevelConfig.hasOwnProperty(appConfigKey)) {
-        throw new Error('Invalid app name received, use cm:bootstrap see the list of apps supported')
+        throw new Error(messageHandler.parse('CLI_BOOTSTRAP_INVALID_APP_NAME'))
     }
     config.appLevelConfig[appConfigKey].appConfigKey = appConfigKey
     return config.appLevelConfig[appConfigKey]
