@@ -59,10 +59,10 @@ ExportLocales.prototype.start = function (credentialConfig) {
         addlogs(credentialConfig, 'No languages found except the master language', 'success')
       }
       helper.writeFile(path.join(localesFolderPath, localeConfig.fileName), self.locales)
-      resolve()
+      return resolve()
     }).catch(error => {
       addlogs(credentialConfig, error, 'error')
-      reject()
+      return reject()
     })
   })
 }
