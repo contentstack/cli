@@ -48,6 +48,7 @@ module.exports.login = config => {
       .then(function () {
         return resolve()
       }).catch(error => {
+        console.log("cdncndcndjc", error);
         if (error.errors.api_key) {
           return reject(error)
         }
