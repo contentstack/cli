@@ -5,8 +5,8 @@ import { AppConfig } from '../config'
 import GitHubClient, { Repo } from './github/client'
 import GithubError from './github/error'
 import { setupEnvironments } from './utils'
+import messageHandler from '../messages'
 
-const DEFAULT_OWNER = 'contentstack'
 export const ENGLISH_LOCALE = 'en-us'
 
 export interface BootstrapOptions {
@@ -26,8 +26,6 @@ export interface BootstrapOptions {
  */
 export default class Bootstrap {
   private readonly ghClient: GitHubClient;
-
-  private ghUsername: string = DEFAULT_OWNER;
 
   private repo: Repo;
 
@@ -57,13 +55,13 @@ export default class Bootstrap {
   }
 
   async run(): Promise<any> {
-    cli.action.start('Cloning the selected app')
+    cli.action.start(messageHandler.parse('CLI_BOOTSTRAP_START_CLONE_APP'))
     try {
       await this.ghClient.getLatest(this.cloneDirectory)
     } catch (error) {
       if (error instanceof GithubError) {
         if (error.status === 404) {
-          cli.error(`Unable to find a repo for '${this.appConfig.source}'.`)
+          cli.error(messageHandler.parse('CLI_BOOTSTRAP_REPO_NOT_FOUND', this.appConfig.source))
         }
       }
       throw error
@@ -83,10 +81,11 @@ export default class Bootstrap {
           this.region,
         )
       } else {
-        throw new Error('No API key generated for the stack')
+        throw new Error(messageHandler.parse('CLI_BOOTSTRAP_NO_API_KEY_FOUND'))
       }
+      cli.log(messageHandler.parse('CLI_BOOTSTRAP_SUCCESS'))
     } catch (error) {
-      cli.error(`Unable to create stack for content '${this.appConfig.stack}' \n ${error.stack}`)
+      cli.error(messageHandler.parse('CLI_BOOTSTRAP_STACK_CREATION_FAILED', this.appConfig.stack))
     }
   }
 }
