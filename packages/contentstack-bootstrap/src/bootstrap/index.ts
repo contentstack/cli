@@ -1,6 +1,6 @@
 import cli from 'cli-ux'
 import * as path from 'path'
-import { default as ContentStackSeed } from '@contentstack/cli-cm-seed/lib/commands/cm/seed'
+import { default as ContentStackSeed } from '@contentstack/cli-cm-seed/src/commands/cm/seed'
 import { AppConfig } from '../config'
 import GitHubClient, { Repo } from './github/client'
 import GithubError from './github/error'
