@@ -36,8 +36,8 @@ let uniqueUidMapperPath
 let modifiedSchemaPath
 let createdEntriesWOUidPath
 let failedWOPath
+let masterLanguage
 
-let masterLanguage = config.master_locale
 let skipFiles = ['__master.json', '__priority.json', 'schema.json']
 let entryBatchLimit = config.rateLimit || 10
 
@@ -99,6 +99,7 @@ importEntries.prototype = {
     let self = this
     config = credentialConfig
     client = stack.Client(config)
+    masterLanguage = config.master_locale
     addlogs(config, 'Migrating entries', 'success')
     let languages = helper.readFile(lPath)
     return new Promise(function (resolve, reject) {
