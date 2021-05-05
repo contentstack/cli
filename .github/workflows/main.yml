@@ -40,3 +40,19 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Run a test script
         run: npx lerna run test
+        
+  publish-gpr:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://npm.pkg.github.com/
+      - name: Bump version 
+        run: npx lerna version -y --conventional-commits --conventional-prerelease
+      - run: npx lerna bootstrap
+      - run: npx lerna publish -y from-package
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
