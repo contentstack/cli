@@ -61,6 +61,10 @@ exportEntries.prototype.start = function (credentialConfig) {
             })
           }
         }
+        apiBucket.push({
+          content_type: content_type.uid,
+          locale: config.master_locale.code,
+        })
       })
       return Promise.map(apiBucket, function (apiDetails) {
         return self.getEntries(apiDetails)
