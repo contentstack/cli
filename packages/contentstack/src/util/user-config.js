@@ -4,7 +4,6 @@ const {cli} = require('cli-ux')
 const Configstore = require('configstore')
 const config = new Configstore('contentstack_cli')
 const debug = require('debug')('contentstack:analytics')
-const {TokenNotFound, NotLoggedIn} = require('./custom-errors')
 
 /**
  * Generate or return an RFC version 4 (random) UUID

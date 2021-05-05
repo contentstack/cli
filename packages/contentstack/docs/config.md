@@ -11,17 +11,23 @@ perform configuration related activities
 Get current region set for CLI
 
 ```
+Get current region set for CLI
+
+
 USAGE
   $ csdx config:get:region
 ```
 
-_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/config/get/region.js)_
+_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/src/commands/config/get/region.js)_
 
 ## `csdx config:set:region [REGION]`
 
 Set region for CLI
 
 ```
+Set region for CLI
+
+
 USAGE
   $ csdx config:set:region [REGION]
 
@@ -39,10 +45,9 @@ OPTIONS
 
 EXAMPLES
   $ csdx config:set:region EU
-  $ csdx config:set:region --cma "https://in-cda.contentstack.com" --cda "https://in-api.contentstack.com" --name 
-  "India"
-  $ csdx config:set:region --cma="https://in-cda.contentstack.com" --cda="https://in-api.contentstack.com" 
+  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"
+  $ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com" 
   --name="India"
 ```
 
-_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/config/set/region.js)_
+_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/src/commands/config/set/region.js)_

@@ -10,6 +10,8 @@ display help for csdx
 display help for csdx
 
 ```
+display help for <%= config.bin %>
+
 USAGE
   $ csdx help [COMMAND]
 

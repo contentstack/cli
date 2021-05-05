@@ -3,6 +3,7 @@ const figlet = require('figlet')
 const {cli} = require('cli-ux')
 
 class MyHelpClass extends Help {
+  // eslint-disable-next-line no-useless-constructor
   constructor(config, opts) {
     super(config, opts)
   }
