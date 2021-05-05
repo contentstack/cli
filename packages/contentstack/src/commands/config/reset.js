@@ -1,20 +1,30 @@
 const {Command, flags} = require('@oclif/command')
+const Configstore = require('configstore')
+const config = new Configstore('contentstack_cli')
+const {cli} = require('cli-ux')
+const chalk = require('chalk')
 
 class ResetCommand extends Command {
   async run() {
-    const {flags} = this.parse(ResetCommand)
-    const name = flags.name || 'world'
-    this.log(`hello ${name} from /home/abhinav/Documents/contentstack/cli/packages/contentstack/src/commands/reset.js`)
+    const confirmation = await cli.confirm('Do you want to reset the configuration to default? Region will be set to EU and everything else will be deleted (y/n)')
+    if (confirmation) {
+      const currentConfig = config.all
+      const defaultConfig = {
+        uuid: currentConfig.uuid,
+      }
+      config.all = defaultConfig
+      let regionDetails = this.config.userConfig.setRegion('EU')
+      const {flags} = this.parse(ResetCommand)
+      const name = flags.name || 'world'
+      cli.log(chalk.green('Region has been set to EU'))
+      cli.log(chalk.green(`CDA HOST: ${regionDetails.cda}`))
+      cli.log(chalk.green(`CMA HOST: ${regionDetails.cma}`))
+    }
   }
 }
 
-ResetCommand.description = `Describe the command here
+ResetCommand.description = `Reset the global cli config
 ...
-Extra documentation goes here
 `
-
-ResetCommand.flags = {
-  name: flags.string({char: 'n', description: 'name to print'}),
-}
 
 module.exports = ResetCommand
