@@ -118,7 +118,7 @@ exports.masterLocalDetails = function(credentialConfig) {
               return obj
             }
             });
-        return resolve(masterLocalObj)
+        return resolve(masterLocalObj[0])
       }).catch(error => {
         return reject(error)
       })
