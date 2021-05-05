@@ -1,0 +1,21 @@
+{
+  "name": "contentstack-utilities",
+  "version": "1.0.0",
+  "description": "Utilities for contentstack projects",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "contentstack",
+    "utilities"
+  ],
+  "author": "contentstack",
+  "license": "ISC",
+  "dependencies": {
+    "@contentstack/cli-command": "*",
+    "@contentstack/management": "^1.2.1",
+    "inquirer": "^8.0.0",
+    "ora": "^5.4.0"
+  }
+}
