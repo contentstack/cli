@@ -58,6 +58,6 @@
   "repository": "https://github.com/contentstack/cli",
   "scripts": {
     "test": "nyc --reporter=html mocha \"test/**/*.test.js\"",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "npx oclif-dev readme && git add README.md"
   }
 }

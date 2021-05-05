@@ -49,9 +49,9 @@
 	"scripts": {
 		"pack": "npm pack && mv *.tgz ../../build",
 		"postpack": "rm -f oclif.manifest.json",
-		"prepack": "oclif-dev manifest && oclif-dev readme",
+		"prepack": "npx oclif-dev manifest && npx oclif-dev readme",
 		"test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-		"version": "oclif-dev readme && git add README.md"
+		"version": "npx oclif-dev readme && git add README.md"
 	},
 	"main": "./src/commands/cm/import.js",
 	"license": "MIT",

@@ -41,6 +41,7 @@ class TokenIndex extends Command {
         },
         {
           printLine: this.log,
+          // eslint-disable-next-line node/no-unsupported-features/es-syntax
           ...flags, // parsed flags
         },
       )

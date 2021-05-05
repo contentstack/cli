@@ -27,6 +27,7 @@ class ExportCommand extends Command {
     host.cda = cdaHost[1]
 
     if (alias && alias !== undefined) {
+      debugger
       let managementTokens = this.getToken(alias)
       if (managementTokens && managementTokens !== undefined) {
         if (extConfig && extConfig !== undefined) {
@@ -57,6 +58,7 @@ class ExportCommand extends Command {
         this.log(alias + ' management token is not present, please add managment token first')
       }
     } else if (authToken && authToken !== undefined && _authToken && _authToken !== undefined) {
+      debugger
       if (extConfig && extConfig !== undefined) {
         configWithAuthToken(
           extConfig,

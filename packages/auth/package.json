@@ -21,6 +21,7 @@
     "chai": "^4.2.0",
     "eslint": "^5.16.0",
     "eslint-config-oclif": "^3.1.0",
+    "eslint-config-oclif-typescript": "^0.2.0",
     "globby": "^10.0.2",
     "mocha": "^8.0.1",
     "nyc": "^14.1.1",
@@ -37,7 +38,9 @@
   ],
   "homepage": "https://github.com/contentstack/cli",
   "keywords": [
-    "contentstack","cli", "plugin"
+    "contentstack",
+    "cli",
+    "plugin"
   ],
   "license": "MIT",
   "oclif": {
@@ -52,9 +55,9 @@
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "npx eslint .",
-    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "prepack": "npx oclif-dev manifest && npx oclif-dev readme",
     "test": "nyc mocha \"test/**/*.test.js\"",
     "test-report": "nyc --reporter=html mocha \"test/**/*.test.js\"",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "npx npx oclif-dev readme && git add README.md"
   }
 }

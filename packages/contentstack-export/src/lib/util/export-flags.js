@@ -51,6 +51,7 @@ exports.withoutParameterMToken = async (managementTokens, moduleName, host, _aut
 }
 
 exports.configWithAuthToken = function (config, _authToken, moduleName, host) {
+  debugger
   let externalConfig = helper.readFile(path.resolve(config))
   defaultConfig.auth_token = _authToken
   defaultConfig.host = host.cma
@@ -82,6 +83,7 @@ exports.parametersWithAuthToken = function (_authToken, sourceStack, data, modul
 }
 
 exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host) => {
+  debugger
   const stackUid = await cli.prompt(message.promptMessageList.promptSourceStack)
   const pathOfExport = await cli.prompt(message.promptMessageList.promptPathStoredData)
   defaultConfig.auth_token = _authToken

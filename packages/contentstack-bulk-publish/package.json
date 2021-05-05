@@ -57,9 +57,8 @@
   "repository": "https://github.com/contentstack/cli",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "oclif-dev manifest && oclif-dev readme",
-    "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
+    "prepack": "npx oclif-dev manifest && npx oclif-dev readme",
     "posttest": "eslint .",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "npx oclif-dev readme && git add README.md"
   }
 }
