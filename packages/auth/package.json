@@ -58,6 +58,6 @@
     "prepack": "npx oclif-dev manifest && npx oclif-dev readme",
     "test": "nyc mocha \"test/**/*.test.js\"",
     "test-report": "nyc --reporter=html mocha \"test/**/*.test.js\"",
-    "version": "npx npx oclif-dev readme && git add README.md"
+    "version": "npx oclif-dev readme && git add README.md"
   }
 }
