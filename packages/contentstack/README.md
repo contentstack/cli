@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.5 darwin-x64 node-v13.14.0
+@contentstack/cli/0.1.1-beta.6 darwin-x64 node-v13.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -46,6 +46,7 @@ USAGE
 * [`csdx cm:export`](#csdx-cmexport)
 * [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
 * [`csdx cm:import`](#csdx-cmimport)
+* [`csdx cm:seed`](#csdx-cmseed)
 * [`csdx cm:stack-clone`](#csdx-cmstack-clone)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
@@ -891,6 +892,27 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.4/packages/contentstack-import/src/commands/cm/import.js)_
 
+## `csdx cm:seed`
+
+Create a Stack from existing content types, entries, assets, etc
+
+```
+Create a Stack from existing content types, entries, assets, etc
+
+USAGE
+  $ csdx cm:seed
+
+OPTIONS
+  -r, --repo=repo  GitHub account or GitHub account/repository
+
+EXAMPLES
+  $ csdx cm:seed
+  $ csdx cm:seed -r "account"
+  $ csdx cm:seed -r "account/repository"
+```
+
+_See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.6/src/commands/cm/seed.ts)_
+
 ## `csdx cm:stack-clone`
 
 Clone data (structure or content or both) of a stack into another stack
@@ -924,7 +946,7 @@ USAGE
   $ csdx config:get:region
 ```
 
-_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/src/commands/config/get/region.js)_
+_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/src/commands/config/get/region.js)_
 
 ## `csdx config:set:region [REGION]`
 
@@ -956,7 +978,7 @@ EXAMPLES
   --name="India"
 ```
 
-_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/src/commands/config/set/region.js)_
+_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/src/commands/config/set/region.js)_
 
 ## `csdx help [COMMAND]`
 

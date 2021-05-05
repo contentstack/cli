@@ -14,7 +14,7 @@ let _ = require('lodash')
 
 let login = require('./lib/util/login')
 let util = require('./lib/util/index')
-const stack = require('./lib/util/contentstack-management-sdk')
+
 
 let { addlogs } = require('./lib/util/log')
 
@@ -61,7 +61,6 @@ exports.initial = function (configData) {
   })
 }
 
-
 let singleImport = async (moduleName, types, config) => {
   return new Promise(async (resolve, reject) => {
     if (types.indexOf(moduleName) > -1) {
@@ -80,7 +79,7 @@ let singleImport = async (moduleName, types, config) => {
           let ctPath = path.resolve(config.data, config.modules.content_types.dirName)
           let fieldPath = path.join(ctPath + '/field_rules_uid.json')
           if (fieldPath && fieldPath !== undefined) {
-            await field_rules_update(config, ctPath)
+            await util.field_rules_update(config, ctPath)
           }
         }
         addlogs(config, moduleName + ' imported successfully!', 'success')
@@ -99,59 +98,6 @@ let singleImport = async (moduleName, types, config) => {
   })
 }
 
-function field_rules_update(config, ctPath) {
-  return new Promise(function (resolve, reject) {
-    let client = stack.Client(config)
-    
-    fs.readFile(path.join(ctPath + '/field_rules_uid.json'), async (err, data) => {
-      if (err) {
-        throw err;
-      }
-      var ct_field_visibility_uid = JSON.parse(data)
-      let ct_files = fs.readdirSync(ctPath)
-      if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
-        for (let index = 0; index < ct_field_visibility_uid.length; index++) {
-          if (ct_files.indexOf(ct_field_visibility_uid[index] + '.json') > -1) {
-            let schema = require(path.resolve(ctPath, ct_field_visibility_uid[index]))
-            // await field_rules_update(schema)
-            let fieldRuleLength = schema.field_rules.length
-            for (let k = 0; k < fieldRuleLength; k++) {
-              let fieldRuleConditionLength = schema.field_rules[k].conditions.length
-              for (let i = 0; i < fieldRuleConditionLength; i++) {
-                if (schema.field_rules[k].conditions[i].operand_field === 'reference') {
-                  let entryMapperPath = path.resolve(config.data, 'mapper', 'entries')
-                  let entryUidMapperPath = path.join(entryMapperPath, 'uid-mapping.json')
-                  let fieldRulesValue = schema.field_rules[k].conditions[i].value
-                  let fieldRulesArray = fieldRulesValue.split('.')
-                  let updatedValue = []
-                  for (let j = 0; j < fieldRulesArray.length; j++) {
-                    let splitedFieldRulesValue = fieldRulesArray[j]
-                    let oldUid = helper.readFile(path.join(entryUidMapperPath))
-                    if (oldUid.hasOwnProperty(splitedFieldRulesValue)) {
-                      updatedValue.push(oldUid[splitedFieldRulesValue])
-                    } else {
-                      updatedValue.push(fieldRulesArray[j])
-                    }
-                  }
-                  schema.field_rules[k].conditions[i].value = updatedValue.join('.')
-                }
-              }
-            }
-            let ctObj = client.stack({ api_key: config.target_stack, management_token: config.management_token }).contentType(schema.uid)
-            Object.assign(ctObj, _.cloneDeep(schema))
-            ctObj.update()
-              .then(() => {
-                return resolve()
-              }).catch(function (error) {
-                return reject(error)
-              })
-          }
-        }
-      }
-    })
-  })
-}
-
 let allImport = async (config, types) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -159,11 +105,9 @@ let allImport = async (config, types) => {
         let type = types[i]
         var exportedModule = require('./lib/import/' + type)
         if (i === 0 && !config.master_locale) {
-          var stackResponse = await stackDetails(config)
-          // console.log("Line no 101", stackResponse);
-          let master_locale = { code: stackResponse.master_locale }
+          var masterLocalResponse = await util.masterLocalDetails(config)
+          let master_locale = { code: masterLocalResponse.code }
           config['master_locale'] = master_locale
-          config['stackName'] = stackResponse.name
         }
         await exportedModule.start(config).then(result => {
           return
@@ -173,7 +117,7 @@ let allImport = async (config, types) => {
         addlogs(config, chalk.green('The data of the ' + config.sourceStackName + ' stack has been imported into ' + config.destinationStackName + ' stack successfully!'), 'success')
         addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'import'), 'success')
       } else {
-        addlogs(config, chalk.green('Stack: ' + config.stackName + ' has been imported succesfully!'), 'success')
+        addlogs(config, chalk.green('Stack: ' + config.sourceStackName + ' has been imported succesfully!'), 'success')
         addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success')
       }
       return resolve()
@@ -183,18 +127,6 @@ let allImport = async (config, types) => {
       addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error')
       return reject()
     }
-  })
-}
-
-let stackDetails = async (credentialConfig) => {
-  let client = stack.Client(credentialConfig)
-  return new Promise((resolve, reject) => {
-    return client.stack({ api_key: credentialConfig.target_stack }).fetch()
-      .then(response => {
-        return resolve(response)
-      }).catch(error => {
-        return reject(error)
-      })
   })
 }
 

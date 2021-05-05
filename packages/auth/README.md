@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-auth/0.1.1-beta.1 darwin-x64 node-v10.19.0
+@contentstack/cli-auth/0.1.1-beta.1 darwin-x64 node-v13.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -37,6 +37,8 @@ USAGE
 Login to Contentstack and save the session for further use
 
 ```
+Login to Contentstack and save the session for further use
+
 USAGE
   $ csdx auth:login
 
@@ -54,6 +56,8 @@ _See code: [src/commands/auth/login.js](https://github.com/contentstack/cli/blob
 Log out from Contentstack and clear the session
 
 ```
+Log out from Contentstack and clear the session
+
 USAGE
   $ csdx auth:logout
 
@@ -71,6 +75,9 @@ _See code: [src/commands/auth/logout.js](https://github.com/contentstack/cli/blo
 Lists all existing tokens added to the session
 
 ```
+Lists all existing tokens added to the session 
+
+
 USAGE
   $ csdx auth:tokens
 
@@ -95,6 +102,9 @@ _See code: [src/commands/auth/tokens/index.js](https://github.com/contentstack/c
 Adds management/delivery tokens to your session to use it with further CLI command
 
 ```
+Adds management/delivery tokens to your session to use it with further CLI command
+by default it adds management token if either of management or delivery flags are not set
+
 USAGE
   $ csdx auth:tokens:add
 
@@ -123,6 +133,8 @@ _See code: [src/commands/auth/tokens/add.js](https://github.com/contentstack/cli
 Removes stored tokens
 
 ```
+Removes stored tokens
+
 USAGE
   $ csdx auth:tokens:remove
 
@@ -143,6 +155,9 @@ _See code: [src/commands/auth/tokens/remove.js](https://github.com/contentstack/
 Display current users email address
 
 ```
+Display current users email address
+
+
 USAGE
   $ csdx auth:whoami
 
