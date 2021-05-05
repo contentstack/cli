@@ -15,6 +15,8 @@ perform authentication-related activities
 Login to Contentstack and save the session for further use
 
 ```
+Login to Contentstack and save the session for further use
+
 USAGE
   $ csdx auth:login
 
@@ -32,6 +34,8 @@ _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.
 Log out from Contentstack and clear the session
 
 ```
+Log out from Contentstack and clear the session
+
 USAGE
   $ csdx auth:logout
 
@@ -49,6 +53,9 @@ _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.
 Lists all existing tokens added to the session
 
 ```
+Lists all existing tokens added to the session 
+
+
 USAGE
   $ csdx auth:tokens
 
@@ -73,6 +80,9 @@ _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.
 Adds management/delivery tokens to your session to use it with further CLI command
 
 ```
+Adds management/delivery tokens to your session to use it with further CLI command
+by default it adds management token if either of management or delivery flags are not set
+
 USAGE
   $ csdx auth:tokens:add
 
@@ -101,6 +111,8 @@ _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.
 Removes stored tokens
 
 ```
+Removes stored tokens
+
 USAGE
   $ csdx auth:tokens:remove
 
@@ -121,6 +133,9 @@ _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.
 Display current users email address
 
 ```
+Display current users email address
+
+
 USAGE
   $ csdx auth:whoami
 

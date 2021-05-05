@@ -16,24 +16,37 @@ perform content management activities
 * [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
 * [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
 * [`csdx cm:export`](#csdx-cmexport)
+* [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
 * [`csdx cm:import`](#csdx-cmimport)
+* [`csdx cm:seed`](#csdx-cmseed)
+* [`csdx cm:stack-clone`](#csdx-cmstack-clone)
 
 ## `csdx cm:bulk-publish`
 
 Bulk Publish script for managing entries and assets
 
 ```
+Bulk Publish script for managing entries and assets
+
+
 USAGE
   $ csdx cm:bulk-publish
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/index.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/index.js)_
 
 ## `csdx cm:bulk-publish:add-fields`
 
 Add fields from updated content types to their respective entries
 
 ```
+Add fields from updated content types to their respective entries
+The add-fields command is used for updating already existing entries with the updated schema of their respective Content Type
+
+Content Types, Environments and Locales are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+
 USAGE
   $ csdx cm:bulk-publish:add-fields
 
@@ -78,13 +91,20 @@ EXAMPLES
   csdx cm:bulk-publish:add-fields -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js)_
 
 ## `csdx cm:bulk-publish:assets`
 
 Publish assets to specified environments
 
 ```
+Publish assets to specified environments
+The assets command is used for publishing assets from the specified stack, to the specified environments
+
+Environment(s) and Locale(s) are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+
 USAGE
   $ csdx cm:bulk-publish:assets
 
@@ -127,13 +147,16 @@ EXAMPLES
   csdx cm:bulk-publish:assets -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js)_
 
 ## `csdx cm:bulk-publish:clear`
 
 Clear the log folder
 
 ```
+Clear the log folder
+
+
 USAGE
   $ csdx cm:bulk-publish:clear
 
@@ -142,13 +165,25 @@ OPTIONS
   -y, --yes   Delete all files without asking for confirmation
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/clear.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/clear.js)_
 
 ## `csdx cm:bulk-publish:configure`
 
 Generate configuration template
 
 ```
+Generate configuration template
+The configure command is used for generating a configuration file for bulk-publish script.
+
+Here is a detailed description for all the available flags
+
+-----------------------------------------------------------------------------------------------------------
+--alias or -a : Management token Alias for the stack in use.
+
+EXAMPLE : cm:bulk-publish:configure --alias [MANAGEMENT TOKEN Alias]
+EXAMPLE : cm:bulk-publish:configure -a [MANAGEMENT TOKEN Alias]
+
+
 USAGE
   $ csdx cm:bulk-publish:configure
 
@@ -167,13 +202,20 @@ DESCRIPTION
   EXAMPLE : cm:bulk-publish:configure -a [MANAGEMENT TOKEN Alias]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/configure.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/configure.js)_
 
 ## `csdx cm:bulk-publish:cross-publish`
 
 Publish entries and assets from one environment to other environments
 
 ```
+Publish entries and assets from one environment to other environments
+The cross-publish command is used for publishing entries and assets from one evironment to other environments
+
+Content Type, Environment, Destination Environment(s) and Locale are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+
 USAGE
   $ csdx cm:bulk-publish:cross-publish
 
@@ -221,13 +263,21 @@ EXAMPLES
   csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
 
 ## `csdx cm:bulk-publish:entries`
 
 Publish entries from multiple content-types to multiple environments and locales
 
 ```
+Publish entries from multiple content-types to multiple environments and locales
+The entries command is used for publishing entries from the specified content types, to the
+specified environments and locales 
+
+Content Types, Environments and Locales are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+
 USAGE
   $ csdx cm:bulk-publish:entries
 
@@ -276,13 +326,21 @@ EXAMPLES
   csdx cm:bulk-publish:entries -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entries.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entries.js)_
 
 ## `csdx cm:bulk-publish:entry-edits`
 
 Publish edited entries from a specified Content Type to given locales and environments
 
 ```
+Publish edited entries from a specified Content Type to given locales and environments
+The entry-edits command is used for publishing entries from the specified content types, to the
+specified environments and locales
+
+Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+
 USAGE
   $ csdx cm:bulk-publish:entry-edits
 
@@ -330,13 +388,21 @@ EXAMPLES
   csdx cm:bulk-publish:entry-edits -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entry-edits.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entry-edits.js)_
 
 ## `csdx cm:bulk-publish:nonlocalized-field-changes`
 
 Publish non-localized-fields for given Content Types, from a particular source environment to specified environments
 
 ```
+Publish non-localized-fields for given Content Types, from a particular source environment to specified environments
+The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types to
+the specified Environments
+
+Content Types, Environments and Source Environment are required for executing this command successfully.
+But, if retryFailed flag is set, then only a logfile is required
+
+
 USAGE
   $ csdx cm:bulk-publish:nonlocalized-field-changes
 
@@ -381,13 +447,18 @@ EXAMPLES
   csdx cm:bulk-publish:nonlocalized-field-changes -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
 
 ## `csdx cm:bulk-publish:revert`
 
 Revert publish operations by using a log file
 
 ```
+Revert publish operations by using a log file
+The revert command is used for reverting all publish operations performed using bulk-publish script.
+A log file name is required to execute revert command
+
+
 USAGE
   $ csdx cm:bulk-publish:revert
 
@@ -409,13 +480,26 @@ EXAMPLES
   cm:bulk-publish:revert -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/revert.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/revert.js)_
 
 ## `csdx cm:bulk-publish:unpublish`
 
 Unpublish entries of given Content Types from given environment
 
 ```
+Unpublish entries of given Content Types from given environment
+The unpublish command is used for unpublishing entries from given environment
+
+Environment (Source Environment) and Locale are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+A Content Type can be specified for publishing entries, but if no content-type(s) is/are specified and --onlyAssets is not used,
+then all entries from all content types will be unpublished from the source environment
+
+--onlyAssets can be used to unpublish only assets and --onlyEntries can be used to unpublish only entries.
+(--onlyAssets and --onlyEntries cannot be used together at the same time)
+
+
 USAGE
   $ csdx cm:bulk-publish:unpublish
 
@@ -485,13 +569,20 @@ EXAMPLES
   (Will unpublish only entries, (from CONTENT TYPE) from the source environment)
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublish.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublish.js)_
 
 ## `csdx cm:bulk-publish:unpublished-entries`
 
 Publish unpublished entries from the source environment, to other environments and locales
 
 ```
+Publish unpublished entries from the source environment, to other environments and locales
+The unpublished-entries command is used for publishing unpublished entries from the source environment, to other environments and locales
+
+Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+
 USAGE
   $ csdx cm:bulk-publish:unpublished-entries
 
@@ -537,13 +628,18 @@ EXAMPLES
   csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
 
 ## `csdx cm:export`
 
 Export content from a stack
 
 ```
+Export content from a stack
+...
+Export content from one stack to another
+
+
 USAGE
   $ csdx cm:export
 
@@ -552,7 +648,6 @@ OPTIONS
   -a, --management-token-alias=management-token-alias  alias of the management token
   -c, --config=config                                  [optional] path of the config
   -d, --data=data                                      path or location to store the data
-  -l, --master-lang=master-lang                        code of the source stack's master Language
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
 
@@ -562,30 +657,49 @@ DESCRIPTION
 
 EXAMPLES
   csdx cm:export -A
-  csdx cm:export -A -l 'master-language' -s 'stack_ApiKey' -d 'path/of/export/destination/dir'
-  csdx cm:export -A -c 'path/of/config/dir'
-  csdx cm:export -a 'management_token_alias'
-  csdx cm:export -a "management_token_alias" -l "master-language" -d "path/of/export/destination/dir"
-  csdx cm:export -a "management_token_alias" -c "path/of/config/file"
-  csdx cm:export -A -m "single module name"
+  csdx cm:export -A -s <stack_ApiKey> -d <path/of/export/destination/dir>
+  csdx cm:export -A -c <path/to/config/dir>
+  csdx cm:export -a <management_token_alias>
+  csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
+  csdx cm:export -a <management_token_alias> -c <path/to/config/file>
+  csdx cm:export -A -m <single module name>
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-export/src/commands/cm/export.js)_
+
+## `csdx cm:export-to-csv`
+
+Export entries or organization users to csv using this command
+
+```
+Export entries or organization users to csv using this command
+
+
+USAGE
+  $ csdx cm:export-to-csv
+```
+
+_See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/v0.1.0-beta.1/src/commands/cm/export-to-csv.js)_
 
 ## `csdx cm:import`
 
 Import script for importing the content into new stack
 
 ```
+Import script for importing the content into new stack
+...
+Once you export content from the source stack, import it to your destination stack by using the cm:import command.
+
+
 USAGE
   $ csdx cm:import
 
 OPTIONS
   -A, --auth-token                                     to use auth token
   -a, --management-token-alias=management-token-alias  alias of the management token
+  -b, --backup-dir=backup-dir                          [optional] backup directory name when using specific module
   -c, --config=config                                  [optional] path of config file
   -d, --data=data                                      path and location where data is stored
-  -l, --master-lang=master-lang                        code of the target stack's master language
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the target stack
 
@@ -595,12 +709,54 @@ DESCRIPTION
 
 EXAMPLES
   csdx cm:import -A
-  csdx cm:import -A -l "master-language" -s "stack_ApiKey" -d "path/of/export/destination/dir"
-  csdx cm:import -A -c "path/of/config/dir"
-  csdx cm:import -a "management_token_alias"
-  csdx cm:import -a "management_token_alias" -l "master-language" -d "path/of/export/destination/dir"
-  csdx cm:import -a "management_token_alias" -c "path/of/config/file"
-  csdx cm:import -A -m "single module name"
+  csdx cm:import -A -s <stack_ApiKey> -d <path/of/export/destination/dir>
+  csdx cm:import -A -c <path/of/config/dir>
+  csdx cm:import -a <management_token_alias>
+  csdx cm:import -a <management_token_alias> -d <path/of/export/destination/dir>
+  csdx cm:import -a <management_token_alias> -c <path/of/config/file>
+  csdx cm:import -A -m <single module name>
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-import/src/commands/cm/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.4/packages/contentstack-import/src/commands/cm/import.js)_
+
+## `csdx cm:seed`
+
+Create a Stack from existing content types, entries, assets, etc
+
+```
+Create a Stack from existing content types, entries, assets, etc
+
+USAGE
+  $ csdx cm:seed
+
+OPTIONS
+  -r, --repo=repo  GitHub account or GitHub account/repository
+
+EXAMPLES
+  $ csdx cm:seed
+  $ csdx cm:seed -r "account"
+  $ csdx cm:seed -r "account/repository"
+```
+
+_See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.6/src/commands/cm/seed.ts)_
+
+## `csdx cm:stack-clone`
+
+Clone data (structure or content or both) of a stack into another stack
+
+```
+Clone data (structure or content or both) of a stack into another stack
+Use this plugin to automate the process of cloning a stack in a few steps.
+
+
+USAGE
+  $ csdx cm:stack-clone
+
+DESCRIPTION
+  Use this plugin to automate the process of cloning a stack in a few steps.
+
+EXAMPLE
+  csdx cm:stack-clone
+```
+
+_See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/v0.1.0-beta.1/src/commands/cm/stack-clone.js)_

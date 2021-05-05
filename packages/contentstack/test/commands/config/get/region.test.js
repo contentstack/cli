@@ -1,17 +1,16 @@
 const {expect, test} = require('@oclif/test')
-const {assert} = require('chai')
 const Configstore  = require('configstore')
 const config = new Configstore('contentstack_cli')
 
-describe('config:get:region', () => {
+describe('Get config command config:get:region', () => {
   const regions = {
     NA: {cma: 'https://api.contentstack.io', cda: 'https://cdn.contentstack.io', name: 'NA'},
     EU: {cma: 'https://eu-api.contentstack.com', cda: 'https://eu-cdn.contentstack.com', name: 'EU'},
   }
 
   // eslint-disable-next-line no-undef
-  before(async () => {
-    await config.set('region', regions.NA)
+  before(() => {
+    config.set('region', regions.NA)
   })
 
   test
