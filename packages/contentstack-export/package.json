@@ -53,9 +53,10 @@
 	"license": "MIT",
 	"scripts": {
 		"postpack": "rm -f oclif.manifest.json",
-		"prepack": "oclif-dev manifest && oclif-dev readme",
+		"prepack": "npx oclif-dev manifest && npx oclif-dev readme",
 		"test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-		"version": "oclif-dev readme && git add README.md"
+		"test-debug": "nyc mocha --inspect-brk \"test/**/*.test.js\"",
+		"version": "npx oclif-dev readme && git add README.md"
 	},
 	"oclif": {
 		"commands": "./src/commands",

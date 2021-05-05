@@ -7,3 +7,4 @@ lerna-debug.log
 contentTest
 build
 _backup*
+workspace.code-workspace

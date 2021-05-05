@@ -1,4 +1,4 @@
-const {test, expect} = require('@oclif/test')
+const {test} = require('@oclif/test')
 const {cli} = require('cli-ux')
 const Configstore  = require('configstore')
 const config = new Configstore('contentstack_cli')
@@ -106,7 +106,7 @@ describe('auth:tokens:add', () => {
       assert.equal(managementTokens.token, 'authtokenblt123')
       assert.equal(managementTokens.apiKey, 'blt1234')
       assert.equal(managementTokens.type, 'management')
-      //expect(ctx.stdout).to.contain('"myalias" token replaced successfully!')
+      // expect(ctx.stdout).to.contain('"myalias" token replaced successfully!')
     })
 
     test

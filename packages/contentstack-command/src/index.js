@@ -8,29 +8,27 @@ const url = require('url')
 const defaultRegion = {cma: 'https://api.contentstack.io', cda: 'https://cdn.contentstack.io', name: 'NA'}
 const defaultRateLimit = 5
 
-
 class ContentstackCommand extends Command {
-
   get managementAPIClient() {
     if (this._managementAPIClient) return this._managementAPIClient
-    this._managementAPIClient = ContentstackManagementSDK.client({host:this.cmaHost})
+    this._managementAPIClient = ContentstackManagementSDK.client({host: this.cmaHost})
     return this._managementAPIClient
   }
 
   set managementAPIClient(params) {
-    if(params && params.host) {
-      //can not set host explicitly as CLI runs under constant host coming from config
+    if (params && params.host) {
+      // can not set host explicitly as CLI runs under constant host coming from config
       params.host = this.cmaHost
     } else {
       params.host = this.cmaHost
     }
     this._managementAPIClient = ContentstackManagementSDK.client(params)
   }
-  
+
   get email() {
     if (this._email) return this._email
     this._email = config.get('email')
-    if(this._email) return this._email
+    if (this._email) return this._email
     throw new NotLoggedIn()
   }
 
@@ -44,7 +42,7 @@ class ContentstackCommand extends Command {
     if (this._region) return this._region
     this._region = config.get('region')
     if (this._region) return this._region
-    // return defaultRegion
+    return defaultRegion
   }
 
   get rateLimit() {
@@ -99,5 +97,5 @@ class ContentstackCommand extends Command {
 
 module.exports = {
   Command: ContentstackCommand,
-  flags
+  flags,
 }
