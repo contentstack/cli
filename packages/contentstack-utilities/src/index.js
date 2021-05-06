@@ -30,6 +30,7 @@ function chooseOrganization(displayMessage, region) {
 				choices: orgList
 			}
 			inquirer.prompt(inquirerConfig).then(({chosenOrganization}) => {
+				debugger
 				resolve({orgUid: orgMap[chosenOrganization], orgName: chosenOrganization})
 			})
 		} catch (error) {
@@ -68,5 +69,6 @@ function chooseStack(organizationId, displayMessage, region) {
 
 module.exports = {
 	chooseOrganization,
-	chooseStack
+	chooseStack,
+	orgClass
 }
