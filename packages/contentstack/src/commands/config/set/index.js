@@ -7,9 +7,23 @@ class SetCommand extends Command {
     const {flags} = this.parse(SetCommand)
     const key = flags.key
     const value = flags.value
+    const plugin = flags.plugin
+    let resultStatement
     try {
-      config.set(key, value)
-      this.log(`${key} has been set to ${value} in the global config`)
+      let globalConfig = config.all
+      if (plugin) {
+        if (!globalConfig[plugin]) {
+          globalConfig[plugin] = {}
+        }
+        debugger
+        globalConfig[plugin][key] = value
+        config.all = globalConfig
+        resultStatement = `${key} has been set to ${value} to ${plugin}'s config`
+      } else {
+        resultStatement = `${key} has been set to ${value} in the global config`
+        config.set(key, value)
+      }
+      this.log(resultStatement)
     } catch (error) {
       this.error(error)
     }
@@ -24,6 +38,7 @@ Extra documentation goes here
 SetCommand.flags = {
   value: flags.string({char: 'v', description: 'Specify the value'}),
   key: flags.string({char: 'k', description: 'Specify the key'}),
+  plugin: flags.string({char: 'p', description: 'Specify the plugin for which the config is to be written'}),
 }
 
 module.exports = SetCommand
