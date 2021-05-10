@@ -10,31 +10,47 @@ class orgClass extends Command {
 	}
 }
 
-function chooseOrganization(displayMessage, region) {
+function chooseOrganization(displayMessage, region, orgUid) {
 	return new Promise(async (resolve, reject) => {
-		const command = new orgClass()
-		const client = command.managementAPIClient
+		debugger
 		try {
+			const command = new orgClass()
+			debugger
+			const client = command.managementAPIClient
+			debugger
 			const spinner = ora('Loading Organizations').start()
+			debugger
 			let {items: organizations} = await client.organization().fetchAll()
+			debugger
 			spinner.stop()
 			let orgMap = {}
-			organizations.forEach(org => {
-				orgMap[org.name] = org.uid
-			})
-			const orgList = Object.keys(orgMap)
-			let inquirerConfig = {
-				type: 'list',
-				name: 'chosenOrganization',
-				message: displayMessage || 'Choose an organization',
-				choices: orgList
+			if (orgUid) {
+				organizations.forEach(org => {
+					orgMap[org.uid] = org.name
+				})
+				if (orgMap[orgUid]) {
+					resolve({orgUid: orgUid, orgName: orgMap[orgUid]})
+				} else {
+					return reject(new Error('The given orgUid doesn\'t exist or you might not have access to it.'))
+				}
+			} else {
+				organizations.forEach(org => {
+					orgMap[org.name] = org.uid
+				})
+				const orgList = Object.keys(orgMap)
+				let inquirerConfig = {
+					type: 'list',
+					name: 'chosenOrganization',
+					message: displayMessage || 'Choose an organization',
+					choices: orgList
+				}
+				inquirer.prompt(inquirerConfig).then(({chosenOrganization}) => {
+					debugger
+					resolve({orgUid: orgMap[chosenOrganization], orgName: chosenOrganization})
+				})
 			}
-			inquirer.prompt(inquirerConfig).then(({chosenOrganization}) => {
-				debugger
-				resolve({orgUid: orgMap[chosenOrganization], orgName: chosenOrganization})
-			})
 		} catch (error) {
-			console.error(error.message)
+			reject(error)
 		}
 	})
 }
