@@ -1,11 +1,11 @@
 // note that we are using @contentstack/cli-command instead of @oclif/command
 import cli from 'cli-ux';
 import {table} from 'table';
+import * as utilities from '../../../../contentstack-utilities/lib/index'
 const ContentstackManagementSDK = require('@contentstack/management')
 const {Command, flags} = require('@contentstack/cli-command')
 const ora = require('ora')
 const arraySort = require('array-sort')
-const utilities = require('../../../../contentstack-utilities/src/index.js')
 let spinner
 let properties
 
@@ -37,7 +37,7 @@ hello world from ./src/hello.ts!
 
   static flags = {
     help: flags.help({char: 'h'}),
-    orgUid: flags.string({char: 'o'}),
+    'org-uid': flags.string({char: 'o'}),
     ...cli.table.flags()
   }
 
@@ -82,10 +82,11 @@ hello world from ./src/hello.ts!
     return new Promise(async (resolve, reject) => {
       try {
         let selectedOrganization
-        if (!flags.orgUid) {
+        if (!flags['org-uid']) {
           selectedOrganization = await utilities.chooseOrganization()
         } else {
-          selectedOrganization = await utilities.chooseOrganization(null, null, flags.orgUid)
+          debugger
+          selectedOrganization = await utilities.chooseOrganization(null, null, flags['org-uid'])
         }
         let stacks = await this.getStacks(selectedOrganization)
         resolve(stacks)
