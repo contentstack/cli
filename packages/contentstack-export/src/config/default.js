@@ -3,7 +3,7 @@ module.exports = {
   modules: {
     types: [
       'stack',
-      // 'assets',
+      'assets',
       'locales',
       'environments',
       'extensions',
