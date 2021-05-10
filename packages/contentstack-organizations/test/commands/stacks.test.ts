@@ -1,10 +1,41 @@
 import Organization from '../../src/commands/cm/stacks';
+// import {expect} from 'chai'
+import * as sinon from 'sinon'
+import * as mocha from 'mocha'
 import {expect, test} from '@oclif/test'
+const utilities = require('../../../contentstack-utilities/src/index.js')
 
 import * as mockOrgs from '../mockData/mock-organizations.json'
 import * as mockStacks from '../mockData/mock-stacks.json'
 
-describe('testing organizations command', () => {
+describe('testing cm:stacks', () => {
+	// sinon.stub(Stack.prototype, 'managementAPIClient').callsFake(() => {
+	// 	return {
+	// 		organization: function() {
+	// 			return {
+	// 				fetchAll: function() {
+	// 					return Promise.resolve(mockOrgs)
+	// 				}
+	// 			}
+	// 		},
+	// 		stack: function() {
+	// 			return {
+	// 				query: function() {
+	// 					return {
+	// 						find: function() {
+	// 							return Promise.resolve(mockStacks)
+	// 						}
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// })
+
+	// sinon.stub(utilities, 'chooseOrganizaion').callsFake(() => {
+	// 	return new Promise(resolve => resolve({orgUid: 'org1', orgName: 'org1'}))
+	// })
+
 	test
 	.stub(Organization.prototype, 'managementAPIClient', () => {
 		return {
@@ -27,6 +58,9 @@ describe('testing organizations command', () => {
 				}
 			}
 		}
+	})
+	.stub(utilities, 'chooseOrganization', () => {
+		return new Promise(resolve => resolve({orgUid: "org1", orgName: "org1"}))
 	})
 	.stdout()
 	.command(['cm:stacks'])
