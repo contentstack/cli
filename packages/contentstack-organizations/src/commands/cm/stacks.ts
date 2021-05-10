@@ -5,6 +5,7 @@ const ContentstackManagementSDK = require('@contentstack/management')
 const {Command, flags} = require('@contentstack/cli-command')
 const ora = require('ora')
 const arraySort = require('array-sort')
+const utilities = require('../../../../contentstack-utilities/src/index.js')
 let spinner
 let properties
 
@@ -78,36 +79,19 @@ hello world from ./src/hello.ts!
   }
 
   fetch(flags) {
-    spinner = ora('Loading Stacks').start()
-    return new Promise((resolve, reject) => {
-      this.managementAPIClient.organization().fetchAll().then(async response => {
-        let stacks: any = []
-        let organizations = {}
-        
-        response.items.forEach(org => {
-          organizations[org.uid] = org.name
-        })
-
-        if (flags.orgUid) {
-          if (organizations[flags.orgUid] === undefined) {
-            spinner.stop()
-            reject(new Error('Either you are not the owner of this organization or this organization doesn\'t exist'))
-          }
-          stacks = await this.getStacks(flags.orgUid, organizations)
+    return new Promise(async (resolve, reject) => {
+      try {
+        let selectedOrganization
+        if (!flags.orgUid) {
+          selectedOrganization = await utilities.chooseOrganization()
         } else {
-          let orgUids = Object.keys(organizations)
-
-          for (let i = 0; i < orgUids.length; i++) {
-            stacks = stacks.concat(await this.getStacks(orgUids[i], organizations))
-          }
+          selectedOrganization = await utilities.chooseOrganization(null, null, flags.orgUid)
         }
-
-        if (flags.sort)
-          stacks = this.sort(stacks, flags.sort)
-
-        spinner.stop()
+        let stacks = await this.getStacks(selectedOrganization)
         resolve(stacks)
-      })
+      } catch (error) {
+        reject(error)
+      }
     }) 
   }
 
@@ -119,10 +103,10 @@ hello world from ./src/hello.ts!
     })
   }
 
-  getStacks(orguid, organizations) {
+  getStacks(organization) {
     return new Promise(resolve => {
       let stacks: any = []
-      this.managementAPIClient.stack({organization_uid: orguid}).query({query: {}}).find().then(stackResponse => {
+      this.managementAPIClient.stack({organization_uid: organization.orgUid}).query({query: {}}).find().then(stackResponse => {
         stackResponse.items.forEach(stack => {
           stacks.push({
             name: stack.name,
@@ -131,7 +115,7 @@ hello world from ./src/hello.ts!
             created_at: stack.created_at,
             updated_at: stack.updated_at,
             org_uid: stack.org_uid,
-            org_name: organizations[stack.org_uid]
+            org_name: organization.orgName
           })
         })
         resolve(stacks)
@@ -140,7 +124,6 @@ hello world from ./src/hello.ts!
   }
 
   sort(data, property) {
-    debugger
     if (property[0] === '-') {
       return arraySort(data, property.split('-').pop(), {reverse: true})
     }
@@ -150,7 +133,6 @@ hello world from ./src/hello.ts!
   validateProperties(data, flags) {
     let availableProperties = Object.keys(tableConfig)
     if (flags.sort) {
-      debugger
       if(availableProperties.indexOf(flags.sort) === -1 && availableProperties.indexOf(flags.sort.split('-').pop()) === -1) {
         throw new Error(`Please enter a valid column to sort by.\nThese are the valid columns:\n${availableProperties.join('\n')}`)
       }
