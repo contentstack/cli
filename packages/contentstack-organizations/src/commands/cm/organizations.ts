@@ -1,8 +1,10 @@
 // note that we are using @contentstack/cli-command instead of @oclif/command
 import cli from 'cli-ux';
 import {table} from 'table';
+import ora from 'ora';
 const ContentstackManagementSDK = require('@contentstack/management')
 const {Command, flags} = require('@contentstack/cli-command')
+let spinner
 
 export default class Organization extends Command {
   get managementAPIClient() {
@@ -69,7 +71,7 @@ hello world from ./src/hello.ts!
           params.asc = sort
         }
       }
-      debugger
+      spinner = ora('Loading Organizations').start()
       this.managementAPIClient.organization().fetchAll(params).then(response => {
         debugger  
         let formattedResponse = response.items.map(org => {
@@ -82,6 +84,7 @@ hello world from ./src/hello.ts!
             updated_at: org.updated_at,
           }
         })
+        spinner.stop()
         resolve(formattedResponse)
       })
     }) 
