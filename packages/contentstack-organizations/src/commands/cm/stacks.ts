@@ -2,9 +2,9 @@
 import cli from 'cli-ux';
 import {table} from 'table';
 import * as utilities from '../../../../contentstack-utilities/lib/index'
+import ora from 'ora'
 const ContentstackManagementSDK = require('@contentstack/management')
 const {Command, flags} = require('@contentstack/cli-command')
-const ora = require('ora')
 const arraySort = require('array-sort')
 let spinner
 let properties
@@ -105,6 +105,7 @@ hello world from ./src/hello.ts!
   }
 
   getStacks(organization) {
+    spinner = ora('Loading Stacks').start()
     return new Promise(resolve => {
       let stacks: any = []
       this.managementAPIClient.stack({organization_uid: organization.orgUid}).query({query: {}}).find().then(stackResponse => {
@@ -119,7 +120,7 @@ hello world from ./src/hello.ts!
             org_name: organization.orgName
           })
         })
-        debugger
+        spinner.stop()
         resolve(stacks)
       })
     })
