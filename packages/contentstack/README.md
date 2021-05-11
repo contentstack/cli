@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.6 darwin-x64 node-v13.14.0
+@contentstack/cli/0.1.1-beta.7 darwin-x64 node-v13.14.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -946,7 +946,7 @@ USAGE
   $ csdx config:get:region
 ```
 
-_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/src/commands/config/get/region.js)_
+_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.7/src/commands/config/get/region.js)_
 
 ## `csdx config:set:region [REGION]`
 
@@ -978,7 +978,7 @@ EXAMPLES
   --name="India"
 ```
 
-_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/src/commands/config/set/region.js)_
+_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.7/src/commands/config/set/region.js)_
 
 ## `csdx help [COMMAND]`
 
