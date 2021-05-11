@@ -59,7 +59,6 @@ var singleExport = async (moduleName, types, config) => {
       }
       addlogs(config, moduleName + ' was exported successfully!', 'success')
       addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success')
-      cli.log('Entity exported successfully');
     } else {
       addlogs(config, 'Please provide valid module name.', 'error')
     }
