@@ -41,8 +41,6 @@ hello world from ./src/hello.ts!
     ...cli.table.flags()
   }
 
-  static args = [{name: 'file'}]
-
   async run() {
     const {args, flags} = this.parse(Stack)
     let stacks

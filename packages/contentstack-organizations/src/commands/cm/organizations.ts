@@ -27,8 +27,6 @@ hello world from ./src/hello.ts!
     ...cli.table.flags()
   }
 
-  static args = [{name: 'file'}]
-
   async run() {
     const {args, flags} = this.parse(Organization)
     const organizations: any = await this.fetch(flags.sort)
@@ -36,28 +34,25 @@ hello world from ./src/hello.ts!
     const name = flags.name || 'world'
     const outputFormat = flags.output || 'json'
 
-    if (!flags.output && !flags.csv) {
-      let printfn = function(data) { something += data }
-      flags.output = outputFormat
-      this.createTable(organizations, flags, printfn)
-      const somethingObject = JSON.parse(something)
-      let formattedOutput = somethingObject.map(element => Object.values(element))
-      if (!flags['no-header']) 
-        formattedOutput.unshift(Object.keys(somethingObject[0]))
-      const output = table(formattedOutput)
-      this.log(`You have ${organizations.length} organizations`)    
-      this.log(output)
+    if (organizations.length > 0) {
+      if (!flags.output && !flags.csv) {
+        let printfn = function(data) { something += data }
+        flags.output = outputFormat
+        this.createTable(organizations, flags, printfn)
+        const somethingObject = JSON.parse(something)
+        let formattedOutput = somethingObject.map(element => Object.values(element))
+        if (!flags['no-header']) 
+          formattedOutput.unshift(Object.keys(somethingObject[0]))
+        const output = table(formattedOutput)
+        this.log(`You have ${organizations.length} organizations`)    
+        this.log(output)
+      } else {
+        let printfn = this.log
+        if (flags.csv) flags.output = 'csv'
+        this.createTable(organizations, flags, printfn)
+      }
     } else {
-      let printfn = this.log
-      if (flags.csv) flags.output = 'csv'
-      this.createTable(organizations, flags, printfn)
-    }
-
-    const currentRegion = this.region.name
-    const managementClient = this.managementAPIClient
-
-    if (args.file) {
-      this.log(`you input argument: ${args.file}`)
+      this.log('There are no organizations available for this account.')
     }
   }
 
