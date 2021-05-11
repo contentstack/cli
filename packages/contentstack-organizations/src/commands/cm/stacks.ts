@@ -56,26 +56,27 @@ hello world from ./src/hello.ts!
     const name = flags.name || 'world'
     const outputFormat = flags.output || 'json'
 
-    if (!flags.output && !flags.csv) {
-      let printfn = function(data) { something += data }
-      flags.output = outputFormat
-      this.createTable(stacks, flags, printfn)
-      const somethingObject = JSON.parse(something)
-      properties = Object.keys(somethingObject[0]).map(element => this.toTitleCase(element))
-      let formattedOutput = somethingObject.map(element => Object.values(element))
-      if (!flags['no-header']) 
-        formattedOutput.unshift(properties)
-      const output = table(formattedOutput)
-      this.log(`You have ${stacks.length} stacks`)    
-      this.log(output)
+    if (stacks.length > 0) {
+      if (!flags.output && !flags.csv) {
+        let printfn = function(data) { something += data }
+        flags.output = outputFormat
+        this.createTable(stacks, flags, printfn)
+        const somethingObject = JSON.parse(something)
+        properties = Object.keys(somethingObject[0]).map(element => this.toTitleCase(element))
+        let formattedOutput = somethingObject.map(element => Object.values(element))
+        if (!flags['no-header']) 
+          formattedOutput.unshift(properties)
+        const output = table(formattedOutput)
+        this.log(`You have ${stacks.length} stacks`)    
+        this.log(output)
+      } else {
+        let printfn = this.log
+        if (flags.csv) flags.output = 'csv'
+        this.createTable(stacks, flags, printfn)
+      }
     } else {
-      let printfn = this.log
-      if (flags.csv) flags.output = 'csv'
-      this.createTable(stacks, flags, printfn)
+      this.log(`There are no stacks available for this organization`)
     }
-
-    const currentRegion = this.region.name
-    const managementClient = this.managementAPIClient
   }
 
   fetch(flags) {
@@ -85,7 +86,6 @@ hello world from ./src/hello.ts!
         if (!flags['org-uid']) {
           selectedOrganization = await utilities.chooseOrganization()
         } else {
-          debugger
           selectedOrganization = await utilities.chooseOrganization(null, null, flags['org-uid'])
         }
         let stacks = await this.getStacks(selectedOrganization)
@@ -119,6 +119,7 @@ hello world from ./src/hello.ts!
             org_name: organization.orgName
           })
         })
+        debugger
         resolve(stacks)
       })
     })
