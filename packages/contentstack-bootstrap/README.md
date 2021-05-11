@@ -8,9 +8,9 @@ It is Contentstack’s CLI plugin bootstrap contentstack apps with a single comm
 <!-- usagestop -->
 ## Commands
 <!-- commands -->
-* [`csdx cm:seed`](#csdx-cmseed)
+* [`csdx cm:bootstrap`](#csdx-bootstrap)
 
-## `csdx cm:seed`
+## `csdx cm:bootstrap`
 
 
 ```
