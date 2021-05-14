@@ -64,7 +64,7 @@ class ImportCommand extends Command {
           })
         } 
       } else {
-        this.log('management Token is not present please add managment token first')
+        console.log('management Token is not present please add managment token first')
       }
     } else if (authToken && authToken !== undefined && _authToken && _authToken !== undefined) {
       if (extConfig && extConfig !== undefined) {
@@ -101,7 +101,7 @@ class ImportCommand extends Command {
         })
       }
     } else  {
-      this.log('Provide alias for managementToken or authtoken')
+      console.log('Provide alias for managementToken or authtoken')
     }
   })
 }
