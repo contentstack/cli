@@ -1,5 +1,11 @@
 ## Description
-This plugin allows you to quickly import existing Stacks that are needed to run sample apps.
+The “seed” command in Contentstack CLI allows users to import content to your stack, from Github repositories. It's an effective command that can help you to migrate content to your stack with minimal steps.
+
+To import content to your stack, you can choose from the following two sources:
+
+**Contentstack’s organization**: In this organization, we have provided sample content, which you can import directly to your stack using the seed command.
+
+**Github’s repository**: You can import content available on Github’s repository belonging to an organization or an individual.
 
 <!-- usagestop -->
 ## Commands
@@ -23,7 +29,7 @@ EXAMPLES
   $ csdx cm:seed -r "account/repository"
 ```
 
-_See code: [src/commands/cm/seed.ts](https://github.com/contentstack/cli/blob/v1.0.5/src/commands/cm/seed.ts)_
+_See code: [src/commands/cm/seed.ts](https://github.com/contentstack/cli/blob/v1.0.6/src/commands/cm/seed.ts)_
 <!-- commandsstop -->
 
 ## Advanced Flags
@@ -63,3 +69,6 @@ The latest release will be downloaded and extracted, when a user attempts to ins
 $ csdx cm:seed -r "account"
 $ csdx cm:seed -r "account/repository"
 ```
+
+## Documentation
+To get more detailed documentation of this command, visit the Seed command documentation on our [docs](https://www.contentstack.com/docs/developers/cli/import-content-using-the-seed-command/).

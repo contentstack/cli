@@ -38,7 +38,7 @@ export default class ContentModelSeeder {
     this.ghRepo = gh.repo
 
     this.csClient = new ContentstackClient(options.cmaHost, options.authToken)
-    this.ghClient = new GitHubClient(this.ghUsername)
+    this.ghClient = new GitHubClient(this.ghUsername, DEFAULT_STACK_PATTERN)
   }
 
   async run() {
