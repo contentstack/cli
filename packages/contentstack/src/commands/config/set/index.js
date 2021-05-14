@@ -12,11 +12,22 @@ class SetCommand extends Command {
     try {
       let globalConfig = config.all
       if (plugin) {
-        if (!globalConfig[plugin]) {
-          globalConfig[plugin] = {}
+        if (!globalConfig.plugins) {
+          globalConfig.plugins = {}
         }
-        debugger
-        globalConfig[plugin][key] = value
+        if (!globalConfig.plugins[plugin]) {
+          globalConfig.plugins[plugin] = {}
+        }
+        globalConfig.plugins[plugin][key] = value
+        if (flags.json) {
+          try {
+            let providedJson = require(flags.json)
+            // eslint-disable-next-line node/no-unsupported-features/es-syntax
+            globalConfig.plugins[plugin] = {...globalConfig.plugins[plugin], ...providedJson}
+          } catch (error) {
+            throw new Error('Either the provided file path for \'json\' flag isn\'t valid or the json data isn\'t valid')
+          }
+        }
         config.all = globalConfig
         resultStatement = `${key} has been set to ${value} to ${plugin}'s config`
       } else {
@@ -31,14 +42,21 @@ class SetCommand extends Command {
 }
 
 SetCommand.description = `Set a property in global config
-...
-Extra documentation goes here
+'csdx config:set' can be used to add a property to the global configuration file, or add a property to a plugin configuration
 `
 
 SetCommand.flags = {
   value: flags.string({char: 'v', description: 'Specify the value'}),
   key: flags.string({char: 'k', description: 'Specify the key'}),
   plugin: flags.string({char: 'p', description: 'Specify the plugin for which the config is to be written'}),
+  json: flags.string({char: 'j', description: 'Provide a json file to set '})
 }
+
+SetCommand.examples = [
+  'csdx config:set --key someKey --value someValue',
+  'csdx config:set --key someKey --value {\'anotherKey\': \'someValue\'}',
+  'csdx config:set --key someKey --value {\'anotherKey\': \'someValue\'} --plugin somePlugin',
+  'csdx config:set --plugin somePlugin --json <path to a json file>',
+]
 
 module.exports = SetCommand
