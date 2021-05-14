@@ -49,7 +49,7 @@ ExportLocales.prototype.start = function (credentialConfig) {
           addlogs(credentialConfig, locale.name + ' locale was exported successfully', 'success')
           for (const key in locale) {
             if (requiredKeys.indexOf(key) === -1) {
-              delete locale.key
+              delete locale[key]
             }
           }
           self.locales[locale.uid] = locale
@@ -59,10 +59,10 @@ ExportLocales.prototype.start = function (credentialConfig) {
         addlogs(credentialConfig, 'No languages found except the master language', 'success')
       }
       helper.writeFile(path.join(localesFolderPath, localeConfig.fileName), self.locales)
-      resolve()
+      return resolve()
     }).catch(error => {
       addlogs(credentialConfig, error, 'error')
-      reject()
+      return reject()
     })
   })
 }
