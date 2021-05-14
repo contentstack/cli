@@ -88,9 +88,9 @@ export function chooseStack(organizationId: string, displayMessage: string, regi
 	})
 }
 
-async function callMe() {
-	let organization = await chooseOrganization()
-	console.log(organization)
-}
+// async function callMe() {
+// 	let organization = await chooseOrganization()
+// 	console.log(organization)
+// }
 
-callMe()
+// callMe()
