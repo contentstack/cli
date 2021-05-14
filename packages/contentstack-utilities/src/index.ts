@@ -13,6 +13,11 @@ interface Stack {
 	api_key: string,
 }
 
+interface selectedOrganization {
+	orgUid: string,
+	orgName: string,
+}
+
 export class orgClass extends Command {
 	get managementAPIClient() {
     this._managementAPIClient = ContentstackManagementSDK.client({host:this.cmaHost, authtoken: this.authToken})
@@ -20,7 +25,7 @@ export class orgClass extends Command {
 	}
 }
 
-export function chooseOrganization(displayMessage?: string, region?: string, orgUid?: string) {
+export function chooseOrganization(displayMessage?: string, region?: string, orgUid?: string): Promise<selectedOrganization> {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const command = new orgClass()
@@ -60,7 +65,7 @@ export function chooseOrganization(displayMessage?: string, region?: string, org
 	})
 }
 
-export function chooseStack(organizationId: string, displayMessage: string, region: string) {
+export function chooseStack(organizationId: string, displayMessage?: string, region?: string) {
 	return new Promise(async (resolve, reject) => {
 		const command = new orgClass()
 		const client = command.managementAPIClient
@@ -88,9 +93,12 @@ export function chooseStack(organizationId: string, displayMessage: string, regi
 	})
 }
 
-// async function callMe() {
-// 	let organization = await chooseOrganization()
-// 	console.log(organization)
-// }
+async function callMe() {
+	let organization: selectedOrganization = await chooseOrganization()
+	console.log(organization)
 
-// callMe()
+	let stack = await chooseStack(organization.orgUid)
+	console.log(stack)
+}
+
+callMe()
