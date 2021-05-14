@@ -1,0 +1,35 @@
+{
+  "name": "@contentstack/utilities",
+  "version": "0.0.0",
+  "description": "Utilities for contentstack projects",
+  "main": "index.js",
+  "scripts": {
+    "test": "nyc --reporter=html mocha --forbid-only \"test/**/*.test.js\""
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "contentstack",
+    "utilities"
+  ],
+  "author": "contentstack",
+  "license": "ISC",
+  "dependencies": {
+    "@contentstack/cli-command": "*",
+    "@contentstack/management": "^1.2.1",
+    "inquirer": "^8.0.0",
+    "ora": "^5.4.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^7.3.1",
+    "chai": "^4.3.4",
+    "mocha": "^8.3.2",
+    "nyc": "^15.1.0",
+    "sinon": "^10.0.0"
+  }
+}
