@@ -15,8 +15,8 @@ class ResetCommand extends Command {
       }
       config.all = defaultConfig
       let regionDetails = this.config.userConfig.setRegion('EU')
-      const {flags} = this.parse(ResetCommand)
-      const name = flags.name || 'world'
+      // const {flags} = this.parse(ResetCommand)
+      // const name = flags.name || 'world'
       cli.log(chalk.green('Region has been set to EU'))
       cli.log(chalk.green(`CDA HOST: ${regionDetails.cda}`))
       cli.log(chalk.green(`CMA HOST: ${regionDetails.cma}`))
