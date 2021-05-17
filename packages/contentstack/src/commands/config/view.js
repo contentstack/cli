@@ -4,8 +4,6 @@ const config = new Configstore('contentstack_cli')
 
 const propertiesToHide = [
   'uuid',
-  'token',
-  'apiKey',
   'authtoken',
 ]
 
@@ -16,6 +14,7 @@ class ViewCommand extends Command {
     this.log(`hello ${name} from /home/abhinav/Documents/contentstack/cli/packages/contentstack/src/commands/view.js`)
     const globalConfig = this.hideSensitiveData(config.all)
     this.log(globalConfig)
+    this.log(`The config file is store at ${config.path}`)
   }
 
   hideSensitiveData(data) {
