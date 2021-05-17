@@ -76,6 +76,7 @@ function chooseStack(organizationId, displayMessage, region) {
             let { items: stacks } = yield client.stack({ organization_uid: organizationId }).query({ query: {} }).find();
             spinner.stop();
             let stackMap = {};
+            debugger
             stacks.forEach((stack) => {
                 stackMap[stack.name] = stack.api_key;
             });
@@ -96,8 +97,12 @@ function chooseStack(organizationId, displayMessage, region) {
     }));
 }
 exports.chooseStack = chooseStack;
-// async function callMe() {
-// 	let organization = await chooseOrganization()
-// 	console.log(organization)
-// }
-// callMe()
+function callMe() {
+    return __awaiter(this, void 0, void 0, function* () {
+        // let organization = await chooseOrganization()
+        // console.log(organization)
+        let stack = yield chooseStack('bltdf4dfa3134a29d66');
+        console.log(stack);
+    });
+}
+callMe();
