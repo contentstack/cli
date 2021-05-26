@@ -11,6 +11,7 @@ export interface AppConfig {
     private?: boolean;
     branch?: string;
     appConfigKey?: string;
+    displayName?: string;
 }
 
 const config: Configuration = {
@@ -26,7 +27,7 @@ const config: Configuration = {
         { displayName: 'Next JS', configKey: 'nextjs-starter' },
         { displayName: 'Gatsby', configKey: 'gatsby-starter' },
         { displayName: 'Angular', configKey: 'angular-starter' },
-        { displayName: 'Nuxt JS', configKey: 'nuxt-starter' },
+        { displayName: 'Nuxt JS', configKey: 'nuxtjs-starter' },
     ],
     appLevelConfig: {
         nextjs: {

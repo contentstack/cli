@@ -86,6 +86,7 @@ export default class BootstrapCommand extends Command {
       }
 
       const appConfig: AppConfig = getAppLevelConfigByName(selectedApp.configKey)
+      appConfig.displayName = selectedApp.displayName
 
       let cloneDirectory = flags.directory as string
       if (!cloneDirectory) {
@@ -105,6 +106,7 @@ export default class BootstrapCommand extends Command {
         managementAPIClient: this.managementAPIClient,
         region: this.region,
         accessToken,
+        appType,
       }
       const bootstrap = new Bootstrap(options)
       await bootstrap.run()

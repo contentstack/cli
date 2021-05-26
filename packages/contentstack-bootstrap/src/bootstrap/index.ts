@@ -4,7 +4,7 @@ import { default as ContentStackSeed } from '@contentstack/cli-cm-seed/lib/comma
 import { AppConfig } from '../config'
 import GitHubClient, { Repo } from './github/client'
 import GithubError from './github/error'
-import { setupEnvironments } from './utils'
+import { setupEnvironments, printSummary } from './utils'
 import messageHandler from '../messages'
 
 export const ENGLISH_LOCALE = 'en-us'
@@ -15,6 +15,7 @@ export interface BootstrapOptions {
   managementAPIClient: any;
   region: any;
   accessToken: string;
+  appType: string;
 }
 
 /**
@@ -33,6 +34,8 @@ export default class Bootstrap {
 
   private region: any;
 
+  private appType: string;
+
   private managementAPIClient: any;
 
   private cloneDirectory: string;
@@ -41,6 +44,7 @@ export default class Bootstrap {
   ) {
     this.region = options.region
     this.appConfig = options.appConfig
+    this.appType = options.appType
     this.managementAPIClient = options.managementAPIClient
     this.repo = GitHubClient.parsePath(options.appConfig.source)
     if (options.appConfig.branch) {
@@ -55,6 +59,7 @@ export default class Bootstrap {
   }
 
   async run(): Promise<any> {
+    
     cli.action.start(messageHandler.parse('CLI_BOOTSTRAP_START_CLONE_APP'))
     try {
       await this.ghClient.getLatest(this.cloneDirectory)
@@ -72,8 +77,9 @@ export default class Bootstrap {
     // seed plugin start
     try {
       const result = await ContentStackSeed.run(['-r', this.appConfig.stack])
+      let environmentResult
       if (result.api_key) {
-        await setupEnvironments(
+        environmentResult =  await setupEnvironments(
           this.managementAPIClient,
           result.api_key,
           this.appConfig,
@@ -83,7 +89,12 @@ export default class Bootstrap {
       } else {
         throw new Error(messageHandler.parse('CLI_BOOTSTRAP_NO_API_KEY_FOUND'))
       }
-      cli.log(messageHandler.parse('CLI_BOOTSTRAP_SUCCESS'))
+      // summary
+      printSummary({
+          appName: this.appConfig.displayName,
+          path: this.cloneDirectory,
+          type: this.appType,
+        }, environmentResult)
     } catch (error) {
       cli.error(messageHandler.parse('CLI_BOOTSTRAP_STACK_CREATION_FAILED', this.appConfig.stack))
     }
