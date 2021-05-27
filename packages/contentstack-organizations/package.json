@@ -1,5 +1,5 @@
 {
-  "name": "contentstack-organizations",
+  "name": "@contentstack/contentstack-organizations",
   "description": "Methods related to organizations",
   "version": "0.0.0",
   "author": "contentstack",

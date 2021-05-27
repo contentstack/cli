@@ -48,7 +48,8 @@ hello world from ./src/hello.ts!
       stacks = await this.fetch(flags)
       this.validateProperties(stacks, flags)
     } catch(error) {
-      return this.error(error)
+      debugger
+      return this.error(error.message)
     }
     let something = ''
     const name = flags.name || 'world'
