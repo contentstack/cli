@@ -2,11 +2,9 @@
 import cli from 'cli-ux';
 import {table} from 'table';
 import * as utilities from '../../../../contentstack-utilities/lib/index'
-import ora from 'ora'
 const ContentstackManagementSDK = require('@contentstack/management')
 const {Command, flags} = require('@contentstack/cli-command')
 const arraySort = require('array-sort')
-let spinner
 let properties
 
 // tableConfig for displaying stack data
@@ -48,7 +46,6 @@ hello world from ./src/hello.ts!
       stacks = await this.fetch(flags)
       this.validateProperties(stacks, flags)
     } catch(error) {
-      debugger
       return this.error(error.message)
     }
     let something = ''
@@ -104,7 +101,7 @@ hello world from ./src/hello.ts!
   }
 
   getStacks(organization) {
-    spinner = ora('Loading Stacks').start()
+    cli.action.start('Loading Stacks')
     return new Promise(resolve => {
       let stacks: any = []
       this.managementAPIClient.stack({organization_uid: organization.orgUid}).query({query: {}}).find().then(stackResponse => {
@@ -119,7 +116,7 @@ hello world from ./src/hello.ts!
             org_name: organization.orgName
           })
         })
-        spinner.stop()
+        cli.action.stop()
         resolve(stacks)
       })
     })
