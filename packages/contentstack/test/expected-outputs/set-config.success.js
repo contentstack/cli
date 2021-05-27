@@ -1,0 +1,1 @@
+module.exports = 'something has been set to something in the global config'

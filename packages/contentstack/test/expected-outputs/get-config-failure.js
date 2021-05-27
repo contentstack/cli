@@ -1,0 +1,1 @@
+module.exports = 'something doesn\'t exist in the global config'
