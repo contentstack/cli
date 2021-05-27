@@ -9,10 +9,9 @@ const propertiesToHide = [
 
 class ViewCommand extends Command {
   async run() {
-    const {flags} = this.parse(ViewCommand)
-    const name = flags.name || 'world'
-    this.log(`hello ${name} from /home/abhinav/Documents/contentstack/cli/packages/contentstack/src/commands/view.js`)
+    debugger
     const globalConfig = this.hideSensitiveData(config.all)
+    debugger
     this.log(globalConfig)
     this.log(`The config file is store at ${config.path}`)
   }
@@ -41,9 +40,5 @@ ViewCommand.description = `Describe the command here
 ...
 Extra documentation goes here
 `
-
-ViewCommand.flags = {
-  name: flags.string({char: 'n', description: 'name to print'}),
-}
 
 module.exports = ViewCommand
