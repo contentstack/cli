@@ -12,18 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.chooseEntry = exports.chooseContentType = exports.chooseStack = exports.chooseOrganization = exports.orgClass = void 0;
+exports.chooseEntry = exports.chooseContentType = exports.chooseStack = exports.chooseOrganization = void 0;
 const ora_1 = __importDefault(require("ora"));
 const inquirer = require('inquirer');
 const { Command } = require('@contentstack/cli-command');
 const ContentstackManagementSDK = require('@contentstack/management');
-class orgClass extends Command {
-    get managementAPIClient() {
-        this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this.authToken });
-        return this._managementAPIClient;
-    }
-}
-exports.orgClass = orgClass;
 function chooseOrganization(displayMessage, region, orgUid) {
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
         try {
@@ -71,14 +64,14 @@ function chooseOrganization(displayMessage, region, orgUid) {
 exports.chooseOrganization = chooseOrganization;
 function chooseStack(organizationId, displayMessage, region) {
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-        const command = new orgClass();
+        const command = new Command();
+        command.managementAPIClient = { host: command.cmaHost, authtoken: command.authToken };
         const client = command.managementAPIClient;
         try {
             const spinner = ora_1.default('Loading Stacks').start();
             let { items: stacks } = yield client.stack({ organization_uid: organizationId }).query({ query: {} }).find();
             spinner.stop();
             let stackMap = {};
-            debugger
             stacks.forEach((stack) => {
                 stackMap[stack.name] = stack.api_key;
             });
@@ -101,7 +94,8 @@ function chooseStack(organizationId, displayMessage, region) {
 exports.chooseStack = chooseStack;
 function chooseContentType(stackApiKey, displayMessage, region) {
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-        const command = new orgClass();
+        const command = new Command();
+        command.managementAPIClient = { host: command.cmaHost, authtoken: command.authToken };
         const client = command.managementAPIClient;
         try {
             const spinner = ora_1.default('Loading Content Types').start();
@@ -130,7 +124,8 @@ function chooseContentType(stackApiKey, displayMessage, region) {
 exports.chooseContentType = chooseContentType;
 function chooseEntry(contentTypeUid, stackApiKey, displayMessage, region) {
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-        const command = new orgClass();
+        const command = new Command();
+        command.managementAPIClient = { host: command.cmaHost, authtoken: command.authToken };
         const client = command.managementAPIClient;
         try {
             const spinner = ora_1.default('Loading Entries').start();
@@ -157,19 +152,3 @@ function chooseEntry(contentTypeUid, stackApiKey, displayMessage, region) {
     }));
 }
 exports.chooseEntry = chooseEntry;
-function callMe() {
-    return __awaiter(this, void 0, void 0, function* () {
-        let organization;
-        try {
-            organization = yield chooseOrganization();
-            console.log(organization);
-        }
-        catch (error) {
-            console.error(error.message);
-        }
-        // let stack = await chooseStack(organization.orgUid)
-        // console.log(stack)
-    });
-}
-callMe();
-//# sourceMappingURL=index.js.map

@@ -8,11 +8,6 @@ interface Organization {
 	name: string,
 }
 
-interface selectedOrganization {
-	orgUid: string,
-	orgName: string,
-}
-
 interface Stack {
 	name: string,
 	api_key: string,
@@ -28,7 +23,7 @@ interface Entry {
 	title: string,
 }
 
-export function chooseOrganization(displayMessage?: string, region?: string, orgUid?: string): Promise<selectedOrganization> {
+export function chooseOrganization(displayMessage?: string, region?: string, orgUid?: string) {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const command = new Command()
@@ -156,18 +151,3 @@ export function chooseEntry(contentTypeUid: string, stackApiKey: string, display
 		}
 	})	
 }
-
-async function callMe() {
-	let organization: selectedOrganization
-	try {
-		organization = await chooseOrganization()
-		console.log(organization)
-	} catch (error) {
-		console.error(error.message)
-	}
-
-	// let stack = await chooseStack(organization.orgUid)
-	// console.log(stack)
-}
-
-callMe()
