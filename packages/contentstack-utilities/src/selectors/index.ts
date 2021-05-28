@@ -8,6 +8,11 @@ interface Organization {
 	name: string,
 }
 
+interface selectedOrganization {
+	orgUid: string,
+	orgName: string,
+}
+
 interface Stack {
 	name: string,
 	api_key: string,
@@ -23,7 +28,7 @@ interface Entry {
 	title: string,
 }
 
-export function chooseOrganization(displayMessage?: string, region?: string, orgUid?: string) {
+export function chooseOrganization(displayMessage?: string, region?: string, orgUid?: string): Promise<selectedOrganization> {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const command = new Command()
@@ -65,7 +70,7 @@ export function chooseOrganization(displayMessage?: string, region?: string, org
 	})
 }
 
-export function chooseStack(organizationId: string, displayMessage?: string, region?: string) {
+export function chooseStack(organizationId: string, displayMessage?: string, region?: string) : Promise<Stack> {
 	return new Promise(async (resolve, reject) => {
 		const command = new Command()
 		command.managementAPIClient = {host: command.cmaHost, authtoken: command.authToken}
@@ -94,7 +99,7 @@ export function chooseStack(organizationId: string, displayMessage?: string, reg
 	})
 }
 
-export function chooseContentType(stackApiKey: string, displayMessage?: string, region?: string) {
+export function chooseContentType(stackApiKey: string, displayMessage?: string, region?: string): Promise<ContentType> {
 	return new Promise(async (resolve, reject) => {
 		const command = new Command()
 		command.managementAPIClient = {host: command.cmaHost, authtoken: command.authToken}
@@ -123,7 +128,7 @@ export function chooseContentType(stackApiKey: string, displayMessage?: string, 
 	})	
 }
 
-export function chooseEntry(contentTypeUid: string, stackApiKey: string, displayMessage?: string, region?: string) {
+export function chooseEntry(contentTypeUid: string, stackApiKey: string, displayMessage?: string, region?: string): Promise<Entry> {
 	return new Promise(async (resolve, reject) => {
 		const command = new Command()
 		command.managementAPIClient = {host: command.cmaHost, authtoken: command.authToken}
