@@ -5,6 +5,7 @@ var {addlogs} = require('./lib/util/log')
 const chalk = require('chalk')
 let path = require('path')
 let _ = require('lodash')
+const cli = require('cli-ux')
 
 exports.initial = async function (config) {
   return new Promise(function (resolve, reject) {
@@ -40,7 +41,13 @@ var singleExport = async (moduleName, types, config) => {
   var types = config.modules.types
   try {
     if (types.indexOf(moduleName) > -1) {
-      let iterateList = ['stack', moduleName]
+      let iterateList
+      if (config.modules.dependency && config.modules.dependency[moduleName]) {
+        iterateList = config.modules.dependency[moduleName]
+      } else {
+        iterateList = ['stack']
+      }
+      iterateList.push(moduleName)
       for (let i = 0; i < iterateList.length; i++) {
         var exportedModule = require('./lib/export/' + iterateList[i])
         await exportedModule.start(config).then(function (result) {
