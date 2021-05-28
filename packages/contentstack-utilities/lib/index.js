@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.chooseStack = exports.chooseOrganization = exports.orgClass = void 0;
+exports.chooseEntry = exports.chooseContentType = exports.chooseStack = exports.chooseOrganization = exports.orgClass = void 0;
 const ora_1 = __importDefault(require("ora"));
 const inquirer = require('inquirer');
 const { Command } = require('@contentstack/cli-command');
@@ -27,7 +27,8 @@ exports.orgClass = orgClass;
 function chooseOrganization(displayMessage, region, orgUid) {
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
         try {
-            const command = new orgClass();
+            const command = new Command();
+            command.managementAPIClient = { host: command.cmaHost, authtoken: command.authToken };
             const client = command.managementAPIClient;
             const spinner = ora_1.default('Loading Organizations').start();
             let { items: organizations } = yield client.organization().fetchAll();
@@ -55,6 +56,7 @@ function chooseOrganization(displayMessage, region, orgUid) {
                     message: displayMessage || 'Choose an organization',
                     choices: orgList
                 };
+                debugger;
                 inquirer.prompt(inquirerConfig).then(({ chosenOrganization }) => {
                     debugger;
                     resolve({ orgUid: orgMap[chosenOrganization], orgName: chosenOrganization });
@@ -97,12 +99,77 @@ function chooseStack(organizationId, displayMessage, region) {
     }));
 }
 exports.chooseStack = chooseStack;
+function chooseContentType(stackApiKey, displayMessage, region) {
+    return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+        const command = new orgClass();
+        const client = command.managementAPIClient;
+        try {
+            const spinner = ora_1.default('Loading Content Types').start();
+            let { items: contentTypes } = yield client.stack({ api_key: stackApiKey }).contentType().query().find();
+            spinner.stop();
+            let contentTypeMap = {};
+            contentTypes.forEach((contentType) => {
+                contentTypeMap[contentType.title] = contentType.uid;
+            });
+            const contentTypeList = Object.keys(contentTypeMap);
+            let inquirerConfig = {
+                type: 'list',
+                name: 'chosenContentType',
+                choices: contentTypeList,
+                message: displayMessage || 'Choose a content type'
+            };
+            inquirer.prompt(inquirerConfig).then(({ chosenContentType }) => {
+                resolve({ uid: contentTypeMap[chosenContentType], title: chosenContentType });
+            });
+        }
+        catch (error) {
+            console.error(error.message);
+        }
+    }));
+}
+exports.chooseContentType = chooseContentType;
+function chooseEntry(contentTypeUid, stackApiKey, displayMessage, region) {
+    return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+        const command = new orgClass();
+        const client = command.managementAPIClient;
+        try {
+            const spinner = ora_1.default('Loading Entries').start();
+            let { items: entries } = yield client.stack({ api_key: stackApiKey }).contentType(contentTypeUid).entry().query().find();
+            spinner.stop();
+            let entryMap = {};
+            entries.forEach((entry) => {
+                entryMap[entry.title] = entry.uid;
+            });
+            const entryList = Object.keys(entryMap);
+            let inquirerConfig = {
+                type: 'list',
+                name: 'chosenEntry',
+                choices: entryList,
+                message: displayMessage || 'Choose an entry'
+            };
+            inquirer.prompt(inquirerConfig).then(({ chosenEntry }) => {
+                resolve({ uid: entryMap[chosenEntry], title: chosenEntry });
+            });
+        }
+        catch (error) {
+            console.error(error.message);
+        }
+    }));
+}
+exports.chooseEntry = chooseEntry;
 function callMe() {
     return __awaiter(this, void 0, void 0, function* () {
-        // let organization = await chooseOrganization()
-        // console.log(organization)
-        let stack = yield chooseStack('bltdf4dfa3134a29d66');
-        console.log(stack);
+        let organization;
+        try {
+            organization = yield chooseOrganization();
+            console.log(organization);
+        }
+        catch (error) {
+            console.error(error.message);
+        }
+        // let stack = await chooseStack(organization.orgUid)
+        // console.log(stack)
     });
 }
 callMe();
+//# sourceMappingURL=index.js.map

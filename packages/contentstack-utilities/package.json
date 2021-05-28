@@ -4,7 +4,8 @@
   "description": "Utilities for contentstack projects",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=html mocha --forbid-only \"test/**/*.test.js\""
+    "test": "nyc --reporter=html mocha --forbid-only \"test/**/*.test.js\"",
+    "testD": "mocha -r ts-node/register test/index.test.js"
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,8 @@
     "@contentstack/cli-command": "*",
     "@contentstack/management": "^1.2.1",
     "inquirer": "^8.0.0",
-    "ora": "^5.4.0"
+    "ora": "^5.4.0",
+    "ts-node": "^10.0.0"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
