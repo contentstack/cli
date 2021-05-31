@@ -34,6 +34,21 @@ export default class ContentstackClient {
     })
   }
 
+  async getOrganization(org_uid: string): Promise<Organization> {
+    try {
+      const response = await this.instance.get(`/organizations/${org_uid}`)
+      const o = response.data.organization
+      const result = {
+        uid: o.uid,
+        name: o.name,
+        enabled: o.enabled,
+      } as Organization
+      return result
+    } catch (error) {
+      throw this.buildError(error)
+    }
+  }
+
   async getOrganizations(): Promise<Organization[]> {
     try {
       const response = await this.instance.get('/organizations', {
@@ -50,6 +65,25 @@ export default class ContentstackClient {
         }
       }) as Organization[]
 
+      return result
+    } catch (error) {
+      throw this.buildError(error)
+    }
+  }
+
+  async getStack(stackUID: string): Promise<Stack> {
+    try {
+      const response = await this.instance.get('/stacks', {
+        headers: {api_key: stackUID},
+      })
+      const s = response.data.stack
+      const result = {
+        uid: s.uid,
+        name: s.name,
+        master_locale: s.master_locale,
+        api_key: s.api_key,
+        org_uid: s.org_uid,
+      } as Stack
       return result
     } catch (error) {
       throw this.buildError(error)
