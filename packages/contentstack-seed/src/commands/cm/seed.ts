@@ -8,6 +8,8 @@ export default class SeedCommand extends Command {
     '$ csdx cm:seed',
     '$ csdx cm:seed -r "account"',
     '$ csdx cm:seed -r "account/repository"',
+    '$ csdx cm:seed -r "account/repository" -s "stack-uid" //seed content into specific stack',
+    '$ csdx cm:seed -r "account/repository" -o "your-org-uid" -n "stack-name" //create a new stack in given org uid',
   ];
 
   static flags = {
@@ -16,6 +18,27 @@ export default class SeedCommand extends Command {
       description: 'GitHub account or GitHub account/repository',
       multiple: false,
       required: false,
+    }),
+    org: flags.string({
+      char: 'o',
+      description: 'Provide Organization UID to create a new stack',
+      multiple: false,
+      required: false,
+      exclusive: ['stack'],
+    }),
+    stack: flags.string({
+      char: 's',
+      description: 'Provide stack UID to seed content to',
+      multiple: false,
+      required: false,
+      exclusive: ['org', 'name'],
+    }),
+    'stack-name': flags.string({
+      char: 'n',
+      description: 'Name of a new stack that needs to be created.',
+      multiple: false,
+      required: false,
+      exclusive: ['stack'],
     }),
   };
 
@@ -32,6 +55,9 @@ export default class SeedCommand extends Command {
         cmaHost: this.cmaHost,
         authToken: this.authToken,
         gitHubPath: flags.repo,
+        orgUid: flags.org,
+        stackUid: flags.stack,
+        stackName: flags['stack-name'],
       }
 
       const seeder = new ContentModelSeeder(options)
