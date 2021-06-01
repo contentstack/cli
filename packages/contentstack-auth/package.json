@@ -26,7 +26,8 @@
     "cli-ux": "^5.4.6",
     "configstore": "^5.0.1",
     "debug": "^4.1.1",
-    "inquirer": "^7.1.0"
+    "inquirer": "^7.1.0",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
