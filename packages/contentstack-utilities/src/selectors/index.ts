@@ -1,5 +1,6 @@
 import ora from 'ora'
 const inquirer = require('inquirer')
+inquirer.registerPrompt('search-list', require('inquirer-search-list'))
 const {Command} = require('@contentstack/cli-command')
 const ContentstackManagementSDK = require('@contentstack/management')
 
@@ -53,10 +54,11 @@ export function chooseOrganization(displayMessage?: string, region?: string, org
 				})
 				const orgList = Object.keys(orgMap)
 				let inquirerConfig = {
-					type: 'list',
+					type: 'search-list',
 					name: 'chosenOrganization',
 					message: displayMessage || 'Choose an organization',
-					choices: orgList
+					choices: orgList,
+					loop: false,
 				}
 				debugger
 				inquirer.prompt(inquirerConfig).then(({chosenOrganization}: {chosenOrganization: string}) => {
@@ -156,3 +158,14 @@ export function chooseEntry(contentTypeUid: string, stackApiKey: string, display
 		}
 	})	
 }
+
+async function getAll () {
+
+}
+
+async function callMe() {
+	let organization = await chooseOrganization()
+	console.log(organization)
+}
+
+callMe()

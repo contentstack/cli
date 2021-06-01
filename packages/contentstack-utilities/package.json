@@ -21,6 +21,7 @@
     "@contentstack/cli-command": "*",
     "@contentstack/management": "^1.2.1",
     "inquirer": "^8.0.0",
+    "inquirer-search-list": "^1.2.6",
     "ora": "^5.4.0",
     "ts-node": "^10.0.0"
   },
