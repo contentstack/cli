@@ -1,5 +1,6 @@
 import * as winston from 'winston';
 import config from '../config';
+import messageHandler from './message-handler';
 class LoggerService {
   name: string;
   data: object | null;
@@ -22,8 +23,16 @@ class LoggerService {
       format: winston.format.combine(
         winston.format.colorize(),
         winston.format.printf((info) => {
+          let stringifiedParam;
+          try {
+            stringifiedParam = JSON.stringify(info.obj);
+          } catch (error) {
+            console.log('warning: failed to log the result');
+          }
+          // parse message
+          info.message = messageHandler.parse(info.message);
           let message = `${LoggerService.dateFormat()}:${name}:${info.level}:${info.message}`;
-          message = info.obj ? message + `:${JSON.stringify(info.obj)}` : message;
+          message = info.obj ? message + `:${stringifiedParam}` : message;
           message = this.data ? message + `:${JSON.stringify(this.data)}` : message;
           return message;
         }),
@@ -37,40 +46,41 @@ class LoggerService {
     this.data = data;
   }
 
-  info(message: string): void {
+  async info(message: string): void {
     this.logger.log('info', message);
   }
 
-  info(message: string, obj: object): void {
+  async info(message: string, obj: object): void {
     this.logger.log('info', message, {
       obj,
     });
   }
 
-  debug(message: string): void {
+  async debug(message: string): void {
     this.logger.log('debug', message);
   }
 
-  debug(message: string, obj: object | string): void {
+  async debug(message: string, obj: object | string): void {
     this.logger.log('debug', message, {
       obj,
     });
   }
 
-  error(message: string): void {
+  async error(message: string): void {
     this.logger.log('error', message);
   }
 
-  error(message: string, obj: object): void {
+  async error(message: string, obj: object): void {
     this.logger.log('error', message, {
       obj,
     });
   }
-  warn(message: string) {
+
+  async warn(message: string) {
     this.logger.log('warn', message);
   }
 
-  warn(message: string, obj: object) {
+  async warn(message: string, obj: object) {
     this.logger.log('warn', message, {
       obj,
     });

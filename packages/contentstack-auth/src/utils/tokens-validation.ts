@@ -20,7 +20,39 @@ export const validateDeliveryToken = async (
       .query({ query: { token: deliveryToken } })
       .find();
     logger.debug('delivery token validation result', deliveryTokenResult);
-    result = { valid: true, message: deliveryTokenResult };
+    if (Array.isArray(deliveryTokenResult.items) && deliveryTokenResult.items.length > 0) {
+      result = { valid: true, message: deliveryTokenResult };
+    } else {
+      result = { valid: false, message: 'CLI_AUTH_TOKENS_VALIDATION_INVALID_DELIVERY_TOKEN' };
+    }
+  } catch (error) {
+    logger.error(error);
+    result = { valid: false, message: error.errorMessage };
+  }
+  return result;
+};
+
+/**
+ * Validate environment
+ * @param contentStackClient
+ * @param apiKey
+ * @param environment
+ * @returns
+ */
+export const validateEnvironment = async (
+  contentStackClient: any,
+  apiKey: string,
+  environment: string,
+): Promise<any> => {
+  let result: { valid: boolean; message: string };
+  try {
+    const validationResult = await contentStackClient.stack({ api_key: apiKey }).environment(environment).fetch();
+    logger.debug('environment validation result', validationResult);
+    if (validationResult.name === environment) {
+      result = { valid: true, message: validationResult };
+    } else {
+      result = { valid: false, message: 'CLI_AUTH_TOKENS_VALIDATION_INVALID_ENVIRONMENT_NAME' };
+    }
   } catch (error) {
     logger.error(error);
     result = { valid: false, message: error.errorMessage };
@@ -33,15 +65,31 @@ export const validateDeliveryToken = async (
  * @param contentStackClient
  * @param apiKey
  * @param managementToken
- * @returns
- * TBD: management client not providing managentToken validation api atm
+ * @returns { valid: boolean; message: any }
+ * Note: Fetching one content type using the management token to check whether it is valid or not
  */
 export const validateManagementToken = async (
   contentStackClient: any,
   apiKey: string,
   managementToken: string,
 ): Promise<any> => {
-  return { valid: true };
+  let result: { valid: boolean; message: string };
+  try {
+    const validationResuslt = await contentStackClient.axiosInstance.get('/content_types?limit=1', {
+      headers: { api_key: apiKey, authorization: managementToken },
+    });
+
+    logger.debug('Management validation result', validationResuslt);
+    if (validationResuslt.content_types) {
+      result = { valid: true, message: validationResuslt };
+    } else {
+      result = { valid: true, message: 'CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN' };
+    }
+  } catch (error) {
+    logger.error('Failed to validate management token', error.message);
+    result = { valid: false, message: error.errorMessage || error.message };
+  }
+  return result;
 };
 
 /**
@@ -54,7 +102,12 @@ export const validateAPIKey = async (contentStackClient: any, apiKey: string): P
   let result: { valid: boolean; message: string };
   try {
     const validateAPIKeyResult = await contentStackClient.stack({ api_key: apiKey }).fetch();
-    result = { valid: true, message: validateAPIKeyResult };
+    logger.debug('api key validation result', validateAPIKeyResult);
+    if (validateAPIKeyResult.api_key === apiKey) {
+      result = { valid: true, message: validateAPIKeyResult };
+    } else {
+      result = { valid: false, message: 'CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY' };
+    }
   } catch (error) {
     logger.error(error);
     result = { valid: false, message: error.errorMessage };

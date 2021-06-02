@@ -2,14 +2,13 @@ import { Command, flags } from '@contentstack/cli-command';
 import * as ContentstackManagementSDK from '@contentstack/management';
 
 import * as Configstore from 'configstore';
-import { logger, cliux, tokenValidation } from '../../../utils';
+import { logger, cliux, tokenValidation, messageHandler } from '../../../utils';
 
 const config = new Configstore('contentstack_cli');
 export default class TokensAddCommand extends Command {
   private readonly _managementAPIClient: any;
 
-  static description = `Adds management/delivery tokens to your session to use it with further CLI command
-  by default it adds management token if either of management or delivery flags are not set`;
+  static description = messageHandler.parse('CLI_AUTH_TOKENS_ADD_DESCRIPTION');
 
   static examples = ['$ csdx auth:tokens:add'];
 
@@ -17,22 +16,22 @@ export default class TokensAddCommand extends Command {
     alias: flags.string({ char: 'a', description: '' }),
     delivery: flags.boolean({
       char: 'd',
-      description: 'Set this while saving delivery token',
+      description: messageHandler.parse('CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN'),
       exclusive: ['management'],
     }),
     management: flags.boolean({
       char: 'm',
-      description: 'Set this while saving management token',
+      description: messageHandler.parse('CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN'),
       exclusive: ['delivery', 'environment'],
     }),
     environment: flags.string({
       char: 'e',
-      description: 'Environment name for delivery token',
+      description: messageHandler.parse('CLI_AUTH_TOKENS_ADD_FLAG_ENVIRONMENT_NAME'),
       exclusive: ['management'],
     }),
-    'api-key': flags.string({ char: 'k', description: '' }),
-    force: flags.boolean({ char: 'f', description: '' }),
-    token: flags.string({ char: 't', description: '', env: 'TOKEN' }),
+    'api-key': flags.string({ char: 'k', description: 'API Key' }),
+    force: flags.boolean({ char: 'f', description: 'Force adding' }),
+    token: flags.string({ char: 't', description: 'Token', env: 'TOKEN' }),
   };
 
   get managementAPIClient(): any {
@@ -53,11 +52,11 @@ export default class TokensAddCommand extends Command {
     const configKeyTokens = 'tokens';
     const type = isDelivery || Boolean(environment) ? 'delivery' : 'management';
 
-    logger.debug(`adding ${type} token`);
+    logger.info(`adding ${type} token`);
 
     try {
       if (!alias) {
-        alias = await cliux.inquire({ type: 'input', message: 'Provide alias to store token', name: 'alias' });
+        alias = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ASK_TOKEN_ALIAS', name: 'alias' });
       }
       isReplace = Boolean(config.get(`${configKeyTokens}.${alias}`)); // get to Check if alias already present
 
@@ -65,24 +64,26 @@ export default class TokensAddCommand extends Command {
         isReplace = true;
         const confirm = await cliux.inquire({
           type: 'confirm',
-          message: 'Alias with "%s" is already exists, do you want to replace?',
+          message: `CLI_AUTH_TOKENS_ADD_CONFIRM_ALIAS_REPLACE`,
           name: 'confirm',
         });
         if (!confirm) {
+          logger.info('Exiting from the process of replacing the token');
           this.exit();
         }
       }
 
       if (!apiKey) {
-        apiKey = await cliux.inquire({ type: 'input', message: 'enter api key', name: 'apiKey' });
+        apiKey = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_API_KEY', name: 'apiKey' });
         const validationResult = await tokenValidation.validateAPIKey(this.managementAPIClient, apiKey);
         if (!validationResult.valid) {
-          logger.error('Invalid api key');
+          cliux.error(validationResult.message);
+          logger.error('Invalid api key', validationResult);
           this.exit();
         }
       }
       if (!token) {
-        token = await cliux.inquire({ type: 'input', message: 'enter the token', name: 'token' });
+        token = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_TOKEN', name: 'token' });
         let validationResult;
         if (type === 'delivery') {
           validationResult = await tokenValidation.validateDeliveryToken(this.managementAPIClient, apiKey, token);
@@ -90,12 +91,28 @@ export default class TokensAddCommand extends Command {
           validationResult = await tokenValidation.validateManagementToken(this.managementAPIClient, apiKey, token);
         }
         if (!validationResult.valid) {
-          logger.error('Invalid token provided');
+          cliux.error(validationResult.message);
+          logger.error('Invalid token provided', validationResult);
           this.exit();
         }
       }
+
       if (isDelivery && !environment) {
-        environment = await cliux.inquire({ type: 'input', message: 'enter the env', name: 'env' });
+        environment = await cliux.inquire({
+          type: 'input',
+          message: 'CLI_AUTH_TOKENS_ADD_ENTER_ENVIRONMENT',
+          name: 'env',
+        });
+        const validationResult = await tokenValidation.validateEnvironment(
+          this.managementAPIClient,
+          apiKey,
+          environment,
+        );
+        if (!validationResult.valid) {
+          cliux.error(validationResult.message);
+          logger.error('Invalid environment provided');
+          this.exit();
+        }
       }
 
       if (isManagement) {
@@ -105,12 +122,13 @@ export default class TokensAddCommand extends Command {
       }
 
       if (isReplace) {
-        cliux.success('Successfully replaced the token');
+        cliux.success('CLI_AUTH_TOKENS_ADD_REPLACE_SUCCESS');
       } else {
-        cliux.success('Successfully added the token');
+        cliux.success('CLI_AUTH_TOKENS_ADD_SUCCESS');
       }
     } catch (error) {
-      logger.error(error.message);
+      logger.error('token add error', error);
+      cliux.error('CLI_AUTH_TOKENS_ADD_FAILED', error.message);
     }
   }
 }

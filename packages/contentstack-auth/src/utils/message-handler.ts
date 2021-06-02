@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import logger from './logger';
 
 /**
  * Message handler
@@ -8,7 +9,7 @@ class Messages {
   private readonly messages: any;
 
   constructor() {
-    this.messages = fs.readFileSync(path.join(__dirname, '../messages/index.json'));
+    this.messages = JSON.parse(fs.readFileSync(path.join(__dirname, '../messages/index.json'), 'utf-8'));
   }
 
   parse(messageKey: string, ...substitutions: Array<any>): string {

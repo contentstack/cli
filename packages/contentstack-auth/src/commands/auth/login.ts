@@ -1,24 +1,24 @@
 import { Command, flags } from '@contentstack/cli-command';
 import * as Configstore from 'configstore';
-import { logger, authHandler, cliux, interactive } from '../../utils';
+import { logger, authHandler, cliux, interactive, messageHandler } from '../../utils';
 
 const config = new Configstore('contentstack_cli');
 
 export default class LoginCommand extends Command {
-  static description = 'Login';
+  static description = messageHandler.parse('CLI_AUTH_LOGIN_DESCRIPTION');
 
   static examples = ['$ csdx auth:login'];
 
   static flags = {
     username: flags.string({
       char: 'u',
-      description: 'User name',
+      description: messageHandler.parse('CLI_AUTH_LOGIN_FLAG_USERNAME'),
       multiple: false,
       required: false,
     }),
     password: flags.string({
       char: 'p',
-      description: 'Password',
+      description: messageHandler.parse('CLI_AUTH_LOGIN_FLAG_PASSWORD'),
       multiple: false,
       required: false,
     }),
@@ -31,16 +31,21 @@ export default class LoginCommand extends Command {
     try {
       const username = flags.username
         ? flags.username
-        : await cliux.inquire<string>({ type: 'input', message: 'Enter your email address', name: 'username' });
+        : await cliux.inquire<string>({
+            type: 'input',
+            message: 'CLI_AUTH_LOGIN_ENTER_EMAIL_ADDRESS',
+            name: 'username',
+          });
       const password = flags.password ? flags.password : await interactive.askPassword();
       logger.debug('username', username);
-      logger.debug('password', password);
       const user: { authtoken: string; email: string } = await authHandler.login(username, password);
       config.set('authtoken', user.authtoken);
       config.set('email', user.email);
-      cliux.success('Successfully logged in!!');
+      logger.info('successfully logged in');
+      cliux.success('CLI_AUTH_LOGIN_SUCCESS');
     } catch (error) {
-      logger.error(error.message);
+      logger.error('login  error', error);
+      cliux.error('CLI_AUTH_LOGIN_FAILED', error.message);
     }
   }
 }
