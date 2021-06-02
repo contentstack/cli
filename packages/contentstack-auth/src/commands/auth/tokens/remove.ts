@@ -1,16 +1,16 @@
 import { Command, flags } from '@contentstack/cli-command';
 import * as Configstore from 'configstore';
-import { cliux, logger } from '../../../utils';
+import { cliux, logger, messageHandler } from '../../../utils';
 
 const config = new Configstore('contentstack_cli');
 export default class TokensRemoveCommand extends Command {
-  static description = 'description';
+  static description = messageHandler.parse('CLI_AUTH_TOKENS_REMOVE_DESCRIPTION');
 
   static examples = ['$ csdx auth:tokens:remove'];
 
   static flags = {
-    alias: flags.string({ char: 'a', description: 'token alias' }),
-    ignore: flags.boolean({ char: 'i', description: '' }),
+    alias: flags.string({ char: 'a', description: 'Token alias' }),
+    ignore: flags.boolean({ char: 'i', description: 'Ignore' }),
   };
 
   async run(): Promise<any> {
@@ -24,7 +24,7 @@ export default class TokensRemoveCommand extends Command {
       const tokenOptions: Array<string> = [];
       if (token || ignore) {
         config.delete(`tokens.${alias}`);
-        return cliux.success(`"${alias}" token removed successfully!`);
+        return cliux.success(`CLI_AUTH_TOKENS_REMOVE_SUCCESS`);
       }
 
       if (tokens && Object.keys(tokens).length > 0) {
@@ -36,26 +36,28 @@ export default class TokensRemoveCommand extends Command {
           );
         });
       } else {
-        return cliux.print('No tokens are added yet.');
+        return cliux.print('CLI_AUTH_TOKENS_NOT_FOUND');
       }
 
       const selectedTokens: Array<any> = await cliux.inquire({
         name: 'selectedTokens',
-        message: 'Select tokens to remove.',
+        message: 'CLI_AUTH_TOKENS_REMOVE_SELECT_TOKEN',
         type: 'checkbox',
         choices: tokenOptions,
       });
 
+      logger.debug('selected tokens', selectedTokens);
       if (selectedTokens.length === 0) {
         return;
       }
       selectedTokens.forEach((element) => {
         const selectedToken = element.split(':')[0];
         config.delete(`tokens.${selectedToken}`);
-        cliux.success(`${selectedToken} removed successfully`);
+        cliux.success('CLI_AUTH_TOKENS_REMOVE_SUCCESS');
       });
     } catch (error) {
-      logger.error(error.message);
+      logger.error('Token remove error');
+      cliux.error('CLI_AUTH_TOKENS_REMOVE_FAILED', error.message);
     }
   }
 }

@@ -1,13 +1,12 @@
 import { Command } from '@contentstack/cli-command';
 import cli from 'cli-ux';
 import * as Configstore from 'configstore';
-import { cliux, logger } from '../../../utils';
+import { cliux, logger, messageHandler } from '../../../utils';
 
 const config = new Configstore('contentstack_cli');
 
 export default class TokensListCommand extends Command {
-  static description = `Lists all existing tokens added to the session 
-  `;
+  static description = messageHandler.parse('CLI_AUTH_TOKENS_LIST_DESCRIPTION');
   static aliases = ['tokens'];
   static examples = ['$ csdx auth:tokens'];
   static flags = cli.table.flags(); // use the cli table flags as it displays tokens in table
@@ -48,15 +47,16 @@ export default class TokensListCommand extends Command {
             },
           },
           {
-            printLine: this.log,
+            printLine: cliux.print,
             ...flags, // parsed flags
           },
         );
       } else {
-        cliux.print('No tokens are added. Use auth:tokens:add command to add tokens.');
+        cliux.print('CLI_AUTH_TOKENS_LIST_NO_TOKENS');
       }
     } catch (error) {
-      logger.error(error.message);
+      logger.error('Token list error', error);
+      cliux.error('CLI_AUTH_TOKENS_LIST_FAILED', error.message);
     }
   }
 }

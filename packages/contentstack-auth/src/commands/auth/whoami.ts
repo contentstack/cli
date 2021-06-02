@@ -1,8 +1,7 @@
 import { Command } from '@contentstack/cli-command';
-import { logger, cliux } from '../../utils';
+import { logger, cliux, messageHandler } from '../../utils';
 export default class WhoamiCommand extends Command {
-  static description = `Display current users email address
-  `;
+  static description = messageHandler.parse('CLI_AUTH_WHOAMI_DESCRIPTION');
 
   static examples = ['$ csdx auth:whoami'];
 
@@ -10,11 +9,12 @@ export default class WhoamiCommand extends Command {
 
   async run(): Promise<any> {
     try {
-      cliux.print('You are currently logged in with email', { color: 'white' });
+      cliux.print('CLI_AUTH_WHOAMI_LOGGED_IN_AS', { color: 'white' });
       cliux.print(this.email, { color: 'yellow' });
-      logger.debug('Currently logged in user', this.email);
+      logger.info('Currently logged in user', this.email);
     } catch (error) {
-      logger.error(error.message);
+      logger.error('whoami error', error);
+      cliux.error('CLI_AUTH_WHOAMI_FAILED', error.message);
     }
   }
 }
