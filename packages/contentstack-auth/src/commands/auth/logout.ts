@@ -1,16 +1,16 @@
 import { Command, flags } from '@contentstack/cli-command';
 import * as Configstore from 'configstore';
-import { logger, authHandler, cliux } from '../../utils';
+import { logger, authHandler, cliux, messageHandler } from '../../utils';
 
 const config = new Configstore('contentstack_cli');
 export default class LogoutCommand extends Command {
-  static description = 'Logout';
+  static description = messageHandler.parse('CLI_AUTH_LOGOUT_DESCRIPTION');
   static examples = ['$ csdx auth:logout'];
 
   static flags = {
     force: flags.string({
       char: 'f',
-      description: 'force logging out for skipping the confirmation',
+      description: messageHandler.parse('CLI_AUTH_LOGOUT_FLAG_PASSWORD'),
       multiple: false,
       required: false,
     }),
@@ -24,19 +24,21 @@ export default class LogoutCommand extends Command {
       ? true
       : await cliux.inquire({
           type: 'confirm',
-          message: 'Are you sure you want to log out? (Y/N)',
+          message: 'CLI_AUTH_LOGOUT_CONFIRM',
           name: 'confirmation',
         });
     try {
       if (confirm) {
-        cliux.loader('Logging out....');
+        cliux.loader('CLI_AUTH_LOGOUT_LOADER_START');
         const authtoken = this.authToken;
         await authHandler.logout(authtoken);
         cliux.loader(''); //stops loading
-        cliux.success('Successfully logged out');
+        logger.info('successfully logged out');
+        cliux.success('CLI_AUTH_LOGOUT_SUCCESS');
       }
     } catch (error) {
-      logger.error(error.message);
+      logger.error('Logout error', error);
+      cliux.error('CLI_AUTH_LOGOUT_FAILED', error.message);
     } finally {
       config.delete('authtoken');
       config.delete('email');
