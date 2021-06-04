@@ -13,7 +13,7 @@
     "version": "oclif-dev readme && git add README.md",
     "test:report": "npm run test --reporter=lcov",
     "pretest": "tsc -p test",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/tokens-validation.test.ts\"",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/login.test.ts\"",
     "posttest": "npm run lint",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix"

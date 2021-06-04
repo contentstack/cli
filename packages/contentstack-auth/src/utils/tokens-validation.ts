@@ -83,7 +83,7 @@ export const validateManagementToken = async (
     if (validationResuslt.content_types) {
       result = { valid: true, message: validationResuslt };
     } else {
-      result = { valid: true, message: 'CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN' };
+      result = { valid: false, message: 'CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN' };
     }
   } catch (error) {
     logger.error('Failed to validate management token', error.message);
