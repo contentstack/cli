@@ -4,6 +4,10 @@ import { logger, authHandler, cliux, messageHandler } from '../../utils';
 
 const config = new Configstore('contentstack_cli');
 export default class LogoutCommand extends Command {
+  private readonly parse: Function;
+  private readonly managementAPIClient: any;
+  private readonly authToken: string;
+
   static description = messageHandler.parse('CLI_AUTH_LOGOUT_DESCRIPTION');
   static examples = ['$ csdx auth:logout'];
 

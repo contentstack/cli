@@ -46,44 +46,44 @@ class LoggerService {
     this.data = data;
   }
 
-  async info(message: string): void {
-    this.logger.log('info', message);
+  async info(message: string, param?: any): Promise<any> {
+    if (param) {
+      this.logger.log('info', message, {
+        obj: param,
+      });
+    } else {
+      this.logger.log('info', message);
+    }
   }
 
-  async info(message: string, obj: object): void {
-    this.logger.log('info', message, {
-      obj,
-    });
+  async debug(message: string, param?: any): Promise<any> {
+    if (param) {
+      this.logger.log('debug', message, {
+        obj: param,
+      });
+    } else {
+      this.logger.log('debug', message);
+    }
   }
 
-  async debug(message: string): void {
-    this.logger.log('debug', message);
+  async error(message: string, param?: any): Promise<any> {
+    if (param) {
+      this.logger.log('error', message, {
+        obj: param,
+      });
+    } else {
+      this.logger.log('error', message);
+    }
   }
 
-  async debug(message: string, obj: object | string): void {
-    this.logger.log('debug', message, {
-      obj,
-    });
-  }
-
-  async error(message: string): void {
-    this.logger.log('error', message);
-  }
-
-  async error(message: string, obj: object): void {
-    this.logger.log('error', message, {
-      obj,
-    });
-  }
-
-  async warn(message: string) {
-    this.logger.log('warn', message);
-  }
-
-  async warn(message: string, obj: object) {
-    this.logger.log('warn', message, {
-      obj,
-    });
+  async warn(message: string, param?: any): Promise<any> {
+    if (param) {
+      this.logger.log('warn', message, {
+        obj: param,
+      });
+    } else {
+      this.logger.log('warn', message);
+    }
   }
 }
 

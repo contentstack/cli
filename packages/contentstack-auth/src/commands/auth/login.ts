@@ -1,10 +1,14 @@
 import { Command, flags } from '@contentstack/cli-command';
 import * as Configstore from 'configstore';
 import { logger, authHandler, cliux, interactive, messageHandler } from '../../utils';
+import { User } from '../../interfaces';
 
 const config = new Configstore('contentstack_cli');
 
 export default class LoginCommand extends Command {
+  private readonly parse: Function;
+  private readonly managementAPIClient: any;
+
   static description = messageHandler.parse('CLI_AUTH_LOGIN_DESCRIPTION');
 
   static examples = ['$ csdx auth:login'];
@@ -38,7 +42,7 @@ export default class LoginCommand extends Command {
           });
       const password = flags.password ? flags.password : await interactive.askPassword();
       logger.debug('username', username);
-      const user: { authtoken: string; email: string } = await authHandler.login(username, password);
+      const user: User = await authHandler.login(username, password);
       config.set('authtoken', user.authtoken);
       config.set('email', user.email);
       logger.info('successfully logged in');

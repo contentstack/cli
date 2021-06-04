@@ -1,16 +1,19 @@
 {
   "compilerOptions": {
-    "declaration": true,
+    "declaration": false,
     "importHelpers": true,
     "module": "commonjs",
     "outDir": "lib",
     "rootDir": "src",
-    "strict": true,
+    "strict": false,
     "target": "es2017",
     "allowJs": true,
     "sourceMap": true,
   },
   "include": [
     "src/**/*"
+  ],
+  "exclude": [
+    "src/**/*.d.ts"
   ]
 }
