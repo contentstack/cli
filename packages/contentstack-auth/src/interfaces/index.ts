@@ -16,6 +16,11 @@ export interface InquirePayload {
   type: string;
   name: string;
   message: string;
-  choices?: Array<string>;
+  choices?: Array<any>;
   transformer?: Function;
+}
+
+export interface User {
+  email: string;
+  authtoken: string;
 }

@@ -1,8 +1,8 @@
-import { AuthOptions } from '../interfaces';
 import CLIError from './cli-error';
 import logger from './logger';
 import cliux from './cli-ux';
 import { askOTPChannel, askOTP } from './interactive';
+import { User } from '../interfaces';
 
 /**
  * @class
@@ -21,11 +21,16 @@ class AuthHandler {
    * @param {string} email Contentstack email address
    * @param {string} password User's password for contentstack account
    * @returns {Promise} Promise object returns authtoken on success
+   * TBD: take out the otp implementation from login and create a new method/function to handle otp
    */
-  async login(email: string, password: string, tfaToken?: string): Promise<object> {
+  async login(email: string, password: string, tfaToken?: string): Promise<User> {
     return new Promise((resolve, reject) => {
       if (email && password) {
-        const loginPayload = { email: email, password: password };
+        const loginPayload: {
+          email: string;
+          password: string;
+          tfa_token?: string;
+        } = { email, password };
         if (tfaToken) {
           loginPayload.tfa_token = tfaToken;
         }
@@ -34,7 +39,7 @@ class AuthHandler {
           .then(async (result: any) => {
             logger.debug('login result', result);
             if (result.user) {
-              resolve(result.user);
+              resolve(result.user as User);
             } else if (result.error_code === 294) {
               const otpChannel = await askOTPChannel();
               // need to send sms to the mobile
@@ -52,6 +57,7 @@ class AuthHandler {
               try {
                 resolve(await this.login(email, password, tfToken));
               } catch (error) {
+                console.log('eror', error);
                 logger.error('Failed to login with tfa token', error);
                 reject(new CLIError({ message: 'Failed to login with the tf token' }));
               }
@@ -61,7 +67,7 @@ class AuthHandler {
           })
           .catch((error: Error) => {
             logger.error('Failed to login', error);
-            reject(new CLIError({ message: 'Failed to login - ' + error.errorMessage }));
+            reject(new CLIError({ message: 'Failed to login - ' + error.message }));
           });
       } else {
         reject(new CLIError({ message: 'No credential found to login' }));
@@ -83,8 +89,8 @@ class AuthHandler {
             return resolve(response);
           })
           .catch((error: Error) => {
-            logger.debug('Failed to login', error);
-            return reject(new CLIError({ message: 'Failed to login - ' + error.errorMessage }));
+            logger.debug('Failed to logout', error);
+            return reject(new CLIError({ message: 'Failed to logout - ' + error.message }));
           });
       } else {
         reject(new CLIError({ message: 'No auth token found to logout' }));
@@ -105,7 +111,7 @@ class AuthHandler {
           .then((user: object) => resolve(user))
           .catch((error: Error) => {
             logger.debug('Failed to validate token', error);
-            reject(new CLIError({ message: 'Failed to validate token - ' + error.errorMessage }));
+            reject(new CLIError({ message: 'Failed to validate token - ' + error.message }));
           });
       } else {
         reject(new CLIError({ message: 'No auth token found to validate' }));
