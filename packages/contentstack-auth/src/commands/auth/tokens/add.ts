@@ -6,7 +6,11 @@ import { logger, cliux, tokenValidation, messageHandler } from '../../../utils';
 
 const config = new Configstore('contentstack_cli');
 export default class TokensAddCommand extends Command {
-  private readonly _managementAPIClient: any;
+  private _managementAPIClient: any;
+  private readonly parse: Function;
+  private cmaHost: string;
+  private authToken: string;
+  private exit: Function;
 
   static description = messageHandler.parse('CLI_AUTH_TOKENS_ADD_DESCRIPTION');
 
