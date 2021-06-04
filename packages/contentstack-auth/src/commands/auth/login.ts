@@ -8,7 +8,7 @@ const config = new Configstore('contentstack_cli');
 export default class LoginCommand extends Command {
   private readonly parse: Function;
   private readonly managementAPIClient: any;
-
+  static run; // to fix the test issue
   static description = messageHandler.parse('CLI_AUTH_LOGIN_DESCRIPTION');
 
   static examples = ['$ csdx auth:login'];
@@ -42,6 +42,7 @@ export default class LoginCommand extends Command {
           });
       const password = flags.password ? flags.password : await interactive.askPassword();
       logger.debug('username', username);
+      logger.debug('password', password);
       const user: User = await authHandler.login(username, password);
       config.set('authtoken', user.authtoken);
       config.set('email', user.email);
