@@ -108,7 +108,7 @@ export function chooseContentType(stackApiKey: string, displayMessage?: string, 
 		const client = command.managementAPIClient
 		try {
 			const spinner = ora('Loading Content Types').start()
-			let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query().find()
+			let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
 			spinner.stop()
 			let contentTypeMap: any = {}
 			contentTypes.forEach((contentType: ContentType) => {
@@ -137,18 +137,21 @@ export function chooseEntry(contentTypeUid: string, stackApiKey: string, display
 		const client = command.managementAPIClient
 		try {
 			const spinner = ora('Loading Entries').start()
-			let {items: entries} = await client.stack({api_key: stackApiKey}).contentType(contentTypeUid).entry().query().find()
+			// let {items: entries} = await client.stack({api_key: stackApiKey}).contentType(contentTypeUid).entry().query({include_count: true}).find()
+			let entries = await getAll(client.stack({api_key: stackApiKey}).contentType(contentTypeUid).entry(), 'entry')
 			spinner.stop()
 			let entryMap: any = {}
 			entries.forEach((entry: Entry) => {
 				entryMap[entry.title] = entry.uid
 			})
 			const entryList = Object.keys(entryMap)
+			console.log('entryList.length', entryList.length)
 			let inquirerConfig = {
 				type: 'list',
 				name: 'chosenEntry',
 				choices: entryList,
-				message: displayMessage || 'Choose an entry'
+				message: displayMessage || 'Choose an entry',
+				loop: false
 			}
 			inquirer.prompt(inquirerConfig).then(({chosenEntry}: {chosenEntry: string}) => {
 				resolve({uid: entryMap[chosenEntry], title: chosenEntry})
@@ -159,13 +162,48 @@ export function chooseEntry(contentTypeUid: string, stackApiKey: string, display
 	})	
 }
 
-async function getAll () {
+async function getAll (element: any, type: string, skip: number=0): Promise<any> {
+	let elements: any = []
+	switch(type) {
+		case 'entry': {
+			try {
+				let queryParams = { include_count: true, skip: (skip) ? skip : 0 }
+				let { items: entries, count: count } = await element.query(queryParams).find()
+				elements.concat(entries)
+				while (queryParams.skip !== count) {
+					queryParams.skip += 100
+					let { items: data } = await element.query(queryParams).find()
+					elements = elements.concat(data)
+				}
+				return new Promise(resolve => resolve(elements))
+			} catch (error) {
+				console.log(error)
+			}
+		}
+		case 'content-type': {
 
+		}
+		case 'stack': {
+
+		}
+	}
 }
 
 async function callMe() {
-	let organization = await chooseOrganization()
-	console.log(organization)
+	// let organization = await chooseOrganization()
+	// console.log(organization)
+
+	// let stack = await chooseStack(organization.orgUid)
+	// console.log(stack)
+
+	// let contentType = await chooseContentType(stack.api_key)
+	// console.log(contentType)
+
+	// let entry = await chooseEntry(contentType.uid, stack.api_key)
+	// console.log(entry)
+
+	let entry = await chooseEntry('major_B', 'blt4e983bb9de3a2bf8')
+	console.log(entry)
 }
 
 callMe()

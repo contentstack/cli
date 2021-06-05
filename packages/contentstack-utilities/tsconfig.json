@@ -6,6 +6,7 @@
 		"noImplicitAny": true,
 		"esModuleInterop": true,
 		"module": "commonjs",
+		"sourceMap": true,
 	},
 	"include": ["./src/**/*"]
 }

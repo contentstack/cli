@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.chooseEntry = exports.chooseContentType = exports.chooseStack = exports.chooseOrganization = void 0;
 const ora_1 = __importDefault(require("ora"));
 const inquirer = require('inquirer');
+inquirer.registerPrompt('search-list', require('inquirer-search-list'));
 const { Command } = require('@contentstack/cli-command');
 const ContentstackManagementSDK = require('@contentstack/management');
 function chooseOrganization(displayMessage, region, orgUid) {
@@ -44,10 +45,11 @@ function chooseOrganization(displayMessage, region, orgUid) {
                 });
                 const orgList = Object.keys(orgMap);
                 let inquirerConfig = {
-                    type: 'list',
+                    type: 'search-list',
                     name: 'chosenOrganization',
                     message: displayMessage || 'Choose an organization',
-                    choices: orgList
+                    choices: orgList,
+                    loop: false,
                 };
                 debugger;
                 inquirer.prompt(inquirerConfig).then(({ chosenOrganization }) => {
@@ -99,7 +101,7 @@ function chooseContentType(stackApiKey, displayMessage, region) {
         const client = command.managementAPIClient;
         try {
             const spinner = ora_1.default('Loading Content Types').start();
-            let { items: contentTypes } = yield client.stack({ api_key: stackApiKey }).contentType().query().find();
+            let { items: contentTypes } = yield client.stack({ api_key: stackApiKey }).contentType().query({ include_count: true }).find();
             spinner.stop();
             let contentTypeMap = {};
             contentTypes.forEach((contentType) => {
@@ -129,18 +131,21 @@ function chooseEntry(contentTypeUid, stackApiKey, displayMessage, region) {
         const client = command.managementAPIClient;
         try {
             const spinner = ora_1.default('Loading Entries').start();
-            let { items: entries } = yield client.stack({ api_key: stackApiKey }).contentType(contentTypeUid).entry().query().find();
+            // let {items: entries} = await client.stack({api_key: stackApiKey}).contentType(contentTypeUid).entry().query({include_count: true}).find()
+            let entries = yield getAll(client.stack({ api_key: stackApiKey }).contentType(contentTypeUid).entry(), 'entry');
             spinner.stop();
             let entryMap = {};
             entries.forEach((entry) => {
                 entryMap[entry.title] = entry.uid;
             });
             const entryList = Object.keys(entryMap);
+            console.log('entryList.length', entryList.length);
             let inquirerConfig = {
                 type: 'list',
                 name: 'chosenEntry',
                 choices: entryList,
-                message: displayMessage || 'Choose an entry'
+                message: displayMessage || 'Choose an entry',
+                loop: false
             };
             inquirer.prompt(inquirerConfig).then(({ chosenEntry }) => {
                 resolve({ uid: entryMap[chosenEntry], title: chosenEntry });
@@ -152,3 +157,46 @@ function chooseEntry(contentTypeUid, stackApiKey, displayMessage, region) {
     }));
 }
 exports.chooseEntry = chooseEntry;
+function getAll(element, type, skip = 0) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let elements = [];
+        switch (type) {
+            case 'entry': {
+                try {
+                    let queryParams = { include_count: true, skip: (skip) ? skip : 0 };
+                    let { items: entries, count: count } = yield element.query(queryParams).find();
+                    elements.concat(entries);
+                    // while (queryParams.skip !== count) {
+                    // 	queryParams.skip += 100
+                    // 	let { items: data } = await element.query(queryParams).find()
+                    // 	elements = elements.concat(data)
+                    // }
+                    return new Promise(resolve => resolve(elements));
+                }
+                catch (error) {
+                    console.log(error);
+                }
+            }
+            case 'content-type': {
+            }
+            case 'stack': {
+            }
+        }
+    });
+}
+function callMe() {
+    return __awaiter(this, void 0, void 0, function* () {
+        // let organization = await chooseOrganization()
+        // console.log(organization)
+        // let stack = await chooseStack(organization.orgUid)
+        // console.log(stack)
+        // let contentType = await chooseContentType(stack.api_key)
+        // console.log(contentType)
+        // let entry = await chooseEntry(contentType.uid, stack.api_key)
+        // console.log(entry)
+        let entry = yield chooseEntry('major_B', 'blt4e983bb9de3a2bf8');
+        console.log(entry);
+    });
+}
+callMe();
+//# sourceMappingURL=index.js.map
