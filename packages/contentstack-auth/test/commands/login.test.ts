@@ -23,11 +23,12 @@ describe('Login Command', () => {
     authHandler.login = loginStub;
   });
   afterEach(() => {
-    loginStub.restore();
+    sinon.restore();
   });
   it('Login with valid credentials, should be successful', async function () {
     const result = await LoginCommand.run(['-u', credentials.email, '-p', credentials.password])!;
-    expect(sinon.spy(cliux, 'success').calledOnce).to.be.true;
+    console.log('result', result);
+    expect(sinon.spy(cliux, 'success').called).to.be.true;
   });
   //   it('Login with invalid credentials, should throw an error', async function () {
   //     const result = await tokenValidation.validateDeliveryToken(contentStackClient, validAPIkey, invalidDeliveryToken);
