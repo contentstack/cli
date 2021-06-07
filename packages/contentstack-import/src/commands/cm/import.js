@@ -126,7 +126,7 @@ ImportCommand.examples = [
   `csdx cm:import -a <management_token_alias> -d <path/of/export/destination/dir>`,
   `csdx cm:import -a <management_token_alias> -c <path/of/config/file>`,
   `csdx cm:import -A -m <single module name>`,
-  `csdx cm:import -A -b <branch name>`,
+  `csdx cm:import -A -f <branch name>`,
 ]
 ImportCommand.flags = {
   config: flags.string({
