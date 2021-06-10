@@ -11,10 +11,11 @@ export default class TokensAddCommand extends Command {
   private cmaHost: string;
   private authToken: string;
   private exit: Function;
+  static run;
 
   static description = messageHandler.parse('CLI_AUTH_TOKENS_ADD_DESCRIPTION');
 
-  static examples = ['$ csdx auth:tokens:add'];
+  static examples = ['$ csdx auth:tokens:add']; // TBD
 
   static flags = {
     alias: flags.string({ char: 'a', description: '' }),
@@ -38,6 +39,7 @@ export default class TokensAddCommand extends Command {
     token: flags.string({ char: 't', description: 'Token', env: 'TOKEN' }),
   };
 
+  // TBD use the base class client
   get managementAPIClient(): any {
     this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this.authToken });
     return this._managementAPIClient;
@@ -65,6 +67,7 @@ export default class TokensAddCommand extends Command {
       isReplace = Boolean(config.get(`${configKeyTokens}.${alias}`)); // get to Check if alias already present
 
       if (isReplace && !forced) {
+        // TBD change the naming
         isReplace = true;
         const confirm = await cliux.inquire({
           type: 'confirm',
@@ -79,26 +82,29 @@ export default class TokensAddCommand extends Command {
 
       if (!apiKey) {
         apiKey = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_API_KEY', name: 'apiKey' });
-        const validationResult = await tokenValidation.validateAPIKey(this.managementAPIClient, apiKey);
-        if (!validationResult.valid) {
-          cliux.error(validationResult.message);
-          logger.error('Invalid api key', validationResult);
-          this.exit();
-        }
       }
+
+      const apiKeyValidationResult = await tokenValidation.validateAPIKey(this.managementAPIClient, apiKey);
+      if (!apiKeyValidationResult.valid) {
+        cliux.error(apiKeyValidationResult.message);
+        logger.error('Invalid api key', apiKeyValidationResult);
+        this.exit();
+      }
+
       if (!token) {
         token = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_TOKEN', name: 'token' });
-        let validationResult;
-        if (type === 'delivery') {
-          validationResult = await tokenValidation.validateDeliveryToken(this.managementAPIClient, apiKey, token);
-        } else if (type === 'management') {
-          validationResult = await tokenValidation.validateManagementToken(this.managementAPIClient, apiKey, token);
-        }
-        if (!validationResult.valid) {
-          cliux.error(validationResult.message);
-          logger.error('Invalid token provided', validationResult);
-          this.exit();
-        }
+      }
+
+      let tokenValidationResult;
+      if (type === 'delivery') {
+        tokenValidationResult = await tokenValidation.validateDeliveryToken(this.managementAPIClient, apiKey, token);
+      } else if (type === 'management') {
+        tokenValidationResult = await tokenValidation.validateManagementToken(this.managementAPIClient, apiKey, token);
+      }
+      if (!tokenValidationResult.valid) {
+        cliux.error(tokenValidationResult.message);
+        logger.error('Invalid token provided', tokenValidationResult);
+        this.exit();
       }
 
       if (isDelivery && !environment) {
@@ -107,13 +113,16 @@ export default class TokensAddCommand extends Command {
           message: 'CLI_AUTH_TOKENS_ADD_ENTER_ENVIRONMENT',
           name: 'env',
         });
-        const validationResult = await tokenValidation.validateEnvironment(
+      }
+
+      if (environment) {
+        const envValidationResult = await tokenValidation.validateEnvironment(
           this.managementAPIClient,
           apiKey,
           environment,
         );
-        if (!validationResult.valid) {
-          cliux.error(validationResult.message);
+        if (!envValidationResult.valid) {
+          cliux.error(envValidationResult.message);
           logger.error('Invalid environment provided');
           this.exit();
         }

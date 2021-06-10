@@ -5,16 +5,16 @@ import { logger, authHandler, cliux, messageHandler } from '../../utils';
 const config = new Configstore('contentstack_cli');
 export default class LogoutCommand extends Command {
   private readonly parse: Function;
-  private readonly managementAPIClient: any;
-  private readonly authToken: string;
-
+  managementAPIClient: any;
+  authToken: string;
+  static run; // to fix the test issue
   static description = messageHandler.parse('CLI_AUTH_LOGOUT_DESCRIPTION');
-  static examples = ['$ csdx auth:logout'];
+  static examples = ['$ csdx auth:logout']; // TBD
 
   static flags = {
-    force: flags.string({
+    force: flags.boolean({
       char: 'f',
-      description: messageHandler.parse('CLI_AUTH_LOGOUT_FLAG_PASSWORD'),
+      description: messageHandler.parse('CLI_AUTH_LOGOUT_FLAG_FORCE'),
       multiple: false,
       required: false,
     }),

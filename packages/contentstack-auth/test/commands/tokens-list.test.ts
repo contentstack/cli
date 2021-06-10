@@ -1,27 +1,37 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import LoginCommand from '../src/command/login';
+import * as Configstore from 'configstore';
+import TokensListCommand from '../../src/commands/auth/tokens/index';
+import { cliux } from '../../src/utils';
 
-describe('Login Command', () => {
-  beforeEach(function () {});
+const config = new Configstore('contentstack_cli');
 
-  it('Login with valid credentials, should be successful', async function () {
-    const result = await tokenValidation.validateDeliveryToken(contentStackClient, validAPIkey, invalidDeliveryToken);
-    expect(result.valid).to.be.false;
+describe('Tokens List Command', () => {
+  const configKeyTokens = 'tokens';
+
+  before(function () {
+    config.clear();
+    config.set(`${configKeyTokens}.test-token-list-command`, { name: 'test1' });
+    config.set(`${configKeyTokens}.test-token-list-command2`, { name: 'test2' });
   });
 
-  it('Login with invalid credentials, should throw an error', async function () {
-    const result = await tokenValidation.validateDeliveryToken(contentStackClient, validAPIkey, invalidDeliveryToken);
-    expect(result.valid).to.be.false;
+  after(() => {
+    config.clear();
   });
 
-  it('Login with with only email, should prompt for email', async function () {
-    const result = await tokenValidation.validateDeliveryToken(contentStackClient, validAPIkey, invalidDeliveryToken);
-    expect(result.valid).to.be.false;
+  it('Runs the command, should lists the tokens', async function () {
+    const tableStub = sinon.stub(cliux, 'table').callsFake((tokens) => {
+      expect(tokens).to.have.length.greaterThan(0);
+    });
+    await TokensListCommand.run([]);
+    tableStub.restore();
   });
-
-  it('Login with no flags, should prompt for credentials', async function () {
-    const result = await tokenValidation.validateDeliveryToken(contentStackClient, validAPIkey, invalidDeliveryToken);
-    expect(result.valid).to.be.false;
+  it('Runs the command with no tokens stored, prints empty table', async function () {
+    config.clear();
+    const tableStub = sinon.stub(cliux, 'table').callsFake((tokens) => {
+      expect(tokens).to.have.length(0);
+    });
+    await TokensListCommand.run([]);
+    tableStub.restore();
   });
 });

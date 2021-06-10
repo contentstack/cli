@@ -7,11 +7,11 @@ const config = new Configstore('contentstack_cli');
 
 export default class LoginCommand extends Command {
   private readonly parse: Function;
-  private readonly managementAPIClient: any;
+  managementAPIClient: any;
   static run; // to fix the test issue
   static description = messageHandler.parse('CLI_AUTH_LOGIN_DESCRIPTION');
 
-  static examples = ['$ csdx auth:login'];
+  static examples = ['$ csdx auth:login']; // TBD
 
   static flags = {
     username: flags.string({
