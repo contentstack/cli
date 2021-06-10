@@ -7,7 +7,7 @@ const config = new Configstore('contentstack_cli');
 
 export default class TokensListCommand extends Command {
   private readonly parse: Function;
-
+  static run;
   static description = messageHandler.parse('CLI_AUTH_TOKENS_LIST_DESCRIPTION');
   static aliases = ['tokens'];
   static examples = ['$ csdx auth:tokens'];
