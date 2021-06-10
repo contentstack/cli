@@ -5,9 +5,9 @@ import { cliux, logger, messageHandler } from '../../../utils';
 const config = new Configstore('contentstack_cli');
 export default class TokensRemoveCommand extends Command {
   private readonly parse: Function;
-
+  static run;
   static description = messageHandler.parse('CLI_AUTH_TOKENS_REMOVE_DESCRIPTION');
-  static examples = ['$ csdx auth:tokens:remove'];
+  static examples = ['$ csdx auth:tokens:remove']; //TBD examples
   static flags = {
     alias: flags.string({ char: 'a', description: 'Token alias' }),
     ignore: flags.boolean({ char: 'i', description: 'Ignore' }),

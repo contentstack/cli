@@ -1,5 +1,5 @@
 {
-  "name": "@contentstack/cli-auth",
+  "name": "@contentstack/cli-auth-2",
   "description": "Contentstack CLI plugin for authentication activities",
   "version": "0.1.1-beta.1",
   "author": "Contentstack",
@@ -11,7 +11,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
     "version": "oclif-dev readme && git add README.md",
-    "test:report": "npm run test --reporter=lcov",
+    "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "pretest": "tsc -p test",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/login.test.ts\"",
     "posttest": "npm run lint",
@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@contentstack/cli-command": "0.1.1-beta.1",
+    "@contentstack/management": "^1.2.2",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
     "chalk": "^4.0.0",

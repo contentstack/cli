@@ -17,6 +17,7 @@ class AuthHandler {
 
   /**
    *
+   *
    * Login into Contentstack
    * @param {string} email Contentstack email address
    * @param {string} password User's password for contentstack account

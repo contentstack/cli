@@ -1,27 +1,39 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import LoginCommand from '../src/command/login';
+import { stub } from 'sinon';
+import WhoamiCommand from '../../src/commands/auth/whoami';
+import { cliux } from '../../src/utils';
 
-describe('Login Command', () => {
-  beforeEach(function () {});
-
-  it('Login with valid credentials, should be successful', async function () {
-    const result = await tokenValidation.validateDeliveryToken(contentStackClient, validAPIkey, invalidDeliveryToken);
-    expect(result.valid).to.be.false;
+describe('Whoami Command', () => {
+  let getEmailStub;
+  before(function () {
+    getEmailStub = sinon.stub(WhoamiCommand.prototype, 'email').get(function getterFn() {
+      return 'test@contentstack.com';
+    });
   });
 
-  it('Login with invalid credentials, should throw an error', async function () {
-    const result = await tokenValidation.validateDeliveryToken(contentStackClient, validAPIkey, invalidDeliveryToken);
-    expect(result.valid).to.be.false;
+  after(() => {
+    getEmailStub.restore();
   });
 
-  it('Login with with only email, should prompt for email', async function () {
-    const result = await tokenValidation.validateDeliveryToken(contentStackClient, validAPIkey, invalidDeliveryToken);
-    expect(result.valid).to.be.false;
+  it('Logged in user, displays the username', async function () {
+    const getEmailStub = sinon.stub(WhoamiCommand.prototype, 'email').get(function getterFn() {
+      return 'test@contentstack.com';
+    });
+    const successMessageStub = sinon.stub(cliux, 'print').returns();
+    await WhoamiCommand.run([]);
+    expect(successMessageStub.calledTwice).to.be.true;
+    getEmailStub.restore();
+    successMessageStub.restore();
   });
-
-  it('Login with no flags, should prompt for credentials', async function () {
-    const result = await tokenValidation.validateDeliveryToken(contentStackClient, validAPIkey, invalidDeliveryToken);
-    expect(result.valid).to.be.false;
+  it('Logged out user, should throw an error', async function () {
+    const getEmailStub = sinon.stub(WhoamiCommand.prototype, 'email').get(function getterFn() {
+      throw new Error('No logged in');
+    });
+    const errorMessageStub = sinon.stub(cliux, 'error').returns();
+    await WhoamiCommand.run([]);
+    expect(errorMessageStub.calledOnce).to.be.true;
+    errorMessageStub.restore();
+    getEmailStub.restore();
   });
 });

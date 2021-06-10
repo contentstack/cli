@@ -1,8 +1,8 @@
 import { Command } from '@contentstack/cli-command';
 import { logger, cliux, messageHandler } from '../../utils';
 export default class WhoamiCommand extends Command {
-  private readonly email: string;
-
+  email: string;
+  static run;
   static description = messageHandler.parse('CLI_AUTH_WHOAMI_DESCRIPTION');
 
   static examples = ['$ csdx auth:whoami'];
