@@ -38,6 +38,7 @@ class LoggerService {
         }),
       ),
       level: config['log-level'],
+      silent: process.env.CLI_ENV === 'TEST' ? true : false,
     });
     this.logger = logger;
   }
