@@ -34,3 +34,11 @@ export const askOTP = async (): Promise<string> => {
     name: 'tfaToken',
   });
 };
+
+export const askUsername = async (): Promise<string> => {
+  return cliux.inquire<string>({
+    type: 'input',
+    message: 'CLI_AUTH_LOGIN_ENTER_EMAIL_ADDRESS',
+    name: 'username',
+  });
+};
