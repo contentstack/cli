@@ -13,14 +13,13 @@
     "version": "oclif-dev readme && git add README.md",
     "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "pretest": "tsc -p test",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/login.test.ts\"",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "posttest": "npm run lint",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix"
   },
   "dependencies": {
     "@contentstack/cli-command": "0.1.1-beta.1",
-    "@contentstack/management": "^1.2.2",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
     "chalk": "^4.0.0",

@@ -5,18 +5,21 @@ import TokensRemoveCommand from '../../src/commands/auth/tokens/remove';
 import { cliux } from '../../src/utils';
 
 const config = new Configstore('contentstack_cli');
+const configKeyTokens = 'tokens';
+const token1Alias = 'test-token-remove-command';
 
+function resetConfig() {
+  config.delete(`${configKeyTokens}.${token1Alias}`);
+  config.delete(`${configKeyTokens}.${token1Alias}2`);
+}
 describe('Tokens Remove Command', () => {
-  const configKeyTokens = 'tokens';
-  const token1Alias = 'test-token-remove-command';
-
   before(function () {
-    config.clear();
+    resetConfig();
     config.set(`${configKeyTokens}.${token1Alias}`, { name: 'test1' });
   });
 
   after(() => {
-    config.clear();
+    resetConfig();
   });
 
   it('Remove the token with alias, should remove the token', async function () {
