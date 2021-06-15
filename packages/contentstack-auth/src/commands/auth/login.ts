@@ -11,7 +11,11 @@ export default class LoginCommand extends Command {
   static run; // to fix the test issue
   static description = messageHandler.parse('CLI_AUTH_LOGIN_DESCRIPTION');
 
-  static examples = ['$ csdx auth:login']; // TBD
+  static examples = [
+    '$ csdx auth:login',
+    '$ csdx auth:login -u <username>',
+    '$ csdx auth:login -u <username> -p <password>',
+  ];
 
   static flags = {
     username: flags.string({
@@ -46,6 +50,8 @@ export default class LoginCommand extends Command {
       const user: User = await authHandler.login(username, password);
       config.set('authtoken', user.authtoken);
       config.set('email', user.email);
+      console.log('auth set', config.get('email'));
+      console.log('auth user', user);
       logger.info('successfully logged in');
       cliux.success('CLI_AUTH_LOGIN_SUCCESS');
     } catch (error) {

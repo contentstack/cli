@@ -9,7 +9,7 @@ export default class LogoutCommand extends Command {
   authToken: string;
   static run; // to fix the test issue
   static description = messageHandler.parse('CLI_AUTH_LOGOUT_DESCRIPTION');
-  static examples = ['$ csdx auth:logout']; // TBD
+  static examples = ['$ csdx auth:logout', '$ csdx auth:logout -f'];
 
   static flags = {
     force: flags.boolean({

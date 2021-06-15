@@ -4,7 +4,14 @@ import * as Configstore from 'configstore';
 import TokensAddCommand from '../../src/commands/auth/tokens/add';
 import { cliux, tokenValidation } from '../../src/utils';
 const config = new Configstore('contentstack_cli');
+const configKeyTokens = 'tokens';
 
+function resetConfig() {
+  config.delete(`${configKeyTokens}.test-api-key-token2`);
+  config.delete(`${configKeyTokens}.test-management-token`);
+  config.delete(`${configKeyTokens}.test-management-token2`);
+  config.delete(`${configKeyTokens}.test-api-key-token`);
+}
 describe('Tokens Add Command', () => {
   let apiKeyValidationStub;
   let deliveryTokenValidationStub;
@@ -12,15 +19,19 @@ describe('Tokens Add Command', () => {
   let configStoreStub;
   let environmentTokenValidationStub;
   let managementClientStub;
+  let getAuthTokenStub;
   const validAPIKey = 'bltajkj234904';
   const validDeliveryToken = 'cdae3493fkdflklssw';
   const validmanagementToken = 'cmajhsd98939482';
   const validEnvironment = 'textenv';
-  const configKeyTokens = 'tokens';
+  const validAuthToken = 'bltadjkjdkjfd';
 
   before(function () {
-    config.clear();
-    managementClientStub = sinon.stub(TokensAddCommand.prototype, 'managementAPIClient').get(() => {});
+    resetConfig();
+    managementClientStub = sinon
+      .stub(TokensAddCommand.prototype, 'managementAPIClient')
+      .get(() => {})
+      .set(() => {});
     apiKeyValidationStub = sinon
       .stub(tokenValidation, 'validateAPIKey')
       .callsFake(function (client: any, apiKey: string): Promise<any> {
@@ -55,6 +66,9 @@ describe('Tokens Add Command', () => {
         }
         return Promise.resolve({ valid: false, message: 'failed' });
       });
+    getAuthTokenStub = sinon.stub(TokensAddCommand.prototype, 'authToken').get(function getterFn() {
+      return validAuthToken;
+    });
   });
 
   after(() => {
@@ -63,8 +77,8 @@ describe('Tokens Add Command', () => {
     managementTokenValidationStub.restore();
     environmentTokenValidationStub.restore();
     managementClientStub.restore();
-    config.clear();
-    //reset config
+    getAuthTokenStub.restore();
+    resetConfig();
   });
 
   it('Add a token with valid api key, should be added scuccessfully', async function () {

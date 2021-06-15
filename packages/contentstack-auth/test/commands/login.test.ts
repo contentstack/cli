@@ -3,6 +3,7 @@ import * as sinon from 'sinon';
 import LoginCommand from '../../src/commands/auth/login';
 import { authHandler, cliux, interactive } from '../../src/utils';
 import * as Configstore from 'configstore';
+const config = new Configstore('contentstack_cli');
 
 const user = { email: 'test@contentstack.com', authtoken: 'testtoken' };
 const credentials = { email: 'test@contentstack.com', password: 'testpassword' };
@@ -13,34 +14,15 @@ describe('Login Command', () => {
   let inquireStub;
   let loginStub;
   let managementClientStub;
-  const config = new Map();
 
   before(function () {
     managementClientStub = sinon.stub(LoginCommand.prototype, 'managementAPIClient').get(() => {});
     loginStub = sinon.stub(authHandler, 'login').callsFake(function (email, password, tfaToken): Promise<any> {
       if (password === credentials.password) {
-        return Promise.resolve({ user });
+        return Promise.resolve(user);
       }
       return Promise.reject({ message: 'invalid credentials' });
     });
-
-    // const stub = sinon.stub().callsFake((configName) => {
-    //   return config;
-    // });
-    // Object.setPrototypeOf(Configstore, stub);
-    // Configstore.prototype.constructor = function Configstore() {
-    //   console.log('HELOOOOOOOO THERE');
-    //   this.get = function (key) {
-    //     return config.get(key);
-    //   };
-    //   this.set = function (key, value) {
-    //     return config.set(key, value);
-    //   };
-    // };
-    // sinon.stub(Configstore.prototype, 'constructor').callsFake((configName) => {
-    //   console.log('called', configName);
-    //   return config;
-    // });
   });
 
   after(() => {
