@@ -35,7 +35,6 @@ describe('Tokens Add Command', () => {
     apiKeyValidationStub = sinon
       .stub(tokenValidation, 'validateAPIKey')
       .callsFake(function (client: any, apiKey: string): Promise<any> {
-        console.log('apikey', apiKey);
         if (apiKey === validAPIKey) {
           return Promise.resolve({ valid: true, message: 'success' });
         }

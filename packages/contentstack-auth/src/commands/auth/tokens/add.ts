@@ -68,7 +68,6 @@ export default class TokensAddCommand extends Command {
         alias = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ASK_TOKEN_ALIAS', name: 'alias' });
       }
       isAliasExist = Boolean(config.get(`${configKeyTokens}.${alias}`)); // get to Check if alias already present
-
       if (isAliasExist && !skipAliasReplaceConfirmation) {
         const shouldAliasReplace = await cliux.inquire({
           type: 'confirm',
@@ -80,7 +79,6 @@ export default class TokensAddCommand extends Command {
           this.exit();
         }
       }
-
       if (!apiKey) {
         apiKey = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_API_KEY', name: 'apiKey' });
       }
