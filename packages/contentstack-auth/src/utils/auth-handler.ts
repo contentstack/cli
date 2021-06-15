@@ -58,7 +58,6 @@ class AuthHandler {
               try {
                 resolve(await this.login(email, password, tfToken));
               } catch (error) {
-                console.log('eror', error);
                 logger.error('Failed to login with tfa token', error);
                 reject(new CLIError({ message: 'Failed to login with the tf token' }));
               }
