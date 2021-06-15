@@ -1,21 +1,29 @@
 import { Command, flags } from '@contentstack/cli-command';
-import * as ContentstackManagementSDK from '@contentstack/management';
-
 import * as Configstore from 'configstore';
 import { logger, cliux, tokenValidation, messageHandler } from '../../../utils';
 
 const config = new Configstore('contentstack_cli');
 export default class TokensAddCommand extends Command {
-  private _managementAPIClient: any;
+  managementAPIClient: any;
   private readonly parse: Function;
   private cmaHost: string;
-  private authToken: string;
+  authToken: string;
   private exit: Function;
   static run;
 
   static description = messageHandler.parse('CLI_AUTH_TOKENS_ADD_DESCRIPTION');
 
-  static examples = ['$ csdx auth:tokens:add']; // TBD
+  static examples = [
+    '$ csdx auth:tokens:add',
+    '$ csdx auth:tokens:add -a <alias>',
+    '$ csdx auth:tokens:add -k <api key>',
+    '$ csdx auth:tokens:add -d',
+    '$ csdx auth:tokens:add -m',
+    '$ csdx auth:tokens:add -e <environment>',
+    '$ csdx auth:tokens:add -t <token>',
+    '$ csdx auth:tokens:add -a <alias> -k <api key> -m -t <management token>',
+    '$ csdx auth:tokens:add -a <alias> -k <api key> -d -e <environment> -t <delivery token>',
+  ];
 
   static flags = {
     alias: flags.string({ char: 'a', description: '' }),
@@ -39,16 +47,11 @@ export default class TokensAddCommand extends Command {
     token: flags.string({ char: 't', description: 'Token', env: 'TOKEN' }),
   };
 
-  // TBD use the base class client
-  get managementAPIClient(): any {
-    this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this.authToken });
-    return this._managementAPIClient;
-  }
-
   async run(): Promise<any> {
+    this.managementAPIClient = { host: this.cmaHost, authtoken: this.authToken };
     const { flags } = this.parse(TokensAddCommand);
-    let isReplace = false;
-    const forced = flags.force;
+    let isAliasExist = false;
+    const skipAliasReplaceConfirmation = flags.force;
     let alias = flags.alias;
     let apiKey = flags['api-key'];
     let token = flags.token;
@@ -64,17 +67,15 @@ export default class TokensAddCommand extends Command {
       if (!alias) {
         alias = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ASK_TOKEN_ALIAS', name: 'alias' });
       }
-      isReplace = Boolean(config.get(`${configKeyTokens}.${alias}`)); // get to Check if alias already present
+      isAliasExist = Boolean(config.get(`${configKeyTokens}.${alias}`)); // get to Check if alias already present
 
-      if (isReplace && !forced) {
-        // TBD change the naming
-        isReplace = true;
-        const confirm = await cliux.inquire({
+      if (isAliasExist && !skipAliasReplaceConfirmation) {
+        const shouldAliasReplace = await cliux.inquire({
           type: 'confirm',
           message: `CLI_AUTH_TOKENS_ADD_CONFIRM_ALIAS_REPLACE`,
           name: 'confirm',
         });
-        if (!confirm) {
+        if (!shouldAliasReplace) {
           logger.info('Exiting from the process of replacing the token');
           this.exit();
         }
@@ -134,7 +135,7 @@ export default class TokensAddCommand extends Command {
         config.set(`${configKeyTokens}.${alias}`, { token, apiKey, environment, type });
       }
 
-      if (isReplace) {
+      if (isAliasExist) {
         cliux.success('CLI_AUTH_TOKENS_ADD_REPLACE_SUCCESS');
       } else {
         cliux.success('CLI_AUTH_TOKENS_ADD_SUCCESS');
