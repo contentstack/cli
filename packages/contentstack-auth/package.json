@@ -1,5 +1,5 @@
 {
-  "name": "@contentstack/cli-auth-2",
+  "name": "@contentstack/cli-auth",
   "description": "Contentstack CLI plugin for authentication activities",
   "version": "0.1.1-beta.1",
   "author": "Contentstack",
