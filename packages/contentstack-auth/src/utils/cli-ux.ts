@@ -47,8 +47,6 @@ class CLIUX {
 
   async inquire<T>(inquirePayload: InquirePayload): Promise<T> {
     inquirePayload.message = messageHandler.parse(inquirePayload.message);
-    typeof inquirer;
-    /* tslint:disable-next-line */
     const result = await inquirer.prompt(inquirePayload as inquirer.QuestionCollection<T>);
     logger.debug('inquire result', result);
     return result[inquirePayload.name] as T;

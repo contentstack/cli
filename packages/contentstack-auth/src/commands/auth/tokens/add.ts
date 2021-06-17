@@ -1,6 +1,6 @@
 import { Command, flags } from '@contentstack/cli-command';
 import * as Configstore from 'configstore';
-import { logger, cliux, tokenValidation, messageHandler } from '../../../utils';
+import { logger, cliux, tokenValidation, messageHandler, CLIError } from '../../../utils';
 
 const config = new Configstore('contentstack_cli');
 export default class TokensAddCommand extends Command {
@@ -76,7 +76,8 @@ export default class TokensAddCommand extends Command {
         });
         if (!shouldAliasReplace) {
           logger.info('Exiting from the process of replacing the token');
-          this.exit();
+          cliux.print('CLI_AUTH_EXIT_PROCESS');
+          return;
         }
       }
       if (!apiKey) {
@@ -85,9 +86,7 @@ export default class TokensAddCommand extends Command {
 
       const apiKeyValidationResult = await tokenValidation.validateAPIKey(this.managementAPIClient, apiKey);
       if (!apiKeyValidationResult.valid) {
-        cliux.error(apiKeyValidationResult.message);
-        logger.error('Invalid api key', apiKeyValidationResult);
-        this.exit();
+        throw new CLIError({ message: 'Invalid api key ' + apiKeyValidationResult.message });
       }
 
       if (!token) {
@@ -101,9 +100,7 @@ export default class TokensAddCommand extends Command {
         tokenValidationResult = await tokenValidation.validateManagementToken(this.managementAPIClient, apiKey, token);
       }
       if (!tokenValidationResult.valid) {
-        cliux.error(tokenValidationResult.message);
-        logger.error('Invalid token provided', tokenValidationResult);
-        this.exit();
+        throw new CLIError({ message: 'Invalid token provided ' + tokenValidationResult.message });
       }
 
       if (isDelivery && !environment) {
@@ -121,9 +118,7 @@ export default class TokensAddCommand extends Command {
           environment,
         );
         if (!envValidationResult.valid) {
-          cliux.error(envValidationResult.message);
-          logger.error('Invalid environment provided');
-          this.exit();
+          throw new CLIError({ message: 'Invalid token provided ' + envValidationResult.message });
         }
       }
 
@@ -139,7 +134,7 @@ export default class TokensAddCommand extends Command {
         cliux.success('CLI_AUTH_TOKENS_ADD_SUCCESS');
       }
     } catch (error) {
-      logger.error('token add error', error);
+      logger.error('token add error', error.message);
       cliux.error('CLI_AUTH_TOKENS_ADD_FAILED', error.message);
     }
   }

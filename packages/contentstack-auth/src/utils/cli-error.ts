@@ -8,6 +8,7 @@ export default class CLIError extends Error {
     this.suggestions = suggestions;
     this.name = this.constructor.name;
     this.statusCode = payload.statusCode;
+    this.message = payload.message;
 
     if (typeof Error.captureStackTrace === 'function') {
       Error.captureStackTrace(this, this.constructor);
