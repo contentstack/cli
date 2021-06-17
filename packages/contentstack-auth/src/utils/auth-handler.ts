@@ -49,7 +49,7 @@ class AuthHandler {
                   await this._client.axiosInstance.post('/user/request_token_sms', { user: loginPayload });
                   cliux.print('CLI_AUTH_LOGIN_SECURITY_CODE_SEND_SUCCESS');
                 } catch (error) {
-                  logger.error('Failed to send the security code', error);
+                  logger.debug('Failed to send the security code', error);
                   reject(new CLIError({ message: 'Failed to login - failed to send the security code' }));
                   return;
                 }
@@ -58,16 +58,16 @@ class AuthHandler {
               try {
                 resolve(await this.login(email, password, tfToken));
               } catch (error) {
-                logger.error('Failed to login with tfa token', error);
+                logger.debug('Failed to login with tfa token', error);
                 reject(new CLIError({ message: 'Failed to login with the tf token' }));
               }
             } else {
               reject(new CLIError({ message: 'No user found with the credentials' }));
             }
           })
-          .catch((error: Error) => {
-            logger.error('Failed to login', error);
-            reject(new CLIError({ message: 'Failed to login - ' + error.message }));
+          .catch((error: any) => {
+            logger.debug('Failed to login', error);
+            reject(new CLIError({ message: error.errorMessage }));
           });
       } else {
         reject(new CLIError({ message: 'No credential found to login' }));
