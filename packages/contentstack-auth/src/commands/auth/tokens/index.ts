@@ -57,7 +57,7 @@ export default class TokensListCommand extends Command {
         cliux.print('CLI_AUTH_TOKENS_LIST_NO_TOKENS');
       }
     } catch (error) {
-      logger.error('Token list error', error);
+      logger.error('Token list error', error.message);
       cliux.error('CLI_AUTH_TOKENS_LIST_FAILED', error.message);
     }
   }

@@ -1,3 +1,3 @@
 export default {
-  'log-level': 'debug',
+  'log-level': 'error',
 };

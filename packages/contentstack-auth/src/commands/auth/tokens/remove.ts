@@ -56,7 +56,7 @@ export default class TokensRemoveCommand extends Command {
         cliux.success('CLI_AUTH_TOKENS_REMOVE_SUCCESS');
       });
     } catch (error) {
-      logger.error('Token remove error');
+      logger.error('Token remove error', error.message);
       cliux.error('CLI_AUTH_TOKENS_REMOVE_FAILED', error.message);
     }
   }
