@@ -86,7 +86,7 @@ export default class TokensAddCommand extends Command {
 
       const apiKeyValidationResult = await tokenValidation.validateAPIKey(this.managementAPIClient, apiKey);
       if (!apiKeyValidationResult.valid) {
-        throw new CLIError({ message: 'Invalid api key ' + apiKeyValidationResult.message });
+        throw new CLIError({ message: apiKeyValidationResult.message });
       }
 
       if (!token) {
@@ -100,7 +100,7 @@ export default class TokensAddCommand extends Command {
         tokenValidationResult = await tokenValidation.validateManagementToken(this.managementAPIClient, apiKey, token);
       }
       if (!tokenValidationResult.valid) {
-        throw new CLIError({ message: 'Invalid token provided ' + tokenValidationResult.message });
+        throw new CLIError({ message: tokenValidationResult.message });
       }
 
       if (isDelivery && !environment) {
@@ -118,7 +118,7 @@ export default class TokensAddCommand extends Command {
           environment,
         );
         if (!envValidationResult.valid) {
-          throw new CLIError({ message: 'Invalid token provided ' + envValidationResult.message });
+          throw new CLIError({ message: envValidationResult.message });
         }
       }
 
