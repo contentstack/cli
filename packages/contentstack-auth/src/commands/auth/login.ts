@@ -40,7 +40,6 @@ export default class LoginCommand extends Command {
       const username = flags.username ? flags.username : await interactive.askUsername();
       const password = flags.password ? flags.password : await interactive.askPassword();
       logger.debug('username', username);
-      logger.debug('password', password);
       await this.login(username, password);
     } catch (error) {
       logger.error('login  error', error.message);
