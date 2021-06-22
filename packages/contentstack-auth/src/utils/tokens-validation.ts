@@ -55,7 +55,7 @@ export const validateEnvironment = async (
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_ENVIRONMENT_NAME') };
     }
   } catch (error) {
-    logger.debug('validate environment error', error);
+    logger.error('validate environment error', error);
     result = { valid: false, message: 'CLI_AUTH_TOKENS_VALIDATION_INVALID_ENVIRONMENT_NAME' };
   }
   return result;
@@ -87,7 +87,7 @@ export const validateManagementToken = async (
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN') };
     }
   } catch (error) {
-    logger.debug('Failed to validate management token', error);
+    logger.error('Failed to validate management token', error);
     result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN') };
   }
   return result;
@@ -110,7 +110,7 @@ export const validateAPIKey = async (contentStackClient: any, apiKey: string): P
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY') };
     }
   } catch (error) {
-    logger.debug('validate api key error', error);
+    logger.error('validate api key error', error);
     result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY') };
   }
 
