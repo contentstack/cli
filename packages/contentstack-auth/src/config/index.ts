@@ -1,3 +1,6 @@
 export default {
-  'log-level': 'error',
+  logger: {
+    level: 'error',
+    silent: true,
+  },
 };
