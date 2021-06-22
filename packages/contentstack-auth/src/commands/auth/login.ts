@@ -42,7 +42,7 @@ export default class LoginCommand extends Command {
       logger.debug('username', username);
       await this.login(username, password);
     } catch (error) {
-      logger.error('login  error', error.message);
+      logger.debug('login  failed', error.message);
       cliux.error('CLI_AUTH_LOGIN_FAILED', error.message);
     }
   }
