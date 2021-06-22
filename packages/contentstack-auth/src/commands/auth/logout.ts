@@ -41,7 +41,7 @@ export default class LogoutCommand extends Command {
         cliux.success('CLI_AUTH_LOGOUT_SUCCESS');
       }
     } catch (error) {
-      logger.error('Logout error', error.message);
+      logger.debug('Logout failed', error.message);
       cliux.error('CLI_AUTH_LOGOUT_FAILED', error.message);
     } finally {
       config.delete('authtoken');
