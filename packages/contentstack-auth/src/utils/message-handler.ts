@@ -8,7 +8,7 @@ class Messages {
   private readonly messages: any;
 
   constructor() {
-    this.messages = JSON.parse(fs.readFileSync(path.join(__dirname, '../messages/index.json'), 'utf-8'));
+    this.messages = JSON.parse(fs.readFileSync(path.join(__dirname, '../../messages/index.json'), 'utf-8'));
   }
 
   parse(messageKey: string, ...substitutions: Array<any>): string {
