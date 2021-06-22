@@ -49,7 +49,7 @@ class AuthHandler {
                   await this._client.axiosInstance.post('/user/request_token_sms', { user: loginPayload });
                   cliux.print('CLI_AUTH_LOGIN_SECURITY_CODE_SEND_SUCCESS');
                 } catch (error) {
-                  logger.debug('Failed to send the security code', error);
+                  logger.error('Failed to send the security code', error);
                   reject(new CLIError({ message: 'Failed to login - failed to send the security code' }));
                   return;
                 }
@@ -58,7 +58,7 @@ class AuthHandler {
               try {
                 resolve(await this.login(email, password, tfToken));
               } catch (error) {
-                logger.debug('Failed to login with tfa token', error);
+                logger.error('Failed to login with tfa token', error);
                 reject(new CLIError({ message: 'Failed to login with the tf token' }));
               }
             } else {
@@ -66,7 +66,7 @@ class AuthHandler {
             }
           })
           .catch((error: any) => {
-            logger.debug('Failed to login', error);
+            logger.error('Failed to login', error);
             reject(new CLIError({ message: error.errorMessage }));
           });
       } else {
@@ -89,7 +89,7 @@ class AuthHandler {
             return resolve(response);
           })
           .catch((error: Error) => {
-            logger.debug('Failed to logout', error);
+            logger.error('Failed to logout', error);
             return reject(new CLIError({ message: 'Failed to logout - ' + error.message }));
           });
       } else {
@@ -110,7 +110,7 @@ class AuthHandler {
           .getUser()
           .then((user: object) => resolve(user))
           .catch((error: Error) => {
-            logger.debug('Failed to validate token', error);
+            logger.error('Failed to validate token', error);
             reject(new CLIError({ message: 'Failed to validate token - ' + error.message }));
           });
       } else {

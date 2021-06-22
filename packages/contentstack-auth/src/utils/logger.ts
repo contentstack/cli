@@ -37,8 +37,8 @@ class LoggerService {
           return message;
         }),
       ),
-      level: config['log-level'],
-      silent: process.env.CLI_ENV === 'TEST' ? true : false,
+      level: config['logger'].level,
+      silent: config['logger'].silent || process.env.CLI_ENV === 'TEST' ? true : false,
     });
     this.logger = logger;
   }
