@@ -9,3 +9,9 @@ export interface InquirePayload {
   choices?: Array<any>;
   transformer?: Function;
 }
+
+export interface Region {
+  name: string;
+  cma: string;
+  cda: string;
+}

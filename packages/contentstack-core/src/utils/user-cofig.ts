@@ -1,5 +1,6 @@
 import * as Configstore from 'configstore';
 import CLIError from './cli-error';
+import { Region } from '../interfaces';
 
 const config = new Configstore('contentstack_cli');
 
@@ -29,7 +30,7 @@ export default class UserConfig {
    * @param {string} region It Can be NA, EU
    * @returns {object} region object with cma, cda, region property
    */
-  setRegion(region): string {
+  setRegion(region): Region {
     const selectedRegion = regions[region];
     if (selectedRegion) {
       config.set('region', selectedRegion);
@@ -42,7 +43,7 @@ export default class UserConfig {
    * Get current host set for CLI
    * @returns { object } Object contains url for cma and cda, and region to which it is pointing to
    */
-  getRegion(): object {
+  getRegion(): Region {
     const regionDetails = config.get('region');
     if (regionDetails) return regionDetails;
 
@@ -56,7 +57,7 @@ export default class UserConfig {
    * @param {object} regionObject should contain cma, cda, region property
    * @returns {object} region object with cma, cda, region(name of region) property
    */
-  setCustomRegion(regionObject): object {
+  setCustomRegion(regionObject): Region {
     if (!this.validateRegion(regionObject)) {
       throw new CLIError({ message: 'CLI_CORE_INVALID_CUSTOM_REGION' }); //Custom region should include valid cma(URL), cda(URL), name(String) (Name for the Region) property.
     }

@@ -5,20 +5,20 @@ import CLIError from './cli-error';
 
 const config = new Configstore('contentstack_cli');
 /**
- * Generate or return an RFC version 4 (random) UUID
- * If UUID already stored in config it will return that
+ * Generate or return an RFC version 4 (random) sessionId
+ * If sessionId already stored in config it will return that
  * Mainly used to maintain uniqueness in Analytics
- * @returns {string} a version 4 UUID
+ * @returns {string} a version 4 sessionId
  */
 export default function (): string {
   try {
-    let uuid = config.get('uuid');
-    if (!uuid) {
-      uuid = config.set('uuid', uuidv4());
+    let sessionId = config.get('sessionId');
+    if (!sessionId) {
+      sessionId = config.set('sessionId', uuidv4());
     }
-    return uuid;
+    return sessionId;
   } catch (error) {
-    logger.debug('Uuid generation error', error);
+    logger.debug('sessionId generation error', error);
     throw new CLIError({ message: 'CLI_CORE_FAILED_UUID_GENERATION' });
   }
 }

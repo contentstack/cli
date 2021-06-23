@@ -7,4 +7,7 @@ export default {
     'cm:bootstrap': true,
     'cm:import': true,
   },
+  analytics: {
+    trackingID: 'UA-169821045-2',
+  },
 };

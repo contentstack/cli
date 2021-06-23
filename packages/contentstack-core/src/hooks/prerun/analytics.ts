@@ -1,30 +1,23 @@
 import * as Configstore from 'configstore';
-import { Analytics, getUUID, logger } from '../../utils';
+import { Analytics, getSessionId, logger } from '../../utils';
+import configInternal from '../../config';
 
 const config = new Configstore('contentstack_cli');
-/**
- * This hook gets UUID for Analytics to maintain uniqueness of user and run before every command gets executed.
- */
-const sessionId = getUUID();
-const googleAnalyticsConf = {
-  trackingID: 'UA-169821045-2',
-  cid: sessionId,
-};
-
-const analytics = new Analytics({
-  trackingID: googleAnalyticsConf.trackingID,
-  cid: googleAnalyticsConf.cid,
-});
 
 /**
  * @param {Object} opts Options provided to hooks via Oclif framework.
+ * This hook gets UUID for Analytics to maintain uniqueness of user and run before every command gets executed.
  */
 export default async function (opts): Promise<any> {
-  if (!config.get('analytics.enabled')) {
-    logger.debug('Analytics not enabled for session', sessionId);
-    return;
-  }
-
+  const sessionId = getSessionId();
+  const googleAnalyticsConf = {
+    trackingID: configInternal.analytics.trackingID,
+    cid: sessionId,
+  };
+  const analytics = new Analytics({
+    trackingID: googleAnalyticsConf.trackingID,
+    cid: googleAnalyticsConf.cid,
+  });
   const plugin = opts.Command.plugin;
   try {
     const result = await analytics.track(opts.Command.id, {
@@ -34,6 +27,7 @@ export default async function (opts): Promise<any> {
     });
     logger.debug(`Analytics captured plugin ${plugin}`, result);
   } catch (error) {
+    console.log('error', error);
     logger.error(`Error in analytics capture plugin ${plugin}`, error);
   }
 }
