@@ -35,6 +35,8 @@ export default class UserConfig {
     if (selectedRegion) {
       config.set('region', selectedRegion);
       return selectedRegion;
+    } else {
+      throw new CLIError({ message: 'Given region not found' });
     }
   }
 

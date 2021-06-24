@@ -33,7 +33,6 @@ export default async function (opts): Promise<void> {
         return;
       }
     } else {
-      console.log('No region found');
       cliux.error('CLI_CORE_NO_REGION_FOUND');
       this.exit();
     }

@@ -25,9 +25,11 @@ export default async function (opts): Promise<any> {
       label: `${this.config.version}`,
       os: `${this.config.userAgent}`,
     });
-    logger.debug(`Analytics captured plugin ${plugin}`, result);
+    if (result.status !== 200) {
+      return logger.error(`Error in analytics capture plugin ${plugin.name}`);
+    }
+    logger.debug(`Analytics captured plugin ${plugin.name}`);
   } catch (error) {
-    console.log('error', error);
-    logger.error(`Error in analytics capture plugin ${plugin}`, error);
+    logger.error(`Error in analytics capture plugin ${plugin.name}`, error);
   }
 }

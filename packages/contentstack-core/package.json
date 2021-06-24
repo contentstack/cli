@@ -31,6 +31,7 @@
     "@contentstack/cli-cm-seed": "1.0.6",
     "@contentstack/cli-command": "0.1.1-beta.1",
     "@contentstack/cli-plugins-plugin": "0.1.0-beta",
+    "@contentstack/cli-config": "0.1.1-beta.1",
     "@contentstack/management": "1.2.1",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
@@ -122,7 +123,8 @@
       "@contentstack/cli-cm-clone",
       "@contentstack/cli-cm-export-to-csv",
       "@contentstack/cli-cm-seed",
-      "@contentstack/cli-cm-bootstrap"
+      "@contentstack/cli-cm-bootstrap",
+      "@contentstack/cli-config"
     ],
     "hooks": {
       "prerun": [
