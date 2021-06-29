@@ -1,0 +1,257 @@
+{
+    "globalfieldformigration": {
+        "global_field": {
+            "created_at": "2021-06-21T09:31:40.548Z",
+            "updated_at": "2021-06-21T09:31:40.548Z",
+            "title": "globalFieldForMigration",
+            "uid": "globalfieldformigration",
+            "_version": 1,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Rich Text Editor",
+                    "uid": "rich_text_editor",
+                    "field_metadata": {
+                        "allow_rich_text": true,
+                        "description": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": [],
+                        "version": 3
+                    },
+                    "non_localizable": false,
+                    "multiple": false,
+                    "mandatory": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "json",
+                    "display_name": "Supercharged RTE",
+                    "uid": "supercharged_rte",
+                    "field_metadata": {
+                        "allow_json_rte": true,
+                        "description": "",
+                        "default_value": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": []
+                    },
+                    "format": "",
+                    "error_messages": {
+                        "format": ""
+                    },
+                    "mandatory": false,
+                    "non_localizable": false,
+                    "multiple": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "referred_content_types": [
+                {
+                    "uid": "contenttype1forglobalfield",
+                    "title": "contentType1ForglobalField"
+                },
+                {
+                    "uid": "contenttype2forglobalfield",
+                    "title": "contenttype2forglobalfield"
+                }
+            ]
+        }
+    },
+    "globalfieldwithemptyschema": {
+        "global_field": {
+            "created_at": "2021-06-21T09:31:40.548Z",
+            "updated_at": "2021-06-21T09:31:40.548Z",
+            "title": "globalfieldwithemptyschema",
+            "uid": "globalfieldwithemptyschema",
+            "_version": 1,
+            "inbuilt_class": false,
+            "schema": [],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "referred_content_types": [
+                {
+                    "uid": "contenttypewithemptyschema",
+                    "title": "contenttypewithemptyschema"
+                }
+            ]
+        }
+    },
+    "globalfieldwithemptyschemacontenttype": {
+        "global_field": {
+            "created_at": "2021-06-21T09:31:40.548Z",
+            "updated_at": "2021-06-21T09:31:40.548Z",
+            "title": "globalfieldwithemptyschemacontenttype",
+            "uid": "globalfieldwithemptyschemacontenttype",
+            "_version": 1,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Rich Text Editor",
+                    "uid": "rich_text_editor",
+                    "field_metadata": {
+                        "allow_rich_text": true,
+                        "description": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": [],
+                        "version": 3
+                    },
+                    "non_localizable": false,
+                    "multiple": false,
+                    "mandatory": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "json",
+                    "display_name": "Supercharged RTE",
+                    "uid": "supercharged_rte",
+                    "field_metadata": {
+                        "allow_json_rte": true,
+                        "description": "",
+                        "default_value": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": []
+                    },
+                    "format": "",
+                    "error_messages": {
+                        "format": ""
+                    },
+                    "mandatory": false,
+                    "non_localizable": false,
+                    "multiple": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "referred_content_types": [
+                {
+                    "uid": "contenttypewithemptyschema",
+                    "title": "contenttypewithemptyschema"
+                }
+            ]
+        }
+    },
+    "globalfieldwithemptycontenttype": {
+        "global_field": {
+            "created_at": "2021-06-21T09:31:40.548Z",
+            "updated_at": "2021-06-21T09:31:40.548Z",
+            "title": "globalFieldForMigration",
+            "uid": "globalfieldformigration",
+            "_version": 1,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Rich Text Editor",
+                    "uid": "rich_text_editor",
+                    "field_metadata": {
+                        "allow_rich_text": true,
+                        "description": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": [],
+                        "version": 3
+                    },
+                    "non_localizable": false,
+                    "multiple": false,
+                    "mandatory": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "json",
+                    "display_name": "Supercharged RTE",
+                    "uid": "supercharged_rte",
+                    "field_metadata": {
+                        "allow_json_rte": true,
+                        "description": "",
+                        "default_value": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": []
+                    },
+                    "format": "",
+                    "error_messages": {
+                        "format": ""
+                    },
+                    "mandatory": false,
+                    "non_localizable": false,
+                    "multiple": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "referred_content_types": []
+        }
+    },
+    "globalfieldwithinvalidcontenttype": {
+        "global_field": {
+            "created_at": "2021-06-21T09:31:40.548Z",
+            "updated_at": "2021-06-21T09:31:40.548Z",
+            "title": "globalFieldForMigration",
+            "uid": "globalfieldformigration",
+            "_version": 1,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Rich Text Editor",
+                    "uid": "rich_text_editor",
+                    "field_metadata": {
+                        "allow_rich_text": true,
+                        "description": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": [],
+                        "version": 3
+                    },
+                    "non_localizable": false,
+                    "multiple": false,
+                    "mandatory": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "json",
+                    "display_name": "Supercharged RTE",
+                    "uid": "supercharged_rte",
+                    "field_metadata": {
+                        "allow_json_rte": true,
+                        "description": "",
+                        "default_value": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": []
+                    },
+                    "format": "",
+                    "error_messages": {
+                        "format": ""
+                    },
+                    "mandatory": false,
+                    "non_localizable": false,
+                    "multiple": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "referred_content_types": [
+                {
+                    "uid": "contenttypewithemptyschema",
+                    "title": "contenttypewithemptyschema"
+                }
+            ]
+        }
+    }
+}

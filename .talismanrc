@@ -1,0 +1,11 @@
+fileignoreconfig:
+- filename: packages/contentstack-migrate-rte/package-lock.json
+  checksum: c9fb39467e28413ae6e1cf6ba438f480ce279a0354211fe1a18ca144bda54340
+- filename: packages/contentstack-migrate-rte/src/lib/util/index.js
+  checksum: 8e7c1f7e16d40cb7db0bfb31a16db1b81b4a7223b6b86b3fb7e97788c0f3b30d
+- filename: packages/contentstack-migrate-rte/test/commands/json-migration.test.js
+  checksum: 0955b5bbb10151da3e52330cef9a5b0f4b58c52f7378ec95e111a52464dff8c0
+- filename: packages/contentstack-migrate-rte/test/dummy/expectedEntriesResponse.json
+  checksum: 85daef6990ce9880bdee8f41103992ab52f17ec91780f79acdfd7f48464d265b
+- filename: packages/contentstack-migrate-rte/test/utils/index.js
+  checksum: 1dd37624c258f2d62b70afb078341ba3a4ab05548d428adddfa71c8fd486d9be
