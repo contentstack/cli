@@ -1,7 +1,7 @@
 const {Command, flags} = require('@contentstack/cli-command')
 const {isEmpty} = require('lodash')
 const chalk = require('chalk')
-let {getStack, getConfig, getToken, updateSingleContentTypeEntries, updateContentTypeForGlobalField} = require('../../../../../lib/util')
+let {getStack, getConfig, getToken, updateSingleContentTypeEntries, updateContentTypeForGlobalField} = require('../../../lib/util')
 
 class JsonMigrationCommand extends Command {
   async run() {
@@ -13,7 +13,7 @@ class JsonMigrationCommand extends Command {
       }
       const {alias, content_type, isGlobalField} = config
       const token = getToken(alias)
-      let stack = getStack({token: token, host: 'localhost:8000'})
+      let stack = getStack({token: token, host: this.cmaHost})
       config.entriesCount = 0
       config.contentTypeCount = 0
       config.errorEntriesUid = []
@@ -47,10 +47,10 @@ JsonMigrationCommand.flags = {
 
 JsonMigrationCommand.examples = [
   'General Usage',
-  'csdx cm:json-rte-migration -p path/to/config.json',
+  'csdx cm:migrate-rte -p path/to/config.json',
   '',
   'Using Flags',
-  'csdx cm:json-rte-migration -a alias -c content_type_uid -h htmlPath -j jsonPath',
+  'csdx cm:migrate-rte -a alias -c content_type_uid -h htmlPath -j jsonPath',
 
 ]
 

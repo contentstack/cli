@@ -9,7 +9,7 @@ const configSchema = require('./config_schema.json')
 const {JSDOM} = require('jsdom')
 const collapseWithSpace = require('collapse-whitespace')
 const {v4} = require('uuid')
-const {fromRedactor} = require('supercharged-rte-serializer')
+const {htmlToJson} = require('supercharged-rte-serializer')
 const path = require('path')
 
 function formatHostname(hostname) {
@@ -19,7 +19,6 @@ function getStack(data) {
   const tokenDetails = data.token
   const client = contentstacksdk.client({
     host: formatHostname(data.host),
-    baseURL: 'http://localhost:8000/v3',
   })
   const stack = client.stack({api_key: tokenDetails.apiKey, management_token: tokenDetails.token})
 
@@ -320,7 +319,7 @@ function convertHtmlToJson(html) {
   collapseWithSpace(htmlDoc)
   let doc
   try {
-    let docChildren = fromRedactor(htmlDoc)
+    let docChildren = htmlToJson(htmlDoc)
     doc = {
       type: 'doc',
       uid: v4().split('-').join(''),

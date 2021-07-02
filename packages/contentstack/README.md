@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.8 darwin-x64 node-v13.14.0
+@contentstack/cli/0.1.1-beta.8 linux-x64 node-v14.15.5
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -31,6 +31,7 @@ USAGE
 * [`csdx auth:tokens:add`](#csdx-authtokensadd)
 * [`csdx auth:tokens:remove`](#csdx-authtokensremove)
 * [`csdx auth:whoami`](#csdx-authwhoami)
+* [`csdx cm:bootstrap`](#csdx-cmbootstrap)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:bulk-publish:add-fields`](#csdx-cmbulk-publishadd-fields)
 * [`csdx cm:bulk-publish:assets`](#csdx-cmbulk-publishassets)
@@ -46,6 +47,7 @@ USAGE
 * [`csdx cm:export`](#csdx-cmexport)
 * [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
 * [`csdx cm:import`](#csdx-cmimport)
+* [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
 * [`csdx cm:seed`](#csdx-cmseed)
 * [`csdx cm:stack-clone`](#csdx-cmstack-clone)
 * [`csdx config:get:region`](#csdx-configgetregion)
@@ -61,49 +63,52 @@ USAGE
 
 ## `csdx auth:login`
 
-Login to Contentstack and save the session for further use
+User session login
 
 ```
-Login to Contentstack and save the session for further use
+User session login
 
 USAGE
   $ csdx auth:login
 
 OPTIONS
-  -u, --username=username  Email address of your Contentstack account
+  -p, --password=password  Password
+  -u, --username=username  User name
 
-ALIASES
-  $ csdx login
+EXAMPLES
+  $ csdx auth:login
+  $ csdx auth:login -u <username>
+  $ csdx auth:login -u <username> -p <password>
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/login.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/login.ts)_
 
 ## `csdx auth:logout`
 
-Log out from Contentstack and clear the session
+User session logout
 
 ```
-Log out from Contentstack and clear the session
+User session logout
 
 USAGE
   $ csdx auth:logout
 
 OPTIONS
-  -f, --force  Exclude confirmation to logout
+  -f, --force  Force logging out for skipping the confirmation
 
-ALIASES
-  $ csdx logout
+EXAMPLES
+  $ csdx auth:logout
+  $ csdx auth:logout -f
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/logout.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/logout.ts)_
 
 ## `csdx auth:tokens`
 
 Lists all existing tokens added to the session
 
 ```
-Lists all existing tokens added to the session 
-
+Lists all existing tokens added to the session
 
 USAGE
   $ csdx auth:tokens
@@ -120,62 +125,66 @@ OPTIONS
 
 ALIASES
   $ csdx tokens
+
+EXAMPLE
+  $ csdx auth:tokens
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/tokens/index.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/tokens/index.ts)_
 
 ## `csdx auth:tokens:add`
 
-Adds management/delivery tokens to your session to use it with further CLI command
+Adds management/delivery tokens to your session to use it with further CLI command by default it adds management token if either of management or delivery flags are not set
 
 ```
-Adds management/delivery tokens to your session to use it with further CLI command
-by default it adds management token if either of management or delivery flags are not set
+Adds management/delivery tokens to your session to use it with further CLI command by default it adds management token if either of management or delivery flags are not set
 
 USAGE
   $ csdx auth:tokens:add
 
 OPTIONS
   -a, --alias=alias
-  -d, --delivery                 Set this while saving delivery token
+  -d, --delivery                 CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN
   -e, --environment=environment  Environment name for delivery token
-  -f, --force                    Exclude confirmation to replace existing alias
-  -k, --api-key=api-key          Stack API key for the token
+  -f, --force                    Force adding
+  -k, --api-key=api-key          API Key
   -m, --management               Set this while saving management token
+  -t, --token=token              Token
 
-  -t, --token=token              Sets token. Can be set via environment variable 'TOKEN'. We recommend to use env
-                                 variable
-
-DESCRIPTION
-  by default it adds management token if either of management or delivery flags are not set
-
-ALIASES
-  $ csdx tokens:add
+EXAMPLES
+  $ csdx auth:tokens:add
+  $ csdx auth:tokens:add -a <alias>
+  $ csdx auth:tokens:add -k <api key>
+  $ csdx auth:tokens:add -d
+  $ csdx auth:tokens:add -m
+  $ csdx auth:tokens:add -e <environment>
+  $ csdx auth:tokens:add -t <token>
+  $ csdx auth:tokens:add -a <alias> -k <api key> -m -t <management token>
+  $ csdx auth:tokens:add -a <alias> -k <api key> -d -e <environment> -t <delivery token>
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/tokens/add.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/tokens/add.ts)_
 
 ## `csdx auth:tokens:remove`
 
-Removes stored tokens
+Removes selected tokens
 
 ```
-Removes stored tokens
+Removes selected tokens
 
 USAGE
   $ csdx auth:tokens:remove
 
 OPTIONS
-  -a, --alias=alias  Alias (name) of the token to remove
+  -a, --alias=alias  Token alias
+  -i, --ignore       Ignore
 
-  -i, --ignore       Ignores if token not present. Command shows show list of available aliases with multi select option
-                     to delete tokens from that list.
-
-ALIASES
-  $ csdx tokens:remove
+EXAMPLES
+  $ csdx auth:tokens:remove
+  $ csdx auth:tokens:remove -a <aliase>
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/tokens/remove.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/tokens/remove.ts)_
 
 ## `csdx auth:whoami`
 
@@ -184,15 +193,45 @@ Display current users email address
 ```
 Display current users email address
 
-
 USAGE
   $ csdx auth:whoami
 
 ALIASES
   $ csdx whoami
+
+EXAMPLE
+  $ csdx auth:whoami
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/whoami.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/whoami.ts)_
+
+## `csdx cm:bootstrap`
+
+Bootstrap contentstack apps
+
+```
+Bootstrap contentstack apps
+
+USAGE
+  $ csdx cm:bootstrap
+
+OPTIONS
+  -a, --appName=appName          App name
+  -d, --directory=directory      Directory to setup the project
+  -s, --appType=appType          Sample or Starter app
+  -t, --accessToken=accessToken  Access token for private github repo
+
+EXAMPLES
+  $ csdx cm:bootstrap
+  $ csdx cm:bootstrap -a <app name>
+  $ csdx cm:bootstrap -d <path/to/setup/the/app>
+  $ csdx cm:bootstrap -t <github private repo token>
+  $ csdx cm:bootstrap -s <sampleapp or startapp>
+  $ csdx cm:bootstrap -s <sampleapp or startapp> -t <optional github private repo token> -a <app name> -d 
+  <path/to/setup/the/app>
+```
+
+_See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/cm/bootstrap.ts)_
 
 ## `csdx cm:bulk-publish`
 
@@ -823,6 +862,7 @@ OPTIONS
   -d, --data=data                                      path or location to store the data
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
+  -t, --content-type=content-type                      [optional] content type
 
 DESCRIPTION
   ...
@@ -836,9 +876,10 @@ EXAMPLES
   csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
   csdx cm:export -a <management_token_alias> -c <path/to/config/file>
   csdx cm:export -A -m <single module name>
+  csdx cm:export -A -m <single module name> -t <content type>
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-export/src/commands/cm/export.js)_
 
 ## `csdx cm:export-to-csv`
 
@@ -890,7 +931,43 @@ EXAMPLES
   csdx cm:import -A -m <single module name>
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.4/packages/contentstack-import/src/commands/cm/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/packages/contentstack-import/src/commands/cm/import.js)_
+
+## `csdx cm:migrate-rte`
+
+Migration script for migrating HTML RTE to JSON RTE
+
+```
+Migration script for migrating HTML RTE to JSON RTE
+
+USAGE
+  $ csdx cm:migrate-rte
+
+OPTIONS
+  -a, --alias=alias                Alias for the management token to be used
+  -c, --content_type=content_type  The content-type from which entries need to be migrated
+  -d, --delay=delay                [default: 1000] Provide delay in ms between two entry update
+
+  -g, --isGlobalField              This flag is set to false by default. It indicates that current content-type is
+                                   global-field
+
+  -h, --htmlPath=htmlPath          Provide path of Html RTE to migrate
+
+  -j, --jsonPath=jsonPath          Provide path of JSON RTE to migrate
+
+  -p, --configPath=configPath      Path to config file to be used
+
+  -y, --yes                        Agree to process the command with the current configuration
+
+EXAMPLES
+  General Usage
+  csdx cm:migrate-rte -p path/to/config.json
+
+  Using Flags
+  csdx cm:migrate-rte -a alias -c content_type_uid -h htmlPath -j jsonPath
+```
+
+_See code: [@contentstack/cli-cm-migrate-rte](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/cm/migrate-rte/index.js)_
 
 ## `csdx cm:seed`
 
