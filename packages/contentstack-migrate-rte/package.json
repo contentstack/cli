@@ -15,7 +15,7 @@
     "nock": "^13.1.0",
     "omit-deep-lodash": "^1.1.5",
     "sinon": "^11.1.1",
-    "supercharged-rte-serializer": "^1.0.515",
+    "supercharged-rte-serializer": "github:contentstack/json-rte-serializer#master",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
