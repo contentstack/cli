@@ -1,6 +1,14 @@
 fileignoreconfig:
+- filename: package-lock.json
+  checksum: b771060d83ebb67bb13aa11f587dd55694479e4ed8a6920991560b3fd1b1ac0c
+- filename: packages/contentstack-auth/package-lock.json
+  checksum: 4081a96cf7719593f66369bf652531ace4d49ef3ab6e7cf152acd09625907fe5
+- filename: packages/contentstack-bootstrap/package-lock.json
+  checksum: 8b633939e68389a52bb7e9d39de95551e642e1f41f6eb080d332ab2dac6388e8
+- filename: packages/contentstack-export-to-csv/package-lock.json
+  checksum: 0a66f308488d3fda887e77d351d5f99f33dfdfbbe64ad46b1288d3e2421724a2
 - filename: packages/contentstack-migrate-rte/package-lock.json
-  checksum: c9fb39467e28413ae6e1cf6ba438f480ce279a0354211fe1a18ca144bda54340
+  checksum: eb6ad4da42f5fa2a20d921d3920ba154c3226eb42974cc3612a663ef256a1521
 - filename: packages/contentstack-migrate-rte/src/lib/util/index.js
   checksum: 8e7c1f7e16d40cb7db0bfb31a16db1b81b4a7223b6b86b3fb7e97788c0f3b30d
 - filename: packages/contentstack-migrate-rte/test/commands/json-migration.test.js
@@ -9,3 +17,9 @@ fileignoreconfig:
   checksum: 85daef6990ce9880bdee8f41103992ab52f17ec91780f79acdfd7f48464d265b
 - filename: packages/contentstack-migrate-rte/test/utils/index.js
   checksum: 1dd37624c258f2d62b70afb078341ba3a4ab05548d428adddfa71c8fd486d9be
+- filename: packages/contentstack-seed/package-lock.json
+  checksum: 4f477bf5cb358d32dc75b40bfdc56e75af22c9d4aa1aa73b9814e453607d661b
+- filename: packages/contentstack/README.md
+  checksum: 7544b2ae5a97f9eb9d46836b763606cd9a34862ff37e5b2b33e88bfaa73b4e17
+- filename: packages/contentstack/package-lock.json
+  checksum: cc3143fea8c54ce78d3fbccc445b5a27f754538f7ce7f24a1d41615f2ac311fc

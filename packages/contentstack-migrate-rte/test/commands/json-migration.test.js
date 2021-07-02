@@ -19,7 +19,7 @@ describe('Migration Config validation', () => {
   test
   .stub(cli, 'confirm', () => async () => false)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'test1', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50'])
   .catch(error => {
     expect(error.message).to.contain('User aborted the command.')
   })
@@ -29,7 +29,7 @@ describe('Migration Config validation', () => {
   .stub(cli, 'confirm', () => async () => true)
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-p', './test/dummy/config/configWithEmptyPath.json', '-y'])
+  .command(['cm:migrate-rte', '-p', './test/dummy/config/configWithEmptyPath.json', '-y'])
   .catch(error => {
     expect(error.message).to.contain('No value provided for the "paths" property in config.')
   })
@@ -39,7 +39,7 @@ describe('Migration Config validation', () => {
   .stub(cli, 'confirm', () => async () => true)
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-p', './test/dummy/config/invalidConfig.json', '-y'])
+  .command(['cm:migrate-rte', '-p', './test/dummy/config/invalidConfig.json', '-y'])
   .catch(error => {
     expect(error.message).to.contain('Invalid key type. alias must be of string type(s).')
   })
@@ -48,7 +48,7 @@ describe('Migration Config validation', () => {
   test
   .stub(cli, 'confirm', () => async () => true)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50'])
+  .command(['cm:migrate-rte', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50'])
   .catch(error => {
     expect(error.message).to.contain('Config is mandatory while defining config.')
   })
@@ -58,7 +58,7 @@ describe('Migration Config validation', () => {
   .stub(cli, 'confirm', () => async () => true)
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'invalidAlias', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'invalidAlias', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50'])
   .catch(error => {
     expect(error.message).to.contain('Invalid alias provided for the management token.')
   })
@@ -68,7 +68,7 @@ describe('Migration Config validation', () => {
   .stub(cli, 'confirm', () => async () => true)
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-p', './test/dummy/config/configWithInvalidPath.json', '-y'])
+  .command(['cm:migrate-rte', '-p', './test/dummy/config/configWithInvalidPath.json', '-y'])
   .catch(error => {
     expect(error.message).to.contain('The specified path to config file does not exist.')
   })
@@ -78,7 +78,7 @@ describe('Migration Config validation', () => {
 describe('Content Type with Single RTE Field of Single Type', () => {
   let token = getToken('test1')
   beforeEach(() => {
-    nock(`${defaultConfig.apiEndpoint}`, {
+    nock(`${command.cmaAPIUrl}`, {
       reqheaders: {
         api_key: token.apiKey,
         authorization: token.token,
@@ -93,7 +93,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
       return getContentType(match[1])
     })
 
-    nock(`${defaultConfig.apiEndpoint}`, {
+    nock(`${command.cmaAPIUrl}`, {
       reqheaders: {
         api_key: token.apiKey,
         authorization: token.token,
@@ -111,7 +111,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
       return getEntries(match[1])
     })
 
-    nock(`${defaultConfig.apiEndpoint}`, {
+    nock(`${command.cmaAPIUrl}`, {
       reqheaders: {
         api_key: token.apiKey,
         authorization: token.token,
@@ -152,7 +152,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-p', './test/dummy/config/config.json', '-y'])
+  .command(['cm:migrate-rte', '-p', './test/dummy/config/config.json', '-y'])
   .it('execute using config file', ctx => {
     expect(ctx.stdout).to.contain('Updated 1 ContentType(s) and 2 Entries')
   })
@@ -161,7 +161,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'test1', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50'])
   .it('execute using flags', ctx => {
     expect(ctx.stdout).to.contain('Updated 1 ContentType(s) and 2 Entries')
   })
@@ -170,7 +170,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'test1', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor.invalidPath', '-j', 'supercharged_rte', '-y', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor.invalidPath', '-j', 'supercharged_rte', '-y', '-d', '50'])
   .catch(error => {
     expect(error.message).to.contain('The specified path to invalidPath HTML RTE does not exist.')
   }).it('throw error on invalid html rte path')
@@ -179,7 +179,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'test1', '-c', 'contenttypewithinvalidhtmlrteschema', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypewithinvalidhtmlrteschema', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
   .catch(error => {
     expect(error.message).to.contain('The specified path to rich_text_editor HTML RTE does not exist.')
   })
@@ -189,7 +189,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'test1', '-c', 'contenttypewithinvalidjsonrteschema', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypewithinvalidjsonrteschema', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
   .catch(error => {
     expect(error.message).to.contain('The specified path to supercharged_rte JSON RTE does not exist.')
   })
@@ -198,7 +198,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'test1', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte.invalidPath', '-y', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte.invalidPath', '-y', '-d', '50'])
   .catch(error => {
     expect(error.message).to.contain('The specified path to invalidPath JSON RTE does not exist.')
   }).it('throw error on invalid json rte path')
@@ -207,7 +207,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-p', './test/dummy/config/configForInvalidContentType.json', '-y'])
+  .command(['cm:migrate-rte', '-p', './test/dummy/config/configForInvalidContentType.json', '-y'])
   .catch(error => {
     expect(error.message).to.contain('Cannot convert "Multiple" type HTML RTE to "Single" type JSON RTE.')
   })
@@ -217,7 +217,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'test1', '-c', 'contenttypewithemptyschema', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypewithemptyschema', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
   .catch(error => {
     expect(error.message).to.contain('The contenttypewithemptyschema content type contains an empty schema.')
   })
@@ -227,7 +227,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'test1', '-c', 'contenttypedifferentlevelrte', '-h', 'group.rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypedifferentlevelrte', '-h', 'group.rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
   .catch(error => {
     expect(error.message).to.contain('To complete migration, HTML RTE and JSON RTE should be present at the same field depth level.')
   })
@@ -237,7 +237,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stub(cli, 'confirm', () => async () => true)
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'test1', '-c', 'invalidContentType', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'invalidContentType', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50'])
   .catch(error => {
     expect(error.message).to.contain('The Content Type \'invalidContentType\' was not found. Please try again.')
   })
@@ -247,7 +247,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stub(cli, 'confirm', () => async () => true)
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'test1', '-c', 'contenttypewithentryupdateerror', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypewithentryupdateerror', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
   .it('notify user on entry update failed', ctx => {
     expect(ctx.stdout).to.contain('Faced issue while migrating some entries,"blta9b16ac2827c54ed"')
   })
@@ -255,7 +255,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
 describe('Global Field Migration', () => {
   let token = getToken('test1')
   beforeEach(() => {
-    nock(`${defaultConfig.apiEndpoint}`, {
+    nock(`${command.cmaAPIUrl}`, {
       reqheaders: {
         api_key: token.apiKey,
         authorization: token.token,
@@ -281,7 +281,7 @@ describe('Global Field Migration', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-p', './test/dummy/config/configForGlobalField.json', '-y'])
+  .command(['cm:migrate-rte', '-p', './test/dummy/config/configForGlobalField.json', '-y'])
   .it('execute using config file', ctx => {
     expect(ctx.stdout).to.contain('Updated 2 ContentType(s) and 2 Entries')
   })
@@ -290,7 +290,7 @@ describe('Global Field Migration', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'test1', '-c', 'globalfieldwithemptycontenttype', '-g', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'globalfieldwithemptycontenttype', '-g', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
   .catch(error => {
     expect(error.message).to.contain('globalfieldformigration Global field is not referred in any content type.')
   })
@@ -300,7 +300,7 @@ describe('Global Field Migration', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'test1', '-c', 'globalfieldwithinvalidcontenttype', '-g', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'globalfieldwithinvalidcontenttype', '-g', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
   .catch(error => {
     expect(error.message).to.contain('The contenttypewithemptyschema content type referred in globalfieldformigration contains an empty schema.')
   })
@@ -310,7 +310,7 @@ describe('Global Field Migration', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'test1', '-c', 'globalfieldwithemptyschema', '-g', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'globalfieldwithemptyschema', '-g', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
   .catch(error => {
     expect(error.message).to.contain('The globalfieldwithemptyschema Global field contains an empty schema.')
   })
@@ -320,7 +320,7 @@ describe('Global Field Migration', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'test1', '-c', 'globalfieldwithemptyschemacontenttype', '-g', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'globalfieldwithemptyschemacontenttype', '-g', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
   .catch(error => {
     expect(error.message).to.contain('The contenttypewithemptyschema content type referred in globalfieldwithemptyschemacontenttype contains an empty schema.')
   })
@@ -330,7 +330,7 @@ describe('Global Field Migration', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-a', 'test1', '-c', 'invalidUidGlobalfield', '-g', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'invalidUidGlobalfield', '-g', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
   .catch(error => {
     expect(error.message).to.contain('The Global Field \'invalidUidGlobalfield\' was not found. Please try again.')
   })
@@ -348,7 +348,7 @@ describe('ContentType with single rte of multiple type', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte', '-p', './test/dummy/config/configForMultipleRte.json', '-y'])
+  .command(['cm:migrate-rte', '-p', './test/dummy/config/configForMultipleRte.json', '-y'])
   .it('execute using config file', ctx => {
     expect(ctx.stdout).to.contain('Updated 1 ContentType(s) and 1 Entries')
   })
@@ -365,7 +365,7 @@ describe('ContentType with Single RTE inside modular block', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte',
+  .command(['cm:migrate-rte',
     '-a',
     'test1',
     '-c',
@@ -393,7 +393,7 @@ describe('ContentType with Single RTE of type multiple inside group', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte',
+  .command(['cm:migrate-rte',
     '-a',
     'test1',
     '-c',
@@ -421,7 +421,7 @@ describe('ContentType with Single RTE inside group of type multiple', () => {
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:stack:entries:migrate-rte',
+  .command(['cm:migrate-rte',
     '-a',
     'test1',
     '-c',

@@ -11,45 +11,70 @@ It is Contentstack’s CLI plugin to migrate rte. Using this command, you can co
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g @contentstack/cli-cm-clone
+$ npm install -g @contentstack/cli-cm-migrate-rte
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-clone/0.1.0-beta-1 darwin-x64 node-v13.14.0
+@contentstack/cli-cm-migrate-rte/1.0.0 linux-x64 node-v14.15.5
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
 <!-- usagestop -->
-```sh-session
-$ npm install -g @contentstack/cli-cm-clone
-$ csdx COMMAND
-running command...
-$ csdx --help [COMMAND]
-USAGE
-  $ csdx COMMAND
-...
-```
 # Commands
 <!-- commands -->
-* [`csdx cm:stack-clone`](#csdx-cmstack-clone)
+* [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
+* [`csdx help [COMMAND]`](#csdx-help-command)
 
-## `csdx cm:stack-clone`
+## `csdx cm:migrate-rte`
 
-This command allows you to migrate data (structure or content or both) from one stack to another stack (either new or existing)
+Migration script for migrating HTML RTE to JSON RTE
 
 ```
 USAGE
-  $ csdx cm:stack-clone
+  $ csdx cm:migrate-rte
 
-DESCRIPTION
-  ...
-  Use this plugin to automate the process of cloning a stack in a few steps.
+OPTIONS
+  -a, --alias=alias                Alias for the management token to be used
+  -c, --content_type=content_type  The content-type from which entries need to be migrated
+  -d, --delay=delay                [default: 1000] Provide delay in ms between two entry update
 
-EXAMPLE
-  csdx cm:stack-clone
+  -g, --isGlobalField              This flag is set to false by default. It indicates that current content-type is
+                                   global-field
+
+  -h, --htmlPath=htmlPath          Provide path of Html RTE to migrate
+
+  -j, --jsonPath=jsonPath          Provide path of JSON RTE to migrate
+
+  -p, --configPath=configPath      Path to config file to be used
+
+  -y, --yes                        Agree to process the command with the current configuration
+
+EXAMPLES
+  General Usage
+  csdx cm:migrate-rte -p path/to/config.json
+
+  Using Flags
+  csdx cm:migrate-rte -a alias -c content_type_uid -h htmlPath -j jsonPath
 ```
 
-_See code: [src/commands/cm/stack-clone.js](https://github.com/contentstack/cli/blob/v0.1.0-beta-1/src/commands/cm/stack-clone.js)_
+_See code: [src/commands/cm/migrate-rte/index.js](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/cm/migrate-rte/index.js)_
+
+## `csdx help [COMMAND]`
+
+display help for csdx
+
+```
+USAGE
+  $ csdx help [COMMAND]
+
+ARGUMENTS
+  COMMAND  command to show help for
+
+OPTIONS
+  --all  see all commands in CLI
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
 <!-- commandsstop -->
