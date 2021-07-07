@@ -9,7 +9,7 @@ const configSchema = require('./config_schema.json')
 const {JSDOM} = require('jsdom')
 const collapseWithSpace = require('collapse-whitespace')
 const {v4} = require('uuid')
-const {htmlToJson} = require('supercharged-rte-serializer')
+const {htmlToJson} = require('@contentstack/json-rte-serializer')
 const path = require('path')
 
 function formatHostname(hostname) {
