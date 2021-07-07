@@ -7,8 +7,7 @@
     "rootDir": "src",
     "strict": false,
     "target": "es2017",
-    "allowJs": true,
-    "sourceMap": true,
+    "allowJs": true
   },
   "include": [
     "src/**/*"
