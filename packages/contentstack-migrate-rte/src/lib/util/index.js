@@ -319,13 +319,7 @@ function convertHtmlToJson(html) {
   collapseWithSpace(htmlDoc)
   let doc
   try {
-    let docChildren = htmlToJson(htmlDoc)
-    doc = {
-      type: 'doc',
-      uid: v4().split('-').join(''),
-      attrs: {},
-      children: docChildren,
-    }
+    doc = htmlToJson(htmlDoc)
     applyDirtyAttributesToBlock(doc)
   } catch (error) {
     // console.log("err", err)
