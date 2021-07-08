@@ -51,6 +51,14 @@ JsonMigrationCommand.examples = [
   '',
   'Using Flags',
   'csdx cm:migrate-rte -a alias -c content_type_uid -h htmlPath -j jsonPath',
+  '',
+  'Nested RTE',
+  'csdx cm:migrate-rte -a alias -c content_type_uid -h modular_block_uid.block_uid.html_rte_uid -j modular_block_uid.block_uid.json_rte_uid',
+  '',
+  'csdx cm:migrate-rte -a alias -c content_type_uid -h group_uid.html_rte_uid -j group_uid.json_rte_uid',
+  '',
+  'Global Field',
+  'csdx cm:migrate-rte -a alias -c global_field_uid -g -h htmlPath -j jsonPath',
 
 ]
 

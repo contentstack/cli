@@ -6,7 +6,7 @@
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "^0.1.1-beta.2",
-    "@contentstack/json-rte-serializer": "^1.0.0",
+    "@contentstack/json-rte-serializer": "^1.0.1",
     "@contentstack/management": "^1.2.1",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
