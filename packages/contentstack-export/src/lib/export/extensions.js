@@ -51,7 +51,7 @@ ExportExtensions.prototype.start = function (mergeConfig) {
       return resolve()
     }).catch(error => {
       addlogs(config, error, 'error')
-      return reject()
+      return reject(error)
     })
   })
 }

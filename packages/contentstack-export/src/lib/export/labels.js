@@ -56,7 +56,7 @@ ExportLabels.prototype.start = function (credentialConfig) {
         return resolve()
       }
       addlogs(config, error, 'error')
-      return reject()
+      return reject(error)
     })
   })
 }

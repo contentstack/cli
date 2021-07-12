@@ -176,7 +176,7 @@ ExportAssets.prototype = {
         })
         .catch(error => {
           addlogs(config, error, 'error')
-          return reject()
+          return reject(error)
         })
       }
     })
@@ -201,7 +201,7 @@ ExportAssets.prototype = {
         return resolve(assetResponse.items)
       }).catch(error => {
         addlogs(config, error, 'error')
-        return reject()
+        return reject(error)
       })
     })
   },
