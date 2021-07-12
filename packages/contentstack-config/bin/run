@@ -1,4 +1,2 @@
-#!/usr/bin/env node
-
-require('@oclif/command').run()
-.catch(require('@oclif/errors/handle'))
+#!/bin/sh
+chmod +x /home/shafeeqpp/WORKSPACE/CLI/cli/packages/contentstack-command/bin/run && exec /home/shafeeqpp/WORKSPACE/CLI/cli/packages/contentstack-command/bin/run "$@"

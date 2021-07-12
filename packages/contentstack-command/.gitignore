@@ -2,8 +2,10 @@
 *-error.log
 /.nyc_output
 /dist
+/lib
 /tmp
 /yarn.lock
-logs
-coverage
 node_modules
+.DS_Store
+coverage
+tsconfig.tsbuildinfo

@@ -70,7 +70,7 @@
 	],
 	"license": "MIT",
 	"oclif": {
-		"commands": "./src/commands",
+		"commands": "./lib/commands",
 		"bin": "csdx",
 		"devPlugins": [
 			"@oclif/plugin-help"

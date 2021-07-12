@@ -1,7 +1,7 @@
-import { Command, flags } from '@oclif/command';
-import * as Config from '@oclif/config';
-import { cliux, logger, messageHandler } from '../../../utils';
+import { Command, flags } from '@contentstack/cli-command';
+import { cliux, logger, messageHandler } from '@contentstack/utilities';
 import { Region } from '../../../interfaces';
+import { regionHandler } from '../../../utils';
 
 export default class RegionSetCommand extends Command {
   config: any;
@@ -29,6 +29,14 @@ export default class RegionSetCommand extends Command {
     '$ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com" --name="India"',
   ];
 
+  static args = [
+    {
+      name: 'region',
+      description: 'North America(NA), Europe (EU)',
+      options: ['EU', 'NA'],
+    },
+  ];
+
   async run() {
     const { args, flags } = this.parse(RegionSetCommand);
     const { cda, cma, name } = flags;
@@ -36,7 +44,7 @@ export default class RegionSetCommand extends Command {
     if (cda && cma && name) {
       try {
         let customRegion: Region = { cda, cma, name };
-        customRegion = this.config.userConfig.setCustomRegion(customRegion);
+        customRegion = regionHandler.setCustomRegion(customRegion);
         cliux.success(`Custom region has been set to ${customRegion.name}`);
         cliux.success(`CMA HOST: ${customRegion.cma}`);
         cliux.success(`CDA HOST: ${customRegion.cda}`);
@@ -46,12 +54,12 @@ export default class RegionSetCommand extends Command {
       }
     } else if (args.region) {
       const selectedRegion: string = args.region;
-      const regionDetails: Region = this.config.userConfig.setRegion(selectedRegion);
+      const regionDetails: Region = regionHandler.setRegion(selectedRegion);
       cliux.success(`Region has been set to ${regionDetails.name}`);
       cliux.success(`CDA HOST: ${regionDetails.cda}`);
       cliux.success(`CMA HOST: ${regionDetails.cma}`);
     } else {
-      this.config.userConfig.setRegion('NA');
+      regionHandler.setRegion('NA');
       cliux.print('CLI_CONFIG_SET_REGION_DEFAULT');
     }
   }

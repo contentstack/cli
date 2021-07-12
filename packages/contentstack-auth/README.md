@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-auth/0.1.1-beta.1 darwin-x64 node-v13.14.0
+@contentstack/cli-auth/0.1.1-beta.1 linux-x64 node-v12.22.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -34,50 +34,47 @@ USAGE
 
 ## `csdx auth:login`
 
-Login to Contentstack and save the session for further use
+User session login
 
 ```
-Login to Contentstack and save the session for further use
-
 USAGE
   $ csdx auth:login
 
 OPTIONS
-  -u, --username=username  Email address of your Contentstack account
+  -p, --password=password  Password
+  -u, --username=username  User name
 
-ALIASES
-  $ csdx login
+EXAMPLES
+  $ csdx auth:login
+  $ csdx auth:login -u <username>
+  $ csdx auth:login -u <username> -p <password>
 ```
 
-_See code: [src/commands/auth/login.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/login.js)_
+_See code: [src/commands/auth/login.ts](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/login.ts)_
 
 ## `csdx auth:logout`
 
-Log out from Contentstack and clear the session
+User session logout
 
 ```
-Log out from Contentstack and clear the session
-
 USAGE
   $ csdx auth:logout
 
 OPTIONS
-  -f, --force  Exclude confirmation to logout
+  -f, --force  Force logging out for skipping the confirmation
 
-ALIASES
-  $ csdx logout
+EXAMPLES
+  $ csdx auth:logout
+  $ csdx auth:logout -f
 ```
 
-_See code: [src/commands/auth/logout.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/logout.js)_
+_See code: [src/commands/auth/logout.ts](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/logout.ts)_
 
 ## `csdx auth:tokens`
 
 Lists all existing tokens added to the session
 
 ```
-Lists all existing tokens added to the session 
-
-
 USAGE
   $ csdx auth:tokens
 
@@ -93,77 +90,77 @@ OPTIONS
 
 ALIASES
   $ csdx tokens
+
+EXAMPLE
+  $ csdx auth:tokens
 ```
 
-_See code: [src/commands/auth/tokens/index.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/tokens/index.js)_
+_See code: [src/commands/auth/tokens/index.ts](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/tokens/index.ts)_
 
 ## `csdx auth:tokens:add`
 
-Adds management/delivery tokens to your session to use it with further CLI command
+Adds management/delivery tokens to your session to use it with further CLI command by default it adds management token if either of management or delivery flags are not set
 
 ```
-Adds management/delivery tokens to your session to use it with further CLI command
-by default it adds management token if either of management or delivery flags are not set
-
 USAGE
   $ csdx auth:tokens:add
 
 OPTIONS
   -a, --alias=alias
-  -d, --delivery                 Set this while saving delivery token
+  -d, --delivery                 CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN
   -e, --environment=environment  Environment name for delivery token
-  -f, --force                    Exclude confirmation to replace existing alias
-  -k, --api-key=api-key          Stack API key for the token
+  -f, --force                    Force adding
+  -k, --api-key=api-key          API Key
   -m, --management               Set this while saving management token
+  -t, --token=token              Token
 
-  -t, --token=token              Sets token. Can be set via environment variable 'TOKEN'. We recommend to use env
-                                 variable
-
-DESCRIPTION
-  by default it adds management token if either of management or delivery flags are not set
-
-ALIASES
-  $ csdx tokens:add
+EXAMPLES
+  $ csdx auth:tokens:add
+  $ csdx auth:tokens:add -a <alias>
+  $ csdx auth:tokens:add -k <api key>
+  $ csdx auth:tokens:add -d
+  $ csdx auth:tokens:add -m
+  $ csdx auth:tokens:add -e <environment>
+  $ csdx auth:tokens:add -t <token>
+  $ csdx auth:tokens:add -a <alias> -k <api key> -m -t <management token>
+  $ csdx auth:tokens:add -a <alias> -k <api key> -d -e <environment> -t <delivery token>
 ```
 
-_See code: [src/commands/auth/tokens/add.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/tokens/add.js)_
+_See code: [src/commands/auth/tokens/add.ts](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/tokens/add.ts)_
 
 ## `csdx auth:tokens:remove`
 
-Removes stored tokens
+Removes selected tokens
 
 ```
-Removes stored tokens
-
 USAGE
   $ csdx auth:tokens:remove
 
 OPTIONS
-  -a, --alias=alias  Alias (name) of the token to remove
+  -a, --alias=alias  Token alias
+  -i, --ignore       Ignore
 
-  -i, --ignore       Ignores if token not present. Command shows show list of available aliases with multi select option
-                     to delete tokens from that list.
-
-ALIASES
-  $ csdx tokens:remove
+EXAMPLES
+  $ csdx auth:tokens:remove
+  $ csdx auth:tokens:remove -a <aliase>
 ```
 
-_See code: [src/commands/auth/tokens/remove.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/tokens/remove.js)_
+_See code: [src/commands/auth/tokens/remove.ts](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/tokens/remove.ts)_
 
 ## `csdx auth:whoami`
 
 Display current users email address
 
 ```
-Display current users email address
-
-
 USAGE
   $ csdx auth:whoami
 
 ALIASES
   $ csdx whoami
+
+EXAMPLE
+  $ csdx auth:whoami
 ```
 
-_See code: [src/commands/auth/whoami.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/whoami.js)_
+_See code: [src/commands/auth/whoami.ts](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/whoami.ts)_
 <!-- commandsstop -->

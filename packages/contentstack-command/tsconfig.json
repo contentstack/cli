@@ -11,6 +11,10 @@
     "sourceMap": false,
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "../contentstack-config/src/types"
+  ],
+  "exclude": [
+    "src/**/*.d.ts"
   ]
 }
