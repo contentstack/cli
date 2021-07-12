@@ -25,6 +25,8 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`csdx config:get:region`](#csdx-configgetregion)
+* [`csdx config:set:region`](#csdx-configsetregion)
 * [`csdx help [COMMAND]`](#csdx-help-command)
 * [`csdx plugins`](#csdx-plugins)
 * [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
@@ -32,6 +34,46 @@ USAGE
 * [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
 * [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
 * [`csdx plugins:update`](#csdx-pluginsupdate)
+
+## `csdx config:get:region`
+
+CLI_CONFIG_SET_REGION_DESCRIPTION
+
+```
+CLI_CONFIG_SET_REGION_DESCRIPTION
+
+USAGE
+  $ csdx config:get:region
+
+EXAMPLE
+  $ csdx config:get:region
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/config/get/region.ts)_
+
+## `csdx config:set:region`
+
+CLI_CONFIG_SET_REGION_DESCRIPTION
+
+```
+CLI_CONFIG_SET_REGION_DESCRIPTION
+
+USAGE
+  $ csdx config:set:region
+
+OPTIONS
+  -d, --cda=cda    CLI_CONFIG_SET_REGION_FLAG_D_DESCRIPTION
+  -m, --cma=cma    CLI_CONFIG_SET_REGION_FLAG_M_DESCRIPTION
+  -n, --name=name  CLI_CONFIG_SET_REGION_FLAG_N_DESCRIPTION
+
+EXAMPLES
+  $ csdx config:set:region EU
+  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"
+  $ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com" 
+  --name="India"
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/config/set/region.ts)_
 
 ## `csdx help [COMMAND]`
 

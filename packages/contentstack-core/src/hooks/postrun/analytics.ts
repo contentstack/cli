@@ -1,8 +1,6 @@
-import * as Configstore from 'configstore';
-import { Analytics, getSessionId, logger } from '../../utils';
+import { logger } from '@contentstack/utilities';
+import { Analytics, getSessionId } from '../../utils';
 import configInternal from '../../config';
-
-const config = new Configstore('contentstack_cli');
 
 /**
  * @param {Object} opts Options provided to hooks via Oclif framework.

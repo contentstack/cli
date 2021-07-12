@@ -1,23 +1,20 @@
-import * as Configstore from 'configstore';
+import { logger, cliux, configHandler } from '@contentstack/utilities';
 import axios from 'axios';
-import { cliux, logger } from '../../utils';
 import { default as internalConfig } from '../../config';
-
-const config = new Configstore('contentstack_cli');
 
 /**
  * Authenticate before executing the protected commands
  */
 export default async function (opts): Promise<void> {
   if (internalConfig.protectedCommands[opts.Command.id]) {
-    const authToken = config.get('authtoken');
+    const authToken = configHandler.get('authtoken');
     if (!authToken) {
       logger.error('No auth token found for command', opts.Command.id);
       cliux.error('CLI_CORE_LOGIN_AGAIN');
       this.exit();
       return;
     }
-    const region = config.get('region');
+    const region = configHandler.get('region');
     if (region && region.cma) {
       try {
         const result = await axios.get(`${region.cma}/v3/user`, { headers: { authtoken: authToken } });

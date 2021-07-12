@@ -1,9 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import * as Configstore from 'configstore';
-import logger from './logger';
-import CLIError from './cli-error';
+import { configHandler, CLIError, logger } from '@contentstack/utilities';
 
-const config = new Configstore('contentstack_cli');
 /**
  * Generate or return an RFC version 4 (random) sessionId
  * If sessionId already stored in config it will return that
@@ -12,9 +9,9 @@ const config = new Configstore('contentstack_cli');
  */
 export default function (): string {
   try {
-    let sessionId = config.get('sessionId');
+    let sessionId = configHandler.get('sessionId');
     if (!sessionId) {
-      sessionId = config.set('sessionId', uuidv4());
+      sessionId = configHandler.set('sessionId', uuidv4());
     }
     return sessionId;
   } catch (error) {

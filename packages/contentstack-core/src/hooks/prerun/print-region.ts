@@ -1,5 +1,5 @@
 import * as Configstore from 'configstore';
-import { cliux } from '../../utils';
+import { cliux } from '@contentstack/utilities';
 
 const config = new Configstore('contentstack_cli');
 
