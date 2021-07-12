@@ -1,14 +1,15 @@
 /* eslint-disable no-console */
 /* eslint-disable new-cap */
 /* eslint-disable camelcase */
-const {getQueue} = require('../util/queue')
+import * as Queue from '../utils/queue'
+
 const {bulkPublish, publishAsset, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
 const {setDelayForBulkPublish} = require('../util')
 const {isEmpty} = require('../util')
 
-const queue = getQueue()
+const queue = new Queue()
 let logFileName
 let bulkPublishSet = []
 let filePath

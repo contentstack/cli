@@ -3,11 +3,11 @@
 /* eslint-disable max-params */
 /* eslint-disable unicorn/explicit-length-check */
 /* eslint-disable camelcase */
-/* eslint-disable max-depth */
 /* eslint-disable complexity */
 /* eslint-disable node/no-extraneous-require */
+import * as Queue from '../utils/queue'
+
 const _ = require('lodash')
-const {getQueue} = require('../util/queue')
 const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
@@ -15,7 +15,7 @@ const {setDelayForBulkPublish} = require('../util')
 const {isEmpty} = require('../util')
 
 let changedFlag = false
-const queue = getQueue()
+const queue = new Queue()
 let skipCount
 let logFileName
 let bulkPublishSet = []

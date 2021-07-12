@@ -3,7 +3,8 @@
 /* eslint-disable camelcase */
 /* eslint-disable complexity */
 /* eslint-disable max-params */
-const {getQueue} = require('../util/queue')
+import * as Queue from '../utils/queue'
+
 const defaults = require('../config/defaults.json')
 const req = require('../util/request')
 const {
@@ -12,9 +13,9 @@ const {
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
 const types = 'asset_published,entry_published'
-const queue = getQueue()
-const entryQueue = getQueue()
-const assetQueue = getQueue()
+const queue = new Queue()
+const entryQueue = new Queue()
+const assetQueue = new Queue()
 const {setDelayForBulkPublish} = require('../util')
 const {Command} = require('@contentstack/cli-command')
 const command = new Command()

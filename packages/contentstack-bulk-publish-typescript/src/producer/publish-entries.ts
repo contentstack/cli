@@ -3,15 +3,14 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-depth */
 /* eslint-disable no-console */
-import getQueue from ''
+import * as Queue from '../utils/queue'
 
-const {getQueue} = require('../util/queue')
 const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
 const {isEmpty} = require('../util')
 
-const queue = getQueue()
+const queue = new Queue()
 
 let skipCount
 let logFileName

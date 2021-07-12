@@ -4,14 +4,15 @@
 /* eslint-disable no-console */
 /* eslint-disable new-cap */
 /* eslint-disable camelcase */
-const {getQueue} = require('../util/queue')
+import * as Queue from '../utils/queue'
+
 const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
 const {setDelayForBulkPublish} = require('../util')
 const {isEmpty} = require('../util')
 
-const queue = getQueue()
+const queue = new Queue()
 let skipCount
 let changedFlag = false
 let logFileName = 'publish-unpublished-env'

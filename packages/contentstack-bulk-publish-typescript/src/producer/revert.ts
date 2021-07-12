@@ -5,9 +5,10 @@
 /* eslint-disable new-cap */
 /* eslint-disable camelcase */
 // const yesno = require('yesno')
+import * as Queue from '../utils/queue'
+
 const chalk = require('chalk')
 const {getAllLogs} = require('../util/logger')
-const {getQueue} = require('../util/queue')
 const {validateFile} = require('../util/fs')
 const Configstore = require('configstore')
 let config = new Configstore('contentstack_cli')
@@ -26,8 +27,8 @@ const getStack = require('../util/client.js').getStack
 // const logfilenameProvidedByUser = getRevertAndLogfile(process.argv)
 const intervalBetweenPublishRequests = 3 // interval in seconds
 
-const unpublishQueue = getQueue()
-const publishQueue = getQueue()
+const unpublishQueue = new Queue()
+const publishQueue = new Queue()
 
 const revertLogFileName = 'revert'
 
