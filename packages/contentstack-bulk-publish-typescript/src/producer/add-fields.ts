@@ -5,10 +5,9 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-console */
 /* eslint-disable max-params */
-import * as Queue from '../utils/queue'
+import * as Queue from '../utils/queue';
 
 const defaultConfig = require('../config/defaults.json')
-const req = require('../util/request')
 const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
@@ -200,7 +199,7 @@ async function updateEntry(config, updatedEntry, contentType, locale) {
     }),
   }
   try {
-    const update = await req(conf)
+    // const update = await req(conf)
     if (update.notice) {
       return Promise.resolve(true)
     }
