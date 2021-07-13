@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import * as chalk from 'chalk'
 import * as path from 'path'
-const {getLogsDirPath} = require('../util/logger.js')
+const {getLogsDirPath} = require('../utils/logger.js')
 
 const logsDir = getLogsDirPath();
 

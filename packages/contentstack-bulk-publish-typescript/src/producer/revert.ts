@@ -8,12 +8,12 @@
 import * as Queue from '../utils/queue'
 
 const chalk = require('chalk')
-const {getAllLogs} = require('../util/logger')
-const {validateFile} = require('../util/fs')
+const {getAllLogs} = require('../utils/logger')
+const {validateFile} = require('../utils/fs')
 const Configstore = require('configstore')
 let config = new Configstore('contentstack_cli')
 const {initializeLogger, bulkUnPublish, publishUsingVersion} = require('../consumer/publish')
-const getStack = require('../util/client.js').getStack
+const getStack = require('../utils/client.js').getStack
 
 // for checking if a logfile has been provided by user
 // function getRevertAndLogfile(args) {

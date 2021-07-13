@@ -3,10 +3,10 @@
 const {Command, flags} = require('@oclif/command')
 const {cli} = require('cli-ux')
 const {start} = require('../../../producer/unpublish')
-const store = require('../../../util/store.js')
+const store = require('../../../utils/store.js')
 const configKey = 'Unpublish'
 const { prettyPrint, formatError } = require('../../../util')
-const { getStack } = require('../../../util/client.js')
+const { getStack } = require('../../../utils/client.js')
 let config
 
 class UnpublishCommand extends Command {

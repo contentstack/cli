@@ -5,11 +5,11 @@ import {Command, flags} from '@contentstack/cli-command'
 import {OclifConfig, Region} from '../../../interfaces'
 
 const {start} = require('../../../producer/publish-entries')
-const store = require('../../../util/store.js')
+const store = require('../../../utils/store.js')
 const {cli} = require('cli-ux')
 const configKey = 'publish_entries'
 const { prettyPrint, formatError } = require('../../../util')
-const { getStack } = require('../../../util/client.js')
+const { getStack } = require('../../../utils/client.js')
 let config
 
 export default class EntriesCommand extends Command {

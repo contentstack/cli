@@ -6,12 +6,12 @@
 import * as Queue from '../utils/queue'
 
 const defaults = require('../config/defaults.json')
-const req = require('../util/request')
+const req = require('../utils/request')
 const {
   bulkPublish, publishEntry, publishAsset, initializeLogger,
 } = require('../consumer/publish')
-const retryFailedLogs = require('../util/retryfailed')
-const {validateFile} = require('../util/fs')
+const retryFailedLogs = require('../utils/retryfailed')
+const {validateFile} = require('../utils/fs')
 const types = 'asset_published,entry_published'
 const queue = new Queue()
 const entryQueue = new Queue()

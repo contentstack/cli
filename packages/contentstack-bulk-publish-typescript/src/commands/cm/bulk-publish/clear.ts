@@ -1,7 +1,7 @@
 const fs = require('fs')
 const {cli} = require('cli-ux')
 const {Command, flags} = require('@oclif/command')
-const {getLogsDirPath} = require('../../../util/logger.js')
+const {getLogsDirPath} = require('../../../utils/logger.js')
 
 class ClearCommand extends Command {
   async run() {

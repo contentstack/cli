@@ -1,10 +1,10 @@
 const {Command, flags} = require('@oclif/command')
 const {start} = require('../../../producer/publish-assets')
-const store = require('../../../util/store.js')
+const store = require('../../../utils/store.js')
 const {cli} = require('cli-ux')
 const configKey = 'publish_assets'
 const {prettyPrint, formatError} = require('../../../util')  
-const {getStack} = require('../../../util/client.js')
+const {getStack} = require('../../../utils/client.js')
 let config
 
 class AssetsCommand extends Command {

@@ -4,13 +4,13 @@
 /* eslint-disable no-console */
 const chalk = require('chalk')
 const path = require('path')
-const req = require('../util/request')
+const req = require('../utils/request')
 const Configstore = require('configstore')
 const defaults = require('../config/defaults.json')
 const configstore = new Configstore('contentstack_cli')
 const {formatError} = require('../util')
 
-const {getLoggerInstance, addLogs, getLogsDirPath} = require('../util/logger')
+const {getLoggerInstance, addLogs, getLogsDirPath} = require('../utils/logger')
 const logsDir = getLogsDirPath()
 
 let logger

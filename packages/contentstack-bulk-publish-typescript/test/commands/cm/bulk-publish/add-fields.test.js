@@ -1,10 +1,10 @@
 const {Command, flags} = require('@oclif/command')
 const {start} = require('../../../producer/add-fields')
-const store = require('../../../util/store.js')
+const store = require('../../../utils/store.js')
 const {cli} = require('cli-ux')
 const configKey = 'addFields'
 const { prettyPrint, formatError } = require('../../../util')
-const { getStack } = require('../../../util/client.js')
+const { getStack } = require('../../../utils/client.js')
 let config
 
 class AddFieldsCommand extends Command {

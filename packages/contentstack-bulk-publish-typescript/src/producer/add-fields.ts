@@ -9,9 +9,9 @@ import * as Queue from '../utils/queue';
 
 const defaultConfig = require('../config/defaults.json')
 const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
-const retryFailedLogs = require('../util/retryfailed')
-const {validateFile} = require('../util/fs')
-const stack = require('../util/client.js').stack
+const retryFailedLogs = require('../utils/retryfailed')
+const {validateFile} = require('../utils/fs')
+const stack = require('../utils/client.js').stack
 const {setDelayForBulkPublish} = require('../util')
 const {Command} = require('@contentstack/cli-command')
 const command = new Command()
