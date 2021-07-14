@@ -1,10 +1,6 @@
 import { Command } from '@contentstack/cli-command';
 import cli from 'cli-ux';
-import * as Configstore from 'configstore';
-import { cliux, logger, messageHandler } from '../../../utils';
-
-const config = new Configstore('contentstack_cli');
-
+import { logger, cliux, messageHandler, configHandler } from '@contentstack/cli-utilities';
 export default class TokensListCommand extends Command {
   private readonly parse: Function;
   static run;
@@ -15,7 +11,7 @@ export default class TokensListCommand extends Command {
 
   async run(): Promise<any> {
     try {
-      const managementTokens = config.get('tokens');
+      const managementTokens = configHandler.get('tokens');
       const tokenOptions: Array<object> = [];
       if (managementTokens && Object.keys(managementTokens).length > 0) {
         Object.keys(managementTokens).forEach(function (item) {

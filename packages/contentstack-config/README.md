@@ -26,7 +26,7 @@ USAGE
 # Commands
 <!-- commands -->
 * [`csdx config:get:region`](#csdx-configgetregion)
-* [`csdx config:set:region`](#csdx-configsetregion)
+* [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 
 ## `csdx config:get:region`
 
@@ -42,13 +42,13 @@ EXAMPLE
 
 _See code: [src/commands/config/get/region.ts](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/config/get/region.ts)_
 
-## `csdx config:set:region`
+## `csdx config:set:region [REGION]`
 
 CLI_CONFIG_SET_REGION_DESCRIPTION
 
 ```
 USAGE
-  $ csdx config:set:region
+  $ csdx config:set:region [REGION]
 
 OPTIONS
   -d, --cda=cda    CLI_CONFIG_SET_REGION_FLAG_D_DESCRIPTION
@@ -56,7 +56,9 @@ OPTIONS
   -n, --name=name  CLI_CONFIG_SET_REGION_FLAG_N_DESCRIPTION
 
 EXAMPLES
-  $ csdx config:set:region EU
+  $ csdx config:set:region
+  $ csdx config:set:region NA
+  $ csdx config:set:region NA
   $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"
   $ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com" 
   --name="India"

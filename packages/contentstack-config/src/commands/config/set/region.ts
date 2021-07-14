@@ -1,7 +1,7 @@
 import { Command, flags } from '@contentstack/cli-command';
-import { cliux, logger, messageHandler } from '@contentstack/utilities';
+import { cliux, logger, messageHandler } from '@contentstack/cli-utilities';
 import { Region } from '../../../interfaces';
-import { regionHandler } from '../../../utils';
+import { regionHandler, interactive } from '../../../utils';
 
 export default class RegionSetCommand extends Command {
   config: any;
@@ -24,7 +24,9 @@ export default class RegionSetCommand extends Command {
     }),
   };
   static examples = [
-    '$ csdx config:set:region EU',
+    '$ csdx config:set:region',
+    '$ csdx config:set:region NA',
+    '$ csdx config:set:region NA',
     '$ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"',
     '$ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com" --name="India"',
   ];
@@ -32,14 +34,28 @@ export default class RegionSetCommand extends Command {
   static args = [
     {
       name: 'region',
-      description: 'North America(NA), Europe (EU)',
-      options: ['EU', 'NA'],
     },
   ];
 
   async run() {
     const { args, flags } = this.parse(RegionSetCommand);
-    const { cda, cma, name } = flags;
+    let { cda, cma, name } = flags;
+    let region = args.region;
+    if (!(cda && cma && name) || !region) {
+      const selectedRegion = await interactive.askRegions();
+      if (selectedRegion === 'EU' || selectedRegion === 'NA') {
+        region = selectedRegion;
+      } else if (selectedRegion === 'custom') {
+        const selectedCustomRegion = await interactive.askCustomRegion();
+        name = selectedCustomRegion.name;
+        cda = selectedCustomRegion.cda;
+        cma = selectedCustomRegion.cma;
+      } else {
+        cliux.error(`Failed to set region`);
+        return;
+      }
+    }
+
     // Custom flag will get first priority over region argument
     if (cda && cma && name) {
       try {
@@ -52,15 +68,12 @@ export default class RegionSetCommand extends Command {
         logger.error('failed to set the region', error);
         cliux.error(`Failed to set region due to: ${error.message}`);
       }
-    } else if (args.region) {
-      const selectedRegion: string = args.region;
+    } else if (region) {
+      const selectedRegion: string = region;
       const regionDetails: Region = regionHandler.setRegion(selectedRegion);
       cliux.success(`Region has been set to ${regionDetails.name}`);
       cliux.success(`CDA HOST: ${regionDetails.cda}`);
       cliux.success(`CMA HOST: ${regionDetails.cma}`);
-    } else {
-      regionHandler.setRegion('NA');
-      cliux.print('CLI_CONFIG_SET_REGION_DEFAULT');
     }
   }
 }

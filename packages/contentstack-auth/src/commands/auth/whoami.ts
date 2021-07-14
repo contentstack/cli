@@ -1,5 +1,6 @@
 import { Command } from '@contentstack/cli-command';
-import { logger, cliux, messageHandler } from '../../utils';
+import { logger, cliux, messageHandler, CLIError } from '@contentstack/cli-utilities';
+
 export default class WhoamiCommand extends Command {
   email: string;
   static run;

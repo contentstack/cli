@@ -1,5 +1,4 @@
-import logger from './logger';
-import messageHandler from './message-handler';
+import { messageHandler, logger } from '@contentstack/cli-utilities';
 
 /**
  * Validate delivery token

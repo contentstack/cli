@@ -1,9 +1,8 @@
 import { CsdxContext } from '../../utils';
 
 /**
- * Set user configuration in the settings
- * TBD: will be removed since command class is providing the same features
+ * Set the cli context
  */
 export default function (opts): void {
-  this.config.context = new CsdxContext(opts);
+  this.config.context = new CsdxContext(opts, this.config);
 }

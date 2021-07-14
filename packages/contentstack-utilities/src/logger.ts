@@ -38,7 +38,7 @@ class LoggerService {
           return message;
         }),
       ),
-      level: config.get('logger.level'),
+      level: (config.get('logger.level') as string) || 'error',
       silent: config.get('logger.enabled') && process.env.CLI_ENV !== 'TEST' ? true : false,
     });
     this.logger = logger;

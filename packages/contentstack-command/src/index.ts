@@ -1,8 +1,8 @@
 import { Command, flags } from '@oclif/command';
-import ContentstackManagementSDK from '@contentstack/management';
+import * as ContentstackManagementSDK from '@contentstack/management';
 import * as ContentstackDeliverySDK from 'contentstack';
 import * as url from 'url';
-import { configHandler, CLIError } from '@contentstack/utilities';
+import { configHandler, CLIError } from '@contentstack/cli-utilities';
 import { Region } from './interfaces';
 
 const defaultRateLimit = 5;

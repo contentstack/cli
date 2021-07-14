@@ -4,7 +4,7 @@
   "version": "0.1.1-beta.8",
   "author": "Contentstack",
   "bin": {
-    "csdx2": "./bin/run"
+    "csdx": "./bin/run"
   },
   "main": "src/index.js",
   "scripts": {
@@ -24,7 +24,8 @@
     "@contentstack/cli-command": "0.1.1-beta.1",
     "@contentstack/cli-config": "0.1.1-beta.1",
     "@contentstack/management": "1.2.1",
-    "@contentstack/utilities": "0.1.1-beta.1",
+    "@contentstack/cli-utilities": "0.1.1-beta.1",
+    "@contentstack/cli-auth": "0.1.1-beta.1",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
     "@oclif/errors": "^1.3.3",
@@ -46,6 +47,7 @@
     "@oclif/dev-cli": "^1.22.2",
     "@oclif/plugin-help": "^3.2.0",
     "@oclif/test": "^1.2.8",
+    "@types/axios": "^0.14.0",
     "@types/chai": "^4.2.18",
     "@types/inquirer": "^7.3.1",
     "@types/mkdirp": "^1.0.1",
@@ -107,12 +109,12 @@
       "@oclif/plugin-help",
       "@oclif/plugin-not-found",
       "@oclif/plugin-plugins",
-      "@contentstack/cli-config"
+      "@contentstack/cli-config",
+      "@contentstack/cli-auth"
     ],
     "hooks": {
       "prerun": [
-        "./lib/hooks/prerun/print-region",
-        "./lib/hooks/prerun/validate-auth-token"
+        "./lib/hooks/prerun/auth-guard"
       ],
       "init": [
         "./lib/hooks/init/context-init",

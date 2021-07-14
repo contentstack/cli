@@ -3,7 +3,6 @@ export interface AuthOptions {
   contentstackClient: any;
 }
 
-// TBD
 export interface ContentStackManagementClient {
   contentstackClient: object;
 }

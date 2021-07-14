@@ -1,5 +1,5 @@
-import { logger } from '@contentstack/utilities';
-import { Analytics, getSessionId } from '../../utils';
+import { logger } from '@contentstack/cli-utilities';
+import { Analytics } from '../../utils';
 import configInternal from '../../config';
 
 /**
@@ -7,7 +7,7 @@ import configInternal from '../../config';
  * This hook gets UUID for Analytics to maintain uniqueness of user and run before every command gets executed.
  */
 export default async function (opts): Promise<any> {
-  const sessionId = getSessionId();
+  const sessionId = this.config.context.id;
   const googleAnalyticsConf = {
     trackingID: configInternal.analytics.trackingID,
     cid: sessionId,

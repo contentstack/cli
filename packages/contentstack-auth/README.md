@@ -34,15 +34,15 @@ USAGE
 
 ## `csdx auth:login`
 
-User session login
+CLI_AUTH_LOGIN_DESCRIPTION
 
 ```
 USAGE
   $ csdx auth:login
 
 OPTIONS
-  -p, --password=password  Password
-  -u, --username=username  User name
+  -p, --password=password  CLI_AUTH_LOGIN_FLAG_PASSWORD
+  -u, --username=username  CLI_AUTH_LOGIN_FLAG_USERNAME
 
 EXAMPLES
   $ csdx auth:login
@@ -54,14 +54,14 @@ _See code: [src/commands/auth/login.ts](https://github.com/contentstack/cli/blob
 
 ## `csdx auth:logout`
 
-User session logout
+CLI_AUTH_LOGOUT_DESCRIPTION
 
 ```
 USAGE
   $ csdx auth:logout
 
 OPTIONS
-  -f, --force  Force logging out for skipping the confirmation
+  -f, --force  CLI_AUTH_LOGOUT_FLAG_FORCE
 
 EXAMPLES
   $ csdx auth:logout
@@ -72,7 +72,7 @@ _See code: [src/commands/auth/logout.ts](https://github.com/contentstack/cli/blo
 
 ## `csdx auth:tokens`
 
-Lists all existing tokens added to the session
+CLI_AUTH_TOKENS_LIST_DESCRIPTION
 
 ```
 USAGE
@@ -99,7 +99,7 @@ _See code: [src/commands/auth/tokens/index.ts](https://github.com/contentstack/c
 
 ## `csdx auth:tokens:add`
 
-Adds management/delivery tokens to your session to use it with further CLI command by default it adds management token if either of management or delivery flags are not set
+CLI_AUTH_TOKENS_ADD_DESCRIPTION
 
 ```
 USAGE
@@ -108,10 +108,10 @@ USAGE
 OPTIONS
   -a, --alias=alias
   -d, --delivery                 CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN
-  -e, --environment=environment  Environment name for delivery token
+  -e, --environment=environment  CLI_AUTH_TOKENS_ADD_FLAG_ENVIRONMENT_NAME
   -f, --force                    Force adding
   -k, --api-key=api-key          API Key
-  -m, --management               Set this while saving management token
+  -m, --management               CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN
   -t, --token=token              Token
 
 EXAMPLES
@@ -130,7 +130,7 @@ _See code: [src/commands/auth/tokens/add.ts](https://github.com/contentstack/cli
 
 ## `csdx auth:tokens:remove`
 
-Removes selected tokens
+CLI_AUTH_TOKENS_REMOVE_DESCRIPTION
 
 ```
 USAGE
@@ -149,7 +149,7 @@ _See code: [src/commands/auth/tokens/remove.ts](https://github.com/contentstack/
 
 ## `csdx auth:whoami`
 
-Display current users email address
+CLI_AUTH_WHOAMI_DESCRIPTION
 
 ```
 USAGE

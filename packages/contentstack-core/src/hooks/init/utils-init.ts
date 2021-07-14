@@ -1,8 +1,7 @@
-import { logger, messageHandler, cliux, configHandler } from '@contentstack/utilities';
+import { logger, messageHandler, cliux } from '@contentstack/cli-utilities';
 
 /**
- * Set user configuration in the settings
- * TBD: will be removed since command class is providing the same features
+ * Initialize the utilities
  */
 export default function (opts): void {
   logger.init(this.config.context);

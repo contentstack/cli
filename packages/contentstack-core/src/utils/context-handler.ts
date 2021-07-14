@@ -1,16 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
-import { configHandler } from '@contentstack/utilities';
-import internalConfig from '../config';
-
+import * as path from 'path';
+import { configHandler } from '@contentstack/cli-utilities';
 export default class CsdxContext {
   readonly id: string;
   readonly user?: object;
   readonly region?: object;
   readonly config: object;
   readonly info: object;
-  readonly plugin: object;
+  readonly plugin: any;
+  readonly pluginConfig: any;
+  readonly messageFilePath: string;
 
-  constructor(cliOpts: any) {
+  constructor(cliOpts: any, cliConfig: any) {
+    const command = cliConfig.findCommand(cliOpts.id);
     const config = configHandler.init();
     let sessionId = configHandler.get('sessionId');
     if (!sessionId) {
@@ -26,9 +28,15 @@ export default class CsdxContext {
     this.config = { ...config };
     this.region = configHandler.get('region');
     this.info = { command: cliOpts.id };
-    this.plugin = {
-      name: cliOpts.id ? cliOpts.id.match(internalConfig.commandRegexPattern)[1] : 'core',
-    };
+    if (command.pluginName) {
+      this.plugin = (cliConfig.plugins || []).find((p) => p.name === command.pluginName) || {};
+      this.plugin.name = command.pluginName;
+      this.plugin.config = { ...((this.plugin.pjson && this.plugin.pjson.csdxConfig) || {}) };
+    }
+    this.messageFilePath = path.resolve(
+      this.plugin.root,
+      this.plugin.config.messageFilePath || './messages/index.json',
+    );
   }
 
   getToken(alias: string) {
@@ -36,6 +44,5 @@ export default class CsdxContext {
       const token = configHandler.get(`tokens.${alias}`);
       if (token) return token;
     }
-    // TBD throw new CLIError({});
   }
 }

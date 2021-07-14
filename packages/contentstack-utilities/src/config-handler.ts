@@ -1,6 +1,7 @@
 import * as ConfigStore from 'configstore';
-const CONFIG_NAMESPACE = 'contentstack_cli';
+import * as dotProp from 'dot-prop';
 
+const CONFIG_NAMESPACE = 'contentstack_cli';
 class Config {
   private configHandler: typeof ConfigStore;
   private config: object;
@@ -20,14 +21,15 @@ class Config {
       this.init();
     }
 
-    return this.config[key];
+    return dotProp.get(this.config, key);
   }
 
   async set(key, value) {
     if (this.config) {
       this.init();
     }
-    this.config[key] = value;
+
+    dotProp.set(this.config, key, value);
     this.configHandler.set(key, value);
     return this.config;
   }
@@ -36,7 +38,8 @@ class Config {
     if (!this.config) {
       this.init();
     }
-    delete this.config[key];
+
+    dotProp.delete(this.config, key);
     this.configHandler.delete(key);
     return this.config;
   }

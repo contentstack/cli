@@ -1,6 +1,6 @@
 import { default as Help } from '@oclif/plugin-help';
 import figlet from 'figlet';
-import { cliux } from '@contentstack/utilities';
+import { cliux } from '@contentstack/cli-utilities';
 
 export default class MyHelpClass extends Help {
   constructor(config, opts) {

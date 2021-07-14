@@ -1,10 +1,7 @@
 import { Command, flags } from '@contentstack/cli-command';
-import * as Configstore from 'configstore';
-import { logger, authHandler, cliux, interactive, messageHandler, CLIError } from '../../utils';
+import { logger, cliux, messageHandler, CLIError, configHandler } from '@contentstack/cli-utilities';
+import { authHandler, interactive } from '../../utils';
 import { User } from '../../interfaces';
-
-const config = new Configstore('contentstack_cli');
-
 export default class LoginCommand extends Command {
   private readonly parse: Function;
   managementAPIClient: any;
@@ -52,8 +49,8 @@ export default class LoginCommand extends Command {
     if (typeof user !== 'object' || !user.authtoken || !user.email) {
       throw new CLIError({ message: 'Failed to login - invalid response' });
     }
-    config.set('authtoken', user.authtoken);
-    config.set('email', user.email);
+    configHandler.set('authtoken', user.authtoken);
+    configHandler.set('email', user.email);
     logger.info('successfully logged in');
     cliux.success('CLI_AUTH_LOGIN_SUCCESS');
   }

@@ -1,8 +1,6 @@
 import { Command, flags } from '@contentstack/cli-command';
-import * as Configstore from 'configstore';
-import { logger, authHandler, cliux, messageHandler } from '../../utils';
-
-const config = new Configstore('contentstack_cli');
+import { logger, cliux, messageHandler, configHandler } from '@contentstack/cli-utilities';
+import { authHandler } from '../../utils';
 export default class LogoutCommand extends Command {
   private readonly parse: Function;
   managementAPIClient: any;
@@ -44,8 +42,8 @@ export default class LogoutCommand extends Command {
       logger.debug('Logout failed', error.message);
       cliux.error('CLI_AUTH_LOGOUT_FAILED', error.message);
     } finally {
-      config.delete('authtoken');
-      config.delete('email');
+      configHandler.delete('authtoken');
+      configHandler.delete('email');
     }
   }
 }

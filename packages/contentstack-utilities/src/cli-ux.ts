@@ -7,8 +7,7 @@ import messageHandler from './message-handler';
 /**
  * CLI Interface
  */
-
-class CLIUX {
+class CLIInterface {
   private loading: boolean;
 
   constructor() {
@@ -53,4 +52,4 @@ class CLIUX {
   }
 }
 
-export default new CLIUX();
+export default new CLIInterface();

@@ -1,6 +1,4 @@
-import CLIError from './cli-error';
-import logger from './logger';
-import cliux from './cli-ux';
+import { cliux, logger, CLIError } from '@contentstack/cli-utilities';
 import { askOTPChannel, askOTP } from './interactive';
 import { User } from '../interfaces';
 

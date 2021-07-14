@@ -1,8 +1,5 @@
 import { Command, flags } from '@contentstack/cli-command';
-import * as Configstore from 'configstore';
-import { cliux, logger, messageHandler } from '../../../utils';
-
-const config = new Configstore('contentstack_cli');
+import { logger, cliux, messageHandler, configHandler } from '@contentstack/cli-utilities';
 export default class TokensRemoveCommand extends Command {
   private readonly parse: Function;
   static run;
@@ -19,11 +16,11 @@ export default class TokensRemoveCommand extends Command {
     const ignore = flags.ignore;
 
     try {
-      const token = config.get(`tokens.${alias}`);
-      const tokens = config.get('tokens');
+      const token = configHandler.get(`tokens.${alias}`);
+      const tokens = configHandler.get('tokens');
       const tokenOptions: Array<string> = [];
       if (token || ignore) {
-        config.delete(`tokens.${alias}`);
+        configHandler.delete(`tokens.${alias}`);
         return cliux.success(`CLI_AUTH_TOKENS_REMOVE_SUCCESS`);
       }
 
@@ -52,7 +49,7 @@ export default class TokensRemoveCommand extends Command {
       }
       selectedTokens.forEach((element) => {
         const selectedToken = element.split(':')[0];
-        config.delete(`tokens.${selectedToken}`);
+        configHandler.delete(`tokens.${selectedToken}`);
         cliux.success('CLI_AUTH_TOKENS_REMOVE_SUCCESS');
       });
     } catch (error) {

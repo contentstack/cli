@@ -1,12 +1,11 @@
 import { Command } from '@contentstack/cli-command';
 import { Region } from '../../../interfaces';
-import { cliux, logger, messageHandler } from '@contentstack/utilities';
+import { cliux, logger, messageHandler } from '@contentstack/cli-utilities';
 
 export default class RegionGetCommand extends Command {
   static description = messageHandler.parse('CLI_CONFIG_SET_REGION_DESCRIPTION');
   static examples = ['$ csdx config:get:region'];
   config: any;
-
   async run() {
     let currentRegion: Region = this.region;
     if (!currentRegion) {

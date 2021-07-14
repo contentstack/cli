@@ -25,8 +25,14 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`csdx auth:login`](#csdx-authlogin)
+* [`csdx auth:logout`](#csdx-authlogout)
+* [`csdx auth:tokens`](#csdx-authtokens)
+* [`csdx auth:tokens:add`](#csdx-authtokensadd)
+* [`csdx auth:tokens:remove`](#csdx-authtokensremove)
+* [`csdx auth:whoami`](#csdx-authwhoami)
 * [`csdx config:get:region`](#csdx-configgetregion)
-* [`csdx config:set:region`](#csdx-configsetregion)
+* [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMAND]`](#csdx-help-command)
 * [`csdx plugins`](#csdx-plugins)
 * [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
@@ -34,6 +40,150 @@ USAGE
 * [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
 * [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
 * [`csdx plugins:update`](#csdx-pluginsupdate)
+
+## `csdx auth:login`
+
+CLI_AUTH_LOGIN_DESCRIPTION
+
+```
+CLI_AUTH_LOGIN_DESCRIPTION
+
+USAGE
+  $ csdx auth:login
+
+OPTIONS
+  -p, --password=password  CLI_AUTH_LOGIN_FLAG_PASSWORD
+  -u, --username=username  CLI_AUTH_LOGIN_FLAG_USERNAME
+
+EXAMPLES
+  $ csdx auth:login
+  $ csdx auth:login -u <username>
+  $ csdx auth:login -u <username> -p <password>
+```
+
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/login.ts)_
+
+## `csdx auth:logout`
+
+CLI_AUTH_LOGOUT_DESCRIPTION
+
+```
+CLI_AUTH_LOGOUT_DESCRIPTION
+
+USAGE
+  $ csdx auth:logout
+
+OPTIONS
+  -f, --force  CLI_AUTH_LOGOUT_FLAG_FORCE
+
+EXAMPLES
+  $ csdx auth:logout
+  $ csdx auth:logout -f
+```
+
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/logout.ts)_
+
+## `csdx auth:tokens`
+
+CLI_AUTH_TOKENS_LIST_DESCRIPTION
+
+```
+CLI_AUTH_TOKENS_LIST_DESCRIPTION
+
+USAGE
+  $ csdx auth:tokens
+
+OPTIONS
+  -x, --extended          show extra columns
+  --columns=columns       only show provided columns (comma-separated)
+  --csv                   output is csv format [alias: --output=csv]
+  --filter=filter         filter property by partial string matching, ex: name=foo
+  --no-header             hide table header from output
+  --no-truncate           do not truncate output to fit screen
+  --output=csv|json|yaml  output in a more machine friendly format
+  --sort=sort             property to sort by (prepend '-' for descending)
+
+ALIASES
+  $ csdx tokens
+
+EXAMPLE
+  $ csdx auth:tokens
+```
+
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/tokens/index.ts)_
+
+## `csdx auth:tokens:add`
+
+CLI_AUTH_TOKENS_ADD_DESCRIPTION
+
+```
+CLI_AUTH_TOKENS_ADD_DESCRIPTION
+
+USAGE
+  $ csdx auth:tokens:add
+
+OPTIONS
+  -a, --alias=alias
+  -d, --delivery                 CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN
+  -e, --environment=environment  CLI_AUTH_TOKENS_ADD_FLAG_ENVIRONMENT_NAME
+  -f, --force                    Force adding
+  -k, --api-key=api-key          API Key
+  -m, --management               CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN
+  -t, --token=token              Token
+
+EXAMPLES
+  $ csdx auth:tokens:add
+  $ csdx auth:tokens:add -a <alias>
+  $ csdx auth:tokens:add -k <api key>
+  $ csdx auth:tokens:add -d
+  $ csdx auth:tokens:add -m
+  $ csdx auth:tokens:add -e <environment>
+  $ csdx auth:tokens:add -t <token>
+  $ csdx auth:tokens:add -a <alias> -k <api key> -m -t <management token>
+  $ csdx auth:tokens:add -a <alias> -k <api key> -d -e <environment> -t <delivery token>
+```
+
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/tokens/add.ts)_
+
+## `csdx auth:tokens:remove`
+
+CLI_AUTH_TOKENS_REMOVE_DESCRIPTION
+
+```
+CLI_AUTH_TOKENS_REMOVE_DESCRIPTION
+
+USAGE
+  $ csdx auth:tokens:remove
+
+OPTIONS
+  -a, --alias=alias  Token alias
+  -i, --ignore       Ignore
+
+EXAMPLES
+  $ csdx auth:tokens:remove
+  $ csdx auth:tokens:remove -a <aliase>
+```
+
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/tokens/remove.ts)_
+
+## `csdx auth:whoami`
+
+CLI_AUTH_WHOAMI_DESCRIPTION
+
+```
+CLI_AUTH_WHOAMI_DESCRIPTION
+
+USAGE
+  $ csdx auth:whoami
+
+ALIASES
+  $ csdx whoami
+
+EXAMPLE
+  $ csdx auth:whoami
+```
+
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/whoami.ts)_
 
 ## `csdx config:get:region`
 
@@ -51,7 +201,7 @@ EXAMPLE
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/config/get/region.ts)_
 
-## `csdx config:set:region`
+## `csdx config:set:region [REGION]`
 
 CLI_CONFIG_SET_REGION_DESCRIPTION
 
@@ -59,7 +209,7 @@ CLI_CONFIG_SET_REGION_DESCRIPTION
 CLI_CONFIG_SET_REGION_DESCRIPTION
 
 USAGE
-  $ csdx config:set:region
+  $ csdx config:set:region [REGION]
 
 OPTIONS
   -d, --cda=cda    CLI_CONFIG_SET_REGION_FLAG_D_DESCRIPTION
@@ -67,7 +217,9 @@ OPTIONS
   -n, --name=name  CLI_CONFIG_SET_REGION_FLAG_N_DESCRIPTION
 
 EXAMPLES
-  $ csdx config:set:region EU
+  $ csdx config:set:region
+  $ csdx config:set:region NA
+  $ csdx config:set:region NA
   $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"
   $ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com" 
   --name="India"

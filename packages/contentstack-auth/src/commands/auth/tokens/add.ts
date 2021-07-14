@@ -1,8 +1,6 @@
 import { Command, flags } from '@contentstack/cli-command';
-import * as Configstore from 'configstore';
-import { logger, cliux, tokenValidation, messageHandler, CLIError } from '../../../utils';
-
-const config = new Configstore('contentstack_cli');
+import { tokenValidation } from '../../../utils';
+import { logger, cliux, messageHandler, CLIError, configHandler } from '@contentstack/cli-utilities';
 export default class TokensAddCommand extends Command {
   managementAPIClient: any;
   private readonly parse: Function;
@@ -67,7 +65,7 @@ export default class TokensAddCommand extends Command {
       if (!alias) {
         alias = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ASK_TOKEN_ALIAS', name: 'alias' });
       }
-      isAliasExist = Boolean(config.get(`${configKeyTokens}.${alias}`)); // get to Check if alias already present
+      isAliasExist = Boolean(configHandler.get(`${configKeyTokens}.${alias}`)); // get to Check if alias already present
       if (isAliasExist && !skipAliasReplaceConfirmation) {
         const shouldAliasReplace = await cliux.inquire({
           type: 'confirm',
@@ -123,9 +121,9 @@ export default class TokensAddCommand extends Command {
       }
 
       if (isManagement) {
-        config.set(`${configKeyTokens}.${alias}`, { token, apiKey, type });
+        configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, type });
       } else {
-        config.set(`${configKeyTokens}.${alias}`, { token, apiKey, environment, type });
+        configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, environment, type });
       }
 
       if (isAliasExist) {

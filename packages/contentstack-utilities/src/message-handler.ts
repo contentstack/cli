@@ -1,20 +1,32 @@
 import * as fs from 'fs';
-import * as path from 'path';
+import CLIError from './cli-error';
 
 /**
  * Message handler
  */
 class Messages {
   private messages: object;
+  messageFilePath: any;
 
   constructor() {
     this.messages = {};
+    this.messageFilePath;
   }
 
   init(context) {
-    this.messages = JSON.parse(
-      fs.readFileSync(path.join(__dirname, `../messages/${context.plugin.name}.json`), 'utf-8'),
-    );
+    if (!context.messageFilePath) {
+      throw new CLIError({ message: 'Invalid message file path' });
+    }
+    this.messageFilePath = context.messageFilePath;
+    try {
+      this.messages = JSON.parse(fs.readFileSync(context.messageFilePath, 'utf-8'));
+    } catch (error) {
+      // create empty messages if not exist
+      if (error.code === 'ENOENT') {
+        this.messages = {};
+      }
+      throw new CLIError({ message: `${error.message}` });
+    }
   }
 
   parse(messageKey: string, ...substitutions: Array<any>): string {
