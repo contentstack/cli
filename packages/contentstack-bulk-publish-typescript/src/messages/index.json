@@ -44,5 +44,5 @@
     "CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY": "Invalid api key",
     "CLI_AUTH_EXIT_PROCESS": "Exiting the process...",
     "CLI_BP_SKIP_WORKFLOW_STAGE_CHECK": "Skip workflow stage check",
-    "CLI_BP_QUERIES": "Specify the query to be used",
+    "CLI_BP_QUERIES": "Specify the query to be used"
 }
