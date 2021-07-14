@@ -1,4 +1,6 @@
 /* eslint-disable node/no-extraneous-require */
+import {messageHandler} from '../../../utils'
+
 const {Command, flags} = require('@oclif/command')
 const {cli} = require('cli-ux')
 const {start} = require('../../../producer/cross-publish')
@@ -128,6 +130,9 @@ CrossPublishCommand.flags = {
   destEnv: flags.string({char: 'd', description: 'Destination Environments', multiple: true}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
+  'skip_workflow_stage_check': flags.boolean({char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK')}),
+  query: flags.string({char: 'q', description: messageHandler.parse('CLI_BP_QUERIES')}),
+
 }
 
 CrossPublishCommand.examples = [

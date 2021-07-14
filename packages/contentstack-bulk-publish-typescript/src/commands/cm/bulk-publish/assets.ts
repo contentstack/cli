@@ -1,3 +1,5 @@
+import {messageHandler} from '../../../utils'
+
 const {Command, flags} = require('@oclif/command')
 const {start} = require('../../../producer/publish-assets')
 const store = require('../../../utils/store.js')
@@ -98,6 +100,8 @@ AssetsCommand.flags = {
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
   locales: flags.string({char: 'l', description: 'Locales to which assets need to be published', multiple: true }),
+  'skip_workflow_stage_check': flags.boolean({char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK')}),
+  query: flags.string({char: 'q', description: messageHandler.parse('CLI_BP_QUERIES')}),
 }
 
 AssetsCommand.examples = [

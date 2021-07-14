@@ -1,3 +1,5 @@
+import {messageHandler} from '../../../utils'
+
 const {Command, flags} = require('@oclif/command')
 const {start} = require('../../../producer/nonlocalized-field-changes')
 const store = require('../../../utils/store.js')
@@ -97,6 +99,8 @@ NonlocalizedFieldChangesCommand.flags = {
   environments: flags.string({char: 'e', description: 'Destination environments', multiple: true}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
+  'skip_workflow_stage_check': flags.boolean({char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK')}),
+  query: flags.string({char: 'q', description: messageHandler.parse('CLI_BP_QUERIES')}),
 }
 
 NonlocalizedFieldChangesCommand.examples = [

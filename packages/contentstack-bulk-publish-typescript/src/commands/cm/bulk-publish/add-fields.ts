@@ -1,5 +1,6 @@
 import {Command, flags} from '@contentstack/cli-command'
 import {OclifConfig, Region} from '../../../interfaces'
+import {messageHandler} from '../../../utils'
 
 const {start} = require('../../../producer/add-fields')
 const store = require('../../../utils/store.js')
@@ -105,6 +106,8 @@ AddFieldsCommand.flags = {
   environments: flags.string({char: 'e', description: 'Environments to which entries need to be published', multiple: true}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
+  'skip_workflow_stage_check': flags.boolean({char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK')}),
+  query: flags.string({char: 'q', description: messageHandler.parse('CLI_BP_QUERIES')}),
 }
 
 AddFieldsCommand.examples = [
