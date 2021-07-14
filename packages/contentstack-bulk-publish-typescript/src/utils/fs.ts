@@ -1,9 +1,10 @@
 import * as fs from 'fs'
 import * as chalk from 'chalk'
 import * as path from 'path'
-const {getLogsDirPath} = require('../utils/logger.js')
+import * as backup from '../utils/backup'
+// const {getLogsDirPath} = require('../utils/logger.js')
 
-const logsDir = getLogsDirPath();
+const logsDir = backup.getLogsDirPath();
 
 function doesFileExistInLogsDirectory(filename): boolean {
   const files = fs.readdirSync(logsDir);

@@ -1,12 +1,13 @@
+import * as backup from '../../../utils/backup'
+
 const fs = require('fs')
 const {cli} = require('cli-ux')
 const {Command, flags} = require('@oclif/command')
-const {getLogsDirPath} = require('../../../utils/logger.js')
 
 class ClearCommand extends Command {
   async run() {
     const {flags} = this.parse(ClearCommand)
-  	let dirPath = getLogsDirPath()
+  	let dirPath = backup.getLogsDirPath()
     if (flags.list) {
     	this.listFiles(dirPath)
     } else if (flags.yes) {

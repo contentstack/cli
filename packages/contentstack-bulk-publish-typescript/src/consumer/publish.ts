@@ -2,16 +2,16 @@
 /* eslint-disable node/no-unsupported-features/es-syntax */
 /* eslint-disable no-negated-condition */
 /* eslint-disable no-console */
+import * as backup from '../utils/backup'
+
 const chalk = require('chalk')
 const path = require('path')
-const req = require('../utils/request')
 const Configstore = require('configstore')
 const defaults = require('../config/defaults.json')
 const configstore = new Configstore('contentstack_cli')
-const {formatError} = require('../util')
+// const {formatError} = require('../util')
 
-const {getLoggerInstance, addLogs, getLogsDirPath} = require('../utils/logger')
-const logsDir = getLogsDirPath()
+const logsDir = backup.getLogsDirPath()
 
 let logger
 let fileNme
@@ -19,7 +19,7 @@ let fileNme
 function initializeLogger(fileName) {
   fileNme = fileName
   fileNme = `${Date.now()}.${fileNme}`
-  logger = getLoggerInstance(fileNme)
+  logger = backup.getLoggerInstance(fileNme)
   return path.join(logsDir, fileNme)
 }
 
@@ -43,7 +43,7 @@ async function publishEntry(data, config, queue) {
     if (!publishEntryResponse.error_message) {
       console.log(chalk.green(`entry published with ContentType uid=${entryObj.content_type} Entry uid=${entryObj.entryUid} locale=${entryObj.locale}`))
       delete entryObj.stack
-      addLogs(logger, {options: entryObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
+      backup.addLogs(logger, {options: entryObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
     } else {
       throw publishEntryResponse
     }
@@ -55,7 +55,7 @@ async function publishEntry(data, config, queue) {
     } else {
       delete entryObj.stack
       console.log(chalk.red(`entry could not be published with ContentType uid=${entryObj.content_type} entry uid=${entryObj.entryUid} locale=${entryObj.locale} error=${formatError(error)}`))
-      addLogs(logger, {options: removePublishDetails(entryObj), api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
+      backup.addLogs(logger, {options: removePublishDetails(entryObj), api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
     }
   })
 }
@@ -69,7 +69,7 @@ async function publishAsset(data, config, queue) {
     if (!publishAssetResponse.error_message) {
       console.log(chalk.green(`asset published with Asset uid=${assetobj.assetUid}, locale=${assetobj.locale}`))
       delete assetobj.stack
-      addLogs(logger, {options: assetobj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
+      backup.addLogs(logger, {options: assetobj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
     } else {
       throw publishAssetResponse
     }
@@ -81,7 +81,7 @@ async function publishAsset(data, config, queue) {
     } else {
       delete assetobj.stack
       console.log(chalk.red(`Could not publish because of Error=${formatError(error)}`))
-      addLogs(logger, {options: removePublishDetails(assetobj), api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
+      backup.addLogs(logger, {options: removePublishDetails(assetobj), api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
     }
   })
 }
@@ -97,7 +97,7 @@ async function UnpublishEntry(data, config, queue) {
     if (!unpublishEntryResponse.error_message) {
       delete entryObj.stack
       console.log(chalk.green(`Entry unpublished with ContentType uid=${entryObj.content_type} Entry uid=${entryObj.entryUid} locale=${entryObj.locale}`))
-      addLogs(logger, {options: entryObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
+      backup.addLogs(logger, {options: entryObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
     } else {
       throw unpublishEntryResponse
     }
@@ -109,7 +109,7 @@ async function UnpublishEntry(data, config, queue) {
     } else {
       delete entryObj.stack
       console.log(chalk.red(`Entry could not be unpublished with ContentType uid=${entryObj.content_type} Entry uid=${entryObj.entryUid} locale=${entryObj.locale} error=${formatError(error)}`))
-      addLogs(logger, {options: entryObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
+      backup.addLogs(logger, {options: entryObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
     }
   })
 }
@@ -123,7 +123,7 @@ async function UnpublishAsset(data, config, queue) {
     if (!unpublishAssetResponse.error_message) {
       delete assetobj.stack
       console.log(`Asset unpublished with Asset uid=${assetobj.assetUid}`)
-      addLogs(logger, {options: assetobj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
+      backup.addLogs(logger, {options: assetobj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
     } else {
       throw unpublishAssetResponse
     }
@@ -135,7 +135,7 @@ async function UnpublishAsset(data, config, queue) {
     } else {
       delete assetobj.stack
       console.log(chalk.red(`Could not Unpublish because of error=${formatError(error)}`))
-      addLogs(logger, {options: assetobj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
+      backup.addLogs(logger, {options: assetobj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
     }
   })
 }
@@ -156,7 +156,7 @@ async function bulkPublish(data, config, queue) {
       if (!bulkPublishEntriesResponse.error_message) {
         console.log(chalk.green(`Bulk entries sent for publish ${JSON.stringify(removePublishDetails(bulkPublishObj.entries))}`))
         delete bulkPublishObj.stack
-        addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
+        backup.addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
       } else {
         throw bulkPublishEntriesResponse
       }
@@ -169,7 +169,7 @@ async function bulkPublish(data, config, queue) {
         delete bulkPublishObj.stack
         const entries = bulkPublishObj.entries.map(entry => entry.uid)
         console.log(chalk.red(`Bulk entries ${JSON.stringify(removePublishDetails(bulkPublishObj.entries))} failed to publish with error ${formatError(error)}`))
-        addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
+        backup.addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
       }
     })
     break
@@ -184,7 +184,7 @@ async function bulkPublish(data, config, queue) {
       if (!bulkPublishAssetsResponse.error_message) {
         console.log(chalk.green(`Bulk assets sent for publish ${JSON.stringify(removePublishDetails(bulkPublishObj.assets))}`))
         delete bulkPublishObj.stack
-        addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
+        backup.addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
       } else {
         throw bulkPublishAssetsResponse
       }
@@ -196,7 +196,7 @@ async function bulkPublish(data, config, queue) {
       } else {
         delete bulkPublishObj.stack
         console.log(chalk.red(`Bulk assets ${JSON.stringify(removePublishDetails(bulkPublishObj.assets))} failed to publish with error ${formatError(error)}`))
-        addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
+        backup.addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
       }
     })
     break
@@ -221,7 +221,7 @@ async function bulkUnPublish(data, config, queue) {
       if (!bulkUnPublishEntriesResponse.error_message) {
         delete bulkUnPublishObj.stack
         console.log(chalk.green(`Bulk entries sent for Unpublish  ${JSON.stringify(removePublishDetails(bulkUnPublishObj.entries))}`))
-        addLogs(logger, {options: bulkUnPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
+        backup.addLogs(logger, {options: bulkUnPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
       } else {
         throw bulkUnPublishEntriesResponse
       }
@@ -233,7 +233,7 @@ async function bulkUnPublish(data, config, queue) {
       } else {
         delete bulkUnPublishObj.stack
         console.log(chalk.red(`Bulk entries ${JSON.stringify(removePublishDetails(bulkUnPublishObj.entries))} failed to Unpublish with error ${formatError(error)}`))
-        addLogs(logger, {options: bulkUnPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
+        backup.addLogs(logger, {options: bulkUnPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
       }
     })
     break
@@ -248,7 +248,7 @@ async function bulkUnPublish(data, config, queue) {
       if (!bulkUnPublishAssetsResponse.error_message) {
         delete bulkUnPublishObj.stack
         console.log(chalk.green(`Bulk assets sent for Unpublish ${JSON.stringify(removePublishDetails(bulkUnPublishObj.assets))}`))
-        addLogs(logger, {options: bulkUnPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
+        backup.addLogs(logger, {options: bulkUnPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
       } else {
         throw bulkUnPublishAssetsResponse
       }
@@ -260,7 +260,7 @@ async function bulkUnPublish(data, config, queue) {
       } else {
         delete bulkUnPublishObj.stack
         console.log(chalk.red(`Bulk assets ${JSON.stringify(removePublishDetails(bulkUnPublishObj.assets))} failed to Unpublish with error ${formatError(error)}`))
-        addLogs(logger, {options: bulkUnPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
+        backup.addLogs(logger, {options: bulkUnPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
       }
     })
     break
@@ -278,7 +278,7 @@ async function publishUsingVersion(data, config, queue) {
   let counter = 0
   const bulkPublishObj = data.obj
   const stack = bulkPublishObj.stack
-  // addLogs(logger,bulkPublishObj);
+  // backup.addLogs(logger,bulkPublishObj);
   switch (bulkPublishObj.Type) {
   case 'entry':
     successfullyPublished = []
@@ -310,12 +310,12 @@ async function publishUsingVersion(data, config, queue) {
           if (counter === bulkPublishObj.entries.length) {
             if (successfullyPublished.length > 0) {
               aggregatedEntries.entries = successfullyPublished
-              addLogs(logger, {options: aggregatedEntries, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
+              backup.addLogs(logger, {options: aggregatedEntries, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
             }
 
             if (failedToPublish.length > 0) {
               aggregatedEntries.entries = failedToPublish
-              addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
+              backup.addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
             }
           }
         } else {
@@ -340,12 +340,12 @@ async function publishUsingVersion(data, config, queue) {
           if (counter === bulkPublishObj.entries.length) {
             if (successfullyPublished.length > 0) {
               aggregatedEntries.entries = successfullyPublished
-              addLogs(logger, {options: aggregatedEntries, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
+              backup.addLogs(logger, {options: aggregatedEntries, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
             }
 
             if (failedToPublish.length > 0) {
               aggregatedEntries.entries = failedToPublish
-              addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
+              backup.addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
             }
           }
 
@@ -383,12 +383,12 @@ async function publishUsingVersion(data, config, queue) {
           if (counter === bulkPublishObj.assets.length) {
             if (successfullyPublished.length > 0) {
               aggregatedAssets.assets = successfullyPublished
-              addLogs(logger, {options: aggregatedAssets, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
+              backup.addLogs(logger, {options: aggregatedAssets, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
             }
 
             if (failedToPublish.length > 0) {
               aggregatedAssets.assets = failedToPublish
-              addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
+              backup.addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
             }
           }
         } else {
@@ -413,12 +413,12 @@ async function publishUsingVersion(data, config, queue) {
           if (counter === bulkPublishObj.assets.length) {
             if (successfullyPublished.length > 0) {
               aggregatedAssets.assets = successfullyPublished
-              addLogs(logger, {options: aggregatedAssets, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
+              backup.addLogs(logger, {options: aggregatedAssets, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'info')
             }
 
             if (failedToPublish.length > 0) {
               aggregatedAssets.assets = failedToPublish
-              addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
+              backup.addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
             }
           }
 

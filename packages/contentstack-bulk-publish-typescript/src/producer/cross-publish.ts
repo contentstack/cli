@@ -6,7 +6,6 @@
 import * as Queue from '../utils/queue'
 
 const defaults = require('../config/defaults.json')
-const req = require('../utils/request')
 const {
   bulkPublish, publishEntry, publishAsset, initializeLogger,
 } = require('../consumer/publish')
@@ -127,7 +126,7 @@ async function getSyncEntries(stack, config, queryParams, bulkPublish, filter, d
           access_token: deliveryToken,
         },
       }
-      const entriesResponse = await req(conf)
+      // const entriesResponse = await req(conf)
       if (entriesResponse.items.length > 0) {
         await bulkAction(stack, entriesResponse.items, bulkPublish, filter, destEnv)
       }
