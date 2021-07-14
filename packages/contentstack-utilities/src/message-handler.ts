@@ -10,14 +10,12 @@ class Messages {
 
   constructor() {
     this.messages = {};
-    this.messageFilePath;
   }
 
   init(context) {
     if (!context.messageFilePath) {
       throw new CLIError({ message: 'Invalid message file path' });
     }
-    this.messageFilePath = context.messageFilePath;
     try {
       this.messages = JSON.parse(fs.readFileSync(context.messageFilePath, 'utf-8'));
     } catch (error) {
