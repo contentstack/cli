@@ -22,9 +22,9 @@ class JsonMigrationCommand extends Command {
       } else {
         await updateSingleContentTypeEntries(stack, content_type, config)
       }
-      console.log(chalk.green(`Updated ${config.contentTypeCount} ContentType(s) and ${config.entriesCount} Entries`))
+      console.log(chalk.green(`Updated ${config.contentTypeCount} Content Type(s) and ${config.entriesCount} Entrie(s)`))
       if (config.errorEntriesUid.length > 0) {
-        console.log(chalk.red(`Faced issue while migrating some entries,"${config.errorEntriesUid.join(', ')}"`))
+        console.log(chalk.red(`Faced issue while migrating some entrie(s),"${config.errorEntriesUid.join(', ')}"`))
       }
     } catch (error) {
       this.error(error.message, {exit: 2})
