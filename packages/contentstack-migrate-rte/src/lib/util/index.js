@@ -178,6 +178,12 @@ async function updateSingleEntry(entry, contentType, config) {
   } catch (error) {
     config.errorEntriesUid.push(entry.uid)
     console.log(chalk.red(`Error while updating '${entry.uid}' entry`))
+    if (error.errors) {
+      const errVal = Object.entries(error.errors)
+      errVal.forEach(([key, vals]) => {
+        console.log(chalk.red(` ${key}:-  ${vals.join(',')}`))
+      })
+    }
   }
 
   // console.log("updated entry", entry)

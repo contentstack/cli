@@ -154,7 +154,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stdout()
   .command(['cm:migrate-rte', '-p', './test/dummy/config/config.json', '-y'])
   .it('execute using config file', ctx => {
-    expect(ctx.stdout).to.contain('Updated 1 ContentType(s) and 2 Entries')
+    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 2 Entrie(s)')
   })
 
   test
@@ -163,7 +163,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stdout()
   .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50'])
   .it('execute using flags', ctx => {
-    expect(ctx.stdout).to.contain('Updated 1 ContentType(s) and 2 Entries')
+    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 2 Entrie(s)')
   })
 
   test
@@ -249,7 +249,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stdout()
   .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypewithentryupdateerror', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-y', '-d', '50'])
   .it('notify user on entry update failed', ctx => {
-    expect(ctx.stdout).to.contain('Faced issue while migrating some entries,"blta9b16ac2827c54ed"')
+    expect(ctx.stdout).to.contain('Faced issue while migrating some entrie(s),"blta9b16ac2827c54ed"')
   })
 })
 describe('Global Field Migration', () => {
@@ -283,7 +283,7 @@ describe('Global Field Migration', () => {
   .stdout()
   .command(['cm:migrate-rte', '-p', './test/dummy/config/configForGlobalField.json', '-y'])
   .it('execute using config file', ctx => {
-    expect(ctx.stdout).to.contain('Updated 2 ContentType(s) and 2 Entries')
+    expect(ctx.stdout).to.contain('Updated 2 Content Type(s) and 2 Entrie(s)')
   })
 
   test
@@ -337,7 +337,7 @@ describe('Global Field Migration', () => {
   .it('throw error on invalid global_field uid')
 })
 
-describe('ContentType with single rte of multiple type', () => {
+describe('Content Type with single rte of multiple type', () => {
   const getTokenCallback = sinon.stub()
   getTokenCallback.withArgs('test1').returns({
     token: 'cs2f6c60355c432bc95972e068',
@@ -350,11 +350,11 @@ describe('ContentType with single rte of multiple type', () => {
   .stdout()
   .command(['cm:migrate-rte', '-p', './test/dummy/config/configForMultipleRte.json', '-y'])
   .it('execute using config file', ctx => {
-    expect(ctx.stdout).to.contain('Updated 1 ContentType(s) and 1 Entries')
+    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 1 Entrie(s)')
   })
 })
 
-describe('ContentType with Single RTE inside modular block', () => {
+describe('Content Type with Single RTE inside modular block', () => {
   const getTokenCallback = sinon.stub()
   getTokenCallback.withArgs('test1').returns({
     token: 'cs2f6c60355c432bc95972e068',
@@ -378,11 +378,11 @@ describe('ContentType with Single RTE inside modular block', () => {
     '-d',
     '50'])
   .it('execute using Flags', ctx => {
-    expect(ctx.stdout).to.contain('Updated 1 ContentType(s) and 1 Entries')
+    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 1 Entrie(s)')
   })
 })
 
-describe('ContentType with Single RTE of type multiple inside group', () => {
+describe('Content Type with Single RTE of type multiple inside group', () => {
   const getTokenCallback = sinon.stub()
   getTokenCallback.withArgs('test1').returns({
     token: 'cs2f6c60355c432bc95972e068',
@@ -406,11 +406,11 @@ describe('ContentType with Single RTE of type multiple inside group', () => {
     '-d',
     '50'])
   .it('execute using Flags', ctx => {
-    expect(ctx.stdout).to.contain('Updated 1 ContentType(s) and 1 Entries')
+    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 1 Entrie(s)')
   })
 })
 
-describe('ContentType with Single RTE inside group of type multiple', () => {
+describe('Content Type with Single RTE inside group of type multiple', () => {
   const getTokenCallback = sinon.stub()
   getTokenCallback.withArgs('test1').returns({
     token: 'cs2f6c60355c432bc95972e068',
@@ -434,6 +434,6 @@ describe('ContentType with Single RTE inside group of type multiple', () => {
     '-d',
     '50'])
   .it('execute using Flags', ctx => {
-    expect(ctx.stdout).to.contain('Updated 1 ContentType(s) and 1 Entries')
+    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 1 Entrie(s)')
   })
 })
