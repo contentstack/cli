@@ -1,0 +1,221 @@
+{
+    "contenttypewithsinglerte": {
+        "entries": [
+            {
+                "title": "Entry 2",
+                "rich_text_editor": "<p>value 2</p>",
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt6168b6493a122849",
+                "created_by": "blt3943ff6628403515",
+                "updated_by": "blt3943ff6628403515",
+                "created_at": "2021-06-18T10:10:35.292Z",
+                "updated_at": "2021-06-18T10:10:35.292Z",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            },
+            {
+                "title": "entry 1",
+                "rich_text_editor": "<p>value 1</p>",
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt94ab8cf0a7956243",
+                "created_by": "blt3943ff6628403515",
+                "updated_by": "blt3943ff6628403515",
+                "created_at": "2021-06-18T10:01:47.035Z",
+                "updated_at": "2021-06-18T10:01:47.035Z",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        ],
+        "count": 2
+    },
+    "contenttype1forglobalfield": {
+        "entries": [
+            {
+                "title": "test1",
+                "global_field": {
+                    "rich_text_editor": "<p>global =&gt; richtext</p>"
+                },
+                "group": {
+                    "global_field": {
+                        "rich_text_editor": "<p>group =&gt; global =&gt; rte</p>"
+                    }
+                },
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt982804d4a39b0197",
+                "created_by": "blt3943ff6628403515",
+                "updated_by": "blt3943ff6628403515",
+                "created_at": "2021-06-21T09:47:49.318Z",
+                "updated_at": "2021-06-21T09:47:49.318Z",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        ],
+        "count": 1
+    },
+    "contenttype2forglobalfield": {
+        "entries": [
+            {
+                "title": "test1",
+                "global_field": {
+                    "rich_text_editor": "<p>global =&gt; rte</p>"
+                },
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blta20a822fdd7bcc87",
+                "created_by": "blt3943ff6628403515",
+                "updated_by": "blt3943ff6628403515",
+                "created_at": "2021-06-21T09:50:48.065Z",
+                "updated_at": "2021-06-21T09:50:48.065Z",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        ],
+        "count": 1
+    },
+    "contenttypewithmultiplerte": {
+        "entries": [
+            {
+                "title": "test1",
+                "rich_text_editor": [
+                    "<p>multiple 1</p>",
+                    "<p>mutiple 2</p>"
+                ],
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt55ac0aa11a1dafe9",
+                "created_by": "blt3943ff6628403515",
+                "updated_by": "blt3943ff6628403515",
+                "created_at": "2021-06-22T05:28:36.417Z",
+                "updated_at": "2021-06-22T05:28:36.417Z",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        ],
+        "count": 1
+    },
+    "contenttypewithmodularblock": {
+        "entries": [
+            {
+                "title": "",
+                "modular_blocks": [
+                    {
+                        "test1": {
+                            "rich_text_editor": "<p>M1</p>",
+                            "_metadata": {
+                                "uid": "csa15520723d8f9738"
+                            }
+                        }
+                    },
+                    {
+                        "test1": {
+                            "rich_text_editor": "<p>m2</p>",
+                            "_metadata": {
+                                "uid": "csc3ccd3f10d8ceff6"
+                            }
+                        }
+                    },
+                    {
+                        "test1": {
+                            "rich_text_editor": "<p>m3</p>",
+                            "_metadata": {
+                                "uid": "csf2355ddf2979a0a1"
+                            }
+                        }
+                    }
+                ],
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blte02628730f4d0c3c",
+                "created_by": "blt3943ff6628403515",
+                "updated_by": "blt3943ff6628403515",
+                "created_at": "2021-06-22T08:37:47.911Z",
+                "updated_at": "2021-06-22T08:37:47.911Z",
+                "_version": 1,
+                "_in_progress": true
+            }
+        ],
+        "count": 1
+    },
+    "contenttypewithgroup": {
+        "entries": [
+            {
+                "title": "test1",
+                "group": {
+                    "rich_text_editor": [
+                        "<p>rte1</p>",
+                        "<p>rte2</p>"
+                    ]
+                },
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt279161bdc0c77b2d",
+                "created_by": "blt3943ff6628403515",
+                "updated_by": "blt3943ff6628403515",
+                "created_at": "2021-06-22T10:24:00.471Z",
+                "updated_at": "2021-06-22T10:24:00.471Z",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        ],
+        "count": 1
+    },
+    "contenttypewithmultiplegroup": {
+        "entries": [
+            {
+                "title": "test1",
+                "group": [
+                    {
+                        "rich_text_editor": "<p>instance 1</p>",
+                        "_metadata": {
+                            "uid": "cs46fbdc80bbb32699"
+                        }
+                    },
+                    {
+                        "rich_text_editor": "<p>instance 2</p>",
+                        "_metadata": {
+                            "uid": "cs9fa775294fcb9aba"
+                        }
+                    }
+                ],
+                "tags": [],
+                "locale": "en-us",
+                "uid": "bltd939c78b885da314",
+                "created_by": "blt3943ff6628403515",
+                "updated_by": "blt3943ff6628403515",
+                "created_at": "2021-06-22T10:38:00.168Z",
+                "updated_at": "2021-06-22T10:38:00.168Z",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        ],
+        "count": 1
+    },
+    "contenttypewithentryupdateerror": {
+        "entries": [
+            {
+                "title": "sdsdsds",
+                "rich_text_editor": "<p>will give error</p>",
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blta9b16ac2827c54ed",
+                "created_by": "blt3943ff6628403515",
+                "updated_by": "blt3943ff6628403515",
+                "created_at": "2021-06-24T10:03:39.192Z",
+                "updated_at": "2021-06-24T10:03:44.173Z",
+                "_version": 2,
+                "_in_progress": false
+            }
+        ],
+        "count": 1
+    }
+}
