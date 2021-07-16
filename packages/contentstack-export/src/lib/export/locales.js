@@ -62,7 +62,7 @@ ExportLocales.prototype.start = function (credentialConfig) {
       return resolve()
     }).catch(error => {
       addlogs(credentialConfig, error, 'error')
-      return reject()
+      return reject(error)
     })
   })
 }

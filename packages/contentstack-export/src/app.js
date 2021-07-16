@@ -76,22 +76,25 @@ var allExport = async (config, types) => {
       for (let i = 0; i < types.length; i++) {
         let type = types[i]
         var exportedModule = require('./lib/export/' + type)
-        await exportedModule.start(config).then(result => {
-          if (type === 'stack') {
-            let master_locale = { master_locale: { code: result.code } }
-            config = _.merge(config, master_locale)
-          }
-          return
-        })
+          await exportedModule.start(config).then(result => {
+            if (type === 'stack') {
+              let master_locale = { master_locale: { code: result.code } }
+              config = _.merge(config, master_locale)
+            }
+            return
+          }) 
       }
       addlogs(config, chalk.green('The content of the ' + config.source_stack + ' has been exported succesfully!'), 'success')
       addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success')
       return resolve()
     } catch (error) {
       addlogs(config, chalk.red('Failed to migrate stack: ' + config.source_stack + '. Please check error logs for more info'), 'error')
-      addlogs(config, chalk.red(error.errorMessage), 'error')
+      addlogs(config, error, 'error')
+      if (error.errorMessage) {
+        addlogs(config, chalk.red(error.errorMessage), 'error')
+      }
       addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error')
-      return reject()
+      return resolve()
     }
   })
 }

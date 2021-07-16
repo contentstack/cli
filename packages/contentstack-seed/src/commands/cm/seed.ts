@@ -4,6 +4,8 @@ import ContentModelSeeder, { ContentModelSeederOptions } from '../../seed'
 export default class SeedCommand extends Command {
   static description = 'Create a Stack from existing content types, entries, assets, etc';
 
+  static run: any;
+
   static examples = [
     '$ csdx cm:seed',
     '$ csdx cm:seed -r "account"',
