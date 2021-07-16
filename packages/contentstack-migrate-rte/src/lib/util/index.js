@@ -405,6 +405,16 @@ function getGlobalFieldPath(schema, globalFieldUid) {
           paths.push(currPath)
         }
       }
+      if (field.data_type === 'blocks') {
+        field.blocks.forEach(function (block) {
+          if (block.schema) {
+            if (block.reference_to && block.reference_to === globalFieldUid) {
+              paths.push(currPath + '.' + block.uid)
+            }
+            traverse(block.schema, currPath + '.' + block.uid)
+          }
+        })
+      }
       // experience_container
       if (field.data_type === 'experience_container') {
         if (field.variations) {
