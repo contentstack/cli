@@ -12,10 +12,10 @@ const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publi
 const retryFailedLogs = require('../utils/retryfailed')
 const {validateFile} = require('../utils/fs')
 const stack = require('../utils/client.js').stack
-const {setDelayForBulkPublish} = require('../util')
+const {setDelayForBulkPublish} = require('../utils')
 const {Command} = require('@contentstack/cli-command')
 const command = new Command()
-const {isEmpty} = require('../util')
+const {isEmpty} = require('../utils')
 
 const queue = new Queue()
 queue.consumer = bulkPublish

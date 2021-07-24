@@ -6,8 +6,8 @@ import * as Queue from '../utils/queue'
 const {bulkPublish, publishAsset, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../utils/retryfailed')
 const {validateFile} = require('../utils/fs')
-const {setDelayForBulkPublish} = require('../util')
-const {isEmpty} = require('../util')
+const {setDelayForBulkPublish} = require('../utils')
+const {isEmpty} = require('../utils')
 
 const queue = new Queue()
 let logFileName

@@ -6,7 +6,7 @@ const {cli} = require('cli-ux')
 const {start} = require('../../../producer/cross-publish')
 const store = require('../../../utils/store.js')
 const configKey = 'cross_env_publish'
-const { prettyPrint, formatError } = require('../../../util')
+const { prettyPrint, formatError } = require('../../../utils')
 const { getStack } = require('../../../utils/client.js')
 let config
 

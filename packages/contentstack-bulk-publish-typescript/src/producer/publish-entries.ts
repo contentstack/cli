@@ -8,7 +8,7 @@ import * as Queue from '../utils/queue'
 const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../utils/retryfailed')
 const {validateFile} = require('../utils/fs')
-const {isEmpty} = require('../util')
+const {isEmpty} = require('../utils')
 
 const queue = new Queue()
 

@@ -4,7 +4,7 @@ const command = new Command()
 
 const Configstore = require('configstore')
 const config = new Configstore('contentstack_cli')
-const { formatHostname } = require('../util')
+const { formatHostname } = require('../utils')
 
 function getStack(data) {
 	const tokenDetails = command.getToken(data.alias)

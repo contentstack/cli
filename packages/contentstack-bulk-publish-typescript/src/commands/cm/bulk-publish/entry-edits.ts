@@ -5,7 +5,7 @@ const {start} = require('../../../producer/publish-edits')
 const store = require('../../../utils/store.js')
 const {cli} = require('cli-ux')
 const configKey = 'publish_edits_on_env'
-const { prettyPrint, formatError } = require('../../../util')
+const { prettyPrint, formatError } = require('../../../utils')
 const { getStack } = require('../../../utils/client.js')
 let config
 

@@ -2,7 +2,7 @@ const {Command, flags} = require('@oclif/command')
 const {start} = require('../../../producer/revert')
 const store = require('../../../utils/store.js')
 const configKey = 'revert'
-const { prettyPrint, formatError } = require('../../../util')
+const { prettyPrint, formatError } = require('../../../utils')
 const { getStack } = require('../../../utils/client.js')
 const {cli} = require('cli-ux')
 

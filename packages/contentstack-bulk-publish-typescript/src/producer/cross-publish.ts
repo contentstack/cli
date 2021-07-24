@@ -15,10 +15,10 @@ const types = 'asset_published,entry_published'
 const queue = new Queue()
 const entryQueue = new Queue()
 const assetQueue = new Queue()
-const {setDelayForBulkPublish} = require('../util')
+const {setDelayForBulkPublish} = require('../utils')
 const {Command} = require('@contentstack/cli-command')
 const command = new Command()
-const {isEmpty} = require('../util')
+const {isEmpty} = require('../utils')
 
 let bulkPublishSet = []
 let bulkPublishAssetSet = []

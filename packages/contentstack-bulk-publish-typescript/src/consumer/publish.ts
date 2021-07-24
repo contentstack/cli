@@ -9,7 +9,7 @@ const path = require('path')
 const Configstore = require('configstore')
 const defaults = require('../config/defaults.json')
 const configstore = new Configstore('contentstack_cli')
-// const {formatError} = require('../util')
+// const {formatError} = require('../utils')
 
 const logsDir = backup.getLogsDirPath()
 
