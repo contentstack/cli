@@ -5,6 +5,7 @@ export { default as logger } from './logger';
 export { default as cliux } from './cli-ux';
 export * as interactive from './interactive';
 export * as tokenValidation from './tokens-validation';
+export { default as Queue } from './queue';
 
 const chalk = require('chalk')
 const fs = require('fs')

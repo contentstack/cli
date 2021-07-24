@@ -1,6 +1,6 @@
 import * as EventEmitter from 'events';
 
-export class Queue extends EventEmitter {
+export default class Queue extends EventEmitter {
   count: number;
   store: Array<any>;
   config: object;
@@ -30,7 +30,7 @@ export class Queue extends EventEmitter {
       obj = {obj, retry: 0}
     }
     if (this.count === this.requestBatchSize) {
-      return this.sleep(this.delay).then(() => {
+      this.sleep(this.delay).then(() => {
         this.count = 1 // reset the count to 1. Because the current object will be processed too, and that counts as one request
         this.store.push(obj);
         this.check();
@@ -50,7 +50,7 @@ export class Queue extends EventEmitter {
     }
   }
 
-  sleep(seconds): void {
+  sleep(seconds): Promise<any> {
     return new Promise(resolve => {
       setTimeout(resolve, seconds * 1000)
     })

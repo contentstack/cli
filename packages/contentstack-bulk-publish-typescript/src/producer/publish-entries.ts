@@ -3,7 +3,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-depth */
 /* eslint-disable no-console */
-import * as Queue from '../utils/queue'
+import {Queue} from '../utils'
 
 const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../utils/retryfailed')

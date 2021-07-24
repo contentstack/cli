@@ -5,7 +5,7 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-console */
 /* eslint-disable max-params */
-import * as Queue from '../utils/queue';
+import {Queue} from '../utils';
 
 const defaultConfig = require('../config/defaults.json')
 const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')

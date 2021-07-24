@@ -5,7 +5,7 @@
 /* eslint-disable new-cap */
 /* eslint-disable camelcase */
 // const yesno = require('yesno')
-import * as Queue from '../utils/queue'
+import {Queue} from '../utils'
 
 const chalk = require('chalk')
 const {getAllLogs} = require('../utils/logger')

@@ -5,7 +5,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable complexity */
 /* eslint-disable node/no-extraneous-require */
-import * as Queue from '../utils/queue'
+import {Queue} from '../utils'
 
 const _ = require('lodash')
 const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')

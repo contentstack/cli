@@ -3,8 +3,8 @@ const {cli} = require('cli-ux')
 const fs = require('fs')
 const path = require('path')
 const defaults = require('../../../config/defaults.json')
-const store = require('../../../utils/store.js')
-let config = require('../../../config/index.js')
+const store = require('../../../utils/store.ts')
+let config = require('../../../config')
 
 class ConfigureCommand extends Command {
 

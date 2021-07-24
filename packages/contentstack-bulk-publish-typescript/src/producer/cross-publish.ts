@@ -3,7 +3,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable complexity */
 /* eslint-disable max-params */
-import * as Queue from '../utils/queue'
+import {Queue} from '../utils'
 
 const defaults = require('../config/defaults.json')
 const {
