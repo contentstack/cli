@@ -1,8 +1,8 @@
 import {messageHandler} from '../../../utils'
+import * as store from '../../../utils/store'
 
 const {Command, flags} = require('@oclif/command')
 const {start} = require('../../../producer/publish-assets')
-const store = require('../../../utils/store.js')
 const {cli} = require('cli-ux')
 const configKey = 'publish_assets'
 const {prettyPrint, formatError} = require('../../../utils')  

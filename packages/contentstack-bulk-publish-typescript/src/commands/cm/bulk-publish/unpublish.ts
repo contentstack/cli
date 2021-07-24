@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 /* eslint-disable node/no-extraneous-require */
 import {messageHandler} from '../../../utils'
+import * as store from '../../../utils/store'
 
 const {Command, flags} = require('@oclif/command')
 const {cli} = require('cli-ux')
 const {start} = require('../../../producer/unpublish')
-const store = require('../../../utils/store.js')
 const configKey = 'Unpublish'
 const { prettyPrint, formatError } = require('../../../utils')
 const { getStack } = require('../../../utils/client.js')

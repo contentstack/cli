@@ -8,7 +8,7 @@ import * as chalk from 'chalk'
 // because both unpublish and cross-publish commands build the filter object
 // internally, and in the original bulk-publish script the filter object was
 // mentioned in the config file itself
-function handleFilterObj(config): object {
+export function handleFilterObj(config): object {
   config.environment = config.filter.environment
   config.contentType = config.filter.content_type_uid
   config.locale = config.filter.locale
@@ -31,7 +31,7 @@ function save(key, data): void {
   })
 }
 
-function get(key, filePath): object {
+export function get(key, filePath): object {
   try {
     const missing = []
     const bulkPublish = fs.readFileSync(filePath)
@@ -65,7 +65,7 @@ function get(key, filePath): object {
   }
 }
 
-function updateMissing(key, flags): object {
+export function updateMissing(key, flags): object {
   let savedConfig
   try {
     savedConfig = get(key, path.resolve(flags.config))
@@ -82,10 +82,4 @@ function updateMissing(key, flags): object {
     delete savedConfig.contentTypes
   console.log('\n')
   return flags
-}
-
-module.exports = {
-  save: save,
-  get: get,
-  updateMissing: updateMissing,
 }

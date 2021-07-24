@@ -1,8 +1,8 @@
 import {messageHandler} from '../../../utils'
+import * as store from '../../../utils/store'
 
 const {Command, flags} = require('@oclif/command')
 const {start} = require('../../../producer/nonlocalized-field-changes')
-const store = require('../../../utils/store.js')
 const {cli} = require('cli-ux')
 const configKey = 'nonlocalized_field_changes'
 const { prettyPrint, formatError } = require('../../../utils')

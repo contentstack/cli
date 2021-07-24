@@ -1,9 +1,9 @@
 import {Command, flags} from '@contentstack/cli-command'
 import {OclifConfig, Region} from '../../../interfaces'
 import {messageHandler} from '../../../utils'
+import * as store from '../../../utils/store'
 
 const {start} = require('../../../producer/add-fields')
-const store = require('../../../utils/store.js')
 const {cli} = require('cli-ux')
 const configKey = 'addFields'
 const { prettyPrint, formatError } = require('../../../utils')
