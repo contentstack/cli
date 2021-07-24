@@ -84,7 +84,6 @@ function setConfig(conf, bp) {
     queue.consumer = publishAsset
     logFileName = 'publish-assets'
   }
-  config = conf
   queue.config = conf
   filePath = initializeLogger(logFileName)
 }

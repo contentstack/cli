@@ -101,7 +101,6 @@ function setConfig(conf, bp) {
     queue.consumer = publishEntry
     logFileName = 'publish-entries'
   }
-  config = conf
   queue.config = conf
   filePath = initializeLogger(logFileName)
 }
@@ -123,7 +122,6 @@ async function start({retryFailed, bulkPublish, publishAllContentTypes, contentT
         if (!validateFile(retryFailed, ['publish-entries', 'bulk-publish-entries'])) {
           return false
         }
-        
         bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
         setConfig(config, bulkPublish)
         if (bulkPublish) {

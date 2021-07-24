@@ -100,7 +100,6 @@ function setConfig(conf, bp) {
     logFileName = 'publish-edits'
     queue.consumer = publishEntry
   }
-  config = conf
   queue.config = config
   filePath = initializeLogger(logFileName)
 }

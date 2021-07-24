@@ -34,7 +34,6 @@ function setConfig(conf, bup) {
     entryQueue.consumer = UnpublishEntry
     assetQueue.consumer = UnpublishAsset
   }
-  config = conf
   queue.config = conf
   entryQueue.config = conf
   assetQueue.config = conf

@@ -154,7 +154,6 @@ function setConfig(conf, bp) {
     assetQueue.consumer = publishAsset
   }
 
-  config = conf
   queue.config = conf
   entryQueue.config = conf
   assetQueue.config = conf

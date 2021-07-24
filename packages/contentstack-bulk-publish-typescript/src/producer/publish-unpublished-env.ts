@@ -27,7 +27,6 @@ function setConfig(conf, bp) {
     logFileName = 'publish-draft'
     queue.consumer = publishEntry
   }
-  config = conf
   queue.config = config
   filePath = initializeLogger(logFileName)
 }

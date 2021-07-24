@@ -29,7 +29,6 @@ function setConfig(conf, bp) {
     logFileName = 'nonlocalized-field-changes'
     queue.consumer = publishEntry
   }
-  config = conf
   queue.config = conf
   filePath = initializeLogger(logFileName)
 }
