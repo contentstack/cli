@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"allowJs": true,
+		"outDir": "./lib",
+		"target": "es6",
+		"noImplicitAny": true,
+		"esModuleInterop": true,
+		"module": "commonjs",
+		"sourceMap": true,
+	},
+	"include": ["./src/**/*"]
+}
