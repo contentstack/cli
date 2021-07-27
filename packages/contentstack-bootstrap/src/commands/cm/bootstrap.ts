@@ -81,11 +81,11 @@ export default class BootstrapCommand extends Command {
         }
       }
 
-      if (!selectedApp) {
+      if (!selectedAppName && !selectedApp) {
         this.error(messageHandler.parse('CLI_BOOTSTRAP_INVALID_APP_NAME'), { exit: 1 })
       }
 
-      const appConfig: AppConfig = getAppLevelConfigByName(selectedApp.configKey)
+      const appConfig: AppConfig = getAppLevelConfigByName(selectedAppName || selectedApp.configKey)
 
       let cloneDirectory = flags.directory as string
       if (!cloneDirectory) {
