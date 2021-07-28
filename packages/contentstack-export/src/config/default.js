@@ -21,7 +21,7 @@ module.exports = {
         'code',
         'uid',
         'name',
-        'fallback_locale',
+        'fallback_locale'
       ],
     },
     environments: {

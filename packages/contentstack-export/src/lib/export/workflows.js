@@ -22,11 +22,12 @@ function ExportWorkFlows() {
 
 ExportWorkFlows.prototype.start = function (credentialConfig) {
   addlogs(config, 'Starting workflow export', 'success')
+  this.workflows = {}
   let self = this
   config = credentialConfig
   client = stack.Client(config)
 
-  let workflowsFolderPath = path.resolve(config.data, workFlowConfig.dirName)
+  let workflowsFolderPath = path.resolve(config.data, config.branchName, workFlowConfig.dirName)
   mkdirp.sync(workflowsFolderPath)
   return new Promise(function (resolve, reject) {
     return client.stack({api_key: config.source_stack, management_token: config.management_token}).workflow().fetchAll()

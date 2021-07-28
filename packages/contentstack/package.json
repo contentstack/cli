@@ -8,9 +8,7 @@
   },
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-cm-migrate-rte": "1.0.0",
     "@contentstack/cli-auth": "0.1.1-beta.1",
-    "@contentstack/cli-cm-bulk-publish": "0.1.1-beta.2",
     "@contentstack/cli-cm-clone": "0.1.0-beta.1",
     "@contentstack/cli-cm-export": "0.1.1-beta.5",
     "@contentstack/cli-cm-export-to-csv": "0.1.0-beta.1",
@@ -18,7 +16,6 @@
     "@contentstack/cli-cm-seed": "1.0.6",
     "@contentstack/cli-cm-bootstrap": "1.0.0",
     "@contentstack/cli-command": "0.1.1-beta.1",
-    "@contentstack/cli-plugins-plugin": "0.1.0-beta",
     "@contentstack/management": "1.2.1",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
@@ -92,13 +89,9 @@
       "@contentstack/cli-auth",
       "@contentstack/cli-cm-export",
       "@contentstack/cli-cm-import",
-      "@contentstack/cli-cm-bulk-publish",
-      "@contentstack/cli-plugins-plugin",
-      "@contentstack/cli-cm-clone",
       "@contentstack/cli-cm-export-to-csv",
       "@contentstack/cli-cm-seed",
-      "@contentstack/cli-cm-bootstrap",
-      "@contentstack/cli-cm-migrate-rte"
+      "@contentstack/cli-cm-bootstrap"
     ],
     "hooks": {
       "prerun": [

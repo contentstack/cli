@@ -8,7 +8,6 @@
 
 var Bluebird = require('bluebird');
 var request = Bluebird.promisify(require('request'));
-var debug = require('debug')('util:requests');
 //var pkg = require('../../package');
 var app = require('../../app');
 
@@ -22,14 +21,14 @@ function validate(req) {
     throw new Error(`Missing uri in request!\n${JSON.stringify(req)}`);
   }
   if (typeof req.method === 'undefined') {
-    debug(`${req.uri || req.url} had no method, setting it as 'GET'`);
+    console.log(`${req.uri || req.url} had no method, setting it as 'GET'`);
     req.method = 'GET';
   }
   if (typeof req.json === 'undefined') {
     req.json = true;
   }
   if (typeof req.headers === 'undefined') {
-    debug(`${req.uri || req.url} had no headers`);
+    console.log(`${req.uri || req.url} had no headers`);
     var config = app.getConfig();
     req.headers = config.headers;
   }
@@ -44,15 +43,15 @@ var makeCall = module.exports = function(req, RETRY) {
       } else if (RETRY > MAX_RETRY_LIMIT) {
         return reject(new Error('Max retry limit exceeded!'));
       }
-      debug(`${req.method.toUpperCase()}: ${req.uri || req.url}`);
+      console.log(`${req.method.toUpperCase()}: ${req.uri || req.url}`);
       return request(req).then(function (response) {
         var timeDelay;
         if (response.statusCode >= 200 && response.statusCode <= 399) {
           return resolve(response);
         } else if (response.statusCode === 429) {
           timeDelay = Math.pow(Math.SQRT2, RETRY) * 100;
-          debug(`API rate limit exceeded.\nReceived ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
-          debug(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`);
+          console.log(`API rate limit exceeded.\nReceived ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
+          console.log(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`);
           return setTimeout(function (req, RETRY) {
             return makeCall(req, RETRY)
               .then(resolve)
@@ -61,8 +60,8 @@ var makeCall = module.exports = function(req, RETRY) {
         } else if (response.statusCode >= 500) {
           // retry, with delay
           timeDelay = Math.pow(Math.SQRT2, RETRY) * 100;
-          debug(`Recevied ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
-          debug(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`);
+          console.log(`Recevied ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
+          console.log(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`);
           RETRY++;
           return setTimeout(function (req, RETRY) {
             return makeCall(req, RETRY)
@@ -70,13 +69,13 @@ var makeCall = module.exports = function(req, RETRY) {
               .catch(reject);
           }, timeDelay, req, RETRY);
         } else {
-          debug(`Request failed\n${JSON.stringify(req)}`);
-          debug(`Response received\n${JSON.stringify(response)}`);
+          console.log(`Request failed\n${JSON.stringify(req)}`);
+          console.log(`Response received\n${JSON.stringify(response)}`);
           return reject(response);
         }
       }).catch(reject);
     } catch (error) {
-      debug(error);
+      console.log(error);
       return reject(error);
     }
   });

@@ -28,10 +28,11 @@ function ExportLabels() {
 
 ExportLabels.prototype.start = function (credentialConfig) {
   addlogs(config, 'Starting labels export', 'success')
+  this.labels = {}
   let self = this
   config = credentialConfig
   client = stack.Client(config)
-  let labelsFolderPath = path.resolve(config.data, labelConfig.dirName)
+  let labelsFolderPath = path.resolve(config.data, config.branchName, labelConfig.dirName)
   // Create locale folder
   mkdirp.sync(labelsFolderPath)
   return new Promise(function (resolve, reject) {

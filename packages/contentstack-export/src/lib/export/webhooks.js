@@ -29,10 +29,12 @@ function ExportWebhooks() {
 
 ExportWebhooks.prototype.start = function (credentialConfig) {
   addlogs(config, 'Starting webhooks export', 'success')
+  this.master = {}
+  this.webhooks = {}
   let self = this
   config = credentialConfig
   client = stack.Client(config)
-  const webhooksFolderPath = path.resolve(config.data, webhooksConfig.dirName)
+  const webhooksFolderPath = path.resolve(config.data, config.branchName, webhooksConfig.dirName)
   mkdirp.sync(webhooksFolderPath)
   return new Promise(function (resolve, reject) {
     client.stack({api_key: config.source_stack, management_token: config.management_token}).webhook().fetchAll(self.requestOptions)

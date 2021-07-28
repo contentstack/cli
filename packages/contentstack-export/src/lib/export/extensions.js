@@ -25,10 +25,12 @@ function ExportExtensions() {
 }
 
 ExportExtensions.prototype.start = function (mergeConfig) {
+  this.master = {}
+  this.extensions = {}
   addlogs(config, 'Starting extension export', 'success')
   let self = this
   config = mergeConfig
-  let extensionsFolderPath = path.resolve(config.data, extensionConfig.dirName)
+  let extensionsFolderPath = path.resolve(config.data, config.branchName, extensionConfig.dirName)
   // Create folder for extensions
   mkdirp.sync(extensionsFolderPath)
   let client = stack.Client(config)

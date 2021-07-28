@@ -11,11 +11,8 @@ let path = require('path')
 const chalk = require('chalk')
 const helper = require('./lib/util/fs')
 let _ = require('lodash')
-
 let login = require('./lib/util/login')
 let util = require('./lib/util/index')
-
-
 let { addlogs } = require('./lib/util/log')
 
 exports.initial = function (configData) {
