@@ -1,50 +1,24 @@
-# Contentstack CLI
+Contentstack CLI’s “Bootstrap” plugin enables you to automate the process of setting up projects for sample and starter apps  in Contentstack.
 
+This means that all the required steps such as stack, environment, and content type creation, entry and asset publishing are performed just by using a single command.
 
-Contentstack is a headless CMS with an API-first approach that puts content at the centre. It is designed to simplify the process of publication by separating code from content.
+Usage:
+$ csdx cm:bootstrap
 
-Currently, the CLI is in Beta and supports content management scripts through which you can perform the following tasks: 
+After running the “Bootstrap” command, follow the steps below to complete the setup:
 
-- Bulk publish content
-- Export content 
-- Import content
-- Clone Stack
-- Seed Stack from Github
+App Preference: Select the app (starter or sample) you want to clone from the list of available options.
+Technology: Select the app framework (React, Angular, Node, and so on) in which you want to set up the project.
+Path: Provide the destination folder path/location where the app will be cloned.
+Organization name: Select your organization name from the provided list.
+Stack: Select the stack where you want to import the content of the app. You can also create a new stack and for the import operation.
 
-## Installing CLI
-### Prerequisites
-Contentstack account
-Node.js version 8 or above
+These steps will help you kickstart your app.
+$ csdx cm:bootstrap -s <sampleapp or starterapp> -t <optional github private repo token> -a <app name> -d <path or the location of the folder to clone the app>
 
-### Installation
-To install CLI on your system, run the below command in your terminal:
+Options:
 
-```
-npm install -g @contentstack/cli 
-```
-
-To verify the installation, run `csdx` in the command window.
-
-## Usage
-After the successful installation of CLI, use the `--help` parameter to display the help section of the CLI. You can even combine this parameter with a specific command to get the help section of that command. 
-
-```shell
-$ csdx --help
-```
-
-## Namespaces
-**auth**: To perform [authentication-related](/packages/auth) activities
-
-**cm**: To perform content management activities such as [bulk publish](/packages/contentstack-bulk-publish), [import](/packages/contentstack-import), and [export](/packages/contentstack-export), [export-to-csv] (/packages/contentstack-export-to-csv), [seed] (/packages/contentstack-seed)
-
-**help**: To list the helpful commands in CLI
-
-**config**: To set regions and customize them
-
-## Documentation
-
-To get a more detailed documentation for every command, visit the [CLI section](https://www.contentstack.com/docs/developers/cli) in our docs.
-
-## Useful Plugins
-
-- [Generate TypeScript typings from a Stack](https://github.com/Contentstack-Solutions/contentstack-cli-tsgen)
+-s, sampleapp or starterapp: The type of app you want to clone.
+ -t: (optional) The token of your private repo to access the project.
+-a, --appName: The app name, eg. Gatsby, Next, Nuxt, etc.
+-d, --data: Specify the path or the location of the folder to clone the app.
