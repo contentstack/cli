@@ -4,9 +4,6 @@ const request = require("./request");
 const helper = require("./helper");
 
 const setupBranches = async (config, branch) => {
-  console.log("config token", config.auth_token);
-  console.log("config source_stack", config.source_stack);
-  console.log("config path", config.data);
   if (typeof config !== "object") {
     throw new Error("Invalid config to setup the branch");
   }
@@ -29,7 +26,7 @@ const setupBranches = async (config, branch) => {
       ) {
         branches.push(result.body.branch);
       } else {
-        throw new Error("No branches found with the name " + branch);
+        throw new Error("No branch found with the name " + branch);
       }
     } else {
       const result = await request({

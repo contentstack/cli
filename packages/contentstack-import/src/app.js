@@ -86,7 +86,7 @@ let singleImport = async (moduleName, types, config) => {
         addlogs(config, 'Failed to migrate ' + moduleName, 'error')
         addlogs(config, error, 'error')
         addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error')
-        return reject()
+        return reject(error)
       })
     } else {
       addlogs(config, 'Please provide valid module name.', 'error')
@@ -122,7 +122,7 @@ let allImport = async (config, types) => {
       addlogs(config, chalk.red('Failed to migrate stack: ' + config.target_stack + '. Please check error logs for more info'), 'error')
       addlogs(config, error, 'error')
       addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error')
-      return reject()
+      return reject(error)
     }
   })
 }

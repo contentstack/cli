@@ -42,9 +42,9 @@ function exportEntries() {
 exportEntries.prototype.start = function (credentialConfig) {
   let self = this
   config = credentialConfig
-  entryFolderPath = path.resolve(config.data,config.branchName, config.modules.entries.dirName)
-  localesFilePath = path.resolve(config.data,config.branchName, config.modules.locales.dirName, config.modules.locales.fileName)
-  schemaFilePath = path.resolve(config.data, config.branchName, config.modules.content_types.dirName, 'schema.json')
+  entryFolderPath = path.resolve(config.data, (config.branchName || ""), config.modules.entries.dirName)
+  localesFilePath = path.resolve(config.data, (config.branchName || ""), config.modules.locales.dirName, config.modules.locales.fileName)
+  schemaFilePath = path.resolve(config.data, (config.branchName || ""), config.modules.content_types.dirName, 'schema.json')
   client = stack.Client(config)
   addlogs(config, 'Starting entry migration', 'success')
   return new Promise(function (resolve, reject) {

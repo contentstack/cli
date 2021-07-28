@@ -177,7 +177,7 @@ importContentTypes.prototype = {
           return resolve()
         }).catch(err => {
           addlogs(config, err, 'error')
-          return reject()
+          return reject(err)
         })
       }, 1000)
     })

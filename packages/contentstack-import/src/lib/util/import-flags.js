@@ -25,7 +25,7 @@ exports.configWithMToken = function (config, managementTokens, moduleName, host,
       .then(() => {
         return resolve()
       }).catch((error) => {
-        return reject()
+        return reject(error)
       })
   })
 }
@@ -46,7 +46,7 @@ exports.parameterWithMToken = function (managementTokens, data, moduleName, host
       .then(() => {
         return resolve()
       }).catch((error) => {
-        return reject()
+        return reject(error)
       })
   })
 }
@@ -69,7 +69,7 @@ exports.withoutParameterMToken = async (managementTokens, moduleName, host, _aut
       .then(() => {
         return resolve()
       }).catch((error) => {
-        return reject()
+        return reject(error)
       })
   })
 }
@@ -94,7 +94,7 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host, br
       .then(() => {
         return resolve()
       }).catch((error) => {
-        return reject()
+        return reject(error)
       })
   })
 }
@@ -117,7 +117,7 @@ exports.parametersWithAuthToken = function (_authToken, targetStack, data, modul
       .then(() => {
         return resolve()
       }).catch((error) => {
-        return reject()
+        return reject(error)
       })
   })
 }
@@ -143,7 +143,7 @@ exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, ba
       .then(() => {
         return resolve()
       }).catch((error) => {
-        return reject()
+        return reject(error)
       })
   })
 }

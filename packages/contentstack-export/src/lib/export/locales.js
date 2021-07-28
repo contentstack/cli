@@ -38,7 +38,7 @@ ExportLocales.prototype.start = function (credentialConfig) {
   addlogs(credentialConfig, 'Starting locale export', 'success')
   let self = this
   config = credentialConfig
-  let localesFolderPath = path.resolve(config.data, config.branchName, localeConfig.dirName)
+  let localesFolderPath = path.resolve(config.data, (config.branchName || ""), localeConfig.dirName)
   mkdirp.sync(localesFolderPath)
 
   let client = stack.Client(config)

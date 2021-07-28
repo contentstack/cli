@@ -27,7 +27,7 @@ ExportWorkFlows.prototype.start = function (credentialConfig) {
   config = credentialConfig
   client = stack.Client(config)
 
-  let workflowsFolderPath = path.resolve(config.data, config.branchName, workFlowConfig.dirName)
+  let workflowsFolderPath = path.resolve(config.data, (config.branchName || ""), workFlowConfig.dirName)
   mkdirp.sync(workflowsFolderPath)
   return new Promise(function (resolve, reject) {
     return client.stack({api_key: config.source_stack, management_token: config.management_token}).workflow().fetchAll()

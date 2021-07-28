@@ -32,7 +32,7 @@ ExportEnvironments.prototype.start = function (mergConfig) {
   config = mergConfig
   addlogs(config, 'Starting environment export', 'success')
   const environmentConfig = config.modules.environments
-  const environmentsFolderPath = path.resolve(config.data, config.branchName, environmentConfig.dirName)
+  const environmentsFolderPath = path.resolve(config.data, (config.branchName || ""), environmentConfig.dirName)
   // Create folder for environments
   mkdirp.sync(environmentsFolderPath)
   let client = stack.Client(config)

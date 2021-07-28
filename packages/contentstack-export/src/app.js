@@ -22,18 +22,29 @@ exports.initial = async function (config) {
       .then(async function () {
         //setup branches
         await setupBranches(config, config.branchName);
-
-        for (let branch of config.branches) {
-          var types = config.modules.types;
-          config.branchName = branch.uid;
+        var types = config.modules.types;
+        if (Array.isArray(config.branches) && config.branches.length > 0) {
+          for (let branch of config.branches) {
+            config.branchName = branch.uid;
+            try {
+              if (config.moduleName && config.moduleName !== undefined) {
+                await singleExport(config.moduleName, types, config, branch.uid);
+              } else {
+                await allExport(config, types, branch.uid);
+              } 
+            } catch (error) {
+              console.log('failed export branch', branch.uid, error)
+            }
+          } 
+        } else {
           try {
             if (config.moduleName && config.moduleName !== undefined) {
-              await singleExport(config.moduleName, types, config, branch.uid);
+              await singleExport(config.moduleName, types, config);
             } else {
-              await allExport(config, types, branch.uid);
+              await allExport(config, types);
             } 
           } catch (error) {
-            console.log('failed export branch', branch.uid, error)
+            console.log('failed export contents', error)
           }
         }
       })

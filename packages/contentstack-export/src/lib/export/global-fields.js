@@ -37,7 +37,7 @@ ExportGlobalFields.prototype = {
     config = {...config, ...credentialConfig};
     globalfieldsFolderPath = path.resolve(
       config.data,
-      config.branchName,
+      (config.branchName || ""),
       globalfieldsConfig.dirName
     );
     // Create folder for Global Fields
