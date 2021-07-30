@@ -40,6 +40,13 @@ export default class SeedCommand extends Command {
       required: false,
       exclusive: ['stack'],
     }),
+    'fetch-limit': flags.string({
+      char: 'l',
+      description: 'Limit for number of Organizations or stacks to be fetched',
+      multiple: false,
+      required: false,
+      hidden: true,
+    }),
   };
 
   async run() {
@@ -58,6 +65,7 @@ export default class SeedCommand extends Command {
         orgUid: flags.org,
         stackUid: flags.stack,
         stackName: flags['stack-name'],
+        fetchLimit: flags['fetch-limit'],
       }
 
       const seeder = new ContentModelSeeder(options)
