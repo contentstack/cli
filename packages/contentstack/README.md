@@ -838,7 +838,7 @@ EXAMPLES
   csdx cm:export -A -m <single module name>
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-export/src/commands/cm/export.js)_
 
 ## `csdx cm:export-to-csv`
 
@@ -890,7 +890,7 @@ EXAMPLES
   csdx cm:import -A -m <single module name>
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.4/packages/contentstack-import/src/commands/cm/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/packages/contentstack-import/src/commands/cm/import.js)_
 
 ## `csdx cm:seed`
 
@@ -903,12 +903,17 @@ USAGE
   $ csdx cm:seed
 
 OPTIONS
-  -r, --repo=repo  GitHub account or GitHub account/repository
+  -n, --stack-name=stack-name  Name of a new stack that needs to be created.
+  -o, --org=org                Provide Organization UID to create a new stack
+  -r, --repo=repo              GitHub account or GitHub account/repository
+  -s, --stack=stack            Provide stack UID to seed content to
 
 EXAMPLES
   $ csdx cm:seed
   $ csdx cm:seed -r "account"
   $ csdx cm:seed -r "account/repository"
+  $ csdx cm:seed -r "account/repository" -s "stack-uid" //seed content into specific stack
+  $ csdx cm:seed -r "account/repository" -o "your-org-uid" -n "stack-name" //create a new stack in given org uid
 ```
 
 _See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.6/src/commands/cm/seed.ts)_
