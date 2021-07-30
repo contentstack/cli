@@ -22,7 +22,7 @@ export const setupEnvironments = async (
     api_key: string,
     appConfig: AppConfig,
     clonedDirectory: string,
-    region: any,
+    region: any
 ) => {
     const environmentResult = await managementAPIClient.stack({ api_key }).environment().query().find()
     if (Array.isArray(environmentResult.items) && environmentResult.items.length > 0) {
@@ -53,12 +53,13 @@ export const setupEnvironments = async (
                             appConfig.appConfigKey || "",
                             environmentVariables,
                             clonedDirectory,
-                            region
+                            region,
                         )
                     } else {
                         cli.log(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_TOKEN_FOR_ENV', environment.name))
                     }
                 } catch (error) {
+                    console.log('error in env setup', error)
                     cli.log(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_ENV_FILE_FOR_ENV', environment.name))
                 }
             } else {
@@ -98,8 +99,9 @@ const envFileHandler = async (
     appConfigKey: string,
     environmentVariables: EnviornmentVariables,
     clonedDirectory: string,
-    region: any,
+    region: any
 ) => {
+    console.log('reigon', region);
     if (!appConfigKey || !environmentVariables) {
         return
     }
@@ -107,28 +109,38 @@ const envFileHandler = async (
     let result
     let filePath
     let fileName
+    let customHost;
+    const regionName = region && region.name && region.name.toLowerCase();
+    if (regionName !== 'eu' && regionName !== 'us' && regionName !== 'na') {
+        console.log('custom')
+        customHost = region.cda && region.cda.substring('8');
+    }
     const production = (environmentVariables.environment === 'production' ? true : false)
     switch (appConfigKey) {
         case 'reactjs':
+        case 'reactjs-starter':
             fileName = `.env.${environmentVariables.environment}.local`
             filePath = path.join(clonedDirectory, fileName)
-            content = `REACT_APP_APIKEY=${environmentVariables.api_key}\nREACT_APP_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nREACT_APP_ENVIRONMENT=${environmentVariables.environment}\nREACT_APP_REGION=${region.name}`
+            content = `REACT_APP_APIKEY=${environmentVariables.api_key}\nREACT_APP_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nREACT_APP_ENVIRONMENT=${environmentVariables.environment}\n${customHost ? 'REACT_APP_CUSTOM_HOST=' + customHost : 'REACT_APP_REGION=' + region.name}`
             result = await writeEnvFile(content, filePath)
             break
         case 'nextjs':
+        case 'nextjs-starter':
             fileName = `.env.${environmentVariables.environment}.local`
             filePath = path.join(clonedDirectory, fileName)
-            content = `API_KEY=${environmentVariables.api_key}\nDELIVERY_TOKEN=${environmentVariables.deliveryToken}\nENVIRONMENT=${environmentVariables.environment}\nREGION=${region.name}`
+            content = `API_KEY=${environmentVariables.api_key}\nDELIVERY_TOKEN=${environmentVariables.deliveryToken}\nENVIRONMENT=${environmentVariables.environment}\n${customHost ? 'CUSTOM_HOST=' + customHost : 'REGION=' + region.name}`
             result = await writeEnvFile(content, filePath)
             break
         case 'gatsby':
+        case 'gatsby-starter':
             fileName = `.env.${environmentVariables.environment}`
             filePath = path.join(clonedDirectory, fileName)
-            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_CDN=${region.cda}`
+            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_CDN=${region.cda}/v3`
             result = await writeEnvFile(content, filePath)
             break
         case 'angular':
-            content = `export const environment = { \n\t production:${(environmentVariables.environment === 'production' ? true : false)}, \n\t config : { \n\t\t api_key: '${environmentVariables.api_key}', \n\t\t delivery_token: '${environmentVariables.deliveryToken}', \n\t\t environment: '${environmentVariables.environment}', \n\t\t region: '${region.name}' \n\t } \n };`
+        case 'angular-starter':
+            content = `export const environment = { \n\t production: true \n\t } \n export const Config = { \n\t\t api_key: '${environmentVariables.api_key}', \n\t\t delivery_token: '${environmentVariables.deliveryToken}', \n\t\t environment: '${environmentVariables.environment}', \n\t\t region: '${region.name}' \n\t };`
             fileName = `environment${(environmentVariables.environment === 'production' ? '.prod.' : ".")}ts`
             filePath = path.join(
                 clonedDirectory,
@@ -139,9 +151,11 @@ const envFileHandler = async (
             result = await writeEnvFile(content, filePath)
             break
         case 'nuxtjs':
+        case 'nuxt-starter':
+            console.log('nuxt');
             fileName = (production ? '.env.production' : '.env')
             filePath = path.join(clonedDirectory, fileName)
-            content = `api_key=${environmentVariables.api_key}\ndelivery_token=${environmentVariables.deliveryToken}\nenvironment=${environmentVariables.environment}\nregion=${region.name}`
+            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_REGION=${region.name}`
             result = await writeEnvFile(content, filePath)
             break
         default:
