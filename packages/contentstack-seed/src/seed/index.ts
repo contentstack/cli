@@ -16,9 +16,10 @@ export interface ContentModelSeederOptions {
   cmaHost: string;
   authToken: string;
   gitHubPath: string | undefined;
-  orgUid?: string | undefined;
-  stackUid?: string | undefined;
-  stackName?: string | undefined;
+  orgUid: string | undefined;
+  stackUid: string | undefined;
+  stackName: string | undefined;
+  fetchLimit: string | undefined;
 }
 
 export default class ContentModelSeeder {
@@ -39,8 +40,9 @@ export default class ContentModelSeeder {
     const gh = GitHubClient.parsePath(options.gitHubPath)
     this.ghUsername = gh.username || DEFAULT_OWNER
     this.ghRepo = gh.repo
+    const limit = Number(this.options.fetchLimit)
 
-    this.csClient = new ContentstackClient(options.cmaHost, options.authToken)
+    this.csClient = new ContentstackClient(options.cmaHost, options.authToken, limit)
     this.ghClient = new GitHubClient(this.ghUsername, DEFAULT_STACK_PATTERN)
   }
 
@@ -61,7 +63,7 @@ export default class ContentModelSeeder {
       }
     }
 
-    const tmpPath = await this.downloadRelease() as string
+    const tmpPath = await this.downloadRelease()
 
     cli.log(
       `Importing into '${stackResponse.name}'.`
@@ -88,18 +90,16 @@ export default class ContentModelSeeder {
     } else {
       let organizationResponse: Organization
       let stackResponse: InquireStackResponse
-      if (!this.options.stackUid) {
-        if (this.options.orgUid) {
-          organizationResponse = await this.csClient.getOrganization(this.options.orgUid)
-        } else {
-          const organizations = await this.csClient.getOrganizations()
-          if (!organizations || organizations.length === 0) {
-            throw new Error(
-              'You do not have access to any organizations. Please try again or ask an Administrator for assistance.'
-            )
-          }
-          organizationResponse = await inquireOrganization(organizations)
+      if (this.options.orgUid) {
+        organizationResponse = await this.csClient.getOrganization(this.options.orgUid)
+      } else {
+        const organizations = await this.csClient.getOrganizations()
+        if (!organizations || organizations.length === 0) {
+          throw new Error(
+            'You do not have access to any organizations. Please try again or ask an Administrator for assistance.'
+          )
         }
+        organizationResponse = await inquireOrganization(organizations)
       }
       if (this.options.stackUid) {
         const stack: Stack = await this.csClient.getStack(this.options.stackUid)
@@ -121,6 +121,7 @@ export default class ContentModelSeeder {
     cli.action.start(
       `Creating Stack '${stackName}' within Organization '${organization.name}'`
     )
+    this.options.fetchLimit
 
     const newStack = await this.csClient.createStack({
       name: stackName,
