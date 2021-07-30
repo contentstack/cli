@@ -56,30 +56,22 @@ const config: Configuration = {
         'nuxt-starter': {
             source: 'contentstack/contentstack-nuxtjs-starter-app',
             stack: 'contentstack/stack-starter-app',
-            private: true,
         },
         'reactjs-starter': {
             source: 'contentstack/contentstack-react-starter-app',
             stack: 'contentstack/stack-starter-app',
-            private: true,
-            branch: 'main',
         },
         'nextjs-starter': {
             source: 'contentstack/contentstack-nextjs-starter-app',
             stack: 'contentstack/stack-starter-app',
-            private: true,
         },
         'gatsby-starter': {
             source: 'contentstack/contentstack-gatsby-starter-app',
-            stack: 'contentstack/stack-starter-app',
-            private: true,
-            branch: 'main',
+            stack: 'contentstack/stack-starter-app'
         },
         'angular-starter': {
             source: 'contentstack/contentstack-angular-starter',
             stack: 'contentstack/stack-starter-app',
-            private: true,
-            branch: 'main',
         },
     },
 }
