@@ -105,6 +105,7 @@ export default class BootstrapCommand extends Command {
         managementAPIClient: this.managementAPIClient,
         region: this.region,
         accessToken,
+        appType,
       }
       const bootstrap = new Bootstrap(options)
       await bootstrap.run()
