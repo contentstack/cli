@@ -15,6 +15,7 @@ export interface BootstrapOptions {
   managementAPIClient: any;
   region: any;
   accessToken: string;
+  appType: string;
 }
 
 /**
@@ -52,6 +53,7 @@ export default class Bootstrap {
       options.appConfig.private,
       options.accessToken
     )
+    this.options = options
   }
 
   async run(): Promise<any> {
@@ -78,7 +80,7 @@ export default class Bootstrap {
           result.api_key,
           this.appConfig,
           this.cloneDirectory,
-          this.region,
+          this.region
         )
       } else {
         throw new Error(messageHandler.parse('CLI_BOOTSTRAP_NO_API_KEY_FOUND'))
