@@ -19,7 +19,6 @@ const config: Configuration = {
         { displayName: 'Next JS', configKey: 'nextjs' },
         { displayName: 'Gatsby', configKey: 'gatsby' },
         { displayName: 'Angular', configKey: 'angular' },
-        { displayName: 'Nuxt JS', configKey: 'nuxtjs' },
     ],
     starterApps: [
         { displayName: 'React JS', configKey: 'reactjs-starter' },
@@ -45,7 +44,7 @@ const config: Configuration = {
             source: 'contentstack/contentstack-angular-modularblock-example',
             stack: 'shafeeqd959/stack-contentstack-angular-modularblock-example',
         },
-        nuxtjs: {
+        'nuxtjs-disabled': {
             source: 'contentstack/contentstack-nuxtjs-vue-universal-demo',
             stack: 'shafeeqd959/stack-contentstack-nuxtjs-vue-universal-demo',
         },
