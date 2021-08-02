@@ -111,7 +111,8 @@ const envFileHandler = async (
     let fileName
     let customHost;
     const regionName = region && region.name && region.name.toLowerCase();
-    if (regionName !== 'eu' && regionName !== 'us' && regionName !== 'na') {
+    const isUSRegion = (regionName === 'us' || regionName === 'na')
+    if (regionName !== 'eu' && !isUSRegion) {
         console.log('custom')
         customHost = region.cda && region.cda.substring('8');
     }
@@ -121,14 +122,14 @@ const envFileHandler = async (
         case 'reactjs-starter':
             fileName = `.env.${environmentVariables.environment}.local`
             filePath = path.join(clonedDirectory, fileName)
-            content = `REACT_APP_APIKEY=${environmentVariables.api_key}\nREACT_APP_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nREACT_APP_ENVIRONMENT=${environmentVariables.environment}\n${customHost ? 'REACT_APP_CUSTOM_HOST=' + customHost : 'REACT_APP_REGION=' + region.name}`
+            content = `REACT_APP_APIKEY=${environmentVariables.api_key}\nREACT_APP_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nREACT_APP_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nREACT_APP_CUSTOM_HOST=' + customHost : '')}${(!isUSRegion && !customHost) ? '\nREACT_APP_REGION=' + region.name : ''}`
             result = await writeEnvFile(content, filePath)
             break
         case 'nextjs':
         case 'nextjs-starter':
             fileName = `.env.${environmentVariables.environment}.local`
             filePath = path.join(clonedDirectory, fileName)
-            content = `API_KEY=${environmentVariables.api_key}\nDELIVERY_TOKEN=${environmentVariables.deliveryToken}\nENVIRONMENT=${environmentVariables.environment}\n${customHost ? 'CUSTOM_HOST=' + customHost : 'REGION=' + region.name}`
+            content = `API_KEY=${environmentVariables.api_key}\nDELIVERY_TOKEN=${environmentVariables.deliveryToken}\nENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nCUSTOM_HOST=' + customHost : '')}${(!isUSRegion && !customHost ? '\nREGION=' + region.name : '')}`
             result = await writeEnvFile(content, filePath)
             break
         case 'gatsby':
@@ -139,7 +140,7 @@ const envFileHandler = async (
             result = await writeEnvFile(content, filePath)
             break
         case 'angular':
-            content = `export const environment = { \n\t production:${(environmentVariables.environment === 'production' ? true : false)}, \n\t config : { \n\t\t api_key: '${environmentVariables.api_key}', \n\t\t delivery_token: '${environmentVariables.deliveryToken}', \n\t\t environment: '${environmentVariables.environment}', \n\t\t region: '${region.name}' \n\t } \n };`
+            content = `export const environment = { \n\t production:${(environmentVariables.environment === 'production' ? true : false)}, \n\t config : { \n\t\t api_key: '${environmentVariables.api_key}', \n\t\t delivery_token: '${environmentVariables.deliveryToken}', \n\t\t environment: '${environmentVariables.environment}${ (!isUSRegion && !customHost ? `,\n\t\tregion:='${region.name}'` : '')} \n\t } \n };`
             fileName = `environment${(environmentVariables.environment === 'production' ? '.prod.' : ".")}ts`
             filePath = path.join(
                 clonedDirectory,
@@ -150,7 +151,7 @@ const envFileHandler = async (
             result = await writeEnvFile(content, filePath)
             break
         case 'angular-starter':
-                content = `export const environment = { \n\t production: true \n}; \nexport const Config = { \n\t api_key: '${environmentVariables.api_key}', \n\t delivery_token: '${environmentVariables.deliveryToken}', \n\t environment: '${environmentVariables.environment}', \n\t region: '${region.name}' \n};`
+                content = `export const environment = { \n\t production: true \n}; \nexport const Config = { \n\t api_key: '${environmentVariables.api_key}', \n\t delivery_token: '${environmentVariables.deliveryToken}', \n\t environment: '${environmentVariables.environment}',${( !isUSRegion && !customHost ? `,\n\t\tregion:='${region.name}'`: '') } \n};`
             fileName = `environment${(environmentVariables.environment === 'production' ? '.prod.' : ".")}ts`
             filePath = path.join(
                 clonedDirectory,
@@ -165,7 +166,7 @@ const envFileHandler = async (
             console.log('nuxt');
             fileName = (production ? '.env.production' : '.env')
             filePath = path.join(clonedDirectory, fileName)
-            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_REGION=${region.name}`
+            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : '')}`
             result = await writeEnvFile(content, filePath)
             break
         default:
