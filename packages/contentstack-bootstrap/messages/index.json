@@ -8,7 +8,7 @@
     "CLI_BOOTSTRAP_STACK_CREATION_FAILED": "Unable to create stack for content \"%s\"",
     "CLI_BOOTSTRAP_APP_SELECTION_ENQUIRY": "Select an App",
     "CLI_BOOTSTRAP_APP_COPY_SOURCE_CODE_DESTINATION_TYPE_ENQUIRY": "Choose the location where you want to copy the source code",
-    "CLI_BOOTSTRAP_APP_COPY_SOURCE_CODE_DESTINATION_ENQUIRY": "Provide the destionation path",
+    "CLI_BOOTSTRAP_APP_COPY_SOURCE_CODE_DESTINATION_ENQUIRY": "Enter destination path",
     "CLI_BOOTSTRAP_NO_ACCESS_TOKEN_CREATED": "Note: Access token not created already, check out this link https://github.com/settings/tokens \n Provide github access token",
     "CLI_BOOTSTRAP_TYPE_OF_APP_ENQUIRY": "Choose the type of app you want to clone",
     "CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_TOKEN_FOR_ENV": "Failed to create delivery token for env \"%s\"",

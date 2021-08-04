@@ -59,7 +59,6 @@ export const setupEnvironments = async (
                         cli.log(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_TOKEN_FOR_ENV', environment.name))
                     }
                 } catch (error) {
-                    console.log('error in env setup', error)
                     cli.log(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_ENV_FILE_FOR_ENV', environment.name))
                 }
             } else {
@@ -101,7 +100,6 @@ const envFileHandler = async (
     clonedDirectory: string,
     region: any
 ) => {
-    console.log('reigon', region);
     if (!appConfigKey || !environmentVariables) {
         return
     }
@@ -113,7 +111,6 @@ const envFileHandler = async (
     const regionName = region && region.name && region.name.toLowerCase();
     const isUSRegion = (regionName === 'us' || regionName === 'na')
     if (regionName !== 'eu' && !isUSRegion) {
-        console.log('custom')
         customHost = region.cda && region.cda.substring('8');
     }
     const production = (environmentVariables.environment === 'production' ? true : false)
@@ -163,7 +160,6 @@ const envFileHandler = async (
             break
         case 'nuxtjs':
         case 'nuxt-starter':
-            console.log('nuxt');
             fileName = (production ? '.env.production' : '.env')
             filePath = path.join(clonedDirectory, fileName)
             content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : '')}`
