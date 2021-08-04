@@ -2,7 +2,7 @@
   "name": "@contentstack/utilities",
   "version": "0.0.0",
   "description": "Utilities for contentstack projects",
-  "main": "index.js",
+  "main": "lib/selectors/index.js",
   "scripts": {
     "test": "nyc --reporter=html mocha --forbid-only \"test/**/*.test.js\"",
     "testD": "mocha -r ts-node/register test/index.test.js"
@@ -20,7 +20,9 @@
   "dependencies": {
     "@contentstack/cli-command": "*",
     "@contentstack/management": "^1.2.1",
+    "configstore": "^5.0.1",
     "inquirer": "^8.0.0",
+    "inquirer-search-checkbox": "^1.0.0",
     "inquirer-search-list": "^1.2.6",
     "ora": "^5.4.0",
     "ts-node": "^10.0.0"

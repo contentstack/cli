@@ -1,8 +1,20 @@
 import ora from 'ora'
+import Configstore from 'configstore';
+debugger
+const config = new Configstore('contentstack_cli');
+
 const inquirer = require('inquirer')
 inquirer.registerPrompt('search-list', require('inquirer-search-list'))
+inquirer.registerPrompt('search-checkbox', require('inquirer-search-checkbox'))
 const {Command} = require('@contentstack/cli-command')
 const ContentstackManagementSDK = require('@contentstack/management')
+
+interface Token {
+	token: string;
+	apiKey: string;
+	environment?: string;
+	type: string;
+}
 
 interface Organization {
 	uid: string,
@@ -163,6 +175,58 @@ export function chooseEntry(contentTypeUid: string, stackApiKey: string, display
 	})	
 }
 
+export function chooseContentTypes(stackApiKey: string, displayMessage?: string, region?: string): Promise<ContentType[]> {
+	return new Promise(async (resolve, reject) => {
+		const command = new Command()
+		command.managementAPIClient = {host: command.cmaHost, authtoken: command.authToken}
+		const client = command.managementAPIClient
+		try {
+			const spinner = ora('Loading Content Types').start()
+			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
+			let contentTypes = await getAll(client.stack({api_key: stackApiKey}).contentType())
+			spinner.stop()
+			let contentTypeMap: any = {}
+			contentTypes.forEach((contentType: ContentType) => {
+				contentTypeMap[contentType.title] = contentType.uid
+			})
+			const contentTypeList = Object.keys(contentTypeMap)
+			let inquirerConfig = {
+				type: 'search-checkbox',
+				name: 'chosenContentTypes',
+				choices: contentTypeList,
+				message: displayMessage || 'Choose a content type',
+				loop: false,
+			}
+			inquirer.prompt(inquirerConfig).then(({ chosenContentTypes }: { chosenContentTypes: string[]}) => {
+				let result: ContentType[] = chosenContentTypes.map(ct => {
+					let foo: ContentType = { uid: contentTypeMap[ct], title: ct }
+					return foo
+				})
+				resolve(result)
+			})
+		} catch (error) {
+			console.error(error.message)
+		}
+	})	
+}
+
+export function chooseTokenAlias() {
+	return new Promise(async (resolve, reject) => {
+		const tokens = config.get('tokens')
+		const tokenList = Object.keys(tokens).filter((token: string) => tokens[token].type === 'management')
+		let inquirerConfig = {
+			type: 'search-list',
+			name: 'chosenToken',
+			choices: tokenList,
+			message: 'Choose a stack to use',
+			loop: false,
+		}
+		inquirer.prompt(inquirerConfig).then(({ chosenToken }: { chosenToken: string }) => {
+			resolve(tokens[chosenToken].apiKey)
+		})
+	})
+}
+
 async function getAll (element: any, skip: number=0): Promise<any> {
 	return new Promise(async resolve => {
 		let result: any[] = []
@@ -184,20 +248,23 @@ async function fetch(element: any, skip: number, accumulator: any[]): Promise<an
 }
 
 // async function callMe() {
-// 	let organization = await chooseOrganization()
-// 	console.log(organization)
+// 	// let organization = await chooseOrganization()
+// 	// console.log(organization)
 
-// 	let stack = await chooseStack(organization.orgUid)
-// 	console.log(stack)
+// 	// let stack = await chooseStack(organization.orgUid)
+// 	// console.log(stack)
 
-// 	let contentType = await chooseContentType(stack.api_key)
-// 	console.log(contentType)
+// 	// let contentType = await chooseContentType(stack.api_key)
+// 	// console.log(contentType)
 
 // 	// let entry = await chooseEntry(contentType.uid, stack.api_key)
 // 	// console.log(entry)
 
-// 	let entry = await chooseEntry(contentType.uid, stack.api_key)
-// 	console.log(entry)
+// 	// let entry = await chooseEntry(contentType.uid, stack.api_key)
+// 	// console.log(entry)
+
+// 	let token = await chooseTokenAlias()
+// 	console.log(token)
 // }
 
 // callMe()
