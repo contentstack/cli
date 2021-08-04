@@ -148,7 +148,7 @@ const envFileHandler = async (
             result = await writeEnvFile(content, filePath)
             break
         case 'angular-starter':
-                content = `export const environment = { \n\t production: true \n}; \nexport const Config = { \n\t api_key: '${environmentVariables.api_key}', \n\t delivery_token: '${environmentVariables.deliveryToken}', \n\t environment: '${environmentVariables.environment}',${( !isUSRegion && !customHost ? `,\n\t\tregion:='${region.name}'`: '') } \n};`
+                content = `export const environment = { \n\t production: true \n}; \nexport const Config = { \n\t api_key: '${environmentVariables.api_key}', \n\t delivery_token: '${environmentVariables.deliveryToken}', \n\t environment: '${environmentVariables.environment}'${( !isUSRegion && !customHost ? `,\n\t\tregion:='${region.name}'`: '') } \n};`
             fileName = `environment${(environmentVariables.environment === 'production' ? '.prod.' : ".")}ts`
             filePath = path.join(
                 clonedDirectory,
