@@ -16,23 +16,21 @@ export default class BootstrapCommand extends Command {
 
   static examples = [
     '$ csdx cm:bootstrap',
-    '$ csdx cm:bootstrap -a <app name>',
     '$ csdx cm:bootstrap -d <path/to/setup/the/app>',
-    '$ csdx cm:bootstrap -t <github private repo token>',
-    '$ csdx cm:bootstrap -s <sampleapp or startapp>',
-    '$ csdx cm:bootstrap -s <sampleapp or startapp> -t <optional github private repo token> -a <app name> -d <path/to/setup/the/app>',
+    '$ csdx cm:bootstrap -s <sampleapp or starterapp>',
+    '$ csdx cm:bootstrap -s <sampleapp or starterapp> -a <app name> -d <path/to/setup/the/app>',
   ];
 
   static flags = {
     appName: flags.string({
       char: 'a',
-      description: 'App name',
+      description: 'App name, 1. sampleapp - reactjs, nextjs, gatsby, angular. 2. starterapp - reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter',
       multiple: false,
       required: false,
     }),
     directory: flags.string({
       char: 'd',
-      description: 'Directory to setup the project',
+      description: 'Directory to setup the project. If directory name has a space then provide the path as a string or escap the space using back slash eg: "../../test space" or ../../test\\ space',
       multiple: false,
       required: false,
     }),
