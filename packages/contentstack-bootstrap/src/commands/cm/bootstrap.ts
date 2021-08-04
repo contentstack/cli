@@ -17,6 +17,7 @@ export default class BootstrapCommand extends Command {
   static examples = [
     '$ csdx cm:bootstrap',
     '$ csdx cm:bootstrap -d <path/to/setup/the/app>',
+    '$ csdx cm:bootstrap -t <github access token>',
     '$ csdx cm:bootstrap -s <sampleapp or starterapp>',
     '$ csdx cm:bootstrap -s <sampleapp or starterapp> -a <app name> -d <path/to/setup/the/app>',
   ];
