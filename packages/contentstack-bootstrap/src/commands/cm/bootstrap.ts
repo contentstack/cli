@@ -34,12 +34,6 @@ export default class BootstrapCommand extends Command {
       multiple: false,
       required: false,
     }),
-    accessToken: flags.string({
-      char: 't',
-      description: 'Access token for private github repo',
-      multiple: false,
-      required: false,
-    }),
     appType: flags.string({
       char: 's',
       description: 'Sample or Starter app',
