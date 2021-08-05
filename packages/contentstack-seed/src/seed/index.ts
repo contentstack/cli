@@ -1,8 +1,8 @@
 import cli from 'cli-ux'
 import * as tmp from 'tmp'
 import * as importer from '../seed/importer'
-import ContentstackClient, {Organization} from '../seed/contentstack/client'
-import {inquireOrganization, inquireProceed, inquireRepo, inquireStack} from '../seed/interactive'
+import ContentstackClient, {Organization, Stack} from '../seed/contentstack/client'
+import {inquireOrganization, inquireProceed, inquireRepo, inquireStack, InquireStackResponse} from '../seed/interactive'
 import GitHubClient from './github/client'
 import GithubError from './github/error'
 
@@ -16,6 +16,10 @@ export interface ContentModelSeederOptions {
   cmaHost: string;
   authToken: string;
   gitHubPath: string | undefined;
+  orgUid: string | undefined;
+  stackUid: string | undefined;
+  stackName: string | undefined;
+  fetchLimit: string | undefined;
 }
 
 export default class ContentModelSeeder {
@@ -36,14 +40,14 @@ export default class ContentModelSeeder {
     const gh = GitHubClient.parsePath(options.gitHubPath)
     this.ghUsername = gh.username || DEFAULT_OWNER
     this.ghRepo = gh.repo
+    const limit = Number(this.options.fetchLimit)
 
-    this.csClient = new ContentstackClient(options.cmaHost, options.authToken)
+    this.csClient = new ContentstackClient(options.cmaHost, options.authToken, limit)
     this.ghClient = new GitHubClient(this.ghUsername, DEFAULT_STACK_PATTERN)
   }
 
   async run() {
     let api_key: string
-
     const {organizationResponse, stackResponse} = await this.getInput()
 
     if (stackResponse.isNew && stackResponse.name) {
@@ -59,7 +63,7 @@ export default class ContentModelSeeder {
       }
     }
 
-    const tmpPath = await this.downloadRelease() as string
+    const tmpPath = await this.downloadRelease()
 
     cli.log(
       `Importing into '${stackResponse.name}'.`
@@ -77,27 +81,39 @@ export default class ContentModelSeeder {
   }
 
   async getInput() {
-    const organizations = await this.csClient.getOrganizations()
-
-    if (!organizations || organizations.length === 0) {
-      throw new Error(
-        'You do not have access to any organizations. Please try again or ask an Administrator for assistance.'
-      )
-    }
-
     if (!this.ghRepo) {
       await this.inquireGitHubRepo()
     }
-
     const repoExists = await this.ghClient.checkIfRepoExists((this.ghRepo as string))
 
     if (repoExists === false) {
       cli.error(`Could not find GitHub repository '${this.ghPath}'.`)
     } else {
-      const organizationResponse = await inquireOrganization(organizations)
-      const stacks = await this.csClient.getStacks(organizationResponse.uid)
-      const stackResponse = await inquireStack(stacks)
-
+      let organizationResponse: Organization
+      let stackResponse: InquireStackResponse
+      if (this.options.orgUid) {
+        organizationResponse = await this.csClient.getOrganization(this.options.orgUid)
+      } else {
+        const organizations = await this.csClient.getOrganizations()
+        if (!organizations || organizations.length === 0) {
+          throw new Error(
+            'You do not have access to any organizations. Please try again or ask an Administrator for assistance.'
+          )
+        }
+        organizationResponse = await inquireOrganization(organizations)
+      }
+      if (this.options.stackUid) {
+        const stack: Stack = await this.csClient.getStack(this.options.stackUid)
+        stackResponse = {
+          isNew: false,
+          name: stack.name,
+          uid: stack.uid,
+          api_key: stack.api_key,
+        }
+      } else {
+        const stacks = await this.csClient.getStacks(organizationResponse.uid)
+        stackResponse = await inquireStack(stacks, this.options.stackName)
+      }
       return {organizationResponse, stackResponse}
     }
   }
@@ -106,6 +122,7 @@ export default class ContentModelSeeder {
     cli.action.start(
       `Creating Stack '${stackName}' within Organization '${organization.name}'`
     )
+    this.options.fetchLimit
 
     const newStack = await this.csClient.createStack({
       name: stackName,
