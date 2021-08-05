@@ -14,5 +14,5 @@
     "CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_TOKEN_FOR_ENV": "Failed to create delivery token for env \"%s\"",
     "CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_ENV_FILE_FOR_ENV": "Failed to setup env file for \"%s\"",
     "CLI_BOOTSTRAP_APP_ENV_NOT_FOUND_FOR_THE_STACK": "No environments found for the stack",
-    "CLI_BOOTSTRAP_SUCCESS": "Successfully setup the project"
+    "CLI_BOOTSTRAP_SUCCESS": "Project setup is successful!"
 }
