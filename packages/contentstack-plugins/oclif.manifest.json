@@ -1,1 +1,0 @@
-{"version":"0.1.0-beta","commands":{"plugins:create":{"id":"plugins:create","description":"generate plugin starter code\n","pluginName":"@contentstack/cli-plugins-plugin","pluginType":"core","aliases":[],"flags":{},"args":[]}}}
