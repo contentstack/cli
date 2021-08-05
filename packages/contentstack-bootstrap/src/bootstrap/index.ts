@@ -87,7 +87,6 @@ export default class Bootstrap {
       }
       cli.log(messageHandler.parse('CLI_BOOTSTRAP_SUCCESS'))
     } catch (error) {
-      console.log('bootstrap error', error);
       cli.error(messageHandler.parse('CLI_BOOTSTRAP_STACK_CREATION_FAILED', this.appConfig.stack))
     }
   }
