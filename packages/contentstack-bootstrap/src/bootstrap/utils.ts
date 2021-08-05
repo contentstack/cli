@@ -137,7 +137,7 @@ const envFileHandler = async (
             result = await writeEnvFile(content, filePath)
             break
         case 'angular':
-            content = `export const environment = { \n\t production:${(environmentVariables.environment === 'production' ? true : false)}, \n\t config : { \n\t\t api_key: '${environmentVariables.api_key}', \n\t\t delivery_token: '${environmentVariables.deliveryToken}', \n\t\t environment: '${environmentVariables.environment}${ (!isUSRegion && !customHost ? `,\n\t\tregion:='${region.name}'` : '')} \n\t } \n };`
+            content = `export const environment = { \n\tproduction:${(environmentVariables.environment === 'production' ? true : false)}, \n\tconfig : { \n\t\tapi_key: '${environmentVariables.api_key}', \n\t\tdelivery_token: '${environmentVariables.deliveryToken}', \n\t\tenvironment: '${environmentVariables.environment}'${ (!isUSRegion && !customHost ? `,\n\t\tregion: '${region.name}'` : '')} \n\t } \n };`
             fileName = `environment${(environmentVariables.environment === 'production' ? '.prod.' : ".")}ts`
             filePath = path.join(
                 clonedDirectory,
@@ -148,7 +148,7 @@ const envFileHandler = async (
             result = await writeEnvFile(content, filePath)
             break
         case 'angular-starter':
-                content = `export const environment = { \n\t production: true \n}; \nexport const Config = { \n\t api_key: '${environmentVariables.api_key}', \n\t delivery_token: '${environmentVariables.deliveryToken}', \n\t environment: '${environmentVariables.environment}'${( !isUSRegion && !customHost ? `,\n\t\tregion:='${region.name}'`: '') } \n};`
+                content = `export const environment = { \n\tproduction: true \n}; \nexport const Config = { \n\tapi_key: '${environmentVariables.api_key}', \n\tdelivery_token: '${environmentVariables.deliveryToken}', \n\tenvironment: '${environmentVariables.environment}'${( !isUSRegion && !customHost ? `,\n\tregion: '${region.name}'`: '') } \n};`
             fileName = `environment${(environmentVariables.environment === 'production' ? '.prod.' : ".")}ts`
             filePath = path.join(
                 clonedDirectory,
