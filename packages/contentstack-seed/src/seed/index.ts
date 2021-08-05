@@ -77,6 +77,7 @@ export default class ContentModelSeeder {
       master_locale: ENGLISH_LOCALE,
       tmpPath: tmpPath,
     })
+    return { api_key }
   }
 
   async getInput() {
