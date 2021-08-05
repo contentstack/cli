@@ -21,7 +21,7 @@ module.exports = {
         'code',
         'uid',
         'name',
-        'fallback_locale',
+        'fallback_locale'
       ],
     },
     environments: {
@@ -140,6 +140,9 @@ module.exports = {
     stack: {
       dirName: 'stack',
       fileName: 'stack.json',
+    },
+    dependency: {
+      entries: ['stack', 'locales', 'content-types'],
     },
   },
   languagesCode: [
