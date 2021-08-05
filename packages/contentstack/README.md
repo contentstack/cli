@@ -31,7 +31,6 @@ USAGE
 * [`csdx auth:tokens:add`](#csdx-authtokensadd)
 * [`csdx auth:tokens:remove`](#csdx-authtokensremove)
 * [`csdx auth:whoami`](#csdx-authwhoami)
-* [`csdx cm:bootstrap`](#csdx-cmbootstrap)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:bulk-publish:add-fields`](#csdx-cmbulk-publishadd-fields)
 * [`csdx cm:bulk-publish:assets`](#csdx-cmbulk-publishassets)
@@ -194,38 +193,6 @@ ALIASES
 ```
 
 _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/whoami.js)_
-
-## `csdx cm:bootstrap`
-
-Bootstrap contentstack apps
-
-```
-Bootstrap contentstack apps
-
-USAGE
-  $ csdx cm:bootstrap
-
-OPTIONS
-  -a, --appName=appName          App name, 1. sampleapp - reactjs, nextjs, gatsby, angular. 2. starterapp -
-                                 reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter
-
-  -d, --directory=directory      Directory to setup the project. If directory name has a space then provide the path as
-                                 a string or escap the space using back slash eg: "../../test space" or ../../test\
-                                 space
-
-  -s, --appType=appType          Sample or Starter app
-
-  -t, --accessToken=accessToken  Access token for private github repo
-
-EXAMPLES
-  $ csdx cm:bootstrap
-  $ csdx cm:bootstrap -d <path/to/setup/the/app>
-  $ csdx cm:bootstrap -t <github access token>
-  $ csdx cm:bootstrap -s <sampleapp or starterapp>
-  $ csdx cm:bootstrap -s <sampleapp or starterapp> -a <app name> -d <path/to/setup/the/app>
-```
-
-_See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/cm/bootstrap.ts)_
 
 ## `csdx cm:bulk-publish`
 
@@ -852,10 +819,12 @@ USAGE
 OPTIONS
   -A, --auth-token                                     to use auth token
   -a, --management-token-alias=management-token-alias  alias of the management token
+  -b, --branch=branch                                  [optional] branch name
   -c, --config=config                                  [optional] path of the config
   -d, --data=data                                      path or location to store the data
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
+  -t, --content-type=content-type                      [optional] content type
 
 DESCRIPTION
   ...
@@ -869,6 +838,8 @@ EXAMPLES
   csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
   csdx cm:export -a <management_token_alias> -c <path/to/config/file>
   csdx cm:export -A -m <single module name>
+  csdx cm:export -A -m <single module name> -t <content type>
+  csdx cm:export -A -b [optional] branch name
 ```
 
 _See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-export/src/commands/cm/export.js)_
@@ -906,6 +877,7 @@ OPTIONS
   -b, --backup-dir=backup-dir                          [optional] backup directory name when using specific module
   -c, --config=config                                  [optional] path of config file
   -d, --data=data                                      path and location where data is stored
+  -f, --branch=branch                                  [optional] branch name
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the target stack
 
@@ -921,6 +893,7 @@ EXAMPLES
   csdx cm:import -a <management_token_alias> -d <path/of/export/destination/dir>
   csdx cm:import -a <management_token_alias> -c <path/of/config/file>
   csdx cm:import -A -m <single module name>
+  csdx cm:import -A -f <branch name>
 ```
 
 _See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/packages/contentstack-import/src/commands/cm/import.js)_
