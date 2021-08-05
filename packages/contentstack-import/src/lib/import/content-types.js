@@ -123,7 +123,7 @@ importContentTypes.prototype = {
             return resolve()
           }).catch((error) => {
             addlogs(config, chalk.green('Error in GlobalFields'), 'success')
-            return reject()
+            return reject(error)
           })
          }  else {
             addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
@@ -177,7 +177,7 @@ importContentTypes.prototype = {
           return resolve()
         }).catch(err => {
           addlogs(config, err, 'error')
-          return reject()
+          return reject(err)
         })
       }, 1000)
     })
