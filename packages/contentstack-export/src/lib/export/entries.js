@@ -42,9 +42,9 @@ function exportEntries() {
 exportEntries.prototype.start = function (credentialConfig) {
   let self = this
   config = credentialConfig
-  entryFolderPath = path.resolve(config.data, config.modules.entries.dirName)
-  localesFilePath = path.resolve(config.data, config.modules.locales.dirName, config.modules.locales.fileName)
-  schemaFilePath = path.resolve(config.data,  config.modules.content_types.dirName, 'schema.json')
+  entryFolderPath = path.resolve(config.data, (config.branchName || ""), config.modules.entries.dirName)
+  localesFilePath = path.resolve(config.data, (config.branchName || ""), config.modules.locales.dirName, config.modules.locales.fileName)
+  schemaFilePath = path.resolve(config.data, (config.branchName || ""), config.modules.content_types.dirName, 'schema.json')
   client = stack.Client(config)
   addlogs(config, 'Starting entry migration', 'success')
   return new Promise(function (resolve, reject) {
@@ -130,7 +130,8 @@ exportEntries.prototype.getEntries = function (apiDetails) {
       },
     }
     client.stack({api_key: config.source_stack, management_token: config.management_token}).contentType(apiDetails.content_type).entry().query(queryrequestObject).find()
-    .then(entriesList => {
+      .then(entriesList => {
+      console.log('entries', JSON.stringify(entriesList))
       // /entries/content_type_uid/locale.json
       if (!fs.existsSync(path.join(entryFolderPath, apiDetails.content_type))) {
         mkdirp.sync(path.join(entryFolderPath, apiDetails.content_type))
