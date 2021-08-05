@@ -8,7 +8,7 @@ export interface InquireStackResponse {
   api_key: string | null;
 }
 
-export async function inquireRepo(repos: any[]): Promise<{choice: string}> {
+export async function inquireRepo(repos: any[]): Promise<{ choice: string }> {
   if (!repos || repos.length === 0) throw new Error('Precondition failed: No Repositories found.')
 
   if (repos.length === 1) {
@@ -66,11 +66,11 @@ export async function inquireProceed(): Promise<number> {
   return createResponse.choice
 }
 
-export async function inquireStack(stacks: Stack[]): Promise<InquireStackResponse> {
+export async function inquireStack(stacks: Stack[], stackName?: string): Promise<InquireStackResponse> {
   const result = {} as InquireStackResponse
   const hasStacks = stacks !== null && stacks.length > 0
 
-  if (hasStacks) {
+  if (hasStacks && !stackName) {
     const createResponse = await inquirer.prompt([
       {
         type: 'list',
@@ -95,25 +95,28 @@ export async function inquireStack(stacks: Stack[]): Promise<InquireStackRespons
   }
 
   if (result.isNew) {
-    const nameResponse = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'name',
-        message: 'Enter a stack name',
-        validate: function (input) {
-          if (!input || input.trim() === '') {
-            return 'Required'
-          }
-          return true
+    if (stackName)
+      result.name = stackName.trim()
+    else {
+      const nameResponse = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'name',
+          message: 'Enter a stack name',
+          validate: function (input) {
+            if (!input || input.trim() === '') {
+              return 'Required'
+            }
+            return true
+          },
         },
-      },
-    ])
-
-    result.name = nameResponse.name.trim()
+      ])
+      result.name = nameResponse.name.trim()
+    }
   } else {
     // project stacks into the format the prompt function requires
     const choices = stacks.map(s => {
-      return {name: s.name, value: s.uid}
+      return {name: `${s.name}`, value: s.uid}
     })
 
     choices.sort((a, b) => (a.name > b.name) ? 1 : -1)
