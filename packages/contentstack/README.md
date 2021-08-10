@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.8 darwin-x64 node-v13.14.0
+@contentstack/cli/0.1.1-beta.8 linux-x64 node-v12.22.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -31,6 +31,7 @@ USAGE
 * [`csdx auth:tokens:add`](#csdx-authtokensadd)
 * [`csdx auth:tokens:remove`](#csdx-authtokensremove)
 * [`csdx auth:whoami`](#csdx-authwhoami)
+* [`csdx cm:bootstrap`](#csdx-cmbootstrap)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:bulk-publish:add-fields`](#csdx-cmbulk-publishadd-fields)
 * [`csdx cm:bulk-publish:assets`](#csdx-cmbulk-publishassets)
@@ -193,6 +194,38 @@ ALIASES
 ```
 
 _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/whoami.js)_
+
+## `csdx cm:bootstrap`
+
+Bootstrap contentstack apps
+
+```
+Bootstrap contentstack apps
+
+USAGE
+  $ csdx cm:bootstrap
+
+OPTIONS
+  -a, --appName=appName          App name, 1. sampleapp - reactjs, nextjs, gatsby, angular. 2. starterapp -
+                                 reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter
+
+  -d, --directory=directory      Directory to setup the project. If directory name has a space then provide the path as
+                                 a string or escap the space using back slash eg: "../../test space" or ../../test\
+                                 space
+
+  -s, --appType=appType          Sample or Starter app
+
+  -t, --accessToken=accessToken  Access token for private github repo
+
+EXAMPLES
+  $ csdx cm:bootstrap
+  $ csdx cm:bootstrap -d <path/to/setup/the/app>
+  $ csdx cm:bootstrap -t <github access token>
+  $ csdx cm:bootstrap -s <sampleapp or starterapp>
+  $ csdx cm:bootstrap -s <sampleapp or starterapp> -a <app name> -d <path/to/setup/the/app>
+```
+
+_See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/cm/bootstrap.ts)_
 
 ## `csdx cm:bulk-publish`
 
@@ -838,7 +871,7 @@ EXAMPLES
   csdx cm:export -A -m <single module name>
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-export/src/commands/cm/export.js)_
 
 ## `csdx cm:export-to-csv`
 
@@ -890,7 +923,7 @@ EXAMPLES
   csdx cm:import -A -m <single module name>
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.4/packages/contentstack-import/src/commands/cm/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/packages/contentstack-import/src/commands/cm/import.js)_
 
 ## `csdx cm:seed`
 
@@ -903,12 +936,17 @@ USAGE
   $ csdx cm:seed
 
 OPTIONS
-  -r, --repo=repo  GitHub account or GitHub account/repository
+  -n, --stack-name=stack-name  Name of a new stack that needs to be created.
+  -o, --org=org                Provide Organization UID to create a new stack
+  -r, --repo=repo              GitHub account or GitHub account/repository
+  -s, --stack=stack            Provide stack UID to seed content to
 
 EXAMPLES
   $ csdx cm:seed
   $ csdx cm:seed -r "account"
   $ csdx cm:seed -r "account/repository"
+  $ csdx cm:seed -r "account/repository" -s "stack-uid" //seed content into specific stack
+  $ csdx cm:seed -r "account/repository" -o "your-org-uid" -n "stack-name" //create a new stack in given org uid
 ```
 
 _See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.6/src/commands/cm/seed.ts)_
