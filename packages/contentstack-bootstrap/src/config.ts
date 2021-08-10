@@ -30,27 +30,23 @@ const config: Configuration = {
     appLevelConfig: {
         nextjs: {
             source: 'contentstack/contentstack-nextjs-react-universal-demo',
-            stack: 'shafeeqd959/stack-contentstack-nextjs-react-universal-demo',
+            stack: 'contentstack/stack-contentstack-nextjs-react-universal-demo',
         },
         reactjs: {
             source: 'contentstack/contentstack-reactjs-universal-sample-app',
-            stack: 'shafeeqd959/stack-contentstack-reactjs-universal-sample-app',
+            stack: 'contentstack/stack-contentstack-reactjs-universal-sample-app',
         },
         gatsby: {
             source: 'contentstack/gatsby-starter-contentstack',
-            stack: 'shafeeqd959/stack-gatsby-starter-contentstack',
+            stack: 'contentstack/stack-gatsby-starter-contentstack',
         },
         angular: {
             source: 'contentstack/contentstack-angular-modularblock-example',
-            stack: 'shafeeqd959/stack-contentstack-angular-modularblock-example',
+            stack: 'contentstack/stack-contentstack-angular-modularblock-example',
         },
         'nuxtjs-disabled': {
             source: 'contentstack/contentstack-nuxtjs-vue-universal-demo',
             stack: 'shafeeqd959/stack-contentstack-nuxtjs-vue-universal-demo',
-        },
-        reacttest: {
-            source: 'contentstack/contentstack-reactjs-universal-sample-app',
-            stack: 'shafeeqd959/stack-test',
         },
         'nuxt-starter': {
             source: 'contentstack/contentstack-nuxtjs-starter-app',
