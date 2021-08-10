@@ -115,7 +115,7 @@ ExportCommand.examples = [
   'csdx cm:export -a <management_token_alias> -c <path/to/config/file>',
   'csdx cm:export -A -m <single module name>',
   'csdx cm:export -A -m <single module name> -t <content type>',
-  'csdx cm:export -A -b [optional] branch name',
+  'csdx cm:export -A -B [optional] branch name',
 ]
 
 ExportCommand.flags = {
@@ -126,7 +126,7 @@ ExportCommand.flags = {
   'auth-token': flags.boolean({ char: 'A', description: 'to use auth token' }),
   module: flags.string({ char: 'm', description: '[optional] specific module name' }),
   'content-type': flags.string({ char: 't', description: '[optional] content type', multiple: true }),
-  branch: flags.string({ char: 'b', description: '[optional] branch name'}),
+  branch: flags.string({ char: 'B', description: '[optional] branch name'}),
 }
 
 module.exports = ExportCommand
