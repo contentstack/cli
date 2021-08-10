@@ -35,10 +35,16 @@ function ExportContentTypes() {
 
 ExportContentTypes.prototype = {
   start: function (credentialConfig) {
+    this.content_types = []
     let self = this
     config = credentialConfig
-    contentTypesFolderPath = path.resolve(config.data, contentTypeConfig.dirName)
+    contentTypesFolderPath = path.resolve(config.data, (config.branchName || ""), contentTypeConfig.dirName)
+
     client = stack.Client(config)
+    // If content type id is provided then use it as part of query
+    if (Array.isArray(config.contentTypes) && config.contentTypes.length > 0) {
+      self.requestOptions.qs.uid = {'$in': config.contentTypes}
+    }
     // Create folder for content types
     mkdirp.sync(contentTypesFolderPath)
     addlogs(config, 'Starting content type export', 'success')
