@@ -1,0 +1,18 @@
+{
+    "CLI_BOOTSTRAP_INVALID_APP_NAME": "Invalid app name received, use cm:bootstrap see the list of apps supported",
+    "CLI_BOOTSTRAP_LOGIN_FAILED": "You need to login, first. See: auth:login --help",
+    "CLI_BOOTSTRAP_GITHUB_ACCESS_NOT_FOUND": "No Github access token found",
+    "CLI_BOOTSTRAP_START_CLONE_APP": "Cloning the selected app",
+    "CLI_BOOTSTRAP_REPO_NOT_FOUND": "Unable to find a repo for \"%s\"",
+    "CLI_BOOTSTRAP_NO_API_KEY_FOUND": "No API key generated for the stack",
+    "CLI_BOOTSTRAP_STACK_CREATION_FAILED": "Unable to create stack for content \"%s\"",
+    "CLI_BOOTSTRAP_APP_SELECTION_ENQUIRY": "Select an App",
+    "CLI_BOOTSTRAP_APP_COPY_SOURCE_CODE_DESTINATION_TYPE_ENQUIRY": "Choose the location where you want to copy the source code",
+    "CLI_BOOTSTRAP_APP_COPY_SOURCE_CODE_DESTINATION_ENQUIRY": "Enter destination path",
+    "CLI_BOOTSTRAP_NO_ACCESS_TOKEN_CREATED": "Note: Access token not created already, check out this link https://github.com/settings/tokens \n Provide github access token",
+    "CLI_BOOTSTRAP_TYPE_OF_APP_ENQUIRY": "Choose the type of app you want to clone",
+    "CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_TOKEN_FOR_ENV": "Failed to create delivery token for env \"%s\"",
+    "CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_ENV_FILE_FOR_ENV": "Failed to setup env file for \"%s\"",
+    "CLI_BOOTSTRAP_APP_ENV_NOT_FOUND_FOR_THE_STACK": "No environments found for the stack",
+    "CLI_BOOTSTRAP_SUCCESS": "Project setup is successful!"
+}
