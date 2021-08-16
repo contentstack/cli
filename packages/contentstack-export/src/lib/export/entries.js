@@ -131,7 +131,6 @@ exportEntries.prototype.getEntries = function (apiDetails) {
     }
     client.stack({api_key: config.source_stack, management_token: config.management_token}).contentType(apiDetails.content_type).entry().query(queryrequestObject).find()
       .then(entriesList => {
-      console.log('entries', JSON.stringify(entriesList))
       // /entries/content_type_uid/locale.json
       if (!fs.existsSync(path.join(entryFolderPath, apiDetails.content_type))) {
         mkdirp.sync(path.join(entryFolderPath, apiDetails.content_type))
