@@ -607,7 +607,7 @@ importEntries.prototype = {
         let entries = helper.readFile(_ePath)
         entries.push(query.entry)
         helper.writeFile(_ePath, entries)
-        addlogs(config, 'Completed mapping entry wo uid: ' + query.entry.uid + ': ' + response.body.entries[0].uid, 'success')
+        addlogs(config, 'Completed mapping entry wo uid: ' + query.entry.uid + ': ' + response.body.entries[0].uid, 'clientsuccess')
         return resolve()
       }).catch(function (error) {
         return resolve()
