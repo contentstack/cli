@@ -67,7 +67,7 @@ let singleImport = async (moduleName, types, config) => {
     if (types.indexOf(moduleName) > -1) {
       if (!config.master_locale) {
         try {
-          const stack = await managementClient.Client(config).stack({ api_key: config.target_stack }).fetch()
+          const stack = await managementClient.Client(config).stack({ api_key: config.target_stack, management_token: config.management_token }).fetch()
           let master_locale = { code: stack.master_locale }
           config['master_locale'] = master_locale
         } catch (error) {
