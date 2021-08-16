@@ -11,6 +11,7 @@ const { map: _map, constants } = require('../utils'),
 /**
  * Base class for module classes
  * @class Base
+ * @ignore
  */
 class Base {
   constructor(id, action) {
@@ -63,6 +64,7 @@ class Base {
   }
   /**
    * Accumulates actions for validating user provided inputs
+   * @ignore
    * @param {Object} callsite Gets the file location and file number of caller 
    * @param {string} id unique id of action type 
    * @param {Object} opts holds payload to be validated 
