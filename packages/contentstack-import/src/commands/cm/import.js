@@ -36,7 +36,8 @@ class ImportCommand extends Command {
             managementTokens,
             moduleName,
             host,
-            _authToken
+            _authToken,
+            backupdir
           )
           .then(() => {
             return resolve()
@@ -47,7 +48,8 @@ class ImportCommand extends Command {
             data,
             moduleName,
             host,
-            _authToken
+            _authToken,
+            backupdir
           )
           .then(() => {
             return resolve()
@@ -57,7 +59,8 @@ class ImportCommand extends Command {
             managementTokens,
             moduleName,
             host,
-            _authToken
+            _authToken,
+            backupdir
           )
           .then(() => {
             return resolve()
@@ -73,6 +76,7 @@ class ImportCommand extends Command {
           _authToken,
           moduleName,
           host,
+          backupdir
         )
         .then(() => {
           return resolve()
@@ -115,10 +119,8 @@ ImportCommand.examples = [
   `csdx cm:import -A`, 
   `csdx cm:import -A -s <stack_ApiKey> -d <path/of/export/destination/dir>`,
   `csdx cm:import -A -c <path/of/config/dir>`,
-  `csdx cm:import -a <management_token_alias>`,
-  `csdx cm:import -a <management_token_alias> -d <path/of/export/destination/dir>`,
-  `csdx cm:import -a <management_token_alias> -c <path/of/config/file>`,
   `csdx cm:import -A -m <single module name>`,
+  `csdx cm:import -A -m <single module name> -b <backup dir>`,
 ]
 ImportCommand.flags = {
   config: flags.string({
@@ -135,7 +137,8 @@ ImportCommand.flags = {
   }),
   'management-token-alias': flags.string({
     char: 'a', 
-    description: 'alias of the management token'
+    description: 'alias of the management token',
+    hidden: true
   }),
   'auth-token': flags.boolean({
     char: 'A', 
