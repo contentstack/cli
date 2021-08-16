@@ -21,6 +21,7 @@ const { keys } = Object,
   // Base class
   Base = require('./base');
 
+
 /**
  * Field class
  * @class Field
@@ -36,11 +37,20 @@ class Field extends Base {
   }
 
   /**
+   * @typedef {Object} Task
+   * @param {string} title - Title for custom task
+   * @param {function[]} task - array of async function to be executed
+   * @param {string} failMessage message to be printed when task fails
+   * @param {string} successMessage - message to be printed when task succeeds
+  */
+
+  /**
    * Creates a field with provided uid.
    * @param {string} field Field name to be created 
    * @param {Object} opts Options to be passed
+   * @returns {Field} current instance of field object to chain further methods.
    * @example
-   * module.exports = migration => {
+   * module.exports =({ migration })=> {
    *  const blog = migration.editContentType('blog');
    *
    *  blog.createField('author');
@@ -61,8 +71,9 @@ class Field extends Base {
    * Edits the field with provided uid.
    * @param {string} field Field name to be edited
    * @param {Object} opts Options to be passed
+   * @returns {Field} current instance of field object to chain further methods.
    * @example
-   * module.exports = migration => {
+   * module.exports =({ migration })=> {
    * const blog = migration.editContentType('blog');
    * 
    * blog.editField('uniqueid')
@@ -82,8 +93,9 @@ class Field extends Base {
   /**
    * Delete a field from the content type
    * @param {string} field Field uid to be deleted 
+   * @returns {Field} current instance of field object to chain further methods.
    * @example
-   * module.exports = migration => {
+   * module.exports =({ migration })=> {
    *  const blog = migration.editContentType('blog');
    * 
    *  blog.deleteField('uniqueid');
@@ -99,8 +111,9 @@ class Field extends Base {
   /**
    * Move the field (position of the field in the editor)
    * @param {string} field Field uid to be moved
+   * @returns {Field} current instance of field object to chain further methods.
    * @example
-   * module.exports = migration => {
+   * module.exports = ({migration}) => {
    *  const blog = migration.editContentType('blog');
    *  
    *  blog.createField('credits')
@@ -120,9 +133,7 @@ class Field extends Base {
    * };
    */
   moveField(field) {
-    
     this.fieldToMove = field;
-    
     return this;
   }
 
@@ -146,41 +157,82 @@ class Field extends Base {
 
   // changeFieldId(currentId, newId) { }
 
+  /**
+   * 
+   * @param {string} value set display name for the field
+   * @returns {Field} current instance of field object to chain further methods.
+   */
   display_name(value) {
     this.buildSchema(display_name, this.field, value);
     return this;
   }
 
+  /**
+   * 
+   * @param {string} value Set data type of the field e.g. text, json, boolean
+   * @returns {Field} current instance of field object to chain further methods.
+   */
   data_type(value) {
     this.buildSchema(data_type, this.field, value);
     return this;
   }
 
+  /**
+   * 
+   * @param {boolean} value set true when field is mandatory
+   * @returns {Field} current instance of field object to chain further methods.
+   */
   mandatory(value) {
     this.buildSchema(mandatory, this.field, value);
     return this;
   }
 
+  /**
+   * 
+   * @param {string|boolean|number} value set true when field is mandatory
+   * @returns {Field} current instance of field object to chain further methods.
+   */
   default(value) {
     this.buildSchema(_default, this.field, value);
     return this;
   }
 
+  /**
+   * 
+   * @param {boolean} value set true if field is unique
+   * @returns {Field} current instance of field object to chain further methods.
+   */
   unique(value) {
     this.buildSchema(unique, this.field, value);
     return this;
   }
 
+  /**
+   * 
+   * @param {string | string[]} value uid of reference content type set array if ref_multipleContentType true 
+   * @see {@link ref_multipleContentType}
+   * @returns {Field} current instance of field object to chain further methods.
+   */
   reference_to(value) {
     this.buildSchema(reference_to, this.field, value);
     return this;
   }
 
+  /**
+   * 
+   * @param {string} value set true if accepts multiple entries as reference
+   * @returns {Field} current instance of field object to chain further methods.
+   */
   ref_multiple(value) {
     this.buildSchema(field_metadata, this.field, { ref_multiple: value, ref_multiple_content_types: true });
     return this;
   }
 
+  /**
+   * 
+   * @param {boolean} value set true if refer to multiple content types
+   * @returns {Field} current instance of field object to chain further methods.
+   */
   ref_multipleContentType(value) {
     this.buildSchema(field_metadata, this.field, { ref_multiple_content_types: value });
     return this;
@@ -232,6 +284,12 @@ class Field extends Base {
     }
   }
 
+  /**
+   * Once you add the fields to content type you can call this method to get the task definition
+   * @returns {Task} This task definition is to pass to migration.addTask()
+   * @example
+   * migration.addTask(foo.getTaskDefinition())
+   */
   getTaskDefinition() {
     return this.request
   }
