@@ -11,6 +11,13 @@
 <dd></dd>
 </dl>
 
+## Typedefs
+
+<dl>
+<dt><a href="#Task">Task</a> : <code>Object</code></dt>
+<dd></dd>
+</dl>
+
 <a name="Base"></a>
 
 ## Base
@@ -175,10 +182,19 @@ module.exports = {migrations} => {
 
 * [Field](#Field)
     * [new Field()](#new_Field_new)
-    * [.createField(field, opts)](#Field+createField)
-    * [.editField(field, opts)](#Field+editField)
-    * [.deleteField(field)](#Field+deleteField)
-    * [.moveField(field)](#Field+moveField)
+    * [.createField(field, opts)](#Field+createField) ⇒ [<code>Field</code>](#Field)
+    * [.editField(field, opts)](#Field+editField) ⇒ [<code>Field</code>](#Field)
+    * [.deleteField(field)](#Field+deleteField) ⇒ [<code>Field</code>](#Field)
+    * [.moveField(field)](#Field+moveField) ⇒ [<code>Field</code>](#Field)
+    * [.display_name(value)](#Field+display_name) ⇒ [<code>Field</code>](#Field)
+    * [.data_type(value)](#Field+data_type) ⇒ [<code>Field</code>](#Field)
+    * [.mandatory(value)](#Field+mandatory) ⇒ [<code>Field</code>](#Field)
+    * [.default(value)](#Field+default) ⇒ [<code>Field</code>](#Field)
+    * [.unique(value)](#Field+unique) ⇒ [<code>Field</code>](#Field)
+    * [.reference_to(value)](#Field+reference_to) ⇒ [<code>Field</code>](#Field)
+    * [.ref_multiple(value)](#Field+ref_multiple) ⇒ [<code>Field</code>](#Field)
+    * [.ref_multipleContentType(value)](#Field+ref_multipleContentType) ⇒ [<code>Field</code>](#Field)
+    * [.getTaskDefinition()](#Field+getTaskDefinition) ⇒ [<code>Task</code>](#Task)
 
 <a name="new_Field_new"></a>
 
@@ -187,10 +203,11 @@ Field class
 
 <a name="Field+createField"></a>
 
-### field.createField(field, opts)
+### field.createField(field, opts) ⇒ [<code>Field</code>](#Field)
 Creates a field with provided uid.
 
 **Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Field</code>](#Field) - current instance of field object to chain further methods.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -199,7 +216,7 @@ Creates a field with provided uid.
 
 **Example**  
 ```js
-module.exports = migration => {
+module.exports =({ migration })=> {
  const blog = migration.editContentType('blog');
 
  blog.createField('author');
@@ -210,10 +227,11 @@ module.exports = migration => {
 ```
 <a name="Field+editField"></a>
 
-### field.editField(field, opts)
+### field.editField(field, opts) ⇒ [<code>Field</code>](#Field)
 Edits the field with provided uid.
 
 **Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Field</code>](#Field) - current instance of field object to chain further methods.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -222,7 +240,7 @@ Edits the field with provided uid.
 
 **Example**  
 ```js
-module.exports = migration => {
+module.exports =({ migration })=> {
 const blog = migration.editContentType('blog');
 
 blog.editField('uniqueid')
@@ -232,10 +250,11 @@ blog.editField('uniqueid')
 ```
 <a name="Field+deleteField"></a>
 
-### field.deleteField(field)
+### field.deleteField(field) ⇒ [<code>Field</code>](#Field)
 Delete a field from the content type
 
 **Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Field</code>](#Field) - current instance of field object to chain further methods.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -243,7 +262,7 @@ Delete a field from the content type
 
 **Example**  
 ```js
-module.exports = migration => {
+module.exports =({ migration })=> {
  const blog = migration.editContentType('blog');
 
  blog.deleteField('uniqueid');
@@ -251,10 +270,11 @@ module.exports = migration => {
 ```
 <a name="Field+moveField"></a>
 
-### field.moveField(field)
+### field.moveField(field) ⇒ [<code>Field</code>](#Field)
 Move the field (position of the field in the editor)
 
 **Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Field</code>](#Field) - current instance of field object to chain further methods.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -262,7 +282,7 @@ Move the field (position of the field in the editor)
 
 **Example**  
 ```js
-module.exports = migration => {
+module.exports = ({migration}) => {
  const blog = migration.editContentType('blog');
  
  blog.createField('credits')
@@ -280,6 +300,98 @@ module.exports = migration => {
  blog.moveField('author').toTheTop();
  blog.moveField('url').afterField('author');
 };
+```
+<a name="Field+display_name"></a>
+
+### field.display\_name(value) ⇒ [<code>Field</code>](#Field)
+**Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Field</code>](#Field) - current instance of field object to chain further methods.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| value | <code>string</code> | set display name for the field |
+
+<a name="Field+data_type"></a>
+
+### field.data\_type(value) ⇒ [<code>Field</code>](#Field)
+**Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Field</code>](#Field) - current instance of field object to chain further methods.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| value | <code>string</code> | Set data type of the field e.g. text, json, boolean |
+
+<a name="Field+mandatory"></a>
+
+### field.mandatory(value) ⇒ [<code>Field</code>](#Field)
+**Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Field</code>](#Field) - current instance of field object to chain further methods.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| value | <code>boolean</code> | set true when field is mandatory |
+
+<a name="Field+default"></a>
+
+### field.default(value) ⇒ [<code>Field</code>](#Field)
+**Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Field</code>](#Field) - current instance of field object to chain further methods.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| value | <code>string</code> \| <code>boolean</code> \| <code>number</code> | set true when field is mandatory |
+
+<a name="Field+unique"></a>
+
+### field.unique(value) ⇒ [<code>Field</code>](#Field)
+**Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Field</code>](#Field) - current instance of field object to chain further methods.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| value | <code>boolean</code> | set true if field is unique |
+
+<a name="Field+reference_to"></a>
+
+### field.reference\_to(value) ⇒ [<code>Field</code>](#Field)
+**Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Field</code>](#Field) - current instance of field object to chain further methods.  
+**See**: [ref_multipleContentType](ref_multipleContentType)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| value | <code>string</code> \| <code>Array.&lt;string&gt;</code> | uid of reference content type set array if ref_multipleContentType true |
+
+<a name="Field+ref_multiple"></a>
+
+### field.ref\_multiple(value) ⇒ [<code>Field</code>](#Field)
+**Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Field</code>](#Field) - current instance of field object to chain further methods.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| value | <code>string</code> | set true if accepts multiple entries as reference |
+
+<a name="Field+ref_multipleContentType"></a>
+
+### field.ref\_multipleContentType(value) ⇒ [<code>Field</code>](#Field)
+**Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Field</code>](#Field) - current instance of field object to chain further methods.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| value | <code>boolean</code> | set true if refer to multiple content types |
+
+<a name="Field+getTaskDefinition"></a>
+
+### field.getTaskDefinition() ⇒ [<code>Task</code>](#Task)
+Once you add the fields to content type you can call this method to get the task definition
+
+**Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Task</code>](#Task) - This task definition is to pass to migration.addTask()  
+**Example**  
+```js
+migration.addTask(foo.getTaskDefinition())
 ```
 <a name="Migration"></a>
 
@@ -325,3 +437,15 @@ let task = {
 }
 migration.addTask(task)
 ```
+<a name="Task"></a>
+
+## Task : <code>Object</code>
+**Kind**: global typedef  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| title | <code>string</code> | Title for custom task |
+| task | <code>Array.&lt;function()&gt;</code> | array of async function to be executed |
+| failMessage | <code>string</code> | message to be printed when task fails |
+| successMessage | <code>string</code> | message to be printed when task succeeds |
+
