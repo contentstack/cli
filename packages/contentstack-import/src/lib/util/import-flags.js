@@ -9,7 +9,7 @@ let _ = require('lodash')
 const { cli } = require('cli-ux')
 let message = require('../../../messages/index.json')
 
-exports.configWithMToken = function (config, managementTokens, moduleName, host, _authToken) {
+exports.configWithMToken = function (config, managementTokens, moduleName, host, _authToken, backupdir) {
   return new Promise(async function (resolve, reject) {
     let externalConfig = require(config)
     defaultConfig.management_token = managementTokens.token
@@ -17,7 +17,9 @@ exports.configWithMToken = function (config, managementTokens, moduleName, host,
       defaultConfig.moduleName = moduleName
     }
     defaultConfig.host = host
-
+    if (backupdir) {
+      defaultConfig.useBackedupDir = backupdir;
+    }
     defaultConfig.auth_token = _authToken
     defaultConfig = _.merge(defaultConfig, externalConfig)
     initial(defaultConfig)
@@ -29,7 +31,7 @@ exports.configWithMToken = function (config, managementTokens, moduleName, host,
   })
 }
 
-exports.parameterWithMToken = function (managementTokens, data, moduleName, host, _authToken) {
+exports.parameterWithMToken = function (managementTokens, data, moduleName, host, _authToken, backupdir) {
   return new Promise(async function (resolve, reject) {
     defaultConfig.management_token = managementTokens.token
     defaultConfig.target_stack = managementTokens.apiKey
@@ -39,7 +41,9 @@ exports.parameterWithMToken = function (managementTokens, data, moduleName, host
     }
     defaultConfig.data = data
     defaultConfig.host = host
-
+    if (backupdir) {
+      defaultConfig.useBackedupDir = backupdir;
+    }
     initial(defaultConfig)
       .then(() => {
         return resolve()
@@ -50,7 +54,7 @@ exports.parameterWithMToken = function (managementTokens, data, moduleName, host
 }
 
 // using ManagemetToken
-exports.withoutParameterMToken = async (managementTokens, moduleName, host, _authToken) => {
+exports.withoutParameterMToken = async (managementTokens, moduleName, host, _authToken, backupdir) => {
   return new Promise(async function (resolve, reject) {
     const exporteddata = await cli.prompt(message.promptMessageList.promptPathStoredData)
     defaultConfig.management_token = managementTokens.token
@@ -61,7 +65,9 @@ exports.withoutParameterMToken = async (managementTokens, moduleName, host, _aut
     }
     defaultConfig.data = exporteddata
     defaultConfig.host = host
-
+    if (backupdir) {
+      defaultConfig.useBackedupDir = backupdir;
+    }
     initial(defaultConfig)
       .then(() => {
         return resolve()
@@ -71,7 +77,7 @@ exports.withoutParameterMToken = async (managementTokens, moduleName, host, _aut
   })
 }
 
-exports.configWithAuthToken = function (config, _authToken, moduleName, host) {
+exports.configWithAuthToken = function (config, _authToken, moduleName, host, backupdir) {
   return new Promise(async function (resolve, reject) {
     let externalConfig = require(config)
     defaultConfig.auth_token = _authToken
@@ -85,6 +91,9 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host) {
       delete externalConfig.modules
     }
 
+    if (backupdir) {
+      defaultConfig.useBackedupDir = backupdir;
+    }
     defaultConfig = _.merge(defaultConfig, externalConfig)
     initial(defaultConfig)
       .then(() => {
