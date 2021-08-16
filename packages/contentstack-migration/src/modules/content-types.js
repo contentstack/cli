@@ -23,12 +23,14 @@ const Field = require('./fields'),
 /**
  * ContentType class
  * @class ContentType
+ * @augments Base
  */
 class ContentType extends Base {
   constructor() {
     super();
     this.contentTypeService = new ContentTypeService();
   }
+  
   /**
    * Creates content type by passing content type name and options
    * @param {string} id Content type UID 
