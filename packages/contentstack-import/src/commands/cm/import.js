@@ -121,6 +121,9 @@ ImportCommand.examples = [
   `csdx cm:import -A -c <path/of/config/dir>`,
   `csdx cm:import -A -m <single module name>`,
   `csdx cm:import -A -m <single module name> -b <backup dir>`,
+  `csdx cm:import -a <management_token_alias>`,
+  `csdx cm:import -a <management_token_alias> -d <path/of/export/destination/dir>`,
+  `csdx cm:import -a <management_token_alias> -c <path/of/config/file>`,
 ]
 ImportCommand.flags = {
   config: flags.string({
@@ -137,8 +140,7 @@ ImportCommand.flags = {
   }),
   'management-token-alias': flags.string({
     char: 'a', 
-    description: 'alias of the management token',
-    hidden: true
+    description: 'alias of the management token'
   }),
   'auth-token': flags.boolean({
     char: 'A', 

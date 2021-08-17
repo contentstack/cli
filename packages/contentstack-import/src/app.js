@@ -14,7 +14,6 @@ let _ = require('lodash')
 
 let login = require('./lib/util/login')
 let util = require('./lib/util/index')
-const managementClient =  require('./lib/util/contentstack-management-sdk')
 
 
 let { addlogs } = require('./lib/util/log')
@@ -67,8 +66,8 @@ let singleImport = async (moduleName, types, config) => {
     if (types.indexOf(moduleName) > -1) {
       if (!config.master_locale) {
         try {
-          const stack = await managementClient.Client(config).stack({ api_key: config.target_stack, management_token: config.management_token }).fetch()
-          let master_locale = { code: stack.master_locale }
+          var masterLocalResponse = await util.masterLocalDetails(config)
+          let master_locale = { code: masterLocalResponse.code }
           config['master_locale'] = master_locale
         } catch (error) {
           console.log("Error to fetch the stack details" + error);
