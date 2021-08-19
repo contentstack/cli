@@ -23,7 +23,7 @@ export default class BootstrapCommand extends Command {
   static flags = {
     appName: flags.string({
       char: 'a',
-      description: 'App name, 1. sampleapp - reactjs, nextjs, gatsby, angular. 2. starterapp - reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter',
+      description: 'App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter',
       multiple: false,
       required: false,
     }),
