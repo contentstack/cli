@@ -18,8 +18,6 @@ export default class BootstrapCommand extends Command {
     '$ csdx cm:bootstrap',
     '$ csdx cm:bootstrap -d <path/to/setup/the/app>',
     '$ csdx cm:bootstrap -t <github access token>',
-    '$ csdx cm:bootstrap -s <sampleapp or starterapp>',
-    '$ csdx cm:bootstrap -s <sampleapp or starterapp> -a <app name> -d <path/to/setup/the/app>',
   ];
 
   static flags = {
@@ -46,6 +44,7 @@ export default class BootstrapCommand extends Command {
       description: 'Sample or Starter app',
       multiple: false,
       required: false,
+      hidden: true,
     }),
   };
 
@@ -63,7 +62,7 @@ export default class BootstrapCommand extends Command {
       }
 
       // inquire user inputs
-      let appType = flags.appType as string
+      let appType = flags.appType as string || 'starterapp';
       if (!appType) {
         appType = await inquireAppType()
       }
