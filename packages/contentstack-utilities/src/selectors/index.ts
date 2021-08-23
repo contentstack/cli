@@ -1,6 +1,17 @@
 import ora from 'ora'
 import Configstore from 'configstore';
-debugger
+import {
+	Token,
+	Organization,
+	selectedOrganization,
+	Stack,
+	ContentType,
+	Environment,
+	Entry,
+	Locale
+} from './interfaces'
+import { shouldNotBeEmpty } from './validations'; 
+
 const config = new Configstore('contentstack_cli');
 
 const inquirer = require('inquirer')
@@ -9,44 +20,9 @@ inquirer.registerPrompt('search-checkbox', require('inquirer-search-checkbox'))
 const {Command} = require('@contentstack/cli-command')
 const ContentstackManagementSDK = require('@contentstack/management')
 
-interface Token {
-	token: string;
-	apiKey: string;
-	environment?: string;
-	type: string;
-}
-
-interface Organization {
-	uid: string,
-	name: string,
-}
-
-interface selectedOrganization {
-	orgUid: string,
-	orgName: string,
-}
-
-interface Stack {
-	name: string,
-	api_key: string,
-}
-
-interface ContentType {
-	uid: string,
-	title: string,
-}
-
-interface Entry {
-	uid: string,
-	title: string,
-}
-
-export function chooseOrganization(displayMessage?: string, region?: string, orgUid?: string): Promise<selectedOrganization> {
+export function chooseOrganization(client: any, displayMessage?: string, region?: string, orgUid?: string): Promise<selectedOrganization> {
 	return new Promise(async (resolve, reject) => {
 		try {
-			const command = new Command()
-			command.managementAPIClient = {host: command.cmaHost, authtoken: command.authToken}
-			const client = command.managementAPIClient
 			const spinner = ora('Loading Organizations').start()
 			let {items: organizations} = await client.organization().fetchAll()
 			spinner.stop()
@@ -71,10 +47,9 @@ export function chooseOrganization(displayMessage?: string, region?: string, org
 					message: displayMessage || 'Choose an organization',
 					choices: orgList,
 					loop: false,
+					validate: shouldNotBeEmpty
 				}
-				debugger
 				inquirer.prompt(inquirerConfig).then(({chosenOrganization}: {chosenOrganization: string}) => {
-					debugger
 					resolve({orgUid: orgMap[chosenOrganization], orgName: chosenOrganization})
 				})
 			}
@@ -84,11 +59,8 @@ export function chooseOrganization(displayMessage?: string, region?: string, org
 	})
 }
 
-export function chooseStack(organizationId: string, displayMessage?: string, region?: string) : Promise<Stack> {
+export function chooseStack(client: any, organizationId: string, displayMessage?: string, region?: string) : Promise<Stack> {
 	return new Promise(async (resolve, reject) => {
-		const command = new Command()
-		command.managementAPIClient = {host: command.cmaHost, authtoken: command.authToken}
-		const client = command.managementAPIClient
 		try {
 			const spinner = ora('Loading Stacks').start()
 			let {items: stacks} = await client.stack({organization_uid: organizationId}).query({query: {}}).find()
@@ -175,15 +147,12 @@ export function chooseEntry(contentTypeUid: string, stackApiKey: string, display
 	})	
 }
 
-export function chooseContentTypes(stackApiKey: string, displayMessage?: string, region?: string): Promise<ContentType[]> {
+export function chooseContentTypes(stack: any, displayMessage?: string): Promise<ContentType[]> {
 	return new Promise(async (resolve, reject) => {
-		const command = new Command()
-		command.managementAPIClient = {host: command.cmaHost, authtoken: command.authToken}
-		const client = command.managementAPIClient
 		try {
 			const spinner = ora('Loading Content Types').start()
 			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
-			let contentTypes = await getAll(client.stack({api_key: stackApiKey}).contentType())
+			let contentTypes = await getAll(stack.contentType())
 			spinner.stop()
 			let contentTypeMap: any = {}
 			contentTypes.forEach((contentType: ContentType) => {
@@ -210,7 +179,135 @@ export function chooseContentTypes(stackApiKey: string, displayMessage?: string,
 	})	
 }
 
-export function chooseTokenAlias() {
+export function chooseEnvironments(stack: any, displayMessage?: string): Promise<Environment[]> {
+	return new Promise(async (resolve, reject) => {
+		try {
+			const spinner = ora('Loading Environments').start()
+			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
+			let environments = await getAll(stack.environment())
+			spinner.stop()
+			debugger
+			let environmentMap: any = {}
+			environments.forEach((environment: Environment) => {
+				environmentMap[environment.name] = environment.uid
+			})
+			const environmentList = Object.keys(environmentMap)
+			let inquirerConfig = {
+				type: 'search-checkbox',
+				name: 'chosenEnvironments',
+				choices: environmentList,
+				message: displayMessage || 'Choose an environment',
+				loop: false,
+				validate: shouldNotBeEmpty
+			}
+			inquirer.prompt(inquirerConfig).then(({ chosenEnvironments }: { chosenEnvironments: string[] }) => {
+				let result: Environment[] = chosenEnvironments.map(env => {
+					let foo: Environment = { uid: environmentMap[env], name: env }
+					return foo
+				})
+				resolve(result)
+			})
+		} catch (error) {
+			console.error(error.message)
+		}
+	})
+}
+
+export function chooseEnvironment(stack: any, displayMessage?: string): Promise<Environment> {
+	return new Promise(async (resolve, reject) => {
+		try {
+			const spinner = ora('Loading Environments').start()
+			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
+			let environments = await getAll(stack.environment())
+			spinner.stop()
+			debugger
+			let environmentMap: any = {}
+			environments.forEach((environment: Environment) => {
+				environmentMap[environment.name] = environment.uid
+			})
+			const environmentList = Object.keys(environmentMap)
+			let inquirerConfig = {
+				type: 'search-list',
+				name: 'chosenEnvironment',
+				choices: environmentList,
+				message: displayMessage || 'Choose an environment',
+				loop: false,
+				validate: shouldNotBeEmpty
+			}
+			inquirer.prompt(inquirerConfig).then(({ chosenEnvironment }: { chosenEnvironment: string }) => {
+				let result: Environment = { uid: environmentMap[chosenEnvironment], name: chosenEnvironment }
+				resolve(result)
+			})
+		} catch (error) {
+			console.error(error.message)
+		}
+	})
+}
+
+export function chooseLocales(stack: any, displayMessage?: string): Promise<Locale[]> {
+	return new Promise(async (resolve, reject) => {
+		try {
+			const spinner = ora('Loading Locales').start()
+			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
+			let locales = await getAll(stack.locale())
+			spinner.stop()
+			let localeMap: any = {}
+			locales.forEach((locale: Locale) => {
+				localeMap[locale.name] = locale.code
+			})
+			const localeList = Object.keys(localeMap)
+			let inquirerConfig = {
+				type: 'search-checkbox',
+				name: 'chosenLocales',
+				choices: localeList,
+				message: displayMessage || 'Choose locales',
+				loop: false,
+				validate: shouldNotBeEmpty,
+			}
+			inquirer.prompt(inquirerConfig).then(({ chosenLocales }: { chosenLocales: string[] }) => {
+				let result: Locale[] = chosenLocales.map(locale => {
+					let foo: Locale = { code: localeMap[locale], name: locale }
+					return foo
+				})
+				resolve(result)
+			})
+		} catch (error) {
+			console.error(error.message)
+		}
+	})
+}
+
+export function chooseLocale(stack: any, displayMessage?: string): Promise<Locale> {
+	return new Promise(async (resolve, reject) => {
+		try {
+			const spinner = ora('Loading Locales').start()
+			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
+			let locales = await getAll(stack.locale())
+			spinner.stop()
+			let localeMap: any = {}
+			locales.forEach((locale: Locale) => {
+				localeMap[locale.name] = locale.code
+			})
+			const localeList = Object.keys(localeMap)
+			let inquirerConfig = {
+				type: 'search-list',
+				name: 'chosenLocale',
+				choices: localeList,
+				message: displayMessage || 'Choose locale',
+				loop: false,
+				validate: shouldNotBeEmpty
+			}
+			inquirer.prompt(inquirerConfig).then(({ chosenLocale }: { chosenLocale: string }) => {
+				let result: Locale = { code: localeMap[chosenLocale], name: chosenLocale }
+				resolve(result)
+			})
+		} catch (error) {
+			console.error(error.message)
+		}
+	})
+}
+
+export function chooseTokenAlias(): Promise<Token> {
 	return new Promise(async (resolve, reject) => {
 		const tokens = config.get('tokens')
 		const tokenList = Object.keys(tokens).filter((token: string) => tokens[token].type === 'management')
@@ -218,11 +315,30 @@ export function chooseTokenAlias() {
 			type: 'search-list',
 			name: 'chosenToken',
 			choices: tokenList,
-			message: 'Choose a stack to use',
+			message: 'Choose an alias to use',
 			loop: false,
+			validate: shouldNotBeEmpty,
 		}
 		inquirer.prompt(inquirerConfig).then(({ chosenToken }: { chosenToken: string }) => {
-			resolve(tokens[chosenToken].apiKey)
+			resolve({ apiKey: tokens[chosenToken].apiKey, token: tokens[chosenToken].token })
+		})
+	})
+}
+
+export function chooseDeliveryTokenAlias(): Promise<Token> {
+	return new Promise(async (resolve, reject) => {
+		const tokens = config.get('tokens')
+		const tokenList = Object.keys(tokens).filter((token: string) => tokens[token].type === 'delivery')
+		let inquirerConfig = {
+			type: 'search-list',
+			name: 'chosenToken',
+			choices: tokenList,
+			message: 'Choose an alias to use',
+			loop: false,
+			validate: shouldNotBeEmpty,
+		}
+		inquirer.prompt(inquirerConfig).then(({ chosenToken }: { chosenToken: string }) => {
+			resolve({ apiKey: tokens[chosenToken].apiKey, token: tokens[chosenToken].token })
 		})
 	})
 }
