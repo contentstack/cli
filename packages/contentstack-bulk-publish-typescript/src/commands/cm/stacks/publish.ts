@@ -5,6 +5,13 @@ import commandNames from '../../../config/commands';
 import { ContentStackManagementClient } from '../../../interfaces';
 
 import { start as publishEntries } from '../../../producer/publish-entries';
+import { start as publishAssets } from '../../../producer/publish-assets';
+import { start as publishEdits } from '../../../producer/publish-edits';
+import { start as publishUnpublishedEntries } from '../../../producer/publish-unpublished-env';
+import { start as addFields } from '../../../producer/add-fields';
+import { start as nonLocalizedFieldChanges } from '../../../producer/nonlocalized-field-changes';
+import { start as unpublish } from '../../../producer/unpublish';
+import { start as crossPublish } from '../../../producer/cross-publish';
 
 export default class Publish extends Command {
   private readonly parse: Function;
@@ -35,7 +42,6 @@ export default class Publish extends Command {
     if (configConfirmation)
       flags.config = await interactive.askInput({ messageCode: 'CLI_BP_CONFIG' })
     const updatedFlags = await interactive.getMissingFlags(selectedCommand, flags, stack)
-    debugger
     await this.execute(selectedCommand, updatedFlags, stack)
     // const updatedFlags = await interactive.getMissingFlags(flags)
     // this.log(`hello ${selectedCommand} from /home/abhinav/Documents/contentstack/cli/packages/contentstack-bulk-publish-typescript/src/commands/publish.ts`)
@@ -63,15 +69,13 @@ export default class Publish extends Command {
     }
     switch(key) {
       case commandNames.ENTRIES: await publishEntries(updatedFlags, stack, config); break;
-      case commandNames.ASSETS:
-      case commandNames.CLEAR:
-      case commandNames.ADD_FIELDS:
-      case commandNames.ENTRY_EDITS:
-      case commandNames.NONLOCALIZED_FIELD_CHANGES:
-      case commandNames.UNPUBLISH:
-      case commandNames.UNPUBLISHED_ENTRIES:
-      case commandNames.REVERT:
-      case commandNames.ADD_FIELDS:
+      case commandNames.ASSETS: await publishAssets(updatedFlags, stack, config); break;
+      case commandNames.ADD_FIELDS: await addFields(updatedFlags, stack, config); break;
+      case commandNames.ENTRY_EDITS: await publishEdits(updatedFlags, stack, config); break;
+      case commandNames.NONLOCALIZED_FIELD_CHANGES: await nonLocalizedFieldChanges(updatedFlags, stack, config); break;
+      case commandNames.UNPUBLISH: await unpublish(updatedFlags, stack, config); break;
+      case commandNames.UNPUBLISHED_ENTRIES: await publishUnpublishedEntries(updatedFlags, stack, config); break;
+      case commandNames.CROSS_PUBLISH: await crossPublish(updatedFlags, stack, config); break;
     }
   }
 }
