@@ -46,6 +46,7 @@ export interface AuthOptions {
 // TBD
 export interface ContentStackManagementClient {
   contentstackClient: object;
+	stack: Function;
 }
 
 export interface PrintOptions {
@@ -58,9 +59,16 @@ export interface InquirePayload {
   message: string;
   choices?: Array<any>;
   transformer?: Function;
+	loop?: boolean;
+	validate?: Function;
 }
 
 export interface User {
   email: string;
   authtoken: string;
+}
+
+export interface Token {
+	apiKey: string;
+	token: string;
 }

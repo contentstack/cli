@@ -44,5 +44,19 @@
     "CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY": "Invalid api key",
     "CLI_AUTH_EXIT_PROCESS": "Exiting the process...",
     "CLI_BP_SKIP_WORKFLOW_STAGE_CHECK": "Skip workflow stage check",
-    "CLI_BP_QUERIES": "Specify the query to be used"
+    "CLI_BP_QUERIES": "Specify the query to be used",
+    "CLI_BP_SELECTCOMMAND": "Select the command to execute",
+    "CLI_BP_PUBLISH_ALL_CONTENTTYPES": "Publish all content types",
+    "CLI_BP_BULKPUBLISH": "Use bulk publish APIs",
+    "CLI_BP_BULKUNPUBLISH": "Use bulk publish APIs for unpublishing operation",
+    "CLI_BP_RETRYFAILED": "Provide the path to the error log for retrying failed requests",
+    "CLI_BP_ONLYASSETS": "Unpublish only assets",
+    "CLI_BP_ONLYENTRIES": "Unpublish only entries",
+    "CLI_BP_SKIP_PUBLISH": "Skip publish operation",
+    "CLI_BP_CONFIG": "Provide the path to a config file",
+    "CLI_BP_LOG_FILE": "Provide path to a failure log to be used to retry failed operations",
+    "CLI_BP_FOLDER_ID": "Provide folder uid if any, or else this field can be left blank",
+    "CLI_BP_CONFIG_CONFIRMATION": "Do you want to use a config file?",
+    "CLI_BP_RETRY_FAILED_CONFIRMATION": "Do you want to retry failed requests from an error log?",
+    "CLI_BP_AUTHENTICATION_METHOD": "Select a method for authentication"
 }
