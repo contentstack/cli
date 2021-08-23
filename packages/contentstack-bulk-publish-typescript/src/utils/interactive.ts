@@ -114,7 +114,6 @@ export const askLocale = async ({stack}): Promise<string> => {
 }
 
 export const askEnvironments = async ({stack}): Promise<string[]> => {
-  debugger
   const environments = await utilities.chooseEnvironments(stack)
   return environments.map(env => env.name)
 }
@@ -143,13 +142,17 @@ export const askAuthenticationMethod = async (): Promise<string> => {
   })
 }
 
-export const askInput = async ({messageCode}): Promise<string> => {
-  return cliux.inquire({
+export const askInput = async ({messageCode, defaultValue}): Promise<string> => {
+  const options = {
     type: 'input',
     message: messageCode,
     name: 'something',
     validate: shouldNotBeEmpty,
-  });
+  }
+  if (defaultValue) {
+    options.default = defaultValue
+  }
+  return cliux.inquire(options);
 }
 
 export const askStack = async (client, orgUid): Promise<string> => {
@@ -206,7 +209,7 @@ askFlags[constants.ENVIRONMENT] = { func: askEnvironment, args: {} }
 askFlags[constants.SOURCE_ENVIRONMENT] = { func: askEnvironment, args: {} }
 askFlags[constants.DESTINATION_ENVIRONMENT] = { func: askEnvironment, args: {} }
 
-askFlags[constants.FOLDER_UID] = { func: askInput, args: { messageCode: 'CLI_BP_FOLDER_ID' } }
+askFlags[constants.FOLDER_UID] = { func: askInput, args: { messageCode: 'CLI_BP_FOLDER_ID', defaultValue: 'cs_root' } }
 
 // selects a token from already configured tokens
 askFlags[constants.ALIAS] = { func: askTokenAlias, args: {} }
@@ -217,6 +220,7 @@ askFlags[constants.AUTHENTICATION_METHOD] = {}
 // need to add validations for the file path
 askFlags[constants.CONFIG_CONFIRMATION] = { func: confirm, args: { messageCode: 'CLI_BP_CONFIG_CONFIRMATION' } }
 askFlags[constants.RETRY_FAILED_CONFIRMATION] = { func: confirm, args: { messageCode: 'CLI_BP_RETRY_FAILED_CONFIRMATION' } }
+askFlags[constants.FOLDER_UID_CONFIRMATION] = { func: confirm, args: { messageCode: 'CLI_BP_FOLDER_ID_CONFIRMATION' } }
 askFlags[constants.CONFIG] = { func: askInput, args: { messageCode: 'CLI_BP_CONFIG' } }
 askFlags[constants.LOG_FILE] = { func: askInput, args: { messageCode: 'CLI_BP_LOG_FILE' } }
 askFlags[constants.RETRY_FAILED] = { func: askInput, args: { messageCode: 'CLI_BP_RETRYFAILED' } }
