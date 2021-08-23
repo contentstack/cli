@@ -15,21 +15,20 @@ commands[commandNames.ENTRIES] = {
 		constants.ENVIRONMENTS,
 		constants.CONFIG,
 		constants.SKIP_WORKFLOW_STAGE_CHECK,
-		constants.QUERY
 	],
 }
 commands[commandNames.ASSETS] = {
 	configKey: 'publish_assets',
 	flags: [
-		constants.ALIAS,
+		constants.RETRY_FAILED_CONFIRMATION,
 		constants.RETRY_FAILED,
+		constants.ALIAS,
 		constants.ENVIRONMENTS,
 		constants.FOLDER_UID,
 		constants.BULK_PUBLISH,
 		constants.CONFIG,
 		constants.LOCALES,
 		constants.SKIP_WORKFLOW_STAGE_CHECK,
-		constants.QUERY
 	],
 }
 commands[commandNames.CLEAR] = {}
@@ -37,8 +36,9 @@ commands[commandNames.CONFIGURE] = {}
 commands[commandNames.CROSS_PUBLISH] = {
 	configKey: 'cross_env_publish',
 	flags: [
-		constants.ALIAS,
+		constants.RETRY_FAILED_CONFIRMATION,
 		constants.RETRY_FAILED,
+		constants.ALIAS,
 		constants.BULK_PUBLISH,
 		constants.CONTENT_TYPE,
 		constants.LOCALE,
@@ -47,14 +47,14 @@ commands[commandNames.CROSS_PUBLISH] = {
 		constants.DESTINATION_ENVIRONMENT,
 		constants.CONFIG,
 		constants.SKIP_WORKFLOW_STAGE_CHECK,
-		constants.QUERY
 	],
 }
 commands[commandNames.ENTRY_EDITS] = {
 	configKey: 'publish_edits_on_env',
 	flags: [
-		constants.ALIAS,
+		constants.RETRY_FAILED_CONFIRMATION,
 		constants.RETRY_FAILED,
+		constants.ALIAS,
 		constants.BULK_PUBLISH,
 		constants.ENVIRONMENT,
 		constants.CONTENT_TYPES,
@@ -62,21 +62,20 @@ commands[commandNames.ENTRY_EDITS] = {
 		constants.ENVIRONMENTS,
 		constants.CONFIG,
 		constants.SKIP_WORKFLOW_STAGE_CHECK,
-		constants.QUERY
 	],
 }
 commands[commandNames.NONLOCALIZED_FIELD_CHANGES] = {
 	configKey: 'nonlocalized_field_changes',
 	flags: [
-		constants.ALIAS,
+		constants.RETRY_FAILED_CONFIRMATION,
 		constants.RETRY_FAILED,
+		constants.ALIAS,
 		constants.BULK_PUBLISH,
 		constants.ENVIRONMENT,
 		constants.CONTENT_TYPES,
 		constants.ENVIRONMENTS,
 		constants.CONFIG,
 		constants.SKIP_WORKFLOW_STAGE_CHECK,
-		constants.QUERY
 	],
 }
 commands[commandNames.REVERT] = {
@@ -89,8 +88,9 @@ commands[commandNames.REVERT] = {
 commands[commandNames.UNPUBLISH] = {
 	configKey: 'Unpublish',
 	flags: [
-		constants.ALIAS,
+		constants.RETRY_FAILED_CONFIRMATION,
 		constants.RETRY_FAILED,
+		constants.ALIAS,
 		constants.BULK_UNPUBLISH,
 		constants.CONTENT_TYPE,
 		constants.LOCALE,
@@ -100,14 +100,14 @@ commands[commandNames.UNPUBLISH] = {
 		constants.ONLY_ASSETS,
 		constants.ONLY_ENTRIES,
 		constants.SKIP_WORKFLOW_STAGE_CHECK,
-		constants.QUERY
 	]
 }
 commands[commandNames.UNPUBLISHED_ENTRIES] = {
 	configKey: 'publish_unpublished_env',
 	flags: [
-		constants.ALIAS,
+		constants.RETRY_FAILED_CONFIRMATION,
 		constants.RETRY_FAILED,
+		constants.ALIAS,
 		constants.BULK_PUBLISH,
 		constants.ENVIRONMENT,
 		constants.CONTENT_TYPES,
@@ -115,25 +115,23 @@ commands[commandNames.UNPUBLISHED_ENTRIES] = {
 		constants.ENVIRONMENTS,
 		constants.CONFIG,
 		constants.SKIP_WORKFLOW_STAGE_CHECK,
-		constants.QUERY
 	]
 }
 commands[commandNames.ADD_FIELDS] = {
 	configKey: 'add_fields',
 	flags: [
-		constants.ALIAS,
+		constants.RETRY_FAILED_CONFIRMATION,
 		constants.RETRY_FAILED,
+		constants.ALIAS,
 		constants.BULK_PUBLISH,
 		constants.CONTENT_TYPES,
 		constants.LOCALES,
 		constants.ENVIRONMENTS,
 		constants.CONFIG,
 		constants.SKIP_WORKFLOW_STAGE_CHECK,
-		constants.QUERY,
 		constants.SKIP_PUBLISH
 	]
 }
-
 
 export default {
 	logger: {
