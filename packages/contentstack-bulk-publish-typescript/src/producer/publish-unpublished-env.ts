@@ -106,7 +106,7 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
   })
 }
 
-async function start({sourceEnv, environments, locale, contentTypes, bulkPublish, retryFailed}, stack, config) {
+export async function start({sourceEnv, environments, locale, contentTypes, bulkPublish, retryFailed}, stack, config) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)
@@ -159,11 +159,3 @@ async function start({sourceEnv, environments, locale, contentTypes, bulkPublish
   }
 }
 
-// start()
-
-module.exports = {
-  getEntries,
-  getEnvironment,
-  setConfig,
-  start,
-}

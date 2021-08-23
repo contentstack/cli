@@ -211,7 +211,7 @@ async function updateEntry(config, updatedEntry, contentType, locale) {
 }
 
 /* eslint-disable no-param-reassign */
-async function getEntries(stack, config, schema, contentType, locale, bulkPublish, environments, skip = 0) {
+async function getEntries(stack, config, schema, contentType, locale, bulkPublish, environments, skipPublish, skip = 0) {
   let queryParams = {
     locale: locale || 'en-us',
     include_count: true,
@@ -228,25 +228,29 @@ async function getEntries(stack, config, schema, contentType, locale, bulkPublis
         updatedEntry = removeUnwanted(entries[index], deleteFields)
         const flag = await updateEntry(config, updatedEntry, contentType, locale)
         if (flag) {
-          if (bulkPublish) {
-            if (bulkPublishSet.length < 10) {
-              bulkPublishSet.push({
-                uid: entries[index].uid,
-                content_type: contentType,
-                locale,
-                publish_details: entries[index].publish_details,
-              })
-            }
-            if (bulkPublishSet.length === 10) {
+          if (!skipPublish) {
+            if (bulkPublish) {
+              if (bulkPublishSet.length < 10) {
+                bulkPublishSet.push({
+                  uid: entries[index].uid,
+                  content_type: contentType,
+                  locale,
+                  publish_details: entries[index].publish_details,
+                })
+              } 
+              if (bulkPublishSet.length === 10) {
+                await queue.Enqueue({
+                  entries: bulkPublishSet, locale, Type: 'entry', environments: environments, stack: stack
+                })
+                bulkPublishSet = []
+              }
+            } else {
               await queue.Enqueue({
-                entries: bulkPublishSet, locale, Type: 'entry', environments: environments, stack: stack
+                content_type: contentType, publish_details: entries[index].publish_details || [], environments: environments, entryUid: entries[index].uid, locale, Type: 'entry', stack: stack
               })
-              bulkPublishSet = []
             }
           } else {
-            await queue.Enqueue({
-              content_type: contentType, publish_details: entries[index].publish_details || [], environments: environments, entryUid: entries[index].uid, locale, Type: 'entry', stack: stack
-            })
+            console.log(`Entry ${entries[index].uid} with contentType ${contentType} has been updated`)
           }
         } else {
           console.log(`Update Failed for entryUid ${entries[index].uid} with contentType ${contentType}`)
@@ -274,7 +278,7 @@ async function getEntries(stack, config, schema, contentType, locale, bulkPublis
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-loop-func */
 
-async function start({contentTypes, locales, environments, retryFailed, bulkPublish}, stack, config) {
+export async function start({contentTypes, locales, environments, retryFailed, bulkPublish, skipPublish}, stack, config) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)
@@ -309,7 +313,7 @@ async function start({contentTypes, locales, environments, retryFailed, bulkPubl
         .then(async schema => {
           for (let j = 0; j < locales.length; j += 1) {
             try {
-              await getEntries(stack, config, schema, contentTypes[i], locales[j], bulkPublish, environments)
+              await getEntries(stack, config, schema, contentTypes[i], locales[j], bulkPublish, environments, skipPublish)
             } catch (err) {
               console.log(`Failed to get Entries with contentType ${contentTypes[i]} and locale ${locales[j]}`)
             }
@@ -323,15 +327,4 @@ async function start({contentTypes, locales, environments, retryFailed, bulkPubl
   } catch(error) {
     throw error
   }
-}
-
-// start()
-
-module.exports = {
-  start,
-  getContentTypeSchema,
-  getEntries,
-  setConfig,
-  removeUnwanted,
-  addFields,
 }

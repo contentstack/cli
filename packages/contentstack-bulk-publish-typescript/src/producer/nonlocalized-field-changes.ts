@@ -293,7 +293,7 @@ async function getLanguages(stack) {
   })
 }
 
-async function start({retryFailed, bulkPublish, sourceEnv, contentTypes, environments}, stack, config) {
+export async function start({retryFailed, bulkPublish, sourceEnv, contentTypes, environments}, stack, config) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)
@@ -345,16 +345,3 @@ async function start({retryFailed, bulkPublish, sourceEnv, contentTypes, environ
     throw error
   }
 }
-
-// start();
-
-module.exports = {
-  start,
-  setConfig,
-  getLanguages,
-  getEntries,
-  getLocalizedEntry,
-  getContentTypeSchema,
-  checkNonLocalizedFieldChanges,
-}
-

@@ -159,7 +159,7 @@ async function getSyncEntries(stack, config, locale, queryParams, bulkUnpublish,
   return resolve()
 }
 
-async function start({retryFailed, bulkUnpublish, contentType, locale, environment, deliveryToken, onlyAssets, onlyEntries, f_types}, stack, config) {
+export async function start({retryFailed, bulkUnpublish, contentType, locale, environment, deliveryToken, onlyAssets, onlyEntries, f_types}, stack, config) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)
@@ -216,11 +216,3 @@ async function start({retryFailed, bulkUnpublish, contentType, locale, environme
   }
 }
 
-// start()
-
-module.exports = {
-  getSyncEntries,
-  setConfig,
-  getQueryParams,
-  start,
-}

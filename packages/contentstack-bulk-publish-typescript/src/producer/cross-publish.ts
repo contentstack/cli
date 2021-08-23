@@ -160,7 +160,7 @@ function setConfig(conf, bp) {
   filePath = initializeLogger(logFileName)
 }
 
-async function start({retryFailed, bulkPublish, filter, deliveryToken, destEnv, f_types}, stack, config) {
+export async function start({retryFailed, bulkPublish, filter, deliveryToken, destEnv, f_types}, stack, config) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)
@@ -201,11 +201,4 @@ async function start({retryFailed, bulkPublish, filter, deliveryToken, destEnv, 
   } catch(error) {
     throw error
   }
-}
-
-module.exports = {
-  getSyncEntries,
-  setConfig,
-  getQueryParams,
-  start,
 }

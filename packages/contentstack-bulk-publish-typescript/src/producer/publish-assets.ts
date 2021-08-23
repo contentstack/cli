@@ -88,7 +88,7 @@ function setConfig(conf, bp) {
   filePath = initializeLogger(logFileName)
 }
 
-async function start({retryFailed, bulkPublish, environments, folderUid, locales}, stack, config) {
+export async function start({retryFailed, bulkPublish, environments, folderUid, locales}, stack, config) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)
@@ -127,10 +127,4 @@ async function start({retryFailed, bulkPublish, environments, folderUid, locales
   } catch (error) {
     throw error
   }
-}
-
-module.exports = {
-  getAssets,
-  setConfig,
-  start,
 }

@@ -329,7 +329,7 @@ async function revertUsingLogs(logFileName) {
   }
 }
 
-async function start({retryFailed, logFile}, config) {
+export async function start({retryFailed, logFile}, config) {
   setConfig(config)
   if (retryFailed) {
     if (typeof retryFailed === 'string') {
@@ -347,12 +347,4 @@ async function start({retryFailed, logFile}, config) {
     revertUsingLogs(logFile)
     // }
   }
-}
-
-// start()
-
-module.exports = {
-  setConfig,
-  revertUsingLogs,
-  start,
 }
