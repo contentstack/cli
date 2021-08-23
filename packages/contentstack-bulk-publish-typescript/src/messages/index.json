@@ -58,5 +58,6 @@
     "CLI_BP_FOLDER_ID": "Provide folder uid if any, or else this field can be left blank",
     "CLI_BP_CONFIG_CONFIRMATION": "Do you want to use a config file?",
     "CLI_BP_RETRY_FAILED_CONFIRMATION": "Do you want to retry failed requests from an error log?",
-    "CLI_BP_AUTHENTICATION_METHOD": "Select a method for authentication"
+    "CLI_BP_AUTHENTICATION_METHOD": "Select a method for authentication",
+    "CLI_BP_FOLDER_ID_CONFIRMATION": "Do you want to publish assets from a specific folder?"
 }
