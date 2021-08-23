@@ -12,8 +12,6 @@ export function validate(command, currentFlag, flags): any {
 	let flag = true
 	switch(command) {
 		case commandNames.ENTRIES: {
-			if (flags[constants.RETRY_FAILED] && flags[constants.RETRY_FAILED].length > 0)
-				flag = false
 			if (flags[constants.PUBLISH_ALL_CONTENT_TYPES] && currentFlag === constants.CONTENT_TYPES)
 				flag = false
 			if (flags[constants.AUTHENTICATION_METHOD] === 'management-token'
@@ -24,16 +22,72 @@ export function validate(command, currentFlag, flags): any {
 			if (!flags[constants.RETRY_FAILED_CONFIRMATION] && currentFlag === constants.RETRY_FAILED)
 				flag = false
 		}	
-		case commandNames.ASSETS: {}
+		case commandNames.ASSETS: {
+			if (flags[constants.AUTHENTICATION_METHOD] === 'management-token'
+				&& currentFlag === constants.ORGANIZATION
+				|| currentFlag === constants.STACK
+			)
+				flag = false
+			if (!flags[constants.RETRY_FAILED_CONFIRMATION] && currentFlag === constants.RETRY_FAILED)
+				flag = false
+		}
 		case commandNames.CLEAR: {}
 		case commandNames.CONFIGURE: {}
-		case commandNames.CROSS_PUBLISH: {}
-		case commandNames.ENTRY_EDITS: {}
-		case commandNames.NONLOCALIZED_FIELD_CHANGES: {}
+		case commandNames.CROSS_PUBLISH: {
+			if (flags[constants.AUTHENTICATION_METHOD] === 'management-token'
+				&& currentFlag === constants.ORGANIZATION
+				|| currentFlag === constants.STACK
+			)
+				flag = false
+			if (!flags[constants.RETRY_FAILED_CONFIRMATION] && currentFlag === constants.RETRY_FAILED)
+				flag = false
+		}
+		case commandNames.ENTRY_EDITS: {
+			if (flags[constants.AUTHENTICATION_METHOD] === 'management-token'
+				&& currentFlag === constants.ORGANIZATION
+				|| currentFlag === constants.STACK
+			)
+				flag = false
+			if (!flags[constants.RETRY_FAILED_CONFIRMATION] && currentFlag === constants.RETRY_FAILED)
+				flag = false
+		}
+		case commandNames.NONLOCALIZED_FIELD_CHANGES: {
+			if (flags[constants.AUTHENTICATION_METHOD] === 'management-token'
+				&& currentFlag === constants.ORGANIZATION
+				|| currentFlag === constants.STACK
+			)
+				flag = false
+			if (!flags[constants.RETRY_FAILED_CONFIRMATION] && currentFlag === constants.RETRY_FAILED)
+				flag = false
+		}
 		case commandNames.REVERT: {}
-		case commandNames.UNPUBLISH: {}
-		case commandNames.UNPUBLISHED_ENTRIES: {}
-		case commandNames.ADD_FIELDS: {}
+		case commandNames.UNPUBLISH: {
+			if (flags[constants.AUTHENTICATION_METHOD] === 'management-token'
+				&& currentFlag === constants.ORGANIZATION
+				|| currentFlag === constants.STACK
+			)
+				flag = false
+			if (!flags[constants.RETRY_FAILED_CONFIRMATION] && currentFlag === constants.RETRY_FAILED)
+				flag = false
+		}
+		case commandNames.UNPUBLISHED_ENTRIES: {
+			if (flags[constants.AUTHENTICATION_METHOD] === 'management-token'
+				&& currentFlag === constants.ORGANIZATION
+				|| currentFlag === constants.STACK
+			)
+				flag = false
+			if (!flags[constants.RETRY_FAILED_CONFIRMATION] && currentFlag === constants.RETRY_FAILED)
+				flag = false
+		}
+		case commandNames.ADD_FIELDS: {
+			if (flags[constants.AUTHENTICATION_METHOD] === 'management-token'
+				&& currentFlag === constants.ORGANIZATION
+				|| currentFlag === constants.STACK
+			)
+				flag = false
+			if (!flags[constants.RETRY_FAILED_CONFIRMATION] && currentFlag === constants.RETRY_FAILED)
+				flag = false
+		}
 	}
 	return flag
 }
