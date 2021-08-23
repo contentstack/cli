@@ -186,7 +186,6 @@ export function chooseEnvironments(stack: any, displayMessage?: string): Promise
 			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
 			let environments = await getAll(stack.environment())
 			spinner.stop()
-			debugger
 			let environmentMap: any = {}
 			environments.forEach((environment: Environment) => {
 				environmentMap[environment.name] = environment.uid
@@ -220,7 +219,6 @@ export function chooseEnvironment(stack: any, displayMessage?: string): Promise<
 			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
 			let environments = await getAll(stack.environment())
 			spinner.stop()
-			debugger
 			let environmentMap: any = {}
 			environments.forEach((environment: Environment) => {
 				environmentMap[environment.name] = environment.uid
