@@ -3,12 +3,10 @@
 /* eslint-disable camelcase */
 /* eslint-disable max-depth */
 /* eslint-disable no-console */
-import {Queue} from '../utils'
+import {Queue, isEmpty} from '../utils'
 import {bulkPublish, publishEntry, initializeLogger} from '../consumer/publish'
 import * as retryFailedLogs from '../utils/retryfailed'
-
-const {validateFile} = require('../utils/fs')
-const {isEmpty} = require('../utils')
+import { validateFile } from '../utils/fs';
 
 const queue = new Queue()
 

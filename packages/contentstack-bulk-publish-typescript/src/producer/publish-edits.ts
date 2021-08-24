@@ -4,13 +4,10 @@
 /* eslint-disable no-console */
 /* eslint-disable max-params */
 /* eslint-disable camelcase */
-import {Queue} from '../utils'
+import {Queue, isEmpty} from '../utils'
 import {bulkPublish, publishEntry, initializeLogger} from '../consumer/publish'
 import * as retryFailedLogs from '../utils/retryfailed'
-
-const {validateFile} = require('../utils/fs')
-const {setDelayForBulkPublish} = require('../utils')
-const {isEmpty} = require('../utils')
+import { validateFile } from '../utils/fs';
 
 let skipCount
 const queue = new Queue()

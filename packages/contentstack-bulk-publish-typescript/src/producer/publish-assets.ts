@@ -1,13 +1,10 @@
 /* eslint-disable no-console */
 /* eslint-disable new-cap */
 /* eslint-disable camelcase */
-import {Queue} from '../utils'
+import {Queue, isEmpty} from '../utils'
 import {bulkPublish, publishAsset, initializeLogger} from '../consumer/publish'
 import * as retryFailedLogs from '../utils/retryfailed'
-
-const {validateFile} = require('../utils/fs')
-const {setDelayForBulkPublish} = require('../utils')
-const {isEmpty} = require('../utils')
+import { validateFile } from '../utils/fs';
 
 const queue = new Queue()
 let logFileName

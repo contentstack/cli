@@ -14,7 +14,7 @@ function doesFileExistInLogsDirectory(filename): boolean {
   throw new Error(`${filename} doesn't exist in logs directory at ${logsDir}`)
 }
 
-function validateFile(filename, types): boolean {
+export function validateFile(filename, types): boolean {
   if (doesFileExistInLogsDirectory(filename)) {
     const [timestamp, logType, status] = filename.split('.');
 
@@ -64,7 +64,3 @@ function validateFile(filename, types): boolean {
     }
   }
 }
-
-module.exports = {
-  validateFile,
-};

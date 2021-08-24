@@ -7,11 +7,11 @@
 // const yesno = require('yesno')
 import {Queue} from '../utils'
 import {initializeLogger, bulkUnPublish, publishUsingVersion} from '../consumer/publish'
+import * as chalk from 'chalk'
+import { validateFile } from '../utils/fs';
+import * as Configstore from 'configstore'
+import { getAllLogs } from '../utils/backup';
 
-const chalk = require('chalk')
-const {getAllLogs} = require('../utils/logger')
-const {validateFile} = require('../utils/fs')
-const Configstore = require('configstore')
 let config = new Configstore('contentstack_cli')
 const getStack = require('../utils/client.js').getStack
 

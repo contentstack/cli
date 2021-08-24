@@ -5,20 +5,14 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-console */
 /* eslint-disable max-params */
-import {Queue} from '../utils';
+import { Queue, isEmpty} from '../utils';
 import {bulkPublish, publishEntry, initializeLogger} from '../consumer/publish'
 import * as defaultConfig from '../config/defaults.json'
 import * as retryFailedLogs from '../utils/retryfailed'
+import { validateFile } from '../utils/fs';
+import { Command } from '@contentstack/cli-command';
 
-
-const defaultConfig = require('../config/defaults.json')
-const {validateFile} = require('../utils/fs')
-const stack = require('../utils/client.js').stack
-const {setDelayForBulkPublish} = require('../utils')
-const {Command} = require('@contentstack/cli-command')
 const command = new Command()
-const {isEmpty} = require('../utils')
-
 const queue = new Queue()
 queue.consumer = bulkPublish
 let logFileName

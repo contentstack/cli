@@ -1,7 +1,7 @@
-const { getAllLogs } = require('./logger');
+import { getAllLogs } from './backup';
 
 export function retryFailed (filename, queue, Type, stack): void {
-  const logs = await getAllLogs(filename);
+  const logs: any = getAllLogs(filename);
   if (logs.file.length > 0) {
     logs.file.forEach((log) => {
       if (Type === 'bulk') {

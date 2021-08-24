@@ -3,22 +3,20 @@
 /* eslint-disable complexity */
 /* eslint-disable no-console */
 /* eslint-disable camelcase */
-import {Queue} from '../utils'
+import {Queue, isEmpty} from '../utils'
 import {
   bulkUnPublish, UnpublishEntry, UnpublishAsset, initializeLogger,
 } from '../consumer/publish'
 import * as retryFailedLogs from '../utils/retryfailed'
+import * as defaults from '../config/defaults.json'
+import { validateFile } from '../utils/fs';
+import { Command } from '@contentstack/cli-command';
 
-const defaults = require('../config/defaults.json')
-const {validateFile} = require('../utils/fs')
 const types = 'asset_published,entry_published'
 const queue = new Queue()
 const entryQueue = new Queue()
 const assetQueue = new Queue()
-const {setDelayForBulkPublish} = require('../utils')
-const {Command} = require('@contentstack/cli-command')
 const command = new Command()
-const {isEmpty} = require('../utils')
 
 let bulkUnPublishSet = []
 let bulkUnPulishAssetSet = []

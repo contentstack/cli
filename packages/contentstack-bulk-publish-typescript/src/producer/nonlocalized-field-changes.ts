@@ -5,14 +5,11 @@
 /* eslint-disable camelcase */
 /* eslint-disable complexity */
 /* eslint-disable node/no-extraneous-require */
-import {Queue} from '../utils'
+import {Queue, isEmpty} from '../utils'
 import {bulkPublish, publishEntry, initializeLogger} from '../consumer/publish' 
 import * as retryFailedLogs from '../utils/retryfailed'
-
-const _ = require('lodash')
-const {validateFile} = require('../utils/fs')
-const {setDelayForBulkPublish} = require('../utils')
-const {isEmpty} = require('../utils')
+import * as _ from 'lodash'
+import { validateFile } from '../utils/fs';
 
 let changedFlag = false
 const queue = new Queue()
