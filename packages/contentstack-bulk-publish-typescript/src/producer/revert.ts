@@ -6,13 +6,13 @@
 /* eslint-disable camelcase */
 // const yesno = require('yesno')
 import {Queue} from '../utils'
+import {initializeLogger, bulkUnPublish, publishUsingVersion} from '../consumer/publish'
 
 const chalk = require('chalk')
 const {getAllLogs} = require('../utils/logger')
 const {validateFile} = require('../utils/fs')
 const Configstore = require('configstore')
 let config = new Configstore('contentstack_cli')
-const {initializeLogger, bulkUnPublish, publishUsingVersion} = require('../consumer/publish')
 const getStack = require('../utils/client.js').getStack
 
 // for checking if a logfile has been provided by user

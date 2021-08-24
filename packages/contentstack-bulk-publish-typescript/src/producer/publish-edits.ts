@@ -5,9 +5,9 @@
 /* eslint-disable max-params */
 /* eslint-disable camelcase */
 import {Queue} from '../utils'
+import {bulkPublish, publishEntry, initializeLogger} from '../consumer/publish'
+import * as retryFailedLogs from '../utils/retryfailed'
 
-const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
-const retryFailedLogs = require('../utils/retryfailed')
 const {validateFile} = require('../utils/fs')
 const {setDelayForBulkPublish} = require('../utils')
 const {isEmpty} = require('../utils')
@@ -127,9 +127,9 @@ export async function start({retryFailed, bulkPublish, sourceEnv, contentTypes, 
         setConfig(config, bulkPublish)
 
         if (bulkPublish) {
-          await retryFailedLogs(retryFailed, queue, 'bulk')
+          await retryFailedLogs(retryFailed, queue, 'bulk', stack)
         } else {
-          await retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish')
+          await retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish', stack)
         }
       }
     } else if (sourceEnv) {

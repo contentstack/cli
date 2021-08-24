@@ -6,10 +6,12 @@
 /* eslint-disable no-console */
 /* eslint-disable max-params */
 import {Queue} from '../utils';
+import {bulkPublish, publishEntry, initializeLogger} from '../consumer/publish'
+import * as defaultConfig from '../config/defaults.json'
+import * as retryFailedLogs from '../utils/retryfailed'
+
 
 const defaultConfig = require('../config/defaults.json')
-const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
-const retryFailedLogs = require('../utils/retryfailed')
 const {validateFile} = require('../utils/fs')
 const stack = require('../utils/client.js').stack
 const {setDelayForBulkPublish} = require('../utils')
@@ -278,7 +280,7 @@ async function getEntries(stack, config, schema, contentType, locale, bulkPublis
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-loop-func */
 
-export async function start({contentTypes, locales, environments, retryFailed, bulkPublish, skipPublish}, stack, config) {
+export async function start({contentTypes, locales, environments, retryFailed, bulkPublish, skipPublish}, stack, config): Promise<void> {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)
@@ -301,9 +303,9 @@ export async function start({contentTypes, locales, environments, retryFailed, b
         setConfig(config, bulkPublish)
 
         if (bulkPublish) {
-          await retryFailedLogs(retryFailed, queue, 'bulk')
+          await retryFailedLogs(retryFailed, queue, 'bulk', stack)
         } else {
-          await retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish')
+          await retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish', stack)
         }
       }
     } else {

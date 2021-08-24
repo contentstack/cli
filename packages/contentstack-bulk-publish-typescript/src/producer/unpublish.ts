@@ -4,12 +4,12 @@
 /* eslint-disable no-console */
 /* eslint-disable camelcase */
 import {Queue} from '../utils'
+import {
+  bulkUnPublish, UnpublishEntry, UnpublishAsset, initializeLogger,
+} from '../consumer/publish'
+import * as retryFailedLogs from '../utils/retryfailed'
 
 const defaults = require('../config/defaults.json')
-const {
-  bulkUnPublish, UnpublishEntry, UnpublishAsset, initializeLogger,
-} = require('../consumer/publish')
-const retryFailedLogs = require('../utils/retryfailed')
 const {validateFile} = require('../utils/fs')
 const types = 'asset_published,entry_published'
 const queue = new Queue()
@@ -182,9 +182,9 @@ export async function start({retryFailed, bulkUnpublish, contentType, locale, en
         setConfig(config, bulkUnpublish)
 
         if (bulkUnpublish) {
-          await retryFailedLogs(retryFailed, queue, 'bulk')
+          await retryFailedLogs(retryFailed, queue, 'bulk', stack)
         } else {
-          await retryFailedLogs(retryFailed, {entryQueue, assetQueue}, 'publish')
+          await retryFailedLogs(retryFailed, {entryQueue, assetQueue}, 'publish', stack)
         }
       }
     } else {
