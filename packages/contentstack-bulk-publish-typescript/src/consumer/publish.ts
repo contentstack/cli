@@ -3,11 +3,11 @@
 /* eslint-disable no-negated-condition */
 /* eslint-disable no-console */
 import * as backup from '../utils/backup'
+import * as chalk from 'chalk'
+import * as path from 'path'
+import * as Configstore from 'configstore'
+import * as defaults from '../config/defaults.json'
 
-const chalk = require('chalk')
-const path = require('path')
-const Configstore = require('configstore')
-const defaults = require('../config/defaults.json')
 const configstore = new Configstore('contentstack_cli')
 // const {formatError} = require('../utils')
 
@@ -16,7 +16,7 @@ const logsDir = backup.getLogsDirPath()
 let logger
 let fileNme
 
-function initializeLogger(fileName) {
+export function initializeLogger(fileName) {
   fileNme = fileName
   fileNme = `${Date.now()}.${fileNme}`
   logger = backup.getLoggerInstance(fileNme)
@@ -33,7 +33,7 @@ function removePublishDetails(elements) {
   return elements
 }
 
-async function publishEntry(data, config, queue) {
+export async function publishEntry(data, config, queue) {
   const lang = []
   const entryObj = data.obj
   const stack = entryObj.stack
@@ -60,7 +60,7 @@ async function publishEntry(data, config, queue) {
   })
 }
 
-async function publishAsset(data, config, queue) {
+export async function publishAsset(data, config, queue) {
   const assetobj = data.obj
   const stack = assetobj.stack
 
@@ -86,7 +86,7 @@ async function publishAsset(data, config, queue) {
   })
 }
 
-async function UnpublishEntry(data, config, queue) {
+export async function UnpublishEntry(data, config, queue) {
   const lang = []
   const entryObj = data.obj
   const stack = entryObj.stack
@@ -114,7 +114,7 @@ async function UnpublishEntry(data, config, queue) {
   })
 }
 
-async function UnpublishAsset(data, config, queue) {
+export async function UnpublishAsset(data, config, queue) {
   const assetobj = data.obj
   const stack = assetobj.stack
 
@@ -140,7 +140,7 @@ async function UnpublishAsset(data, config, queue) {
   })
 }
 
-async function bulkPublish(data, config, queue) {
+export async function bulkPublish(data, config, queue) {
   let conf
   const bulkPublishObj = data.obj
   const stack = bulkPublishObj.stack
@@ -205,7 +205,7 @@ async function bulkPublish(data, config, queue) {
   }
 }
 
-async function bulkUnPublish(data, config, queue) {
+export async function bulkUnPublish(data, config, queue) {
   let conf
   const bulkUnPublishObj = data.obj
   const stack = bulkUnPublishObj.stack
@@ -271,7 +271,7 @@ async function bulkUnPublish(data, config, queue) {
 
 // short-term fix for reverting to previous versions
 /* eslint-disable no-case-declarations */
-async function publishUsingVersion(data, config, queue) {
+export async function publishUsingVersion(data, config, queue) {
   let conf
   let successfullyPublished = []
   let failedToPublish = []
@@ -432,13 +432,3 @@ async function publishUsingVersion(data, config, queue) {
   }
 }
 
-module.exports = {
-  bulkPublish,
-  bulkUnPublish,
-  initializeLogger,
-  publishEntry,
-  publishAsset,
-  UnpublishEntry,
-  UnpublishAsset,
-  publishUsingVersion,
-}
