@@ -17,7 +17,7 @@ let allContentTypes = []
 let bulkPublishSet = []
 let filePath
 
-async function getEntries(stack, contentType, locale, bulkPublish, environments, skip = 0) {
+export async function getEntries(stack, contentType, locale, bulkPublish, environments, skip = 0) {
   return new Promise((resolve, reject) => {
     skipCount = skip
 
@@ -74,7 +74,7 @@ async function getEntries(stack, contentType, locale, bulkPublish, environments,
   })
 }
 
-async function getContentTypes(stack, skip = 0, contentTypes = []) {
+export async function getContentTypes(stack, skip = 0, contentTypes = []) {
   return new Promise((resolve, reject) => {
     skipCount = skip
     contentTypesList = contentTypes
