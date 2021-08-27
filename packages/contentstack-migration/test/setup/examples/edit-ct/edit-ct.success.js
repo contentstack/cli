@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 
 module.exports = migrations => {
-  const foo = migrations.editContentType('foo1');
+  const foo = migrations.editContentType('foo1')
 
-  foo.description('Edited description');
-};
+  foo.description('Edited description')
+}
 
