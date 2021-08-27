@@ -1,75 +1,75 @@
-'use strict';
+'use strict'
 
 // Utils
-const { constants } = require('../utils'),
-  // Properties
-  { actions, validationAction } = constants,
-  {
-    create,
-    customTask,
-    edit,
-    transformEntries,
-    deriveLinkedEntries,
-    transformEntriesToType,
-    typeError,
-    apiError,
-    schema,
-    __migrationError,
-    field
-  } = validationAction;
+const {constants} = require('../utils')
+// Properties
+const {actions, validationAction} = constants
+const {
+  create,
+  customTask,
+  edit,
+  transformEntries,
+  deriveLinkedEntries,
+  transformEntriesToType,
+  typeError,
+  apiError,
+  schema,
+  __migrationError,
+  field,
+} = validationAction
 
 const actionCreators = {
   customTasks: (callsite, opts) => {
-    const { CUSTOM_TASK } = actions;
+    const {CUSTOM_TASK} = actions
     return {
       type: customTask,
       meta: {
         callsite: {
           file: callsite.getFileName(),
-          line: callsite.getLineNumber()
-        }
+          line: callsite.getLineNumber(),
+        },
       },
       payload: {
         options: opts,
-        action: CUSTOM_TASK
-      }
-    };
+        action: CUSTOM_TASK,
+      },
+    }
   },
   contentType: {
     create: (callsite, id, opts) => {
-      const { CREATE_CT } = actions;
+      const {CREATE_CT} = actions
       return {
         type: create,
         meta: {
           callsite: {
             file: callsite.getFileName(),
-            line: callsite.getLineNumber()
-          }
+            line: callsite.getLineNumber(),
+          },
         },
         payload: {
           contentTypeId: id,
           options: opts,
-          action: CREATE_CT
-        }
-      };
+          action: CREATE_CT,
+        },
+      }
     },
     edit: (callsite, id, opts) => {
-      const { EDIT_CT } = actions;
+      const {EDIT_CT} = actions
 
       return {
         type: edit,
         meta: {
           callsite: {
             file: callsite.getFileName(),
-            line: callsite.getLineNumber()
-          }
+            line: callsite.getLineNumber(),
+          },
         },
         payload: {
           contentTypeId: id,
           options: opts,
-          action: EDIT_CT
-        }
-      };
+          action: EDIT_CT,
+        },
+      }
     },
     // delete: () => { },
     transformEntries: (callsite, id, opts) => {
@@ -78,13 +78,13 @@ const actionCreators = {
         meta: {
           callsite: {
             file: callsite.getFileName(),
-            line: callsite.getLineNumber()
-          }
+            line: callsite.getLineNumber(),
+          },
         },
         payload: {
-          options: opts
-        }
-      };
+          options: opts,
+        },
+      }
     },
     deriveLinkedEntries: (callsite, id, opts) => {
       return {
@@ -92,13 +92,13 @@ const actionCreators = {
         meta: {
           callsite: {
             file: callsite.getFileName(),
-            line: callsite.getLineNumber()
-          }
+            line: callsite.getLineNumber(),
+          },
         },
         payload: {
-          options: opts
-        }
-      };
+          options: opts,
+        },
+      }
     },
     transformEntriesToType: (callsite, id, opts) => {
       return {
@@ -106,24 +106,24 @@ const actionCreators = {
         meta: {
           callsite: {
             file: callsite.getFileName(),
-            line: callsite.getLineNumber()
-          }
+            line: callsite.getLineNumber(),
+          },
         },
         payload: {
-          options: opts
-        }
-      };
+          options: opts,
+        },
+      }
     },
-    typeError: (callsite, id, { typeErrors }) => {
+    typeError: (callsite, id, {typeErrors}) => {
       return {
         type: typeError,
         meta: {
           callsite: {
             file: callsite.getFileName(),
-            line: callsite.getLineNumber()
-          }
+            line: callsite.getLineNumber(),
+          },
         },
-        payload: { typeErrors }
+        payload: {typeErrors},
       }
     },
     apiError: (callsite, id, opts) => {
@@ -132,11 +132,11 @@ const actionCreators = {
         meta: {
           callsite: {
             file: callsite.getFileName(),
-            line: callsite.getLineNumber()
-          }
+            line: callsite.getLineNumber(),
+          },
         },
-        payload: { apiError: opts }
-      };
+        payload: {apiError: opts},
+      }
     },
     fromFields: (callsite, id, opts) => {
       return {
@@ -144,10 +144,10 @@ const actionCreators = {
         meta: {
           callsite: {
             file: callsite.getFileName(),
-            line: callsite.getLineNumber()
-          }
+            line: callsite.getLineNumber(),
+          },
         },
-        payload: { fromField: opts.fromField }
+        payload: {fromField: opts.fromField},
       }
     },
     toFields: (callsite, id, opts) => {
@@ -156,11 +156,11 @@ const actionCreators = {
         meta: {
           callsite: {
             file: callsite.getFileName(),
-            line: callsite.getLineNumber()
-          }
+            line: callsite.getLineNumber(),
+          },
         },
-        payload: { toField: opts.toField }
-      };
+        payload: {toField: opts.toField},
+      }
     },
     toReferenceFields: (callsite, id, opts) => {
       return {
@@ -168,11 +168,11 @@ const actionCreators = {
         meta: {
           callsite: {
             file: callsite.getFileName(),
-            line: callsite.getLineNumber()
-          }
+            line: callsite.getLineNumber(),
+          },
         },
-        payload: { toField: opts.toReferenceField }
-      };
+        payload: {toField: opts.toReferenceField},
+      }
     },
     deriveFields: (callsite, id, opts) => {
       return {
@@ -180,11 +180,11 @@ const actionCreators = {
         meta: {
           callsite: {
             file: callsite.getFileName(),
-            line: callsite.getLineNumber()
-          }
+            line: callsite.getLineNumber(),
+          },
         },
-        payload: { deriveField: opts.deriveField }
-      };
+        payload: {deriveField: opts.deriveField},
+      }
     },
     migrationError: (callsite, id, opts) => {
       return {
@@ -192,10 +192,10 @@ const actionCreators = {
         meta: {
           callsite: {
             file: callsite.getFileName(),
-            line: callsite.getLineNumber()
-          }
+            line: callsite.getLineNumber(),
+          },
         },
-        payload: { migrationError: opts }
+        payload: {migrationError: opts},
       }
     },
     field: (callsite, id, opts) => {
@@ -204,15 +204,15 @@ const actionCreators = {
         meta: {
           callsite: {
             file: callsite.getFileName(),
-            line: callsite.getLineNumber()
-          }
+            line: callsite.getLineNumber(),
+          },
         },
-        payload: { field: opts }
-      };
-    }
+        payload: {field: opts},
+      }
+    },
 
-  }
-};
+  },
+}
 
-exports.actionCreators = actionCreators;
-exports.ActionList = require('./action-list');
+exports.actionCreators = actionCreators
+exports.ActionList = require('./action-list')
