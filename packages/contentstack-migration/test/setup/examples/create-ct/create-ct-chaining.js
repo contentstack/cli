@@ -1,79 +1,78 @@
-'use strict';
+'use strict'
 
-
-module.exports = async ({ migration, stackSDKInstance }) => {
-  const blogUID= 'blog12',
-    blogTitle = 'Blog12',
-    authorUID= 'author12',
-    authorTitle= 'Author12';
+module.exports = async ({migration, stackSDKInstance}) => {
+  const blogUID = 'blog12'
+  const blogTitle = 'Blog12'
+  const authorUID = 'author12'
+  const authorTitle = 'Author12'
 
   /**
    * Create Blog content type
    */
   const blog = migration.createContentType(blogUID)
-    .title(blogTitle)
-    .description('Awesome blogs here')
-    .isPage(true)
-    .singleton(false);
+  .title(blogTitle)
+  .description('Awesome blogs here')
+  .isPage(true)
+  .singleton(false)
 
   blog.createField('title')
-    .display_name('Title')
-    .data_type('text')
-    .mandatory(true);
+  .display_name('Title')
+  .data_type('text')
+  .mandatory(true)
 
   blog.createField('url')
-    .display_name('URL')
-    .data_type('text')
-    .mandatory(true);
+  .display_name('URL')
+  .data_type('text')
+  .mandatory(true)
 
   blog.createField('author_name')
-    .display_name('Author Name')
-    .data_type('text')
-    .mandatory(true);
+  .display_name('Author Name')
+  .data_type('text')
+  .mandatory(true)
 
   let jsonRTE = {
-    "data_type":"text",
-    "display_name": "Body",
-    "field_metadata": {
+    data_type: 'text',
+    display_name: 'Body',
+    field_metadata: {
       allow_rich_text: true,
-      "rich_text_type": "advanced",
-      "description": "",
-      "default_value": ""
+      rich_text_type: 'advanced',
+      description: '',
+      default_value: '',
     },
   }
 
   let group = {
-    "data_type": "group",
-    "display_name": "Group",
-    "field_metadata": {},
-    "schema": [
-        {
-            "data_type": "text",
-            "display_name": "Single line textbox",
-            "uid": "single_line",
-            "field_metadata": {
-                "description": "",
-                "default_value": "",
-                "version": 3
-            },
-            "format": "",
-            "error_messages": {
-                "format": ""
-            },
-            "multiple": false,
-            "mandatory": false,
-            "unique": false,
-            "indexed": false,
-            "inbuilt_model": false,
-            "non_localizable": false
-        }
+    data_type: 'group',
+    display_name: 'Group',
+    field_metadata: {},
+    schema: [
+      {
+        data_type: 'text',
+        display_name: 'Single line textbox',
+        uid: 'single_line',
+        field_metadata: {
+          description: '',
+          default_value: '',
+          version: 3,
+        },
+        format: '',
+        error_messages: {
+          format: '',
+        },
+        multiple: false,
+        mandatory: false,
+        unique: false,
+        indexed: false,
+        inbuilt_model: false,
+        non_localizable: false,
+      },
     ],
-    "multiple": false,
-    "mandatory": false,
-    "unique": false,
-    "indexed": false,
-    "inbuilt_model": false,
-    "non_localizable": false
+    multiple: false,
+    mandatory: false,
+    unique: false,
+    indexed: false,
+    inbuilt_model: false,
+    non_localizable: false,
   }
 
   blog.createField('body', jsonRTE)
@@ -84,31 +83,31 @@ module.exports = async ({ migration, stackSDKInstance }) => {
   /**
    * add entries to blog content type
    */
-  let entries = [];
+  let entries = []
   let createEntryTask = {
     title: 'Create blog entries',
     successMessage: 'Blog entries added successfully.',
     failedMessage: 'Failed to add Blog entries.',
-    tasks: [async (params) => {
+    tasks: async params => {
       try {
         for (let index = 0; index < 4; index++) {
           let entry = {
             title: `Awesome Blog ${index}`,
             url: `/awesome-blog-${index}`,
             body: `This is ${index} blog.`,
-            author_name: `Firstname-${index} Lastname-${index}`
+            author_name: `Firstname-${index} Lastname-${index}`,
           }
-          let entryObj = await stackSDKInstance.contentType(blogUID).entry().create({ entry })
+          let entryObj = await stackSDKInstance.contentType(blogUID).entry().create({entry})
           entries.push(entryObj)
         }
       } catch (error) {
         throw error
       }
-    }],
-    paramsToBind: entries
+    },
+    paramsToBind: entries,
   }
 
-  migration.addTask(createEntryTask);
+  migration.addTask(createEntryTask)
 
   /**
    * Create author content type
@@ -116,68 +115,66 @@ module.exports = async ({ migration, stackSDKInstance }) => {
   const author = migration.createContentType(authorUID)
   .title(authorTitle)
   .isPage(false)
-  .singleton(false);
-  
+  .singleton(false)
 
   author.createField('title')
   .display_name('Title')
-    .data_type('text')
-    .mandatory(true)
+  .data_type('text')
+  .mandatory(true)
 
   author.createField('firstname')
-    .display_name('First Name')
-    .data_type('text')
-    .mandatory(false);
+  .display_name('First Name')
+  .data_type('text')
+  .mandatory(false)
 
   author.createField('lastname')
-    .display_name('Last Name')
-    .data_type('text')
-    .mandatory(false);
+  .display_name('Last Name')
+  .data_type('text')
+  .mandatory(false)
 
-  migration.addTask(author.getTaskDefinition());
+  migration.addTask(author.getTaskDefinition())
 
   // /**
   //  * Create reference filed for author content type
   //  */
-  const blogEdit = migration.editContentType(blogUID);
-    blogEdit.createField('author')
-        .data_type('reference')
-        .reference_to([authorUID])
-        .ref_multiple(false);
+  const blogEdit = migration.editContentType(blogUID)
+  blogEdit.createField('author')
+  .data_type('reference')
+  .reference_to([authorUID])
+  .ref_multiple(false)
 
-  migration.addTask(blogEdit.getTaskDefinition());
-  
+  migration.addTask(blogEdit.getTaskDefinition())
+
   /**
    * add entries to author content type and link it to Derived entry of blog content type
    */
-   let createAuthorsTaskAndRefInBlog = {
+  let createAuthorsTaskAndRefInBlog = {
     title: 'Create authors derived from blog author_name',
     successMessage: 'Authors created successfully.',
-    tasks: [ async (params) => {
+    tasks: async params => {
       try {
         for (let index = 0; index < entries.length; index++) {
           let blogEntry = entries[index]
-          if(blogEntry.author_name) {
-            let author_name = blogEntry.author_name.split(' ');
+          if (blogEntry.author_name) {
+            let author_name = blogEntry.author_name.split(' ')
             let entry   = {
               title: blogEntry.author_name,
-              url: `/${blogEntry.author_name.replace(' ','-')}`,
+              url: `/${blogEntry.author_name.replace(' ', '-')}`,
               firstname: author_name[0],
-              lastname: author_name[1]
+              lastname: author_name[1],
             }
             const entryI = stackSDKInstance.contentType(authorUID).entry()
-            let entryObj = await entryI.create({ entry })
-            blogEntry['author']=[];
-            blogEntry['author'].push({uid: entryObj.uid, _content_type_uid: entryObj.content_type_uid});
-            let blogEntryObj  = await blogEntry.update();
+            let entryObj = await entryI.create({entry})
+            blogEntry.author = []
+            blogEntry.author.push({uid: entryObj.uid, _content_type_uid: entryObj.content_type_uid})
+            let blogEntryObj  = await blogEntry.update()
           }
         }
       } catch (error) {
         console.log('error', error)
         throw error
       }
-    }]
+    },
   }
-  migration.addTask(createAuthorsTaskAndRefInBlog);
-  
-};
+  migration.addTask(createAuthorsTaskAndRefInBlog)
+}
