@@ -1,31 +1,38 @@
-@contentstack/cli-cm-export
-===================
+# @contentstack/cli-cm-export
 
-It is Contentstack’s CLI plugin to export content from the stack. To learn how to export and import content in Contentstack, refer to the [Migration guide](https://www.contentstack.com/docs/developers/cli/migration/). 
+It is Contentstack’s CLI plugin to export content from the stack. To learn how to export and import content in Contentstack, refer to the [Migration guide](https://www.contentstack.com/docs/developers/cli/migration/).
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-export/0.1.1-beta.5 linux-x64 node-v12.22.1
+@contentstack/cli-cm-export/0.1.1-beta.5 linux-x64 node-v14.15.5
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
-* [`csdx cm:export`](#csdx-cmexport)
+
+- [`csdx cm:export`](#csdx-cmexport)
 
 ## `csdx cm:export`
 
@@ -58,4 +65,5 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/export.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-export/src/commands/cm/export.js)_
+
 <!-- commandsstop -->
