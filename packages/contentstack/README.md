@@ -1,64 +1,72 @@
-@contentstack/cli
-===
+# @contentstack/cli
 
 Use Contentstack Command-line Interface to command Contentstack for executing a set of operations from the terminal. To get started with CLI, refer to the [CLI documentation](https://www.contentstack.com/docs/developers/cli/).
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.8 linux-x64 node-v12.22.1
+@contentstack/cli/0.1.1-beta.8 linux-x64 node-v14.15.5
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
-* [`csdx auth:login`](#csdx-authlogin)
-* [`csdx auth:logout`](#csdx-authlogout)
-* [`csdx auth:tokens`](#csdx-authtokens)
-* [`csdx auth:tokens:add`](#csdx-authtokensadd)
-* [`csdx auth:tokens:remove`](#csdx-authtokensremove)
-* [`csdx auth:whoami`](#csdx-authwhoami)
-* [`csdx cm:bootstrap`](#csdx-cmbootstrap)
-* [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
-* [`csdx cm:bulk-publish:add-fields`](#csdx-cmbulk-publishadd-fields)
-* [`csdx cm:bulk-publish:assets`](#csdx-cmbulk-publishassets)
-* [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
-* [`csdx cm:bulk-publish:configure`](#csdx-cmbulk-publishconfigure)
-* [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
-* [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
-* [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
-* [`csdx cm:bulk-publish:nonlocalized-field-changes`](#csdx-cmbulk-publishnonlocalized-field-changes)
-* [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
-* [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
-* [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
-* [`csdx cm:export`](#csdx-cmexport)
-* [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
-* [`csdx cm:import`](#csdx-cmimport)
-* [`csdx cm:seed`](#csdx-cmseed)
-* [`csdx cm:stack-clone`](#csdx-cmstack-clone)
-* [`csdx config:get:region`](#csdx-configgetregion)
-* [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
-* [`csdx help [COMMAND]`](#csdx-help-command)
-* [`csdx plugins`](#csdx-plugins)
-* [`csdx plugins:create`](#csdx-pluginscreate)
-* [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
-* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
-* [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
-* [`csdx plugins:update`](#csdx-pluginsupdate)
+
+- [`csdx auth:login`](#csdx-authlogin)
+- [`csdx auth:logout`](#csdx-authlogout)
+- [`csdx auth:tokens`](#csdx-authtokens)
+- [`csdx auth:tokens:add`](#csdx-authtokensadd)
+- [`csdx auth:tokens:remove`](#csdx-authtokensremove)
+- [`csdx auth:whoami`](#csdx-authwhoami)
+- [`csdx cm:bootstrap`](#csdx-cmbootstrap)
+- [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
+- [`csdx cm:bulk-publish:add-fields`](#csdx-cmbulk-publishadd-fields)
+- [`csdx cm:bulk-publish:assets`](#csdx-cmbulk-publishassets)
+- [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
+- [`csdx cm:bulk-publish:configure`](#csdx-cmbulk-publishconfigure)
+- [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
+- [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
+- [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
+- [`csdx cm:bulk-publish:nonlocalized-field-changes`](#csdx-cmbulk-publishnonlocalized-field-changes)
+- [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
+- [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
+- [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
+- [`csdx cm:export`](#csdx-cmexport)
+- [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
+- [`csdx cm:import`](#csdx-cmimport)
+- [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
+- [`csdx cm:seed`](#csdx-cmseed)
+- [`csdx cm:stack-clone`](#csdx-cmstack-clone)
+- [`csdx config:get:region`](#csdx-configgetregion)
+- [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
+- [`csdx help [COMMAND]`](#csdx-help-command)
+- [`csdx plugins`](#csdx-plugins)
+- [`csdx plugins:create`](#csdx-pluginscreate)
+- [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
+- [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
+- [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
+- [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
+- [`csdx plugins:update`](#csdx-pluginsupdate)
 
 ## `csdx auth:login`
 
@@ -103,7 +111,7 @@ _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.
 Lists all existing tokens added to the session
 
 ```
-Lists all existing tokens added to the session 
+Lists all existing tokens added to the session
 
 
 USAGE
@@ -276,7 +284,7 @@ OPTIONS
   -y, --yes                        Agree to process the command with the current configuration
 
 DESCRIPTION
-  The add-fields command is used for updating already existing entries with the updated schema of their respective 
+  The add-fields command is used for updating already existing entries with the updated schema of their respective
   Content Type
 
   Content Types, Environments and Locales are required for executing the command successfully
@@ -284,7 +292,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:add-fields -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] 
+  csdx cm:bulk-publish:add-fields -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1]
   [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -456,7 +464,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
+  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a
   [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]
 
   Using --config or -c flag
@@ -478,7 +486,7 @@ Publish entries from multiple content-types to multiple environments and locales
 ```
 Publish entries from multiple content-types to multiple environments and locales
 The entries command is used for publishing entries from the specified content types, to the
-specified environments and locales 
+specified environments and locales
 
 Content Types, Environments and Locales are required for executing the command successfully
 But, if retryFailed flag is set, then only a logfile is required
@@ -512,14 +520,14 @@ OPTIONS
 
 DESCRIPTION
   The entries command is used for publishing entries from the specified content types, to the
-  specified environments and locales 
+  specified environments and locales
 
   Content Types, Environments and Locales are required for executing the command successfully
   But, if retryFailed flag is set, then only a logfile is required
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:entries -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] 
+  csdx cm:bulk-publish:entries -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1]
   [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -575,13 +583,13 @@ DESCRIPTION
   The entry-edits command is used for publishing entries from the specified content types, to the
   specified environments and locales
 
-  Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command 
+  Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command
   successfully
   But, if retryFailed flag is set, then only a logfile is required
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 
+  csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT
   2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -631,7 +639,7 @@ OPTIONS
   -y, --yes                        Agree to process the command with the current configuration
 
 DESCRIPTION
-  The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types 
+  The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types
   to
   the specified Environments
 
@@ -640,7 +648,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
+  csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT
   2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -739,7 +747,7 @@ DESCRIPTION
   Environment (Source Environment) and Locale are required for executing the command successfully
   But, if retryFailed flag is set, then only a logfile is required
 
-  A Content Type can be specified for publishing entries, but if no content-type(s) is/are specified and --onlyAssets is 
+  A Content Type can be specified for publishing entries, but if no content-type(s) is/are specified and --onlyAssets is
   not used,
   then all entries from all content types will be unpublished from the source environment
 
@@ -748,7 +756,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x 
+  csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x
   [DELIVERY TOKEN]
 
   Using --config or -c flag
@@ -761,17 +769,17 @@ EXAMPLES
   csdx cm:bulk-publish:unpublish -r [LOG FILE NAME]
 
   No content type
-  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all 
+  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all
   content types and assets from the source environment)
 
   Using --onlyAssets
-  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyAssets (Will unpublish only assets 
+  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyAssets (Will unpublish only assets
   from the source environment)
 
   Using --onlyEntries
-  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only 
+  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only
   entries, all entries, from the source environment)
-  csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries 
+  csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries
   (Will unpublish only entries, (from CONTENT TYPE) from the source environment)
 ```
 
@@ -813,10 +821,10 @@ OPTIONS
   -y, --yes                        Agree to process the command with the current configuration
 
 DESCRIPTION
-  The unpublished-entries command is used for publishing unpublished entries from the source environment, to other 
+  The unpublished-entries command is used for publishing unpublished entries from the source environment, to other
   environments and locales
 
-  Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the 
+  Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the
   command successfully
   But, if retryFailed flag is set, then only a logfile is required
 
@@ -925,6 +933,51 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/packages/contentstack-import/src/commands/cm/import.js)_
 
+## `csdx cm:migrate-rte`
+
+Migration script for migrating HTML RTE to JSON RTE
+
+```
+Migration script for migrating HTML RTE to JSON RTE
+
+USAGE
+  $ csdx cm:migrate-rte
+
+OPTIONS
+  -a, --alias=alias                Alias for the management token to be used
+  -c, --content_type=content_type  The content-type from which entries need to be migrated
+  -d, --delay=delay                [default: 1000] Provide delay in ms between two entry update
+
+  -g, --isGlobalField              This flag is set to false by default. It indicates that current content-type is
+                                   global-field
+
+  -h, --htmlPath=htmlPath          Provide path of Html RTE to migrate
+
+  -j, --jsonPath=jsonPath          Provide path of JSON RTE to migrate
+
+  -p, --configPath=configPath      Path to config file to be used
+
+  -y, --yes                        Agree to process the command with the current configuration
+
+EXAMPLES
+  General Usage
+  csdx cm:migrate-rte -p path/to/config.json
+
+  Using Flags
+  csdx cm:migrate-rte -a alias -c content_type_uid -h htmlPath -j jsonPath
+
+  Nested RTE
+  csdx cm:migrate-rte -a alias -c content_type_uid -h modular_block_uid.block_uid.html_rte_uid -j
+  modular_block_uid.block_uid.json_rte_uid
+
+  csdx cm:migrate-rte -a alias -c content_type_uid -h group_uid.html_rte_uid -j group_uid.json_rte_uid
+
+  Global Field
+  csdx cm:migrate-rte -a alias -c global_field_uid -g -h htmlPath -j jsonPath
+```
+
+_See code: [@contentstack/cli-cm-migrate-rte](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/cm/migrate-rte/index.js)_
+
 ## `csdx cm:seed`
 
 Create a Stack from existing content types, entries, assets, etc
@@ -1012,7 +1065,7 @@ OPTIONS
 EXAMPLES
   $ csdx config:set:region EU
   $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"
-  $ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com" 
+  $ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com"
   --name="India"
 ```
 
@@ -1122,15 +1175,15 @@ DESCRIPTION
 
   Installation of a user-installed plugin will override a core plugin.
 
-  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command 
-  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in 
+  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
+  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
   the CLI without the need to patch and update the whole CLI.
 
 ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:install myplugin 
+  $ csdx plugins:install myplugin
   $ csdx plugins:install https://github.com/someuser/someplugin
   $ csdx plugins:install someuser/someplugin
 ```
@@ -1161,7 +1214,7 @@ OPTIONS
 DESCRIPTION
   Installation of a linked plugin will override a user-installed or core plugin.
 
-  e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello' 
+  e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello'
   command will override the user-installed or core plugin implementation. This is useful for development work.
 
 EXAMPLE
@@ -1210,4 +1263,5 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/update.ts)_
+
 <!-- commandsstop -->
