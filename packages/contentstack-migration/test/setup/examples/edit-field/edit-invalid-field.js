@@ -1,7 +1,7 @@
 module.exports = migration => {
-  const blog = migration.editContentType('blog');
+  const blog = migration.editContentType('blog')
 
   blog.editField('_uniqueid')
-    .display_name('Unique Id')
-    .mandatory(false);
-};
+  .display_name('Unique Id')
+  .mandatory(false)
+}

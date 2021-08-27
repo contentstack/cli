@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
 module.exports = {
-  'is_page': true,
-  'singleton': false
-};
+  is_page: true,
+  singleton: false,
+}

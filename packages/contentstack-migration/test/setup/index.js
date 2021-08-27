@@ -1,50 +1,49 @@
-'use strict';
+'use strict'
 
-const { spawn } = require('child_process'),
-  { resolve } = require('path'),
-  concat = require('concat-stream'),
+const {spawn} = require('child_process')
+const {resolve} = require('path')
+const concat = require('concat-stream')
 
-  constants = require('./constants'),
-  { startPoint, CONTENTSTACK_API_KEY, CONTENTSTACK_AUTHTOKEN } = constants;
+const constants = require('./constants')
+const {startPoint, CONTENTSTACK_API_KEY, CONTENTSTACK_AUTHTOKEN} = constants
 
 function createProcess(processPath = '', args = [], env = null) {
+  const cwd = resolve()
 
-  const cwd = resolve();
+  env = {...process.env}
 
-  env = { ...process.env };
-
-  env.NODE_ENV = 'test';
-  env.CONTENTSTACK_API_KEY = CONTENTSTACK_API_KEY;
-  env.CONTENTSTACK_AUTHTOKEN = CONTENTSTACK_AUTHTOKEN;
+  env.NODE_ENV = 'test'
+  env.CONTENTSTACK_API_KEY = CONTENTSTACK_API_KEY
+  env.CONTENTSTACK_AUTHTOKEN = CONTENTSTACK_AUTHTOKEN
 
   // args[args.length - 1]
-  return spawn(startPoint, args, { env, cwd });
+  return spawn(startPoint, args, {env, cwd})
 }
 
 // A promise wrapper over child process to create
 function execute(processPath, args = [], opts = {}) {
-  const { env = null } = opts;
+  const {env = null} = opts
 
-  const childProcess = createProcess(processPath, args, env);
-  childProcess.stdin.setEncoding('utf-8');
+  const childProcess = createProcess(processPath, args, env)
+  childProcess.stdin.setEncoding('utf-8')
 
   const promise = new Promise((resolve, reject) => {
     childProcess.stderr.once('data', err => {
-      reject(err.toString());
-    });
-    
-    childProcess.on('error', (code) => {
-      console.log(`>>>>>>>>>>>>>>child process exited with code ${code}`);
+      reject(err.toString())
+    })
+
+    childProcess.on('error', code => {
+      console.log(`>>>>>>>>>>>>>>child process exited with code ${code}`)
       return reject(code)
-    });
+    })
 
     childProcess.stdout.pipe(
       concat(result => resolve(result.toString()))
-    );
-  });
-  return promise;
+    )
+  })
+  return promise
 }
 
-exports.execute = execute;
-exports.constants = constants;
+exports.execute = execute
+exports.constants = constants
 

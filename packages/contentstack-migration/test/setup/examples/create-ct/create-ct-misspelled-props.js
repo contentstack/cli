@@ -1,8 +1,9 @@
-'use strict';
+'use strict'
 
-module.exports = migrations => {
-  const foo = migrations.createContentType('foo', {
+module.exports = async ({migration, stackSDKInstance}) => {
+  const foo = migration.createContentType('foo', {
     title: 'foo',
-    deshcripshion: 'sample desc'
-  });
-};
+    deshcripshion: 'sample desc',
+  })
+  migration.addTask(foo.getTaskDefinition())
+}

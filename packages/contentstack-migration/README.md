@@ -52,6 +52,6 @@ _See code: [src/commands/cm/migration.js](https://github.com/ninadhatkar/cli-mig
 
 ### Limitation & work around
 
-* Support for group is not present - Work around would be pass custom schema for now to createField method.
-* Support for global filed in not present - You can use SDK instance to create global filed and add it to content type via createField method
-* Support for entries not present - You can use SDK instance to create/update/delete entries for content type
+* Support for group is not present - Work around would be pass custom schema for now to [createField](packages/contentstack-migration/docs/api-reference.md#fieldcreatefieldfield-opts--field) method. See example [here](packages/contentstack-migration/test/setup/examples/create-ct/create-ct-chaining.js)
+* Support for global filed in not present - You can use SDK instance to create global filed and add it to content type via createField method. See example [here](packages/contentstack-migration/test/setup/examples/create-ct/create-ct-chaining.js)
+* Support for entries not present - You can use SDK instance to create/update/delete entries for content type. See example [here](packages/contentstack-migration/test/setup/examples/create-ct/create-ct-chaining.js)
