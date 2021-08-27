@@ -1,0 +1,1 @@
+{"version":"0.1.0-beta.1","commands":{"cm:export-to-csv":{"id":"cm:export-to-csv","description":"Export entries or organization users to csv using this command\n","pluginName":"@contentstack/cli-cm-export-to-csv","pluginType":"core","aliases":[],"flags":{},"args":[]}}}
