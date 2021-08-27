@@ -1,17 +1,17 @@
-'use strict';
+'use strict'
 
 // Dependencies
-const { request } = require('https'),
-  { stringify, parse } = JSON,
+const {request} = require('https')
+const {stringify, parse} = JSON
 
-  // Map helper
-  { getMapInstance, getDataWithAction } = require('./map'),
+// Map helper
+const {getMapInstance, getDataWithAction} = require('./map')
 
-  // constants
-  { actions, nonWritableMethods } = require('./constants'),
+// constants
+const {actions, nonWritableMethods} = require('./constants')
 
-  // Properties
-  { DELETE_CT } = actions;
+// Properties
+const {DELETE_CT} = actions
 
 module.exports = ({
   hostname,
@@ -19,79 +19,77 @@ module.exports = ({
   headers,
   method,
   id,
-  action
+  action,
 }) => {
-
   let options = {
     hostname,
     path,
     headers,
     method,
     id,
-    action
-  };
+    action,
+  }
   return _data => {
     // get data here using id and action
-    let data = getData(_data, id, action, method);
+    let data = getData(_data, id, action, method)
     // Special handling for non writable methods
-    options = getNewOptions(options, data, action, method);
+    options = getNewOptions(options, data, action, method)
 
     return new Promise((resolve, reject) => {
       const req = request(options, res => {
-
-        let response = '';
+        let response = ''
 
         res.on('data', _res => {
-          response += _res.toString();
-        });
+          response += _res.toString()
+        })
 
         res.on('end', () => {
           try {
-            response = parse(response);
-            resolve(response);
+            response = parse(response)
+            resolve(response)
           } catch (err) {
-            reject('Error while parsing response!');
+            reject('Error while parsing response!')
             // throw new Error('Error while parsing response!');
           }
-        });
-      });
+        })
+      })
 
       req.on('error', err => {
-        reject(err);
-      });
+        reject(err)
+      })
 
-      !nonWritableMethods.includes(method) && req.write(data);
-      req.end();
-    });
-  };
-};
+      !nonWritableMethods.includes(method) && req.write(data)
+      req.end()
+    })
+  }
+}
 
 function getData(_data, id, action, method) {
-  if (method === 'GET') return;
+  if (method === 'GET') return
   // if (!nonWritableMethods.includes(method)) {
-  let mapInstance = getMapInstance(),
+  let mapInstance = getMapInstance()
 
-    data = _data ? _data : getDataWithAction(id, mapInstance, action);
-  return stringify(data);
+  let data = _data ? _data : getDataWithAction(id, mapInstance, action)
+  return stringify(data)
 }
 
 function getNewOptions(options, data, action, method) {
   // Special handling for delete method
   if (action === DELETE_CT) {
     try {
-      data = parse(data);
+      data = parse(data)
     } catch (err) {
-      throw 'Error while parsing data for delete operation';
+      throw 'Error while parsing data for delete operation'
     }
-    options.path = `${options.path}?force=${data.content_type.force}`;
+    options.path = `${options.path}?force=${data.content_type.force}`
   }
 
   if (!nonWritableMethods.includes(method)) {
-    options.headers['Content-Length'] = data.length;
+    options.headers['Content-Length'] = data.length
   } else {
-    delete options.headers['Content-Type'];
-    delete options.headers['Content-Length'];
+    delete options.headers['Content-Type']
+    delete options.headers['Content-Length']
   }
 
-  return options;
+  return options
 }

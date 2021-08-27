@@ -1,36 +1,41 @@
-'use strict';
+'use strict'
 
-const { mapObject, actionMapper, requests } = require('./constants');
+const {mapObject, actionMapper, requests} = require('./constants')
 
 exports.getMapInstance = () => {
-  return mapObject;
-};
+  return mapObject
+}
 
 exports.get = (id, mapInstance, data = []) => {
   // Create key if does not exist
-  let __data = mapInstance.get(id);
+  let __data = mapInstance.get(id)
 
   !__data && (
     mapInstance.set(id, data),
     __data = mapInstance.get(id)
-  );
+  )
 
-  return __data;
-};
+  return __data
+}
 
 exports.set = (id, mapInstance, data) => {
-  return mapInstance.set(id, data);
-};
+  return mapInstance.set(id, data)
+}
+
+exports.remove = (id, mapInstance) => {
+  console.log(mapInstance)
+  return mapInstance.delete(id)
+}
 
 exports.getDataWithAction = (id, mapInstance, action) => {
-  let data = this.get(id, mapInstance);
-  data = data[action];
-  return data;
-};
+  let data = this.get(id, mapInstance)
+  data = data[action]
+  return data
+}
 
 exports.resetMapInstance = mapInstance => {
-  this.set(actionMapper, mapInstance, []);
-  this.set(requests, mapInstance, []);
-};
+  this.set(actionMapper, mapInstance, [])
+  this.set(requests, mapInstance, [])
+}
 
-exports.delete = () => { };
+exports.delete = () => { }

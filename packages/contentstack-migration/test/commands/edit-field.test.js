@@ -1,9 +1,9 @@
-'use strict';
+'use strict'
 
-const { match } = require('assert'),
+const {match} = require('assert')
 
-  { execute, constants } = require('../setup'),
-  { migration, filePathArg, migrationPath } = constants;
+const {execute, constants} = require('../setup')
+const {migration, filePathArg, migrationPath} = constants
 
 describe('Edit field test from migration script', () => {
   it('should throw error for non existant field', async () => {
@@ -11,31 +11,31 @@ describe('Edit field test from migration script', () => {
       await execute(null, [
         migration,
         filePathArg,
-        `${migrationPath}/edit-field/edit-invalid-field.js`
-      ]);
+        `${migrationPath}/edit-field/edit-invalid-field.js`,
+      ])
     } catch (error) {
-      match(error, /Validation failed/);
+      match(error, /Validation failed/)
     }
-  });
+  })
 
   it('should throw error for misspelled chained methods', async () => {
     try {
       await execute(null, [
         migration,
         filePathArg,
-        `${migrationPath}/edit-field/edit-invalid-method.js`
-      ]);
+        `${migrationPath}/edit-field/edit-invalid-method.js`,
+      ])
     } catch (error) {
-      match(error, /Validation failed/);
+      match(error, /Validation failed/)
     }
-  });
+  })
 
   it('should work as expected', async () => {
     const response = await execute(null, [
       migration,
       filePathArg,
-      `${migrationPath}/edit-field/edit-field.js`
-    ]);
-    match(response, /Success/);
-  });
-});
+      `${migrationPath}/edit-field/edit-field.js`,
+    ])
+    match(response, /Success/)
+  })
+})
