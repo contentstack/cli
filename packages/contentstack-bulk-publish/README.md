@@ -1,17 +1,19 @@
-@contentstack/cli-cm-bulk-publish
-============
+# @contentstack/cli-cm-bulk-publish
 
 It is Contentstack’s CLI plugin to perform bulk publish/unpublish operations on entries and assets in Contentstack. Refer to the [Bulk Publish and Unpublish documentation](https://www.contentstack.com/docs/developers/cli/bulk-publish-and-unpublish) to learn more about its commands.
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
-
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @contentstack/cli-cm-bulk-publish
 $ csdx COMMAND
@@ -23,21 +25,25 @@ USAGE
   $ csdx COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
-* [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
-* [`csdx cm:bulk-publish:add-fields`](#csdx-cmbulk-publishadd-fields)
-* [`csdx cm:bulk-publish:assets`](#csdx-cmbulk-publishassets)
-* [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
-* [`csdx cm:bulk-publish:configure`](#csdx-cmbulk-publishconfigure)
-* [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
-* [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
-* [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
-* [`csdx cm:bulk-publish:nonlocalized-field-changes`](#csdx-cmbulk-publishnonlocalized-field-changes)
-* [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
-* [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
-* [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
+
+- [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
+- [`csdx cm:bulk-publish:add-fields`](#csdx-cmbulk-publishadd-fields)
+- [`csdx cm:bulk-publish:assets`](#csdx-cmbulk-publishassets)
+- [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
+- [`csdx cm:bulk-publish:configure`](#csdx-cmbulk-publishconfigure)
+- [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
+- [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
+- [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
+- [`csdx cm:bulk-publish:nonlocalized-field-changes`](#csdx-cmbulk-publishnonlocalized-field-changes)
+- [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
+- [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
+- [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
 
 ## `csdx cm:bulk-publish`
 
@@ -78,7 +84,7 @@ OPTIONS
   -y, --yes                        Agree to process the command with the current configuration
 
 DESCRIPTION
-  The add-fields command is used for updating already existing entries with the updated schema of their respective 
+  The add-fields command is used for updating already existing entries with the updated schema of their respective
   Content Type
 
   Content Types, Environments and Locales are required for executing the command successfully
@@ -86,7 +92,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:add-fields -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] 
+  csdx cm:bulk-publish:add-fields -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1]
   [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -229,7 +235,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
+  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a
   [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]
 
   Using --config or -c flag
@@ -277,14 +283,14 @@ OPTIONS
 
 DESCRIPTION
   The entries command is used for publishing entries from the specified content types, to the
-  specified environments and locales 
+  specified environments and locales
 
   Content Types, Environments and Locales are required for executing the command successfully
   But, if retryFailed flag is set, then only a logfile is required
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:entries -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] 
+  csdx cm:bulk-publish:entries -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1]
   [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -332,13 +338,13 @@ DESCRIPTION
   The entry-edits command is used for publishing entries from the specified content types, to the
   specified environments and locales
 
-  Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command 
+  Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command
   successfully
   But, if retryFailed flag is set, then only a logfile is required
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 
+  csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT
   2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -380,7 +386,7 @@ OPTIONS
   -y, --yes                        Agree to process the command with the current configuration
 
 DESCRIPTION
-  The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types 
+  The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types
   to
   the specified Environments
 
@@ -389,7 +395,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
+  csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT
   2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -470,7 +476,7 @@ DESCRIPTION
   Environment (Source Environment) and Locale are required for executing the command successfully
   But, if retryFailed flag is set, then only a logfile is required
 
-  A Content Type can be specified for publishing entries, but if no content-type(s) is/are specified and --onlyAssets is 
+  A Content Type can be specified for publishing entries, but if no content-type(s) is/are specified and --onlyAssets is
   not used,
   then all entries from all content types will be unpublished from the source environment
 
@@ -479,7 +485,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x 
+  csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x
   [DELIVERY TOKEN]
 
   Using --config or -c flag
@@ -492,17 +498,17 @@ EXAMPLES
   csdx cm:bulk-publish:unpublish -r [LOG FILE NAME]
 
   No content type
-  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all 
+  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all
   content types and assets from the source environment)
 
   Using --onlyAssets
-  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyAssets (Will unpublish only assets 
+  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyAssets (Will unpublish only assets
   from the source environment)
 
   Using --onlyEntries
-  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only 
+  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only
   entries, all entries, from the source environment)
-  csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries 
+  csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries
   (Will unpublish only entries, (from CONTENT TYPE) from the source environment)
 ```
 
@@ -537,10 +543,10 @@ OPTIONS
   -y, --yes                        Agree to process the command with the current configuration
 
 DESCRIPTION
-  The unpublished-entries command is used for publishing unpublished entries from the source environment, to other 
+  The unpublished-entries command is used for publishing unpublished entries from the source environment, to other
   environments and locales
 
-  Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the 
+  Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the
   command successfully
   But, if retryFailed flag is set, then only a logfile is required
 
@@ -559,4 +565,5 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/bulk-publish/unpublished-entries.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
+
 <!-- commandsstop -->
