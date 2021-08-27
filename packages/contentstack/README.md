@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.8 darwin-x64 node-v13.14.0
+@contentstack/cli/0.1.1-beta.8 linux-x64 node-v14.15.5
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -46,6 +46,7 @@ USAGE
 * [`csdx cm:export`](#csdx-cmexport)
 * [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
 * [`csdx cm:import`](#csdx-cmimport)
+* [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
 * [`csdx cm:seed`](#csdx-cmseed)
 * [`csdx cm:stack-clone`](#csdx-cmstack-clone)
 * [`csdx config:get:region`](#csdx-configgetregion)
@@ -838,7 +839,7 @@ EXAMPLES
   csdx cm:export -A -m <single module name>
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-export/src/commands/cm/export.js)_
 
 ## `csdx cm:export-to-csv`
 
@@ -890,7 +891,52 @@ EXAMPLES
   csdx cm:import -A -m <single module name>
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.4/packages/contentstack-import/src/commands/cm/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/packages/contentstack-import/src/commands/cm/import.js)_
+
+## `csdx cm:migrate-rte`
+
+Migration script for migrating HTML RTE to JSON RTE
+
+```
+Migration script for migrating HTML RTE to JSON RTE
+
+USAGE
+  $ csdx cm:migrate-rte
+
+OPTIONS
+  -a, --alias=alias                Alias for the management token to be used
+  -c, --content_type=content_type  The content-type from which entries need to be migrated
+  -d, --delay=delay                [default: 1000] Provide delay in ms between two entry update
+
+  -g, --isGlobalField              This flag is set to false by default. It indicates that current content-type is
+                                   global-field
+
+  -h, --htmlPath=htmlPath          Provide path of Html RTE to migrate
+
+  -j, --jsonPath=jsonPath          Provide path of JSON RTE to migrate
+
+  -p, --configPath=configPath      Path to config file to be used
+
+  -y, --yes                        Agree to process the command with the current configuration
+
+EXAMPLES
+  General Usage
+  csdx cm:migrate-rte -p path/to/config.json
+
+  Using Flags
+  csdx cm:migrate-rte -a alias -c content_type_uid -h htmlPath -j jsonPath
+
+  Nested RTE
+  csdx cm:migrate-rte -a alias -c content_type_uid -h modular_block_uid.block_uid.html_rte_uid -j 
+  modular_block_uid.block_uid.json_rte_uid
+
+  csdx cm:migrate-rte -a alias -c content_type_uid -h group_uid.html_rte_uid -j group_uid.json_rte_uid
+
+  Global Field
+  csdx cm:migrate-rte -a alias -c global_field_uid -g -h htmlPath -j jsonPath
+```
+
+_See code: [@contentstack/cli-cm-migrate-rte](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/cm/migrate-rte/index.js)_
 
 ## `csdx cm:seed`
 
