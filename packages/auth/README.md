@@ -1,16 +1,19 @@
-@contentstack/cli-auth
-===
+# @contentstack/cli-auth
 
 It is Contentstack’s CLI plugin to perform authentication-related activities. To get started with authenticating yourself with the CLI, refer to the [CLI’s Authentication documentation](https://www.contentstack.com/docs/developers/cli/authentication)
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
@@ -22,15 +25,19 @@ USAGE
   $ csdx COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
-* [`csdx auth:login`](#csdx-authlogin)
-* [`csdx auth:logout`](#csdx-authlogout)
-* [`csdx auth:tokens`](#csdx-authtokens)
-* [`csdx auth:tokens:add`](#csdx-authtokensadd)
-* [`csdx auth:tokens:remove`](#csdx-authtokensremove)
-* [`csdx auth:whoami`](#csdx-authwhoami)
+
+- [`csdx auth:login`](#csdx-authlogin)
+- [`csdx auth:logout`](#csdx-authlogout)
+- [`csdx auth:tokens`](#csdx-authtokens)
+- [`csdx auth:tokens:add`](#csdx-authtokensadd)
+- [`csdx auth:tokens:remove`](#csdx-authtokensremove)
+- [`csdx auth:whoami`](#csdx-authwhoami)
 
 ## `csdx auth:login`
 
@@ -75,7 +82,7 @@ _See code: [src/commands/auth/logout.js](https://github.com/contentstack/cli/blo
 Lists all existing tokens added to the session
 
 ```
-Lists all existing tokens added to the session 
+Lists all existing tokens added to the session
 
 
 USAGE
@@ -166,4 +173,5 @@ ALIASES
 ```
 
 _See code: [src/commands/auth/whoami.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/whoami.js)_
+
 <!-- commandsstop -->
