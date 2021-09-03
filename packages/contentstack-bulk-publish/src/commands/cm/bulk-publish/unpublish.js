@@ -58,7 +58,7 @@ class UnpublishCommand extends Command {
     }
   }
 
-  validate({environment, retryFailed, locale, onlyAssets, onlyEntries}) {
+  validate({environment, retryFailed, locale, contentType, onlyAssets, onlyEntries}) {
     let missing = []
     if (retryFailed) {
       return true
@@ -66,6 +66,10 @@ class UnpublishCommand extends Command {
 
     if (onlyAssets && onlyEntries) {
       this.error(`The flags onlyAssets and onlyEntries need not be used at the same time. Unpublish command unpublishes entries and assts at the same time by default`)
+    }
+
+    if (onlyAssets && contentType) {
+      this.error(`Specifying content-type and onlyAssets together will have unexpected results. Please do not use these 2 flags together. Thank you.`)
     }
 
     if (!environment) {
@@ -90,19 +94,19 @@ class UnpublishCommand extends Command {
     }
   }
 
-  async confirmFlags(flags) {  
+  async confirmFlags(flags) {
     let confirmation
     prettyPrint(flags)
-    if(flags.yes) { 
-      return true 
-    } 
+    if (flags.yes) {
+      return true
+    }
 
-    if(!flags.contentType && !flags.onlyAssets) {
+    if (!flags.contentType && !flags.onlyAssets) {
       confirmation = await cli.confirm('Do you want to continue with this configuration. This will unpublish all the entries from all content types? [yes or no]')
     } else {
-      confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]') 
+      confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')
     }
-    return confirmation 
+    return confirmation
   }
 }
 
