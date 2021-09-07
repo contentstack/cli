@@ -23,7 +23,6 @@ exports.set = (id, mapInstance, data) => {
 }
 
 exports.remove = (id, mapInstance) => {
-  console.log(mapInstance)
   return mapInstance.delete(id)
 }
 

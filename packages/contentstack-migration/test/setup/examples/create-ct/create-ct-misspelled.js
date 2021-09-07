@@ -1,19 +1,14 @@
 'use strict'
 
-module.exports = async ({migrations}) => {
-  const foo = migrations.createContentType('foo')
+module.exports = async ({migration}) => {
+  const foo = migration.createContentType('foo')
   .title('foo')
   .description('Sample description')
 
   foo.createField('title')
-  .display_naem('Title')
+  .display_name('Title')
   .data_tyep('text')
   .mandatory(true)
 
-  foo.createField('url')
-  .display_naem('URL')
-  .data_tyep('text')
-  .mandatory(true)
-
-  migrations.addTask(foo.getTaskDefinition())
+  migration.addTask(foo.getTaskDefinition())
 }

@@ -1,5 +1,6 @@
-module.exports = migration => {
-  const blog = migration.editContentType('blog')
+module.exports = ({migration}) => {
+  const foo = migration.editContentType('foo3')
 
-  blog.deleteField('test_field')
+  foo.deleteField('facebook_link')
+  migration.addTask(foo.getTaskDefinition())
 }

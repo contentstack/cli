@@ -45,43 +45,39 @@ class ContentType extends Base {
    * }
    */
   createContentType(id, opts = {}) {
-    try {
-      const callsite = getCallsite()
-      // base class method
-      let options = {...defaultOptions, ...opts}
-      delete options.title
-      delete options.description
-      this.dispatch(callsite, id, opts, create)
-      const {title, description} = opts
-      const mapInstance = getMapInstance()
+    const callsite = getCallsite()
+    // base class method
+    let options = {...defaultOptions, ...opts}
+    delete options.title
+    delete options.description
+    this.dispatch(callsite, id, opts, create)
+    const {title, description} = opts
+    const mapInstance = getMapInstance()
 
-      const {CREATE_CT} = actions
-      const uid = getUid(id)
+    const {CREATE_CT} = actions
+    const uid = getUid(id)
 
-      const ctObj = {content_type: {title, uid, description, options}}
+    const ctObj = {content_type: {title, uid, description, options}}
 
-      const ctActionObj = {[CREATE_CT]: ctObj}
+    const ctActionObj = {[CREATE_CT]: ctObj}
 
-      const {contentTypeService} = this
-      // Sets data to post in map object
-      set(id, mapInstance, ctActionObj)
-      // Sets action and id in content type service
-      contentTypeService.setIdAndAction(id, CREATE_CT)
-      const tasks = [contentTypeService.postContentTypes.bind(contentTypeService, callsite, id, CREATE_CT)]
-      const req = {
-        title: `Adding content type: ${id}`,
-        failMessage: `Failed to create content type: ${id}`,
-        successMessage: `Successfully added content type: ${id}`,
-        tasks,
-      }
-      let field = new Field(id, CREATE_CT, contentTypeService, req)
-      // TODO: should find better way to attach content type level methods
-      field.singleton = this.singleton
-      field.isPage = this.isPage
-      return field
-    } catch (error) {
-      throw error
+    const {contentTypeService} = this
+    // Sets data to post in map object
+    set(id, mapInstance, ctActionObj)
+    // Sets action and id in content type service
+    contentTypeService.setIdAndAction(id, CREATE_CT)
+    const tasks = [contentTypeService.postContentTypes.bind(contentTypeService, callsite, id, CREATE_CT)]
+    const req = {
+      title: `Adding content type: ${id}`,
+      failMessage: `Failed to create content type: ${id}`,
+      successMessage: `Successfully added content type: ${id}`,
+      tasks,
     }
+    let field = new Field(id, CREATE_CT, contentTypeService, req)
+    // TODO: should find better way to attach content type level methods
+    field.singleton = this.singleton
+    field.isPage = this.isPage
+    return field
   }
 
   /**
@@ -125,21 +121,22 @@ class ContentType extends Base {
    *  blog.description('Changed description');
    * }
    */
-  editContentType(id) {
+  editContentType(id, opts = {}) {
+    let options = {...defaultOptions, ...opts}
+    delete options.title
+    delete options.description
+
     const callsite = getCallsite()
     // base class method
     this.dispatch(callsite, id, {}, edit)
-
+    const {title, description} = opts
     const mapInstance = getMapInstance()
 
     const {EDIT_CT} = actions
 
-    const uid = getUid(id)
+    const uid = id
 
-    const title = id
-
-    const ctObj = {content_type: {uid, title}}
-
+    const ctObj = {content_type: {title, uid, description, options}}
     const ctActionObj = {[EDIT_CT]: ctObj}
 
     const {contentTypeService} = this
@@ -164,7 +161,11 @@ class ContentType extends Base {
     }
 
     // Keeping the same instance of contentTypeService in Field class
-    return new Field(id, EDIT_CT, contentTypeService, req)
+    let fieldI = new Field(id, EDIT_CT, contentTypeService, req)
+    // TODO: should find better way to attach content type level methods
+    fieldI.singleton = this.singleton
+    fieldI.isPage = this.isPage
+    return fieldI
   }
 
   /**
