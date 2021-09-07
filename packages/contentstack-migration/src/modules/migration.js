@@ -13,8 +13,6 @@ const ContentType = require('./content-types')
 // Merge all classes containing migration methods into a single class
 const _Migration = _Class => class extends _Class { }
 
-// class Migration extends _Migration(__Migration(ContentType)) { }
-
 /**
  * Migration class
  * @class Migration
@@ -44,11 +42,16 @@ class Migration extends _Migration(ContentType) {
    */
   addTask(taskDescription) {
     const {title, failMessage, successMessage} = taskDescription
-    let {tasks} = taskDescription
+    let {tasks, task} = taskDescription
     const callsite = getCallsite()
     const mapInstance = getMapInstance()
-    if (!Array.isArray(tasks))
+    // eslint-disable-next-line no-warning-comments
+    // TODO: Make it better to accept only single task
+    if (tasks && !Array.isArray(tasks))
       tasks = [tasks]
+    if (task && !Array.isArray(task)) {
+      tasks = [task]
+    }
     this.contentTypeService.base.dispatch(callsite, null, null, tasks)
     let _requests = get(requests, mapInstance)
     const req = {
@@ -71,7 +74,6 @@ class Migration extends _Migration(ContentType) {
       this.handleErrors(error)
       // When the process is child, send error message to parent
       if (process.send) process.send({errorOccurred: true})
-      // this.exit(0);
     })
   }
 
