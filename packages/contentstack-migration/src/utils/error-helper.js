@@ -22,7 +22,6 @@ const getLineWithContext = (lines, lineNumber, context) => {
 module.exports = errors => {
   const errorsByFile = groupBy(errors, 'file')
   const messages = []
-
   for (const file of keys(errorsByFile)) {
     const fileContents = readFile(file)
     const highlightedCode = highlight(fileContents, {linenos: true})
@@ -51,7 +50,7 @@ module.exports = errors => {
     messages.push(`${fileErrorsMessage}${errorMessages}`)
   }
   // eslint-disable-next-line
-  //console.error(chalk`{red.bold Validation failed}\n\n`);
+  // console.error(chalk`{red.bold Validation failed}\n\n`);
   // eslint-disable-next-line
   console.error(messages.join('\n'));
   // eslint-disable-next-line

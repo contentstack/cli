@@ -23,6 +23,7 @@ class Base {
   /**
    * Chained function which takes value for title
    * @param {string} value Title
+   * @returns {Base} current instance of inherited class
    */
   title(value) {
     const mapInstance = getMapInstance()
@@ -38,21 +39,20 @@ class Base {
   /**
    * Chained function which takes value for description
    * @param {string} value Description
+   * @returns {Base} current instance of inherited class
    */
   description(value) {
     const mapInstance = getMapInstance()
     const {id, action} = this
-
     const contentType = get(id, mapInstance)
-
     contentType[action].content_type.description = value
-
     return this
   }
 
   /**
    * Chained function takes boolean value for force while deleting content type
    * @param {boolean} value Force delete
+   * @returns {Base} current instance of inherited class
    */
   force(value) {
     const mapInstance = getMapInstance()

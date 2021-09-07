@@ -1,7 +1,8 @@
 'use strict'
 
-module.exports = migrations => {
-  const foo = migrations.editContentType('foo', {
+module.exports = ({migration}) => {
+  const foo = migration.editContentType('foo', {
     deschripshion: 'New description',
   })
+  migration.addTask(foo.getTaskDefinition())
 }
