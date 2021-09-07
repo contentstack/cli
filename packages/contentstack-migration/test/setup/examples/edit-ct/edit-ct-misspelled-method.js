@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = migrations => {
-  const foo = migrations.editContentType('foo')
+module.exports = ({migration}) => {
+  const foo = migration.editContentType('foo')
   foo.deschripshion('new deschripshion')
 }
