@@ -27,13 +27,12 @@ function execute(processPath, args = [], opts = {}) {
   const childProcess = createProcess(processPath, args, env)
   childProcess.stdin.setEncoding('utf-8')
 
-  const promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     childProcess.stderr.once('data', err => {
       reject(err.toString())
     })
 
     childProcess.on('error', code => {
-      console.log(`>>>>>>>>>>>>>>child process exited with code ${code}`)
       return reject(code)
     })
 
@@ -41,7 +40,6 @@ function execute(processPath, args = [], opts = {}) {
       concat(result => resolve(result.toString()))
     )
   })
-  return promise
 }
 
 exports.execute = execute

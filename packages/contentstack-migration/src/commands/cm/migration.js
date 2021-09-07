@@ -2,13 +2,14 @@
 
 // Dependencies
 const Listr = require('listr')
-const {resolve} = require('path')
+const {resolve, extname} = require('path')
 const {Command, flags} = require('@contentstack/cli-command')
 const {waterfall} = require('async')
 const {Parser} = require('../../modules')
 const {ActionList} = require('../../actions')
 const fs = require('fs')
 const chalk = require('chalk')
+
 const {ApiError, SchemaValidator, MigrationError, FieldValidator} = require('../../validators')
 
 // Utils
@@ -17,7 +18,7 @@ const {success} = require('../../utils/logger')
 
 // Properties
 const {get, set, getMapInstance, resetMapInstance} = _map
-const {requests: _requests, actionMapper, MANAGEMENT_SDK} = constants
+const {requests: _requests, actionMapper, MANAGEMENT_SDK, MANAGEMENT_TOKEN, AUTH_TOKEN, API_KEY, BRANCH} = constants
 
 class MigrationCommand extends Command {
   async run() {
@@ -33,10 +34,15 @@ class MigrationCommand extends Command {
     // Reset map instance
     const mapInstance = getMapInstance()
     resetMapInstance(mapInstance)
+    if (branch) {
+      set(BRANCH, mapInstance, branch)
+    }
 
     if (alias) {
       let managementToken = this.getToken(alias)
       if (managementToken) {
+        set(MANAGEMENT_TOKEN, mapInstance, managementToken)
+        set(API_KEY, mapInstance, managementToken.apiKey)
         if (branch) {
           stackSDKInstance = this.managementAPIClient.stack({management_token: managementToken.token, api_key: managementToken.apiKey, branch_uid: branch})
         } else {
@@ -46,6 +52,8 @@ class MigrationCommand extends Command {
     }
 
     if (authtoken) {
+      set(AUTH_TOKEN, mapInstance, authtoken)
+      set(API_KEY, mapInstance, apiKey)
       this.managementAPIClient = {authtoken: this.authToken}
       if (branch) {
         stackSDKInstance = this.managementAPIClient.stack({api_key: apiKey, branch_uid: branch})
@@ -71,49 +79,52 @@ class MigrationCommand extends Command {
 
     const parser = new Parser()
 
-    const migrationParser = await parser.getMigrationParser(migrationFunc)
+    try {
+      const migrationParser = await parser.getMigrationParser(migrationFunc)
+      if (migrationParser.hasErrors) {
+        errorHelper(migrationParser.hasErrors)
+        // When the process is child, send error message to parent
+        if (process.send) process.send({errorOccurred: true})
+        this.exit(1)
+      }
 
-    if (migrationParser.hasErrors) {
-      errorHelper(migrationParser.hasErrors)
-      // When the process is child, send error message to parent
-      if (process.send) process.send({errorOccurred: true})
-      this.exit(1)
+      // Make calls from here
+      const requests = get(_requests, mapInstance)
+      // Fetches tasks array
+      const tasks = this.getTasks(requests)
+
+      const listr = new Listr(tasks)
+
+      await listr.run().catch(error => {
+        this.handleErrors(error)
+        // When the process is child, send error message to parent
+        if (process.send) process.send({errorOccurred: true})
+      })
+      requests.splice(0, requests.length)
+    } catch (error) {
+      // errorHandler(null, null, null, error)
     }
-
-    // Make calls from here
-    const requests = get(_requests, mapInstance)
-    // Fetches tasks array
-    const tasks = await this.getTasks(requests)
-
-    const listr = new Listr(tasks)
-
-    await listr.run().catch(error => {
-      this.handleErrors(error)
-      // When the process is child, send error message to parent
-      if (process.send) process.send({errorOccurred: true})
-      // this.exit(0);
-    })
-    requests.splice(0, requests.length)
   }
 
   async execMultiFiles(filePath, mapInstance) {
     // Resolved absolute path
     const resolvedMigrationPath = resolve(filePath)
-    // const child = fork(resolvedMigrationPath);
     try {
       const files = fs.readdirSync(resolvedMigrationPath)
       for (let index = 0; index < files.length; index++) {
         const file = files[index]
-        success(chalk`{white Executing file:} {grey {bold ${file}}}`)
-        // eslint-disable-next-line no-await-in-loop
-        await this.execSingleFile(resolve(filePath, file), mapInstance)
+        if (extname(file) === '.js') {
+          success(chalk`{white Executing file:} {grey {bold ${file}}}`)
+          // eslint-disable-next-line no-await-in-loop
+          await this.execSingleFile(resolve(filePath, file), mapInstance)
+        }
       }
     } catch (error) {
-      console.log(error)
+      error(error)
     }
   }
 
-  async getTasks(requests) {
+  getTasks(requests) {
     const _tasks = []
     const results = []
 

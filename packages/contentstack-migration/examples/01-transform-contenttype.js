@@ -1,10 +1,17 @@
+/* eslint-disable camelcase */
 'use strict'
 
+/**
+ * In this scenario We have Blog content type having author_name field.
+ * We have a requirement to create separate content type to store authors and refer it in Blog content type.
+ * We are transforming Blog content type where we are creating authors from 'author_name' field and then referring it to respective entries in blog.
+ */
+
 module.exports = async ({migration, stackSDKInstance}) => {
-  const blogUID = 'blog'
-  const blogTitle = 'Blog'
-  const authorUID = 'author'
-  const authorTitle = 'Author'
+  const blogUID = 'blog6'
+  const blogTitle = 'Blog6'
+  const authorUID = 'author6'
+  const authorTitle = 'Author6'
 
   /**
    * Create Blog content type
@@ -88,7 +95,7 @@ module.exports = async ({migration, stackSDKInstance}) => {
     title: 'Create blog entries',
     successMessage: 'Blog entries added successfully.',
     failedMessage: 'Failed to add Blog entries.',
-    task: async params => {
+    task: async () => {
       try {
         for (let index = 0; index < 4; index++) {
           let entry = {
@@ -101,10 +108,9 @@ module.exports = async ({migration, stackSDKInstance}) => {
           entries.push(entryObj)
         }
       } catch (error) {
-        throw error
+        console.log(error)
       }
     },
-    paramsToBind: entries,
   }
 
   migration.addTask(createEntryTask)
