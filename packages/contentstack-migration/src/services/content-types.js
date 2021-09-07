@@ -6,7 +6,7 @@ const {map: _map, safePromise, successHandler, errorHandler, constants} = requir
 // Map methods
 const {get, getMapInstance, getDataWithAction} = _map
 const mapInstance = getMapInstance()
-const {ContentType, MANAGEMENT_SDK} = constants
+const {ContentType, MANAGEMENT_SDK, actions: _actions} = constants
 
 class ContentTypeService {
   constructor() {
@@ -44,8 +44,9 @@ class ContentTypeService {
   }
 
   async editContentType(callsite, data) {
+    const d = getDataWithAction(data.uid, mapInstance, _actions.EDIT_CT)
+    data = {...data, ...d.content_type}
     const method = 'PUT'
-
     const [err, result] = await safePromise(data.update())
     if (err) {
       errorHandler(data.uid, ContentType, method, err)
@@ -74,7 +75,6 @@ class ContentTypeService {
   applyActionsOnFields(callsite, data, cb) {
     const {schema} = data
     const {moveFieldActions, mergeEditSchema} = this
-
     let i = 0
     let finalSchema
     try {
@@ -137,7 +137,7 @@ class ContentTypeService {
     let isDeleteFieldPresent = false
     let fieldToRaiseExceptionAgainst
 
-    if (contentTypeSchema.length && schema.length) {
+    if (contentTypeSchema.length > 0  && schema.length > 0) {
       // If found a updated field replace the new field with the existing field
       contentTypeSchema.forEach((newSchema, i) => {
         schema.every((oldSchema, j) => {

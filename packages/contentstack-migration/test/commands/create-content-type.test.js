@@ -13,10 +13,10 @@ const {assert} = require('chai')
 const sinon = require('sinon')
 const ContentTypeService = require('../../src/services/content-types')
 const {createContentType} = require('../setup/mocks')
-const endPoint = 'https://api.contentstack.io:443'
+const endPoint = 'https://api.contentstack.io'
 
 describe('Create content type from migration script', () => {
-  describe('Create content type with passing options as arguments', () => {
+  describe.only('Create content type with passing options as arguments', () => {
     test
     .stdout()
     .nock(endPoint,
@@ -30,15 +30,15 @@ describe('Create content type from migration script', () => {
       expect(ctx.stdout).to.contain('Successfully added content type: foo3')
     })
 
-    test
-    .stdout()
-    .command(['cm:migration', '-n', './test/setup/examples/create-ct/create-ct-opts.js', '-A', '-k', 'bltd8f5f521adc4b5b3'])
-    .it('Should create content type', ctx => {
-      expect(ctx.stdout).to.contain('Successfully added content type: foo3')
-    })
+    // test
+    // .stdout()
+    // .command(['cm:migration', '-n', './test/setup/examples/create-ct/create-ct-opts.js', '-A', '-k', 'bltd8f5f521adc4b5b3'])
+    // .it('Should create content type', ctx => {
+    //   expect(ctx.stdout).to.contain('Successfully added content type: foo3')
+    // })
   })
 
-  describe.only('Create content type applying chaining', () => {
+  describe('Create content type applying chaining', () => {
     test
     .stdout()
     .command(['cm:migration', '-n', `${migrationPath}/create-ct/create-ct-misspelled-props.js`, '-A', '-k', 'bltd8f5f521adc4b5b3'])
