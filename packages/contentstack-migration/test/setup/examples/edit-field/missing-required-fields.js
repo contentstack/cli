@@ -1,7 +1,7 @@
 'use strict'
 
-module.exports = migrations => {
-  const foo = migrations.createContentType('foo')
+module.exports = ({migration}) => {
+  const foo = migration.createContentType('foo')
   .title('foo')
   .description('Sample description')
 
@@ -9,4 +9,7 @@ module.exports = migrations => {
   .display_name('bar')
   .data_type('text')
   .mandatory(true)
+
+  migration.addTask(foo.getTaskDefinition())
+
 }
