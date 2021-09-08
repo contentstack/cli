@@ -21,7 +21,7 @@ exports.configWithMToken = function (config, managementTokens, host, securedAsse
   initial(defaultConfig)
 }
 
-exports.parameterWithMToken = function (managementTokens, data, moduleName, host, _authToken, parameterWithMToken) {
+exports.parameterWithMToken = function (managementTokens, data, moduleName, host, _authToken, securedAssets) {
   defaultConfig.management_token = managementTokens.token
   defaultConfig.auth_token = _authToken
   defaultConfig.host = host.cma

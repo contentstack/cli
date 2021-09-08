@@ -107,8 +107,7 @@ ExportCommand.examples = [
   'csdx cm:export -A --secured-assets',
   'csdx cm:export -a <management_token_alias>',
   'csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>',
-  'csdx cm:export -a <management_token_alias> -c <path/to/config/file>',
-  'csdx cm:export -a --secured-assets',
+  'csdx cm:export -a <management_token_alias> -c <path/to/config/file>'
 ]
 
 ExportCommand.flags = {
