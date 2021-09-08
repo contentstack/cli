@@ -52,7 +52,7 @@ module.exports = errors => {
   // eslint-disable-next-line
   // console.error(chalk`{red.bold Validation failed}\n\n`);
   // eslint-disable-next-line
-  console.error(messages.join('\n'));
+  console.log(messages.join('\n'));
   // eslint-disable-next-line
-  console.error(chalk`{bold.red Migration unsuccessful}`);
+  console.log(chalk`{bold.red Migration unsuccessful}`);
 }

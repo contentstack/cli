@@ -1,6 +1,8 @@
 'use strict'
 
-module.exports = migrations => {
+module.exports = ({migration}) => {
   // Clean up
-  migrations.deleteContentType('foo2')
+  const foo = migration.deleteContentType('foo3')
+  migration.addTask(foo.getTaskDefinition())
+
 }
