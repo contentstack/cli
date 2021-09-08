@@ -1,0 +1,66 @@
+[
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "POST",
+        "path": "/v3/content_types",
+        "body": {
+            "content_type": {
+                "title": "foo",
+                "uid": "foo",
+                "description": "Sample description",
+                "options": {
+                    "is_page": true,
+                    "singleton": false
+                },
+                "schema": [
+                    {
+                        "display_name": "bar",
+                        "uid": "bar",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    }
+                ]
+            }
+        },
+        "status": 422,
+        "response": {
+            "error_message": "Content Type creation failed. Please try again.",
+            "error_code": 115,
+            "errors": {
+                "content_type": [
+                    "should have a 'title' field."
+                ],
+                "schema": [
+                    "should have a 'url' field."
+                ]
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Tue, 07 Sep 2021 22:26:05 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "X-Contentstack-Organization",
+            "blt90f399a6ce838a5a",
+            "X-Runtime",
+            "13ms",
+            "X-REQUEST-ID",
+            "73237",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    }
+]

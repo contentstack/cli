@@ -47,7 +47,7 @@ OPTIONS
   --multi                                              Supports multiple files
 ```
 
-_See code: [src/commands/cm/migration.js](https://github.com/ninadhatkar/cli-migration/blob/v0.0.0/src/commands/cm/migration.js)_
+_See code: [src/commands/cm/migration.js](https://github.com/contentstack/cli-migration/blob/v0.0.0/src/commands/cm/migration.js)_
 <!-- commandsstop -->
 
 ### Limitation & work around

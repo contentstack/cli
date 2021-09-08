@@ -13,6 +13,7 @@ module.exports = async ({migration, stackSDKInstance}) => {
   const authorUID = 'author6'
   const authorTitle = 'Author6'
 
+  // *********************** START: Preparing the scenario ************************//
   /**
    * Create Blog content type
    */
@@ -115,6 +116,8 @@ module.exports = async ({migration, stackSDKInstance}) => {
 
   migration.addTask(createEntryTask)
 
+  // *********************** END: Preparing the scenario ************************//
+
   /**
    * Create author content type
    */
@@ -140,9 +143,9 @@ module.exports = async ({migration, stackSDKInstance}) => {
 
   migration.addTask(author.getTaskDefinition())
 
-  // /**
-  //  * Create reference filed for author content type
-  //  */
+  /**
+   * Create reference filed for author content type in blog
+   */
   const blogEdit = migration.editContentType(blogUID)
   blogEdit.createField('author')
   .data_type('reference')
@@ -170,7 +173,9 @@ module.exports = async ({migration, stackSDKInstance}) => {
               lastname: author_name[1],
             }
             const entryI = stackSDKInstance.contentType(authorUID).entry()
+            // Create Author entry
             let entryObj = await entryI.create({entry})
+            // Add reference to blog entry
             blogEntry.author = []
             blogEntry.author.push({uid: entryObj.uid, _content_type_uid: entryObj.content_type_uid})
             await blogEntry.update()
@@ -184,8 +189,8 @@ module.exports = async ({migration, stackSDKInstance}) => {
   migration.addTask(createAuthorsTaskAndRefInBlog)
 }
 
-// Change and publish example
-// Add to Release and deploy example
+// Change and publish example - Done
+// Add to Release and deploy example - Done
 
 // Extension example
 
