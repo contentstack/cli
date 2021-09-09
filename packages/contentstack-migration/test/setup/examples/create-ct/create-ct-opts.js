@@ -16,5 +16,15 @@ module.exports = async ({migration}) => {
   .data_type('text')
   .mandatory(true)
 
+  foo.createField('facebook_link')
+  .display_name('facebook_link')
+  .data_type('text')
+  .mandatory(true)
+
+  foo.createField('twitter_link')
+  .display_name('twitter_link')
+  .data_type('text')
+  .mandatory(true)
+
   migration.addTask(foo.getTaskDefinition())
 }
