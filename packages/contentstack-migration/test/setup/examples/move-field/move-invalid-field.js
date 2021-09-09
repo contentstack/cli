@@ -1,10 +1,9 @@
 'use strict'
 
-module.exports = migration => {
-  const blog = migration.editContentType('blog')
+module.exports = ({migration}) => {
+  const foo = migration.editContentType('foo3')
 
-  blog.moveField('_uniqueid').toTheBottom()
-  // blog.moveField('references').beforeField('author_name');
-  // blog.moveField('author').toTheTop();
-  // blog.moveField('url').afterField('author');
+  foo.moveField('_uniqueid').toTheBottom()
+
+  migration.addTask(foo.getTaskDefinition())
 }
