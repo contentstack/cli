@@ -1,8 +1,8 @@
 'use strict'
 
 module.exports = migrations => {
-  const foo = migrations.createContentType('foo1343q12314', {
-    title: 'foo1343q12314',
+  const foo = migrations.createContentType('foo3', {
+    title: 'foo3',
     description: 'sample description',
   })
 
