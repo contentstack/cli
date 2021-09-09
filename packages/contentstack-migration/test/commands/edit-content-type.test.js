@@ -1,73 +1,58 @@
 'use strict'
 
-const {match} = require('assert')
-
-const {execute, constants} = require('../setup')
-const {migration, filePathArg, migrationPath} = constants
+const {constants} = require('../setup')
+const {migrationPath} = constants
+const path = require('path')
+const nockBack = require('nock').back
+const {expect, test} = require('@oclif/test')
 
 describe('Edit content type from migration script', () => {
+  nockBack.fixtures = path.join(__dirname, '__nock-fixtures__')
+  nockBack.setMode('record')
+  describe('prepare for edit field test', () => {
+    test
+    .command(['cm:migration', '-n', `${migrationPath}/create-ct/create-ct-opts.js`, '-A', '-k', 'bltd8f5f521adc4b5b3'])
+    .it('Should create content type', () => { })
+  })
+
   describe('Allow editing existing content type', () => {
-    before('Create a content type', async () => {
-      const response = await execute(null, [
-        migration,
-        filePathArg,
-        `${migrationPath}/create-ct/create-ct-opts`,
-      ])
-      match(response, /Successfully saved Content type/)
-    })
+    nockBack('edit-content-type.json', nockDone => {
+      test
+      .stdout()
+      .command(['cm:migration', '-n', `${migrationPath}/edit-ct/edit-ct.success.js`, '-A', '-k', 'bltd8f5f521adc4b5b3'])
+      .it('should allow editing a existing content type', ctx => {
+        expect(ctx.stdout).to.contains('Successfully updated content type: foo3')
+        nockDone()
+      })
 
-    it('should allow editing a existing content type', async () => {
-      const response = await execute(null, [
-        migration,
-        filePathArg,
-        `${migrationPath}/edit-ct/edit-ct.success.js`,
-      ])
-      match(response, /Successfully updated Content type/)
-    })
+      test
+      .stdout()
+      .command(['cm:migration', '-n', `${migrationPath}/edit-ct/edit-ct.failure.js`, '-A', '-k', 'bltd8f5f521adc4b5b3'])
+      .it('should throw an error editing non existent content type', ctx => {
+        expect(ctx.stdout).to.contains('The Content Type \'foo100\' was not found. Please try again.')
+        nockDone()
+      })
 
-    after('Clean up content type', async () => {
-      const response = await execute(null, [
-        migration,
-        filePathArg,
-        `${migrationPath}/delete-ct.js`,
-      ])
-      match(response, /Successfully deleted Content type/)
+      // test
+      // .stdout()
+      // .command(['cm:migration', '-n', `${migrationPath}/edit-ct/edit-ct-misspelled-props.js`, '-A', '-k', 'bltd8f5f521adc4b5b3'])
+      // .it('should throw error for misspelled properties while passing options', ctx => {
+      //   expect(ctx.stdout).to.contains('The Content Type \'foo100\' was not found. Please try again.')
+      //   nockDone()
+      // })
+
+      test
+      .stdout()
+      .command(['cm:migration', '-n', `${migrationPath}/edit-ct/edit-ct-misspelled-method.js`, '-A', '-k', 'bltd8f5f521adc4b5b3'])
+      .it('should throw error for misspelled chaining methods', ctx => {
+        expect(ctx.stdout).to.contains('deschripshion is not a valid function')
+        nockDone()
+      })
     })
   })
-
-  it('should throw an error editing non existent content type', async () => {
-    try {
-      await execute(null, [
-        migration,
-        filePathArg,
-        `${migrationPath}/edit-ct/edit-ct.failure.js`,
-      ])
-    } catch (error) {
-      match(error, /Validation failed/)
-    }
-  })
-
-  it('should throw error for misspelled properties while passing options', async () => {
-    try {
-      await execute(null, [
-        migration,
-        filePathArg,
-        `${migrationPath}/edit-ct/edit-ct-misspelled-props.js`,
-      ])
-    } catch (error) {
-      match(error, /Validation failed/)
-    }
-  })
-
-  it('should throw error for misspelled chaining methods', async () => {
-    try {
-      await execute(null, [
-        migration,
-        filePathArg,
-        `${migrationPath}/edit-ct/edit-ct-misspelled-method.js`,
-      ])
-    } catch (error) {
-      match(error, /Validation failed/)
-    }
+  describe('wind up field test', () => {
+    test
+    .command(['cm:migration', '-n', `${migrationPath}/edit-ct/delete-ct.js`, '-A', '-k', 'bltd8f5f521adc4b5b3'])
+    .it('Should delete content type', () => { })
   })
 })

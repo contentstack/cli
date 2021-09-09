@@ -1,3 +1,5 @@
+/* eslint-disable unicorn/explicit-length-check */
+/* eslint-disable no-unused-expressions */
 'use strict'
 
 const Base = require('../modules/base')
@@ -227,8 +229,10 @@ class ContentTypeService {
 
   afterField(schema, actionObj) {
     const {fieldToMove, against} = actionObj
-    let i = 0; let indexToMove = 0; let tempObj; let
-      found = 0
+    let i = 0
+    let indexToMove = 0
+    let tempObj
+    let found = 0
     // eslint-disable-next-line
     while (true) {
       if (schema[i].uid === against) {
@@ -252,8 +256,10 @@ class ContentTypeService {
   beforeField(schema, actionObj) {
     const {fieldToMove, against} = actionObj
 
-    let i = 0; let indexToMove = 0; let tempObj = 0; let
-      found = 0
+    let i = 0
+    let indexToMove = 0
+    let tempObj = 0
+    let found = 0
     // eslint-disable-next-line
     while (true) {
       if (schema[i].uid === against) {
@@ -279,8 +285,8 @@ class ContentTypeService {
     let missingField = ''
     let i = 0
 
-    const {fieldToMove, against} = actionObj; const
-      uids = []
+    const {fieldToMove, against} = actionObj
+    const uids = []
     // eslint-disable-next-line
     while (true) {
 
@@ -296,11 +302,11 @@ class ContentTypeService {
       if (!schema[i]) break
     }
     // TODO: Need a better way to handle this
-    missingField = !uids.includes(fieldToMove) ? fieldToMove : null
+    missingField = uids.includes(fieldToMove) ? null : fieldToMove
 
     // against && (missingField = !uids.includes(against) ? against : null);
     if (!missingField && against) {
-      missingField = !uids.includes(against) ? against : null
+      missingField = uids.includes(against) ? null : against
     }
 
     // Handling both the scenarios

@@ -1,6 +1,9 @@
 @contentstack/cli-migration
 ===========================
 
+The Contentstack CLI’s “Migration” plugin allows developers to automate the content migration process and easily migrate your content from your system to Contentstack. 
+
+
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/@contentstack/cli-migration.svg)](https://npmjs.org/package/@contentstack/cli-migration)
 [![Downloads/week](https://img.shields.io/npm/dw/@contentstack/cli-migration.svg)](https://npmjs.org/package/@contentstack/cli-migration)
@@ -50,8 +53,8 @@ OPTIONS
 _See code: [src/commands/cm/migration.js](https://github.com/contentstack/cli-migration/blob/v0.0.0/src/commands/cm/migration.js)_
 <!-- commandsstop -->
 
-### Limitation & work around
+### Points to remember
 
-* Support for group is not present - Work around would be pass custom schema for now to [createField](packages/contentstack-migration/docs/api-reference.md#fieldcreatefieldfield-opts--field) method. See example [here](packages/contentstack-migration/test/setup/examples/create-ct/create-ct-chaining.js)
-* Support for global filed in not present - You can use SDK instance to create global filed and add it to content type via createField method. See example [here](packages/contentstack-migration/test/setup/examples/create-ct/create-ct-chaining.js)
-* Support for entries not present - You can use SDK instance to create/update/delete entries for content type. See example [here](packages/contentstack-migration/test/setup/examples/create-ct/create-ct-chaining.js)
+* Currently, the Migration plugin does not support Group fields migration. You can pass a custom schema to the createField method to migrate Group fields. [here](packages/contentstack-migration/examples/)
+* Currently, the Migration plugin does not support Global fields migration. You can migrate Global fields by creating an SDK instance and adding it to content types using the createField method.[here](packages/contentstack-migration/examples/)
+* Currently, the Migration plugin does not support migration of Entries. You can migrate entries by creating an SDK instance to create/ update/ delete entries for your content type. [here](packages/contentstack-migration/examples/)
