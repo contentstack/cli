@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-warning-comments */
+/* eslint-disable camelcase */
 'use strict'
 
 // Dependencies
@@ -13,7 +16,7 @@ const chalk = require('chalk')
 const {ApiError, SchemaValidator, MigrationError, FieldValidator} = require('../../validators')
 
 // Utils
-const {map: _map, constants, safePromise, errorHelper, errorHandler} = require('../../utils')
+const {map: _map, constants, safePromise, errorHelper} = require('../../utils')
 const {success} = require('../../utils/logger')
 
 // Properties
@@ -168,12 +171,12 @@ class MigrationCommand extends Command {
 MigrationCommand.description = 'Contentstack migration script.'
 
 MigrationCommand.flags = {
-  'api-key': flags.string({char: 'k', description: 'Api key along with authtoken to be used', dependsOn: ['authtoken'], exclusive: ['management-token-alias']}),
-  authtoken: flags.boolean({char: 'A', description: 'Use authtoken', dependsOn: ['api-key'], exclusive: ['management-token-alias']}),
-  'management-token-alias': flags.string({char: 'a', description: 'Alias to be used', exclusive: ['authtoken']}), // Add a better description
-  filePath: flags.string({char: 'n', description: 'Provides filepath to migration script provided by user.'}),
-  branch: flags.string({char: 'b', description: 'Branch name'}),
-  multi: flags.boolean({description: 'Supports multiple files'}), // Add a better description
+  'api-key': flags.string({char: 'k', description: 'With this flag add the API key of your stack.', dependsOn: ['authtoken'], exclusive: ['management-token-alias']}),
+  authtoken: flags.boolean({char: 'A', description: 'Use this flag to use the auth token of the current session. After logging in CLI, an auth token is generated for each new session.', dependsOn: ['api-key'], exclusive: ['management-token-alias']}),
+  'management-token-alias': flags.string({char: 'a', description: 'Use this flag to add the management token alias.', exclusive: ['authtoken']}), // Add a better description
+  filePath: flags.string({char: 'n', description: 'Use this flag to provide the path of the file of the migration script provided by the user.'}),
+  branch: flags.string({char: 'b', description: 'Use this flag to add the branch name where you want to perform the migration.'}),
+  multi: flags.boolean({description: 'This flag helps you to migrate multiple content files in a single instance.'}), // Add a better description
 }
 
 module.exports = MigrationCommand

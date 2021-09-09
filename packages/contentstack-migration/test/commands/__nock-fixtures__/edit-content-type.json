@@ -40,6 +40,34 @@
                         "non_localizable": false,
                         "isDelete": false,
                         "isEdit": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "isDelete": false,
+                        "isEdit": false
                     }
                 ]
             }
@@ -48,8 +76,8 @@
         "response": {
             "notice": "Content Type created successfully.",
             "content_type": {
-                "created_at": "2021-09-07T21:03:18.695Z",
-                "updated_at": "2021-09-07T21:03:18.695Z",
+                "created_at": "2021-09-09T03:30:57.155Z",
+                "updated_at": "2021-09-09T03:30:57.155Z",
                 "title": "foo3",
                 "uid": "foo3",
                 "_version": 1,
@@ -76,6 +104,32 @@
                         "unique": true,
                         "field_metadata": {
                             "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
                             "version": 3
                         },
                         "non_localizable": false,
@@ -138,7 +192,7 @@
         },
         "rawHeaders": [
             "Date",
-            "Tue, 07 Sep 2021 21:03:18 GMT",
+            "Thu, 09 Sep 2021 03:30:57 GMT",
             "Content-Type",
             "application/json",
             "Transfer-Encoding",
@@ -148,9 +202,9 @@
             "X-Contentstack-Organization",
             "blt90f399a6ce838a5a",
             "X-Runtime",
-            "25ms",
+            "26ms",
             "X-REQUEST-ID",
-            "593",
+            "18509",
             "Strict-Transport-Security",
             "max-age=31536000; includeSubDomains"
         ],
@@ -164,8 +218,8 @@
         "status": 200,
         "response": {
             "content_type": {
-                "created_at": "2021-09-07T21:03:18.695Z",
-                "updated_at": "2021-09-07T21:03:18.695Z",
+                "created_at": "2021-09-09T03:30:57.155Z",
+                "updated_at": "2021-09-09T03:30:57.155Z",
                 "title": "foo3",
                 "uid": "foo3",
                 "_version": 1,
@@ -192,6 +246,32 @@
                         "unique": true,
                         "field_metadata": {
                             "_default": true,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "facebook_link",
+                        "uid": "facebook_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
                             "version": 3
                         },
                         "non_localizable": false,
@@ -292,7 +372,7 @@
         },
         "rawHeaders": [
             "Date",
-            "Tue, 07 Sep 2021 21:03:19 GMT",
+            "Thu, 09 Sep 2021 03:30:58 GMT",
             "Content-Type",
             "application/json",
             "Transfer-Encoding",
@@ -308,7 +388,7 @@
             "X-Runtime",
             "9ms",
             "X-REQUEST-ID",
-            "62435",
+            "88970",
             "Strict-Transport-Security",
             "max-age=31536000; includeSubDomains"
         ],
@@ -362,6 +442,19 @@
                         "non_localizable": false,
                         "isDelete": false,
                         "isEdit": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
                     }
                 ],
                 "last_activity": {},
@@ -457,8 +550,8 @@
         "response": {
             "notice": "Content Type updated successfully.",
             "content_type": {
-                "created_at": "2021-09-07T21:03:18.695Z",
-                "updated_at": "2021-09-07T21:03:21.039Z",
+                "created_at": "2021-09-09T03:30:57.155Z",
+                "updated_at": "2021-09-09T03:30:59.459Z",
                 "title": "foo3",
                 "uid": "foo3",
                 "_version": 2,
@@ -494,6 +587,19 @@
                         "display_name": "facebook",
                         "uid": "facebook_link",
                         "data_type": "link",
+                        "mandatory": true,
+                        "unique": false,
+                        "field_metadata": {
+                            "_default": false,
+                            "version": 3
+                        },
+                        "non_localizable": false,
+                        "multiple": false
+                    },
+                    {
+                        "display_name": "twitter_link",
+                        "uid": "twitter_link",
+                        "data_type": "text",
                         "mandatory": true,
                         "unique": false,
                         "field_metadata": {
@@ -555,7 +661,7 @@
         },
         "rawHeaders": [
             "Date",
-            "Tue, 07 Sep 2021 21:03:21 GMT",
+            "Thu, 09 Sep 2021 03:30:59 GMT",
             "Content-Type",
             "application/json",
             "Transfer-Encoding",
@@ -569,7 +675,42 @@
             "X-Runtime",
             "28ms",
             "X-REQUEST-ID",
-            "68591",
+            "39527",
+            "Strict-Transport-Security",
+            "max-age=31536000; includeSubDomains"
+        ],
+        "responseIsBinary": false
+    },
+    {
+        "scope": "https://api.contentstack.io:443",
+        "method": "GET",
+        "path": "/v3/content_types/foo100",
+        "body": "",
+        "status": 422,
+        "response": {
+            "error_message": "The Content Type 'foo100' was not found. Please try again.",
+            "error_code": 118,
+            "errors": {
+                "uid": [
+                    "is not valid."
+                ]
+            }
+        },
+        "rawHeaders": [
+            "Date",
+            "Thu, 09 Sep 2021 03:31:00 GMT",
+            "Content-Type",
+            "application/json",
+            "Transfer-Encoding",
+            "chunked",
+            "Connection",
+            "close",
+            "X-Contentstack-Organization",
+            "blt90f399a6ce838a5a",
+            "X-Runtime",
+            "11ms",
+            "X-REQUEST-ID",
+            "2333",
             "Strict-Transport-Security",
             "max-age=31536000; includeSubDomains"
         ],

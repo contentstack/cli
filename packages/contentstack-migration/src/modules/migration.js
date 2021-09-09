@@ -22,7 +22,7 @@ class Migration extends _Migration(ContentType) {
    * Adds custom task in migration to execute.
    * @param {Object} taskDescription Task title and task function to execute
    * @param {string} taskDescription.title Title for custom task
-   * @param {array} taskDescription.tasks async function to be executed
+   * @param {array} taskDescription.task async function to be executed
    * @param {string} taskDescription.failMessage message to be printed when task fails
    * @param {string} taskDescription.successMessage message to be printed when task succeeds
    * @example
