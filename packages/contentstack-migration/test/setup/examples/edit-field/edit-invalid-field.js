@@ -1,7 +1,9 @@
-module.exports = migration => {
-  const blog = migration.editContentType('blog')
+module.exports = ({migration}) => {
+  const foo = migration.editContentType('foo3')
 
-  blog.editField('_uniqueid')
+  foo.editField('_uniqueid')
   .display_name('Unique Id')
-  .mandatory(false)
+
+  migration.addTask(foo.getTaskDefinition())
 }
+
