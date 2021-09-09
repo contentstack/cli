@@ -1,18 +1,8 @@
-module.exports = migration => {
-  const blog = migration.editContentType('blog')
 
-  blog.editField('main_change_kia')
-  .display_name('Blog hello')
+module.exports = ({migration}) => {
+  const foo = migration.editContentType('foo3')
+  foo.editField('facebook_link')
+  .display_name('Facebook Link')
   .mandatory(false)
-
-  blog.editField('category')
-  .display_name('Blog hello')
-  .mandatory(false)
-
-  blog.createField('credits')
-  .display_name('Credits')
-  .data_type('text')
-  .mandatory(false)
-
-  migrations.deleteContentType('foo2')
+  migration.addTask(foo.getTaskDefinition())
 }
