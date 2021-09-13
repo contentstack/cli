@@ -54,7 +54,7 @@ const setupBranches = async (config, branch) => {
     // add branches list in the
     config.branches = branches;
   } catch (error) {
-    console.log("failed to setup the branch", error && error.body);
+    console.log("failed to setup the branch");
   }
 };
 
