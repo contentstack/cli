@@ -132,7 +132,7 @@ UnpublishCommand.flags = {
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
   onlyAssets: flags.boolean({description: 'Unpublish only assets', default: false}),
   onlyEntries: flags.boolean({description: 'Unpublish only entries', default: false}),
-  branch: flags.string({char: 'n', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
+  branch: flags.string({char: 'B', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
 }
 
 UnpublishCommand.examples = [
@@ -158,8 +158,8 @@ UnpublishCommand.examples = [
   'csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only entries, all entries, from the source environment)',
   'csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only entries, (from CONTENT TYPE) from the source environment)',
   '',
-  'Using --branch or -n flag',
-  'csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -n [BRANCH NAME]',
+  'Using --branch or -B flag',
+  'csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]',
 ]
 
 module.exports = UnpublishCommand
