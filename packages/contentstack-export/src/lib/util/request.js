@@ -48,7 +48,7 @@ var makeCall = module.exports = function(req, RETRY) {
           return resolve(response);
         } else if (response.statusCode === 429) {
           timeDelay = Math.pow(Math.SQRT2, RETRY) * 100;
-          console.log(`API rate limit exceeded.\nReceived ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
+          // console.log(`API rate limit exceeded.\nReceived ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
           console.log(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`);
           return setTimeout(function (req, RETRY) {
             return makeCall(req, RETRY)
@@ -58,7 +58,7 @@ var makeCall = module.exports = function(req, RETRY) {
         } else if (response.statusCode >= 500) {
           // retry, with delay
           timeDelay = Math.pow(Math.SQRT2, RETRY) * 100;
-          console.log(`Recevied ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
+          // console.log(`Recevied ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
           console.log(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`);
           RETRY++;
           return setTimeout(function (req, RETRY) {
@@ -67,8 +67,6 @@ var makeCall = module.exports = function(req, RETRY) {
               .catch(reject);
           }, timeDelay, req, RETRY);
         } else {
-          console.log(`Request failed\n${JSON.stringify(req)}`);
-          console.log(`Response received\n${JSON.stringify(response)}`);
           return reject(response);
         }
       }).catch(reject);
