@@ -24,9 +24,10 @@ class AddFieldsCommand extends Command {
         }
         updatedFlags.bulkPublish = (updatedFlags.bulkPublish === 'false') ? false : true
         await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
-        config = { 
+        config = {
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma
+          host: this.config.userConfig.getRegion().cma,
+          branch: flags.branch,
         }
         stack = getStack(config)
       }
@@ -97,7 +98,8 @@ AddFieldsCommand.flags = {
   locales: flags.string({char: 'l', description: 'Locales to which entries need to be published', multiple: true}),
   environments: flags.string({char: 'e', description: 'Environments to which entries need to be published', multiple: true}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
+  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
+  branch: flags.string({char: 'n', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
 }
 
 AddFieldsCommand.examples = [
@@ -111,7 +113,10 @@ AddFieldsCommand.examples = [
   '',
   'Using --retryFailed or -r flag',
   'csdx cm:bulk-publish:add-fields --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:add-fields -r [LOG FILE NAME]'
+  'csdx cm:bulk-publish:add-fields -r [LOG FILE NAME]',
+  '',
+  'Using --branch or -n flag',
+  'csdx cm:bulk-publish:add-fields -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -n [BRANCH NAME]',
 ]
 
 module.exports = AddFieldsCommand
