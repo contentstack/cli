@@ -103,7 +103,7 @@ class CrossPublishCommand extends Command {
 
   async confirmFlags(flags) {
     prettyPrint(flags)
-    if(flags.yes) {
+    if (flags.yes) {
       return true
     }
     const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')
@@ -129,7 +129,7 @@ CrossPublishCommand.flags = {
   destEnv: flags.string({char: 'd', description: 'Destination Environments', multiple: true}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
-  branch: flags.string({char: 'n', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
+  branch: flags.string({char: 'B', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
 }
 
 CrossPublishCommand.examples = [
@@ -145,8 +145,8 @@ CrossPublishCommand.examples = [
   'csdx cm:bulk-publish:cross-publish --retryFailed [LOG FILE NAME]',
   'csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]',
   '',
-  'Using --branch or -n flag',
-  'csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -n [BRANCH NAME]',
+  'Using --branch or -B flag',
+  'csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]',
 ]
 
 module.exports = CrossPublishCommand

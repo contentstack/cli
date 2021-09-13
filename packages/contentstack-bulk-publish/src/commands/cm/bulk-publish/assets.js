@@ -99,7 +99,7 @@ AssetsCommand.flags = {
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
   locales: flags.string({char: 'l', description: 'Locales to which assets need to be published', multiple: true}),
-  branch: flags.string({char: 'n', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
+  branch: flags.string({char: 'B', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
 }
 
 AssetsCommand.examples = [
@@ -115,8 +115,8 @@ AssetsCommand.examples = [
   'csdx cm:bulk-publish:assets --retryFailed [LOG FILE NAME]',
   'csdx cm:bulk-publish:assets -r [LOG FILE NAME]',
   '',
-  'Using --branch or -n flag',
-  'csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -n [BRANCH NAME]',
+  'Using --branch or -B flag',
+  'csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]',
 ]
 
 module.exports = AssetsCommand
