@@ -106,7 +106,7 @@ EntryEditsCommand.flags = {
   environments: flags.string({char: 'e', description: 'Destination environments', multiple: true}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
-  branch: flags.string({char: 'n', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
+  branch: flags.string({char: 'B', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
 }
 
 EntryEditsCommand.examples = [
@@ -122,8 +122,8 @@ EntryEditsCommand.examples = [
   'csdx cm:bulk-publish:entry-edits --retryFailed [LOG FILE NAME]',
   'csdx cm:bulk-publish:entry-edits -r [LOG FILE NAME]',
   '',
-  'Using --branch or -n flag',
-  'csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -n [BRANCH NAME]',
+  'Using --branch or -B flag',
+  'csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]',
 ]
 
 module.exports = EntryEditsCommand
