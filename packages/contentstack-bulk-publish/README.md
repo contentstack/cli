@@ -17,7 +17,7 @@ $ npm install -g @contentstack/cli-cm-bulk-publish
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bulk-publish/0.1.1-beta.2 linux-x64 node-v12.22.1
+@contentstack/cli-cm-bulk-publish/0.1.1-beta.2 linux-x64 node-v12.18.4
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -70,6 +70,9 @@ OPTIONS
 
   -l, --locales=locales            Locales to which entries need to be published
 
+  -n, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
+                                   branch)
+
   -r, --retryFailed=retryFailed    Retry publishing failed entries from the logfile (optional, overrides all other
                                    flags)
 
@@ -97,6 +100,10 @@ EXAMPLES
   Using --retryFailed or -r flag
   csdx cm:bulk-publish:add-fields --retryFailed [LOG FILE NAME]
   csdx cm:bulk-publish:add-fields -r [LOG FILE NAME]
+
+  Using --branch or -n flag
+  csdx cm:bulk-publish:add-fields -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] 
+  [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -n [BRANCH NAME]
 ```
 
 _See code: [src/commands/cm/bulk-publish/add-fields.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js)_
@@ -120,6 +127,9 @@ OPTIONS
   -e, --environments=environments  Environments to which assets need to be published
 
   -l, --locales=locales            Locales to which assets need to be published
+
+  -n, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
+                                   branch)
 
   -r, --retryFailed=retryFailed    Retry publishing failed assets from the logfile (optional, will override all other
                                    flags)
@@ -146,6 +156,10 @@ EXAMPLES
   Using --retryFailed or -r flag
   csdx cm:bulk-publish:assets --retryFailed [LOG FILE NAME]
   csdx cm:bulk-publish:assets -r [LOG FILE NAME]
+
+  Using --branch or -n flag
+  csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -n [BRANCH 
+  NAME]
 ```
 
 _See code: [src/commands/cm/bulk-publish/assets.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js)_
@@ -212,6 +226,9 @@ OPTIONS
 
   -l, --locale=locale                Locale filter
 
+  -n, --branch=branch                [default: master] Specify the branch to fetch the content from (default is master
+                                     branch)
+
   -r, --retryFailed=retryFailed      Retry publishing failed entries from the logfile (optional, overrides all other
                                      flags)
 
@@ -240,6 +257,10 @@ EXAMPLES
   Using --retryFailed or -r flag
   csdx cm:bulk-publish:cross-publish --retryFailed [LOG FILE NAME]
   csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]
+
+  Using --branch or -n flag
+  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
+  [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -n [BRANCH NAME]
 ```
 
 _See code: [src/commands/cm/bulk-publish/cross-publish.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
@@ -264,6 +285,9 @@ OPTIONS
   -e, --environments=environments  Environments to which entries need to be published
 
   -l, --locales=locales            Locales to which entries need to be published
+
+  -n, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
+                                   branch)
 
   -o, --publishAllContentTypes     Publish all content-types (optional, cannot be set when contentTypes flag is set)
 
@@ -295,6 +319,10 @@ EXAMPLES
   Using --retryFailed or -r flag
   csdx cm:bulk-publish:entries --retryFailed [LOG FILE NAME]
   csdx cm:bulk-publish:entries -r [LOG FILE NAME]
+
+  Using --branch or -n flag
+  csdx cm:bulk-publish:entries -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] 
+  [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -n [BRANCH NAME]
 ```
 
 _See code: [src/commands/cm/bulk-publish/entries.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entries.js)_
@@ -318,6 +346,9 @@ OPTIONS
   -e, --environments=environments  Destination environments
 
   -l, --locales=locales            Locales to which edited entries need to be published
+
+  -n, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
+                                   branch)
 
   -r, --retryFailed=retryFailed    Retry publishing failed entries from the logfile (optional, overrides all other
                                    flags)
@@ -349,6 +380,10 @@ EXAMPLES
   Using --retryFailed or -r flag
   csdx cm:bulk-publish:entry-edits --retryFailed [LOG FILE NAME]
   csdx cm:bulk-publish:entry-edits -r [LOG FILE NAME]
+
+  Using --branch or -n flag
+  csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 
+  2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -n [BRANCH NAME]
 ```
 
 _See code: [src/commands/cm/bulk-publish/entry-edits.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entry-edits.js)_
@@ -370,6 +405,9 @@ OPTIONS
   -c, --config=config              Path to config file to be used
 
   -e, --environments=environments  Destination environments
+
+  -n, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
+                                   branch)
 
   -r, --retryFailed=retryFailed    Retry publishing failed entries from the logfile
 
@@ -400,6 +438,10 @@ EXAMPLES
   Using --retryFailed or -r flag
   csdx cm:bulk-publish:nonlocalized-field-changes --retryFailed [LOG FILE NAME]
   csdx cm:bulk-publish:nonlocalized-field-changes -r [LOG FILE NAME]
+
+  Using --branch or -n flag
+  csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
+  2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -n [BRANCH NAME]
 ```
 
 _See code: [src/commands/cm/bulk-publish/nonlocalized-field-changes.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
@@ -451,6 +493,9 @@ OPTIONS
   -e, --environment=environment      Source Environment
 
   -l, --locale=locale                Locale filter
+
+  -n, --branch=branch                [default: master] Specify the branch to fetch the content from (default is master
+                                     branch)
 
   -r, --retryFailed=retryFailed      Retry publishing failed entries from the logfile
 
@@ -504,6 +549,10 @@ EXAMPLES
   entries, all entries, from the source environment)
   csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries 
   (Will unpublish only entries, (from CONTENT TYPE) from the source environment)
+
+  Using --branch or -n flag
+  csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x 
+  [DELIVERY TOKEN] -n [BRANCH NAME]
 ```
 
 _See code: [src/commands/cm/bulk-publish/unpublish.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublish.js)_
@@ -527,6 +576,9 @@ OPTIONS
   -e, --environments=environments  Destination environments
 
   -l, --locale=locale              Source locale
+
+  -n, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
+                                   branch)
 
   -r, --retryFailed=retryFailed    Retry publishing failed entries from the logfile
 
@@ -556,6 +608,10 @@ EXAMPLES
   Using --retryFailed or -r flag
   csdx cm:bulk-publish:unpublished-entries --retryFailed [LOG FILE NAME]
   csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]
+
+  Using --branch or -n flag
+  csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] 
+  -n [BRANCH NAME]
 ```
 
 _See code: [src/commands/cm/bulk-publish/unpublished-entries.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
