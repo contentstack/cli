@@ -108,7 +108,7 @@ EntriesCommand.flags = {
   environments: flags.string({char: 'e', description: 'Environments to which entries need to be published', multiple: true}),
   config: flags.string({char: 'c', description: 'Path for the external config file to be used (A new config file can be generated at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`)'}),
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
-  branch: flags.string({char: 'n', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
+  branch: flags.string({char: 'B', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
 }
 
 EntriesCommand.examples = [
@@ -124,8 +124,8 @@ EntriesCommand.examples = [
   'csdx cm:bulk-publish:entries --retryFailed [LOG FILE NAME]',
   'csdx cm:bulk-publish:entries -r [LOG FILE NAME]',
   '',
-  'Using --branch or -n flag',
-  'csdx cm:bulk-publish:entries -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -n [BRANCH NAME]',
+  'Using --branch or -B flag',
+  'csdx cm:bulk-publish:entries -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]',
 ]
 
 module.exports = EntriesCommand
