@@ -26,7 +26,8 @@ class UnpublishedEntriesCommand extends Command {
         await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
         config = { 
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma
+          host: this.config.userConfig.getRegion().cma,
+          branch: flags.branch,
         }
         stack = getStack(config)
       }
@@ -102,7 +103,8 @@ UnpublishedEntriesCommand.flags = {
   locale: flags.string({char: 'l', description: 'Source locale'}),
   environments: flags.string({char: 'e', description: 'Destination environments', multiple: true}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
+  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
+  branch: flags.string({char: 'B', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
 }
 
 UnpublishedEntriesCommand.examples = [
@@ -116,7 +118,10 @@ UnpublishedEntriesCommand.examples = [
   '',
   'Using --retryFailed or -r flag',
   'csdx cm:bulk-publish:unpublished-entries --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]'
+  'csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]',
+  '',
+  'Using --branch or -B flag',
+  'csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]',
 ]
 
 module.exports = UnpublishedEntriesCommand

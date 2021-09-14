@@ -24,7 +24,8 @@ class NonlocalizedFieldChangesCommand extends Command {
         await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
         config = { 
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma
+          host: this.config.userConfig.getRegion().cma,
+          branch: flags.branch,
         }
         stack = getStack(config)
       }
@@ -96,7 +97,8 @@ NonlocalizedFieldChangesCommand.flags = {
   contentTypes: flags.string({char: 't', description: 'The Content-Types from which entries need to be published', multiple: true}),
   environments: flags.string({char: 'e', description: 'Destination environments', multiple: true}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
+  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
+  branch: flags.string({char: 'B', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
 }
 
 NonlocalizedFieldChangesCommand.examples = [
@@ -110,7 +112,10 @@ NonlocalizedFieldChangesCommand.examples = [
   '',
   'Using --retryFailed or -r flag',
   'csdx cm:bulk-publish:nonlocalized-field-changes --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:nonlocalized-field-changes -r [LOG FILE NAME]'
+  'csdx cm:bulk-publish:nonlocalized-field-changes -r [LOG FILE NAME]',
+  '',
+  'Using --branch or -B flag',
+  'csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]',
 ]
 
 module.exports = NonlocalizedFieldChangesCommand
