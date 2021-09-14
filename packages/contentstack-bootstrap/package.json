@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-bootstrap",
   "description": "Bootstrap contentstack apps",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
@@ -10,7 +10,7 @@
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepack": "npm run build && oclif-dev manifest && oclif-dev readme",
     "version": "oclif-dev readme && git add README.md",
     "test": "npm run build && npm run test:e2e",
     "test:e2e": "nyc mocha \"test/**/*.test.js\"",
@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@contentstack/cli-command": "^0.1.1-beta.1",
-    "@contentstack/cli-cm-seed": "1.0.6",
+    "@contentstack/cli-cm-seed": "^1.0.7",
     "@contentstack/management": "^1.2.1",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
@@ -53,6 +53,7 @@
   },
   "files": [
     "/lib",
+    "/messages",
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
