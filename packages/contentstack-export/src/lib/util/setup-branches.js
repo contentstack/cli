@@ -44,7 +44,7 @@ const setupBranches = async (config, branch) => {
       ) {
         branches = result.body.branches;
       } else {
-        branches.push("master");
+        branches.push("main");
       }
     }
 
