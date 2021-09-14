@@ -131,6 +131,11 @@ module.exports = async ({migration, stackSDKInstance}) => {
   .data_type('text')
   .mandatory(true)
 
+  author.createField('url')
+  .display_name('URL')
+  .data_type('text')
+  .mandatory(true)
+  
   author.createField('firstname')
   .display_name('First Name')
   .data_type('text')
