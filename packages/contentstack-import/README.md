@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-import/0.1.1-beta.6 darwin-x64 node-v13.14.0
+@contentstack/cli-cm-import/0.1.1-beta.6 linux-x64 node-v12.22.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -39,6 +39,7 @@ OPTIONS
   -b, --backup-dir=backup-dir                          [optional] backup directory name when using specific module
   -c, --config=config                                  [optional] path of config file
   -d, --data=data                                      path and location where data is stored
+  -f, --branch=branch                                  [optional] branch name
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the target stack
 
@@ -54,6 +55,7 @@ EXAMPLES
   csdx cm:import -a <management_token_alias> -d <path/of/export/destination/dir>
   csdx cm:import -a <management_token_alias> -c <path/of/config/file>
   csdx cm:import -A -m <single module name>
+  csdx cm:import -A -f <branch name>
 ```
 
 _See code: [src/commands/cm/import.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/packages/contentstack-import/src/commands/cm/import.js)_

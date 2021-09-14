@@ -21,12 +21,17 @@ USAGE
   $ csdx cm:seed
 
 OPTIONS
-  -r, --repo=repo  GitHub account or GitHub account/repository
+  -n, --stack-name=stack-name  Name of a new stack that needs to be created.
+  -o, --org=org                Provide Organization UID to create a new stack
+  -r, --repo=repo              GitHub account or GitHub account/repository
+  -s, --stack=stack            Provide stack UID to seed content to
 
 EXAMPLES
   $ csdx cm:seed
   $ csdx cm:seed -r "account"
   $ csdx cm:seed -r "account/repository"
+  $ csdx cm:seed -r "account/repository" -s "stack-uid" //seed content into specific stack
+  $ csdx cm:seed -r "account/repository" -o "your-org-uid" -n "stack-name" //create a new stack in given org uid
 ```
 
 _See code: [src/commands/cm/seed.ts](https://github.com/contentstack/cli/blob/v1.0.6/src/commands/cm/seed.ts)_
