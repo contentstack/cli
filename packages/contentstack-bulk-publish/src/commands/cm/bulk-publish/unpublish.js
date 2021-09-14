@@ -132,7 +132,7 @@ UnpublishCommand.flags = {
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
   onlyAssets: flags.boolean({description: 'Unpublish only assets', default: false}),
   onlyEntries: flags.boolean({description: 'Unpublish only entries', default: false}),
-  branch: flags.string({char: 'B', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
+  branch: flags.string({char: 'B', default: 'main', description: 'Specify the branch to fetch the content from (default is main branch)'}),
 }
 
 UnpublishCommand.examples = [
