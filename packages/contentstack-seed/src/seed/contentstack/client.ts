@@ -25,7 +25,7 @@ export interface CreateStackOptions {
 export default class ContentstackClient {
   instance: AxiosInstance;
 
-  limit: number | 100;
+  limit: number;
 
   constructor(cmaHost: string, authToken: string, limit: number) {
     this.instance = axios.create({
@@ -34,7 +34,7 @@ export default class ContentstackClient {
         authtoken: authToken,
       },
     })
-    this.limit = limit
+    this.limit = limit || 100
   }
 
   async getOrganization(org_uid: string): Promise<Organization> {
