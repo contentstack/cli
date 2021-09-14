@@ -402,7 +402,7 @@ Adds custom task in migration to execute.
 | --- | --- | --- |
 | taskDescription | <code>Object</code> | Task title and task function to execute |
 | taskDescription.title | <code>string</code> | Title for custom task |
-| taskDescription.tasks | <code>array</code> | async function to be executed |
+| taskDescription.task | <code>array</code> | async function to be executed |
 | taskDescription.failMessage | <code>string</code> | message to be printed when task fails |
 | taskDescription.successMessage | <code>string</code> | message to be printed when task succeeds |
 
