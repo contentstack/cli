@@ -34,6 +34,7 @@ class UnpublishCommand extends Command {
           alias: updatedFlags.alias,
           host: this.config.userConfig.getRegion().cma,
           cda: this.config.userConfig.getRegion().cda,
+          branch: flags.branch,
         }
         stack = getStack(config)
       }
@@ -131,6 +132,7 @@ UnpublishCommand.flags = {
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
   onlyAssets: flags.boolean({description: 'Unpublish only assets', default: false}),
   onlyEntries: flags.boolean({description: 'Unpublish only entries', default: false}),
+  branch: flags.string({char: 'B', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
 }
 
 UnpublishCommand.examples = [
@@ -155,6 +157,9 @@ UnpublishCommand.examples = [
   'Using --onlyEntries',
   'csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only entries, all entries, from the source environment)',
   'csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only entries, (from CONTENT TYPE) from the source environment)',
+  '',
+  'Using --branch or -B flag',
+  'csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]',
 ]
 
 module.exports = UnpublishCommand
