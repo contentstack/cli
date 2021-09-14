@@ -2,23 +2,60 @@ Contentstack CLI’s “Bootstrap” plugin enables you to automate the process 
 
 This means that all the required steps such as stack, environment, and content type creation, entry and asset publishing are performed just by using a single command.
 
-Usage:
-$ csdx cm:bootstrap
+<!-- toc -->
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
+# Usage
+<!-- usage -->
+```sh-session
+$ npm install -g @contentstack/cli-cm-bootstrap
+$ csdx COMMAND
+running command...
+$ csdx (-v|--version|version)
+@contentstack/cli-cm-bootstrap/1.0.1 linux-x64 node-v12.22.1
+$ csdx --help [COMMAND]
+USAGE
+  $ csdx COMMAND
+...
+```
+<!-- usagestop -->
+```sh-session
+$ npm install -g @contentstack/cli-cm-clone
+$ csdx COMMAND
+running command...
+$ csdx --help [COMMAND]
+USAGE
+  $ csdx COMMAND
+...
+```
+# Commands
+<!-- commands -->
+* [`csdx cm:bootstrap`](#csdx-cmbootstrap)
 
-After running the “Bootstrap” command, follow the steps below to complete the setup:
+## `csdx cm:bootstrap`
 
-App Preference: Select the app (starter or sample) you want to clone from the list of available options.
-Technology: Select the app framework (React, Angular, Node, and so on) in which you want to set up the project.
-Path: Provide the destination folder path/location where the app will be cloned.
-Organization name: Select your organization name from the provided list.
-Stack: Select the stack where you want to import the content of the app. You can also create a new stack and for the import operation.
+Bootstrap contentstack apps
 
-These steps will help you kickstart your app.
-$ csdx cm:bootstrap -s <sampleapp or starterapp> -t <optional github private repo token> -a <app name> -d <path or the location of the folder to clone the app>
+```
+USAGE
+  $ csdx cm:bootstrap
 
-Options:
+OPTIONS
+  -a, --appName=appName          App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter,
+                                 nuxt-starter
 
--s, sampleapp or starterapp: The type of app you want to clone.
- -t: (optional) The token of your private repo to access the project.
--a, --appName: The app name, eg. Gatsby, Next, Nuxt, etc.
--d, --data: Specify the path or the location of the folder to clone the app.
+  -d, --directory=directory      Directory to setup the project. If directory name has a space then provide the path as
+                                 a string or escap the space using back slash eg: "../../test space" or ../../test\
+                                 space
+
+  -t, --accessToken=accessToken  Access token for private github repo
+
+EXAMPLES
+  $ csdx cm:bootstrap
+  $ csdx cm:bootstrap -d <path/to/setup/the/app>
+  $ csdx cm:bootstrap -t <github access token>
+```
+
+_See code: [src/commands/cm/bootstrap.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/cm/bootstrap.ts)_
+<!-- commandsstop -->

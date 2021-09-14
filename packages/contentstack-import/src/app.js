@@ -62,13 +62,13 @@ let singleImport = async (moduleName, types, config) => {
   return new Promise(async (resolve, reject) => {
     if (types.indexOf(moduleName) > -1) {
       if (!config.master_locale) {
-        await stackDetails(config).then(stackResponse => {
-          let master_locale = { code: stackResponse.master_locale }
+        try {
+          var masterLocalResponse = await util.masterLocalDetails(config)
+          let master_locale = { code: masterLocalResponse.code }
           config['master_locale'] = master_locale
-          return
-        }).catch(error => {
+        } catch (error) {
           console.log("Error to fetch the stack details" + error);
-        })
+        }
       }
       let exportedModule = require('./lib/import/' + moduleName)
       exportedModule.start(config).then(async function () {
