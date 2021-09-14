@@ -1,5 +1,5 @@
 module.exports = ({migration}) => {
-  const foo = migration.editContentType('author')
+  const foo = migration.editContentType('author6')
 
   foo.createField('facebook_link')
   .display_name('facebook')
