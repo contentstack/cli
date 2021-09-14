@@ -1,10 +1,11 @@
 const {Command, flags} = require('@oclif/command')
 const {start} = require('../../../producer/publish-edits')
 const store = require('../../../util/store.js')
+// eslint-disable-next-line node/no-extraneous-require
 const {cli} = require('cli-ux')
 const configKey = 'publish_edits_on_env'
-const { prettyPrint, formatError } = require('../../../util')
-const { getStack } = require('../../../util/client.js')
+const {prettyPrint, formatError} = require('../../../util')
+const {getStack} = require('../../../util/client.js')
 let config
 
 class EntryEditsCommand extends Command {
@@ -13,31 +14,32 @@ class EntryEditsCommand extends Command {
     let updatedFlags
     try {
       updatedFlags = (flags.config) ? store.updateMissing(configKey, flags) : flags
-    } catch(error) {
+    } catch (error) {
       this.error(error.message, {exit: 2})
     }
     if (this.validate(updatedFlags)) {
       let stack
-      if (!updatedFlags.retryFailed) { 
-        if(!updatedFlags.alias) {
+      if (!updatedFlags.retryFailed) {
+        if (!updatedFlags.alias) {
           updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used')
         }
-        updatedFlags.bulkPublish = (updatedFlags.bulkPublish === 'false') ? false : true
+        updatedFlags.bulkPublish = updatedFlags.bulkPublish !== 'false'
         await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
-        config = { 
+        config = {
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma
+          host: this.config.userConfig.getRegion().cma,
+          branch: flags.branch,
         }
         stack = getStack(config)
       }
-      if(await this.confirmFlags(updatedFlags)) {
+      if (await this.confirmFlags(updatedFlags)) {
         try {
           if (!updatedFlags.retryFailed) {
             await start(updatedFlags, stack, config)
           } else {
             await start(updatedFlags)
           }
-        } catch(error) {
+        } catch (error) {
           let message = formatError(error)
           this.error(message, {exit: 2})
         }
@@ -78,7 +80,7 @@ class EntryEditsCommand extends Command {
 
   async confirmFlags(flags) {
     prettyPrint(flags)
-    if(flags.yes) {
+    if (flags.yes) {
       return true
     }
     const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')
@@ -103,7 +105,8 @@ EntryEditsCommand.flags = {
   locales: flags.string({char: 'l', description: 'Locales to which edited entries need to be published', multiple: true}),
   environments: flags.string({char: 'e', description: 'Destination environments', multiple: true}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }), 
+  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
+  branch: flags.string({char: 'B', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
 }
 
 EntryEditsCommand.examples = [
@@ -117,7 +120,10 @@ EntryEditsCommand.examples = [
   '',
   'Using --retryFailed or -r flag',
   'csdx cm:bulk-publish:entry-edits --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:entry-edits -r [LOG FILE NAME]'
+  'csdx cm:bulk-publish:entry-edits -r [LOG FILE NAME]',
+  '',
+  'Using --branch or -B flag',
+  'csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]',
 ]
 
 module.exports = EntryEditsCommand
