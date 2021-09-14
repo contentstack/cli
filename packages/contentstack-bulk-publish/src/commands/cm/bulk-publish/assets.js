@@ -28,9 +28,10 @@ class AssetsCommand extends Command {
           updatedFlags.folderUid = 'cs_root'
         }
         await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
-        config = { 
+        config = {
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma
+          host: this.config.userConfig.getRegion().cma,
+          branch: flags.branch,
         }
         stack = getStack(config)
       }
@@ -96,8 +97,9 @@ AssetsCommand.flags = {
   folderUid: flags.string({char: 'u', description: '[default: cs_root] Folder-uid from which the assets need to be published'}),
   bulkPublish: flags.string({char: 'b', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true'}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
-  locales: flags.string({char: 'l', description: 'Locales to which assets need to be published', multiple: true }),
+  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
+  locales: flags.string({char: 'l', description: 'Locales to which assets need to be published', multiple: true}),
+  branch: flags.string({char: 'B', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
 }
 
 AssetsCommand.examples = [
@@ -111,7 +113,10 @@ AssetsCommand.examples = [
   '',
   'Using --retryFailed or -r flag',
   'csdx cm:bulk-publish:assets --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:assets -r [LOG FILE NAME]'
+  'csdx cm:bulk-publish:assets -r [LOG FILE NAME]',
+  '',
+  'Using --branch or -B flag',
+  'csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]',
 ]
 
 module.exports = AssetsCommand
