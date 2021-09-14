@@ -38,7 +38,8 @@ class ImportCommand extends Command {
             moduleName,
             host,
             _authToken,
-            branchName
+            branchName,
+            backupdir
           )
           .then(() => {
             return resolve()
@@ -50,7 +51,8 @@ class ImportCommand extends Command {
             moduleName,
             host,
             _authToken,
-            branchName
+            branchName,
+            backupdir
           )
           .then(() => {
             return resolve()
@@ -61,7 +63,8 @@ class ImportCommand extends Command {
             moduleName,
             host,
             _authToken,
-            branchName
+            branchName,
+            backupdir
           )
           .then(() => {
             return resolve()
@@ -77,7 +80,8 @@ class ImportCommand extends Command {
           _authToken,
           moduleName,
           host,
-          branchName
+          branchName,
+          backupdir
         )
         .then(() => {
           return resolve()
@@ -122,6 +126,8 @@ ImportCommand.examples = [
   `csdx cm:import -A`, 
   `csdx cm:import -A -s <stack_ApiKey> -d <path/of/export/destination/dir>`,
   `csdx cm:import -A -c <path/of/config/dir>`,
+  `csdx cm:import -A -m <single module name>`,
+  `csdx cm:import -A -m <single module name> -b <backup dir>`,
   `csdx cm:import -a <management_token_alias>`,
   `csdx cm:import -a <management_token_alias> -d <path/of/export/destination/dir>`,
   `csdx cm:import -a <management_token_alias> -c <path/of/config/file>`,
