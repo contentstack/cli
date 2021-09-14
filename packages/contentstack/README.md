@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.8 darwin-x64 node-v13.14.0
+@contentstack/cli/0.1.1-beta.8 linux-x64 node-v12.22.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -819,10 +819,12 @@ USAGE
 OPTIONS
   -A, --auth-token                                     to use auth token
   -a, --management-token-alias=management-token-alias  alias of the management token
+  -b, --branch=branch                                  [optional] branch name
   -c, --config=config                                  [optional] path of the config
   -d, --data=data                                      path or location to store the data
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
+  -t, --content-type=content-type                      [optional] content type
 
 DESCRIPTION
   ...
@@ -836,9 +838,11 @@ EXAMPLES
   csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
   csdx cm:export -a <management_token_alias> -c <path/to/config/file>
   csdx cm:export -A -m <single module name>
+  csdx cm:export -A -m <single module name> -t <content type>
+  csdx cm:export -A -b [optional] branch name
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-export/src/commands/cm/export.js)_
 
 ## `csdx cm:export-to-csv`
 
@@ -873,6 +877,7 @@ OPTIONS
   -b, --backup-dir=backup-dir                          [optional] backup directory name when using specific module
   -c, --config=config                                  [optional] path of config file
   -d, --data=data                                      path and location where data is stored
+  -f, --branch=branch                                  [optional] branch name
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the target stack
 
@@ -888,9 +893,10 @@ EXAMPLES
   csdx cm:import -a <management_token_alias> -d <path/of/export/destination/dir>
   csdx cm:import -a <management_token_alias> -c <path/of/config/file>
   csdx cm:import -A -m <single module name>
+  csdx cm:import -A -f <branch name>
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.4/packages/contentstack-import/src/commands/cm/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/packages/contentstack-import/src/commands/cm/import.js)_
 
 ## `csdx cm:seed`
 
@@ -903,12 +909,17 @@ USAGE
   $ csdx cm:seed
 
 OPTIONS
-  -r, --repo=repo  GitHub account or GitHub account/repository
+  -n, --stack-name=stack-name  Name of a new stack that needs to be created.
+  -o, --org=org                Provide Organization UID to create a new stack
+  -r, --repo=repo              GitHub account or GitHub account/repository
+  -s, --stack=stack            Provide stack UID to seed content to
 
 EXAMPLES
   $ csdx cm:seed
   $ csdx cm:seed -r "account"
   $ csdx cm:seed -r "account/repository"
+  $ csdx cm:seed -r "account/repository" -s "stack-uid" //seed content into specific stack
+  $ csdx cm:seed -r "account/repository" -o "your-org-uid" -n "stack-name" //create a new stack in given org uid
 ```
 
 _See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.6/src/commands/cm/seed.ts)_
