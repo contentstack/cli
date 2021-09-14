@@ -1,29 +1,33 @@
-@contentstack/cli
-===
+# @contentstack/cli
 
 Use Contentstack Command-line Interface to command Contentstack for executing a set of operations from the terminal. To get started with CLI, refer to the [CLI documentation](https://www.contentstack.com/docs/developers/cli/).
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
+* [@contentstack/cli](#contentstackcli)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
 ```sh-session
 $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.8 linux-x64 node-v12.22.1
+@contentstack/cli/0.1.1-beta.12 linux-x64 node-v12.22.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
 * [`csdx auth:login`](#csdx-authlogin)
 * [`csdx auth:logout`](#csdx-authlogout)
@@ -31,6 +35,7 @@ USAGE
 * [`csdx auth:tokens:add`](#csdx-authtokensadd)
 * [`csdx auth:tokens:remove`](#csdx-authtokensremove)
 * [`csdx auth:whoami`](#csdx-authwhoami)
+* [`csdx cm:bootstrap`](#csdx-cmbootstrap)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:bulk-publish:add-fields`](#csdx-cmbulk-publishadd-fields)
 * [`csdx cm:bulk-publish:assets`](#csdx-cmbulk-publishassets)
@@ -46,6 +51,8 @@ USAGE
 * [`csdx cm:export`](#csdx-cmexport)
 * [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
 * [`csdx cm:import`](#csdx-cmimport)
+* [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
+* [`csdx cm:migration`](#csdx-cmmigration)
 * [`csdx cm:seed`](#csdx-cmseed)
 * [`csdx cm:stack-clone`](#csdx-cmstack-clone)
 * [`csdx config:get:region`](#csdx-configgetregion)
@@ -194,6 +201,34 @@ ALIASES
 
 _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/whoami.js)_
 
+## `csdx cm:bootstrap`
+
+Bootstrap contentstack apps
+
+```
+Bootstrap contentstack apps
+
+USAGE
+  $ csdx cm:bootstrap
+
+OPTIONS
+  -a, --appName=appName          App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter,
+                                 nuxt-starter
+
+  -d, --directory=directory      Directory to setup the project. If directory name has a space then provide the path as
+                                 a string or escap the space using back slash eg: "../../test space" or ../../test\
+                                 space
+
+  -t, --accessToken=accessToken  Access token for private github repo
+
+EXAMPLES
+  $ csdx cm:bootstrap
+  $ csdx cm:bootstrap -d <path/to/setup/the/app>
+  $ csdx cm:bootstrap -t <github access token>
+```
+
+_See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/cm/bootstrap.ts)_
+
 ## `csdx cm:bulk-publish`
 
 Bulk Publish script for managing entries and assets
@@ -206,7 +241,7 @@ USAGE
   $ csdx cm:bulk-publish
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/index.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/index.js)_
 
 ## `csdx cm:bulk-publish:add-fields`
 
@@ -224,6 +259,9 @@ USAGE
   $ csdx cm:bulk-publish:add-fields
 
 OPTIONS
+  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
+                                   branch)
+
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -262,9 +300,13 @@ EXAMPLES
   Using --retryFailed or -r flag
   csdx cm:bulk-publish:add-fields --retryFailed [LOG FILE NAME]
   csdx cm:bulk-publish:add-fields -r [LOG FILE NAME]
+
+  Using --branch or -B flag
+  csdx cm:bulk-publish:add-fields -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] 
+  [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js)_
 
 ## `csdx cm:bulk-publish:assets`
 
@@ -282,6 +324,9 @@ USAGE
   $ csdx cm:bulk-publish:assets
 
 OPTIONS
+  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
+                                   branch)
+
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -318,9 +363,13 @@ EXAMPLES
   Using --retryFailed or -r flag
   csdx cm:bulk-publish:assets --retryFailed [LOG FILE NAME]
   csdx cm:bulk-publish:assets -r [LOG FILE NAME]
+
+  Using --branch or -B flag
+  csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH 
+  NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js)_
 
 ## `csdx cm:bulk-publish:clear`
 
@@ -338,7 +387,7 @@ OPTIONS
   -y, --yes   Delete all files without asking for confirmation
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/clear.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/clear.js)_
 
 ## `csdx cm:bulk-publish:configure`
 
@@ -375,7 +424,7 @@ DESCRIPTION
   EXAMPLE : cm:bulk-publish:configure -a [MANAGEMENT TOKEN Alias]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/configure.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/configure.js)_
 
 ## `csdx cm:bulk-publish:cross-publish`
 
@@ -393,6 +442,9 @@ USAGE
   $ csdx cm:bulk-publish:cross-publish
 
 OPTIONS
+  -B, --branch=branch                [default: master] Specify the branch to fetch the content from (default is master
+                                     branch)
+
   -a, --alias=alias                  Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish      [default: true] This flag is set to true by default. It indicates that
@@ -434,9 +486,13 @@ EXAMPLES
   Using --retryFailed or -r flag
   csdx cm:bulk-publish:cross-publish --retryFailed [LOG FILE NAME]
   csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]
+
+  Using --branch or -B flag
+  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
+  [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
 
 ## `csdx cm:bulk-publish:entries`
 
@@ -455,6 +511,9 @@ USAGE
   $ csdx cm:bulk-publish:entries
 
 OPTIONS
+  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
+                                   branch)
+
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -497,9 +556,13 @@ EXAMPLES
   Using --retryFailed or -r flag
   csdx cm:bulk-publish:entries --retryFailed [LOG FILE NAME]
   csdx cm:bulk-publish:entries -r [LOG FILE NAME]
+
+  Using --branch or -B flag
+  csdx cm:bulk-publish:entries -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] 
+  [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entries.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entries.js)_
 
 ## `csdx cm:bulk-publish:entry-edits`
 
@@ -518,6 +581,9 @@ USAGE
   $ csdx cm:bulk-publish:entry-edits
 
 OPTIONS
+  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
+                                   branch)
+
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -559,9 +625,13 @@ EXAMPLES
   Using --retryFailed or -r flag
   csdx cm:bulk-publish:entry-edits --retryFailed [LOG FILE NAME]
   csdx cm:bulk-publish:entry-edits -r [LOG FILE NAME]
+
+  Using --branch or -B flag
+  csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 
+  2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entry-edits.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entry-edits.js)_
 
 ## `csdx cm:bulk-publish:nonlocalized-field-changes`
 
@@ -580,6 +650,9 @@ USAGE
   $ csdx cm:bulk-publish:nonlocalized-field-changes
 
 OPTIONS
+  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
+                                   branch)
+
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -618,9 +691,13 @@ EXAMPLES
   Using --retryFailed or -r flag
   csdx cm:bulk-publish:nonlocalized-field-changes --retryFailed [LOG FILE NAME]
   csdx cm:bulk-publish:nonlocalized-field-changes -r [LOG FILE NAME]
+
+  Using --branch or -B flag
+  csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
+  2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
 
 ## `csdx cm:bulk-publish:revert`
 
@@ -653,7 +730,7 @@ EXAMPLES
   cm:bulk-publish:revert -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/revert.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/revert.js)_
 
 ## `csdx cm:bulk-publish:unpublish`
 
@@ -677,6 +754,9 @@ USAGE
   $ csdx cm:bulk-publish:unpublish
 
 OPTIONS
+  -B, --branch=branch                [default: master] Specify the branch to fetch the content from (default is master
+                                     branch)
+
   -a, --alias=alias                  Alias for the management token to be used
 
   -b, --bulkUnpublish=bulkUnpublish  [default: true] This flag is set to true by default. It indicates that
@@ -740,9 +820,13 @@ EXAMPLES
   entries, all entries, from the source environment)
   csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries 
   (Will unpublish only entries, (from CONTENT TYPE) from the source environment)
+
+  Using --branch or -B flag
+  csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x 
+  [DELIVERY TOKEN] -B [BRANCH NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublish.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublish.js)_
 
 ## `csdx cm:bulk-publish:unpublished-entries`
 
@@ -760,6 +844,9 @@ USAGE
   $ csdx cm:bulk-publish:unpublished-entries
 
 OPTIONS
+  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
+                                   branch)
+
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -799,9 +886,13 @@ EXAMPLES
   Using --retryFailed or -r flag
   csdx cm:bulk-publish:unpublished-entries --retryFailed [LOG FILE NAME]
   csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]
+
+  Using --branch or -B flag
+  csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] 
+  -B [BRANCH NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
 
 ## `csdx cm:export`
 
@@ -818,8 +909,8 @@ USAGE
 
 OPTIONS
   -A, --auth-token                                     to use auth token
+  -B, --branch=branch                                  [optional] branch name
   -a, --management-token-alias=management-token-alias  alias of the management token
-  -b, --branch=branch                                  [optional] branch name
   -c, --config=config                                  [optional] path of the config
   -d, --data=data                                      path or location to store the data
   -m, --module=module                                  [optional] specific module name
@@ -839,10 +930,10 @@ EXAMPLES
   csdx cm:export -a <management_token_alias> -c <path/to/config/file>
   csdx cm:export -A -m <single module name>
   csdx cm:export -A -m <single module name> -t <content type>
-  csdx cm:export -A -b [optional] branch name
+  csdx cm:export -A -B [optional] branch name
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/packages/contentstack-export/src/commands/cm/export.js)_
 
 ## `csdx cm:export-to-csv`
 
@@ -873,11 +964,11 @@ USAGE
 
 OPTIONS
   -A, --auth-token                                     to use auth token
+  -B, --branch=branch                                  [optional] branch name
   -a, --management-token-alias=management-token-alias  alias of the management token
   -b, --backup-dir=backup-dir                          [optional] backup directory name when using specific module
   -c, --config=config                                  [optional] path of config file
   -d, --data=data                                      path and location where data is stored
-  -f, --branch=branch                                  [optional] branch name
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the target stack
 
@@ -889,14 +980,91 @@ EXAMPLES
   csdx cm:import -A
   csdx cm:import -A -s <stack_ApiKey> -d <path/of/export/destination/dir>
   csdx cm:import -A -c <path/of/config/dir>
+  csdx cm:import -A -m <single module name>
+  csdx cm:import -A -m <single module name> -b <backup dir>
   csdx cm:import -a <management_token_alias>
   csdx cm:import -a <management_token_alias> -d <path/of/export/destination/dir>
   csdx cm:import -a <management_token_alias> -c <path/of/config/file>
   csdx cm:import -A -m <single module name>
-  csdx cm:import -A -f <branch name>
+  csdx cm:import -A -B <branch name>
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/packages/contentstack-import/src/commands/cm/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.7/packages/contentstack-import/src/commands/cm/import.js)_
+
+## `csdx cm:migrate-rte`
+
+Migration script for migrating HTML RTE to JSON RTE
+
+```
+Migration script for migrating HTML RTE to JSON RTE
+
+USAGE
+  $ csdx cm:migrate-rte
+
+OPTIONS
+  -a, --alias=alias                Alias for the management token to be used
+  -c, --content_type=content_type  The content-type from which entries need to be migrated
+  -d, --delay=delay                [default: 1000] Provide delay in ms between two entry update
+
+  -g, --isGlobalField              This flag is set to false by default. It indicates that current content-type is
+                                   global-field
+
+  -h, --htmlPath=htmlPath          Provide path of Html RTE to migrate
+
+  -j, --jsonPath=jsonPath          Provide path of JSON RTE to migrate
+
+  -p, --configPath=configPath      Path to config file to be used
+
+  -y, --yes                        Agree to process the command with the current configuration
+
+EXAMPLES
+  General Usage
+  csdx cm:migrate-rte -p path/to/config.json
+
+  Using Flags
+  csdx cm:migrate-rte -a alias -c content_type_uid -h htmlPath -j jsonPath
+
+  Nested RTE
+  csdx cm:migrate-rte -a alias -c content_type_uid -h modular_block_uid.block_uid.html_rte_uid -j 
+  modular_block_uid.block_uid.json_rte_uid
+
+  csdx cm:migrate-rte -a alias -c content_type_uid -h group_uid.html_rte_uid -j group_uid.json_rte_uid
+
+  Global Field
+  csdx cm:migrate-rte -a alias -c global_field_uid -g -h htmlPath -j jsonPath
+```
+
+_See code: [@contentstack/cli-cm-migrate-rte](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/cm/migrate-rte/index.js)_
+
+## `csdx cm:migration`
+
+Contentstack migration script.
+
+```
+Contentstack migration script.
+
+USAGE
+  $ csdx cm:migration
+
+OPTIONS
+  -A, --authtoken                                      Use this flag to use the auth token of the current session. After
+                                                       logging in CLI, an auth token is generated for each new session.
+
+  -a, --management-token-alias=management-token-alias  Use this flag to add the management token alias.
+
+  -b, --branch=branch                                  Use this flag to add the branch name where you want to perform
+                                                       the migration.
+
+  -k, --api-key=api-key                                With this flag add the API key of your stack.
+
+  -n, --filePath=filePath                              Use this flag to provide the path of the file of the migration
+                                                       script provided by the user.
+
+  --multi                                              This flag helps you to migrate multiple content files in a single
+                                                       instance.
+```
+
+_See code: [@contentstack/cli-migration](https://github.com/contentstack/cli-migration/blob/v0.1.1-beta.1/src/commands/cm/migration.js)_
 
 ## `csdx cm:seed`
 
@@ -922,7 +1090,7 @@ EXAMPLES
   $ csdx cm:seed -r "account/repository" -o "your-org-uid" -n "stack-name" //create a new stack in given org uid
 ```
 
-_See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.6/src/commands/cm/seed.ts)_
+_See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.7/src/commands/cm/seed.ts)_
 
 ## `csdx cm:stack-clone`
 
@@ -957,7 +1125,7 @@ USAGE
   $ csdx config:get:region
 ```
 
-_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.8/src/commands/config/get/region.js)_
+_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.12/src/commands/config/get/region.js)_
 
 ## `csdx config:set:region [REGION]`
 
@@ -989,7 +1157,7 @@ EXAMPLES
   --name="India"
 ```
 
-_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.8/src/commands/config/set/region.js)_
+_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.12/src/commands/config/set/region.js)_
 
 ## `csdx help [COMMAND]`
 

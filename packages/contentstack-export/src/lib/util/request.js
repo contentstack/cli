@@ -41,7 +41,7 @@ var makeCall = module.exports = function(req, RETRY) {
       } else if (RETRY > MAX_RETRY_LIMIT) {
         return reject(new Error('Max retry limit exceeded!'));
       }
-      console.log(`${req.method.toUpperCase()}: ${req.uri || req.url}`);
+      // console.log(`${req.method.toUpperCase()}: ${req.uri || req.url}`);
       return request(req).then(function (response) {
         var timeDelay;
         if (response.statusCode >= 200 && response.statusCode <= 399) {
