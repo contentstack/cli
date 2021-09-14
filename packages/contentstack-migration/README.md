@@ -20,7 +20,7 @@ $ npm install -g @contentstack/cli-migration
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-migration/0.0.0 darwin-x64 node-v13.14.0
+@contentstack/cli-migration/0.1.1-beta.1 linux-x64 node-v12.22.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -42,15 +42,24 @@ USAGE
   $ csdx cm:migration
 
 OPTIONS
-  -A, --authtoken                                      Use authtoken
-  -a, --management-token-alias=management-token-alias  Alias to be used
-  -b, --branch=branch                                  Branch name
-  -k, --api-key=api-key                                Api key along with authtoken to be used
-  -n, --filePath=filePath                              Provides filepath to migration script provided by user.
-  --multi                                              Supports multiple files
+  -A, --authtoken                                      Use this flag to use the auth token of the current session. After
+                                                       logging in CLI, an auth token is generated for each new session.
+
+  -a, --management-token-alias=management-token-alias  Use this flag to add the management token alias.
+
+  -b, --branch=branch                                  Use this flag to add the branch name where you want to perform
+                                                       the migration.
+
+  -k, --api-key=api-key                                With this flag add the API key of your stack.
+
+  -n, --filePath=filePath                              Use this flag to provide the path of the file of the migration
+                                                       script provided by the user.
+
+  --multi                                              This flag helps you to migrate multiple content files in a single
+                                                       instance.
 ```
 
-_See code: [src/commands/cm/migration.js](https://github.com/contentstack/cli-migration/blob/v0.0.0/src/commands/cm/migration.js)_
+_See code: [src/commands/cm/migration.js](https://github.com/contentstack/cli-migration/blob/v0.1.1-beta.1/src/commands/cm/migration.js)_
 <!-- commandsstop -->
 
 ### Points to remember
