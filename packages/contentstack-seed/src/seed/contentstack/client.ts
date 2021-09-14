@@ -25,13 +25,30 @@ export interface CreateStackOptions {
 export default class ContentstackClient {
   instance: AxiosInstance;
 
-  constructor(cmaHost: string, authToken: string) {
+  limit: number | 100;
+
+  constructor(cmaHost: string, authToken: string, limit: number) {
     this.instance = axios.create({
       baseURL: `https://${cmaHost}/v3/`,
       headers: {
         authtoken: authToken,
       },
     })
+    this.limit = limit
+  }
+
+  async getOrganization(org_uid: string): Promise<Organization> {
+    try {
+      const response = await this.instance.get(`/organizations/${org_uid}`)
+      const o = response.data.organization
+      return {
+        uid: o.uid,
+        name: o.name,
+        enabled: o.enabled,
+      } as Organization
+    } catch (error) {
+      throw this.buildError(error)
+    }
   }
 
   async getOrganizations(): Promise<Organization[]> {
@@ -39,18 +56,35 @@ export default class ContentstackClient {
       const response = await this.instance.get('/organizations', {
         params: {
           asc: 'name',
+          limit: this.limit,
         },
       })
 
-      const result = response.data.organizations.map((o: any) => {
+      return response.data.organizations.map((o: any) => {
         return {
           uid: o.uid,
           name: o.name,
           enabled: o.enabled,
         }
       }) as Organization[]
+    } catch (error) {
+      throw this.buildError(error)
+    }
+  }
 
-      return result
+  async getStack(stackUID: string): Promise<Stack> {
+    try {
+      const response = await this.instance.get('/stacks', {
+        headers: {api_key: stackUID},
+      })
+      const s = response.data.stack
+      return {
+        uid: s.uid,
+        name: s.name,
+        master_locale: s.master_locale,
+        api_key: s.api_key,
+        org_uid: s.org_uid,
+      } as Stack
     } catch (error) {
       throw this.buildError(error)
     }
@@ -64,7 +98,7 @@ export default class ContentstackClient {
         },
       })
 
-      const result = response.data.stacks.map((s: any) => {
+      return response.data.stacks.map((s: any) => {
         return {
           uid: s.uid,
           name: s.name,
@@ -73,8 +107,6 @@ export default class ContentstackClient {
           org_uid: s.org_uid,
         }
       }) as Stack[]
-
-      return result
     } catch (error) {
       throw this.buildError(error)
     }
