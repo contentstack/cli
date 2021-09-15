@@ -91,8 +91,7 @@ async function UnpublishEntry(data, config, queue) {
   const entryObj = data.obj
   const stack = entryObj.stack
   lang.push(entryObj.locale)
-
-  stack.contentType(entryObj.content_type).entry(entryObj.entryUid).unpublish({publishDetails: {environments: entryObj.environments, locales: lang}})
+  stack.contentType(entryObj.content_type).entry(entryObj.entryUid).unpublish({publishDetails: {environments: entryObj.environments, locales: lang}, locale: entryObj.locale})
   .then(unpublishEntryResponse => {
     if (!unpublishEntryResponse.error_message) {
       delete entryObj.stack
