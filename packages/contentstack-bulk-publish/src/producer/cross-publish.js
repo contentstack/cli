@@ -42,23 +42,12 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv) {
     for (let index = 0; index < items.length; index++) {
       changedFlag = true
 
-      if (!items[index].data.publish_details) {
-        // adding this condition because sometimes
-        // item.data.publish_details.locale failes because publish_details is undefined
-        items[index].data.publish_details = {}
-      }
-
-      if (items[index].data.publish_details) {
-        items[index].data.publish_details.version = items[index].data._version
-      }
-
       if (bulkPublish) {
         if (bulkPublishSet.length < 10 && items[index].type === 'entry_published') {
           bulkPublishSet.push({
             uid: items[index].data.uid,
             content_type: items[index].content_type_uid,
-            locale: items[index].data.publish_details.locale || 'en-us',
-            version: items[index].data._version,
+            locale: items[index].data.locale || 'en-us',
             publish_details: [items[index].data.publish_details] || [],
           })
         }
@@ -101,7 +90,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv) {
       } else {
         if (items[index].type === 'entry_published') {
           await entryQueue.Enqueue({
-            content_type: items[index].content_type_uid, publish_details: [items[index].data.publish_details], environments: destEnv, entryUid: items[index].data.uid, locale: items[index].data.publish_details.locale || 'en-us', Type: 'entry', stack: stack
+            content_type: items[index].content_type_uid, publish_details: [items[index].data.publish_details], environments: destEnv, entryUid: items[index].data.uid, locale: items[index].data.locale || 'en-us', Type: 'entry', stack: stack
           })
         }
         if (items[index].type === 'asset_published') {
