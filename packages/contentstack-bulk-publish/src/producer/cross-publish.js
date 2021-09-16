@@ -113,6 +113,7 @@ async function getSyncEntries(stack, config, queryParams, bulkPublish, filter, d
         headers: {
           api_key: tokenDetails.apiKey,
           access_token: deliveryToken,
+          branch: config.branch,
         },
       }
       const entriesResponse = await req(conf)

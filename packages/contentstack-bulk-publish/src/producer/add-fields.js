@@ -193,6 +193,7 @@ async function updateEntry(config, updatedEntry, contentType, locale) {
       api_key: tokenDetails.apiKey,
       authorization: tokenDetails.token,
       'Content-Type': 'application/json',
+      branch: config.branch,
     },
     body: JSON.stringify({
       ...entry,
