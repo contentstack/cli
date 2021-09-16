@@ -98,12 +98,12 @@ NonlocalizedFieldChangesCommand.flags = {
   environments: flags.string({char: 'e', description: 'Destination environments', multiple: true}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
-  branch: flags.string({char: 'B', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
+  branch: flags.string({char: 'B', default: 'main', description: 'Specify the branch to fetch the content from (default is main branch)'}),
 }
 
 NonlocalizedFieldChangesCommand.examples = [
   'General Usage',
-  'csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
+  'csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -s [SOURCE ENV]',
   '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
@@ -115,7 +115,7 @@ NonlocalizedFieldChangesCommand.examples = [
   'csdx cm:bulk-publish:nonlocalized-field-changes -r [LOG FILE NAME]',
   '',
   'Using --branch or -B flag',
-  'csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]',
+  'csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME] -s [SOURCE ENV]',
 ]
 
 module.exports = NonlocalizedFieldChangesCommand
