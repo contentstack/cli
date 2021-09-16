@@ -99,7 +99,7 @@ AssetsCommand.flags = {
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
   locales: flags.string({char: 'l', description: 'Locales to which assets need to be published', multiple: true}),
-  branch: flags.string({char: 'B', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
+  branch: flags.string({char: 'B', default: 'main', description: 'Specify the branch to fetch the content from (default is main branch)'}),
 }
 
 AssetsCommand.examples = [
