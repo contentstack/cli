@@ -8,6 +8,12 @@ exports.Client = function (config) {
     logHandler: (level, data) => {},
   }
 
+  if (typeof config.branchName === 'string') {
+    option.headers = {
+      branch: config.branchName,
+    }
+  }
+
   const client = contentstacksdk.client(option)
   return client
 }
