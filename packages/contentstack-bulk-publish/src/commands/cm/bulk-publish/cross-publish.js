@@ -29,10 +29,11 @@ class CrossPublishCommand extends Command {
         }
         updatedFlags.bulkPublish = (updatedFlags.bulkPublish === 'false') ? false : true
         await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
-        config = { 
+        config = {
           alias: updatedFlags.alias,
           host: this.config.userConfig.getRegion().cma,
           cda: this.config.userConfig.getRegion().cda,
+          branch: flags.branch,
         }
         stack = getStack(config)
       }
@@ -102,7 +103,7 @@ class CrossPublishCommand extends Command {
 
   async confirmFlags(flags) {
     prettyPrint(flags)
-    if(flags.yes) {
+    if (flags.yes) {
       return true
     }
     const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')
@@ -127,7 +128,8 @@ CrossPublishCommand.flags = {
   deliveryToken: flags.string({char: 'x', description: 'Delivery Token for source environment'}),
   destEnv: flags.string({char: 'd', description: 'Destination Environments', multiple: true}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
+  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
+  branch: flags.string({char: 'B', default: 'main', description: 'Specify the branch to fetch the content from (default is main branch)'}),
 }
 
 CrossPublishCommand.examples = [
@@ -141,7 +143,10 @@ CrossPublishCommand.examples = [
   '',
   'Using --retryFailed or -r flag',
   'csdx cm:bulk-publish:cross-publish --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]'
+  'csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]',
+  '',
+  'Using --branch or -B flag',
+  'csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]',
 ]
 
 module.exports = CrossPublishCommand
