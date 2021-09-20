@@ -108,7 +108,7 @@ EntriesCommand.flags = {
   environments: flags.string({char: 'e', description: 'Environments to which entries need to be published', multiple: true}),
   config: flags.string({char: 'c', description: 'Path for the external config file to be used (A new config file can be generated at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`)'}),
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
-  branch: flags.string({char: 'B', default: 'master', description: 'Specify the branch to fetch the content from (default is master branch)'}),
+  branch: flags.string({char: 'B', default: 'main', description: 'Specify the branch to fetch the content from (default is main branch)'}),
 }
 
 EntriesCommand.examples = [
