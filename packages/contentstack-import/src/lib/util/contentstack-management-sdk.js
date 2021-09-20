@@ -22,7 +22,12 @@ exports.Client = function (config) {
     retryDelayOptions: {
       base: 1000,
     },
-  };
-  const client = contentstacksdk.client(option);
-  return client;
-};
+  }
+  if (typeof config.branchName === 'string') {
+    option.headers = {
+      branch: config.branchName,
+    }
+  }
+  const client = contentstacksdk.client(option)
+  return client
+}
