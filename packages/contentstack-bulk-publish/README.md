@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-cm-bulk-publish
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bulk-publish/0.1.1-beta.3 linux-x64 node-v12.22.1
+@contentstack/cli-cm-bulk-publish/0.1.1-beta.3 linux-x64 node-v12.18.4
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -62,9 +62,7 @@ USAGE
   $ csdx cm:bulk-publish:add-fields
 
 OPTIONS
-  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
-                                   branch)
-
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -120,9 +118,7 @@ USAGE
   $ csdx cm:bulk-publish:assets
 
 OPTIONS
-  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
-                                   branch)
-
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -216,7 +212,7 @@ USAGE
   $ csdx cm:bulk-publish:cross-publish
 
 OPTIONS
-  -B, --branch=branch                [default: master] Specify the branch to fetch the content from (default is master
+  -B, --branch=branch                [default: main] Specify the branch to fetch the content from (default is main
                                      branch)
 
   -a, --alias=alias                  Alias for the management token to be used
@@ -277,9 +273,7 @@ USAGE
   $ csdx cm:bulk-publish:entries
 
 OPTIONS
-  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
-                                   branch)
-
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -339,9 +333,7 @@ USAGE
   $ csdx cm:bulk-publish:entry-edits
 
 OPTIONS
-  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
-                                   branch)
-
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -400,9 +392,7 @@ USAGE
   $ csdx cm:bulk-publish:nonlocalized-field-changes
 
 OPTIONS
-  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
-                                   branch)
-
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -486,7 +476,7 @@ USAGE
   $ csdx cm:bulk-publish:unpublish
 
 OPTIONS
-  -B, --branch=branch                [default: master] Specify the branch to fetch the content from (default is master
+  -B, --branch=branch                [default: main] Specify the branch to fetch the content from (default is main
                                      branch)
 
   -a, --alias=alias                  Alias for the management token to be used
@@ -569,9 +559,7 @@ USAGE
   $ csdx cm:bulk-publish:unpublished-entries
 
 OPTIONS
-  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
-                                   branch)
-
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
