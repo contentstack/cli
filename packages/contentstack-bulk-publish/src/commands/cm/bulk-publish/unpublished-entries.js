@@ -26,7 +26,8 @@ class UnpublishedEntriesCommand extends Command {
         await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
         config = { 
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma
+          host: this.config.userConfig.getRegion().cma,
+          branch: flags.branch,
         }
         stack = getStack(config)
       }
@@ -102,12 +103,13 @@ UnpublishedEntriesCommand.flags = {
   locale: flags.string({char: 'l', description: 'Source locale'}),
   environments: flags.string({char: 'e', description: 'Destination environments', multiple: true}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
+  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
+  branch: flags.string({char: 'B', default: 'main', description: 'Specify the branch to fetch the content from (default is main branch)'}),
 }
 
 UnpublishedEntriesCommand.examples = [
   'General Usage',
-  'csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS]',
+  'csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] -s [SOURCE ENV]',
   '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
@@ -116,7 +118,10 @@ UnpublishedEntriesCommand.examples = [
   '',
   'Using --retryFailed or -r flag',
   'csdx cm:bulk-publish:unpublished-entries --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]'
+  'csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]',
+  '',
+  'Using --branch or -B flag',
+  'csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME] -s [SOURCE ENV]',
 ]
 
 module.exports = UnpublishedEntriesCommand
