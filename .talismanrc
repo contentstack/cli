@@ -1,0 +1,3 @@
+fileignoreconfig:
+- filename: packages/contentstack-bulk-publish/src/util/client.js
+  checksum: ecdfff786782dbae27f8b113fd57e5400fabe1a4beed4a268ab98ea1437c9e79

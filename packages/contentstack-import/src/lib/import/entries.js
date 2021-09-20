@@ -482,7 +482,7 @@ importEntries.prototype = {
                   locale: lang,
                   error: error,
                 })
-                return reject()
+                return reject(error)
               })
             })
             await promiseResult
