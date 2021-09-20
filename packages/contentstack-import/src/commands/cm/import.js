@@ -23,6 +23,7 @@ class ImportCommand extends Command {
     const alias = flags['management-token-alias']
     const authToken = flags['auth-token']
     let _authToken = credStore.get('authtoken')
+    let branchName = flags.branch
     let host = self.cmaHost
     
   return new Promise(function (resolve, reject) {  
@@ -37,6 +38,7 @@ class ImportCommand extends Command {
             moduleName,
             host,
             _authToken,
+            branchName,
             backupdir
           )
           .then(() => {
@@ -49,6 +51,7 @@ class ImportCommand extends Command {
             moduleName,
             host,
             _authToken,
+            branchName,
             backupdir
           )
           .then(() => {
@@ -60,6 +63,7 @@ class ImportCommand extends Command {
             moduleName,
             host,
             _authToken,
+            branchName,
             backupdir
           )
           .then(() => {
@@ -76,6 +80,7 @@ class ImportCommand extends Command {
           _authToken,
           moduleName,
           host,
+          branchName,
           backupdir
         )
         .then(() => {
@@ -88,7 +93,8 @@ class ImportCommand extends Command {
           data,
           moduleName,
           host,
-          backupdir
+          backupdir,
+          branchName
         )
         .then(() => {
           return resolve()
@@ -98,7 +104,8 @@ class ImportCommand extends Command {
           _authToken,
           moduleName,
           host,
-          backupdir
+          backupdir,
+          branchName
         )
         .then(() => {
           return resolve()
@@ -124,6 +131,8 @@ ImportCommand.examples = [
   `csdx cm:import -a <management_token_alias>`,
   `csdx cm:import -a <management_token_alias> -d <path/of/export/destination/dir>`,
   `csdx cm:import -a <management_token_alias> -c <path/of/config/file>`,
+  `csdx cm:import -A -m <single module name>`,
+  `csdx cm:import -A -B <branch name>`,
 ]
 ImportCommand.flags = {
   config: flags.string({
@@ -153,6 +162,10 @@ ImportCommand.flags = {
   "backup-dir": flags.string({
     char: 'b', 
     description: '[optional] backup directory name when using specific module'
+  }),
+  'branch': flags.string({
+    char: 'B', 
+    description: '[optional] branch name'
   })
 }
 
