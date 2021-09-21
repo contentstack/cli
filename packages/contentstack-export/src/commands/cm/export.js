@@ -117,7 +117,7 @@ ExportCommand.flags = {
   'management-token-alias': flags.string({char: 'a', description: 'alias of the management token'}),
   'auth-token': flags.boolean({char: 'A', description: 'to use auth token'}),
   module: flags.string({char: 'm', description: '[optional] specific module name'}),
-  'secured-assets': flags.boolean({description: '[optional] for secured assets'}),
+  'secured-assets': flags.boolean({description: '[optional] use when assets are secured'}),
 }
 
 module.exports = ExportCommand
