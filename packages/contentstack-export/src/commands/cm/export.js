@@ -17,6 +17,7 @@ class ExportCommand extends Command {
     let sourceStack = flags['stack-uid']
     const alias = flags['management-token-alias']
     const authToken = flags['auth-token']
+    const securedAssets = flags['secured-assets']
     const data = flags.data
     const moduleName = flags.module
     let _authToken = credStore.get('authtoken')
@@ -33,7 +34,8 @@ class ExportCommand extends Command {
           configWithMToken(
             extConfig,
             managementTokens,
-            host
+            host,
+            securedAssets
           )
         } else if (data) {
           parameterWithMToken(
@@ -41,14 +43,16 @@ class ExportCommand extends Command {
             data,
             moduleName,
             host,
-            _authToken
+            _authToken,
+            securedAssets
           )
         } else if (data === undefined && sourceStack === undefined) {
           withoutParameterMToken(
             managementTokens,
             moduleName,
             host,
-            _authToken
+            _authToken,
+            securedAssets
           )
         } else {
           this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage')
@@ -62,7 +66,8 @@ class ExportCommand extends Command {
           extConfig,
           _authToken,
           moduleName,
-          host
+          host,
+          securedAssets
         )
       } else if (sourceStack && data) {
         return parametersWithAuthToken(
@@ -70,13 +75,15 @@ class ExportCommand extends Command {
           sourceStack,
           data,
           moduleName,
-          host
+          host,
+          securedAssets
         )
       } else if (data === undefined && sourceStack === undefined) {
         withoutParametersWithAuthToken(
           _authToken,
           moduleName,
-          host
+          host,
+          securedAssets
         )
       } else {
         this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage')
@@ -96,10 +103,11 @@ ExportCommand.examples = [
   'csdx cm:export -A',
   'csdx cm:export -A -s <stack_ApiKey> -d <path/of/export/destination/dir>',
   'csdx cm:export -A -c <path/to/config/dir>',
+  'csdx cm:export -A -m <single module name>',
+  'csdx cm:export -A --secured-assets',
   'csdx cm:export -a <management_token_alias>',
   'csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>',
-  'csdx cm:export -a <management_token_alias> -c <path/to/config/file>',
-  'csdx cm:export -A -m <single module name>',
+  'csdx cm:export -a <management_token_alias> -c <path/to/config/file>'
 ]
 
 ExportCommand.flags = {
@@ -109,6 +117,7 @@ ExportCommand.flags = {
   'management-token-alias': flags.string({char: 'a', description: 'alias of the management token'}),
   'auth-token': flags.boolean({char: 'A', description: 'to use auth token'}),
   module: flags.string({char: 'm', description: '[optional] specific module name'}),
+  'secured-assets': flags.boolean({description: '[optional] use when assets are secured'}),
 }
 
 module.exports = ExportCommand
