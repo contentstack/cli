@@ -42,19 +42,6 @@ class CrossPublishCommand extends Command {
       }
 
       if (await this.confirmFlags(updatedFlags)) {
-        updatedFlags.filter = {}
-        updatedFlags.filter.locale = updatedFlags.locale
-        delete updatedFlags.locale
-
-        if (updatedFlags.contentType && updatedFlags.contentType.length > 0) {
-          updatedFlags.filter.content_type_uid = updatedFlags.contentType
-          delete updatedFlags.contentType
-        }
-
-        if (updatedFlags.environment && updatedFlags.environment.length > 0) {
-          updatedFlags.filter.environment = updatedFlags.environment
-          delete updatedFlags.environment
-        }
         try {
           if (!updatedFlags.retryFailed) {
             await start(updatedFlags, stack, config)
@@ -71,10 +58,18 @@ class CrossPublishCommand extends Command {
     }
   }
 
-  validate({environment, retryFailed, contentType, destEnv, locale}) {
+  validate({environment, retryFailed, destEnv, onlyAssets, contentType, onlyEntries, locale}) {
     let missing = []
     if (retryFailed) {
       return true
+    }
+
+    if (onlyAssets && onlyEntries) {
+      this.error(`The flags onlyAssets and onlyEntries need not be used at the same time. Unpublish command unpublishes entries and assts at the same time by default`)
+    }
+
+    if (onlyAssets && contentType) {
+      this.error(`Specifying content-type and onlyAssets together will have unexpected results. Please do not use these 2 flags together. Thank you.`)
     }
 
     if (!environment) {
@@ -83,10 +78,6 @@ class CrossPublishCommand extends Command {
 
     if (!destEnv) {
       missing.push('Destination Environment')
-    }
-
-    if (!contentType) {
-      missing.push('ContentType')
     }
 
     if (!locale) {
@@ -102,7 +93,7 @@ class CrossPublishCommand extends Command {
 
   async confirmFlags(flags) {
     prettyPrint(flags)
-    if(flags.yes) {
+    if (flags.yes) {
       return true
     }
     const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')
@@ -127,7 +118,9 @@ CrossPublishCommand.flags = {
   deliveryToken: flags.string({char: 'x', description: 'Delivery Token for source environment'}),
   destEnv: flags.string({char: 'd', description: 'Destination Environments', multiple: true}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
+  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
+  onlyAssets: flags.boolean({description: 'Unpublish only assets', default: false}),
+  onlyEntries: flags.boolean({description: 'Unpublish only entries', default: false}),
 }
 
 CrossPublishCommand.examples = [
