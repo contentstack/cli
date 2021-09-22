@@ -246,8 +246,10 @@ ExportAssets.prototype = {
         return resolve()
       }
       self.assetStream = {
-        url: asset.url,
-      }
+        url: config.securedAssets
+          ? `${asset.url}?authtoken=${config.authtoken || config.auth_token}`
+          : asset.url,
+      };
 
       const assetStreamRequest = nativeRequest(self.assetStream)
       assetStreamRequest.on('response', function () {
