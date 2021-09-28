@@ -11,9 +11,9 @@ const helper = require('../util/helper');
 let _ = require('lodash')
 const {cli} = require('cli-ux')
 
-exports.configWithMToken = function (config, managementTokens, host, _authToken, moduleName, contentTypes, branchName) {
+exports.configWithMToken = function (config, managementTokens, host, contentTypes, branchName, securedAssets) {
   let externalConfig = require(config)
-  defaultConfig.auth_token = _authToken
+  defaultConfig.securedAssets = securedAssets
   defaultConfig.management_token = managementTokens.token
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
@@ -33,12 +33,13 @@ exports.configWithMToken = function (config, managementTokens, host, _authToken,
   initial(defaultConfig)
 }
 
-exports.parameterWithMToken = function (managementTokens, data, moduleName, host, _authToken, contentTypes, branchName) {
+exports.parameterWithMToken = function (managementTokens, data, moduleName, host, _authToken, contentTypes, branchName, securedAssets) {
   defaultConfig.management_token = managementTokens.token
   defaultConfig.auth_token = _authToken
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
   defaultConfig.branchName = branchName
+  defaultConfig.securedAssets = securedAssets
   if (moduleName && moduleName !== undefined) {
     defaultConfig.moduleName = moduleName
     // Specfic content type setting is only for entries module
@@ -56,7 +57,7 @@ exports.parameterWithMToken = function (managementTokens, data, moduleName, host
 }
 
 // using ManagementToken
-exports.withoutParameterMToken = async (managementTokens, moduleName, host, _authToken, contentTypes, branchName) => {
+exports.withoutParameterMToken = async (managementTokens, moduleName, host, _authToken, contentTypes, branchName, securedAssets) => {
   const stackUid = managementTokens.apiKey
   const pathOfExport = await cli.prompt(message.promptMessageList.promptPathStoredData)
   defaultConfig.management_token = managementTokens.token
@@ -64,6 +65,7 @@ exports.withoutParameterMToken = async (managementTokens, moduleName, host, _aut
   defaultConfig.cdn = host.cda
   defaultConfig.branchName = branchName
   defaultConfig.auth_token = _authToken
+  defaultConfig.securedAssets = securedAssets
   if (moduleName && moduleName !== undefined) {
     defaultConfig.moduleName = moduleName
     // Specfic content type setting is only for entries module
@@ -80,12 +82,13 @@ exports.withoutParameterMToken = async (managementTokens, moduleName, host, _aut
   initial(defaultConfig)
 }
 
-exports.configWithAuthToken = function (config, _authToken, moduleName, host, contentTypes, branchName) {
+exports.configWithAuthToken = function (config, _authToken, moduleName, host, contentTypes, branchName, securedAssets) {
   let externalConfig = helper.readFile(path.resolve(config))
   defaultConfig.auth_token = _authToken
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
   defaultConfig.branchName = branchName
+  defaultConfig.securedAssets = securedAssets
   if (moduleName && moduleName !== undefined) {
     defaultConfig.moduleName = moduleName
     // Specfic content type setting is only for entries module
@@ -101,7 +104,7 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host, co
   initial(defaultConfig)
 }
 
-exports.parametersWithAuthToken = function (_authToken, sourceStack, data, moduleName, host, contentTypes, branchName) {
+exports.parametersWithAuthToken = function (_authToken, sourceStack, data, moduleName, host, contentTypes, branchName, securedAssets) {
   return new Promise(async(resolve, reject) => {
     defaultConfig.auth_token = _authToken
     defaultConfig.source_stack = sourceStack
@@ -120,6 +123,7 @@ exports.parametersWithAuthToken = function (_authToken, sourceStack, data, modul
     defaultConfig.host = host.cma
     defaultConfig.cdn = host.cda
     defaultConfig.data = data
+    defaultConfig.securedAssets = securedAssets
     var exportStart = initial(defaultConfig)
     exportStart.then(() => {
       return resolve()
@@ -129,11 +133,12 @@ exports.parametersWithAuthToken = function (_authToken, sourceStack, data, modul
   })
 }
 
-exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, contentTypes, branchName) => {
+exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, contentTypes, branchName, securedAssets) => {
   const stackUid = await cli.prompt(message.promptMessageList.promptSourceStack)
   const pathOfExport = await cli.prompt(message.promptMessageList.promptPathStoredData)
   defaultConfig.auth_token = _authToken
   defaultConfig.source_stack = stackUid
+  defaultConfig.securedAssets = securedAssets
   if (moduleName && moduleName !== undefined) {
     defaultConfig.moduleName = moduleName
     // Specfic content type setting is only for entries module
