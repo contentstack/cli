@@ -45,7 +45,7 @@ class StackCloneCommand extends Command {
   }
 
   registerCleanupOnInterrupt(pathDir) {
-    ['SIGINT', 'SIGQUIT', 'SIGKILL']
+    ['SIGINT', 'SIGQUIT', 'SIGTERM']
     .forEach(signal => process.on(signal, async () => {
       // eslint-disable-next-line no-console
       console.log('\nCleaning up')
