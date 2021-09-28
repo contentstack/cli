@@ -374,6 +374,7 @@ importAssets.prototype = {
         let parent_uid = coll[j].parent_uid
         if (branch.hasOwnProperty(parent_uid)) {
           branch[parent_uid][coll[j].uid] = {}
+          coll.splice(j, 1);
           self.findBranches(branch[parent_uid], coll)
         }
       }
