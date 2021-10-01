@@ -2,10 +2,10 @@ module.exports = {
   stack: {
     created_at: '2019-11-04T07:54:05.013Z',
     updated_at: '2019-11-04T07:54:05.877Z',
-    uid: 'blt88742805ce18a9c7',
+    uid: '***REMOVED***',
     name: 'cross-publishing-test',
     description: 'stack for cross environment publishing test',
-    org_uid: 'bltff6ec735225b72b5',
+    org_uid: '***REMOVED***',
     api_key: '***REMOVED***',
     master_locale: 'en-us',
     is_asset_download_public: true,
@@ -32,7 +32,7 @@ module.exports = {
       },
       roles: [
         {
-          uid: 'blt96731c8116bde66d',
+          uid: '***REMOVED***',
           name: 'Developer',
           invite: true,
           sub_acl: {
@@ -43,7 +43,7 @@ module.exports = {
           },
         },
         {
-          uid: 'blt4984bf8fd093b31c',
+          uid: '***REMOVED***',
           name: 'Admin',
           invite: true,
           sub_acl: {
