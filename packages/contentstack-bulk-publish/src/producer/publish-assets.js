@@ -2,7 +2,7 @@
 /* eslint-disable new-cap */
 /* eslint-disable camelcase */
 const {getQueue} = require('../util/queue')
-const {bulkPublish, publishAsset, initializeLogger} = require('../consumer/publish')
+const {performBulkPublish, publishAsset, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
 const {setDelayForBulkPublish} = require('../util')
@@ -77,7 +77,7 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, skip 
 
 function setConfig(conf, bp) {
   if (bp) {
-    queue.consumer = bulkPublish
+    queue.consumer = performBulkPublish
     logFileName = 'bulk-publish-assets'
   } else {
     queue.consumer = publishAsset

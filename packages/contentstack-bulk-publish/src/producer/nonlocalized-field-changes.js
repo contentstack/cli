@@ -8,7 +8,7 @@
 /* eslint-disable node/no-extraneous-require */
 const _ = require('lodash')
 const {getQueue} = require('../util/queue')
-const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
+const {performBulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
 const {setDelayForBulkPublish} = require('../util')
@@ -24,7 +24,7 @@ let filePath
 function setConfig(conf, bp) {
   if (bp) {
     logFileName = 'bulk-nonlocalized-field-changes'
-    queue.consumer = bulkPublish
+    queue.consumer = performBulkPublish
   } else {
     logFileName = 'nonlocalized-field-changes'
     queue.consumer = publishEntry
