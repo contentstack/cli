@@ -11,7 +11,7 @@ const {getQueue} = require('../util/queue')
 const {validateFile} = require('../util/fs')
 const Configstore = require('configstore')
 let config = new Configstore('contentstack_cli')
-const {initializeLogger, bulkUnPublish, publishUsingVersion} = require('../consumer/publish')
+const {initializeLogger, performBulkUnPublish, publishUsingVersion} = require('../consumer/publish')
 const getStack = require('../util/client.js').getStack
 
 // for checking if a logfile has been provided by user
@@ -35,7 +35,7 @@ function setConfig(conf) {
   config = conf
   unpublishQueue.config = conf
   publishQueue.config = conf
-  unpublishQueue.consumer = bulkUnPublish
+  unpublishQueue.consumer = performBulkUnPublish
   publishQueue.consumer = publishUsingVersion
 }
 

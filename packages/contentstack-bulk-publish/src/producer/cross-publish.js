@@ -7,7 +7,7 @@ const {getQueue} = require('../util/queue')
 const defaults = require('../config/defaults.json')
 const req = require('../util/request')
 const {
-  bulkPublish, publishEntry, publishAsset, initializeLogger,
+  performBulkPublish, publishEntry, publishAsset, initializeLogger,
 } = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
@@ -136,7 +136,7 @@ async function getSyncEntries(stack, config, queryParams, bulkPublish, filter, d
 function setConfig(conf, bp) {
   if (bp) {
     logFileName = 'bulk-cross-publish'
-    queue.consumer = bulkPublish
+    queue.consumer = performBulkPublish
   } else {
     logFileName = 'cross-publish'
     entryQueue.consumer = publishEntry

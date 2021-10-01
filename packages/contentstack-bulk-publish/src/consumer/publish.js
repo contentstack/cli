@@ -139,7 +139,7 @@ async function UnpublishAsset(data, config, queue) {
   })
 }
 
-async function bulkPublish(data, config, queue) {
+async function performBulkPublish(data, config, queue) {
   let conf
   const bulkPublishObj = data.obj
   const stack = bulkPublishObj.stack
@@ -166,7 +166,6 @@ async function bulkPublish(data, config, queue) {
         queue.Enqueue(data)
       } else {
         delete bulkPublishObj.stack
-        const entries = bulkPublishObj.entries.map(entry => entry.uid)
         console.log(chalk.red(`Bulk entries ${JSON.stringify(removePublishDetails(bulkPublishObj.entries))} failed to publish with error ${formatError(error)}`))
         addLogs(logger, {options: bulkPublishObj, api_key: stack.stackHeaders.api_key, alias: stack.alias, host: stack.host}, 'error')
       }
@@ -204,7 +203,7 @@ async function bulkPublish(data, config, queue) {
   }
 }
 
-async function bulkUnPublish(data, config, queue) {
+async function performBulkUnPublish(data, config, queue) {
   let conf
   const bulkUnPublishObj = data.obj
   const stack = bulkUnPublishObj.stack
@@ -432,8 +431,8 @@ async function publishUsingVersion(data, config, queue) {
 }
 
 module.exports = {
-  bulkPublish,
-  bulkUnPublish,
+  performBulkPublish,
+  performBulkUnPublish,
   initializeLogger,
   publishEntry,
   publishAsset,
