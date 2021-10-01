@@ -5,7 +5,7 @@
 /* eslint-disable max-params */
 /* eslint-disable camelcase */
 const {getQueue} = require('../util/queue')
-const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
+const {performBulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
 const {setDelayForBulkPublish} = require('../util')
@@ -94,7 +94,7 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
 function setConfig(conf, bp) {
   if (bp) {
     logFileName = 'bulk-publish-edits'
-    queue.consumer = bulkPublish
+    queue.consumer = performBulkPublish
   } else {
     logFileName = 'publish-edits'
     queue.consumer = publishEntry

@@ -4,7 +4,7 @@
 /* eslint-disable max-depth */
 /* eslint-disable no-console */
 const {getQueue} = require('../util/queue')
-const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
+const {performBulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
 const {isEmpty} = require('../util')
@@ -94,7 +94,7 @@ async function getContentTypes(stack, skip = 0, contentTypes = []) {
 
 function setConfig(conf, bp) {
   if (bp) {
-    queue.consumer = bulkPublish
+    queue.consumer = performBulkPublish
     logFileName = 'bulk-publish-entries'
   } else {
     queue.consumer = publishEntry
