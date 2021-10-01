@@ -5,7 +5,7 @@
 /* eslint-disable new-cap */
 /* eslint-disable camelcase */
 const {getQueue} = require('../util/queue')
-const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
+const {performBulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
 const {setDelayForBulkPublish} = require('../util')
@@ -21,7 +21,7 @@ let filePath
 function setConfig(conf, bp) {
   if (bp) {
     logFileName = 'bulk-publish-draft'
-    queue.consumer = bulkPublish
+    queue.consumer = performBulkPublish
   } else {
     logFileName = 'publish-draft'
     queue.consumer = publishEntry
