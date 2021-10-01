@@ -8,17 +8,16 @@
 const {getQueue} = require('../util/queue')
 const defaultConfig = require('../config/defaults.json')
 const req = require('../util/request')
-const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
+const {performBulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
-const stack = require('../util/client.js').stack
 const {setDelayForBulkPublish} = require('../util')
 const {Command} = require('@contentstack/cli-command')
 const command = new Command()
 const {isEmpty} = require('../util')
 
 const queue = getQueue()
-queue.consumer = bulkPublish
+queue.consumer = performBulkPublish
 let logFileName
 let bulkPublishSet = []
 let filePath
@@ -38,7 +37,7 @@ const deleteFields = ['updated_by', 'created_by', 'created_at', 'updated_at', '_
 function setConfig(conf, bp) {
   if (bp) {
     logFileName = 'bulk-add-fields'
-    queue.consumer = bulkPublish
+    queue.consumer = performBulkPublish
   } else {
     logFileName = 'add-fields'
     queue.consumer = publishEntry

@@ -1,6 +1,6 @@
 fileignoreconfig:
-- filename: packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublish.js
-  checksum: 574ac2077b98acb0d0d438a2a92cb0a007a7b72857d5cb351895ed278363d999
+- filename: packages/contentstack-bulk-publish/src/producer/publish-unpublished-env.js
+  checksum: b3fd4e46480904da1e0dbc272fffc984076e23c09e8e943c6a93dde71dc23145
 - filename: packages/contentstack-bulk-publish/src/util/client.js
   checksum: ecdfff786782dbae27f8b113fd57e5400fabe1a4beed4a268ab98ea1437c9e79
 - filename: packages/contentstack-bulk-publish/test/dummy/1587758242717.bulkPublishAssets.error
