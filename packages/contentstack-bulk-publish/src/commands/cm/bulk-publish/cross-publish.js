@@ -1,5 +1,5 @@
 /* eslint-disable node/no-extraneous-require */
-const {Command, flags} = require('@oclif/command')
+const {Command} = require('@oclif/command')
 const {cli} = require('cli-ux')
 const {start} = require('../../../producer/cross-publish')
 const store = require('../../../util/store.js')
@@ -101,9 +101,9 @@ class CrossPublishCommand extends Command {
     }
   }
 
-  async confirmFlags(flags) {
-    prettyPrint(flags)
-    if (flags.yes) {
+  async confirmFlags(data) {
+    prettyPrint(data)
+    if (data.yes) {
       return true
     }
     const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable node/no-extraneous-require */
-const {Command, flags} = require('@oclif/command')
+const {Command} = require('@oclif/command')
 const {start} = require('../../../producer/publish-entries')
 const store = require('../../../util/store.js')
 const {cli} = require('cli-ux')
@@ -80,9 +80,9 @@ class EntriesCommand extends Command {
     }
   }
 
-  async confirmFlags(flags) {
-    prettyPrint(flags)
-    if (flags.yes) {
+  async confirmFlags(data) {
+    prettyPrint(data)
+    if (data.yes) {
       return true
     }
     const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')

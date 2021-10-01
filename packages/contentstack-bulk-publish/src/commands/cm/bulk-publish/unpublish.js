@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable node/no-extraneous-require */
-const {Command, flags} = require('@oclif/command')
+const {Command} = require('@oclif/command')
 const {cli} = require('cli-ux')
 const {start} = require('../../../producer/unpublish')
 const store = require('../../../util/store.js')
@@ -91,14 +91,14 @@ class UnpublishCommand extends Command {
     }
   }
 
-  async confirmFlags(flags) {  
+  async confirmFlags(data) {  
     let confirmation
-    prettyPrint(flags)
-    if(flags.yes) { 
+    prettyPrint(data)
+    if(data.yes) { 
       return true 
     } 
 
-    if(!flags.contentType && !flags.onlyAssets) {
+    if(!data.contentType && !data.onlyAssets) {
       confirmation = await cli.confirm('Do you want to continue with this configuration. This will unpublish all the entries from all content types? [yes or no]')
     } else {
       confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]') 
