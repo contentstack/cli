@@ -7,7 +7,7 @@ const {getQueue} = require('../util/queue')
 const defaults = require('../config/defaults.json')
 const req = require('../util/request')
 const {
-  bulkUnPublish, UnpublishEntry, UnpublishAsset, initializeLogger,
+  performBulkUnPublish, UnpublishEntry, UnpublishAsset, initializeLogger,
 } = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
@@ -27,7 +27,7 @@ let filePath
 function setConfig(conf, bup) {
   if (bup) {
     logFileName = 'bulk-unpublish'
-    queue.consumer = bulkUnPublish
+    queue.consumer = performBulkUnPublish
   } else {
     logFileName = 'unpublish'
     entryQueue.consumer = UnpublishEntry
