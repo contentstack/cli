@@ -1,3 +1,15 @@
 fileignoreconfig:
 - filename: packages/contentstack-bulk-publish/src/util/client.js
   checksum: ecdfff786782dbae27f8b113fd57e5400fabe1a4beed4a268ab98ea1437c9e79
+- filename: packages/contentstack-bulk-publish/test/dummy/1587758242717.bulkPublishAssets.error
+  checksum: 33aa57b6a978b3c3d1c2b367e2a1ea9e1d38790ae09dd26600d0c2e2b021c96f
+- filename: packages/contentstack-bulk-publish/test/dummy/1587956283100.PublishAssets.success
+  checksum: 0e5a13a7db0219d1954e484818688eb4e3599504c1d44ec3c68ddf344ca0ede0
+- filename: packages/contentstack-bulk-publish/test/dummy/bulkasset1.js
+  checksum: 0f1f165dc9fdbb389261d4ca0dfcb687934da657c6515d4e8a57b352f0696960
+- filename: packages/contentstack-bulk-publish/test/dummy/bulkasset2.js
+  checksum: 73b04ed4c0d97e91898a688c84c9b607b6a80bd08c20ed3f02468472a7d39a83
+- filename: packages/contentstack-bulk-publish/test/dummy/sdk/stack.js
+  checksum: 88cd4e934275bbafaad5a8281617375f2d56e878f3df615f31410cd741af2114
+- filename: packages/contentstack-bulk-publish/test/dummy/stackResponse.js
+  checksum: 696db88c6c28903ba41f555703f3d21c97f1d6b48970c31c55a435a2abd38256
