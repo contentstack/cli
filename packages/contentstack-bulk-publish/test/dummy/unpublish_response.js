@@ -1,7 +1,7 @@
 module.exports = {
   items: [{
     content_type_uid: 'sys_assets',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'asset_published',
     data: {
       uid: 'dummyAssetId',
@@ -9,7 +9,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'sys_assets',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'asset_published',
     data: {
       uid: 'dummyAssetId2',
@@ -17,7 +17,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'dummyContentType',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'entry_published',
     data: {
       uid: 'dummyEntryId',
@@ -28,7 +28,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'dummyContentType',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'entry_published',
     data: {
       uid: 'dummyEntryId2',
@@ -39,7 +39,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'sys_assets',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'asset_published',
     data: {
       uid: 'dummyAssetId3',
@@ -47,7 +47,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'sys_assets',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'asset_published',
     data: {
       uid: 'dummyAssetId4',
@@ -55,7 +55,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'sys_assets',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'asset_published',
     data: {
       uid: 'dummyAssetId5',
@@ -63,7 +63,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'sys_assets',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'asset_published',
     data: {
       uid: 'dummyAssetId6',
@@ -71,7 +71,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'sys_assets',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'asset_published',
     data: {
       uid: 'dummyAssetId7',
@@ -79,7 +79,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'sys_assets',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'asset_published',
     data: {
       uid: 'dummyAssetId8',
@@ -87,7 +87,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'sys_assets',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'asset_published',
     data: {
       uid: 'dummyAssetId9',
@@ -95,7 +95,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'sys_assets',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'asset_published',
     data: {
       uid: 'dummyAssetId10',
@@ -103,7 +103,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'sys_assets',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'asset_published',
     data: {
       uid: 'dummyAssetId11',
@@ -111,7 +111,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'sys_assets',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'asset_published',
     data: {
       uid: 'dummyAssetId12',
@@ -119,7 +119,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'dummyContentType',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'entry_published',
     data: {
       uid: 'dummyEntryId3',
@@ -130,7 +130,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'dummyContentType',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'entry_published',
     data: {
       uid: 'dummyEntryId4',
@@ -141,7 +141,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'dummyContentType',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'entry_published',
     data: {
       uid: 'dummyEntryId5',
@@ -152,7 +152,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'dummyContentType',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'entry_published',
     data: {
       uid: 'dummyEntryId6',
@@ -163,7 +163,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'dummyContentType',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'entry_published',
     data: {
       uid: 'dummyEntryId7',
@@ -174,7 +174,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'dummyContentType',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'entry_published',
     data: {
       uid: 'dummyEntryId8',
@@ -185,7 +185,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'dummyContentType',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'entry_published',
     data: {
       uid: 'dummyEntryId9',
@@ -196,7 +196,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'dummyContentType',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'entry_published',
     data: {
       uid: 'dummyEntryId10',
@@ -207,7 +207,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'dummyContentType',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'entry_published',
     data: {
       uid: 'dummyEntryId11',
@@ -218,7 +218,7 @@ module.exports = {
     },
   }, {
     content_type_uid: 'dummyContentType',
-    event_at: '2020-04-17T17:30:10.029Z',
+    event_at: '1970-01-01T00:00:00.000Z',
     type: 'entry_published',
     data: {
       uid: 'dummyEntryId12',
