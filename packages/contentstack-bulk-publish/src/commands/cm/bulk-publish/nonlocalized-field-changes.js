@@ -1,4 +1,4 @@
-const {Command} = require('@oclif/command')
+const {Command, flags} = require('@oclif/command')
 const {start} = require('../../../producer/nonlocalized-field-changes')
 const store = require('../../../util/store.js')
 const {cli} = require('cli-ux')
@@ -9,10 +9,10 @@ let config
 
 class NonlocalizedFieldChangesCommand extends Command {
   async run() {
-    const {flags} = this.parse(NonlocalizedFieldChangesCommand)
+    const nonlocalizedFieldChangesFlags = this.parse(NonlocalizedFieldChangesCommand).flags
     let updatedFlags
     try {
-      updatedFlags = (flags.config) ? store.updateMissing(configKey, flags) : flags
+      updatedFlags = (nonlocalizedFieldChangesFlags.config) ? store.updateMissing(configKey, nonlocalizedFieldChangesFlags) : nonlocalizedFieldChangesFlags
     } catch(error) {
       this.error(error.message, {exit: 2})
     }
@@ -25,7 +25,7 @@ class NonlocalizedFieldChangesCommand extends Command {
         config = { 
           alias: updatedFlags.alias,
           host: this.config.userConfig.getRegion().cma,
-          branch: flags.branch,
+          branch: nonlocalizedFieldChangesFlags.branch,
         }
         stack = getStack(config)
       }
