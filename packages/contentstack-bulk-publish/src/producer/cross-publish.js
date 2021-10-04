@@ -160,51 +160,44 @@ async function start({retryFailed, bulkPublish, filter, deliveryToken, contentTy
     process.exit(0)
   })
 
-  try {
-    if (retryFailed) {
-      if (typeof retryFailed === 'string' && retryFailed.length > 0) {
-        if (!validateFile(retryFailed, ['cross-publish', 'bulk-cross-publish'])) {
-          return false
-        }
+  if (retryFailed) {
+    if (typeof retryFailed === 'string' && retryFailed.length > 0) {
+      if (!validateFile(retryFailed, ['cross-publish', 'bulk-cross-publish'])) {
+        return false
+      }
 
-        bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
-        setConfig(config, bulkPublish)
-
-        if (bulkPublish) {
-          await retryFailedLogs(retryFailed, queue, 'bulk')
-        } else {
-          await retryFailedLogs(retryFailed, {entryQueue, assetQueue}, 'publish')
-        }
-      }
-    } else {
-      let filter = {
-        environment,
-        locale,
-      }
-      if (f_types)
-        filter.type = f_types
-      // filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
-      if (contentType) {
-        filter.content_type_uid = contentType
-        filter.type = 'entry_published'
-      }
-      if (onlyAssets) {
-        filter.type = 'asset_published'
-        delete filter.content_type_uid
-      }
-      if (onlyEntries) {
-        filter.type = 'entry_published'
-      }
+      bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
       setConfig(config, bulkPublish)
-      const queryParams = getQueryParams(filter)
-      try {
-        await getSyncEntries(stack, config, queryParams, bulkPublish, filter, deliveryToken, destEnv)
-      } catch (error) {
-        throw error
+
+      if (bulkPublish) {
+        await retryFailedLogs(retryFailed, queue, 'bulk')
+      } else {
+        await retryFailedLogs(retryFailed, {entryQueue, assetQueue}, 'publish')
       }
     }
-  } catch (error) {
-    throw error
+  } else {
+    let filter = {
+      environment,
+      locale,
+    }
+    if (f_types)
+      filter.type = f_types
+    // filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
+    if (contentType) {
+      filter.content_type_uid = contentType
+      filter.type = 'entry_published'
+    }
+    if (onlyAssets) {
+      filter.type = 'asset_published'
+      delete filter.content_type_uid
+    }
+    if (onlyEntries) {
+      filter.type = 'entry_published'
+    }
+    setConfig(config, bulkPublish)
+    // filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
+    const queryParams = getQueryParams(filter)
+    await getSyncEntries(stack, config, queryParams, bulkPublish, filter, deliveryToken, destEnv)
   }
 }
 
