@@ -1,4 +1,4 @@
-const {Command} = require('@oclif/command')
+const {Command, flags} = require('@oclif/command')
 const {start} = require('../../../producer/publish-unpublished-env')
 const store = require('../../../util/store.js')
 const {cli} = require('cli-ux')
@@ -9,17 +9,17 @@ let config
 
 class UnpublishedEntriesCommand extends Command {
   async run() {
-    const {flags} = this.parse(UnpublishedEntriesCommand)
+    const unpublishedEntriesFlags = this.parse(UnpublishedEntriesCommand).flags
     let updatedFlags
     try {
-      updatedFlags = (flags.config) ? store.updateMissing(configKey, flags) : flags
+      updatedFlags = (unpublishedEntriesFlags.config) ? store.updateMissing(configKey, unpublishedEntriesFlags) : unpublishedEntriesFlags
     } catch(error) {
       this.error(error.message, {exit: 2})
     }
     if (this.validate(updatedFlags)) {
       let stack
       if (!updatedFlags.retryFailed) {
-        if(!updatedFlags.alias) {
+        if (!updatedFlags.alias) {
           updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used')
         }
         updatedFlags.bulkPublish = (updatedFlags.bulkPublish === 'false') ? false : true
@@ -27,7 +27,7 @@ class UnpublishedEntriesCommand extends Command {
         config = { 
           alias: updatedFlags.alias,
           host: this.config.userConfig.getRegion().cma,
-          branch: flags.branch,
+          branch: unpublishedEntriesFlags.branch,
         }
         stack = getStack(config)
       }

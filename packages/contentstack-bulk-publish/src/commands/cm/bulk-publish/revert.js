@@ -1,4 +1,4 @@
-const {Command} = require('@oclif/command')
+const {Command, flags} = require('@oclif/command')
 const {start} = require('../../../producer/revert')
 const store = require('../../../util/store.js')
 const configKey = 'revert'
@@ -10,10 +10,10 @@ let config
 
 class RevertCommand extends Command {
   async run() {
-    const {flags} = this.parse(RevertCommand)
+    const revertFlags = this.parse(RevertCommand).flags
     let updatedFlags
     try {
-      updatedFlags = (flags.config) ? store.updateMissing(configKey, flags) : flags
+      updatedFlags = (revertFlags.config) ? store.updateMissing(configKey, revertFlags) : revertFlags
     } catch(error) {
       this.error(error.message, {exit: 2})
     }
