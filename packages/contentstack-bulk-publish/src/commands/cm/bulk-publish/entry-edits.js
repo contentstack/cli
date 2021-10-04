@@ -1,4 +1,4 @@
-const {Command} = require('@oclif/command')
+const {Command, flags} = require('@oclif/command')
 const {start} = require('../../../producer/publish-edits')
 const store = require('../../../util/store.js')
 // eslint-disable-next-line node/no-extraneous-require
@@ -10,10 +10,10 @@ let config
 
 class EntryEditsCommand extends Command {
   async run() {
-    const {flags} = this.parse(EntryEditsCommand)
+    const entryEditsFlags = this.parse(EntryEditsCommand).flags
     let updatedFlags
     try {
-      updatedFlags = (flags.config) ? store.updateMissing(configKey, flags) : flags
+      updatedFlags = (entryEditsFlags.config) ? store.updateMissing(configKey, entryEditsFlags) : entryEditsFlags
     } catch (error) {
       this.error(error.message, {exit: 2})
     }
@@ -28,7 +28,7 @@ class EntryEditsCommand extends Command {
         config = {
           alias: updatedFlags.alias,
           host: this.config.userConfig.getRegion().cma,
-          branch: flags.branch,
+          branch: entryEditsFlags.branch,
         }
         stack = getStack(config)
       }
