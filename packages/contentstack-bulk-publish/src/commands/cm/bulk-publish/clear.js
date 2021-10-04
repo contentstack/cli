@@ -1,6 +1,6 @@
 const fs = require('fs')
 const {cli} = require('cli-ux')
-const {Command} = require('@oclif/command')
+const {Command, flags} = require('@oclif/command')
 const {getLogsDirPath} = require('../../../util/logger.js')
 
 class ClearCommand extends Command {
