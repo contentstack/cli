@@ -13,7 +13,7 @@ class UnpublishedEntriesCommand extends Command {
     let updatedFlags
     try {
       updatedFlags = (unpublishedEntriesFlags.config) ? store.updateMissing(configKey, unpublishedEntriesFlags) : unpublishedEntriesFlags
-    } catch(error) {
+    } catch (error) {
       this.error(error.message, {exit: 2})
     }
     if (this.validate(updatedFlags)) {
@@ -24,7 +24,7 @@ class UnpublishedEntriesCommand extends Command {
         }
         updatedFlags.bulkPublish = (updatedFlags.bulkPublish === 'false') ? false : true
         await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
-        config = { 
+        config = {
           alias: updatedFlags.alias,
           host: this.config.userConfig.getRegion().cma,
           branch: unpublishedEntriesFlags.branch,
