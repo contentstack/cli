@@ -116,43 +116,31 @@ async function start({retryFailed, bulkPublish, sourceEnv, contentTypes, locales
     process.exit(0)  
   })
 
-  try {
-    if (retryFailed) {
-      if (typeof retryFailed === 'string') {
-        if (!validateFile(retryFailed, ['publish-edits', 'bulk-publish-edits'])) {
-          return false
-        }
-        
-        bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
-        setConfig(config, bulkPublish)
-
-        if (bulkPublish) {
-          await retryFailedLogs(retryFailed, queue, 'bulk')
-        } else {
-          await retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish')
-        }
+  if (retryFailed) {
+    if (typeof retryFailed === 'string') {
+      if (!validateFile(retryFailed, ['publish-edits', 'bulk-publish-edits'])) {
+        return false
       }
-    } else if (sourceEnv) {
+
+      bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
       setConfig(config, bulkPublish)
-      try {
-        const environmentDetails = await getEnvironment(stack, sourceEnv)
-        for (let i = 0; i < contentTypes.length; i += 1) {
-          for (let j = 0; j < locales.length; j += 1) {
-            try {
-              /* eslint-disable no-await-in-loop */
-              await getEntries(stack, contentTypes[i], environmentDetails.uid, locales[j], bulkPublish, environments)
-              /* eslint-enable no-await-in-loop */
-            } catch (error) {
-              throw error
-            }
-          }
-        }
-      } catch (error) {
-        throw error
+
+      if (bulkPublish) {
+        await retryFailedLogs(retryFailed, queue, 'bulk')
+      } else {
+        await retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish')
       }
     }
-  } catch(error) {
-    throw error
+  } else if (sourceEnv) {
+    setConfig(config, bulkPublish)
+    const environmentDetails = await getEnvironment(stack, sourceEnv)
+    for (let i = 0; i < contentTypes.length; i += 1) {
+      for (let j = 0; j < locales.length; j += 1) {
+        /* eslint-disable no-await-in-loop */
+        await getEntries(stack, contentTypes[i], environmentDetails.uid, locales[j], bulkPublish, environments)
+        /* eslint-enable no-await-in-loop */
+      }
+    }
   }
 }
 
