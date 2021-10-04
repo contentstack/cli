@@ -21,8 +21,9 @@ class ClearCommand extends Command {
 
 	rmDir(dirPath, removeSelf) {
 		if (fs.existsSync(dirPath)) {
-			if (removeSelf === undefined)
+			if (removeSelf === undefined) {
 		    removeSelf = true;
+			}
 		  try { var files = fs.readdirSync(dirPath); }
 		  catch(e) { return; }
 		  if (files.length > 0)
@@ -33,8 +34,9 @@ class ClearCommand extends Command {
 		      else
 		        rmDir(filePath);
 		    }
-		  if (removeSelf)
+		  if (removeSelf) {
 		    fs.rmdirSync(dirPath);
+			}
 		  this.log('Log files have been cleared')
 		} else {
 			this.error(`The log directory doesn't exist.`)

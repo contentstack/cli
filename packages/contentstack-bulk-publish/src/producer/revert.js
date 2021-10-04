@@ -328,8 +328,8 @@ async function revertUsingLogs(logFileName) {
   }
 }
 
-async function start({retryFailed, logFile}, config) {
-  setConfig(config)
+async function start({retryFailed, logFile}, cfg) {
+  setConfig(cfg)
   if (retryFailed) {
     if (typeof retryFailed === 'string') {
       if (!validateFile(retryFailed, ['revert'])) {
