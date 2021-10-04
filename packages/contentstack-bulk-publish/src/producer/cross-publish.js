@@ -130,7 +130,6 @@ async function getSyncEntries(stack, config, queryParams, bulkPublish, filter, d
       reject(error)
     }
   })
-  return resolve()
 }
 
 function setConfig(conf, bp) {
@@ -143,7 +142,6 @@ function setConfig(conf, bp) {
     assetQueue.consumer = publishAsset
   }
 
-  config = conf
   queue.config = conf
   entryQueue.config = conf
   assetQueue.config = conf
@@ -162,34 +160,30 @@ async function start({retryFailed, bulkPublish, filter, deliveryToken, destEnv, 
     process.exit(0)
   })
 
-  try {
-    if (retryFailed) {
-      if (typeof retryFailed === 'string' && retryFailed.length > 0) {
-        if (!validateFile(retryFailed, ['cross-publish', 'bulk-cross-publish'])) {
-          return false
-        }
-
-        bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
-        setConfig(config, bulkPublish)
-
-        if (bulkPublish) {
-          await retryFailedLogs(retryFailed, queue, 'bulk')
-        } else {
-          await retryFailedLogs(retryFailed, {entryQueue, assetQueue}, 'publish')
-        }
+  if (retryFailed) {
+    if (typeof retryFailed === 'string' && retryFailed.length > 0) {
+      if (!validateFile(retryFailed, ['cross-publish', 'bulk-cross-publish'])) {
+        return false
       }
-    } else {
-      setConfig(config, bulkPublish)  
-      filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
-      const queryParams = getQueryParams(filter)
-      try {
-        await getSyncEntries(stack, config, queryParams, bulkPublish, filter, deliveryToken, destEnv)
-      } catch (error) {
-        throw error
+
+      bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
+      setConfig(config, bulkPublish)
+
+      if (bulkPublish) {
+        await retryFailedLogs(retryFailed, queue, 'bulk')
+      } else {
+        await retryFailedLogs(retryFailed, {entryQueue, assetQueue}, 'publish')
       }
     }
-  } catch(error) {
-    throw error
+  } else {
+    setConfig(config, bulkPublish)  
+    filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
+    const queryParams = getQueryParams(filter)
+    try {
+      await getSyncEntries(stack, config, queryParams, bulkPublish, filter, deliveryToken, destEnv)
+    } catch (error) {
+      throw error
+    }
   }
 }
 
