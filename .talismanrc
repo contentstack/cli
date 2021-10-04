@@ -1,4 +1,22 @@
 fileignoreconfig:
+- filename: packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js
+  checksum: 6bb1c10a38248e00cc276bacf6068b56ee4cff58f277f6955bf303342251562d
+- filename: packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js
+  checksum: a088561632c4e373a6848ffe5ac8701e08e47555261e4a532f2dcb519c46c5b9
+- filename: packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js
+  checksum: 0db328cd49cd8e704c4969ee0fec008a07e415fffbc9fe82d14f5e0e9bd4dcfa
+- filename: packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entries.js
+  checksum: 76d85fa32e17c770bf1e8e56fc4e22f2efe661f2465b0bd75d350e3d042bd79e
+- filename: packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entry-edits.js
+  checksum: 429b40513c6ae2a3ed9c6cf3409babb0646ed8d19903e1d03d75ec16afebb01d
+- filename: packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js
+  checksum: 0310b7ecd7caf745c122ec17db6352a844182d311d568c7363cf2b01f4a21207
+- filename: packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/revert.js
+  checksum: efbfdd22c73b05f6acb073be9e3ee45105686d0bbc43b355f5f0498137e0d95a
+- filename: packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublish.js
+  checksum: 167562a53c659d2d8e8e32ad0383a093a92c4c17fc16dfdff3211065ec24cdbd
+- filename: packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js
+  checksum: 33cd7a2c1ae049cedd8850b3aaa192cf344b54b51f53b98ec5f89ea94573a5e5
 - filename: packages/contentstack-bulk-publish/src/producer/publish-unpublished-env.js
   checksum: b3fd4e46480904da1e0dbc272fffc984076e23c09e8e943c6a93dde71dc23145
 - filename: packages/contentstack-bulk-publish/src/util/client.js
