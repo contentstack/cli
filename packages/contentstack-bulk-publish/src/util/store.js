@@ -52,11 +52,7 @@ function get(key, filePath) {
 
 function updateMissing(key, flags) {
   let savedConfig
-  try {
-    savedConfig = get(key, path.resolve(flags.config))
-  } catch(error) {
-    throw error
-  }
+  savedConfig = get(key, path.resolve(flags.config))
   Object.keys(savedConfig).forEach(element => {
     if (flags[element] === undefined) {
       console.log(`Using ${element} from config file`)
@@ -74,13 +70,13 @@ function updateMissing(key, flags) {
 // because both unpublish and cross-publish commands build the filter object
 // internally, and in the original bulk-publish script the filter object was
 // mentioned in the config file itself
-function handleFilterObj(config) {
-  config.environment = config.filter.environment
-  config.contentType = config.filter.content_type_uid
-  config.locale = config.filter.locale
-  config.f_types = config.filter.type // adding f_types to differentiate the types specified in the config.js, and the types defined internally in Unpublish and Cross Publish
-  delete config.filter
-  return config
+function handleFilterObj(config1) {
+  config1.environment = config1.filter.environment
+  config1.contentType = config1.filter.content_type_uid
+  config1.locale = config1.filter.locale
+  config1.f_types = config1.filter.type // adding f_types to differentiate the types specified in the config.js, and the types defined internally in Unpublish and Cross Publish
+  delete config1.filter
+  return config1
 }
 
 module.exports = {
