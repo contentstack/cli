@@ -11,14 +11,14 @@ const config = new Configstore('contentstack_cli')
 class AddCommand extends Command {
   async run() {
     let isReplace = false
-    const {flags} = this.parse(AddCommand)
-    let forced = flags.force
-    let alias = flags.alias
-    let apiKey = flags['api-key']
-    let token = flags.token
-    let isDelivery = flags.delivery
-    let isManagement = flags.management
-    let environment = flags.environment
+    const addCommandFlags = this.parse(AddCommand).flags
+    let forced = addCommandFlags.force
+    let alias = addCommandFlags.alias
+    let apiKey = addCommandFlags['api-key']
+    let token = addCommandFlags.token
+    let isDelivery = addCommandFlags.delivery
+    let isManagement = addCommandFlags.management
+    let environment = addCommandFlags.environment
     let configKeyTokens = 'tokens'
     let type = (isDelivery || Boolean(environment)) ? 'delivery' : 'management'
     debug(`Adding ${type} token`)
