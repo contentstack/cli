@@ -26,11 +26,11 @@ const {requests: _requests, actionMapper, MANAGEMENT_SDK, MANAGEMENT_TOKEN, AUTH
 class MigrationCommand extends Command {
   async run() {
     // TODO: filePath validation required.
-    const {flags} = this.parse(MigrationCommand)
-    const {filePath, multi, branch} = flags
-    const authtoken = flags.authtoken
-    const apiKey = flags['api-key']
-    const alias = flags['management-token-alias']
+    const migrationCommandFlags = this.parse(MigrationCommand).flags
+    const {filePath, multi, branch} = migrationCommandFlags
+    const authtoken = migrationCommandFlags.authtoken
+    const apiKey = migrationCommandFlags['api-key']
+    const alias = migrationCommandFlags['management-token-alias']
 
     let stackSDKInstance
 
