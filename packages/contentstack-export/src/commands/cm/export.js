@@ -12,16 +12,16 @@ const credStore = new Configstore('contentstack_cli')
 
 class ExportCommand extends Command {
   async run() {
-    const { flags } = this.parse(ExportCommand)
-    const extConfig = flags.config
-    let sourceStack = flags['stack-uid']
-    const alias = flags['management-token-alias']
-    const authToken = flags['auth-token']
-    const securedAssets = flags['secured-assets']
-    const data = flags.data
-    const moduleName = flags.module
-    const contentTypes = flags['content-type']
-    const branchName = flags.branch;
+    const exportCommandFlags = this.parse(ExportCommand).flags
+    const extConfig = exportCommandFlags.config
+    let sourceStack = exportCommandFlags['stack-uid']
+    const alias = exportCommandFlags['management-token-alias']
+    const authToken = exportCommandFlags['auth-token']
+    const securedAssets = exportCommandFlags['secured-assets']
+    const data = exportCommandFlags.data
+    const moduleName = exportCommandFlags.module
+    const contentTypes = exportCommandFlags['content-type']
+    const branchName = exportCommandFlags.branch;
     let _authToken = credStore.get('authtoken')
     let host = this.region
     let cmaHost = host.cma.split('//')
@@ -29,10 +29,10 @@ class ExportCommand extends Command {
     host.cma = cmaHost[1]
     host.cda = cdaHost[1]
 
-    if (alias && alias !== undefined) {
+    if (alias) {
       let managementTokens = this.getToken(alias)
-      if (managementTokens && managementTokens !== undefined) {
-        if (extConfig && extConfig !== undefined) {
+      if (managementTokens) {
+        if (extConfig) {
           configWithMToken(
             extConfig,
             managementTokens,
@@ -68,8 +68,8 @@ class ExportCommand extends Command {
       } else {
         this.log(alias + ' management token is not present, please add managment token first')
       }
-    } else if (authToken && authToken !== undefined && _authToken && _authToken !== undefined) {
-      if (extConfig && extConfig !== undefined) {
+    } else if (authToken && _authToken) {
+      if (extConfig) {
         configWithAuthToken(
           extConfig,
           _authToken,

@@ -1,10 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import { Stream } from 'stream'
-import * as path from 'path'
 import * as zlib from 'zlib'
 import * as tar from 'tar'
 import * as mkdirp from 'mkdirp'
-import GithubError from './error'
+import GithubError from './github-error'
 import messageHandler from '../../messages'
 
 const DEFAULT_BRANCH = 'master'
