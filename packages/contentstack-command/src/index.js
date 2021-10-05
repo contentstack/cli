@@ -21,8 +21,6 @@ class ContentstackCommand extends Command {
     if(params && params.host) {
       //can not set host explicitly as CLI runs under constant host coming from config
       params.host = this.cmaHost
-    } else {
-      params.host = this.cmaHost
     }
     this._managementAPIClient = ContentstackManagementSDK.client(params)
   }

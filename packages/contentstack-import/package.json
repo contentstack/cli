@@ -12,7 +12,7 @@
 		"axios": "^0.21.1",
 		"bluebird": "3.5.1",
 		"configstore": "^5.0.1",
-		"debug": "4.1.0",
+		"debug": "^4.1.0",
 		"lodash": "^4.17.20",
 		"marked": "0.7.0",
 		"mkdirp": "^1.0.4",

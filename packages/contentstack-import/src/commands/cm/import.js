@@ -14,24 +14,24 @@ const {configWithMToken,
 class ImportCommand extends Command {
   async run() {
     let self = this
-    const {flags} = self.parse(ImportCommand)
-    const extConfig = flags.config
-    let targetStack = flags['stack-uid']
-    const data = flags.data
-    const moduleName = flags.module
-    const backupdir = flags["backup-dir"]
-    const alias = flags['management-token-alias']
-    const authToken = flags['auth-token']
+    const importCommandFlags = self.parse(ImportCommand).flags
+    const extConfig = importCommandFlags.config
+    let targetStack = importCommandFlags['stack-uid']
+    const data = importCommandFlags.data
+    const moduleName = importCommandFlags.module
+    const backupdir = importCommandFlags["backup-dir"]
+    const alias = importCommandFlags['management-token-alias']
+    const authToken = importCommandFlags['auth-token']
     let _authToken = credStore.get('authtoken')
-    let branchName = flags.branch
+    let branchName = importCommandFlags.branch
     let host = self.cmaHost
     
   return new Promise(function (resolve, reject) {  
-    if (alias && alias !== undefined) {
+    if (alias) {
       let managementTokens = self.getToken(alias)
 
-      if (managementTokens && managementTokens !== undefined) {
-        if (extConfig && extConfig !== undefined && _authToken) {
+      if (managementTokens) {
+        if (extConfig && _authToken) {
           configWithMToken(
             extConfig,
             managementTokens,
@@ -73,8 +73,8 @@ class ImportCommand extends Command {
       } else {
         console.log('management Token is not present please add managment token first')
       }
-    } else if (authToken && authToken !== undefined && _authToken && _authToken !== undefined) {
-      if (extConfig && extConfig !== undefined) {
+    } else if (authToken && _authToken) {
+      if (extConfig) {
         configWithAuthToken(
           extConfig,
           _authToken,

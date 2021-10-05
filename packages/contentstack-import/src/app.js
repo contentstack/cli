@@ -19,7 +19,7 @@ exports.initial = function (configData) {
   return new Promise(function (resolve, reject) {
     let config = util.initialization(configData)
     config.oldPath = config.data
-    if (config && config !== undefined) {
+    if (config) {
       login(config)
         .then(function () {
           if (fs.existsSync(config.data)) {
@@ -33,7 +33,7 @@ exports.initial = function (configData) {
             })
               .then(() => {
                 let types = config.modules.types
-                if (config.moduleName && config.moduleName !== undefined) {
+                if (config.moduleName) {
                   singleImport(config.moduleName, types, config).then(() => {
                     return resolve()
                   })
