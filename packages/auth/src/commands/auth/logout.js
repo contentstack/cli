@@ -8,9 +8,9 @@ const messages = new Messages('logout').msgs
 
 class LogoutCommand extends Command {
   async run() {
-    const {flags} = this.parse(LogoutCommand)
+    const logoutCommandFlags = this.parse(LogoutCommand).flags
     let confirm = false
-    confirm = flags.force ? true : await cli.confirm(messages.promptConfirmLogout)
+    confirm = logoutCommandFlags.force ? true : await cli.confirm(messages.promptConfirmLogout)
     const opts = {
       contentstackClient: this.managementAPIClient,
     }
