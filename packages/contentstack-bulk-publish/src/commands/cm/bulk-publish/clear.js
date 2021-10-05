@@ -1,6 +1,6 @@
 const fs = require('fs')
 const {cli} = require('cli-ux')
-const {Command, flags} = require('@oclif/command')
+const {Command} = require('@oclif/command')
 const {getLogsDirPath} = require('../../../util/logger.js')
 
 class ClearCommand extends Command {
@@ -39,7 +39,7 @@ class ClearCommand extends Command {
 		} else {
 			this.error(`The log directory doesn't exist.`)
 		}
-	};
+	}
 
 	listFiles(dirPath) {
 		if (fs.existsSync(dirPath)) {
