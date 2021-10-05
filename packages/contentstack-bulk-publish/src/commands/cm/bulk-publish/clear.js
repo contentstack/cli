@@ -5,11 +5,11 @@ const {getLogsDirPath} = require('../../../util/logger.js')
 
 class ClearCommand extends Command {
   async run() {
-    const {flags} = this.parse(ClearCommand)
+    const clearFlags = this.parse(ClearCommand).flags
   	let dirPath = getLogsDirPath()
-    if (flags.list) {
+    if (clearFlags.list) {
     	this.listFiles(dirPath)
-    } else if (flags.yes) {
+    } else if (clearFlags.yes) {
     	this.rmDir(dirPath, false)
     } else {
 	    const confirmation = await cli.prompt('Proceed to delete all log files (y/n)?')
