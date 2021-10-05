@@ -26,6 +26,7 @@ let globalfieldsUidMapperPath
 let globalfieldsSuccessPath
 let globalfieldsFailsPath
 let client
+let globalFieldsPending
 
 
 global._globalField_pending = []

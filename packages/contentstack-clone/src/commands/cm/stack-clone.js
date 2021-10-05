@@ -17,7 +17,7 @@ class StackCloneCommand extends Command {
         config.host = this.cmaHost
         config.cdn  = this.cdaHost
         const cloneHandler = new CloneHandler(config)
-        let result = await cloneHandler.start()
+        await cloneHandler.start()
         let successMessage = 'Stack cloning process have been completed successfully'
         await this.cleanUp(pathdir, successMessage)
       } else {
@@ -45,7 +45,7 @@ class StackCloneCommand extends Command {
   }
 
   registerCleanupOnInterrupt(pathDir) {
-    ['SIGINT', 'SIGQUIT', 'SIGKILL']
+    ['SIGINT', 'SIGQUIT', 'SIGTERM']
     .forEach(signal => process.on(signal, async () => {
       // eslint-disable-next-line no-console
       console.log('\nCleaning up')
