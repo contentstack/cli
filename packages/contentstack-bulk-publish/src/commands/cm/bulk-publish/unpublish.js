@@ -11,11 +11,11 @@ let config
 
 class UnpublishCommand extends Command {
   async run() {
-    const {flags} = this.parse(UnpublishCommand)
+    const unpublishFlags = this.parse(UnpublishCommand).flags
     let updatedFlags
     try {
-      updatedFlags = (flags.config) ? store.updateMissing(configKey, flags) : flags
-    } catch(error) {
+      updatedFlags = (unpublishFlags.config) ? store.updateMissing(configKey, unpublishFlags) : unpublishFlags
+    } catch (error) {
       this.error(error.message, {exit: 2})
     }
 
@@ -30,11 +30,11 @@ class UnpublishCommand extends Command {
         }
         updatedFlags.bulkUnpublish = (updatedFlags.bulkUnpublish === 'false') ? false : true
         await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
-        config = { 
+        config = {
           alias: updatedFlags.alias,
           host: this.config.userConfig.getRegion().cma,
           cda: this.config.userConfig.getRegion().cda,
-          branch: flags.branch,
+          branch: unpublishFlags.branch,
         }
         stack = getStack(config)
       }
@@ -49,7 +49,7 @@ class UnpublishCommand extends Command {
           } else {
             await start(updatedFlags)
           }
-        } catch(error) {
+        } catch (error) {
           let message = formatError(error)
           this.error(message, {exit: 2})
         }
@@ -95,14 +95,14 @@ class UnpublishCommand extends Command {
     }
   }
 
-  async confirmFlags(flags) {
+  async confirmFlags(data) {
     let confirmation
-    prettyPrint(flags)
-    if (flags.yes) {
+    prettyPrint(data)
+    if (data.yes) {
       return true
     }
 
-    if (!flags.contentType && !flags.onlyAssets) {
+    if (!data.contentType && !data.onlyAssets) {
       confirmation = await cli.confirm('Do you want to continue with this configuration. This will unpublish all the entries from all content types? [yes or no]')
     } else {
       confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')

@@ -1,4 +1,4 @@
-const {Command, flags} = require('@oclif/command')
+const {Command} = require('@oclif/command')
 const {start} = require('../../../producer/revert')
 const store = require('../../../util/store.js')
 const configKey = 'revert'
@@ -48,9 +48,9 @@ class RevertCommand extends Command {
     }
   }
 
-  async confirmFlags(flags) {
-    prettyPrint(flags)
-    if(flags.yes) {
+  async confirmFlags(data) {
+    prettyPrint(data)
+    if(data.yes) {
       return true
     }
     const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')
