@@ -11,7 +11,6 @@ const {
 } = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
-const types = 'asset_published,entry_published'
 const queue = getQueue()
 const entryQueue = getQueue()
 const assetQueue = getQueue()
@@ -129,6 +128,7 @@ async function getSyncEntries(stack, config, queryParams, bulkPublish, filter, d
     } catch (error) {
       reject(error)
     }
+    return resolve()
   })
 }
 
@@ -148,7 +148,7 @@ function setConfig(conf, bp) {
   filePath = initializeLogger(logFileName)
 }
 
-async function start({retryFailed, bulkPublish, filter, deliveryToken, destEnv, f_types}, stack, config) {
+async function start({retryFailed, bulkPublish, filter, deliveryToken, contentType, environment, locale, onlyAssets, onlyEntries, destEnv, f_types}, stack, config) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)
@@ -176,14 +176,28 @@ async function start({retryFailed, bulkPublish, filter, deliveryToken, destEnv, 
       }
     }
   } else {
-    setConfig(config, bulkPublish)  
-    filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
-    const queryParams = getQueryParams(filter)
-    try {
-      await getSyncEntries(stack, config, queryParams, bulkPublish, filter, deliveryToken, destEnv)
-    } catch (error) {
-      throw error
+    let filter = {
+      environment,
+      locale,
     }
+    if (f_types)
+      filter.type = f_types
+    // filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
+    if (contentType) {
+      filter.content_type_uid = contentType
+      filter.type = 'entry_published'
+    }
+    if (onlyAssets) {
+      filter.type = 'asset_published'
+      delete filter.content_type_uid
+    }
+    if (onlyEntries) {
+      filter.type = 'entry_published'
+    }
+    setConfig(config, bulkPublish)
+    // filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
+    const queryParams = getQueryParams(filter)
+    await getSyncEntries(stack, config, queryParams, bulkPublish, filter, deliveryToken, destEnv)
   }
 }
 

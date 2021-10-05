@@ -11,7 +11,6 @@ const {
 } = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
-const types = 'asset_published,entry_published'
 const queue = getQueue()
 const entryQueue = getQueue()
 const assetQueue = getQueue()
@@ -157,7 +156,7 @@ async function start({retryFailed, bulkUnpublish, contentType, locale, environme
     } else if (!isSuccessLogEmpty) {
       console.log(`The success log for this session is stored at ${filePath}.success`)
     }
-    process.exit(0)  
+    process.exit(0)
   })
 
   if (retryFailed) {
@@ -180,9 +179,13 @@ async function start({retryFailed, bulkUnpublish, contentType, locale, environme
       environment,
       locale,
     }
-    filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
+    if (f_types) {
+      filter.type = f_types
+    }
+    // filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
     if (contentType) {
       filter.content_type_uid = contentType
+      filter.type = 'entry_published'
     }
     if (onlyAssets) {
       filter.type = 'asset_published'

@@ -1,4 +1,14 @@
 fileignoreconfig:
+- filename: package-lock.json
+  checksum: 3b6c1994c163c76cf973bef4d9eea68674effea15a91144f2612266d84586466
+- filename: packages/auth/package-lock.json
+  checksum: 7ebb9d0250dafb7c213cd2b633f37bca1dde024209c98b09a4cdff78a2d20f4e
+- filename: packages/auth/src/commands/auth/tokens/add.js
+  checksum: b5cfab55085963320819949282f4e93e8932925391b75a7107666e67ce9db7ad
+- filename: packages/contentstack-bootstrap/package-lock.json
+  checksum: fcd912d61818c137902ae5fd401c1488ea67fa93d07275fd9eaf898c7b67f224
+- filename: packages/contentstack-bulk-publish/package-lock.json
+  checksum: 88c71241f97b82ef8c83fc2c8abc4882792ce68e4f6e9358ff2162f636df5dc1
 - filename: packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js
   checksum: 6bb1c10a38248e00cc276bacf6068b56ee4cff58f277f6955bf303342251562d
 - filename: packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js
@@ -33,3 +43,31 @@ fileignoreconfig:
   checksum: 88cd4e934275bbafaad5a8281617375f2d56e878f3df615f31410cd741af2114
 - filename: packages/contentstack-bulk-publish/test/dummy/stackResponse.js
   checksum: 696db88c6c28903ba41f555703f3d21c97f1d6b48970c31c55a435a2abd38256
+- filename: packages/contentstack-clone/package-lock.json
+  checksum: 32d94deab36ab7c1a9511351671bde911a12e96458080ba37ff0cacd4fd13629
+- filename: packages/contentstack-command/package-lock.json
+  checksum: 67b392fca8edd4b96704c14d940b5b7250e44686d48c6725247d51678783e9c2
+- filename: packages/contentstack-export-to-csv/package-lock.json
+  checksum: 9df66d3a652f2ca1bef078602829988f1ba3c3991c914292c43629fd5a06d308
+- filename: packages/contentstack-export/package-lock.json
+  checksum: dc299085fb93471b1c8b20d51879624c771a5f23f5b07a6a91baa9f3342cdcbb
+- filename: packages/contentstack-export/src/lib/export/global-fields.js
+  checksum: e21b79207eb0888c63ad9f0c5f2cdf0da9b77d69036ce406c4495f06d40e3f3e
+- filename: packages/contentstack-export/src/lib/util/login.js
+  checksum: 6526d0eee8d29a29dd54f84a84e30896ce6fe7db9431738152406874aa7f02c5
+- filename: packages/contentstack-import/package-lock.json
+  checksum: 19fe9c46e75f7907aac5e61843e8733c6ee5272a4690ed81527c3121e765caf4
+- filename: packages/contentstack-import/src/lib/util/index.js
+  checksum: 1e9393fa23bc0869603d5ee6f4e7a84a1ba2b2965b1ed49237666d4bad3f3cfb
+- filename: packages/contentstack-migrate-rte/package-lock.json
+  checksum: 9b0a9ae16cea1b5f7d1d276e91576cb01b1643a6dac0fec387139af5510cbb47
+- filename: packages/contentstack-migration/package-lock.json
+  checksum: 19c172bfc0c85ac3474a0ce5040e743c7933a248be7df4aafc18d438e751acce
+- filename: packages/contentstack-migration/src/commands/cm/migration.js
+  checksum: 72e696ad93ed5552e45cc77439bcc75b85d3ee46193dc05e3e5cb625d2fe3e4f
+- filename: packages/contentstack-plugins/package-lock.json
+  checksum: 59baec0390b81462c88999440f9be0ae58480d67a50073c1a30ebdccc6b17fd9
+- filename: packages/contentstack-seed/package-lock.json
+  checksum: f93e33a1e8df359a52fccf4b00cf0c1fe75752c0b2a3fe7c2147442ca4252bec
+- filename: packages/contentstack/package-lock.json
+  checksum: cb43ad33bb1c7323668f50be5d8e096622dd9c2aae4320f445758f6c1d9742d6

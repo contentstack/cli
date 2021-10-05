@@ -15,7 +15,7 @@ class UnpublishCommand extends Command {
     let updatedFlags
     try {
       updatedFlags = (unpublishFlags.config) ? store.updateMissing(configKey, unpublishFlags) : unpublishFlags
-    } catch(error) {
+    } catch (error) {
       this.error(error.message, {exit: 2})
     }
 
@@ -49,7 +49,7 @@ class UnpublishCommand extends Command {
           } else {
             await start(updatedFlags)
           }
-        } catch(error) {
+        } catch (error) {
           let message = formatError(error)
           this.error(message, {exit: 2})
         }
@@ -59,7 +59,7 @@ class UnpublishCommand extends Command {
     }
   }
 
-  validate({environment, retryFailed, locale, onlyAssets, onlyEntries}) {
+  validate({environment, retryFailed, locale, contentType, onlyAssets, onlyEntries}) {
     let missing = []
     if (retryFailed) {
       return true
@@ -67,6 +67,10 @@ class UnpublishCommand extends Command {
 
     if (onlyAssets && onlyEntries) {
       this.error(`The flags onlyAssets and onlyEntries need not be used at the same time. Unpublish command unpublishes entries and assts at the same time by default`)
+    }
+
+    if (onlyAssets && contentType) {
+      this.error(`Specifying content-type and onlyAssets together will have unexpected results. Please do not use these 2 flags together. Thank you.`)
     }
 
     if (!environment) {
@@ -91,19 +95,19 @@ class UnpublishCommand extends Command {
     }
   }
 
-  async confirmFlags(data) {  
+  async confirmFlags(data) {
     let confirmation
     prettyPrint(data)
-    if(data.yes) { 
-      return true 
-    } 
+    if (data.yes) {
+      return true
+    }
 
-    if(!data.contentType && !data.onlyAssets) {
+    if (!data.contentType && !data.onlyAssets) {
       confirmation = await cli.confirm('Do you want to continue with this configuration. This will unpublish all the entries from all content types? [yes or no]')
     } else {
-      confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]') 
+      confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')
     }
-    return confirmation 
+    return confirmation
   }
 }
 

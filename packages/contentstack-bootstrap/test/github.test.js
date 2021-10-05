@@ -9,9 +9,9 @@ const url = 'http://www.google.com'
 
 function getDirectory() {
     return new Promise((resolve, reject) => {
-        tmp.dir(function (err, path) {
+        tmp.dir(function (err, dirPath) {
             if (err) reject(err)
-            resolve(path)
+            resolve(dirPath)
         });
     })
 }
