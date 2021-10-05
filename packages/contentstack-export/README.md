@@ -48,6 +48,7 @@ OPTIONS
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
   -t, --content-type=content-type                      [optional] content type
+  --secured-assets                                     [optional] use when assets are secured
 
 DESCRIPTION
   ...
@@ -57,6 +58,8 @@ EXAMPLES
   csdx cm:export -A
   csdx cm:export -A -s <stack_ApiKey> -d <path/of/export/destination/dir>
   csdx cm:export -A -c <path/to/config/dir>
+  csdx cm:export -A -m <single module name>
+  csdx cm:export -A --secured-assets
   csdx cm:export -a <management_token_alias>
   csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
   csdx cm:export -a <management_token_alias> -c <path/to/config/file>
