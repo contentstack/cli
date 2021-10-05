@@ -54,7 +54,7 @@ export default class BootstrapCommand extends Command {
   }
 
   async run() {
-    const { flags } = this.parse(BootstrapCommand)
+    const bootstrapCommandFlags = this.parse(BootstrapCommand).flags
 
     try {
       if (!this.authToken) {
@@ -62,12 +62,12 @@ export default class BootstrapCommand extends Command {
       }
 
       // inquire user inputs
-      let appType = flags.appType as string || 'starterapp';
+      let appType = bootstrapCommandFlags.appType as string || 'starterapp';
       if (!appType) {
         appType = await inquireAppType()
       }
 
-      const selectedAppName = flags.appName as string
+      const selectedAppName = bootstrapCommandFlags.appName as string
       let selectedApp
       if (!selectedAppName) {
         if (appType === 'sampleapp') {
@@ -85,13 +85,13 @@ export default class BootstrapCommand extends Command {
 
       const appConfig: AppConfig = getAppLevelConfigByName(selectedAppName || selectedApp.configKey)
 
-      let cloneDirectory = flags.directory as string
+      let cloneDirectory = bootstrapCommandFlags.directory as string
       if (!cloneDirectory) {
         cloneDirectory = await inquireCloneDirectory()
       }
 
       // Check the access token
-      let accessToken = flags.accessToken as string
+      let accessToken = bootstrapCommandFlags.accessToken as string
       if (appConfig.private && !accessToken) {
         accessToken = await inquireGithubAccessToken()
       }

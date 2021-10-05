@@ -50,8 +50,8 @@ var makeCall = module.exports = function(req, RETRY) {
           timeDelay = Math.pow(Math.SQRT2, RETRY) * 100;
           // console.log(`API rate limit exceeded.\nReceived ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
           console.log(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`);
-          return setTimeout(function (req, RETRY) {
-            return makeCall(req, RETRY)
+          return setTimeout(function (reqObj, retry) {
+            return makeCall(reqObj, retry)
               .then(resolve)
               .catch(reject);
           }, timeDelay, req, RETRY);
