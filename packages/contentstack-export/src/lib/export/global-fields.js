@@ -52,7 +52,7 @@ ExportGlobalFields.prototype = {
             if (!result) {
               return self
                 .writeGlobalFields()
-                .then((result) => {
+                .then(() => {
                   return resolve();
                 })
                 .catch((error) => {
@@ -69,7 +69,7 @@ ExportGlobalFields.prototype = {
       }
     });
   },
-  getGlobalFields: function (skip, config) {
+  getGlobalFields: function (skip, globalFieldConfig) {
     const self = this;
     if (typeof skip !== "number") {
       skip = 0;
@@ -78,12 +78,12 @@ ExportGlobalFields.prototype = {
       self.requestOptions.qs.skip = skip;
     }
 
-    let client = stack.Client(config);
+    let client = stack.Client(globalFieldConfig);
     return new Promise(function (resolve, reject) {
       client
         .stack({
-          api_key: config.source_stack,
-          management_token: config.management_token,
+          api_key: globalFieldConfig.source_stack,
+          management_token: globalFieldConfig.management_token,
         })
         .globalField()
         .query(self.requestOptions.qs)
@@ -91,7 +91,7 @@ ExportGlobalFields.prototype = {
         .then((globalFieldResponse) => {
           try {
             if (globalFieldResponse.items.length === 0) {
-              addlogs(config, "No global fields found", "success");
+              addlogs(globalFieldConfig, "No global fields found", "success");
               return resolve("No Global Fields");
             }
             globalFieldResponse.items.forEach(function (globalField) {
@@ -110,7 +110,7 @@ ExportGlobalFields.prototype = {
             }
 
             return self
-              .getGlobalFields(skip, config)
+              .getGlobalFields(skip, globalFieldConfig)
               .then(resolve)
               .catch(reject);
           } catch (error) {
