@@ -1,7 +1,6 @@
 import * as inquirer from 'inquirer'
 import cli from 'cli-ux'
 import * as path from 'path'
-import { AppConfig } from '../config'
 import messageHandler from '../messages'
 
 /**
