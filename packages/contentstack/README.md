@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.12 linux-x64 node-v12.22.1
+@contentstack/cli/0.1.1-beta.14 linux-x64 node-v12.22.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -259,9 +259,7 @@ USAGE
   $ csdx cm:bulk-publish:add-fields
 
 OPTIONS
-  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
-                                   branch)
-
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -324,9 +322,7 @@ USAGE
   $ csdx cm:bulk-publish:assets
 
 OPTIONS
-  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
-                                   branch)
-
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -442,7 +438,7 @@ USAGE
   $ csdx cm:bulk-publish:cross-publish
 
 OPTIONS
-  -B, --branch=branch                [default: master] Specify the branch to fetch the content from (default is master
+  -B, --branch=branch                [default: main] Specify the branch to fetch the content from (default is main
                                      branch)
 
   -a, --alias=alias                  Alias for the management token to be used
@@ -466,6 +462,10 @@ OPTIONS
   -x, --deliveryToken=deliveryToken  Delivery Token for source environment
 
   -y, --yes                          Agree to process the command with the current configuration
+
+  --onlyAssets                       Unpublish only assets
+
+  --onlyEntries                      Unpublish only entries
 
 DESCRIPTION
   The cross-publish command is used for publishing entries and assets from one evironment to other environments
@@ -511,9 +511,7 @@ USAGE
   $ csdx cm:bulk-publish:entries
 
 OPTIONS
-  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
-                                   branch)
-
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -581,9 +579,7 @@ USAGE
   $ csdx cm:bulk-publish:entry-edits
 
 OPTIONS
-  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
-                                   branch)
-
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -650,9 +646,7 @@ USAGE
   $ csdx cm:bulk-publish:nonlocalized-field-changes
 
 OPTIONS
-  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
-                                   branch)
-
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -681,7 +675,7 @@ DESCRIPTION
 EXAMPLES
   General Usage
   csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
-  2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
+  2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -s [SOURCE ENV]
 
   Using --config or -c flag
   Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
@@ -694,7 +688,7 @@ EXAMPLES
 
   Using --branch or -B flag
   csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
-  2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
+  2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME] -s [SOURCE ENV]
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
@@ -754,7 +748,7 @@ USAGE
   $ csdx cm:bulk-publish:unpublish
 
 OPTIONS
-  -B, --branch=branch                [default: master] Specify the branch to fetch the content from (default is master
+  -B, --branch=branch                [default: main] Specify the branch to fetch the content from (default is main
                                      branch)
 
   -a, --alias=alias                  Alias for the management token to be used
@@ -844,9 +838,7 @@ USAGE
   $ csdx cm:bulk-publish:unpublished-entries
 
 OPTIONS
-  -B, --branch=branch              [default: master] Specify the branch to fetch the content from (default is master
-                                   branch)
-
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
   -a, --alias=alias                Alias for the management token to be used
 
   -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -876,7 +868,8 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS]
+  csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] 
+  -s [SOURCE ENV]
 
   Using --config or -c flag
   Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
@@ -889,7 +882,7 @@ EXAMPLES
 
   Using --branch or -B flag
   csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] 
-  -B [BRANCH NAME]
+  -B [BRANCH NAME] -s [SOURCE ENV]
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
@@ -916,6 +909,7 @@ OPTIONS
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
   -t, --content-type=content-type                      [optional] content type
+  --secured-assets                                     [optional] use when assets are secured
 
 DESCRIPTION
   ...
@@ -925,6 +919,8 @@ EXAMPLES
   csdx cm:export -A
   csdx cm:export -A -s <stack_ApiKey> -d <path/of/export/destination/dir>
   csdx cm:export -A -c <path/to/config/dir>
+  csdx cm:export -A -m <single module name>
+  csdx cm:export -A --secured-assets
   csdx cm:export -a <management_token_alias>
   csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
   csdx cm:export -a <management_token_alias> -c <path/to/config/file>
@@ -989,7 +985,7 @@ EXAMPLES
   csdx cm:import -A -B <branch name>
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.7/packages/contentstack-import/src/commands/cm/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.8/packages/contentstack-import/src/commands/cm/import.js)_
 
 ## `csdx cm:migrate-rte`
 
@@ -1111,7 +1107,7 @@ EXAMPLE
   csdx cm:stack-clone
 ```
 
-_See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/v0.1.0-beta.1/src/commands/cm/stack-clone.js)_
+_See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/v0.1.0-beta.2/src/commands/cm/stack-clone.js)_
 
 ## `csdx config:get:region`
 
@@ -1125,7 +1121,7 @@ USAGE
   $ csdx config:get:region
 ```
 
-_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.12/src/commands/config/get/region.js)_
+_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.14/src/commands/config/get/region.js)_
 
 ## `csdx config:set:region [REGION]`
 
@@ -1157,7 +1153,7 @@ EXAMPLES
   --name="India"
 ```
 
-_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.12/src/commands/config/set/region.js)_
+_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.14/src/commands/config/set/region.js)_
 
 ## `csdx help [COMMAND]`
 
@@ -1195,7 +1191,7 @@ EXAMPLE
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:create`
 
@@ -1232,7 +1228,7 @@ EXAMPLE
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -1276,7 +1272,7 @@ EXAMPLES
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
@@ -1309,7 +1305,7 @@ EXAMPLE
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -1333,7 +1329,7 @@ ALIASES
   $ csdx plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:update`
 
@@ -1350,5 +1346,5 @@ OPTIONS
   -v, --verbose
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/update.ts)_
 <!-- commandsstop -->
