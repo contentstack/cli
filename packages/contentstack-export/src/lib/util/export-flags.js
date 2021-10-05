@@ -18,7 +18,7 @@ exports.configWithMToken = function (config, managementTokens, host, contentType
   defaultConfig.host = host.cma
   defaultConfig.cdn = host.cda
   defaultConfig.branchName = branchName
-  if (moduleName && moduleName !== undefined) {
+  if (moduleName) {
     defaultConfig.moduleName = moduleName
     // Specfic content type setting is only for entries module
     if (
@@ -40,7 +40,7 @@ exports.parameterWithMToken = function (managementTokens, data, moduleName, host
   defaultConfig.cdn = host.cda
   defaultConfig.branchName = branchName
   defaultConfig.securedAssets = securedAssets
-  if (moduleName && moduleName !== undefined) {
+  if (moduleName) {
     defaultConfig.moduleName = moduleName
     // Specfic content type setting is only for entries module
     if (
@@ -66,7 +66,7 @@ exports.withoutParameterMToken = async (managementTokens, moduleName, host, _aut
   defaultConfig.branchName = branchName
   defaultConfig.auth_token = _authToken
   defaultConfig.securedAssets = securedAssets
-  if (moduleName && moduleName !== undefined) {
+  if (moduleName) {
     defaultConfig.moduleName = moduleName
     // Specfic content type setting is only for entries module
     if (
@@ -89,7 +89,7 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host, co
   defaultConfig.cdn = host.cda
   defaultConfig.branchName = branchName
   defaultConfig.securedAssets = securedAssets
-  if (moduleName && moduleName !== undefined) {
+  if (moduleName) {
     defaultConfig.moduleName = moduleName
     // Specfic content type setting is only for entries module
     if (
@@ -108,7 +108,7 @@ exports.parametersWithAuthToken = function (_authToken, sourceStack, data, modul
   return new Promise(async(resolve, reject) => {
     defaultConfig.auth_token = _authToken
     defaultConfig.source_stack = sourceStack
-    if (moduleName && moduleName !== undefined) {
+    if (moduleName) {
       defaultConfig.moduleName = moduleName
       // Specfic content type setting is only for entries module
       if (
@@ -139,7 +139,7 @@ exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, co
   defaultConfig.auth_token = _authToken
   defaultConfig.source_stack = stackUid
   defaultConfig.securedAssets = securedAssets
-  if (moduleName && moduleName !== undefined) {
+  if (moduleName) {
     defaultConfig.moduleName = moduleName
     // Specfic content type setting is only for entries module
     if (

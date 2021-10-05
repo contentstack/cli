@@ -160,7 +160,6 @@ ExportAssets.prototype = {
     })
   },
   getAssetCount: function (folder) {
-    let self = this
     return new Promise(function (resolve, reject) {
       if (folder && typeof folder === 'boolean') {
         let queryOptions = {include_folders: true, query: {'is_dir': true}, include_count: true}
@@ -185,7 +184,6 @@ ExportAssets.prototype = {
     })
   },
   getAssetJSON: function (skip) {
-    let  self = this
     return new Promise(function (resolve, reject) {
       if (typeof skip !== 'number') {
         skip = 0

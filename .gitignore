@@ -8,6 +8,5 @@ contentTest
 build
 _backup*
 oclif.manifest.json
-.talismanrc
 .vscode
 .nyc_output

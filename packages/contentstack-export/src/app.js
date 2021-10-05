@@ -7,7 +7,6 @@ const chalk = require("chalk");
 let path = require("path");
 let _ = require("lodash");
 const cli = require("cli-ux");
-const { reject } = require("lodash");
 
 exports.initial = async function (config) {
   return new Promise(function (resolve, reject) {
@@ -27,7 +26,7 @@ exports.initial = async function (config) {
           for (let branch of config.branches) {
             config.branchName = branch.uid;
             try {
-              if (config.moduleName && config.moduleName !== undefined) {
+              if (config.moduleName) {
                 await singleExport(config.moduleName, types, config, branch.uid);
               } else {
                 await allExport(config, types, branch.uid);
@@ -38,7 +37,7 @@ exports.initial = async function (config) {
           } 
         } else {
           try {
-            if (config.moduleName && config.moduleName !== undefined) {
+            if (config.moduleName) {
               await singleExport(config.moduleName, types, config);
             } else {
               await allExport(config, types);
@@ -72,7 +71,6 @@ exports.initial = async function (config) {
 };
 
 var singleExport = async (moduleName, types, config, branchName) => {
-  var types = config.modules.types;
   try {
     if (types.indexOf(moduleName) > -1) {
       let iterateList;
