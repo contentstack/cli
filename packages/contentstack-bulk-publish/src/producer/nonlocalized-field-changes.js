@@ -8,7 +8,7 @@
 /* eslint-disable node/no-extraneous-require */
 const _ = require('lodash')
 const {getQueue} = require('../util/queue')
-const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
+const {performBulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
 const {setDelayForBulkPublish} = require('../util')
@@ -24,7 +24,7 @@ let filePath
 function setConfig(conf, bp) {
   if (bp) {
     logFileName = 'bulk-nonlocalized-field-changes'
-    queue.consumer = bulkPublish
+    queue.consumer = performBulkPublish
   } else {
     logFileName = 'nonlocalized-field-changes'
     queue.consumer = publishEntry
@@ -65,7 +65,7 @@ async function getLocalizedEntry(stack, entry, contentType, locale, sourceEnv) {
         resolve({})
       }
       if (typeof error === 'string') {
-        if (!JSON.parse(error).errorCode === 141) console.log(error)
+        if (JSON.parse(error).errorCode !== 141) console.log(error)
       }
     })
   })
@@ -306,44 +306,32 @@ async function start({retryFailed, bulkPublish, sourceEnv, contentTypes, environ
     process.exit(0)  
   })
 
-  try {
-    if (retryFailed) {
-      if (typeof retryFailed === 'string') {
-        if (!validateFile(retryFailed, ['nonlocalized-field-changes', 'bulk-nonlocalized-field-changes'])) {
-          return false
-        }
-
-        bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
-        setConfig(config, bulkPublish)
-
-        if (bulkPublish) {
-          await retryFailedLogs(retryFailed, queue, 'bulk')
-        } else {
-          await retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish')
-        }
+  if (retryFailed) {
+    if (typeof retryFailed === 'string') {
+      if (!validateFile(retryFailed, ['nonlocalized-field-changes', 'bulk-nonlocalized-field-changes'])) {
+        return false
       }
-    } else {
-      setConfig(config, bulkPublish)  
-      try {
-        const masterLocale = 'en-us'
-        const languages = await getLanguages(stack)
-        // const {contentTypes} = config.nonlocalized_field_changes
-        for (let i = 0; i < contentTypes.length; i += 1) {
-          try {
-            /* eslint-disable no-await-in-loop */
-            const schema = await getContentTypeSchema(stack, contentTypes[i])
-            await getEntries(stack, schema, contentTypes[i], languages, masterLocale, bulkPublish, environments, sourceEnv)
-            /* eslint-enable no-await-in-loop */
-          } catch (error) {
-            throw error
-          }
-        }
-      } catch (error) {
-        throw error
+
+      bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
+      setConfig(config, bulkPublish)
+
+      if (bulkPublish) {
+        await retryFailedLogs(retryFailed, queue, 'bulk')
+      } else {
+        await retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish')
       }
     }
-  } catch(error) {
-    throw error
+  } else {
+    setConfig(config, bulkPublish)  
+    const masterLocale = 'en-us'
+    const languages = await getLanguages(stack)
+    // const {contentTypes} = config.nonlocalized_field_changes
+    for (let i = 0; i < contentTypes.length; i += 1) {
+      /* eslint-disable no-await-in-loop */
+      const schema = await getContentTypeSchema(stack, contentTypes[i])
+      await getEntries(stack, schema, contentTypes[i], languages, masterLocale, bulkPublish, environments, sourceEnv)
+      /* eslint-enable no-await-in-loop */
+    }
   }
 }
 
