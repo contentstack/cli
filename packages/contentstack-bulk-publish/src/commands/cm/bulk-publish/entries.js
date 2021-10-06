@@ -11,10 +11,10 @@ let config
 
 class EntriesCommand extends Command {
   async run() {
-    const {flags} = this.parse(EntriesCommand)
+    const entriesFlags = this.parse(EntriesCommand).flags
     let updatedFlags
     try {
-      updatedFlags = (flags.config) ? store.updateMissing(configKey, flags) : flags
+      updatedFlags = (entriesFlags.config) ? store.updateMissing(configKey, entriesFlags) : entriesFlags
     } catch (error) {
       this.error(error.message, {exit: 2})
     }
@@ -29,7 +29,7 @@ class EntriesCommand extends Command {
         config = {
           alias: updatedFlags.alias,
           host: this.config.userConfig.getRegion().cma,
-          branch: flags.branch,
+          branch: entriesFlags.branch,
         }
         stack = getStack(config)
       }
@@ -80,9 +80,9 @@ class EntriesCommand extends Command {
     }
   }
 
-  async confirmFlags(flags) {
-    prettyPrint(flags)
-    if (flags.yes) {
+  async confirmFlags(data) {
+    prettyPrint(data)
+    if (data.yes) {
       return true
     }
     const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')

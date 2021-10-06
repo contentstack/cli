@@ -9,10 +9,10 @@ let config
 
 class NonlocalizedFieldChangesCommand extends Command {
   async run() {
-    const {flags} = this.parse(NonlocalizedFieldChangesCommand)
+    const nonlocalizedFieldChangesFlags = this.parse(NonlocalizedFieldChangesCommand).flags
     let updatedFlags
     try {
-      updatedFlags = (flags.config) ? store.updateMissing(configKey, flags) : flags
+      updatedFlags = (nonlocalizedFieldChangesFlags.config) ? store.updateMissing(configKey, nonlocalizedFieldChangesFlags) : nonlocalizedFieldChangesFlags
     } catch(error) {
       this.error(error.message, {exit: 2})
     }
@@ -25,7 +25,7 @@ class NonlocalizedFieldChangesCommand extends Command {
         config = { 
           alias: updatedFlags.alias,
           host: this.config.userConfig.getRegion().cma,
-          branch: flags.branch,
+          branch: nonlocalizedFieldChangesFlags.branch,
         }
         stack = getStack(config)
       }
@@ -71,9 +71,9 @@ class NonlocalizedFieldChangesCommand extends Command {
     }
   }
 
-  async confirmFlags(flags) {
-    prettyPrint(flags)
-    if(flags.yes) {
+  async confirmFlags(data) {
+    prettyPrint(data)
+    if(data.yes) {
       return true
     }
     const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')

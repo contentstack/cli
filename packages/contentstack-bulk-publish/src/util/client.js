@@ -15,7 +15,7 @@ function getStack(data) {
     },
     host: formatHostname(data.host),
     // eslint-disable-next-line no-unused-vars
-    logHandler: (level, data) => {},
+    logHandler: level => {},
   })
   const stack = client.stack({api_key: tokenDetails.apiKey, management_token: tokenDetails.token})
   stack.alias = data.alias
