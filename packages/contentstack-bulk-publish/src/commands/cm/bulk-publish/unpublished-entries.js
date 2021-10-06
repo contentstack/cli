@@ -9,25 +9,25 @@ let config
 
 class UnpublishedEntriesCommand extends Command {
   async run() {
-    const {flags} = this.parse(UnpublishedEntriesCommand)
+    const unpublishedEntriesFlags = this.parse(UnpublishedEntriesCommand).flags
     let updatedFlags
     try {
-      updatedFlags = (flags.config) ? store.updateMissing(configKey, flags) : flags
-    } catch(error) {
+      updatedFlags = (unpublishedEntriesFlags.config) ? store.updateMissing(configKey, unpublishedEntriesFlags) : unpublishedEntriesFlags
+    } catch (error) {
       this.error(error.message, {exit: 2})
     }
     if (this.validate(updatedFlags)) {
       let stack
       if (!updatedFlags.retryFailed) {
-        if(!updatedFlags.alias) {
+        if (!updatedFlags.alias) {
           updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used')
         }
         updatedFlags.bulkPublish = (updatedFlags.bulkPublish === 'false') ? false : true
         await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
-        config = { 
+        config = {
           alias: updatedFlags.alias,
           host: this.config.userConfig.getRegion().cma,
-          branch: flags.branch,
+          branch: unpublishedEntriesFlags.branch,
         }
         stack = getStack(config)
       }
@@ -77,9 +77,9 @@ class UnpublishedEntriesCommand extends Command {
     }
   }
 
-  async confirmFlags(flags) {
-    prettyPrint(flags)
-    if(flags.yes) {
+  async confirmFlags(data) {
+    prettyPrint(data)
+    if(data.yes) {
       return true
     }
     const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')
