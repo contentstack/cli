@@ -12,11 +12,11 @@ It is Contentstack’s CLI plugin to perform authentication-related activities. 
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g @contentstack/cli-2
+$ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-2/0.1.1-beta.8 linux-x64 node-v12.22.1
+@contentstack/cli/0.1.1-beta.8 linux-x64 node-v12.22.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -31,6 +31,7 @@ USAGE
 * [`csdx auth:tokens:add`](#csdx-authtokensadd)
 * [`csdx auth:tokens:remove`](#csdx-authtokensremove)
 * [`csdx auth:whoami`](#csdx-authwhoami)
+* [`csdx cm:export`](#csdx-cmexport)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMAND]`](#csdx-help-command)
@@ -184,6 +185,40 @@ EXAMPLE
 ```
 
 _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/whoami.ts)_
+
+## `csdx cm:export`
+
+Export content from a stack
+
+```
+Export content from a stack
+
+USAGE
+  $ csdx cm:export
+
+OPTIONS
+  -a, --mtoken-alias=mtoken-alias                  alias of the management token
+  -b, --branch=branch                              [optional] branch name
+  -c, --external-config-path=external-config-path  [optional] path of the config
+  -d, --export-dir=export-dir                      path or location to store the data
+  -k, --api-key=api-key                            API key of the source stack
+  -m, --module=module                              [optional] specific module name
+  -t, --content-type=content-type                  [optional] content type
+
+EXAMPLES
+  csdx cm:export
+  csdx cm:export -s <stack_ApiKey> -d <path/of/export/destination/dir>
+  csdx cm:export -m <single module name>
+  csdx cm:export -m <single module name> -s <stack_ApiKey> -d <path/of/export/destination/dir>
+  csdx cm:export -m <single module name> -t <content type>
+  csdx cm:export -B [optional] branch name
+  csdx cm:export -c <path/to/config/dir>
+  csdx cm:export -a <management_token_alias>
+  csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
+  csdx cm:export -a <management_token_alias> -c <path/to/config/file>
+```
+
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/cm/export.ts)_
 
 ## `csdx config:get:region`
 
