@@ -2,6 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as config from '../config'
 import * as chalk from 'chalk'
+import {ConfigFile} from '../interfaces'
 
 // a fix for handling filter object in Unpublish and cross publish cases
 // in the config file
@@ -20,7 +21,7 @@ export function handleFilterObj(config): object {
 
 function save(key, data): void {
   const bulkPublish = (config) ? config : {}
-  const filePath = path.join(process.cwd(), config.json)
+  const filePath = path.join(process.cwd(), 'config.json')
   bulkPublish[key] = data
   fs.writeFile(filePath, JSON.stringify(bulkPublish), (error) => {
     if(error) {
@@ -34,7 +35,7 @@ function save(key, data): void {
 export function get(key, filePath): object {
   try {
     const missing = []
-    const bulkPublish = fs.readFileSync(filePath)
+    const bulkPublish = fs.readFileSync(filePath) as ConfigFile
     // const bulkPublish = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
     if (!bulkPublish) {
       throw new Error('Unable to read config file')

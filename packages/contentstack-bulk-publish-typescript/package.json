@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@contentstack/cli-command": "0.1.1-beta.1",
-    "@contentstack/utilities": "0.0.0",
+    "@contentstack/cli-utilities": "0.1.1-beta.1",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
     "chalk": "^4.0.0",

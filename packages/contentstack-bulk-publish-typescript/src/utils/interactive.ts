@@ -1,9 +1,8 @@
 import cliux from './cli-ux';
-import * as utilities from '@contentstack/utilities'
+import {selectors} from '@contentstack/cli-utilities'
 import config from '../config'
 import {store} from '../utils'
 import { Token } from '../interfaces';
-import * as path from 'path'
 import constants from '../config/constants';
 import { validate, shouldNotBeEmpty } from './flags-validation';
 
@@ -73,53 +72,45 @@ export const chooseCommand = async (): Promise<string> => {
 
 export const askTokenAlias = async (): Promise<Token> => {
   return new Promise(async (resolve, reject) => {
-    const token: Token = await utilities.chooseTokenAlias()
+    const token: Token = await selectors.chooseTokenAlias()
     return resolve(token)
   })
 }
 
 export const askDeliveryToken = async (): Promise<Token> => {
   return new Promise(async (resolve, reject) => {
-    const token: Token = await utilities.chooseDeliveryTokenAlias()
+    const token: Token = await selectors.chooseDeliveryTokenAlias()
     return resolve(token)
   })
 }
 
 export const askContentTypes = async ({stack}): Promise<string[]> => {
-  const contentTypes = await utilities.chooseContentTypes(stack)
+  const contentTypes = await selectors.chooseContentTypes(stack)
   return contentTypes.map(ct => ct.uid)
 }
 
 export const askContentType = async ({stack}): Promise<string> => {
-  const contentType = await utilities.chooseContentType
+  const contentType = await selectors.chooseContentType(stack)
   return contentType
 }
 
-export const test = async (): Promise<string> => {
-  return cliux.inquire({
-    type: 'input',
-    message: 'CLI_AUTH_LOGIN_ENTER_SECURITY_CODE',
-    name: 'tfaToken',
-  });
-}
-
 export const askLocales = async ({stack}): Promise<string[]> => {
-  const locales = await utilities.chooseLocales(stack)
+  const locales = await selectors.chooseLocales(stack)
   return locales.map(loc => loc.code)
 }
 
 export const askLocale = async ({stack}): Promise<string> => {
-  const locale = await utilities.chooseLocale(stack)
+  const locale = await selectors.chooseLocale(stack)
   return locale
 }
 
 export const askEnvironments = async ({stack}): Promise<string[]> => {
-  const environments = await utilities.chooseEnvironments(stack)
+  const environments = await selectors.chooseEnvironments(stack)
   return environments.map(env => env.name)
 }
 
 export const askEnvironment = async ({ stack }): Promise<string> => {
-  const environment = await utilities.chooseEnvironment(stack)
+  const environment = await selectors.chooseEnvironment(stack)
   return environment
 }
 
@@ -128,7 +119,7 @@ export const askEnvironment = async ({ stack }): Promise<string> => {
 // }
 
 export const askOrganization = async (client): Promise<string> => {
-  const organization = await utilities.chooseOrganization(client)
+  const organization = await selectors.chooseOrganization(client)
   return organization.orgUid
 }
 
@@ -150,13 +141,13 @@ export const askInput = async ({messageCode, defaultValue}): Promise<string> => 
     validate: shouldNotBeEmpty,
   }
   if (defaultValue) {
-    options.default = defaultValue
+    options['default'] = defaultValue
   }
   return cliux.inquire(options);
 }
 
 export const askStack = async (client, orgUid): Promise<string> => {
-  const stack = await utilities.chooseStack(client, orgUid)
+  const stack = await selectors.chooseStack(client, orgUid)
   return stack.api_key
 }
 
@@ -220,7 +211,7 @@ askFlags[constants.AUTHENTICATION_METHOD] = {}
 // need to add validations for the file path
 askFlags[constants.CONFIG_CONFIRMATION] = { func: confirm, args: { messageCode: 'CLI_BP_CONFIG_CONFIRMATION' } }
 askFlags[constants.RETRY_FAILED_CONFIRMATION] = { func: confirm, args: { messageCode: 'CLI_BP_RETRY_FAILED_CONFIRMATION' } }
-askFlags[constants.FOLDER_UID_CONFIRMATION] = { func: confirm, args: { messageCode: 'CLI_BP_FOLDER_ID_CONFIRMATION' } }
+// askFlags[constants.FOLDER_UID_CONFIRMATION] = { func: confirm, args: { messageCode: 'CLI_BP_FOLDER_ID_CONFIRMATION' } }
 askFlags[constants.CONFIG] = { func: askInput, args: { messageCode: 'CLI_BP_CONFIG' } }
 askFlags[constants.LOG_FILE] = { func: askInput, args: { messageCode: 'CLI_BP_LOG_FILE' } }
 askFlags[constants.RETRY_FAILED] = { func: askInput, args: { messageCode: 'CLI_BP_RETRYFAILED' } }
@@ -254,15 +245,24 @@ askFlags[constants.SKIP_PUBLISH] = { func: confirm, args: { messageCode: 'CLI_BP
 //   'query': askQuery,
 // }
 
+function identifyMissingFlags(command, flags): Array<string> {
+  const missing = []
+  config.commands[command].flags.forEach(flag => {
+    if (!flags[flag] && flagsToIgnore.indexOf(flag) === -1)
+      missing.push(flag)
+  })
+  return missing
+}
+
 function askMissingFlags(command, flags, stack) {
   return new Promise(async resolve => {
-    let questions = {}
-    let missingFlags = identifyMissingFlags(command, flags)
+    const questions = {}
+    const missingFlags = identifyMissingFlags(command, flags)
     missingFlags.forEach(flag => {
       if (askFlags[flag] !== undefined)
         questions[flag] = askFlags[flag]
     })
-    let answeredFlags = await mapSeries(command, questions, stack)
+    const answeredFlags = await mapSeries(command, questions, stack)
     resolve(answeredFlags)
   })
 }
@@ -282,14 +282,6 @@ async function mapSeries(command, iterable, stack) {
   })
 }
 
-function identifyMissingFlags(command, flags) {
-  let missing = []
-  config.commands[command].flags.forEach(flag => {
-    if (!flags[flag] && flagsToIgnore.indexOf(flag) === -1)
-      missing.push(flag)
-  })
-  return missing
-}
 
 export const getMissingFlags = async (selectedCommand, flags, stack): Promise<string> => {
   return new Promise(async resolve => {
