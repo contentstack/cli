@@ -15,6 +15,11 @@ abstract class ContentstackCommand extends Command {
   private _authToken: string;
   private _deliveryAPIClient: any;
 
+  get context() {
+    // @ts-ignore
+    return this.config.context;
+  }
+
   get managementAPIClient() {
     if (this._managementAPIClient) return this._managementAPIClient;
     this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost });

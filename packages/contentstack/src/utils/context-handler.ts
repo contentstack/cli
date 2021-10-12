@@ -12,7 +12,7 @@ export default class CsdxContext {
   readonly messageFilePath: string;
 
   constructor(cliOpts: any, cliConfig: any) {
-    const command = cliConfig.findCommand(cliOpts.id);
+    const command = cliConfig.findCommand(cliOpts.id) || {};
     const config = configHandler.init();
     let sessionId = configHandler.get('sessionId');
     if (!sessionId) {
@@ -32,11 +32,11 @@ export default class CsdxContext {
       this.plugin = (cliConfig.plugins || []).find((p) => p.name === command.pluginName) || {};
       this.plugin.name = command.pluginName;
       this.plugin.config = { ...((this.plugin.pjson && this.plugin.pjson.csdxConfig) || {}) };
+      this.messageFilePath = path.resolve(
+        this.plugin.root,
+        this.plugin.config.messageFilePath || './messages/index.json',
+      );
     }
-    this.messageFilePath = path.resolve(
-      this.plugin.root,
-      this.plugin.config.messageFilePath || './messages/index.json',
-    );
   }
 
   getToken(alias: string) {

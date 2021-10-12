@@ -47,16 +47,16 @@ export default {
       dirName: 'global_fields',
       fileName: 'globalfields.json',
       validKeys: ['title', 'uid', 'schema', 'options', 'singleton', 'description'],
+      limit: 100,
     },
     assets: {
       dirName: 'assets',
       fileName: 'assets.json',
       // This is the total no. of asset objects fetched in each 'get assets' call
       batchLimit: 20,
-      host: 'https://stag-images.contentstack.io',
       invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by', '_metadata', 'published'],
       // no of asset version files (of a single asset) that'll be downloaded parallelly
-      downloadLimit: 5,
+      downloadLimit: 2,
     },
     contentTypes: {
       dirName: 'content_types',
@@ -318,4 +318,5 @@ export default {
     stacks: '/stacks/',
   },
   preserveStackVersion: false,
+  masterLocale: 'en-us',
 };

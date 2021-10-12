@@ -12,11 +12,11 @@ It is Contentstack’s CLI plugin to perform authentication-related activities. 
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g @contentstack/cli-auth
+$ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-auth/0.1.1-beta.1 linux-x64 node-v12.22.1
+@contentstack/cli-cm-export/0.1.1-beta.1 linux-x64 node-v12.22.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -25,142 +25,37 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`csdx auth:login`](#csdx-authlogin)
-* [`csdx auth:logout`](#csdx-authlogout)
-* [`csdx auth:tokens`](#csdx-authtokens)
-* [`csdx auth:tokens:add`](#csdx-authtokensadd)
-* [`csdx auth:tokens:remove`](#csdx-authtokensremove)
-* [`csdx auth:whoami`](#csdx-authwhoami)
+* [`csdx cm:export`](#csdx-cmexport)
 
-## `csdx auth:login`
+## `csdx cm:export`
 
-CLI_AUTH_LOGIN_DESCRIPTION
+Export content from a stack
 
 ```
 USAGE
-  $ csdx auth:login
+  $ csdx cm:export
 
 OPTIONS
-  -p, --password=password  CLI_AUTH_LOGIN_FLAG_PASSWORD
-  -u, --username=username  CLI_AUTH_LOGIN_FLAG_USERNAME
+  -a, --mtoken-alias=mtoken-alias                  alias of the management token
+  -b, --branch=branch                              [optional] branch name
+  -c, --external-config-path=external-config-path  [optional] path of the config
+  -d, --export-dir=export-dir                      path or location to store the data
+  -k, --api-key=api-key                            API key of the source stack
+  -m, --module=module                              [optional] specific module name
+  -t, --content-type=content-type                  [optional] content type
 
 EXAMPLES
-  $ csdx auth:login
-  $ csdx auth:login -u <username>
-  $ csdx auth:login -u <username> -p <password>
+  csdx cm:export
+  csdx cm:export -s <stack_ApiKey> -d <path/of/export/destination/dir>
+  csdx cm:export -m <single module name>
+  csdx cm:export -m <single module name> -s <stack_ApiKey> -d <path/of/export/destination/dir>
+  csdx cm:export -m <single module name> -t <content type>
+  csdx cm:export -B [optional] branch name
+  csdx cm:export -c <path/to/config/dir>
+  csdx cm:export -a <management_token_alias>
+  csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
+  csdx cm:export -a <management_token_alias> -c <path/to/config/file>
 ```
 
-_See code: [src/commands/auth/login.ts](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/login.ts)_
-
-## `csdx auth:logout`
-
-CLI_AUTH_LOGOUT_DESCRIPTION
-
-```
-USAGE
-  $ csdx auth:logout
-
-OPTIONS
-  -f, --force  CLI_AUTH_LOGOUT_FLAG_FORCE
-
-EXAMPLES
-  $ csdx auth:logout
-  $ csdx auth:logout -f
-```
-
-_See code: [src/commands/auth/logout.ts](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/logout.ts)_
-
-## `csdx auth:tokens`
-
-CLI_AUTH_TOKENS_LIST_DESCRIPTION
-
-```
-USAGE
-  $ csdx auth:tokens
-
-OPTIONS
-  -x, --extended          show extra columns
-  --columns=columns       only show provided columns (comma-separated)
-  --csv                   output is csv format [alias: --output=csv]
-  --filter=filter         filter property by partial string matching, ex: name=foo
-  --no-header             hide table header from output
-  --no-truncate           do not truncate output to fit screen
-  --output=csv|json|yaml  output in a more machine friendly format
-  --sort=sort             property to sort by (prepend '-' for descending)
-
-ALIASES
-  $ csdx tokens
-
-EXAMPLE
-  $ csdx auth:tokens
-```
-
-_See code: [src/commands/auth/tokens/index.ts](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/tokens/index.ts)_
-
-## `csdx auth:tokens:add`
-
-CLI_AUTH_TOKENS_ADD_DESCRIPTION
-
-```
-USAGE
-  $ csdx auth:tokens:add
-
-OPTIONS
-  -a, --alias=alias
-  -d, --delivery                 CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN
-  -e, --environment=environment  CLI_AUTH_TOKENS_ADD_FLAG_ENVIRONMENT_NAME
-  -f, --force                    Force adding
-  -k, --api-key=api-key          API Key
-  -m, --management               CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN
-  -t, --token=token              Token
-
-EXAMPLES
-  $ csdx auth:tokens:add
-  $ csdx auth:tokens:add -a <alias>
-  $ csdx auth:tokens:add -k <api key>
-  $ csdx auth:tokens:add -d
-  $ csdx auth:tokens:add -m
-  $ csdx auth:tokens:add -e <environment>
-  $ csdx auth:tokens:add -t <token>
-  $ csdx auth:tokens:add -a <alias> -k <api key> -m -t <management token>
-  $ csdx auth:tokens:add -a <alias> -k <api key> -d -e <environment> -t <delivery token>
-```
-
-_See code: [src/commands/auth/tokens/add.ts](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/tokens/add.ts)_
-
-## `csdx auth:tokens:remove`
-
-CLI_AUTH_TOKENS_REMOVE_DESCRIPTION
-
-```
-USAGE
-  $ csdx auth:tokens:remove
-
-OPTIONS
-  -a, --alias=alias  Token alias
-  -i, --ignore       Ignore
-
-EXAMPLES
-  $ csdx auth:tokens:remove
-  $ csdx auth:tokens:remove -a <aliase>
-```
-
-_See code: [src/commands/auth/tokens/remove.ts](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/tokens/remove.ts)_
-
-## `csdx auth:whoami`
-
-CLI_AUTH_WHOAMI_DESCRIPTION
-
-```
-USAGE
-  $ csdx auth:whoami
-
-ALIASES
-  $ csdx whoami
-
-EXAMPLE
-  $ csdx auth:whoami
-```
-
-_See code: [src/commands/auth/whoami.ts](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/auth/whoami.ts)_
+_See code: [src/commands/cm/export.ts](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/cm/export.ts)_
 <!-- commandsstop -->
