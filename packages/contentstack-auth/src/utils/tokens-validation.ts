@@ -75,13 +75,13 @@ export const validateManagementToken = async (
 ): Promise<any> => {
   let result: { valid: boolean; message: string };
   try {
-    const validationResuslt = await contentStackClient.axiosInstance.get('/content_types?limit=1', {
+    const { data: validationResult } = await contentStackClient.axiosInstance.get('/content_types?limit=1', {
       headers: { api_key: apiKey, authorization: managementToken },
     });
 
-    logger.debug('Management validation result', validationResuslt);
-    if (validationResuslt.content_types) {
-      result = { valid: true, message: validationResuslt };
+    logger.debug('Management validation result', validationResult);
+    if (validationResult && validationResult.content_types) {
+      result = { valid: true, message: validationResult };
     } else {
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN') };
     }

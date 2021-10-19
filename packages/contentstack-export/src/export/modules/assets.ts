@@ -43,18 +43,18 @@ export default class AssetExport {
         return;
       }
       const assetBatchCount = AssetExport.makeAssetBatches(this.batchLimit, assetCount);
-      const totalAssets = [];
+      const totalAssets = {};
       for (const batchCount of assetBatchCount) {
         const assets = await this.getAssetsByBatch(batchCount);
         const promiseRunner = pLimit(this.downloadLimit);
         const result = await Promise.all(
           assets.map(async (asset) =>
             promiseRunner(() => {
+              totalAssets[asset.uid] = asset;
               return this.getAssetsByVersions(asset.uid, asset._version);
             }),
           ),
         );
-        totalAssets.push(...assets);
       }
       await fileHelper.writeFile(this.assetContentsFile, totalAssets);
       await this.exportFolders();

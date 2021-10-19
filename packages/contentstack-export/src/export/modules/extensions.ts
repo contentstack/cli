@@ -34,7 +34,7 @@ export default class ExtensionExport {
   }
 
   async getExtensions() {
-    let extensions = await this.stackAPIClient.query().query(this.qs).find();
+    let extensions = await this.stackAPIClient.extension().query(this.qs).find();
     if (Array.isArray(extensions.items) && extensions.items.length > 0) {
       let updatedExtensions = this.sanitizeAttribs(extensions.items);
       return updatedExtensions;
@@ -45,12 +45,9 @@ export default class ExtensionExport {
   sanitizeAttribs(extensions) {
     let updatedExtensions = {};
     extensions.forEach((extension) => {
-      for (let key in extension) {
-        if (this.extensionConfig.requiredKeys.indexOf(key) === -1) {
-          delete extension.SYS_ACL;
-        }
-      }
+      delete extension.SYS_ACL;
       updatedExtensions[extension.uid] = extension;
+      delete extension.uid;
     });
     return updatedExtensions;
   }
