@@ -11,6 +11,7 @@ import * as chalk from 'chalk'
 import { validateFile } from '../utils/fs';
 import * as Configstore from 'configstore'
 import { getAllLogs } from '../utils/backup';
+import { FormattedLogs } from '../interfaces'
 
 let config = new Configstore('contentstack_cli')
 const getStack = require('../utils/client.js').getStack
@@ -81,8 +82,8 @@ function filterPublishDetails(elements, environments, locale) {
   return elements
 }
 
-async function formatLogData(stack, data) {
-  const formattedLogs = {}
+async function formatLogData(stack, data): Promise<FormattedLogs> {
+  const formattedLogs: FormattedLogs = {}
   const type = getLogFileDataType(data)
 
   switch (type) {

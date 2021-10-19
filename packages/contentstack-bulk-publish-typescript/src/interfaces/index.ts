@@ -73,6 +73,15 @@ export interface Token {
 	token: string;
 }
 
+export interface FormattedLogs {
+  entries?: Array<any>;
+  locale?: Array<any>;
+  environments?: Array<any>;
+  api_key?: string;
+  type?: string;
+  assets?: Array<any>;
+}
+
 export interface ConfigFile {
   alias?: string;
   apikey?: string;

@@ -26,7 +26,7 @@ export function getFileLoggerInstance(fileName) {
   return logger;
 }
 
-export function getAllLogs(fname) {
+export function getAllLogs(fname): any {
   const options = {
     limit: 1000000000000,
     start: 0,
@@ -34,8 +34,8 @@ export function getAllLogs(fname) {
   };
   const logger = getFileLoggerInstance(fname);
   logger.query(options, async (err, result) => {
-    if (err) return reject(err);
-    return resolve(result);
+    if (err) return err;
+    return result;
   });
 }
 export function addLogs(logger, data, Type) {
