@@ -1,7 +1,6 @@
 export default {
   versioning: false,
   moduleNames: [
-    'stack',
     'assets',
     'locales',
     'environments',
