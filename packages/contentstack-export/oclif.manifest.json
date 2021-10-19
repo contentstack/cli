@@ -1,1 +1,69 @@
-{"version":"0.1.1-beta.1","commands":{"auth:login":{"id":"auth:login","description":"CLI_AUTH_LOGIN_DESCRIPTION","pluginName":"@contentstack/cli-auth","pluginType":"core","aliases":[],"examples":["$ csdx auth:login","$ csdx auth:login -u <username>","$ csdx auth:login -u <username> -p <password>"],"flags":{"username":{"name":"username","type":"option","char":"u","description":"CLI_AUTH_LOGIN_FLAG_USERNAME","required":false},"password":{"name":"password","type":"option","char":"p","description":"CLI_AUTH_LOGIN_FLAG_PASSWORD","required":false}},"args":[]},"auth:logout":{"id":"auth:logout","description":"CLI_AUTH_LOGOUT_DESCRIPTION","pluginName":"@contentstack/cli-auth","pluginType":"core","aliases":[],"examples":["$ csdx auth:logout","$ csdx auth:logout -f"],"flags":{"force":{"name":"force","type":"boolean","char":"f","description":"CLI_AUTH_LOGOUT_FLAG_FORCE","required":false,"allowNo":false}},"args":[]},"auth:whoami":{"id":"auth:whoami","description":"CLI_AUTH_WHOAMI_DESCRIPTION","pluginName":"@contentstack/cli-auth","pluginType":"core","aliases":["whoami"],"examples":["$ csdx auth:whoami"],"flags":{},"args":[]},"auth:tokens:add":{"id":"auth:tokens:add","description":"CLI_AUTH_TOKENS_ADD_DESCRIPTION","pluginName":"@contentstack/cli-auth","pluginType":"core","aliases":[],"examples":["$ csdx auth:tokens:add","$ csdx auth:tokens:add -a <alias>","$ csdx auth:tokens:add -k <api key>","$ csdx auth:tokens:add -d","$ csdx auth:tokens:add -m","$ csdx auth:tokens:add -e <environment>","$ csdx auth:tokens:add -t <token>","$ csdx auth:tokens:add -a <alias> -k <api key> -m -t <management token>","$ csdx auth:tokens:add -a <alias> -k <api key> -d -e <environment> -t <delivery token>"],"flags":{"alias":{"name":"alias","type":"option","char":"a","description":""},"delivery":{"name":"delivery","type":"boolean","char":"d","description":"CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN","allowNo":false},"management":{"name":"management","type":"boolean","char":"m","description":"CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN","allowNo":false},"environment":{"name":"environment","type":"option","char":"e","description":"CLI_AUTH_TOKENS_ADD_FLAG_ENVIRONMENT_NAME"},"api-key":{"name":"api-key","type":"option","char":"k","description":"API Key"},"force":{"name":"force","type":"boolean","char":"f","description":"Force adding","allowNo":false},"token":{"name":"token","type":"option","char":"t","description":"Token"}},"args":[]},"auth:tokens":{"id":"auth:tokens","description":"CLI_AUTH_TOKENS_LIST_DESCRIPTION","pluginName":"@contentstack/cli-auth","pluginType":"core","aliases":["tokens"],"examples":["$ csdx auth:tokens"],"flags":{"columns":{"name":"columns","type":"option","description":"only show provided columns (comma-separated)"},"sort":{"name":"sort","type":"option","description":"property to sort by (prepend '-' for descending)"},"filter":{"name":"filter","type":"option","description":"filter property by partial string matching, ex: name=foo"},"csv":{"name":"csv","type":"boolean","description":"output is csv format [alias: --output=csv]","allowNo":false},"output":{"name":"output","type":"option","description":"output in a more machine friendly format","options":["csv","json","yaml"]},"extended":{"name":"extended","type":"boolean","char":"x","description":"show extra columns","allowNo":false},"no-truncate":{"name":"no-truncate","type":"boolean","description":"do not truncate output to fit screen","allowNo":false},"no-header":{"name":"no-header","type":"boolean","description":"hide table header from output","allowNo":false}},"args":[]},"auth:tokens:remove":{"id":"auth:tokens:remove","description":"CLI_AUTH_TOKENS_REMOVE_DESCRIPTION","pluginName":"@contentstack/cli-auth","pluginType":"core","aliases":[],"examples":["$ csdx auth:tokens:remove","$ csdx auth:tokens:remove -a <aliase>"],"flags":{"alias":{"name":"alias","type":"option","char":"a","description":"Token alias"},"ignore":{"name":"ignore","type":"boolean","char":"i","description":"Ignore","allowNo":false}},"args":[]}}}
+{
+    "version": "0.1.1-beta.1",
+    "commands": {
+        "cm:export": {
+            "id": "cm:export",
+            "description": "Export content from a stack",
+            "pluginName": "@contentstack/cli-cm-export",
+            "pluginType": "core",
+            "aliases": [],
+            "examples": [
+                "csdx cm:export",
+                "csdx cm:export -s <stack_ApiKey> -d <path/of/export/destination/dir>",
+                "csdx cm:export -m <single module name>",
+                "csdx cm:export -m <single module name> -s <stack_ApiKey> -d <path/of/export/destination/dir>",
+                "csdx cm:export -m <single module name> -t <content type>",
+                "csdx cm:export -B [optional] branch name",
+                "csdx cm:export -c <path/to/config/dir>",
+                "csdx cm:export -a <management_token_alias>",
+                "csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>",
+                "csdx cm:export -a <management_token_alias> -c <path/to/config/file>"
+            ],
+            "flags": {
+                "external-config-path": {
+                    "name": "external-config-path",
+                    "type": "option",
+                    "char": "c",
+                    "description": "[optional] path of the config"
+                },
+                "api-key": {
+                    "name": "api-key",
+                    "type": "option",
+                    "char": "k",
+                    "description": "API key of the source stack"
+                },
+                "export-dir": {
+                    "name": "export-dir",
+                    "type": "option",
+                    "char": "d",
+                    "description": "path or location to store the data"
+                },
+                "mtoken-alias": {
+                    "name": "mtoken-alias",
+                    "type": "option",
+                    "char": "a",
+                    "description": "alias of the management token"
+                },
+                "module": {
+                    "name": "module",
+                    "type": "option",
+                    "char": "m",
+                    "description": "[optional] specific module name"
+                },
+                "content-type": {
+                    "name": "content-type",
+                    "type": "option",
+                    "char": "t",
+                    "description": "[optional] content type"
+                },
+                "branch": {
+                    "name": "branch",
+                    "type": "option",
+                    "char": "b",
+                    "description": "[optional] branch name"
+                }
+            },
+            "args": []
+        }
+    }
+}

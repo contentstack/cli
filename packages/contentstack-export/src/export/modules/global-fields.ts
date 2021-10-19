@@ -38,7 +38,7 @@ export default class GlobalFieldExport {
   }
 
   async getExtensions(skip = 0, globalFields = []) {
-    let globalFieldSearchResponse = await this.stackAPIClient.query().query(this.qs).find();
+    let globalFieldSearchResponse = await this.stackAPIClient.globalField().query(this.qs).find();
     if (Array.isArray(globalFieldSearchResponse.items) && globalFieldSearchResponse.items.length > 0) {
       let updatedGlobalFields = this.sanitizeAttribs(globalFieldSearchResponse.items);
       globalFields.push(...updatedGlobalFields);

@@ -40,12 +40,13 @@ export default class LabelsExport {
   sanitizeAttribs(labels) {
     let updatedLabels = {};
     labels.forEach((label) => {
+      const uid = label.uid;
       for (let key in label) {
         if (this.labelsConfig.invalidKeys.indexOf(key) !== -1) {
           delete label[key];
         }
       }
-      updatedLabels[label.uid] = label;
+      updatedLabels[uid] = label;
     });
     return updatedLabels;
   }

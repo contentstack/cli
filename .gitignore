@@ -9,3 +9,4 @@ build
 _backup*
 .talismanrc
 .vscode/
+oclif.manifest.json

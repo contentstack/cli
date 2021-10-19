@@ -42,7 +42,6 @@ export default class ExportCommand extends Command {
     // initialize the exporter
     // start export
     try {
-      console.log('contentxt', this.context);
       this.managementAPIClient = { host: this.cmaHost, authtoken: this.authToken };
       const exportConfig = await setupExportConfig(this.context, this.parse(ExportCommand).flags);
       const moduleExpoter = new ModuleExporter(this.context, this.managementAPIClient, exportConfig);
