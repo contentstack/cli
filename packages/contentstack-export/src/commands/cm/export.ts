@@ -1,7 +1,7 @@
 import { Command, flags } from '@contentstack/cli-command';
 import { logger, cliux, messageHandler, CLIError, configHandler } from '@contentstack/cli-utilities';
-import { ModuleExporter } from '../export';
-import { setupExportConfig } from '../utils';
+import { ModuleExporter } from '../../export';
+import { setupExportConfig } from '../../utils';
 
 export default class ExportCommand extends Command {
   managementAPIClient: any;
