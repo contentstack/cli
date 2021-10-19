@@ -10,3 +10,4 @@ node_modules
 coverage
 .talismanrc
 .vscode
+oclif.manifest.json

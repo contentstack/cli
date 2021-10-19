@@ -46,6 +46,7 @@ export default class WebhooksExport {
     webhooks.forEach((webhook) => {
       delete webhook.SYS_ACL;
       updatedWebhooks[webhook.uid] = webhook;
+      delete webhook.uid;
     });
     return updatedWebhooks;
   }

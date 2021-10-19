@@ -14,17 +14,22 @@ const setupConfig = async (context, userInputPayload): Promise<any> => {
   }
   config.exportDir = userInputPayload['export-dir'] || (await askExportDir());
   config.exportDir = path.resolve(config.exportDir);
-  config.apiKey = userInputPayload['api-key'] || (await askAPIKey());
+  if (userInputPayload['mtoken-alias']) {
+    let { token, apiKey } = context.getToken(userInputPayload['mtoken-alias']);
+    if (!token) {
+      throw new CLIError('Management token is invalid');
+    }
+    config.mToken = token;
+    config.apiKey = apiKey;
+  }
+
+  if (!config.apiKey) {
+    config.apiKey = userInputPayload['api-key'] || (await askAPIKey());
+  }
   if (!config.apiKey) {
     throw new CLIError('API Key is mandatory');
   }
 
-  if (userInputPayload['mtoken-alias']) {
-    config.mToken = context.getToken(userInputPayload['mtoken-alias']);
-    if (!config.mToken) {
-      throw new CLIError('Management token is mandatory');
-    }
-  }
   if (!context.user && !context.user.authtoken && !userInputPayload['mtoken-alias']) {
     // TBD: ask the auth method and get the either of the token and continue
     throw new CLIError('Invalid auth method');

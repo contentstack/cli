@@ -172,7 +172,7 @@ export default class EntriesExport {
   sanitizeAttribs(entries: Array<any>, entriesList = {}): Object {
     entries.forEach((entry) => {
       for (let key in entry) {
-        if (this.entriesConfig.invalidKeys.indexOf(key) === -1) {
+        if (this.entriesConfig.invalidKeys.indexOf(key) !== -1) {
           delete entry[key];
         }
       }
