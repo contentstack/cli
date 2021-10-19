@@ -8,6 +8,7 @@ export * as tokenValidation from './tokens-validation';
 export { default as Queue } from './queue';
 export * as flagValidation from './flags-validation';
 export * as store from './store'
+export { default as req } from './request'
 
 const chalk = require('chalk')
 const fs = require('fs')

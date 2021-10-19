@@ -3,7 +3,7 @@
 /* eslint-disable complexity */
 /* eslint-disable no-console */
 /* eslint-disable camelcase */
-import {Queue, isEmpty} from '../utils'
+import {Queue, isEmpty, req} from '../utils'
 import {
   bulkUnPublish, UnpublishEntry, UnpublishAsset, initializeLogger,
 } from '../consumer/publish'
@@ -139,7 +139,7 @@ async function getSyncEntries(stack, config, locale, queryParams, bulkUnpublish,
           access_token: deliveryToken,
         },
       }
-      // const entriesResponse = await req(conf)
+      const entriesResponse = await req(conf)
       if (entriesResponse.items.length > 0) {
         await bulkAction(stack, entriesResponse.items, bulkUnpublish, environment, locale)
       }

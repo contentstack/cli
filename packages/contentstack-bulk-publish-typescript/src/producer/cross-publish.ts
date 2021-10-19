@@ -3,7 +3,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable complexity */
 /* eslint-disable max-params */
-import { Queue, isEmpty} from '../utils'
+import { Queue, isEmpty, req} from '../utils'
 import {
   bulkPublish, 
   publishEntry, 
@@ -127,7 +127,7 @@ async function getSyncEntries(stack, config, queryParams, bulkPublish, filter, d
           access_token: deliveryToken,
         },
       }
-      // const entriesResponse = await req(conf)
+      const entriesResponse = await req(conf)
       if (entriesResponse.items.length > 0) {
         await bulkAction(stack, entriesResponse.items, bulkPublish, filter, destEnv)
       }
