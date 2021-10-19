@@ -1,10 +1,9 @@
 export default {
   versioning: false,
   moduleNames: [
-    'stack',
-    'assets',
     'locales',
     'environments',
+    'assets',
     'extensions',
     'webhooks',
     'global-fields',
@@ -26,7 +25,10 @@ export default {
     labels: {
       dirName: 'labels',
       fileName: 'labels.json',
-      invalidKeys: ['stackHeaders', 'uid', 'urlPath', 'created_at', 'updated_at', 'created_by', 'updated_by'],
+    },
+    extensions: {
+      dirName: 'extensions',
+      fileName: 'extensions.json',
     },
     webhooks: {
       dirName: 'webhooks',
@@ -35,7 +37,6 @@ export default {
     releases: {
       dirName: 'releases',
       fileName: 'releases.json',
-      releasesList: 'releasesList.json',
       invalidKeys: ['stackHeaders', 'urlPath', 'created_at', 'updated_at', 'created_by', 'updated_by'],
     },
     workflows: {
@@ -43,50 +44,33 @@ export default {
       fileName: 'workflows.json',
       invalidKeys: ['stackHeaders', 'urlPath', 'created_at', 'updated_at', 'created_by', 'updated_by'],
     },
-    globalFields: {
-      dirName: 'global_fields',
-      fileName: 'globalfields.json',
-      validKeys: ['title', 'uid', 'schema', 'options', 'singleton', 'description'],
-    },
     assets: {
       dirName: 'assets',
       fileName: 'assets.json',
       // This is the total no. of asset objects fetched in each 'get assets' call
-      batchLimit: 20,
-      host: 'https://stag-images.contentstack.io',
-      invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by', '_metadata', 'published'],
-      // no of asset version files (of a single asset) that'll be downloaded parallelly
-      downloadLimit: 5,
+      limit: 100,
+      host: 'https://api.contentstack.io',
+      validKeys: ['uid', 'filename', 'url', 'status'],
+      assetBatchLimit: 1,
     },
     contentTypes: {
       dirName: 'content_types',
       fileName: 'content_types.json',
-      validKeys: ['title', 'uid', 'field_rules', 'schema', 'options', 'singleton', 'description'],
-      // total no of content types fetched in each 'get content types' call
+      validKeys: ['title', 'uid', 'schema', 'options', 'singleton', 'description'],
       limit: 100,
     },
     entries: {
       dirName: 'entries',
       fileName: 'entries.json',
-      invalidKeys: [
-        'stackHeaders',
-        'content_type_uid',
-        'urlPath',
-        'created_at',
-        'updated_at',
-        'created_by',
-        'updated_by',
-        '_metadata',
-        'published',
-      ],
-      batchLimit: 20,
-      downloadLimit: 5,
-      limit: 100,
-      dependencies: ['stack', 'locales', 'content-types'],
+      invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by', '_metadata', 'published'],
+      limit: 50,
+      assetBatchLimit: 5,
     },
-    extensions: {
-      dirName: 'extensions',
-      fileName: 'extensions.json',
+    globalFields: {
+      dirName: 'global_fields',
+      fileName: 'globalfields.json',
+      validKeys: ['title', 'uid', 'schema', 'options', 'singleton', 'description'],
+      limit: 100,
     },
     stack: {
       dirName: 'stack',
@@ -317,5 +301,10 @@ export default {
     webhooks: '/webhooks/',
     stacks: '/stacks/',
   },
+  rateLimit: 5,
   preserveStackVersion: false,
+  entriesPublish: true,
+  concurrency: 1,
+  // useBackupDir: '_backup_397'
+  // backupConcurrency: 10,
 };

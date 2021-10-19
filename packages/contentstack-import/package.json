@@ -22,7 +22,9 @@
 		"@contentstack/cli-command": "0.1.1-beta.1",
 		"@contentstack/cli-utilities": "0.1.1-beta.1",
 		"@oclif/command": "^1.6.1",
-		"@oclif/config": "^1.15.1"
+		"@oclif/config": "^1.15.1",
+		"merge": "^2.1.1",
+		"mkdirp": "^1.0.4"
 	},
 	"devDependencies": {
 		"@oclif/dev-cli": "^1.22.2",

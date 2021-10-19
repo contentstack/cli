@@ -1,4 +1,4 @@
-export default class EnvironmentsImport {
+export default class GlobalFieldsImport {
   private context: any;
   private stackAPIClient: any;
   private importConfig: any;
