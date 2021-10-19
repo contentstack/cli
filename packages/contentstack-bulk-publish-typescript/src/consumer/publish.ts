@@ -9,7 +9,7 @@ import * as Configstore from 'configstore'
 import * as defaults from '../config/defaults.json'
 
 const configstore = new Configstore('contentstack_cli')
-// const {formatError} = require('../utils')
+const {formatError} = require('../utils')
 
 const logsDir = backup.getLogsDirPath()
 
