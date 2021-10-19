@@ -7,7 +7,7 @@
 /* eslint-disable node/no-extraneous-require */
 import {Queue, isEmpty} from '../utils'
 import {bulkPublish, publishEntry, initializeLogger} from '../consumer/publish' 
-import * as retryFailedLogs from '../utils/retryfailed'
+import { retryFailedLogs } from '../utils/retryfailed'
 import * as _ from 'lodash'
 import { validateFile } from '../utils/fs';
 

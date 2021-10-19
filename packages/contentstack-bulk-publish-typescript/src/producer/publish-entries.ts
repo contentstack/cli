@@ -5,7 +5,7 @@
 /* eslint-disable no-console */
 import {Queue, isEmpty} from '../utils'
 import {bulkPublish, publishEntry, initializeLogger} from '../consumer/publish'
-import * as retryFailedLogs from '../utils/retryfailed'
+import { retryFailedLogs } from '../utils/retryfailed'
 import { validateFile } from '../utils/fs';
 
 const queue = new Queue()

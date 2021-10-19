@@ -1,6 +1,6 @@
 import { getAllLogs } from './backup';
 
-export function retryFailed (filename, queue, Type, stack): void {
+export function retryFailedLogs (filename, queue, Type, stack): void {
   const logs: any = getAllLogs(filename);
   if (logs.file.length > 0) {
     logs.file.forEach((log) => {

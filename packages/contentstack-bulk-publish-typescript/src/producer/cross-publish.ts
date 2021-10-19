@@ -10,7 +10,7 @@ import {
   publishAsset, 
   initializeLogger,
 } from '../consumer/publish' 
-import * as retryFailedLogs from '../utils/retryfailed'
+import { retryFailedLogs } from '../utils/retryfailed'
 import * as defaults from '../config/defaults.json'
 import { validateFile } from '../utils/fs';
 import { Command } from '@contentstack/cli-command';
