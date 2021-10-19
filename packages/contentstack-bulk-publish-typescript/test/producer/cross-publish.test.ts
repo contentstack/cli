@@ -1,0 +1,1 @@
+cross-publish.test.ts

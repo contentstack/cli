@@ -1,4 +1,5 @@
 import { cliux } from '@contentstack/cli-utilities';
+import * as path from 'path';
 
 export const askPassword = async () => {
   return cliux.inquire<string>({
@@ -40,5 +41,26 @@ export const askUsername = async (): Promise<string> => {
     type: 'input',
     message: 'CLI_AUTH_LOGIN_ENTER_EMAIL_ADDRESS',
     name: 'username',
+  });
+};
+
+export const askExportDir = async (): Promise<string> => {
+  const result = await cliux.inquire<string>({
+    type: 'input',
+    message: 'Enter the path for storing the content: (current folder)',
+    name: 'dir',
+  });
+  if (!result) {
+    return process.cwd();
+  } else {
+    return path.resolve(result);
+  }
+};
+
+export const askAPIKey = async (): Promise<string> => {
+  return cliux.inquire<string>({
+    type: 'input',
+    message: 'Enter the stack api key',
+    name: 'apiKey',
   });
 };

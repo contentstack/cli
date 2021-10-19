@@ -15,25 +15,23 @@ export default class ExportCommand extends Command {
   static description = messageHandler.parse('Export content from a stack');
 
   static examples = [
-    'csdx cm:export -A',
-    'csdx cm:export -A -s <stack_ApiKey> -d <path/of/export/destination/dir>',
-    'csdx cm:export -A -m <single module name>',
-    'csdx cm:export -A -m <single module name> -s <stack_ApiKey> -d <path/of/export/destination/dir>',
-    'csdx cm:export -A -m <single module name> -s <stack_ApiKey> -d <path/of/export/destination/dir>',
-    'csdx cm:export -A -m <single module name> -t <content type>',
-    'csdx cm:export -A -B [optional] branch name',
-    'csdx cm:export -A -c <path/to/config/dir>',
+    'csdx cm:export',
+    'csdx cm:export -s <stack_ApiKey> -d <path/of/export/destination/dir>',
+    'csdx cm:export -m <single module name>',
+    'csdx cm:export -m <single module name> -s <stack_ApiKey> -d <path/of/export/destination/dir>',
+    'csdx cm:export -m <single module name> -t <content type>',
+    'csdx cm:export -B [optional] branch name',
+    'csdx cm:export -c <path/to/config/dir>',
     'csdx cm:export -a <management_token_alias>',
     'csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>',
     'csdx cm:export -a <management_token_alias> -c <path/to/config/file>',
   ];
 
   static flags = {
-    'external-config': flags.string({ char: 'c', description: '[optional] path of the config' }),
+    'external-config-path': flags.string({ char: 'c', description: '[optional] path of the config' }),
     'api-key': flags.string({ char: 'k', description: 'API key of the source stack' }),
     'export-dir': flags.string({ char: 'd', description: 'path or location to store the data' }),
     'mtoken-alias': flags.string({ char: 'a', description: 'alias of the management token' }),
-    'auth-token': flags.boolean({ char: 'A', description: 'to use auth token' }),
     module: flags.string({ char: 'm', description: '[optional] specific module name' }),
     'content-type': flags.string({ char: 't', description: '[optional] content type', multiple: true }),
     branch: flags.string({ char: 'b', description: '[optional] branch name' }),
@@ -44,9 +42,12 @@ export default class ExportCommand extends Command {
     // initialize the exporter
     // start export
     try {
-      const exportConfig = await setupExportConfig(this.context, this.parse(ExportCommand));
-      const moduleExpoter = new ModuleExporter(this.context, exportConfig);
+      console.log('contentxt', this.context);
+      this.managementAPIClient = { host: this.cmaHost, authtoken: this.authToken };
+      const exportConfig = await setupExportConfig(this.context, this.parse(ExportCommand).flags);
+      const moduleExpoter = new ModuleExporter(this.context, this.managementAPIClient, exportConfig);
       await moduleExpoter.start();
+      console.log('done');
     } catch (error) {
       logger.error('Failed to export the content', error);
       cliux.error('Failed to export content', error.message);
