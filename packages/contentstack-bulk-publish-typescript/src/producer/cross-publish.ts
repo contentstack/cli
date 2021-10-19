@@ -142,7 +142,7 @@ async function getSyncEntries(stack, config, queryParams, bulkPublish, filter, d
       reject(error)
     }
   })
-  return resolve()
+  return
 }
 
 function setConfig(conf, bp) {

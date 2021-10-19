@@ -45,8 +45,9 @@ export interface AuthOptions {
 
 // TBD
 export interface ContentStackManagementClient {
-  contentstackClient: object;
-	stack: Function;
+  contentstackClient?: object;
+	stack?: Function;
+  authtoken?: string;
 }
 
 export interface PrintOptions {
@@ -74,9 +75,9 @@ export interface Token {
 }
 
 export interface FormattedLogs {
-  entries?: Array<any>;
+  entries?: Array<any> | any;
   locale?: Array<any>;
-  environments?: Array<any>;
+  environments?: Array<any> | any;
   api_key?: string;
   type?: string;
   assets?: Array<any>;

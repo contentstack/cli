@@ -52,7 +52,7 @@ function getLogFileDataType(data) {
   return 'asset'
 }
 
-async function getEnvironmentUids(stack, environments) {
+async function getEnvironmentUids(stack, environments): Promise<any> {
   return new Promise((resolve, reject) => {
     stack.environment().query().find()
     .then(allEnvironments => {
@@ -63,7 +63,7 @@ async function getEnvironmentUids(stack, environments) {
   })
 }
 
-function filterPublishDetails(elements, environments, locale) {
+function filterPublishDetails(elements, environments, locale?) {
   if (locale && locale.length > 0) {
     locale.forEach(loc => {
       elements[loc].forEach(entry => {

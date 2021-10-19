@@ -154,7 +154,7 @@ async function getSyncEntries(stack, config, locale, queryParams, bulkUnpublish,
       reject(error)
     }
   })
-  return resolve()
+  return
 }
 
 export async function start({retryFailed, bulkUnpublish, contentType, locale, environment, deliveryToken, onlyAssets, onlyEntries, f_types}, stack, config) {
@@ -186,7 +186,7 @@ export async function start({retryFailed, bulkUnpublish, contentType, locale, en
         }
       }
     } else {
-      let filter = {
+      let filter: any = {
         environment,
         locale,
       }

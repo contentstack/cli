@@ -24,7 +24,7 @@ function setConfig(conf, bp) {
     logFileName = 'publish-draft'
     queue.consumer = publishEntry
   }
-  queue.config = config
+  queue.config = conf
   filePath = initializeLogger(logFileName)
 }
 
@@ -135,7 +135,7 @@ export async function start({sourceEnv, environments, locale, contentTypes, bulk
       setConfig(config, bulkPublish)  
       try {
         if (sourceEnv) {
-          const environmentDetails = await getEnvironment(stack, sourceEnv)
+          const environmentDetails: any = await getEnvironment(stack, sourceEnv)
           for (let i = 0; i < contentTypes.length; i += 1) {
             try {
               /* eslint-disable no-await-in-loop */

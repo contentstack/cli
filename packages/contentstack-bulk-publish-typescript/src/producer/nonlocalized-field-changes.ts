@@ -61,7 +61,7 @@ async function getLocalizedEntry(stack, entry, contentType, locale, sourceEnv) {
         resolve({})
       }
       if (typeof error === 'string') {
-        if (!JSON.parse(error).errorCode === 141) console.log(error)
+        if (JSON.parse(error).errorCode !== 141) console.log(error)
       }
     })
   })
@@ -228,7 +228,7 @@ async function getEntries(stack, schema, contentType, languages, masterLocale, b
           for (let e = 0; e < entriesResponse.items.length; e += 1) {
             const entry = entriesResponse.items[e]
             try {
-              let localizedEntry = await getLocalizedEntry(stack, entry, contentType, locale.code, sourceEnv)
+              let localizedEntry: any = await getLocalizedEntry(stack, entry, contentType, locale.code, sourceEnv)
               localizedEntry = localizedEntry || {}
               if (checkNonLocalizedFieldChanges(schema, entry, localizedEntry)) {
                 if (bulkPublish) {

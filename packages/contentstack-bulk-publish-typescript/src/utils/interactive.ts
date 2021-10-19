@@ -133,7 +133,7 @@ export const askAuthenticationMethod = async (): Promise<string> => {
   })
 }
 
-export const askInput = async ({messageCode, defaultValue}): Promise<string> => {
+export const askInput = async ({messageCode, defaultValue}: {messageCode, defaultValue?}): Promise<string> => {
   const options = {
     type: 'input',
     message: messageCode,

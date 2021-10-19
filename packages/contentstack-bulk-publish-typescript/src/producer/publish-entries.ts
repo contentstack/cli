@@ -13,7 +13,7 @@ const queue = new Queue()
 let skipCount
 let logFileName
 let contentTypesList = []
-let allContentTypes = []
+let allContentTypes: any = []
 let bulkPublishSet = []
 let filePath
 

@@ -97,7 +97,7 @@ function setConfig(conf, bp) {
     logFileName = 'publish-edits'
     queue.consumer = publishEntry
   }
-  queue.config = config
+  queue.config = conf
   filePath = initializeLogger(logFileName)
 }
 
@@ -132,7 +132,7 @@ export async function start({retryFailed, bulkPublish, sourceEnv, contentTypes, 
     } else if (sourceEnv) {
       setConfig(config, bulkPublish)
       try {
-        const environmentDetails = await getEnvironment(stack, sourceEnv)
+        const environmentDetails: any = await getEnvironment(stack, sourceEnv)
         for (let i = 0; i < contentTypes.length; i += 1) {
           for (let j = 0; j < locales.length; j += 1) {
             try {

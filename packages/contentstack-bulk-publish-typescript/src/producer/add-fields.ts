@@ -5,7 +5,7 @@
 /* eslint-disable new-cap */
 /* eslint-disable no-console */
 /* eslint-disable max-params */
-import { Queue, isEmpty} from '../utils';
+import { Queue, isEmpty, req} from '../utils';
 import {bulkPublish, publishEntry, initializeLogger} from '../consumer/publish'
 import * as defaultConfig from '../config/defaults.json'
 import { retryFailedLogs } from '../utils/retryfailed'
@@ -39,7 +39,6 @@ function setConfig(conf, bp) {
     logFileName = 'add-fields'
     queue.consumer = publishEntry
   }
-  config = conf
   queue.config = conf
   filePath = initializeLogger(logFileName)
 }
@@ -195,7 +194,7 @@ async function updateEntry(config, updatedEntry, contentType, locale) {
     }),
   }
   try {
-    // const update = await req(conf)
+    const update = await req(conf)
     if (update.notice) {
       return Promise.resolve(true)
     }
@@ -274,7 +273,7 @@ async function getEntries(stack, config, schema, contentType, locale, bulkPublis
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-loop-func */
 
-export async function start({contentTypes, locales, environments, retryFailed, bulkPublish, skipPublish}, stack, config): Promise<void> {
+export async function start({contentTypes, locales, environments, retryFailed, bulkPublish, skipPublish}, stack, config): Promise<void | boolean> {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)
