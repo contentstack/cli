@@ -9,6 +9,7 @@
     "target": "es2017",
     "allowJs": true,
     "sourceMap": true,
+    "resolveJsonModule": true,
   },
   "include": [
     "./src/**/*ts",
