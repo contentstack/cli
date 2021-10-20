@@ -17,10 +17,16 @@ const config = new Configstore('contentstack_cli');
 const inquirer = require('inquirer')
 inquirer.registerPrompt('search-list', require('inquirer-search-list'))
 inquirer.registerPrompt('search-checkbox', require('inquirer-search-checkbox'))
-const {Command} = require('@contentstack/cli-command')
 const ContentstackManagementSDK = require('@contentstack/management')
 
-export function chooseOrganization(client: any, displayMessage?: string, region?: string, orgUid?: string): Promise<selectedOrganization> {
+/**
+ * Organization selector, it allows the user to select an organization from the list of available organizations
+ * @param client A management API client created from management-sdk 
+ * @param {string} [displayMessage] The message that needs to be displayed to the user
+ * @param {string } [orgUid] UID for an organization that is already chosen from the backend
+ * @returns {Promise} The uid and name for the selected organiztion
+ */
+export function chooseOrganization(client: any, displayMessage?: string, orgUid?: string): Promise<selectedOrganization> {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const spinner = ora('Loading Organizations').start()
@@ -59,7 +65,14 @@ export function chooseOrganization(client: any, displayMessage?: string, region?
 	})
 }
 
-export function chooseStack(client: any, organizationId: string, displayMessage?: string, region?: string) : Promise<Stack> {
+/**
+ * Stack selector, it allows the user to select a stack from a list of available stacks
+ * @param client A management API client created from management-sdk
+ * @param {string} organizationId The id of the organization, from where the stacks are to be fetched
+ * @param {string} [displayMessage] The message that needs to be displayed to the user
+ * @returns {Promise} The api_key and name for the selected stack
+ */
+export function chooseStack(client: any, organizationId: string, displayMessage?: string) : Promise<Stack> {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const spinner = ora('Loading Stacks').start()
@@ -86,15 +99,17 @@ export function chooseStack(client: any, organizationId: string, displayMessage?
 	})
 }
 
-export function chooseContentType(stackApiKey: string, displayMessage?: string, region?: string): Promise<ContentType> {
+/**
+ * Content Type Selector, It allows the user to select a content type from a list of available content types
+ * @param stack The stack method created from contentstack management sdk
+ * @param {string} [displayMessage] The message that needs to be displayed to the user
+ * @returns {Promise} The uid and title of the selected content type
+ */
+export function chooseContentType(stack: any, displayMessage?: string): Promise<ContentType> {
 	return new Promise(async (resolve, reject) => {
-		const command = new Command()
-		command.managementAPIClient = {host: command.cmaHost, authtoken: command.authToken}
-		const client = command.managementAPIClient
 		try {
 			const spinner = ora('Loading Content Types').start()
-			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
-			let contentTypes = await getAll(client.stack({api_key: stackApiKey}).contentType())
+			let contentTypes = await getAll(stack.contentType())
 			spinner.stop()
 			let contentTypeMap: any = {}
 			contentTypes.forEach((contentType: ContentType) => {
@@ -116,15 +131,17 @@ export function chooseContentType(stackApiKey: string, displayMessage?: string, 
 		}
 	})	
 }
-
-export function chooseEntry(contentTypeUid: string, stackApiKey: string, displayMessage?: string, region?: string): Promise<Entry> {
+/**
+ * Entry Selector, It allows the user to select an entry from the list of available entries
+ * @param contentType The stack method created from contentstack management sdk
+ * @param displayMessage 
+ * @returns {Promise} The uid and title of the selected entry
+ */
+export function chooseEntry(contentType: any, displayMessage?: string): Promise<Entry> {
 	return new Promise(async (resolve, reject) => {
-		const command = new Command()
-		command.managementAPIClient = {host: command.cmaHost, authtoken: command.authToken}
-		const client = command.managementAPIClient
 		try {
 			const spinner = ora('Loading Entries').start()
-			let entries = await getAll(client.stack({api_key: stackApiKey}).contentType(contentTypeUid).entry())
+			let entries = await getAll(contentType.entry())
 			spinner.stop()
 			let entryMap: any = {}
 			entries.forEach((entry: Entry) => {
@@ -146,12 +163,16 @@ export function chooseEntry(contentTypeUid: string, stackApiKey: string, display
 		}
 	})	
 }
-
+/**
+ * Content Types Selector, it allows the user to select multiple content types from a list of available content types
+ * @param stack The stack method created from contentstack management sdk
+ * @param {string} [displayMessage] The message that needs to be displayed to the user
+ * @returns {Promise} An array of objects containing uid and title for all selected content types
+ */
 export function chooseContentTypes(stack: any, displayMessage?: string): Promise<ContentType[]> {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const spinner = ora('Loading Content Types').start()
-			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
 			let contentTypes = await getAll(stack.contentType())
 			spinner.stop()
 			let contentTypeMap: any = {}
@@ -178,12 +199,16 @@ export function chooseContentTypes(stack: any, displayMessage?: string): Promise
 		}
 	})	
 }
-
+/**
+ * Environments selector, it allows the user to select multiple environments from a list of available environments
+ * @param stack The stack method created from contentstack management sdk
+ * @param {string} [displayMessage] The message that needs to be displayed to the user
+ * @returns {Promise} An array of objects containing uid and name for all selected environments
+ */
 export function chooseEnvironments(stack: any, displayMessage?: string): Promise<Environment[]> {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const spinner = ora('Loading Environments').start()
-			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
 			let environments = await getAll(stack.environment())
 			spinner.stop()
 			let environmentMap: any = {}
@@ -211,12 +236,16 @@ export function chooseEnvironments(stack: any, displayMessage?: string): Promise
 		}
 	})
 }
-
+/**
+ * Environment Selector, it allows the user to select an environment from a list of available environments
+ * @param stack The stack method created from contentstack management sdk
+ * @param {string} [displayMessage] The message that needs to be displayed to the user
+ * @returns {Promise} An object containing uid and name of the selected environment
+ */
 export function chooseEnvironment(stack: any, displayMessage?: string): Promise<Environment> {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const spinner = ora('Loading Environments').start()
-			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
 			let environments = await getAll(stack.environment())
 			spinner.stop()
 			let environmentMap: any = {}
@@ -241,12 +270,16 @@ export function chooseEnvironment(stack: any, displayMessage?: string): Promise<
 		}
 	})
 }
-
+/**
+ * Locales selector, it allows the user to select multiple locales from a list of available locales
+ * @param stack The stack method created from contentstack management sdk
+ * @param {string} [displayMessage] The message that needs to be displayed to the user
+ * @returns {Promise} An array of objects containing code and name for all selected locales
+ */
 export function chooseLocales(stack: any, displayMessage?: string): Promise<Locale[]> {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const spinner = ora('Loading Locales').start()
-			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
 			let locales = await getAll(stack.locale())
 			spinner.stop()
 			let localeMap: any = {}
@@ -274,12 +307,16 @@ export function chooseLocales(stack: any, displayMessage?: string): Promise<Loca
 		}
 	})
 }
-
+/**
+ * Locale Selector, it allows the user to select a locale from a list of available locales
+ * @param stack The stack method created from contentstack management sdk
+ * @param {string} [displayMessage] The message that needs to be displayed to the user
+ * @returns {Promise} An object containing code and name for the selected locale
+ */
 export function chooseLocale(stack: any, displayMessage?: string): Promise<Locale> {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const spinner = ora('Loading Locales').start()
-			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
 			let locales = await getAll(stack.locale())
 			spinner.stop()
 			let localeMap: any = {}
@@ -304,7 +341,10 @@ export function chooseLocale(stack: any, displayMessage?: string): Promise<Local
 		}
 	})
 }
-
+/**
+ * Token alias selector, allows the user to select the management token alias they want to use
+ * @returns {Promise} An object containing apiKey and token for the selected alias
+ */
 export function chooseTokenAlias(): Promise<Token> {
 	return new Promise(async (resolve, reject) => {
 		const tokens = config.get('tokens')
@@ -322,7 +362,10 @@ export function chooseTokenAlias(): Promise<Token> {
 		})
 	})
 }
-
+/**
+ * Delivery token alias selector, allows the user to select a delivery token alias they want to use
+ * @returns {Promise} An object containing apiKey and token for the selected alias
+ */
 export function chooseDeliveryTokenAlias(): Promise<Token> {
 	return new Promise(async (resolve, reject) => {
 		const tokens = config.get('tokens')
@@ -340,7 +383,12 @@ export function chooseDeliveryTokenAlias(): Promise<Token> {
 		})
 	})
 }
-
+/**
+ * A method to handle pagination
+ * @param element 
+ * @param skip 
+ * @returns The fetched result
+ */
 async function getAll (element: any, skip: number=0): Promise<any> {
 	return new Promise(async resolve => {
 		let result: any[] = []
@@ -348,7 +396,13 @@ async function getAll (element: any, skip: number=0): Promise<any> {
 		resolve(result)
 	})
 }
-
+/**
+ * A method to perform actual http requests
+ * @param element 
+ * @param skip 
+ * @param accumulator 
+ * @returns The consolidated result after handling pagination
+ */
 async function fetch(element: any, skip: number, accumulator: any[]): Promise<any[]> {
 	return new Promise(async resolve => {
 		let queryParams = {include_count: true, skip: skip}
