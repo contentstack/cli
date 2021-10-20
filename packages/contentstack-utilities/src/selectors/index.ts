@@ -1,5 +1,5 @@
 import * as ora from 'ora'
-import * as Configstore from 'configstore';
+import {default as configHandler} from '../config-handler'
 import {
 	Token,
 	Organization,
@@ -12,8 +12,7 @@ import {
 } from './interfaces'
 import { shouldNotBeEmpty } from './validations'; 
 
-const config = new Configstore('contentstack_cli');
-
+const config = configHandler.init();
 const inquirer = require('inquirer')
 inquirer.registerPrompt('search-list', require('inquirer-search-list'))
 inquirer.registerPrompt('search-checkbox', require('inquirer-search-checkbox'))
@@ -347,7 +346,7 @@ export function chooseLocale(stack: any, displayMessage?: string): Promise<Local
  */
 export function chooseTokenAlias(): Promise<Token> {
 	return new Promise(async (resolve, reject) => {
-		const tokens = config.get('tokens')
+		const tokens = config.tokens
 		const tokenList = Object.keys(tokens).filter((token: string) => tokens[token].type === 'management')
 		let inquirerConfig = {
 			type: 'search-list',
@@ -368,7 +367,7 @@ export function chooseTokenAlias(): Promise<Token> {
  */
 export function chooseDeliveryTokenAlias(): Promise<Token> {
 	return new Promise(async (resolve, reject) => {
-		const tokens = config.get('tokens')
+		const tokens = config.tokens
 		const tokenList = Object.keys(tokens).filter((token: string) => tokens[token].type === 'delivery')
 		let inquirerConfig = {
 			type: 'search-list',
