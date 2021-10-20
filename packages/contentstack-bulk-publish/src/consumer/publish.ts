@@ -5,10 +5,8 @@
 import * as backup from '../utils/backup'
 import * as chalk from 'chalk'
 import * as path from 'path'
-import * as Configstore from 'configstore'
 import * as defaults from '../config/defaults.json'
 
-const configstore = new Configstore('contentstack_cli')
 const {formatError} = require('../utils')
 
 const logsDir = backup.getLogsDirPath()

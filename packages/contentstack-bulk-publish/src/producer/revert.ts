@@ -9,11 +9,9 @@ import {Queue} from '../utils'
 import {initializeLogger, bulkUnPublish, publishUsingVersion} from '../consumer/publish'
 import * as chalk from 'chalk'
 import { validateFile } from '../utils/fs';
-import * as Configstore from 'configstore'
 import { getAllLogs } from '../utils/backup';
 import { FormattedLogs } from '../interfaces'
 
-let config = new Configstore('contentstack_cli')
 const getStack = require('../utils/client.js').getStack
 
 // for checking if a logfile has been provided by user
@@ -34,7 +32,6 @@ const publishQueue = new Queue()
 const revertLogFileName = 'revert'
 
 function setConfig(conf) {
-  config = conf
   unpublishQueue.config = conf
   publishQueue.config = conf
   unpublishQueue.consumer = bulkUnPublish

@@ -25,7 +25,6 @@
     "@oclif/config": "^1.15.1",
     "chalk": "^4.0.0",
     "cli-ux": "^5.4.6",
-    "configstore": "^5.0.1",
     "debug": "^4.1.1",
     "inquirer": "^7.1.0",
     "winston": "^3.3.3"
