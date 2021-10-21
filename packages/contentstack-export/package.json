@@ -27,10 +27,11 @@
 		"cli-ux": "^5.4.6",
 		"configstore": "^5.0.1",
 		"debug": "^4.1.1",
+		"get-unique-objects": "^1.0.1",
 		"inquirer": "^7.1.0",
 		"merge": "^2.1.1",
 		"mkdirp": "^1.0.4",
-		"winston": "^3.3.3"
+		"promise-limit": "^2.7.0"
 	},
 	"devDependencies": {
 		"@oclif/dev-cli": "^1.22.2",

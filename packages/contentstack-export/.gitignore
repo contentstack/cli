@@ -9,3 +9,5 @@ node_modules
 .DS_Store
 coverage
 .talismanrc
+.vscode
+oclif.manifest.json
