@@ -46,7 +46,7 @@ export default class AssetExport {
       const totalAssets = {};
       for (const batchCount of assetBatchCount) {
         const assets = await this.getAssetsByBatch(batchCount);
-        const promiseRunner = pLimit(1);
+        const promiseRunner = pLimit(this.downloadLimit);
         const result = await Promise.all(
           assets.map(async (asset) =>
             promiseRunner(() => {
