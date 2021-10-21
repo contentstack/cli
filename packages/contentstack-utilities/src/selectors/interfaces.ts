@@ -37,3 +37,7 @@ export interface Locale {
   name: string;
   code: string;
 }
+
+export interface Config {
+  tokens?: Array<any>;
+}
