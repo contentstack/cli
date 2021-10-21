@@ -16,11 +16,11 @@ export default class ExportCommand extends Command {
 
   static examples = [
     'csdx cm:export',
-    'csdx cm:export -s <stack_ApiKey> -d <path/of/export/destination/dir>',
+    'csdx cm:export -k <stack_ApiKey> -d <path/of/export/destination/dir>',
     'csdx cm:export -m <single module name>',
-    'csdx cm:export -m <single module name> -s <stack_ApiKey> -d <path/of/export/destination/dir>',
+    'csdx cm:export -m <single module name> -k <stack_ApiKey> -d <path/of/export/destination/dir>',
     'csdx cm:export -m <single module name> -t <content type>',
-    'csdx cm:export -B [optional] branch name',
+    'csdx cm:export -b [optional] branch name',
     'csdx cm:export -c <path/to/config/dir>',
     'csdx cm:export -a <management_token_alias>',
     'csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>',
