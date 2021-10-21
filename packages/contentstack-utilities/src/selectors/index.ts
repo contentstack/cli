@@ -8,11 +8,12 @@ import {
 	ContentType,
 	Environment,
 	Entry,
-	Locale
+	Locale,
+	Config
 } from './interfaces'
 import { shouldNotBeEmpty } from './validations'; 
 
-const config = configHandler.init();
+const config = configHandler.init() as Config;
 const inquirer = require('inquirer')
 inquirer.registerPrompt('search-list', require('inquirer-search-list'))
 inquirer.registerPrompt('search-checkbox', require('inquirer-search-checkbox'))
