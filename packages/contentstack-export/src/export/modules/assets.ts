@@ -46,12 +46,10 @@ export default class AssetExport {
       const totalAssets = {};
       for (const batchCount of assetBatchCount) {
         const assets = await this.getAssetsByBatch(batchCount);
-        console.log('got assests', batchCount);
         const promiseRunner = pLimit(1);
         const result = await Promise.all(
           assets.map(async (asset) =>
             promiseRunner(() => {
-              console.log('promise runner', asset.uid);
               totalAssets[asset.uid] = asset;
               return this.getAssetsByVersions(asset.uid, asset._version);
             }),
@@ -94,11 +92,9 @@ export default class AssetExport {
   }
 
   async getAssetsByVersions(uid: string, version: number, assetVersionInfo = []): Promise<any> {
-    console.log('get assets by version');
     if (version <= 0) {
       const assetVersionInfoFile = path.resolve(this.assetsFolderPath, uid, '_contentstack_' + uid + '.json');
       await fileHelper.writeFile(assetVersionInfoFile, assetVersionInfo);
-      console.log('get assets by version completed');
       return true;
     }
     const queryOptions = {
@@ -111,7 +107,6 @@ export default class AssetExport {
 
     const versionedAssetJSONResponse = await this.stackAPIClient.asset(uid).fetch(queryOptions);
     const downloadResponse = await this.downloadAssets(versionedAssetJSONResponse);
-    console.log('download assets completed');
     assetVersionInfo.splice(0, 0, versionedAssetJSONResponse);
     // Remove duplicates
     assetVersionInfo = uniqueObjects(assetVersionInfo);
@@ -119,7 +114,6 @@ export default class AssetExport {
   }
 
   async downloadAssets(asset): Promise<any> {
-    console.log('download assets');
     const assetFolderPath = path.resolve(this.assetsFolderPath, asset.uid);
     const assetFilePath = path.resolve(assetFolderPath, asset.filename);
     if (fs.existsSync(assetFilePath)) {
@@ -131,13 +125,14 @@ export default class AssetExport {
         const assetFileStream = fs.createWriteStream(assetFilePath);
         res.on('data', function (chunk) {
           assetFileStream.write(chunk);
-          res.on('end', function () {
-            assetFileStream.end();
-            resolve('done');
-          });
-          res.on('error', function (error) {
-            reject(error);
-          });
+        });
+        res.on('end', function () {
+          assetFileStream.end();
+          resolve('done');
+        });
+        res.on('error', function (error) {
+          assetFileStream.end();
+          reject(error);
         });
       });
     });
