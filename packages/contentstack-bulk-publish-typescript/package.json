@@ -9,6 +9,7 @@
     "clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
+    "prepack": "npm run build && oclif-dev manifest && oclif-dev readme",
     "version": "oclif-dev readme && git add README.md",
     "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "pretest": "tsc -p test",

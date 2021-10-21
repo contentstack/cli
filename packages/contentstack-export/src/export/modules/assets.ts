@@ -56,7 +56,6 @@ export default class AssetExport {
           ),
         );
       }
-      console.log('assets completed');
       await fileHelper.writeFile(this.assetContentsFile, totalAssets);
       await this.exportFolders();
       console.log('Assets export completed');
