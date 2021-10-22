@@ -150,7 +150,7 @@
                             "sub_acl": {
                                 "read": true
                             },
-                            "uid": "blt9228a34ebcbe7a3f"
+                            "uid": "***REMOVED***"
                         }
                     ],
                     "management_token": {
@@ -200,7 +200,7 @@
             "Connection",
             "close",
             "X-Contentstack-Organization",
-            "blt90f399a6ce838a5a",
+            "bltmock9e992a923aafmock99a6ce838a5a",
             "X-Runtime",
             "35ms",
             "X-REQUEST-ID",
@@ -292,7 +292,7 @@
                             "sub_acl": {
                                 "read": true
                             },
-                            "uid": "blt9228a34ebcbe7a3f"
+                            "uid": "***REMOVED***"
                         }
                     ],
                     "management_token": {
@@ -302,7 +302,7 @@
                 "SYS_ACL": {
                     "roles": [
                         {
-                            "uid": "bltb4de6b6db2b83d1d",
+                            "uid": "***REMOVED***",
                             "read": true,
                             "sub_acl": {
                                 "create": true,
@@ -315,7 +315,7 @@
                             "delete": true
                         },
                         {
-                            "uid": "blta5f79e992a923aaf",
+                            "uid": "bltmock9e992a923aafa5f79e992a923aaf",
                             "read": true,
                             "sub_acl": {
                                 "create": true,
@@ -326,7 +326,7 @@
                             }
                         },
                         {
-                            "uid": "bltb45172f1f120bb67",
+                            "uid": "***REMOVED***",
                             "read": true,
                             "sub_acl": {
                                 "create": true,
@@ -382,9 +382,9 @@
             "Vary",
             "Accept-Encoding",
             "Surrogate-Key",
-            "bltd8f5f521adc4b5b3.content_types bltd8f5f521adc4b5b3.content_types.foo3",
+            "bltmock9e992a923aafdmock521adc4b5b3.content_types bltmock9e992a923aafdmock521adc4b5b3.content_types.foo3",
             "X-Contentstack-Organization",
-            "blt90f399a6ce838a5a",
+            "bltmock9e992a923aafmock99a6ce838a5a",
             "X-Runtime",
             "14ms",
             "X-REQUEST-ID",
@@ -471,7 +471,7 @@
                             "sub_acl": {
                                 "read": true
                             },
-                            "uid": "blt9228a34ebcbe7a3f"
+                            "uid": "***REMOVED***"
                         }
                     ],
                     "management_token": {
@@ -481,7 +481,7 @@
                 "SYS_ACL": {
                     "roles": [
                         {
-                            "uid": "bltb4de6b6db2b83d1d",
+                            "uid": "***REMOVED***",
                             "read": true,
                             "sub_acl": {
                                 "create": true,
@@ -494,7 +494,7 @@
                             "delete": true
                         },
                         {
-                            "uid": "blta5f79e992a923aaf",
+                            "uid": "bltmock9e992a923aafa5f79e992a923aaf",
                             "read": true,
                             "sub_acl": {
                                 "create": true,
@@ -505,7 +505,7 @@
                             }
                         },
                         {
-                            "uid": "bltb45172f1f120bb67",
+                            "uid": "***REMOVED***",
                             "read": true,
                             "sub_acl": {
                                 "create": true,
@@ -620,7 +620,7 @@
                     },
                     "users": [
                         {
-                            "uid": "blt9228a34ebcbe7a3f",
+                            "uid": "***REMOVED***",
                             "read": true,
                             "sub_acl": {
                                 "read": true
@@ -671,7 +671,7 @@
             "Vary",
             "Accept-Encoding",
             "X-Contentstack-Organization",
-            "blt90f399a6ce838a5a",
+            "bltmock9e992a923aafmock99a6ce838a5a",
             "X-Runtime",
             "34ms",
             "X-REQUEST-ID",
@@ -702,7 +702,7 @@
             "Vary",
             "Accept-Encoding",
             "X-Contentstack-Organization",
-            "blt90f399a6ce838a5a",
+            "bltmock9e992a923aafmock99a6ce838a5a",
             "X-Runtime",
             "43ms",
             "X-REQUEST-ID",
@@ -766,7 +766,7 @@
             "Connection",
             "close",
             "X-Contentstack-Organization",
-            "blt90f399a6ce838a5a",
+            "bltmock9e992a923aafmock99a6ce838a5a",
             "X-Runtime",
             "16ms",
             "X-REQUEST-ID",
