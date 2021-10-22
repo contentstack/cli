@@ -46,6 +46,7 @@ exports.initial = async function (config) {
             console.log('failed export contents', error)
           }
         }
+        resolve()
       })
       .catch((error) => {
         console.log("error", error);
@@ -66,6 +67,7 @@ exports.initial = async function (config) {
         } else {
           console.log("Stack fail to export")
         }
+        reject(error)
       });
   });
 };
