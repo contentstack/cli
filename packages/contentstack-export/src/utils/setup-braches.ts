@@ -35,6 +35,6 @@ export default async function setupBranches(context, managementAPIClient, export
     // add branches list in the
     exportConfig.branches = branches;
   } catch (error) {
-    logger.error('failed to setup the branch', error && error.body);
+    logger.debug('failed to setup the branch', error && error.body);
   }
 }

@@ -124,13 +124,14 @@ export default class AssetExport {
         const assetFileStream = fs.createWriteStream(assetFilePath);
         res.on('data', function (chunk) {
           assetFileStream.write(chunk);
-          res.on('end', function () {
-            assetFileStream.end();
-            resolve('done');
-          });
-          res.on('error', function (error) {
-            reject(error);
-          });
+        });
+        res.on('end', function () {
+          assetFileStream.end();
+          resolve('done');
+        });
+        res.on('error', function (error) {
+          assetFileStream.end();
+          reject(error);
         });
       });
     });
