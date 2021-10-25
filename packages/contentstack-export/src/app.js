@@ -84,7 +84,7 @@ var allExport = async (config, types) => {
       addlogs(config, chalk.red('Failed to migrate stack: ' + config.source_stack + '. Please check error logs for more info'), 'error')
       addlogs(config, chalk.red(error.errorMessage), 'error')
       addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error')
-      return reject()
+      return reject(error)
     }
   })
 }
