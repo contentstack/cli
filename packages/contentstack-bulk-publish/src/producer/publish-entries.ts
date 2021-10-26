@@ -17,7 +17,7 @@ let allContentTypes: any = []
 let bulkPublishSet = []
 let filePath
 
-export async function getEntries(stack, contentType, locale, bulkPublish, environments, skip = 0) {
+async function getEntries(stack, contentType, locale, bulkPublish, environments, skip = 0) {
   return new Promise((resolve, reject) => {
     skipCount = skip
 
@@ -74,7 +74,7 @@ export async function getEntries(stack, contentType, locale, bulkPublish, enviro
   })
 }
 
-export async function getContentTypes(stack, skip = 0, contentTypes = []) {
+async function getContentTypes(stack, skip = 0, contentTypes = []) {
   return new Promise((resolve, reject) => {
     skipCount = skip
     contentTypesList = contentTypes
@@ -103,7 +103,7 @@ function setConfig(conf, bp) {
   filePath = initializeLogger(logFileName)
 }
 
-export async function start({retryFailed, bulkPublish, publishAllContentTypes, contentTypes, locales, environments}, stack, config) {
+export default async function start({retryFailed, bulkPublish, publishAllContentTypes, contentTypes, locales, environments}, stack, config) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)
@@ -139,6 +139,7 @@ export async function start({retryFailed, bulkPublish, publishAllContentTypes, c
         for (let i = 0; i < allContentTypes.length; i += 1) {
           try {
             /* eslint-disable no-await-in-loop */
+            debugger
             await getEntries(stack, allContentTypes[i].uid || allContentTypes[i], locales[loc], bulkPublish, environments)
             /* eslint-enable no-await-in-loop */
           } catch (error) {

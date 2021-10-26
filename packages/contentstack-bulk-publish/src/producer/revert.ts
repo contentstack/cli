@@ -327,7 +327,7 @@ async function revertUsingLogs(logFileName) {
   }
 }
 
-export async function start({retryFailed, logFile}, config) {
+export default async function start({retryFailed, logFile}, config) {
   setConfig(config)
   if (retryFailed) {
     if (typeof retryFailed === 'string') {

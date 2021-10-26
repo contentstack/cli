@@ -290,7 +290,7 @@ async function getLanguages(stack) {
   })
 }
 
-export async function start({retryFailed, bulkPublish, sourceEnv, contentTypes, environments}, stack, config) {
+export default async function start({retryFailed, bulkPublish, sourceEnv, contentTypes, environments}, stack, config) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)
