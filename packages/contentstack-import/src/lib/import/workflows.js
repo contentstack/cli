@@ -90,7 +90,7 @@ importWorkflows.prototype = {
               } else if (error.errors['workflow_stages.0.users']) {
                 addlogs(config, chalk.red("Failed to import Workflows as you've specified certain roles in the Stage transition and access rules section. We currently don't import roles to the stack."), 'error');
               } else {
-                addlogs(config, chalk.red('workflow: \'' + workflow.name + '\'  already exist'), 'error');
+                addlogs(config, chalk.red('workflow: \'' + workflow.name + '\'  failed'), 'error');
               }
               return;
             });

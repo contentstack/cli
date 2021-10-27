@@ -49,9 +49,9 @@ ExportWorkFlows.prototype.start = function (credentialConfig) {
       if (error.statusCode === 401) {
         addlogs(config, chalk.red('You are not allowed to export workflow, Unless you provide email and password in config', 'error'))
         return resolve()
-      }
+      } 
       addlogs(config, error, 'error')
-      return reject()
+      return resolve()
     })
   })
 }
