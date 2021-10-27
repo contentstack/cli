@@ -9,5 +9,4 @@ node_modules
 .DS_Store
 coverage
 src/__src
-src/commands
 test/tsconfig.tsbuildinfo
