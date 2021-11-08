@@ -1,0 +1,4 @@
+fileignoreconfig:
+- filename: packages/contentstack-import/package-lock.json
+  checksum: f56999b4d7b17b2ef031b646aaab624c858b270936b4634dfaa1820619e5094b
+version: "1.0"
