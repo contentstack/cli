@@ -179,7 +179,7 @@ exportEntries.prototype.getEntries = function (apiDetails) {
           })
         })
       }
-      if (apiDetails.skip > entriesList.items.length) {
+      if (apiDetails.skip > entriesList.count) {
         addlogs(config, 'Exported entries of ' + apiDetails.content_type +
             ' to the ' + apiDetails.locale + ' language successfully', 'success')
         return resolve()
