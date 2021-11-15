@@ -6,6 +6,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "npm run clean && npm run compile",
+    "prepack": "npm run build",
     "clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",

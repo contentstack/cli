@@ -1,5 +1,5 @@
 import {Command, flags} from '@contentstack/cli-command'
-import { interactive } from '../../../utils';
+import { interactive, messageHandler } from '../../../utils';
 import config from '../../../config';
 import commandNames from '../../../config/commands';
 import { ContentStackManagementClient } from '../../../interfaces';
@@ -18,22 +18,16 @@ export default class Publish extends Command {
   private readonly exit: Function;
   private readonly error: Function;
   private readonly region: any;
+  private readonly authToken: string;
   managementAPIClient: ContentStackManagementClient
   static description = 'describe the command here'
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    // flag with a value (-n, --name=VALUE)
-    name: flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    force: flags.boolean({char: 'f'}),
-    option: flags.string({char: 'o', options: config.commands})
+    config: flags.string({char: 'c', description: messageHandler.parse('CLI_BP_CONFIG')})
   }
 
-  static args = [{name: 'file'}]
-
-  async run(): void {
-    let {args, flags} = this.parse(Publish)
+  async run(): Promise<void> {
+    let {flags} = this.parse(Publish)
     if (!flags)
       flags = {}
     const selectedCommand = await interactive.chooseCommand()
@@ -50,7 +44,7 @@ export default class Publish extends Command {
     // }
   }
 
-  async authenticateAndGetStack(): void {
+  async authenticateAndGetStack(): Promise<void> {
     const authenticationMethod = await interactive.askAuthenticationMethod()
     if (authenticationMethod === 'auth-token') {
       this.managementAPIClient = {authtoken: this.authToken}
@@ -62,7 +56,7 @@ export default class Publish extends Command {
     return this.managementAPIClient.stack({ api_key: alias.apiKey, management_token: alias.token })
   }
 
-  async execute(key, updatedFlags, stack): void {
+  async execute(key, updatedFlags, stack): Promise<void> {
     const config = {
       alias: updatedFlags.alias,
       host: this.region.cma,
