@@ -5,8 +5,6 @@
 // import * as Bluebird from 'bluebird'
 const request = require('axios')
 const debug = require('debug')('requests')
-const Configstore = require('configstore')
-let config = new Configstore('contentstack_cli')
 
 const MAX_RETRY_LIMIT = 8
 
@@ -21,7 +19,7 @@ export default async function makeCall (req, RETRY?): Promise<any | Error> {
       if (!req.headers) {
         req.headers = {}
       }
-      req.headers['X-User-Agent'] = `bulk-publish-entries-assets/v${config.get('apiVersion')}`
+      req.headers['X-User-Agent'] = 'bulk-publish-entries-assets/v3'
       return request(req).then(response => {
         let timeDelay
         if (response.status >= 200 && response.status <= 399) {
