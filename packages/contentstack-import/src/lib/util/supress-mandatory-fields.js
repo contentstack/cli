@@ -21,7 +21,7 @@ var supress = module.exports = function (schema, flag) {
       if(schema[i].uid !== 'title') {
         schema[i].unique = false;
         schema[i].mandatory = false;
-        flag.supressed = true;
+        flag.suppressed = true;
       }    
     }
   }
