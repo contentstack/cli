@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import LoginCommand from '../../src/commands/auth/login';
-import { authHandler, cliux, interactive } from '../../src/utils';
+import { authHandler, interactive } from '../../src/utils';
+import { cliux } from '@contentstack/cli-utilities';
 import * as Configstore from 'configstore';
 const config = new Configstore('contentstack_cli');
 
@@ -31,7 +32,7 @@ describe('Login Command', () => {
   });
 
   it('Login with valid credentials, should be successful', async function () {
-    const cliuxStub1 = sinon.stub(cliux, 'success').returns();
+    const cliuxStub1 = sinon.stub(cliux, 'success').returns(true);
     await LoginCommand.run(['-u', credentials.email, '-p', credentials.password]);
     expect(cliuxStub1.calledOnce).to.be.true;
     expect(config.get('email')).to.be.equal(credentials.email);
@@ -39,7 +40,7 @@ describe('Login Command', () => {
   });
 
   it('Login with invalid credentials, should print error message', async function () {
-    const cliuxStub2 = sinon.stub(cliux, 'error').returns();
+    const cliuxStub2 = sinon.stub(cliux, 'error').returns(true);
     await LoginCommand.run(['-u', invalidCredentials.email, '-p', invalidCredentials.password]);
     expect(cliuxStub2.calledOnce).to.be.true;
     cliuxStub2.restore();

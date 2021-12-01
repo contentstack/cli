@@ -1,68 +1,68 @@
 {
-  "name": "@contentstack/cli-utilities",
-  "version": "0.1.1-beta.1",
-  "description": "Utilities for contentstack projects",
-  "main": "lib/index.js",
-  "scripts": {
-    "build": "npm run clean && npm run compile",
-    "clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
-    "compile": "tsc -b tsconfig.json",
-    "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "pretest": "tsc -p test",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
-    "posttest": "npm run lint",
-    "lint": "eslint src/**/*.ts",
-    "format": "eslint src/**/*.ts --fix"
-  },
-  "repository": {
-    "type": "git",
-    "url": ""
-  },
-  "keywords": [
-    "contentstack",
-    "utilities"
-  ],
-  "author": "contentstack",
-  "license": "ISC",
-  "dependencies": {
-    "@contentstack/management": "^1.2.1",
-    "chalk": "^4.0.0",
-    "cli-ux": "^5.4.6",
-    "configstore": "^5.0.1",
-    "debug": "^4.1.1",
-    "dot-prop": "^6.0.1",
-    "inquirer": "^8.0.0",
-    "ora": "^5.4.0",
-    "winston": "^3.3.3"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
-  "devDependencies": {
-    "@oclif/plugin-help": "^3.2.0",
-    "@oclif/test": "^1.2.8",
-    "@types/chai": "^4.2.18",
-    "@types/dot-prop": "^5.0.1",
-    "@types/inquirer": "^7.3.1",
-    "@types/mkdirp": "^1.0.1",
-    "@types/mocha": "^8.2.2",
-    "@types/nock": "^11.1.0",
-    "@types/node": "^14.14.32",
-    "@types/sinon": "^10.0.2",
-    "@types/tar": "^4.0.3",
-    "@types/winston": "^2.4.4",
-    "chai": "^4.3.4",
-    "eslint": "^5.16.0",
-    "eslint-config-oclif": "^3.1.0",
-    "eslint-config-oclif-typescript": "^0.1.0",
-    "globby": "^10.0.2",
-    "mocha": "^8.3.2",
-    "nock": "^13.1.0",
-    "nyc": "^15.1.0",
-    "rimraf": "^2.7.1",
-    "sinon": "^11.1.1",
-    "tmp": "^0.2.1",
-    "ts-node": "^8.10.2",
-    "typescript": "^3.9.7"
-  }
+	"name": "@contentstack/cli-utilities",
+	"version": "0.1.1-beta.1",
+	"description": "Utilities for contentstack projects",
+	"main": "lib/index.js",
+	"scripts": {
+		"prepack": "npm run clean && npm run compile",
+		"clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
+		"compile": "tsc -b tsconfig.json",
+		"test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+		"pretest": "tsc -p test",
+		"disable-test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+		"posttest": "npm run lint",
+		"lint": "eslint src/**/*.ts",
+		"format": "eslint src/**/*.ts --fix"
+	},
+	"repository": {
+		"type": "git",
+		"url": ""
+	},
+	"keywords": [
+		"contentstack",
+		"utilities"
+	],
+	"author": "contentstack",
+	"license": "ISC",
+	"dependencies": {
+		"@contentstack/management": "^1.2.1",
+		"chalk": "^4.0.0",
+		"cli-ux": "^5.4.6",
+		"configstore": "^5.0.1",
+		"debug": "^4.1.1",
+		"dot-prop": "^6.0.1",
+		"inquirer": "^8.0.0",
+		"ora": "^5.4.0",
+		"winston": "^3.3.3"
+	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com/"
+	},
+	"devDependencies": {
+		"@oclif/plugin-help": "^3.2.0",
+		"@oclif/test": "^1.2.8",
+		"@types/chai": "^4.2.18",
+		"@types/dot-prop": "^5.0.1",
+		"@types/inquirer": "^7.3.1",
+		"@types/mkdirp": "^1.0.1",
+		"@types/mocha": "^8.2.2",
+		"@types/nock": "^11.1.0",
+		"@types/node": "^14.14.32",
+		"@types/sinon": "^10.0.2",
+		"@types/tar": "^4.0.3",
+		"@types/winston": "^2.4.4",
+		"chai": "^4.3.4",
+		"eslint": "^5.16.0",
+		"eslint-config-oclif": "^3.1.0",
+		"eslint-config-oclif-typescript": "^0.1.0",
+		"globby": "^10.0.2",
+		"mocha": "^8.3.2",
+		"nock": "^13.1.0",
+		"nyc": "^15.1.0",
+		"rimraf": "^2.7.1",
+		"sinon": "^11.1.1",
+		"tmp": "^0.2.1",
+		"ts-node": "^8.10.2",
+		"typescript": "^3.9.7"
+	}
 }

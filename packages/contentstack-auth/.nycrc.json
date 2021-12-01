@@ -1,5 +1,6 @@
 {
     "inlcude": [
         "lib/**/*.js"
-    ]
+    ],
+    "report-dir": "auth-test-report"
 }
