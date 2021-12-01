@@ -11,9 +11,9 @@
 		"postpack": "rm -f oclif.manifest.json",
 		"prepack": "npm run build && oclif-dev manifest && oclif-dev readme",
 		"version": "oclif-dev readme && git add README.md",
-		"test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+		"test": "nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
 		"pretest": "tsc -p test",
-		"test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+		"test:dev": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
 		"disable-posttest": "npm run lint",
 		"lint": "eslint src/**/*.ts",
 		"format": "eslint src/**/*.ts --fix"
