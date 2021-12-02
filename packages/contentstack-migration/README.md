@@ -20,7 +20,7 @@ $ npm install -g @contentstack/cli-migration
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-migration/0.1.1-beta.1 linux-x64 node-v12.22.1
+@contentstack/cli-migration/0.1.1-beta.1 linux-x64 node-v12.22.7
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND

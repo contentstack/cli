@@ -18,7 +18,7 @@ const {map: _map, constants} = require('../utils')
 // map properties
 const {getMapInstance, get} = _map
 // Constants
-const {actionMapper, MANAGEMENT_SDK, MANAGEMENT_TOKEN, AUTH_TOKEN, API_KEY, BRANCH} = constants
+const {actionMapper, MANAGEMENT_SDK, MANAGEMENT_TOKEN, AUTH_TOKEN, API_KEY, BRANCH, MANAGEMENT_CLIENT, SOURCE_BRANCH} = constants
 
 class Parser {
   async getMigrationParser(migrationFunc) {
@@ -33,7 +33,9 @@ class Parser {
       const authToken = get(AUTH_TOKEN, mapInstance)
       const apiKey = get(API_KEY, mapInstance)
       const branch = get(BRANCH, mapInstance)
-      await migrationFunc({migration, stackSDKInstance, managementToken, authToken, apiKey, branch})
+      const sourceBranch = get(SOURCE_BRANCH, mapInstance)
+      const managementAPIClient = get(MANAGEMENT_CLIENT, mapInstance)
+      await migrationFunc({migration, stackSDKInstance, managementAPIClient, managementToken, authToken, apiKey, branch, sourceBranch})
     } catch (error) {
       if (error instanceof TypeError) {
         if (error.message.includes('is not a function')) {
