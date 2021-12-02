@@ -21,7 +21,7 @@ const {success} = require('../../utils/logger')
 
 // Properties
 const {get, set, getMapInstance, resetMapInstance} = _map
-const {requests: _requests, actionMapper, MANAGEMENT_SDK, MANAGEMENT_TOKEN, AUTH_TOKEN, API_KEY, BRANCH} = constants
+const {requests: _requests, actionMapper, MANAGEMENT_SDK, MANAGEMENT_TOKEN, AUTH_TOKEN, API_KEY, BRANCH, MANAGEMENT_CLIENT, SOURCE_BRANCH} = constants
 
 class MigrationCommand extends Command {
   async run() {
@@ -31,6 +31,7 @@ class MigrationCommand extends Command {
     const authtoken = migrationCommandFlags.authtoken
     const apiKey = migrationCommandFlags['api-key']
     const alias = migrationCommandFlags['management-token-alias']
+    const sourceBranch = migrationCommandFlags['source-branch'];
 
     let stackSDKInstance
 
@@ -39,6 +40,10 @@ class MigrationCommand extends Command {
     resetMapInstance(mapInstance)
     if (branch) {
       set(BRANCH, mapInstance, branch)
+    }
+
+    if (sourceBranch) {
+      set(SOURCE_BRANCH, mapInstance, sourceBranch)
     }
 
     if (alias) {
@@ -66,6 +71,7 @@ class MigrationCommand extends Command {
     }
 
     set(MANAGEMENT_SDK, mapInstance, stackSDKInstance)
+    set(MANAGEMENT_CLIENT, mapInstance, this.managementAPIClient)
 
     if (multi) {
       await this.execMultiFiles(filePath, mapInstance)
@@ -175,7 +181,8 @@ MigrationCommand.flags = {
   authtoken: flags.boolean({char: 'A', description: 'Use this flag to use the auth token of the current session. After logging in CLI, an auth token is generated for each new session.', dependsOn: ['api-key'], exclusive: ['management-token-alias']}),
   'management-token-alias': flags.string({char: 'a', description: 'Use this flag to add the management token alias.', exclusive: ['authtoken']}), // Add a better description
   filePath: flags.string({char: 'n', description: 'Use this flag to provide the path of the file of the migration script provided by the user.'}),
-  branch: flags.string({char: 'b', description: 'Use this flag to add the branch name where you want to perform the migration.'}),
+  branch: flags.string({char: 'd', description: 'Use this flag to add the branch name where you want to perform the migration.'}),
+  'source-branch': flags.string({char: 's', description: 'use this flag to denote the source branch'}),
   multi: flags.boolean({description: 'This flag helps you to migrate multiple content files in a single instance.'}), // Add a better description
 }
 
