@@ -20,8 +20,11 @@ class ModuleImporter {
 
   async start(): Promise<any> {
     // setup the branches
-    await setupBranches(this.context, this.managementAPIClient, this.importConfig);
-    await backupHandler(this.context, this.importConfig);
+    // await setupBranches(this.context, this.managementAPIClient, this.importConfig);
+    const backupDir = await backupHandler(this.context, this.importConfig);
+    if (backupDir) {
+      this.importConfig.backupDir = backupDir;
+    }
     // if branches available run it export by branches
     if (this.importConfig.branches) {
       this.importConfig.branchEnabled = true;

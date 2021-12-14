@@ -45,7 +45,7 @@ export default class ImportCommand extends Command {
     // start import
     try {
       this.managementAPIClient = { host: this.cmaHost, authtoken: this.authToken };
-      const importConfig = await setupImportConfig(this.context, this.parse(ImportCommand));
+      const importConfig = await setupImportConfig(this.context, this.parse(ImportCommand).flags);
       const moduleImporter = new ModuleImporter(this.context, this.managementAPIClient, importConfig);
       await moduleImporter.start();
       console.log('done');
@@ -55,3 +55,11 @@ export default class ImportCommand extends Command {
     }
   }
 }
+
+ImportCommand.run([
+  '-A',
+  '-d',
+  '/home/shafeeqpp/WORKSPACE/CLI/cli/packages/contentstack-import/contents-export-test',
+  '-k',
+  'bltcfab61bccde90989',
+]);

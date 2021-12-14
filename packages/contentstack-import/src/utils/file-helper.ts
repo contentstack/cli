@@ -71,3 +71,15 @@ export const readJSONFile = async (filePath: string): Promise<any> => {
     });
   });
 };
+
+export const isFolderExist = async (folderPath: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    folderPath = path.resolve(folderPath);
+    fs.access(folderPath, (error) => {
+      if (error) {
+        return resolve(false);
+      }
+      resolve(true);
+    });
+  });
+};

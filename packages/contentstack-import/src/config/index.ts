@@ -1,17 +1,6 @@
 export default {
   versioning: false,
-  moduleNames: [
-    'locales',
-    'environments',
-    'assets',
-    'extensions',
-    'webhooks',
-    'global-fields',
-    'content-types',
-    'workflows',
-    'entries',
-    'labels',
-  ],
+  moduleNames: ['assets'],
   moduleLevelConfig: {
     locales: {
       dirName: 'locales',
@@ -305,6 +294,7 @@ export default {
   preserveStackVersion: false,
   entriesPublish: true,
   concurrency: 1,
+  masterLocale: 'en-us',
   // useBackupDir: '_backup_397'
   // backupConcurrency: 10,
 };
