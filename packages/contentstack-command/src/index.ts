@@ -17,7 +17,81 @@ abstract class ContentstackCommand extends Command {
 
   get context() {
     // @ts-ignore
-    return this.config.context;
+
+    return  {
+      id: '9edc57bb-5703-4df3-83c2-d11a9c80e817',
+      user: {
+        authtoken: 'bltdfbb61559a919b2d',
+        email: 'shafeeq.pp@contentstack.com'
+      },
+      config: {
+        '0': 'r',
+        '1': 'e',
+        '2': 'g',
+        '3': 'i',
+        '4': 'o',
+        '5': 'n',
+        uuid: '074b8565-394b-4a7d-9baf-6ee197084f59',
+        tokens: { 'mtoken-dev9': [Object] },
+        sessionId: '9edc57bb-5703-4df3-83c2-d11a9c80e817',
+        logger: { level: 'debug', enabled: true },
+        region: {
+          cma: 'https://stag-api.contentstack.io',
+          cda: 'https://stag-cdn.contentstack.io',
+          name: 'stage'
+        },
+        authtoken: 'bltdfbb61559a919b2d',
+        email: 'shafeeq.pp@contentstack.com'
+      },
+      region: {
+        cma: 'https://stag-api.contentstack.io',
+        cda: 'https://stag-cdn.contentstack.io',
+        name: 'stage'
+      },
+      info: { command: 'cm:import' },
+      plugin: {
+        options: {
+          type: 'core',
+          root: '/home/shafeeqpp/WORKSPACE/CLI/cli/packages/contentstack',
+          name: '@contentstack/cli-cm-import'
+        },
+        _base: '@oclif/config@1.17.0',
+        valid: true,
+        alreadyLoaded: false,
+        children: [],
+        _debug: [Function],
+        warned: false,
+        type: 'core',
+        tag: undefined,
+        root: '/home/shafeeqpp/WORKSPACE/CLI/cli/packages/contentstack/node_modules/@contentstack/cli-cm-import',
+        pjson: {
+          name: '@contentstack/cli-cm-import',
+          description: 'Contentstack CLI plugin to import content into stack',
+          version: '0.1.1-beta.1',
+          author: 'Contentstack',
+          bugs: 'https://github.com/contentstack/cli/issues',
+          scripts: [Object],
+          dependencies: [Object],
+          devDependencies: [Object],
+          engines: [Object],
+          files: [Array],
+          homepage: 'https://github.com/contentstack/cli',
+          keywords: [Array],
+          license: 'MIT',
+          oclif: [Object],
+          husky: [Object],
+          repository: 'contentstack/cli'
+        },
+        name: '@contentstack/cli-cm-import',
+        version: '0.1.1-beta.1',
+        hooks: {},
+        manifest: { version: '0.1.1-beta.1', commands: [Object] },
+        commands: [ [Object] ],
+        config: {}
+      },
+      messageFilePath: '/home/shafeeqpp/WORKSPACE/CLI/cli/packages/contentstack/node_modules/@contentstack/cli-cm-import/messages/index.json'
+    }
+    // return this.config.context;
   }
 
   get managementAPIClient() {

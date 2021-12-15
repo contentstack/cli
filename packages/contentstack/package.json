@@ -21,10 +21,10 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
+    "@contentstack/management": "^1.2.4",
+    "@contentstack/cli-utilities": "0.1.1-beta.1",
     "@contentstack/cli-command": "0.1.1-beta.1",
     "@contentstack/cli-config": "0.1.1-beta.1",
-    "@contentstack/management": "1.2.1",
-    "@contentstack/cli-utilities": "0.1.1-beta.1",
     "@contentstack/cli-auth": "0.1.1-beta.1",
     "@contentstack/cli-cm-export": "0.1.1-beta.1",
     "@contentstack/cli-cm-import": "0.1.1-beta.1",

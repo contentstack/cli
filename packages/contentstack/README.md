@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.8 linux-x64 node-v12.22.1
+@contentstack/cli/0.1.1-beta.1 linux-x64 node-v12.22.7
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -32,6 +32,7 @@ USAGE
 * [`csdx auth:tokens:remove`](#csdx-authtokensremove)
 * [`csdx auth:whoami`](#csdx-authwhoami)
 * [`csdx cm:export`](#csdx-cmexport)
+* [`csdx cm:import`](#csdx-cmimport)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMAND]`](#csdx-help-command)
@@ -219,6 +220,42 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/cm/export.ts)_
+
+## `csdx cm:import`
+
+Import content from a stack
+
+```
+Import content from a stack
+
+USAGE
+  $ csdx cm:import
+
+OPTIONS
+  -A, --auth-token                       to use auth token
+  -a, --mtoken-alias=mtoken-alias        alias of the management token
+  -b, --branch=branch                    [optional] branch name
+  -c, --external-config=external-config  [optional] path of the config
+  -d, --content-dir=content-dir          path or location to store the data
+  -k, --api-key=api-key                  API key of the source stack
+  -m, --module=module                    [optional] specific module name
+  -t, --content-type=content-type        [optional] content type
+  --backup-dir=backup-dir                [optional] backup directory name when using specific module
+
+EXAMPLES
+  csdx cm:import -A
+  csdx cm:import -A -s <stack_ApiKey> -d <path/of/content/dir>
+  csdx cm:import -A -c <path/of/config/dir>
+  csdx cm:import -A -m <single module name>
+  csdx cm:import -A -m <single module name> -b <backup dir>
+  csdx cm:import -a <management_token_alias>
+  csdx cm:import -a <management_token_alias> -d <path/of/content/destination/dir>
+  csdx cm:import -a <management_token_alias> -c <path/of/config/file>
+  csdx cm:import -A -m <single module name>
+  csdx cm:import -A -B <branch name>
+```
+
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/cm/import.ts)_
 
 ## `csdx config:get:region`
 

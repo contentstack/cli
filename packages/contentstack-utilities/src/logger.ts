@@ -2,6 +2,7 @@ import * as winston from 'winston';
 import config from './config-handler';
 import messageHandler from './message-handler';
 
+config.set('logger.level', 'debug');
 class LoggerService {
   name: string;
   data: object | null;
@@ -39,7 +40,7 @@ class LoggerService {
         }),
       ),
       level: (config.get('logger.level') as string) || 'error',
-      silent: config.get('logger.enabled') && process.env.CLI_ENV !== 'TEST' ? true : false,
+      silent: config.get('logger.enabled') && process.env.CLI_ENV !== 'TEST' ? false : false,
     });
     this.logger = logger;
   }
