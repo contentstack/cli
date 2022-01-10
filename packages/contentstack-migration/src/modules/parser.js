@@ -14,7 +14,7 @@ const Base = require('./base')
 
 const {ActionList} = require('../actions')
 // Utils
-const {map: _map, constants} = require('../utils')
+const {map: _map, constants, fsHelper} = require('../utils')
 // map properties
 const {getMapInstance, get} = _map
 // Constants
@@ -33,9 +33,13 @@ class Parser {
       const authToken = get(AUTH_TOKEN, mapInstance)
       const apiKey = get(API_KEY, mapInstance)
       const branch = get(BRANCH, mapInstance)
-      const sourceBranch = get(SOURCE_BRANCH, mapInstance)
       const managementAPIClient = get(MANAGEMENT_CLIENT, mapInstance)
-      await migrationFunc({migration, stackSDKInstance, managementAPIClient, managementToken, authToken, apiKey, branch, sourceBranch})
+      const externalConfigPath = get("config-path", mapInstance)
+      let externalConfig
+      if (externalConfigPath) {
+        externalConfig = await fsHelper.readJSONFile(externalConfigPath);
+      }
+      await migrationFunc({migration, stackSDKInstance, managementAPIClient, managementToken, authToken, apiKey, branch, config: externalConfig})
     } catch (error) {
       if (error instanceof TypeError) {
         if (error.message.includes('is not a function')) {
