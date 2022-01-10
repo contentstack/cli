@@ -21,7 +21,7 @@ const {success} = require('../../utils/logger')
 
 // Properties
 const {get, set, getMapInstance, resetMapInstance} = _map
-const {requests: _requests, actionMapper, MANAGEMENT_SDK, MANAGEMENT_TOKEN, AUTH_TOKEN, API_KEY, BRANCH, MANAGEMENT_CLIENT, SOURCE_BRANCH} = constants
+const {requests: _requests, actionMapper, MANAGEMENT_SDK, MANAGEMENT_TOKEN, AUTH_TOKEN, API_KEY, BRANCH, MANAGEMENT_CLIENT} = constants
 
 class MigrationCommand extends Command {
   async run() {
@@ -31,19 +31,17 @@ class MigrationCommand extends Command {
     const authtoken = migrationCommandFlags.authtoken
     const apiKey = migrationCommandFlags['api-key']
     const alias = migrationCommandFlags['management-token-alias']
-    const sourceBranch = migrationCommandFlags['source-branch'];
-
-    let stackSDKInstance
-
+    
     // Reset map instance
     const mapInstance = getMapInstance()
     resetMapInstance(mapInstance)
-    if (branch) {
-      set(BRANCH, mapInstance, branch)
+    if (migrationCommandFlags['config']) {
+      set("config-path", mapInstance, migrationCommandFlags['config'])
     }
 
-    if (sourceBranch) {
-      set(SOURCE_BRANCH, mapInstance, sourceBranch)
+    let stackSDKInstance
+    if (branch) {
+      set(BRANCH, mapInstance, branch)
     }
 
     if (alias) {
@@ -182,7 +180,7 @@ MigrationCommand.flags = {
   'management-token-alias': flags.string({char: 'a', description: 'Use this flag to add the management token alias.', exclusive: ['authtoken']}), // Add a better description
   filePath: flags.string({char: 'n', description: 'Use this flag to provide the path of the file of the migration script provided by the user.'}),
   branch: flags.string({char: 'd', description: 'Use this flag to add the branch name where you want to perform the migration.'}),
-  'source-branch': flags.string({char: 's', description: 'use this flag to denote the source branch'}),
+  'config': flags.string({char: 'c', description: '[optional] Path of the configuration file'}),
   multi: flags.boolean({description: 'This flag helps you to migrate multiple content files in a single instance.'}), // Add a better description
 }
 
