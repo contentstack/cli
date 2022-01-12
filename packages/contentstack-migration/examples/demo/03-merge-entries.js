@@ -18,7 +18,7 @@ module.exports = async ({
   apiKey,
   config,
 }) => {
-  const contentTypeUID = "product_teaser";
+  const { contentTypeUID } = config;
   const mergeNewEntries = {
     title: "Merge new entries",
     successMessage: "Merged new entries successfully",
@@ -26,7 +26,7 @@ module.exports = async ({
     task: async () => {
       // initiating source stack client based on the authentication method provided managementToken/apiKey
       let stackSDKInstanceSource;
-      if (managementToken) {
+      if (typeof managementToken === "string") {
         stackSDKInstanceSource = managementAPIClient.stack({
           management_token: managementToken.token,
           api_key: managementToken.apiKey,
@@ -38,7 +38,6 @@ module.exports = async ({
           branch_uid: config.sourceBranch,
         });
       }
-
       /**
        * step 1 Get all the entries from source and target branch
        * step 2 filter out the newly created entries from the source

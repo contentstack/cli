@@ -14,8 +14,8 @@ module.exports = async ({ migration, stackSDKInstance, config }) => {
     failedMessage: "Failed to add entries.",
     task: async () => {
       let entry = {
-        title: `Apple tag teaser`,
-        description: `Apple tag`,
+        title: `Apple tag teaser 2`,
+        description: `Apple tag 2`,
       };
       const entryObj = await stackSDKInstance
         .contentType(contentTypeId)

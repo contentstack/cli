@@ -36,7 +36,7 @@ class Parser {
       const managementAPIClient = get(MANAGEMENT_CLIENT, mapInstance)
       const externalConfigPath = get("config-path", mapInstance)
       let externalConfig
-      if (externalConfigPath) {
+      if (!Array.isArray(externalConfigPath)) {
         externalConfig = await fsHelper.readJSONFile(externalConfigPath);
       }
       await migrationFunc({migration, stackSDKInstance, managementAPIClient, managementToken, authToken, apiKey, branch, config: externalConfig})
