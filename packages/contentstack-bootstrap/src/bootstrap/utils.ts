@@ -119,14 +119,14 @@ const envFileHandler = async (
         case 'reactjs-starter':
             fileName = `.env.${environmentVariables.environment}.local`
             filePath = path.join(clonedDirectory, fileName)
-            content = `REACT_APP_APIKEY=${environmentVariables.api_key}\nREACT_APP_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nREACT_APP_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nREACT_APP_CUSTOM_HOST=' + customHost : '')}${(!isUSRegion && !customHost) ? '\nREACT_APP_REGION=' + region.name : ''}`
+            content = `REACT_APP_CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nREACT_APP_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nREACT_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nREACT_APP_CONTENTSTACK_CUSTOM_HOST=' + customHost : '')}${(!isUSRegion && !customHost) ? '\nREACT_APP__REGION=' + region.name : ''}`
             result = await writeEnvFile(content, filePath)
             break
         case 'nextjs':
         case 'nextjs-starter':
             fileName = `.env.${environmentVariables.environment}.local`
             filePath = path.join(clonedDirectory, fileName)
-            content = `API_KEY=${environmentVariables.api_key}\nDELIVERY_TOKEN=${environmentVariables.deliveryToken}\nENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nCUSTOM_HOST=' + customHost : '')}${(!isUSRegion && !customHost ? '\nREGION=' + region.name : '')}`
+            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nCONTENTSTACK_CUSTOM_HOST=' + customHost : '')}${(!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : '')}`
             result = await writeEnvFile(content, filePath)
             break
         case 'gatsby':
