@@ -5,12 +5,12 @@
   "author": "Contentstack",
   "main": "lib/index.js",
   "scripts": {
-    "build": "npm run clean && npm run compile",
+    "prepack": "npm run clean && npm run compile",
     "clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "pretest": "tsc -p test",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "disable-test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "posttest": "npm run lint",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix"

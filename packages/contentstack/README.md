@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.8 linux-x64 node-v12.22.1
+@contentstack/cli/0.1.1-beta.1 linux-x64 node-v12.22.7
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -32,6 +32,7 @@ USAGE
 * [`csdx auth:tokens:remove`](#csdx-authtokensremove)
 * [`csdx auth:whoami`](#csdx-authwhoami)
 * [`csdx cm:export`](#csdx-cmexport)
+* [`csdx cm:import`](#csdx-cmimport)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMAND]`](#csdx-help-command)
@@ -207,11 +208,11 @@ OPTIONS
 
 EXAMPLES
   csdx cm:export
-  csdx cm:export -s <stack_ApiKey> -d <path/of/export/destination/dir>
+  csdx cm:export -k <stack_ApiKey> -d <path/of/export/destination/dir>
   csdx cm:export -m <single module name>
-  csdx cm:export -m <single module name> -s <stack_ApiKey> -d <path/of/export/destination/dir>
+  csdx cm:export -m <single module name> -k <stack_ApiKey> -d <path/of/export/destination/dir>
   csdx cm:export -m <single module name> -t <content type>
-  csdx cm:export -B [optional] branch name
+  csdx cm:export -b [optional] branch name
   csdx cm:export -c <path/to/config/dir>
   csdx cm:export -a <management_token_alias>
   csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
@@ -219,6 +220,44 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/src/commands/cm/export.ts)_
+
+## `csdx cm:import`
+
+Import script for importing the content into new stack
+
+```
+Import script for importing the content into new stack
+...
+Once you export content from the source stack, import it to your destination stack by using the cm:import command.
+
+
+USAGE
+  $ csdx cm:import
+
+OPTIONS
+  -A, --auth-token                                     to use auth token
+  -a, --management-token-alias=management-token-alias  alias of the management token
+  -c, --config=config                                  [optional] path of config file
+  -d, --data=data                                      path and location where data is stored
+  -l, --master-lang=master-lang                        code of the target stack's master language
+  -m, --module=module                                  [optional] specific module name
+  -s, --stack-uid=stack-uid                            API key of the target stack
+
+DESCRIPTION
+  ...
+  Once you export content from the source stack, import it to your destination stack by using the cm:import command.
+
+EXAMPLES
+  csdx cm:import -A
+  csdx cm:import -A -l "master-language" -s "stack_ApiKey" -d "path/of/export/destination/dir"
+  csdx cm:import -A -c "path/of/config/dir"
+  csdx cm:import -a "management_token_alias"
+  csdx cm:import -a "management_token_alias" -l "master-language" -d "path/of/export/destination/dir"
+  csdx cm:import -a "management_token_alias" -c "path/of/config/file"
+  csdx cm:import -A -m "single module name"
+```
+
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-import/src/commands/cm/import.js)_
 
 ## `csdx config:get:region`
 

@@ -2,7 +2,8 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as Configstore from 'configstore';
 import TokensAddCommand from '../../src/commands/auth/tokens/add';
-import { cliux, tokenValidation } from '../../src/utils';
+import { tokenValidation } from '../../src/utils';
+import { cliux } from '@contentstack/cli-utilities';
 const config = new Configstore('contentstack_cli');
 const configKeyTokens = 'tokens';
 

@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { authHandler, CLIError, interactive } from '../src/utils';
+import { authHandler, interactive } from '../src/utils';
+import { CLIError } from '@contentstack/cli-utilities';
 import { User } from '../src/interfaces';
 
 const user: User = { email: 'test@contentstack.com', authtoken: 'testtoken' };

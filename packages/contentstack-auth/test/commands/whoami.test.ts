@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { stub } from 'sinon';
 import WhoamiCommand from '../../src/commands/auth/whoami';
-import { cliux } from '../../src/utils';
+import { cliux } from '@contentstack/cli-utilities';
 
 describe('Whoami Command', () => {
   let getEmailStub;
@@ -20,7 +20,7 @@ describe('Whoami Command', () => {
     const getEmailStub = sinon.stub(WhoamiCommand.prototype, 'email').get(function getterFn() {
       return 'test@contentstack.com';
     });
-    const successMessageStub = sinon.stub(cliux, 'print').returns();
+    const successMessageStub = sinon.stub(cliux, 'print').returns(true);
     await WhoamiCommand.run([]);
     expect(successMessageStub.calledTwice).to.be.true;
     getEmailStub.restore();
@@ -30,7 +30,7 @@ describe('Whoami Command', () => {
     const getEmailStub = sinon.stub(WhoamiCommand.prototype, 'email').get(function getterFn() {
       throw new Error('No logged in');
     });
-    const errorMessageStub = sinon.stub(cliux, 'error').returns();
+    const errorMessageStub = sinon.stub(cliux, 'error').returns(true);
     await WhoamiCommand.run([]);
     expect(errorMessageStub.calledOnce).to.be.true;
     errorMessageStub.restore();

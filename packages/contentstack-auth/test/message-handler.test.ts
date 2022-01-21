@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { messageHandler } from '../src/utils';
+import { messageHandler } from '@contentstack/cli-utilities';
 
 describe('Message Handler', () => {
   it('parse with valid message key, should resolve to message', function () {
