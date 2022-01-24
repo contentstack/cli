@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.12 darwin-x64 node-v13.14.0
+@contentstack/cli/0.1.1-beta.17 linux-x64 node-v12.22.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -240,7 +240,7 @@ USAGE
   $ csdx cm:bulk-publish
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/index.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/index.js)_
 
 ## `csdx cm:bulk-publish:add-fields`
 
@@ -298,7 +298,7 @@ EXAMPLES
   csdx cm:bulk-publish:add-fields -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js)_
 
 ## `csdx cm:bulk-publish:assets`
 
@@ -354,7 +354,7 @@ EXAMPLES
   csdx cm:bulk-publish:assets -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js)_
 
 ## `csdx cm:bulk-publish:clear`
 
@@ -372,7 +372,7 @@ OPTIONS
   -y, --yes   Delete all files without asking for confirmation
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/clear.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/clear.js)_
 
 ## `csdx cm:bulk-publish:configure`
 
@@ -409,7 +409,7 @@ DESCRIPTION
   EXAMPLE : cm:bulk-publish:configure -a [MANAGEMENT TOKEN Alias]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/configure.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/configure.js)_
 
 ## `csdx cm:bulk-publish:cross-publish`
 
@@ -449,6 +449,10 @@ OPTIONS
 
   -y, --yes                          Agree to process the command with the current configuration
 
+  --onlyAssets                       Unpublish only assets
+
+  --onlyEntries                      Unpublish only entries
+
 DESCRIPTION
   The cross-publish command is used for publishing entries and assets from one evironment to other environments
 
@@ -470,7 +474,7 @@ EXAMPLES
   csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
 
 ## `csdx cm:bulk-publish:entries`
 
@@ -533,7 +537,7 @@ EXAMPLES
   csdx cm:bulk-publish:entries -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entries.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entries.js)_
 
 ## `csdx cm:bulk-publish:entry-edits`
 
@@ -595,7 +599,7 @@ EXAMPLES
   csdx cm:bulk-publish:entry-edits -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entry-edits.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entry-edits.js)_
 
 ## `csdx cm:bulk-publish:nonlocalized-field-changes`
 
@@ -654,7 +658,7 @@ EXAMPLES
   csdx cm:bulk-publish:nonlocalized-field-changes -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
 
 ## `csdx cm:bulk-publish:revert`
 
@@ -687,7 +691,7 @@ EXAMPLES
   cm:bulk-publish:revert -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/revert.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/revert.js)_
 
 ## `csdx cm:bulk-publish:unpublish`
 
@@ -776,7 +780,7 @@ EXAMPLES
   (Will unpublish only entries, (from CONTENT TYPE) from the source environment)
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublish.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublish.js)_
 
 ## `csdx cm:bulk-publish:unpublished-entries`
 
@@ -835,7 +839,7 @@ EXAMPLES
   csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
 
 ## `csdx cm:export`
 
@@ -857,6 +861,7 @@ OPTIONS
   -d, --data=data                                      path or location to store the data
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
+  --secured-assets                                     [optional] use when assets are secured
 
 DESCRIPTION
   ...
@@ -866,13 +871,14 @@ EXAMPLES
   csdx cm:export -A
   csdx cm:export -A -s <stack_ApiKey> -d <path/of/export/destination/dir>
   csdx cm:export -A -c <path/to/config/dir>
+  csdx cm:export -A -m <single module name>
+  csdx cm:export -A --secured-assets
   csdx cm:export -a <management_token_alias>
   csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
   csdx cm:export -a <management_token_alias> -c <path/to/config/file>
-  csdx cm:export -A -m <single module name>
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.8/packages/contentstack-export/src/commands/cm/export.js)_
 
 ## `csdx cm:export-to-csv`
 
@@ -925,7 +931,7 @@ EXAMPLES
   csdx cm:import -a <management_token_alias> -c <path/of/config/file>
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.7/packages/contentstack-import/src/commands/cm/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.9/packages/contentstack-import/src/commands/cm/import.js)_
 
 ## `csdx cm:migrate-rte`
 
@@ -970,7 +976,7 @@ EXAMPLES
   csdx cm:migrate-rte -a alias -c global_field_uid -g -h htmlPath -j jsonPath
 ```
 
-_See code: [@contentstack/cli-cm-migrate-rte](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/cm/migrate-rte/index.js)_
+_See code: [@contentstack/cli-cm-migrate-rte](https://github.com/contentstack/cli/blob/v1.0.2/src/commands/cm/migrate-rte/index.js)_
 
 ## `csdx cm:seed`
 
@@ -1017,7 +1023,7 @@ EXAMPLE
   csdx cm:stack-clone
 ```
 
-_See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/v0.1.0-beta.1/src/commands/cm/stack-clone.js)_
+_See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/v0.1.0-beta.2/src/commands/cm/stack-clone.js)_
 
 ## `csdx config:get:region`
 
@@ -1031,7 +1037,7 @@ USAGE
   $ csdx config:get:region
 ```
 
-_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.12/src/commands/config/get/region.js)_
+_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.17/src/commands/config/get/region.js)_
 
 ## `csdx config:set:region [REGION]`
 
@@ -1063,7 +1069,7 @@ EXAMPLES
   --name="India"
 ```
 
-_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.12/src/commands/config/set/region.js)_
+_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.17/src/commands/config/set/region.js)_
 
 ## `csdx help [COMMAND]`
 
