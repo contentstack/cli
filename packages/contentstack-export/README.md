@@ -5,34 +5,31 @@ It is Contentstack’s CLI plugin to export content from the stack. To learn how
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-
-- [Usage](#usage)
-- [Commands](#commands)
+* [@contentstack/cli-cm-export](#contentstackcli-cm-export)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-export/0.1.1-beta.5 linux-x64 node-v14.15.5
+@contentstack/cli-cm-export/0.1.1-beta.8 linux-x64 node-v12.22.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`csdx cm:export`](#csdx-cmexport)
+* [`csdx cm:export`](#csdx-cmexport)
 
 ## `csdx cm:export`
 
@@ -49,6 +46,7 @@ OPTIONS
   -d, --data=data                                      path or location to store the data
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
+  --secured-assets                                     [optional] use when assets are secured
 
 DESCRIPTION
   ...
@@ -58,12 +56,12 @@ EXAMPLES
   csdx cm:export -A
   csdx cm:export -A -s <stack_ApiKey> -d <path/of/export/destination/dir>
   csdx cm:export -A -c <path/to/config/dir>
+  csdx cm:export -A -m <single module name>
+  csdx cm:export -A --secured-assets
   csdx cm:export -a <management_token_alias>
   csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
   csdx cm:export -a <management_token_alias> -c <path/to/config/file>
-  csdx cm:export -A -m <single module name>
 ```
 
-_See code: [src/commands/cm/export.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-export/src/commands/cm/export.js)_
-
+_See code: [src/commands/cm/export.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.8/packages/contentstack-export/src/commands/cm/export.js)_
 <!-- commandsstop -->
