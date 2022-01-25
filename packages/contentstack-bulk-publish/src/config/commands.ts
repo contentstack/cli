@@ -1,13 +1,13 @@
 export default {
-  'ENTRIES': 'entries',
-  'ASSETS': 'assets',
-  'CLEAR': 'clear',
-  'CONFIGURE': 'configure',
+  'ADD_FIELDS': 'add_fields',
   'CROSS_PUBLISH': 'cross_publish',
-  'ENTRY_EDITS': 'entry_edits',
   'NONLOCALIZED_FIELD_CHANGES': 'nonlocalized_field_changes',
-  'REVERT': 'revert',
+  'ASSETS': 'assets',
+  'ENTRY_EDITS': 'entry_edits',
+  'ENTRIES': 'entries',
   'UNPUBLISH': 'unpublish',
   'UNPUBLISHED_ENTRIES': 'unpublished_entries',
-  'ADD_FIELDS': 'add_fields'
+  'CLEAR': 'clear',
+  'CONFIGURE': 'configure',
+  'REVERT': 'revert',
 }
