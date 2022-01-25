@@ -176,7 +176,7 @@ function addFields(contentType, entry) {
   return {entry, changedFlag}
 }
 
-async function updateEntry(config, updatedEntry, contentType, locale) {
+async function updateEntry(stack, updatedEntry, contentType, locale) {
   const entry = {
     entry: updatedEntry,
   }
@@ -204,6 +204,35 @@ async function updateEntry(config, updatedEntry, contentType, locale) {
   }
   return Promise.resolve(false)
 }
+
+// async function updateEntry(config, updatedEntry, contentType, locale) {
+//   const entry = {
+//     entry: updatedEntry,
+//   }
+//   const tokenDetails = command.getToken(config.alias)
+//   const conf = {
+//     uri: `${config.host}/v${defaultConfig.apiVersion}/content_types/${contentType}/entries/${updatedEntry.uid}?locale=${locale || 'en-us'}`,
+//     method: 'PUT',
+//     headers: {
+//       api_key: tokenDetails.apiKey,
+//       authorization: tokenDetails.token,
+//       'Content-Type': 'application/json',
+//     },
+//     body: JSON.stringify({
+//       ...entry,
+//     }),
+//   }
+//   try {
+//     const update = await req(conf)
+//     if (update.notice) {
+//       return Promise.resolve(true)
+//     }
+//     return Promise.resolve(false)
+//   } catch (error) {
+//     console.log(error)
+//   }
+//   return Promise.resolve(false)
+// }
 
 /* eslint-disable no-param-reassign */
 async function getEntries(stack, config, schema, contentType, locale, bulkPublish, environments, skipPublish, skip = 0) {
