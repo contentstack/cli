@@ -363,6 +363,21 @@ export function chooseTokenAlias(): Promise<Token> {
 	})
 }
 /**
+ * Token alias selector, allows the user to select the management token alias they want to use
+ * @returns {Promise} An object containing apiKey and token for the selected alias
+ */
+export function getTokenFromAlias(alias): Promise<Token> {
+	return new Promise(async (resolve, reject) => {
+		const tokens = config.tokens
+		const tokenList = Object.keys(tokens).filter((token: string) => tokens[token].type === 'management')
+		if (tokens.indexOf(alias) > -1) {
+			resolve({ apiKey: tokens[alias].apiKey, token: tokens[alias].token })
+		} else {
+			reject(new Error('Alias not found'))
+		}
+	})
+}
+/**
  * Delivery token alias selector, allows the user to select a delivery token alias they want to use
  * @returns {Promise} An object containing apiKey and token for the selected alias
  */

@@ -77,6 +77,17 @@ export const askTokenAlias = async (): Promise<Token> => {
   })
 }
 
+export const getTokenAlias = async (alias): Promise<Token> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const token: Token = await selectors.getTokenFromAlias(alias)
+      return resolve(token)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
 export const askDeliveryToken = async (): Promise<Token> => {
   return new Promise(async (resolve, reject) => {
     const token: Token = await selectors.chooseDeliveryTokenAlias()
