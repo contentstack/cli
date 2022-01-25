@@ -4,20 +4,21 @@ import config from '../../../config';
 import commandNames from '../../../config/commands';
 import { ContentStackManagementClient } from '../../../interfaces';
 
+import { 
+  addFields,
+  crossPublish,
+  nonLocalizedFieldChanges,
+  publishAssets,
+  publishEdits,
+  publishEntries,
+  publishUnpublishedEnv,
+  revert,
+  unpublish,
+ } from '../../../producer';
+
 // import { 
 //   publishEntries,
-//   publishAssets,
-//   publishEdits,
-//   publishUnpublishedEntries,
-//   addFields,
-//   nonLocalizedFieldChanges,
-//   unpublish,
-//   crossPublish,
 //  } from '../../../producer';
-
-import { 
-  publishEntries,
- } from '../../../producer';
 
 
 export default class Publish extends Command {
@@ -69,14 +70,14 @@ export default class Publish extends Command {
       host: this.region.cma,
     }
     switch(key) {
+      case commandNames.ADD_FIELDS: await addFields(updatedFlags, stack, config); break;
+      case commandNames.CROSS_PUBLISH: await crossPublish(updatedFlags, stack, config); break;
+      case commandNames.NONLOCALIZED_FIELD_CHANGES: await nonLocalizedFieldChanges(updatedFlags, stack, config); break;
+      case commandNames.ASSETS: await publishAssets(updatedFlags, stack, config); break;
+      case commandNames.ENTRY_EDITS: await publishEdits(updatedFlags, stack, config); break;
       case commandNames.ENTRIES: await publishEntries(updatedFlags, stack, config); break;
-      // case commandNames.ASSETS: await publishAssets(updatedFlags, stack, config); break;
-      // case commandNames.ADD_FIELDS: await addFields(updatedFlags, stack, config); break;
-      // case commandNames.ENTRY_EDITS: await publishEdits(updatedFlags, stack, config); break;
-      // case commandNames.NONLOCALIZED_FIELD_CHANGES: await nonLocalizedFieldChanges(updatedFlags, stack, config); break;
-      // case commandNames.UNPUBLISH: await unpublish(updatedFlags, stack, config); break;
-      // case commandNames.UNPUBLISHED_ENTRIES: await publishUnpublishedEntries(updatedFlags, stack, config); break;
-      // case commandNames.CROSS_PUBLISH: await crossPublish(updatedFlags, stack, config); break;
+      case commandNames.UNPUBLISH: await unpublish(updatedFlags, stack, config); break;
+      case commandNames.UNPUBLISHED_ENTRIES: await publishUnpublishedEntries(updatedFlags, stack, config); break;
     }
   }
 }
