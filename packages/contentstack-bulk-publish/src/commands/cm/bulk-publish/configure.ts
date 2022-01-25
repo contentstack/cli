@@ -6,7 +6,23 @@ const defaults = require('../../../config/defaults.json')
 const store = require('../../../utils/store.ts')
 let config = require('../../../config')
 
-class ConfigureCommand extends Command {
+export default class ConfigureCommand extends Command {
+
+  static description = `Generate configuration template
+  The configure command is used for generating a configuration file for bulk-publish script.
+
+  Here is a detailed description for all the available flags
+
+  -----------------------------------------------------------------------------------------------------------
+  --alias or -a : Management token Alias for the stack in use.
+
+  EXAMPLE : cm:bulk-publish:configure --alias [MANAGEMENT TOKEN Alias]
+  EXAMPLE : cm:bulk-publish:configure -a [MANAGEMENT TOKEN Alias]
+  `
+
+  static flags = {
+    alias: flags.string({ char: 'a', description: 'Management token alias for the stack' }),
+  }
 
   async run() {
     const {flags} = this.parse(ConfigureCommand)
@@ -26,21 +42,3 @@ class ConfigureCommand extends Command {
     fs.writeFileSync(path.join(process.cwd(), 'config.js'), `module.exports = ${JSON.stringify(config, null, 2)}`)
   }
 }
-
-ConfigureCommand.description = `Generate configuration template
-The configure command is used for generating a configuration file for bulk-publish script.
-
-Here is a detailed description for all the available flags
-
------------------------------------------------------------------------------------------------------------
---alias or -a : Management token Alias for the stack in use.
-
-EXAMPLE : cm:bulk-publish:configure --alias [MANAGEMENT TOKEN Alias]
-EXAMPLE : cm:bulk-publish:configure -a [MANAGEMENT TOKEN Alias]
-`
-
-ConfigureCommand.flags = {
-  alias: flags.string({char: 'a', description: 'Management token alias for the stack'}),
-}
-
-module.exports = ConfigureCommand

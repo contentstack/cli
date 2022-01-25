@@ -4,8 +4,15 @@ const fs = require('fs')
 const {cli} = require('cli-ux')
 const {Command, flags} = require('@oclif/command')
 
-class ClearCommand extends Command {
-  async run() {
+export default class ClearCommand extends Command {
+	
+	static description = `Clear the log folder`
+	static flags = {
+		list: flags.boolean({ char: 'l', description: 'List number of log files' }),
+		yes: flags.boolean({ char: 'y', description: 'Delete all files without asking for confirmation' })
+	}
+  
+	async run() {
     const {flags} = this.parse(ClearCommand)
   	let dirPath = backup.getLogsDirPath()
     if (flags.list) {
@@ -52,13 +59,3 @@ class ClearCommand extends Command {
 		}
 	}
 }
-
-ClearCommand.description = `Clear the log folder
-`
-
-ClearCommand.flags = {
-  list: flags.boolean({char: 'l', description: 'List number of log files'}),
-  yes: flags.boolean({char: 'y', description: 'Delete all files without asking for confirmation'})
-}
-
-module.exports = ClearCommand

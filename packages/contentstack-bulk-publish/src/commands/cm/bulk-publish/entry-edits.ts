@@ -9,7 +9,43 @@ const { prettyPrint, formatError } = require('../../../utils')
 const { getStack } = require('../../../utils/client.js')
 let config
 
-class EntryEditsCommand extends Command {
+export default class EntryEditsCommand extends Command {
+  static description = `Publish edited entries from a specified Content Type to given locales and environments
+  The entry-edits command is used for publishing entries from the specified content types, to the
+  specified environments and locales
+
+  Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command successfully
+  But, if retryFailed flag is set, then only a logfile is required
+  `
+
+  static flags = {
+    alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
+    retryFailed: flags.string({ char: 'r', description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)' }),
+    bulkPublish: flags.string({ char: 'b', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true' }),
+    sourceEnv: flags.string({ char: 's', description: 'Environment from which edited entries will be published' }),
+    contentTypes: flags.string({ char: 't', description: 'The Content-Types which will be checked for edited entries', multiple: true }),
+    locales: flags.string({ char: 'l', description: 'Locales to which edited entries need to be published', multiple: true }),
+    environments: flags.string({ char: 'e', description: 'Destination environments', multiple: true }),
+    config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
+    yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
+    'skip_workflow_stage_check': flags.boolean({ char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK') }),
+    query: flags.string({ char: 'q', description: messageHandler.parse('CLI_BP_QUERIES') }),
+  }
+
+  static examples = [
+    'General Usage',
+    'csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
+    '',
+    'Using --config or -c flag',
+    'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
+    'csdx cm:bulk-publish:entry-edits --config [PATH TO CONFIG FILE]',
+    'csdx cm:bulk-publish:entry-edits -c [PATH TO CONFIG FILE]',
+    '',
+    'Using --retryFailed or -r flag',
+    'csdx cm:bulk-publish:entry-edits --retryFailed [LOG FILE NAME]',
+    'csdx cm:bulk-publish:entry-edits -r [LOG FILE NAME]'
+  ]
+  
   async run() {
     const {flags} = this.parse(EntryEditsCommand)
     let updatedFlags
@@ -88,40 +124,3 @@ class EntryEditsCommand extends Command {
   }
 }
 
-EntryEditsCommand.description = `Publish edited entries from a specified Content Type to given locales and environments
-The entry-edits command is used for publishing entries from the specified content types, to the
-specified environments and locales
-
-Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command successfully
-But, if retryFailed flag is set, then only a logfile is required
-`
-
-EntryEditsCommand.flags = {
-  alias: flags.string({char: 'a', description: 'Alias for the management token to be used'}),
-  retryFailed: flags.string({char: 'r', description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)'}),
-  bulkPublish: flags.string({char: 'b', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true'}),
-  sourceEnv: flags.string({char: 's', description: 'Environment from which edited entries will be published'}),
-  contentTypes: flags.string({char: 't', description: 'The Content-Types which will be checked for edited entries', multiple: true}),
-  locales: flags.string({char: 'l', description: 'Locales to which edited entries need to be published', multiple: true}),
-  environments: flags.string({char: 'e', description: 'Destination environments', multiple: true}),
-  config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
-  'skip_workflow_stage_check': flags.boolean({char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK')}),
-  query: flags.string({char: 'q', description: messageHandler.parse('CLI_BP_QUERIES')}),
-}
-
-EntryEditsCommand.examples = [
-  'General Usage',
-  'csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
-  '',
-  'Using --config or -c flag',
-  'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
-  'csdx cm:bulk-publish:entry-edits --config [PATH TO CONFIG FILE]',
-  'csdx cm:bulk-publish:entry-edits -c [PATH TO CONFIG FILE]',
-  '',
-  'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:entry-edits --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:entry-edits -r [LOG FILE NAME]'
-]
-
-module.exports = EntryEditsCommand

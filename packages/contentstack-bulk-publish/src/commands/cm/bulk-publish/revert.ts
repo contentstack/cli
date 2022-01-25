@@ -9,7 +9,26 @@ const {cli} = require('cli-ux')
 
 let config
 
-class RevertCommand extends Command {
+export default class RevertCommand extends Command {
+  static description = `Revert publish operations by using a log file
+  The revert command is used for reverting all publish operations performed using bulk-publish script.
+  A log file name is required to execute revert command
+  `
+
+  static flags = {
+    retryFailed: flags.string({ char: 'r', description: 'retry publishing failed entries from the logfile' }),
+    logFile: flags.string({ char: 'l', description: 'logfile to be used to revert' }),
+  }
+
+  static examples = [
+    'Using --logFile',
+    'cm:bulk-publish:revert --logFile [LOG FILE NAME]',
+    'cm:bulk-publish:revert -l [LOG FILE NAME]',
+    '',
+    'Using --retryFailed',
+    'cm:bulk-publish:revert --retryFailed [LOG FILE NAME]',
+    'cm:bulk-publish:revert -r [LOG FILE NAME]',
+  ]
   async run() {
     const {flags} = this.parse(RevertCommand)
     let updatedFlags
@@ -59,24 +78,3 @@ class RevertCommand extends Command {
   }
 }
 
-RevertCommand.description = `Revert publish operations by using a log file
-The revert command is used for reverting all publish operations performed using bulk-publish script.
-A log file name is required to execute revert command
-`
-
-RevertCommand.flags = {
-  retryFailed: flags.string({char: 'r', description: 'retry publishing failed entries from the logfile'}),
-  logFile: flags.string({char: 'l', description: 'logfile to be used to revert'}),
-}
-
-RevertCommand.examples = [
-  'Using --logFile',
-  'cm:bulk-publish:revert --logFile [LOG FILE NAME]',
-  'cm:bulk-publish:revert -l [LOG FILE NAME]',
-  '',
-  'Using --retryFailed',
-  'cm:bulk-publish:revert --retryFailed [LOG FILE NAME]',
-  'cm:bulk-publish:revert -r [LOG FILE NAME]',
-]
-
-module.exports = RevertCommand

@@ -9,7 +9,42 @@ const {prettyPrint, formatError} = require('../../../utils')
 const {getStack} = require('../../../utils/client.js')
 let config
 
-class AssetsCommand extends Command {
+export default class AssetsCommand extends Command {
+  
+  static description = `Publish assets to specified environments
+  The assets command is used for publishing assets from the specified stack, to the specified environments
+
+  Environment(s) and Locale(s) are required for executing the command successfully
+  But, if retryFailed flag is set, then only a logfile is required
+  `
+
+  static flags = {
+    alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
+    retryFailed: flags.string({ char: 'r', description: 'Retry publishing failed assets from the logfile (optional, will override all other flags)' }),
+    environments: flags.string({ char: 'e', description: 'Environments to which assets need to be published', multiple: true }),
+    folderUid: flags.string({ char: 'u', description: '[default: cs_root] Folder-uid from which the assets need to be published' }),
+    bulkPublish: flags.string({ char: 'b', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true' }),
+    config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
+    yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
+    locales: flags.string({ char: 'l', description: 'Locales to which assets need to be published', multiple: true }),
+    'skip_workflow_stage_check': flags.boolean({ char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK') }),
+    query: flags.string({ char: 'q', description: messageHandler.parse('CLI_BP_QUERIES') }),
+  }
+
+  static examples = [
+    'General Usage',
+    'csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS]',
+    '',
+    'Using --config or -c flag',
+    'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
+    'csdx cm:bulk-publish:assets --config [PATH TO CONFIG FILE]',
+    'csdx cm:bulk-publish:assets -c [PATH TO CONFIG FILE]',
+    '',
+    'Using --retryFailed or -r flag',
+    'csdx cm:bulk-publish:assets --retryFailed [LOG FILE NAME]',
+    'csdx cm:bulk-publish:assets -r [LOG FILE NAME]'
+  ]
+  
   async run() {
     const {flags} = this.parse(AssetsCommand)
     let updatedFlags
@@ -83,39 +118,3 @@ class AssetsCommand extends Command {
     return confirmation
   }
 }
-
-AssetsCommand.description = `Publish assets to specified environments
-The assets command is used for publishing assets from the specified stack, to the specified environments
-
-Environment(s) and Locale(s) are required for executing the command successfully
-But, if retryFailed flag is set, then only a logfile is required
-`
-
-AssetsCommand.flags = {
-  alias: flags.string({char: 'a', description: 'Alias for the management token to be used'}),
-  retryFailed: flags.string({char: 'r', description: 'Retry publishing failed assets from the logfile (optional, will override all other flags)'}),
-  environments: flags.string({char: 'e', description: 'Environments to which assets need to be published', multiple: true}),
-  folderUid: flags.string({char: 'u', description: '[default: cs_root] Folder-uid from which the assets need to be published'}),
-  bulkPublish: flags.string({char: 'b', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true'}),
-  config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
-  locales: flags.string({char: 'l', description: 'Locales to which assets need to be published', multiple: true }),
-  'skip_workflow_stage_check': flags.boolean({char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK')}),
-  query: flags.string({char: 'q', description: messageHandler.parse('CLI_BP_QUERIES')}),
-}
-
-AssetsCommand.examples = [
-  'General Usage',
-  'csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS]',
-  '',
-  'Using --config or -c flag',
-  'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
-  'csdx cm:bulk-publish:assets --config [PATH TO CONFIG FILE]',
-  'csdx cm:bulk-publish:assets -c [PATH TO CONFIG FILE]',
-  '',
-  'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:assets --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:assets -r [LOG FILE NAME]'
-]
-
-module.exports = AssetsCommand

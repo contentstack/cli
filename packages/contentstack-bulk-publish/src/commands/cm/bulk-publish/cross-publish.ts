@@ -10,7 +10,45 @@ const { prettyPrint, formatError } = require('../../../utils')
 const { getStack } = require('../../../utils/client.js')
 let config
 
-class CrossPublishCommand extends Command {
+export default class CrossPublishCommand extends Command {
+  
+  static description = `Publish entries and assets from one environment to other environments
+  The cross-publish command is used for publishing entries and assets from one evironment to other environments
+
+  Content Type, Environment, Destination Environment(s) and Locale are required for executing the command successfully
+  But, if retryFailed flag is set, then only a logfile is required
+  `
+
+  static flags = {
+    alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
+    retryFailed: flags.string({ char: 'r', description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)' }),
+    bulkPublish: flags.string({ char: 'b', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true' }),
+    contentType: flags.string({ char: 't', description: 'Content-Type filter' }),
+    locale: flags.string({ char: 'l', description: 'Locale filter' }),
+    environment: flags.string({ char: 'e', description: 'Source Environment' }),
+    deliveryToken: flags.string({ char: 'x', description: 'Delivery Token for source environment' }),
+    destEnv: flags.string({ char: 'd', description: 'Destination Environments', multiple: true }),
+    config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
+    yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
+    'skip_workflow_stage_check': flags.boolean({ char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK') }),
+    query: flags.string({ char: 'q', description: messageHandler.parse('CLI_BP_QUERIES') }),
+
+  }
+
+  static examples = [
+    'General Usage',
+    'csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]',
+    '',
+    'Using --config or -c flag',
+    'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
+    'csdx cm:bulk-publish:cross-publish --config [PATH TO CONFIG FILE]',
+    'csdx cm:bulk-publish:cross-publish -c [PATH TO CONFIG FILE]',
+    '',
+    'Using --retryFailed or -r flag',
+    'csdx cm:bulk-publish:cross-publish --retryFailed [LOG FILE NAME]',
+    'csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]'
+  ]
+
   async run() {
     const {flags} = this.parse(CrossPublishCommand)
     let updatedFlags
@@ -112,41 +150,3 @@ class CrossPublishCommand extends Command {
   }
 }
 
-CrossPublishCommand.description = `Publish entries and assets from one environment to other environments
-The cross-publish command is used for publishing entries and assets from one evironment to other environments
-
-Content Type, Environment, Destination Environment(s) and Locale are required for executing the command successfully
-But, if retryFailed flag is set, then only a logfile is required
-`
-
-CrossPublishCommand.flags = {
-  alias: flags.string({char: 'a', description: 'Alias for the management token to be used'}),
-  retryFailed: flags.string({char: 'r', description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)'}),
-  bulkPublish: flags.string({char: 'b', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true'}),
-  contentType: flags.string({char: 't', description: 'Content-Type filter'}),
-  locale: flags.string({char: 'l', description: 'Locale filter'}),
-  environment: flags.string({char: 'e', description: 'Source Environment'}),
-  deliveryToken: flags.string({char: 'x', description: 'Delivery Token for source environment'}),
-  destEnv: flags.string({char: 'd', description: 'Destination Environments', multiple: true}),
-  config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
-  'skip_workflow_stage_check': flags.boolean({char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK')}),
-  query: flags.string({char: 'q', description: messageHandler.parse('CLI_BP_QUERIES')}),
-
-}
-
-CrossPublishCommand.examples = [
-  'General Usage',
-  'csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]',
-  '',
-  'Using --config or -c flag',
-  'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
-  'csdx cm:bulk-publish:cross-publish --config [PATH TO CONFIG FILE]',
-  'csdx cm:bulk-publish:cross-publish -c [PATH TO CONFIG FILE]',
-  '',
-  'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:cross-publish --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]'
-]
-
-module.exports = CrossPublishCommand

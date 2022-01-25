@@ -12,6 +12,59 @@ const { getStack } = require('../../../utils/client.js')
 let config
 
 class UnpublishCommand extends Command {
+static description = `Unpublish entries of given Content Types from given environment
+The unpublish command is used for unpublishing entries from given environment
+
+Environment (Source Environment) and Locale are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+A Content Type can be specified for publishing entries, but if no content-type(s) is/are specified and --onlyAssets is not used,
+then all entries from all content types will be unpublished from the source environment
+
+--onlyAssets can be used to unpublish only assets and --onlyEntries can be used to unpublish only entries.
+(--onlyAssets and --onlyEntries cannot be used together at the same time)
+`
+
+static flags = {
+    alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
+    retryFailed: flags.string({ char: 'r', description: 'Retry publishing failed entries from the logfile' }),
+    bulkUnpublish: flags.string({ char: 'b', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true' }),
+    contentType: flags.string({ char: 't', description: 'Content Type filter' }),
+    locale: flags.string({ char: 'l', description: 'Locale filter' }),
+    environment: flags.string({ char: 'e', description: 'Source Environment' }),
+    deliveryToken: flags.string({ char: 'x', description: 'Delivery Token for source environment' }),
+    config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
+    yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
+    onlyAssets: flags.boolean({ description: 'Unpublish only assets', default: false }),
+    onlyEntries: flags.boolean({ description: 'Unpublish only entries', default: false }),
+    'skip_workflow_stage_check': flags.boolean({ char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK') }),
+    query: flags.string({ char: 'q', description: messageHandler.parse('CLI_BP_QUERIES') }),
+  }
+
+  static examples = [
+    'General Usage',
+    'csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]',
+    '',
+    'Using --config or -c flag',
+    'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
+    'csdx cm:bulk-publish:unpublish --config [PATH TO CONFIG FILE]',
+    'csdx cm:bulk-publish:unpublish -c [PATH TO CONFIG FILE]',
+    '',
+    'Using --retryFailed or -r flag',
+    'csdx cm:bulk-publish:unpublish --retryFailed [LOG FILE NAME]',
+    'csdx cm:bulk-publish:unpublish -r [LOG FILE NAME]',
+    '',
+    'No content type',
+    'csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all content types and assets from the source environment)',
+    '',
+    'Using --onlyAssets',
+    'csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyAssets (Will unpublish only assets from the source environment)',
+    '',
+    'Using --onlyEntries',
+    'csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only entries, all entries, from the source environment)',
+    'csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only entries, (from CONTENT TYPE) from the source environment)',
+  ]
+
   async run() {
     const {flags} = this.parse(UnpublishCommand)
     let updatedFlags
@@ -107,58 +160,5 @@ class UnpublishCommand extends Command {
     return confirmation 
   }
 }
-
-UnpublishCommand.description = `Unpublish entries of given Content Types from given environment
-The unpublish command is used for unpublishing entries from given environment
-
-Environment (Source Environment) and Locale are required for executing the command successfully
-But, if retryFailed flag is set, then only a logfile is required
-
-A Content Type can be specified for publishing entries, but if no content-type(s) is/are specified and --onlyAssets is not used,
-then all entries from all content types will be unpublished from the source environment
-
---onlyAssets can be used to unpublish only assets and --onlyEntries can be used to unpublish only entries.
-(--onlyAssets and --onlyEntries cannot be used together at the same time)
-`
-
-UnpublishCommand.flags = {
-  alias: flags.string({char: 'a', description: 'Alias for the management token to be used'}),
-  retryFailed: flags.string({char: 'r', description: 'Retry publishing failed entries from the logfile'}),
-  bulkUnpublish: flags.string({char: 'b', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true'}),
-  contentType: flags.string({char: 't', description: 'Content Type filter'}),
-  locale: flags.string({char: 'l', description: 'Locale filter'}),
-  environment: flags.string({char: 'e', description: 'Source Environment'}),
-  deliveryToken: flags.string({char: 'x', description: 'Delivery Token for source environment'}),
-  config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
-  onlyAssets: flags.boolean({description: 'Unpublish only assets', default: false}),
-  onlyEntries: flags.boolean({description: 'Unpublish only entries', default: false}),
-  'skip_workflow_stage_check': flags.boolean({char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK')}),
-  query: flags.string({char: 'q', description: messageHandler.parse('CLI_BP_QUERIES')}),
-}
-
-UnpublishCommand.examples = [
-  'General Usage',
-  'csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]',
-  '',
-  'Using --config or -c flag',
-  'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
-  'csdx cm:bulk-publish:unpublish --config [PATH TO CONFIG FILE]',
-  'csdx cm:bulk-publish:unpublish -c [PATH TO CONFIG FILE]',
-  '',
-  'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:unpublish --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:unpublish -r [LOG FILE NAME]',
-  '',
-  'No content type',
-  'csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all content types and assets from the source environment)',
-  '',
-  'Using --onlyAssets',
-  'csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyAssets (Will unpublish only assets from the source environment)',
-  '',
-  'Using --onlyEntries',
-  'csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only entries, all entries, from the source environment)',
-  'csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only entries, (from CONTENT TYPE) from the source environment)',
-]
 
 module.exports = UnpublishCommand

@@ -9,7 +9,41 @@ const { prettyPrint, formatError } = require('../../../utils')
 const { getStack } = require('../../../utils/client.js')
 let config
 
-class NonlocalizedFieldChangesCommand extends Command {
+export default class NonlocalizedFieldChangesCommand extends Command {
+  static description = `Publish non-localized-fields for given Content Types, from a particular source environment to specified environments
+  The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types to
+  the specified Environments
+
+  Content Types, Environments and Source Environment are required for executing this command successfully.
+  But, if retryFailed flag is set, then only a logfile is required
+  `
+
+  static flags = {
+    alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
+    retryFailed: flags.string({ char: 'r', description: 'Retry publishing failed entries from the logfile' }),
+    bulkPublish: flags.string({ char: 'b', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true' }),
+    sourceEnv: flags.string({ char: 's', description: 'Source Environment' }),
+    contentTypes: flags.string({ char: 't', description: 'The Content-Types from which entries need to be published', multiple: true }),
+    environments: flags.string({ char: 'e', description: 'Destination environments', multiple: true }),
+    config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
+    yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
+    'skip_workflow_stage_check': flags.boolean({ char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK') }),
+    query: flags.string({ char: 'q', description: messageHandler.parse('CLI_BP_QUERIES') }),
+  }
+
+  static examples = [
+    'General Usage',
+    'csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
+    '',
+    'Using --config or -c flag',
+    'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
+    'csdx cm:bulk-publish:nonlocalized-field-changes --config [PATH TO CONFIG FILE]',
+    'csdx cm:bulk-publish:nonlocalized-field-changes -c [PATH TO CONFIG FILE]',
+    '',
+    'Using --retryFailed or -r flag',
+    'csdx cm:bulk-publish:nonlocalized-field-changes --retryFailed [LOG FILE NAME]',
+    'csdx cm:bulk-publish:nonlocalized-field-changes -r [LOG FILE NAME]'
+  ]
   async run() {
     const {flags} = this.parse(NonlocalizedFieldChangesCommand)
     let updatedFlags
@@ -81,40 +115,3 @@ class NonlocalizedFieldChangesCommand extends Command {
     return confirmation
   }
 }
-
-NonlocalizedFieldChangesCommand.description = `Publish non-localized-fields for given Content Types, from a particular source environment to specified environments
-The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types to
-the specified Environments
-
-Content Types, Environments and Source Environment are required for executing this command successfully.
-But, if retryFailed flag is set, then only a logfile is required
-`
-
-NonlocalizedFieldChangesCommand.flags = {
-  alias: flags.string({char: 'a', description: 'Alias for the management token to be used'}),
-  retryFailed: flags.string({char: 'r', description: 'Retry publishing failed entries from the logfile'}),
-  bulkPublish: flags.string({char: 'b', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true'}),
-  sourceEnv: flags.string({char: 's', description: 'Source Environment'}),
-  contentTypes: flags.string({char: 't', description: 'The Content-Types from which entries need to be published', multiple: true}),
-  environments: flags.string({char: 'e', description: 'Destination environments', multiple: true}),
-  config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
-  'skip_workflow_stage_check': flags.boolean({char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK')}),
-  query: flags.string({char: 'q', description: messageHandler.parse('CLI_BP_QUERIES')}),
-}
-
-NonlocalizedFieldChangesCommand.examples = [
-  'General Usage',
-  'csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
-  '',
-  'Using --config or -c flag',
-  'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
-  'csdx cm:bulk-publish:nonlocalized-field-changes --config [PATH TO CONFIG FILE]',
-  'csdx cm:bulk-publish:nonlocalized-field-changes -c [PATH TO CONFIG FILE]',
-  '',
-  'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:nonlocalized-field-changes --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:nonlocalized-field-changes -r [LOG FILE NAME]'
-]
-
-module.exports = NonlocalizedFieldChangesCommand
