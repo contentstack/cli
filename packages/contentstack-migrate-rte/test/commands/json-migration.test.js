@@ -3,9 +3,9 @@ const sinon = require('sinon')
 const nock = require('nock')
 const {cli} = require('cli-ux')
 const defaultConfig = require('../dummy/defaultConfig.json')
-const {getToken, getContentType, getEntries, getExpectedOutput, getGlobalField} = require('../utils')
+const {getToken, getContentType, getEntries, getExpectedOutput, getGlobalField, getEntriesOnlyUID, getEntry} = require('../utils')
 const omitDeep = require('omit-deep-lodash')
-const {isEqual} = require('lodash')
+const {isEqual, cloneDeep} = require('lodash')
 const {command} = require('../../src/lib/util')
 
 describe('Migration Config validation', () => {
@@ -91,6 +91,25 @@ describe('Content Type with Single RTE Field of Single Type', () => {
       var match = uri.match(/\/v3\/content_types\/((\w)*)/)
       return getContentType(match[1])
     })
+    nock(`${command.cmaAPIUrl}`, {
+      reqheaders: {
+        api_key: token.apiKey,
+        authorization: token.token,
+      },
+    })
+    .persist()
+    .get(/\/v3\/content_types\/((\w)*)\/entries/)
+    .query({
+      include_count: true,
+      skip: 0,
+      limit: 100,
+      "only[BASE][]":"uid"
+    })
+    .reply(200, uri => {
+      var match = uri.match(/\/v3\/content_types\/((\w)*)\/entries/)
+      const entries = getEntriesOnlyUID(match[1])
+      return entries
+    })
 
     nock(`${command.cmaAPIUrl}`, {
       reqheaders: {
@@ -109,6 +128,47 @@ describe('Content Type with Single RTE Field of Single Type', () => {
       var match = uri.match(/\/v3\/content_types\/((\w)*)\/entries/)
       return getEntries(match[1])
     })
+    // mock get locale
+    nock(`${command.cmaAPIUrl}`, {
+      reqheaders: {
+        api_key: token.apiKey,
+        authorization: token.token,
+      },
+    })
+    .persist()
+    .get(/\/v3\/content_types\/((\w)*)\/entries\/((\w)*)\/locale/)
+    .query({
+      deleted: false
+    })
+    .reply(200, uri => {
+      let match = uri.match(/\/v3\/content_types\/((\w)*)\/entries\/((\w)*)/)
+      return {
+        "locales": [
+            {
+                "code": "en-in"
+            },
+            {
+                "code": "en-us"
+            }
+        ]
+    }
+    })
+    
+    // mock single entry fetch
+    nock(`${command.cmaAPIUrl}`, {
+      reqheaders: {
+        api_key: token.apiKey,
+        authorization: token.token,
+      },
+    })
+    .persist()
+    .get(/\/v3\/content_types\/((\w)*)\/entries\/((\w)*)/)
+    .query(true)
+    .reply(200, uri => {
+      let match = uri.match(/\/v3\/content_types\/((\w)*)\/entries\/((\w)*)\?locale=((\w|-)*)/)
+      return getEntry(match[1], match[3], match[5])
+    })
+    
 
     nock(`${command.cmaAPIUrl}`, {
       reqheaders: {
@@ -119,9 +179,10 @@ describe('Content Type with Single RTE Field of Single Type', () => {
     .persist()
     .put(/\/v3\/content_types\/((\w)*)\/entries/)
     .reply((uri, body) => {
-      let match = uri.match(/\/v3\/content_types\/((\w)*)\/entries\/((\w)*)/)
-      let responseModified = omitDeep(body, ['uid'])
-      let expectedResponse = omitDeep(getExpectedOutput(match[1], match[3]), ['uid'])
+      let match = uri.match(/\/v3\/content_types\/((\w)*)\/entries\/((\w)*)\?locale=((\w|-)*)/)
+      let responseModified = cloneDeep(omitDeep(body, ['uid']))
+      let expectedResponse = omitDeep(getExpectedOutput(match[1], match[3],match[5]), ['uid'])
+      expectedResponse = cloneDeep(expectedResponse)
       if (isEqual(responseModified, expectedResponse)) {
         return [
           200, {
@@ -153,7 +214,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stdout()
   .command(['cm:migrate-rte', '-p', './test/dummy/config/config.json', '-y'])
   .it('execute using config file', ctx => {
-    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 2 Entrie(s)')
+    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 3 Entrie(s)')
   })
 
   test
@@ -162,7 +223,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stdout()
   .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50'])
   .it('execute using flags', ctx => {
-    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 2 Entrie(s)')
+    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 3 Entrie(s)')
   })
 
   test
