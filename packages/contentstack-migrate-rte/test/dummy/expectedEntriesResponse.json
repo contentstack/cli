@@ -32,6 +32,39 @@
                 "_in_progress": false
             }
         },
+        "blt6168b6493a122849_en-in": {
+            "entry": {
+              "content_type_uid": "contenttypewithsinglerte",
+              "title": "Entry 2",
+              "rich_text_editor": "<p>value 2 en-in</p>",
+              "tags": [
+              ],
+              "locale": "en-in",
+              "ACL": {
+              },
+              "_version": 1,
+              "_in_progress": false,
+              "supercharged_rte": {
+                "type": "doc",
+                "attrs": {
+                  "dirty": true
+                },
+                "children": [
+                  {
+                    "type": "p",
+                    "attrs": {
+                      "dirty": true
+                    },
+                    "children": [
+                      {
+                        "text": "value 2 en-in"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+        },
         "blt94ab8cf0a7956243": {
             "entry": {
                 "content_type_uid": "contenttypewithsinglerte",
