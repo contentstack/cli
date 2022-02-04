@@ -4,7 +4,7 @@ var _ = require('lodash');
 
 /* eslint-disable no-empty */
 var removeReferenceFields = module.exports = function (schema, flag) {
-  for (var i in schema) {
+  for (let i = 0; i < schema.length; i++) {
     if (schema[i].data_type === 'group') {
       removeReferenceFields(schema[i].schema, flag);
     } else if (schema[i].data_type === 'blocks') {
@@ -13,10 +13,8 @@ var removeReferenceFields = module.exports = function (schema, flag) {
       }
     } else if(schema[i].data_type === 'reference') {
       flag.supressed = true;
-      _.remove(schema, function(c) {
-        return c.data_type === 'reference';
-      });
-      
+      schema.splice(i, 1);
+      --i;
       if(schema.length < 1) {
         schema.push({
           'data_type': 'text',
