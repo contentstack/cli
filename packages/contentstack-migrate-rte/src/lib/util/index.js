@@ -11,6 +11,8 @@ const collapseWithSpace = require('collapse-whitespace')
 const {v4} = require('uuid')
 const {htmlToJson} = require('@contentstack/json-rte-serializer')
 const path = require('path')
+const fetch = require('node-fetch');
+
 const packageValue = require('../../../package.json')
 const isBlank = variable => {
   return isNil(variable) || isEmpty(variable)
@@ -121,19 +123,40 @@ async function confirmConfig(config, skipConfirmation) {
   return confirmation
 }
 const delay = ms => new Promise(res => setTimeout(res, ms))
+async function getAllLocalesOfEntry(entry){
+  let allLocales = []
+  try {
+    let locales = await fetch(`https://${command.cmaHost}/v3/content_types/${entry.content_type_uid}/entries/${entry.uid}/locales?deleted=false`,{
+    method: 'GET',
+    headers: entry.stackHeaders
+    })
+    let localesData = await locales.json()
+    allLocales = localesData.locales || []
+    return allLocales
+
+  } catch (error) {
+    throw new Error("Error while fetching locales of entry. Please try again.")
+  }
+}
 async function updateEntriesInBatch(contentType, config, skip = 0) {
   let entryQuery = {
     include_count: true,
     skip: skip,
     limit: 100,
+    "only[BASE][]": "uid"
   }
   await contentType.entry().query(entryQuery).find().then(async entriesResponse => {
     skip += entriesResponse.items.length
     let entries = entriesResponse.items
 
     for (const entry of entries) {
-      // console.log("entry", entry)
-      await updateSingleEntry(entry, contentType, config)
+      let allLocales = await getAllLocalesOfEntry(entry)
+      for (const locale of allLocales) {
+        let localizedEntry = await contentType.entry(entry.uid).fetch({locale:locale.code})
+        if(localizedEntry.locale === locale.code){
+          await updateSingleEntry(localizedEntry, contentType, config)
+        }
+      }
       await delay(config.delay || 1000)
     }
     if (skip === entriesResponse.count) {
@@ -187,7 +210,7 @@ async function updateSingleEntry(entry, contentType, config) {
       let parentFileFieldPath = fileFieldPath.slice(0, fileFieldPath.length - 1).join('.')
       unsetResolvedUploadData(parentFileFieldPath, entry, schema, {fileUid})
     }
-    await entry.update()
+    await entry.update({locale:entry.locale})
     config.entriesCount += 1
   } catch (error) {
     config.errorEntriesUid.push(entry.uid)
