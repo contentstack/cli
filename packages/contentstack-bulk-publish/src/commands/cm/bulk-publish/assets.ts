@@ -1,16 +1,21 @@
-import {messageHandler} from '../../../utils'
-import * as store from '../../../utils/store'
+import {Command, flags} from '@contentstack/cli-command'
+import { OclifConfig, Region } from '../../../interfaces'
+import { publishAssets } from '../../../producer'
+import {cli} from 'cli-ux'
+import { prettyPrint, formatError, messageHandler, interactive, store } from '../../../utils'
 
-const {Command, flags} = require('@oclif/command')
-const {start} = require('../../../producer/publish-assets')
-const {cli} = require('cli-ux')
 const configKey = 'publish_assets'
-const {prettyPrint, formatError} = require('../../../utils')  
-const {getStack} = require('../../../utils/client.js')
 let config
 
 export default class AssetsCommand extends Command {
-  
+  private readonly parse: Function;
+  private readonly exit: Function;
+  private readonly error: Function;
+  private readonly config: OclifConfig;
+  private readonly region: Region;
+  private readonly cmaHost: string;
+  managementAPIClient: any;
+
   static description = `Publish assets to specified environments
   The assets command is used for publishing assets from the specified stack, to the specified environments
 
@@ -23,12 +28,13 @@ export default class AssetsCommand extends Command {
     retryFailed: flags.string({ char: 'r', description: 'Retry publishing failed assets from the logfile (optional, will override all other flags)' }),
     environments: flags.string({ char: 'e', description: 'Environments to which assets need to be published', multiple: true }),
     folderUid: flags.string({ char: 'u', description: '[default: cs_root] Folder-uid from which the assets need to be published' }),
-    bulkPublish: flags.string({ char: 'b', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true' }),
+    bulkPublish: flags.string({ char: 'B', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true' }),
     config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
     yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
     locales: flags.string({ char: 'l', description: 'Locales to which assets need to be published', multiple: true }),
     'skip_workflow_stage_check': flags.boolean({ char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK') }),
     query: flags.string({ char: 'q', description: messageHandler.parse('CLI_BP_QUERIES') }),
+    branch: flags.string({ char: 'b', description: '[optional] branch name', default: 'main'})
   }
 
   static examples = [
@@ -45,7 +51,7 @@ export default class AssetsCommand extends Command {
     'csdx cm:bulk-publish:assets -r [LOG FILE NAME]'
   ]
   
-  async run() {
+  async run(): Promise<void> {
     const {flags} = this.parse(AssetsCommand)
     let updatedFlags
     try {
@@ -54,32 +60,44 @@ export default class AssetsCommand extends Command {
       this.error(error.message, {exit: 2})
     }
     if (this.validate(updatedFlags)) {
-      let stack
+      let stack, alias
       if (!updatedFlags.retryFailed) {
         if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used')
+          // updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used')
+          alias = await interactive.askTokenAlias()
+          updatedFlags.alias = alias.token
+        } else {
+          try {
+            alias = await interactive.getTokenAlias(updatedFlags.alias)
+          } catch (error) {
+            const message = formatError(error)
+            this.error(message, {exit: 2})
+          }
         }
         updatedFlags.bulkPublish = (updatedFlags.bulkPublish === 'false') ? false : true
         if (updatedFlags.folderUid === undefined) {
           // set default value for folderUid
           updatedFlags.folderUid = 'cs_root'
         }
-        await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
+        // await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
         config = {
-          alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma
+          alias: updatedFlags.alias.token,
+          host: this.region.cma
         }
-        stack = getStack(config)
+        // stack = getStack(config)
+        this.managementAPIClient = {host: this.cmaHost, headers: {branch: updatedFlags.branch}}
+        stack = this.managementAPIClient.stack({api_key: alias.apiKey, management_token: alias.token})
+        
       }
       if (await this.confirmFlags(updatedFlags)) {
         try {
           if (!updatedFlags.retryFailed) {
-            await start(updatedFlags, stack, config)
+            await publishAssets(updatedFlags, stack, config)
           } else {
-            await start(updatedFlags)
+            await publishAssets(updatedFlags)
           }
         } catch (error) {
-          let message = formatError(error)
+          const message = formatError(error)
           this.error(message, {exit: 2})
         }
       } else {

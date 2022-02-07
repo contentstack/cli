@@ -1,11 +1,9 @@
 import {Command, flags} from '@contentstack/cli-command'
 import {OclifConfig, Region} from '../../../interfaces'
-import * as store from '../../../utils/store'
 import { addFields } from '../../../producer'
 import { cli } from 'cli-ux'
-import { prettyPrint, formatError, messageHandler, interactive } from '../../../utils'
+import { prettyPrint, formatError, messageHandler, interactive, store } from '../../../utils'
 const configKey = 'addFields'
-
 let config
 
 export default class AddFieldsCommand extends Command {
@@ -14,6 +12,8 @@ export default class AddFieldsCommand extends Command {
   private readonly error: Function;
   private readonly config: OclifConfig;
   private readonly region: Region;
+  private readonly cmaHost: string;
+  managementAPIClient: any;
 
   static description = `Add fields from updated content types to their respective entries
   The add-fields command is used for updating already existing entries with the updated schema of their respective Content Type
@@ -67,7 +67,7 @@ export default class AddFieldsCommand extends Command {
           updatedFlags.alias = alias.token
         } else {
           try {
-            alias = await interactive.getTokenFromAlias(updatedFlags.alias)
+            alias = await interactive.getTokenAlias(updatedFlags.alias)
           } catch (error) {
             const message = formatError(error)
             this.error(message, {exit: 2})

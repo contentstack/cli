@@ -1,3 +1,4 @@
+import { default as logger } from './logger';
 export { default as authHandler } from './auth-handler';
 export { default as CLIError } from './cli-error';
 export { default as messageHandler } from './message-handler';

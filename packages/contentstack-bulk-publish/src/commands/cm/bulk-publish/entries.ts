@@ -2,15 +2,10 @@
 
 import {Command, flags} from '@contentstack/cli-command'
 import {OclifConfig, Region} from '../../../interfaces'
-import {messageHandler} from '../../../utils'
-import * as store from '../../../utils/store'
-
-
-const {start} = require('../../../producer/publish-entries')
-const {cli} = require('cli-ux')
+import { publishEntries } from '../../../producer'
+import { cli } from 'cli-ux'
+import { prettyPrint, formatError, messageHandler, interactive, store } from '../../../utils'
 const configKey = 'publish_entries'
-const { prettyPrint, formatError } = require('../../../utils')
-const { getStack } = require('../../../utils/client.js')
 let config
 
 export default class EntriesCommand extends Command {
@@ -18,8 +13,9 @@ export default class EntriesCommand extends Command {
   private readonly exit: Function;
   private readonly error: Function;
   private readonly config: OclifConfig;
-  region: Region;
-  managementAPIClient: object;
+  private readonly region: Region;
+  private readonly cmaHost: string;
+  managementAPIClient: any;
 
   static description = `Publish entries from multiple content-types to multiple environments and locales
   The entries command is used for publishing entries from the specified content types, to the
@@ -53,7 +49,7 @@ export default class EntriesCommand extends Command {
       description: 'Retry failed entries from the logfile (optional, overrides all other flags) This flag is used to retry publishing entries that failed to publish in a previous attempt. A log file for the previous session will be required for processing the failed entries'
     }),
     bulkPublish: flags.string({
-      char: 'b', 
+      char: 'B', 
       description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true'
     }),
     publishAllContentTypes: flags.boolean({char: 'o', description: 'Publish all content-types (optional, cannot be set when contentTypes flag is set)'}),
@@ -63,10 +59,11 @@ export default class EntriesCommand extends Command {
     config: flags.string({char: 'c', description: 'Path for the external config file to be used (A new config file can be generated at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`)'}),
     yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
    'skip_workflow_stage_check': flags.boolean({char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK')}),
-   query: flags.string({char: 'q', description: messageHandler.parse('CLI_BP_QUERIES')}),
+    query: flags.string({char: 'q', description: messageHandler.parse('CLI_BP_QUERIES')}),
+    branch: flags.string({ char: 'b', description: '[optional] branch name', default: 'main' })
   }
 
-  async run(): void {
+  async run(): Promise<void> {
     const {flags} = this.parse(EntriesCommand)
     let updatedFlags
     try {
@@ -75,25 +72,36 @@ export default class EntriesCommand extends Command {
       this.error(error.message, {exit: 2})
     }
     if (this.validate(updatedFlags)) {
-      let stack
+      let stack, alias
       if (!updatedFlags.retryFailed) {
         if(!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Provide the alias of the management token to use')
+          // updatedFlags.alias = await cli.prompt('Provide the alias of the management token to use')
+          alias = await interactive.askTokenAlias()
+          updatedFlags.alias = alias.token
+        } else {
+          try {
+            alias = await interactive.getTokenAlias(updatedFlags.alias)
+          } catch (error) {
+            const message = formatError(error)
+            this.error(message, { exit: 2 })
+          }
         }
         updatedFlags.bulkPublish = (updatedFlags.bulkPublish === 'false') ? false : true
-        await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
+        // await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
         config = {
-          alias: updatedFlags.alias,
+          alias: updatedFlags.alias.token,
           host: this.region.cma
         }
-        stack = getStack(config)
+        this.managementAPIClient = { host: this.cmaHost, headers: { branch: updatedFlags.branch } }
+        stack = this.managementAPIClient.stack({ api_key: alias.apiKey, management_token: alias.token })
+        // stack = getStack(config)
       }
       if (await this.confirmFlags(updatedFlags)) {
         try {
           if (!updatedFlags.retryFailed) {
-            await start(updatedFlags, stack, config)
+            await publishEntries(updatedFlags, stack, config)
           } else {
-            await start(updatedFlags)
+            await publishEntries(updatedFlags)
           }
         } catch(error) {
           const message = formatError(error)
@@ -134,7 +142,7 @@ export default class EntriesCommand extends Command {
     }
   }
 
-  async confirmFlags(flags): boolean {  
+  async confirmFlags(flags): Promise<boolean> {  
     prettyPrint(flags)
     if(flags.yes) { 
       return true 

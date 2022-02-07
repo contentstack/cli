@@ -27,7 +27,7 @@ export default class ClearCommand extends Command {
     }
   }
 
-	rmDir(dirPath, removeSelf) {
+	rmDir(dirPath, removeSelf?) {
 		if (fs.existsSync(dirPath)) {
 			if (removeSelf === undefined)
 		    removeSelf = true;
@@ -39,7 +39,7 @@ export default class ClearCommand extends Command {
 		      if (fs.statSync(filePath).isFile())
 		        fs.unlinkSync(filePath);
 		      else
-		        rmDir(filePath);
+		        this.rmDir(filePath);
 		    }
 		  if (removeSelf)
 		    fs.rmdirSync(dirPath);

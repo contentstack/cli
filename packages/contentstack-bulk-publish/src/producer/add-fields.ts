@@ -176,63 +176,21 @@ function addFields(contentType, entry) {
   return {entry, changedFlag}
 }
 
-async function updateEntry(stack, updatedEntry, contentType, locale) {
-  const entry = {
-    entry: updatedEntry,
-  }
-  const tokenDetails = command.getToken(config.alias)
-  const conf = {
-    uri: `${config.host}/v${defaultConfig.apiVersion}/content_types/${contentType}/entries/${updatedEntry.uid}?locale=${locale || 'en-us'}`,
-    method: 'PUT',
-    headers: {
-      api_key: tokenDetails.apiKey,
-      authorization: tokenDetails.token,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      ...entry,
-    }),
-  }
-  try {
-    const update = await req(conf)
-    if (update.notice) {
-      return Promise.resolve(true)
-    }
-    return Promise.resolve(false)
-  } catch (error) {
-    console.log(error)
-  }
-  return Promise.resolve(false)
+async function updateEntry(stack, updatedEntry, contentType, locale): Promise<boolean> {
+  return stack.contentType(contentType).entry(updatedEntry.uid).fetch()
+    .then((entry) => {
+      Object.keys(updatedEntry).forEach(key => {
+        entry[key] = updatedEntry[key];
+      });
+      return entry.update();
+    })
+    .then((data) => {
+      if (data.notice)
+        return Promise.resolve(true);
+      return Promise.resolve(false);
+    })
+    .catch((error) => Promise.reject(error));
 }
-
-// async function updateEntry(config, updatedEntry, contentType, locale) {
-//   const entry = {
-//     entry: updatedEntry,
-//   }
-//   const tokenDetails = command.getToken(config.alias)
-//   const conf = {
-//     uri: `${config.host}/v${defaultConfig.apiVersion}/content_types/${contentType}/entries/${updatedEntry.uid}?locale=${locale || 'en-us'}`,
-//     method: 'PUT',
-//     headers: {
-//       api_key: tokenDetails.apiKey,
-//       authorization: tokenDetails.token,
-//       'Content-Type': 'application/json',
-//     },
-//     body: JSON.stringify({
-//       ...entry,
-//     }),
-//   }
-//   try {
-//     const update = await req(conf)
-//     if (update.notice) {
-//       return Promise.resolve(true)
-//     }
-//     return Promise.resolve(false)
-//   } catch (error) {
-//     console.log(error)
-//   }
-//   return Promise.resolve(false)
-// }
 
 /* eslint-disable no-param-reassign */
 async function getEntries(stack, config, schema, contentType, locale, bulkPublish, environments, skipPublish, skip = 0) {
@@ -250,7 +208,7 @@ async function getEntries(stack, config, schema, contentType, locale, bulkPublis
       let updatedEntry = addFields(schema, entries[index])
       if (updatedEntry.changedFlag) {
         updatedEntry = removeUnwanted(entries[index], deleteFields)
-        const flag = await updateEntry(config, updatedEntry, contentType, locale)
+        const flag: boolean = await updateEntry(config, updatedEntry, contentType, locale)
         if (flag) {
           if (!skipPublish) {
             if (bulkPublish) {
@@ -302,7 +260,7 @@ async function getEntries(stack, config, schema, contentType, locale, bulkPublis
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-loop-func */
 
-export default async function start({contentTypes, locales, environments, retryFailed, bulkPublish, skipPublish}, stack, config): Promise<void | boolean> {
+export default async function start({contentTypes, locales, environments, retryFailed, bulkPublish, skipPublish}, stack?, config?): Promise<void | boolean> {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)

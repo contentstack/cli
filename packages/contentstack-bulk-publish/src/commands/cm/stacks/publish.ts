@@ -77,7 +77,7 @@ export default class Publish extends Command {
       case commandNames.ENTRY_EDITS: await publishEdits(updatedFlags, stack, config); break;
       case commandNames.ENTRIES: await publishEntries(updatedFlags, stack, config); break;
       case commandNames.UNPUBLISH: await unpublish(updatedFlags, stack, config); break;
-      case commandNames.UNPUBLISHED_ENTRIES: await publishUnpublishedEntries(updatedFlags, stack, config); break;
+      case commandNames.UNPUBLISHED_ENTRIES: await publishUnpublishedEnv(updatedFlags, stack, config); break;
     }
   }
 }

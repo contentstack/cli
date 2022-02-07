@@ -103,7 +103,7 @@ function setConfig(conf, bp) {
   filePath = initializeLogger(logFileName)
 }
 
-export default async function start({retryFailed, bulkPublish, publishAllContentTypes, contentTypes, locales, environments}, stack, config) {
+export default async function start({retryFailed, bulkPublish, publishAllContentTypes, contentTypes, locales, environments}, stack?, config?) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)
