@@ -20,7 +20,7 @@ class LoginCommand extends Command {
 
     const password = await cli.prompt(messages.promptPassword, {type: 'hide'})
     try {
-      const user  = await authHandler.login(username, password)
+      const user = await authHandler.login(username, password)
       debug('User object ', user)
       config.set('authtoken', user.authtoken)
       config.set('email', user.email)
