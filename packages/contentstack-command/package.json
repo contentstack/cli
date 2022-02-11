@@ -20,6 +20,7 @@
   "dependencies": {
     "@contentstack/management": "^1.1.2",
     "@oclif/command": "^1.8.0",
+    "@oclif/config": "^1.17.0",
     "configstore": "^5.0.1",
     "contentstack": "^3.10.1"
   },
