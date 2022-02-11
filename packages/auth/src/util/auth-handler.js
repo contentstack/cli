@@ -1,3 +1,7 @@
+const { cli } = require('cli-ux')
+const inquirer = require('inquirer')
+const chalk = require('chalk')
+
 let client = {}
 
 class AuthHandler {
@@ -12,18 +16,59 @@ class AuthHandler {
     * @param {string} password User's password for contentstack account
     * @returns {Promise} Promise object returns authtoken on success
    */
-  async login(email, password) {
-    return new Promise(function (resolve, reject) {
+  async login(email, password, tfaToken) {
+    const loginPayload = {
+      email,
+      password
+    };
+    if (tfaToken) {
+      loginPayload.tfa_token = tfaToken;
+    }
+    return new Promise( (resolve, reject) => {
       if (email && password) {
-        client.login({email: email, password: password}).then(result => {
-          return resolve(result.user)
+        client.login(loginPayload).then(async result => {
+          // 2FA enabled
+          if (result.error_code === 294) {
+            const twoFactorResult = await this.twoFactorAuthentication(loginPayload);
+            resolve(twoFactorResult);
+          } else {
+            resolve(result.user);
+          }
         }).catch(error => {
-          return reject(error)
+          reject(error)
         })
       }
     })
   }
 
+  async twoFactorAuthentication(loginPayload) {
+    const actions = [{
+      type: 'list',
+      name: 'otpChannel',
+      message: "Two factor authentication enabled, please select a way to get the security code",
+      choices: [
+        { name: 'Authy App', value: 'authy' },
+        { name: 'SMS', value: 'sms' },
+      ],
+    }];
+  
+    const channelResponse = await inquirer.prompt(actions)
+
+    // need to send sms to the mobile
+    if (channelResponse.otpChannel === 'sms') {
+      await client.axiosInstance.post('/user/request_token_sms', { user: loginPayload });
+      cli.log(chalk.yellow("Security code sent to your mobile"))
+    }
+
+    const tokenResponse = await inquirer.prompt({
+      type: 'input',
+      message: 'Please provide the security code',
+      name: 'tfaToken',
+    });
+    
+    return this.login(loginPayload.email, loginPayload.password, tokenResponse.tfaToken);
+  }
+  
   /**
     *
     * Logout from Contentstack
