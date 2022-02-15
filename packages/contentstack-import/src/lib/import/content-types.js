@@ -6,6 +6,7 @@
  */
 let mkdirp = require('mkdirp')
 let fs = require('fs')
+let fsPromises = require('fs').promises
 let path = require('path')
 let _ = require('lodash')
 let Promise = require('bluebird')
@@ -73,13 +74,14 @@ importContentTypes.prototype = {
       self.createdContentTypeUids = helper.readFile(path.join(mapperFolderPath, 'success.json')) || []
     }
     self.contentTypeUids = _.difference(self.contentTypeUids, self.createdContentTypeUids)
+    self.uidToTitleMap = self.mapUidToTitle(self.contentTypes)
     // remove contet types, already created
     _.remove(this.contentTypes, function (contentType) {
       return self.contentTypeUids.indexOf(contentType.uid) === -1
     })
     return new Promise(function (resolve, reject) {
       return Promise.map(self.contentTypeUids, function (contentTypeUid) {
-        return self.seedContentTypes(contentTypeUid).then(function () {
+        return self.seedContentTypes(contentTypeUid, self.uidToTitleMap[contentTypeUid]).then(function () {
 
         }).catch(function (error) {
           return reject(error)
@@ -108,40 +110,41 @@ importContentTypes.prototype = {
           })
         }, {
           concurrency: reqConcurrency,
-        }).then(function () {
+        }).then(async function () {
           // eslint-disable-next-line quotes
           if (field_rules_ct.length > 0) {
-            fs.writeFile(contentTypesFolderPath + '/field_rules_uid.json', JSON.stringify(field_rules_ct), function (err) {
-              if (err) throw err
+            // fs.writeFile(contentTypesFolderPath + '/field_rules_uid.json', JSON.stringify(field_rules_ct), function (err) {
+            //   if (err) throw err
+            // })
+
+            await fsPromises.writeFile(contentTypesFolderPath + '/field_rules_uid.json', JSON.stringify(field_rules_ct))
+          }
+
+          if (globalFieldPendingPath && globalFieldPendingPath.length !== 0) {
+            return self.updateGlobalfields().then(function () {
+              addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
+              return resolve()
+            }).catch(error => {
+              addlogs(config, chalk.green('Error in GlobalFields'), 'success')
+              return reject()
             })
           }
-        
-         if(globalFieldPendingPath && globalFieldPendingPath.length !== 0) {
-          return self.updateGlobalfields().then(function () {
-            addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
-            return resolve()
-          }).catch((error) => {
-            addlogs(config, chalk.green('Error in GlobalFields'), 'success')
-            return reject(error)
-          })
-         }  else {
-            addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
-            return resolve()
-         } 
+          addlogs(config, chalk.green('Content types have been imported successfully!'), 'success')
+          return resolve()
         }).catch(error => {
           return reject(error)
-        }) 
+        })
       }).catch(error => {
         return reject(error)
       })
     })
   },
-  seedContentTypes: function (uid) {
+  seedContentTypes: function (uid, title) {
     let self = this
     return new Promise(function (resolve, reject) {
       let body = _.cloneDeep(self.schemaTemplate)
       body.content_type.uid = uid
-      body.content_type.title = uid
+      body.content_type.title = title
       let requestObject = _.cloneDeep(self.requestOptions)
       requestObject.json = body
       return stack.contentType().create(requestObject.json)
@@ -212,6 +215,14 @@ importContentTypes.prototype = {
         return reject(error)
       })
     })
+  },
+
+  mapUidToTitle: function (contentTypes) {
+    let result = {}
+    contentTypes.forEach(ct => {
+      result[ct.uid] = ct.title
+    })
+    return result
   },
 }
 
