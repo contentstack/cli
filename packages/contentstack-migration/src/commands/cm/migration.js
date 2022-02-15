@@ -175,7 +175,7 @@ MigrationCommand.flags = {
   authtoken: flags.boolean({char: 'A', description: 'Use this flag to use the auth token of the current session. After logging in CLI, an auth token is generated for each new session.', dependsOn: ['api-key'], exclusive: ['management-token-alias']}),
   'management-token-alias': flags.string({char: 'a', description: 'Use this flag to add the management token alias.', exclusive: ['authtoken']}), // Add a better description
   filePath: flags.string({char: 'n', description: 'Use this flag to provide the path of the file of the migration script provided by the user.'}),
-  branch: flags.string({char: 'b', description: 'Use this flag to add the branch name where you want to perform the migration.'}),
+  branch: flags.string({char: 'B', description: 'Use this flag to add the branch name where you want to perform the migration.'}),
   multi: flags.boolean({description: 'This flag helps you to migrate multiple content files in a single instance.'}), // Add a better description
 }
 
