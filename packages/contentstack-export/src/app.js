@@ -148,23 +148,10 @@ var allExport = async (config, types, branchName) => {
       );
       return resolve();
     } catch (error) {
-      addlogs(
-        config,
-        chalk.red(
-          "Failed to migrate stack: " +
-            config.source_stack +
-            ". Please check error logs for more info"
-        ),
-        "error"
-      );
-      addlogs(config, chalk.red(error.errorMessage), "error");
-      addlogs(
-        config,
-        "The log for this is stored at " +
-          path.join(config.data, "logs", "export"),
-        "error"
-      );
-      return reject(error);
+      addlogs(config, chalk.red('Failed to migrate stack: ' + config.source_stack + '. Please check error logs for more info'), 'error')
+      addlogs(config, chalk.red(error.errorMessage), 'error')
+      addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error')
+      return reject(error)
     }
   });
 };
