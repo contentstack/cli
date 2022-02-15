@@ -737,14 +737,17 @@ importEntries.prototype = {
         addlogs(config, 'field_rules is not available...', 'error')
       }
 
-      let ctObj = client.stack({ api_key: config.target_stack, management_token: config.management_token }).contentType(schema.uid)
-      Object.assign(ctObj, _.cloneDeep(schema))
-      ctObj.update()
-        .then(() => {
-          return resolve()
-        }).catch(function (error) {
-          return reject(error)
-        })
+      client.stack({ api_key: config.target_stack, management_token: config.management_token }).contentType(schema.uid).fetch()
+      .then((contentTypeResponse) => {
+        // Object.assign(ctObj, _.cloneDeep(schema))
+        contentTypeResponse.field_rules = schema.field_rules
+        contentTypeResponse.update()
+      })
+      .then(() => {
+        return resolve()
+      }).catch(function (error) {
+        return reject(error)
+      })
     })
   },
   publish: function (langs) {
@@ -800,11 +803,13 @@ importEntries.prototype = {
                     client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry(entryUid).publish({publishDetails: requestObject.entry, locale: lang})
                     // eslint-disable-next-line max-nested-callbacks
                     .then(result => {
-                      addlogs(config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
+                      // addlogs(config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
+                      console.log('Entry ' + eUid + ' published successfully in ' + ctUid + ' content type');
                       return resolve(result)
                       // eslint-disable-next-line max-nested-callbacks
                     }).catch(function (err) {
-                      addlogs(config, 'Entry ' + eUid + ' not published successfully in ' + ctUid + ' content type', 'error')
+                      // addlogs(config, 'Entry ' + eUid + ' not published successfully in ' + ctUid + ' content type', 'error')
+                      console.log('Entry ' + eUid + ' not published successfully in ' + ctUid + ' content type')
                       return reject(err.errorMessage)
                     })
                   })
@@ -824,7 +829,8 @@ importEntries.prototype = {
           }, {
             concurrency: 1,
           }).then(function () {
-            addlogs(config, 'Entries published successfully in ' + ctUid + ' content type', 'success')
+            // addlogs(config, 'Entries published successfully in ' + ctUid + ' content type', 'success')
+            console.log('Entries published successfully in ' + ctUid + ' content type')
           }).catch(function (error) {
             addlogs(config, 'Failed some of the Entry publishing in ' + ctUid + ' content type, go through logs for details.', 'error')
             return error
