@@ -157,7 +157,7 @@ async function getSyncEntries(stack, config, locale, queryParams, bulkUnpublish,
   return
 }
 
-export default async function start({retryFailed, bulkUnpublish, contentType, locale, environment, deliveryToken, onlyAssets, onlyEntries, f_types}, stack, config) {
+export default async function start({retryFailed, bulkUnpublish, contentType, locale, environment, deliveryToken, onlyAssets, onlyEntries, f_types}, stack?, config?) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)

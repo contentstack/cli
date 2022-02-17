@@ -1,15 +1,20 @@
-import {messageHandler} from '../../../utils'
-import * as store from '../../../utils/store'
-
-const {Command, flags} = require('@oclif/command')
-const {start} = require('../../../producer/nonlocalized-field-changes')
-const {cli} = require('cli-ux')
+import {Command, flags} from '@contentstack/cli-command'
+import {OclifConfig, Region} from '../../../interfaces'
+import { nonLocalizedFieldChanges } from '../../../producer'
+import { cli } from 'cli-ux'
+import { prettyPrint, formatError, messageHandler, interactive, store } from '../../../utils'
 const configKey = 'nonlocalized_field_changes'
-const { prettyPrint, formatError } = require('../../../utils')
-const { getStack } = require('../../../utils/client.js')
 let config
 
 export default class NonlocalizedFieldChangesCommand extends Command {
+  private readonly parse: Function;
+  private readonly exit: Function;
+  private readonly error: Function;
+  private readonly config: OclifConfig;
+  private readonly region: Region;
+  private readonly cmaHost: string;
+  managementAPIClient: any;
+  
   static description = `Publish non-localized-fields for given Content Types, from a particular source environment to specified environments
   The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types to
   the specified Environments
@@ -21,7 +26,7 @@ export default class NonlocalizedFieldChangesCommand extends Command {
   static flags = {
     alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
     retryFailed: flags.string({ char: 'r', description: 'Retry publishing failed entries from the logfile' }),
-    bulkPublish: flags.string({ char: 'b', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true' }),
+    bulkPublish: flags.string({ char: 'B', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true' }),
     sourceEnv: flags.string({ char: 's', description: 'Source Environment' }),
     contentTypes: flags.string({ char: 't', description: 'The Content-Types from which entries need to be published', multiple: true }),
     environments: flags.string({ char: 'e', description: 'Destination environments', multiple: true }),
@@ -29,6 +34,7 @@ export default class NonlocalizedFieldChangesCommand extends Command {
     yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
     'skip_workflow_stage_check': flags.boolean({ char: 'w', description: messageHandler.parse('CLI_BP_SKIP_WORKFLOW_STAGE_CHECK') }),
     query: flags.string({ char: 'q', description: messageHandler.parse('CLI_BP_QUERIES') }),
+    branch: flags.string({ char: 'b', description: '[optional] branch name', default: 'main' })
   }
 
   static examples = [
@@ -54,22 +60,36 @@ export default class NonlocalizedFieldChangesCommand extends Command {
     }
 
     if (this.validate(updatedFlags)) {
-      let stack
+      let stack, alias
       if (!updatedFlags.retryFailed) {
-        updatedFlags.bulkPublish = (updatedFlags.bulkPublish === 'false') ? false : true
-        await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
-        config = { 
-          alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma
+        if(!updatedFlags.alias) {
+          // updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used')
+          alias = await interactive.askTokenAlias()
+          updatedFlags.alias = alias.token
+        } else {
+          try {
+            alias = await interactive.getTokenAlias(updatedFlags.alias)
+          } catch (error) {
+            const message = formatError(error)
+            this.error(message, {exit: 2})
+          }
         }
-        stack = getStack(config)
+        updatedFlags.bulkPublish = (updatedFlags.bulkPublish === 'false') ? false : true
+        // await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
+        config = { 
+          alias: updatedFlags.alias.token,
+          host: this.region.cma
+        }
+        this.managementAPIClient = {host: this.cmaHost, headers: {branch: updatedFlags.branch}}
+        stack = this.managementAPIClient.stack({api_key: alias.apiKey, management_token: alias.token})
+        // stack = getStack(config)
       }
       if (await this.confirmFlags(updatedFlags)) {
         try {
           if (!updatedFlags.retryFailed) {
-            await start(updatedFlags, stack, config)
+            await nonLocalizedFieldChanges(updatedFlags, stack, config)
           } else {
-            await start(updatedFlags)
+            await nonLocalizedFieldChanges(updatedFlags)
           }
         } catch(error) {
           let message = formatError(error)
