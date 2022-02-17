@@ -8,6 +8,7 @@
     "build": "npm run clean && npm run compile",
     "clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
+    "prepack": "npm run build && oclif-dev manifest && oclif-dev readme",
     "postpack": "rm -f oclif.manifest.json",
     "disable-prepack": "npm run build && oclif-dev manifest && oclif-dev readme",
     "version": "oclif-dev readme && git add README.md",
