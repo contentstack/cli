@@ -12,7 +12,7 @@
     "url": "git+https://github.com/contentstack/cli.git"
   },
   "files": [
-    "src"
+    "./src"
   ],
   "license": "MIT",
   "bugs": "https://github.com/contentstack/cli/issues",
