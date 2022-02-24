@@ -18,7 +18,7 @@
   "bugs": "https://github.com/contentstack/cli/issues",
   "homepage": "https://github.com/contentstack/cli#readme",
   "dependencies": {
-    "@contentstack/management": "^1.2.4",
+    "@contentstack/management": "github:contentstack/contentstack-management-javascript#65e8588",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "configstore": "^5.0.1",
