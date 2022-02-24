@@ -6,7 +6,7 @@
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "0.1.1-beta.1",
-    "@contentstack/management": "^1.2.4",
+    "@contentstack/management": "github:contentstack/contentstack-management-javascript#65e8588",
     "@oclif/command": "^1.7.0",
     "@oclif/config": "^1.16.0",
     "bluebird": "^3.7.2",
