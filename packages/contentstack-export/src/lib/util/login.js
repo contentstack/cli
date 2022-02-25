@@ -18,7 +18,7 @@ module.exports.login = config => {
     if (config.email && config.password) {
       // eslint-disable-next-line no-console
       console.log('Logging into Contentstack')
-      return client.login({email: config.email, password: config.password})
+      client.login({email: config.email, password: config.password})
       .then(function (response) {
         // eslint-disable-next-line no-console
         console.log(chalk.green('Contentstack account authenticated successfully!'))
@@ -29,11 +29,11 @@ module.exports.login = config => {
           authtoken: config.authtoken,
           'X-User-Agent': 'contentstack-export/v',
         }
-        return resolve(config)
+         resolve(config)
       }).catch(function (error) {
-        return reject(error)
+         reject(error)
       })
-    } if (!config.email && !config.password && config.source_stack && config.access_token) {
+    } else if (!config.email && !config.password && config.source_stack && config.access_token) {
       addlogs(config, chalk.yellow('Content types, entries, assets, labels, global fields, extensions modules will be exported'), 'success')
       addlogs(config, chalk.yellow('Email, password, or management token is not set in the config, cannot export Webhook and label modules'), 'success')
       config.headers = {
@@ -41,21 +41,21 @@ module.exports.login = config => {
         access_token: config.access_token,
         'X-User-Agent': 'contentstack-export/v',
       }
-      return resolve(config)
+      resolve(config)
     // eslint-disable-next-line no-else-return
     } else if (config.auth_token && !config.management_token) {
       client.stack({api_key: config.source_stack, management_token: config.management_token}).users()
       .then(function () {
-        return resolve()
+        resolve()
       }).catch(error => {
         if (error.errors.api_key) {
           return reject(error)
         }
         addlogs(config, error.errorMessage, 'error')
-        return reject(error)
+        reject(error)
       })
     } else if (config.management_token) {
-      return resolve()
+      resolve()
     }
   })
 }

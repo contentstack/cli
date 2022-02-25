@@ -29,12 +29,15 @@ USAGE
 
 ## `csdx cm:import`
 
+Import script for importing the content into new stack
+
 ```
 USAGE
   $ csdx cm:import
 
 OPTIONS
   -A, --auth-token                                     to use auth token
+  -B, --branch=branch                                  [optional] branch name
   -a, --management-token-alias=management-token-alias  alias of the management token
   -b, --backup-dir=backup-dir                          [optional] backup directory name when using specific module
   -c, --config=config                                  [optional] path of config file
@@ -55,6 +58,8 @@ EXAMPLES
   csdx cm:import -a <management_token_alias>
   csdx cm:import -a <management_token_alias> -d <path/of/export/destination/dir>
   csdx cm:import -a <management_token_alias> -c <path/of/config/file>
+  csdx cm:import -A -m <single module name>
+  csdx cm:import -A -B <branch name>
 ```
 
 _See code: [src/commands/cm/import.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.11/packages/contentstack-import/src/commands/cm/import.js)_
