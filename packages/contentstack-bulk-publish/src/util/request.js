@@ -26,21 +26,23 @@ var makeCall = module.exports = function (req, RETRY) {
         let timeDelay
         if (response.statusCode >= 200 && response.statusCode <= 399) {
           return resolve(JSON.parse(response.body))
-        } if (response.statusCode === 429) {
+        }
+        if (response.statusCode === 429) {
           // eslint-disable-next-line no-mixed-operators
           timeDelay = Math.SQRT2 ** RETRY * 100
           debug(`API rate limit exceeded.\nReceived ${response.statusCode} status\nBody ${JSON.stringify(response)}`)
           debug(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`)
-          return setTimeout((req, RETRY) => makeCall(req, RETRY)
+          return setTimeout((req1, RETRY1) => makeCall(req1, RETRY1)
           .then(resolve)
           .catch(reject), timeDelay, req, RETRY)
-        } if (response.statusCode >= 500) {
+        }
+        if (response.statusCode >= 500) {
           // retry, with delay
           timeDelay = Math.SQRT2 ** RETRY * 100
           debug(`Recevied ${response.statusCode} status\nBody ${JSON.stringify(response)}`)
           debug(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`)
           RETRY++
-          return setTimeout((req, RETRY) => makeCall(req, RETRY)
+          return setTimeout((req2, RETRY2) => makeCall(req2, RETRY2)
           .then(resolve)
           .catch(reject), timeDelay, req, RETRY)
         }
