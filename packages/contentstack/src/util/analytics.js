@@ -1,6 +1,6 @@
 const axios = require('axios')
 const debug = require('debug')('contentstack:analytics')
-const querystring = require('querystring')
+const querystring = require('query-string')
 
 const VERSION = 1
 /**
@@ -53,7 +53,6 @@ class Analytics {
       cd1: analyticsOpts.os,
     }
     let opts = Object.assign(this.settings, data)
-    debug('Sending event to analytics for', querystring.stringify(opts))
     return axios.post(GOOGLE_ANALYTICS_MEASUREMENT_PROTOCOL_URL, querystring.stringify(opts))
   }
 }

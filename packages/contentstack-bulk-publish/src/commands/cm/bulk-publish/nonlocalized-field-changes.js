@@ -9,10 +9,10 @@ let config
 
 class NonlocalizedFieldChangesCommand extends Command {
   async run() {
-    const {flags} = this.parse(NonlocalizedFieldChangesCommand)
+    const nonlocalizedFieldChangesFlags = this.parse(NonlocalizedFieldChangesCommand).flags
     let updatedFlags
     try {
-      updatedFlags = (flags.config) ? store.updateMissing(configKey, flags) : flags
+      updatedFlags = (nonlocalizedFieldChangesFlags.config) ? store.updateMissing(configKey, nonlocalizedFieldChangesFlags) : nonlocalizedFieldChangesFlags
     } catch(error) {
       this.error(error.message, {exit: 2})
     }
@@ -24,7 +24,8 @@ class NonlocalizedFieldChangesCommand extends Command {
         await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
         config = { 
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma
+          host: this.config.userConfig.getRegion().cma,
+          branch: nonlocalizedFieldChangesFlags.branch,
         }
         stack = getStack(config)
       }
@@ -70,9 +71,9 @@ class NonlocalizedFieldChangesCommand extends Command {
     }
   }
 
-  async confirmFlags(flags) {
-    prettyPrint(flags)
-    if(flags.yes) {
+  async confirmFlags(data) {
+    prettyPrint(data)
+    if(data.yes) {
       return true
     }
     const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')
@@ -96,12 +97,13 @@ NonlocalizedFieldChangesCommand.flags = {
   contentTypes: flags.string({char: 't', description: 'The Content-Types from which entries need to be published', multiple: true}),
   environments: flags.string({char: 'e', description: 'Destination environments', multiple: true}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
+  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
+  branch: flags.string({char: 'B', default: 'main', description: 'Specify the branch to fetch the content from (default is main branch)'}),
 }
 
 NonlocalizedFieldChangesCommand.examples = [
   'General Usage',
-  'csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
+  'csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -s [SOURCE ENV]',
   '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
@@ -110,7 +112,10 @@ NonlocalizedFieldChangesCommand.examples = [
   '',
   'Using --retryFailed or -r flag',
   'csdx cm:bulk-publish:nonlocalized-field-changes --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:nonlocalized-field-changes -r [LOG FILE NAME]'
+  'csdx cm:bulk-publish:nonlocalized-field-changes -r [LOG FILE NAME]',
+  '',
+  'Using --branch or -B flag',
+  'csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME] -s [SOURCE ENV]',
 ]
 
 module.exports = NonlocalizedFieldChangesCommand

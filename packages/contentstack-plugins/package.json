@@ -1,4 +1,4 @@
-  {
+{
   "name": "@contentstack/cli-plugins-plugin",
   "description": "Plugin for generating plugin bootstrap code",
   "version": "0.1.0-beta",
