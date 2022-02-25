@@ -7,7 +7,7 @@ const {getQueue} = require('../util/queue')
 const defaults = require('../config/defaults.json')
 const req = require('../util/request')
 const {
-  bulkUnPublish, UnpublishEntry, UnpublishAsset, initializeLogger,
+  performBulkUnPublish, UnpublishEntry, UnpublishAsset, initializeLogger,
 } = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
@@ -27,7 +27,7 @@ let filePath
 function setConfig(conf, bup) {
   if (bup) {
     logFileName = 'bulk-unpublish'
-    queue.consumer = bulkUnPublish
+    queue.consumer = performBulkUnPublish
   } else {
     logFileName = 'unpublish'
     entryQueue.consumer = UnpublishEntry
@@ -58,23 +58,12 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale) {
     for (let index = 0; index < items.length; index++) {
       changedFlag = true
 
-      if (!items[index].data.publish_details) {
-        // adding this condition because sometimes
-        // item.data.publish_details.locale failes because publish_details is undefined
-        items[index].data.publish_details = {}
-      }
-
-      if (items[index].data.publish_details) {
-        items[index].data.publish_details.version = items[index].data._version
-      }
-
       if (bulkUnpublish) {
         if (bulkUnPublishSet.length < 10 && items[index].type === 'entry_published') {
           bulkUnPublishSet.push({
             uid: items[index].data.uid,
             content_type: items[index].content_type_uid,
-            locale: items[index].data.publish_details.locale || 'en-us',
-            version: items[index].data._version,
+            locale: items[index].data.locale || 'en-us',
             publish_details: [items[index].data.publish_details] || [],
           })
         }
@@ -116,7 +105,7 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale) {
       } else {
         if (items[index].type === 'entry_published') {
           await entryQueue.Enqueue({
-            content_type: items[index].content_type_uid, publish_details: [items[index].data.publish_details], environments: [environment], entryUid: items[index].data.uid, locale: items[index].data.publish_details.locale || 'en-us', Type: 'entry', stack: stack
+            content_type: items[index].content_type_uid, publish_details: [items[index].data.publish_details], environments: [environment], entryUid: items[index].data.uid, locale: items[index].data.locale || 'en-us', Type: 'entry', stack: stack
           })
         }
         if (items[index].type === 'asset_published') {
@@ -156,7 +145,6 @@ async function getSyncEntries(stack, config, locale, queryParams, bulkUnpublish,
       reject(error)
     }
   })
-  return resolve()
 }
 
 async function start({retryFailed, bulkUnpublish, contentType, locale, environment, deliveryToken, onlyAssets, onlyEntries, f_types}, stack, config) {
@@ -168,54 +156,47 @@ async function start({retryFailed, bulkUnpublish, contentType, locale, environme
     } else if (!isSuccessLogEmpty) {
       console.log(`The success log for this session is stored at ${filePath}.success`)
     }
-    process.exit(0)  
+    process.exit(0)
   })
 
-  try {
-    if (retryFailed) {
-      if (typeof retryFailed === 'string' && retryFailed.length > 0) {
-        if (!validateFile(retryFailed, ['unpublish', 'bulk-unpublish'])) {
-          return false
-        }
+  if (retryFailed) {
+    if (typeof retryFailed === 'string' && retryFailed.length > 0) {
+      if (!validateFile(retryFailed, ['unpublish', 'bulk-unpublish'])) {
+        return false
+      }
 
-        bulkUnpublish = retryFailed.match(new RegExp('bulk')) ? true : false
-        setConfig(config, bulkUnpublish)
-
-        if (bulkUnpublish) {
-          await retryFailedLogs(retryFailed, queue, 'bulk')
-        } else {
-          await retryFailedLogs(retryFailed, {entryQueue, assetQueue}, 'publish')
-        }
-      }
-    } else {
-      let filter = {
-        environment,
-        locale,
-      }
-      if (f_types)
-        filter.type = f_types
-      // filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
-      if (contentType) {
-        filter.content_type_uid = contentType
-        filter.type = 'entry_published'
-      }
-      if (onlyAssets) {
-        filter.type = 'asset_published'
-        delete filter.content_type_uid
-      }
-      if (onlyEntries) {
-        filter.type = 'entry_published'
-      }
+      bulkUnpublish = retryFailed.match(new RegExp('bulk')) ? true : false
       setConfig(config, bulkUnpublish)
-      const queryParams = getQueryParams(filter)
-      try {
-        await getSyncEntries(stack, config, locale, queryParams, bulkUnpublish, environment, deliveryToken)
-      } catch (error) {
-        throw error
+
+      if (bulkUnpublish) {
+        await retryFailedLogs(retryFailed, queue, 'bulk')
+      } else {
+        await retryFailedLogs(retryFailed, {entryQueue, assetQueue}, 'publish')
       }
     }
-  } catch (error) {
-    throw error
+  } else {
+    let filter = {
+      environment,
+      locale,
+    }
+    if (f_types) {
+      filter.type = f_types
+    }
+    // filter.type = (f_types) ? f_types : types // types mentioned in the config file (f_types) are given preference
+    if (contentType) {
+      filter.content_type_uid = contentType
+      filter.type = 'entry_published'
+    }
+    if (onlyAssets) {
+      filter.type = 'asset_published'
+      delete filter.content_type_uid
+    }
+    if (onlyEntries) {
+      filter.type = 'entry_published'
+    }
+    setConfig(config, bulkUnpublish)
+    const queryParams = getQueryParams(filter)
+    await getSyncEntries(stack, config, locale, queryParams, bulkUnpublish, environment, deliveryToken)
   }
 }
 
