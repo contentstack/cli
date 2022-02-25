@@ -10,10 +10,10 @@ let config
 
 class RevertCommand extends Command {
   async run() {
-    const {flags} = this.parse(RevertCommand)
+    const revertFlags = this.parse(RevertCommand).flags
     let updatedFlags
     try {
-      updatedFlags = (flags.config) ? store.updateMissing(configKey, flags) : flags
+      updatedFlags = (revertFlags.config) ? store.updateMissing(configKey, revertFlags) : revertFlags
     } catch(error) {
       this.error(error.message, {exit: 2})
     }
@@ -48,9 +48,9 @@ class RevertCommand extends Command {
     }
   }
 
-  async confirmFlags(flags) {
-    prettyPrint(flags)
-    if(flags.yes) {
+  async confirmFlags(data) {
+    prettyPrint(data)
+    if(data.yes) {
       return true
     }
     const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')

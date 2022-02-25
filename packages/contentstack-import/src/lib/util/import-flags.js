@@ -9,10 +9,11 @@ let _ = require('lodash')
 const { cli } = require('cli-ux')
 let message = require('../../../messages/index.json')
 
-exports.configWithMToken = function (config, managementTokens, moduleName, host, _authToken, backupdir) {
+exports.configWithMToken = function (config, managementTokens, moduleName, host, _authToken, backupdir, branchName) {
   return new Promise(async function (resolve, reject) {
     let externalConfig = require(config)
     defaultConfig.management_token = managementTokens.token
+    defaultConfig.branchName = branchName
     if (moduleName && moduleName !== undefined) {
       defaultConfig.moduleName = moduleName
     }
@@ -26,16 +27,17 @@ exports.configWithMToken = function (config, managementTokens, moduleName, host,
       .then(() => {
         return resolve()
       }).catch((error) => {
-        return reject()
+        return reject(error)
       })
   })
 }
 
-exports.parameterWithMToken = function (managementTokens, data, moduleName, host, _authToken, backupdir) {
+exports.parameterWithMToken = function (managementTokens, data, moduleName, host, _authToken, backupdir, branchName) {
   return new Promise(async function (resolve, reject) {
     defaultConfig.management_token = managementTokens.token
     defaultConfig.target_stack = managementTokens.apiKey
     defaultConfig.auth_token = _authToken
+    defaultConfig.branchName = branchName
     if (moduleName && moduleName !== undefined) {
       defaultConfig.moduleName = moduleName
     }
@@ -48,18 +50,19 @@ exports.parameterWithMToken = function (managementTokens, data, moduleName, host
       .then(() => {
         return resolve()
       }).catch((error) => {
-        return reject()
+        return reject(error)
       })
   })
 }
 
 // using ManagemetToken
-exports.withoutParameterMToken = async (managementTokens, moduleName, host, _authToken, backupdir) => {
+exports.withoutParameterMToken = async (managementTokens, moduleName, host, _authToken, backupdir, branchName) => {
   return new Promise(async function (resolve, reject) {
     const exporteddata = await cli.prompt(message.promptMessageList.promptPathStoredData)
     defaultConfig.management_token = managementTokens.token
     defaultConfig.target_stack = managementTokens.apiKey
     defaultConfig.auth_token = _authToken
+    defaultConfig.branchName = branchName
     if (moduleName && moduleName !== undefined) {
       defaultConfig.moduleName = moduleName
     }
@@ -72,15 +75,16 @@ exports.withoutParameterMToken = async (managementTokens, moduleName, host, _aut
       .then(() => {
         return resolve()
       }).catch((error) => {
-        return reject()
+        return reject(error)
       })
   })
 }
 
-exports.configWithAuthToken = function (config, _authToken, moduleName, host, backupdir) {
+exports.configWithAuthToken = function (config, _authToken, moduleName, host, backupdir, branchName) {
   return new Promise(async function (resolve, reject) {
     let externalConfig = require(config)
     defaultConfig.auth_token = _authToken
+    defaultConfig.branchName = branchName
     if (moduleName && moduleName !== undefined) {
       defaultConfig.moduleName = moduleName
     }
@@ -99,15 +103,16 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host, ba
       .then(() => {
         return resolve()
       }).catch((error) => {
-        return reject()
+        return reject(error)
       })
   })
 }
 
-exports.parametersWithAuthToken = function (_authToken, targetStack, data, moduleName, host, backupdir) {
+exports.parametersWithAuthToken = function (_authToken, targetStack, data, moduleName, host, backupdir, branchName) {
   return new Promise(async function (resolve, reject) {
     defaultConfig.auth_token = _authToken
     defaultConfig.target_stack = targetStack
+    defaultConfig.branchName = branchName
     if (moduleName && moduleName !== undefined && backupdir === undefined) {
       defaultConfig.moduleName = moduleName
     } else if (moduleName && moduleName !== undefined && backupdir !== undefined) {
@@ -121,18 +126,19 @@ exports.parametersWithAuthToken = function (_authToken, targetStack, data, modul
       .then(() => {
         return resolve()
       }).catch((error) => {
-        return reject()
+        return reject(error)
       })
   })
 }
 
-exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, backupdir) => {
+exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, backupdir, branchName) => {
   return new Promise(async function (resolve, reject) {
     const stackUid = await cli.prompt(message.promptMessageList.promptTargetStack)
     const exporteddata = await cli.prompt(message.promptMessageList.promptPathStoredData)
     defaultConfig.auth_token = _authToken
     defaultConfig.target_stack = stackUid
     defaultConfig.data = exporteddata
+    defaultConfig.branchName = branchName
     if (moduleName && moduleName !== undefined && backupdir === undefined) {
       defaultConfig.moduleName = moduleName
     } else if (moduleName && moduleName !== undefined && backupdir !== undefined) {
@@ -146,7 +152,7 @@ exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, ba
       .then(() => {
         return resolve()
       }).catch((error) => {
-        return reject()
+        return reject(error)
       })
   })
 }

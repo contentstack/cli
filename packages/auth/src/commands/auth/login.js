@@ -15,8 +15,8 @@ class LoginCommand extends Command {
     }
 
     const authHandler = new AuthHandler(opts)
-    const {flags} = this.parse(LoginCommand)
-    let username = flags.username ? flags.username : await cli.prompt(messages.promptEmailAddress)
+    const loginCommandFlags = this.parse(LoginCommand).flags
+    let username = loginCommandFlags.username ? loginCommandFlags.username : await cli.prompt(messages.promptEmailAddress)
 
     const password = await cli.prompt(messages.promptPassword, {type: 'hide'})
     try {

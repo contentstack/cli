@@ -1,7 +1,7 @@
 module.exports = {
   "urlPath": '/stacks',
-  "api_key": '***REMOVED***',
-  "stackHeaders": { api_key: '***REMOVED***' },
+  "api_key": 'bltmockdata42069007',
+  "stackHeaders": { api_key: 'bltmockdata42069007' },
   // update: [Function],
   // delete: [Function],
   // fetch: [Function],
@@ -10,7 +10,7 @@ module.exports = {
   // asset: [Function],
   // globalField: [Function],
   // environment: [Function],
-  // deliveryToken: [Function],
+  // deliveryToken: [Function]
   // users: [Function],
   // transferOwnership: [Function],
   // settings: [Function],
