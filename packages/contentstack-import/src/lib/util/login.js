@@ -44,10 +44,10 @@ module.exports = function (config) {
         let errorstack_key = error.errors.api_key       
         if(error.errors.api_key) {
           addlogs(config, chalk.red("Stack Api key " + errorstack_key[0], "Please enter valid Key"), 'error')
-          return reject()
+          return reject(error)
         }
         addlogs(config, error.errorMessage, 'error')
-        return reject()
+        return reject(error)
       })
     }
   });
