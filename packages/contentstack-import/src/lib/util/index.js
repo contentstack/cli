@@ -24,40 +24,40 @@ exports.initialization = function(configData) {
   }
 }
 
-exports.validateConfig = function (config) {
-  if (config.email && config.password && !config.target_stack) {
-    addlogs(config, chalk.red('Kindly provide api_token'), 'error')
+exports.validateConfig = function (importConfig) {
+  if (importConfig.email && importConfig.password && !importConfig.target_stack) {
+    addlogs(importConfig, chalk.red('Kindly provide api_token'), 'error')
     return 'error' 
-  } if(!config.email && !config.password && !config.management_token && config.target_stack && !config.auth_token) {
-    addlogs(config, chalk.red('Kindly provide management_token or email and password'), 'error')
+  } else if(!importConfig.email && !importConfig.password && !importConfig.management_token && importConfig.target_stack && !importConfig.auth_token) {
+    addlogs(importConfig, chalk.red('Kindly provide management_token or email and password'), 'error')
     return 'error'
-  } else if(!config.email && !config.password && config.preserveStackVersion) {
-    addlogs(config, chalk.red('Kindly provide Email and password for old version stack'), 'error')
+  } else if(!importConfig.email && !importConfig.password && importConfig.preserveStackVersion) {
+    addlogs(importConfig, chalk.red('Kindly provide Email and password for old version stack'), 'error')
     return 'error'
-  } else if(config.email && !config.password || !config.email && config.password) {
-    addlogs(config, chalk.red('Kindly provide Email and password'), 'error')
+  } else if(importConfig.email && !importConfig.password || !importConfig.email && importConfig.password) {
+    addlogs(importConfig, chalk.red('Kindly provide Email and password'), 'error')
     return 'error'
   }
-  //  if(!config.languagesCode.includes(config.master_locale.code)) {
-  //   addlogs(config, chalk.red('Kindly provide valid master_locale code'), 'error')
+  //  if(!importConfig.languagesCode.includes(importConfig.master_locale.code)) {
+  //   addlogs(importConfig, chalk.red('Kindly provide valid master_locale code'), 'error')
   //   return 'error'
   // }
 }
 
-exports.buildAppConfig = function (config) {
-  config = _.merge(defaultConfig, config)
-  return config
+exports.buildAppConfig = function (importConfig) {
+  importConfig = _.merge(defaultConfig, importConfig)
+  return importConfig
 };
 
-exports.sanitizeStack = function (config) {
-  if (typeof config.preserveStackVersion !== 'boolean' || !config.preserveStackVersion) {
+exports.sanitizeStack = function (importConfig) {
+  if (typeof importConfig.preserveStackVersion !== 'boolean' || !importConfig.preserveStackVersion) {
     return Promise.resolve()
   }
-  addlogs(config, 'Running script to maintain stack version.', 'success')
+  addlogs(importConfig, 'Running script to maintain stack version.', 'success')
   var getStackOptions = {
-    url: config.host + config.apis.stacks,
+    url: importConfig.host + importConfig.apis.stacks,
     method: 'GET',
-    headers: config.headers,
+    headers: importConfig.headers,
     json: true
   }
 
@@ -67,7 +67,7 @@ exports.sanitizeStack = function (config) {
         if (stackDetails.body && stackDetails.body.stack && stackDetails.body.stack.settings) {
           const newStackVersion = stackDetails.body.stack.settings.version
           const newStackDate = new Date(newStackVersion).toString()
-          const stackFilePath = path.join(config.data, config.modules.stack.dirName, config.modules.stack.fileName)
+          const stackFilePath = path.join(importConfig.data, importConfig.modules.stack.dirName, importConfig.modules.stack.fileName)
 
           const oldStackDetails = fs.readFile(stackFilePath)
           if (!oldStackDetails || !oldStackDetails.settings || !oldStackDetails.settings.hasOwnProperty('version')) {
@@ -78,15 +78,15 @@ exports.sanitizeStack = function (config) {
           if (oldStackDate > newStackDate) {
             throw new Error('Migration Error. You cannot migrate data from new stack onto old. Kindly contact support@contentstack.com for more details.')
           } else if (oldStackDate === newStackDate) {
-            addlogs(config, 'The version of both the stacks are same.', 'success')
+            addlogs(importConfig, 'The version of both the stacks are same.', 'success')
             return Promise.resolve()
           }
-          addlogs(config, 'Updating stack version.', 'success')
+          addlogs(importConfig, 'Updating stack version.', 'success')
           // Update the new stack
           var updateStackOptions = {
-            url: config.host + config.apis.stacks + 'settings/set-version',
+            url: importConfig.host + importConfig.apis.stacks + 'settings/set-version',
             method: 'PUT',
-            headers: config.headers,
+            headers: importConfig.headers,
             body: {
               stack_settings: {
                 version: '2017-10-14' // This can be used as a variable
@@ -96,7 +96,7 @@ exports.sanitizeStack = function (config) {
 
           return request(updateStackOptions)
             .then((response) => {
-              addlogs(config, `Stack version preserved successfully!\n${JSON.stringify(response.body)}`, 'success')
+              addlogs(importConfig, `Stack version preserved successfully!\n${JSON.stringify(response.body)}`, 'success')
               return;
             })
         } 
@@ -125,9 +125,9 @@ exports.masterLocalDetails = function(credentialConfig) {
   })
 };
 
-exports.field_rules_update = function(config, ctPath) {
+exports.field_rules_update = function(importConfig, ctPath) {
   return new Promise(function (resolve, reject) {
-    let client = stack.Client(config)
+    let client = stack.Client(importConfig)
     
     fs.readFile(path.join(ctPath + '/field_rules_uid.json'), async (err, data) => {
       if (err) {
@@ -145,7 +145,7 @@ exports.field_rules_update = function(config, ctPath) {
               let fieldRuleConditionLength = schema.field_rules[k].conditions.length
               for (let i = 0; i < fieldRuleConditionLength; i++) {
                 if (schema.field_rules[k].conditions[i].operand_field === 'reference') {
-                  let entryMapperPath = path.resolve(config.data, 'mapper', 'entries')
+                  let entryMapperPath = path.resolve(importConfig.data, 'mapper', 'entries')
                   let entryUidMapperPath = path.join(entryMapperPath, 'uid-mapping.json')
                   let fieldRulesValue = schema.field_rules[k].conditions[i].value
                   let fieldRulesArray = fieldRulesValue.split('.')
@@ -163,7 +163,7 @@ exports.field_rules_update = function(config, ctPath) {
                 }
               }
             }
-            let ctObj = client.stack({ api_key: config.target_stack, management_token: config.management_token }).contentType(schema.uid)
+            let ctObj = client.stack({ api_key: importConfig.target_stack, management_token: importConfig.management_token }).contentType(schema.uid)
             Object.assign(ctObj, _.cloneDeep(schema))
             ctObj.update()
               .then(() => {
