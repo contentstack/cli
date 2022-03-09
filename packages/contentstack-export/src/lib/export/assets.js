@@ -37,9 +37,11 @@ function ExportAssets() {
 
 ExportAssets.prototype = {
   start: function (credentialConfig) {
+    this.assetContents = {}
+    this.folderData = []
     let  self = this
     config = credentialConfig
-    assetsFolderPath = path.resolve(config.data, assetConfig.dirName)
+    assetsFolderPath = path.resolve(config.data, (config.branchName || ""), assetConfig.dirName)
     assetContentsFile = path.resolve(assetsFolderPath, 'assets.json')
     folderJSONPath = path.resolve(assetsFolderPath, 'folders.json')
     client = stack.Client(config)
@@ -48,6 +50,7 @@ ExportAssets.prototype = {
     // Create asset folder
     mkdirp.sync(assetsFolderPath)
     return new Promise(function (resolve, reject) {
+      //TBD: getting all the assets should have optimized
       return self.getAssetCount().then(function (count) {
         if (typeof count !== 'number' || count === 0) {
           addlogs(config, 'No assets found', 'success')
@@ -157,7 +160,6 @@ ExportAssets.prototype = {
     })
   },
   getAssetCount: function (folder) {
-    let self = this
     return new Promise(function (resolve, reject) {
       if (folder && typeof folder === 'boolean') {
         let queryOptions = {include_folders: true, query: {'is_dir': true}, include_count: true}
@@ -182,7 +184,6 @@ ExportAssets.prototype = {
     })
   },
   getAssetJSON: function (skip) {
-    let  self = this
     return new Promise(function (resolve, reject) {
       if (typeof skip !== 'number') {
         skip = 0
