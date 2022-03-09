@@ -36,7 +36,6 @@ let client
 let stack = {}
 
 function importContentTypes() {
-  let self = this
   this.contentTypes = []
   this.schemaTemplate = require('../util/schemaTemplate')
   this.requestOptions = {
@@ -180,7 +179,7 @@ importContentTypes.prototype = {
           return resolve()
         }).catch(err => {
           addlogs(config, err, 'error')
-          return reject()
+          return reject(err)
         })
       }, 1000)
     })
@@ -191,7 +190,6 @@ importContentTypes.prototype = {
     return new Promise(function (resolve, reject) {
       // eslint-disable-next-line no-undef
       return Promise.map(globalFieldPendingPath, function (globalfield) {
-        let lenGlobalField = (self.globalfields).length
         let Obj = _.find(self.globalfields, {uid: globalfield})
         let globalFieldObj = stack.globalField(globalfield)
         Object.assign(globalFieldObj, _.cloneDeep(Obj))
