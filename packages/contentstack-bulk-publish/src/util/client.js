@@ -3,21 +3,26 @@ const {Command} = require('@contentstack/cli-command')
 const command = new Command()
 
 const Configstore = require('configstore')
+// eslint-disable-next-line no-unused-vars
 const config = new Configstore('contentstack_cli')
-const { formatHostname } = require('../util')
+const {formatHostname} = require('../util')
 
 function getStack(data) {
-	const tokenDetails = command.getToken(data.alias)
-	const client = contentstackSdk.client({
-		host: formatHostname(data.host),
-		logHandler: (level, data) => {}
-	})
-	const stack = client.stack({api_key: tokenDetails.apiKey, management_token: tokenDetails.token})
-	stack.alias = data.alias
-	stack.host = data.host
-	return stack
+  const tokenDetails = command.getToken(data.alias)
+  const client = contentstackSdk.client({
+    headers: {
+      branch: data.branch,
+    },
+    host: formatHostname(data.host),
+    // eslint-disable-next-line no-unused-vars
+    logHandler: level => {},
+  })
+  const stack = client.stack({api_key: tokenDetails.apiKey, management_token: tokenDetails.token})
+  stack.alias = data.alias
+  stack.host = data.host
+  return stack
 }
 
 module.exports = {
-  getStack
+  getStack,
 }
