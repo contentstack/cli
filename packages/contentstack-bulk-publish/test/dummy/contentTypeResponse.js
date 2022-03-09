@@ -1,6 +1,6 @@
 module.exports = {
-  created_at: '2020-02-25T05:19:53.403Z',
-  updated_at: '2020-03-22T21:59:09.071Z',
+  created_at: '1970-01-01T00:00:00.000Z',
+  updated_at: '1970-01-01T00:00:00.000Z',
   title: 'helloworld',
   uid: 'dummyContentType',
   _version: 59,
@@ -894,62 +894,62 @@ module.exports = {
   last_activity: {
     environments: [
     {
-      uid: 'blt56e125f207cd669e',
+      uid: 'bltmockdata42069007',
       details: [
       {
         locale: 'en-us',
-        time: '2020-03-16T13:25:44.519Z',
+        time: '1970-01-01T00:00:00.000Z',
       },
       ],
     },
     {
-      uid: 'blt98195f852552a780',
+      uid: 'bltmockdata42069007',
       details: [
       {
         locale: 'en-us',
-        time: '2020-03-17T14:39:54.070Z',
+        time: '1970-01-01T00:00:00.000Z',
       },
       ],
     },
     {
-      uid: 'bltc0c97f25bc259354',
+      uid: 'bltmockdata42069007',
       details: [
       {
         locale: 'es',
-        time: '2020-03-22T21:35:46.030Z',
+        time: '1970-01-01T00:00:00.000Z',
       },
       {
         locale: 'fr-fr',
-        time: '2020-03-22T21:34:35.644Z',
+        time: '1970-01-01T00:00:00.000Z',
       },
       {
         locale: 'en-us',
-        time: '2020-03-16T13:03:44.049Z',
+        time: '1970-01-01T00:00:00.000Z',
       },
       {
         locale: 'ar-eg',
-        time: '2020-03-03T11:24:39.582Z',
+        time: '1970-01-01T00:00:00.000Z',
       },
       ],
     },
     {
-      uid: 'blt6e988221145bc2e7',
+      uid: 'bltmockdata42069007',
       details: [
       {
         locale: 'en-us',
-        time: '2020-03-22T22:04:29.024Z',
+        time: '1970-01-01T00:00:00.000Z',
       },
       {
         locale: 'es',
-        time: '2020-03-22T21:44:59.512Z',
+        time: '1970-01-01T00:00:00.000Z',
       },
       {
         locale: 'ar-eg',
-        time: '2020-03-22T21:39:01.620Z',
+        time: '1970-01-01T00:00:00.000Z',
       },
       {
         locale: 'fr-fr',
-        time: '2020-03-22T21:36:55.870Z',
+        time: '1970-01-01T00:00:00.000Z',
       },
       ],
     },
@@ -964,7 +964,7 @@ module.exports = {
     },
     users: [
     {
-      uid: 'bltfb478f930c364f38',
+      uid: 'bltmockdata42069007',
       read: true,
       sub_acl: {
         read: true,
@@ -975,7 +975,7 @@ module.exports = {
   SYS_ACL: {
     roles: [
     {
-      uid: 'blt96731c8116bde66d',
+      uid: 'bltmockdata42069007',
       read: true,
       sub_acl: {
         create: true,
@@ -988,7 +988,7 @@ module.exports = {
       delete: true,
     },
     {
-      uid: 'bltca998c03ca411f1d',
+      uid: 'bltmockdata42069007',
       read: true,
       sub_acl: {
         create: true,
@@ -999,7 +999,7 @@ module.exports = {
       },
     },
     {
-      uid: 'blt4984bf8fd093b31c',
+      uid: 'bltmockdata42069007',
       read: true,
       sub_acl: {
         create: true,
