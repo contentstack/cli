@@ -375,7 +375,7 @@ module.exports = {
       last_activity: {
         environments: [
           {
-            uid: 'blta39a4441696e35e0',
+            uid: '***REMOVED***',
             details: [
               {
                 locale: 'en-us',
@@ -394,7 +394,7 @@ module.exports = {
         },
         users: [
           {
-            uid: 'bltb7dc5be19ed72dd9',
+            uid: '***REMOVED***',
             read: true,
             sub_acl: {
               read: true,
@@ -405,7 +405,7 @@ module.exports = {
       SYS_ACL: {
         roles: [
           {
-            uid: 'blt70c41dfd00924e9f',
+            uid: '***REMOVED***',
             read: true,
             sub_acl: {
               create: true,
@@ -418,7 +418,7 @@ module.exports = {
             delete: true,
           },
           {
-            uid: 'blt954756afc76573d1',
+            uid: '***REMOVED***',
             read: true,
             sub_acl: {
               create: true,
@@ -431,7 +431,7 @@ module.exports = {
             delete: true,
           },
           {
-            uid: 'blt5c82a78624ed860d',
+            uid: '***REMOVED***',
             read: true,
             sub_acl: {
               create: true,
@@ -520,7 +520,7 @@ module.exports = {
         },
         users: [
           {
-            uid: 'bltb7dc5be19ed72dd9',
+            uid: '***REMOVED***',
             read: true,
             sub_acl: {
               read: true,
@@ -531,7 +531,7 @@ module.exports = {
       SYS_ACL: {
         roles: [
           {
-            uid: 'blt70c41dfd00924e9f',
+            uid: '***REMOVED***',
             read: true,
             sub_acl: {
               create: true,
@@ -544,7 +544,7 @@ module.exports = {
             delete: true,
           },
           {
-            uid: 'blt954756afc76573d1',
+            uid: '***REMOVED***',
             read: true,
             sub_acl: {
               create: true,
@@ -557,7 +557,7 @@ module.exports = {
             delete: true,
           },
           {
-            uid: 'blt5c82a78624ed860d',
+            uid: '***REMOVED***',
             read: true,
             sub_acl: {
               create: true,

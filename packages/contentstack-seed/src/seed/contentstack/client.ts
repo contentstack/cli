@@ -119,8 +119,8 @@ export default class ContentstackClient {
           api_key: api_key,
           include_count: true,
         },
+        headers: {api_key},
       })
-
       return response.data.count as number
     } catch (error) {
       throw this.buildError(error)
