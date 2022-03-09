@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "0.1.1-beta.22",
+  "version": "0.1.1-beta.23",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run"
@@ -10,23 +10,24 @@
   "dependencies": {
     "@contentstack/cli-cm-migrate-rte": "^1.0.3",
     "@contentstack/cli-auth": "0.1.1-beta.2",
-    "@contentstack/cli-cm-bulk-publish": "0.1.1-beta.3",
+    "@contentstack/cli-cm-bulk-publish": "0.1.1-beta.4",
     "@contentstack/cli-cm-clone": "0.1.0-beta.2",
-    "@contentstack/cli-cm-export": "^0.1.1-beta.8",
+    "@contentstack/cli-cm-export": "^0.1.1-beta.9",
     "@contentstack/cli-cm-export-to-csv": "0.1.0-beta.1",
-    "@contentstack/cli-cm-import": "^0.1.1-beta.11",
-    "@contentstack/cli-cm-seed": "^1.0.7",
     "@contentstack/cli-command": "0.1.1-beta.1",
-    "@contentstack/cli-cm-bootstrap": "^1.0.2",
+    "@contentstack/cli-migration": "0.1.1-beta.1",
+    "@contentstack/cli-cm-import": "^0.1.1-beta.12",
+    "@contentstack/cli-cm-seed": "^1.0.8",
+    "@contentstack/cli-cm-bootstrap": "^1.0.3",
     "@contentstack/cli-plugins-plugin": "0.1.0-beta",
-    "@contentstack/management": "1.2.1",
+    "@contentstack/management": "^1.3.0",
     "@oclif/command": "^1.6.1",
     "@oclif/config": "^1.15.1",
     "@oclif/errors": "^1.3.3",
     "@oclif/plugin-help": "^2.2.3",
     "@oclif/plugin-not-found": "^1.2.3",
     "@oclif/plugin-plugins": "^1.8.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bluebird": "^3.7.2",
     "chalk": "^4.1.0",
     "cli-ux": "^5.5.0",
@@ -34,7 +35,7 @@
     "debug": "^4.1.1",
     "figlet": "^1.4.0",
     "lodash": "^4.17.20",
-    "querystring": "^0.2.0",
+    "query-string": "^7.0.1",
     "request": "^2.88.2",
     "uuid": "^8.2.0"
   },
@@ -50,7 +51,7 @@
     "nyc": "^14.1.1"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=10.0.0"
   },
   "files": [
     "/bin",
@@ -97,6 +98,7 @@
       "@contentstack/cli-cm-clone",
       "@contentstack/cli-cm-export-to-csv",
       "@contentstack/cli-cm-seed",
+      "@contentstack/cli-migration",
       "@contentstack/cli-cm-bootstrap",
       "@contentstack/cli-cm-migrate-rte"
     ],
