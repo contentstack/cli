@@ -6,7 +6,7 @@
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-cm-import": "^0.1.1-beta.13",
-    "@contentstack/cli-command": "^0.1.1-beta.3",
+    "@contentstack/cli-command": "^0.1.1-beta.5",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "axios": "^0.21.1",
