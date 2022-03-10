@@ -8,7 +8,7 @@
   },
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "0.1.1-beta.3",
+    "@contentstack/cli-command": "0.1.1-beta.5",
     "@contentstack/cli-auth": "0.1.1-beta.2",
     "@contentstack/cli-cm-bulk-publish": "0.1.1-beta.5",
     "@contentstack/cli-cm-clone": "0.1.0-beta.3",
