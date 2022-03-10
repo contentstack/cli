@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.21 linux-x64 node-v12.22.7
+@contentstack/cli/0.1.1-beta.22 linux-x64 node-v12.22.7
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -83,7 +83,7 @@ ALIASES
   $ csdx login
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/login.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/auth/src/commands/auth/login.js)_
 
 ## `csdx auth:logout`
 
@@ -102,7 +102,7 @@ ALIASES
   $ csdx logout
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/logout.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/auth/src/commands/auth/logout.js)_
 
 ## `csdx auth:tokens`
 
@@ -129,7 +129,7 @@ ALIASES
   $ csdx tokens
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/tokens/index.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/auth/src/commands/auth/tokens/index.js)_
 
 ## `csdx auth:tokens:add`
 
@@ -160,7 +160,7 @@ ALIASES
   $ csdx tokens:add
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/tokens/add.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/auth/src/commands/auth/tokens/add.js)_
 
 ## `csdx auth:tokens:remove`
 
@@ -182,7 +182,7 @@ ALIASES
   $ csdx tokens:remove
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/tokens/remove.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/auth/src/commands/auth/tokens/remove.js)_
 
 ## `csdx auth:whoami`
 
@@ -199,7 +199,7 @@ ALIASES
   $ csdx whoami
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/auth/src/commands/auth/whoami.js)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v0.1.1-beta.2/packages/auth/src/commands/auth/whoami.js)_
 
 ## `csdx cm:bootstrap`
 
@@ -1121,7 +1121,7 @@ USAGE
   $ csdx config:get:region
 ```
 
-_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.21/src/commands/config/get/region.js)_
+_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.22/src/commands/config/get/region.js)_
 
 ## `csdx config:set:region [REGION]`
 
@@ -1153,7 +1153,7 @@ EXAMPLES
   --name="India"
 ```
 
-_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.21/src/commands/config/set/region.js)_
+_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.22/src/commands/config/set/region.js)_
 
 ## `csdx help [COMMAND]`
 
