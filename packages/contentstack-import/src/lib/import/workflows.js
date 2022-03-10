@@ -74,8 +74,13 @@ importWorkflows.prototype = {
             }
           }
 
+          if(workflow.admin_users !== undefined) {
+            addlogs(config, chalk.yellow('We are skipping import of `Workflow superuser(s)` from workflow'), 'info');
+            delete workflow.admin_users;
+          }
+
           let requestOption = {
-            workflow: workflow
+            workflow
           };
 
           return client.stack({ api_key: config.target_stack, management_token: config.management_token }).workflow().create(requestOption)
