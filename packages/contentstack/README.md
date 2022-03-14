@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.22 linux-x64 node-v12.22.7
+@contentstack/cli/0.1.1-beta.24 linux-x64 node-v12.22.7
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -227,7 +227,7 @@ EXAMPLES
   $ csdx cm:bootstrap -t <github access token>
 ```
 
-_See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/v1.0.2/src/commands/cm/bootstrap.ts)_
+_See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/v1.0.4/src/commands/cm/bootstrap.ts)_
 
 ## `csdx cm:bulk-publish`
 
@@ -241,7 +241,7 @@ USAGE
   $ csdx cm:bulk-publish
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/index.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/index.js)_
 
 ## `csdx cm:bulk-publish:add-fields`
 
@@ -304,7 +304,7 @@ EXAMPLES
   [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js)_
 
 ## `csdx cm:bulk-publish:assets`
 
@@ -365,7 +365,7 @@ EXAMPLES
   NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js)_
 
 ## `csdx cm:bulk-publish:clear`
 
@@ -383,7 +383,7 @@ OPTIONS
   -y, --yes   Delete all files without asking for confirmation
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/clear.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/clear.js)_
 
 ## `csdx cm:bulk-publish:configure`
 
@@ -420,7 +420,7 @@ DESCRIPTION
   EXAMPLE : cm:bulk-publish:configure -a [MANAGEMENT TOKEN Alias]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/configure.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/configure.js)_
 
 ## `csdx cm:bulk-publish:cross-publish`
 
@@ -492,7 +492,7 @@ EXAMPLES
   [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
 
 ## `csdx cm:bulk-publish:entries`
 
@@ -560,7 +560,7 @@ EXAMPLES
   [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entries.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entries.js)_
 
 ## `csdx cm:bulk-publish:entry-edits`
 
@@ -627,7 +627,7 @@ EXAMPLES
   2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entry-edits.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entry-edits.js)_
 
 ## `csdx cm:bulk-publish:nonlocalized-field-changes`
 
@@ -691,7 +691,7 @@ EXAMPLES
   2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME] -s [SOURCE ENV]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
 
 ## `csdx cm:bulk-publish:revert`
 
@@ -724,7 +724,7 @@ EXAMPLES
   cm:bulk-publish:revert -r [LOG FILE NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/revert.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/revert.js)_
 
 ## `csdx cm:bulk-publish:unpublish`
 
@@ -820,7 +820,7 @@ EXAMPLES
   [DELIVERY TOKEN] -B [BRANCH NAME]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublish.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublish.js)_
 
 ## `csdx cm:bulk-publish:unpublished-entries`
 
@@ -885,7 +885,7 @@ EXAMPLES
   -B [BRANCH NAME] -s [SOURCE ENV]
 ```
 
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.3/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
 
 ## `csdx cm:export`
 
@@ -929,7 +929,7 @@ EXAMPLES
   csdx cm:export -A -B [optional] branch name
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.6/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.10/packages/contentstack-export/src/commands/cm/export.js)_
 
 ## `csdx cm:export-to-csv`
 
@@ -943,7 +943,7 @@ USAGE
   $ csdx cm:export-to-csv
 ```
 
-_See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/v0.1.0-beta.1/src/commands/cm/export-to-csv.js)_
+_See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/v0.1.0-beta.2/src/commands/cm/export-to-csv.js)_
 
 ## `csdx cm:import`
 
@@ -985,7 +985,7 @@ EXAMPLES
   csdx cm:import -A -B <branch name>
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.11/packages/contentstack-import/src/commands/cm/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.13/packages/contentstack-import/src/commands/cm/import.js)_
 
 ## `csdx cm:migrate-rte`
 
@@ -1030,7 +1030,7 @@ EXAMPLES
   csdx cm:migrate-rte -a alias -c global_field_uid -g -h htmlPath -j jsonPath
 ```
 
-_See code: [@contentstack/cli-cm-migrate-rte](https://github.com/contentstack/cli/blob/v1.0.3/src/commands/cm/migrate-rte/index.js)_
+_See code: [@contentstack/cli-cm-migrate-rte](https://github.com/contentstack/cli/blob/v1.0.4/src/commands/cm/migrate-rte/index.js)_
 
 ## `csdx cm:migration`
 
@@ -1046,10 +1046,10 @@ OPTIONS
   -A, --authtoken                                      Use this flag to use the auth token of the current session. After
                                                        logging in CLI, an auth token is generated for each new session.
 
-  -a, --management-token-alias=management-token-alias  Use this flag to add the management token alias.
-
-  -b, --branch=branch                                  Use this flag to add the branch name where you want to perform
+  -B, --branch=branch                                  Use this flag to add the branch name where you want to perform
                                                        the migration.
+
+  -a, --management-token-alias=management-token-alias  Use this flag to add the management token alias.
 
   -k, --api-key=api-key                                With this flag add the API key of your stack.
 
@@ -1060,7 +1060,7 @@ OPTIONS
                                                        instance.
 ```
 
-_See code: [@contentstack/cli-migration](https://github.com/contentstack/cli-migration/blob/v0.1.1-beta.1/src/commands/cm/migration.js)_
+_See code: [@contentstack/cli-migration](https://github.com/contentstack/cli-migration/blob/v0.1.1-beta.2/src/commands/cm/migration.js)_
 
 ## `csdx cm:seed`
 
@@ -1086,7 +1086,7 @@ EXAMPLES
   $ csdx cm:seed -r "account/repository" -o "your-org-uid" -n "stack-name" //create a new stack in given org uid
 ```
 
-_See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.7/src/commands/cm/seed.ts)_
+_See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.9/src/commands/cm/seed.ts)_
 
 ## `csdx cm:stack-clone`
 
@@ -1107,7 +1107,7 @@ EXAMPLE
   csdx cm:stack-clone
 ```
 
-_See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/v0.1.0-beta.2/src/commands/cm/stack-clone.js)_
+_See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/v0.1.0-beta.3/src/commands/cm/stack-clone.js)_
 
 ## `csdx config:get:region`
 
@@ -1121,7 +1121,7 @@ USAGE
   $ csdx config:get:region
 ```
 
-_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.22/src/commands/config/get/region.js)_
+_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.24/src/commands/config/get/region.js)_
 
 ## `csdx config:set:region [REGION]`
 
@@ -1153,7 +1153,7 @@ EXAMPLES
   --name="India"
 ```
 
-_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.22/src/commands/config/set/region.js)_
+_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.24/src/commands/config/set/region.js)_
 
 ## `csdx help [COMMAND]`
 
@@ -1191,7 +1191,7 @@ EXAMPLE
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:create`
 
@@ -1228,7 +1228,7 @@ EXAMPLE
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -1272,7 +1272,7 @@ EXAMPLES
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
@@ -1305,7 +1305,7 @@ EXAMPLE
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -1329,7 +1329,7 @@ ALIASES
   $ csdx plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:update`
 
@@ -1346,5 +1346,5 @@ OPTIONS
   -v, --verbose
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.1/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/update.ts)_
 <!-- commandsstop -->
