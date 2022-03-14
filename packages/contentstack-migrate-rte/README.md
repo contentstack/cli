@@ -15,7 +15,7 @@ $ npm install -g @contentstack/cli-cm-migrate-rte
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-migrate-rte/1.0.1 linux-x64 node-v12.22.1
+@contentstack/cli-cm-migrate-rte/1.0.4 linux-x64 node-v12.22.7
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -68,7 +68,7 @@ EXAMPLES
   csdx cm:migrate-rte -a alias -c global_field_uid -g -h htmlPath -j jsonPath
 ```
 
-_See code: [src/commands/cm/migrate-rte/index.js](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/cm/migrate-rte/index.js)_
+_See code: [src/commands/cm/migrate-rte/index.js](https://github.com/contentstack/cli/blob/v1.0.4/src/commands/cm/migrate-rte/index.js)_
 
 ## `csdx help [COMMAND]`
 
@@ -85,5 +85,5 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.3/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
 <!-- commandsstop -->

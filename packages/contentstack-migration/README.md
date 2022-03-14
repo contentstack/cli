@@ -20,7 +20,7 @@ $ npm install -g @contentstack/cli-migration
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-migration/0.1.1-beta.1 linux-x64 node-v12.22.1
+@contentstack/cli-migration/0.1.1-beta.2 linux-x64 node-v12.22.7
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -45,10 +45,10 @@ OPTIONS
   -A, --authtoken                                      Use this flag to use the auth token of the current session. After
                                                        logging in CLI, an auth token is generated for each new session.
 
-  -a, --management-token-alias=management-token-alias  Use this flag to add the management token alias.
-
-  -b, --branch=branch                                  Use this flag to add the branch name where you want to perform
+  -B, --branch=branch                                  Use this flag to add the branch name where you want to perform
                                                        the migration.
+
+  -a, --management-token-alias=management-token-alias  Use this flag to add the management token alias.
 
   -k, --api-key=api-key                                With this flag add the API key of your stack.
 
@@ -59,7 +59,7 @@ OPTIONS
                                                        instance.
 ```
 
-_See code: [src/commands/cm/migration.js](https://github.com/contentstack/cli-migration/blob/v0.1.1-beta.1/src/commands/cm/migration.js)_
+_See code: [src/commands/cm/migration.js](https://github.com/contentstack/cli-migration/blob/v0.1.1-beta.2/src/commands/cm/migration.js)_
 <!-- commandsstop -->
 
 ### Points to remember
