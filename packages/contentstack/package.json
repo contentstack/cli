@@ -16,7 +16,7 @@
     "@contentstack/cli-cm-export-to-csv": "0.1.0-beta.2",
     "@contentstack/cli-migration": "0.1.1-beta.2",
     "@contentstack/cli-cm-migrate-rte": "^1.0.4",
-    "@contentstack/cli-cm-import": "^0.1.1-beta.13",
+    "@contentstack/cli-cm-import": "^0.1.1-beta.14",
     "@contentstack/cli-cm-seed": "^1.0.9",
     "@contentstack/cli-cm-bootstrap": "^1.0.4",
     "@contentstack/cli-plugins-plugin": "0.1.0-beta",
