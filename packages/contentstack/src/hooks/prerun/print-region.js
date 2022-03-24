@@ -4,14 +4,12 @@ const {Command} = require('@contentstack/cli-command')
 const command = new Command()
 
 module.exports = async function (opts) {
-  if (opts.Command.id !== 'config:get:region') {
+  if (opts.Command.id !== 'config:get:region' && opts.Command.id !== 'config:set:region') {
     const region = command.region
-    if (!region && opts.Command.id !== 'config:set:region') {
-      console.log(chalk.yellow("Please set a region using `csdx config:set:region <region>`"))
+    if (!region) {
+      cli.log(chalk.yellow("Please set a region using `csdx config:set:region <region>`"))
       command.exit(2)
-    }
-    
-    if(region) {
+    } else {
       cli.log(chalk.grey(`Currently using ${region.name} region`))
     }
   }
