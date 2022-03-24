@@ -39,6 +39,8 @@ ExportAssets.prototype = {
   start: function (credentialConfig) {
     this.assetContents = {}
     this.folderData = []
+    this.assetDownloadRetry = {};
+    this.assetDownloadRetryLimit = 3;
     let  self = this
     config = credentialConfig
     assetsFolderPath = path.resolve(config.data, (config.branchName || ""), assetConfig.dirName)
@@ -69,9 +71,9 @@ ExportAssets.prototype = {
                   // log.success(chalk.white('The following asset has been downloaded successfully: ' +
                   //     assetJSON.uid))
                 }).catch(function (error) {
-                addlogs(self.configchalk.red('The following asset failed to download\n' + JSON.stringify(
+                  addlogs(config, chalk.red('The following asset failed to download\n' + JSON.stringify(
                   assetJSON)))
-                addlogs(config, error, 'error')
+                  addlogs(config, error, 'error')
               })
             }, {
               concurrency: vLimit,
@@ -210,6 +212,10 @@ ExportAssets.prototype = {
     let self = this
     let assetVersionInfo = bucket || []
     return new Promise(function (resolve, reject) {
+      if (self.assetDownloadRetry[uid + version] > self.assetDownloadRetryLimit) {
+        return reject(new Error('Asset Max download retry limit exceeded! ' + uid));
+      }
+
       if (version <= 0) {
         const assetVersionInfoFile = path.resolve(assetsFolderPath, uid, '_contentstack_' + uid + '.json')
         helper.writeFile(assetVersionInfoFile, assetVersionInfo)
@@ -231,8 +237,17 @@ ExportAssets.prototype = {
           assetVersionInfo = _.uniqWith(assetVersionInfo, _.isEqual)
           self.getVersionedAssetJSON(uid, --version, assetVersionInfo)
           .then(resolve)
-          .catch(reject)
+            .catch(reject)
         }).catch(reject)
+      }).catch((error) => {
+        if (error.status === 408) {
+          // retrying when timeout
+          (self.assetDownloadRetry[uid+version] ? ++self.assetDownloadRetry[uid+version] : self.assetDownloadRetry[uid+version] = 1 ) 
+          return self.getVersionedAssetJSON(uid, version, assetVersionInfo)
+          .then(resolve)
+            .catch(reject) 
+        }
+        reject(error);
       })
     })
   },
@@ -252,6 +267,7 @@ ExportAssets.prototype = {
           : asset.url,
       };
 
+      self.assetStream.url = encodeURI(self.assetStream.url);
       const assetStreamRequest = nativeRequest(self.assetStream)
       assetStreamRequest.on('response', function () {
         helper.makeDirectory(assetFolderPath)
