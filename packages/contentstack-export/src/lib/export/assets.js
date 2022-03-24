@@ -71,9 +71,9 @@ ExportAssets.prototype = {
                   // log.success(chalk.white('The following asset has been downloaded successfully: ' +
                   //     assetJSON.uid))
                 }).catch(function (error) {
-                addlogs(chalk.red('The following asset failed to download\n' + JSON.stringify(
+                  addlogs(config, chalk.red('The following asset failed to download\n' + JSON.stringify(
                   assetJSON)))
-                addlogs(config, error, 'error')
+                  addlogs(config, error, 'error')
               })
             }, {
               concurrency: vLimit,
@@ -212,7 +212,7 @@ ExportAssets.prototype = {
     let self = this
     let assetVersionInfo = bucket || []
     return new Promise(function (resolve, reject) {
-      if (self.assetDownloadRetry[uid + version] > this.assetDownloadRetryLimit) {
+      if (self.assetDownloadRetry[uid + version] > self.assetDownloadRetryLimit) {
         return reject(new Error('Asset Max download retry limit exceeded! ' + uid));
       }
 
