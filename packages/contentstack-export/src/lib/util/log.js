@@ -37,7 +37,7 @@ var myCustomLevels = {
   },
 }
 
-var logger
+let logger
 function init (_logPath, logfileName) {
   if (!logger) {
     var logsDir = path.resolve(_logPath, 'logs', 'export')
