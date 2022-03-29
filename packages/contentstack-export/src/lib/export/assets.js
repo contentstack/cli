@@ -37,9 +37,13 @@ function ExportAssets() {
 
 ExportAssets.prototype = {
   start: function (credentialConfig) {
+    this.assetContents = {}
+    this.folderData = []
+    this.assetDownloadRetry = {};
+    this.assetDownloadRetryLimit = 3;
     let  self = this
     config = credentialConfig
-    assetsFolderPath = path.resolve(config.data, assetConfig.dirName)
+    assetsFolderPath = path.resolve(config.data, (config.branchName || ""), assetConfig.dirName)
     assetContentsFile = path.resolve(assetsFolderPath, 'assets.json')
     folderJSONPath = path.resolve(assetsFolderPath, 'folders.json')
     client = stack.Client(config)
@@ -48,6 +52,7 @@ ExportAssets.prototype = {
     // Create asset folder
     mkdirp.sync(assetsFolderPath)
     return new Promise(function (resolve, reject) {
+      //TBD: getting all the assets should have optimized
       return self.getAssetCount().then(function (count) {
         if (typeof count !== 'number' || count === 0) {
           addlogs(config, 'No assets found', 'success')
@@ -66,9 +71,9 @@ ExportAssets.prototype = {
                   // log.success(chalk.white('The following asset has been downloaded successfully: ' +
                   //     assetJSON.uid))
                 }).catch(function (error) {
-                addlogs(self.configchalk.red('The following asset failed to download\n' + JSON.stringify(
+                  addlogs(config, chalk.red('The following asset failed to download\n' + JSON.stringify(
                   assetJSON)))
-                addlogs(config, error, 'error')
+                  addlogs(config, error, 'error')
               })
             }, {
               concurrency: vLimit,
@@ -157,7 +162,6 @@ ExportAssets.prototype = {
     })
   },
   getAssetCount: function (folder) {
-    let self = this
     return new Promise(function (resolve, reject) {
       if (folder && typeof folder === 'boolean') {
         let queryOptions = {include_folders: true, query: {'is_dir': true}, include_count: true}
@@ -182,7 +186,6 @@ ExportAssets.prototype = {
     })
   },
   getAssetJSON: function (skip) {
-    let  self = this
     return new Promise(function (resolve, reject) {
       if (typeof skip !== 'number') {
         skip = 0
@@ -209,6 +212,10 @@ ExportAssets.prototype = {
     let self = this
     let assetVersionInfo = bucket || []
     return new Promise(function (resolve, reject) {
+      if (self.assetDownloadRetry[uid + version] > self.assetDownloadRetryLimit) {
+        return reject(new Error('Asset Max download retry limit exceeded! ' + uid));
+      }
+
       if (version <= 0) {
         const assetVersionInfoFile = path.resolve(assetsFolderPath, uid, '_contentstack_' + uid + '.json')
         helper.writeFile(assetVersionInfoFile, assetVersionInfo)
@@ -230,8 +237,17 @@ ExportAssets.prototype = {
           assetVersionInfo = _.uniqWith(assetVersionInfo, _.isEqual)
           self.getVersionedAssetJSON(uid, --version, assetVersionInfo)
           .then(resolve)
-          .catch(reject)
+            .catch(reject)
         }).catch(reject)
+      }).catch((error) => {
+        if (error.status === 408) {
+          // retrying when timeout
+          (self.assetDownloadRetry[uid+version] ? ++self.assetDownloadRetry[uid+version] : self.assetDownloadRetry[uid+version] = 1 ) 
+          return self.getVersionedAssetJSON(uid, version, assetVersionInfo)
+          .then(resolve)
+            .catch(reject) 
+        }
+        reject(error);
       })
     })
   },
@@ -251,6 +267,7 @@ ExportAssets.prototype = {
           : asset.url,
       };
 
+      self.assetStream.url = encodeURI(self.assetStream.url);
       const assetStreamRequest = nativeRequest(self.assetStream)
       assetStreamRequest.on('response', function () {
         helper.makeDirectory(assetFolderPath)

@@ -8,17 +8,16 @@
 const {getQueue} = require('../util/queue')
 const defaultConfig = require('../config/defaults.json')
 const req = require('../util/request')
-const {bulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
+const {performBulkPublish, publishEntry, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
-const stack = require('../util/client.js').stack
 const {setDelayForBulkPublish} = require('../util')
 const {Command} = require('@contentstack/cli-command')
 const command = new Command()
 const {isEmpty} = require('../util')
 
 const queue = getQueue()
-queue.consumer = bulkPublish
+queue.consumer = performBulkPublish
 let logFileName
 let bulkPublishSet = []
 let filePath
@@ -38,7 +37,7 @@ const deleteFields = ['updated_by', 'created_by', 'created_at', 'updated_at', '_
 function setConfig(conf, bp) {
   if (bp) {
     logFileName = 'bulk-add-fields'
-    queue.consumer = bulkPublish
+    queue.consumer = performBulkPublish
   } else {
     logFileName = 'add-fields'
     queue.consumer = publishEntry
@@ -286,42 +285,38 @@ async function start({contentTypes, locales, environments, retryFailed, bulkPubl
     process.exit(0)  
   })
 
-  try {
-    if (retryFailed) {
-      if (typeof retryFailed === 'string') {
-        if (!validateFile(retryFailed, ['bulk-add-fields', 'add-fields'])) {
-          return false
-        }
-
-        bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
-        setConfig(config, bulkPublish)
-
-        if (bulkPublish) {
-          await retryFailedLogs(retryFailed, queue, 'bulk')
-        } else {
-          await retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish')
-        }
+  if (retryFailed) {
+    if (typeof retryFailed === 'string') {
+      if (!validateFile(retryFailed, ['bulk-add-fields', 'add-fields'])) {
+        return false
       }
-    } else {
-      setConfig(config, bulkPublish)  
-      for (let i = 0; i < contentTypes.length; i += 1) {
-        getContentTypeSchema(stack, contentTypes[i])
-        .then(async schema => {
-          for (let j = 0; j < locales.length; j += 1) {
-            try {
-              await getEntries(stack, config, schema, contentTypes[i], locales[j], bulkPublish, environments)
-            } catch (err) {
-              console.log(`Failed to get Entries with contentType ${contentTypes[i]} and locale ${locales[j]}`)
-            }
-          }
-        })
-        .catch(err => {
-          console.log(`Failed to fetch schema${JSON.stringify(err)}`)
-        })
+
+      bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
+      setConfig(config, bulkPublish)
+
+      if (bulkPublish) {
+        await retryFailedLogs(retryFailed, queue, 'bulk')
+      } else {
+        await retryFailedLogs(retryFailed, {entryQueue: queue}, 'publish')
       }
     }
-  } catch(error) {
-    throw error
+  } else {
+    setConfig(config, bulkPublish)  
+    for (let i = 0; i < contentTypes.length; i += 1) {
+      getContentTypeSchema(stack, contentTypes[i])
+      .then(async schema => {
+        for (let j = 0; j < locales.length; j += 1) {
+          try {
+            await getEntries(stack, config, schema, contentTypes[i], locales[j], bulkPublish, environments)
+          } catch (err) {
+            console.log(`Failed to get Entries with contentType ${contentTypes[i]} and locale ${locales[j]}`)
+          }
+        }
+      })
+      .catch(err => {
+        console.log(`Failed to fetch schema${JSON.stringify(err)}`)
+      })
+    }
   }
 }
 

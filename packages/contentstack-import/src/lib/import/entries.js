@@ -448,14 +448,6 @@ importEntries.prototype = {
               return
             }
 
-            let requestObject = {
-              qs: {
-                locale: lang,
-              },
-              json: {
-                entry: entry,
-              },
-            }
             let promiseResult = new Promise((resolve, reject) => {
               let entryResponse = client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry(entry.uid)
               Object.assign(entryResponse, entry)
@@ -482,7 +474,7 @@ importEntries.prototype = {
                   locale: lang,
                   error: error,
                 })
-                return reject()
+                return reject(error)
               })
             })
             await promiseResult
@@ -615,7 +607,6 @@ importEntries.prototype = {
     })
   },
   unSuppressFields: function () {
-    let self = this
     return new Promise(function (resolve, reject) {
       let modifiedSchemas = helper.readFile(modifiedSchemaPath)
       let modifiedSchemasUids = []
@@ -719,7 +710,6 @@ importEntries.prototype = {
     })
   },
   field_rules_update: function (schema) {
-    let self = this
     return new Promise(function (resolve, reject) {
       if (schema.field_rules) {
         let fieldRuleLength = schema.field_rules.length
