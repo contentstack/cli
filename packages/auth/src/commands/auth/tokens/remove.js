@@ -9,9 +9,9 @@ const config = new Configstore('contentstack_cli')
 
 class RemoveCommand extends Command {
   async run() {
-    const {flags} = this.parse(RemoveCommand)
-    let alias = flags.alias
-    let ignore = flags.ignore
+    const removeCommandFlags = this.parse(RemoveCommand).flags
+    let alias = removeCommandFlags.alias
+    let ignore = removeCommandFlags.ignore
 
     let token = config.get(`tokens.${alias}`)
     const tokens = config.get('tokens')

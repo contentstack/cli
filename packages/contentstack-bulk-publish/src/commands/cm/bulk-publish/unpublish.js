@@ -11,11 +11,11 @@ let config
 
 class UnpublishCommand extends Command {
   async run() {
-    const {flags} = this.parse(UnpublishCommand)
+    const unpublishFlags = this.parse(UnpublishCommand).flags
     let updatedFlags
     try {
-      updatedFlags = (flags.config) ? store.updateMissing(configKey, flags) : flags
-    } catch(error) {
+      updatedFlags = (unpublishFlags.config) ? store.updateMissing(configKey, unpublishFlags) : unpublishFlags
+    } catch (error) {
       this.error(error.message, {exit: 2})
     }
 
@@ -30,10 +30,11 @@ class UnpublishCommand extends Command {
         }
         updatedFlags.bulkUnpublish = (updatedFlags.bulkUnpublish === 'false') ? false : true
         await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
-        config = { 
+        config = {
           alias: updatedFlags.alias,
           host: this.config.userConfig.getRegion().cma,
           cda: this.config.userConfig.getRegion().cda,
+          branch: unpublishFlags.branch,
         }
         stack = getStack(config)
       }
@@ -48,7 +49,7 @@ class UnpublishCommand extends Command {
           } else {
             await start(updatedFlags)
           }
-        } catch(error) {
+        } catch (error) {
           let message = formatError(error)
           this.error(message, {exit: 2})
         }
@@ -94,14 +95,14 @@ class UnpublishCommand extends Command {
     }
   }
 
-  async confirmFlags(flags) {
+  async confirmFlags(data) {
     let confirmation
-    prettyPrint(flags)
-    if (flags.yes) {
+    prettyPrint(data)
+    if (data.yes) {
       return true
     }
 
-    if (!flags.contentType && !flags.onlyAssets) {
+    if (!data.contentType && !data.onlyAssets) {
       confirmation = await cli.confirm('Do you want to continue with this configuration. This will unpublish all the entries from all content types? [yes or no]')
     } else {
       confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')
@@ -135,6 +136,7 @@ UnpublishCommand.flags = {
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
   onlyAssets: flags.boolean({description: 'Unpublish only assets', default: false}),
   onlyEntries: flags.boolean({description: 'Unpublish only entries', default: false}),
+  branch: flags.string({char: 'B', default: 'main', description: 'Specify the branch to fetch the content from (default is main branch)'}),
 }
 
 UnpublishCommand.examples = [
@@ -159,6 +161,9 @@ UnpublishCommand.examples = [
   'Using --onlyEntries',
   'csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only entries, all entries, from the source environment)',
   'csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only entries, (from CONTENT TYPE) from the source environment)',
+  '',
+  'Using --branch or -B flag',
+  'csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]',
 ]
 
 module.exports = UnpublishCommand

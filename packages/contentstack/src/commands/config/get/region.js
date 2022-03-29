@@ -5,9 +5,13 @@ const chalk = require('chalk')
 class RegionCommand extends Command {
   async run() {
     let currentRegion = this.region
-    cli.log(chalk.green(`Currently using ${currentRegion.name} region`))
-    cli.log(chalk.green(`CDA HOST: ${currentRegion.cda}`))
-    cli.log(chalk.green(`CMA HOST: ${currentRegion.cma}`))
+    if (currentRegion) {
+      cli.log(chalk.green(`Currently using ${currentRegion.name} region`))
+      cli.log(chalk.green(`CDA HOST: ${currentRegion.cda}`))
+      cli.log(chalk.green(`CMA HOST: ${currentRegion.cma}`)) 
+    } else {
+      cli.log(chalk.yellow("Please set a region using `csdx config:set:region <region>`"))
+    }
   }
 }
 

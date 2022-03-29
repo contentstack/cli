@@ -10,7 +10,7 @@ module.exports = {
   // asset: [Function],
   // globalField: [Function],
   // environment: [Function],
-  // deliveryToken: [Function],
+  // deliveryToken: [Function]
   // users: [Function],
   // transferOwnership: [Function],
   // settings: [Function],

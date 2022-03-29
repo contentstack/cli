@@ -3,14 +3,14 @@ module.exports = {
     {
       uid: 'dummyAssetId',
       created_at: '2019-11-04T08:40:41.341Z',
-      updated_at: '2020-02-14T13:11:59.992Z',
+      updated_at: '1970-01-01T00:00:00.000Z',
       created_by: '***REMOVED***',
       updated_by: '***REMOVED***',
       content_type: 'image/svg+xml',
       file_size: '2676',
       tags: [],
       filename: 'Content_manager.svg',
-      url: '***REMOVED***MOVED***/blt42be7794369fbf06/5dbfe409a0b3fd4bbae67e30/Content_manager.svg',
+      url: '***REMOVED***MOVED***/***REMOVED***/5dbfe409a0b3fd4bbae67e30/Content_manager.svg',
       ACL: {
         roles: [],
         others: {
@@ -28,7 +28,7 @@ module.exports = {
         },
       },
       is_dir: false,
-      parent_uid: 'blt0829fdfd03dfabc5',
+      parent_uid: '***REMOVED***',
       _version: 2,
       title: 'Content_manager.svg',
       description: '',
@@ -43,7 +43,7 @@ module.exports = {
       file_size: '344825',
       tags: [],
       filename: 'Snap.PNG',
-      url: '***REMOVED***MOVED***/blt0ebb164df30cd6d5/5dbfe4280eebac1e86b541b3/Snap.PNG',
+      url: '***REMOVED***MOVED***/***REMOVED***/5dbfe4280eebac1e86b541b3/Snap.PNG',
       ACL: {
         roles: [],
         others: {
@@ -74,7 +74,7 @@ module.exports = {
       file_size: '344825',
       tags: [],
       filename: 'Snap.PNG',
-      url: '***REMOVED***MOVED***/blt0ebb164df30cd6d5/5dbfe4280eebac1e86b541b3/Snap.PNG',
+      url: '***REMOVED***MOVED***/***REMOVED***/5dbfe4280eebac1e86b541b3/Snap.PNG',
       ACL: {
         roles: [],
         others: {
@@ -105,7 +105,7 @@ module.exports = {
       file_size: '344825',
       tags: [],
       filename: 'Snap.PNG',
-      url: '***REMOVED***MOVED***/blt0ebb164df30cd6d5/5dbfe4280eebac1e86b541b3/Snap.PNG',
+      url: '***REMOVED***MOVED***/***REMOVED***/5dbfe4280eebac1e86b541b3/Snap.PNG',
       ACL: {
         roles: [],
         others: {
@@ -136,7 +136,7 @@ module.exports = {
       file_size: '344825',
       tags: [],
       filename: 'Snap.PNG',
-      url: '***REMOVED***MOVED***/blt0ebb164df30cd6d5/5dbfe4280eebac1e86b541b3/Snap.PNG',
+      url: '***REMOVED***MOVED***/***REMOVED***/5dbfe4280eebac1e86b541b3/Snap.PNG',
       ACL: {
         roles: [],
         others: {
@@ -167,7 +167,7 @@ module.exports = {
       file_size: '344825',
       tags: [],
       filename: 'Snap.PNG',
-      url: '***REMOVED***MOVED***/blt0ebb164df30cd6d5/5dbfe4280eebac1e86b541b3/Snap.PNG',
+      url: '***REMOVED***MOVED***/***REMOVED***/5dbfe4280eebac1e86b541b3/Snap.PNG',
       ACL: {
         roles: [],
         others: {
@@ -198,7 +198,7 @@ module.exports = {
       file_size: '344825',
       tags: [],
       filename: 'Snap.PNG',
-      url: '***REMOVED***MOVED***/blt0ebb164df30cd6d5/5dbfe4280eebac1e86b541b3/Snap.PNG',
+      url: '***REMOVED***MOVED***/***REMOVED***/5dbfe4280eebac1e86b541b3/Snap.PNG',
       ACL: {
         roles: [],
         others: {
@@ -229,7 +229,7 @@ module.exports = {
       file_size: '344825',
       tags: [],
       filename: 'Snap.PNG',
-      url: '***REMOVED***MOVED***/blt0ebb164df30cd6d5/5dbfe4280eebac1e86b541b3/Snap.PNG',
+      url: '***REMOVED***MOVED***/***REMOVED***/5dbfe4280eebac1e86b541b3/Snap.PNG',
       ACL: {
         roles: [],
         others: {
@@ -260,7 +260,7 @@ module.exports = {
       file_size: '344825',
       tags: [],
       filename: 'Snap.PNG',
-      url: '***REMOVED***MOVED***/blt0ebb164df30cd6d5/5dbfe4280eebac1e86b541b3/Snap.PNG',
+      url: '***REMOVED***MOVED***/***REMOVED***/5dbfe4280eebac1e86b541b3/Snap.PNG',
       ACL: {
         roles: [],
         others: {
@@ -291,7 +291,7 @@ module.exports = {
       file_size: '344825',
       tags: [],
       filename: 'Snap.PNG',
-      url: '***REMOVED***MOVED***/blt0ebb164df30cd6d5/5dbfe4280eebac1e86b541b3/Snap.PNG',
+      url: '***REMOVED***MOVED***/***REMOVED***/5dbfe4280eebac1e86b541b3/Snap.PNG',
       ACL: {
         roles: [],
         others: {
@@ -322,7 +322,7 @@ module.exports = {
       file_size: '344825',
       tags: [],
       filename: 'Snap.PNG',
-      url: '***REMOVED***MOVED***/blt0ebb164df30cd6d5/5dbfe4280eebac1e86b541b3/Snap.PNG',
+      url: '***REMOVED***MOVED***/***REMOVED***/5dbfe4280eebac1e86b541b3/Snap.PNG',
       ACL: {
         roles: [],
         others: {
@@ -353,7 +353,7 @@ module.exports = {
       file_size: '344825',
       tags: [],
       filename: 'Snap.PNG',
-      url: '***REMOVED***MOVED***/blt0ebb164df30cd6d5/5dbfe4280eebac1e86b541b3/Snap.PNG',
+      url: '***REMOVED***MOVED***/***REMOVED***/5dbfe4280eebac1e86b541b3/Snap.PNG',
       ACL: {
         roles: [],
         others: {
@@ -384,7 +384,7 @@ module.exports = {
       file_size: '344825',
       tags: [],
       filename: 'Snap.PNG',
-      url: '***REMOVED***MOVED***/blt0ebb164df30cd6d5/5dbfe4280eebac1e86b541b3/Snap.PNG',
+      url: '***REMOVED***MOVED***/***REMOVED***/5dbfe4280eebac1e86b541b3/Snap.PNG',
       ACL: {
         roles: [],
         others: {
@@ -415,7 +415,7 @@ module.exports = {
       file_size: '344825',
       tags: [],
       filename: 'Snap.PNG',
-      url: '***REMOVED***MOVED***/blt0ebb164df30cd6d5/5dbfe4280eebac1e86b541b3/Snap.PNG',
+      url: '***REMOVED***MOVED***/***REMOVED***/5dbfe4280eebac1e86b541b3/Snap.PNG',
       ACL: {
         roles: [],
         others: {

@@ -2,7 +2,7 @@
 /* eslint-disable new-cap */
 /* eslint-disable camelcase */
 const {getQueue} = require('../util/queue')
-const {bulkPublish, publishAsset, initializeLogger} = require('../consumer/publish')
+const {performBulkPublish, publishAsset, initializeLogger} = require('../consumer/publish')
 const retryFailedLogs = require('../util/retryfailed')
 const {validateFile} = require('../util/fs')
 const {setDelayForBulkPublish} = require('../util')
@@ -77,7 +77,7 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, skip 
 
 function setConfig(conf, bp) {
   if (bp) {
-    queue.consumer = bulkPublish
+    queue.consumer = performBulkPublish
     logFileName = 'bulk-publish-assets'
   } else {
     queue.consumer = publishAsset
@@ -100,32 +100,24 @@ async function start({retryFailed, bulkPublish, environments, folderUid, locales
     process.exit(0)  
   })
 
-  try {
-    if (retryFailed) {
-      if (!validateFile(retryFailed, ['publish-assets', 'bulk-publish-assets'])) {
-        return false
-      }
-
-      bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
-      setConfig(config, bulkPublish)
-
-      if (bulkPublish) {
-        await retryFailedLogs(retryFailed, queue, 'bulk')
-      } else {
-        await retryFailedLogs(retryFailed, {assetQueue: queue}, 'publish')
-      }
-    } else if (folderUid) {
-      setConfig(config, bulkPublish)
-      for (let loc = 0; loc < locales.length; loc += 1) {
-        try {
-          await getAssets(stack, folderUid, bulkPublish, environments, locales[loc])
-        } catch(error) {
-          throw error
-        }
-      }
+  if (retryFailed) {
+    if (!validateFile(retryFailed, ['publish-assets', 'bulk-publish-assets'])) {
+      return false
     }
-  } catch (error) {
-    throw error
+
+    bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false
+    setConfig(config, bulkPublish)
+
+    if (bulkPublish) {
+      await retryFailedLogs(retryFailed, queue, 'bulk')
+    } else {
+      await retryFailedLogs(retryFailed, {assetQueue: queue}, 'publish')
+    }
+  } else if (folderUid) {
+    setConfig(config, bulkPublish)
+    for (let loc = 0; loc < locales.length; loc += 1) {
+      await getAssets(stack, folderUid, bulkPublish, environments, locales[loc])
+    }
   }
 }
 
