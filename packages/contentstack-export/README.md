@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-export/0.1.1-beta.8 linux-x64 node-v12.22.1
+@contentstack/cli-cm-export/0.1.1-beta.10 linux-x64 node-v12.22.7
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -41,11 +41,13 @@ USAGE
 
 OPTIONS
   -A, --auth-token                                     to use auth token
+  -B, --branch=branch                                  [optional] branch name
   -a, --management-token-alias=management-token-alias  alias of the management token
   -c, --config=config                                  [optional] path of the config
   -d, --data=data                                      path or location to store the data
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
+  -t, --content-type=content-type                      [optional] content type
   --secured-assets                                     [optional] use when assets are secured
 
 DESCRIPTION
@@ -61,7 +63,10 @@ EXAMPLES
   csdx cm:export -a <management_token_alias>
   csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
   csdx cm:export -a <management_token_alias> -c <path/to/config/file>
+  csdx cm:export -A -m <single module name>
+  csdx cm:export -A -m <single module name> -t <content type>
+  csdx cm:export -A -B [optional] branch name
 ```
 
-_See code: [src/commands/cm/export.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.8/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [src/commands/cm/export.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.10/packages/contentstack-export/src/commands/cm/export.js)_
 <!-- commandsstop -->

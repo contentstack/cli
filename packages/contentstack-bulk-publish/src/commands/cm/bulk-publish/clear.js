@@ -5,11 +5,11 @@ const {getLogsDirPath} = require('../../../util/logger.js')
 
 class ClearCommand extends Command {
   async run() {
-    const {flags} = this.parse(ClearCommand)
+    const clearFlags = this.parse(ClearCommand).flags
   	let dirPath = getLogsDirPath()
-    if (flags.list) {
+    if (clearFlags.list) {
     	this.listFiles(dirPath)
-    } else if (flags.yes) {
+    } else if (clearFlags.yes) {
     	this.rmDir(dirPath, false)
     } else {
 	    const confirmation = await cli.prompt('Proceed to delete all log files (y/n)?')
@@ -21,8 +21,9 @@ class ClearCommand extends Command {
 
 	rmDir(dirPath, removeSelf) {
 		if (fs.existsSync(dirPath)) {
-			if (removeSelf === undefined)
+			if (removeSelf === undefined) {
 		    removeSelf = true;
+			}
 		  try { var files = fs.readdirSync(dirPath); }
 		  catch(e) { return; }
 		  if (files.length > 0)
@@ -33,13 +34,14 @@ class ClearCommand extends Command {
 		      else
 		        rmDir(filePath);
 		    }
-		  if (removeSelf)
+		  if (removeSelf) {
 		    fs.rmdirSync(dirPath);
+			}
 		  this.log('Log files have been cleared')
 		} else {
 			this.error(`The log directory doesn't exist.`)
 		}
-	};
+	}
 
 	listFiles(dirPath) {
 		if (fs.existsSync(dirPath)) {

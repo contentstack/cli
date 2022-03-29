@@ -2,21 +2,19 @@ const {Command, flags} = require('@oclif/command')
 const {cli} = require('cli-ux')
 const fs = require('fs')
 const path = require('path')
-const defaults = require('../../../config/defaults.json')
-const store = require('../../../util/store.js')
 let config = require('../../../config/index.js')
 
 class ConfigureCommand extends Command {
 
   async run() {
-    const {flags} = this.parse(ConfigureCommand)
+    const configureFlags = this.parse(ConfigureCommand).flags
 
-    if (!flags.alias) {
-      flags.alias = await cli.prompt('Please enter the management token alias to be used')
+    if (!configureFlags.alias) {
+      configureFlags.alias = await cli.prompt('Please enter the management token alias to be used')
     }
 
-    await this.config.runHook('validateManagementTokenAlias', {alias: flags.alias})
-    this.setConfig(flags)
+    await this.config.runHook('validateManagementTokenAlias', {alias: configureFlags.alias})
+    this.setConfig(configureFlags)
     this.log('The configuration has been saved successfully.')
   }
 
