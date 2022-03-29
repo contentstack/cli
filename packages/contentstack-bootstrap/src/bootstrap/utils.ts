@@ -32,17 +32,22 @@ export const setupEnvironments = async (
                     'token': {
                         'name': `Sample app ${environment.name}`,
                         'description': 'Sample app',
-                        'scope': [{
-                            'module': 'environment',
-                            'environments': [environment.name],
-                            'acl': {
-                                'read': true
+                        'scope': [
+                            {
+                                'module': 'environment',
+                                'environments': [environment.name],
+                                'acl': {'read': true }
+                            },
+                            {
+                                module: "branch",
+                                acl: { read: true },
+                                branches: ["main"]
                             }
-                        }]
-                    }
+                        ]
+                    },
                 }
                 try {
-                    const tokenResult = await managementAPIClient.stack({ api_key }).deliveryToken().create(body)
+                    const tokenResult = await managementAPIClient.stack({ api_key}).deliveryToken().create(body)
                     if (tokenResult.token) {
                         const environmentVariables: EnviornmentVariables = {
                             api_key,
@@ -59,6 +64,7 @@ export const setupEnvironments = async (
                         cli.log(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_TOKEN_FOR_ENV', environment.name))
                     }
                 } catch (error) {
+                    console.log("error", error);
                     cli.log(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_ENV_FILE_FOR_ENV', environment.name))
                 }
             } else {
