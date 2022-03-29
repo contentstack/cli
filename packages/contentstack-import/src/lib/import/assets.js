@@ -142,11 +142,11 @@ importAssets.prototype = {
           }
           // TODO: if there are failures, retry
           return resolve()
-        }).catch(function () {
-          return reject()
+        }).catch(function (error) {
+          return reject(error)
         })
       }).catch(function (error) {
-        return reject()
+        return reject(error)
       })
     })
   },
