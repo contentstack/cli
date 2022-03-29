@@ -9,24 +9,25 @@ let config
 
 class UnpublishedEntriesCommand extends Command {
   async run() {
-    const {flags} = this.parse(UnpublishedEntriesCommand)
+    const unpublishedEntriesFlags = this.parse(UnpublishedEntriesCommand).flags
     let updatedFlags
     try {
-      updatedFlags = (flags.config) ? store.updateMissing(configKey, flags) : flags
-    } catch(error) {
+      updatedFlags = (unpublishedEntriesFlags.config) ? store.updateMissing(configKey, unpublishedEntriesFlags) : unpublishedEntriesFlags
+    } catch (error) {
       this.error(error.message, {exit: 2})
     }
     if (this.validate(updatedFlags)) {
       let stack
       if (!updatedFlags.retryFailed) {
-        if(!updatedFlags.alias) {
+        if (!updatedFlags.alias) {
           updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used')
         }
         updatedFlags.bulkPublish = (updatedFlags.bulkPublish === 'false') ? false : true
         await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
-        config = { 
+        config = {
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma
+          host: this.config.userConfig.getRegion().cma,
+          branch: unpublishedEntriesFlags.branch,
         }
         stack = getStack(config)
       }
@@ -76,9 +77,9 @@ class UnpublishedEntriesCommand extends Command {
     }
   }
 
-  async confirmFlags(flags) {
-    prettyPrint(flags)
-    if(flags.yes) {
+  async confirmFlags(data) {
+    prettyPrint(data)
+    if(data.yes) {
       return true
     }
     const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')
@@ -102,12 +103,13 @@ UnpublishedEntriesCommand.flags = {
   locale: flags.string({char: 'l', description: 'Source locale'}),
   environments: flags.string({char: 'e', description: 'Destination environments', multiple: true}),
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration' }),
+  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
+  branch: flags.string({char: 'B', default: 'main', description: 'Specify the branch to fetch the content from (default is main branch)'}),
 }
 
 UnpublishedEntriesCommand.examples = [
   'General Usage',
-  'csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS]',
+  'csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] -s [SOURCE ENV]',
   '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
@@ -116,7 +118,10 @@ UnpublishedEntriesCommand.examples = [
   '',
   'Using --retryFailed or -r flag',
   'csdx cm:bulk-publish:unpublished-entries --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]'
+  'csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]',
+  '',
+  'Using --branch or -B flag',
+  'csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME] -s [SOURCE ENV]',
 ]
 
 module.exports = UnpublishedEntriesCommand
