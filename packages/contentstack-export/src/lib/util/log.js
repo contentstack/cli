@@ -38,7 +38,7 @@ var myCustomLevels = {
 }
 
 let logger
-function init (_logPath, logfileName) {
+function init(_logPath, logfileName) {
   if (!logger) {
     var logsDir = path.resolve(_logPath, 'logs', 'export')
     // Create dir if doesn't already exist
@@ -55,7 +55,7 @@ function init (_logPath, logfileName) {
 
     transports.push(new (winston.transports.Console)())
 
-    logger = new(winston.Logger)({
+    logger = new (winston.Logger)({
       transports: transports,
       levels: myCustomLevels.levels
     })
@@ -98,5 +98,12 @@ exports.addlogs = async (config, message, type) => {
     init(config.data, type).log(message)
   } else {
     init(config.data, type).error(message)
+  }
+}
+
+exports.unlinkFileLogger = () => {
+  if (logger) {
+    const fileLogger = logger.transports.file
+    logger.remove(fileLogger)
   }
 }
