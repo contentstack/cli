@@ -1,7 +1,7 @@
 /* eslint-disable no-redeclare */
 var util = require("./lib/util");
 var login = require("./lib/util/login");
-var { addlogs } = require("./lib/util/log");
+var { addlogs, unlinkFileLogger } = require("./lib/util/log");
 const setupBranches = require("./lib/util/setup-branches");
 const chalk = require("chalk");
 let path = require("path");
@@ -46,6 +46,7 @@ exports.initial = async function (config) {
             console.log('failed export contents', error)
           }
         }
+        unlinkFileLogger()
         resolve()
       })
       .catch((error) => {
