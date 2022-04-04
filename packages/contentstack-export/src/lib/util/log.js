@@ -37,27 +37,29 @@ var myCustomLevels = {
   },
 }
 
-function init (_logPath, logfileName) {
-  var logsDir = path.resolve(_logPath, 'logs', 'export')
-  // Create dir if doesn't already exist
-  mkdirp.sync(logsDir)
-  var logPath = path.join(logsDir, logfileName + '.log')
-
-  var transports = [new (winston.transports.File)({
-    filename: logPath,
-    maxFiles: 20,
-    maxsize: 1000000,
-    tailable: true,
-    json: true,
-  })]
-
-  transports.push(new (winston.transports.Console)())
-
-  var logger = new(winston.Logger)({
-    transports: transports,
-    levels: myCustomLevels.levels
-  })
-
+var logger;
+function init(_logPath, logfileName) {
+  if (!logger) {
+    var logsDir = path.resolve(_logPath, 'logs', 'export')
+    // Create dir if doesn't already exist
+    mkdirp.sync(logsDir)
+    var logPath = path.join(logsDir, logfileName + '.log')
+  
+    var transports = [new (winston.transports.File)({
+      filename: logPath,
+      maxFiles: 20,
+      maxsize: 1000000,
+      tailable: true,
+      json: true,
+    })]
+  
+    transports.push(new (winston.transports.Console)())
+  
+    logger = new(winston.Logger)({
+      transports: transports,
+      levels: myCustomLevels.levels
+    })
+  }
   return {
     log: function () {
       var args = slice.call(arguments)
