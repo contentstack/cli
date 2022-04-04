@@ -20,7 +20,7 @@ $ npm install -g @contentstack/cli-migration
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-migration/0.1.1-beta.2 linux-x64 node-v12.22.7
+@contentstack/cli-migration/1.0.0 linux-x64 node-v12.22.7
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -59,7 +59,7 @@ OPTIONS
                                                        instance.
 ```
 
-_See code: [src/commands/cm/migration.js](https://github.com/contentstack/cli-migration/blob/v0.1.1-beta.2/src/commands/cm/migration.js)_
+_See code: [src/commands/cm/migration.js](https://github.com/contentstack/cli-migration/blob/v1.0.0/src/commands/cm/migration.js)_
 <!-- commandsstop -->
 
 ### Points to remember
