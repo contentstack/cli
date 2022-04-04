@@ -73,7 +73,9 @@ exportEntries.prototype.start = function (credentialConfig) {
       }).then(function () {
         addlogs(config, 'Entry migration completed successfully', 'success')
         return resolve()
-      }).catch(reject)
+      }).catch((error) => {
+        console.log("Error getting enrtries", error);
+      })
     }
     addlogs(config, 'No content_types were found in the Stack', 'success')
     return resolve()
@@ -187,8 +189,11 @@ exportEntries.prototype.getEntries = function (apiDetails) {
       apiDetails.skip += limit
       return self.getEntries(apiDetails)
       .then(resolve)
-      .catch(reject)
-    }).catch(error => {
+        .catch((error) => {
+          console.log("Get Entries errror", error);
+      })
+      }).catch(error => {
+        console.log("Entries fetch errror", error);
       addlogs(config, error, 'error')
     })
   })
