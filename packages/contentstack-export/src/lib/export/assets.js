@@ -81,6 +81,7 @@ ExportAssets.prototype = {
               addlogs(config, 'Batch no ' + (batch + 1) + ' of assets is complete', 'success')
               helper.writeFile(assetContentsFile, self.assetContents)
             }).catch(function (error) {
+              console.log("Error fetch/download the asset", error);
               addlogs(config, 'Asset batch ' + (batch + 1) + ' failed to download', 'error')
               addlogs(config, error, 'error')
               // log this error onto a file - send over retries
@@ -213,6 +214,7 @@ ExportAssets.prototype = {
     let assetVersionInfo = bucket || []
     return new Promise(function (resolve, reject) {
       if (self.assetDownloadRetry[uid + version] > self.assetDownloadRetryLimit) {
+        console.log("Reached max", self.assetDownloadRetry[uid + version])
         return reject(new Error('Asset Max download retry limit exceeded! ' + uid));
       }
 
@@ -240,9 +242,11 @@ ExportAssets.prototype = {
             .catch(reject)
         }).catch(reject)
       }).catch((error) => {
+        console.log("Error on  fetch", error);
         if (error.status === 408) {
+          console.log("retrying", uid);
           // retrying when timeout
-          (self.assetDownloadRetry[uid+version] ? ++self.assetDownloadRetry[uid+version] : self.assetDownloadRetry[uid+version] = 1 ) 
+          self.assetDownloadRetry[uid + version] ? ++self.assetDownloadRetry[uid + version] : self.assetDownloadRetry[uid + version] = 1;
           return self.getVersionedAssetJSON(uid, version, assetVersionInfo)
           .then(resolve)
             .catch(reject) 
