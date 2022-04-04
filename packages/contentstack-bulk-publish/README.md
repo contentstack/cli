@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-cm-bulk-publish
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bulk-publish/0.1.1-beta.5 linux-x64 node-v12.22.7
+@contentstack/cli-cm-bulk-publish/1.0.0 linux-x64 node-v12.22.7
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -51,7 +51,7 @@ USAGE
   $ csdx cm:bulk-publish
 ```
 
-_See code: [src/commands/cm/bulk-publish/index.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/index.js)_
+_See code: [src/commands/cm/bulk-publish/index.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/index.js)_
 
 ## `csdx cm:bulk-publish:add-fields`
 
@@ -107,7 +107,7 @@ EXAMPLES
   [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
 ```
 
-_See code: [src/commands/cm/bulk-publish/add-fields.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js)_
+_See code: [src/commands/cm/bulk-publish/add-fields.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js)_
 
 ## `csdx cm:bulk-publish:assets`
 
@@ -161,7 +161,7 @@ EXAMPLES
   NAME]
 ```
 
-_See code: [src/commands/cm/bulk-publish/assets.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js)_
+_See code: [src/commands/cm/bulk-publish/assets.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js)_
 
 ## `csdx cm:bulk-publish:clear`
 
@@ -176,7 +176,7 @@ OPTIONS
   -y, --yes   Delete all files without asking for confirmation
 ```
 
-_See code: [src/commands/cm/bulk-publish/clear.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/clear.js)_
+_See code: [src/commands/cm/bulk-publish/clear.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/clear.js)_
 
 ## `csdx cm:bulk-publish:configure`
 
@@ -201,7 +201,7 @@ DESCRIPTION
   EXAMPLE : cm:bulk-publish:configure -a [MANAGEMENT TOKEN Alias]
 ```
 
-_See code: [src/commands/cm/bulk-publish/configure.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/configure.js)_
+_See code: [src/commands/cm/bulk-publish/configure.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/configure.js)_
 
 ## `csdx cm:bulk-publish:cross-publish`
 
@@ -266,7 +266,7 @@ EXAMPLES
   [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]
 ```
 
-_See code: [src/commands/cm/bulk-publish/cross-publish.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
+_See code: [src/commands/cm/bulk-publish/cross-publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
 
 ## `csdx cm:bulk-publish:entries`
 
@@ -326,7 +326,7 @@ EXAMPLES
   [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
 ```
 
-_See code: [src/commands/cm/bulk-publish/entries.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entries.js)_
+_See code: [src/commands/cm/bulk-publish/entries.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entries.js)_
 
 ## `csdx cm:bulk-publish:entry-edits`
 
@@ -385,7 +385,7 @@ EXAMPLES
   2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
 ```
 
-_See code: [src/commands/cm/bulk-publish/entry-edits.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entry-edits.js)_
+_See code: [src/commands/cm/bulk-publish/entry-edits.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entry-edits.js)_
 
 ## `csdx cm:bulk-publish:nonlocalized-field-changes`
 
@@ -441,7 +441,7 @@ EXAMPLES
   2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME] -s [SOURCE ENV]
 ```
 
-_See code: [src/commands/cm/bulk-publish/nonlocalized-field-changes.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
+_See code: [src/commands/cm/bulk-publish/nonlocalized-field-changes.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
 
 ## `csdx cm:bulk-publish:revert`
 
@@ -469,7 +469,7 @@ EXAMPLES
   cm:bulk-publish:revert -r [LOG FILE NAME]
 ```
 
-_See code: [src/commands/cm/bulk-publish/revert.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/revert.js)_
+_See code: [src/commands/cm/bulk-publish/revert.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/revert.js)_
 
 ## `csdx cm:bulk-publish:unpublish`
 
@@ -552,7 +552,7 @@ EXAMPLES
   [DELIVERY TOKEN] -B [BRANCH NAME]
 ```
 
-_See code: [src/commands/cm/bulk-publish/unpublish.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublish.js)_
+_See code: [src/commands/cm/bulk-publish/unpublish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublish.js)_
 
 ## `csdx cm:bulk-publish:unpublished-entries`
 
@@ -610,5 +610,5 @@ EXAMPLES
   -B [BRANCH NAME] -s [SOURCE ENV]
 ```
 
-_See code: [src/commands/cm/bulk-publish/unpublished-entries.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
+_See code: [src/commands/cm/bulk-publish/unpublished-entries.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
 <!-- commandsstop -->
