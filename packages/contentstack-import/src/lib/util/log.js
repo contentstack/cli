@@ -24,7 +24,6 @@ function returnString (args) {
 
 var myCustomLevels = {
   levels: {
-    error: 0,
     warn: 1,
     info: 2,
     debug: 3
@@ -38,9 +37,10 @@ var myCustomLevels = {
 };
 
 let logger
+let errorLogger
+
 let successTransport
 let errorTransport
-let debugTransport
 
 // removed logfileName from arguments
 function init(_logPath) {
@@ -69,29 +69,27 @@ function init(_logPath) {
       level: 'error',
     }
 
-    debugTransport = {
-      name: 'debug-file',
-      filename: path.join(logsDir, 'debug.log'),
-      maxFiles: 20,
-      maxsize: 1000000,
-      tailable: true,
-      json: true,
-      level: 'debug',
-    }
-
     logger = new (winston.Logger)({
-      levels: myCustomLevels.levels
+      transports: [
+        new (winston.transports.File)(successTransport),
+        new (winston.transports.Console)()
+      ],
+      levels: myCustomLevels.levels,
     });
+
+    errorLogger = new (winston.Logger)({
+      transports: [
+        new (winston.transports.File)(errorTransport),
+        new (winston.transports.Console)({level: 'error'})
+      ],
+      levels: { error: 0 }
+    })
   }
 
   return {
     log: function () {
       var args = slice.call(arguments);
       var logString = returnString(args);
-      logger.clear()
-      logger
-      .add(winston.transports.File, successTransport)
-      .add(winston.transports.Console)
       if (logString) {
         logger.log('info', logString);
       }
@@ -99,10 +97,6 @@ function init(_logPath) {
     warn: function () {
       var args = slice.call(arguments);
       var logString = returnString(args);
-      logger.clear()
-      logger
-      .add(winston.transports.File, successTransport)
-      .add(winston.transports.Console)
       if (logString) {
         logger.log('warn', logString);
       }
@@ -110,21 +104,13 @@ function init(_logPath) {
     error: function () {
       var args = slice.call(arguments);
       var logString = returnString(args);
-      logger.clear()
-      logger
-      .add(winston.transports.File, errorTransport)
-      .add(winston.transports.Console)
       if (logString) {
-        logger.log('error', logString);
+        errorLogger.log('error', logString);
       }
     },
     debug: function () {
       var args = slice.call(arguments);
       var logString = returnString(args);
-      logger.clear()
-      logger
-      .add(winston.transports.File, debugTransport)
-      .add(winston.transports.Console)
       if (logString) {
         logger.log('debug', logString);
       }
