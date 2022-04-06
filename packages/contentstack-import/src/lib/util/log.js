@@ -111,6 +111,7 @@ function init(_logPath) {
       var args = slice.call(arguments);
       var logString = returnString(args);
       logger.clear()
+      logger
       .add(winston.transports.File, errorTransport)
       .add(winston.transports.Console)
       if (logString) {
