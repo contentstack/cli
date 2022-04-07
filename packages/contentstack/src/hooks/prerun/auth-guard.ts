@@ -14,7 +14,7 @@ export default async function (opts): Promise<void> {
       this.exit();
       return;
     }
-    cliux.print(`Currently using ${region.name} region`, { color: 'grey' });
+    cliux.print(`\n Currently using ${region.name} region \n`, { color: 'grey' });
   }
   // Auth guard
   if (protectedCommands[opts.Command.id]) {
