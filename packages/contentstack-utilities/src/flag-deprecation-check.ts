@@ -6,7 +6,7 @@ import cliux from './cli-ux';
  * @param {String} customMessage [optional] a custom message
  * @returns flag parser
  */
-export default function (deprecatedFlags = [], customMessage: string) {
+export default function (deprecatedFlags = [], suggestions = [], customMessage: string) {
   return (input, command) => {
     let isCommandHasDeprecationFlag = false;
     deprecatedFlags.forEach((item) => {
@@ -19,7 +19,11 @@ export default function (deprecatedFlags = [], customMessage: string) {
     if (isCommandHasDeprecationFlag) {
       cliux.print(
         `DEPRECATION WARNING: ${
-          customMessage ? customMessage : `flags ${deprecatedFlags.join(',')} will be removed in 2 months`
+          customMessage
+            ? customMessage
+            : `flags ${deprecatedFlags.join(',')} will be removed in two months${
+                suggestions.length > 0 ? `, start using ${suggestions.join(',')} flags instead` : ''
+              }`
         }`,
         {
           color: 'yellow',
