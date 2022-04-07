@@ -68,7 +68,7 @@
 	},
 	"csdxConfig": {
 		"expiredCommands": {
-			"cm:export": "command will be removed in 2 months, start using cm:stacks:export"
+			"cm:export": "command will be deprecated in two months, start using cm:stacks:export instead"
 		}
 	},
 	"main": "./src/commands/cm/stacks/export.js",
