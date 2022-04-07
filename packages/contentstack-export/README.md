@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-export/1.0.0 linux-x64 node-v12.22.7
+@contentstack/cli-cm-export/1.0.0 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -44,7 +44,8 @@ OPTIONS
   -B, --branch=branch                                  [optional] branch name
   -a, --management-token-alias=management-token-alias  alias of the management token
   -c, --config=config                                  [optional] path of the config
-  -d, --data=data                                      path or location to store the data
+  -d, --data-dir=data-dir                              path or location to store the data
+  -k, --stack-api-key=stack-api-key                    API key of the source stack
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
   -t, --content-type=content-type                      [optional] content type
