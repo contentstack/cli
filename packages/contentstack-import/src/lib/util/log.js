@@ -44,7 +44,7 @@ let errorTransport
 
 // removed logfileName from arguments
 function init(_logPath) {
-  if (!logger) {
+  if (!logger || !errorLogger) {
     var logsDir = path.resolve(_logPath, 'logs', 'import')
     // Create dir if doesn't already exist
     mkdirp.sync(logsDir)
