@@ -80,7 +80,7 @@ export const validateManagementToken = async (
     });
 
     logger.debug('Management validation result', validationResuslt);
-    if (validationResuslt.content_types) {
+    if (validationResuslt.status === 200) {
       result = { valid: true, message: validationResuslt };
     } else {
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN') };

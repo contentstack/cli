@@ -44,13 +44,13 @@ USAGE
 * [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
 * [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
 * [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
-* [`csdx cm:export`](#csdx-cmexport)
 * [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
 * [`csdx cm:import`](#csdx-cmimport)
 * [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
 * [`csdx cm:migration`](#csdx-cmmigration)
 * [`csdx cm:seed`](#csdx-cmseed)
 * [`csdx cm:stack-clone`](#csdx-cmstack-clone)
+* [`csdx cm:stacks:export`](#csdx-cmstacksexport)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMAND]`](#csdx-help-command)
@@ -891,50 +891,6 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
 
-## `csdx cm:export`
-
-Export content from a stack
-
-```
-Export content from a stack
-...
-Export content from one stack to another
-
-
-USAGE
-  $ csdx cm:export
-
-OPTIONS
-  -A, --auth-token                                     to use auth token
-  -B, --branch=branch                                  [optional] branch name
-  -a, --management-token-alias=management-token-alias  alias of the management token
-  -c, --config=config                                  [optional] path of the config
-  -d, --data=data                                      path or location to store the data
-  -m, --module=module                                  [optional] specific module name
-  -s, --stack-uid=stack-uid                            API key of the source stack
-  -t, --content-type=content-type                      [optional] content type
-  --secured-assets                                     [optional] use when assets are secured
-
-DESCRIPTION
-  ...
-  Export content from one stack to another
-
-EXAMPLES
-  csdx cm:export -A
-  csdx cm:export -A -s <stack_ApiKey> -d <path/of/export/destination/dir>
-  csdx cm:export -A -c <path/to/config/dir>
-  csdx cm:export -A -m <single module name>
-  csdx cm:export -A --secured-assets
-  csdx cm:export -a <management_token_alias>
-  csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
-  csdx cm:export -a <management_token_alias> -c <path/to/config/file>
-  csdx cm:export -A -m <single module name>
-  csdx cm:export -A -m <single module name> -t <content type>
-  csdx cm:export -A -B [optional] branch name
-```
-
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-export/src/commands/cm/export.js)_
-
 ## `csdx cm:export-to-csv`
 
 Export entries or organization users to csv using this command
@@ -1112,6 +1068,53 @@ EXAMPLE
 ```
 
 _See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/cm/stack-clone.js)_
+
+## `csdx cm:stacks:export`
+
+Export content from a stack
+
+```
+Export content from a stack
+...
+Export content from one stack to another
+
+
+USAGE
+  $ csdx cm:stacks:export
+
+OPTIONS
+  -A, --auth-token                                     to use auth token
+  -B, --branch=branch                                  [optional] branch name
+  -a, --management-token-alias=management-token-alias  alias of the management token
+  -c, --config=config                                  [optional] path of the config
+  -d, --data=data                                      path or location to store the data
+  -m, --module=module                                  [optional] specific module name
+  -s, --stack-uid=stack-uid                            API key of the source stack
+  -t, --content-type=content-type                      [optional] content type
+  --secured-assets                                     [optional] use when assets are secured
+
+DESCRIPTION
+  ...
+  Export content from one stack to another
+
+ALIASES
+  $ csdx cm:export
+
+EXAMPLES
+  csdx cm:export -A
+  csdx cm:export -A -s <stack_ApiKey> -d <path/of/export/destination/dir>
+  csdx cm:export -A -c <path/to/config/dir>
+  csdx cm:export -A -m <single module name>
+  csdx cm:export -A --secured-assets
+  csdx cm:export -a <management_token_alias>
+  csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>
+  csdx cm:export -a <management_token_alias> -c <path/to/config/file>
+  csdx cm:export -A -m <single module name>
+  csdx cm:export -A -m <single module name> -t <content type>
+  csdx cm:export -A -B [optional] branch name
+```
+
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-export/src/commands/cm/stacks/export.js)_
 
 ## `csdx config:get:region`
 

@@ -136,7 +136,7 @@ var allExport = async (config, types, branchName) => {
         chalk.green(
           "The content of the " +
             config.source_stack +
-            " has been exported succesfully!"
+            " has been exported successfully!"
         ),
         "success"
       );

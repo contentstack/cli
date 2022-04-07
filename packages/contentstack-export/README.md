@@ -29,15 +29,15 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`csdx cm:export`](#csdx-cmexport)
+* [`csdx cm:stacks:export`](#csdx-cmstacksexport)
 
-## `csdx cm:export`
+## `csdx cm:stacks:export`
 
 Export content from a stack
 
 ```
 USAGE
-  $ csdx cm:export
+  $ csdx cm:stacks:export
 
 OPTIONS
   -A, --auth-token                                     to use auth token
@@ -54,6 +54,9 @@ DESCRIPTION
   ...
   Export content from one stack to another
 
+ALIASES
+  $ csdx cm:export
+
 EXAMPLES
   csdx cm:export -A
   csdx cm:export -A -s <stack_ApiKey> -d <path/of/export/destination/dir>
@@ -68,5 +71,5 @@ EXAMPLES
   csdx cm:export -A -B [optional] branch name
 ```
 
-_See code: [src/commands/cm/export.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [src/commands/cm/stacks/export.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-export/src/commands/cm/stacks/export.js)_
 <!-- commandsstop -->
