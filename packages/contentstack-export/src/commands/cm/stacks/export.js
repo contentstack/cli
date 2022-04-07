@@ -16,11 +16,10 @@ class ExportCommand extends Command {
   async run() {
     const exportCommandFlags = this.parse(ExportCommand).flags
     const extConfig = exportCommandFlags.config
-    let sourceStack = exportCommandFlags['stack-uid']
+    let sourceStack = exportCommandFlags['stack-uid'] || exportCommandFlags['stack-api-key']
     const alias = exportCommandFlags['management-token-alias']
-    const authToken = exportCommandFlags['auth-token']
     const securedAssets = exportCommandFlags['secured-assets']
-    const data = exportCommandFlags.data
+    const data = exportCommandFlags.data || exportCommandFlags['data-dir'];
     const moduleName = exportCommandFlags.module
     const contentTypes = exportCommandFlags['content-type']
     const branchName = exportCommandFlags.branch;
@@ -70,7 +69,7 @@ class ExportCommand extends Command {
       } else {
         this.log(alias + ' management token is not present, please add managment token first')
       }
-    } else if (authToken && _authToken) {
+    } else if (_authToken) {
       if (extConfig) {
         configWithAuthToken(
           extConfig,
@@ -105,7 +104,7 @@ class ExportCommand extends Command {
         this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage')
       }
     } else {
-      this.log('Provide the alias for management token or auth token')
+      this.log('Login or provide the alias for management token')
     }
     // return
   }
@@ -131,13 +130,15 @@ ExportCommand.examples = [
 
 ExportCommand.flags = {
   config: flags.string({ char: 'c', description: '[optional] path of the config' }),
-  'stack-uid': flags.string({ char: 's', description: 'API key of the source stack', parse: printFlagDeprecation(["-s", "--stack-uid"]) }),
-  data: flags.string({ char: 'd', description: 'path or location to store the data' }),
+  'stack-uid': flags.string({ char: 's', description: 'API key of the source stack', parse: printFlagDeprecation(["-s", "--stack-uid"], ["-k", "--stack-api-key"])}),
+  'stack-api-key': flags.string({ char: 'k', description: 'API key of the source stack'}),
+  'data': flags.string({ char: 'd', description: 'path or location to store the data', parse: printFlagDeprecation(["--data"], ["--data-dir"]) }),
+  'data-dir': flags.string({description: 'path or location to store the data'}),
   'management-token-alias': flags.string({ char: 'a', description: 'alias of the management token' }),
-  'auth-token': flags.boolean({ char: 'A', description: 'to use auth token' }),
-  module: flags.string({ char: 'm', description: '[optional] specific module name' }),
-  'content-type': flags.string({ char: 't', description: '[optional] content type', multiple: true }),
-  branch: flags.string({ char: 'B', description: '[optional] branch name'}),
+  'auth-token': flags.boolean({ char: 'A', description: 'to use auth token', parse: printFlagDeprecation(["-A", "--auth-token"])}),
+  module: flags.string({ char: 'm', description: '[optional] specific module name', parse: printFlagDeprecation(["-m"], ["--module"]) }),
+  'content-type': flags.string({ char: 't', description: '[optional] content type', multiple: true, parse: printFlagDeprecation(["-t"], ["--content-type"]) }),
+  branch: flags.string({ char: 'B', description: '[optional] branch name', parse: printFlagDeprecation(["-B"], ["--branch"])}),
   'secured-assets': flags.boolean({ description: '[optional] use when assets are secured' }),
 }
 
