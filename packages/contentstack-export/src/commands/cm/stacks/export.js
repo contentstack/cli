@@ -1,12 +1,14 @@
 /* eslint-disable complexity */
 const { Command, flags } = require('@contentstack/cli-command')
+const { printFlagDeprecation } = require("@contentstack/cli-utilities");
+
 const { configWithMToken,
   parameterWithMToken,
   withoutParameterMToken,
   configWithAuthToken,
   parametersWithAuthToken,
   withoutParametersWithAuthToken,
-} = require('../../lib/util/export-flags')
+} = require('../../../lib/util/export-flags')
 const Configstore = require('configstore')
 const credStore = new Configstore('contentstack_cli')
 
@@ -129,14 +131,16 @@ ExportCommand.examples = [
 
 ExportCommand.flags = {
   config: flags.string({ char: 'c', description: '[optional] path of the config' }),
-  'stack-uid': flags.string({ char: 's', description: 'API key of the source stack' }),
+  'stack-uid': flags.string({ char: 's', description: 'API key of the source stack', parse: printFlagDeprecation(["-s", "--stack-uid"]) }),
   data: flags.string({ char: 'd', description: 'path or location to store the data' }),
   'management-token-alias': flags.string({ char: 'a', description: 'alias of the management token' }),
   'auth-token': flags.boolean({ char: 'A', description: 'to use auth token' }),
   module: flags.string({ char: 'm', description: '[optional] specific module name' }),
   'content-type': flags.string({ char: 't', description: '[optional] content type', multiple: true }),
-  branch: flags.string({ char: 'B', description: '[optional] branch name' }),
+  branch: flags.string({ char: 'B', description: '[optional] branch name'}),
   'secured-assets': flags.boolean({ description: '[optional] use when assets are secured' }),
 }
+
+ExportCommand.aliases = ["cm:export"];
 
 module.exports = ExportCommand
