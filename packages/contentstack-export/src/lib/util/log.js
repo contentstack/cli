@@ -49,7 +49,6 @@ function init(_logPath) {
     mkdirp.sync(logsDir)
 
     successTransport = {
-      name: 'success-file',
       filename: path.join(logsDir, 'success.log'),
       maxFiles: 20,
       maxsize: 1000000,
@@ -59,7 +58,6 @@ function init(_logPath) {
     }
 
     errorTransport = {
-      name: 'error-file',
       filename: path.join(logsDir, 'error.log'),
       maxFiles: 20,
       maxsize: 1000000,
@@ -134,7 +132,7 @@ exports.unlinkFileLogger = () => {
   }
 
   if (errorLogger) {
-    const fileLogger = logger.transports.file
+    const fileLogger = errorLogger.transports.file
     errorLogger.remove(fileLogger)
   }
 }
