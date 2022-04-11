@@ -1,6 +1,6 @@
 import { Command } from '@contentstack/cli-command';
 import cli from 'cli-ux';
-import { logger, cliux, messageHandler, configHandler } from '@contentstack/cli-utilities';
+import { logger, cliux, configHandler } from '@contentstack/cli-utilities';
 
 export default class TokensListCommand extends Command {
   private readonly parse: Function;
