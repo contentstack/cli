@@ -6,11 +6,7 @@ export const askPassword = async () => {
     message: 'CLI_AUTH_LOGIN_ENTER_PASSWORD',
     name: 'password',
     transformer: (pswd: string) => {
-      let pswdMasked = '';
-      for (let i = 0; i < pswd.length; i++) {
-        pswdMasked += '*';
-      }
-      return pswdMasked;
+      return '*'.repeat(pswd.length);
     },
   });
 };
