@@ -30,7 +30,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       if ((schema[i].data_type === 'text' && schema[i].field_metadata && (schema[i].field_metadata.markdown ||
           schema[i].field_metadata.rich_text_type))) {
         parent.push(schema[i].uid);
-        findFileUrls(parent, schema[i], entry, assetUrls);
+        findFileUrls(schema[i], entry, assetUrls);
         parent.pop();
       }
       if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
@@ -49,10 +49,42 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
           }
         }
       }
+      if (schema[i].data_type === "json") {
+        parent.push(schema[i].uid)
+        findFileUrls(schema[i], entry, assetUrls)
+        // maybe only one of these checks would be enough
+        if (schema[i].multiple === true && Array.isArray(entry[schema[i].uid])) {
+          entry[schema[i].uid].forEach(e => gatherJsonRteAssetIds(e))
+        } else {
+          // collecting asset ids referred in json rte field
+          gatherJsonRteAssetIds(entry[schema[i].uid])
+        }
+        parent.pop()
+      }
     }
   };
-  
-  
+
+  function gatherJsonRteAssetIds(jsonRteData) {
+    jsonRteData.children.forEach(element => {
+      if (element.type) {
+        switch (element.type) {
+          case 'p': {
+            if (element.children && element.children.length > 0) {
+              gatherJsonRteAssetIds(element)
+            }
+            break;
+          }
+          case 'reference': {
+            if (Object.keys(element.attrs).length > 0 && element.attrs.type === "asset") {
+              assetUids.push(element.attrs['asset-uid'])
+            }
+            break;
+          }
+        }
+      }
+    })
+  }
+
   find(data.content_type.schema, data.entry);
   updateFileFields(data.entry, data, null, mappedAssetUids, matchedUids, unmatchedUids);
   assetUids = _.uniq(assetUids);
@@ -72,7 +104,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
     var url = mappedAssetUrls[assetUrl];
     if (typeof url !== 'undefined') {
       entry = entry.replace(new RegExp(assetUrl, 'img'), url);
-      unmatchedUrls.push(url);
+      matchedUrls.push(url);
     } else {
       unmatchedUrls.push(assetUrl);
     }
@@ -160,9 +192,9 @@ function findFileUrls (schema, _entry, assetUrls) {
   if (schema && schema.field_metadata && schema.field_metadata.markdown) {
     text = marked(_entry);
   } else {
-    text = _entry;
+    text = JSON.stringify(_entry);
   }
-  markdownRegEx = new RegExp('(https://(assets|images).contentstack.io/v3/assets/(.*?)/(.*?)/(.*?)/(.*)(?="))', 'g');
+  markdownRegEx = new RegExp('(https://(assets|images).contentstack.io/v3/assets/(.*?)/(.*?)/(.*?)/(.*?)(?="))', 'g');
   while ((markdownMatch = markdownRegEx.exec(text)) !== null) {
     if (markdownMatch && typeof markdownMatch[0] === 'string') {
       assetUrls.push(markdownMatch[0]);
