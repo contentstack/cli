@@ -12,22 +12,26 @@ export default class LoginCommand extends Command {
     '$ csdx auth:login',
     '$ csdx auth:login -u <username>',
     '$ csdx auth:login -u <username> -p <password>',
+    '$ csdx auth:login --username <username>',
+    '$ csdx auth:login --username <username> --password <password>',
   ];
 
   static flags = {
-    username: flags.string({
+    'username': flags.string({
       char: 'u',
       description: "User name",
       multiple: false,
       required: false,
     }),
-    password: flags.string({
+    'password': flags.string({
       char: 'p',
       description: 'Password',
       multiple: false,
       required: false,
     }),
   };
+
+  static aliases = ['login'];
 
   async run(): Promise<any> {
     const { flags } = this.parse(LoginCommand);
