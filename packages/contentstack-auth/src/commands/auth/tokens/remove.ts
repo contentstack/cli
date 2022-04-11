@@ -1,5 +1,5 @@
 import { Command, flags } from '@contentstack/cli-command';
-import { logger, cliux, messageHandler, configHandler } from '@contentstack/cli-utilities';
+import { logger, cliux, configHandler } from '@contentstack/cli-utilities';
 export default class TokensRemoveCommand extends Command {
   private readonly parse: Function;
   static run;
@@ -11,9 +11,9 @@ export default class TokensRemoveCommand extends Command {
   };
 
   async run(): Promise<any> {
-    const { flags } = this.parse(TokensRemoveCommand);
-    const alias = flags.alias;
-    const ignore = flags.ignore;
+    const { flags: removeTokenFlags } = this.parse(TokensRemoveCommand);
+    const alias = removeTokenFlags.alias;
+    const ignore = removeTokenFlags.ignore;
 
     try {
       const token = configHandler.get(`tokens.${alias}`);
@@ -27,8 +27,7 @@ export default class TokensRemoveCommand extends Command {
       if (tokens && Object.keys(tokens).length > 0) {
         Object.keys(tokens).forEach(function (item) {
           tokenOptions.push(
-            `${item}: ${tokens[item].token} : ${tokens[item].apiKey}${
-              tokens[item].environment ? ' : ' + tokens[item].environment + ' ' : ''
+            `${item}: ${tokens[item].token} : ${tokens[item].apiKey}${tokens[item].environment ? ' : ' + tokens[item].environment + ' ' : ''
             }: ${tokens[item].type}`,
           );
         });
