@@ -19,8 +19,7 @@
 		"mkdirp": "^1.0.4",
 		"ncp": "2.0.0",
 		"request": "2.88.0",
-		"winston": "2.4.5",
-		"cli-ux": "^5.4.6"
+		"winston": "2.4.5"
 	},
 	"devDependencies": {
 		"@oclif/dev-cli": "^1.22.2",
