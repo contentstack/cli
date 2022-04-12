@@ -49,6 +49,8 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
           }
         }
       }
+      // added rich_text_type field check because some marketplace extensions also
+      // have data_type has json
       if (schema[i].data_type === "json" && schema[i].field_metadata.rich_text_type) {
         parent.push(schema[i].uid)
         findFileUrls(schema[i], entry, assetUrls)
