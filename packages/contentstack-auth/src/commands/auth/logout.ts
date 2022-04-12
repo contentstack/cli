@@ -29,11 +29,11 @@ export default class LogoutCommand extends Command {
   static aliases = ['logout'];
 
   async run(): Promise<any> {
-    const { flags: logoutCommands } = this.parse(LogoutCommand);
+    const { flags: logoutFlags } = this.parse(LogoutCommand);
     authHandler.client = this.managementAPIClient;
     let confirm = false;
     confirm =
-      logoutCommands.force || logoutCommands.yes
+      logoutFlags.force || logoutFlags.yes
         ? true
         : await cliux.inquire({
             type: 'confirm',
