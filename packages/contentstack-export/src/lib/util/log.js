@@ -24,12 +24,11 @@ function returnString(args) {
 
 var myCustomLevels = {
   levels: {
-    error: 0,
     warn: 1,
     info: 2,
     debug: 3,
   },
-  colors: {
+  colors: { //colors aren't being used anywhere as of now, we're using chalk to add colors while logging
     info: 'blue',
     debug: 'green',
     warn: 'yellow',
@@ -44,7 +43,7 @@ function init(_logPath, logfileName) {
     // Create dir if doesn't already exist
     mkdirp.sync(logsDir)
     var logPath = path.join(logsDir, logfileName + '.log')
-  
+
     var transports = [new (winston.transports.File)({
       filename: logPath,
       maxFiles: 20,
@@ -52,9 +51,9 @@ function init(_logPath, logfileName) {
       tailable: true,
       json: true,
     })]
-  
+
     transports.push(new (winston.transports.Console)())
-  
+
     logger = new(winston.Logger)({
       transports: transports,
       levels: myCustomLevels.levels
@@ -79,7 +78,7 @@ function init(_logPath, logfileName) {
       var args = slice.call(arguments)
       var logString = returnString(args)
       if (logString) {
-        logger.log('error', logString)
+        errorLogger.log('error', logString)
       }
     },
     debug: function () {
@@ -93,9 +92,23 @@ function init(_logPath, logfileName) {
 }
 
 exports.addlogs = async (config, message, type) => {
+  // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
-    init(config.data, type).log(message)
+    // removed type argument from init method
+    init(config.data).log(message)
   } else {
-    init(config.data, type).error(message)
+    init(config.data).error(message)
+  }
+}
+
+exports.unlinkFileLogger = () => {
+  if (logger) {
+    const fileLogger = logger.transports.file
+    logger.remove(fileLogger)
+  }
+
+  if (errorLogger) {
+    const fileLogger = errorLogger.transports.file
+    errorLogger.remove(fileLogger)
   }
 }
