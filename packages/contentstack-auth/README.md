@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-auth/1.0.0 linux-x64 node-v12.22.7
+@contentstack/cli-auth/1.0.0 darwin-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -44,10 +44,15 @@ OPTIONS
   -p, --password=password  Password
   -u, --username=username  User name
 
+ALIASES
+  $ csdx login
+
 EXAMPLES
   $ csdx auth:login
   $ csdx auth:login -u <username>
   $ csdx auth:login -u <username> -p <password>
+  $ csdx auth:login --username <username>
+  $ csdx auth:login --username <username> --password <password>
 ```
 
 _See code: [src/commands/auth/login.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/login.ts)_
@@ -61,11 +66,15 @@ USAGE
   $ csdx auth:logout
 
 OPTIONS
-  -f, --force  CLI_AUTH_LOGOUT_FLAG_FORCE
+  -y, --yes  CLI_AUTH_LOGOUT_FLAG_FORCE
+
+ALIASES
+  $ csdx logout
 
 EXAMPLES
   $ csdx auth:logout
-  $ csdx auth:logout -f
+  $ csdx auth:logout -y
+  $ csdx auth:logout --yes
 ```
 
 _See code: [src/commands/auth/logout.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/logout.ts)_
@@ -106,24 +115,27 @@ USAGE
   $ csdx auth:tokens:add
 
 OPTIONS
-  -a, --alias=alias
-  -d, --delivery                 CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN
-  -e, --environment=environment  CLI_AUTH_TOKENS_ADD_FLAG_ENVIRONMENT_NAME
-  -f, --force                    Force adding
-  -k, --api-key=api-key          API Key
-  -m, --management               CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN
-  -t, --token=token              Token
+  --delivery                         CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN
+  --management                       CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN
+  --token=token                      Token
+  -a, --alias=alias                  Name of the token alias
+  -e, --environment=environment      CLI_AUTH_TOKENS_ADD_FLAG_ENVIRONMENT_NAME
+  -k, --stack-api-key=stack-api-key  Stack API Key
+  -y, --yes                          Skipping confirmation
 
 EXAMPLES
   $ csdx auth:tokens:add
   $ csdx auth:tokens:add -a <alias>
-  $ csdx auth:tokens:add -k <api key>
-  $ csdx auth:tokens:add -d
-  $ csdx auth:tokens:add -m
+  $ csdx auth:tokens:add -k <stack api key>
+  $ csdx auth:tokens:add --delivery
+  $ csdx auth:tokens:add --management
   $ csdx auth:tokens:add -e <environment>
-  $ csdx auth:tokens:add -t <token>
-  $ csdx auth:tokens:add -a <alias> -k <api key> -m -t <management token>
-  $ csdx auth:tokens:add -a <alias> -k <api key> -d -e <environment> -t <delivery token>
+  $ csdx auth:tokens:add --token <token>
+  $ csdx auth:tokens:add -a <alias> -k <stack api key> --management --token <management token>
+  $ csdx auth:tokens:add -a <alias> -k <stack api key> --delivery -e <environment> --token <delivery token>
+  $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --management --token <management token>
+  $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery
+  token>
 ```
 
 _See code: [src/commands/auth/tokens/add.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/add.ts)_
