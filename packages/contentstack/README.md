@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/1.0.0 linux-x64 node-v12.22.7
+@contentstack/cli/1.0.0 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -1088,9 +1088,11 @@ OPTIONS
   -a, --management-token-alias=management-token-alias  alias of the management token
   -c, --config=config                                  [optional] path of the config
   -d, --data=data                                      path or location to store the data
+  -k, --stack-api-key=stack-api-key                    API key of the source stack
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
   -t, --content-type=content-type                      [optional] content type
+  --data-dir=data-dir                                  path or location to store the data
   --secured-assets                                     [optional] use when assets are secured
 
 DESCRIPTION
@@ -1194,7 +1196,7 @@ EXAMPLE
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:inspect PLUGIN...`
 
@@ -1217,7 +1219,7 @@ EXAMPLE
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -1261,7 +1263,7 @@ EXAMPLES
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
@@ -1294,7 +1296,7 @@ EXAMPLE
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -1318,7 +1320,7 @@ ALIASES
   $ csdx plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:update`
 
@@ -1335,5 +1337,5 @@ OPTIONS
   -v, --verbose
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.0/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/update.ts)_
 <!-- commandsstop -->
