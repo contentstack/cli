@@ -16,11 +16,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-<<<<<<< HEAD
-@contentstack/cli/1.0.0 linux-x64 node-v16.14.2
-=======
 @contentstack/cli/1.0.0 darwin-x64 node-v16.14.2
->>>>>>> 9fb28f2a4e2ffa758ca769f944c936a59c00c2a6
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
