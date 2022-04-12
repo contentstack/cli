@@ -1,5 +1,5 @@
 import { Command, flags } from '@contentstack/cli-command';
-import { logger, cliux, messageHandler, configHandler } from '@contentstack/cli-utilities';
+import { logger, cliux, messageHandler, configHandler, printFlagDeprecation } from '@contentstack/cli-utilities';
 import { authHandler } from '../../utils';
 export default class LogoutCommand extends Command {
   private readonly parse: Function;
@@ -7,22 +7,32 @@ export default class LogoutCommand extends Command {
   authToken: string;
   static run; // to fix the test issue
   static description = "User session logout";
-  static examples = ['$ csdx auth:logout', '$ csdx auth:logout -f'];
+  static examples = ['$ csdx auth:logout', '$ csdx auth:logout -y', '$ csdx auth:logout --yes'];
 
   static flags = {
-    force: flags.boolean({
-      char: 'f',
+    'yes': flags.boolean({
+      char: 'y',
       description: messageHandler.parse('CLI_AUTH_LOGOUT_FLAG_FORCE'),
       multiple: false,
       required: false,
     }),
+    'force': flags.boolean({
+      char: 'f',
+      description: messageHandler.parse('CLI_AUTH_LOGOUT_FLAG_FORCE'),
+      multiple: false,
+      required: false,
+      hidden: true,
+      parse: printFlagDeprecation(["-f", "--force"], ["-y", "--yes"])
+    }),
   };
+
+  static aliases = ['logout']
 
   async run(): Promise<any> {
     const { flags } = this.parse(LogoutCommand);
     authHandler.client = this.managementAPIClient;
     let confirm = false;
-    confirm = flags.force
+    confirm = flags.force || flags.yes
       ? true
       : await cliux.inquire({
           type: 'confirm',
