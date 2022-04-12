@@ -9,6 +9,7 @@ const path = require('path')
 const _ = require('lodash')
 const mkdirp = require('mkdirp')
 const chalk = require('chalk')
+const crypto = require('crypto')
 
 const helper = require('../util/fs')
 const {addlogs} = require('../util/log')
@@ -60,6 +61,12 @@ function importEntries() {
   this.ctSchemas = {}
   // Array of content type uids, that have reference fields
   this.refSchemas = []
+  // map of content types uids and their json-rte fields
+  this.ctJsonRte = {}
+  // map of content types uids and their json-rte fields
+  this.ctJsonRteWithEntryRefs = {}
+  // Entry refs that are held back to resolve after all entries have been created
+  this.jsonRteEntryRefs = {}
   // Collection of entries, that were not created, as they already exist on Stack
   this.createdEntriesWOUid = []
   // Collection of entry uids, mapped to the language they exist in
@@ -201,6 +208,19 @@ importEntries.prototype = {
             addlogs(config, `Creating entries for content type ${ctUid} in language ${lang} ...`, 'success')
             for (let eUid in entries) {
               if (eUid) {
+
+                // check ctUid in self.ctJsonRte array, if ct exists there... only then remove entry references for json rte
+                // also with json rte, api creates the json-rte field with the same uid as passed in the payload. So use the node's inbuilt
+                // crypto module to generate a random uid and populate the json rte data
+                // https://www.kindacode.com/article/how-to-easily-generate-a-random-string-in-node-js/
+
+                // while creating entries with json-rte field, the api does not create fresh uids for the json-rte field
+                // and its subsequent children. If the data is passed without a uid, then the fields aren't created. So, I'll
+                // generate the uids for now, and will come up with a better solution later
+                entries[eUid] = self.generateUidsForJsonRteFields(ctUid, entries[eUid])
+
+                // remove entry references from json-rte fields
+                entries[eUid] = self.removeEntryRefsFromJSONRTE(ctUid, entries[eUid])
                 // will replace all old asset uid/urls with new ones
                 entries[eUid] = lookupReplaceAssets({
                   content_type: self.ctSchemas[ctUid],
@@ -393,7 +413,6 @@ importEntries.prototype = {
       return Promise.map(self.refSchemas, function (ctUid) {
         let eFolderPath = path.join(entryMapperPath, lang, ctUid)
         let eSuccessFilePath = path.join(eFolderPath, 'success.json')
-
         if (!fs.existsSync(eSuccessFilePath)) {
           addlogs(config, 'Success file was not found at: ' + eSuccessFilePath, 'success')
           return
@@ -419,12 +438,17 @@ importEntries.prototype = {
         // map failed reference uids @mapper/language/unmapped-uids.json
         let refUidMapperPath = path.join(entryMapperPath, lang)
 
+        // add entry references to JSON RTE fields
         entries = _.map(entries, function (entry) {
           try {
             let uid = entry.uid
+
+            // restores json rte entry refs if they exist
+            let updatedEntry = self.restoreJsonRteEntryRefs(entry)
+            
             let _entry = lookupReplaceEntries({
               content_type: schema,
-              entry: entry,
+              entry: updatedEntry,
             }, _.clone(self.mappedUids), refUidMapperPath)
             // if there's self references, the uid gets replaced
             _entry.uid = uid
@@ -516,7 +540,7 @@ importEntries.prototype = {
       })
     })
   },
-  supressFields: async function () {
+  supressFields: async function () { // it should be spelled as suppressFields
     addlogs(config, chalk.white('Suppressing content type fields...'), 'success')
     let self = this
     return new Promise(function (resolve, reject) {
@@ -529,6 +553,8 @@ importEntries.prototype = {
           let flag = {
             suppressed: false,
             references: false,
+            jsonRte: false,
+            jsonRteEmbeddedEntries: false
           }
           if (contentTypeSchema.field_rules) {
             delete contentTypeSchema.field_rules
@@ -544,6 +570,25 @@ importEntries.prototype = {
 
           if (flag.references) {
             self.refSchemas.push(uid)
+          }
+
+          if (flag.jsonRte) {
+            let jsonRteFieldData = self.ctSchemas[uid].schema.filter(e => e.data_type === 'json').map(e => {
+              return {
+                uid: e.uid,
+                multiple: e.multiple
+              }
+            })
+            self.ctJsonRte[uid] = jsonRteFieldData
+            if (flag.jsonRteEmbeddedEntries) {
+              self.ctJsonRteWithEntryRefs[uid] = jsonRteFieldData
+              // pushing ct uid to refSchemas, because
+              // repostEntries uses refSchemas content types for
+              // reposting entries
+              if (self.refSchemas.indexOf(uid) === -1) {
+                self.refSchemas.push(uid)
+              }
+            }
           }
 
           // Replace extensions with new UID
@@ -851,6 +896,127 @@ importEntries.prototype = {
       })
     })
   },
+  removeEntryRefsFromJSONRTE(ctUid, entry) {
+    let self = this
+    if (Object.keys(self.ctJsonRteWithEntryRefs).indexOf(ctUid) > -1) {
+      self.ctJsonRteWithEntryRefs[ctUid].forEach(element => {
+        if (element.multiple) {
+          entry[element.uid] = entry[element.uid].map(jsonRteData => {
+            // repeated code from else block, will abstract later
+            let entryReferences = jsonRteData.children.filter(e => this.doEntryReferencesExist(e))
+            if (entryReferences.length > 0) {
+              jsonRteData.children = jsonRteData.children.filter(e => !this.doEntryReferencesExist(e))
+              if (self.jsonRteEntryRefs[entry.uid] === undefined)
+                self.jsonRteEntryRefs[entry.uid] = {}
+              if (self.jsonRteEntryRefs[entry.uid][element.uid] === undefined)
+                self.jsonRteEntryRefs[entry.uid][element.uid] = [] // array, because json rte field is multiple
+              self.jsonRteEntryRefs[entry.uid][element.uid].push(entryReferences)
+              return jsonRteData // return jsonRteData without entry references
+            } else {
+              return jsonRteData // return jsonRteData as it is, because there are no entry references
+            }
+          })
+        } else {
+          let entryReferences = entry[element.uid].children.filter(e => this.doEntryReferencesExist(e))
+          if (entryReferences.length > 0) {
+            entry[element.uid].children = entry[element.uid].children.filter(e => !this.doEntryReferencesExist(e))
+            if (self.jsonRteEntryRefs[entry.uid] === undefined)
+              self.jsonRteEntryRefs[entry.uid] = {}
+            if (self.jsonRteEntryRefs[entry.uid][element.uid] === undefined)
+              self.jsonRteEntryRefs[entry.uid][element.uid] = {} // object, because json rte field is not multiple
+            self.jsonRteEntryRefs[entry.uid][element.uid]['children'] = entryReferences
+          }
+        }
+      })
+    }
+    return entry
+  },
+  doEntryReferencesExist(element) { 
+    // checks if the children of p element contain any references
+    // only checking one level deep, not recursive
+
+    if (element.length) {
+      for(let i=0; i < element.length; i++) {
+        // although most data has only one level of nesting, and this case might never come up
+        // I've handled multiple level of nesting for 'p' elements
+        if(element[i].type === 'p' && element[i].children && element[i].children.length > 0) {
+          return this.doEntryReferencesExist(element[i].children)
+        } else if(this.isEntryRef(element[i])) {
+          return true
+        }
+      }
+    } else {
+      if(this.isEntryRef(element)) {
+        return true
+      }
+
+      if (element.type === "p" && element.children && element.children.length > 0) {
+        return this.doEntryReferencesExist(element.children)
+      }
+    }
+    return false
+  },
+  restoreJsonRteEntryRefs(entry) {
+    let self = this
+    if (Object.keys(self.jsonRteEntryRefs).indexOf(entry.uid) > -1) {
+      Object.keys(self.jsonRteEntryRefs[entry.uid]).forEach(jsonRteFieldUid => {
+        if (self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid].length) { // handles when json_rte is multiple
+          entry[jsonRteFieldUid] = entry[jsonRteFieldUid].map((field, index) => {
+            field.children = [...field.children, ...self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid][index]]
+            return field
+          })
+        } else {
+          entry[jsonRteFieldUid].children = [...entry[jsonRteFieldUid].children, ...self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid].children]
+        }
+      })
+    }
+    return entry
+  },
+  isEntryRef(element) {
+    return element.type === "reference" && element.attrs.type === "entry"
+  },
+  generateUidsForJsonRteFields(ctUid, entry) {
+    let self = this
+    if (Object.keys(self.ctJsonRte).indexOf(ctUid) > -1) {
+      self.ctJsonRte[ctUid].forEach(element => {
+        if (element.multiple) {
+          entry[element.uid] = entry[element.uid].map(jsonRteData => {
+            jsonRteData.uid = this.generateUid()
+            jsonRteData.children = jsonRteData.children.map(child => this.populateChildrenWithUids(child))
+            return jsonRteData
+          })
+        } else {
+          entry[element.uid].uid = this.generateUid()
+          entry[element.uid].children = entry[element.uid].children.map(child => this.populateChildrenWithUids(child))
+        }
+      })
+    }
+    return entry
+  },
+  populateChildrenWithUids(children) {
+    if (children.length && children.length > 0) {
+      return children.map(child => {
+        if(child.type && child.type.length > 0) {
+          child.uid = this.generateUid()
+        }
+        if(child.children && child.children.length > 0) {
+          child.children = this.populateChildrenWithUids(child.children)
+        }
+        return child
+      })
+    } else {
+      if (children.type && children.type.length > 0) {
+        children.uid = this.generateUid()
+      }
+      if (children.children && children.children.length > 0) {
+        children.children = this.populateChildrenWithUids(children.children)
+      }
+      return children
+    }
+  },
+  generateUid() {
+    return crypto.randomBytes(16).toString('hex')
+  }
 }
 
 module.exports = new importEntries()
