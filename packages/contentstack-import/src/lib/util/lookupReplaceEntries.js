@@ -21,6 +21,27 @@ module.exports = function (data, mappedUids, uidMapperPath) {
   var isNewRefFields = false
   var preserveStackVersion = config.preserveStackVersion
 
+  function gatherJsonRteEntryIds(jsonRteData) {
+    jsonRteData.children.forEach(element => {
+      if (element.type) {
+        switch (element.type) {
+          case 'p': {
+            if (element.children && element.children.length > 0) {
+              gatherJsonRteEntryIds(element)
+            }
+            break;
+          }
+          case 'reference': {
+            if (Object.keys(element.attrs).length > 0 && element.attrs.type === "entry") {
+              uids.push(element.attrs['entry-uid'])
+            }
+            break;
+          }
+        }
+      }
+    })
+  }
+
   var update = function (parent, form_id, entry) {
     var _entry = entry
     var len = parent.length
@@ -95,6 +116,16 @@ module.exports = function (data, mappedUids, uidMapperPath) {
           find(schema[i].blocks[j].schema, entry)
           parent.pop()
           parent.pop()
+        }
+        break
+      case 'json':
+        if (schema[i].field_metadata.rich_text_type) {
+          if (schema[i].multiple === true && Array.isArray(entry[schema[i].uid])) {
+            entry[schema[i].uid].forEach(e => gatherJsonRteEntryIds(e))
+          } else {
+            // collecting asset ids referred in json rte field
+            gatherJsonRteEntryIds(entry[schema[i].uid])
+          }
         }
         break
       }
