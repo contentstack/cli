@@ -49,7 +49,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
           }
         }
       }
-      if (schema[i].data_type === "json") {
+      if (schema[i].data_type === "json" && schema[i].field_metadata.rich_text_type) {
         parent.push(schema[i].uid)
         findFileUrls(schema[i], entry, assetUrls)
         // maybe only one of these checks would be enough
