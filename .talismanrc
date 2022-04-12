@@ -5,6 +5,8 @@ fileignoreconfig:
   checksum: b613fbc87e45375dc35ace330c66a22d99981197645129d4ae1db07534d2722d
 - filename: packages/contentstack-import/src/lib/util/lookupReplaceAssets.js
   checksum: 14d9acf9baf628558b1f30151c322863bd12620d8d519fa572e15ad6549901cd
+- filename: packages/contentstack-import/src/lib/util/lookupReplaceEntries.js
+  checksum: ed1f3ab6c0a1812fc43644616ef13212ce09d2feaa454ca84deac8e7f5f92710
 - filename: packages/contentstack/package-lock.json
   checksum: be5da46c99ee2ea6c021a6dd4f903feda4f4c610033aba5ad3d25761810b52ff
 version: "1.0"
