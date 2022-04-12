@@ -115,17 +115,13 @@ ExportCommand.description = `Export content from a stack
 Export content from one stack to another
 `
 ExportCommand.examples = [
-  'csdx cm:export -A',
-  'csdx cm:export -A -s <stack_ApiKey> -d <path/of/export/destination/dir>',
-  'csdx cm:export -A -c <path/to/config/dir>',
-  'csdx cm:export -A -m <single module name>',
-  'csdx cm:export -A --secured-assets',
+  'csdx cm:export -k <stack_ApiKey> -d <path/of/export/destination/dir>',
+  'csdx cm:export -c <path/to/config/dir>',
   'csdx cm:export -a <management_token_alias>',
-  'csdx cm:export -a <management_token_alias> -d <path/to/export/destination/dir>',
+  'csdx cm:export -a <management_token_alias> --data-dir <path/to/export/destination/dir>',
   'csdx cm:export -a <management_token_alias> -c <path/to/config/file>',
-  'csdx cm:export -A -m <single module name>',
-  'csdx cm:export -A -m <single module name> -t <content type>',
-  'csdx cm:export -A -B [optional] branch name',
+  'csdx cm:export --module <single module name>',
+  'csdx cm:export --branch [optional] branch name',
 ]
 
 ExportCommand.flags = {
