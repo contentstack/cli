@@ -96,7 +96,9 @@ importAssets.prototype = {
                     if (config.versioning) {
                       return self
                         .uploadVersionedAssets(assetUid, currentAssetFolderPath)
-                        .then(function () {})
+                        .then(function () {
+                          // empty function
+                        })
                         .catch(function (error) {
                           addlogs(config, (chalk.red('Asset upload failed \n' + error), 'error'));
                         });
@@ -209,7 +211,6 @@ importAssets.prototype = {
           let assetMetadata = versionedAssetMetadata[counter];
           let assetPath = path.join(assetFolderPath, assetMetadata.filename);
           if (++counter === 1) {
-            // delete assetMetadata.uid;
             return self
               .uploadAsset(assetPath, assetMetadata, uidContainer, urlContainer)
               .then(function () {
@@ -222,7 +223,9 @@ importAssets.prototype = {
             .then(function () {
               filesStreamed.push(assetMetadata.filename);
             })
-            .catch((error) => {});
+            .catch((_error) => {
+              // empty function
+            });
         },
         {
           concurrency: 1,
@@ -244,8 +247,7 @@ importAssets.prototype = {
         });
     });
   },
-  updateAsset: function (assetPath, metadata, filesStreamed, uidContainer, urlContainer) {
-    // let self = this
+  updateAsset: function (assetPath, metadata, filesStreamed, _uidContainer, urlContainer) {
     return new Promise(function (resolve, reject) {
       let requestOption = {};
       if (filesStreamed && filesStreamed.indexOf(metadata.filename) !== -1) {
@@ -284,7 +286,6 @@ importAssets.prototype = {
     });
   },
   uploadAsset: function (assetPath, metadata, uidContainer, urlContainer) {
-    // let self = this
     return new Promise(function (resolve, reject) {
       let requestOption = {};
 
@@ -355,7 +356,7 @@ importAssets.prototype = {
             .create(folder.json)
             .then((response) => {
               addlogs(config, "Created folder: '" + folder.json.asset.name + "'", 'success');
-              // { oldUid: newUid }
+              // assigning newUid to oldUid
               createdFolders[folder.oldUid] = response.uid;
               helper.writeFile(mappedFolderPath, createdFolders);
               idx++;
@@ -423,7 +424,7 @@ importAssets.prototype = {
   },
   findBranches: function (branch, coll) {
     let self = this;
-    for (let leaf in branch) {
+    for (let _leaf in branch) {
       for (let j = 0; j < coll.length; j++) {
         let parent_uid = coll[j].parent_uid;
         if (branch.hasOwnProperty(parent_uid)) {

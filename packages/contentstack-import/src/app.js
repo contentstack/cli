@@ -52,10 +52,9 @@ exports.initial = function (configData) {
           } else {
             let filename = path.basename(config.data);
             addlogs(config, chalk.red(filename + ' Folder does not Exist'), 'error');
-            return;
           }
         })
-        .catch((error) => {
+        .catch((_error) => {
           return;
         });
     }
@@ -113,7 +112,7 @@ let allImport = async (config, types) => {
           let master_locale = { code: masterLocalResponse.code };
           config['master_locale'] = master_locale;
         }
-        await exportedModule.start(config).then((result) => {
+        await exportedModule.start(config).then((_result) => {
           return;
         });
       }
