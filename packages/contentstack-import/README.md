@@ -14,6 +14,7 @@ For switching to EU region update the hosts at config/default.js
 ```js
 {
   host:'https://eu-api.contentstack.com/v3',
+  cdn: 'https://eu-cdn.contentstack.com/v3',
  ...
 }
 ``` 
@@ -21,7 +22,8 @@ For switching to EU region update the hosts at config/default.js
 For switching to AZURE region update the hosts at config/default.js
 ```js
 {
-  host:'https://azure-api.contentstack.com/v3',
+  host:'https://azure-na-api.contentstack.com/v3',
+  cdn: 'https://azure-na-cdn.contentstack.com/v3'
  ...
 }
 ``` 
