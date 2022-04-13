@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: package-lock.json
+  checksum: e5cc04454abef05bcb450d18d088e194c23382b5ce9986c3c959b3103804a17c
 - filename: packages/contentstack-import/package-lock.json
   checksum: 66126a79971d8afa929ac43e86261578431e4d63bc0de59a410d86c467bdcbcf
 - filename: packages/contentstack-import/src/lib/import/assets.js
