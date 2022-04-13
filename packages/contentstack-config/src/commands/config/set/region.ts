@@ -11,13 +11,13 @@ export default class RegionSetCommand extends Command {
       char: 'd',
       description: messageHandler.parse('CLI_CONFIG_SET_REGION_FLAG_D_DESCRIPTION'),
       dependsOn: ['cma', 'name'],
-      parse: printFlagDeprecation(["-d"], ["--cda"]),
+      parse: printFlagDeprecation(['-d'], ['--cda']),
     }),
     cma: flags.string({
       char: 'm',
       description: messageHandler.parse('CLI_CONFIG_SET_REGION_FLAG_M_DESCRIPTION'),
       dependsOn: ['cda', 'name'],
-      parse: printFlagDeprecation(["-m"], ["--cma"]),
+      parse: printFlagDeprecation(['-m'], ['--cma']),
     }),
     name: flags.string({
       char: 'n',
@@ -33,15 +33,17 @@ export default class RegionSetCommand extends Command {
     '$ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com" --name="India"',
   ];
 
-  static args = [{
+  static args = [
+    {
       name: 'region',
-  }];
+    },
+  ];
 
   async run() {
     const { args, flags } = this.parse(RegionSetCommand);
     let cda = flags.cda;
     let cma = flags.cma;
-    let name = flags.name
+    let name = flags.name;
     let region = args.region;
     if (!(cda && cma && name) || !region) {
       const selectedRegion = await interactive.askRegions();
@@ -52,7 +54,7 @@ export default class RegionSetCommand extends Command {
         name = selectedCustomRegion.name;
         cda = selectedCustomRegion.cda;
         cma = selectedCustomRegion.cma;
-      } else if(selectedRegion !== "exit"){
+      } else if (selectedRegion !== 'exit') {
         cliux.error(`Failed to set region`);
         return;
       }

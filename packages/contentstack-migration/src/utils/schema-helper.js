@@ -1,10 +1,10 @@
 /* eslint-disable camelcase */
-'use strict'
+'use strict';
 
-const {version, defaultDataType, actions} = require('./constants')
+const { version, defaultDataType, actions } = require('./constants');
 
 exports.getSchema = (field, subAction) => {
-  const {EDIT_FIELD, DELETE_FIELD} = actions
+  const { EDIT_FIELD, DELETE_FIELD } = actions;
 
   const schema = {
     display_name: field,
@@ -17,19 +17,19 @@ exports.getSchema = (field, subAction) => {
     // isDelete: !!isDelete,
     isDelete: subAction === DELETE_FIELD,
     isEdit: subAction === EDIT_FIELD,
-  }
-  return schema
-}
+  };
+  return schema;
+};
 
-exports.getUid = data => data.split(' ').join('_').toLowerCase()
+exports.getUid = (data) => data.split(' ').join('_').toLowerCase();
 
-exports.getMandatoryVal = data => data.toLowerCase() === 'title' || data.toLowerCase() === 'url'
+exports.getMandatoryVal = (data) => data.toLowerCase() === 'title' || data.toLowerCase() === 'url';
 
-exports.getUniqueVal = data => data.toLowerCase() === 'title' || data.toLowerCase() === 'url'
+exports.getUniqueVal = (data) => data.toLowerCase() === 'title' || data.toLowerCase() === 'url';
 
-exports.getFieldMetaData = data => {
+exports.getFieldMetaData = (data) => {
   return {
     _default: this.getMandatoryVal(data),
     version,
-  }
-}
+  };
+};

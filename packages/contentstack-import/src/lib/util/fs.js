@@ -10,16 +10,16 @@ var mkdirp = require('mkdirp');
 
 exports.readFile = function (filePath, parse) {
   var data;
-  parse = (typeof parse === 'undefined') ? true : parse;
+  parse = typeof parse === 'undefined' ? true : parse;
   filePath = path.resolve(filePath);
   if (fs.existsSync(filePath)) {
-    data = (parse) ? JSON.parse(fs.readFileSync(filePath, 'utf-8')) : data;
+    data = parse ? JSON.parse(fs.readFileSync(filePath, 'utf-8')) : data;
   }
   return data;
 };
 
 exports.writeFile = function (filePath, data) {
-  data = (typeof data === 'object') ? JSON.stringify(data) : data || '{}';
+  data = typeof data === 'object' ? JSON.stringify(data) : data || '{}';
   fs.writeFileSync(filePath, data);
 };
 
@@ -39,4 +39,3 @@ exports.readdir = function (dirPath) {
     return [];
   }
 };
-
