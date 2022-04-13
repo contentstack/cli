@@ -1,27 +1,25 @@
-const {Command, flags} = require('@oclif/command')
-const {cli} = require('cli-ux')
-const fs = require('fs')
-const path = require('path')
-let config = require('../../../config/index.js')
+const { Command, flags } = require('@oclif/command');
+const { cli } = require('cli-ux');
+const fs = require('fs');
+const path = require('path');
+let config = require('../../../config/index.js');
 
 class ConfigureCommand extends Command {
-
   async run() {
-    const configureFlags = this.parse(ConfigureCommand).flags
+    const configureFlags = this.parse(ConfigureCommand).flags;
 
     if (!configureFlags.alias) {
-      configureFlags.alias = await cli.prompt('Please enter the management token alias to be used')
+      configureFlags.alias = await cli.prompt('Please enter the management token alias to be used');
     }
 
-    await this.config.runHook('validateManagementTokenAlias', {alias: configureFlags.alias})
-    this.setConfig(configureFlags)
-    this.log('The configuration has been saved successfully.')
+    await this.config.runHook('validateManagementTokenAlias', { alias: configureFlags.alias });
+    this.setConfig(configureFlags);
+    this.log('The configuration has been saved successfully.');
   }
 
-  setConfig({apikey, alias}) {
-    if (alias)
-      config.alias = alias
-    fs.writeFileSync(path.join(process.cwd(), 'config.js'), `module.exports = ${JSON.stringify(config, null, 2)}`)
+  setConfig({ apikey, alias }) {
+    if (alias) config.alias = alias;
+    fs.writeFileSync(path.join(process.cwd(), 'config.js'), `module.exports = ${JSON.stringify(config, null, 2)}`);
   }
 }
 
@@ -35,10 +33,10 @@ Here is a detailed description for all the available flags
 
 EXAMPLE : cm:bulk-publish:configure --alias [MANAGEMENT TOKEN Alias]
 EXAMPLE : cm:bulk-publish:configure -a [MANAGEMENT TOKEN Alias]
-`
+`;
 
 ConfigureCommand.flags = {
-  alias: flags.string({char: 'a', description: 'Management token alias for the stack'}),
-}
+  alias: flags.string({ char: 'a', description: 'Management token alias for the stack' }),
+};
 
-module.exports = ConfigureCommand
+module.exports = ConfigureCommand;

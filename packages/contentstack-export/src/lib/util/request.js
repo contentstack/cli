@@ -1,8 +1,8 @@
 /*!
-* Contentstack Export
-* Copyright (c) 2019 Contentstack LLC
-* MIT Licensed
-*/
+ * Contentstack Export
+ * Copyright (c) 2019 Contentstack LLC
+ * MIT Licensed
+ */
 
 'use strict';
 
@@ -32,7 +32,7 @@ function validate(req) {
   }
 }
 
-var makeCall = module.exports = function(req, RETRY) {
+var makeCall = (module.exports = function (req, RETRY) {
   return new Bluebird(function (resolve, reject) {
     try {
       validate(req);
@@ -42,37 +42,45 @@ var makeCall = module.exports = function(req, RETRY) {
         return reject(new Error('Max retry limit exceeded!'));
       }
       // console.log(`${req.method.toUpperCase()}: ${req.uri || req.url}`);
-      return request(req).then(function (response) {
-        var timeDelay;
-        if (response.statusCode >= 200 && response.statusCode <= 399) {
-          return resolve(response);
-        } else if (response.statusCode === 429) {
-          timeDelay = Math.pow(Math.SQRT2, RETRY) * 100;
-          // console.log(`API rate limit exceeded.\nReceived ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
-          console.log(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`);
-          return setTimeout(function (reqObj, retry) {
-            return makeCall(reqObj, retry)
-              .then(resolve)
-              .catch(reject);
-          }, timeDelay, req, RETRY);
-        } else if (response.statusCode >= 500) {
-          // retry, with delay
-          timeDelay = Math.pow(Math.SQRT2, RETRY) * 100;
-          // console.log(`Recevied ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
-          console.log(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`);
-          RETRY++;
-          return setTimeout(function (req, RETRY) {
-            return makeCall(req, RETRY)
-              .then(resolve)
-              .catch(reject);
-          }, timeDelay, req, RETRY);
-        } else {
-          return reject(response);
-        }
-      }).catch(reject);
+      return request(req)
+        .then(function (response) {
+          var timeDelay;
+          if (response.statusCode >= 200 && response.statusCode <= 399) {
+            return resolve(response);
+          } else if (response.statusCode === 429) {
+            timeDelay = Math.pow(Math.SQRT2, RETRY) * 100;
+            // console.log(`API rate limit exceeded.\nReceived ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
+            console.log(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`);
+            return setTimeout(
+              function (reqObj, retry) {
+                return makeCall(reqObj, retry).then(resolve).catch(reject);
+              },
+              timeDelay,
+              req,
+              RETRY,
+            );
+          } else if (response.statusCode >= 500) {
+            // retry, with delay
+            timeDelay = Math.pow(Math.SQRT2, RETRY) * 100;
+            // console.log(`Recevied ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
+            console.log(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`);
+            RETRY++;
+            return setTimeout(
+              function (req, RETRY) {
+                return makeCall(req, RETRY).then(resolve).catch(reject);
+              },
+              timeDelay,
+              req,
+              RETRY,
+            );
+          } else {
+            return reject(response);
+          }
+        })
+        .catch(reject);
     } catch (error) {
       console.log(error);
       return reject(error);
     }
   });
-};
+});
