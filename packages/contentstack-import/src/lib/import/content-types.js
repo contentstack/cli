@@ -87,7 +87,9 @@ importContentTypes.prototype = {
         function (contentTypeUid) {
           return self
             .seedContentTypes(contentTypeUid, self.uidToTitleMap[contentTypeUid])
-            .then(function () {})
+            .then(function () {
+              // empty function
+            })
             .catch(function (error) {
               return reject(error);
             });
@@ -100,7 +102,6 @@ importContentTypes.prototype = {
         .then(function () {
           let batches = [];
           let lenObj = self.contentTypes;
-          // var a = Math.round(2.60);
           for (let i = 0; i < lenObj.length; i += Math.round(requestLimit / 3)) {
             batches.push(lenObj.slice(i, i + Math.round(requestLimit / 3)));
           }
@@ -118,7 +119,9 @@ importContentTypes.prototype = {
                   concurrency: reqConcurrency,
                 },
               )
-                .then(function () {})
+                .then(function () {
+                  // empty function
+                })
                 .catch((e) => {
                   console.log('Something went wrong while migrating content type batch', e);
                 });
@@ -147,7 +150,7 @@ importContentTypes.prototype = {
                     addlogs(config, chalk.green('Content types have been imported successfully!'), 'success');
                     return resolve();
                   })
-                  .catch((error) => {
+                  .catch((_error) => {
                     addlogs(config, chalk.green('Error in GlobalFields'), 'success');
                     return reject();
                   });
@@ -203,7 +206,7 @@ importContentTypes.prototype = {
         Object.assign(contentTypeResponse, _.cloneDeep(contentType));
         contentTypeResponse
           .update()
-          .then((UpdatedcontentType) => {
+          .then((_updatedcontentType) => {
             return resolve();
           })
           .catch((err) => {
