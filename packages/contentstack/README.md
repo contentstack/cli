@@ -1135,7 +1135,7 @@ USAGE
   $ csdx config:set:region [REGION]
 
 ARGUMENTS
-  REGION  (EU|NA) North America(NA), Europe (EU)
+  REGION  (EU|NA) North America(NA), Europe (EU), AZURE
 
 OPTIONS
   -d, --cda=cda    Custom host to set for content delivery API, if this flag is added then cma and name flags are
