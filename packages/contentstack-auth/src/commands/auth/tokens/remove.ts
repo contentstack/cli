@@ -3,7 +3,7 @@ import { logger, cliux, messageHandler, configHandler } from '@contentstack/cli-
 export default class TokensRemoveCommand extends Command {
   private readonly parse: Function;
   static run;
-  static description = "Removes selected tokens";
+  static description = 'Removes selected tokens';
   static examples = ['$ csdx auth:tokens:remove', '$ csdx auth:tokens:remove -a <aliase>'];
   static flags = {
     alias: flags.string({ char: 'a', description: 'Token alias' }),

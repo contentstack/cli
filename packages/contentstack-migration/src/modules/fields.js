@@ -1,12 +1,12 @@
-'use strict'
+'use strict';
 
-const {keys} = Object
+const { keys } = Object;
 // Utils
-const {map: _map, schemaHelper, constants} = require('../utils')
+const { map: _map, schemaHelper, constants } = require('../utils');
 
 // Utils Properties
-const {getMapInstance, get} = _map
-const {getSchema} = schemaHelper
+const { getMapInstance, get } = _map;
+const { getSchema } = schemaHelper;
 const {
   data_type,
   mandatory,
@@ -16,10 +16,10 @@ const {
   field_metadata,
   reference_to,
   actions: _actions,
-} = constants
+} = constants;
 
 // Base class
-const Base = require('./base')
+const Base = require('./base');
 
 /**
  * Field class
@@ -28,11 +28,11 @@ const Base = require('./base')
 class Field extends Base {
   // prop, value
   constructor(uid, action, contentTypeService, request) {
-    super(uid)
-    this.uid = uid
-    this.action = action
-    this.contentTypeService = contentTypeService
-    this.request = request
+    super(uid);
+    this.uid = uid;
+    this.action = action;
+    this.contentTypeService = contentTypeService;
+    this.request = request;
   }
 
   /**
@@ -41,7 +41,7 @@ class Field extends Base {
    * @param {function[]} task - array of async function to be executed
    * @param {string} failMessage message to be printed when task fails
    * @param {string} successMessage - message to be printed when task succeeds
-  */
+   */
 
   /**
    * Creates a field with provided uid.
@@ -59,11 +59,11 @@ class Field extends Base {
    * };
    */
   createField(field, opts) {
-    this.updateContentTypeSchema(field)
+    this.updateContentTypeSchema(field);
 
     // Build schema from options provided
-    if (opts && keys(opts).length) return this.getSchemaFromOptions(opts, field)
-    return this
+    if (opts && keys(opts).length) return this.getSchemaFromOptions(opts, field);
+    return this;
   }
 
   /**
@@ -81,12 +81,12 @@ class Field extends Base {
    * };
    */
   editField(field, opts) {
-    const {EDIT_FIELD} = _actions
-    this.updateContentTypeSchema(field, EDIT_FIELD)
+    const { EDIT_FIELD } = _actions;
+    this.updateContentTypeSchema(field, EDIT_FIELD);
 
     // Build schema from options provided
-    if (opts && keys(opts).length) return this.getSchemaFromOptions(opts, field)
-    return this
+    if (opts && keys(opts).length) return this.getSchemaFromOptions(opts, field);
+    return this;
   }
 
   /**
@@ -101,10 +101,10 @@ class Field extends Base {
    * };
    */
   deleteField(field) {
-    const {DELETE_FIELD} = _actions
-    this.updateContentTypeSchema(field, DELETE_FIELD)
+    const { DELETE_FIELD } = _actions;
+    this.updateContentTypeSchema(field, DELETE_FIELD);
 
-    return this
+    return this;
   }
 
   /**
@@ -132,26 +132,26 @@ class Field extends Base {
    * };
    */
   moveField(field) {
-    this.fieldToMove = field
-    return this
+    this.fieldToMove = field;
+    return this;
   }
 
   updateContentTypeSchema(field, subAction) {
-    const mapInstance = getMapInstance()
+    const mapInstance = getMapInstance();
 
-    const {uid, action} = this
+    const { uid, action } = this;
 
-    const contentType = get(uid, mapInstance)
+    const contentType = get(uid, mapInstance);
 
-    let contentTypeSchema = contentType[action].content_type.schema
-    contentTypeSchema = contentTypeSchema || []
+    let contentTypeSchema = contentType[action].content_type.schema;
+    contentTypeSchema = contentTypeSchema || [];
 
-    const schemaObj = getSchema(field, subAction)
-    contentTypeSchema.push(schemaObj)
+    const schemaObj = getSchema(field, subAction);
+    contentTypeSchema.push(schemaObj);
 
-    contentType[action].content_type.schema = contentTypeSchema
+    contentType[action].content_type.schema = contentTypeSchema;
 
-    this.field = schemaObj.uid
+    this.field = schemaObj.uid;
   }
 
   // changeFieldId(currentId, newId) { }
@@ -162,8 +162,8 @@ class Field extends Base {
    * @returns {Field} current instance of field object to chain further methods.
    */
   display_name(value) {
-    this.buildSchema(display_name, this.field, value)
-    return this
+    this.buildSchema(display_name, this.field, value);
+    return this;
   }
 
   /**
@@ -172,8 +172,8 @@ class Field extends Base {
    * @returns {Field} current instance of field object to chain further methods.
    */
   data_type(value) {
-    this.buildSchema(data_type, this.field, value)
-    return this
+    this.buildSchema(data_type, this.field, value);
+    return this;
   }
 
   /**
@@ -182,8 +182,8 @@ class Field extends Base {
    * @returns {Field} current instance of field object to chain further methods.
    */
   mandatory(value) {
-    this.buildSchema(mandatory, this.field, value)
-    return this
+    this.buildSchema(mandatory, this.field, value);
+    return this;
   }
 
   /**
@@ -192,8 +192,8 @@ class Field extends Base {
    * @returns {Field} current instance of field object to chain further methods.
    */
   default(value) {
-    this.buildSchema(_default, this.field, value)
-    return this
+    this.buildSchema(_default, this.field, value);
+    return this;
   }
 
   /**
@@ -202,8 +202,8 @@ class Field extends Base {
    * @returns {Field} current instance of field object to chain further methods.
    */
   unique(value) {
-    this.buildSchema(unique, this.field, value)
-    return this
+    this.buildSchema(unique, this.field, value);
+    return this;
   }
 
   /**
@@ -213,8 +213,8 @@ class Field extends Base {
    * @returns {Field} current instance of field object to chain further methods.
    */
   reference_to(value) {
-    this.buildSchema(reference_to, this.field, value)
-    return this
+    this.buildSchema(reference_to, this.field, value);
+    return this;
   }
 
   /**
@@ -223,8 +223,8 @@ class Field extends Base {
    * @returns {Field} current instance of field object to chain further methods.
    */
   ref_multiple(value) {
-    this.buildSchema(field_metadata, this.field, {ref_multiple: value, ref_multiple_content_types: true})
-    return this
+    this.buildSchema(field_metadata, this.field, { ref_multiple: value, ref_multiple_content_types: true });
+    return this;
   }
 
   /**
@@ -233,52 +233,52 @@ class Field extends Base {
    * @returns {Field} current instance of field object to chain further methods.
    */
   ref_multipleContentType(value) {
-    this.buildSchema(field_metadata, this.field, {ref_multiple_content_types: value})
-    return this
+    this.buildSchema(field_metadata, this.field, { ref_multiple_content_types: value });
+    return this;
   }
 
   toTheBottom() {
-    const {fieldToMove, contentTypeService} = this
+    const { fieldToMove, contentTypeService } = this;
 
-    if (!fieldToMove) throw new Error('Cannot access this method directly.')
+    if (!fieldToMove) throw new Error('Cannot access this method directly.');
 
-    contentTypeService.getActions({action: 'toTheBottom', fieldToMove})
+    contentTypeService.getActions({ action: 'toTheBottom', fieldToMove });
   }
 
   toTheTop() {
-    const {fieldToMove, contentTypeService} = this
-    if (!fieldToMove) throw new Error('Cannot access this method directly.')
+    const { fieldToMove, contentTypeService } = this;
+    if (!fieldToMove) throw new Error('Cannot access this method directly.');
 
-    contentTypeService.getActions({action: 'toTheTop', fieldToMove})
+    contentTypeService.getActions({ action: 'toTheTop', fieldToMove });
   }
 
   afterField(field) {
-    const {fieldToMove, contentTypeService} = this
+    const { fieldToMove, contentTypeService } = this;
 
-    if (!fieldToMove) throw new Error('Cannot access this method directly.')
+    if (!fieldToMove) throw new Error('Cannot access this method directly.');
 
-    contentTypeService.getActions({action: 'afterField', fieldToMove, against: field})
+    contentTypeService.getActions({ action: 'afterField', fieldToMove, against: field });
   }
 
   beforeField(field) {
-    const {fieldToMove, contentTypeService} = this
+    const { fieldToMove, contentTypeService } = this;
 
-    if (!fieldToMove) throw new Error('Cannot access this method directly.')
+    if (!fieldToMove) throw new Error('Cannot access this method directly.');
 
-    contentTypeService.getActions({action: 'beforeField', fieldToMove, against: field})
+    contentTypeService.getActions({ action: 'beforeField', fieldToMove, against: field });
   }
 
   buildSchema(prop, field, value) {
-    const mapInstance = getMapInstance()
+    const mapInstance = getMapInstance();
 
-    const {uid, action} = this
+    const { uid, action } = this;
 
-    const contentType = get(uid, mapInstance)
+    const contentType = get(uid, mapInstance);
 
     for (const _schema of contentType[action].content_type.schema) {
       if (_schema.uid === field) {
-        _schema[prop] = value
-        break
+        _schema[prop] = value;
+        break;
       }
     }
   }
@@ -290,15 +290,15 @@ class Field extends Base {
    * migration.addTask(foo.getTaskDefinition())
    */
   getTaskDefinition() {
-    return this.request
+    return this.request;
   }
 
   getSchemaFromOptions(opts, field) {
-    const allKeys = keys(opts)
-    allKeys.forEach(_key => {
-      this.buildSchema(_key, field, opts[_key])
-    })
+    const allKeys = keys(opts);
+    allKeys.forEach((_key) => {
+      this.buildSchema(_key, field, opts[_key]);
+    });
   }
 }
 
-module.exports = Field
+module.exports = Field;

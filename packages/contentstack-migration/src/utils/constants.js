@@ -1,24 +1,24 @@
-'use strict'
+'use strict';
 
-exports.mapObject = new Map()
+exports.mapObject = new Map();
 
-exports.version = 3 // TODO: Fetch it from CMA
+exports.version = 3; // TODO: Fetch it from CMA
 
-exports.defaultDataType = 'text'
+exports.defaultDataType = 'text';
 
-exports.MANAGEMENT_SDK = 'MANAGEMENT_SDK'
-exports.MANAGEMENT_SDK = 'MANAGEMENT_TOKEN'
-exports.AUTH_TOKEN = 'AUTH_TOKEN'
-exports.API_KEY = 'API_KEY'
-exports.BRANCH = 'BRANCH'
+exports.MANAGEMENT_SDK = 'MANAGEMENT_SDK';
+exports.MANAGEMENT_SDK = 'MANAGEMENT_TOKEN';
+exports.AUTH_TOKEN = 'AUTH_TOKEN';
+exports.API_KEY = 'API_KEY';
+exports.BRANCH = 'BRANCH';
 
-exports.data_type = 'data_type'
-exports.mandatory = 'mandatory'
-exports._default = 'default'
-exports.unique = 'unique'
-exports.display_name = 'display_name'
-exports.reference_to = 'reference_to'
-exports.field_metadata = 'field_metadata'
+exports.data_type = 'data_type';
+exports.mandatory = 'mandatory';
+exports._default = 'default';
+exports.unique = 'unique';
+exports.display_name = 'display_name';
+exports.reference_to = 'reference_to';
+exports.field_metadata = 'field_metadata';
 
 exports.actions = {
   CUSTOM_TASK: 'CUSTOM_TASK',
@@ -29,40 +29,40 @@ exports.actions = {
   EDIT_FIELD: 'EDIT_FIELD',
   DELETE_FIELD: 'DELETE_FIELD',
   MOVE_FIELD: 'MOVE_FIELD',
-}
+};
 
 // Http call max retry
-exports.MAX_RETRY = 3
+exports.MAX_RETRY = 3;
 
 // This key holds the value for http objects in map
-exports.requests = 'REQUESTS'
+exports.requests = 'REQUESTS';
 
-exports.limit = 1 // Limit for concurrent tasks executed parallely
+exports.limit = 1; // Limit for concurrent tasks executed parallely
 
-exports.nonWritableMethods = ['GET', 'DELETE']
+exports.nonWritableMethods = ['GET', 'DELETE'];
 
-exports.ContentType = 'Content type'
-exports.Entry = 'Entry'
+exports.ContentType = 'Content type';
+exports.Entry = 'Entry';
 
 exports.errorMessageHandler = {
   POST: 'saving',
   GET: 'fetching',
   PUT: 'updating',
   DELETE: 'deleting',
-}
+};
 
 exports.successMessageHandler = {
   POST: 'saved',
   GET: 'fetched',
   PUT: 'updated',
   DELETE: 'deleted',
-}
+};
 // map key
-exports.actionMapper = 'actions'
+exports.actionMapper = 'actions';
 
-exports.batchLimit = 20
+exports.batchLimit = 20;
 
-exports.contentTypeProperties = ['description', 'title', 'uid', 'options', 'force', 'schema']
+exports.contentTypeProperties = ['description', 'title', 'uid', 'options', 'force', 'schema'];
 
 exports.validationAction = {
   create: 'create',
@@ -76,7 +76,7 @@ exports.validationAction = {
   schema: 'schema',
   __migrationError: 'migrationError',
   field: 'field',
-}
+};
 
 exports.transformEntriesProperties = [
   {
@@ -110,7 +110,7 @@ exports.transformEntriesProperties = [
     type: 'function',
     mandatory: true,
   },
-]
+];
 
 exports.deriveLinkedEntriesProperties = [
   {
@@ -159,7 +159,7 @@ exports.deriveLinkedEntriesProperties = [
     type: 'function',
     mandatory: true,
   },
-]
+];
 
 exports.transformEntriesToTypeProperties = [
   {
@@ -203,7 +203,7 @@ exports.transformEntriesToTypeProperties = [
     type: 'function',
     mandatory: true,
   },
-]
+];
 
 exports.SDK_ACTIONS = {
   CONTENTTYPE_GET: 'CONTENTTYPE_GET',
@@ -216,4 +216,4 @@ exports.SDK_ACTIONS = {
   ENTRY_PUT: 'ENTRY_PUT',
   ENTRY_DELETE: 'ENTRY_DELETE',
   ENTRY_PUBLISH: 'ENTRY_PUBLISH',
-}
+};

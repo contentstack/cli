@@ -1,3 +1,3 @@
-'use strict'
+'use strict';
 
-module.exports = promise => promise.then(res => [null, res]).catch(err => [err])
+module.exports = (promise) => promise.then((res) => [null, res]).catch((err) => [err]);

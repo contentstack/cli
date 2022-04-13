@@ -1,85 +1,88 @@
-const {Command, flags} = require('@oclif/command')
-const {start} = require('../../../producer/add-fields')
-const store = require('../../../util/store.js')
-const {cli} = require('cli-ux')
-const configKey = 'addFields'
-const {prettyPrint, formatError} = require('../../../util')
-const {getStack} = require('../../../util/client.js')
-let config
+const { Command, flags } = require('@oclif/command');
+const { start } = require('../../../producer/add-fields');
+const store = require('../../../util/store.js');
+const { cli } = require('cli-ux');
+const configKey = 'addFields';
+const { prettyPrint, formatError } = require('../../../util');
+const { getStack } = require('../../../util/client.js');
+let config;
 
 class AddFieldsCommand extends Command {
   async run() {
-    const addFieldsFlags = this.parse(AddFieldsCommand).flags
-    let updatedFlags
+    const addFieldsFlags = this.parse(AddFieldsCommand).flags;
+    let updatedFlags;
     try {
-      updatedFlags = (addFieldsFlags.config) ? store.updateMissing(configKey, addFieldsFlags) : addFieldsFlags
+      updatedFlags = addFieldsFlags.config ? store.updateMissing(configKey, addFieldsFlags) : addFieldsFlags;
     } catch (error) {
-      this.error(error.message, {exit: 2})
+      this.error(error.message, { exit: 2 });
     }
     if (this.validate(updatedFlags)) {
-      let stack
+      let stack;
       if (!updatedFlags.retryFailed) {
         if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used')
+          updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used');
         }
-        updatedFlags.bulkPublish = (updatedFlags.bulkPublish === 'false') ? false : true
-        await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
+        updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
+        await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
         config = {
           alias: updatedFlags.alias,
           host: this.config.userConfig.getRegion().cma,
           branch: addFieldsFlags.branch,
-        }
-        stack = getStack(config)
+        };
+        stack = getStack(config);
       }
       if (await this.confirmFlags(updatedFlags)) {
         try {
           if (!updatedFlags.retryFailed) {
-            await start(updatedFlags, stack, config)
+            await start(updatedFlags, stack, config);
           } else {
-            await start(updatedFlags)
+            await start(updatedFlags);
           }
-        } catch(error) {
-          let message = formatError(error)
-          this.error(message, {exit: 2})
+        } catch (error) {
+          let message = formatError(error);
+          this.error(message, { exit: 2 });
         }
       } else {
-        this.exit(0)
+        this.exit(0);
       }
     }
   }
 
-  validate({contentTypes, locales, environments, retryFailed}) {
-    let missing = []
+  validate({ contentTypes, locales, environments, retryFailed }) {
+    let missing = [];
     if (retryFailed) {
-      return true
+      return true;
     }
 
     if (!contentTypes || contentTypes.length === 0) {
-      missing.push('Content Types')
+      missing.push('Content Types');
     }
 
     if (!locales || locales.length === 0) {
-      missing.push('Locales')
+      missing.push('Locales');
     }
 
     if (!environments || environments.length === 0) {
-      missing.push('Environments')
+      missing.push('Environments');
     }
 
     if (missing.length > 0) {
-      this.error(`${missing.join(', ')} are required for processing this command. Please check --help for more details`, {exit: 2})
+      this.error(
+        `${missing.join(', ')} are required for processing this command. Please check --help for more details`,
+        { exit: 2 },
+      );
     } else {
-      return true
+      return true;
     }
   }
 
   async confirmFlags(data) {
-    prettyPrint(data)
+    prettyPrint(data);
     if (data.yes) {
-      return true
+      return true;
     }
-    const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')
-    return confirmation
+    const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+    return confirmation;
   }
 }
 
@@ -88,19 +91,39 @@ The add-fields command is used for updating already existing entries with the up
 
 Content Types, Environments and Locales are required for executing the command successfully
 But, if retryFailed flag is set, then only a logfile is required
-`
+`;
 
 AddFieldsCommand.flags = {
-  alias: flags.string({char: 'a', description: 'Alias for the management token to be used'}),
-  retryFailed: flags.string({char: 'r', description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)'}),
-  bulkPublish: flags.string({char: 'b', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true'}),
-  contentTypes: flags.string({char: 't', description: 'The Content-Types from which entries need to be published', multiple: true}),
-  locales: flags.string({char: 'l', description: 'Locales to which entries need to be published', multiple: true}),
-  environments: flags.string({char: 'e', description: 'Environments to which entries need to be published', multiple: true}),
-  config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
-  branch: flags.string({char: 'B', default: 'main', description: 'Specify the branch to fetch the content from (default is main branch)'}),
-}
+  alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
+  retryFailed: flags.string({
+    char: 'r',
+    description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)',
+  }),
+  bulkPublish: flags.string({
+    char: 'b',
+    description:
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+    default: 'true',
+  }),
+  contentTypes: flags.string({
+    char: 't',
+    description: 'The Content-Types from which entries need to be published',
+    multiple: true,
+  }),
+  locales: flags.string({ char: 'l', description: 'Locales to which entries need to be published', multiple: true }),
+  environments: flags.string({
+    char: 'e',
+    description: 'Environments to which entries need to be published',
+    multiple: true,
+  }),
+  config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
+  yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
+  branch: flags.string({
+    char: 'B',
+    default: 'main',
+    description: 'Specify the branch to fetch the content from (default is main branch)',
+  }),
+};
 
 AddFieldsCommand.examples = [
   'General Usage',
@@ -117,6 +140,6 @@ AddFieldsCommand.examples = [
   '',
   'Using --branch or -B flag',
   'csdx cm:bulk-publish:add-fields -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]',
-]
+];
 
-module.exports = AddFieldsCommand
+module.exports = AddFieldsCommand;

@@ -1,12 +1,12 @@
-import axios, { AxiosRequestConfig } from 'axios'
-import { Stream } from 'stream'
-import * as zlib from 'zlib'
-import * as tar from 'tar'
-import * as mkdirp from 'mkdirp'
-import GithubError from './github-error'
-import messageHandler from '../../messages'
+import axios, { AxiosRequestConfig } from "axios";
+import { Stream } from "stream";
+import * as zlib from "zlib";
+import * as tar from "tar";
+import * as mkdirp from "mkdirp";
+import GithubError from "./github-error";
+import messageHandler from "../../messages";
 
-const DEFAULT_BRANCH = 'master'
+const DEFAULT_BRANCH = "master";
 
 export interface Repo {
   user: string;
@@ -25,58 +25,59 @@ export default class GitHubClient {
 
   static parsePath(gitPath?: string): Repo {
     const result = {
-      user: '',
-      name: '',
-    }
+      user: "",
+      name: "",
+    };
 
     if (gitPath) {
-      const parts = gitPath.split('/')
-      result.user = parts[0]
+      const parts = gitPath.split("/");
+      result.user = parts[0];
       if (parts.length === 2) {
-        result.name = parts[1]
+        result.name = parts[1];
       }
     }
 
-    return result
+    return result;
   }
 
-  constructor(
-    repo: Repo,
-    privateRepo = false,
-    token?: string
-  ) {
-    this.repo = repo
-    this.private = privateRepo
+  constructor(repo: Repo, privateRepo = false, token?: string) {
+    this.repo = repo;
+    this.private = privateRepo;
     if (privateRepo) {
-      this.accessToken = token
+      this.accessToken = token;
     }
-    this.gitTarBallUrl = `https://api.github.com/repos/${repo.user}/${repo.name}/tarball/${repo.branch || DEFAULT_BRANCH}`
+    this.gitTarBallUrl = `https://api.github.com/repos/${repo.user}/${
+      repo.name
+    }/tarball/${repo.branch || DEFAULT_BRANCH}`;
   }
 
   async getLatest(destination: string): Promise<void> {
-    const releaseStream = await this.streamRelease(this.gitTarBallUrl)
-    await mkdirp(destination)
-    return this.extract(destination, releaseStream)
+    const releaseStream = await this.streamRelease(this.gitTarBallUrl);
+    await mkdirp(destination);
+    return this.extract(destination, releaseStream);
   }
 
   async streamRelease(url: string): Promise<Stream> {
     const options: AxiosRequestConfig = {
-      responseType: 'stream',
-    }
+      responseType: "stream",
+    };
 
     if (this.private) {
       if (this.accessToken) {
         options.headers = {
-          Authorization: `token ${this.accessToken}`
-        }
+          Authorization: `token ${this.accessToken}`,
+        };
       } else {
-        throw new GithubError(messageHandler.parse('CLI_BOOTSTRAP_GITHUB_ACCESS_NOT_FOUND'), 1)
+        throw new GithubError(
+          messageHandler.parse("CLI_BOOTSTRAP_GITHUB_ACCESS_NOT_FOUND"),
+          1
+        );
       }
     }
 
-    const response = await axios.get(url, options)
+    const response = await axios.get(url, options);
 
-    return response.data as Stream
+    return response.data as Stream;
   }
 
   async extract(destination: string, stream: Stream): Promise<any> {
@@ -89,10 +90,10 @@ export default class GitHubClient {
             strip: 1,
           })
         )
-        .on('end', () => {
-          resolve('done')
+        .on("end", () => {
+          resolve("done");
         })
-        .on('error', reject)
-    })
+        .on("error", reject);
+    });
   }
 }
