@@ -13,8 +13,13 @@ var helper = require('./fs');
 
 // get assets object
 module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMapperPath) {
-  if (!_.has(data, 'entry') || !_.has(data, 'content_type') || !_.isPlainObject(mappedAssetUids) || !_.isPlainObject(
-    mappedAssetUrls) || typeof assetUidMapperPath !== 'string') {
+  if (
+    !_.has(data, 'entry') ||
+    !_.has(data, 'content_type') ||
+    !_.isPlainObject(mappedAssetUids) ||
+    !_.isPlainObject(mappedAssetUrls) ||
+    typeof assetUidMapperPath !== 'string'
+  ) {
     throw new Error('Invalid inputs for lookupAssets!');
   }
   var parent = [];
@@ -27,8 +32,11 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
 
   var find = function (schema, entry) {
     for (var i = 0, _i = schema.length; i < _i; i++) {
-      if ((schema[i].data_type === 'text' && schema[i].field_metadata && (schema[i].field_metadata.markdown ||
-          schema[i].field_metadata.rich_text_type))) {
+      if (
+        schema[i].data_type === 'text' &&
+        schema[i].field_metadata &&
+        (schema[i].field_metadata.markdown || schema[i].field_metadata.rich_text_type)
+      ) {
         parent.push(schema[i].uid);
         findFileUrls(parent, schema[i], entry, assetUrls);
         parent.pop();
@@ -40,7 +48,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       }
       if (schema[i].data_type === 'blocks') {
         for (var j = 0, _j = schema[i].blocks.length; j < _j; j++) {
-          if(schema[i].blocks[j].schema) {
+          if (schema[i].blocks[j].schema) {
             parent.push(schema[i].uid);
             parent.push(schema[i].blocks[j].uid);
             find(schema[i].blocks[j].schema, entry);
@@ -51,8 +59,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       }
     }
   };
-  
-  
+
   find(data.content_type.schema, data.entry);
   updateFileFields(data.entry, data, null, mappedAssetUids, matchedUids, unmatchedUids);
   assetUids = _.uniq(assetUids);
@@ -85,7 +92,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       matchedAssetUids[data.content_type.uid][data.entry.uid] = matchedUids;
     } else {
       matchedAssetUids[data.content_type.uid] = {
-        [data.entry.uid]: matchedUids
+        [data.entry.uid]: matchedUids,
       };
     }
     helper.writeFile(path.join(assetUidMapperPath, 'matched-asset-uids.json'));
@@ -98,7 +105,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       unmatchedAssetUids[data.content_type.uid][data.entry.uid] = unmatchedUids;
     } else {
       unmatchedAssetUids[data.content_type.uid] = {
-        [data.entry.uid]: unmatchedUids
+        [data.entry.uid]: unmatchedUids,
       };
     }
     helper.writeFile(path.join(assetUidMapperPath, 'unmatched-asset-uids.json'));
@@ -111,7 +118,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       unmatchedAssetUrls[data.content_type.uid][data.entry.uid] = unmatchedUrls;
     } else {
       unmatchedAssetUrls[data.content_type.uid] = {
-        [data.entry.uid]: unmatchedUrls
+        [data.entry.uid]: unmatchedUrls,
       };
     }
     helper.writeFile(path.join(assetUidMapperPath, 'unmatched-asset-urls.json'));
@@ -124,7 +131,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       matchedAssetUrls[data.content_type.uid][data.entry.uid] = matchedUrls;
     } else {
       matchedAssetUrls[data.content_type.uid] = {
-        [data.entry.uid]: matchedUrls
+        [data.entry.uid]: matchedUrls,
       };
     }
     helper.writeFile(path.join(assetUidMapperPath, 'matched-asset-urls.json'));
@@ -133,7 +140,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
   return JSON.parse(entry);
 };
 
-function findFileUrls (schema, _entry, assetUrls) {
+function findFileUrls(schema, _entry, assetUrls) {
   var markdownRegEx;
   var markdownMatch;
 
@@ -142,11 +149,14 @@ function findFileUrls (schema, _entry, assetUrls) {
   if (schema && schema.field_metadata && schema.field_metadata.markdown) {
     regex = new RegExp(
       // eslint-disable-next-line no-control-regex
-      'https://(contentstack-|)api.(built|contentstack).io/(.*?)/download(.*?)uid=([a-z0-9]+[^\?&\s\n])((.*)[\n\s]?)',
-      'g');
+      'https://(contentstack-|)api.(built|contentstack).io/(.*?)/download(.*?)uid=([a-z0-9]+[^?&s\n])((.*)[\ns]?)',
+      'g',
+    );
   } else {
     regex = new RegExp(
-      'https://(contentstack-|)api.(built|contentstack).io/(.*?)/download(.*?)uid=([a-z0-9]+[^\?&\'"])(.*?)', 'g');
+      'https://(contentstack-|)api.(built|contentstack).io/(.*?)/download(.*?)uid=([a-z0-9]+[^?&\'"])(.*?)',
+      'g',
+    );
   }
   while ((_matches = regex.exec(_entry)) !== null) {
     if (_matches && _matches.length) {
@@ -170,7 +180,7 @@ function findFileUrls (schema, _entry, assetUrls) {
   }
 }
 
-function updateFileFields (objekt, parent, pos, mappedAssetUids, matchedUids, unmatchedUids) {
+function updateFileFields(objekt, parent, pos, mappedAssetUids, matchedUids, unmatchedUids) {
   if (_.isPlainObject(objekt) && _.has(objekt, 'filename') && _.has(objekt, 'uid')) {
     if (typeof pos !== 'undefined') {
       if (typeof pos === 'number' || typeof pos === 'string') {
@@ -184,8 +194,7 @@ function updateFileFields (objekt, parent, pos, mappedAssetUids, matchedUids, un
       }
     }
   } else if (_.isPlainObject(objekt)) {
-    for (var key in objekt)
-      updateFileFields(objekt[key], objekt, key, mappedAssetUids, matchedUids, unmatchedUids);
+    for (var key in objekt) updateFileFields(objekt[key], objekt, key, mappedAssetUids, matchedUids, unmatchedUids);
   } else if (_.isArray(objekt) && objekt.length) {
     for (var i = 0; i <= objekt.length; i++)
       updateFileFields(objekt[i], objekt, i, mappedAssetUids, matchedUids, unmatchedUids);
