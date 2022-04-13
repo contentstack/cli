@@ -5,7 +5,7 @@ import { logger, cliux, messageHandler, configHandler } from '@contentstack/cli-
 export default class TokensListCommand extends Command {
   private readonly parse: Function;
   static run;
-  static description = "Lists all existing tokens added to the session";
+  static description = 'Lists all existing tokens added to the session';
   static aliases = ['tokens'];
   static examples = ['$ csdx auth:tokens'];
   static flags = cli.table.flags(); // use the cli table flags as it displays tokens in table
