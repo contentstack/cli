@@ -9,6 +9,22 @@ It is Contentstack’s CLI plugin to import content in the stack. To learn how t
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+
+For switching to EU region update the hosts at config/default.js
+```js
+{
+  host:'https://eu-api.contentstack.com/v3',
+ ...
+}
+``` 
+
+For switching to AZURE region update the hosts at config/default.js
+```js
+{
+  host:'https://azure-api.contentstack.com/v3',
+ ...
+}
+``` 
 # Usage
 <!-- usage -->
 ```sh-session
