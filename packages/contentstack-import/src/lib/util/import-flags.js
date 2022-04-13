@@ -1,158 +1,164 @@
 /*!
-* Contentstack Export
-* Copyright (c) 2019 Contentstack LLC
-* MIT Licensed
-*/
-let defaultConfig = require('../../config/default')
-let { initial } = require('../../app')
-let _ = require('lodash')
-const { cli } = require('cli-ux')
-let message = require('../../../messages/index.json')
+ * Contentstack Export
+ * Copyright (c) 2019 Contentstack LLC
+ * MIT Licensed
+ */
+let defaultConfig = require('../../config/default');
+let { initial } = require('../../app');
+let _ = require('lodash');
+const { cli } = require('cli-ux');
+let message = require('../../../messages/index.json');
 
 exports.configWithMToken = function (config, managementTokens, moduleName, host, _authToken, backupdir, branchName) {
   return new Promise(async function (resolve, reject) {
-    let externalConfig = require(config)
-    defaultConfig.management_token = managementTokens.token
-    defaultConfig.branchName = branchName
+    let externalConfig = require(config);
+    defaultConfig.management_token = managementTokens.token;
+    defaultConfig.branchName = branchName;
     if (moduleName && moduleName !== undefined) {
-      defaultConfig.moduleName = moduleName
+      defaultConfig.moduleName = moduleName;
     }
-    defaultConfig.host = host
+    defaultConfig.host = host;
     if (backupdir) {
       defaultConfig.useBackedupDir = backupdir;
     }
-    defaultConfig.auth_token = _authToken
-    defaultConfig = _.merge(defaultConfig, externalConfig)
+    defaultConfig.auth_token = _authToken;
+    defaultConfig = _.merge(defaultConfig, externalConfig);
     initial(defaultConfig)
       .then(() => {
-        return resolve()
-      }).catch((error) => {
-        return reject(error)
+        return resolve();
       })
-  })
-}
+      .catch((error) => {
+        return reject(error);
+      });
+  });
+};
 
 exports.parameterWithMToken = function (managementTokens, data, moduleName, host, _authToken, backupdir, branchName) {
   return new Promise(async function (resolve, reject) {
-    defaultConfig.management_token = managementTokens.token
-    defaultConfig.target_stack = managementTokens.apiKey
-    defaultConfig.auth_token = _authToken
-    defaultConfig.branchName = branchName
+    defaultConfig.management_token = managementTokens.token;
+    defaultConfig.target_stack = managementTokens.apiKey;
+    defaultConfig.auth_token = _authToken;
+    defaultConfig.branchName = branchName;
     if (moduleName && moduleName !== undefined) {
-      defaultConfig.moduleName = moduleName
+      defaultConfig.moduleName = moduleName;
     }
-    defaultConfig.data = data
-    defaultConfig.host = host
+    defaultConfig.data = data;
+    defaultConfig.host = host;
     if (backupdir) {
       defaultConfig.useBackedupDir = backupdir;
     }
     initial(defaultConfig)
       .then(() => {
-        return resolve()
-      }).catch((error) => {
-        return reject(error)
+        return resolve();
       })
-  })
-}
+      .catch((error) => {
+        return reject(error);
+      });
+  });
+};
 
 // using ManagemetToken
 exports.withoutParameterMToken = async (managementTokens, moduleName, host, _authToken, backupdir, branchName) => {
   return new Promise(async function (resolve, reject) {
-    const exporteddata = await cli.prompt(message.promptMessageList.promptPathStoredData)
-    defaultConfig.management_token = managementTokens.token
-    defaultConfig.target_stack = managementTokens.apiKey
-    defaultConfig.auth_token = _authToken
-    defaultConfig.branchName = branchName
+    const exporteddata = await cli.prompt(message.promptMessageList.promptPathStoredData);
+    defaultConfig.management_token = managementTokens.token;
+    defaultConfig.target_stack = managementTokens.apiKey;
+    defaultConfig.auth_token = _authToken;
+    defaultConfig.branchName = branchName;
     if (moduleName && moduleName !== undefined) {
-      defaultConfig.moduleName = moduleName
+      defaultConfig.moduleName = moduleName;
     }
-    defaultConfig.data = exporteddata
-    defaultConfig.host = host
+    defaultConfig.data = exporteddata;
+    defaultConfig.host = host;
     if (backupdir) {
       defaultConfig.useBackedupDir = backupdir;
     }
     initial(defaultConfig)
       .then(() => {
-        return resolve()
-      }).catch((error) => {
-        return reject(error)
+        return resolve();
       })
-  })
-}
+      .catch((error) => {
+        return reject(error);
+      });
+  });
+};
 
 exports.configWithAuthToken = function (config, _authToken, moduleName, host, backupdir, branchName) {
   return new Promise(async function (resolve, reject) {
-    let externalConfig = require(config)
-    defaultConfig.auth_token = _authToken
-    defaultConfig.branchName = branchName
+    let externalConfig = require(config);
+    defaultConfig.auth_token = _authToken;
+    defaultConfig.branchName = branchName;
     if (moduleName && moduleName !== undefined) {
-      defaultConfig.moduleName = moduleName
+      defaultConfig.moduleName = moduleName;
     }
-    defaultConfig.host = host
+    defaultConfig.host = host;
 
     if (externalConfig.modules) {
-      defaultConfig.modules.types = externalConfig.modules
-      delete externalConfig.modules
+      defaultConfig.modules.types = externalConfig.modules;
+      delete externalConfig.modules;
     }
 
     if (backupdir) {
       defaultConfig.useBackedupDir = backupdir;
     }
-    defaultConfig = _.merge(defaultConfig, externalConfig)
+    defaultConfig = _.merge(defaultConfig, externalConfig);
     initial(defaultConfig)
       .then(() => {
-        return resolve()
-      }).catch((error) => {
-        return reject(error)
+        return resolve();
       })
-  })
-}
+      .catch((error) => {
+        return reject(error);
+      });
+  });
+};
 
 exports.parametersWithAuthToken = function (_authToken, targetStack, data, moduleName, host, backupdir, branchName) {
   return new Promise(async function (resolve, reject) {
-    defaultConfig.auth_token = _authToken
-    defaultConfig.target_stack = targetStack
-    defaultConfig.branchName = branchName
+    defaultConfig.auth_token = _authToken;
+    defaultConfig.target_stack = targetStack;
+    defaultConfig.branchName = branchName;
     if (moduleName && moduleName !== undefined && backupdir === undefined) {
-      defaultConfig.moduleName = moduleName
+      defaultConfig.moduleName = moduleName;
     } else if (moduleName && moduleName !== undefined && backupdir !== undefined) {
-      defaultConfig.moduleName = moduleName
-      defaultConfig.useBackedupDir = backupdir
+      defaultConfig.moduleName = moduleName;
+      defaultConfig.useBackedupDir = backupdir;
     }
-    defaultConfig.data = data
-    defaultConfig.host = host
+    defaultConfig.data = data;
+    defaultConfig.host = host;
 
     initial(defaultConfig)
       .then(() => {
-        return resolve()
-      }).catch((error) => {
-        return reject(error)
+        return resolve();
       })
-  })
-}
+      .catch((error) => {
+        return reject(error);
+      });
+  });
+};
 
 exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, backupdir, branchName) => {
   return new Promise(async function (resolve, reject) {
-    const stackUid = await cli.prompt(message.promptMessageList.promptTargetStack)
-    const exporteddata = await cli.prompt(message.promptMessageList.promptPathStoredData)
-    defaultConfig.auth_token = _authToken
-    defaultConfig.target_stack = stackUid
-    defaultConfig.data = exporteddata
-    defaultConfig.branchName = branchName
+    const stackUid = await cli.prompt(message.promptMessageList.promptTargetStack);
+    const exporteddata = await cli.prompt(message.promptMessageList.promptPathStoredData);
+    defaultConfig.auth_token = _authToken;
+    defaultConfig.target_stack = stackUid;
+    defaultConfig.data = exporteddata;
+    defaultConfig.branchName = branchName;
     if (moduleName && moduleName !== undefined && backupdir === undefined) {
-      defaultConfig.moduleName = moduleName
+      defaultConfig.moduleName = moduleName;
     } else if (moduleName && moduleName !== undefined && backupdir !== undefined) {
-      defaultConfig.moduleName = moduleName
-      defaultConfig.useBackedupDir = backupdir
+      defaultConfig.moduleName = moduleName;
+      defaultConfig.useBackedupDir = backupdir;
     }
 
-    defaultConfig.host = host
+    defaultConfig.host = host;
 
     initial(defaultConfig)
       .then(() => {
-        return resolve()
-      }).catch((error) => {
-        return reject(error)
+        return resolve();
       })
-  })
-}
+      .catch((error) => {
+        return reject(error);
+      });
+  });
+};

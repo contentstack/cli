@@ -1,21 +1,22 @@
-'use strict'
+'use strict';
 
 class _TypeError {
-  constructor() {
-  }
+  constructor() {}
 
   validate(data) {
     if (data.payload.typeErrors) {
-      return [{
-        ...data,
-        message: `${data.payload.typeErrors[0]} is not a valid function`,
-      }]
+      return [
+        {
+          ...data,
+          message: `${data.payload.typeErrors[0]} is not a valid function`,
+        },
+      ];
     }
-    return []
+    return [];
   }
 
   isApplicable(action) {
-    return action.type === 'typeError'
+    return action.type === 'typeError';
   }
 }
-module.exports = _TypeError
+module.exports = _TypeError;
