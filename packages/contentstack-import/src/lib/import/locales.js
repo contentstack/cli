@@ -135,7 +135,9 @@ importLanguages.prototype = {
             .stack({ api_key: config.target_stack, management_token: config.management_token })
             .locale(lang.code);
           Object.assign(langobj, _.cloneDeep(lang));
-          langobj.update().then(() => {});
+          langobj.update().then(() => {
+            // empty function
+          });
         }),
       )
         .then(() => {

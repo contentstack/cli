@@ -73,7 +73,6 @@ importEnvironments.prototype = {
                 self.success.push(environment.items);
                 self.envUidMapper[envUid] = environment.uid;
                 helper.writeFile(envUidMapperPath, self.envUidMapper);
-                return;
               })
               .catch(function (err) {
                 let error = JSON.parse(err.message);
@@ -88,7 +87,6 @@ importEnvironments.prototype = {
                     'error',
                   );
                 }
-                return;
               });
           } else {
             // the environment has already been created
@@ -97,7 +95,6 @@ importEnvironments.prototype = {
               chalk.white("The environment: '" + env.name + "' already exists. Skipping it to avoid duplicates!"),
               'success',
             );
-            return;
           }
           // import 2 environments at a time
         },

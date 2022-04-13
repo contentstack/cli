@@ -31,7 +31,6 @@ var upload = (module.exports = function (req, fsPath, RETRY) {
       } else if (RETRY > MAX_RETRY_LIMIT) {
         return reject(new Error('Max retry limit exceeded!'));
       }
-      // var uploadStream = fs.createReadStream(fsPath)
 
       req.upload = fsPath;
       client
