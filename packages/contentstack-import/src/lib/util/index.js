@@ -44,10 +44,6 @@ exports.validateConfig = function (importConfig) {
     addlogs(importConfig, chalk.red('Kindly provide Email and password'), 'error');
     return 'error';
   }
-  //  if(!importConfig.languagesCode.includes(importConfig.master_locale.code)) {
-  //   addlogs(importConfig, chalk.red('Kindly provide valid master_locale code'), 'error')
-  //   return 'error'
-  // }
 };
 
 exports.buildAppConfig = function (importConfig) {
@@ -107,7 +103,6 @@ exports.sanitizeStack = function (importConfig) {
 
         return request(updateStackOptions).then((response) => {
           addlogs(importConfig, `Stack version preserved successfully!\n${JSON.stringify(response.body)}`, 'success');
-          return;
         });
       }
       throw new Error(`Unexpected stack details ${stackDetails}. 'stackDetails.body.stack' not found!!`);

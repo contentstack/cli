@@ -1,8 +1,26 @@
 fileignoreconfig:
 - filename: packages/contentstack-import/package-lock.json
   checksum: 66126a79971d8afa929ac43e86261578431e4d63bc0de59a410d86c467bdcbcf
+- filename: packages/contentstack-import/src/lib/import/assets.js
+  checksum: 799050f25ca725fd352ff27f3df8bda9d0fc8e7f65cfc2e26abaa4e67a0ca741
 - filename: packages/contentstack-import/src/lib/import/entries.js
-  checksum: b613fbc87e45375dc35ace330c66a22d99981197645129d4ae1db07534d2722d
+  checksum: 5a9c83f45956a6449f8f391855bed37e48463d491cbba7ecdbf2ceea545d1045
+- filename: packages/contentstack-import/src/lib/import/locales.js
+  checksum: cab0f178ef06b4580dc727d6190e31739863961e3ae05ba8c2d02f620286f05c
+- filename: packages/contentstack-import/src/lib/import/webhooks.js
+  checksum: 90e1ce6878746e3047808a20e715376414d775224d993ac9957e0f81870481dc
+- filename: packages/contentstack-import/src/lib/util/extensionsUidReplace.js
+  checksum: 91b9fca35885b3a79d1f4eaedcf2b3c625d2de194f3c812b7fe702a6930865aa
+- filename: packages/contentstack-import/src/lib/util/login.js
+  checksum: 6ea1c2897e9c87d0b0534f43b7065e0956e2549889829b1e022b7764b90e026b
+- filename: packages/contentstack-import/src/lib/util/lookupReplaceEntries.js
+  checksum: cea4c0b9b80fa66e0df6aab6626713ffffa653e9f88755e40921634dec358f42
+- filename: packages/contentstack-import/test/mock/environment.js
+  checksum: 1de72c3f0b3383e1e103206cbafd27977db46ed603534e36c916cb941c9a682b
+- filename: packages/contentstack-import/test/mock/extensions.js
+  checksum: 27fe9ff50e8ccf7a33e09be01cdc1aa17703014efe55d553ded0b86edd9cbfc8
+- filename: packages/contentstack-import/test/mock/globalFields.js
+  checksum: ebfcba93d888713142c8fe5bfa6a80c09344ab357bc13ac935d8c50c283bd1ae
 - filename: packages/contentstack/package-lock.json
   checksum: be5da46c99ee2ea6c021a6dd4f903feda4f4c610033aba5ad3d25761810b52ff
 version: "1.0"
