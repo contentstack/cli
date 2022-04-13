@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-'use strict'
+'use strict';
 
 module.exports = {
   master_locale: {
@@ -7,4 +7,4 @@ module.exports = {
     name: 'English - United States',
     code: 'en-us',
   },
-}
+};

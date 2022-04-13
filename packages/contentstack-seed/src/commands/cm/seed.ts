@@ -1,5 +1,5 @@
-import {Command, flags} from '@contentstack/cli-command'
-import ContentModelSeeder, {ContentModelSeederOptions} from '../../seed'
+import { Command, flags } from '@contentstack/cli-command';
+import ContentModelSeeder, { ContentModelSeederOptions } from '../../seed';
 
 export default class SeedCommand extends Command {
   static description = 'Create a Stack from existing content types, entries, assets, etc';
@@ -51,10 +51,13 @@ export default class SeedCommand extends Command {
 
   async run() {
     try {
-      const {flags} = this.parse(SeedCommand)
+      const { flags } = this.parse(SeedCommand);
 
       if (!this.authToken) {
-        this.error('You need to login, first. See: auth:login --help', {exit: 2, suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/']})
+        this.error('You need to login, first. See: auth:login --help', {
+          exit: 2,
+          suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
+        });
       }
 
       const options: ContentModelSeederOptions = {
@@ -66,13 +69,13 @@ export default class SeedCommand extends Command {
         stackUid: flags.stack,
         stackName: flags['stack-name'],
         fetchLimit: flags['fetch-limit'],
-      }
+      };
 
-      const seeder = new ContentModelSeeder(options)
-      const result = await seeder.run()
-      return result
+      const seeder = new ContentModelSeeder(options);
+      const result = await seeder.run();
+      return result;
     } catch (error) {
-      this.error(error, {exit: 1, suggestions: error.suggestions})
+      this.error(error, { exit: 1, suggestions: error.suggestions });
     }
   }
 }

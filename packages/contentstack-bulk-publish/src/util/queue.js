@@ -7,8 +7,8 @@ class Queue extends EventEmitter {
     this.count = 0;
     this.store = [];
     this.config = {};
-    this.delay = 1
-    this.requestBatchSize = 1
+    this.delay = 1;
+    this.requestBatchSize = 1;
     this.on('dequeue', this.check);
   }
 
@@ -20,16 +20,16 @@ class Queue extends EventEmitter {
 
   Enqueue(obj) {
     if (!obj.retry) {
-      obj = {obj, retry: 0}
+      obj = { obj, retry: 0 };
     }
     if (this.count === this.requestBatchSize) {
       return this.sleep(this.delay).then(() => {
-        this.count = 1 // reset the count to 1. Because the current object will be processed too, and that counts as one request
+        this.count = 1; // reset the count to 1. Because the current object will be processed too, and that counts as one request
         this.store.push(obj);
         this.check();
-      })
+      });
     } else {
-      this.count++
+      this.count++;
       this.store.push(obj);
       this.check();
     }
@@ -44,14 +44,14 @@ class Queue extends EventEmitter {
   }
 
   sleep(seconds) {
-    return new Promise(resolve => {
-      setTimeout(resolve, seconds * 1000)
-    })
+    return new Promise((resolve) => {
+      setTimeout(resolve, seconds * 1000);
+    });
   }
 }
 
 module.exports = {
-  getQueue: function() {
-    return new Queue()
-  }
-}
+  getQueue: function () {
+    return new Queue();
+  },
+};
