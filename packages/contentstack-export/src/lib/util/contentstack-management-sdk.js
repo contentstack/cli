@@ -1,4 +1,4 @@
-const contentstacksdk = require('@contentstack/management')
+const contentstacksdk = require('@contentstack/management');
 
 exports.Client = function (config) {
   const option = {
@@ -6,14 +6,14 @@ exports.Client = function (config) {
     authtoken: config.auth_token,
     api_key: config.source_stack,
     logHandler: (level, data) => {},
-  }
+  };
 
   if (typeof config.branchName === 'string') {
     option.headers = {
       branch: config.branchName,
-    }
+    };
   }
 
-  const client = contentstacksdk.client(option)
-  return client
-}
+  const client = contentstacksdk.client(option);
+  return client;
+};

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const chalk = require('chalk');
 const path = require('path');
-const {getLogsDirPath} = require('../util/logger.js')
+const { getLogsDirPath } = require('../util/logger.js');
 
 const logsDir = getLogsDirPath();
 
@@ -12,7 +12,7 @@ function doesFileExistInLogsDirectory(filename) {
   if (files.indexOf(filename) !== -1) {
     return true;
   }
-  throw new Error(`${filename} doesn't exist in logs directory at ${logsDir}`)
+  throw new Error(`${filename} doesn't exist in logs directory at ${logsDir}`);
 }
 
 function validateFile(filename, types) {
@@ -20,11 +20,11 @@ function validateFile(filename, types) {
     const [timestamp, logType, status] = filename.split('.');
 
     if (!timestamp || !logType || !status) {
-      throw new Error(`${filename} is not a valid log file or the log name has been changed`)
+      throw new Error(`${filename} is not a valid log file or the log name has been changed`);
     }
 
     if (status !== 'success' && status !== 'error') {
-      throw new Error(`${filename} is not a valid log file or the log name has been changed`)
+      throw new Error(`${filename} is not a valid log file or the log name has been changed`);
     }
 
     if (logType) {
@@ -48,19 +48,18 @@ function validateFile(filename, types) {
         case 'unpublish':
         case 'revert':
           if (types && types.length > 0) {
-
-            if(status !=='error') {
-              throw new Error('Error: The given log file is not an error log file.')
+            if (status !== 'error') {
+              throw new Error('Error: The given log file is not an error log file.');
             }
 
-            if(types.indexOf(logType) === -1) {
-              let validTypes = '' + types.join(', ')
-              throw new Error(`For this operation, the log file should be of the following types: ${validTypes}`)
+            if (types.indexOf(logType) === -1) {
+              let validTypes = '' + types.join(', ');
+              throw new Error(`For this operation, the log file should be of the following types: ${validTypes}`);
             }
           }
           return true;
         default:
-          throw new Error(`${filename} is not a valid log file or the log name has been changed`)
+          throw new Error(`${filename} is not a valid log file or the log name has been changed`);
       }
     }
   }
