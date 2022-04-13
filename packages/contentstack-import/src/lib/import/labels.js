@@ -68,7 +68,6 @@ importLabels.prototype = {
               label: label,
             };
 
-            // return self.createLabels(self.labels[labelUid]);
             return client
               .stack({ api_key: config.target_stack, management_token: config.management_token })
               .label()
@@ -76,17 +75,14 @@ importLabels.prototype = {
               .then(function (response) {
                 self.labelUidMapper[labelUid] = response;
                 helper.writeFile(labelUidMapperPath, self.labelUidMapper);
-                return;
               })
               .catch(function (error) {
                 self.fails.push(label);
-                // addlogs(config, chalk.red('Label: \'' + label.name + '\' failed to be imported\n'), 'error');
                 if (error.errors.name) {
                   addlogs(config, chalk.red("Label: '" + label.name + "'  already exist"), 'error');
                 } else {
                   addlogs(config, chalk.red("Label: '" + label.name + "' failed to be imported\n"), 'error');
                 }
-                return;
               });
           } else {
             // the label has already been created
@@ -95,7 +91,6 @@ importLabels.prototype = {
               chalk.white("The label: '" + label.name + "' already exists. Skipping it to avoid duplicates!"),
               'success',
             );
-            return;
           }
           // import 1 labels at a time
         },

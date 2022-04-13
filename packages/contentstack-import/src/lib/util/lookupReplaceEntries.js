@@ -21,40 +21,40 @@ module.exports = function (data, mappedUids, uidMapperPath) {
   var isNewRefFields = false;
   var preserveStackVersion = config.preserveStackVersion;
 
-  var update = function (parent, form_id, entry) {
-    var _entry = entry;
-    var len = parent.length;
+  var update = function (_parent, form_id, updateEntry) {
+    var _entry = updateEntry;
+    var len = _parent.length;
     for (var j = 0; j < len; j++) {
-      if (_entry && parent[j]) {
-        if (j === len - 1 && _entry[parent[j]]) {
+      if (_entry && _parent[j]) {
+        if (j === len - 1 && _entry[_parent[j]]) {
           if (form_id !== '_assets') {
-            if (_entry[parent[j]].length) {
-              _entry[parent[j]].forEach((item, idx) => {
+            if (_entry[_parent[j]].length) {
+              _entry[_parent[j]].forEach((item, idx) => {
                 if (typeof item.uid === 'string' && item._content_type_uid) {
                   uids.push(item.uid);
                 } else if (typeof item === 'string' && preserveStackVersion === true) {
                   uids.push(item);
                 } else {
                   uids.push(item);
-                  _entry[parent[j]][idx] = {
+                  _entry[_parent[j]][idx] = {
                     uid: item,
                     _content_type_uid: form_id,
                   };
                 }
               });
             }
-          } else if (Array.isArray(_entry[parent[j]])) {
-            for (var k = 0; k < _entry[parent[j]].length; k++) {
-              if (_entry[parent[j]][k].uid.length) {
-                uids.push(_entry[parent[j]][k].uid);
+          } else if (Array.isArray(_entry[_parent[j]])) {
+            for (var k = 0; k < _entry[_parent[j]].length; k++) {
+              if (_entry[_parent[j]][k].uid.length) {
+                uids.push(_entry[_parent[j]][k].uid);
               }
             }
-          } else if (_entry[parent[j]].uid.length) {
-            uids.push(_entry[parent[j]].uid);
+          } else if (_entry[_parent[j]].uid.length) {
+            uids.push(_entry[_parent[j]].uid);
           }
         } else {
-          _entry = _entry[parent[j]];
-          var _keys = _.clone(parent).splice(eval(j + 1), len);
+          _entry = _entry[_parent[j]];
+          var _keys = _.clone(_parent).splice(eval(j + 1), len);
           if (Array.isArray(_entry)) {
             for (var i = 0, _i = _entry.length; i < _i; i++) {
               update(_keys, form_id, _entry[i]);
@@ -66,7 +66,7 @@ module.exports = function (data, mappedUids, uidMapperPath) {
       }
     }
   };
-  var find = function (schema, entry) {
+  var find = function (schema, _entry) {
     for (var i = 0, _i = schema.length; i < _i; i++) {
       switch (schema[i].data_type) {
         case 'reference':
@@ -74,25 +74,25 @@ module.exports = function (data, mappedUids, uidMapperPath) {
             isNewRefFields = true;
             schema[i].reference_to.forEach((reference) => {
               parent.push(schema[i].uid);
-              update(parent, reference, entry);
+              update(parent, reference, _entry);
               parent.pop();
             });
           } else {
             parent.push(schema[i].uid);
-            update(parent, schema[i].reference_to, entry);
+            update(parent, schema[i].reference_to, _entry);
             parent.pop();
           }
           break;
         case 'group':
           parent.push(schema[i].uid);
-          find(schema[i].schema, entry);
+          find(schema[i].schema, _entry);
           parent.pop();
           break;
         case 'blocks':
           for (var j = 0, _j = schema[i].blocks.length; j < _j; j++) {
             parent.push(schema[i].uid);
             parent.push(schema[i].blocks[j].uid);
-            find(schema[i].blocks[j].schema, entry);
+            find(schema[i].blocks[j].schema, _entry);
             parent.pop();
             parent.pop();
           }
