@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 module.exports = {
   CreateContentTypeValidator: require('./create-content-type-validator'),
@@ -8,4 +8,4 @@ module.exports = {
   _TypeError: require('./type-error'),
   ApiError: require('./api-error'),
   MigrationError: require('./migration-error'),
-}
+};
