@@ -4,7 +4,7 @@ import { logger, cliux, messageHandler, CLIError } from '@contentstack/cli-utili
 export default class WhoamiCommand extends Command {
   email: string;
   static run;
-  static description = "Display current users email address";
+  static description = 'Display current users email address';
 
   static examples = ['$ csdx auth:whoami'];
 

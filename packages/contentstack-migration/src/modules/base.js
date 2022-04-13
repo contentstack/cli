@@ -1,12 +1,12 @@
-'use strict'
+'use strict';
 
 // Utils
-const {map: _map, constants} = require('../utils')
+const { map: _map, constants } = require('../utils');
 // Actions
-const {actionCreators} = require('../actions')
+const { actionCreators } = require('../actions');
 // Utils properties
-const {getMapInstance, get} = _map
-const {actionMapper} = constants
+const { getMapInstance, get } = _map;
+const { actionMapper } = constants;
 
 /**
  * Base class for module classes
@@ -15,9 +15,9 @@ const {actionMapper} = constants
  */
 class Base {
   constructor(id, action) {
-    this.id = id
-    this.action = action
-    this.actions = []
+    this.id = id;
+    this.action = action;
+    this.actions = [];
   }
 
   /**
@@ -26,14 +26,14 @@ class Base {
    * @returns {Base} current instance of inherited class
    */
   title(value) {
-    const mapInstance = getMapInstance()
-    const {id, action} = this
+    const mapInstance = getMapInstance();
+    const { id, action } = this;
 
-    const contentType = get(id, mapInstance)
+    const contentType = get(id, mapInstance);
 
-    contentType[action].content_type.title = value
+    contentType[action].content_type.title = value;
 
-    return this
+    return this;
   }
 
   /**
@@ -42,11 +42,11 @@ class Base {
    * @returns {Base} current instance of inherited class
    */
   description(value) {
-    const mapInstance = getMapInstance()
-    const {id, action} = this
-    const contentType = get(id, mapInstance)
-    contentType[action].content_type.description = value
-    return this
+    const mapInstance = getMapInstance();
+    const { id, action } = this;
+    const contentType = get(id, mapInstance);
+    contentType[action].content_type.description = value;
+    return this;
   }
 
   /**
@@ -55,14 +55,14 @@ class Base {
    * @returns {Base} current instance of inherited class
    */
   force(value) {
-    const mapInstance = getMapInstance()
-    const {id, action} = this
+    const mapInstance = getMapInstance();
+    const { id, action } = this;
 
-    const contentType = get(id, mapInstance)
+    const contentType = get(id, mapInstance);
 
-    contentType[action].content_type.force = value
+    contentType[action].content_type.force = value;
 
-    return this
+    return this;
   }
 
   /**
@@ -75,21 +75,21 @@ class Base {
    */
   dispatch(callsite, id, opts, method) {
     if (!id && !opts) {
-      let mapInstance = getMapInstance()
-      let actions = get(actionMapper, mapInstance) // Returns an array if empty
-      let action = actionCreators.customTasks(callsite, opts)
-      actions.push(action)
+      let mapInstance = getMapInstance();
+      let actions = get(actionMapper, mapInstance); // Returns an array if empty
+      let action = actionCreators.customTasks(callsite, opts);
+      actions.push(action);
     } else {
-      let mapInstance = getMapInstance()
-      let actions = get(actionMapper, mapInstance) // Returns an array if empty
-      let action = actionCreators.contentType[method](callsite, id, {...opts, id})
-      actions.push(action)
+      let mapInstance = getMapInstance();
+      let actions = get(actionMapper, mapInstance); // Returns an array if empty
+      let action = actionCreators.contentType[method](callsite, id, { ...opts, id });
+      actions.push(action);
     }
   }
 
   getActions() {
-    return this.actions
+    return this.actions;
   }
 }
 
-module.exports = Base
+module.exports = Base;

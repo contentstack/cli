@@ -1,6 +1,13 @@
 import { Command, flags } from '@contentstack/cli-command';
 import { tokenValidation } from '../../../utils';
-import { logger, cliux, messageHandler, CLIError, configHandler, printFlagDeprecation } from '@contentstack/cli-utilities';
+import {
+  logger,
+  cliux,
+  messageHandler,
+  CLIError,
+  configHandler,
+  printFlagDeprecation,
+} from '@contentstack/cli-utilities';
 export default class TokensAddCommand extends Command {
   managementAPIClient: any;
   private readonly parse: Function;
@@ -9,7 +16,7 @@ export default class TokensAddCommand extends Command {
   private exit: Function;
   static run;
 
-  static description = "Adds management/delivery tokens to your session to use it with further CLI commands";
+  static description = 'Adds management/delivery tokens to your session to use it with further CLI commands';
 
   static examples = [
     '$ csdx auth:tokens:add',
@@ -26,31 +33,45 @@ export default class TokensAddCommand extends Command {
   ];
 
   static flags = {
-    'alias': flags.string({ char: 'a', description: 'Name of the token alias' }),
-    'delivery': flags.boolean({
+    alias: flags.string({ char: 'a', description: 'Name of the token alias' }),
+    delivery: flags.boolean({
       char: 'd',
       description: messageHandler.parse('CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN'),
       exclusive: ['management'],
-      parse: printFlagDeprecation(["-d"], ["--delivery"]),
+      parse: printFlagDeprecation(['-d'], ['--delivery']),
     }),
-    'management': flags.boolean({
+    management: flags.boolean({
       char: 'm',
       description: messageHandler.parse('CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN'),
       exclusive: ['delivery', 'environment'],
-      parse: printFlagDeprecation(["-m"], ["--management"]),
+      parse: printFlagDeprecation(['-m'], ['--management']),
     }),
-    'environment': flags.string({
+    environment: flags.string({
       char: 'e',
       description: messageHandler.parse('CLI_AUTH_TOKENS_ADD_FLAG_ENVIRONMENT_NAME'),
       exclusive: ['management'],
     }),
     'stack-api-key': flags.string({ char: 'k', description: 'Stack API Key' }),
-    'yes': flags.boolean({ char: 'y', description: 'Skipping confirmation' }),
-    'token': flags.string({ char: 't', description: 'Token', env: 'TOKEN', parse: printFlagDeprecation(["-t"], ["--token"]) }),
+    yes: flags.boolean({ char: 'y', description: 'Skipping confirmation' }),
+    token: flags.string({
+      char: 't',
+      description: 'Token',
+      env: 'TOKEN',
+      parse: printFlagDeprecation(['-t'], ['--token']),
+    }),
 
     //To be deprecated
-    'api-key': flags.string({ description: 'API Key', hidden: true, parse: printFlagDeprecation(["api-key"], ["-k", "stack-api-key"]) }),
-    'force': flags.boolean({ char: 'f', hidden: true, description: 'Force adding', parse: printFlagDeprecation(["-f", "--force"], ["-y", "--yes"]) }),
+    'api-key': flags.string({
+      description: 'API Key',
+      hidden: true,
+      parse: printFlagDeprecation(['api-key'], ['-k', 'stack-api-key']),
+    }),
+    force: flags.boolean({
+      char: 'f',
+      hidden: true,
+      description: 'Force adding',
+      parse: printFlagDeprecation(['-f', '--force'], ['-y', '--yes']),
+    }),
   };
 
   async run(): Promise<any> {
@@ -124,7 +145,7 @@ export default class TokensAddCommand extends Command {
           environment,
         );
         if (!envValidationResult.valid) {
-          throw new CLIError(envValidationResult.message );
+          throw new CLIError(envValidationResult.message);
         }
       }
 
