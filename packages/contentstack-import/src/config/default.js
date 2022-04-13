@@ -3,7 +3,7 @@ module.exports = {
   // use below hosts for eu region
   // host:'https://eu-api.contentstack.com/v3',
   // use below hosts for azure region
-  // host:'https://azure-api.contentstack.com/v3',
+  // host:'https://azure-na-api.contentstack.com/v3',
   // pass locale, only to migrate entries from that locale
   // not passing `locale` will migrate all the locales present
   // locales: ['fr-fr'],
