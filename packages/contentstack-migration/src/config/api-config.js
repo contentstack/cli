@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
-'use strict'
+'use strict';
 
-const {CONTENTSTACK_API_KEY, CONTENTSTACK_AUTHTOKEN} = process.env
-const {version} = require('../../package.json')
+const { CONTENTSTACK_API_KEY, CONTENTSTACK_AUTHTOKEN } = process.env;
+const { version } = require('../../package.json');
 module.exports = {
   hostname: 'dev9-api.contentstack.com',
   // hostname: 'stag-app.contentstack.com',
@@ -16,4 +16,4 @@ module.exports = {
     api_key: CONTENTSTACK_API_KEY,
     // management_token: CONTENTSTACK_MANAGEMENT_TOKEN
   },
-}
+};

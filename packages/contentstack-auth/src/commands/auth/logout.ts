@@ -6,39 +6,40 @@ export default class LogoutCommand extends Command {
   managementAPIClient: any;
   authToken: string;
   static run; // to fix the test issue
-  static description = "User session logout";
+  static description = 'User session logout';
   static examples = ['$ csdx auth:logout', '$ csdx auth:logout -y', '$ csdx auth:logout --yes'];
 
   static flags = {
-    'yes': flags.boolean({
+    yes: flags.boolean({
       char: 'y',
       description: messageHandler.parse('CLI_AUTH_LOGOUT_FLAG_FORCE'),
       multiple: false,
       required: false,
     }),
-    'force': flags.boolean({
+    force: flags.boolean({
       char: 'f',
       description: messageHandler.parse('CLI_AUTH_LOGOUT_FLAG_FORCE'),
       multiple: false,
       required: false,
       hidden: true,
-      parse: printFlagDeprecation(["-f", "--force"], ["-y", "--yes"])
+      parse: printFlagDeprecation(['-f', '--force'], ['-y', '--yes']),
     }),
   };
 
-  static aliases = ['logout']
+  static aliases = ['logout'];
 
   async run(): Promise<any> {
     const { flags } = this.parse(LogoutCommand);
     authHandler.client = this.managementAPIClient;
     let confirm = false;
-    confirm = flags.force || flags.yes
-      ? true
-      : await cliux.inquire({
-          type: 'confirm',
-          message: 'CLI_AUTH_LOGOUT_CONFIRM',
-          name: 'confirmation',
-        });
+    confirm =
+      flags.force || flags.yes
+        ? true
+        : await cliux.inquire({
+            type: 'confirm',
+            message: 'CLI_AUTH_LOGOUT_CONFIRM',
+            name: 'confirmation',
+          });
     try {
       if (confirm) {
         cliux.loader('CLI_AUTH_LOGOUT_LOADER_START');
