@@ -30,7 +30,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
   var matchedUids = [];
   var matchedUrls = [];
 
-  var find = function (schema, entry) {
+  var find = function (schema, entryToFind) {
     for (var i = 0, _i = schema.length; i < _i; i++) {
       if (
         schema[i].data_type === 'text' &&
@@ -38,12 +38,12 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         (schema[i].field_metadata.markdown || schema[i].field_metadata.rich_text_type)
       ) {
         parent.push(schema[i].uid);
-        findFileUrls(parent, schema[i], entry, assetUrls);
+        findFileUrls(parent, schema[i], entryToFind, assetUrls);
         parent.pop();
       }
       if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
         parent.push(schema[i].uid);
-        find(schema[i].schema, entry);
+        find(schema[i].schema, entryToFind);
         parent.pop();
       }
       if (schema[i].data_type === 'blocks') {
@@ -51,7 +51,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
           if (schema[i].blocks[j].schema) {
             parent.push(schema[i].uid);
             parent.push(schema[i].blocks[j].uid);
-            find(schema[i].blocks[j].schema, entry);
+            find(schema[i].blocks[j].schema, entryToFind);
             parent.pop();
             parent.pop();
           }
@@ -76,10 +76,10 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
   });
 
   assetUrls.forEach(function (assetUrl) {
-    var url = mappedAssetUrls[assetUrl];
-    if (typeof url !== 'undefined') {
-      entry = entry.replace(new RegExp(assetUrl, 'img'), url);
-      unmatchedUrls.push(url);
+    var mappedAssetUrl = mappedAssetUrls[assetUrl];
+    if (typeof mappedAssetUrl !== 'undefined') {
+      entry = entry.replace(new RegExp(assetUrl, 'img'), mappedAssetUrl);
+      unmatchedUrls.push(mappedAssetUrl);
     } else {
       unmatchedUrls.push(assetUrl);
     }

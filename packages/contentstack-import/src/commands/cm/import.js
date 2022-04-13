@@ -27,7 +27,7 @@ class ImportCommand extends Command {
     let branchName = importCommandFlags.branch;
     let host = self.cmaHost;
 
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, _reject) {
       if (alias) {
         let managementTokens = self.getToken(alias);
 
