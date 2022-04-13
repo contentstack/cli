@@ -8,13 +8,12 @@ exports.Client = function (config) {
     api_key: config.target_stack,
     maxContentLength: 100000000,
     maxBodyLength: 1000000000,
-    logHandler: (level, data) => {},
+    logHandler: (_level, _data) => {
+      // empty handler
+    },
     retryCondition: (error) => {
       // no async function should be used here
-      if (error.response && (error.response.status === 429 || error.response.status === 408)) {
-        return true;
-      }
-      return false;
+      return (error.response && (error.response.status === 429 || error.response.status === 408))
     },
     retryDelayOptions: {
       base: 1000,
@@ -25,6 +24,5 @@ exports.Client = function (config) {
       branch: config.branchName,
     };
   }
-  const client = contentstacksdk.client(option);
-  return client;
+  return contentstacksdk.client(option);
 };
