@@ -1,13 +1,13 @@
-'use strict'
+'use strict';
 
-const {apiConfig} = require('../config')
+const { apiConfig } = require('../config');
 
-module.exports = ({method, path, sdkAction}) => {
+module.exports = ({ method, path, sdkAction }) => {
   return {
     ...apiConfig,
     path: path ? `${apiConfig.version}${path}` : apiConfig.version,
     method,
-    headers: {...apiConfig.headers},
+    headers: { ...apiConfig.headers },
     sdkAction,
-  }
-}
+  };
+};
