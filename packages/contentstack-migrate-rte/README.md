@@ -15,7 +15,7 @@ $ npm install -g @contentstack/cli-cm-migrate-rte
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-migrate-rte/1.0.5 linux-x64 node-v12.22.7
+@contentstack/cli-cm-migrate-rte/1.0.5 darwin-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -24,51 +24,55 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
+* [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
 * [`csdx help [COMMAND]`](#csdx-help-command)
 
-## `csdx cm:migrate-rte`
+## `csdx cm:entries:migrate-html-rte`
 
 Migration script for migrating HTML RTE to JSON RTE
 
 ```
 USAGE
-  $ csdx cm:migrate-rte
+  $ csdx cm:entries:migrate-html-rte
 
 OPTIONS
-  -a, --alias=alias                Alias for the management token to be used
-  -c, --content_type=content_type  The content-type from which entries need to be migrated
-  -d, --delay=delay                [default: 1000] Provide delay in ms between two entry update
+  -a, --alias=alias              Alias for the management token to be used
+  -c, --config-path=config-path  Path to config file to be used
+  -y, --yes                      Agree to process the command with the current configuration
+  --content-type=content-type    The content-type from which entries need to be migrated
+  --delay=delay                  [default: 1000] Provide delay in ms between two entry update
 
-  -g, --isGlobalField              This flag is set to false by default. It indicates that current content-type is
-                                   global-field
+  --global-field                 This flag is set to false by default. It indicates that current content-type is
+                                 global-field
 
-  -h, --htmlPath=htmlPath          Provide path of Html RTE to migrate
+  --html-path=html-path          Provide path of HTML RTE to migrate
 
-  -j, --jsonPath=jsonPath          Provide path of JSON RTE to migrate
+  --json-path=json-path          Provide path of JSON RTE to migrate
 
-  -p, --configPath=configPath      Path to config file to be used
-
-  -y, --yes                        Agree to process the command with the current configuration
+ALIASES
+  $ csdx cm:migrate-rte
 
 EXAMPLES
   General Usage
-  csdx cm:migrate-rte -p path/to/config.json
+  csdx cm:entries:migrate-html-rte --config-path path/to/config.json
 
   Using Flags
-  csdx cm:migrate-rte -a alias -c content_type_uid -h htmlPath -j jsonPath
+  csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path html-path --json-path 
+  json-path
 
   Nested RTE
-  csdx cm:migrate-rte -a alias -c content_type_uid -h modular_block_uid.block_uid.html_rte_uid -j 
-  modular_block_uid.block_uid.json_rte_uid
+  csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path 
+  modular_block_uid.block_uid.html_rte_uid --json-path modular_block_uid.block_uid.json_rte_uid
 
-  csdx cm:migrate-rte -a alias -c content_type_uid -h group_uid.html_rte_uid -j group_uid.json_rte_uid
+  csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path group_uid.html_rte_uid 
+  --json-path group_uid.json_rte_uid
 
   Global Field
-  csdx cm:migrate-rte -a alias -c global_field_uid -g -h htmlPath -j jsonPath
+  csdx cm:entries:migrate-html-rte --alias alias --content-type global_field_uid --global-field --html-path html-path 
+  --json-path json-path
 ```
 
-_See code: [src/commands/cm/migrate-rte/index.js](https://github.com/contentstack/cli/blob/v1.0.5/src/commands/cm/migrate-rte/index.js)_
+_See code: [src/commands/cm/entries/migrate-html-rte.js](https://github.com/contentstack/cli/blob/v1.0.5/src/commands/cm/entries/migrate-html-rte.js)_
 
 ## `csdx help [COMMAND]`
 
@@ -85,5 +89,5 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.3.1/src/commands/help.ts)_
 <!-- commandsstop -->
