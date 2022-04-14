@@ -81,7 +81,7 @@ export default class SeedCommand extends Command {
         authToken: this.authToken,
         gitHubPath: flags.repo,
         orgUid: flags.org,
-        stackUid: flags.stack,
+        stackUid: flags['stack-api-key'] || flags.stack,
         stackName: flags['stack-name'],
         fetchLimit: flags['fetch-limit'],
       };
