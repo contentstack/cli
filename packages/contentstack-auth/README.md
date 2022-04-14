@@ -1,15 +1,17 @@
-@contentstack/cli-auth
-===
+# @contentstack/cli-auth
 
 It is Contentstack’s CLI plugin to perform authentication-related activities. To get started with authenticating yourself with the CLI, refer to the [CLI’s Authentication documentation](https://www.contentstack.com/docs/developers/cli/authentication)
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
+* [@contentstack/cli-auth](#contentstackcli-auth)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
 ```sh-session
 $ npm install -g @contentstack/cli-auth
@@ -23,7 +25,9 @@ USAGE
 ...
 ```
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
 * [`csdx auth:login`](#csdx-authlogin)
 * [`csdx auth:logout`](#csdx-authlogout)
@@ -115,12 +119,12 @@ USAGE
   $ csdx auth:tokens:add
 
 OPTIONS
-  --delivery                         CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN
-  --management                       CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN
-  --token=token                      Token
   -a, --alias=alias                  Name of the token alias
+  -d, --delivery                     CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN
   -e, --environment=environment      CLI_AUTH_TOKENS_ADD_FLAG_ENVIRONMENT_NAME
   -k, --stack-api-key=stack-api-key  Stack API Key
+  -m, --management                   CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN
+  -t, --token=token                  Token
   -y, --yes                          Skipping confirmation
 
 EXAMPLES
@@ -134,7 +138,7 @@ EXAMPLES
   $ csdx auth:tokens:add -a <alias> -k <stack api key> --management --token <management token>
   $ csdx auth:tokens:add -a <alias> -k <stack api key> --delivery -e <environment> --token <delivery token>
   $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --management --token <management token>
-  $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery
+  $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery 
   token>
 ```
 
