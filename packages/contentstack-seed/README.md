@@ -10,31 +10,36 @@ To import content to your stack, you can choose from the following two sources:
 <!-- usagestop -->
 ## Commands
 <!-- commands -->
-* [`csdx cm:seed`](#csdx-cmseed)
+* [`csdx cm:stacks:seed`](#csdx-cmstacksseed)
 
-## `csdx cm:seed`
+## `csdx cm:stacks:seed`
 
 Create a Stack from existing content types, entries, assets, etc
 
 ```
 USAGE
-  $ csdx cm:seed
+  $ csdx cm:stacks:seed
 
 OPTIONS
-  -n, --stack-name=stack-name  Name of a new stack that needs to be created.
-  -o, --org=org                Provide Organization UID to create a new stack
-  -r, --repo=repo              GitHub account or GitHub account/repository
-  -s, --stack=stack            Provide stack UID to seed content to
+  -k, --stack-api-key=stack-api-key  Provide stack api key to seed content to
+  -n, --stack-name=stack-name        Name of a new stack that needs to be created.
+  -o, --org=org                      Provide Organization UID to create a new stack
+  -r, --repo=repo                    GitHub account or GitHub account/repository
+  -s, --stack=stack                  Provide stack UID to seed content to
+
+ALIASES
+  $ csdx cm:seed
 
 EXAMPLES
-  $ csdx cm:seed
-  $ csdx cm:seed -r "account"
-  $ csdx cm:seed -r "account/repository"
-  $ csdx cm:seed -r "account/repository" -s "stack-uid" //seed content into specific stack
-  $ csdx cm:seed -r "account/repository" -o "your-org-uid" -n "stack-name" //create a new stack in given org uid
+  $ csdx cm:stacks:seed
+  $ csdx cm:stacks:seed --repo "account"
+  $ csdx cm:stacks:seed --repo "account/repository"
+  $ csdx cm:stacks:seed --repo "account/repository" --stack-api-key "stack-api-key" //seed content into specific stack
+  $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack 
+  in given org uid
 ```
 
-_See code: [src/commands/cm/seed.ts](https://github.com/contentstack/cli/blob/v1.0.11/src/commands/cm/seed.ts)_
+_See code: [src/commands/cm/stacks/seed.ts](https://github.com/contentstack/cli/blob/v1.0.11/src/commands/cm/stacks/seed.ts)_
 <!-- commandsstop -->
 
 ## Advanced Flags
