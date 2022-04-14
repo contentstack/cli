@@ -57,6 +57,11 @@
       "@oclif/plugin-help"
     ]
   },
+  "csdxConfig": {
+    "expiredCommands": {
+      "cm:migrate-rte": "command will be deprecated in two months, start using cm:entries:migrate-html-rte instead"
+    }
+  },
   "repository": "contentstack/cli",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
