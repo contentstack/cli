@@ -1,15 +1,16 @@
 import { Command, flags } from '@contentstack/cli-command';
-import ContentModelSeeder, { ContentModelSeederOptions } from '../../seed';
+import ContentModelSeeder, { ContentModelSeederOptions } from '../../../seed';
+import { printFlagDeprecation } from '@contentstack/cli-utilities';
 
 export default class SeedCommand extends Command {
   static description = 'Create a Stack from existing content types, entries, assets, etc';
 
   static examples = [
-    '$ csdx cm:seed',
-    '$ csdx cm:seed -r "account"',
-    '$ csdx cm:seed -r "account/repository"',
-    '$ csdx cm:seed -r "account/repository" -s "stack-uid" //seed content into specific stack',
-    '$ csdx cm:seed -r "account/repository" -o "your-org-uid" -n "stack-name" //create a new stack in given org uid',
+    '$ csdx cm:stacks:seed',
+    '$ csdx cm:stacks:seed --repo "account"',
+    '$ csdx cm:stacks:seed --repo "account/repository"',
+    '$ csdx cm:stacks:seed --repo "account/repository" --stack-api-key "stack-api-key" //seed content into specific stack',
+    '$ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack in given org uid',
   ];
 
   static flags = {
@@ -18,6 +19,7 @@ export default class SeedCommand extends Command {
       description: 'GitHub account or GitHub account/repository',
       multiple: false,
       required: false,
+      parse: printFlagDeprecation(['-r'], ['--repo']),
     }),
     org: flags.string({
       char: 'o',
@@ -25,13 +27,14 @@ export default class SeedCommand extends Command {
       multiple: false,
       required: false,
       exclusive: ['stack'],
+      parse: printFlagDeprecation(['-o'], ['--org']),
     }),
-    stack: flags.string({
-      char: 's',
-      description: 'Provide stack UID to seed content to',
+    'stack-api-key': flags.string({
+      char: 'k',
+      description: 'Provide stack api key to seed content to',
       multiple: false,
       required: false,
-      exclusive: ['org', 'name'],
+      exclusive: ['org'],
     }),
     'stack-name': flags.string({
       char: 'n',
@@ -47,7 +50,19 @@ export default class SeedCommand extends Command {
       required: false,
       hidden: true,
     }),
+
+    //To be deprecated
+    stack: flags.string({
+      char: 's',
+      description: 'Provide stack UID to seed content to',
+      multiple: false,
+      required: false,
+      exclusive: ['org', 'name'],
+      parse: printFlagDeprecation(['s', 'stack'], ['-k', 'stack-api-key']),
+    }),
   };
+
+  static aliases = ['cm:seed'];
 
   async run() {
     try {
@@ -75,7 +90,8 @@ export default class SeedCommand extends Command {
       const result = await seeder.run();
       return result;
     } catch (error) {
-      this.error(error, { exit: 1, suggestions: error.suggestions });
+      let errorObj: any = error;
+      this.error(errorObj, { exit: 1, suggestions: errorObj.suggestions });
     }
   }
 }
