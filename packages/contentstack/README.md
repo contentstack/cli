@@ -44,7 +44,7 @@ USAGE
 * [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
 * [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
 * [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
-* [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
+* [`csdx cm:entries:export-to-csv`](#csdx-cmentriesexport-to-csv)
 * [`csdx cm:import`](#csdx-cmimport)
 * [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
 * [`csdx cm:migration`](#csdx-cmmigration)
@@ -903,19 +903,24 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
 
-## `csdx cm:export-to-csv`
+## `csdx cm:entries:export-to-csv`
 
 Export entries or organization users to csv using this command
 
 ```
 Export entries or organization users to csv using this command
-
 
 USAGE
+  $ csdx cm:entries:export-to-csv
+
+ALIASES
   $ csdx cm:export-to-csv
+
+EXAMPLE
+  csdx cm:entries:export-to-csv
 ```
 
-_See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/cm/export-to-csv.js)_
+_See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/cm/entries/export-to-csv.js)_
 
 ## `csdx cm:import`
 
