@@ -70,12 +70,12 @@ function init(_logPath) {
       level: 'error',
     };
 
-    logger = new winston.Logger({
+    logger = new winston.createLogger({
       transports: [new winston.transports.File(successTransport), new winston.transports.Console()],
       levels: myCustomLevels.levels,
     });
 
-    errorLogger = new winston.Logger({
+    errorLogger = new winston.createLogger({
       transports: [new winston.transports.File(errorTransport), new winston.transports.Console({ level: 'error' })],
       levels: { error: 0 },
     });
