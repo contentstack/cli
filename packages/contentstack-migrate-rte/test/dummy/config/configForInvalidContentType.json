@@ -1,12 +1,12 @@
 {
-    "alias": "test1",
-    "content_type": "contenttypewithinvalidrtetype",
-    "isGlobalField": false,
-    "paths": [
-        {
-            "from": "rich_text_editor",
-            "to": "supercharged_rte"
-        }
-    ],
-    "delay": 50
+  "alias": "test1",
+  "content-type": "contenttypewithinvalidrtetype",
+  "global-field": false,
+  "paths": [
+    {
+      "from": "rich_text_editor",
+      "to": "supercharged_rte"
+    }
+  ],
+  "delay": 50
 }
