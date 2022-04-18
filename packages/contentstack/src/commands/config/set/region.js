@@ -39,8 +39,8 @@ RegionCommand.description = `Set region for CLI
 
 RegionCommand.args = [{
   name: 'region',
-  description: 'North America(NA), Europe (EU), AZURE',
-  options: ['EU', 'NA', 'AZURE'],
+  description: 'North America(NA), Europe (EU), AZURE-NA',
+  options: ['EU', 'NA', 'AZURE-NA'],
 }]
 
 RegionCommand.examples =  [
