@@ -1,8 +1,8 @@
 const { Command } = require('@contentstack/cli-command');
 const Configstore = require('configstore');
 const credStore = new Configstore('contentstack_cli');
-const { CloneHandler } = require('../../lib/util/clone-handler');
-let config = require('../../lib/util/dummyConfig.json');
+const { CloneHandler } = require('../../../lib/util/clone-handler');
+let config = require('../../../lib/util/dummyConfig.json');
 const path = require('path');
 const rimraf = require('rimraf');
 let pathdir = path.join(__dirname.split('src')[0], 'contents');
@@ -62,6 +62,8 @@ StackCloneCommand.description = `Clone data (structure or content or both) of a 
 Use this plugin to automate the process of cloning a stack in a few steps.
 `;
 
-StackCloneCommand.examples = ['csdx cm:stack-clone'];
+StackCloneCommand.examples = ['csdx cm:stacks:clone'];
+
+StackCloneCommand.aliases = ['cm:stack-clone'];
 
 module.exports = StackCloneCommand;
