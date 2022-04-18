@@ -94,7 +94,6 @@ importWorkflows.prototype = {
               .then(function (response) {
                 self.workflowUidMapper[workflowUid] = response;
                 helper.writeFile(workflowUidMapperPath, self.workflowUidMapper);
-                return;
               })
               .catch(function (error) {
                 self.fails.push(workflow);
@@ -111,7 +110,6 @@ importWorkflows.prototype = {
                 } else {
                   addlogs(config, chalk.red("workflow: '" + workflow.name + "'  failed"), 'error');
                 }
-                return;
               });
           } else {
             // the workflow has already been created
@@ -120,7 +118,6 @@ importWorkflows.prototype = {
               chalk.white("The Workflows: '" + workflow.name + "' already exists. Skipping it to avoid duplicates!"),
               'success',
             );
-            return;
           }
           // import 1 workflows at a time
         },

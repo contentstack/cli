@@ -7,6 +7,7 @@
   "dependencies": {
     "@contentstack/cli-cm-import": "^1.0.0",
     "@contentstack/cli-command": "^1.0.0",
+    "@contentstack/cli-utilities": "^1.0.0",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
     "axios": "^0.21.1",
@@ -56,6 +57,11 @@
     "devPlugins": [
       "@oclif/plugin-help"
     ]
+  },
+  "csdxConfig": {
+    "expiredCommands": {
+      "cm:seed": "command will be deprecated in two months, start using cm:stacks:seed instead"
+    }
   },
   "repository": "contentstack/cli",
   "scripts": {
