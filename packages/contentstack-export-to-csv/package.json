@@ -50,6 +50,11 @@
       "@oclif/plugin-help"
     ]
   },
+  "csdxConfig": {
+    "expiredCommands": {
+      "cm:export-to-csv": "command will be deprecated in two months, start using cm:entries:export-to-csv instead"
+    }
+  },
   "repository": "contentstack/cli",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
