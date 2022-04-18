@@ -1,4 +1,3 @@
-//var pending_reference_fields = [];
 var _ = require('lodash');
 
 /* eslint-disable no-empty */
