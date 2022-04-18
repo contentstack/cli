@@ -8,7 +8,6 @@
 
 var Bluebird = require('bluebird');
 var request = Bluebird.promisify(require('request'));
-//var pkg = require('../../package');
 var app = require('../../app');
 
 var MAX_RETRY_LIMIT = 8;
@@ -41,7 +40,6 @@ var makeCall = (module.exports = function (req, RETRY) {
       } else if (RETRY > MAX_RETRY_LIMIT) {
         return reject(new Error('Max retry limit exceeded!'));
       }
-      // console.log(`${req.method.toUpperCase()}: ${req.uri || req.url}`);
       return request(req)
         .then(function (response) {
           var timeDelay;
@@ -49,7 +47,6 @@ var makeCall = (module.exports = function (req, RETRY) {
             return resolve(response);
           } else if (response.statusCode === 429) {
             timeDelay = Math.pow(Math.SQRT2, RETRY) * 100;
-            // console.log(`API rate limit exceeded.\nReceived ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
             console.log(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`);
             return setTimeout(
               function (reqObj, retry) {
@@ -62,12 +59,11 @@ var makeCall = (module.exports = function (req, RETRY) {
           } else if (response.statusCode >= 500) {
             // retry, with delay
             timeDelay = Math.pow(Math.SQRT2, RETRY) * 100;
-            // console.log(`Recevied ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
             console.log(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`);
             RETRY++;
             return setTimeout(
-              function (req, RETRY) {
-                return makeCall(req, RETRY).then(resolve).catch(reject);
+              function (_req, _RETRY) {
+                return makeCall(_req, _RETRY).then(resolve).catch(reject);
               },
               timeDelay,
               req,
