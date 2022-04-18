@@ -131,8 +131,6 @@ ExportAssets.prototype = {
             });
         })
         .catch(function (error) {
-          // addlogs(config, chalk.red('Failed to download assets due to the following error: ' + JSON.stringify(
-          //   error)));
           return reject(error);
         });
     });
