@@ -1,25 +1,28 @@
 /*!
-* Contentstack Export
-* Copyright (c) 2019 Contentstack LLC
-* MIT Licensed
-*/
+ * Contentstack Export
+ * Copyright (c) 2019 Contentstack LLC
+ * MIT Licensed
+ */
 
-var winston = require('winston')
-var path = require('path')
-var mkdirp = require('mkdirp')
-var slice = Array.prototype.slice
+var winston = require('winston');
+var path = require('path');
+var mkdirp = require('mkdirp');
+var slice = Array.prototype.slice;
 
 function returnString(args) {
-  var returnStr = ''
+  var returnStr = '';
   if (args && args.length) {
-    returnStr = args.map(function (item) {
-      if (item && typeof (item) === 'object') {
-        return JSON.stringify(item)
-      }
-      return item
-    }).join('  ').trim()
+    returnStr = args
+      .map(function (item) {
+        if (item && typeof item === 'object') {
+          return JSON.stringify(item);
+        }
+        return item;
+      })
+      .join('  ')
+      .trim();
   }
-  return returnStr
+  return returnStr;
 }
 
 var myCustomLevels = {
@@ -28,25 +31,26 @@ var myCustomLevels = {
     info: 2,
     debug: 3,
   },
-  colors: { //colors aren't being used anywhere as of now, we're using chalk to add colors while logging
+  colors: {
+    //colors aren't being used anywhere as of now, we're using chalk to add colors while logging
     info: 'blue',
     debug: 'green',
     warn: 'yellow',
     error: 'red',
   },
-}
+};
 
-let logger
-let errorLogger
+let logger;
+let errorLogger;
 
-let successTransport
-let errorTransport
+let successTransport;
+let errorTransport;
 
 function init(_logPath) {
   if (!logger || !errorLogger) {
-    var logsDir = path.resolve(_logPath, 'logs', 'export')
+    var logsDir = path.resolve(_logPath, 'logs', 'export');
     // Create dir if doesn't already exist
-    mkdirp.sync(logsDir)
+    mkdirp.sync(logsDir);
 
     successTransport = {
       filename: path.join(logsDir, 'success.log'),
@@ -55,7 +59,7 @@ function init(_logPath) {
       tailable: true,
       json: true,
       level: 'info',
-    }
+    };
 
     errorTransport = {
       filename: path.join(logsDir, 'error.log'),
@@ -64,75 +68,69 @@ function init(_logPath) {
       tailable: true,
       json: true,
       level: 'error',
-    }
+    };
 
-    logger = new (winston.Logger)({
-      transports: [
-        new (winston.transports.File)(successTransport),
-        new (winston.transports.Console)()
-      ],
-      levels: myCustomLevels.levels
+    logger = winston.createLogger({
+      transports: [new winston.transports.File(successTransport), new winston.transports.Console()],
+      levels: myCustomLevels.levels,
     });
 
-    errorLogger = new (winston.Logger)({
-      transports: [
-        new (winston.transports.File)(errorTransport),
-        new (winston.transports.Console)({ level: 'error' })
-      ],
-      levels: { error: 0 }
-    })
+    errorLogger = winston.createLogger({
+      transports: [new winston.transports.File(errorTransport), new winston.transports.Console({ level: 'error' })],
+      levels: { error: 0 },
+    });
   }
 
   return {
     log: function () {
-      var args = slice.call(arguments)
-      var logString = returnString(args)
+      let args = slice.call(arguments);
+      let logString = returnString(args);
       if (logString) {
-        logger.log('info', logString)
+        logger.log('info', logString);
       }
     },
     warn: function () {
-      var args = slice.call(arguments)
-      var logString = returnString(args)
+      let args = slice.call(arguments);
+      let logString = returnString(args);
       if (logString) {
-        logger.log('warn', logString)
+        logger.log('warn', logString);
       }
     },
-    error: function (args) {
-      var args = slice.call(arguments)
-      var logString = returnString(args)
+    error: function () {
+      let args = slice.call(arguments);
+      let logString = returnString(args);
       if (logString) {
-        errorLogger.log('error', logString)
+        errorLogger.log('error', logString);
       }
     },
     debug: function () {
-      // var args = slice.call(arguments)
-      var logString = returnString(args)
+      let args = slice.call(arguments);
+      let logString = returnString(args);
       if (logString) {
-        logger.log('debug', logString)
+        logger.log('debug', logString);
       }
     },
-  }
+  };
 }
 
 exports.addlogs = async (config, message, type) => {
   // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
     // removed type argument from init method
-    init(config.data).log(message)
+    init(config.data).log(message);
   } else {
-    init(config.data).error(message)
+    init(config.data).error(message);
   }
-}
+};
 
 exports.unlinkFileLogger = () => {
   if (logger) {
-    const fileLogger = logger.transports.file
-    logger.remove(fileLogger)
+    const fileLogger = logger.transports.file;
+    logger.remove(fileLogger);
   }
 
   if (errorLogger) {
-    const fileLogger = errorLogger.transports.file
-    errorLogger.remove(fileLogger)
+    const fileLogger = errorLogger.transports.file;
+    errorLogger.remove(fileLogger);
   }
-}
+};
