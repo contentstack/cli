@@ -65,18 +65,15 @@ importWebhooks.prototype = {
               },
             };
 
-            // return self.createwebhooks(self.webhooks[webUid]);
             return (
               client
                 .stack({ api_key: config.target_stack, management_token: config.management_token })
                 .webhook()
                 .create(requestOption.json)
-                // return request(requestOption)
                 .then(function (response) {
                   self.success.push(response);
                   self.webUidMapper[webUid] = response.uid;
                   helper.writeFile(webUidMapperPath, self.webUidMapper);
-                  return;
                 })
                 .catch(function (err) {
                   let error = JSON.parse(err.message);
@@ -86,7 +83,6 @@ importWebhooks.prototype = {
                     chalk.red("Webhooks: '" + web.name + "' failed to be import\n" + JSON.stringify(error)),
                     'error',
                   );
-                  return;
                 })
             );
           } else {
@@ -96,7 +92,6 @@ importWebhooks.prototype = {
               chalk.white("The Webhooks: '" + web.name + "' already exists. Skipping it to avoid duplicates!"),
               'success',
             );
-            return;
           }
           // import 2 webhooks at a time
         },
