@@ -7,6 +7,7 @@ import {
   inquireGithubAccessToken,
   inquireAppType,
 } from '../../bootstrap/interactive';
+import { printFlagDeprecation } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
 export default class BootstrapCommand extends Command {
@@ -16,16 +17,43 @@ export default class BootstrapCommand extends Command {
 
   static examples = [
     '$ csdx cm:bootstrap',
-    '$ csdx cm:bootstrap -d <path/to/setup/the/app>',
-    '$ csdx cm:bootstrap -t <github access token>',
+    '$ csdx cm:bootstrap --project-dir <path/to/setup/the/app>',
+    '$ csdx cm:bootstrap --access-token <github access token>',
+    '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app>',
   ];
 
   static flags = {
+    'app-name': flags.string({
+      description: 'App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter',
+      multiple: false,
+      required: false,
+    }),
+    'project-dir': flags.string({
+      description:
+        'Directory to setup the project. If directory name has a space then provide the path as a string or escap the space using back slash eg: "../../test space" or ../../test\\ space',
+      multiple: false,
+      required: false,
+    }),
+    'access-token': flags.string({
+      description: 'Access token for private github repo',
+      multiple: false,
+      required: false,
+    }),
+    'app-type': flags.string({
+      description: 'Sample or Starter app',
+      multiple: false,
+      required: false,
+      hidden: true,
+    }),
+
+    // To be deprecated
     appName: flags.string({
       char: 'a',
       description: 'App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter',
       multiple: false,
       required: false,
+      hidden: true,
+      parse: printFlagDeprecation(['-a', '--appName'], ['--app-name']),
     }),
     directory: flags.string({
       char: 'd',
@@ -33,12 +61,16 @@ export default class BootstrapCommand extends Command {
         'Directory to setup the project. If directory name has a space then provide the path as a string or escap the space using back slash eg: "../../test space" or ../../test\\ space',
       multiple: false,
       required: false,
+      hidden: true,
+      parse: printFlagDeprecation(['-d', '--directory'], ['--project-dir']),
     }),
     accessToken: flags.string({
       char: 't',
       description: 'Access token for private github repo',
       multiple: false,
       required: false,
+      hidden: true,
+      parse: printFlagDeprecation(['-t', '--accessToken'], ['--access-token']),
     }),
     appType: flags.string({
       char: 's',
@@ -46,6 +78,7 @@ export default class BootstrapCommand extends Command {
       multiple: false,
       required: false,
       hidden: true,
+      parse: printFlagDeprecation(['-s', '--appType'], ['--app-type']),
     }),
   };
 
