@@ -11,6 +11,8 @@
     "skipLibCheck": true
   },
   "include": [
-    "src/**/*", "src/typings/@contentstack/cli-command.ts"
+    "src/**/*",
+    "src/typings/@contentstack/cli-command.ts",
+    "src/typings/@contentstack/cli-utilities.ts",
   ]
 }
