@@ -47,10 +47,10 @@ USAGE
 * [`csdx cm:entries:export-to-csv`](#csdx-cmentriesexport-to-csv)
 * [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
 * [`csdx cm:migration`](#csdx-cmmigration)
-* [`csdx cm:stack-clone`](#csdx-cmstack-clone)
+* [`csdx cm:stacks:clone`](#csdx-cmstacksclone)
 * [`csdx cm:stacks:export`](#csdx-cmstacksexport)
-* [`csdx cm:stacks:seed`](#csdx-cmstacksseed)
 * [`csdx cm:stacks:import`](#csdx-cmstacksimport)
+* [`csdx cm:stacks:seed`](#csdx-cmstacksseed)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMAND]`](#csdx-help-command)
@@ -1001,7 +1001,7 @@ OPTIONS
 
 _See code: [@contentstack/cli-migration](https://github.com/contentstack/cli-migration/blob/v1.0.0/src/commands/cm/migration.js)_
 
-## `csdx cm:stack-clone`
+## `csdx cm:stacks:clone`
 
 Clone data (structure or content or both) of a stack into another stack
 
@@ -1011,16 +1011,19 @@ Use this plugin to automate the process of cloning a stack in a few steps.
 
 
 USAGE
-  $ csdx cm:stack-clone
+  $ csdx cm:stacks:clone
 
 DESCRIPTION
   Use this plugin to automate the process of cloning a stack in a few steps.
 
+ALIASES
+  $ csdx cm:stack-clone
+
 EXAMPLE
-  csdx cm:stack-clone
+  csdx cm:stacks:clone
 ```
 
-_See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/cm/stack-clone.js)_
+_See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/cm/stacks/clone.js)_
 
 ## `csdx cm:stacks:export`
 
@@ -1067,36 +1070,6 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-export/src/commands/cm/stacks/export.js)_
 
-## `csdx cm:stacks:seed`
-
-Create a Stack from existing content types, entries, assets, etc
-
-```
-Create a Stack from existing content types, entries, assets, etc
-
-USAGE
-  $ csdx cm:stacks:seed
-
-OPTIONS
-  -k, --stack-api-key=stack-api-key  Provide stack api key to seed content to
-  -n, --stack-name=stack-name        Name of a new stack that needs to be created.
-  -o, --org=org                      Provide Organization UID to create a new stack
-  -r, --repo=repo                    GitHub account or GitHub account/repository
-  -s, --stack=stack                  Provide stack UID to seed content to
-
-ALIASES
-  $ csdx cm:seed
-
-EXAMPLES
-  $ csdx cm:stacks:seed
-  $ csdx cm:stacks:seed --repo "account"
-  $ csdx cm:stacks:seed --repo "account/repository"
-  $ csdx cm:stacks:seed --repo "account/repository" --stack-api-key "stack-api-key" //seed content into specific stack
-  $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack 
-  in given org uid
-```
-
-_See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.11/src/commands/cm/stacks/seed.ts)_
 ## `csdx cm:stacks:import`
 
 Import script for importing the content into new stack
@@ -1143,6 +1116,37 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-import/src/commands/cm/stacks/import.js)_
+
+## `csdx cm:stacks:seed`
+
+Create a Stack from existing content types, entries, assets, etc
+
+```
+Create a Stack from existing content types, entries, assets, etc
+
+USAGE
+  $ csdx cm:stacks:seed
+
+OPTIONS
+  -k, --stack-api-key=stack-api-key  Provide stack api key to seed content to
+  -n, --stack-name=stack-name        Name of a new stack that needs to be created.
+  -o, --org=org                      Provide Organization UID to create a new stack
+  -r, --repo=repo                    GitHub account or GitHub account/repository
+  -s, --stack=stack                  Provide stack UID to seed content to
+
+ALIASES
+  $ csdx cm:seed
+
+EXAMPLES
+  $ csdx cm:stacks:seed
+  $ csdx cm:stacks:seed --repo "account"
+  $ csdx cm:stacks:seed --repo "account/repository"
+  $ csdx cm:stacks:seed --repo "account/repository" --stack-api-key "stack-api-key" //seed content into specific stack
+  $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack 
+  in given org uid
+```
+
+_See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.11/src/commands/cm/stacks/seed.ts)_
 
 ## `csdx config:get:region`
 
