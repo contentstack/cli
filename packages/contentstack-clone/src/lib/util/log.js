@@ -58,7 +58,7 @@ function init(_logPath, logfileName) {
 
   transports.push(new winston.transports.Console());
 
-  var logger = new winston.Logger({
+  var logger = winston.createLogger({
     transports: transports,
     levels: myCustomLevels.levels,
   });
