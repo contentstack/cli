@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/1.0.0 darwin-x64 node-v16.14.2
+@contentstack/cli/1.0.0 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -46,11 +46,11 @@ USAGE
 * [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
 * [`csdx cm:entries:export-to-csv`](#csdx-cmentriesexport-to-csv)
 * [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
-* [`csdx cm:import`](#csdx-cmimport)
 * [`csdx cm:migration`](#csdx-cmmigration)
 * [`csdx cm:stack-clone`](#csdx-cmstack-clone)
 * [`csdx cm:stacks:export`](#csdx-cmstacksexport)
 * [`csdx cm:stacks:seed`](#csdx-cmstacksseed)
+* [`csdx cm:stacks:import`](#csdx-cmstacksimport)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMAND]`](#csdx-help-command)
@@ -971,48 +971,6 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-migrate-rte](https://github.com/contentstack/cli/blob/v1.0.5/src/commands/cm/entries/migrate-html-rte.js)_
 
-## `csdx cm:import`
-
-Import script for importing the content into new stack
-
-```
-Import script for importing the content into new stack
-...
-Once you export content from the source stack, import it to your destination stack by using the cm:import command.
-
-
-USAGE
-  $ csdx cm:import
-
-OPTIONS
-  -A, --auth-token                                     to use auth token
-  -B, --branch=branch                                  [optional] branch name
-  -a, --management-token-alias=management-token-alias  alias of the management token
-  -b, --backup-dir=backup-dir                          [optional] backup directory name when using specific module
-  -c, --config=config                                  [optional] path of config file
-  -d, --data=data                                      path and location where data is stored
-  -m, --module=module                                  [optional] specific module name
-  -s, --stack-uid=stack-uid                            API key of the target stack
-
-DESCRIPTION
-  ...
-  Once you export content from the source stack, import it to your destination stack by using the cm:import command.
-
-EXAMPLES
-  csdx cm:import -A
-  csdx cm:import -A -s <stack_ApiKey> -d <path/of/export/destination/dir>
-  csdx cm:import -A -c <path/of/config/dir>
-  csdx cm:import -A -m <single module name>
-  csdx cm:import -A -m <single module name> -b <backup dir>
-  csdx cm:import -a <management_token_alias>
-  csdx cm:import -a <management_token_alias> -d <path/of/export/destination/dir>
-  csdx cm:import -a <management_token_alias> -c <path/of/config/file>
-  csdx cm:import -A -m <single module name>
-  csdx cm:import -A -B <branch name>
-```
-
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-import/src/commands/cm/import.js)_
-
 ## `csdx cm:migration`
 
 Contentstack migration script.
@@ -1139,6 +1097,52 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.11/src/commands/cm/stacks/seed.ts)_
+## `csdx cm:stacks:import`
+
+Import script for importing the content into new stack
+
+```
+Import script for importing the content into new stack
+...
+Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import command.
+
+
+USAGE
+  $ csdx cm:stacks:import
+
+OPTIONS
+  -A, --auth-token                                     to use auth token
+  -B, --branch=branch                                  [optional] branch name
+  -a, --management-token-alias=management-token-alias  alias of the management token
+  -b, --backup-dir=backup-dir                          [optional] backup directory name when using specific module
+  -c, --config=config                                  [optional] path of config file
+  -d, --data=data                                      path and location where data is stored
+  -k, --stack-api-key=stack-api-key                    API key of the target stack
+  -m, --module=module                                  [optional] specific module name
+  -s, --stack-uid=stack-uid                            API key of the target stack
+  --data-dir=data-dir                                  path and location where data is stored
+
+DESCRIPTION
+  ...
+  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import 
+  command.
+
+ALIASES
+  $ csdx cm:import
+
+EXAMPLES
+  csdx cm:stacks:import -s <stack_ApiKey> -d <path/of/export/destination/dir>
+  csdx cm:stacks:import -c <path/of/config/dir>
+  csdx cm:stacks:import -m <single module name>
+  csdx cm:stacks:import -m <single module name> -b <backup dir>
+  csdx cm:stacks:import -a <management_token_alias>
+  csdx cm:stacks:import -a <management_token_alias> -d <path/of/export/destination/dir>
+  csdx cm:stacks:import -a <management_token_alias> -c <path/of/config/file>
+  csdx cm:stacks:import -m <single module name>
+  csdx cm:stacks:import -B <branch name>
+```
+
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-import/src/commands/cm/stacks/import.js)_
 
 ## `csdx config:get:region`
 
