@@ -59,5 +59,10 @@
   "scripts": {
     "test": "nyc --reporter=html mocha \"test/**/*.test.js\"",
     "version": "oclif-dev readme && git add README.md"
-  }
+  },
+  "csdxConfig": {
+		"expiredCommands": {
+			"cm:stack-clone": "command will be deprecated in two months, start using cm:stacks:clone instead"
+		}
+	}
 }
