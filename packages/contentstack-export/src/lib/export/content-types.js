@@ -10,7 +10,6 @@ const chalk = require('chalk');
 const Promise = require('bluebird');
 
 const helper = require('../util/helper');
-// const log = require('../util/log')
 const stack = require('../util/contentstack-management-sdk');
 const { addlogs } = require('../util/log');
 
@@ -54,7 +53,7 @@ ExportContentTypes.prototype = {
         .then(function () {
           return self
             .writeContentTypes()
-            .then((result) => {
+            .then(() => {
               return resolve();
             })
             .catch((error) => {
