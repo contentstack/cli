@@ -76,15 +76,15 @@ export default class TokensAddCommand extends Command {
 
   async run(): Promise<any> {
     this.managementAPIClient = { host: this.cmaHost, authtoken: this.authToken };
-    const { flags } = this.parse(TokensAddCommand);
+    const { flags: addTokenFlags } = this.parse(TokensAddCommand);
     let isAliasExist = false;
-    const skipAliasReplaceConfirmation = flags.force || flags.yes;
-    let alias = flags.alias;
-    let apiKey = flags['api-key'] || flags['stack-api-key'];
-    let token = flags.token;
-    const isDelivery = flags.delivery;
-    const isManagement = flags.management;
-    let environment = flags.environment;
+    const skipAliasReplaceConfirmation = addTokenFlags.force || addTokenFlags.yes;
+    let alias = addTokenFlags.alias;
+    let apiKey = addTokenFlags['api-key'] || addTokenFlags['stack-api-key'];
+    let token = addTokenFlags.token;
+    const isDelivery = addTokenFlags.delivery;
+    const isManagement = addTokenFlags.management;
+    let environment = addTokenFlags.environment;
     const configKeyTokens = 'tokens';
     const type = isDelivery || Boolean(environment) ? 'delivery' : 'management';
 
