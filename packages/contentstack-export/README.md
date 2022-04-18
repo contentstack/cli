@@ -20,7 +20,7 @@ For switching to EU region update the hosts at config/default.js
 }
 ```
 
-For switching to AZURE region update the hosts at config/default.js
+For switching to AZURE-NA region update the hosts at config/default.js
 
 ```js
 {
