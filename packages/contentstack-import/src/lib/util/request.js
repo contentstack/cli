@@ -53,8 +53,8 @@ var makeCall = (module.exports = function (req, RETRY) {
             debug(`API rate limit exceeded.\nReceived ${response.statusCode} status\nBody ${JSON.stringify(response)}`);
             debug(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`);
             return setTimeout(
-              function (req, RETRY) {
-                return makeCall(req, RETRY).then(resolve).catch(reject);
+              function (_req, _RETRY) {
+                return makeCall(_req, _RETRY).then(resolve).catch(reject);
               },
               timeDelay,
               req,
@@ -67,8 +67,8 @@ var makeCall = (module.exports = function (req, RETRY) {
             debug(`Retrying ${req.uri || req.url} with ${timeDelay} sec delay`);
             RETRY++;
             return setTimeout(
-              function (req, RETRY) {
-                return makeCall(req, RETRY).then(resolve).catch(reject);
+              function (_req, _RETRY) {
+                return makeCall(_req, _RETRY).then(resolve).catch(reject);
               },
               timeDelay,
               req,

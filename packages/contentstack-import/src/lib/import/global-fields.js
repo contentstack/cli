@@ -98,7 +98,6 @@ importGlobalFields.prototype = {
                 self.snipUidMapper[snipUid] = globalField.items;
                 helper.writeFile(globalfieldsUidMapperPath, self.snipUidMapper);
                 addlogs(config, chalk.green('Global field ' + global_field_uid + ' created successfully'), 'success');
-                return;
               })
               .catch(function (err) {
                 let error = JSON.parse(err.message);
@@ -109,7 +108,6 @@ importGlobalFields.prototype = {
                   addlogs(config, chalk.red('Globalfield failed to import ' + JSON.stringify(error.errors)), 'error');
                 }
                 self.fails.push(snip);
-                return;
               });
           } else {
             // globalfields has already been created
@@ -118,7 +116,6 @@ importGlobalFields.prototype = {
               chalk.white('The globalfields already exists. Skipping it to avoid duplicates!'),
               'success',
             );
-            return;
           }
           // import 2 globalfields at a time
         },
