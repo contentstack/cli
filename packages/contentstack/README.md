@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/1.0.0 linux-x64 node-v16.14.2
+@contentstack/cli/1.0.0 darwin-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -228,19 +228,17 @@ USAGE
   $ csdx cm:bootstrap
 
 OPTIONS
-  -a, --appName=appName          App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter,
-                                 nuxt-starter
+  --access-token=access-token  Access token for private github repo
+  --app-name=app-name          App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter
 
-  -d, --directory=directory      Directory to setup the project. If directory name has a space then provide the path as
-                                 a string or escap the space using back slash eg: "../../test space" or ../../test\
-                                 space
-
-  -t, --accessToken=accessToken  Access token for private github repo
+  --project-dir=project-dir    Directory to setup the project. If directory name has a space then provide the path as a
+                               string or escap the space using back slash eg: "../../test space" or ../../test\ space
 
 EXAMPLES
   $ csdx cm:bootstrap
-  $ csdx cm:bootstrap -d <path/to/setup/the/app>
-  $ csdx cm:bootstrap -t <github access token>
+  $ csdx cm:bootstrap --project-dir <path/to/setup/the/app>
+  $ csdx cm:bootstrap --access-token <github access token>
+  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app>
 ```
 
 _See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/v1.0.6/src/commands/cm/bootstrap.ts)_
@@ -1207,7 +1205,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.18/src/commands/help.ts)_
 
 ## `csdx plugins`
 
