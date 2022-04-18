@@ -8,7 +8,6 @@
 const chalk = require('chalk');
 
 const { addlogs } = require('../util/log');
-// var pkg = require('../../package');
 let stack = require('../util/contentstack-management-sdk');
 let client;
 
@@ -36,7 +35,6 @@ module.exports = function (config) {
     } else if (config.management_token) {
       return resolve();
     } else if (config.auth_token) {
-      //  return resolve()
       client
         .stack({ api_key: config.target_stack, management_token: config.management_token })
         .fetch()

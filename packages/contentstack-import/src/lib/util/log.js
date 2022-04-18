@@ -70,12 +70,12 @@ function init(_logPath) {
       level: 'error',
     };
 
-    logger = new winston.Logger({
+    logger = winston.createLogger({
       transports: [new winston.transports.File(successTransport), new winston.transports.Console()],
       levels: myCustomLevels.levels,
     });
 
-    errorLogger = new winston.Logger({
+    errorLogger = winston.createLogger({
       transports: [new winston.transports.File(errorTransport), new winston.transports.Console({ level: 'error' })],
       levels: { error: 0 },
     });
@@ -114,8 +114,8 @@ function init(_logPath) {
 }
 
 exports.addlogs = async (config, message, type) => {
-  var configLogPath;
-  config.source_stack && config.target_stack ? (configLogPath = config.data) : (configLogPath = config.oldPath);
+  var configLogPath =
+    config.source_stack && config.target_stack ? config.data : config.oldPath;
   // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
     // removed type argument from init method
