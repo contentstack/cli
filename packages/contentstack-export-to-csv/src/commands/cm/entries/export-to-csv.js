@@ -1,7 +1,7 @@
 const { Command } = require('@contentstack/cli-command');
-const util = require('../../util/index');
+const util = require('../../../util/index');
 const ContentstackManagementSDK = require('@contentstack/management');
-const config = require('../../util/config.js');
+const config = require('../../../util/config.js');
 
 class ExportToCsvCommand extends Command {
   get managementAPIClient() {
@@ -24,8 +24,6 @@ class ExportToCsvCommand extends Command {
           let contentType = contentTypes.shift();
           let entries = await util.getEntries(this.managementAPIClient, stack.apiKey, contentType, language.code); // fetch entries
           let flatEntries = util.cleanEntries(entries.items, language.code, environments, contentType); // clean entries to be wderitten to file
-          // let dateTime = util.getDateTime()
-          // let fileName = `${contentType}_${language.code}_entries_export_${dateTime}.csv`
           let fileName = `${stack.name}_${contentType}_${language.code}_entries_export.csv`;
 
           util.write(this, flatEntries, fileName); // write to file
@@ -56,7 +54,12 @@ class ExportToCsvCommand extends Command {
   }
 }
 
-ExportToCsvCommand.description = `Export entries or organization users to csv using this command
-`;
+ExportToCsvCommand.description = `Export entries or organization users to csv using this command`;
+
+ExportToCsvCommand.examples = ['csdx cm:entries:export-to-csv'];
+
+ExportToCsvCommand.aliases = ['cm:export-to-csv'];
+
+ExportToCsvCommand.flags = [];
 
 module.exports = ExportToCsvCommand;
