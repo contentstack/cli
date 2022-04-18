@@ -1,7 +1,7 @@
 module.exports = {
     stackHeaders: {
-      api_key: 'blt61ddbaadc822abdd',
-      authorization: '***REMOVED***'
+      api_key: 'dummyAPIKey',
+      authorization: 'dummyAuthorization'
     },
     urlPath: '/global_fields/address',
     created_at: '2020-07-30T11:27:20.445Z',

@@ -42,8 +42,8 @@ var extension_uid_Replace = (module.exports = function (schema, preserveStackVer
         schema[i].reference_to = global_fields_data[global_fields_key_value];
       }
     } else if (schema[i].hasOwnProperty('extension_uid')) {
-      var extension_key_value = schema[i].extension_uid;
-      var data = helper.readFile(path.join(extensionPath));
+      const extension_key_value = schema[i].extension_uid;
+      const data = helper.readFile(path.join(extensionPath));
       if (data && data.hasOwnProperty(extension_key_value)) {
         // eslint-disable-next-line camelcase
         schema[i].extension_uid = data[extension_key_value];

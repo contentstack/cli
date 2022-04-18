@@ -201,7 +201,7 @@ importEntries.prototype = {
           let failedEntryLogPath = path.join(eLogFolderPath, 'fails.json');
           let createdEntriesPath = path.join(eLogFolderPath, 'created-entries.json');
           let createdEntries = {};
-          let stack = client.stack({ api_key: config.target_stack, management_token: config.management_token });
+          let stackForEntries = client.stack({ api_key: config.target_stack, management_token: config.management_token });
 
           if (fs.existsSync(createdEntriesPath)) {
             createdEntries = helper.readFile(createdEntriesPath);
@@ -280,7 +280,7 @@ importEntries.prototype = {
                         },
                       };
                       if (self.mappedUids.hasOwnProperty(eUid)) {
-                        let entryToUpdate = stack.contentType(ctUid).entry(self.mappedUids[eUid]);
+                        let entryToUpdate = stackForEntries.contentType(ctUid).entry(self.mappedUids[eUid]);
                         Object.assign(entryToUpdate, _.cloneDeep(entries[eUid]));
                         return entryToUpdate
                           .update({ locale: entryToUpdate.locale })
@@ -553,7 +553,7 @@ importEntries.prototype = {
                     return;
                   }
 
-                  let promiseResult = new Promise((resolve, reject) => {
+                  let promiseResult = new Promise((resolveUpdatedUids, rejectUpdatedUids) => {
                     let entryResponse = client
                       .stack({ api_key: config.target_stack, management_token: config.management_token })
                       .contentType(ctUid)
@@ -570,7 +570,7 @@ importEntries.prototype = {
                           }
                         }
                         refsUpdatedUids.push(response.uid);
-                        return resolve();
+                        return resolveUpdatedUids();
                       })
                       .catch(function (error) {
                         addlogs(
@@ -593,7 +593,7 @@ importEntries.prototype = {
                           locale: lang,
                           error: error,
                         });
-                        return reject(error);
+                        return rejectUpdatedUids(error);
                       });
                   });
                   await promiseResult;
@@ -706,8 +706,10 @@ importEntries.prototype = {
           Object.assign(contentTypeResponse, _.cloneDeep(schema));
           return contentTypeResponse
             .update()
-            .then((UpdatedcontentType) => {})
-            .catch(function (error) {
+            .then((_updatedcontentType) => {
+              // empty function
+            })
+            .catch(function (_error) {
               addlogs(
                 config,
                 chalk.red("Failed to modify mandatory field of '" + schema.uid + "' content type"),
@@ -732,7 +734,7 @@ importEntries.prototype = {
   },
   fetchEntry: function (query) {
     let self = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, _reject) {
       let requestObject = {
         qs: {
           query: {
@@ -766,7 +768,7 @@ importEntries.prototype = {
           );
           return resolve();
         })
-        .catch(function (error) {
+        .catch(function (_error) {
           return resolve();
         });
     });
@@ -790,7 +792,7 @@ importEntries.prototype = {
       return Promise.map(
         updatedExtensionUidsSchemas,
         async function (schema) {
-          let promise = new Promise((resolve, reject) => {
+          let promise = new Promise((resolveContentType, rejectContentType) => {
             client
               .stack({ api_key: config.target_stack, management_token: config.management_token })
               .contentType(schema.uid)
@@ -799,23 +801,23 @@ importEntries.prototype = {
                 contentTypeResponse.schema = schema.schema;
                 contentTypeResponse
                   .update()
-                  .then((UpdatedcontentType) => {
+                  .then((_updatedcontentType) => {
                     modifiedSchemasUids.push(schema.uid);
                     addlogs(
                       config,
                       chalk.white("Content type: '" + schema.uid + "' has been restored to its previous glory!"),
                     );
-                    return resolve();
+                    return resolveContentType();
                   })
                   .catch(function (error) {
                     addlogs(config, chalk.red('Failed to re-update ' + schema.uid), 'error');
                     addlogs(config, error, 'error');
-                    return reject(error);
+                    return rejectContentType(error);
                   });
               })
               .catch(function (error) {
                 addlogs(config, error, 'error');
-                return reject(error);
+                return rejectContentType(error);
               });
           });
           await promise;
@@ -1004,7 +1006,7 @@ importEntries.prototype = {
                         if (entryUid) {
                           requestObject.entry.environments = envId;
                           requestObject.entry.locales = locales;
-                          let publishPromiseResult = new Promise((resolve, reject) => {
+                          return new Promise((resolveEntryPublished, rejectEntryPublished) => {
                             client
                               .stack({ api_key: config.target_stack, management_token: config.management_token })
                               .contentType(ctUid)
@@ -1014,7 +1016,7 @@ importEntries.prototype = {
                               .then((result) => {
                                 // addlogs(config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
                                 console.log('Entry ' + eUid + ' published successfully in ' + ctUid + ' content type');
-                                return resolve(result);
+                                return resolveEntryPublished(result);
                                 // eslint-disable-next-line max-nested-callbacks
                               })
                               .catch(function (err) {
@@ -1022,10 +1024,9 @@ importEntries.prototype = {
                                 console.log(
                                   'Entry ' + eUid + ' not published successfully in ' + ctUid + ' content type',
                                 );
-                                return reject(err.errorMessage);
+                                return rejectEntryPublished(err.errorMessage);
                               });
                           });
-                          return publishPromiseResult;
                         }
                       } else {
                         return {};
@@ -1035,7 +1036,9 @@ importEntries.prototype = {
                       concurrency: reqConcurrency,
                     },
                   )
-                    .then(function () {})
+                    .then(function () {
+                      // empty function 
+                    })
                     .catch(function (error) {
                       // error while executing entry in batch
                       addlogs(config, error, 'error');
@@ -1063,7 +1066,9 @@ importEntries.prototype = {
               concurrency: 1,
             },
           )
-            .then(function () {})
+            .then(function () {
+              // empty function
+            })
             .catch(function (error) {
               return error;
             });
