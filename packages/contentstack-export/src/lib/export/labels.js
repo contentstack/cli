@@ -8,7 +8,6 @@ const mkdirp = require('mkdirp');
 const path = require('path');
 const chalk = require('chalk');
 
-// let request = require('../util/request')
 let helper = require('../util/helper');
 let { addlogs } = require('../util/log');
 
