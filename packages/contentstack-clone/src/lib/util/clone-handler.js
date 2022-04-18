@@ -73,17 +73,17 @@ class CloneHandler {
               var stackCreateConfirmation = await inquirer.prompt(stackCreationConfirmation);
               if (stackCreateConfirmation.stackCreate !== true) {
                 oraMessage = 'Choose an organization where the destination stack exists: ';
-                let orgdetails = this.getOrganizationChoices(oraMessage);
-                orgdetails
-                  .then(async (orgList) => {
-                    var stackMessage = 'Choose the destination stack:';
-                    var orgSelected = await inquirer.prompt(orgList);
-                    let stackDetails = this.getStack(orgSelected, stackMessage);
-                    stackDetails
-                      .then(async (stackList) => {
-                        let stackSelected = await inquirer.prompt(stackList);
-                        config.target_stack = stackUidList[stackSelected.stack];
-                        config.destinationStackName = stackSelected.stack;
+                let orgChoices = this.getOrganizationChoices(oraMessage);
+                orgChoices
+                  .then(async (_orgList) => {
+                    var destinationStackMessage = 'Choose the destination stack:';
+                    var selectedDestinationOrg = await inquirer.prompt(_orgList);
+                    let destinationStacks = this.getStack(selectedDestinationOrg, destinationStackMessage);
+                    destinationStacks
+                      .then(async (destinationStackList) => {
+                        let selectedDestinationStack = await inquirer.prompt(destinationStackList);
+                        config.target_stack = stackUidList[selectedDestinationStack.stack];
+                        config.destinationStackName = selectedDestinationStack.stack;
                         this.cloneTypeSelection()
                           .then((msgData) => {
                             return resolve(msgData);
@@ -101,11 +101,11 @@ class CloneHandler {
                   });
               } else {
                 oraMessage = 'Choose an organization where you want to create a stack: ';
-                let orgdetails = this.getOrganizationChoices(oraMessage);
-                orgdetails
-                  .then(async (orgList) => {
-                    var orgSelected = await inquirer.prompt(orgList);
-                    let orgUid = orgUidList[orgSelected.Organization];
+                let createStackOrganizations = this.getOrganizationChoices(oraMessage);
+                createStackOrganizations
+                  .then(async (_orgList) => {
+                    var selectedOrgToCreateStack = await inquirer.prompt(_orgList);
+                    let orgUid = orgUidList[selectedOrgToCreateStack.Organization];
                     this.createNewStack(orgUid)
                       .then(() => {
                         this.cloneTypeSelection()
@@ -135,11 +135,11 @@ class CloneHandler {
     });
   }
 
-  getOrganizationChoices = async (oraMessage) => {
+  getOrganizationChoices = async (orgMessage) => {
     let orgChoice = {
       type: 'list',
       name: 'Organization',
-      message: oraMessage !== undefined ? oraMessage : 'Choose an organization',
+      message: orgMessage !== undefined ? orgMessage : 'Choose an organization',
       choices: [],
     };
     return new Promise(async (resolve, reject) => {
@@ -164,7 +164,6 @@ class CloneHandler {
       let stackChoice = {
         type: 'list',
         name: 'stack',
-        message: stkMessage,
         message: stkMessage !== undefined ? stkMessage : 'Select the stack',
         choices: [],
       };
@@ -266,7 +265,7 @@ class CloneHandler {
   }
 
   async cmdImport() {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve, _reject) => {
       await importCmd.run(['-A', '-c', path.join(__dirname, 'dummyConfig.json')]);
       return resolve();
     });
