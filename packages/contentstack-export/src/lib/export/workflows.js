@@ -29,7 +29,7 @@ ExportWorkFlows.prototype.start = function (credentialConfig) {
 
   let workflowsFolderPath = path.resolve(config.data, config.branchName || '', workFlowConfig.dirName);
   mkdirp.sync(workflowsFolderPath);
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve) {
     return client
       .stack({ api_key: config.source_stack, management_token: config.management_token })
       .workflow()
