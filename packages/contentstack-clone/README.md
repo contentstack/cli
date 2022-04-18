@@ -33,23 +33,23 @@ USAGE
 ```
 # Commands
 <!-- commands -->
-* [`csdx cm:stack-clone`](#csdx-cmstack-clone)
+* [`csdx cm:stacks:clone`](#csdx-cmstack-clone)
 
-## `csdx cm:stack-clone`
+## `csdx cm:stacks:clone`
 
 This command allows you to migrate data (structure or content or both) from one stack to another stack (either new or existing)
 
 ```
 USAGE
-  $ csdx cm:stack-clone
+  $ csdx cm:stacks:clone
 
 DESCRIPTION
   ...
   Use this plugin to automate the process of cloning a stack in a few steps.
 
 EXAMPLE
-  csdx cm:stack-clone
+  csdx cm:stacks:clone
 ```
 
-_See code: [src/commands/cm/stack-clone.js](https://github.com/contentstack/cli/blob/v0.1.0-beta-1/src/commands/cm/stack-clone.js)_
+_See code: [src/commands/cm/stacks/clone.js](https://github.com/contentstack/cli/blob/v0.1.0-beta-1/src/commands/cm/stack-clone.js)_
 <!-- commandsstop -->
