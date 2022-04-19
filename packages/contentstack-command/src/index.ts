@@ -34,7 +34,7 @@ abstract class ContentstackCommand extends Command {
     if (this._email) return this._email;
     this._email = configHandler.get('email');
     if (this._email) return this._email;
-    throw new CLIError('No email found');
+    throw new CLIError('You are not logged in. Please login with command $ csdx auth:login');
   }
 
   get deliveryAPIClient() {
