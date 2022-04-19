@@ -52,7 +52,7 @@ export default class LogoutCommand extends Command {
         }
       }
     } catch (error) {
-      logger.debug('Logout failed', error.message);
+      logger.error('Logout failed', error.message);
       cliux.print('CLI_AUTH_LOGOUT_FAILED', { color: 'yellow' });
       cliux.print(error.message, { color: 'red' });
     } finally {
