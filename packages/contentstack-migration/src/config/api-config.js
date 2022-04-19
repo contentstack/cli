@@ -1,19 +1,19 @@
 /* eslint-disable camelcase */
-'use strict'
+"use strict";
 
-const {CONTENTSTACK_API_KEY, CONTENTSTACK_AUTHTOKEN} = process.env
-const {version} = require('../../package.json')
+const { CONTENTSTACK_API_KEY, CONTENTSTACK_AUTHTOKEN } = process.env;
+const { version } = require("../../package.json");
 module.exports = {
-  hostname: 'dev9-api.contentstack.com',
+  hostname: "dev9-app.contentstack.com",
   // hostname: 'stag-app.contentstack.com',
-  version: '/v3',
-  method: 'GET', // Default Http method
+  version: "/v3",
+  method: "GET", // Default Http method
   headers: {
-    'Content-Type': 'application/json',
-    'Content-Length': null,
-    'X-User-Agent': `@contentstack-migration/v${version}`,
+    "Content-Type": "application/json",
+    "Content-Length": null,
+    "X-User-Agent": `@contentstack-migration/v${version}`,
     authtoken: CONTENTSTACK_AUTHTOKEN,
     api_key: CONTENTSTACK_API_KEY,
     // management_token: CONTENTSTACK_MANAGEMENT_TOKEN
   },
-}
+};
