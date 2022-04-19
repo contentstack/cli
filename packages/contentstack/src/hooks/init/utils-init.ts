@@ -1,10 +1,9 @@
-import { logger, messageHandler, cliux, CLIError } from '@contentstack/cli-utilities';
+import { logger, messageHandler, cliux } from '@contentstack/cli-utilities';
 
 /**
  * Initialize the utilities
  */
-export default function (opts): void {
-  // console.log("Context", this.config.context);
+export default function (_opts): void {
   logger.init(this.config.context);
   messageHandler.init(this.config.context);
   cliux.init(this.config.context);
