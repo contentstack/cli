@@ -55,7 +55,8 @@ export default class TokensListCommand extends Command {
       }
     } catch (error) {
       logger.error('Token list error', error.message);
-      cliux.error('CLI_AUTH_TOKENS_LIST_FAILED', error.message);
+      cliux.print('CLI_AUTH_TOKENS_LIST_FAILED', { color: 'yellow' });
+      cliux.print(error.message, { color: 'red' });
     }
   }
 }

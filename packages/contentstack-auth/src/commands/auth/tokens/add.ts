@@ -162,7 +162,8 @@ export default class TokensAddCommand extends Command {
       }
     } catch (error) {
       logger.error('token add error', error.message);
-      cliux.error('CLI_AUTH_TOKENS_ADD_FAILED', error.message);
+      cliux.print('CLI_AUTH_TOKENS_ADD_FAILED', { color: 'yellow' });
+      cliux.print(error.message, { color: 'red' });
     }
   }
 }
