@@ -27,7 +27,8 @@ export default class TokensRemoveCommand extends Command {
       if (tokens && Object.keys(tokens).length > 0) {
         Object.keys(tokens).forEach(function (item) {
           tokenOptions.push(
-            `${item}: ${tokens[item].token} : ${tokens[item].apiKey}${tokens[item].environment ? ' : ' + tokens[item].environment + ' ' : ''
+            `${item}: ${tokens[item].token} : ${tokens[item].apiKey}${
+              tokens[item].environment ? ' : ' + tokens[item].environment + ' ' : ''
             }: ${tokens[item].type}`,
           );
         });
@@ -53,7 +54,8 @@ export default class TokensRemoveCommand extends Command {
       });
     } catch (error) {
       logger.error('Token remove error', error.message);
-      cliux.error('CLI_AUTH_TOKENS_REMOVE_FAILED', error.message);
+      cliux.print('CLI_AUTH_TOKENS_REMOVE_FAILED', { color: 'yellow' });
+      cliux.print(error.message, { color: 'red' });
     }
   }
 }
