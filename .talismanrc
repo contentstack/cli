@@ -7,6 +7,8 @@ fileignoreconfig:
   checksum: fed20f9d26ca3695ebfd917bf4390a6b5e8565021ea9a968ed87549aa336f07b
 - filename: packages/contentstack-auth/src/commands/auth/tokens/remove.ts
   checksum: 5f502b0036ec26e30d38dab695953a415f1c49e78a2867d74adf2c536a99cef2
+- filename: packages/contentstack-export/README.md
+  checksum: 5d68a84f733c41adddda5bee580910f6cb5ac2105407afd74e5ccc3baade45c5
 - filename: packages/contentstack-import/package-lock.json
   checksum: 66126a79971d8afa929ac43e86261578431e4d63bc0de59a410d86c467bdcbcf
 - filename: packages/contentstack-import/src/lib/import/assets.js
