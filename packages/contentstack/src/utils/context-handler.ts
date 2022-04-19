@@ -12,10 +12,7 @@ export default class CsdxContext {
   readonly messageFilePath: string;
 
   constructor(cliOpts: any, cliConfig: any) {
-    // console.log("cli config", cliConfig);
-    // console.log("cliOpts", cliOpts);
     const command = cliConfig.findCommand(cliOpts.id) || {};
-    // console.log("command", command);
     const config = configHandler.init();
     let sessionId = configHandler.get('sessionId');
     if (!sessionId) {
@@ -33,7 +30,6 @@ export default class CsdxContext {
     this.info = { command: cliOpts.id };
     if (command.pluginName) {
       this.plugin = (cliConfig.plugins || []).find((p) => p.name === command.pluginName) || {};
-      // console.log("commands", this.plugin.commands);
       this.plugin.name = command.pluginName;
       this.plugin.config = { ...((this.plugin.pjson && this.plugin.pjson.csdxConfig) || {}) };
       this.messageFilePath = path.resolve(
