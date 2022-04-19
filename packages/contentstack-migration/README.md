@@ -20,7 +20,7 @@ $ npm install -g @contentstack/cli-migration
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-migration/1.0.0 linux-x64 node-v12.22.7
+@contentstack/cli-migration/1.0.0 darwin-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -36,8 +36,6 @@ USAGE
 Contentstack migration script.
 
 ```
-Contentstack migration script.
-
 USAGE
   $ csdx cm:migration
 
