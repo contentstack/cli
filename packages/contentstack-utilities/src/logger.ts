@@ -17,10 +17,10 @@ class LoggerService {
 
     const logger = winston.createLogger({
       transports: [
-        new winston.transports.Console(),
-        // new winston.transports.File({
-        //   filename: `./logs/${name}.log`,
-        // }),
+        // new winston.transports.Console(),
+        new winston.transports.File({
+          filename: `./logs/${name}.log`,
+        }),
       ],
       format: winston.format.combine(
         winston.format.colorize(),
@@ -46,7 +46,7 @@ class LoggerService {
   }
 
   init(context) {
-    this.name = (context && context.plugin && context.plugin.name) || "cli";
+    this.name = (context && context.plugin && context.plugin.name) || 'cli';
   }
 
   set loggerName(name: string) {
