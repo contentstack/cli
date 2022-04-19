@@ -6,7 +6,7 @@ export default class LoginCommand extends Command {
   private readonly parse: Function;
   managementAPIClient: any;
   static run; // to fix the test issue
-  static description = "User sessions login";
+  static description = 'User sessions login';
 
   static examples = [
     '$ csdx auth:login',
@@ -17,13 +17,13 @@ export default class LoginCommand extends Command {
   ];
 
   static flags = {
-    'username': flags.string({
+    username: flags.string({
       char: 'u',
-      description: "User name",
+      description: 'User name',
       multiple: false,
       required: false,
     }),
-    'password': flags.string({
+    password: flags.string({
       char: 'p',
       description: 'Password',
       multiple: false,
@@ -43,8 +43,9 @@ export default class LoginCommand extends Command {
       logger.debug('username', username);
       await this.login(username, password);
     } catch (error) {
-      logger.debug('login  failed', error.message);
-      cliux.error('CLI_AUTH_LOGIN_FAILED', error.message);
+      logger.error('login  failed', error.message);
+      cliux.print('CLI_AUTH_LOGIN_FAILED', { color: 'yellow' });
+      cliux.print(error.message.message, { color: 'red' });
     }
   }
 
