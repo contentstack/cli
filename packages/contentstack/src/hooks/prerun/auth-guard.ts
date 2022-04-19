@@ -6,10 +6,6 @@ export default async function (opts): Promise<void> {
   const { context: { plugin: { config: { protectedCommands = {} } = {} } = {}, region = null } = {} } = this.config;
   if (opts.Command.id !== 'config:set:region') {
     if (!region) {
-      // let regionSetCommand = this.config.findCommand('config:set:region');
-      // regionSetCommand = regionSetCommand.load();
-      // await regionSetCommand.run();
-
       cliux.error('No region found, please set a region $config:set:region');
       this.exit();
       return;
