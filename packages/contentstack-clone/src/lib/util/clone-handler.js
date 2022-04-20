@@ -65,6 +65,14 @@ class CloneHandler {
           config.source_stack = stackUidList[stackSelected.stack];
           master_locale = masterLocaleList[stackSelected.stack];
           config.sourceStackName = stackSelected.stack;
+          if (!config.sourceStackBranch) {
+            try {
+              const branches = await client.stack({ api_key: config.source_stack }).branch().query().find()
+              if (branches && branches.items && branches.items.length) config.sourceStackBranch = 'main'
+            } catch (_error) {
+              // empty handler
+            }
+          }
           stackName.default = 'Copy of ' + stackSelected.stack;
           let cmdExport = this.cmdExport();
           cmdExport
@@ -227,7 +235,7 @@ class CloneHandler {
       ];
       var selectedValue = await inquirer.prompt(cloneTypeSelection);
       let cloneType = selectedValue.type;
-      config['data'] = path.join(__dirname.split('src')[0], 'contents');
+      config['data'] = path.join(__dirname.split('src')[0], 'contents', config.sourceStackBranch || '');
       if (cloneType === 'Structure (all modules except entries & assets)') {
         config['modules'] = structureList;
         let cmdImport = this.cmdImport();
@@ -253,7 +261,10 @@ class CloneHandler {
 
   async cmdExport() {
     return new Promise((resolve, reject) => {
-      let exportData = exportCmd.run(['-A', '-s', config.source_stack, '-d', __dirname.split('src')[0] + 'contents']);
+      const cmd = ['-k', config.source_stack, '-d', __dirname.split('src')[0] + 'contents']
+      if (config.sourceStackBranch) cmd.push('--branch', config.sourceStackBranch)
+
+      let exportData = exportCmd.run(cmd);
       exportData
         .then(async () => {
           return resolve();
@@ -266,7 +277,11 @@ class CloneHandler {
 
   async cmdImport() {
     return new Promise(async (resolve, _reject) => {
-      await importCmd.run(['-A', '-c', path.join(__dirname, 'dummyConfig.json')]);
+      const cmd = ['-c', path.join(__dirname, 'dummyConfig.json')]
+      if (config.sourceStackBranch) cmd.push('-d', path.join(__dirname, config.sourceStackBranch))
+      if (config.targetStackBranch) cmd.push('--branch', config.targetStackBranch)
+
+      await importCmd.run(cmd);
       return resolve();
     });
   }
