@@ -1,7 +1,7 @@
 {
 	"name": "@contentstack/cli-cm-import",
 	"description": "Contentstack CLI plugin to import content into stack",
-	"version": "0.1.1-beta.15",
+	"version": "0.1.1-beta.16",
 	"author": "Contentstack",
 	"bugs": "https://github.com/contentstack/cli/issues",
 	"dependencies": {

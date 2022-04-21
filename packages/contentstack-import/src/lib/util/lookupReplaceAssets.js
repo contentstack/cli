@@ -196,7 +196,7 @@ function findFileUrls (schema, _entry, assetUrls) {
   } else {
     text = JSON.stringify(_entry);
   }
-  markdownRegEx = new RegExp('(https://(assets|images).contentstack.io/v3/assets/(.*?)/(.*?)/(.*?)/(.*?)(?="))', 'g');
+  markdownRegEx = new RegExp('(https://(assets|(eu-|azure-na-|stag-)?images).contentstack.(io|com)/v3/assets/(.*?)/(.*?)/(.*?)/(.*?)(?="))', 'g');
   while ((markdownMatch = markdownRegEx.exec(text)) !== null) {
     if (markdownMatch && typeof markdownMatch[0] === 'string') {
       assetUrls.push(markdownMatch[0]);
