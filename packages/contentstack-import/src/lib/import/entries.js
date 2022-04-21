@@ -62,9 +62,9 @@ function importEntries() {
   // Array of content type uids, that have reference fields
   this.refSchemas = []
   // map of content types uids and their json-rte fields
-  this.ctJsonRte = {}
+  this.ctJsonRte = []
   // map of content types uids and their json-rte fields
-  this.ctJsonRteWithEntryRefs = {}
+  this.ctJsonRteWithEntryRefs = []
   // Entry refs that are held back to resolve after all entries have been created
   this.jsonRteEntryRefs = {}
   // Collection of entries, that were not created, as they already exist on Stack
@@ -217,10 +217,14 @@ importEntries.prototype = {
                 // while creating entries with json-rte field, the api does not create fresh uids for the json-rte field
                 // and its subsequent children. If the data is passed without a uid, then the fields aren't created. So, I'll
                 // generate the uids for now, and will come up with a better solution later
-                entries[eUid] = self.generateUidsForJsonRteFields(ctUid, entries[eUid])
+                if (self.ctJsonRte.indexOf(ctUid) > -1) {
+                  entries[eUid] = self.generateUidsForJsonRteFields(entries[eUid], self.ctSchemas[ctUid].schema)
+                }
 
                 // remove entry references from json-rte fields
-                entries[eUid] = self.removeEntryRefsFromJSONRTE(ctUid, entries[eUid])
+                if (self.ctJsonRteWithEntryRefs.indexOf(ctUid) > -1) {
+                  entries[eUid] = self.removeEntryRefsFromJSONRTE(entries[eUid], self.ctSchemas[ctUid].schema)
+                }
                 // will replace all old asset uid/urls with new ones
                 entries[eUid] = lookupReplaceAssets({
                   content_type: self.ctSchemas[ctUid],
@@ -413,6 +417,9 @@ importEntries.prototype = {
       return Promise.map(self.refSchemas, function (ctUid) {
         let eFolderPath = path.join(entryMapperPath, lang, ctUid)
         let eSuccessFilePath = path.join(eFolderPath, 'success.json')
+        let eFilePath = path.resolve(ePath, ctUid, lang + '.json')
+        let sourceStackEntries = helper.readFile(eFilePath)
+
         if (!fs.existsSync(eSuccessFilePath)) {
           addlogs(config, 'Success file was not found at: ' + eSuccessFilePath, 'success')
           return
@@ -442,9 +449,14 @@ importEntries.prototype = {
         entries = _.map(entries, function (entry) {
           try {
             let uid = entry.uid
+            let updatedEntry
 
             // restores json rte entry refs if they exist
-            let updatedEntry = self.restoreJsonRteEntryRefs(entry)
+            if (self.ctJsonRte.indexOf(ctUid) > -1) {
+              updatedEntry = self.restoreJsonRteEntryRefs(entry, sourceStackEntries[self.mappedUids[entry.uid]], schema)
+            } else {
+              updatedEntry = entry
+            }
             
             let _entry = lookupReplaceEntries({
               content_type: schema,
@@ -573,15 +585,9 @@ importEntries.prototype = {
           }
 
           if (flag.jsonRte) {
-            let jsonRteFieldData = self.ctSchemas[uid].schema.filter(e => e.data_type === 'json').map(e => {
-              return {
-                uid: e.uid,
-                multiple: e.multiple
-              }
-            })
-            self.ctJsonRte[uid] = jsonRteFieldData
+            self.ctJsonRte.push(uid)
             if (flag.jsonRteEmbeddedEntries) {
-              self.ctJsonRteWithEntryRefs[uid] = jsonRteFieldData
+              self.ctJsonRteWithEntryRefs.push(uid)
               // pushing ct uid to refSchemas, because
               // repostEntries uses refSchemas content types for
               // reposting entries
@@ -896,38 +902,59 @@ importEntries.prototype = {
       })
     })
   },
-  removeEntryRefsFromJSONRTE(ctUid, entry) {
-    let self = this
-    if (Object.keys(self.ctJsonRteWithEntryRefs).indexOf(ctUid) > -1) {
-      self.ctJsonRteWithEntryRefs[ctUid].forEach(element => {
-        if (element.multiple) {
-          entry[element.uid] = entry[element.uid].map(jsonRteData => {
-            // repeated code from else block, will abstract later
-            let entryReferences = jsonRteData.children.filter(e => this.doEntryReferencesExist(e))
-            if (entryReferences.length > 0) {
-              jsonRteData.children = jsonRteData.children.filter(e => !this.doEntryReferencesExist(e))
-              if (self.jsonRteEntryRefs[entry.uid] === undefined)
-                self.jsonRteEntryRefs[entry.uid] = {}
-              if (self.jsonRteEntryRefs[entry.uid][element.uid] === undefined)
-                self.jsonRteEntryRefs[entry.uid][element.uid] = [] // array, because json rte field is multiple
-              self.jsonRteEntryRefs[entry.uid][element.uid].push(entryReferences)
-              return jsonRteData // return jsonRteData without entry references
-            } else {
-              return jsonRteData // return jsonRteData as it is, because there are no entry references
+  removeEntryRefsFromJSONRTE(entry, ctSchema) {
+    for (let i = 0; i < ctSchema.length; i++) {
+      switch(ctSchema[i].data_type) {
+        case 'blocks': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(e => {
+                let key = Object.keys(e).pop()
+                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
+                e[key] = this.removeEntryRefsFromJSONRTE(e[key], subBlock.schema)
+                return e
+              })
             }
-          })
-        } else {
-          let entryReferences = entry[element.uid].children.filter(e => this.doEntryReferencesExist(e))
-          if (entryReferences.length > 0) {
-            entry[element.uid].children = entry[element.uid].children.filter(e => !this.doEntryReferencesExist(e))
-            if (self.jsonRteEntryRefs[entry.uid] === undefined)
-              self.jsonRteEntryRefs[entry.uid] = {}
-            if (self.jsonRteEntryRefs[entry.uid][element.uid] === undefined)
-              self.jsonRteEntryRefs[entry.uid][element.uid] = {} // object, because json rte field is not multiple
-            self.jsonRteEntryRefs[entry.uid][element.uid]['children'] = entryReferences
           }
+          break;
         }
-      })
+        case 'global_fields':
+        case 'group': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(e => {
+                e = this.removeEntryRefsFromJSONRTE(e, ctSchema[i].schema)
+                return e
+              })
+            } else {
+              entry[ctSchema[i].uid] = this.removeEntryRefsFromJSONRTE(entry[ctSchema[i].uid], ctSchema[i].schema)
+            }
+          }
+          break;
+        }
+        case 'json': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(jsonRteData => {
+                // repeated code from else block, will abstract later
+                let entryReferences = jsonRteData.children.filter(e => this.doEntryReferencesExist(e))
+                if (entryReferences.length > 0) {
+                  jsonRteData.children = jsonRteData.children.filter(e => !this.doEntryReferencesExist(e))
+                  return jsonRteData // return jsonRteData without entry references
+                } else {
+                  return jsonRteData // return jsonRteData as it is, because there are no entry references
+                }
+              })
+            } else {
+              let entryReferences = entry[ctSchema[i].uid].children.filter(e => this.doEntryReferencesExist(e))
+              if (entryReferences.length > 0) {
+                entry[ctSchema[i].uid].children = entry[ctSchema[i].uid].children.filter(e => !this.doEntryReferencesExist(e))
+              }
+            }
+          }
+          break;
+        }
+      }
     }
     return entry
   },
@@ -956,40 +983,125 @@ importEntries.prototype = {
     }
     return false
   },
-  restoreJsonRteEntryRefs(entry) {
-    let self = this
-    if (Object.keys(self.jsonRteEntryRefs).indexOf(entry.uid) > -1) {
-      Object.keys(self.jsonRteEntryRefs[entry.uid]).forEach(jsonRteFieldUid => {
-        if (self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid].length) { // handles when json_rte is multiple
-          entry[jsonRteFieldUid] = entry[jsonRteFieldUid].map((field, index) => {
-            field.children = [...field.children, ...self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid][index]]
-            return field
-          })
-        } else {
-          entry[jsonRteFieldUid].children = [...entry[jsonRteFieldUid].children, ...self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid].children]
+  restoreJsonRteEntryRefs(entry, sourceStackEntry, ctSchema) {
+    for (let i = 0; i < ctSchema.length; i++) {
+      switch (ctSchema[i].data_type) {
+        case 'blocks': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map((e, eIndex) => {
+                let key = Object.keys(e).pop()
+                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
+                let sourceStackElement = sourceStackEntry[ctSchema[i].uid][eIndex][key]
+                e[key] = this.restoreJsonRteEntryRefs(e[key], sourceStackElement, subBlock.schema)
+                return e
+              })
+            }
+          }
+          break;
         }
-      })
+        case 'global_fields':
+        case 'group': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map((e, eIndex) => {
+                let sourceStackElement = sourceStackEntry[ctSchema[i].uid][eIndex]
+                e = this.restoreJsonRteEntryRefs(e, sourceStackElement, ctSchema[i].schema)
+                return e
+              })
+            } else {
+              let sourceStackElement = sourceStackEntry[ctSchema[i].uid]
+              entry[ctSchema[i].uid] = this.restoreJsonRteEntryRefs(entry[ctSchema[i].uid], sourceStackElement, ctSchema[i].schema)
+            }
+          }
+          break;
+        }
+        case 'json': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map((field, index) => {
+                field.children = [
+                  ...field.children, 
+                  ...sourceStackEntry[ctSchema[i].uid][index].children.filter(e => this.doEntryReferencesExist(e))
+                ]
+                return field
+              })
+            } else {
+              entry[ctSchema[i].uid].children = [
+                ...entry[ctSchema[i].uid].children, 
+                ...sourceStackEntry[ctSchema[i].uid].children.filter(e => this.doEntryReferencesExist(e)),
+              ]
+            }
+          }
+          break;
+        }
+      }
     }
     return entry
+    //------------------------------------------------------------------------------------------------------------
+    // if (Object.keys(self.jsonRteEntryRefs).indexOf(entry.uid) > -1) {
+    //   Object.keys(self.jsonRteEntryRefs[entry.uid]).forEach(jsonRteFieldUid => {
+    //     if (self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid].length) { // handles when json_rte is multiple
+    //       entry[jsonRteFieldUid] = entry[jsonRteFieldUid].map((field, index) => {
+    //         field.children = [...field.children, ...self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid][index]]
+    //         return field
+    //       })
+    //     } else {
+    //       entry[jsonRteFieldUid].children = [...entry[jsonRteFieldUid].children, ...self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid].children]
+    //     }
+    //   })
+    // }
+    // return entry
   },
   isEntryRef(element) {
     return element.type === "reference" && element.attrs.type === "entry"
   },
-  generateUidsForJsonRteFields(ctUid, entry) {
-    let self = this
-    if (Object.keys(self.ctJsonRte).indexOf(ctUid) > -1) {
-      self.ctJsonRte[ctUid].forEach(element => {
-        if (element.multiple) {
-          entry[element.uid] = entry[element.uid].map(jsonRteData => {
-            jsonRteData.uid = this.generateUid()
-            jsonRteData.children = jsonRteData.children.map(child => this.populateChildrenWithUids(child))
-            return jsonRteData
-          })
-        } else {
-          entry[element.uid].uid = this.generateUid()
-          entry[element.uid].children = entry[element.uid].children.map(child => this.populateChildrenWithUids(child))
+  generateUidsForJsonRteFields(entry, ctSchema) {
+    for (let i = 0; i < ctSchema.length; i++) {
+      switch (ctSchema[i].data_type) {
+        case 'blocks': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(e => {
+                let key = Object.keys(e).pop()
+                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
+                e[key] = this.generateUidsForJsonRteFields(e[key], subBlock.schema)
+                return e
+              })
+            }
+          }
+          break;
         }
-      })
+        case 'global_fields':
+        case 'group': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(e => {
+                e = this.generateUidsForJsonRteFields(e, ctSchema[i].schema)
+                return e
+              })
+            } else {
+              entry[ctSchema[i].uid] = this.generateUidsForJsonRteFields(entry[ctSchema[i].uid], ctSchema[i].schema)
+            }
+          }
+          break;
+        }
+        case 'json': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(jsonRteData => {
+                jsonRteData.uid = this.generateUid()
+                jsonRteData.children = jsonRteData.children.map(child => this.populateChildrenWithUids(child))
+                return jsonRteData
+              })
+            } else {
+              entry[ctSchema[i].uid].uid = this.generateUid()
+              entry[ctSchema[i].uid].children = entry[ctSchema[i].uid].children.map(child => this.populateChildrenWithUids(child))
+            }
+          }
+          break;
+        }
+      }
     }
     return entry
   },
