@@ -10,6 +10,25 @@ It is Contentstack’s CLI plugin to export content from the stack. To learn how
 * [Commands](#commands)
 <!-- tocstop -->
 
+For switching to EU region update the hosts at config/default.js
+
+```js
+{
+  host:'https://eu-api.contentstack.com/v3',
+  cdn: 'https://eu-cdn.contentstack.com/v3',
+ ...
+}
+```
+
+For switching to AZURE-NA region update the hosts at config/default.js
+
+```js
+{
+  host:'https://azure-na-api.contentstack.com/v3',
+  cdn: 'https://azure-na-cdn.contentstack.com/v3',
+ ...
+}
+```
 # Usage
 
 <!-- usage -->
