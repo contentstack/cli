@@ -120,17 +120,59 @@ module.exports = function (data, mappedUids, uidMapperPath) {
         break
       case 'json':
         if (schema[i].field_metadata.rich_text_type) {
-          if (schema[i].multiple === true && Array.isArray(entry[schema[i].uid])) {
-            entry[schema[i].uid].forEach(e => gatherJsonRteEntryIds(e))
-          } else {
-            // collecting asset ids referred in json rte field
-            gatherJsonRteEntryIds(entry[schema[i].uid])
+          if (uids.length === 0) {
+            findEntryIdsFromJsonRte(data.entry, data.content_type.schema)
           }
         }
         break
       }
     }
   }
+
+  function findEntryIdsFromJsonRte(entry, ctSchema) {
+    for (let i = 0; i < ctSchema.length; i++) {
+      switch (ctSchema[i].data_type) {
+        case 'blocks': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid].forEach(e => {
+                let key = Object.keys(e).pop()
+                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
+                findEntryIdsFromJsonRte(e[key], subBlock.schema)
+              })
+            }
+          }
+          break;
+        }
+        case 'global_fields':
+        case 'group': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid].forEach(e => {
+                findEntryIdsFromJsonRte(e, ctSchema[i].schema)
+              })
+            } else {
+              findEntryIdsFromJsonRte(entry[ctSchema[i].uid], ctSchema[i].schema)
+            }
+          }
+          break;
+        }
+        case 'json': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid].forEach(jsonRteData => {
+                gatherJsonRteEntryIds(jsonRteData)
+              })
+            } else {
+              gatherJsonRteEntryIds(entry[ctSchema[i].uid])
+            }
+          }
+          break;
+        }
+      }
+    }
+  }
+
   find(data.content_type.schema, data.entry)
   if (isNewRefFields) {
     findUidsInNewRefFields(data.entry, uids)
