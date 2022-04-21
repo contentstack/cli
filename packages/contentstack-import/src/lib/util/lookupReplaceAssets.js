@@ -54,17 +54,58 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       if (schema[i].data_type === "json" && schema[i].field_metadata.rich_text_type) {
         parent.push(schema[i].uid)
         findFileUrls(schema[i], entry, assetUrls)
-        // maybe only one of these checks would be enough
-        if (schema[i].multiple === true && Array.isArray(entry[schema[i].uid])) {
-          entry[schema[i].uid].forEach(e => gatherJsonRteAssetIds(e))
-        } else {
-          // collecting asset ids referred in json rte field
-          gatherJsonRteAssetIds(entry[schema[i].uid])
+        if (assetUids.length === 0) {
+          findAssetIdsFromJsonRte(data.entry, data.content_type.schema)
         }
+        // maybe only one of these checks would be enough
         parent.pop()
       }
     }
   };
+
+  function findAssetIdsFromJsonRte(entry, ctSchema) {
+    for (let i = 0; i < ctSchema.length; i++) {
+      switch (ctSchema[i].data_type) {
+        case 'blocks': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid].forEach(e => {
+                let key = Object.keys(e).pop()
+                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
+                findAssetIdsFromJsonRte(e[key], subBlock.schema)
+              })
+            }
+          }
+          break;
+        }
+        case 'global_fields':
+        case 'group': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid].forEach(e => {
+                findAssetIdsFromJsonRte(e, ctSchema[i].schema)
+              })
+            } else {
+              findAssetIdsFromJsonRte(entry[ctSchema[i].uid], ctSchema[i].schema)
+            }
+          }
+          break;
+        }
+        case 'json': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid].forEach(jsonRteData => {
+                gatherJsonRteAssetIds(jsonRteData)
+              })
+            } else {
+              gatherJsonRteAssetIds(entry[ctSchema[i].uid])
+            }
+          }
+          break;
+        }
+      }
+    }
+  }
 
   function gatherJsonRteAssetIds(jsonRteData) {
     jsonRteData.children.forEach(element => {
