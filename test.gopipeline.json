@@ -1,0 +1,94 @@
+{
+  "group": "My-Pipelines",
+  "name": "test",
+  "display_order_weight": -1.0,
+  "label_template": "${COUNT}",
+  "lock_behavior": "none",
+  "environment_variables": [],
+  "parameters": [],
+  "materials": [
+    {
+      "url": "https://github.com/contentstack/cli",
+      "branch": "release-1.0.0",
+      "shallow_clone": false,
+      "filter": {
+        "ignore": [],
+        "includes": []
+      },
+      "auto_update": true,
+      "type": "git"
+    }
+  ],
+  "stages": [
+    {
+      "name": "Build-And-Setup",
+      "fetch_materials": true,
+      "never_cleanup_artifacts": false,
+      "clean_working_directory": false,
+      "approval": {
+        "type": "success",
+        "users": [],
+        "roles": [],
+        "allow_only_on_success": false
+      },
+      "environment_variables": [],
+      "jobs": [
+        {
+          "name": "build",
+          "environment_variables": [],
+          "tabs": [],
+          "resources": [],
+          "artifacts": [],
+          "timeout": 0.0,
+          "tasks": [
+            {
+              "command": "rm",
+              "timeout": -1.0,
+              "arguments": [
+                "-rf",
+                "package-lock.json",
+                "\u0026\u0026",
+                "rm",
+                "-rf",
+                "packages/*/package-lock.json"
+              ],
+              "run_if": "passed",
+              "type": "exec"
+            },
+            {
+              "command": "npm",
+              "timeout": -1.0,
+              "arguments": [
+                "i",
+                "-g",
+                "lerna"
+              ],
+              "run_if": "passed",
+              "type": "exec"
+            },
+            {
+              "command": "lerna",
+              "timeout": -1.0,
+              "arguments": [
+                "clean",
+                "-y"
+              ],
+              "run_if": "passed",
+              "type": "exec"
+            },
+            {
+              "command": "lerna",
+              "timeout": -1.0,
+              "arguments": [
+                "bootstrap",
+                "--force-local"
+              ],
+              "run_if": "passed",
+              "type": "exec"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
