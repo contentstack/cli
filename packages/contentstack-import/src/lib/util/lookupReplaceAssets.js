@@ -143,6 +143,32 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
     }
   });
 
+  // the above loop replaces all the assetUids within the entry, 
+  // it also replaces the old asset uids in the asset urls
+  // for example all asset urls in the entry become something like this
+  // https://oldStack/oldAssetUid/<id-generated-from-file-name>/<file-name> -> https://oldStack/newStackAssetUid/<id-generated-from-file-name>/<file-name>
+  // so, the following for loop which replaces assetUrls doesn't work because
+  // it tries to find assetUrls which are in this format : https://oldStack/oldAssetUid/<id-generated-from-file-name>/<file-name>
+  // but the asset urls in the entry have transformed to this format : https://oldStack/newStackAssetUid/<id-generated-from-file-name>/<file-name>
+  // so I'm adding this workaround for now, and will come up with a better solution later
+  // here I'm converting all the assetUrls to this format : https://oldStack/newStackAssetUid/<id-generated-from-file-name>/<file-name>
+
+  let dataToAddInMappedAssetUrls = {}
+  // workaround for the above mentioned problem
+  assetUrls = assetUrls.map(assetUrl => {
+    matchedUids.forEach(e => {
+      if(assetUrl.indexOf(e) > -1) {
+        let value = mappedAssetUrls[assetUrl]
+        assetUrl = assetUrl.replace(new RegExp(e, 'img'), mappedAssetUids[e])
+        dataToAddInMappedAssetUrls[assetUrl] = value
+      }
+    })
+    return assetUrl
+  })
+
+  // will need to add these modified assetUrls to mappedAssetUrls too
+  mappedAssetUrls = {...mappedAssetUrls, ...dataToAddInMappedAssetUrls}
+
   assetUrls.forEach(function (assetUrl) {
     var url = mappedAssetUrls[assetUrl];
     if (typeof url !== 'undefined') {
