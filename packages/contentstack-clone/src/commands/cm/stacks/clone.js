@@ -12,13 +12,19 @@ class StackCloneCommand extends Command {
     try {
       let self = this;
       const cloneCommandFlags = self.parse(StackCloneCommand).flags;
-      const sourceStackBranch = cloneCommandFlags['source-branch']
-      const targetStackBranch = cloneCommandFlags['target-branch']
-      if (sourceStackBranch) config.sourceStackBranch = sourceStackBranch
-      if (targetStackBranch) config.targetStackBranch = targetStackBranch
+      const sourceStackBranch = cloneCommandFlags['source-branch'];
+      const targetStackBranch = cloneCommandFlags['target-branch'];
+      if (sourceStackBranch) {
+        config.sourceStackBranch = sourceStackBranch;
+      }
+      if (targetStackBranch) {
+        config.targetStackBranch = targetStackBranch;
+      }
+
       this.registerCleanupOnInterrupt(pathdir);
+
       let _authToken = credStore.get('authtoken');
-      if (_authToken && _authToken !== undefined) {
+      if (_authToken) {
         config.auth_token = _authToken;
         config.host = this.cmaHost;
         config.cdn = this.cdaHost;
@@ -70,20 +76,19 @@ Use this plugin to automate the process of cloning a stack in a few steps.
 
 StackCloneCommand.examples = [
   'csdx cm:stacks:clone',
-  'csdx cm:stacks:clone -s <source-stack-branch> -t <target-stack-branch>'
+  'csdx cm:stacks:clone --source-branch --target-branch',
+  'csdx cm:stacks:clone -a <management token alias>',
 ];
 
 StackCloneCommand.aliases = ['cm:stack-clone'];
 
 StackCloneCommand.flags = {
   'source-branch': flags.string({
-    char: 's',
     description: 'Branch of the source stack',
   }),
   'target-branch': flags.string({
-    char: 't',
     description: 'Branch of the target stack',
-  })
-}
+  }),
+};
 
 module.exports = StackCloneCommand;
