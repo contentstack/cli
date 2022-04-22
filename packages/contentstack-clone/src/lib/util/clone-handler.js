@@ -67,8 +67,10 @@ class CloneHandler {
           config.sourceStackName = stackSelected.stack;
           if (!config.sourceStackBranch) {
             try {
-              const branches = await client.stack({ api_key: config.source_stack }).branch().query().find()
-              if (branches && branches.items && branches.items.length) config.sourceStackBranch = 'main'
+              const branches = await client.stack({ api_key: config.source_stack }).branch().query().find();
+              if (branches && branches.items && branches.items.length) {
+                config.sourceStackBranch = 'main';
+              }
             } catch (_error) {
               // empty handler
             }
@@ -261,8 +263,10 @@ class CloneHandler {
 
   async cmdExport() {
     return new Promise((resolve, reject) => {
-      const cmd = ['-k', config.source_stack, '-d', __dirname.split('src')[0] + 'contents']
-      if (config.sourceStackBranch) cmd.push('--branch', config.sourceStackBranch)
+      const cmd = ['-k', config.source_stack, '-d', __dirname.split('src')[0] + 'contents'];
+      if (config.sourceStackBranch) {
+        cmd.push('--branch', config.sourceStackBranch);
+      }
 
       let exportData = exportCmd.run(cmd);
       exportData
@@ -277,9 +281,13 @@ class CloneHandler {
 
   async cmdImport() {
     return new Promise(async (resolve, _reject) => {
-      const cmd = ['-c', path.join(__dirname, 'dummyConfig.json')]
-      if (config.sourceStackBranch) cmd.push('-d', path.join(__dirname, config.sourceStackBranch))
-      if (config.targetStackBranch) cmd.push('--branch', config.targetStackBranch)
+      const cmd = ['-c', path.join(__dirname, 'dummyConfig.json')];
+      if (config.sourceStackBranch) {
+        cmd.push('-d', path.join(__dirname, config.sourceStackBranch));
+      }
+      if (config.targetStackBranch) {
+        cmd.push('--branch', config.targetStackBranch);
+      }
 
       await importCmd.run(cmd);
       return resolve();
