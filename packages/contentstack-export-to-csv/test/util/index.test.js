@@ -172,7 +172,7 @@ describe('test util functions', () => {
   test
   .stdout()
   .stub(ExportToCsvCommand.prototype, 'managementAPIClient', () => {
-    const entries = {
+    const _entries = {
       items: [{title: 'ct1', uid: 'ct1'}, {title: 'ct2', uid: 'ct2'}, {title: 'ct3', uid: 'ct3'}]
     }
     return {
@@ -185,7 +185,7 @@ describe('test util functions', () => {
                   query: function() {
                     return {
                       find: function() {
-                        return new Promise(resolve => resolve(entries))
+                        return new Promise(resolve => resolve(_entries))
                       }
                     }
                   }
@@ -299,7 +299,7 @@ describe('test util functions', () => {
           organizations: [{ 
             uid: 'orgUid1',
             getInvitations: function() {
-              return new Promise(resolve => resolve(users))
+              return new Promise(_resolve => _resolve(users))
             }
           }]
         }))
@@ -369,7 +369,7 @@ describe('test util functions', () => {
           organizations: [{ 
             uid: 'orgUid1',
             roles: function() {
-              return new Promise(resolve => resolve(roles))
+              return new Promise(_resolve => _resolve(roles))
             }
           }]
         }))
@@ -433,7 +433,7 @@ describe('test util functions', () => {
 
     const filteredEntries = util.cleanEntries(entries.items, language, environments, contentTypeUid)
 
-    expect(entries).to.be.an('object')
+    expect(filteredEntries).to.be.an('object')
   })
 
   // test getDateTime
