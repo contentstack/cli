@@ -1,4 +1,4 @@
-const { Command } = require('@contentstack/cli-command');
+const { Command, flags } = require('@contentstack/cli-command');
 const Configstore = require('configstore');
 const credStore = new Configstore('contentstack_cli');
 const { CloneHandler } = require('../../../lib/util/clone-handler');
@@ -10,9 +10,21 @@ let pathdir = path.join(__dirname.split('src')[0], 'contents');
 class StackCloneCommand extends Command {
   async run() {
     try {
+      let self = this;
+      const cloneCommandFlags = self.parse(StackCloneCommand).flags;
+      const sourceStackBranch = cloneCommandFlags['source-branch'];
+      const targetStackBranch = cloneCommandFlags['target-branch'];
+      if (sourceStackBranch) {
+        config.sourceStackBranch = sourceStackBranch;
+      }
+      if (targetStackBranch) {
+        config.targetStackBranch = targetStackBranch;
+      }
+
       this.registerCleanupOnInterrupt(pathdir);
+
       let _authToken = credStore.get('authtoken');
-      if (_authToken && _authToken !== undefined) {
+      if (_authToken) {
         config.auth_token = _authToken;
         config.host = this.cmaHost;
         config.cdn = this.cdaHost;
@@ -62,8 +74,21 @@ StackCloneCommand.description = `Clone data (structure or content or both) of a 
 Use this plugin to automate the process of cloning a stack in a few steps.
 `;
 
-StackCloneCommand.examples = ['csdx cm:stacks:clone'];
+StackCloneCommand.examples = [
+  'csdx cm:stacks:clone',
+  'csdx cm:stacks:clone --source-branch --target-branch',
+  'csdx cm:stacks:clone -a <management token alias>',
+];
 
 StackCloneCommand.aliases = ['cm:stack-clone'];
+
+StackCloneCommand.flags = {
+  'source-branch': flags.string({
+    description: 'Branch of the source stack',
+  }),
+  'target-branch': flags.string({
+    description: 'Branch of the target stack',
+  }),
+};
 
 module.exports = StackCloneCommand;
