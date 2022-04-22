@@ -7,6 +7,8 @@ fileignoreconfig:
   checksum: fed20f9d26ca3695ebfd917bf4390a6b5e8565021ea9a968ed87549aa336f07b
 - filename: packages/contentstack-auth/src/commands/auth/tokens/remove.ts
   checksum: 5f502b0036ec26e30d38dab695953a415f1c49e78a2867d74adf2c536a99cef2
+- filename: packages/contentstack-clone/src/lib/util/clone-handler.js
+  checksum: 56be60f744b35b1e4a2291dfebb480c7e29c4af337e2ea5d267ca6403d4f252f
 - filename: packages/contentstack-export/README.md
   checksum: 5d68a84f733c41adddda5bee580910f6cb5ac2105407afd74e5ccc3baade45c5
 - filename: packages/contentstack-import/package-lock.json
@@ -32,7 +34,7 @@ fileignoreconfig:
 - filename: packages/contentstack-import/test/mock/globalFields.js
   checksum: ebfcba93d888713142c8fe5bfa6a80c09344ab357bc13ac935d8c50c283bd1ae
 - filename: packages/contentstack/README.md
-  checksum: 45c2552117269e9a03e9c5d5bbfeda6ad19113bb2ffa8d5deadbece646850945
+  checksum: a77f5fda6655fb01d9781d31006a5638d8ab6df75147804e671fc181b5610f68
 - filename: packages/contentstack/package-lock.json
   checksum: be5da46c99ee2ea6c021a6dd4f903feda4f4c610033aba5ad3d25761810b52ff
 version: "1.0"
