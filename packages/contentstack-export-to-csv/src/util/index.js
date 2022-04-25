@@ -311,7 +311,7 @@ function getOrgUsers(managementAPIClient, orgUid, ecsv) {
         let authtoken = ecsv.authToken;
         return axios
           .get(`${cma}/v3/organizations/${organization.uid}/share`, { headers: { authtoken: authtoken } })
-          .then((response) => resolve({ items: response.data.shares }));
+          .then((_response) => resolve({ items: _response.data.shares }));
       }
       if (!organization.getInvitations) {
         return reject(new Error(config.adminError));
@@ -347,7 +347,7 @@ function getOrgRoles(managementAPIClient, orgUid, ecsv) {
         let authtoken = ecsv.authToken;
         return axios
           .get(`${cma}/v3/organizations/${organization.uid}/roles`, { headers: { authtoken: authtoken } })
-          .then((response) => resolve({ items: response.data.roles }));
+          .then((_response) => resolve({ items: _response.data.roles }));
       }
       if (!organization.roles) {
         return reject(new Error(config.adminError));
