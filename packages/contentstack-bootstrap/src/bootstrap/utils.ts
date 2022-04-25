@@ -125,7 +125,7 @@ const envFileHandler = async (
         case 'reactjs-starter':
             fileName = `.env.${environmentVariables.environment}.local`
             filePath = path.join(clonedDirectory, fileName)
-            content = `REACT_APP_CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nREACT_APP_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nREACT_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nREACT_APP_CONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost) ? '\nREACT_APP_CONTENTSTACK_REGION=' + region.name : ''}`
+            content = `REACT_APP_CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nREACT_APP_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nREACT_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nREACT_APP_CONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost) ? '\nREACT_APP_CONTENTSTACK_REGION=' + region.name : ''}\nSKIP_PREFLIGHT_CHECK=true`
             result = await writeEnvFile(content, filePath)
             break
         case 'nextjs':
