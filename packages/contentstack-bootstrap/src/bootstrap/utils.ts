@@ -154,19 +154,15 @@ const envFileHandler = async (
             result = await writeEnvFile(content, filePath)
             break
         case 'angular-starter':
-            //     content = `export const environment = { \n\tproduction: true \n}; \nexport const Config = { \n\tapi_key: '${environmentVariables.api_key}', \n\tdelivery_token: '${environmentVariables.deliveryToken}', \n\tenvironment: '${environmentVariables.environment}'${( !isUSRegion && !customHost ? `,\n\tregion: '${region.name}'`: '') } \n};`
-            // fileName = `environment${(environmentVariables.environment === 'production' ? '.prod.' : ".")}ts`
-            // filePath = path.join(
-            //     clonedDirectory,
-            //     'src',
-            //     'environments',
-            //     fileName
-            // )
-            // result = await writeEnvFile(content, filePath)
-            // fileName = `.env.${environmentVariables.environment}`
-            // filePath = path.join(clonedDirectory, fileName)
-            // content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nCONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : '')}`
-            // result = await writeEnvFile(content, filePath)
+            content = `export const environment = { \n\tproduction: true \n}; \nexport const Config = { \n\tapi_key: '${environmentVariables.api_key}', \n\tdelivery_token: '${environmentVariables.deliveryToken}', \n\tenvironment: '${environmentVariables.environment}'${( !isUSRegion && !customHost ? `,\n\tregion: '${region.name}'`: '') },\n\tapi_host: '${customHost ? customHost: ''}',\n\tapp_host: '',\n\tmanagement_token: '',\n\tlive_preview: ''\n};`
+            fileName = `environment${(environmentVariables.environment === 'production' ? '.prod.' : ".")}ts`
+            filePath = path.join(
+                clonedDirectory,
+                'src',
+                'environments',
+                fileName
+            )
+            result = await writeEnvFile(content, filePath)
             break
         case 'nuxtjs':
         case 'nuxt-starter':
