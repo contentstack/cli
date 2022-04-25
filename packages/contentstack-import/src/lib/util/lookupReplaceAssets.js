@@ -38,7 +38,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         (schema[i].field_metadata.markdown || schema[i].field_metadata.rich_text_type)
       ) {
         parent.push(schema[i].uid);
-        findFileUrls(parent, schema[i], entryToFind, assetUrls);
+        findFileUrls(schema[i], entryToFind, assetUrls);
         parent.pop();
       }
       if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
@@ -170,9 +170,12 @@ function findFileUrls(schema, _entry, assetUrls) {
   if (schema && schema.field_metadata && schema.field_metadata.markdown) {
     text = marked(_entry);
   } else {
-    text = _entry;
+    text = JSON.stringify(_entry);
   }
-  markdownRegEx = new RegExp('(https://(assets|images).contentstack.io/v3/assets/(.*?)/(.*?)/(.*?)/(.*)(?="))', 'g');
+  markdownRegEx = new RegExp(
+    '(https://(assets|(eu-|azure-na-|stag-)?images).contentstack.(io|com)/v3/assets/(.*?)/(.*?)/(.*?)/(.*?)(?="))',
+    'g',
+  );
   while ((markdownMatch = markdownRegEx.exec(text)) !== null) {
     if (markdownMatch && typeof markdownMatch[0] === 'string') {
       assetUrls.push(markdownMatch[0]);
