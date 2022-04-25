@@ -6,7 +6,7 @@
  * @param {Object} stackSDKInstance
  */
 module.exports = async ({ migration, stackSDKInstance, config }) => {
-  const contentTypeId = "product_teaser";
+  const { contentTypeId } = config;
 
   const createEntryTask = {
     title: "Create entries",
