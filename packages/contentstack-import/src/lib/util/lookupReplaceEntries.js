@@ -144,7 +144,7 @@ module.exports = function (data, mappedUids, uidMapperPath) {
           }
           break;
         }
-        case 'global_fields':
+        case 'global_field':
         case 'group': {
           if (entry[ctSchema[i].uid] !== undefined) {
             if (ctSchema[i].multiple) {
