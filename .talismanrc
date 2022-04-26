@@ -2,7 +2,11 @@ fileignoreconfig:
 - filename: packages/contentstack-import/package-lock.json
   checksum: 66126a79971d8afa929ac43e86261578431e4d63bc0de59a410d86c467bdcbcf
 - filename: packages/contentstack-import/src/lib/import/entries.js
-  checksum: b613fbc87e45375dc35ace330c66a22d99981197645129d4ae1db07534d2722d
+  checksum: 5f8aac3ad5849fa08aff6c2c072727c059c75d6fabe2da98e4c6b892321e7078
+- filename: packages/contentstack-import/src/lib/util/lookupReplaceAssets.js
+  checksum: 73596dc5a1e69e427fe219b04d5444faec9d3ba988bb43faed3a60c9c6547159
+- filename: packages/contentstack-import/src/lib/util/lookupReplaceEntries.js
+  checksum: 00a295394d9bad848b0b51161f59182940fc5a2c575bf58458a1f546a3cd4058
 - filename: packages/contentstack/package-lock.json
   checksum: be5da46c99ee2ea6c021a6dd4f903feda4f4c610033aba5ad3d25761810b52ff
 version: "1.0"
