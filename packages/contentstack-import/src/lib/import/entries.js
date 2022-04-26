@@ -918,7 +918,7 @@ importEntries.prototype = {
           }
           break;
         }
-        case 'global_fields':
+        case 'global_field':
         case 'group': {
           if (entry[ctSchema[i].uid] !== undefined) {
             if (ctSchema[i].multiple) {
@@ -1000,7 +1000,7 @@ importEntries.prototype = {
           }
           break;
         }
-        case 'global_fields':
+        case 'global_field':
         case 'group': {
           if (entry[ctSchema[i].uid] !== undefined) {
             if (ctSchema[i].multiple) {
@@ -1072,7 +1072,7 @@ importEntries.prototype = {
           }
           break;
         }
-        case 'global_fields':
+        case 'global_field':
         case 'group': {
           if (entry[ctSchema[i].uid] !== undefined) {
             if (ctSchema[i].multiple) {
