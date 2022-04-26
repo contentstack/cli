@@ -49,15 +49,102 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
           }
         }
       }
+      // added rich_text_type field check because some marketplace extensions also
+      // have data_type has json
+      if (schema[i].data_type === "json" && schema[i].field_metadata.rich_text_type) {
+        parent.push(schema[i].uid)
+        // findFileUrls(schema[i], entry, assetUrls)
+        if (assetUids.length === 0) {
+          findAssetIdsFromJsonRte(data.entry, data.content_type.schema)
+        }
+        // maybe only one of these checks would be enough
+        parent.pop()
+      }
     }
   };
-  
-  
+
+  function findAssetIdsFromJsonRte(entry, ctSchema) {
+    for (let i = 0; i < ctSchema.length; i++) {
+      switch (ctSchema[i].data_type) {
+        case 'blocks': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid].forEach(e => {
+                let key = Object.keys(e).pop()
+                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
+                findAssetIdsFromJsonRte(e[key], subBlock.schema)
+              })
+            }
+          }
+          break;
+        }
+        case 'global_field':
+        case 'group': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid].forEach(e => {
+                findAssetIdsFromJsonRte(e, ctSchema[i].schema)
+              })
+            } else {
+              findAssetIdsFromJsonRte(entry[ctSchema[i].uid], ctSchema[i].schema)
+            }
+          }
+          break;
+        }
+        case 'json': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid].forEach(jsonRteData => {
+                gatherJsonRteAssetIds(jsonRteData)
+              })
+            } else {
+              gatherJsonRteAssetIds(entry[ctSchema[i].uid])
+            }
+          }
+          break;
+        }
+      }
+    }
+  }
+
+  function gatherJsonRteAssetIds(jsonRteData) {
+    jsonRteData.children.forEach(element => {
+      if (element.type) {
+        switch (element.type) {
+          case 'p': {
+            if (element.children && element.children.length > 0) {
+              gatherJsonRteAssetIds(element)
+            }
+            break;
+          }
+          case 'reference': {
+            if (Object.keys(element.attrs).length > 0 && element.attrs.type === "asset") {
+              assetUids.push(element.attrs['asset-uid'])
+              assetUrls.push(element.attrs['asset-link'])
+            }
+            break;
+          }
+        }
+      }
+    })
+  }
+
   find(data.content_type.schema, data.entry);
   updateFileFields(data.entry, data, null, mappedAssetUids, matchedUids, unmatchedUids);
   assetUids = _.uniq(assetUids);
   assetUrls = _.uniq(assetUrls);
   var entry = JSON.stringify(data.entry);
+
+  assetUrls.forEach(function (assetUrl) {
+    var url = mappedAssetUrls[assetUrl];
+    if (typeof url !== 'undefined') {
+      entry = entry.replace(new RegExp(assetUrl, 'img'), url);
+      matchedUrls.push(url);
+    } else {
+      unmatchedUrls.push(assetUrl);
+    }
+  });
+
   assetUids.forEach(function (assetUid) {
     var uid = mappedAssetUids[assetUid];
     if (typeof uid !== 'undefined') {
@@ -65,16 +152,6 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       matchedUids.push(assetUid);
     } else {
       unmatchedUids.push(assetUid);
-    }
-  });
-
-  assetUrls.forEach(function (assetUrl) {
-    var url = mappedAssetUrls[assetUrl];
-    if (typeof url !== 'undefined') {
-      entry = entry.replace(new RegExp(assetUrl, 'img'), url);
-      unmatchedUrls.push(url);
-    } else {
-      unmatchedUrls.push(assetUrl);
     }
   });
 
