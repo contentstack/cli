@@ -14,6 +14,10 @@ var supress = module.exports = function (schema, flag) {
       }
     } else if (schema[i].data_type === 'reference') {
       flag.references = true;
+    } else if (schema[i].data_type === 'json' && schema[i].field_metadata.rich_text_type) {
+      flag.jsonRte = true
+      if (schema[i].field_metadata.embed_entry === true)
+        flag.jsonRteEmbeddedEntries = true;
     }
 
     if ((schema[i].hasOwnProperty('mandatory') && schema[i].mandatory) || (schema[i].hasOwnProperty('unique') &&
