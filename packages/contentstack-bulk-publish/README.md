@@ -33,7 +33,6 @@ USAGE
 * [`csdx cm:bulk-publish:add-fields`](#csdx-cmbulk-publishadd-fields)
 * [`csdx cm:bulk-publish:assets`](#csdx-cmbulk-publishassets)
 * [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
-* [`csdx cm:bulk-publish:configure`](#csdx-cmbulk-publishconfigure)
 * [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
 * [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
 * [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
@@ -41,6 +40,7 @@ USAGE
 * [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
 * [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
 * [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
+* [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
 
 ## `csdx cm:bulk-publish`
 
@@ -177,31 +177,6 @@ OPTIONS
 ```
 
 _See code: [src/commands/cm/bulk-publish/clear.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/clear.js)_
-
-## `csdx cm:bulk-publish:configure`
-
-Generate configuration template
-
-```
-USAGE
-  $ csdx cm:bulk-publish:configure
-
-OPTIONS
-  -a, --alias=alias  Management token alias for the stack
-
-DESCRIPTION
-  The configure command is used for generating a configuration file for bulk-publish script.
-
-  Here is a detailed description for all the available flags
-
-  -----------------------------------------------------------------------------------------------------------
-  --alias or -a : Management token Alias for the stack in use.
-
-  EXAMPLE : cm:bulk-publish:configure --alias [MANAGEMENT TOKEN Alias]
-  EXAMPLE : cm:bulk-publish:configure -a [MANAGEMENT TOKEN Alias]
-```
-
-_See code: [src/commands/cm/bulk-publish/configure.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/configure.js)_
 
 ## `csdx cm:bulk-publish:cross-publish`
 
@@ -611,4 +586,26 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/bulk-publish/unpublished-entries.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
+
+## `csdx cm:stacks:publish-configure`
+
+The configure command is used for generating a configuration file for publish script.
+
+```
+USAGE
+  $ csdx cm:stacks:publish-configure
+
+OPTIONS
+  -a, --alias=alias  Management token alias for the stack
+
+ALIASES
+  $ csdx cm:bulk-publish:configure
+
+EXAMPLES
+  csdx cm:stacks:publish-configure
+  csdx cm:stacks:publish-configure -a <management_token_alias>
+  csdx cm:stacks:publish-configure --alias <management_token_alias>
+```
+
+_See code: [src/commands/cm/stacks/publish-configure.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-configure.js)_
 <!-- commandsstop -->
