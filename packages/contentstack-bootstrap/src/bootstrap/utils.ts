@@ -115,6 +115,7 @@ const envFileHandler = async (
     let fileName
     let customHost;
     const regionName = region && region.name && region.name.toLowerCase();
+    const managementAPIHost = region.cma && region.cma.substring('8');
     const isUSRegion = (regionName === 'us' || regionName === 'na')
     if (regionName !== 'eu' && !isUSRegion) {
         customHost = region.cma && region.cma.substring('8');
@@ -139,7 +140,7 @@ const envFileHandler = async (
         case 'gatsby-starter':
             fileName = `.env.${environmentVariables.environment}`
             filePath = path.join(clonedDirectory, fileName)
-            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nCONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : '')}`
+            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_API_HOST=${managementAPIHost}`
             result = await writeEnvFile(content, filePath)
             break
         case 'angular':
