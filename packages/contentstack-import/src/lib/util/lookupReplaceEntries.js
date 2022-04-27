@@ -21,6 +21,27 @@ module.exports = function (data, mappedUids, uidMapperPath) {
   var isNewRefFields = false
   var preserveStackVersion = config.preserveStackVersion
 
+  function gatherJsonRteEntryIds(jsonRteData) {
+    jsonRteData.children.forEach(element => {
+      if (element.type) {
+        switch (element.type) {
+          case 'p': {
+            if (element.children && element.children.length > 0) {
+              gatherJsonRteEntryIds(element)
+            }
+            break;
+          }
+          case 'reference': {
+            if (Object.keys(element.attrs).length > 0 && element.attrs.type === "entry") {
+              uids.push(element.attrs['entry-uid'])
+            }
+            break;
+          }
+        }
+      }
+    })
+  }
+
   var update = function (parent, form_id, entry) {
     var _entry = entry
     var len = parent.length
@@ -97,9 +118,61 @@ module.exports = function (data, mappedUids, uidMapperPath) {
           parent.pop()
         }
         break
+      case 'json':
+        if (schema[i].field_metadata.rich_text_type) {
+          if (uids.length === 0) {
+            findEntryIdsFromJsonRte(data.entry, data.content_type.schema)
+          }
+        }
+        break
       }
     }
   }
+
+  function findEntryIdsFromJsonRte(entry, ctSchema) {
+    for (let i = 0; i < ctSchema.length; i++) {
+      switch (ctSchema[i].data_type) {
+        case 'blocks': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid].forEach(e => {
+                let key = Object.keys(e).pop()
+                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
+                findEntryIdsFromJsonRte(e[key], subBlock.schema)
+              })
+            }
+          }
+          break;
+        }
+        case 'global_field':
+        case 'group': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid].forEach(e => {
+                findEntryIdsFromJsonRte(e, ctSchema[i].schema)
+              })
+            } else {
+              findEntryIdsFromJsonRte(entry[ctSchema[i].uid], ctSchema[i].schema)
+            }
+          }
+          break;
+        }
+        case 'json': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid].forEach(jsonRteData => {
+                gatherJsonRteEntryIds(jsonRteData)
+              })
+            } else {
+              gatherJsonRteEntryIds(entry[ctSchema[i].uid])
+            }
+          }
+          break;
+        }
+      }
+    }
+  }
+
   find(data.content_type.schema, data.entry)
   if (isNewRefFields) {
     findUidsInNewRefFields(data.entry, uids)

@@ -35,6 +35,13 @@ var removeReferenceFields = module.exports = function (schema, flag) {
           'non_localizable': false
         });
       }
-    }
+    } else if( // handling entry references in json rte
+      schema[i].data_type === 'json' 
+      && schema[i].field_metadata.rich_text_type
+      && schema[i].field_metadata.embed_entry
+      && schema[i].reference_to.length > 1) {
+        flag.supressed = true;
+        schema[i].reference_to = ["sys_assets"]
+      }
   }
 };

@@ -9,6 +9,7 @@ const path = require('path')
 const _ = require('lodash')
 const mkdirp = require('mkdirp')
 const chalk = require('chalk')
+const crypto = require('crypto')
 
 const helper = require('../util/fs')
 const {addlogs} = require('../util/log')
@@ -60,6 +61,12 @@ function importEntries() {
   this.ctSchemas = {}
   // Array of content type uids, that have reference fields
   this.refSchemas = []
+  // map of content types uids and their json-rte fields
+  this.ctJsonRte = []
+  // map of content types uids and their json-rte fields
+  this.ctJsonRteWithEntryRefs = []
+  // Entry refs that are held back to resolve after all entries have been created
+  this.jsonRteEntryRefs = {}
   // Collection of entries, that were not created, as they already exist on Stack
   this.createdEntriesWOUid = []
   // Collection of entry uids, mapped to the language they exist in
@@ -201,6 +208,23 @@ importEntries.prototype = {
             addlogs(config, `Creating entries for content type ${ctUid} in language ${lang} ...`, 'success')
             for (let eUid in entries) {
               if (eUid) {
+
+                // check ctUid in self.ctJsonRte array, if ct exists there... only then remove entry references for json rte
+                // also with json rte, api creates the json-rte field with the same uid as passed in the payload. So use the node's inbuilt
+                // crypto module to generate a random uid and populate the json rte data
+                // https://www.kindacode.com/article/how-to-easily-generate-a-random-string-in-node-js/
+
+                // while creating entries with json-rte field, the api does not create fresh uids for the json-rte field
+                // and its subsequent children. If the data is passed without a uid, then the fields aren't created. So, I'll
+                // generate the uids for now, and will come up with a better solution later
+                if (self.ctJsonRte.indexOf(ctUid) > -1) {
+                  entries[eUid] = self.generateUidsForJsonRteFields(entries[eUid], self.ctSchemas[ctUid].schema)
+                }
+
+                // remove entry references from json-rte fields
+                if (self.ctJsonRteWithEntryRefs.indexOf(ctUid) > -1) {
+                  entries[eUid] = self.removeEntryRefsFromJSONRTE(entries[eUid], self.ctSchemas[ctUid].schema)
+                }
                 // will replace all old asset uid/urls with new ones
                 entries[eUid] = lookupReplaceAssets({
                   content_type: self.ctSchemas[ctUid],
@@ -393,6 +417,8 @@ importEntries.prototype = {
       return Promise.map(self.refSchemas, function (ctUid) {
         let eFolderPath = path.join(entryMapperPath, lang, ctUid)
         let eSuccessFilePath = path.join(eFolderPath, 'success.json')
+        let eFilePath = path.resolve(ePath, ctUid, lang + '.json')
+        let sourceStackEntries = helper.readFile(eFilePath)
 
         if (!fs.existsSync(eSuccessFilePath)) {
           addlogs(config, 'Success file was not found at: ' + eSuccessFilePath, 'success')
@@ -419,12 +445,22 @@ importEntries.prototype = {
         // map failed reference uids @mapper/language/unmapped-uids.json
         let refUidMapperPath = path.join(entryMapperPath, lang)
 
+        // add entry references to JSON RTE fields
         entries = _.map(entries, function (entry) {
           try {
             let uid = entry.uid
+            let updatedEntry
+
+            // restores json rte entry refs if they exist
+            if (self.ctJsonRte.indexOf(ctUid) > -1) {
+              updatedEntry = self.restoreJsonRteEntryRefs(entry, sourceStackEntries[self.mappedUids[entry.uid]], schema)
+            } else {
+              updatedEntry = entry
+            }
+            
             let _entry = lookupReplaceEntries({
               content_type: schema,
-              entry: entry,
+              entry: updatedEntry,
             }, _.clone(self.mappedUids), refUidMapperPath)
             // if there's self references, the uid gets replaced
             _entry.uid = uid
@@ -516,7 +552,7 @@ importEntries.prototype = {
       })
     })
   },
-  supressFields: async function () {
+  supressFields: async function () { // it should be spelled as suppressFields
     addlogs(config, chalk.white('Suppressing content type fields...'), 'success')
     let self = this
     return new Promise(function (resolve, reject) {
@@ -529,6 +565,8 @@ importEntries.prototype = {
           let flag = {
             suppressed: false,
             references: false,
+            jsonRte: false,
+            jsonRteEmbeddedEntries: false
           }
           if (contentTypeSchema.field_rules) {
             delete contentTypeSchema.field_rules
@@ -544,6 +582,19 @@ importEntries.prototype = {
 
           if (flag.references) {
             self.refSchemas.push(uid)
+          }
+
+          if (flag.jsonRte) {
+            self.ctJsonRte.push(uid)
+            if (flag.jsonRteEmbeddedEntries) {
+              self.ctJsonRteWithEntryRefs.push(uid)
+              // pushing ct uid to refSchemas, because
+              // repostEntries uses refSchemas content types for
+              // reposting entries
+              if (self.refSchemas.indexOf(uid) === -1) {
+                self.refSchemas.push(uid)
+              }
+            }
           }
 
           // Replace extensions with new UID
@@ -851,6 +902,233 @@ importEntries.prototype = {
       })
     })
   },
+  removeEntryRefsFromJSONRTE(entry, ctSchema) {
+    for (let i = 0; i < ctSchema.length; i++) {
+      switch(ctSchema[i].data_type) {
+        case 'blocks': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(e => {
+                let key = Object.keys(e).pop()
+                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
+                e[key] = this.removeEntryRefsFromJSONRTE(e[key], subBlock.schema)
+                return e
+              })
+            }
+          }
+          break;
+        }
+        case 'global_field':
+        case 'group': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(e => {
+                e = this.removeEntryRefsFromJSONRTE(e, ctSchema[i].schema)
+                return e
+              })
+            } else {
+              entry[ctSchema[i].uid] = this.removeEntryRefsFromJSONRTE(entry[ctSchema[i].uid], ctSchema[i].schema)
+            }
+          }
+          break;
+        }
+        case 'json': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(jsonRteData => {
+                // repeated code from else block, will abstract later
+                let entryReferences = jsonRteData.children.filter(e => this.doEntryReferencesExist(e))
+                if (entryReferences.length > 0) {
+                  jsonRteData.children = jsonRteData.children.filter(e => !this.doEntryReferencesExist(e))
+                  return jsonRteData // return jsonRteData without entry references
+                } else {
+                  return jsonRteData // return jsonRteData as it is, because there are no entry references
+                }
+              })
+            } else {
+              let entryReferences = entry[ctSchema[i].uid].children.filter(e => this.doEntryReferencesExist(e))
+              if (entryReferences.length > 0) {
+                entry[ctSchema[i].uid].children = entry[ctSchema[i].uid].children.filter(e => !this.doEntryReferencesExist(e))
+              }
+            }
+          }
+          break;
+        }
+      }
+    }
+    return entry
+  },
+  doEntryReferencesExist(element) { 
+    // checks if the children of p element contain any references
+    // only checking one level deep, not recursive
+
+    if (element.length) {
+      for(let i=0; i < element.length; i++) {
+        // although most data has only one level of nesting, and this case might never come up
+        // I've handled multiple level of nesting for 'p' elements
+        if(element[i].type === 'p' && element[i].children && element[i].children.length > 0) {
+          return this.doEntryReferencesExist(element[i].children)
+        } else if(this.isEntryRef(element[i])) {
+          return true
+        }
+      }
+    } else {
+      if(this.isEntryRef(element)) {
+        return true
+      }
+
+      if (element.type === "p" && element.children && element.children.length > 0) {
+        return this.doEntryReferencesExist(element.children)
+      }
+    }
+    return false
+  },
+  restoreJsonRteEntryRefs(entry, sourceStackEntry, ctSchema) {
+    for (let i = 0; i < ctSchema.length; i++) {
+      switch (ctSchema[i].data_type) {
+        case 'blocks': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map((e, eIndex) => {
+                let key = Object.keys(e).pop()
+                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
+                let sourceStackElement = sourceStackEntry[ctSchema[i].uid][eIndex][key]
+                e[key] = this.restoreJsonRteEntryRefs(e[key], sourceStackElement, subBlock.schema)
+                return e
+              })
+            }
+          }
+          break;
+        }
+        case 'global_field':
+        case 'group': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map((e, eIndex) => {
+                let sourceStackElement = sourceStackEntry[ctSchema[i].uid][eIndex]
+                e = this.restoreJsonRteEntryRefs(e, sourceStackElement, ctSchema[i].schema)
+                return e
+              })
+            } else {
+              let sourceStackElement = sourceStackEntry[ctSchema[i].uid]
+              entry[ctSchema[i].uid] = this.restoreJsonRteEntryRefs(entry[ctSchema[i].uid], sourceStackElement, ctSchema[i].schema)
+            }
+          }
+          break;
+        }
+        case 'json': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map((field, index) => {
+                field.children = [
+                  ...field.children, 
+                  ...sourceStackEntry[ctSchema[i].uid][index].children.filter(e => this.doEntryReferencesExist(e))
+                ]
+                return field
+              })
+            } else {
+              entry[ctSchema[i].uid].children = [
+                ...entry[ctSchema[i].uid].children, 
+                ...sourceStackEntry[ctSchema[i].uid].children.filter(e => this.doEntryReferencesExist(e)),
+              ]
+            }
+          }
+          break;
+        }
+      }
+    }
+    return entry
+    //------------------------------------------------------------------------------------------------------------
+    // if (Object.keys(self.jsonRteEntryRefs).indexOf(entry.uid) > -1) {
+    //   Object.keys(self.jsonRteEntryRefs[entry.uid]).forEach(jsonRteFieldUid => {
+    //     if (self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid].length) { // handles when json_rte is multiple
+    //       entry[jsonRteFieldUid] = entry[jsonRteFieldUid].map((field, index) => {
+    //         field.children = [...field.children, ...self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid][index]]
+    //         return field
+    //       })
+    //     } else {
+    //       entry[jsonRteFieldUid].children = [...entry[jsonRteFieldUid].children, ...self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid].children]
+    //     }
+    //   })
+    // }
+    // return entry
+  },
+  isEntryRef(element) {
+    return element.type === "reference" && element.attrs.type === "entry"
+  },
+  generateUidsForJsonRteFields(entry, ctSchema) {
+    for (let i = 0; i < ctSchema.length; i++) {
+      switch (ctSchema[i].data_type) {
+        case 'blocks': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(e => {
+                let key = Object.keys(e).pop()
+                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
+                e[key] = this.generateUidsForJsonRteFields(e[key], subBlock.schema)
+                return e
+              })
+            }
+          }
+          break;
+        }
+        case 'global_field':
+        case 'group': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(e => {
+                e = this.generateUidsForJsonRteFields(e, ctSchema[i].schema)
+                return e
+              })
+            } else {
+              entry[ctSchema[i].uid] = this.generateUidsForJsonRteFields(entry[ctSchema[i].uid], ctSchema[i].schema)
+            }
+          }
+          break;
+        }
+        case 'json': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(jsonRteData => {
+                jsonRteData.uid = this.generateUid()
+                jsonRteData.children = jsonRteData.children.map(child => this.populateChildrenWithUids(child))
+                return jsonRteData
+              })
+            } else {
+              entry[ctSchema[i].uid].uid = this.generateUid()
+              entry[ctSchema[i].uid].children = entry[ctSchema[i].uid].children.map(child => this.populateChildrenWithUids(child))
+            }
+          }
+          break;
+        }
+      }
+    }
+    return entry
+  },
+  populateChildrenWithUids(children) {
+    if (children.length && children.length > 0) {
+      return children.map(child => {
+        if(child.type && child.type.length > 0) {
+          child.uid = this.generateUid()
+        }
+        if(child.children && child.children.length > 0) {
+          child.children = this.populateChildrenWithUids(child.children)
+        }
+        return child
+      })
+    } else {
+      if (children.type && children.type.length > 0) {
+        children.uid = this.generateUid()
+      }
+      if (children.children && children.children.length > 0) {
+        children.children = this.populateChildrenWithUids(children.children)
+      }
+      return children
+    }
+  },
+  generateUid() {
+    return crypto.randomBytes(16).toString('hex')
+  }
 }
 
 module.exports = new importEntries()
