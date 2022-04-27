@@ -54,6 +54,11 @@
     },
     "repositoryPrefix": "<%- repo %>/blob/v<%- version %>/packages/contentstack-bulk-publish/<%- commandPath %>"
   },
+  "csdxConfig": {
+    "expiredCommands": {
+      "cm:bulk-publish:configure": "command will be deprecated in two months, start using csdx cm:stacks:publish-configure instead"
+    }
+  },
   "repository": "https://github.com/contentstack/cli",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",

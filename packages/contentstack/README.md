@@ -20,7 +20,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/1.0.0 linux-x64 node-v16.14.2
+@contentstack/cli/1.0.0 darwin-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -44,7 +44,6 @@ USAGE
 - [`csdx cm:bulk-publish:add-fields`](#csdx-cmbulk-publishadd-fields)
 - [`csdx cm:bulk-publish:assets`](#csdx-cmbulk-publishassets)
 - [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
-- [`csdx cm:bulk-publish:configure`](#csdx-cmbulk-publishconfigure)
 - [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
 - [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
 - [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
@@ -58,6 +57,7 @@ USAGE
 - [`csdx cm:stacks:clone`](#csdx-cmstacksclone)
 - [`csdx cm:stacks:export`](#csdx-cmstacksexport)
 - [`csdx cm:stacks:import`](#csdx-cmstacksimport)
+- [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
 - [`csdx cm:stacks:seed`](#csdx-cmstacksseed)
 - [`csdx config:get:region`](#csdx-configgetregion)
 - [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
@@ -406,43 +406,6 @@ OPTIONS
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/clear.js)_
-
-## `csdx cm:bulk-publish:configure`
-
-Generate configuration template
-
-```
-Generate configuration template
-The configure command is used for generating a configuration file for bulk-publish script.
-
-Here is a detailed description for all the available flags
-
------------------------------------------------------------------------------------------------------------
---alias or -a : Management token Alias for the stack in use.
-
-EXAMPLE : cm:bulk-publish:configure --alias [MANAGEMENT TOKEN Alias]
-EXAMPLE : cm:bulk-publish:configure -a [MANAGEMENT TOKEN Alias]
-
-
-USAGE
-  $ csdx cm:bulk-publish:configure
-
-OPTIONS
-  -a, --alias=alias  Management token alias for the stack
-
-DESCRIPTION
-  The configure command is used for generating a configuration file for bulk-publish script.
-
-  Here is a detailed description for all the available flags
-
-  -----------------------------------------------------------------------------------------------------------
-  --alias or -a : Management token Alias for the stack in use.
-
-  EXAMPLE : cm:bulk-publish:configure --alias [MANAGEMENT TOKEN Alias]
-  EXAMPLE : cm:bulk-publish:configure -a [MANAGEMENT TOKEN Alias]
-```
-
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/configure.js)_
 
 ## `csdx cm:bulk-publish:cross-publish`
 
@@ -1020,8 +983,8 @@ USAGE
   $ csdx cm:stacks:clone
 
 OPTIONS
-  -s, --source-branch=source-branch  Branch of the source stack
-  -t, --target-branch=target-branch  Branch of the target stack
+  --source-branch=source-branch  Branch of the source stack
+  --target-branch=target-branch  Branch of the target stack
 
 DESCRIPTION
   Use this plugin to automate the process of cloning a stack in a few steps.
@@ -1031,7 +994,8 @@ ALIASES
 
 EXAMPLES
   csdx cm:stacks:clone
-  csdx cm:stacks:clone -s <source-stack-branch> -t <target-stack-branch>
+  csdx cm:stacks:clone --source-branch --target-branch
+  csdx cm:stacks:clone -a <management token alias>
 ```
 
 _See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/cm/stacks/clone.js)_
@@ -1128,6 +1092,30 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-import/src/commands/cm/stacks/import.js)_
 
+## `csdx cm:stacks:publish-configure`
+
+The configure command is used for generating a configuration file for publish script.
+
+```
+The configure command is used for generating a configuration file for publish script.
+
+USAGE
+  $ csdx cm:stacks:publish-configure
+
+OPTIONS
+  -a, --alias=alias  Management token alias for the stack
+
+ALIASES
+  $ csdx cm:bulk-publish:configure
+
+EXAMPLES
+  csdx cm:stacks:publish-configure
+  csdx cm:stacks:publish-configure -a <management_token_alias>
+  csdx cm:stacks:publish-configure --alias <management_token_alias>
+```
+
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-configure.js)_
+
 ## `csdx cm:stacks:seed`
 
 Create a Stack from existing content types, entries, assets, etc
@@ -1172,6 +1160,10 @@ USAGE
 ARGUMENTS
   REGION  (EU|NA|AZURE-NA) North America(NA), Europe (EU), AZURE-NA
 
+EXAMPLE
+  $ csdx config:get:region
+```
+
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/config/get/region.ts)_
 
 ## `csdx config:set:region [REGION]`
@@ -1179,25 +1171,23 @@ _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v
 CLI_CONFIG_SET_REGION_DESCRIPTION
 
 ```
-
 CLI_CONFIG_SET_REGION_DESCRIPTION
 
 USAGE
-$ csdx config:set:region [REGION]
+  $ csdx config:set:region [REGION]
 
 OPTIONS
--d, --cda=cda CLI_CONFIG_SET_REGION_FLAG_D_DESCRIPTION
--m, --cma=cma CLI_CONFIG_SET_REGION_FLAG_M_DESCRIPTION
--n, --name=name CLI_CONFIG_SET_REGION_FLAG_N_DESCRIPTION
+  -d, --cda=cda    CLI_CONFIG_SET_REGION_FLAG_D_DESCRIPTION
+  -m, --cma=cma    CLI_CONFIG_SET_REGION_FLAG_M_DESCRIPTION
+  -n, --name=name  CLI_CONFIG_SET_REGION_FLAG_N_DESCRIPTION
 
 EXAMPLES
-$ csdx config:set:region
-$ csdx config:set:region NA
-$ csdx config:set:region NA
-$ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"
-$ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com"
---name="India"
-
+  $ csdx config:set:region
+  $ csdx config:set:region NA
+  $ csdx config:set:region NA
+  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"
+  $ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com"
+  --name="India"
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/config/set/region.ts)_
@@ -1207,18 +1197,16 @@ _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v
 display help for csdx
 
 ```
-
 display help for <%= config.bin %>
 
 USAGE
-$ csdx help [COMMAND]
+  $ csdx help [COMMAND]
 
 ARGUMENTS
-COMMAND command to show help for
+  COMMAND  command to show help for
 
 OPTIONS
---all see all commands in CLI
-
+  --all  see all commands in CLI
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.18/src/commands/help.ts)_
@@ -1228,18 +1216,16 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.1
 list installed plugins
 
 ```
-
 list installed plugins
 
 USAGE
-$ csdx plugins
+  $ csdx plugins
 
 OPTIONS
---core show core plugins
+  --core  show core plugins
 
 EXAMPLE
-$ csdx plugins
-
+  $ csdx plugins
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/index.ts)_
@@ -1249,22 +1235,20 @@ _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/
 displays installation properties of a plugin
 
 ```
-
 displays installation properties of a plugin
 
 USAGE
-$ csdx plugins:inspect PLUGIN...
+  $ csdx plugins:inspect PLUGIN...
 
 ARGUMENTS
-PLUGIN [default: .] plugin to inspect
+  PLUGIN  [default: .] plugin to inspect
 
 OPTIONS
--h, --help show CLI help
--v, --verbose
+  -h, --help     show CLI help
+  -v, --verbose
 
 EXAMPLE
-$ csdx plugins:inspect myplugin
-
+  $ csdx plugins:inspect myplugin
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/inspect.ts)_
@@ -1274,7 +1258,6 @@ _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/
 installs a plugin into the CLI
 
 ```
-
 installs a plugin into the CLI
 Can be installed from npm or a git url.
 
@@ -1282,34 +1265,34 @@ Installation of a user-installed plugin will override a core plugin.
 
 e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in the CLI without the need to patch and update the whole CLI.
 
+
 USAGE
-$ csdx plugins:install PLUGIN...
+  $ csdx plugins:install PLUGIN...
 
 ARGUMENTS
-PLUGIN plugin to install
+  PLUGIN  plugin to install
 
 OPTIONS
--f, --force yarn install with force flag
--h, --help show CLI help
--v, --verbose
+  -f, --force    yarn install with force flag
+  -h, --help     show CLI help
+  -v, --verbose
 
 DESCRIPTION
-Can be installed from npm or a git url.
+  Can be installed from npm or a git url.
 
-Installation of a user-installed plugin will override a core plugin.
+  Installation of a user-installed plugin will override a core plugin.
 
-e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
-will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
-the CLI without the need to patch and update the whole CLI.
+  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
+  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
+  the CLI without the need to patch and update the whole CLI.
 
 ALIASES
-$ csdx plugins:add
+  $ csdx plugins:add
 
 EXAMPLES
-$ csdx plugins:install myplugin
-$ csdx plugins:install https://github.com/someuser/someplugin
-$ csdx plugins:install someuser/someplugin
-
+  $ csdx plugins:install myplugin
+  $ csdx plugins:install https://github.com/someuser/someplugin
+  $ csdx plugins:install someuser/someplugin
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/install.ts)_
@@ -1319,31 +1302,30 @@ _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/
 links a plugin into the CLI for development
 
 ```
-
 links a plugin into the CLI for development
 Installation of a linked plugin will override a user-installed or core plugin.
 
 e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello' command will override the user-installed or core plugin implementation. This is useful for development work.
 
+
 USAGE
-$ csdx plugins:link PLUGIN
+  $ csdx plugins:link PLUGIN
 
 ARGUMENTS
-PATH [default: .] path to plugin
+  PATH  [default: .] path to plugin
 
 OPTIONS
--h, --help show CLI help
--v, --verbose
+  -h, --help     show CLI help
+  -v, --verbose
 
 DESCRIPTION
-Installation of a linked plugin will override a user-installed or core plugin.
+  Installation of a linked plugin will override a user-installed or core plugin.
 
-e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello'
-command will override the user-installed or core plugin implementation. This is useful for development work.
+  e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello'
+  command will override the user-installed or core plugin implementation. This is useful for development work.
 
 EXAMPLE
-$ csdx plugins:link myplugin
-
+  $ csdx plugins:link myplugin
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/link.ts)_
@@ -1353,23 +1335,21 @@ _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/
 removes a plugin from the CLI
 
 ```
-
 removes a plugin from the CLI
 
 USAGE
-$ csdx plugins:uninstall PLUGIN...
+  $ csdx plugins:uninstall PLUGIN...
 
 ARGUMENTS
-PLUGIN plugin to uninstall
+  PLUGIN  plugin to uninstall
 
 OPTIONS
--h, --help show CLI help
--v, --verbose
+  -h, --help     show CLI help
+  -v, --verbose
 
 ALIASES
-$ csdx plugins:unlink
-$ csdx plugins:remove
-
+  $ csdx plugins:unlink
+  $ csdx plugins:remove
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/uninstall.ts)_
@@ -1379,18 +1359,20 @@ _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/
 update installed plugins
 
 ```
-
 update installed plugins
 
 USAGE
-$ csdx plugins:update
+  $ csdx plugins:update
 
 OPTIONS
--h, --help show CLI help
--v, --verbose
-
+  -h, --help     show CLI help
+  -v, --verbose
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/update.ts)_
+
 <!-- commandsstop -->
+
+```
+
 ```
