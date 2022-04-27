@@ -17,26 +17,24 @@ class ConfigureCommand extends Command {
     this.log('The configuration has been saved successfully.');
   }
 
-  setConfig({ apikey, alias }) {
+  setConfig({ alias }) {
     if (alias) config.alias = alias;
     fs.writeFileSync(path.join(process.cwd(), 'config.js'), `module.exports = ${JSON.stringify(config, null, 2)}`);
   }
 }
 
-ConfigureCommand.description = `Generate configuration template
-The configure command is used for generating a configuration file for bulk-publish script.
-
-Here is a detailed description for all the available flags
-
------------------------------------------------------------------------------------------------------------
---alias or -a : Management token Alias for the stack in use.
-
-EXAMPLE : cm:bulk-publish:configure --alias [MANAGEMENT TOKEN Alias]
-EXAMPLE : cm:bulk-publish:configure -a [MANAGEMENT TOKEN Alias]
-`;
+ConfigureCommand.description = `The configure command is used for generating a configuration file for publish script.`;
 
 ConfigureCommand.flags = {
   alias: flags.string({ char: 'a', description: 'Management token alias for the stack' }),
 };
+
+ConfigureCommand.examples = [
+  'csdx cm:stacks:publish-configure',
+  'csdx cm:stacks:publish-configure -a <management_token_alias>',
+  'csdx cm:stacks:publish-configure --alias <management_token_alias>',
+];
+
+ConfigureCommand.aliases = ['cm:bulk-publish:configure'];
 
 module.exports = ConfigureCommand;
