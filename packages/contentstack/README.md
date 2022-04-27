@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.27 linux-x64 node-v16.14.2
+@contentstack/cli/0.1.1-beta.28 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -227,7 +227,7 @@ EXAMPLES
   $ csdx cm:bootstrap -t <github access token>
 ```
 
-_See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/v1.0.5/src/commands/cm/bootstrap.ts)_
+_See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/v1.0.6/src/commands/cm/bootstrap.ts)_
 
 ## `csdx cm:bulk-publish`
 
@@ -929,7 +929,7 @@ EXAMPLES
   csdx cm:export -A -B [optional] branch name
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.12/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.13/packages/contentstack-export/src/commands/cm/export.js)_
 
 ## `csdx cm:export-to-csv`
 
@@ -985,7 +985,7 @@ EXAMPLES
   csdx cm:import -A -B <branch name>
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.15/packages/contentstack-import/src/commands/cm/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.16/packages/contentstack-import/src/commands/cm/import.js)_
 
 ## `csdx cm:migrate-rte`
 
@@ -1086,7 +1086,7 @@ EXAMPLES
   $ csdx cm:seed -r "account/repository" -o "your-org-uid" -n "stack-name" //create a new stack in given org uid
 ```
 
-_See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.10/src/commands/cm/seed.ts)_
+_See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.11/src/commands/cm/seed.ts)_
 
 ## `csdx cm:stack-clone`
 
@@ -1121,7 +1121,7 @@ USAGE
   $ csdx config:get:region
 ```
 
-_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.27/src/commands/config/get/region.js)_
+_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.28/src/commands/config/get/region.js)_
 
 ## `csdx config:set:region [REGION]`
 
@@ -1153,7 +1153,7 @@ EXAMPLES
   --name="India"
 ```
 
-_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.27/src/commands/config/set/region.js)_
+_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.28/src/commands/config/set/region.js)_
 
 ## `csdx help [COMMAND]`
 
