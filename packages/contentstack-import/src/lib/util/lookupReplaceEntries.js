@@ -21,9 +21,29 @@ module.exports = function (data, mappedUids, uidMapperPath) {
   var isNewRefFields = false;
   var preserveStackVersion = config.preserveStackVersion;
 
-  var update = function (_parent, form_id, updateEntry) {
-    var _entry = updateEntry;
-    var len = _parent.length;
+  function gatherJsonRteEntryIds(jsonRteData) {
+    jsonRteData.children.forEach((element) => {
+      if (element.type) {
+        switch (element.type) {
+          case 'p': {
+            if (element.children && element.children.length > 0) {
+              gatherJsonRteEntryIds(element);
+            }
+            break;
+          }
+          case 'reference': {
+            if (Object.keys(element.attrs).length > 0 && element.attrs.type === 'entry') {
+              uids.push(element.attrs['entry-uid']);
+            }
+            break;
+          }
+        }
+      }
+    });
+  }
+
+  var update = function (_parent, form_id, _entry) {
+    var len = parent.length;
     for (var j = 0; j < len; j++) {
       if (_entry && _parent[j]) {
         if (j === len - 1 && _entry[_parent[j]]) {
@@ -44,9 +64,9 @@ module.exports = function (data, mappedUids, uidMapperPath) {
               });
             }
           } else if (Array.isArray(_entry[_parent[j]])) {
-            for (var k = 0; k < _entry[_parent[j]].length; k++) {
-              if (_entry[_parent[j]][k].uid.length) {
-                uids.push(_entry[_parent[j]][k].uid);
+            for (const element of _entry[_parent[j]]) {
+              if (element.uid.length) {
+                uids.push(element.uid);
               }
             }
           } else if (_entry[_parent[j]].uid.length) {
@@ -66,6 +86,7 @@ module.exports = function (data, mappedUids, uidMapperPath) {
       }
     }
   };
+
   var find = function (schema, _entry) {
     for (var i = 0, _i = schema.length; i < _i; i++) {
       switch (schema[i].data_type) {
@@ -97,9 +118,61 @@ module.exports = function (data, mappedUids, uidMapperPath) {
             parent.pop();
           }
           break;
+        case 'json':
+          if (schema[i].field_metadata.rich_text_type) {
+            if (uids.length === 0) {
+              findEntryIdsFromJsonRte(data.entry, data.content_type.schema);
+            }
+          }
+          break;
       }
     }
   };
+
+  function findEntryIdsFromJsonRte(_entry, ctSchema) {
+    for (const element of ctSchema) {
+      switch (element.data_type) {
+        case 'blocks': {
+          if (_entry[element.uid] !== undefined) {
+            if (element.multiple) {
+              _entry[element.uid].forEach((e) => {
+                let key = Object.keys(e).pop();
+                let subBlock = element.blocks.filter((e) => e.uid === key).pop();
+                findEntryIdsFromJsonRte(e[key], subBlock.schema);
+              });
+            }
+          }
+          break;
+        }
+        case 'global_field':
+        case 'group': {
+          if (_entry[element.uid] !== undefined) {
+            if (element.multiple) {
+              _entry[element.uid].forEach((e) => {
+                findEntryIdsFromJsonRte(e, element.schema);
+              });
+            } else {
+              findEntryIdsFromJsonRte(_entry[element.uid], element.schema);
+            }
+          }
+          break;
+        }
+        case 'json': {
+          if (_entry[element.uid] !== undefined) {
+            if (element.multiple) {
+              _entry[element.uid].forEach((jsonRteData) => {
+                gatherJsonRteEntryIds(jsonRteData);
+              });
+            } else {
+              gatherJsonRteEntryIds(_entry[element.uid]);
+            }
+          }
+          break;
+        }
+      }
+    }
+  }
+
   find(data.content_type.schema, data.entry);
   if (isNewRefFields) {
     findUidsInNewRefFields(data.entry, uids);
@@ -152,18 +225,18 @@ module.exports = function (data, mappedUids, uidMapperPath) {
   return JSON.parse(entry);
 };
 
-function findUidsInNewRefFields(entry, uids) {
-  if (entry && typeof entry === 'object') {
-    if (entry.uid && entry._content_type_uid) {
-      uids.push(entry.uid);
-    } else if (Array.isArray(entry) && entry.length) {
-      entry.forEach(function (elem) {
+function findUidsInNewRefFields(_entry, uids) {
+  if (_entry && typeof _entry === 'object') {
+    if (_entry.uid && _entry._content_type_uid) {
+      uids.push(_entry.uid);
+    } else if (Array.isArray(_entry) && _entry.length) {
+      _entry.forEach(function (elem) {
         findUidsInNewRefFields(elem, uids);
       });
-    } else if (Object.keys(entry).length) {
-      for (var key in entry) {
+    } else if (Object.keys(_entry).length) {
+      for (var key in _entry) {
         if (key) {
-          findUidsInNewRefFields(entry[key], uids);
+          findUidsInNewRefFields(_entry[key], uids);
         }
       }
     }

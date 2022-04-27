@@ -37,4 +37,6 @@ fileignoreconfig:
     checksum: be5da46c99ee2ea6c021a6dd4f903feda4f4c610033aba5ad3d25761810b52ff
   - filename: packages/contentstack/README.md
     checksum: 03940bc99b53df5257456051789a20a273ee35abc1546d2c3e8a8eefb1f70482
+  - filename: packages/contentstack-import/src/lib/util/lookupReplaceAssets.js
+    checksum: 73596dc5a1e69e427fe219b04d5444faec9d3ba988bb43faed3a60c9c6547159
 version: '1.0'
