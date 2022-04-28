@@ -44,20 +44,18 @@ export default class RegionSetCommand extends Command {
     let cda = flags.cda;
     let cma = flags.cma;
     let name = flags.name;
-    let region = args.region;
-    if (!(cda && cma && name) || !region) {
-      const selectedRegion = await interactive.askRegions();
-      if (selectedRegion === 'EU' || selectedRegion === 'NA') {
-        region = selectedRegion;
-      } else if (selectedRegion === 'custom') {
-        const selectedCustomRegion = await interactive.askCustomRegion();
-        name = selectedCustomRegion.name;
-        cda = selectedCustomRegion.cda;
-        cma = selectedCustomRegion.cma;
-      } else if (selectedRegion !== 'exit') {
-        cliux.error(`Failed to set region`);
-        return;
-      }
+    let selectedRegion = args.region;
+    if (!(cda && cma && name) && !selectedRegion) {
+      selectedRegion = await interactive.askRegions();
+    }
+
+    if (selectedRegion === 'custom') {
+      const selectedCustomRegion = await interactive.askCustomRegion();
+      name = selectedCustomRegion.name;
+      cda = selectedCustomRegion.cda;
+      cma = selectedCustomRegion.cma;
+    } else if (selectedRegion === 'exit') {
+      this.exit();
     }
 
     // Custom flag will get first priority over region argument
@@ -72,12 +70,13 @@ export default class RegionSetCommand extends Command {
         logger.error('failed to set the region', error);
         cliux.error(`Failed to set region due to: ${error.message}`);
       }
-    } else if (region) {
-      const selectedRegion: string = region;
+    } else if (selectedRegion === 'NA' || selectedRegion === 'EU') {
       const regionDetails: Region = regionHandler.setRegion(selectedRegion);
       cliux.success(`Region has been set to ${regionDetails.name}`);
       cliux.success(`CDA HOST: ${regionDetails.cda}`);
       cliux.success(`CMA HOST: ${regionDetails.cma}`);
+    } else {
+      cliux.error(`Invalid region is given`);
     }
   }
 }
