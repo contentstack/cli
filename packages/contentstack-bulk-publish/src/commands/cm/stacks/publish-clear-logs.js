@@ -8,7 +8,7 @@ class ClearCommand extends Command {
   async run() {
     const clearFlags = this.parse(ClearCommand).flags;
     let dirPath = getLogsDirPath();
-    if (clearFlags['no-of-log-files'] || clearFlags.list) {
+    if (clearFlags['log-files-count'] || clearFlags.list) {
       this.listFiles(dirPath);
     } else if (clearFlags.yes) {
       this.rmDir(dirPath, false);
@@ -58,7 +58,7 @@ class ClearCommand extends Command {
 ClearCommand.description = `Clear the log folder`;
 
 ClearCommand.flags = {
-  'no-of-log-files': flags.boolean({ description: 'List number of log files' }),
+  'log-files-count': flags.boolean({ description: 'List number of log files' }),
   yes: flags.boolean({ char: 'y', description: 'Delete all files without asking for confirmation' }),
 
   //To be depreacted
@@ -66,13 +66,13 @@ ClearCommand.flags = {
     description: 'List number of log files',
     char: 'l',
     hidden: true,
-    parse: printFlagDeprecation(['-l', '--list'], ['--no-of-log-files']),
+    parse: printFlagDeprecation(['-l', '--list'], ['--log-files-count']),
   }),
 };
 
 ClearCommand.examples = [
   'csdx cm:stacks:publish-clear-logs',
-  'csdx cm:stacks:publish-clear-logs --no-of-log-files',
+  'csdx cm:stacks:publish-clear-logs --log-files-count',
   'csdx cm:stacks:publish-clear-logs --yes',
   'csdx cm:stacks:publish-clear-logs -y',
 ];
