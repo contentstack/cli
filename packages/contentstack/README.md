@@ -1086,14 +1086,14 @@ USAGE
 
 OPTIONS
   -y, --yes          Delete all files without asking for confirmation
-  --no-of-log-files  List number of log files
+  --log-files-count  List number of log files
 
 ALIASES
   $ csdx cm:bulk-publish:clear
 
 EXAMPLES
   csdx cm:stacks:publish-clear-logs
-  csdx cm:stacks:publish-clear-logs --no-of-log-files
+  csdx cm:stacks:publish-clear-logs --log-files-count
   csdx cm:stacks:publish-clear-logs --yes
   csdx cm:stacks:publish-clear-logs -y
 ```
