@@ -36,7 +36,6 @@ export default class LoginCommand extends Command {
   async run(): Promise<any> {
     const { flags: loginFlags } = this.parse(LoginCommand);
     authHandler.client = this.managementAPIClient;
-
     try {
       const username = loginFlags.username ? loginFlags.username : await interactive.askUsername();
       const password = loginFlags.password ? loginFlags.password : await interactive.askPassword();
@@ -44,7 +43,7 @@ export default class LoginCommand extends Command {
       await this.login(username, password);
     } catch (error) {
       logger.error('login  failed', error.message);
-      cliux.print('CLI_AUTH_LOGIN_FAILED', { color: 'yellow' });
+      // cliux.print('CLI_AUTH_LOGIN_FAILED', { color: 'yellow' });
       cliux.print(error.message.message, { color: 'red' });
     }
   }
