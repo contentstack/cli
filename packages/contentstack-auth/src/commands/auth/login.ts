@@ -43,8 +43,8 @@ export default class LoginCommand extends Command {
       await this.login(username, password);
     } catch (error) {
       logger.error('login  failed', error.message);
-      // cliux.print('CLI_AUTH_LOGIN_FAILED', { color: 'yellow' });
-      cliux.print(error.message.message, { color: 'red' });
+      cliux.print('CLI_AUTH_LOGIN_FAILED', { color: 'yellow' });
+      cliux.print(error.message.message ? error.message.message : error.message, { color: 'red' });
     }
   }
 
