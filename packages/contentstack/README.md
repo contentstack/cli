@@ -43,7 +43,6 @@ USAGE
 - [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 - [`csdx cm:bulk-publish:add-fields`](#csdx-cmbulk-publishadd-fields)
 - [`csdx cm:bulk-publish:assets`](#csdx-cmbulk-publishassets)
-- [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
 - [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
 - [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
 - [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
@@ -57,6 +56,7 @@ USAGE
 - [`csdx cm:stacks:clone`](#csdx-cmstacksclone)
 - [`csdx cm:stacks:export`](#csdx-cmstacksexport)
 - [`csdx cm:stacks:import`](#csdx-cmstacksimport)
+- [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
 - [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
 - [`csdx cm:stacks:seed`](#csdx-cmstacksseed)
 - [`csdx config:get:region`](#csdx-configgetregion)
@@ -388,24 +388,6 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js)_
-
-## `csdx cm:bulk-publish:clear`
-
-Clear the log folder
-
-```
-Clear the log folder
-
-
-USAGE
-  $ csdx cm:bulk-publish:clear
-
-OPTIONS
-  -l, --list  List number of log files
-  -y, --yes   Delete all files without asking for confirmation
-```
-
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/clear.js)_
 
 ## `csdx cm:bulk-publish:cross-publish`
 
@@ -1091,6 +1073,32 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-import/src/commands/cm/stacks/import.js)_
+
+## `csdx cm:stacks:publish-clear-logs`
+
+Clear the log folder
+
+```
+Clear the log folder
+
+USAGE
+  $ csdx cm:stacks:publish-clear-logs
+
+OPTIONS
+  -y, --yes          Delete all files without asking for confirmation
+  --no-of-log-files  List number of log files
+
+ALIASES
+  $ csdx cm:bulk-publish:clear
+
+EXAMPLES
+  csdx cm:stacks:publish-clear-logs
+  csdx cm:stacks:publish-clear-logs --no-of-log-files
+  csdx cm:stacks:publish-clear-logs --yes
+  csdx cm:stacks:publish-clear-logs -y
+```
+
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-clear-logs.js)_
 
 ## `csdx cm:stacks:publish-configure`
 
