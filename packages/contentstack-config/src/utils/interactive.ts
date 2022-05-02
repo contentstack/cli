@@ -8,6 +8,7 @@ export const askRegions = async (): Promise<string> => {
     choices: [
       { name: 'NA', value: 'NA' },
       { name: 'EU', value: 'EU' },
+      { name: 'AZURE-NA', value: 'AZURE-NA' },
       { name: 'Custom', value: 'custom' },
       { name: 'exit', value: 'exit' },
     ],
