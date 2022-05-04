@@ -235,7 +235,7 @@ function findFileUrls (schema, _entry, assetUrls) {
   var text;
   // Regex to detect v3 asset uri patterns
   if (schema && schema.field_metadata && schema.field_metadata.markdown) {
-    text = marked(_entry);
+    text = marked(JSON.stringify(_entry));
   } else {
     text = JSON.stringify(_entry);
   }
