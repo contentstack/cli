@@ -67,7 +67,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
     for (let i = 0; i < ctSchema.length; i++) {
       switch (ctSchema[i].data_type) {
         case 'blocks': {
-          if (entry[ctSchema[i].uid] !== undefined) {
+          if (entry[ctSchema[i].uid]) {
             if (ctSchema[i].multiple) {
               entry[ctSchema[i].uid].forEach(e => {
                 let key = Object.keys(e).pop()
@@ -80,7 +80,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         }
         case 'global_field':
         case 'group': {
-          if (entry[ctSchema[i].uid] !== undefined) {
+          if (entry[ctSchema[i].uid]) {
             if (ctSchema[i].multiple) {
               entry[ctSchema[i].uid].forEach(e => {
                 findAssetIdsFromJsonRte(e, ctSchema[i].schema)
@@ -92,7 +92,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
           break;
         }
         case 'json': {
-          if (entry[ctSchema[i].uid] !== undefined && ctSchema[i].field_metadata.rich_text_type) {
+          if (entry[ctSchema[i].uid] && ctSchema[i].field_metadata.rich_text_type) {
             if (ctSchema[i].multiple) {
               entry[ctSchema[i].uid].forEach(jsonRteData => {
                 gatherJsonRteAssetIds(jsonRteData)
