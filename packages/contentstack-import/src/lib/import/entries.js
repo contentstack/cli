@@ -933,7 +933,7 @@ importEntries.prototype = {
           break;
         }
         case 'json': {
-          if (entry[ctSchema[i].uid] !== undefined) {
+          if (entry[ctSchema[i].uid] !== undefined && ctSchema[i].field_metadata.rich_text_type) {
             if (ctSchema[i].multiple) {
               entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(jsonRteData => {
                 // repeated code from else block, will abstract later
@@ -1017,7 +1017,7 @@ importEntries.prototype = {
           break;
         }
         case 'json': {
-          if (entry[ctSchema[i].uid] !== undefined) {
+          if (entry[ctSchema[i].uid] !== undefined && ctSchema[i].field_metadata.rich_text_type) {
             if (ctSchema[i].multiple) {
               entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map((field, index) => {
                 field.children = [
@@ -1087,7 +1087,7 @@ importEntries.prototype = {
           break;
         }
         case 'json': {
-          if (entry[ctSchema[i].uid] !== undefined) {
+          if (entry[ctSchema[i].uid] !== undefined && ctSchema[i].field_metadata.rich_text_type) {
             if (ctSchema[i].multiple) {
               entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(jsonRteData => {
                 jsonRteData.uid = this.generateUid()
