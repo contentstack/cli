@@ -92,7 +92,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
           break;
         }
         case 'json': {
-          if (entry[ctSchema[i].uid] !== undefined) {
+          if (entry[ctSchema[i].uid] !== undefined && ctSchema[i].field_metadata.rich_text_type) {
             if (ctSchema[i].multiple) {
               entry[ctSchema[i].uid].forEach(jsonRteData => {
                 gatherJsonRteAssetIds(jsonRteData)
