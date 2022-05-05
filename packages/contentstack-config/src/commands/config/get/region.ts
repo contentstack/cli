@@ -3,7 +3,7 @@ import { Region } from '../../../interfaces';
 import { cliux, logger, messageHandler } from '@contentstack/cli-utilities';
 
 export default class RegionGetCommand extends Command {
-  static description = messageHandler.parse('CLI_CONFIG_SET_REGION_DESCRIPTION');
+  static description = 'Get current region set for CLI';
   static examples = ['$ csdx config:get:region'];
   config: any;
   async run() {
