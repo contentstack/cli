@@ -36,7 +36,7 @@ export default class TokensAddCommand extends Command {
     alias: flags.string({ char: 'a', description: 'Name of the token alias' }),
     delivery: flags.boolean({
       char: 'd',
-      description: messageHandler.parse('CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN'),
+      description: messageHandler.parse('CLI_AUTH_TOKENS_ADD_FLAG_DELIVERY_TOKEN'),
       exclusive: ['management'],
       parse: printFlagDeprecation(['-d'], ['--delivery']),
     }),
