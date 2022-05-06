@@ -8,32 +8,33 @@ let {
   getToken,
   updateSingleContentTypeEntries,
   updateContentTypeForGlobalField,
+  normalizeFlags
 } = require('../../../lib/util');
 
 class JsonMigrationCommand extends Command {
   async run() {
     const { flags } = this.parse(JsonMigrationCommand);
     try {
-      let config = await getConfig(flags);
+      const normalizedFlags = normalizeFlags(flags);
+      let config = await getConfig(normalizedFlags);
       if (isEmpty(config.paths)) {
         throw new Error('No value provided for the "paths" property in config.');
       }
-      const { alias, content_type, isGlobalField } = config;
-      const token = getToken(alias);
+      const token = getToken(config.alias);
       let stack = getStack({ token: token, host: this.cmaHost });
       config.entriesCount = 0;
       config.contentTypeCount = 0;
       config.errorEntriesUid = [];
-      if (isGlobalField) {
-        await updateContentTypeForGlobalField(stack, content_type, config);
+      if (config['global-field']) {
+        await updateContentTypeForGlobalField(stack, config['content-type'], config);
       } else {
-        await updateSingleContentTypeEntries(stack, content_type, config);
+        await updateSingleContentTypeEntries(stack, config['content-type'], config);
       }
       console.log(
-        chalk.green(`Updated ${config.contentTypeCount} Content Type(s) and ${config.entriesCount} Entrie(s)`),
+        chalk.green(`\nUpdated ${config.contentTypeCount} Content Type(s) and ${config.entriesCount} Entrie(s)`),
       );
       if (config.errorEntriesUid.length > 0) {
-        console.log(chalk.red(`Faced issue while migrating some entrie(s),"${config.errorEntriesUid.join(', ')}"`));
+        console.log(chalk.red(`\nFaced issue while migrating some entrie(s),"${config.errorEntriesUid.join(', ')}"`));
       }
     } catch (error) {
       this.error(error.message, { exit: 2 });
@@ -82,10 +83,12 @@ JsonMigrationCommand.flags = {
   delay: flags.integer({
     description: 'Provide delay in ms between two entry update',
     default: 1000,
-    required: false,
-    parse: printFlagDeprecation(['-d'], ['--delay']),
+    required: false
   }),
-
+  locale: flags.string({
+    description : 'The locale from which entries need to be migrated',
+    required: false
+  }),
   //To be deprecated
   configPath: flags.string({
     char: 'p',
@@ -94,7 +97,6 @@ JsonMigrationCommand.flags = {
     parse: printFlagDeprecation(['-p', '--configPath'], ['-c', '--config-path']),
   }),
   content_type: flags.string({
-    char: 'c',
     description: 'The content-type from which entries need to be migrated',
     hidden: true,
     parse: printFlagDeprecation(['-c', '--content_type'], ['--content-type']),
@@ -102,7 +104,6 @@ JsonMigrationCommand.flags = {
   isGlobalField: flags.boolean({
     char: 'g',
     description: 'This flag is set to false by default. It indicates that current content-type is global-field',
-    default: false,
     hidden: true,
     parse: printFlagDeprecation(['-g', '--isGlobalField'], ['--global-field']),
   }),
