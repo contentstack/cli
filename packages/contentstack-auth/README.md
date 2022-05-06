@@ -74,7 +74,7 @@ USAGE
   $ csdx auth:logout
 
 OPTIONS
-  -y, --yes  CLI_AUTH_LOGOUT_FLAG_FORCE
+  -y, --yes  Force logging out for skipping the confirmation
 
 ALIASES
   $ csdx logout
@@ -124,11 +124,11 @@ USAGE
 
 OPTIONS
   -a, --alias=alias                  Name of the token alias
-  -e, --environment=environment      CLI_AUTH_TOKENS_ADD_FLAG_ENVIRONMENT_NAME
+  -e, --environment=environment      Environment name for delivery token
   -k, --stack-api-key=stack-api-key  Stack API Key
   -y, --yes                          Skipping confirmation
-  --delivery                         CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN
-  --management                       CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN
+  --delivery                         Set this while saving delivery token
+  --management                       Set this while saving management token
   --token=token                      Token
 
 
