@@ -29,41 +29,42 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`csdx auth:login`](#csdx-authlogin)
-* [`csdx auth:logout`](#csdx-authlogout)
-* [`csdx auth:tokens`](#csdx-authtokens)
-* [`csdx auth:tokens:add`](#csdx-authtokensadd)
-* [`csdx auth:tokens:remove`](#csdx-authtokensremove)
-* [`csdx auth:whoami`](#csdx-authwhoami)
-* [`csdx cm:bootstrap`](#csdx-cmbootstrap)
-* [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
-* [`csdx cm:bulk-publish:add-fields`](#csdx-cmbulk-publishadd-fields)
-* [`csdx cm:bulk-publish:assets`](#csdx-cmbulk-publishassets)
-* [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
-* [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
-* [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
-* [`csdx cm:bulk-publish:nonlocalized-field-changes`](#csdx-cmbulk-publishnonlocalized-field-changes)
-* [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
-* [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
-* [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
-* [`csdx cm:entries:export-to-csv`](#csdx-cmentriesexport-to-csv)
-* [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
-* [`csdx cm:migration`](#csdx-cmmigration)
-* [`csdx cm:stacks:clone`](#csdx-cmstacksclone)
-* [`csdx cm:stacks:export`](#csdx-cmstacksexport)
-* [`csdx cm:stacks:import`](#csdx-cmstacksimport)
-* [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
-* [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
-* [`csdx cm:stacks:seed`](#csdx-cmstacksseed)
-* [`csdx config:get:region`](#csdx-configgetregion)
-* [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
-* [`csdx help [COMMAND]`](#csdx-help-command)
-* [`csdx plugins`](#csdx-plugins)
-* [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
-* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
-* [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
-* [`csdx plugins:update`](#csdx-pluginsupdate)
+
+- [`csdx auth:login`](#csdx-authlogin)
+- [`csdx auth:logout`](#csdx-authlogout)
+- [`csdx auth:tokens`](#csdx-authtokens)
+- [`csdx auth:tokens:add`](#csdx-authtokensadd)
+- [`csdx auth:tokens:remove`](#csdx-authtokensremove)
+- [`csdx auth:whoami`](#csdx-authwhoami)
+- [`csdx cm:assets:publish`](#csdx-cmassetspublish)
+- [`csdx cm:bootstrap`](#csdx-cmbootstrap)
+- [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
+- [`csdx cm:bulk-publish:add-fields`](#csdx-cmbulk-publishadd-fields)
+- [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
+- [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
+- [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
+- [`csdx cm:bulk-publish:nonlocalized-field-changes`](#csdx-cmbulk-publishnonlocalized-field-changes)
+- [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
+- [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
+- [`csdx cm:entries:export-to-csv`](#csdx-cmentriesexport-to-csv)
+- [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
+- [`csdx cm:migration`](#csdx-cmmigration)
+- [`csdx cm:stacks:clone`](#csdx-cmstacksclone)
+- [`csdx cm:stacks:export`](#csdx-cmstacksexport)
+- [`csdx cm:stacks:import`](#csdx-cmstacksimport)
+- [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
+- [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
+- [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
+- [`csdx cm:stacks:seed`](#csdx-cmstacksseed)
+- [`csdx config:get:region`](#csdx-configgetregion)
+- [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
+- [`csdx help [COMMAND]`](#csdx-help-command)
+- [`csdx plugins`](#csdx-plugins)
+- [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
+- [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
+- [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
+- [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
+- [`csdx plugins:update`](#csdx-pluginsupdate)
 
 ## `csdx auth:login`
 
@@ -103,7 +104,7 @@ USAGE
   $ csdx auth:logout
 
 OPTIONS
-  -y, --yes  CLI_AUTH_LOGOUT_FLAG_FORCE
+  -y, --yes  Force logging out for skipping the confirmation
 
 ALIASES
   $ csdx logout
@@ -157,12 +158,12 @@ USAGE
 
 OPTIONS
   -a, --alias=alias                  Name of the token alias
-  -d, --delivery                     CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN
-  -e, --environment=environment      CLI_AUTH_TOKENS_ADD_FLAG_ENVIRONMENT_NAME
+  -e, --environment=environment      Environment name for delivery token
   -k, --stack-api-key=stack-api-key  Stack API Key
-  -m, --management                   CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN
-  -t, --token=token                  Token
   -y, --yes                          Skipping confirmation
+  --delivery                         Set this while saving delivery token
+  --management                       Set this while saving management token
+  --token=token                      Token
 
 EXAMPLES
   $ csdx auth:tokens:add
@@ -220,6 +221,70 @@ EXAMPLE
 ```
 
 _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/whoami.ts)_
+
+## `csdx cm:assets:publish`
+
+Publish assets to specified environments
+
+```
+Publish assets to specified environments
+The assets command is used for publishing assets from the specified stack, to the specified environments
+
+Environment(s) and Locale(s) are required for executing the command successfully
+But, if retryFailed flag is set, then only a logfile is required
+
+
+USAGE
+  $ csdx cm:assets:publish
+
+OPTIONS
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
+  -a, --alias=alias                Alias for the management token to be used
+
+  -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used for publishing the entries
+
+  -c, --config=config              Path to config file to be used
+
+  -e, --environments=environments  Environments to which assets need to be published
+
+  -l, --locales=locales            Locales to which assets need to be published
+
+  -r, --retryFailed=retryFailed    Retry publishing failed assets from the logfile (optional, will override all other
+                                   flags)
+
+  -u, --folderUid=folderUid        [default: cs_root] Folder-uid from which the assets need to be published
+
+  -y, --yes                        Agree to process the command with the current configuration
+
+DESCRIPTION
+  The assets command is used for publishing assets from the specified stack, to the specified environments
+
+  Environment(s) and Locale(s) are required for executing the command successfully
+  But, if retryFailed flag is set, then only a logfile is required
+
+ALIASES
+  $ csdx cm:bulk-publish:assets
+
+EXAMPLES
+  General Usage
+  csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS]
+
+  Using --config or -c flag
+  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
+  csdx cm:bulk-publish:assets --config [PATH TO CONFIG FILE]
+  csdx cm:bulk-publish:assets -c [PATH TO CONFIG FILE]
+
+  Using --retryFailed or -r flag
+  csdx cm:bulk-publish:assets --retryFailed [LOG FILE NAME]
+  csdx cm:bulk-publish:assets -r [LOG FILE NAME]
+
+  Using --branch or -B flag
+  csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH
+  NAME]
+```
+
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/assets/publish.js)_
 
 ## `csdx cm:bootstrap`
 
@@ -323,67 +388,6 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js)_
-
-## `csdx cm:bulk-publish:assets`
-
-Publish assets to specified environments
-
-```
-Publish assets to specified environments
-The assets command is used for publishing assets from the specified stack, to the specified environments
-
-Environment(s) and Locale(s) are required for executing the command successfully
-But, if retryFailed flag is set, then only a logfile is required
-
-
-USAGE
-  $ csdx cm:bulk-publish:assets
-
-OPTIONS
-  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
-  -a, --alias=alias                Alias for the management token to be used
-
-  -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
-
-  -c, --config=config              Path to config file to be used
-
-  -e, --environments=environments  Environments to which assets need to be published
-
-  -l, --locales=locales            Locales to which assets need to be published
-
-  -r, --retryFailed=retryFailed    Retry publishing failed assets from the logfile (optional, will override all other
-                                   flags)
-
-  -u, --folderUid=folderUid        [default: cs_root] Folder-uid from which the assets need to be published
-
-  -y, --yes                        Agree to process the command with the current configuration
-
-DESCRIPTION
-  The assets command is used for publishing assets from the specified stack, to the specified environments
-
-  Environment(s) and Locale(s) are required for executing the command successfully
-  But, if retryFailed flag is set, then only a logfile is required
-
-EXAMPLES
-  General Usage
-  csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS]
-
-  Using --config or -c flag
-  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
-  csdx cm:bulk-publish:assets --config [PATH TO CONFIG FILE]
-  csdx cm:bulk-publish:assets -c [PATH TO CONFIG FILE]
-
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:assets --retryFailed [LOG FILE NAME]
-  csdx cm:bulk-publish:assets -r [LOG FILE NAME]
-
-  Using --branch or -B flag
-  csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH 
-  NAME]
-```
-
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js)_
 
 ## `csdx cm:bulk-publish:cross-publish`
 
@@ -655,39 +659,6 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
-
-## `csdx cm:bulk-publish:revert`
-
-Revert publish operations by using a log file
-
-```
-Revert publish operations by using a log file
-The revert command is used for reverting all publish operations performed using bulk-publish script.
-A log file name is required to execute revert command
-
-
-USAGE
-  $ csdx cm:bulk-publish:revert
-
-OPTIONS
-  -l, --logFile=logFile          logfile to be used to revert
-  -r, --retryFailed=retryFailed  retry publishing failed entries from the logfile
-
-DESCRIPTION
-  The revert command is used for reverting all publish operations performed using bulk-publish script.
-  A log file name is required to execute revert command
-
-EXAMPLES
-  Using --logFile
-  cm:bulk-publish:revert --logFile [LOG FILE NAME]
-  cm:bulk-publish:revert -l [LOG FILE NAME]
-
-  Using --retryFailed
-  cm:bulk-publish:revert --retryFailed [LOG FILE NAME]
-  cm:bulk-publish:revert -r [LOG FILE NAME]
-```
-
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/revert.js)_
 
 ## `csdx cm:bulk-publish:unpublish`
 
@@ -1120,6 +1091,40 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-configure.js)_
 
+## `csdx cm:stacks:publish-revert`
+
+Revert publish operations by using a log file
+
+```
+Revert publish operations by using a log file
+The revert command is used for reverting all publish operations performed using bulk-publish script.
+A log file name is required to execute revert command
+
+
+USAGE
+  $ csdx cm:stacks:publish-revert
+
+OPTIONS
+  --log-file=log-file          logfile to be used to revert
+  --retry-failed=retry-failed  retry publishing failed entries from the logfile
+
+DESCRIPTION
+  The revert command is used for reverting all publish operations performed using bulk-publish script.
+  A log file name is required to execute revert command
+
+ALIASES
+  $ csdx cm:bulk-publish:revert
+
+EXAMPLES
+  Using --log-file
+  cm:bulk-publish:revert --log-file [LOG FILE NAME]
+
+  Using --retry-failed
+  cm:bulk-publish:revert --retry-failed [LOG FILE NAME]
+```
+
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-revert.js)_
+
 ## `csdx cm:stacks:seed`
 
 Create a Stack from existing content types, entries, assets, etc
@@ -1153,10 +1158,10 @@ _See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/
 
 ## `csdx config:get:region`
 
-CLI_CONFIG_SET_REGION_DESCRIPTION
+Get current region set for CLI
 
 ```
-CLI_CONFIG_SET_REGION_DESCRIPTION
+Get current region set for CLI
 
 USAGE
   $ csdx config:get:region
@@ -1165,22 +1170,26 @@ EXAMPLE
   $ csdx config:get:region
 ```
 
-_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/config/get/region.ts)_
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/config/get/region.ts)_
 
 ## `csdx config:set:region [REGION]`
 
-CLI_CONFIG_SET_REGION_DESCRIPTION
+Set region for CLI
 
 ```
-CLI_CONFIG_SET_REGION_DESCRIPTION
+Set region for CLI
 
 USAGE
   $ csdx config:set:region [REGION]
 
 OPTIONS
-  -d, --cda=cda    CLI_CONFIG_SET_REGION_FLAG_D_DESCRIPTION
-  -m, --cma=cma    CLI_CONFIG_SET_REGION_FLAG_M_DESCRIPTION
-  -n, --name=name  CLI_CONFIG_SET_REGION_FLAG_N_DESCRIPTION
+  -d, --cda=cda    Custom host to set for content delivery API, if this flag is added then cma and name flags are
+                   required
+
+  -m, --cma=cma    Custom host to set for content management API, , if this flag is added then cda and name flags are
+                   required
+
+  -n, --name=name  Name for the region, if this flag is added then cda and cma flags are required
 
 EXAMPLES
   $ csdx config:set:region
@@ -1191,7 +1200,7 @@ EXAMPLES
   --name="India"
 ```
 
-_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/config/set/region.ts)_
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/config/set/region.ts)_
 
 ## `csdx help [COMMAND]`
 

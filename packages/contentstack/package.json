@@ -99,16 +99,16 @@
   "oclif": {
     "topics": {
       "auth": {
-        "description": "perform authentication-related activities"
+        "description": "Perform authentication-related activities"
       },
       "cm": {
-        "description": "perform content management activities"
+        "description": "Perform content management activities"
       },
       "config": {
-        "description": "perform configuration related activities"
+        "description": "Perform configuration related activities"
       },
       "plugins": {
-        "description": "list installed plugins"
+        "description": "List installed plugins"
       }
     },
     "helpClass": "./lib/help.js",
