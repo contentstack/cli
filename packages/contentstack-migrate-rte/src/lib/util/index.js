@@ -1,5 +1,7 @@
 const contentstacksdk = require('@contentstack/management');
 const { Command } = require('@contentstack/cli-command');
+const { logger } = require('@contentstack/cli-utilities');
+
 const command = new Command();
 const { cli } = require('cli-ux');
 const chalk = require('chalk');
@@ -13,24 +15,18 @@ const {
   flatten,
   cloneDeep,
   isNil,
-  isString,
-  isObject,
+  isNull,
 } = require('lodash');
 const Validator = require('jsonschema').Validator;
 const configSchema = require('./config_schema.json');
 const { JSDOM } = require('jsdom');
 const collapseWithSpace = require('collapse-whitespace');
-const { v4 } = require('uuid');
 const { htmlToJson } = require('@contentstack/json-rte-serializer');
 const path = require('path');
-const fetch = require('node-fetch');
 
 const packageValue = require('../../../package.json');
 const isBlank = (variable) => {
   return isNil(variable) || isEmpty(variable);
-};
-const isPlainObject = (obj) => {
-  return isObject(obj) && !isArray(obj);
 };
 function formatHostname(hostname) {
   return hostname.split('//').pop();
@@ -40,23 +36,47 @@ function getStack(data) {
   const client = contentstacksdk.client({
     host: formatHostname(data.host),
     application: `json-rte-migration/${packageValue.version}`,
+    timeout: 120000
   });
   const stack = client.stack({ api_key: tokenDetails.apiKey, management_token: tokenDetails.token });
 
   stack.host = data.host;
   return stack;
 }
+const deprecatedFields = {
+  "configPath": "config-path",
+  "content_type": "content-type",
+  "isGlobalField": "global-field",
+  "htmlPath": "html-path",
+  "jsonPath": "json-path"
+}
+function normalizeFlags(config){
+  let normalizedConfig = cloneDeep(config);
+  Object.keys(deprecatedFields).forEach(key => {
+    if(normalizedConfig.hasOwnProperty(key)){
+      normalizedConfig[deprecatedFields[key]] = normalizedConfig[key];
+      delete normalizedConfig[key];
+    }
+  })
+  return normalizedConfig;
+}
+
+var customBar = cli.progress({
+  format: 'Migrating entry for {content_type} ' + '| {bar} | {value}/{total} Entries',
+  barCompleteChar: '\u2588',
+  barIncompleteChar: '\u2591'
+})
 async function getConfig(flags) {
   try {
     let config;
-    if (flags['config-path'] || flags.configPath) {
-      const configPath = flags['config-path'] || flags.configPath;
+    if (flags['config-path']) {
+      const configPath = flags['config-path'];
       config = require(path.resolve(configPath));
     } else {
       config = {
         alias: flags.alias,
-        content_type: flags['content-type'] || flags.content_type,
-        isGlobalField: flags['global-field'] || flags.isGlobalField,
+        "content-type": flags['content-type'],
+        "global-field": flags['global-field'],
         paths: [
           {
             from: flags['html-path'] || flags.htmlPath,
@@ -64,6 +84,7 @@ async function getConfig(flags) {
           },
         ],
         delay: flags.delay,
+        locale : flags.locale
       };
     }
     if (checkConfig(config)) {
@@ -140,50 +161,37 @@ async function confirmConfig(config, skipConfirmation) {
   return confirmation;
 }
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
-async function getAllLocalesOfEntry(entry) {
-  let allLocales = [];
-  try {
-    let locales = await fetch(
-      `https://${command.cmaHost}/v3/content_types/${entry.content_type_uid}/entries/${entry.uid}/locales?deleted=false`,
-      {
-        method: 'GET',
-        headers: entry.stackHeaders,
-      },
-    );
-    let localesData = await locales.json();
-    allLocales = localesData.locales || [];
-    return allLocales;
-  } catch (error) {
-    throw new Error('Error while fetching locales of entry. Please try again.');
-  }
-}
+
 async function updateEntriesInBatch(contentType, config, skip = 0) {
+  let extraParams = {}
+  if(config.locale){
+    extraParams.locale = config.locale
+    extraParams.query = {locale:config.locale}
+  }
   let entryQuery = {
     include_count: true,
+    ...extraParams,
     skip: skip,
-    limit: 100,
-    'only[BASE][]': 'uid',
+    limit: 1
   };
   await contentType
     .entry()
     .query(entryQuery)
     .find()
     .then(async (entriesResponse) => {
+      customBar.start(entriesResponse.count, skip,{
+        content_type: contentType.uid
+      })  
+      
       skip += entriesResponse.items.length;
       let entries = entriesResponse.items;
 
       for (const entry of entries) {
-        let allLocales = await getAllLocalesOfEntry(entry);
-        for (const locale of allLocales) {
-          let localizedEntry = await contentType.entry(entry.uid).fetch({ locale: locale.code });
-          if (localizedEntry.locale === locale.code) {
-            await updateSingleEntry(localizedEntry, contentType, config);
-          }
-        }
+        customBar.increment()
+        await updateSingleEntry(entry, contentType, config);
         await delay(config.delay || 1000);
       }
       if (skip === entriesResponse.count) {
-        // console.log("exit")
         return Promise.resolve();
       }
       await updateEntriesInBatch(contentType, config, skip);
@@ -204,6 +212,9 @@ async function updateSingleContentTypeEntries(stack, contentTypeUid, config) {
   }
   await updateEntriesInBatch(contentType, config);
   config.contentTypeCount += 1;
+  try {
+    customBar.stop()
+  } catch (error) {}
 }
 async function updateSingleContentTypeEntriesWithGlobalField(contentType, config) {
   let schema = contentType.schema;
@@ -429,7 +440,7 @@ function unsetResolvedUploadData(path, entry, schema, fieldMetaData) {
     if (entry) {
       const { fileUid } = fieldMetaData;
       const fieldValue = get(entry, fileUid);
-      if (!isUndefined(fieldValue)) {
+      if (!isUndefined(fieldValue) && !isNull(fieldValue)) {
         if (isArray(fieldValue)) {
           for (let i = 0; i < fieldValue.length; i++) {
             const singleFile = fieldValue[i];
@@ -495,6 +506,9 @@ async function updateContentTypeForGlobalField(stack, global_field, config) {
         throw new Error(`The ${contentType.uid} content type referred in ${globalField.uid} contains an empty schema.`);
       }
     }
+    try {
+      customBar.stop()
+    } catch (error) {}
   } else {
     throw new Error(`${globalField.uid} Global field is not referred in any content type.`);
   }
@@ -620,4 +634,5 @@ module.exports = {
   updateSingleContentTypeEntries,
   updateContentTypeForGlobalField,
   command,
+  normalizeFlags
 };
