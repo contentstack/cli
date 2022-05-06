@@ -15,7 +15,7 @@ $ npm install -g @contentstack/cli-cm-migrate-rte
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-migrate-rte/1.0.5 darwin-x64 node-v16.14.2
+@contentstack/cli-cm-migrate-rte/1.0.5 darwin-x64 node-v12.22.5
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -89,5 +89,5 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.18/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
 <!-- commandsstop -->
