@@ -5,40 +5,36 @@ It is Contentstack’s CLI plugin to perform authentication-related activities. 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-
-- [@contentstack/cli-auth](#contentstackcli-auth)
-- [Usage](#usage)
-- [Commands](#commands)
+* [@contentstack/cli-auth](#contentstackcli-auth)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-auth/1.0.0 darwin-x64 node-v16.14.2
+@contentstack/cli-auth/1.0.0 darwin-x64 node-v12.22.5
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`csdx auth:login`](#csdx-authlogin)
-- [`csdx auth:logout`](#csdx-authlogout)
-- [`csdx auth:tokens`](#csdx-authtokens)
-- [`csdx auth:tokens:add`](#csdx-authtokensadd)
-- [`csdx auth:tokens:remove`](#csdx-authtokensremove)
-- [`csdx auth:whoami`](#csdx-authwhoami)
+* [`csdx auth:login`](#csdx-authlogin)
+* [`csdx auth:logout`](#csdx-authlogout)
+* [`csdx auth:tokens`](#csdx-authtokens)
+* [`csdx auth:tokens:add`](#csdx-authtokensadd)
+* [`csdx auth:tokens:remove`](#csdx-authtokensremove)
+* [`csdx auth:whoami`](#csdx-authwhoami)
 
 ## `csdx auth:login`
 
@@ -124,13 +120,12 @@ USAGE
 
 OPTIONS
   -a, --alias=alias                  Name of the token alias
+  -d, --delivery                     CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN
   -e, --environment=environment      CLI_AUTH_TOKENS_ADD_FLAG_ENVIRONMENT_NAME
   -k, --stack-api-key=stack-api-key  Stack API Key
+  -m, --management                   CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN
+  -t, --token=token                  Token
   -y, --yes                          Skipping confirmation
-  --delivery                         CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN
-  --management                       CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN
-  --token=token                      Token
-
 
 EXAMPLES
   $ csdx auth:tokens:add
@@ -143,7 +138,7 @@ EXAMPLES
   $ csdx auth:tokens:add -a <alias> -k <stack api key> --management --token <management token>
   $ csdx auth:tokens:add -a <alias> -k <stack api key> --delivery -e <environment> --token <delivery token>
   $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --management --token <management token>
-  $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery
+  $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery 
   token>
 ```
 
@@ -184,5 +179,4 @@ EXAMPLE
 ```
 
 _See code: [src/commands/auth/whoami.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/whoami.ts)_
-
 <!-- commandsstop -->
