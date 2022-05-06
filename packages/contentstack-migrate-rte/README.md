@@ -49,6 +49,8 @@ OPTIONS
 
   --json-path=json-path          Provide path of JSON RTE to migrate
 
+  --locale=locale                The locale from which entries need to be migrated
+
 ALIASES
   $ csdx cm:migrate-rte
 
