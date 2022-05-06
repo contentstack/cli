@@ -61,6 +61,11 @@ class MigrationCommand extends Command {
     const alias = migrationCommandFlags["management-token-alias"];
     const config = migrationCommandFlags["config"];
 
+    if (!filePath) {
+      this.log("Please provide the migration script file path, use -n or --filePath flag");
+      this.exit();
+    }
+
     // Reset map instance
     const mapInstance = getMapInstance();
     resetMapInstance(mapInstance);
