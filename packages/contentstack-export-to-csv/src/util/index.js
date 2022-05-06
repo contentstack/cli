@@ -19,7 +19,7 @@ function chooseOrganization(managementAPIClient, action) {
     }
     let orgList = Object.keys(organizations);
     orgList.push(config.cancelString);
-    let chooseOrganization = [
+    let _chooseOrganization = [
       {
         type: 'list',
         name: 'chosenOrg',
@@ -28,7 +28,7 @@ function chooseOrganization(managementAPIClient, action) {
         loop: false,
       },
     ];
-    inquirer.prompt(chooseOrganization).then(({ chosenOrg }) => {
+    inquirer.prompt(_chooseOrganization).then(({ chosenOrg }) => {
       if (chosenOrg === config.cancelString) exitProgram();
       resolve({ name: chosenOrg, uid: organizations[chosenOrg] });
     });
@@ -77,7 +77,7 @@ function chooseStack(managementAPIClient, orgUid) {
     let stackList = Object.keys(stacks);
     stackList.push(config.cancelString);
 
-    let chooseStack = [
+    let _chooseStack = [
       {
         type: 'list',
         name: 'chosenStack',
@@ -86,7 +86,7 @@ function chooseStack(managementAPIClient, orgUid) {
       },
     ];
 
-    inquirer.prompt(chooseStack).then(({ chosenStack }) => {
+    inquirer.prompt(_chooseStack).then(({ chosenStack }) => {
       if (chosenStack === config.cancelString) exitProgram();
       resolve({ name: chosenStack, apiKey: stacks[chosenStack] });
     });
@@ -118,7 +118,7 @@ function chooseContentType(managementAPIClient, stackApiKey) {
     let contentTypesList = Object.values(contentTypes);
     // contentTypesList.push(config.cancelString)
 
-    let chooseContentType = [
+    let _chooseContentType = [
       {
         type: 'checkbox',
         message: 'Choose Content Type',
@@ -128,7 +128,7 @@ function chooseContentType(managementAPIClient, stackApiKey) {
       },
     ];
 
-    inquirer.prompt(chooseContentType).then(({ chosenContentTypes }) => {
+    inquirer.prompt(_chooseContentType).then(({ chosenContentTypes }) => {
       // if (chosenContentType === config.cancelString)
       // 	exitProgram()
       resolve(chosenContentTypes);
@@ -159,7 +159,7 @@ function chooseLanguage(managementAPIClient, stackApiKey) {
     let languagesList = Object.keys(languages);
     languagesList.push(config.cancelString);
 
-    let chooseLanguage = [
+    let _chooseLanguage = [
       {
         type: 'list',
         message: 'Choose Language',
@@ -168,7 +168,7 @@ function chooseLanguage(managementAPIClient, stackApiKey) {
       },
     ];
 
-    inquirer.prompt(chooseLanguage).then(({ chosenLanguage }) => {
+    inquirer.prompt(_chooseLanguage).then(({ chosenLanguage }) => {
       if (chosenLanguage === config.cancelString) exitProgram();
       resolve({ name: chosenLanguage, code: languages[chosenLanguage] });
     });
@@ -311,7 +311,7 @@ function getOrgUsers(managementAPIClient, orgUid, ecsv) {
         let authtoken = ecsv.authToken;
         return axios
           .get(`${cma}/v3/organizations/${organization.uid}/share`, { headers: { authtoken: authtoken } })
-          .then((response) => resolve({ items: response.data.shares }));
+          .then((_response) => resolve({ items: _response.data.shares }));
       }
       if (!organization.getInvitations) {
         return reject(new Error(config.adminError));
@@ -347,7 +347,7 @@ function getOrgRoles(managementAPIClient, orgUid, ecsv) {
         let authtoken = ecsv.authToken;
         return axios
           .get(`${cma}/v3/organizations/${organization.uid}/roles`, { headers: { authtoken: authtoken } })
-          .then((response) => resolve({ items: response.data.roles }));
+          .then((_response) => resolve({ items: _response.data.roles }));
       }
       if (!organization.roles) {
         return reject(new Error(config.adminError));
