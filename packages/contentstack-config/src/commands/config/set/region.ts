@@ -5,23 +5,25 @@ import { regionHandler, interactive } from '../../../utils';
 
 export default class RegionSetCommand extends Command {
   config: any;
-  static description = messageHandler.parse('CLI_CONFIG_SET_REGION_DESCRIPTION');
+  static description = 'Set region for CLI';
   static flags = {
     cda: flags.string({
       char: 'd',
-      description: messageHandler.parse('CLI_CONFIG_SET_REGION_FLAG_D_DESCRIPTION'),
+      description:
+        'Custom host to set for content delivery API, if this flag is added then cma and name flags are required',
       dependsOn: ['cma', 'name'],
       parse: printFlagDeprecation(['-d'], ['--cda']),
     }),
     cma: flags.string({
       char: 'm',
-      description: messageHandler.parse('CLI_CONFIG_SET_REGION_FLAG_M_DESCRIPTION'),
+      description:
+        'Custom host to set for content management API, , if this flag is added then cda and name flags are required',
       dependsOn: ['cda', 'name'],
       parse: printFlagDeprecation(['-m'], ['--cma']),
     }),
     name: flags.string({
       char: 'n',
-      description: messageHandler.parse('CLI_CONFIG_SET_REGION_FLAG_N_DESCRIPTION'),
+      description: 'Name for the region, if this flag is added then cda and cma flags are required',
       dependsOn: ['cda', 'cma'],
     }),
   };
@@ -70,7 +72,7 @@ export default class RegionSetCommand extends Command {
         logger.error('failed to set the region', error);
         cliux.error(`Failed to set region due to: ${error.message}`);
       }
-    } else if (selectedRegion === 'NA' || selectedRegion === 'EU') {
+    } else if (['NA', 'EU', 'AZURE-NA'].includes(selectedRegion)) {
       const regionDetails: Region = regionHandler.setRegion(selectedRegion);
       cliux.success(`Region has been set to ${regionDetails.name}`);
       cliux.success(`CDA HOST: ${regionDetails.cda}`);
