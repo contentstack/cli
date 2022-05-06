@@ -97,4 +97,6 @@ RevertCommand.examples = [
   'cm:bulk-publish:revert --retry-failed [LOG FILE NAME]',
 ];
 
+RevertCommand.aliases = ['cm:bulk-publish:revert'];
+
 module.exports = RevertCommand;
