@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-config/1.0.0 darwin-x64 node-v16.14.2
+@contentstack/cli-config/1.0.1 darwin-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -30,7 +30,7 @@ USAGE
 
 ## `csdx config:get:region`
 
-CLI_CONFIG_SET_REGION_DESCRIPTION
+Get current region set for CLI
 
 ```
 USAGE
@@ -40,20 +40,24 @@ EXAMPLE
   $ csdx config:get:region
 ```
 
-_See code: [src/commands/config/get/region.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/config/get/region.ts)_
+_See code: [src/commands/config/get/region.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/config/get/region.ts)_
 
 ## `csdx config:set:region [REGION]`
 
-CLI_CONFIG_SET_REGION_DESCRIPTION
+Set region for CLI
 
 ```
 USAGE
   $ csdx config:set:region [REGION]
 
 OPTIONS
-  -d, --cda=cda    CLI_CONFIG_SET_REGION_FLAG_D_DESCRIPTION
-  -m, --cma=cma    CLI_CONFIG_SET_REGION_FLAG_M_DESCRIPTION
-  -n, --name=name  CLI_CONFIG_SET_REGION_FLAG_N_DESCRIPTION
+  -d, --cda=cda    Custom host to set for content delivery API, if this flag is added then cma and name flags are
+                   required
+
+  -m, --cma=cma    Custom host to set for content management API, , if this flag is added then cda and name flags are
+                   required
+
+  -n, --name=name  Name for the region, if this flag is added then cda and cma flags are required
 
 EXAMPLES
   $ csdx config:set:region
@@ -64,5 +68,5 @@ EXAMPLES
   --name="India"
 ```
 
-_See code: [src/commands/config/set/region.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/config/set/region.ts)_
+_See code: [src/commands/config/set/region.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/config/set/region.ts)_
 <!-- commandsstop -->
