@@ -47,7 +47,6 @@ USAGE
 - [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
 - [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
 - [`csdx cm:bulk-publish:nonlocalized-field-changes`](#csdx-cmbulk-publishnonlocalized-field-changes)
-- [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
 - [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
 - [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
 - [`csdx cm:entries:export-to-csv`](#csdx-cmentriesexport-to-csv)
@@ -58,6 +57,7 @@ USAGE
 - [`csdx cm:stacks:import`](#csdx-cmstacksimport)
 - [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
 - [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
+- [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
 - [`csdx cm:stacks:seed`](#csdx-cmstacksseed)
 - [`csdx config:get:region`](#csdx-configgetregion)
 - [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
@@ -161,7 +161,7 @@ USAGE
 
 OPTIONS
   -a, --alias=alias                  Name of the token alias
-  -d, --delivery                     CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN
+  -d, --delivery                     CLI_AUTH_TOKENS_ADD_FLAG_DELIVERY_TOKEN
   -e, --environment=environment      CLI_AUTH_TOKENS_ADD_FLAG_ENVIRONMENT_NAME
   -k, --stack-api-key=stack-api-key  Stack API Key
   -m, --management                   CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN
@@ -660,39 +660,6 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
 
-## `csdx cm:bulk-publish:revert`
-
-Revert publish operations by using a log file
-
-```
-Revert publish operations by using a log file
-The revert command is used for reverting all publish operations performed using bulk-publish script.
-A log file name is required to execute revert command
-
-
-USAGE
-  $ csdx cm:bulk-publish:revert
-
-OPTIONS
-  -l, --logFile=logFile          logfile to be used to revert
-  -r, --retryFailed=retryFailed  retry publishing failed entries from the logfile
-
-DESCRIPTION
-  The revert command is used for reverting all publish operations performed using bulk-publish script.
-  A log file name is required to execute revert command
-
-EXAMPLES
-  Using --logFile
-  cm:bulk-publish:revert --logFile [LOG FILE NAME]
-  cm:bulk-publish:revert -l [LOG FILE NAME]
-
-  Using --retryFailed
-  cm:bulk-publish:revert --retryFailed [LOG FILE NAME]
-  cm:bulk-publish:revert -r [LOG FILE NAME]
-```
-
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/revert.js)_
-
 ## `csdx cm:bulk-publish:unpublish`
 
 Unpublish entries of given Content Types from given environment
@@ -1124,6 +1091,37 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-configure.js)_
 
+## `csdx cm:stacks:publish-revert`
+
+Revert publish operations by using a log file
+
+```
+Revert publish operations by using a log file
+The revert command is used for reverting all publish operations performed using bulk-publish script.
+A log file name is required to execute revert command
+
+
+USAGE
+  $ csdx cm:stacks:publish-revert
+
+OPTIONS
+  --log-file=log-file          logfile to be used to revert
+  --retry-failed=retry-failed  retry publishing failed entries from the logfile
+
+DESCRIPTION
+  The revert command is used for reverting all publish operations performed using bulk-publish script.
+  A log file name is required to execute revert command
+
+EXAMPLES
+  Using --log-file
+  cm:bulk-publish:revert --log-file [LOG FILE NAME]
+
+  Using --retry-failed
+  cm:bulk-publish:revert --retry-failed [LOG FILE NAME]
+```
+
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-revert.js)_
+
 ## `csdx cm:stacks:seed`
 
 Create a Stack from existing content types, entries, assets, etc
@@ -1157,10 +1155,10 @@ _See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/
 
 ## `csdx config:get:region`
 
-CLI_CONFIG_SET_REGION_DESCRIPTION
+Get current region set for CLI
 
 ```
-CLI_CONFIG_SET_REGION_DESCRIPTION
+Get current region set for CLI
 
 USAGE
   $ csdx config:get:region
@@ -1172,22 +1170,26 @@ EXAMPLE
   $ csdx config:get:region
 ```
 
-_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/config/get/region.ts)_
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/config/get/region.ts)_
 
 ## `csdx config:set:region [REGION]`
 
-CLI_CONFIG_SET_REGION_DESCRIPTION
+Set region for CLI
 
 ```
-CLI_CONFIG_SET_REGION_DESCRIPTION
+Set region for CLI
 
 USAGE
   $ csdx config:set:region [REGION]
 
 OPTIONS
-  -d, --cda=cda    CLI_CONFIG_SET_REGION_FLAG_D_DESCRIPTION
-  -m, --cma=cma    CLI_CONFIG_SET_REGION_FLAG_M_DESCRIPTION
-  -n, --name=name  CLI_CONFIG_SET_REGION_FLAG_N_DESCRIPTION
+  -d, --cda=cda    Custom host to set for content delivery API, if this flag is added then cma and name flags are
+                   required
+
+  -m, --cma=cma    Custom host to set for content management API, , if this flag is added then cda and name flags are
+                   required
+
+  -n, --name=name  Name for the region, if this flag is added then cda and cma flags are required
 
 EXAMPLES
   $ csdx config:set:region
@@ -1198,7 +1200,7 @@ EXAMPLES
   --name="India"
 ```
 
-_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/config/set/region.ts)_
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/config/set/region.ts)_
 
 ## `csdx help [COMMAND]`
 
