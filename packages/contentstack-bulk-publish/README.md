@@ -36,11 +36,11 @@ USAGE
 * [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
 * [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
 * [`csdx cm:bulk-publish:nonlocalized-field-changes`](#csdx-cmbulk-publishnonlocalized-field-changes)
-* [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
 * [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
 * [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
 * [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
 * [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
+* [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
 
 ## `csdx cm:bulk-publish`
 
@@ -403,34 +403,6 @@ EXAMPLES
 
 _See code: [src/commands/cm/bulk-publish/nonlocalized-field-changes.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
 
-## `csdx cm:bulk-publish:revert`
-
-Revert publish operations by using a log file
-
-```
-USAGE
-  $ csdx cm:bulk-publish:revert
-
-OPTIONS
-  -l, --logFile=logFile          logfile to be used to revert
-  -r, --retryFailed=retryFailed  retry publishing failed entries from the logfile
-
-DESCRIPTION
-  The revert command is used for reverting all publish operations performed using bulk-publish script.
-  A log file name is required to execute revert command
-
-EXAMPLES
-  Using --logFile
-  cm:bulk-publish:revert --logFile [LOG FILE NAME]
-  cm:bulk-publish:revert -l [LOG FILE NAME]
-
-  Using --retryFailed
-  cm:bulk-publish:revert --retryFailed [LOG FILE NAME]
-  cm:bulk-publish:revert -r [LOG FILE NAME]
-```
-
-_See code: [src/commands/cm/bulk-publish/revert.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/revert.js)_
-
 ## `csdx cm:bulk-publish:unpublish`
 
 Unpublish entries of given Content Types from given environment
@@ -617,4 +589,30 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/stacks/publish-configure.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-configure.js)_
+
+## `csdx cm:stacks:publish-revert`
+
+Revert publish operations by using a log file
+
+```
+USAGE
+  $ csdx cm:stacks:publish-revert
+
+OPTIONS
+  --log-file=log-file          logfile to be used to revert
+  --retry-failed=retry-failed  retry publishing failed entries from the logfile
+
+DESCRIPTION
+  The revert command is used for reverting all publish operations performed using bulk-publish script.
+  A log file name is required to execute revert command
+
+EXAMPLES
+  Using --log-file
+  cm:bulk-publish:revert --log-file [LOG FILE NAME]
+
+  Using --retry-failed
+  cm:bulk-publish:revert --retry-failed [LOG FILE NAME]
+```
+
+_See code: [src/commands/cm/stacks/publish-revert.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-revert.js)_
 <!-- commandsstop -->
