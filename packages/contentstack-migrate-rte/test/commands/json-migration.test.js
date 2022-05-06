@@ -1,8 +1,8 @@
 const { expect, test } = require('@oclif/test');
 const sinon = require('sinon');
+const qs = require('querystring')
 const nock = require('nock');
 const { cli } = require('cli-ux');
-const defaultConfig = require('../dummy/defaultConfig.json');
 const {
   getToken,
   getContentType,
@@ -42,7 +42,7 @@ describe('Migration Config validation', () => {
       '--json-path',
       'supercharged_rte',
       '--delay',
-      '50',
+      "50",
     ])
     .catch((error) => {
       expect(error.message).to.contain('User aborted the command.');
@@ -155,7 +155,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
         include_count: true,
         skip: 0,
         limit: 100,
-        'only[BASE][]': 'uid',
+        "only[Base][]": "uid"
       })
       .reply(200, (uri) => {
         var match = uri.match(/\/v3\/content_types\/((\w)*)\/entries/);
@@ -171,14 +171,17 @@ describe('Content Type with Single RTE Field of Single Type', () => {
     })
       .persist()
       .get(/\/v3\/content_types\/((\w)*)\/entries/)
-      .query({
-        include_count: true,
-        skip: 0,
-        limit: 100,
-      })
-      .reply(200, (uri) => {
+      .query(true)
+      .reply(200, function(uri){
+        let query = this.req.options.search
+        query = query.substring(1)
+        let locale = undefined
+        query = qs.parse(query)
+        if(query.locale){
+          locale = query.locale
+        }
         var match = uri.match(/\/v3\/content_types\/((\w)*)\/entries/);
-        return getEntries(match[1]);
+        return getEntries(match[1],locale);
       });
     // mock get locale
     nock(`${command.cmaAPIUrl}`, {
@@ -198,6 +201,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
           locales: [
             {
               code: 'en-in',
+              localized: true
             },
             {
               code: 'en-us',
@@ -216,9 +220,19 @@ describe('Content Type with Single RTE Field of Single Type', () => {
       .persist()
       .get(/\/v3\/content_types\/((\w)*)\/entries\/((\w)*)/)
       .query(true)
-      .reply(200, (uri) => {
-        let match = uri.match(/\/v3\/content_types\/((\w)*)\/entries\/((\w)*)\?locale=((\w|-)*)/);
-        return getEntry(match[1], match[3], match[5]);
+      .reply(200, (uri,test) => {
+        const query = this.queries
+        let match = uri.match(/\/v3\/content_types\/((\w)*)\/entries\/((\w)*)/);
+        if(query.locale){
+          return getEntry(match[1], match[3], query.locale);
+        }
+        else{
+          //console.error("tstse",match2[1], match2[3])
+          return getEntry(match2[1], match2[3]);
+        }
+        
+        //console.log("MAtch::::::",match,uri);
+        //return {}
       });
 
     nock(`${command.cmaAPIUrl}`, {
@@ -265,8 +279,17 @@ describe('Content Type with Single RTE Field of Single Type', () => {
     .stub(command, 'getToken', getTokenCallback)
     .stdout()
     .command(['cm:entries:migrate-html-rte', '--config-path', './test/dummy/config/config.json', '--yes'])
-    .it('execute using config file', (ctx) => {
-      expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 3 Entrie(s)');
+    .it('execute using config file w/o locale', (ctx) => {
+      expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 2 Entrie(s)');
+    });
+
+    test
+    .stub(cli, 'confirm', () => async () => 'yes')
+    .stub(command, 'getToken', getTokenCallback)
+    .stdout()
+    .command(['cm:entries:migrate-html-rte', '--config-path', './test/dummy/config/config_locale.json', '--yes'])
+    .it('execute using config file w/ locale', (ctx) => {
+      expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 1 Entrie(s)');
     });
 
   test
@@ -286,10 +309,32 @@ describe('Content Type with Single RTE Field of Single Type', () => {
       '--delay',
       '50',
     ])
-    .it('execute using flags', (ctx) => {
-      expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 3 Entrie(s)');
+    .it('execute using flags (w/o locale)', (ctx) => {
+      expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 2 Entrie(s)');
     });
 
+    test
+    .stub(cli, 'confirm', () => async () => 'yes')
+    .stub(command, 'getToken', getTokenCallback)
+    .stdout()
+    .command([
+      'cm:entries:migrate-html-rte',
+      '--alias',
+      'test1',
+      '--content-type',
+      'contenttypewithsinglerte',
+      '--html-path',
+      'rich_text_editor',
+      '--json-path',
+      'supercharged_rte',
+      '--locale',
+      'en-in',
+      '--delay',
+      '50',
+    ])
+    .it('execute using flags w/ locale', (ctx) => {
+      expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 1 Entrie(s)');
+    });
   test
     .stub(cli, 'confirm', () => async () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
@@ -784,3 +829,48 @@ describe('Content Type with multiple file field', () => {
       expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 1 Entrie(s)');
     });
 });
+
+describe('Migration with old flags and command', () => {
+  const getTokenCallback = sinon.stub();
+  getTokenCallback.withArgs('test1').returns({
+    token: '***REMOVED***',
+    apiKey: 'blt1f36f82ccc346cc5',
+    type: 'management',
+  });
+
+  test
+    .stub(cli, 'confirm', () => async () => 'yes')
+    .stub(command, 'getToken', getTokenCallback)
+    .stdout()
+    .command(['cm:migrate-rte', '--configPath', './test/dummy/config/config.json', '--yes'])
+    .it('execute using config file w/o locale', (ctx) => {
+      expect(ctx.stdout).to.contain(`DEPRECATION WARNING: flags -p,--configPath will be removed in two months, start using -c,--config-path flags instead`);
+      expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 2 Entrie(s)');
+    });
+
+  test
+    .stub(cli, 'confirm', () => async () => 'yes')
+    .stub(command, 'getToken', getTokenCallback)
+    .stdout()
+    .command([
+      'cm:entries:migrate-html-rte',
+      '--alias',
+      'test1',
+      '--content_type',
+      'contenttypewithsinglerte',
+      '--htmlPath',
+      'rich_text_editor',
+      '--jsonPath',
+      'supercharged_rte',
+      '--delay',
+      '50',
+    ])
+    .it('execute using flags (w/o locale)', (ctx) => {
+      expect(ctx.stdout).to.contain(`DEPRECATION WARNING: flags -c,--content_type will be removed in two months, start using --content-type flags instead`);
+      expect(ctx.stdout).to.contain(`DEPRECATION WARNING: flags -h,--htmlPath will be removed in two months, start using --html-path flags instead`);
+      expect(ctx.stdout).to.contain(`DEPRECATION WARNING: flags -j,--jsonPath will be removed in two months, start using --json-path flags instead`);
+
+      expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 2 Entrie(s)');
+    });
+  
+})
