@@ -36,19 +36,19 @@ export default class TokensAddCommand extends Command {
     alias: flags.string({ char: 'a', description: 'Name of the token alias' }),
     delivery: flags.boolean({
       char: 'd',
-      description: messageHandler.parse('CLI_AUTH_TOKENS_ADD_FLAG__DELIVERY_TOKEN'),
+      description: 'Set this while saving delivery token',
       exclusive: ['management'],
       parse: printFlagDeprecation(['-d'], ['--delivery']),
     }),
     management: flags.boolean({
       char: 'm',
-      description: messageHandler.parse('CLI_AUTH_TOKENS_ADD_FLAG_MANAGEMENT_TOKEN'),
+      description: 'Set this while saving management token',
       exclusive: ['delivery', 'environment'],
       parse: printFlagDeprecation(['-m'], ['--management']),
     }),
     environment: flags.string({
       char: 'e',
-      description: messageHandler.parse('CLI_AUTH_TOKENS_ADD_FLAG_ENVIRONMENT_NAME'),
+      description: 'Environment name for delivery token',
       exclusive: ['management'],
     }),
     'stack-api-key': flags.string({ char: 'k', description: 'Stack API Key' }),
