@@ -29,9 +29,9 @@ USAGE
 # Commands
 
 <!-- commands -->
+* [`csdx cm:assets:publish`](#csdx-cmassetspublish)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:bulk-publish:add-fields`](#csdx-cmbulk-publishadd-fields)
-* [`csdx cm:bulk-publish:assets`](#csdx-cmbulk-publishassets)
 * [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
 * [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
 * [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
@@ -41,6 +41,63 @@ USAGE
 * [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
 * [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
 * [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
+
+## `csdx cm:assets:publish`
+
+Publish assets to specified environments
+
+```
+USAGE
+  $ csdx cm:assets:publish
+
+OPTIONS
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
+  -a, --alias=alias                Alias for the management token to be used
+
+  -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used for publishing the entries
+
+  -c, --config=config              Path to config file to be used
+
+  -e, --environments=environments  Environments to which assets need to be published
+
+  -l, --locales=locales            Locales to which assets need to be published
+
+  -r, --retryFailed=retryFailed    Retry publishing failed assets from the logfile (optional, will override all other
+                                   flags)
+
+  -u, --folderUid=folderUid        [default: cs_root] Folder-uid from which the assets need to be published
+
+  -y, --yes                        Agree to process the command with the current configuration
+
+DESCRIPTION
+  The assets command is used for publishing assets from the specified stack, to the specified environments
+
+  Environment(s) and Locale(s) are required for executing the command successfully
+  But, if retryFailed flag is set, then only a logfile is required
+
+ALIASES
+  $ csdx cm:bulk-publish:assets
+
+EXAMPLES
+  General Usage
+  csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS]
+
+  Using --config or -c flag
+  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
+  csdx cm:bulk-publish:assets --config [PATH TO CONFIG FILE]
+  csdx cm:bulk-publish:assets -c [PATH TO CONFIG FILE]
+
+  Using --retryFailed or -r flag
+  csdx cm:bulk-publish:assets --retryFailed [LOG FILE NAME]
+  csdx cm:bulk-publish:assets -r [LOG FILE NAME]
+
+  Using --branch or -B flag
+  csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH 
+  NAME]
+```
+
+_See code: [src/commands/cm/assets/publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/assets/publish.js)_
 
 ## `csdx cm:bulk-publish`
 
@@ -108,60 +165,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/bulk-publish/add-fields.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js)_
-
-## `csdx cm:bulk-publish:assets`
-
-Publish assets to specified environments
-
-```
-USAGE
-  $ csdx cm:bulk-publish:assets
-
-OPTIONS
-  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
-  -a, --alias=alias                Alias for the management token to be used
-
-  -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
-
-  -c, --config=config              Path to config file to be used
-
-  -e, --environments=environments  Environments to which assets need to be published
-
-  -l, --locales=locales            Locales to which assets need to be published
-
-  -r, --retryFailed=retryFailed    Retry publishing failed assets from the logfile (optional, will override all other
-                                   flags)
-
-  -u, --folderUid=folderUid        [default: cs_root] Folder-uid from which the assets need to be published
-
-  -y, --yes                        Agree to process the command with the current configuration
-
-DESCRIPTION
-  The assets command is used for publishing assets from the specified stack, to the specified environments
-
-  Environment(s) and Locale(s) are required for executing the command successfully
-  But, if retryFailed flag is set, then only a logfile is required
-
-EXAMPLES
-  General Usage
-  csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS]
-
-  Using --config or -c flag
-  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
-  csdx cm:bulk-publish:assets --config [PATH TO CONFIG FILE]
-  csdx cm:bulk-publish:assets -c [PATH TO CONFIG FILE]
-
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:assets --retryFailed [LOG FILE NAME]
-  csdx cm:bulk-publish:assets -r [LOG FILE NAME]
-
-  Using --branch or -B flag
-  csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH 
-  NAME]
-```
-
-_See code: [src/commands/cm/bulk-publish/assets.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js)_
 
 ## `csdx cm:bulk-publish:cross-publish`
 
@@ -605,6 +608,9 @@ OPTIONS
 DESCRIPTION
   The revert command is used for reverting all publish operations performed using bulk-publish script.
   A log file name is required to execute revert command
+
+ALIASES
+  $ csdx cm:bulk-publish:revert
 
 EXAMPLES
   Using --log-file
