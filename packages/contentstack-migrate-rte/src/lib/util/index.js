@@ -22,7 +22,7 @@ const configSchema = require('./config_schema.json');
 const { JSDOM } = require('jsdom');
 const collapseWithSpace = require('collapse-whitespace');
 const { htmlToJson } = require('@contentstack/json-rte-serializer');
-const path = require('path');
+const nodePath = require('path');
 
 const packageValue = require('../../../package.json');
 const isBlank = (variable) => {
@@ -71,7 +71,7 @@ async function getConfig(flags) {
     let config;
     if (flags['config-path']) {
       const configPath = flags['config-path'];
-      config = require(path.resolve(configPath));
+      config = require(nodePath.resolve(configPath));
     } else {
       config = {
         alias: flags.alias,
@@ -131,7 +131,7 @@ function getGlobalField(stack, globalFieldUid) {
 }
 function throwConfigError(error) {
   // console.log(error)
-  const { name, path, message, argument } = error;
+  const { name, path, argument } = error;
   let fieldName = path.join('.');
   if (fieldName === '') {
     fieldName = 'Config';
@@ -154,11 +154,10 @@ function prettyPrint(data) {
 }
 async function confirmConfig(config, skipConfirmation) {
   if (skipConfirmation) {
-    return true;
+    return Promise.resolve(true);
   }
   prettyPrint(config);
-  let confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]');
-  return confirmation;
+  return cli.confirm('Do you want to continue with this configuration ? [yes or no]');
 }
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -595,8 +594,8 @@ function getPaths(schema, type) {
 
   function traverse(fields, path) {
     path = path || '';
-    for (var i = 0; i < fields.length; i++) {
-      var field = fields[i];
+    for (const element of fields) {
+      var field = element;
       var currPath = genPath(path, field.uid);
 
       if (field.data_type === type) paths[currPath] = true;
@@ -604,7 +603,6 @@ function getPaths(schema, type) {
       if (field.data_type === 'group') traverse(field.schema, currPath);
 
       if (field.data_type === 'global_field' && isUndefined(field.schema) === false && isEmpty(field.schema) === false)
-        // added support to show asset details for global_fields
         traverse(field.schema, currPath);
       if (field.data_type === 'blocks') {
         field.blocks.forEach(function (block) {
