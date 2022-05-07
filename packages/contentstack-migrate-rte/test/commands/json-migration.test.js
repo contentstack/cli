@@ -159,8 +159,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
       })
       .reply(200, (uri) => {
         var match = uri.match(/\/v3\/content_types\/((\w)*)\/entries/);
-        const entries = getEntriesOnlyUID(match[1]);
-        return entries;
+        return getEntriesOnlyUID(match[1]);
       });
 
     nock(`${command.cmaAPIUrl}`, {
@@ -195,8 +194,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
       .query({
         deleted: false,
       })
-      .reply(200, (uri) => {
-        let match = uri.match(/\/v3\/content_types\/((\w)*)\/entries\/((\w)*)/);
+      .reply(200, () => {
         return {
           locales: [
             {
@@ -220,19 +218,15 @@ describe('Content Type with Single RTE Field of Single Type', () => {
       .persist()
       .get(/\/v3\/content_types\/((\w)*)\/entries\/((\w)*)/)
       .query(true)
-      .reply(200, (uri,test) => {
+      .reply(200, (uri) => {
         const query = this.queries
         let match = uri.match(/\/v3\/content_types\/((\w)*)\/entries\/((\w)*)/);
         if(query.locale){
           return getEntry(match[1], match[3], query.locale);
         }
         else{
-          //console.error("tstse",match2[1], match2[3])
           return getEntry(match2[1], match2[3]);
         }
-        
-        //console.log("MAtch::::::",match,uri);
-        //return {}
       });
 
     nock(`${command.cmaAPIUrl}`, {

@@ -13,9 +13,9 @@ let {
 
 class JsonMigrationCommand extends Command {
   async run() {
-    const { flags } = this.parse(JsonMigrationCommand);
+    const migrateRteFlags = this.parse(JsonMigrationCommand).flags;
     try {
-      const normalizedFlags = normalizeFlags(flags);
+      const normalizedFlags = normalizeFlags(migrateRteFlags);
       let config = await getConfig(normalizedFlags);
       if (isEmpty(config.paths)) {
         throw new Error('No value provided for the "paths" property in config.');
