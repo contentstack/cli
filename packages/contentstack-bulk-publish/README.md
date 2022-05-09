@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-cm-bulk-publish
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bulk-publish/1.0.0 darwin-x64 node-v12.22.5
+@contentstack/cli-cm-bulk-publish/1.0.0 darwin-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -447,8 +447,8 @@ DESCRIPTION
   Environment (Source Environment) and Locale are required for executing the command successfully
   But, if retryFailed flag is set, then only a logfile is required
 
-  A Content Type can be specified for publishing entries, but if no content-type(s) is/are specified and --onlyAssets is 
-  not used,
+  A Content Type can be specified for publishing entries, but if no content-type(s) is/are specified and --onlyAssets is
+   not used,
   then all entries from all content types will be unpublished from the source environment
 
   --onlyAssets can be used to unpublish only assets and --onlyEntries can be used to unpublish only entries.
@@ -479,8 +479,8 @@ EXAMPLES
   Using --onlyEntries
   csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only 
   entries, all entries, from the source environment)
-  csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries 
-  (Will unpublish only entries, (from CONTENT TYPE) from the source environment)
+  csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries
+   (Will unpublish only entries, (from CONTENT TYPE) from the source environment)
 
   Using --branch or -B flag
   csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x 
@@ -528,8 +528,8 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] 
-  -s [SOURCE ENV]
+  csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS]
+   -s [SOURCE ENV]
 
   Using --config or -c flag
   Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
@@ -541,8 +541,8 @@ EXAMPLES
   csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]
 
   Using --branch or -B flag
-  csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] 
-  -B [BRANCH NAME] -s [SOURCE ENV]
+  csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS]
+   -B [BRANCH NAME] -s [SOURCE ENV]
 ```
 
 _See code: [src/commands/cm/bulk-publish/unpublished-entries.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
