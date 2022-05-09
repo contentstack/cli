@@ -15,7 +15,7 @@ $ npm install -g @contentstack/cli-cm-migrate-rte
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-migrate-rte/1.0.5 darwin-x64 node-v16.14.2
+@contentstack/cli-cm-migrate-rte/1.0.5 darwin-x64 node-v12.22.5
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -48,6 +48,8 @@ OPTIONS
   --html-path=html-path          Provide path of HTML RTE to migrate
 
   --json-path=json-path          Provide path of JSON RTE to migrate
+
+  --locale=locale                The locale from which entries need to be migrated
 
 ALIASES
   $ csdx cm:migrate-rte
@@ -89,5 +91,5 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.18/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
 <!-- commandsstop -->
