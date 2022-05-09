@@ -138,9 +138,6 @@
       "init": [
         "./lib/hooks/init/context-init",
         "./lib/hooks/init/utils-init"
-      ],
-      "postrun": [
-        "./lib/hooks/postrun/analytics"
       ]
     }
   },
