@@ -76,23 +76,23 @@ class Migration extends _Migration(ContentType) {
     });
   }
 
-  async getTasks(requests) {
+  async getTasks(_requests) {
     const _tasks = [];
     const results = [];
-    for (let i = 0; i < requests.length; i++) {
-      let reqObj = requests[i];
+    for (let i = 0; i < _requests.length; i++) {
+      let reqObj = _requests[i];
       const { title, failedTitle, successTitle, tasks } = reqObj;
       const task = {
         title: title,
-        task: async (ctx, task) => {
+        task: async (ctx, _task) => {
           const [err, result] = await safePromise(waterfall(tasks));
           if (err) {
             ctx.error = true;
-            task.title = failedTitle;
+            _task.title = failedTitle;
             throw err;
           }
           result && results.push(result);
-          task.title = successTitle;
+          _task.title = successTitle;
           return result;
         },
       };

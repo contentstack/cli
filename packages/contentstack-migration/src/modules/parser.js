@@ -20,7 +20,7 @@ class Parser {
     const migration = new Migration();
     const mapInstance = getMapInstance();
     const parseResult = {};
-    const typeErrors = [];
+    let typeErrors = [];
     // migrations
     try {
       const stackSDKInstance = get(MANAGEMENT_SDK, mapInstance);
@@ -54,7 +54,7 @@ class Parser {
           getLineNumber: () => line,
         };
         const base = new Base();
-        let typeErrors = [error];
+        typeErrors = [error];
         base.dispatch(callsite, null, { typeErrors }, 'typeError');
       }
     }

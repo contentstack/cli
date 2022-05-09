@@ -122,11 +122,11 @@ class ContentTypeService {
 
   // Merges the user specified with new fields with existing schema
   mergeEditSchema(schema = []) {
-    const mapInstance = getMapInstance();
+    const _mapInstance = getMapInstance();
 
     const { id, action } = this;
 
-    const contentType = get(id, mapInstance);
+    const contentType = get(id, _mapInstance);
 
     let contentTypeSchema = contentType[action].content_type.schema;
     contentTypeSchema = contentTypeSchema || [];
