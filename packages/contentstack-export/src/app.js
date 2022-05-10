@@ -78,7 +78,7 @@ var singleExport = async (moduleName, types, config, branchName) => {
         const result = await exportedModule.start(config, branchName);
         if (result && iterateList[i] === 'stack') {
           let master_locale = {
-            master_locale: { code: result.code },
+            master_locale: { code: result.master_locale },
           };
           config = _.merge(config, master_locale);
         }
