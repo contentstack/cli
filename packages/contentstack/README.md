@@ -313,7 +313,7 @@ EXAMPLES
   $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app>
 ```
 
-_See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/v1.0.6/src/commands/cm/bootstrap.ts)_
+_See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/v1.0.7/src/commands/cm/bootstrap.ts)_
 
 ## `csdx cm:bulk-publish`
 
