@@ -33,8 +33,8 @@ module.exports = (errors) => {
         const context = 2;
         const { before, line, after } = getLineWithContext(lines, callsite.line, context);
 
-        const beforeLines = before.map((line) => chalk`${line}\n`);
-        const afterLines = after.map((line) => chalk`${line}\n`);
+        const beforeLines = before.map((_line) => chalk`${_line}\n`);
+        const afterLines = after.map((_line) => chalk`${_line}\n`);
         const highlightedLine = chalk`{bold ${line}}\n`;
 
         const formattedCode = beforeLines + highlightedLine + afterLines;
