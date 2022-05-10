@@ -2,7 +2,8 @@ const {expect, test} = require('@oclif/test')
 const sinon = require('sinon')
 const nock = require('nock')
 const {cli} = require('cli-ux')
-const defaultConfig = require('../dummy/defaultConfig.json')
+const qs = require('querystring')
+
 const {getToken, getContentType, getEntries, getExpectedOutput, getGlobalField, getEntriesOnlyUID, getEntry} = require('../utils')
 const omitDeep = require('omit-deep-lodash')
 const {isEqual, cloneDeep} = require('lodash')
@@ -117,17 +118,20 @@ describe('Content Type with Single RTE Field of Single Type', () => {
         authorization: token.token,
       },
     })
-    .persist()
-    .get(/\/v3\/content_types\/((\w)*)\/entries/)
-    .query({
-      include_count: true,
-      skip: 0,
-      limit: 100,
-    })
-    .reply(200, uri => {
-      var match = uri.match(/\/v3\/content_types\/((\w)*)\/entries/)
-      return getEntries(match[1])
-    })
+      .persist()
+      .get(/\/v3\/content_types\/((\w)*)\/entries/)
+      .query(true)
+      .reply(200, function(uri){
+        let query = this.req.options.search
+        query = query.substring(1)
+        let locale = undefined
+        query = qs.parse(query)
+        if (query.locale) {
+          locale = query.locale
+        }
+        var match = uri.match(/\/v3\/content_types\/((\w)*)\/entries/);
+        return getEntries(match[1], locale);
+      })
     // mock get locale
     nock(`${command.cmaAPIUrl}`, {
       reqheaders: {
@@ -214,7 +218,16 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stdout()
   .command(['cm:migrate-rte', '-p', './test/dummy/config/config.json', '-y'])
   .it('execute using config file', ctx => {
-    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 3 Entrie(s)')
+    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 2 Entrie(s)')
+  })
+
+  test
+  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(command, 'getToken', getTokenCallback)
+  .stdout()
+  .command(['cm:migrate-rte', '-p', './test/dummy/config/config-locale.json', '-y'])
+  .it('execute using config file w/ locale', ctx => {
+    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 1 Entrie(s)')
   })
 
   test
@@ -223,9 +236,17 @@ describe('Content Type with Single RTE Field of Single Type', () => {
   .stdout()
   .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50'])
   .it('execute using flags', ctx => {
-    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 3 Entrie(s)')
+    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 2 Entrie(s)')
   })
 
+  test
+  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(command, 'getToken', getTokenCallback)
+  .stdout()
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50', '-l','en-in'])
+  .it('execute using flags w/ locale', ctx => {
+    expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 1 Entrie(s)')
+  })
   test
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
