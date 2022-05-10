@@ -21,30 +21,9 @@ module.exports = function (data, mappedUids, uidMapperPath) {
   var isNewRefFields = false;
   var preserveStackVersion = config.preserveStackVersion;
 
-  function gatherJsonRteEntryIds(jsonRteData) {
-    jsonRteData.children.forEach(element => {
-      if (element.type) {
-        switch (element.type) {
-          case 'p': {
-            if (element.children && element.children.length > 0) {
-              gatherJsonRteEntryIds(element)
-            }
-            break;
-          }
-          case 'reference': {
-            if (Object.keys(element.attrs).length > 0 && element.attrs.type === "entry") {
-              uids.push(element.attrs['entry-uid'])
-            }
-            break;
-          }
-        }
-      }
-    })
-  }
-
   var update = function (_parent, form_id, updateEntry) {
-    var _entry = updateEntry
-    var len = _parent.length
+    var _entry = updateEntry;
+    var len = _parent.length;
     for (var j = 0; j < len; j++) {
       if (_entry && _parent[j]) {
         if (j === len - 1 && _entry[_parent[j]]) {
@@ -90,90 +69,38 @@ module.exports = function (data, mappedUids, uidMapperPath) {
   var find = function (schema, _entry) {
     for (var i = 0, _i = schema.length; i < _i; i++) {
       switch (schema[i].data_type) {
-      case 'reference':
-        if (Array.isArray(schema[i].reference_to)) {
-          isNewRefFields = true
-          schema[i].reference_to.forEach(reference => {
-            parent.push(schema[i].uid)
-            update(parent, reference, _entry)
-            parent.pop()
-          })
-        } else {
-          parent.push(schema[i].uid)
-          update(parent, schema[i].reference_to, _entry)
-          parent.pop()
-        }
-        break
-      case 'group':
-        parent.push(schema[i].uid)
-        find(schema[i].schema, _entry)
-        parent.pop()
-        break
-      case 'blocks':
-        for (var j = 0, _j = schema[i].blocks.length; j < _j; j++) {
-          parent.push(schema[i].uid)
-          parent.push(schema[i].blocks[j].uid)
-          find(schema[i].blocks[j].schema, _entry)
-          parent.pop()
-          parent.pop()
-        }
-        break
-      case 'json':
-        if (schema[i].field_metadata.rich_text_type) {
-          if (uids.length === 0) {
-            findEntryIdsFromJsonRte(data.entry, data.content_type.schema)
+        case 'reference':
+          if (Array.isArray(schema[i].reference_to)) {
+            isNewRefFields = true;
+            schema[i].reference_to.forEach((reference) => {
+              parent.push(schema[i].uid);
+              update(parent, reference, _entry);
+              parent.pop();
+            });
+          } else {
+            parent.push(schema[i].uid);
+            update(parent, schema[i].reference_to, _entry);
+            parent.pop();
           }
-        }
-        break;
+          break;
+        case 'group':
+          parent.push(schema[i].uid);
+          find(schema[i].schema, _entry);
+          parent.pop();
+          break;
+        case 'blocks':
+          for (var j = 0, _j = schema[i].blocks.length; j < _j; j++) {
+            parent.push(schema[i].uid);
+            parent.push(schema[i].blocks[j].uid);
+            find(schema[i].blocks[j].schema, _entry);
+            parent.pop();
+            parent.pop();
+          }
+          break;
       }
     }
-  }
-
-  function findEntryIdsFromJsonRte(entry, ctSchema) {
-    for (let i = 0; i < ctSchema.length; i++) {
-      switch (ctSchema[i].data_type) {
-        case 'blocks': {
-          if (entry[ctSchema[i].uid] !== undefined) {
-            if (ctSchema[i].multiple) {
-              entry[ctSchema[i].uid].forEach(e => {
-                let key = Object.keys(e).pop()
-                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
-                findEntryIdsFromJsonRte(e[key], subBlock.schema)
-              })
-            }
-          }
-          break;
-        }
-        case 'global_field':
-        case 'group': {
-          if (entry[ctSchema[i].uid] !== undefined) {
-            if (ctSchema[i].multiple) {
-              entry[ctSchema[i].uid].forEach(e => {
-                findEntryIdsFromJsonRte(e, ctSchema[i].schema)
-              })
-            } else {
-              findEntryIdsFromJsonRte(entry[ctSchema[i].uid], ctSchema[i].schema)
-            }
-          }
-          break;
-        }
-        case 'json': {
-          if (entry[ctSchema[i].uid] !== undefined) {
-            if (ctSchema[i].multiple) {
-              entry[ctSchema[i].uid].forEach(jsonRteData => {
-                gatherJsonRteEntryIds(jsonRteData)
-              })
-            } else {
-              gatherJsonRteEntryIds(entry[ctSchema[i].uid])
-            }
-          }
-          break;
-        }
-      }
-    }
-  }
-
-  find(data.content_type.schema, data.entry)
+  };
+  find(data.content_type.schema, data.entry);
   if (isNewRefFields) {
     findUidsInNewRefFields(data.entry, uids);
   }
