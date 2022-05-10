@@ -161,43 +161,57 @@ async function confirmConfig(config, skipConfirmation) {
 }
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-async function updateEntriesInBatch(contentType, config, skip = 0) {
+async function updateEntriesInBatch(contentType, config, skip = 0, retry = 0) {
   let extraParams = {}
-  if(config.locale){
+  if (config.locale) {
     extraParams.locale = config.locale
-    extraParams.query = {locale:config.locale}
+    extraParams.query = { locale: config.locale }
   }
   let entryQuery = {
     include_count: true,
     ...extraParams,
     skip: skip,
-    limit: 1
+    limit: 100
   };
-  await contentType
-    .entry()
-    .query(entryQuery)
-    .find()
-    .then(async (entriesResponse) => {
-      customBar.start(entriesResponse.count, skip,{
-        content_type: contentType.uid
-      })  
-      
-      skip += entriesResponse.items.length;
-      let entries = entriesResponse.items;
+  try {
+    await contentType
+      .entry()
+      .query(entryQuery)
+      .find()
+      .then(async (entriesResponse) => {
+        try {
+          customBar.start(entriesResponse.count, skip, {
+            content_type: contentType.uid
+          })
+        } catch (error) { }
 
-      for (const entry of entries) {
-        customBar.increment()
-        await updateSingleEntry(entry, contentType, config);
-        await delay(config.delay || 1000);
-      }
-      if (skip === entriesResponse.count) {
-        return Promise.resolve();
-      }
-      await updateEntriesInBatch(contentType, config, skip);
-    })
-    .catch((error) => {
-      throw new Error(error.message);
-    });
+        skip += entriesResponse.items.length;
+        let entries = entriesResponse.items;
+
+        for (const entry of entries) {
+          customBar.increment()
+          await updateSingleEntry(entry, contentType, config);
+          await delay(config.delay || 1000);
+        }
+        if (skip === entriesResponse.count) {
+          return Promise.resolve();
+        }
+        await updateEntriesInBatch(contentType, config, skip);
+      })
+  } catch (error) {
+    console.error(`Error while fetching batch of entries: ${error.message}`);
+    if (retry < 3) {
+      retry += 1
+      console.error(`Retrying again in 5 seconds... (${retry}/3)`);
+      await delay(5000);
+      await updateEntriesInBatch(contentType, config, skip, retry);
+    }
+    else {
+      throw new Error(`Max retry exceeded: Error while fetching batch of entries: ${error.message}`);
+    }
+  }
+
+
 }
 async function updateSingleContentTypeEntries(stack, contentTypeUid, config) {
   let contentType = await getContentType(stack, contentTypeUid);
