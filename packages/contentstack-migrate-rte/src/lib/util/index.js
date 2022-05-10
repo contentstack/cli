@@ -245,7 +245,7 @@ async function handleEntryUpdate(entry,config,retry = 0){
     config.entriesCount += 1
   } catch (error) {
     console.log(chalk.red(`Error while updating '${entry.uid}' entry`))
-    if (error.errors) {
+    if (error.errors && isPlainObject(error.errors)) {
       const errVal = Object.entries(error.errors)
       errVal.forEach(([key, vals]) => {
         console.log(chalk.red(` ${key}:-  ${vals.join(',')}`))
