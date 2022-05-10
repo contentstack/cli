@@ -27,7 +27,7 @@ function execute(processPath, args = [], opts = {}) {
   const childProcess = createProcess(processPath, args, env);
   childProcess.stdin.setEncoding('utf-8');
 
-  return new Promise((resolve, reject) => {
+  return new Promise((res, reject) => {
     childProcess.stderr.once('data', (err) => {
       reject(err.toString());
     });
@@ -36,7 +36,7 @@ function execute(processPath, args = [], opts = {}) {
       return reject(code);
     });
 
-    childProcess.stdout.pipe(concat((result) => resolve(result.toString())));
+    childProcess.stdout.pipe(concat((result) => res(result.toString())));
   });
 }
 
