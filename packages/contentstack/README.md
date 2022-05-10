@@ -1147,6 +1147,17 @@ OPTIONS
 
 ALIASES
   $ csdx cm:seed
+  $ csdx cm:seed -r "account"
+  $ csdx cm:seed -r "account/repository"
+  $ csdx cm:seed -r "account/repository" -s "stack-uid" //seed content into specific stack
+  $ csdx cm:seed -r "account/repository" -o "your-org-uid" -n "stack-name" //create a new stack in given org uid
+```
+
+_See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.11/src/commands/cm/seed.ts)_
+
+## `csdx cm:stack-clone`
+
+Clone data (structure or content or both) of a stack into another stack
 
 EXAMPLES
   $ csdx cm:stacks:seed
