@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@contentstack/cli-auth": "^1.0.0",
-    "@contentstack/cli-cm-bootstrap": "^1.0.6",
+    "@contentstack/cli-cm-bootstrap": "^1.0.7",
     "@contentstack/cli-cm-bulk-publish": "^1.0.0",
     "@contentstack/cli-cm-clone": "^1.0.0",
     "@contentstack/cli-cm-export": "^1.0.0",
