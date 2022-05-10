@@ -1,5 +1,4 @@
 @contentstack/cli-cm-import
-=================================
 
 It is Contentstack’s CLI plugin to import content in the stack. To learn how to export and import content in Contentstack, refer to the [Migration guide](https://www.contentstack.com/docs/developers/cli/migration/). 
 
