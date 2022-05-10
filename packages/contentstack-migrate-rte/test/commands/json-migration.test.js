@@ -75,7 +75,8 @@ describe('Migration Config validation', () => {
   })
   .it('throw error on invalid config file')
 })
-describe('Content Type with Single RTE Field of Single Type', () => {
+describe('Content Type with Single RTE Field of Single Type', function(){
+  this.timeout(25000);
   let token = getToken('test1')
   beforeEach(() => {
     nock(`${command.cmaAPIUrl}`, {

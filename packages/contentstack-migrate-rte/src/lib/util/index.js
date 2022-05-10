@@ -10,7 +10,6 @@ const {JSDOM} = require('jsdom')
 const collapseWithSpace = require('collapse-whitespace')
 const {htmlToJson} = require('@contentstack/json-rte-serializer')
 const nodePath = require('path')
-const fetch = require('node-fetch');
 
 const packageValue = require('../../../package.json')
 const isBlank = variable => {
@@ -35,7 +34,7 @@ function getStack(data) {
   return stack
 }
 var customBar = cli.progress({
-  format: 'Migrating entry for {content_type} ' + '| {bar} | {value}/{total} Entries',
+  format: '{title} ' + '| {bar} | {value}/{total} Entries',
   barCompleteChar: '\u2588',
   barIncompleteChar: '\u2591',
   stream: process.stdout
@@ -100,7 +99,7 @@ function getGlobalField(stack, globalFieldUid) {
 }
 function throwConfigError(error) {
   // console.log(error)
-  const {name, path, message, argument} = error
+  const {name, path, argument} = error
   let fieldName = path.join('.')
   if (fieldName === '') {
     fieldName = 'Config'
@@ -130,26 +129,21 @@ async function confirmConfig(config, skipConfirmation) {
   return confirmation
 }
 const delay = ms => new Promise(res => setTimeout(res, ms))
-async function getAllLocalesOfEntry(entry){
-  let allLocales = []
-  try {
-    let locales = await fetch(`https://${command.cmaHost}/v3/content_types/${entry.content_type_uid}/entries/${entry.uid}/locales?deleted=false`,{
-    method: 'GET',
-    headers: entry.stackHeaders
-    })
-    let localesData = await locales.json()
-    allLocales = localesData.locales || []
-    return allLocales
 
-  } catch (error) {
-    throw new Error("Error while fetching locales of entry. Please try again.")
-  }
-}
 async function updateEntriesInBatch(contentType, config, skip = 0,retry = 0) {
+  let title = `Migrating entries for ${contentType.uid}`
   let extraParams = {}
   if (config.locale) {
     extraParams.locale = config.locale
     extraParams.query = { locale: config.locale }
+  }
+  if(config["failed-entries"] && config["failed-entries"].length > 0){
+    title = `Migrating failed entries for ${contentType.uid}`
+    if(extraParams.query){
+      extraParams.query["uid"] = { "$in": config["failed-entries"] }
+    }else{
+      extraParams = {query: {uid: { "$in": config["failed-entries"] }}}
+    }
   }
   let entryQuery = {
     include_count: true,
@@ -161,7 +155,7 @@ async function updateEntriesInBatch(contentType, config, skip = 0,retry = 0) {
     await contentType.entry().query(entryQuery).find().then(async entriesResponse => {
       try {
         customBar.start(entriesResponse.count, skip, {
-          content_type: contentType.uid
+          title: title
         })
       } catch (error) {}
       skip += entriesResponse.items.length
@@ -238,20 +232,36 @@ async function updateSingleEntry(entry, contentType, config) {
       let parentFileFieldPath = fileFieldPath.slice(0, fileFieldPath.length - 1).join('.')
       unsetResolvedUploadData(parentFileFieldPath, entry, schema, {fileUid})
     }
+  } catch (error) {
+    console.error(`Error while unsetting resolved upload data: ${error.message}`);
+  }
+  await handleEntryUpdate(entry,config)
+
+  // console.log("updated entry", entry)
+}
+async function handleEntryUpdate(entry,config,retry = 0){
+  try {
     await entry.update({locale:entry.locale})
     config.entriesCount += 1
   } catch (error) {
-    config.errorEntriesUid.push(entry.uid)
     console.log(chalk.red(`Error while updating '${entry.uid}' entry`))
     if (error.errors) {
       const errVal = Object.entries(error.errors)
       errVal.forEach(([key, vals]) => {
         console.log(chalk.red(` ${key}:-  ${vals.join(',')}`))
       })
+    }else{
+      console.log(chalk.red(`Error stack: ${error}`))
+    }
+    if (retry < 3) {
+      retry += 1
+      console.log(`Retrying again in 5 seconds... (${retry}/3)`);
+      await delay(5000);
+      await handleEntryUpdate(entry,config,retry)
+    }else{
+      config.errorEntriesUid.push(entry.uid)
     }
   }
-
-  // console.log("updated entry", entry)
 }
 function traverseSchemaForField(schema, path, field_uid) {
   let paths = path.split('.')
