@@ -724,6 +724,19 @@ importEntries.prototype = {
             }
           }
 
+          if (flag.jsonRte) {
+            self.ctJsonRte.push(uid)
+            if (flag.jsonRteEmbeddedEntries) {
+              self.ctJsonRteWithEntryRefs.push(uid)
+              // pushing ct uid to refSchemas, because
+              // repostEntries uses refSchemas content types for
+              // reposting entries
+              if (self.refSchemas.indexOf(uid) === -1) {
+                self.refSchemas.push(uid)
+              }
+            }
+          }
+
           // Replace extensions with new UID
           extension_suppress(contentTypeSchema.schema, config.preserveStackVersion);
         }
@@ -1119,6 +1132,230 @@ importEntries.prototype = {
           return reject(error);
         });
     });
+  },
+  removeEntryRefsFromJSONRTE(entry, ctSchema) {
+    for (let i = 0; i < ctSchema.length; i++) {
+      switch(ctSchema[i].data_type) {
+        case 'blocks': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(e => {
+                let key = Object.keys(e).pop()
+                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
+                e[key] = this.removeEntryRefsFromJSONRTE(e[key], subBlock.schema)
+                return e
+              })
+            }
+          }
+          break;
+        }
+        case 'global_field':
+        case 'group': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(e => {
+                e = this.removeEntryRefsFromJSONRTE(e, ctSchema[i].schema)
+                return e
+              })
+            } else {
+              entry[ctSchema[i].uid] = this.removeEntryRefsFromJSONRTE(entry[ctSchema[i].uid], ctSchema[i].schema)
+            }
+          }
+          break;
+        }
+        case 'json': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(jsonRteData => {
+                // repeated code from else block, will abstract later
+                let entryReferences = jsonRteData.children.filter(e => this.doEntryReferencesExist(e))
+                if (entryReferences.length > 0) {
+                  jsonRteData.children = jsonRteData.children.filter(e => !this.doEntryReferencesExist(e))
+                  return jsonRteData // return jsonRteData without entry references
+                } else {
+                  return jsonRteData // return jsonRteData as it is, because there are no entry references
+                }
+              })
+            } else {
+              let entryReferences = entry[ctSchema[i].uid].children.filter(e => this.doEntryReferencesExist(e))
+              if (entryReferences.length > 0) {
+                entry[ctSchema[i].uid].children = entry[ctSchema[i].uid].children.filter(e => !this.doEntryReferencesExist(e))
+              }
+            }
+          }
+          break;
+        }
+      }
+    }
+    return entry
+  },
+  doEntryReferencesExist(element) { 
+    // checks if the children of p element contain any references
+    // only checking one level deep, not recursive
+
+    if (element.length) {
+      for(let i=0; i < element.length; i++) {
+        // although most data has only one level of nesting, and this case might never come up
+        // I've handled multiple level of nesting for 'p' elements
+        if(element[i].type === 'p' && element[i].children && element[i].children.length > 0) {
+          return this.doEntryReferencesExist(element[i].children)
+        } else if(this.isEntryRef(element[i])) {
+          return true
+        }
+      }
+    } else {
+      if(this.isEntryRef(element)) {
+        return true
+      }
+
+      if (element.type === "p" && element.children && element.children.length > 0) {
+        return this.doEntryReferencesExist(element.children)
+      }
+    }
+    return false
+  },
+  restoreJsonRteEntryRefs(entry, sourceStackEntry, ctSchema) {
+    for (let i = 0; i < ctSchema.length; i++) {
+      switch (ctSchema[i].data_type) {
+        case 'blocks': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map((e, eIndex) => {
+                let key = Object.keys(e).pop()
+                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
+                let sourceStackElement = sourceStackEntry[ctSchema[i].uid][eIndex][key]
+                e[key] = this.restoreJsonRteEntryRefs(e[key], sourceStackElement, subBlock.schema)
+                return e
+              })
+            }
+          }
+          break;
+        }
+        case 'global_field':
+        case 'group': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map((e, eIndex) => {
+                let sourceStackElement = sourceStackEntry[ctSchema[i].uid][eIndex]
+                e = this.restoreJsonRteEntryRefs(e, sourceStackElement, ctSchema[i].schema)
+                return e
+              })
+            } else {
+              let sourceStackElement = sourceStackEntry[ctSchema[i].uid]
+              entry[ctSchema[i].uid] = this.restoreJsonRteEntryRefs(entry[ctSchema[i].uid], sourceStackElement, ctSchema[i].schema)
+            }
+          }
+          break;
+        }
+        case 'json': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map((field, index) => {
+                field.children = [
+                  ...field.children, 
+                  ...sourceStackEntry[ctSchema[i].uid][index].children.filter(e => this.doEntryReferencesExist(e))
+                ]
+                return field
+              })
+            } else {
+              entry[ctSchema[i].uid].children = [
+                ...entry[ctSchema[i].uid].children, 
+                ...sourceStackEntry[ctSchema[i].uid].children.filter(e => this.doEntryReferencesExist(e)),
+              ]
+            }
+          }
+          break;
+        }
+      }
+    }
+    return entry
+    //------------------------------------------------------------------------------------------------------------
+    // if (Object.keys(self.jsonRteEntryRefs).indexOf(entry.uid) > -1) {
+    //   Object.keys(self.jsonRteEntryRefs[entry.uid]).forEach(jsonRteFieldUid => {
+    //     if (self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid].length) { // handles when json_rte is multiple
+    //       entry[jsonRteFieldUid] = entry[jsonRteFieldUid].map((field, index) => {
+    //         field.children = [...field.children, ...self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid][index]]
+    //         return field
+    //       })
+    //     } else {
+    //       entry[jsonRteFieldUid].children = [...entry[jsonRteFieldUid].children, ...self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid].children]
+    //     }
+    //   })
+    // }
+    // return entry
+  },
+  isEntryRef(element) {
+    return element.type === "reference" && element.attrs.type === "entry"
+  },
+  generateUidsForJsonRteFields(entry, ctSchema) {
+    for (let i = 0; i < ctSchema.length; i++) {
+      switch (ctSchema[i].data_type) {
+        case 'blocks': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(e => {
+                let key = Object.keys(e).pop()
+                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
+                e[key] = this.generateUidsForJsonRteFields(e[key], subBlock.schema)
+                return e
+              })
+            }
+          }
+          break;
+        }
+        case 'global_field':
+        case 'group': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(e => {
+                e = this.generateUidsForJsonRteFields(e, ctSchema[i].schema)
+                return e
+              })
+            } else {
+              entry[ctSchema[i].uid] = this.generateUidsForJsonRteFields(entry[ctSchema[i].uid], ctSchema[i].schema)
+            }
+          }
+          break;
+        }
+        case 'json': {
+          if (entry[ctSchema[i].uid] !== undefined) {
+            if (ctSchema[i].multiple) {
+              entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(jsonRteData => {
+                jsonRteData.uid = this.generateUid()
+                jsonRteData.children = jsonRteData.children.map(child => this.populateChildrenWithUids(child))
+                return jsonRteData
+              })
+            } else {
+              entry[ctSchema[i].uid].uid = this.generateUid()
+              entry[ctSchema[i].uid].children = entry[ctSchema[i].uid].children.map(child => this.populateChildrenWithUids(child))
+            }
+          }
+          break;
+        }
+      }
+    }
+    return entry
+  },
+  populateChildrenWithUids(children) {
+    if (children.length && children.length > 0) {
+      return children.map(child => {
+        if(child.type && child.type.length > 0) {
+          child.uid = this.generateUid()
+        }
+        if(child.children && child.children.length > 0) {
+          child.children = this.populateChildrenWithUids(child.children)
+        }
+        return child
+      })
+    } else {
+      if (children.type && children.type.length > 0) {
+        children.uid = this.generateUid()
+      }
+      if (children.children && children.children.length > 0) {
+        children.children = this.populateChildrenWithUids(children.children)
+      }
+      return children
+    }
   },
   removeEntryRefsFromJSONRTE(entry, ctSchema) {
     for (let i = 0; i < ctSchema.length; i++) {
