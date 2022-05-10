@@ -17,8 +17,6 @@ fileignoreconfig:
   checksum: 66126a79971d8afa929ac43e86261578431e4d63bc0de59a410d86c467bdcbcf
 - filename: packages/contentstack-import/src/lib/import/assets.js
   checksum: 799050f25ca725fd352ff27f3df8bda9d0fc8e7f65cfc2e26abaa4e67a0ca741
-- filename: packages/contentstack-import/src/lib/import/entries.js
-  checksum: 87f36a09dbbce4d97b97084862bd2624d6f51a6064eee35c9f5091c7e802acb7
 - filename: packages/contentstack-import/src/lib/import/locales.js
   checksum: cab0f178ef06b4580dc727d6190e31739863961e3ae05ba8c2d02f620286f05c
 - filename: packages/contentstack-import/src/lib/import/webhooks.js
@@ -41,4 +39,6 @@ fileignoreconfig:
   checksum: 03940bc99b53df5257456051789a20a273ee35abc1546d2c3e8a8eefb1f70482
 - filename: packages/contentstack/package-lock.json
   checksum: be5da46c99ee2ea6c021a6dd4f903feda4f4c610033aba5ad3d25761810b52ff
+- filename: packages/contentstack-import/src/lib/import/entries.js
+  checksum: 26921322ea463e69284d009777eb6b58a62cd683b4fdf23120e0ccf02c323063
 version: "1.0"
