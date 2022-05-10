@@ -4,8 +4,7 @@
 const { CONTENTSTACK_API_KEY, CONTENTSTACK_AUTHTOKEN } = process.env;
 const { version } = require('../../package.json');
 module.exports = {
-  hostname: 'dev9-api.contentstack.com',
-  // hostname: 'stag-app.contentstack.com',
+  hostname: 'api.contentstack.io',
   version: '/v3',
   method: 'GET', // Default Http method
   headers: {

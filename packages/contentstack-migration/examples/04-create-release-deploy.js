@@ -34,14 +34,6 @@ module.exports = async ({migration, stackSDKInstance}) => {
           entries = entries.items
           for (let index = 0; index < entries.length; index++) {
             const entry = entries[index]
-            const publishDetails = {
-              locales: [
-                'en-us',
-              ],
-              environments: [
-                'development',
-              ],
-            }
             items.push({
               uid: entry.uid,
               version: entry._version,
