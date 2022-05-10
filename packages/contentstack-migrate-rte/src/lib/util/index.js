@@ -37,7 +37,8 @@ function getStack(data) {
 var customBar = cli.progress({
   format: 'Migrating entry for {content_type} ' + '| {bar} | {value}/{total} Entries',
   barCompleteChar: '\u2588',
-  barIncompleteChar: '\u2591'
+  barIncompleteChar: '\u2591',
+  stream: process.stdout
 })
 async function getConfig(flags) {
   try {
