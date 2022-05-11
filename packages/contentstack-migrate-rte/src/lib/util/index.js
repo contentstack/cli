@@ -3,15 +3,13 @@ const {Command} = require('@contentstack/cli-command')
 const command = new Command()
 const {cli} = require('cli-ux')
 const chalk = require('chalk')
-const {isEmpty, find, get, isArray, isUndefined, set, flatten, cloneDeep, isNil, isString, isObject} = require('lodash')
+const {isEmpty, find, get, isArray, isUndefined, set, flatten, cloneDeep, isNil, isNull, isObject} = require('lodash')
 const Validator = require('jsonschema').Validator
 const configSchema = require('./config_schema.json')
 const {JSDOM} = require('jsdom')
 const collapseWithSpace = require('collapse-whitespace')
-const {v4} = require('uuid')
 const {htmlToJson} = require('@contentstack/json-rte-serializer')
-const path = require('path')
-const fetch = require('node-fetch');
+const nodePath = require('path')
 
 const packageValue = require('../../../package.json')
 const isBlank = variable => {
@@ -28,17 +26,24 @@ function getStack(data) {
   const client = contentstacksdk.client({
     host: formatHostname(data.host),
     application: `json-rte-migration/${packageValue.version}`,
+    timeout:120000
   })
   const stack = client.stack({api_key: tokenDetails.apiKey, management_token: tokenDetails.token})
 
   stack.host = data.host
   return stack
 }
+var customBar = cli.progress({
+  format: '{title} ' + '| {bar} | {value}/{total} Entries',
+  barCompleteChar: '\u2588',
+  barIncompleteChar: '\u2591',
+  stream: process.stdout
+})
 async function getConfig(flags) {
   try {
     let config
     if (flags.configPath) {
-      config = require(path.resolve(flags.configPath))
+      config = require(nodePath.resolve(flags.configPath))
     } else {
       config = {
         alias: flags.alias,
@@ -51,6 +56,7 @@ async function getConfig(flags) {
           },
         ],
         delay: flags.delay,
+        locale: flags.locale
       }
     }
     if (checkConfig(config)) {
@@ -93,7 +99,7 @@ function getGlobalField(stack, globalFieldUid) {
 }
 function throwConfigError(error) {
   // console.log(error)
-  const {name, path, message, argument} = error
+  const {name, path, argument} = error
   let fieldName = path.join('.')
   if (fieldName === '') {
     fieldName = 'Config'
@@ -123,50 +129,63 @@ async function confirmConfig(config, skipConfirmation) {
   return confirmation
 }
 const delay = ms => new Promise(res => setTimeout(res, ms))
-async function getAllLocalesOfEntry(entry){
-  let allLocales = []
-  try {
-    let locales = await fetch(`https://${command.cmaHost}/v3/content_types/${entry.content_type_uid}/entries/${entry.uid}/locales?deleted=false`,{
-    method: 'GET',
-    headers: entry.stackHeaders
-    })
-    let localesData = await locales.json()
-    allLocales = localesData.locales || []
-    return allLocales
 
-  } catch (error) {
-    throw new Error("Error while fetching locales of entry. Please try again.")
+async function updateEntriesInBatch(contentType, config, skip = 0,retry = 0) {
+  let title = `Migrating entries for ${contentType.uid}`
+  let extraParams = {}
+  if (config.locale) {
+    extraParams.locale = config.locale
+    extraParams.query = { locale: config.locale }
   }
-}
-async function updateEntriesInBatch(contentType, config, skip = 0) {
+  if(config["failed-entries"] && config["failed-entries"].length > 0){
+    title = `Migrating failed entries for ${contentType.uid}`
+    if(extraParams.query){
+      extraParams.query["uid"] = { "$in": config["failed-entries"] }
+    }else{
+      extraParams = {query: {uid: { "$in": config["failed-entries"] }}}
+    }
+  }
   let entryQuery = {
     include_count: true,
+    ...extraParams,
     skip: skip,
-    limit: 100,
-    "only[BASE][]": "uid"
+    limit: 100
   }
-  await contentType.entry().query(entryQuery).find().then(async entriesResponse => {
-    skip += entriesResponse.items.length
-    let entries = entriesResponse.items
-
-    for (const entry of entries) {
-      let allLocales = await getAllLocalesOfEntry(entry)
-      for (const locale of allLocales) {
-        let localizedEntry = await contentType.entry(entry.uid).fetch({locale:locale.code})
-        if(localizedEntry.locale === locale.code){
-          await updateSingleEntry(localizedEntry, contentType, config)
-        }
+  try {
+    await contentType.entry().query(entryQuery).find().then(async entriesResponse => {
+      try {
+        customBar.start(entriesResponse.count, skip, {
+          title: title
+        })
+      } catch (error) {}
+      skip += entriesResponse.items.length
+      let entries = entriesResponse.items
+  
+      for (const entry of entries) {
+        try {
+          customBar.increment()
+        } catch (error) {}
+        await updateSingleEntry(entry, contentType, config)
+        await delay(config.delay || 1000)
       }
-      await delay(config.delay || 1000)
+      if (skip === entriesResponse.count) {
+        return Promise.resolve()
+      }
+      await updateEntriesInBatch(contentType, config, skip)
+    })
+  } catch (error) {
+    console.error(`Error while fetching batch of entries: ${error.message}`);
+    if (retry < 3) {
+      retry += 1
+      console.error(`Retrying again in 5 seconds... (${retry}/3)`);
+      await delay(5000);
+      await updateEntriesInBatch(contentType, config, skip, retry);
     }
-    if (skip === entriesResponse.count) {
-      // console.log("exit")
-      return Promise.resolve()
+    else {
+      throw new Error(`Max retry exceeded: Error while fetching batch of entries: ${error.message}`);
     }
-    await updateEntriesInBatch(contentType, config, skip)
-  }).catch(error => {
-    throw new Error(error.message)
-  })
+  }
+  
 }
 async function updateSingleContentTypeEntries(stack, contentTypeUid, config) {
   let contentType = await getContentType(stack, contentTypeUid)
@@ -180,6 +199,9 @@ async function updateSingleContentTypeEntries(stack, contentTypeUid, config) {
   }
   await updateEntriesInBatch(contentType, config)
   config.contentTypeCount += 1
+  try {
+    customBar.stop()
+  } catch (error) {}
 }
 async function updateSingleContentTypeEntriesWithGlobalField(contentType, config) {
   let schema = contentType.schema
@@ -210,20 +232,36 @@ async function updateSingleEntry(entry, contentType, config) {
       let parentFileFieldPath = fileFieldPath.slice(0, fileFieldPath.length - 1).join('.')
       unsetResolvedUploadData(parentFileFieldPath, entry, schema, {fileUid})
     }
+  } catch (error) {
+    console.error(`Error while unsetting resolved upload data: ${error.message}`);
+  }
+  await handleEntryUpdate(entry,config)
+
+  // console.log("updated entry", entry)
+}
+async function handleEntryUpdate(entry,config,retry = 0){
+  try {
     await entry.update({locale:entry.locale})
     config.entriesCount += 1
   } catch (error) {
-    config.errorEntriesUid.push(entry.uid)
     console.log(chalk.red(`Error while updating '${entry.uid}' entry`))
-    if (error.errors) {
+    if (error.errors && isPlainObject(error.errors)) {
       const errVal = Object.entries(error.errors)
       errVal.forEach(([key, vals]) => {
         console.log(chalk.red(` ${key}:-  ${vals.join(',')}`))
       })
+    }else{
+      console.log(chalk.red(`Error stack: ${error}`))
+    }
+    if (retry < 3) {
+      retry += 1
+      console.log(`Retrying again in 5 seconds... (${retry}/3)`);
+      await delay(5000);
+      await handleEntryUpdate(entry,config,retry)
+    }else{
+      config.errorEntriesUid.push(entry.uid)
     }
   }
-
-  // console.log("updated entry", entry)
 }
 function traverseSchemaForField(schema, path, field_uid) {
   let paths = path.split('.')
@@ -399,7 +437,7 @@ function unsetResolvedUploadData(path, entry, schema, fieldMetaData) {
     if (entry) {
       const {fileUid} = fieldMetaData
       const fieldValue = get(entry, fileUid)
-      if (!isUndefined(fieldValue)) {
+      if (!isUndefined(fieldValue) && !isNull(fieldValue)) {
         if (isArray(fieldValue)) {
           for (let i = 0; i < fieldValue.length; i++) {
             const singleFile = fieldValue[i]
@@ -465,6 +503,9 @@ async function updateContentTypeForGlobalField(stack, global_field, config) {
         throw new Error(`The ${contentType.uid} content type referred in ${globalField.uid} contains an empty schema.`)
       }
     }
+    try {
+      customBar.stop()
+    } catch (error) {}
   } else {
     throw new Error(`${globalField.uid} Global field is not referred in any content type.`)
   }
