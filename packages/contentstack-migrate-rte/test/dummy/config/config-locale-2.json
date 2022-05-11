@@ -9,5 +9,5 @@
         }
     ],
     "delay": 50,
-    "locale":["en-in"]
+    "locale":["en-in","en-us"]
 }
