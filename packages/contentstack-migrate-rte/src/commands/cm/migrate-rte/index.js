@@ -50,6 +50,7 @@ JsonMigrationCommand.flags = {
   jsonPath: flags.string({char: 'j', description: 'Provide path of JSON RTE to migrate', dependsOn: ['htmlPath']}),
   delay: flags.integer({char: 'd', description: 'Provide delay in ms between two entry update', default: 1000}),
   locale: flags.string({char: 'l', description: 'The locale from which entries need to be migrated'}),
+  "batch-limit" : flags.integer({description:'Provide batch limit for updating entries', default: 50 }),
 }
 
 JsonMigrationCommand.examples = [
