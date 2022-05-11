@@ -55,7 +55,8 @@ async function getConfig(flags) {
             to: flags.jsonPath,
           },
         ],
-        delay: flags.delay
+        delay: flags.delay,
+        "batch-limit": flags["batch-limit"]
       }
       if(flags.locale){
         config.locale = [flags.locale]
@@ -110,6 +111,8 @@ function throwConfigError(error) {
     throw new Error(`${fieldName} is mandatory while defining config.`)
   } else if (name === 'type') {
     throw new Error(`Invalid key type. ${fieldName} must be of ${argument[0] || 'string'} type(s).`)
+  } else if (name === 'minimum' || name === 'maximum') {
+    throw new Error(`${fieldName} must be between 1 and 100.`)
   }
 }
 function checkConfig(config) {
@@ -151,7 +154,7 @@ async function updateEntriesInBatch(contentType, config, skip = 0,retry = 0,loca
     include_count: true,
     ...extraParams,
     skip: skip,
-    limit: 100
+    limit: config["batch-limit"] || 50
   }
   try {
     await contentType.entry().query(entryQuery).find().then(async entriesResponse => {
@@ -202,7 +205,7 @@ async function updateSingleContentTypeEntries(stack, contentTypeUid, config) {
   if(config.locale && isArray(config.locale) && config.locale.length > 0){
     const locales = config.locale
     for (const locale of locales) {
-      console.log(`Migrating entries for "${contentTypeUid}" Content-type in "${locale}" locale`)
+      console.log(`\nMigrating entries for "${contentTypeUid}" Content-type in "${locale}" locale`)
       await updateEntriesInBatch(contentType, config,0,0,locale)
       await delay(config.delay || 1000)
     }
@@ -222,7 +225,7 @@ async function updateSingleContentTypeEntriesWithGlobalField(contentType, config
   if (config.locale && isArray(config.locale) && config.locale.length > 0) {
     const locales = config.locale
     for (const locale of locales) {
-      console.log(`Migrating entries for ${contentType.uid} in locale ${locale}`)
+      console.log(`\nMigrating entries for ${contentType.uid} in locale ${locale}`)
       await updateEntriesInBatch(contentType, config, 0, 0, locale)
       await delay(config.delay || 1000)
     }
