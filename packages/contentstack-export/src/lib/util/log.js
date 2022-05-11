@@ -125,12 +125,21 @@ exports.addlogs = async (config, message, type) => {
 
 exports.unlinkFileLogger = () => {
   if (logger) {
-    const fileLogger = logger.transports.file;
-    logger.remove(fileLogger);
+    const transports = logger.transports;
+    transports.forEach(transport => {
+      if (transport.name === 'file') {
+        logger.remove(transport);
+      }
+    });
+
   }
 
   if (errorLogger) {
-    const fileLogger = errorLogger.transports.file;
-    errorLogger.remove(fileLogger);
+    const transports = errorLogger.transports;
+    transports.forEach(transport => {
+      if (transport.name === 'file') {
+        errorLogger.remove(transport);
+      }
+    });
   }
 };
