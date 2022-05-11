@@ -157,6 +157,16 @@
                 [
                     "en-in"]
             ]
+        },
+        "batch-limit": {
+            "type": "integer",
+            "default": 50,
+            "title": "The batch-limit Schema",
+            "examples": [
+                30
+            ],
+            "maximum": 100,
+            "minimum": 1
         }
     },
     "additionalProperties": true

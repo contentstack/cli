@@ -244,8 +244,8 @@ describe('Content Type with Single RTE Field of Single Type', function(){
   .stub(cli, 'confirm', () => async () => 'yes')
   .stub(command, 'getToken', getTokenCallback)
   .stdout()
-  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50'])
-  .it('execute using flags', ctx => {
+  .command(['cm:migrate-rte', '-a', 'test1', '-c', 'contenttypewithsinglerte', '-h', 'rich_text_editor', '-j', 'supercharged_rte', '-d', '50' ,'--batch-limit', 10])
+  .it('execute using flags111', ctx => {
     expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 2 Entrie(s)')
   })
 
