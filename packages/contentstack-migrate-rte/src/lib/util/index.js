@@ -55,8 +55,10 @@ async function getConfig(flags) {
             to: flags.jsonPath,
           },
         ],
-        delay: flags.delay,
-        locale: flags.locale
+        delay: flags.delay
+      }
+      if(flags.locale){
+        config.locale = [flags.locale]
       }
     }
     if (checkConfig(config)) {
@@ -130,12 +132,12 @@ async function confirmConfig(config, skipConfirmation) {
 }
 const delay = ms => new Promise(res => setTimeout(res, ms))
 
-async function updateEntriesInBatch(contentType, config, skip = 0,retry = 0) {
+async function updateEntriesInBatch(contentType, config, skip = 0,retry = 0,locale = undefined) {
   let title = `Migrating entries for ${contentType.uid}`
   let extraParams = {}
-  if (config.locale) {
-    extraParams.locale = config.locale
-    extraParams.query = { locale: config.locale }
+  if (locale) {
+    extraParams.locale = locale
+    extraParams.query = { locale: locale }
   }
   if(config["failed-entries"] && config["failed-entries"].length > 0){
     title = `Migrating failed entries for ${contentType.uid}`
@@ -171,7 +173,7 @@ async function updateEntriesInBatch(contentType, config, skip = 0,retry = 0) {
       if (skip === entriesResponse.count) {
         return Promise.resolve()
       }
-      await updateEntriesInBatch(contentType, config, skip)
+      await updateEntriesInBatch(contentType, config, skip,0,locale)
     })
   } catch (error) {
     console.error(`Error while fetching batch of entries: ${error.message}`);
@@ -179,7 +181,7 @@ async function updateEntriesInBatch(contentType, config, skip = 0,retry = 0) {
       retry += 1
       console.error(`Retrying again in 5 seconds... (${retry}/3)`);
       await delay(5000);
-      await updateEntriesInBatch(contentType, config, skip, retry);
+      await updateEntriesInBatch(contentType, config, skip, retry,locale);
     }
     else {
       throw new Error(`Max retry exceeded: Error while fetching batch of entries: ${error.message}`);
@@ -197,7 +199,16 @@ async function updateSingleContentTypeEntries(stack, contentTypeUid, config) {
       throw new Error(`The ${contentTypeUid} content type contains an empty schema.`)
     }
   }
-  await updateEntriesInBatch(contentType, config)
+  if(config.locale && isArray(config.locale) && config.locale.length > 0){
+    const locales = config.locale
+    for (const locale of locales) {
+      console.log(`Migrating entries for "${contentTypeUid}" Content-type in "${locale}" locale`)
+      await updateEntriesInBatch(contentType, config,0,0,locale)
+      await delay(config.delay || 1000)
+    }
+  }else{
+    await updateEntriesInBatch(contentType, config)
+  }
   config.contentTypeCount += 1
   try {
     customBar.stop()
@@ -208,7 +219,16 @@ async function updateSingleContentTypeEntriesWithGlobalField(contentType, config
   for (const path of config.paths) {
     isPathValid(schema, path)
   }
-  await updateEntriesInBatch(contentType, config)
+  if (config.locale && isArray(config.locale) && config.locale.length > 0) {
+    const locales = config.locale
+    for (const locale of locales) {
+      console.log(`Migrating entries for ${contentType.uid} in locale ${locale}`)
+      await updateEntriesInBatch(contentType, config, 0, 0, locale)
+      await delay(config.delay || 1000)
+    }
+  } else {
+    await updateEntriesInBatch(contentType, config)
+  }
   config.contentTypeCount += 1
 }
 async function updateSingleEntry(entry, contentType, config) {
@@ -259,7 +279,11 @@ async function handleEntryUpdate(entry,config,retry = 0){
       await delay(5000);
       await handleEntryUpdate(entry,config,retry)
     }else{
-      config.errorEntriesUid.push(entry.uid)
+      if(config && config.errorEntriesUid && config.errorEntriesUid[entry.content_type_uid] &&config.errorEntriesUid[entry.content_type_uid][entry.locale]){
+        config.errorEntriesUid[entry.content_type_uid][entry.locale].push(entry.uid)
+      }else{
+        set(config,['errorEntriesUid',entry.content_type_uid,entry.locale],[entry.uid])
+      }
     }
   }
 }
