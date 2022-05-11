@@ -124,6 +124,22 @@
             "examples": [
                 100
             ]
+        },
+        "failed-entries": {
+            "type": "array",
+            "default": [],
+            "title": "The failed-entries Schema",
+            "items": {
+                "type": "string",
+                "default": "",
+                "title": "A Schema",
+                "examples": [
+                    "blt1c37c346218e033e, blt6ed6d545cdc2064f, blt0594909c6f0a2e82, blt07fe0dc0d2f89e71, blt6d0d993a944947e8"
+                ]
+            },
+            "examples": [
+                ["blt1c37c346218e033e, blt6ed6d545cdc2064f, blt0594909c6f0a2e82, blt07fe0dc0d2f89e71, blt6d0d993a944947e8"]
+            ]
         }
     },
     "additionalProperties": true
