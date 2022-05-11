@@ -1,8 +1,7 @@
 {
   "name": "root",
-  "dependencies": {},
   "devDependencies": {
-    "lerna": "^3.16.4"
+    "lerna": "^4.0.0"
   },
   "engines": {
     "node": ">=8.0.0"
