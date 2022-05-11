@@ -46,8 +46,8 @@ class MigrationCommand extends Command {
   static examples = [
     "$ csdx cm:migration -A -n <migration/script/file/path> -k <api-key>",
     "$ csdx cm:migration -A -n <migration/script/file/path> -k <api-key> -B <target branch name>",
-    "$ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ...",
-    "$ csdx cm:migration --config-file <path/to/json/config/file>",
+    "$ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... -n <migration/script/file/path>",
+    "$ csdx cm:migration --config-file <path/to/json/config/file> -n <migration/script/file/path>",
     "$ csdx cm:migration --multi -n <migration/scripts/dir/path> ",
     "$ csdx cm:migration -a -n <migration/script/file/path> -k <api-key>",
   ];
