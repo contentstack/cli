@@ -503,7 +503,7 @@
             "entry": {
                 "content_type_uid": "contenttypewithfilefield",
                 "title": "This is test",
-                "file": "blt500166bcb9232005",
+                "file": null,
                 "asset": "bltab83acc0e405b6f8",
                 "modular_blocks": [
                     {
