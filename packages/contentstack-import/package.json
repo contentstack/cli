@@ -14,7 +14,7 @@
 		"configstore": "^5.0.1",
 		"debug": "^4.1.0",
 		"lodash": "^4.17.20",
-		"marked": "0.7.0",
+		"marked": "4.0.10",
 		"mkdirp": "^1.0.4",
 		"ncp": "2.0.0",
 		"request": "2.88.0",
