@@ -9,6 +9,24 @@ It is Contentstack’s CLI plugin to import content in the stack. To learn how t
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+
+For switching to EU region update the hosts at config/default.js
+```js
+{
+  host:'https://eu-api.contentstack.com/v3',
+  cdn: 'https://eu-cdn.contentstack.com/v3',
+ ...
+}
+``` 
+
+For switching to AZURE-NA region update the hosts at config/default.js
+```js
+{
+  host:'https://azure-na-api.contentstack.com/v3',
+  cdn: 'https://azure-na-cdn.contentstack.com/v3'
+ ...
+}
+``` 
 # Usage
 <!-- usage -->
 ```sh-session
@@ -16,7 +34,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-import/0.1.1-beta.14 linux-x64 node-v12.22.7
+@contentstack/cli-cm-import/0.1.1-beta.16 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -62,5 +80,5 @@ EXAMPLES
   csdx cm:import -A -B <branch name>
 ```
 
-_See code: [src/commands/cm/import.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.14/packages/contentstack-import/src/commands/cm/import.js)_
+_See code: [src/commands/cm/import.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.16/packages/contentstack-import/src/commands/cm/import.js)_
 <!-- commandsstop -->
