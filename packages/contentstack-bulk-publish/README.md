@@ -53,22 +53,18 @@ USAGE
 OPTIONS
   -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
   -a, --alias=alias                Alias for the management token to be used
+  -c, --config=config              Path to config file to be used
+  -e, --environments=environments  Environments to which assets need to be published
+  -l, --locales=locales            Locales to which assets need to be published
+  -y, --yes                        Agree to process the command with the current configuration
 
-  -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
+  --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's
                                    bulkpublish API will be used for publishing the entries
 
-  -c, --config=config              Path to config file to be used
+  --folder-uid=folder-uid          [default: cs_root] Folder-uid from which the assets need to be published
 
-  -e, --environments=environments  Environments to which assets need to be published
-
-  -l, --locales=locales            Locales to which assets need to be published
-
-  -r, --retryFailed=retryFailed    Retry publishing failed assets from the logfile (optional, will override all other
+  --retry-failed=retry-failed      Retry publishing failed assets from the logfile (optional, will override all other
                                    flags)
-
-  -u, --folderUid=folderUid        [default: cs_root] Folder-uid from which the assets need to be published
-
-  -y, --yes                        Agree to process the command with the current configuration
 
 DESCRIPTION
   The assets command is used for publishing assets from the specified stack, to the specified environments
@@ -81,20 +77,20 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS]
+  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
+  ALIAS]
 
   Using --config or -c flag
-  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
-  csdx cm:bulk-publish:assets --config [PATH TO CONFIG FILE]
-  csdx cm:bulk-publish:assets -c [PATH TO CONFIG FILE]
+  Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`
+  csdx cm:assets:publish --config [PATH TO CONFIG FILE]
+  csdx cm:assets:publish -c [PATH TO CONFIG FILE]
 
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:assets --retryFailed [LOG FILE NAME]
-  csdx cm:bulk-publish:assets -r [LOG FILE NAME]
+  Using --retry-failed flag
+  csdx cm:assets:publish --retry-failed [LOG FILE NAME]
 
-  Using --branch or -B flag
-  csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH 
-  NAME]
+  Using --branch flag
+  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
+  ALIAS] --branch [BRANCH NAME]
 ```
 
 _See code: [src/commands/cm/assets/publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/assets/publish.js)_
