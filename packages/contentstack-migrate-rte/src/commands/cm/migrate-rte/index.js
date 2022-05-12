@@ -16,15 +16,21 @@ class JsonMigrationCommand extends Command {
       let stack = getStack({token: token, host: this.cmaHost})
       config.entriesCount = 0
       config.contentTypeCount = 0
-      config.errorEntriesUid = []
+      config.errorEntriesUid = {}
       if (isGlobalField) {
         await updateContentTypeForGlobalField(stack, content_type, config)
       } else {
         await updateSingleContentTypeEntries(stack, content_type, config)
       }
       console.log(chalk.green(`Updated ${config.contentTypeCount} Content Type(s) and ${config.entriesCount} Entrie(s)`))
-      if (config.errorEntriesUid.length > 0) {
-        console.log(chalk.red(`Faced issue while migrating some entrie(s),"${config.errorEntriesUid.join(', ')}"`))
+      if(config.errorEntriesUid && Object.keys(config.errorEntriesUid).length > 0) {
+        const failedCTs = Object.keys(config.errorEntriesUid)
+        for (const failedCT of failedCTs) {
+          const locales = Object.keys(config.errorEntriesUid[failedCT])
+          for (const locale of locales) {
+            console.log(chalk.red(`Faced issue while migrating some entrie(s) for "${failedCT}" Content-type in "${locale}" locale,"${config.errorEntriesUid[failedCT][locale].join(', ')}"`))
+          }
+        }
       }
     } catch (error) {
       this.error(error.message, {exit: 2})
@@ -44,6 +50,7 @@ JsonMigrationCommand.flags = {
   jsonPath: flags.string({char: 'j', description: 'Provide path of JSON RTE to migrate', dependsOn: ['htmlPath']}),
   delay: flags.integer({char: 'd', description: 'Provide delay in ms between two entry update', default: 1000}),
   locale: flags.string({char: 'l', description: 'The locale from which entries need to be migrated'}),
+  "batch-limit" : flags.integer({description:'Provide batch limit for updating entries', default: 50 }),
 }
 
 JsonMigrationCommand.examples = [
