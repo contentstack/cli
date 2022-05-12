@@ -191,6 +191,7 @@ importContentTypes.prototype = {
       // eslint-disable-next-line no-undef
       return Promise.map(globalFieldPendingPath, function (globalfield) {
         let Obj = _.find(self.globalfields, {uid: globalfield})
+        supress(Obj.schema)
         let globalFieldObj = stack.globalField(globalfield)
         Object.assign(globalFieldObj, _.cloneDeep(Obj))
         return globalFieldObj.update()
