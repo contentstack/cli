@@ -59,7 +59,8 @@
     "expiredCommands": {
       "cm:bulk-publish:configure": "command will be deprecated in two months, start using csdx cm:stacks:publish-configure instead",
       "cm:bulk-publish:clear": "command will be deprecated in two months, start using csdx cm:stacks:publish-clear-logs instead",
-      "cm:bulk-publish:revert": "command will be deprecated in two months, start using csdx cm:stacks:publish-revert instead"
+      "cm:bulk-publish:revert": "command will be deprecated in two months, start using csdx cm:stacks:publish-revert instead",
+      "cm:bulk-publish:assets": "command will be deprecated in two months, start using csdx cm:assets:publish instead"
     }
   },
   "repository": "https://github.com/contentstack/cli",
