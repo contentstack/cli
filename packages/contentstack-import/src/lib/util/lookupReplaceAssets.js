@@ -67,7 +67,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
     for (let i = 0; i < ctSchema.length; i++) {
       switch (ctSchema[i].data_type) {
         case 'blocks': {
-          if (entry[ctSchema[i].uid] !== undefined) {
+          if (entry[ctSchema[i].uid]) {
             if (ctSchema[i].multiple) {
               entry[ctSchema[i].uid].forEach(e => {
                 let key = Object.keys(e).pop()
@@ -80,7 +80,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         }
         case 'global_field':
         case 'group': {
-          if (entry[ctSchema[i].uid] !== undefined) {
+          if (entry[ctSchema[i].uid]) {
             if (ctSchema[i].multiple) {
               entry[ctSchema[i].uid].forEach(e => {
                 findAssetIdsFromJsonRte(e, ctSchema[i].schema)
@@ -92,7 +92,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
           break;
         }
         case 'json': {
-          if (entry[ctSchema[i].uid] !== undefined) {
+          if (entry[ctSchema[i].uid] && ctSchema[i].field_metadata.rich_text_type) {
             if (ctSchema[i].multiple) {
               entry[ctSchema[i].uid].forEach(jsonRteData => {
                 gatherJsonRteAssetIds(jsonRteData)
@@ -235,7 +235,7 @@ function findFileUrls (schema, _entry, assetUrls) {
   var text;
   // Regex to detect v3 asset uri patterns
   if (schema && schema.field_metadata && schema.field_metadata.markdown) {
-    text = marked(_entry);
+    text = marked(JSON.stringify(_entry));
   } else {
     text = JSON.stringify(_entry);
   }
