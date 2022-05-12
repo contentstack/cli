@@ -112,9 +112,9 @@ function getStacks(managementAPIClient, orgUid) {
   });
 }
 
-function chooseContentType(managementAPIClient, stackApiKey) {
+function chooseContentType(managementAPIClient, stackApiKey, skip) {
   return new Promise(async (resolve) => {
-    let contentTypes = await getContentTypes(managementAPIClient, stackApiKey);
+    let contentTypes = await getContentTypes(managementAPIClient, stackApiKey, skip);
     let contentTypesList = Object.values(contentTypes);
     // contentTypesList.push(config.cancelString)
 
@@ -136,13 +136,13 @@ function chooseContentType(managementAPIClient, stackApiKey) {
   });
 }
 
-function getContentTypes(managementAPIClient, stackApiKey) {
+function getContentTypes(managementAPIClient, stackApiKey, skip) {
   return new Promise((resolve) => {
     let result = {};
     managementAPIClient
       .stack({ api_key: stackApiKey })
       .contentType()
-      .query()
+      .query({ skip: skip * 100 })
       .find()
       .then((contentTypes) => {
         contentTypes.items.forEach((contentType) => {
@@ -217,6 +217,19 @@ function getEnvironments(managementAPIClient, stackApiKey) {
       });
       return result;
     });
+}
+
+function getContentTypeCount(managementAPIClient, stackApiKey) {
+  return new Promise((resolve) => {
+    managementAPIClient
+      .stack({ api_key: stackApiKey })
+      .contentType()
+      .query()
+      .count()
+      .then((contentTypes) => {
+        resolve(contentTypes.content_types);
+      });
+  });
 }
 
 function exitProgram() {
@@ -441,4 +454,5 @@ module.exports = {
   getOrganizationsWhereUserIsAdmin: getOrganizationsWhereUserIsAdmin,
   kebabize: kebabize,
   flatten: flatten,
+  getContentTypeCount: getContentTypeCount,
 };
