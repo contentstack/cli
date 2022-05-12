@@ -5,9 +5,9 @@ let {getStack, getConfig, getToken, updateSingleContentTypeEntries, updateConten
 
 class JsonMigrationCommand extends Command {
   async run() {
-    const {flags} = this.parse(JsonMigrationCommand)
+    const migrateRTEFlag = this.parse(JsonMigrationCommand).flags
     try {
-      let config = await getConfig(flags)
+      let config = await getConfig(migrateRTEFlag)
       if (isEmpty(config.paths)) {
         throw new Error('No value provided for the "paths" property in config.')
       }
@@ -16,15 +16,21 @@ class JsonMigrationCommand extends Command {
       let stack = getStack({token: token, host: this.cmaHost})
       config.entriesCount = 0
       config.contentTypeCount = 0
-      config.errorEntriesUid = []
+      config.errorEntriesUid = {}
       if (isGlobalField) {
         await updateContentTypeForGlobalField(stack, content_type, config)
       } else {
         await updateSingleContentTypeEntries(stack, content_type, config)
       }
       console.log(chalk.green(`Updated ${config.contentTypeCount} Content Type(s) and ${config.entriesCount} Entrie(s)`))
-      if (config.errorEntriesUid.length > 0) {
-        console.log(chalk.red(`Faced issue while migrating some entrie(s),"${config.errorEntriesUid.join(', ')}"`))
+      if(config.errorEntriesUid && Object.keys(config.errorEntriesUid).length > 0) {
+        const failedCTs = Object.keys(config.errorEntriesUid)
+        for (const failedCT of failedCTs) {
+          const locales = Object.keys(config.errorEntriesUid[failedCT])
+          for (const locale of locales) {
+            console.log(chalk.red(`Faced issue while migrating some entrie(s) for "${failedCT}" Content-type in "${locale}" locale,"${config.errorEntriesUid[failedCT][locale].join(', ')}"`))
+          }
+        }
       }
     } catch (error) {
       this.error(error.message, {exit: 2})
@@ -43,6 +49,8 @@ JsonMigrationCommand.flags = {
   htmlPath: flags.string({char: 'h', description: 'Provide path of Html RTE to migrate', dependsOn: ['jsonPath']}),
   jsonPath: flags.string({char: 'j', description: 'Provide path of JSON RTE to migrate', dependsOn: ['htmlPath']}),
   delay: flags.integer({char: 'd', description: 'Provide delay in ms between two entry update', default: 1000}),
+  locale: flags.string({char: 'l', description: 'The locale from which entries need to be migrated'}),
+  "batch-limit" : flags.integer({description:'Provide batch limit for updating entries', default: 50 }),
 }
 
 JsonMigrationCommand.examples = [
