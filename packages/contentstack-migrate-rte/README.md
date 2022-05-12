@@ -15,7 +15,7 @@ $ npm install -g @contentstack/cli-cm-migrate-rte
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-migrate-rte/1.0.4 linux-x64 node-v12.22.7
+@contentstack/cli-cm-migrate-rte/1.0.5 darwin-x64 node-v12.22.5
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -47,6 +47,8 @@ OPTIONS
 
   -j, --jsonPath=jsonPath          Provide path of JSON RTE to migrate
 
+  -l, --locale=locale              The locale from which entries need to be migrated
+
   -p, --configPath=configPath      Path to config file to be used
 
   -y, --yes                        Agree to process the command with the current configuration
@@ -68,7 +70,7 @@ EXAMPLES
   csdx cm:migrate-rte -a alias -c global_field_uid -g -h htmlPath -j jsonPath
 ```
 
-_See code: [src/commands/cm/migrate-rte/index.js](https://github.com/contentstack/cli/blob/v1.0.4/src/commands/cm/migrate-rte/index.js)_
+_See code: [src/commands/cm/migrate-rte/index.js](https://github.com/contentstack/cli/blob/v1.0.5/src/commands/cm/migrate-rte/index.js)_
 
 ## `csdx help [COMMAND]`
 
