@@ -5,11 +5,19 @@ const { cli } = require('cli-ux');
 const configKey = 'publish_assets';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
+const { printFlagDeprecation } = require('@contentstack/cli-utilities');
 let config;
 
-class AssetsCommand extends Command {
+class AssetsPublishCommand extends Command {
   async run() {
-    const assetsFlags = this.parse(AssetsCommand).flags;
+    const assetsFlags = this.parse(AssetsPublishCommand).flags;
+    assetsFlags.retryFailed = assetsFlags['retry-failed'] || assetsFlags.retryFailed;
+    assetsFlags.folderUid = assetsFlags['folder-uid'] || assetsFlags.folderUid;
+    assetsFlags.bulkPublish = assetsFlags['bulk-publish'] || assetsFlags.bulkPublish;
+    delete assetsFlags['retry-failed'];
+    delete assetsFlags['folder-uid'];
+    delete assetsFlags['bulk-publish'];
+
     let updatedFlags;
     try {
       updatedFlags = assetsFlags.config ? store.updateMissing(configKey, assetsFlags) : assetsFlags;
@@ -30,7 +38,7 @@ class AssetsCommand extends Command {
         await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
         config = {
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma,
+          host: this.config.context.region.cma,
           branch: assetsFlags.branch,
         };
         stack = getStack(config);
@@ -81,22 +89,23 @@ class AssetsCommand extends Command {
     if (data.yes) {
       return true;
     }
-    const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]');
-    return confirmation;
+    return cli.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 
-AssetsCommand.description = `Publish assets to specified environments
+AssetsPublishCommand.description = `Publish assets to specified environments
 The assets command is used for publishing assets from the specified stack, to the specified environments
 
 Environment(s) and Locale(s) are required for executing the command successfully
 But, if retryFailed flag is set, then only a logfile is required
 `;
 
-AssetsCommand.flags = {
-  alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
-  retryFailed: flags.string({
-    char: 'r',
+AssetsPublishCommand.flags = {
+  alias: flags.string({
+    char: 'a',
+    description: 'Alias for the management token to be used',
+  }),
+  'retry-failed': flags.string({
     description: 'Retry publishing failed assets from the logfile (optional, will override all other flags)',
   }),
   environments: flags.string({
@@ -104,41 +113,74 @@ AssetsCommand.flags = {
     description: 'Environments to which assets need to be published',
     multiple: true,
   }),
+  'folder-uid': flags.string({
+    description: '[default: cs_root] Folder-uid from which the assets need to be published',
+  }),
+  'bulk-publish': flags.string({
+    description:
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+    default: 'true',
+  }),
+  config: flags.string({
+    char: 'c',
+    description: 'Path to config file to be used',
+  }),
+  yes: flags.boolean({
+    char: 'y',
+    description: 'Agree to process the command with the current configuration',
+  }),
+  locales: flags.string({
+    char: 'l',
+    description: 'Locales to which assets need to be published',
+    multiple: true,
+    parse: printFlagDeprecation(['-l'], ['--locales']),
+  }),
+  branch: flags.string({
+    char: 'B',
+    default: 'main',
+    description: 'Specify the branch to fetch the content from (default is main branch)',
+    parse: printFlagDeprecation(['-B'], ['--branch']),
+  }),
+
+  // To be deprecated
+  retryFailed: flags.string({
+    char: 'r',
+    description: 'Retry publishing failed assets from the logfile (optional, will override all other flags)',
+    hidden: true,
+    parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
+  }),
   folderUid: flags.string({
     char: 'u',
     description: '[default: cs_root] Folder-uid from which the assets need to be published',
+    hidden: true,
+    parse: printFlagDeprecation(['-u', '--folderUid'], ['--folder-uid']),
   }),
   bulkPublish: flags.string({
     char: 'b',
     description:
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
-    default: 'true',
-  }),
-  config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
-  yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
-  locales: flags.string({ char: 'l', description: 'Locales to which assets need to be published', multiple: true }),
-  branch: flags.string({
-    char: 'B',
-    default: 'main',
-    description: 'Specify the branch to fetch the content from (default is main branch)',
+    // default: 'true',
+    hidden: true,
+    parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
 };
 
-AssetsCommand.examples = [
+AssetsPublishCommand.examples = [
   'General Usage',
-  'csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS]',
+  'csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS]',
   '',
   'Using --config or -c flag',
-  'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
-  'csdx cm:bulk-publish:assets --config [PATH TO CONFIG FILE]',
-  'csdx cm:bulk-publish:assets -c [PATH TO CONFIG FILE]',
+  'Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`',
+  'csdx cm:assets:publish --config [PATH TO CONFIG FILE]',
+  'csdx cm:assets:publish -c [PATH TO CONFIG FILE]',
   '',
-  'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:assets --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:assets -r [LOG FILE NAME]',
+  'Using --retry-failed flag',
+  'csdx cm:assets:publish --retry-failed [LOG FILE NAME]',
   '',
-  'Using --branch or -B flag',
-  'csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]',
+  'Using --branch flag',
+  'csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]',
 ];
 
-module.exports = AssetsCommand;
+AssetsPublishCommand.aliases = ['cm:bulk-publish:assets'];
+
+module.exports = AssetsPublishCommand;
