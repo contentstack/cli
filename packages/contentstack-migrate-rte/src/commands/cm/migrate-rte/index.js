@@ -5,9 +5,9 @@ let {getStack, getConfig, getToken, updateSingleContentTypeEntries, updateConten
 
 class JsonMigrationCommand extends Command {
   async run() {
-    const {flags} = this.parse(JsonMigrationCommand)
+    const migrateRTEFlag = this.parse(JsonMigrationCommand).flags
     try {
-      let config = await getConfig(flags)
+      let config = await getConfig(migrateRTEFlag)
       if (isEmpty(config.paths)) {
         throw new Error('No value provided for the "paths" property in config.')
       }
@@ -43,6 +43,7 @@ JsonMigrationCommand.flags = {
   htmlPath: flags.string({char: 'h', description: 'Provide path of Html RTE to migrate', dependsOn: ['jsonPath']}),
   jsonPath: flags.string({char: 'j', description: 'Provide path of JSON RTE to migrate', dependsOn: ['htmlPath']}),
   delay: flags.integer({char: 'd', description: 'Provide delay in ms between two entry update', default: 1000}),
+  locale: flags.string({char: 'l', description: 'The locale from which entries need to be migrated'}),
 }
 
 JsonMigrationCommand.examples = [

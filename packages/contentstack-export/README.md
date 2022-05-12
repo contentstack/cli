@@ -10,6 +10,25 @@ It is Contentstack’s CLI plugin to export content from the stack. To learn how
 * [Commands](#commands)
 <!-- tocstop -->
 
+For switching to EU region update the hosts at config/default.js
+
+```js
+{
+  host:'https://eu-api.contentstack.com/v3',
+  cdn: 'https://eu-cdn.contentstack.com/v3',
+ ...
+}
+```
+
+For switching to AZURE-NA region update the hosts at config/default.js
+
+```js
+{
+  host:'https://azure-na-api.contentstack.com/v3',
+  cdn: 'https://azure-na-cdn.contentstack.com/v3',
+ ...
+}
+```
 # Usage
 
 <!-- usage -->
@@ -18,7 +37,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-export/0.1.1-beta.10 linux-x64 node-v12.22.7
+@contentstack/cli-cm-export/0.1.1-beta.13 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -68,5 +87,5 @@ EXAMPLES
   csdx cm:export -A -B [optional] branch name
 ```
 
-_See code: [src/commands/cm/export.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.10/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [src/commands/cm/export.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.13/packages/contentstack-export/src/commands/cm/export.js)_
 <!-- commandsstop -->
