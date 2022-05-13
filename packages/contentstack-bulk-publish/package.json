@@ -11,7 +11,6 @@
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
     "bluebird": "^3.7.2",
-    "configstore": "^5.0.1",
     "lodash": "^4.17.15",
     "nock": "^13.0.2",
     "request": "^2.88.2",
