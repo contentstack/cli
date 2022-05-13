@@ -38,7 +38,7 @@ fileignoreconfig:
 - filename: packages/contentstack-import/test/mock/globalFields.js
   checksum: ebfcba93d888713142c8fe5bfa6a80c09344ab357bc13ac935d8c50c283bd1ae
 - filename: packages/contentstack-utilities/src/config-handler.ts
-  checksum: 6433b9ac77edaec0260000104471fbdda277f3488040a63bffb670721edc5281
+  checksum: 7f8b00ee4e24e2a750aa748db01c1a8de2592d117e6374a7fb5ab1e89fb7cd38
 - filename: packages/contentstack/README.md
   checksum: 03940bc99b53df5257456051789a20a273ee35abc1546d2c3e8a8eefb1f70482
 - filename: packages/contentstack/package-lock.json
