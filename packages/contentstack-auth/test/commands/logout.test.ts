@@ -4,8 +4,6 @@ import { stub } from 'sinon';
 import LogoutCommand from '../../src/commands/auth/logout';
 import { authHandler, cliux, interactive, CLIError } from '../../src/utils';
 import { Command } from '@contentstack/cli-command';
-// const Configstore = require('configstore');
-// const config = new Configstore('contentstack_cli');
 
 const user = { email: 'test@contentstack.com', authtoken: 'testtoken' };
 const validAuthToken = 'bltadjkjdkjfd';

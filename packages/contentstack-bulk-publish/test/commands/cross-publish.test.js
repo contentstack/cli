@@ -3,8 +3,8 @@ const {expect, test} = require('@oclif/test')
 const nock = require('nock')
 const {cli} = require('cli-ux')
 const stack = require('../../src/util/client.js').stack
-const Configstore = require('configstore')
-const dummyConfig = new Configstore('contentstack_cli')
+const { configHandler } = require('@contentstack/cli-utilities');
+const dummyConfig = configHandler
 const store = require('../../src/util/store.js')
 
 // const {assetQueue} = require('../../src/producer/cross-publish.js')
