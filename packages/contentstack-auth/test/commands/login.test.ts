@@ -2,8 +2,9 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import LoginCommand from '../../src/commands/auth/login';
 import { authHandler, cliux, interactive } from '../../src/utils';
-import * as Configstore from 'configstore';
-const config = new Configstore('contentstack_cli');
+import { configHandler } from '@contentstack/cli-utilities';
+
+const config = configHandler
 
 const user = { email: 'test@contentstack.com', authtoken: 'testtoken' };
 const credentials = { email: 'test@contentstack.com', password: 'testpassword' };
