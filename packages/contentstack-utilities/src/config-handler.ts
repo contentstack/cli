@@ -1,15 +1,23 @@
 import Conf from 'conf';
+import { randomUUID } from 'crypto';
 
 const CONFIG_NAME = 'contentstack_cli';
-const ENC_KEY = 'encryptionKey';
+const ENC_CONFIG_NAME = 'contentstack_cli_obfuscate';
 class Config {
   private config: Conf;
 
   constructor() {
-    this.config = new Conf({ configName: CONFIG_NAME, encryptionKey: ENC_KEY });
+    this.init()
   }
 
   init() {
+    const obfuscationKeyName = 'obfuscation_key'
+    const encConfig = new Conf({ configName: ENC_CONFIG_NAME })
+    let obfuscation_key: any = encConfig.get(obfuscationKeyName)
+    if (!obfuscation_key) encConfig.set(obfuscationKeyName, randomUUID())
+
+    obfuscation_key = encConfig.get(obfuscationKeyName)
+    this.config = new Conf({ configName: CONFIG_NAME, encryptionKey: obfuscation_key });
     return this.config;
   }
 
