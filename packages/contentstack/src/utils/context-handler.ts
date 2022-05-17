@@ -13,7 +13,7 @@ export default class CsdxContext {
 
   constructor(cliOpts: any, cliConfig: any) {
     const command = cliConfig.findCommand(cliOpts.id) || {};
-    const config = configHandler.init();
+    const config = configHandler
     let sessionId = configHandler.get('sessionId');
     if (!sessionId) {
       sessionId = uuidv4();
