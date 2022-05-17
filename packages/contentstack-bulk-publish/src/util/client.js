@@ -2,9 +2,6 @@ const contentstackSdk = require('@contentstack/management');
 const { Command } = require('@contentstack/cli-command');
 const command = new Command();
 
-const Configstore = require('configstore');
-// eslint-disable-next-line no-unused-vars
-const config = new Configstore('contentstack_cli');
 const { formatHostname } = require('../util');
 
 function getStack(data) {
