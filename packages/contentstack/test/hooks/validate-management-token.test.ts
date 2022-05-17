@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import * as Configstore from 'configstore';
+import { configHandler } from '@contentstack/cli-utilities';
 import validateManagementToken from '../../src/hooks/custom/validate-management-token';
 import { CLIError } from '../../src/utils';
 
-const config = new Configstore('contentstack_cli');
+const config = configHandler
 describe('Validate management token hook', function () {
   before(function () {
     config.set('tokens.mToken', 'testmtoken');

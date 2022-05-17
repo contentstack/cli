@@ -4,8 +4,8 @@ const nock = require('nock')
 const {expect, test} = require('@oclif/test')
 const {cli} = require('cli-ux')
 
-const Configstore = require('configstore')
-const dummyConfig = new Configstore('contentstack_cli')
+const { configHandler } = require('@contentstack/cli-utilities');
+const dummyConfig = configHandler
 const store = require('../../src/util/store.js')
 
 const deliveryToken = 'dummyDeliveryToken'
