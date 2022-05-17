@@ -14,7 +14,6 @@
     "axios": "^0.21.1",
     "bluebird": "^3.7.2",
     "cli-ux": "^5.4.6",
-    "configstore": "^5.0.1",
     "fs": "0.0.1-security",
     "is-valid-path": "^0.1.1",
     "lodash": "^4.17.20",

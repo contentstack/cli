@@ -4,9 +4,9 @@
 const {expect, test} = require('@oclif/test')
 const nock = require('nock')
 const stack = require('../../src/util/client.js').getStack({apikey: "dummyApiKey", managementTokenAlias: "dummyManagementTokenAlias"})
-const Configstore = require('configstore')
+const { configHandler } = require('@contentstack/cli-utilities');
 const {cli} = require('cli-ux')
-const dummyConfig = new Configstore('contentstack_cli')
+const dummyConfig = configHandler
 const store = require('../../src/util/store.js')
 
 const {setConfig} = require('../../src/producer/publish-entries')

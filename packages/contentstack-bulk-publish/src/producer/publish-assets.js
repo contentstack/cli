@@ -135,8 +135,8 @@ async function start({ retryFailed, bulkPublish, environments, folderUid, locale
     }
   } else if (folderUid) {
     setConfig(config, bulkPublish);
-    for (let loc = 0; loc < locales.length; loc += 1) {
-      await getAssets(stack, folderUid, bulkPublish, environments, locales[loc]);
+    for (const element of locales) {
+      await getAssets(stack, folderUid, bulkPublish, environments, element);
     }
   }
 }
