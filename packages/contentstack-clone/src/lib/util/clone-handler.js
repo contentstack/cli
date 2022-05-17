@@ -1,5 +1,4 @@
 let inquirer = require('inquirer');
-const Configstore = require('configstore');
 const _ = require('lodash');
 const fs = require('fs');
 let ora = require('ora');
