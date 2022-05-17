@@ -9,8 +9,8 @@ const chalk = require('chalk');
 const { getAllLogs } = require('../util/logger');
 const { getQueue } = require('../util/queue');
 const { validateFile } = require('../util/fs');
-const Configstore = require('configstore');
-let config = new Configstore('contentstack_cli');
+const { configHandler } = require('@contentstack/cli-utilities');
+let config = configHandler
 const { initializeLogger, performBulkUnPublish, publishUsingVersion } = require('../consumer/publish');
 const getStack = require('../util/client.js').getStack;
 

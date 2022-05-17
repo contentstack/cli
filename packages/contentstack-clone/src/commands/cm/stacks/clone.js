@@ -1,6 +1,5 @@
 const { Command, flags } = require('@contentstack/cli-command');
-const Configstore = require('configstore');
-const credStore = new Configstore('contentstack_cli');
+const { configHandler } = require('@contentstack/cli-utilities');
 const { CloneHandler } = require('../../../lib/util/clone-handler');
 let config = require('../../../lib/util/dummyConfig.json');
 const path = require('path');
@@ -23,7 +22,7 @@ class StackCloneCommand extends Command {
 
       this.registerCleanupOnInterrupt(pathdir);
 
-      let _authToken = credStore.get('authtoken');
+      let _authToken = configHandler.get('authtoken');
       if (_authToken) {
         config.auth_token = _authToken;
         config.host = this.cmaHost;
