@@ -1,5 +1,5 @@
 import { Command, flags } from '@contentstack/cli-command';
-import { cliux, logger, messageHandler, printFlagDeprecation } from '@contentstack/cli-utilities';
+import { cliux, logger, printFlagDeprecation } from '@contentstack/cli-utilities';
 import { Region } from '../../../interfaces';
 import { regionHandler, interactive } from '../../../utils';
 
