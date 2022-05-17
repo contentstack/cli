@@ -1,10 +1,10 @@
 import { expect } from 'chai';
-import * as Configstore from 'configstore';
 import * as sinon from 'sinon';
 import { cliux } from '../../src/utils';
 import printRegionHook from '../../src/hooks/prerun/print-region';
+import { configHandler } from '@contentstack/cli-utilities';
 
-const config = new Configstore('contentstack_cli');
+const config = configHandler
 
 describe('Print region hook', function () {
   let printStub;
