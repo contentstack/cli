@@ -1,12 +1,12 @@
 import { expect, should } from 'chai';
 import * as sinon from 'sinon';
-import * as Configstore from 'configstore';
+import { configHandler } from '@contentstack/cli-utilities';
 import GetRegionCommand from '../../src/commands/config/get/region';
 import SetRegionCommand from '../../src/commands/config/set/region';
 import { cliux } from '../../src/utils';
 import { Region } from '../../src/interfaces';
 
-const config = new Configstore('contentstack_cli');
+const config = configHandler
 describe('Region command', function () {
   const region: Region = {
     name: 'test',
