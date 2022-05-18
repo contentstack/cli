@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const axios = require('axios');
 const os = require('os');
+const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 const config = require('./config.js');
 const fastcsv = require('fast-csv');
 const mkdirp = require('mkdirp');
@@ -8,6 +9,9 @@ const fs = require('fs');
 const debug = require('debug')('export-to-csv');
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
+
+// Register checkbox-plus here.
+inquirer.registerPrompt('checkbox-plus', checkboxPlus);
 
 function chooseOrganization(managementAPIClient, action) {
   return new Promise(async (resolve) => {
@@ -133,6 +137,40 @@ function chooseContentType(managementAPIClient, stackApiKey, skip) {
       // 	exitProgram()
       resolve(chosenContentTypes);
     });
+  });
+}
+
+function chooseInMemContentTypes(contentTypesList) {
+  return new Promise(async (resolve) => {
+    let _chooseContentType = [
+      {
+        type: 'checkbox-plus',
+        message: 'Choose Content Type',
+        choices: contentTypesList,
+        name: 'chosenContentTypes',
+        loop: false,
+        highlight: true,
+        searchable: true,
+        source: (_, input) => {
+          input = input || '';
+          const inputArray = input.split(' ');
+          return new Promise(resolveSource => {
+            const contentTypes = contentTypesList.filter(contentType => {
+              let shouldInclude = true;
+              inputArray.forEach(inputChunk => {
+                // if any term to filter by doesn't exist, exclude
+                if (!contentType.toLowerCase().includes(inputChunk.toLowerCase())) {
+                  shouldInclude = false;
+                }
+              });
+              return shouldInclude;
+            });
+            resolveSource(contentTypes);
+          });
+        }
+      }
+    ];
+    inquirer.prompt(_chooseContentType).then(({ chosenContentTypes }) => resolve(chosenContentTypes));
   });
 }
 
@@ -455,4 +493,6 @@ module.exports = {
   kebabize: kebabize,
   flatten: flatten,
   getContentTypeCount: getContentTypeCount,
+  getContentTypes: getContentTypes,
+  chooseInMemContentTypes: chooseInMemContentTypes,
 };
