@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/0.1.1-beta.28 linux-x64 node-v16.14.2
+@contentstack/cli/0.1.1-beta.29 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -227,7 +227,7 @@ EXAMPLES
   $ csdx cm:bootstrap -t <github access token>
 ```
 
-_See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/v1.0.6/src/commands/cm/bootstrap.ts)_
+_See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/v1.0.7/src/commands/cm/bootstrap.ts)_
 
 ## `csdx cm:bulk-publish`
 
@@ -929,7 +929,7 @@ EXAMPLES
   csdx cm:export -A -B [optional] branch name
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.13/packages/contentstack-export/src/commands/cm/export.js)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v0.1.1-beta.14/packages/contentstack-export/src/commands/cm/export.js)_
 
 ## `csdx cm:export-to-csv`
 
@@ -985,7 +985,7 @@ EXAMPLES
   csdx cm:import -A -B <branch name>
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.16/packages/contentstack-import/src/commands/cm/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v0.1.1-beta.17/packages/contentstack-import/src/commands/cm/import.js)_
 
 ## `csdx cm:migrate-rte`
 
@@ -1009,9 +1009,13 @@ OPTIONS
 
   -j, --jsonPath=jsonPath          Provide path of JSON RTE to migrate
 
+  -l, --locale=locale              The locale from which entries need to be migrated
+
   -p, --configPath=configPath      Path to config file to be used
 
   -y, --yes                        Agree to process the command with the current configuration
+
+  --batch-limit=batch-limit        [default: 50] Provide batch limit for updating entries
 
 EXAMPLES
   General Usage
@@ -1030,7 +1034,7 @@ EXAMPLES
   csdx cm:migrate-rte -a alias -c global_field_uid -g -h htmlPath -j jsonPath
 ```
 
-_See code: [@contentstack/cli-cm-migrate-rte](https://github.com/contentstack/cli/blob/v1.0.4/src/commands/cm/migrate-rte/index.js)_
+_See code: [@contentstack/cli-cm-migrate-rte](https://github.com/contentstack/cli/blob/v1.0.5/src/commands/cm/migrate-rte/index.js)_
 
 ## `csdx cm:migration`
 
@@ -1056,11 +1060,23 @@ OPTIONS
   -n, --filePath=filePath                              Use this flag to provide the path of the file of the migration
                                                        script provided by the user.
 
+  --config=config                                      [optional] inline configuration, <key1>:<value1>
+
+  --config-file=config-file                            [optional] Path of the JSON configuration file
+
   --multi                                              This flag helps you to migrate multiple content files in a single
                                                        instance.
+
+EXAMPLES
+  $ csdx cm:migration -A -n <migration/script/file/path> -k <api-key>
+  $ csdx cm:migration -A -n <migration/script/file/path> -k <api-key> -B <target branch name>
+  $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... -n <migration/script/file/path>
+  $ csdx cm:migration --config-file <path/to/json/config/file> -n <migration/script/file/path>
+  $ csdx cm:migration --multi -n <migration/scripts/dir/path> 
+  $ csdx cm:migration -a -n <migration/script/file/path> -k <api-key>
 ```
 
-_See code: [@contentstack/cli-migration](https://github.com/contentstack/cli-migration/blob/v0.1.1-beta.2/src/commands/cm/migration.js)_
+_See code: [@contentstack/cli-migration](https://github.com/contentstack/cli-migration/blob/v0.1.1-beta.3/src/commands/cm/migration.js)_
 
 ## `csdx cm:seed`
 
@@ -1121,7 +1137,7 @@ USAGE
   $ csdx config:get:region
 ```
 
-_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.28/src/commands/config/get/region.js)_
+_See code: [src/commands/config/get/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.29/src/commands/config/get/region.js)_
 
 ## `csdx config:set:region [REGION]`
 
@@ -1153,7 +1169,7 @@ EXAMPLES
   --name="India"
 ```
 
-_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.28/src/commands/config/set/region.js)_
+_See code: [src/commands/config/set/region.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.29/src/commands/config/set/region.js)_
 
 ## `csdx help [COMMAND]`
 
