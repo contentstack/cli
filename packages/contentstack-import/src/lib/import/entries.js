@@ -453,7 +453,8 @@ importEntries.prototype = {
 
             // restores json rte entry refs if they exist
             if (self.ctJsonRte.indexOf(ctUid) > -1) {
-              updatedEntry = self.restoreJsonRteEntryRefs(entry, sourceStackEntries[self.mappedUids[entry.uid]], schema)
+              // the entries stored in eSuccessFilePath, have the same uids as the entries from source data
+              updatedEntry = self.restoreJsonRteEntryRefs(entry, sourceStackEntries[entry.uid], schema.schema)
             } else {
               updatedEntry = entry
             }
@@ -902,7 +903,7 @@ importEntries.prototype = {
       })
     })
   },
-  removeEntryRefsFromJSONRTE(entry, ctSchema) {
+  removeEntryRefsFromJSONRTE: function(entry, ctSchema) {
     for (let i = 0; i < ctSchema.length; i++) {
       switch(ctSchema[i].data_type) {
         case 'blocks': {
@@ -958,7 +959,7 @@ importEntries.prototype = {
     }
     return entry
   },
-  doEntryReferencesExist(element) { 
+  doEntryReferencesExist: function(element) { 
     // checks if the children of p element contain any references
     // only checking one level deep, not recursive
 
@@ -966,7 +967,7 @@ importEntries.prototype = {
       for(let i=0; i < element.length; i++) {
         // although most data has only one level of nesting, and this case might never come up
         // I've handled multiple level of nesting for 'p' elements
-        if(element[i].type === 'p' && element[i].children && element[i].children.length > 0) {
+        if((element[i].type === 'p' || element[i].type === 'a') && element[i].children && element[i].children.length > 0) {
           return this.doEntryReferencesExist(element[i].children)
         } else if(this.isEntryRef(element[i])) {
           return true
@@ -977,13 +978,15 @@ importEntries.prototype = {
         return true
       }
 
-      if (element.type === "p" && element.children && element.children.length > 0) {
+      if ((element.type === 'p' || element.type === 'a') && element.children && element.children.length > 0) {
         return this.doEntryReferencesExist(element.children)
       }
     }
     return false
   },
-  restoreJsonRteEntryRefs(entry, sourceStackEntry, ctSchema) {
+  restoreJsonRteEntryRefs: function(entry, sourceStackEntry, ctSchema) {
+    let mappedAssetUids = helper.readFile(mappedAssetUidPath) || {}
+    let mappedAssetUrls = helper.readFile(mappedAssetUrlPath) || {}
     for (let i = 0; i < ctSchema.length; i++) {
       switch (ctSchema[i].data_type) {
         case 'blocks': {
@@ -1022,14 +1025,14 @@ importEntries.prototype = {
               entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map((field, index) => {
                 field.children = [
                   ...field.children, 
-                  ...sourceStackEntry[ctSchema[i].uid][index].children.filter(e => this.doEntryReferencesExist(e))
+                  ...sourceStackEntry[ctSchema[i].uid][index].children.filter(e => this.doEntryReferencesExist(e)).map(e => this.setDirtyTrue(e)).map(e => this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls))
                 ]
                 return field
               })
             } else {
               entry[ctSchema[i].uid].children = [
                 ...entry[ctSchema[i].uid].children, 
-                ...sourceStackEntry[ctSchema[i].uid].children.filter(e => this.doEntryReferencesExist(e)),
+                ...sourceStackEntry[ctSchema[i].uid].children.filter(e => this.doEntryReferencesExist(e)).map(e => this.setDirtyTrue(e)).map(e => this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls))
               ]
             }
           }
@@ -1053,10 +1056,10 @@ importEntries.prototype = {
     // }
     // return entry
   },
-  isEntryRef(element) {
+  isEntryRef: function(element) {
     return element.type === "reference" && element.attrs.type === "entry"
   },
-  generateUidsForJsonRteFields(entry, ctSchema) {
+  generateUidsForJsonRteFields: function(entry, ctSchema) {
     for (let i = 0; i < ctSchema.length; i++) {
       switch (ctSchema[i].data_type) {
         case 'blocks': {
@@ -1105,7 +1108,7 @@ importEntries.prototype = {
     }
     return entry
   },
-  populateChildrenWithUids(children) {
+  populateChildrenWithUids: function(children) {
     if (children.length && children.length > 0) {
       return children.map(child => {
         if(child.type && child.type.length > 0) {
@@ -1126,8 +1129,49 @@ importEntries.prototype = {
       return children
     }
   },
-  generateUid() {
+  generateUid: function() {
     return crypto.randomBytes(16).toString('hex')
+  },
+  setDirtyTrue: function(e) {
+    if (e.type) {
+      e.attrs['dirty'] = true
+      
+      if (e.children && e.children.length > 0) {
+        e.children = e.children.map(subElement => this.setDirtyTrue(subElement))
+      }
+    }
+    return e
+  },
+  resolveAssetRefsInEntryRefsForJsonRte: function(e, mappedAssetUids, mappedAssetUrls) {
+    
+      if (e.type) {
+        if (e.attrs.type === 'asset') {
+          let assetUrl
+          if(mappedAssetUids[e.attrs['asset-uid']]) {
+            e.attrs['asset-uid'] = mappedAssetUids[e.attrs['asset-uid']]
+          }
+
+          if (e.attrs['display-type'] !== 'link') {
+            assetUrl = e.attrs['asset-link']
+          } else {
+            assetUrl = e.attrs['href']
+          }
+
+          if(mappedAssetUrls[assetUrl]) {
+            if (e.attrs['display-type'] !== 'link') {
+              e.attrs['asset-link'] = mappedAssetUrls[assetUrl]
+            } else {
+              e.attrs['href'] = mappedAssetUrls[assetUrl]
+            }
+          }
+        }
+
+        if (e.children && e.children.length > 0) {
+          e.children = e.children.map(subElement => this.resolveAssetRefsInEntryRefsForJsonRte(subElement, mappedAssetUids, mappedAssetUrls))
+        }
+      }
+
+      return e
   }
 }
 
