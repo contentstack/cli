@@ -1,4 +1,4 @@
-const { Command, flags } = require('@oclif/command');
+const { Command, flags } = require('@contentstack/cli-command');
 const { start } = require('../../../producer/publish-assets');
 const store = require('../../../util/store.js');
 const { cli } = require('cli-ux');
@@ -38,7 +38,7 @@ class AssetsPublishCommand extends Command {
         await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
         config = {
           alias: updatedFlags.alias,
-          host: this.config.context.region.cma,
+          host: this.region.cma,
           branch: assetsFlags.branch,
         };
         stack = getStack(config);
