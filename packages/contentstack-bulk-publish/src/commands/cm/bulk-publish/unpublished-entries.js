@@ -1,4 +1,4 @@
-const { Command, flags } = require('@oclif/command');
+const { Command, flags } = require('@contentstack/cli-command');
 const { start } = require('../../../producer/publish-unpublished-env');
 const store = require('../../../util/store.js');
 const { cli } = require('cli-ux');
@@ -28,7 +28,7 @@ class UnpublishedEntriesCommand extends Command {
         await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
         config = {
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma,
+          host: this.region.cma,
           branch: unpublishedEntriesFlags.branch,
         };
         stack = getStack(config);
