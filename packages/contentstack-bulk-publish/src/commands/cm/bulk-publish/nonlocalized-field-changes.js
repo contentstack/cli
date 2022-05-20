@@ -1,4 +1,4 @@
-const { Command, flags } = require('@oclif/command');
+const { Command, flags } = require('@contentstack/cli-command');
 const { start } = require('../../../producer/nonlocalized-field-changes');
 const store = require('../../../util/store.js');
 const { cli } = require('cli-ux');
@@ -26,7 +26,7 @@ class NonlocalizedFieldChangesCommand extends Command {
         await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
         config = {
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma,
+          host: this.region.cma,
           branch: nonlocalizedFieldChangesFlags.branch,
         };
         stack = getStack(config);
