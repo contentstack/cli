@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable node/no-extraneous-require */
-const { Command, flags } = require('@oclif/command');
+const { Command, flags } = require('@contentstack/cli-command');
 const { cli } = require('cli-ux');
 const { start } = require('../../../producer/unpublish');
 const store = require('../../../util/store.js');
@@ -32,8 +32,8 @@ class UnpublishCommand extends Command {
         await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
         config = {
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma,
-          cda: this.config.userConfig.getRegion().cda,
+          host: this.region.cma,
+          cda: this.region.cda,
           branch: unpublishFlags.branch,
         };
         stack = getStack(config);
