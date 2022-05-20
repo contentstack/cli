@@ -1,5 +1,5 @@
 /* eslint-disable node/no-extraneous-require */
-const { Command, flags } = require('@oclif/command');
+const { Command, flags } = require('@contentstack/cli-command');
 const { cli } = require('cli-ux');
 const { start } = require('../../../producer/cross-publish');
 const store = require('../../../util/store.js');
@@ -31,8 +31,8 @@ class CrossPublishCommand extends Command {
         await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
         config = {
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma,
-          cda: this.config.userConfig.getRegion().cda,
+          host: this.region.cma,
+          cda: this.region.cda,
           branch: crossPublishFlags.branch,
         };
         stack = getStack(config);

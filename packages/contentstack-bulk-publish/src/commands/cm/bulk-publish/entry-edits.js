@@ -1,4 +1,4 @@
-const { Command, flags } = require('@oclif/command');
+const { Command, flags } = require('@contentstack/cli-command');
 const { start } = require('../../../producer/publish-edits');
 const store = require('../../../util/store.js');
 // eslint-disable-next-line node/no-extraneous-require
@@ -27,7 +27,7 @@ class EntryEditsCommand extends Command {
         await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
         config = {
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma,
+          host: this.region.cma,
           branch: entryEditsFlags.branch,
         };
         stack = getStack(config);
