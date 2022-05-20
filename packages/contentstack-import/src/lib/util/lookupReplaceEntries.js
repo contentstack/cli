@@ -25,6 +25,7 @@ module.exports = function (data, mappedUids, uidMapperPath) {
     jsonRteData.children.forEach(element => {
       if (element.type) {
         switch (element.type) {
+          case 'a':
           case 'p': {
             if (element.children && element.children.length > 0) {
               gatherJsonRteEntryIds(element)
@@ -33,7 +34,12 @@ module.exports = function (data, mappedUids, uidMapperPath) {
           }
           case 'reference': {
             if (Object.keys(element.attrs).length > 0 && element.attrs.type === "entry") {
-              uids.push(element.attrs['entry-uid'])
+              if (uids.indexOf(element.attrs['entry-uid']) === -1) {
+                uids.push(element.attrs['entry-uid'])
+              }
+            }
+            if (element.children && element.children.length > 0) {
+              gatherJsonRteEntryIds(element)
             }
             break;
           }
@@ -120,9 +126,7 @@ module.exports = function (data, mappedUids, uidMapperPath) {
         break
       case 'json':
         if (schema[i].field_metadata.rich_text_type) {
-          if (uids.length === 0) {
-            findEntryIdsFromJsonRte(data.entry, data.content_type.schema)
-          }
+          findEntryIdsFromJsonRte(data.entry, data.content_type.schema)
         }
         break
       }
