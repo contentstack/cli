@@ -24,7 +24,12 @@ class EntryEditsCommand extends Command {
           updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used');
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish !== 'false';
-        await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
+        // Validate management token alias.
+        try {
+          this.getToken(updatedFlags.alias);
+        } catch (error) {
+          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, {exit: 2})
+        }
         config = {
           alias: updatedFlags.alias,
           host: this.region.cma,
