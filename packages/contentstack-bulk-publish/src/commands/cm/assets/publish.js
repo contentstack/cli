@@ -35,7 +35,12 @@ class AssetsPublishCommand extends Command {
           // set default value for folderUid
           updatedFlags.folderUid = 'cs_root';
         }
-        await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
+        // Validate management token alias.
+        try {
+          this.getToken(updatedFlags.alias);
+        } catch (error) {
+          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, {exit: 2})
+        }
         config = {
           alias: updatedFlags.alias,
           host: this.region.cma,
