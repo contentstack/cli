@@ -29,7 +29,12 @@ class UnpublishCommand extends Command {
           updatedFlags.deliveryToken = await cli.prompt('Enter delivery token of your source environment');
         }
         updatedFlags.bulkUnpublish = updatedFlags.bulkUnpublish === 'false' ? false : true;
-        await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
+        // Validate management token alias.
+        try {
+          this.getToken(updatedFlags.alias);
+        } catch (error) {
+          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, {exit: 2})
+        }
         config = {
           alias: updatedFlags.alias,
           host: this.region.cma,
