@@ -1,5 +1,5 @@
 /* eslint-disable node/no-extraneous-require */
-const { Command, flags } = require('@oclif/command');
+const { Command, flags } = require('@contentstack/cli-command');
 const { cli } = require('cli-ux');
 const { start } = require('../../../producer/cross-publish');
 const store = require('../../../util/store.js');
@@ -28,11 +28,16 @@ class CrossPublishCommand extends Command {
           updatedFlags.deliveryToken = await cli.prompt('Enter delivery token of your source environment');
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
-        await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
+        // Validate management token alias.
+        try {
+          this.getToken(updatedFlags.alias);
+        } catch (error) {
+          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, {exit: 2})
+        }
         config = {
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma,
-          cda: this.config.userConfig.getRegion().cda,
+          host: this.region.cma,
+          cda: this.region.cda,
           branch: crossPublishFlags.branch,
         };
         stack = getStack(config);
