@@ -1,5 +1,5 @@
 import * as ora from 'ora'
-import * as Configstore from 'configstore';
+import { default as config } from '../config-handler';
 import {
 	Token,
 	Organization,
@@ -11,8 +11,6 @@ import {
 	Locale
 } from './interfaces'
 import { shouldNotBeEmpty } from './validations'; 
-
-const config = new Configstore('contentstack_cli');
 
 const inquirer = require('inquirer')
 inquirer.registerPrompt('search-list', require('inquirer-search-list'))
