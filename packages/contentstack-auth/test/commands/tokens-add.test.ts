@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import * as Configstore from 'configstore';
+import { configHandler } from '@contentstack/cli-utilities';
 import TokensAddCommand from '../../src/commands/auth/tokens/add';
 import { cliux, tokenValidation } from '../../src/utils';
-const config = new Configstore('contentstack_cli');
+const config = configHandler
 const configKeyTokens = 'tokens';
 
 function resetConfig() {
