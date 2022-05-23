@@ -11,7 +11,6 @@
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
     "bluebird": "^3.7.2",
-    "configstore": "^5.0.1",
     "lodash": "^4.17.15",
     "nock": "^13.0.2",
     "request": "^2.88.2",
@@ -59,7 +58,8 @@
     "expiredCommands": {
       "cm:bulk-publish:configure": "command will be deprecated in two months, start using csdx cm:stacks:publish-configure instead",
       "cm:bulk-publish:clear": "command will be deprecated in two months, start using csdx cm:stacks:publish-clear-logs instead",
-      "cm:bulk-publish:revert": "command will be deprecated in two months, start using csdx cm:stacks:publish-revert instead"
+      "cm:bulk-publish:revert": "command will be deprecated in two months, start using csdx cm:stacks:publish-revert instead",
+      "cm:bulk-publish:assets": "command will be deprecated in two months, start using csdx cm:assets:publish instead"
     }
   },
   "repository": "https://github.com/contentstack/cli",
