@@ -11,23 +11,30 @@ class ExportToCsvCommand extends Command {
   }
 
   async run() {
-    const action = await util.startupQuestions();
-
-    switch (action) {
-      case config.exportEntries: {
-        const organization = await util.chooseOrganization(this.managementAPIClient); // prompt for organization
-        const stack = await util.chooseStack(this.managementAPIClient, organization.uid); // prompt for stack
-
-        const contentTypeCount = await util.getContentTypeCount(this.managementAPIClient, stack.apiKey);
-        /**
-         * TODO: Show a message displaying total content-types count and display a friendly message
-         * to the user that we will paginate the content-types.
-         */
-        for (let index = 0; index <= contentTypeCount / 100; index++) {
-          const contentTypes = await util.chooseContentType(this.managementAPIClient, stack.apiKey, index); // prompt for content Type
+    try {
+      const action = await util.startupQuestions();
+      switch (action) {
+        case config.exportEntries: {
+          const organization = await util.chooseOrganization(this.managementAPIClient); // prompt for organization
+          const stack = await util.chooseStack(this.managementAPIClient, organization.uid); // prompt for stack
+  
+          const contentTypeCount = await util.getContentTypeCount(this.managementAPIClient, stack.apiKey);
           const language = await util.chooseLanguage(this.managementAPIClient, stack.apiKey); // prompt for language
           const environments = await util.getEnvironments(this.managementAPIClient, stack.apiKey); // fetch environments, because in publish details only env uid are available and we need env names
+  
+          let contentTypes = [];
+          for (let index = 0; index <= contentTypeCount / 100; index++) {
+            const contentTypesMap = await util.getContentTypes(this.managementAPIClient, stack.apiKey, index);
+            contentTypes = contentTypes.concat(Object.values(contentTypesMap)); // prompt for content Type
+          }
 
+          if (contentTypes.length <= 0) {
+            this.log("No content types found for the given stack");
+            this.exit();
+          }
+  
+          contentTypes = await util.chooseInMemContentTypes(contentTypes);
+  
           while (contentTypes.length > 0) {
             let contentType = contentTypes.pop();
             let entries = await util.getEntries(this.managementAPIClient, stack.apiKey, contentType, language.code); // fetch entries
@@ -36,30 +43,33 @@ class ExportToCsvCommand extends Command {
   
             util.write(this, flatEntries, fileName); // write to file
           }
+          break;
         }
-        break;
-      }
-      case config.exportUsers: {
-        try {
-          const organization = await util.chooseOrganization(this.managementAPIClient, action); // prompt for organization
-          const orgUsers = await util.getOrgUsers(this.managementAPIClient, organization.uid, this);
-          const orgRoles = await util.getOrgRoles(this.managementAPIClient, organization.uid, this);
-          const mappedUsers = util.getMappedUsers(orgUsers);
-          const mappedRoles = util.getMappedRoles(orgRoles);
-          const listOfUsers = util.cleanOrgUsers(orgUsers, mappedUsers, mappedRoles);
-          // const dateTime = util.getDateTime()
-          // const fileName = `${util.kebabize(organization.name.replace(config.organizationNameRegex, ''))}_users_export_${dateTime}.csv`
-          const fileName = `${util.kebabize(
-            organization.name.replace(config.organizationNameRegex, ''),
-          )}_users_export.csv`;
-
-          util.write(this, listOfUsers, fileName);
-        } catch (error) {
-          this.error(error);
+        case config.exportUsers: {
+          try {
+            const organization = await util.chooseOrganization(this.managementAPIClient, action); // prompt for organization
+            const orgUsers = await util.getOrgUsers(this.managementAPIClient, organization.uid, this);
+            const orgRoles = await util.getOrgRoles(this.managementAPIClient, organization.uid, this);
+            const mappedUsers = util.getMappedUsers(orgUsers);
+            const mappedRoles = util.getMappedRoles(orgRoles);
+            const listOfUsers = util.cleanOrgUsers(orgUsers, mappedUsers, mappedRoles);
+            // const dateTime = util.getDateTime()
+            // const fileName = `${util.kebabize(organization.name.replace(config.organizationNameRegex, ''))}_users_export_${dateTime}.csv`
+            const fileName = `${util.kebabize(
+              organization.name.replace(config.organizationNameRegex, ''),
+            )}_users_export.csv`;
+  
+            util.write(this, listOfUsers, fileName);
+          } catch (error) {
+            this.error("failed export content to csv");
+          }
+          break;
         }
-        break;
       }
+    } catch (error) {
+      this.error("failed export content to csv");
     }
+ 
   }
 }
 
