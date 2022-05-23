@@ -8,6 +8,6 @@
       "to": "supercharged_rte"
     }
   ],
-  "locale":"en-in",
+  "locale":["en-in"],
   "delay": 50
 }
