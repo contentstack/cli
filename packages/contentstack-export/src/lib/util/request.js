@@ -75,7 +75,7 @@ var makeCall = (module.exports = function (req, RETRY) {
         })
         .catch(reject);
     } catch (error) {
-      console.log(error);
+      console.log("Error on http request", error && error.message);
       return reject(error);
     }
   });
