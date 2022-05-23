@@ -117,7 +117,7 @@ importEntries.prototype = {
         }
       }
 
-      // Step 1: Removes filed rules from content type
+      // Step 1: Removes field rules from content type
       // This allows to handle cases like self references and circular reference
       // if mandatory reference fields are not filed in entries then avoids the error
       // Also remove field visibility rules
@@ -210,13 +210,8 @@ importEntries.prototype = {
               if (eUid) {
 
                 // check ctUid in self.ctJsonRte array, if ct exists there... only then remove entry references for json rte
-                // also with json rte, api creates the json-rte field with the same uid as passed in the payload. So use the node's inbuilt
-                // crypto module to generate a random uid and populate the json rte data
-                // https://www.kindacode.com/article/how-to-easily-generate-a-random-string-in-node-js/
+                // also with json rte, api creates the json-rte field with the same uid as passed in the payload.
 
-                // while creating entries with json-rte field, the api does not create fresh uids for the json-rte field
-                // and its subsequent children. If the data is passed without a uid, then the fields aren't created. So, I'll
-                // generate the uids for now, and will come up with a better solution later
                 if (self.ctJsonRte.indexOf(ctUid) > -1) {
                   entries[eUid] = self.generateUidsForJsonRteFields(entries[eUid], self.ctSchemas[ctUid].schema)
                 }
@@ -445,7 +440,6 @@ importEntries.prototype = {
         // map failed reference uids @mapper/language/unmapped-uids.json
         let refUidMapperPath = path.join(entryMapperPath, lang)
 
-        // add entry references to JSON RTE fields
         entries = _.map(entries, function (entry) {
           try {
             let uid = entry.uid
@@ -965,8 +959,6 @@ importEntries.prototype = {
 
     if (element.length) {
       for(let i=0; i < element.length; i++) {
-        // although most data has only one level of nesting, and this case might never come up
-        // I've handled multiple level of nesting for 'p' elements
         if((element[i].type === 'p' || element[i].type === 'a') && element[i].children && element[i].children.length > 0) {
           return this.doEntryReferencesExist(element[i].children)
         } else if(this.isEntryRef(element[i])) {
@@ -1041,20 +1033,6 @@ importEntries.prototype = {
       }
     }
     return entry
-    //------------------------------------------------------------------------------------------------------------
-    // if (Object.keys(self.jsonRteEntryRefs).indexOf(entry.uid) > -1) {
-    //   Object.keys(self.jsonRteEntryRefs[entry.uid]).forEach(jsonRteFieldUid => {
-    //     if (self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid].length) { // handles when json_rte is multiple
-    //       entry[jsonRteFieldUid] = entry[jsonRteFieldUid].map((field, index) => {
-    //         field.children = [...field.children, ...self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid][index]]
-    //         return field
-    //       })
-    //     } else {
-    //       entry[jsonRteFieldUid].children = [...entry[jsonRteFieldUid].children, ...self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid].children]
-    //     }
-    //   })
-    // }
-    // return entry
   },
   isEntryRef: function(element) {
     return element.type === "reference" && element.attrs.type === "entry"
@@ -1132,46 +1110,46 @@ importEntries.prototype = {
   generateUid: function() {
     return crypto.randomBytes(16).toString('hex')
   },
-  setDirtyTrue: function(e) {
-    if (e.type) {
-      e.attrs['dirty'] = true
+  setDirtyTrue: function(jsonRteChild) {
+    if (jsonRteChild.type) {
+      jsonRteChild.attrs['dirty'] = true
       
-      if (e.children && e.children.length > 0) {
-        e.children = e.children.map(subElement => this.setDirtyTrue(subElement))
+      if (jsonRteChild.children && jsonRteChild.children.length > 0) {
+        jsonRteChild.children = jsonRteChild.children.map(subElement => this.setDirtyTrue(subElement))
       }
     }
-    return e
+    return jsonRteChild
   },
-  resolveAssetRefsInEntryRefsForJsonRte: function(e, mappedAssetUids, mappedAssetUrls) {
+  resolveAssetRefsInEntryRefsForJsonRte: function(jsonRteChild, mappedAssetUids, mappedAssetUrls) {
     
-      if (e.type) {
-        if (e.attrs.type === 'asset') {
+      if (jsonRteChild.type) {
+        if (jsonRteChild.attrs.type === 'asset') {
           let assetUrl
-          if(mappedAssetUids[e.attrs['asset-uid']]) {
-            e.attrs['asset-uid'] = mappedAssetUids[e.attrs['asset-uid']]
+          if(mappedAssetUids[jsonRteChild.attrs['asset-uid']]) {
+            jsonRteChild.attrs['asset-uid'] = mappedAssetUids[jsonRteChild.attrs['asset-uid']]
           }
 
-          if (e.attrs['display-type'] !== 'link') {
-            assetUrl = e.attrs['asset-link']
+          if (jsonRteChild.attrs['display-type'] !== 'link') {
+            assetUrl = jsonRteChild.attrs['asset-link']
           } else {
-            assetUrl = e.attrs['href']
+            assetUrl = jsonRteChild.attrs['href']
           }
 
           if(mappedAssetUrls[assetUrl]) {
-            if (e.attrs['display-type'] !== 'link') {
-              e.attrs['asset-link'] = mappedAssetUrls[assetUrl]
+            if (jsonRteChild.attrs['display-type'] !== 'link') {
+              jsonRteChild.attrs['asset-link'] = mappedAssetUrls[assetUrl]
             } else {
-              e.attrs['href'] = mappedAssetUrls[assetUrl]
+              jsonRteChild.attrs['href'] = mappedAssetUrls[assetUrl]
             }
           }
         }
 
-        if (e.children && e.children.length > 0) {
-          e.children = e.children.map(subElement => this.resolveAssetRefsInEntryRefsForJsonRte(subElement, mappedAssetUids, mappedAssetUrls))
+        if (jsonRteChild.children && jsonRteChild.children.length > 0) {
+          jsonRteChild.children = jsonRteChild.children.map(subElement => this.resolveAssetRefsInEntryRefsForJsonRte(subElement, mappedAssetUids, mappedAssetUrls))
         }
       }
 
-      return e
+      return jsonRteChild
   }
 }
 
