@@ -1,8 +1,7 @@
 const { Command, flags } = require('@contentstack/cli-command');
 const { cli } = require('cli-ux');
 let _ = require('lodash');
-const Configstore = require('configstore');
-const credStore = new Configstore('contentstack_cli');
+const { configHandler } = require('@contentstack/cli-utilities');
 const {
   configWithMToken,
   parameterWithMToken,
@@ -23,7 +22,7 @@ class ImportCommand extends Command {
     const moduleName = importCommandFlags.module;
     const backupdir = importCommandFlags['backup-dir'];
     const alias = importCommandFlags['management-token-alias'];
-    let _authToken = credStore.get('authtoken');
+    let _authToken = configHandler.get('authtoken');
     let branchName = importCommandFlags.branch;
     let host = self.cmaHost;
 
