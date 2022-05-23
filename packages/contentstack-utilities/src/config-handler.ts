@@ -1,52 +1,42 @@
-import * as ConfigStore from 'configstore';
-import * as dotProp from 'dot-prop';
+import Conf from 'conf';
+import { randomUUID } from 'crypto';
 
-const CONFIG_NAMESPACE = 'contentstack_cli';
+const CONFIG_NAME = 'contentstack_cli';
+const ENC_CONFIG_NAME = 'contentstack_cli_obfuscate';
 class Config {
-  private configHandler: typeof ConfigStore;
-  private config: object;
+  private config: Conf;
 
   constructor() {
-    this.configHandler = new ConfigStore(CONFIG_NAMESPACE);
-    this.config = null;
+    this.init()
   }
 
   init() {
-    this.config = this.configHandler.all;
+    const obfuscationKeyName = 'obfuscation_key'
+    const encConfig = new Conf({ configName: ENC_CONFIG_NAME })
+    let obfuscation_key: any = encConfig.get(obfuscationKeyName)
+    if (!obfuscation_key) encConfig.set(obfuscationKeyName, randomUUID())
+
+    obfuscation_key = encConfig.get(obfuscationKeyName)
+    this.config = new Conf({ configName: CONFIG_NAME, encryptionKey: obfuscation_key });
     return this.config;
   }
 
   get(key) {
-    if (!this.config) {
-      this.init();
-    }
-
-    return dotProp.get(this.config, key);
+    return this.config.get(key);
   }
 
   async set(key, value) {
-    if (this.config) {
-      this.init();
-    }
-
-    dotProp.set(this.config, key, value);
-    this.configHandler.set(key, value);
+    this.config.set(key, value);
     return this.config;
   }
 
   delete(key) {
-    if (!this.config) {
-      this.init();
-    }
-
-    dotProp.delete(this.config, key);
-    this.configHandler.delete(key);
+    this.config.delete(key);
     return this.config;
   }
 
   clear() {
-    this.config = {};
-    this.configHandler.all = {};
+    this.config.clear()
   }
 }
 

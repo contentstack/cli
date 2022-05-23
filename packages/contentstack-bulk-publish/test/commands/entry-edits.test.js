@@ -4,10 +4,10 @@ const nock = require('nock')
 const {cli} = require('cli-ux')
 
 const stack = require('../../src/util/client.js').stack
-const Configstore = require('configstore')
+const { configHandler } = require('@contentstack/cli-utilities');
 const store = require('../../src/util/store.js')
 
-const dummyConfig = new Configstore('contentstack_cli')
+const dummyConfig = configHandler;
 const bulkentriesResponse1 = require('../dummy/bulkentries1')
 const bulkentriesResponse2 = require('../dummy/bulkentries2')
 const entryPublishResponse = require('../dummy/entrypublished')

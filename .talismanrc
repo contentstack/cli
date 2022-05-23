@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: d362ebe12aac23a019a933dec2fc59506f1df1b8c1bd2931d2bcb0d31523553a
+  checksum: d3c6e1d15482fa5e81fb3a82c387d43deccbe6ca978f561d9e18001f3160decc
 - filename: packages/contentstack-auth/src/commands/auth/login.ts
   checksum: 1bec664b51e7750a8f0f7267fe6df72e8c8d2e59c6080d21e29309816c5e0ee7
 - filename: packages/contentstack-auth/src/commands/auth/tokens/add.ts
@@ -17,6 +17,8 @@ fileignoreconfig:
   checksum: 66126a79971d8afa929ac43e86261578431e4d63bc0de59a410d86c467bdcbcf
 - filename: packages/contentstack-import/src/lib/import/assets.js
   checksum: 799050f25ca725fd352ff27f3df8bda9d0fc8e7f65cfc2e26abaa4e67a0ca741
+- filename: packages/contentstack-import/src/lib/import/entries.js
+  checksum: 26921322ea463e69284d009777eb6b58a62cd683b4fdf23120e0ccf02c323063
 - filename: packages/contentstack-import/src/lib/import/locales.js
   checksum: cab0f178ef06b4580dc727d6190e31739863961e3ae05ba8c2d02f620286f05c
 - filename: packages/contentstack-import/src/lib/import/webhooks.js
@@ -35,10 +37,10 @@ fileignoreconfig:
   checksum: 27fe9ff50e8ccf7a33e09be01cdc1aa17703014efe55d553ded0b86edd9cbfc8
 - filename: packages/contentstack-import/test/mock/globalFields.js
   checksum: ebfcba93d888713142c8fe5bfa6a80c09344ab357bc13ac935d8c50c283bd1ae
+- filename: packages/contentstack-utilities/src/config-handler.ts
+  checksum: 7f8b00ee4e24e2a750aa748db01c1a8de2592d117e6374a7fb5ab1e89fb7cd38
 - filename: packages/contentstack/README.md
   checksum: 03940bc99b53df5257456051789a20a273ee35abc1546d2c3e8a8eefb1f70482
 - filename: packages/contentstack/package-lock.json
   checksum: be5da46c99ee2ea6c021a6dd4f903feda4f4c610033aba5ad3d25761810b52ff
-- filename: packages/contentstack-import/src/lib/import/entries.js
-  checksum: 26921322ea463e69284d009777eb6b58a62cd683b4fdf23120e0ccf02c323063
 version: "1.0"
