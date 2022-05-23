@@ -105,6 +105,49 @@
       "description": "Provide delay in ms between two entry update",
       "default": 1000,
       "examples": [100]
+    },
+    "failed-entries": {
+        "type": "array",
+        "default": [],
+        "title": "The failed-entries Schema",
+        "items": {
+            "type": "string",
+            "default": "",
+            "title": "A Schema",
+            "examples": [
+                "blt1c37c346218e033e, blt6ed6d545cdc2064f, blt0594909c6f0a2e82, blt07fe0dc0d2f89e71, blt6d0d993a944947e8"
+            ]
+        },
+        "examples": [
+            ["blt1c37c346218e033e, blt6ed6d545cdc2064f, blt0594909c6f0a2e82, blt07fe0dc0d2f89e71, blt6d0d993a944947e8"]
+        ]
+    },
+    "locale": {
+        "type": "array",
+        "default": [],
+        "title": "The locale Schema",
+        "items": {
+            "type": "string",
+            "default": "",
+            "title": "A Schema",
+            "examples": [
+                "en-in"
+            ]
+        },
+        "examples": [
+            [
+                "en-in"]
+        ]
+    },
+    "batch-limit": {
+        "type": "integer",
+        "default": 50,
+        "title": "The batch-limit Schema",
+        "examples": [
+            30
+        ],
+        "maximum": 100,
+        "minimum": 1
     }
   },
   "additionalProperties": true

@@ -125,7 +125,8 @@ describe('Migration Config validation', () => {
     })
     .it('throw error on invalid config file');
 });
-describe('Content Type with Single RTE Field of Single Type', () => {
+describe('Content Type with Single RTE Field of Single Type', function(){
+  this.timeout(1000000);
   let token = getToken('test1');
   beforeEach(() => {
     nock(`${command.cmaAPIUrl}`, {
@@ -286,6 +287,14 @@ describe('Content Type with Single RTE Field of Single Type', () => {
       expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 1 Entrie(s)');
     });
 
+  test
+    .stub(cli, 'confirm', () => async () => 'yes')
+    .stub(command, 'getToken', getTokenCallback)
+    .stdout()
+    .command(['cm:entries:migrate-html-rte', '--config-path', './test/dummy/config/config-locale-2.json', '--yes'])
+    .it('execute using config file w/ multiple locale', ctx => {
+      expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 3 Entrie(s)')
+    })
   test
     .stub(cli, 'confirm', () => async () => 'yes')
     .stub(command, 'getToken', getTokenCallback)
@@ -524,7 +533,7 @@ describe('Content Type with Single RTE Field of Single Type', () => {
       '50',
     ])
     .it('notify user on entry update failed', (ctx) => {
-      expect(ctx.stdout).to.contain('Faced issue while migrating some entrie(s),"blta9b16ac2827c54ed"');
+      expect(ctx.stdout).to.contain(`Faced issue while migrating some entrie(s) for "contenttypewithentryupdateerror" Content-type in "en-us" locale,"blta9b16ac2827c54ed, blta9b16ac2827c54e1"`);
     });
 });
 describe('Global Field Migration', () => {
