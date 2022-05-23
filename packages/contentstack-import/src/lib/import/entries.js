@@ -218,7 +218,7 @@ importEntries.prototype = {
                 // and its subsequent children. If the data is passed without a uid, then the fields aren't created. So, I'll
                 // generate the uids for now, and will come up with a better solution later
                 if (self.ctJsonRte.indexOf(ctUid) > -1) {
-                  entries[eUid] = self.generateUidsForJsonRteFields(entries[eUid], self.ctSchemas[ctUid].schema)
+                  entries[eUid] = self.removeUidsFromJsonRteFields(entries[eUid], self.ctSchemas[ctUid].schema)
                 }
 
                 // remove entry references from json-rte fields
@@ -902,7 +902,7 @@ importEntries.prototype = {
       })
     })
   },
-  removeEntryRefsFromJSONRTE(entry, ctSchema) {
+  removeEntryRefsFromJSONRTE: function(entry, ctSchema) {
     for (let i = 0; i < ctSchema.length; i++) {
       switch(ctSchema[i].data_type) {
         case 'blocks': {
@@ -958,7 +958,7 @@ importEntries.prototype = {
     }
     return entry
   },
-  doEntryReferencesExist(element) { 
+  doEntryReferencesExist: function(element) { 
     // checks if the children of p element contain any references
     // only checking one level deep, not recursive
 
@@ -983,7 +983,7 @@ importEntries.prototype = {
     }
     return false
   },
-  restoreJsonRteEntryRefs(entry, sourceStackEntry, ctSchema) {
+  restoreJsonRteEntryRefs: function(entry, sourceStackEntry, ctSchema) {
     for (let i = 0; i < ctSchema.length; i++) {
       switch (ctSchema[i].data_type) {
         case 'blocks': {
@@ -1053,10 +1053,10 @@ importEntries.prototype = {
     // }
     // return entry
   },
-  isEntryRef(element) {
+  isEntryRef: function(element) {
     return element.type === "reference" && element.attrs.type === "entry"
   },
-  generateUidsForJsonRteFields(entry, ctSchema) {
+  removeUidsFromJsonRteFields: function(entry, ctSchema) {
     for (let i = 0; i < ctSchema.length; i++) {
       switch (ctSchema[i].data_type) {
         case 'blocks': {
@@ -1065,7 +1065,7 @@ importEntries.prototype = {
               entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(e => {
                 let key = Object.keys(e).pop()
                 let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
-                e[key] = this.generateUidsForJsonRteFields(e[key], subBlock.schema)
+                e[key] = this.removeUidsFromJsonRteFields(e[key], subBlock.schema)
                 return e
               })
             }
@@ -1077,11 +1077,11 @@ importEntries.prototype = {
           if (entry[ctSchema[i].uid]) {
             if (ctSchema[i].multiple) {
               entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(e => {
-                e = this.generateUidsForJsonRteFields(e, ctSchema[i].schema)
+                e = this.removeUidsFromJsonRteFields(e, ctSchema[i].schema)
                 return e
               })
             } else {
-              entry[ctSchema[i].uid] = this.generateUidsForJsonRteFields(entry[ctSchema[i].uid], ctSchema[i].schema)
+              entry[ctSchema[i].uid] = this.removeUidsFromJsonRteFields(entry[ctSchema[i].uid], ctSchema[i].schema)
             }
           }
           break;
@@ -1090,13 +1090,17 @@ importEntries.prototype = {
           if (entry[ctSchema[i].uid] && ctSchema[i].field_metadata.rich_text_type) {
             if (ctSchema[i].multiple) {
               entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(jsonRteData => {
-                jsonRteData.uid = this.generateUid()
-                jsonRteData.children = jsonRteData.children.map(child => this.populateChildrenWithUids(child))
+                delete jsonRteData.uid // remove uid
+                jsonRteData.children = jsonRteData.children.map(child => this.removeUidsFromChildren(child))
+                // jsonRteData.uid = this.generateUid()
+                // jsonRteData.children = jsonRteData.children.map(child => this.populateChildrenWithUids(child))
                 return jsonRteData
               })
             } else {
-              entry[ctSchema[i].uid].uid = this.generateUid()
-              entry[ctSchema[i].uid].children = entry[ctSchema[i].uid].children.map(child => this.populateChildrenWithUids(child))
+              delete entry[ctSchema[i].uid].uid // remove uid
+              entry[ctSchema[i].uid].children = entry[ctSchema[i].uid].children.map(child => this.removeUidsFromChildren(child))
+              // entry[ctSchema[i].uid].uid = this.generateUid()
+              // entry[ctSchema[i].uid].children = entry[ctSchema[i].uid].children.map(child => this.populateChildrenWithUids(child))
             }
           }
           break;
@@ -1105,29 +1109,28 @@ importEntries.prototype = {
     }
     return entry
   },
-  populateChildrenWithUids(children) {
+  removeUidsFromChildren: function(children) {
     if (children.length && children.length > 0) {
       return children.map(child => {
         if(child.type && child.type.length > 0) {
-          child.uid = this.generateUid()
+          delete child.uid // remove uid
+          // child.uid = this.generateUid()
         }
         if(child.children && child.children.length > 0) {
-          child.children = this.populateChildrenWithUids(child.children)
+          child.children = this.removeUidsFromChildren(child.children)
         }
         return child
       })
     } else {
       if (children.type && children.type.length > 0) {
-        children.uid = this.generateUid()
+        // children.uid = this.generateUid()
+        delete children.uid // remove uid
       }
       if (children.children && children.children.length > 0) {
-        children.children = this.populateChildrenWithUids(children.children)
+        children.children = this.removeUidsFromChildren(children.children)
       }
       return children
     }
-  },
-  generateUid() {
-    return crypto.randomBytes(16).toString('hex')
   }
 }
 
