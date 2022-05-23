@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import * as Configstore from 'configstore';
+import { configHandler } from '@contentstack/cli-utilities';
 import * as nock from 'nock';
 import validateAuthToken from '../../src/hooks/prerun/validate-auth-token';
 
-const config = new Configstore('contentstack_cli');
+const config = configHandler
 describe('Validate auth token hook', function () {
   let context, exitStub;
   before(function () {

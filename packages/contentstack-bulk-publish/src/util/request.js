@@ -5,8 +5,8 @@
 const Bluebird = require('bluebird');
 const request = Bluebird.promisify(require('request'));
 const debug = require('debug')('requests');
-const Configstore = require('configstore');
-let config = new Configstore('contentstack_cli');
+const { configHandler } = require('@contentstack/cli-utilities');
+let config = configHandler
 
 const MAX_RETRY_LIMIT = 8;
 

@@ -1,9 +1,9 @@
 const { expect, test } = require('@oclif/test')
 const nock = require('nock')
 const stack = require('../../src/util/client.js').stack
-const Configstore = require('configstore')
+const { configHandler } = require('@contentstack/cli-utilities');
 const { cli } = require('cli-ux')
-const dummyConfig = new Configstore('contentstack_cli')
+const dummyConfig = configHandler
 const store = require('../../src/util/store.js')
 
 const languagesResponse = require('../dummy/languages')

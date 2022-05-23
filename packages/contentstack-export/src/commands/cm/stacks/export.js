@@ -10,8 +10,7 @@ const {
   parametersWithAuthToken,
   withoutParametersWithAuthToken,
 } = require('../../../lib/util/export-flags');
-const Configstore = require('configstore');
-const credStore = new Configstore('contentstack_cli');
+const { configHandler } = require('@contentstack/cli-utilities');
 
 class ExportCommand extends Command {
   async run() {
@@ -24,7 +23,7 @@ class ExportCommand extends Command {
     const moduleName = exportCommandFlags.module;
     const contentTypes = exportCommandFlags['content-type'];
     const branchName = exportCommandFlags.branch;
-    let _authToken = credStore.get('authtoken');
+    let _authToken = configHandler.get('authtoken');
     let host = this.region;
     let cmaHost = host.cma.split('//');
     let cdaHost = host.cda.split('//');
