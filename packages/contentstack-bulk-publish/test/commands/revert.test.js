@@ -3,7 +3,7 @@ const nock = require('nock')
 
 const stack = require('../../src/util/client.js').stack
 const { configHandler } = require('@contentstack/cli-utilities');
-const {cli} = require('cli-ux')
+const { ux: cli } = require('@contentstack/cli-utilities');
 const dummyConfig = configHandler
 const store = require('../../src/util/store.js')
 

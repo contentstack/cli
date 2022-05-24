@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { cli } = require('cli-ux');
+const { ux: cli } = require('@contentstack/cli-utilities');
 const { Command, flags } = require('@oclif/command');
 const { getLogsDirPath } = require('../../../util/logger.js');
 const { printFlagDeprecation } = require('@contentstack/cli-utilities');

@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 /* eslint-disable node/no-extraneous-require */
-const { Command, flags } = require('@oclif/command');
+const { Command, flags } = require('@contentstack/cli-command');
 const { start } = require('../../../producer/publish-entries');
 const store = require('../../../util/store.js');
-const { cli } = require('cli-ux');
+const { ux: cli } = require('@contentstack/cli-utilities');
 const configKey = 'publish_entries';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
@@ -25,10 +25,15 @@ class EntriesCommand extends Command {
           updatedFlags.alias = await cli.prompt('Provide the alias of the management token to use');
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish !== 'false';
-        await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
+        // Validate management token alias.
+        try {
+          this.getToken(updatedFlags.alias);
+        } catch (error) {
+          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, {exit: 2})
+        }
         config = {
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma,
+          host: this.region.cma,
           branch: entriesFlags.branch,
         };
         stack = getStack(config);
