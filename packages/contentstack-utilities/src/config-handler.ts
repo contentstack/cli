@@ -7,7 +7,7 @@ class Config {
   private config: Conf;
 
   constructor() {
-    this.init()
+    // this.init()
   }
 
   init() {
