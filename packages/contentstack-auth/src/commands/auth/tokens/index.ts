@@ -1,6 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import cli from 'cli-ux';
-import { logger, cliux, configHandler } from '@contentstack/cli-utilities';
+import { logger, cliux, ux, configHandler } from '@contentstack/cli-utilities';
 
 export default class TokensListCommand extends Command {
   private readonly parse: Function;
@@ -8,7 +7,7 @@ export default class TokensListCommand extends Command {
   static description = 'Lists all existing tokens added to the session';
   static aliases = ['tokens'];
   static examples = ['$ csdx auth:tokens'];
-  static flags = cli.table.flags(); // use the cli table flags as it displays tokens in table
+  static flags = ux.table.flags(); // use the cli table flags as it displays tokens in table
 
   async run(): Promise<any> {
     try {

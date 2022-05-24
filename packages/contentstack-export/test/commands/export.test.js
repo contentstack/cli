@@ -1,5 +1,5 @@
 const {expect, test, it} = require('@oclif/test')
-const {cli} = require('cli-ux')
+const { ux: cli } = require('@contentstack/cli-utilities');
 const {Client} = require('../../src/lib/util/contentstack-management-sdk')
 let defaultConfig = require('../../src/config/default')
 let _ = require('lodash')

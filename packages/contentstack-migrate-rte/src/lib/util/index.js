@@ -3,7 +3,7 @@ const { Command } = require('@contentstack/cli-command');
 const { logger } = require('@contentstack/cli-utilities');
 
 const command = new Command();
-const { cli } = require('cli-ux');
+const { ux: cli } = require('@contentstack/cli-utilities');
 const chalk = require('chalk');
 const {
   isEmpty,
