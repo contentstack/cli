@@ -9,7 +9,6 @@ const path = require('path')
 const _ = require('lodash')
 const mkdirp = require('mkdirp')
 const chalk = require('chalk')
-const crypto = require('crypto')
 
 const helper = require('../util/fs')
 const {addlogs} = require('../util/log')
@@ -117,7 +116,7 @@ importEntries.prototype = {
         }
       }
 
-      // Step 1: Removes filed rules from content type
+      // Step 1: Removes field rules from content type
       // This allows to handle cases like self references and circular reference
       // if mandatory reference fields are not filed in entries then avoids the error
       // Also remove field visibility rules
@@ -210,13 +209,8 @@ importEntries.prototype = {
               if (eUid) {
 
                 // check ctUid in self.ctJsonRte array, if ct exists there... only then remove entry references for json rte
-                // also with json rte, api creates the json-rte field with the same uid as passed in the payload. So use the node's inbuilt
-                // crypto module to generate a random uid and populate the json rte data
-                // https://www.kindacode.com/article/how-to-easily-generate-a-random-string-in-node-js/
+                // also with json rte, api creates the json-rte field with the same uid as passed in the payload.
 
-                // while creating entries with json-rte field, the api does not create fresh uids for the json-rte field
-                // and its subsequent children. If the data is passed without a uid, then the fields aren't created. So, I'll
-                // generate the uids for now, and will come up with a better solution later
                 if (self.ctJsonRte.indexOf(ctUid) > -1) {
                   entries[eUid] = self.removeUidsFromJsonRteFields(entries[eUid], self.ctSchemas[ctUid].schema)
                 }
@@ -445,7 +439,6 @@ importEntries.prototype = {
         // map failed reference uids @mapper/language/unmapped-uids.json
         let refUidMapperPath = path.join(entryMapperPath, lang)
 
-        // add entry references to JSON RTE fields
         entries = _.map(entries, function (entry) {
           try {
             let uid = entry.uid
@@ -453,7 +446,8 @@ importEntries.prototype = {
 
             // restores json rte entry refs if they exist
             if (self.ctJsonRte.indexOf(ctUid) > -1) {
-              updatedEntry = self.restoreJsonRteEntryRefs(entry, sourceStackEntries[self.mappedUids[entry.uid]], schema)
+              // the entries stored in eSuccessFilePath, have the same uids as the entries from source data
+              updatedEntry = self.restoreJsonRteEntryRefs(entry, sourceStackEntries[entry.uid], schema.schema)
             } else {
               updatedEntry = entry
             }
@@ -964,9 +958,7 @@ importEntries.prototype = {
 
     if (element.length) {
       for(let i=0; i < element.length; i++) {
-        // although most data has only one level of nesting, and this case might never come up
-        // I've handled multiple level of nesting for 'p' elements
-        if(element[i].type === 'p' && element[i].children && element[i].children.length > 0) {
+        if((element[i].type === 'p' || element[i].type === 'a') && element[i].children && element[i].children.length > 0) {
           return this.doEntryReferencesExist(element[i].children)
         } else if(this.isEntryRef(element[i])) {
           return true
@@ -977,13 +969,15 @@ importEntries.prototype = {
         return true
       }
 
-      if (element.type === "p" && element.children && element.children.length > 0) {
+      if ((element.type === 'p' || element.type === 'a') && element.children && element.children.length > 0) {
         return this.doEntryReferencesExist(element.children)
       }
     }
     return false
   },
   restoreJsonRteEntryRefs: function(entry, sourceStackEntry, ctSchema) {
+    let mappedAssetUids = helper.readFile(mappedAssetUidPath) || {}
+    let mappedAssetUrls = helper.readFile(mappedAssetUrlPath) || {}
     for (let i = 0; i < ctSchema.length; i++) {
       switch (ctSchema[i].data_type) {
         case 'blocks': {
@@ -1022,14 +1016,14 @@ importEntries.prototype = {
               entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map((field, index) => {
                 field.children = [
                   ...field.children, 
-                  ...sourceStackEntry[ctSchema[i].uid][index].children.filter(e => this.doEntryReferencesExist(e))
+                  ...sourceStackEntry[ctSchema[i].uid][index].children.filter(e => this.doEntryReferencesExist(e)).map(e => this.setDirtyTrue(e)).map(e => this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls))
                 ]
                 return field
               })
             } else {
               entry[ctSchema[i].uid].children = [
                 ...entry[ctSchema[i].uid].children, 
-                ...sourceStackEntry[ctSchema[i].uid].children.filter(e => this.doEntryReferencesExist(e)),
+                ...sourceStackEntry[ctSchema[i].uid].children.filter(e => this.doEntryReferencesExist(e)).map(e => this.setDirtyTrue(e)).map(e => this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls))
               ]
             }
           }
@@ -1038,20 +1032,6 @@ importEntries.prototype = {
       }
     }
     return entry
-    //------------------------------------------------------------------------------------------------------------
-    // if (Object.keys(self.jsonRteEntryRefs).indexOf(entry.uid) > -1) {
-    //   Object.keys(self.jsonRteEntryRefs[entry.uid]).forEach(jsonRteFieldUid => {
-    //     if (self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid].length) { // handles when json_rte is multiple
-    //       entry[jsonRteFieldUid] = entry[jsonRteFieldUid].map((field, index) => {
-    //         field.children = [...field.children, ...self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid][index]]
-    //         return field
-    //       })
-    //     } else {
-    //       entry[jsonRteFieldUid].children = [...entry[jsonRteFieldUid].children, ...self.jsonRteEntryRefs[entry.uid][jsonRteFieldUid].children]
-    //     }
-    //   })
-    // }
-    // return entry
   },
   isEntryRef: function(element) {
     return element.type === "reference" && element.attrs.type === "entry"
@@ -1092,15 +1072,11 @@ importEntries.prototype = {
               entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(jsonRteData => {
                 delete jsonRteData.uid // remove uid
                 jsonRteData.children = jsonRteData.children.map(child => this.removeUidsFromChildren(child))
-                // jsonRteData.uid = this.generateUid()
-                // jsonRteData.children = jsonRteData.children.map(child => this.populateChildrenWithUids(child))
                 return jsonRteData
               })
             } else {
               delete entry[ctSchema[i].uid].uid // remove uid
               entry[ctSchema[i].uid].children = entry[ctSchema[i].uid].children.map(child => this.removeUidsFromChildren(child))
-              // entry[ctSchema[i].uid].uid = this.generateUid()
-              // entry[ctSchema[i].uid].children = entry[ctSchema[i].uid].children.map(child => this.populateChildrenWithUids(child))
             }
           }
           break;
@@ -1114,7 +1090,6 @@ importEntries.prototype = {
       return children.map(child => {
         if(child.type && child.type.length > 0) {
           delete child.uid // remove uid
-          // child.uid = this.generateUid()
         }
         if(child.children && child.children.length > 0) {
           child.children = this.removeUidsFromChildren(child.children)
@@ -1123,7 +1098,6 @@ importEntries.prototype = {
       })
     } else {
       if (children.type && children.type.length > 0) {
-        // children.uid = this.generateUid()
         delete children.uid // remove uid
       }
       if (children.children && children.children.length > 0) {
@@ -1131,6 +1105,47 @@ importEntries.prototype = {
       }
       return children
     }
+  },
+  setDirtyTrue: function(jsonRteChild) {
+    if (jsonRteChild.type) {
+      jsonRteChild.attrs['dirty'] = true
+      
+      if (jsonRteChild.children && jsonRteChild.children.length > 0) {
+        jsonRteChild.children = jsonRteChild.children.map(subElement => this.setDirtyTrue(subElement))
+      }
+    }
+    return jsonRteChild
+  },
+  resolveAssetRefsInEntryRefsForJsonRte: function(jsonRteChild, mappedAssetUids, mappedAssetUrls) {
+    
+      if (jsonRteChild.type) {
+        if (jsonRteChild.attrs.type === 'asset') {
+          let assetUrl
+          if(mappedAssetUids[jsonRteChild.attrs['asset-uid']]) {
+            jsonRteChild.attrs['asset-uid'] = mappedAssetUids[jsonRteChild.attrs['asset-uid']]
+          }
+
+          if (jsonRteChild.attrs['display-type'] !== 'link') {
+            assetUrl = jsonRteChild.attrs['asset-link']
+          } else {
+            assetUrl = jsonRteChild.attrs['href']
+          }
+
+          if(mappedAssetUrls[assetUrl]) {
+            if (jsonRteChild.attrs['display-type'] !== 'link') {
+              jsonRteChild.attrs['asset-link'] = mappedAssetUrls[assetUrl]
+            } else {
+              jsonRteChild.attrs['href'] = mappedAssetUrls[assetUrl]
+            }
+          }
+        }
+
+        if (jsonRteChild.children && jsonRteChild.children.length > 0) {
+          jsonRteChild.children = jsonRteChild.children.map(subElement => this.resolveAssetRefsInEntryRefsForJsonRte(subElement, mappedAssetUids, mappedAssetUrls))
+        }
+      }
+
+      return jsonRteChild
   }
 }
 
