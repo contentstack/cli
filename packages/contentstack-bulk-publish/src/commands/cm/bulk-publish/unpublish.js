@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable node/no-extraneous-require */
 const { Command, flags } = require('@oclif/command');
-const { cli } = require('cli-ux');
+const { ux: cli } = require('@contentstack/cli-utilities');
 const { start } = require('../../../producer/unpublish');
 const store = require('../../../util/store.js');
 const configKey = 'Unpublish';
@@ -29,11 +29,16 @@ class UnpublishCommand extends Command {
           updatedFlags.deliveryToken = await cli.prompt('Enter delivery token of your source environment');
         }
         updatedFlags.bulkUnpublish = updatedFlags.bulkUnpublish === 'false' ? false : true;
-        await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
+        // Validate management token alias.
+        try {
+          this.getToken(updatedFlags.alias);
+        } catch (error) {
+          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, {exit: 2})
+        }
         config = {
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma,
-          cda: this.config.userConfig.getRegion().cda,
+          host: this.region.cma,
+          cda: this.region.cda,
           branch: unpublishFlags.branch,
         };
         stack = getStack(config);

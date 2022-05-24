@@ -1,7 +1,7 @@
-const { Command, flags } = require('@oclif/command');
+const { Command, flags } = require('@contentstack/cli-command');
 const { start } = require('../../../producer/add-fields');
 const store = require('../../../util/store.js');
-const { cli } = require('cli-ux');
+const { ux: cli } = require('@contentstack/cli-utilities');
 const configKey = 'addFields';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
@@ -23,10 +23,15 @@ class AddFieldsCommand extends Command {
           updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used');
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
-        await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
+        // Validate management token alias.
+        try {
+          this.getToken(updatedFlags.alias);
+        } catch (error) {
+          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, {exit: 2})
+        }
         config = {
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma,
+          host: this.region.cma,
           branch: addFieldsFlags.branch,
         };
         stack = getStack(config);

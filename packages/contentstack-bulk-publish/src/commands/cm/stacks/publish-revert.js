@@ -3,7 +3,7 @@ const { start } = require('../../../producer/revert');
 const store = require('../../../util/store.js');
 const configKey = 'revert';
 const { prettyPrint, formatError } = require('../../../util');
-const { cli } = require('cli-ux');
+const { ux: cli } = require('@contentstack/cli-utilities');
 const { printFlagDeprecation } = require('@contentstack/cli-utilities');
 
 let config;

@@ -1,5 +1,6 @@
-import cli from 'cli-ux';
 import * as tmp from 'tmp';
+import { ux as cli } from '@contentstack/cli-utilities';
+
 import * as importer from '../seed/importer';
 import ContentstackClient, { Organization, Stack } from '../seed/contentstack/client';
 import {
