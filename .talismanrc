@@ -40,7 +40,7 @@ fileignoreconfig:
 - filename: packages/contentstack-utilities/src/config-handler.ts
   checksum: 7f8b00ee4e24e2a750aa748db01c1a8de2592d117e6374a7fb5ab1e89fb7cd38
 - filename: packages/contentstack/README.md
-  checksum: 03940bc99b53df5257456051789a20a273ee35abc1546d2c3e8a8eefb1f70482
+  checksum: afb5db672874919b776217f688fede6d93cdf20487b7ba1f75df9c828d9b8d83
 - filename: packages/contentstack/package-lock.json
   checksum: be5da46c99ee2ea6c021a6dd4f903feda4f4c610033aba5ad3d25761810b52ff
 version: "1.0"
