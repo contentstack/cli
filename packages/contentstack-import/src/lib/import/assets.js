@@ -376,6 +376,7 @@ importAssets.prototype = {
           branch[parent_uid][coll[j].uid] = {}
           coll.splice(j, 1);
           self.findBranches(branch[parent_uid], coll)
+          --j
         }
       }
     }
