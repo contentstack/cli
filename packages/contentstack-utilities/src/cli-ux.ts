@@ -1,8 +1,9 @@
-import cliux from 'cli-ux';
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
-import { PrintOptions, InquirePayload } from './interfaces';
+import { ux as cliux, Table } from '@oclif/core/lib/cli-ux'
+
 import messageHandler from './message-handler';
+import { PrintOptions, InquirePayload } from './interfaces';
 
 /**
  * CLI Interface
@@ -41,15 +42,23 @@ class CLIInterface {
     this.loading = !this.loading;
   }
 
-  table(data: Array<object>, columns: any, options: object): void {
+  table(
+    data: Record<string, unknown>[],
+    columns: Table.table.Columns<Record<string, unknown>>,
+    options?: Table.table.Options
+  ): void {
     cliux.table(data, columns, options);
   }
 
   async inquire<T>(inquirePayload: InquirePayload): Promise<T> {
     inquirePayload.message = messageHandler.parse(inquirePayload.message);
     const result = await inquirer.prompt(inquirePayload as inquirer.QuestionCollection<T>);
+
     return result[inquirePayload.name] as T;
   }
 }
 
 export default new CLIInterface();
+
+export * as CliUx from '@oclif/core/lib/cli-ux'
+export { ux, ActionBase, Config, Table, ExitError, IPromptOptions, config } from '@oclif/core/lib/cli-ux'

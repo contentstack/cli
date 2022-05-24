@@ -1,11 +1,12 @@
-import cli from 'cli-ux';
 import * as path from 'path';
+import { ux as cli } from '@contentstack/cli-utilities';
 import { default as ContentStackSeed } from '@contentstack/cli-cm-seed/lib/commands/cm/stacks/seed';
+
 import { AppConfig } from '../config';
-import GitHubClient, { Repo } from './github/client';
-import GithubError from './github/github-error';
-import { setupEnvironments } from './utils';
 import messageHandler from '../messages';
+import { setupEnvironments } from './utils';
+import GithubError from './github/github-error';
+import GitHubClient, { Repo } from './github/client';
 
 export const ENGLISH_LOCALE = 'en-us';
 
@@ -53,6 +54,7 @@ export default class Bootstrap {
 
   async run(): Promise<any> {
     cli.action.start(messageHandler.parse('CLI_BOOTSTRAP_START_CLONE_APP'));
+
     try {
       await this.ghClient.getLatest(this.cloneDirectory);
     } catch (error) {
