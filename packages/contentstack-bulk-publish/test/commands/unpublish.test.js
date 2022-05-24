@@ -2,7 +2,7 @@
 /* eslint-disable node/no-extraneous-require */
 const nock = require('nock')
 const {expect, test} = require('@oclif/test')
-const {cli} = require('cli-ux')
+const { ux: cli } = require('@contentstack/cli-utilities');
 
 const { configHandler } = require('@contentstack/cli-utilities');
 const dummyConfig = configHandler

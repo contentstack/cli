@@ -1,5 +1,5 @@
 const { Command, flags } = require('@oclif/command');
-const { cli } = require('cli-ux');
+const { ux: cli } = require('@contentstack/cli-utilities');
 const fs = require('fs');
 const path = require('path');
 let config = require('../../../config/index.js');

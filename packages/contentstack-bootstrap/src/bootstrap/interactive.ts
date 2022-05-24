@@ -1,7 +1,9 @@
-import * as inquirer from 'inquirer';
-import cli from 'cli-ux';
 import * as path from 'path';
+import * as inquirer from 'inquirer';
+import { ux as cli } from '@contentstack/cli-utilities';
+
 import messageHandler from '../messages';
+
 
 /**
  * @description Inquire starter app
