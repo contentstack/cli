@@ -1,6 +1,7 @@
-import cli from 'cli-ux';
 import * as fs from 'fs';
 import * as path from 'path';
+import { ux as cli } from '@contentstack/cli-utilities';
+
 import { AppConfig } from '../config';
 import messageHandler from '../messages';
 
@@ -98,7 +99,7 @@ const envFileHandler = async (
   region: any,
 ) => {
     if (!appConfigKey || !environmentVariables) {
-        return
+      return
     }
     let content
     let result

@@ -6,7 +6,6 @@ const setupBranches = require('./lib/util/setup-branches');
 const chalk = require('chalk');
 let path = require('path');
 let _ = require('lodash');
-const cli = require('cli-ux');
 
 exports.initial = async function (config) {
   return new Promise(function (resolve, reject) {

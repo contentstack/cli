@@ -9,7 +9,7 @@ let { initial } = require('../../app');
 let path = require('path');
 const helper = require('../util/helper');
 let _ = require('lodash');
-const { cli } = require('cli-ux');
+const { ux: cli } = require('@contentstack/cli-utilities');
 
 exports.configWithMToken = function (config, managementTokens, host, contentTypes, branchName, securedAssets) {
   let externalConfig = require(config);

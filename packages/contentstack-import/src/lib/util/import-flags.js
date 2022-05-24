@@ -6,7 +6,7 @@
 let defaultConfig = require('../../config/default');
 let { initial } = require('../../app');
 let _ = require('lodash');
-const { cli } = require('cli-ux');
+const { ux: cli } = require('@contentstack/cli-utilities');
 let message = require('../../../messages/index.json');
 
 exports.configWithMToken = function (config, managementTokens, moduleName, host, _authToken, backupdir, branchName) {
