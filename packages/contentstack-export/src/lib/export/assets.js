@@ -71,6 +71,7 @@ ExportAssets.prototype = {
                   // log.success(chalk.white('The following asset has been downloaded successfully: ' +
                   //     assetJSON.uid))
                 }).catch(function (error) {
+                  console.log("error on 74", error);
                   addlogs(config, chalk.red('The following asset failed to download\n' + JSON.stringify(
                   assetJSON)))
                   addlogs(config, error, 'error')
@@ -78,14 +79,16 @@ ExportAssets.prototype = {
             }, {
               concurrency: vLimit,
             }).then(function () {
-              addlogs(config, 'Batch no ' + (batch + 1) + ' of assets is complete', 'success')
-              helper.writeFile(assetContentsFile, self.assetContents)
+              // addlogs(config, 'Batch no ' + (batch + 1) + ' of assets is complete', 'success')
+              // helper.writeFile(assetContentsFile, self.assetContents)
             }).catch(function (error) {
+              console.log("error on 85", error);
               addlogs(config, 'Asset batch ' + (batch + 1) + ' failed to download', 'error')
               addlogs(config, error, 'error')
               // log this error onto a file - send over retries
             })
           }).catch(function (error) {
+            console.log("error on 89", error);
             return reject(error)
           })
         }, {
@@ -95,9 +98,11 @@ ExportAssets.prototype = {
             addlogs(config, chalk.green('Asset export completed successfully'), 'success')
             return resolve()
           }).catch(function (error) {
+            console.log("error on 99", error);
             return reject(error)
           })
         }).catch(function (error) {
+          console.log("error on 103", error);
           addlogs(config, chalk.red('Asset export failed due to the following errrors ' + JSON.stringify(
             error), 'error'))
           return reject(error)
@@ -105,6 +110,7 @@ ExportAssets.prototype = {
       }).catch(function (error) {
         // addlogs(config, chalk.red('Failed to download assets due to the following error: ' + JSON.stringify(
         //   error)));
+        console.log("error on 111", error);
         return reject(error)
       })
     })
@@ -122,10 +128,12 @@ ExportAssets.prototype = {
           addlogs(config, 'Asset-folders have been successfully exported!', 'success')
           return resolve()
         }).catch(function (error) {
+          console.log("error on 129", error);
           addlogs(config, chalk.red('Error while exporting asset-folders!'), 'error')
           return reject(error)
         })
       }).catch(function (error) {
+        console.log("error on 134", error);
         addlogs(config, error, 'error')
         // error while fetching asset folder count
         return reject(error)
@@ -169,7 +177,8 @@ ExportAssets.prototype = {
         .then(asset => {
           return resolve(asset.count)
         })
-        .catch(error => {
+          .catch(error => {
+        console.log("error on 179", error);
           addlogs(config, error, 'error')
         })
       } else {
@@ -178,7 +187,8 @@ ExportAssets.prototype = {
         .then(asset => {
           return resolve(asset.count)
         })
-        .catch(error => {
+          .catch(error => {
+        console.log("error on 188", error);
           addlogs(config, error, 'error')
           return reject()
         })
@@ -203,6 +213,7 @@ ExportAssets.prototype = {
       .then(assetResponse => {
         return resolve(assetResponse.items)
       }).catch(error => {
+        console.log("error on 214", error);
         addlogs(config, error, 'error')
         return reject()
       })
@@ -236,16 +247,27 @@ ExportAssets.prototype = {
           // Remove duplicates
           assetVersionInfo = _.uniqWith(assetVersionInfo, _.isEqual)
           self.getVersionedAssetJSON(uid, --version, assetVersionInfo)
-          .then(resolve)
-            .catch(reject)
-        }).catch(reject)
+            .then(resolve)
+            .catch((error) => {
+              console.log("error on 250", error);
+              reject(error);
+            })
+        }).catch((error) => {
+          console.log("error on 254", error);
+          reject(error);
+        });
       }).catch((error) => {
+        console.log("error on 255", error);
         if (error.status === 408) {
           // retrying when timeout
-          (self.assetDownloadRetry[uid+version] ? ++self.assetDownloadRetry[uid+version] : self.assetDownloadRetry[uid+version] = 1 ) 
+          (self.assetDownloadRetry[uid + version] ? ++self.assetDownloadRetry[uid + version] : self.assetDownloadRetry[uid + version] = 1)
+          console.log("Retrying", uid);
           return self.getVersionedAssetJSON(uid, version, assetVersionInfo)
           .then(resolve)
-            .catch(reject) 
+            .catch((_error) => {
+              console.log("error on 261", error);
+              reject(_error);
+            }) 
         }
         reject(error);
       })
@@ -257,8 +279,8 @@ ExportAssets.prototype = {
       const assetFolderPath = path.resolve(assetsFolderPath, asset.uid)
       const assetFilePath = path.resolve(assetFolderPath, asset.filename)
       if (fs.existsSync(assetFilePath)) {
-        addlogs(config, 'Skipping download of { title: ' + asset.filename + ', uid: ' +
-          asset.uid + ' }, as they already exist', 'success')
+        // addlogs(config, 'Skipping download of { title: ' + asset.filename + ', uid: ' +
+        //   asset.uid + ' }, as they already exist', 'success')
         return resolve()
       }
       self.assetStream = {
@@ -277,7 +299,10 @@ ExportAssets.prototype = {
           addlogs(config, 'Downloaded ' + asset.filename + ': ' + asset.uid + ' successfully!', 'success')
           return resolve()
         })
-      }).on('error', reject)
+      }).on('error', (error) => {
+        console.log("error on 301", error);
+        reject(error);
+      })
     })
   },
   getFolders: function () {
@@ -292,9 +317,11 @@ ExportAssets.prototype = {
           addlogs(config, chalk.green('Exported asset-folders successfully!'), 'success')
           return resolve()
         }).catch(function (error) {
+          console.log("error on 318", error);
           return reject(error)
         })
       }).catch(function (error) {
+        console.log("error on 322", error);
         return reject(error)
       })
     })
@@ -322,8 +349,12 @@ ExportAssets.prototype = {
         skip += 100
         return self.getFolderDetails(skip, tCount)
         .then(resolve)
-        .catch(reject)
+        .catch((error) => {
+          console.log("error on 351", error);
+          reject(error);
+        })
       }).catch(error => {
+        console.log("error on 352", error);
         addlogs(config, error, 'error')
       })
     })
