@@ -3,7 +3,7 @@
 const { Command, flags } = require('@contentstack/cli-command');
 const { start } = require('../../../producer/publish-entries');
 const store = require('../../../util/store.js');
-const { ux: cli } = require('@contentstack/cli-utilities');
+const { cliux } = require('@contentstack/cli-utilities');
 const configKey = 'publish_entries';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
@@ -22,7 +22,7 @@ class EntriesCommand extends Command {
       let stack;
       if (!updatedFlags.retryFailed) {
         if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Provide the alias of the management token to use');
+          updatedFlags.alias = await cliux.prompt('Provide the alias of the management token to use');
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish !== 'false';
         // Validate management token alias.
@@ -96,7 +96,7 @@ class EntriesCommand extends Command {
     if (data.yes) {
       return true;
     }
-    const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+    const confirmation = await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
     return confirmation;
   }
 }

@@ -3,7 +3,7 @@ import * as inquirer from 'inquirer';
 import { ux as cliux, Table } from '@oclif/core/lib/cli-ux'
 
 import messageHandler from './message-handler';
-import { PrintOptions, InquirePayload } from './interfaces';
+import { PrintOptions, InquirePayload, CliUXPromptOptions } from './interfaces';
 
 /**
  * CLI Interface
@@ -15,6 +15,10 @@ class CLIInterface {
     this.loading = false;
   }
 
+  get uxTable(): typeof Table.table {
+    return cliux.table
+  }
+
   init(context) {}
 
   print(message: string, opts?: PrintOptions): void {
@@ -22,6 +26,7 @@ class CLIInterface {
       cliux.log(chalk[opts.color](messageHandler.parse(message)));
       return;
     }
+
     cliux.log(messageHandler.parse(message));
   }
 
@@ -33,7 +38,7 @@ class CLIInterface {
     cliux.log(chalk.red(messageHandler.parse(message) + (params && params.length > 0 ? ': ' : '')), ...params);
   }
 
-  loader(message: string): void {
+  loader(message?: string): void {
     if (!this.loading) {
       cliux.action.start(messageHandler.parse(message));
     } else {
@@ -56,9 +61,18 @@ class CLIInterface {
 
     return result[inquirePayload.name] as T;
   }
+
+  prompt(name: string, options?: CliUXPromptOptions): Promise<any> {
+    return cliux.prompt(name, options)
+  }
+
+  confirm(message?: string): Promise<boolean> {
+    return cliux.confirm(message)
+  }
+
+  progress(options?: any): any {
+    return cliux.progress(options)
+  }
 }
 
 export default new CLIInterface();
-
-export * as CliUx from '@oclif/core/lib/cli-ux'
-export { ux, ActionBase, Config, Table, ExitError, IPromptOptions, config } from '@oclif/core/lib/cli-ux'

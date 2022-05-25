@@ -1,8 +1,8 @@
 const fs = require('fs');
-const { ux: cli } = require('@contentstack/cli-utilities');
 const { Command, flags } = require('@oclif/command');
+const { cliux, printFlagDeprecation } = require('@contentstack/cli-utilities');
+
 const { getLogsDirPath } = require('../../../util/logger.js');
-const { printFlagDeprecation } = require('@contentstack/cli-utilities');
 
 class ClearCommand extends Command {
   async run() {
@@ -13,7 +13,7 @@ class ClearCommand extends Command {
     } else if (clearFlags.yes) {
       this.rmDir(dirPath, false);
     } else {
-      const confirmation = await cli.confirm('Proceed to delete all log files (y/n)?');
+      const confirmation = await cliux.confirm('Proceed to delete all log files (y/n)?');
       if (confirmation) {
         this.rmDir(dirPath, false);
       } else {

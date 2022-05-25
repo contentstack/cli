@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Utilities for contentstack projects",
   "main": "lib/index.js",
+  "types": "./types/index.d.ts",
   "scripts": {
     "prepack": "npm run clean && npm run compile",
     "clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",

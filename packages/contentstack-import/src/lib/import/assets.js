@@ -468,7 +468,13 @@ importAssets.prototype = {
         })
         .catch(function (err) {
           if (err && err.message) {
-            let error = JSON.parse(err.message);
+            let error
+            try {
+              error = JSON.parse(err.message);
+            } catch (cError) {
+              error = { errorMessage: err.message }
+            }
+
             addlogs(config, chalk.red('Asset ' + assetUid + ' not published, ' + error.errorMessage), 'error');
             return reject(err);
           }
