@@ -13,10 +13,10 @@ class UpdateAndPublishCommand extends Command {
   async run() {
     const addFieldsFlags = this.parse(UpdateAndPublishCommand).flags;
     addFieldsFlags.retryFailed = addFieldsFlags['retry-failed'] || addFieldsFlags.retryFailed;
-    addFieldsFlags.contentTypes = addFieldsFlags['content-types'] || addFieldsFlags.contentTypes;
+    addFieldsFlags.contentTypes = addFieldsFlags['content-type'] || addFieldsFlags.contentTypes;
     addFieldsFlags.bulkPublish = addFieldsFlags['bulk-publish'] || addFieldsFlags.bulkPublish;
     delete addFieldsFlags['retry-failed'];
-    delete addFieldsFlags['content-types'];
+    delete addFieldsFlags['content-type'];
     delete addFieldsFlags['bulk-publish'];
 
     let updatedFlags;
@@ -129,7 +129,7 @@ UpdateAndPublishCommand.flags = {
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
-  'content-types': flags.string({
+  'content-type': flags.string({
     description: 'The Content-Types from which entries need to be published',
     multiple: true,
   }),
@@ -137,7 +137,7 @@ UpdateAndPublishCommand.flags = {
     char: 't',
     description: 'The Content-Types from which entries need to be published',
     multiple: true,
-    parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-types']),
+    parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-type']),
   }),
   environments: flags.string({
     char: 'e',
@@ -162,7 +162,7 @@ UpdateAndPublishCommand.flags = {
 
 UpdateAndPublishCommand.examples = [
   'General Usage',
-  'csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
+  'csdx cm:entries:update-and-publish --content-type [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
   '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`',
@@ -172,7 +172,8 @@ UpdateAndPublishCommand.examples = [
   'Using --retry-failed',
   'csdx cm:entries:update-and-publish --retry-failed [LOG FILE NAME]',
   '',
-  'csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
+  'Using --branch',
+  'csdx cm:entries:update-and-publish --content-type [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]',
 ];
 
 UpdateAndPublishCommand.aliases = ['cm:bulk-publish:add-fields'];
