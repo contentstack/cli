@@ -5,11 +5,19 @@ const { cli } = require('cli-ux');
 const configKey = 'addFields';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
+const { printFlagDeprecation } = require('@contentstack/cli-utilities');
 let config;
 
-class AddFieldsCommand extends Command {
+class UpdateAndPublishCommand extends Command {
   async run() {
-    const addFieldsFlags = this.parse(AddFieldsCommand).flags;
+    const addFieldsFlags = this.parse(UpdateAndPublishCommand).flags;
+    addFieldsFlags.retryFailed = addFieldsFlags['retry-failed'] || addFieldsFlags.retryFailed;
+    addFieldsFlags.contentTypes = addFieldsFlags['content-types'] || addFieldsFlags.contentTypes;
+    addFieldsFlags.bulkPublish = addFieldsFlags['bulk-publish'] || addFieldsFlags.bulkPublish;
+    delete addFieldsFlags['retry-failed'];
+    delete addFieldsFlags['content-types'];
+    delete addFieldsFlags['bulk-publish'];
+
     let updatedFlags;
     try {
       updatedFlags = addFieldsFlags.config ? store.updateMissing(configKey, addFieldsFlags) : addFieldsFlags;
@@ -86,36 +94,50 @@ class AddFieldsCommand extends Command {
     if (data.yes) {
       return true;
     }
-    const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]');
-    return confirmation;
+    return cli.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 
-AddFieldsCommand.description = `Add fields from updated content types to their respective entries
+UpdateAndPublishCommand.description = `Add fields from updated content types to their respective entries
 The add-fields command is used for updating already existing entries with the updated schema of their respective Content Type
 
 Content Types, Environments and Locales are required for executing the command successfully
-But, if retryFailed flag is set, then only a logfile is required
+But, if retry-failed flag is set, then only a logfile is required
 `;
 
-AddFieldsCommand.flags = {
+UpdateAndPublishCommand.flags = {
   alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
+  'retry-failed': flags.string({
+    description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)',
+  }),
   retryFailed: flags.string({
     char: 'r',
     description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)',
+    hidden: true,
+    parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
+  }),
+  'bulk-publish': flags.string({
+    description:
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+    default: 'true',
   }),
   bulkPublish: flags.string({
     char: 'b',
     description:
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
-    default: 'true',
+    hidden: true,
+    parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
+  }),
+  'content-types': flags.string({
+    description: 'The Content-Types from which entries need to be published',
+    multiple: true,
   }),
   contentTypes: flags.string({
     char: 't',
     description: 'The Content-Types from which entries need to be published',
     multiple: true,
+    parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-types']),
   }),
-  locales: flags.string({ char: 'l', description: 'Locales to which entries need to be published', multiple: true }),
   environments: flags.string({
     char: 'e',
     description: 'Environments to which entries need to be published',
@@ -123,28 +145,35 @@ AddFieldsCommand.flags = {
   }),
   config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
+  locales: flags.string({
+    char: 'l',
+    description: 'Locales to which entries need to be published',
+    multiple: true,
+    parse: printFlagDeprecation(['-l'], ['--locales']),
+  }),
   branch: flags.string({
     char: 'B',
     default: 'main',
     description: 'Specify the branch to fetch the content from (default is main branch)',
+    parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
 };
 
-AddFieldsCommand.examples = [
+UpdateAndPublishCommand.examples = [
   'General Usage',
-  'csdx cm:bulk-publish:add-fields -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
+  'csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
   '',
   'Using --config or -c flag',
-  'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
-  'csdx cm:bulk-publish:add-fields --config [PATH TO CONFIG FILE]',
-  'csdx cm:bulk-publish:add-fields -c [PATH TO CONFIG FILE]',
+  'Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`',
+  'csdx cm:entries:update-and-publish --config [PATH TO CONFIG FILE]',
+  'csdx cm:entries:update-and-publish -c [PATH TO CONFIG FILE]',
   '',
-  'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:add-fields --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:add-fields -r [LOG FILE NAME]',
+  'Using --retry-failed',
+  'csdx cm:entries:update-and-publish --retry-failed [LOG FILE NAME]',
   '',
-  'Using --branch or -B flag',
-  'csdx cm:bulk-publish:add-fields -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]',
+  'csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
 ];
 
-module.exports = AddFieldsCommand;
+UpdateAndPublishCommand.aliases = ['cm:bulk-publish:add-fields'];
+
+module.exports = UpdateAndPublishCommand;
