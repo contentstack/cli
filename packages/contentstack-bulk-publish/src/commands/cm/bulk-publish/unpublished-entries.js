@@ -1,99 +1,14 @@
 const { Command, flags } = require('@contentstack/cli-command');
-const { start } = require('../../../producer/publish-unpublished-env');
-const store = require('../../../util/store.js');
-const { cli } = require('cli-ux');
-const configKey = 'publish_unpublished_env';
-const { prettyPrint, formatError } = require('../../../util');
-const { getStack } = require('../../../util/client.js');
-let config;
-
+const { printFlagDeprecation } = require('@contentstack/cli-utilities');
+const { publishOnlyUnpublishedService } = require('../../../services/publish-only-unpublished');
 class UnpublishedEntriesCommand extends Command {
   async run() {
-    const unpublishedEntriesFlags = this.parse(UnpublishedEntriesCommand).flags;
-    let updatedFlags;
     try {
-      updatedFlags = unpublishedEntriesFlags.config
-        ? store.updateMissing(configKey, unpublishedEntriesFlags)
-        : unpublishedEntriesFlags;
+      this.log('DEPRECATION WARNING: This command will be removed in two months, start using cm:entries:publish-only-unpublished command instead');
+      await publishOnlyUnpublishedService.apply(this, [UnpublishedEntriesCommand]);
     } catch (error) {
-      this.error(error.message, { exit: 2 });
+      this.error(error, { exit: 2 });
     }
-    if (this.validate(updatedFlags)) {
-      let stack;
-      if (!updatedFlags.retryFailed) {
-        if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used');
-        }
-        updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
-        // Validate management token alias.
-        try {
-          this.getToken(updatedFlags.alias);
-        } catch (error) {
-          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, {exit: 2})
-        }
-        config = {
-          alias: updatedFlags.alias,
-          host: this.region.cma,
-          branch: unpublishedEntriesFlags.branch,
-        };
-        stack = getStack(config);
-      }
-      if (await this.confirmFlags(updatedFlags)) {
-        try {
-          if (!updatedFlags.retryFailed) {
-            await start(updatedFlags, stack, config);
-          } else {
-            await start(updatedFlags);
-          }
-        } catch (error) {
-          let message = formatError(error);
-          this.error(message, { exit: 2 });
-        }
-      } else {
-        this.exit(0);
-      }
-    }
-  }
-
-  validate({ contentTypes, environments, sourceEnv, locale, retryFailed }) {
-    let missing = [];
-    if (retryFailed) {
-      return true;
-    }
-
-    if (!contentTypes || contentTypes.length === 0) {
-      missing.push('Content Types');
-    }
-
-    if (!sourceEnv) {
-      missing.push('SourceEnv');
-    }
-
-    if (!environments || environments.length === 0) {
-      missing.push('Environments');
-    }
-
-    if (!locale) {
-      missing.push('Source Locale');
-    }
-
-    if (missing.length > 0) {
-      this.error(
-        `${missing.join(', ')} are required for processing this command. Please check --help for more details`,
-        { exit: 2 },
-      );
-    } else {
-      return true;
-    }
-  }
-
-  async confirmFlags(data) {
-    prettyPrint(data);
-    if (data.yes) {
-      return true;
-    }
-    const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]');
-    return confirmation;
   }
 }
 
@@ -106,20 +21,34 @@ But, if retryFailed flag is set, then only a logfile is required
 
 UnpublishedEntriesCommand.flags = {
   alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
-  retryFailed: flags.string({ char: 'r', description: 'Retry publishing failed entries from the logfile' }),
+  retryFailed: flags.string({
+    char: 'r',
+    description: 'Retry publishing failed entries from the logfile',
+    parse: printFlagDeprecation(['--retryFailed', '-r'], ['--retry-failed']),
+  }),
   bulkPublish: flags.string({
     char: 'b',
     description:
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
     default: 'true',
+    parse: printFlagDeprecation(['--bulkPublish', '-b'], ['--bulk-publish']),
   }),
-  sourceEnv: flags.string({ char: 's', description: 'Source Env' }),
+  sourceEnv: flags.string({
+    char: 's',
+    description: 'Source Env',
+    parse: printFlagDeprecation(['--sourceEnv', '-s'], ['--source-env']),
+  }),
   contentTypes: flags.string({
     char: 't',
     description: 'The Content-Types from which entries need to be published',
     multiple: true,
+    parse: printFlagDeprecation(['--contentTypes', '-t'], ['--content-type']),
   }),
-  locale: flags.string({ char: 'l', description: 'Source locale' }),
+  locale: flags.string({
+    char: 'l',
+    description: 'Source locale',
+    parse: printFlagDeprecation(['-l'], ['--locales']),
+  }),
   environments: flags.string({ char: 'e', description: 'Destination environments', multiple: true }),
   config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
@@ -127,6 +56,7 @@ UnpublishedEntriesCommand.flags = {
     char: 'B',
     default: 'main',
     description: 'Specify the branch to fetch the content from (default is main branch)',
+    parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
 };
 
