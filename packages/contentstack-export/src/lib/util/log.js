@@ -14,7 +14,11 @@ function returnString(args) {
   if (args && args.length) {
     returnStr = args.map(function (item) {
       if (item && typeof (item) === 'object') {
-        return JSON.stringify(item)
+        try {
+          return JSON.stringify(item)
+        } catch (error) {
+          return error.message;
+        }
       }
       return item
     }).join('  ').trim()

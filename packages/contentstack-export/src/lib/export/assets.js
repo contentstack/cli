@@ -42,7 +42,7 @@ ExportAssets.prototype = {
     this.assetDownloadRetry = {};
     this.assetDownloadRetryLimit = 3;
     let  self = this
-    config = credentialConfig
+    config = credentialConfig 
     assetsFolderPath = path.resolve(config.data, (config.branchName || ""), assetConfig.dirName)
     assetContentsFile = path.resolve(assetsFolderPath, 'assets.json')
     folderJSONPath = path.resolve(assetsFolderPath, 'folders.json')
@@ -68,27 +68,24 @@ ExportAssets.prototype = {
               return self.getVersionedAssetJSON(assetJSON.uid, assetJSON._version).then(
                 function () {
                   self.assetContents[assetJSON.uid] = assetJSON
-                  // log.success(chalk.white('The following asset has been downloaded successfully: ' +
-                  //     assetJSON.uid))
+                  addlogs(config, chalk.white('The following asset has been downloaded successfully: ' +
+                      assetJSON.uid))
                 }).catch(function (error) {
-                  console.log("error on 74", error);
                   addlogs(config, chalk.red('The following asset failed to download\n' + JSON.stringify(
                   assetJSON)))
-                  addlogs(config, error.message, 'error')
+                  addlogs(config, error, 'error')
               })
             }, {
               concurrency: vLimit,
             }).then(function () {
-              // addlogs(config, 'Batch no ' + (batch + 1) + ' of assets is complete', 'success')
-              // helper.writeFile(assetContentsFile, self.assetContents)
+              addlogs(config, 'Batch no ' + (batch + 1) + ' of assets is complete', 'success')
+              helper.writeFile(assetContentsFile, self.assetContents)
             }).catch(function (error) {
-              console.log("error on 85", error);
               addlogs(config, 'Asset batch ' + (batch + 1) + ' failed to download', 'error')
               addlogs(config, error, 'error')
               // log this error onto a file - send over retries
             })
           }).catch(function (error) {
-            console.log("error on 89", error);
             return reject(error)
           })
         }, {
@@ -98,19 +95,18 @@ ExportAssets.prototype = {
             addlogs(config, chalk.green('Asset export completed successfully'), 'success')
             return resolve()
           }).catch(function (error) {
-            console.log("error on 99", error);
             return reject(error)
           })
         }).catch(function (error) {
-          console.log("error on 103", error);
-          addlogs(config, chalk.red('Asset export failed due to the following errrors ' + JSON.stringify(
-            error), 'error'))
+          // addlogs(config, chalk.red('Asset export failed due to the following errrors ' + JSON.stringify(
+          //   error), 'error'))
+          console.log("Error on 103", error);
           return reject(error)
         })
       }).catch(function (error) {
         // addlogs(config, chalk.red('Failed to download assets due to the following error: ' + JSON.stringify(
         //   error)));
-        console.log("error on 111", error);
+        console.log("Error on 109", error);
         return reject(error)
       })
     })
@@ -128,12 +124,10 @@ ExportAssets.prototype = {
           addlogs(config, 'Asset-folders have been successfully exported!', 'success')
           return resolve()
         }).catch(function (error) {
-          console.log("error on 129", error);
           addlogs(config, chalk.red('Error while exporting asset-folders!'), 'error')
           return reject(error)
         })
       }).catch(function (error) {
-        console.log("error on 134", error);
         addlogs(config, error, 'error')
         // error while fetching asset folder count
         return reject(error)
@@ -177,8 +171,7 @@ ExportAssets.prototype = {
         .then(asset => {
           return resolve(asset.count)
         })
-          .catch(error => {
-        console.log("error on 179", error);
+        .catch(error => {
           addlogs(config, error, 'error')
         })
       } else {
@@ -187,8 +180,7 @@ ExportAssets.prototype = {
         .then(asset => {
           return resolve(asset.count)
         })
-          .catch(error => {
-        console.log("error on 188", error);
+        .catch(error => {
           addlogs(config, error, 'error')
           return reject()
         })
@@ -213,7 +205,6 @@ ExportAssets.prototype = {
       .then(assetResponse => {
         return resolve(assetResponse.items)
       }).catch(error => {
-        console.log("error on 214", error);
         addlogs(config, error, 'error')
         return reject()
       })
@@ -241,33 +232,25 @@ ExportAssets.prototype = {
       }
 
       client.stack({ api_key: config.source_stack, management_token: config.management_token}).asset(uid).fetch(queryrequestOption)
-      .then(versionedAssetJSONResponse => {
+        .then(versionedAssetJSONResponse => {
+        if (config.enabledVersionedAssetLog) {
+          addlogs(config, `Started to download asset ${uid} with version ${version}`, 'success');
+        }
         self.downloadAsset(versionedAssetJSONResponse).then(function () {
           assetVersionInfo.splice(0, 0, versionedAssetJSONResponse)
           // Remove duplicates
           assetVersionInfo = _.uniqWith(assetVersionInfo, _.isEqual)
           self.getVersionedAssetJSON(uid, --version, assetVersionInfo)
-            .then(resolve)
-            .catch((error) => {
-              console.log("error on 250", error);
-              reject(error);
-            })
-        }).catch((error) => {
-          console.log("error on 254", error);
-          reject(error);
-        });
+          .then(resolve)
+            .catch(reject)
+        }).catch(reject)
       }).catch((error) => {
-        console.log("error on 255", error);
         if (error.status === 408) {
           // retrying when timeout
-          (self.assetDownloadRetry[uid + version] ? ++self.assetDownloadRetry[uid + version] : self.assetDownloadRetry[uid + version] = 1)
-          console.log("Retrying", uid);
+          (self.assetDownloadRetry[uid+version] ? ++self.assetDownloadRetry[uid+version] : self.assetDownloadRetry[uid+version] = 1 ) 
           return self.getVersionedAssetJSON(uid, version, assetVersionInfo)
           .then(resolve)
-            .catch((_error) => {
-              console.log("error on 261", error);
-              reject(_error);
-            }) 
+            .catch(reject) 
         }
         reject(error);
       })
@@ -279,8 +262,8 @@ ExportAssets.prototype = {
       const assetFolderPath = path.resolve(assetsFolderPath, asset.uid)
       const assetFilePath = path.resolve(assetFolderPath, asset.filename)
       if (fs.existsSync(assetFilePath)) {
-        // addlogs(config, 'Skipping download of { title: ' + asset.filename + ', uid: ' +
-        //   asset.uid + ' }, as they already exist', 'success')
+        addlogs(config, 'Skipping download of { title: ' + asset.filename + ', uid: ' +
+          asset.uid + ' }, as they already exist', 'success')
         return resolve()
       }
       self.assetStream = {
@@ -299,10 +282,7 @@ ExportAssets.prototype = {
           addlogs(config, 'Downloaded ' + asset.filename + ': ' + asset.uid + ' successfully!', 'success')
           return resolve()
         })
-      }).on('error', (error) => {
-        console.log("error on 301", error);
-        reject(error);
-      })
+      }).on('error', reject)
     })
   },
   getFolders: function () {
@@ -317,11 +297,9 @@ ExportAssets.prototype = {
           addlogs(config, chalk.green('Exported asset-folders successfully!'), 'success')
           return resolve()
         }).catch(function (error) {
-          console.log("error on 318", error);
           return reject(error)
         })
       }).catch(function (error) {
-        console.log("error on 322", error);
         return reject(error)
       })
     })
@@ -349,12 +327,8 @@ ExportAssets.prototype = {
         skip += 100
         return self.getFolderDetails(skip, tCount)
         .then(resolve)
-        .catch((error) => {
-          console.log("error on 351", error);
-          reject(error);
-        })
+        .catch(reject)
       }).catch(error => {
-        console.log("error on 352", error);
         addlogs(config, error, 'error')
       })
     })
