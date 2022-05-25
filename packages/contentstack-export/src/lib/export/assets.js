@@ -74,7 +74,7 @@ ExportAssets.prototype = {
                   console.log("error on 74", error);
                   addlogs(config, chalk.red('The following asset failed to download\n' + JSON.stringify(
                   assetJSON)))
-                  addlogs(config, error, 'error')
+                  addlogs(config, error.message, 'error')
               })
             }, {
               concurrency: vLimit,

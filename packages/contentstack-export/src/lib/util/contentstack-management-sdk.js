@@ -21,6 +21,7 @@ exports.Client = function (config) {
     retryDelay: Math.floor(Math.random() * (8000 - 3000 + 1) + 3000),
     logHandler: (level, data) => { },
     retryCondition: (error) => {
+      console.log("Retrying", error.response);
       if (error.response.status === 408) {
         addlogs({ data: error.response }, 'Timeout error', 'error'); 
       }
