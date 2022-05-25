@@ -32,11 +32,11 @@ USAGE
 * [`csdx cm:assets:publish`](#csdx-cmassetspublish)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
-* [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
 * [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
 * [`csdx cm:bulk-publish:nonlocalized-field-changes`](#csdx-cmbulk-publishnonlocalized-field-changes)
 * [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
 * [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
+* [`csdx cm:entries:publish`](#csdx-cmentriespublish)
 * [`csdx cm:entries:update-and-publish`](#csdx-cmentriesupdate-and-publish)
 * [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
 * [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
@@ -170,66 +170,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/bulk-publish/cross-publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
-
-## `csdx cm:bulk-publish:entries`
-
-Publish entries from multiple content-types to multiple environments and locales
-
-```
-USAGE
-  $ csdx cm:bulk-publish:entries
-
-OPTIONS
-  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
-  -a, --alias=alias                Alias for the management token to be used
-
-  -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
-
-  -c, --config=config              Path for the external config file to be used (A new config file can be generated at
-                                   the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`)
-
-  -e, --environments=environments  Environments to which entries need to be published
-
-  -l, --locales=locales            Locales to which entries need to be published
-
-  -o, --publishAllContentTypes     Publish all content-types (optional, cannot be set when contentTypes flag is set)
-
-  -r, --retryFailed=retryFailed    Retry failed entries from the logfile (optional, overrides all other flags) This flag
-                                   is used to retry publishing entries that failed to publish in a previous attempt. A
-                                   log file for the previous session will be required for processing the failed entries
-
-  -t, --contentTypes=contentTypes  The Content-types from which entries need to be published
-
-  -y, --yes                        Agree to process the command with the current configuration
-
-DESCRIPTION
-  The entries command is used for publishing entries from the specified content types, to the
-  specified environments and locales 
-
-  Content Types, Environments and Locales are required for executing the command successfully
-  But, if retryFailed flag is set, then only a logfile is required
-
-EXAMPLES
-  General Usage
-  csdx cm:bulk-publish:entries -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] 
-  [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
-
-  Using --config or -c flag
-  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
-  csdx cm:bulk-publish:entries --config [PATH TO CONFIG FILE]
-  csdx cm:bulk-publish:entries -c [PATH TO CONFIG FILE]
-
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:entries --retryFailed [LOG FILE NAME]
-  csdx cm:bulk-publish:entries -r [LOG FILE NAME]
-
-  Using --branch or -B flag
-  csdx cm:bulk-publish:entries -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] 
-  [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
-```
-
-_See code: [src/commands/cm/bulk-publish/entries.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entries.js)_
 
 ## `csdx cm:bulk-publish:entry-edits`
 
@@ -487,6 +427,69 @@ EXAMPLES
 
 _See code: [src/commands/cm/bulk-publish/unpublished-entries.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
 
+## `csdx cm:entries:publish`
+
+Publish entries from multiple content-types to multiple environments and locales
+
+```
+USAGE
+  $ csdx cm:entries:publish
+
+OPTIONS
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
+  -a, --alias=alias                Alias for the management token to be used
+
+  -c, --config=config              Path for the external config file to be used (A new config file can be generated at
+                                   the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`)
+
+  -e, --environments=environments  Environments to which entries need to be published
+
+  -l, --locales=locales            Locales to which entries need to be published
+
+  -y, --yes                        Agree to process the command with the current configuration
+
+  --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used for publishing the entries
+
+  --content-types=content-types    The Content-Types from which entries need to be published
+
+  --publish-all-content-types      Publish all content-types (optional, cannot be set when contentTypes flag is set)
+
+  --retry-failed=retry-failed      Retry failed entries from the logfile (optional, overrides all other flags) This flag
+                                   is used to retry publishing entries that failed to publish in a previous attempt. A
+                                   log file for the previous session will be required for processing the failed entries
+
+DESCRIPTION
+  The entries command is used for publishing entries from the specified content types, to the
+  specified environments and locales 
+
+  Content Types, Environments and Locales are required for executing the command successfully
+  But, if retry-failed flag is set, then only a logfile is required
+
+ALIASES
+  $ csdx cm:bulk-publish:entries
+
+EXAMPLES
+  General Usage
+  csdx cm:entries:publish -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] 
+  [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
+
+  Using --config or -c flag
+  Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`
+  csdx cm:entries:publish --config [PATH TO CONFIG FILE]
+  csdx cm:entries:publish -c [PATH TO CONFIG FILE]
+
+  Using --retry-failed
+  csdx cm:entries:publish --retry-failed [LOG FILE NAME]
+  csdx cm:entries:publish -r [LOG FILE NAME]
+
+  Using --branch
+  csdx cm:entries:publish --content-type [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale 
+  [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
+```
+
+_See code: [src/commands/cm/entries/publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish.js)_
+
 ## `csdx cm:entries:update-and-publish`
 
 Add fields from updated content types to their respective entries
@@ -507,7 +510,7 @@ OPTIONS
   --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's
                                    bulkpublish API will be used for publishing the entries
 
-  --content-types=content-types    The Content-Types from which entries need to be published
+  --content-type=content-type      The Content-Types from which entries need to be published
 
   --retry-failed=retry-failed      Retry publishing failed entries from the logfile (optional, overrides all other
                                    flags)
@@ -524,8 +527,8 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
-  2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
+  csdx cm:entries:update-and-publish --content-type [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2]
+   --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
   Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`
@@ -535,8 +538,9 @@ EXAMPLES
   Using --retry-failed
   csdx cm:entries:update-and-publish --retry-failed [LOG FILE NAME]
 
-  csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
-  2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
+  Using --branch
+  csdx cm:entries:update-and-publish --content-type [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2]
+   --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
 ```
 
 _See code: [src/commands/cm/entries/update-and-publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/update-and-publish.js)_

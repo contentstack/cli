@@ -60,7 +60,8 @@
       "cm:bulk-publish:clear": "command will be deprecated in two months, start using csdx cm:stacks:publish-clear-logs instead",
       "cm:bulk-publish:revert": "command will be deprecated in two months, start using csdx cm:stacks:publish-revert instead",
       "cm:bulk-publish:assets": "command will be deprecated in two months, start using csdx cm:assets:publish instead",
-      "cm:bulk-publish:add-fields": "command will be deprecated in two months, start using csdx cm:entries:update-and-publish instead"
+      "cm:bulk-publish:add-fields": "command will be deprecated in two months, start using csdx cm:entries:update-and-publish instead",
+      "cm:bulk-publish:entries": "command will be deprecated in two months, start using csdx cm:entries:publish instead"
     }
   },
   "repository": "https://github.com/contentstack/cli",
