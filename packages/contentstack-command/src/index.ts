@@ -45,7 +45,6 @@ abstract class ContentstackCommand extends Command {
 
   get region() {
     if (this._region) return this._region;
-    console.log(configHandler, 'configHandler')
     this._region = configHandler.get('region');
     if (this._region) return this._region;
   }
@@ -104,3 +103,5 @@ module.exports = {
   Command: ContentstackCommand,
   flags,
 };
+
+export { ContentstackCommand as Command, flags }

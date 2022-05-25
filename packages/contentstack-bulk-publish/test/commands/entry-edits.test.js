@@ -1,10 +1,9 @@
 /* eslint-disable no-console */
 const {expect, test} = require('@oclif/test')
 const nock = require('nock')
-const { ux: cli } = require('@contentstack/cli-utilities');
+const { cliux, configHandler } = require('@contentstack/cli-utilities');
 
 const stack = require('../../src/util/client.js').stack
-const { configHandler } = require('@contentstack/cli-utilities');
 const store = require('../../src/util/store.js')
 
 const dummyConfig = configHandler;
@@ -136,7 +135,7 @@ describe('entry-edits', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout({print: true})
   .command(['cm:bulk-publish:entry-edits', '-s', 'dummyEnvironment', '-c', 'dummyContentType', '-e', 'dummyEnvironment'])
   .it('runs hello', ctx => {
@@ -170,7 +169,7 @@ describe('entry-edits', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stub(store, 'updateMissing', (key, flags) => flags)
   .stderr()
   .command(['cm:bulk-publish:entry-edits'])
@@ -205,7 +204,7 @@ describe('entry-edits', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout()
   .command(['cm:bulk-publish:entry-edits', '-r', bulkPublishEntriesLog])
   .it('runs hello', ctx => {
@@ -239,7 +238,7 @@ describe('entry-edits', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout({print: true})
   .command(['cm:bulk-publish:entry-edits', '-s', 'dummyEnvironment', '-c', 'dummyContentType', '-e', 'dummyEnvironment', '--no-bulkPublish'])
   .it('runs command with --no-bulkPublish', ctx => {

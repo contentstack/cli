@@ -7,7 +7,7 @@ class Config {
   private config: Conf;
 
   constructor() {
-    // this.init()
+    this.init()
   }
 
   init() {
@@ -21,7 +21,7 @@ class Config {
     return this.config;
   }
 
-  get(key) {
+  get(key): string | any {
     return this.config.get(key);
   }
 

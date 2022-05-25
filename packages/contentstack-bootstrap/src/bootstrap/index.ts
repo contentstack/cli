@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { ux as cli } from '@contentstack/cli-utilities';
+import { cliux } from '@contentstack/cli-utilities';
 import { default as ContentStackSeed } from '@contentstack/cli-cm-seed/lib/commands/cm/stacks/seed';
 
 import { AppConfig } from '../config';
@@ -53,19 +53,19 @@ export default class Bootstrap {
   }
 
   async run(): Promise<any> {
-    cli.action.start(messageHandler.parse('CLI_BOOTSTRAP_START_CLONE_APP'));
+    cliux.loader(messageHandler.parse('CLI_BOOTSTRAP_START_CLONE_APP'))
 
     try {
       await this.ghClient.getLatest(this.cloneDirectory);
     } catch (error) {
       if (error instanceof GithubError) {
         if (error.status === 404) {
-          cli.error(messageHandler.parse('CLI_BOOTSTRAP_REPO_NOT_FOUND', this.appConfig.source));
+          cliux.error(messageHandler.parse('CLI_BOOTSTRAP_REPO_NOT_FOUND', this.appConfig.source));
         }
       }
       throw error;
     } finally {
-      cli.action.stop();
+      cliux.loader();
     }
 
     // seed plugin start
@@ -82,9 +82,9 @@ export default class Bootstrap {
       } else {
         throw new Error(messageHandler.parse('CLI_BOOTSTRAP_NO_API_KEY_FOUND'));
       }
-      cli.log(messageHandler.parse('CLI_BOOTSTRAP_SUCCESS'));
+      cliux.print(messageHandler.parse('CLI_BOOTSTRAP_SUCCESS'))
     } catch (error) {
-      cli.error(messageHandler.parse('CLI_BOOTSTRAP_STACK_CREATION_FAILED', this.appConfig.stack));
+      cliux.error(messageHandler.parse('CLI_BOOTSTRAP_STACK_CREATION_FAILED', this.appConfig.stack))
     }
   }
 }
