@@ -1,7 +1,7 @@
 const { Command, flags } = require('@contentstack/cli-command');
 const { start } = require('../../../producer/publish-unpublished-env');
 const store = require('../../../util/store.js');
-const { ux: cli } = require('@contentstack/cli-utilities');
+const { cliux } = require('@contentstack/cli-utilities');
 const configKey = 'publish_unpublished_env';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
@@ -22,7 +22,7 @@ class UnpublishedEntriesCommand extends Command {
       let stack;
       if (!updatedFlags.retryFailed) {
         if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used');
+          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
         // Validate management token alias.
@@ -92,7 +92,7 @@ class UnpublishedEntriesCommand extends Command {
     if (data.yes) {
       return true;
     }
-    const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+    const confirmation = await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
     return confirmation;
   }
 }

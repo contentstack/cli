@@ -6,7 +6,7 @@
 let defaultConfig = require('../../config/default');
 let { initial } = require('../../app');
 let _ = require('lodash');
-const { ux: cli } = require('@contentstack/cli-utilities');
+const { cliux } = require('@contentstack/cli-utilities');
 let message = require('../../../messages/index.json');
 
 exports.configWithMToken = function (config, managementTokens, moduleName, host, _authToken, backupdir, branchName) {
@@ -60,7 +60,7 @@ exports.parameterWithMToken = function (managementTokens, data, moduleName, host
 // using ManagemetToken
 exports.withoutParameterMToken = async (managementTokens, moduleName, host, _authToken, backupdir, branchName) => {
   return new Promise(async function (resolve, reject) {
-    const exporteddata = await cli.prompt(message.promptMessageList.promptPathStoredData);
+    const exporteddata = await cliux.prompt(message.promptMessageList.promptPathStoredData);
     defaultConfig.management_token = managementTokens.token;
     defaultConfig.target_stack = managementTokens.apiKey;
     defaultConfig.auth_token = _authToken;
@@ -138,8 +138,8 @@ exports.parametersWithAuthToken = function (_authToken, targetStack, data, modul
 
 exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, backupdir, branchName) => {
   return new Promise(async function (resolve, reject) {
-    const stackUid = await cli.prompt(message.promptMessageList.promptTargetStack);
-    const exporteddata = await cli.prompt(message.promptMessageList.promptPathStoredData);
+    const stackUid = await cliux.prompt(message.promptMessageList.promptTargetStack);
+    const exporteddata = await cliux.prompt(message.promptMessageList.promptPathStoredData);
     defaultConfig.auth_token = _authToken;
     defaultConfig.target_stack = stackUid;
     defaultConfig.data = exporteddata;

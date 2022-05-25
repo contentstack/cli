@@ -1,8 +1,7 @@
 const {expect, test} = require('@oclif/test')
 const nock = require('nock')
 const stack = require('../../src/util/client.js').stack
-const { configHandler } = require('@contentstack/cli-utilities');
-const { ux: cli } = require('@contentstack/cli-utilities');
+const { cliux, configHandler } = require('@contentstack/cli-utilities');
 const dummyConfig = configHandler
 const store = require('../../src/util/store.js')
 
@@ -163,7 +162,7 @@ describe('add-fields', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stub(store, 'updateMissing', (key, flags) => flags)
   .stderr()
   .command(['cm:bulk-publish:add-fields'])
@@ -197,7 +196,7 @@ describe('add-fields', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout({print: true})
   .command(['cm:bulk-publish:add-fields', '-c', 'helloworld', '-e', 'dummyEnvironment'])
   .it('runs add-fields with flags', async ctx => {
@@ -236,7 +235,7 @@ describe('add-fields', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout()
   .command(['cm:bulk-publish:add-fields', '-c', 'helloworld', '-e', 'dummyEnvironment', '--no-bulkPublish'])
   .it('runs add-fields with flags', ctx => {
