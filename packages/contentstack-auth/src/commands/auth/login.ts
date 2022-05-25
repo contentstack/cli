@@ -1,10 +1,9 @@
 import { Command, flags } from '@contentstack/cli-command';
 import { logger, cliux, CLIError, configHandler } from '@contentstack/cli-utilities';
-import { authHandler, interactive } from '../../utils';
+
 import { User } from '../../interfaces';
+import { authHandler, interactive } from '../../utils';
 export default class LoginCommand extends Command {
-  private readonly parse: Function;
-  managementAPIClient: any;
   static run; // to fix the test issue
   static description = 'User sessions login';
 

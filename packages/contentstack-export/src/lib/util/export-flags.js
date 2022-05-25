@@ -9,7 +9,7 @@ let { initial } = require('../../app');
 let path = require('path');
 const helper = require('../util/helper');
 let _ = require('lodash');
-const { ux: cli } = require('@contentstack/cli-utilities');
+const { cliux } = require('@contentstack/cli-utilities');
 
 exports.configWithMToken = function (config, managementTokens, host, contentTypes, branchName, securedAssets) {
   let externalConfig = require(config);
@@ -68,7 +68,7 @@ exports.withoutParameterMToken = async (
   securedAssets,
 ) => {
   const stackUid = managementTokens.apiKey;
-  const pathOfExport = await cli.prompt(message.promptMessageList.promptPathStoredData);
+  const pathOfExport = await cliux.prompt(message.promptMessageList.promptPathStoredData);
   defaultConfig.management_token = managementTokens.token;
   defaultConfig.host = host.cma;
   defaultConfig.cdn = host.cda;
@@ -149,8 +149,8 @@ exports.withoutParametersWithAuthToken = async (
   branchName,
   securedAssets,
 ) => {
-  const stackUid = await cli.prompt(message.promptMessageList.promptSourceStack);
-  const pathOfExport = await cli.prompt(message.promptMessageList.promptPathStoredData);
+  const stackUid = await cliux.prompt(message.promptMessageList.promptSourceStack);
+  const pathOfExport = await cliux.prompt(message.promptMessageList.promptPathStoredData);
   defaultConfig.auth_token = _authToken;
   defaultConfig.source_stack = stackUid;
   defaultConfig.securedAssets = securedAssets;

@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-cm-bulk-publish
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bulk-publish/1.0.0 linux-x64 node-v16.14.2
+@contentstack/cli-cm-bulk-publish/1.0.0 darwin-arm64 node-v18.1.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -29,21 +29,18 @@ USAGE
 # Commands
 
 <!-- commands -->
-- [@contentstack/cli-cm-bulk-publish](#contentstackcli-cm-bulk-publish)
-- [Usage](#usage)
-- [Commands](#commands)
-  - [`csdx cm:assets:publish`](#csdx-cmassetspublish)
-  - [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
-  - [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
-  - [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
-  - [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
-  - [`csdx cm:bulk-publish:nonlocalized-field-changes`](#csdx-cmbulk-publishnonlocalized-field-changes)
-  - [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
-  - [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
-  - [`csdx cm:entries:update-and-publish`](#csdx-cmentriesupdate-and-publish)
-  - [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
-  - [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
-  - [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
+* [`csdx cm:assets:publish`](#csdx-cmassetspublish)
+* [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
+* [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
+* [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
+* [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
+* [`csdx cm:bulk-publish:nonlocalized-field-changes`](#csdx-cmbulk-publishnonlocalized-field-changes)
+* [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
+* [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
+* [`csdx cm:entries:update-and-publish`](#csdx-cmentriesupdate-and-publish)
+* [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
+* [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
+* [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
 
 ## `csdx cm:assets:publish`
 

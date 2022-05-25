@@ -11,7 +11,7 @@ import { printFlagDeprecation } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
 export default class BootstrapCommand extends Command {
-  private _managementAPIClient: any;
+  private bootstrapManagementAPIClient: any;
 
   static description = 'Bootstrap contentstack apps';
 
@@ -83,11 +83,12 @@ export default class BootstrapCommand extends Command {
   };
 
   get managementAPIClient() {
-    this._managementAPIClient = ContentstackManagementSDK.client({
+    this.bootstrapManagementAPIClient = ContentstackManagementSDK.client({
       host: this.cmaHost,
       authtoken: this.authToken,
     });
-    return this._managementAPIClient;
+
+    return this.bootstrapManagementAPIClient;
   }
 
   async run() {
