@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable node/no-extraneous-require */
 const { Command, flags } = require('@oclif/command');
-const { ux: cli } = require('@contentstack/cli-utilities');
+const { cliux } = require('@contentstack/cli-utilities');
 const { start } = require('../../../producer/unpublish');
 const store = require('../../../util/store.js');
 const configKey = 'Unpublish';
@@ -23,10 +23,10 @@ class UnpublishCommand extends Command {
       let stack;
       if (!updatedFlags.retryFailed) {
         if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used');
+          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
         }
         if (!updatedFlags.deliveryToken) {
-          updatedFlags.deliveryToken = await cli.prompt('Enter delivery token of your source environment');
+          updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token of your source environment');
         }
         updatedFlags.bulkUnpublish = updatedFlags.bulkUnpublish === 'false' ? false : true;
         // Validate management token alias.
@@ -115,11 +115,11 @@ class UnpublishCommand extends Command {
     }
 
     if (!data.contentType && !data.onlyAssets) {
-      confirmation = await cli.confirm(
+      confirmation = await cliux.confirm(
         'Do you want to continue with this configuration. This will unpublish all the entries from all content types? [yes or no]',
       );
     } else {
-      confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+      confirmation = await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
     }
     return confirmation;
   }

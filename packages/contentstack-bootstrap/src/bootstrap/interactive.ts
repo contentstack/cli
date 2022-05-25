@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as inquirer from 'inquirer';
-import { ux as cli } from '@contentstack/cli-utilities';
+import { cliux } from '@contentstack/cli-utilities';
 
 import messageHandler from '../messages';
 
@@ -26,7 +26,7 @@ export async function inquireApp(apps: Array<any>): Promise<any> {
   ];
   const selectedApp = await inquirer.prompt(actions);
   if (selectedApp.app === 'Exit') {
-    cli.log('Exiting...');
+    cliux.print('Exiting...');
     throw new Error('Exit');
   }
   return selectedApp.app;
