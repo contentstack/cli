@@ -38,7 +38,7 @@ class CLIInterface {
     cliux.log(chalk.red(messageHandler.parse(message) + (params && params.length > 0 ? ': ' : '')), ...params);
   }
 
-  loader(message?: string): void {
+  loader(message: string = ''): void {
     if (!this.loading) {
       cliux.action.start(messageHandler.parse(message));
     } else {
