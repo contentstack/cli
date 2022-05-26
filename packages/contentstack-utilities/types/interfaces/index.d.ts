@@ -1,3 +1,4 @@
+import { IPromptOptions } from "@oclif/core/lib/cli-ux";
 export interface PrintOptions {
     color?: string;
 }
@@ -44,4 +45,6 @@ export interface Entry {
 export interface Locale {
     name: string;
     code: string;
+}
+export interface CliUXPromptOptions extends IPromptOptions {
 }
