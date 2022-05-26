@@ -1,5 +1,5 @@
 import { Table } from '@oclif/core/lib/cli-ux';
-import { PrintOptions, InquirePayload } from './interfaces';
+import { PrintOptions, InquirePayload, CliUXPromptOptions } from './interfaces';
 /**
  * CLI Interface
  */
@@ -14,6 +14,7 @@ declare class CLIInterface {
     loader(message?: string): void;
     table(data: Record<string, unknown>[], columns: Table.table.Columns<Record<string, unknown>>, options?: Table.table.Options): void;
     inquire<T>(inquirePayload: InquirePayload): Promise<T>;
+    prompt(name: string, options?: CliUXPromptOptions): Promise<any>;
     confirm(message?: string): Promise<boolean>;
     progress(options?: any): any;
 }
