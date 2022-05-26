@@ -146,7 +146,7 @@ class PublishEntriesCommand extends Command {
 }
 
 PublishEntriesCommand.description = `Publish entries from multiple content-types to multiple environments and locales
-The entries command is used for publishing entries from the specified content types, to the
+The publish command is used for publishing entries from the specified content types, to the
 specified environments and locales 
 
 Content Types, Environments and Locales are required for executing the command successfully
@@ -187,7 +187,7 @@ PublishEntriesCommand.flags = {
     hidden: true,
     parse: printFlagDeprecation(['-o', '--publishAllContentTypes'], ['--publish-all-content-types']),
   }),
-  'content-types': flags.string({
+  'content-type': flags.string({
     description: 'The Content-Types from which entries need to be published',
     multiple: true,
   }),
