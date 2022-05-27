@@ -18,12 +18,12 @@ class NonlocalizedFieldChangesCommand extends Command {
     nonlocalizedFieldChangesFlags.sourceEnv =
       nonlocalizedFieldChangesFlags['source-env'] || nonlocalizedFieldChangesFlags.sourceEnv;
     nonlocalizedFieldChangesFlags.contentTypes =
-      nonlocalizedFieldChangesFlags['content-type'] || nonlocalizedFieldChangesFlags.contentTypes;
+      nonlocalizedFieldChangesFlags['content-types'] || nonlocalizedFieldChangesFlags.contentTypes;
 
     delete nonlocalizedFieldChangesFlags['retry-failed'];
     delete nonlocalizedFieldChangesFlags['bulk-publish'];
     delete nonlocalizedFieldChangesFlags['source-env'];
-    delete nonlocalizedFieldChangesFlags['content-type'];
+    delete nonlocalizedFieldChangesFlags['content-types'];
 
     let updatedFlags;
     try {
@@ -200,5 +200,7 @@ NonlocalizedFieldChangesCommand.examples = [
   'Using --branch flag',
   'csdx cm:entries:publish-non-localized-fields --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --alias [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENV] --branch [BRANCH NAME]',
 ];
+
+NonlocalizedFieldChangesCommand.aliases = ['cm:bulk-publish:nonlocalized-field-changes'];
 
 module.exports = NonlocalizedFieldChangesCommand;

@@ -447,14 +447,14 @@ USAGE
   $ csdx cm:entries:publish-non-localized-fields
 
 OPTIONS
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
   -a, --alias=alias                Alias for the management token to be used
   -c, --config=config              Path to config file to be used
   -e, --environments=environments  Destination environments
   -y, --yes                        Agree to process the command with the current configuration
 
-  --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
-
-  --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries
+  --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used for publishing the entries
 
   --content-types=content-types    The Content-Types from which entries need to be published
 
@@ -468,6 +468,9 @@ DESCRIPTION
 
   Content Types, Environments and Source Environment are required for executing this command successfully.
   But, if retryFailed flag is set, then only a logfile is required
+
+ALIASES
+  $ csdx cm:bulk-publish:nonlocalized-field-changes
 
 EXAMPLES
   General Usage
