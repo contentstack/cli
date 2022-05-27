@@ -5,42 +5,46 @@ It is Contentstack’s CLI plugin to perform bulk publish/unpublish operations o
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-* [@contentstack/cli-cm-bulk-publish](#contentstackcli-cm-bulk-publish)
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [@contentstack/cli-cm-bulk-publish](#contentstackcli-cm-bulk-publish)
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @contentstack/cli-cm-bulk-publish
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bulk-publish/1.0.0 linux-x64 node-v16.14.2
+@contentstack/cli-cm-bulk-publish/1.0.0 darwin-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-* [`csdx cm:assets:publish`](#csdx-cmassetspublish)
-* [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
-* [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
-* [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
-* [`csdx cm:bulk-publish:nonlocalized-field-changes`](#csdx-cmbulk-publishnonlocalized-field-changes)
-* [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
-* [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
-* [`csdx cm:entries:publish`](#csdx-cmentriespublish)
-* [`csdx cm:entries:update-and-publish`](#csdx-cmentriesupdate-and-publish)
-* [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
-* [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
-* [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
+
+- [`csdx cm:assets:publish`](#csdx-cmassetspublish)
+- [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
+- [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
+- [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
+- [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
+- [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
+- [`csdx cm:entries:publish`](#csdx-cmentriespublish)
+- [`csdx cm:entries:publish-non-localized-fields`](#csdx-cmentriespublish-non-localized-fields)
+- [`csdx cm:entries:update-and-publish`](#csdx-cmentriesupdate-and-publish)
+- [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
+- [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
+- [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
 
 ## `csdx cm:assets:publish`
 
@@ -77,7 +81,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
+  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN
   ALIAS]
 
   Using --config or -c flag
@@ -89,7 +93,7 @@ EXAMPLES
   csdx cm:assets:publish --retry-failed [LOG FILE NAME]
 
   Using --branch flag
-  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
+  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN
   ALIAS] --branch [BRANCH NAME]
 ```
 
@@ -152,7 +156,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
+  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a
   [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]
 
   Using --config or -c flag
@@ -165,7 +169,7 @@ EXAMPLES
   csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]
 
   Using --branch or -B flag
-  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
+  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a
   [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]
 ```
 
@@ -205,13 +209,13 @@ DESCRIPTION
   The entry-edits command is used for publishing entries from the specified content types, to the
   specified environments and locales
 
-  Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command 
+  Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command
   successfully
   But, if retryFailed flag is set, then only a logfile is required
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 
+  csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT
   2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -224,67 +228,11 @@ EXAMPLES
   csdx cm:bulk-publish:entry-edits -r [LOG FILE NAME]
 
   Using --branch or -B flag
-  csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 
+  csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT
   2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
 ```
 
 _See code: [src/commands/cm/bulk-publish/entry-edits.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entry-edits.js)_
-
-## `csdx cm:bulk-publish:nonlocalized-field-changes`
-
-Publish non-localized-fields for given Content Types, from a particular source environment to specified environments
-
-```
-USAGE
-  $ csdx cm:bulk-publish:nonlocalized-field-changes
-
-OPTIONS
-  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
-  -a, --alias=alias                Alias for the management token to be used
-
-  -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
-
-  -c, --config=config              Path to config file to be used
-
-  -e, --environments=environments  Destination environments
-
-  -r, --retryFailed=retryFailed    Retry publishing failed entries from the logfile
-
-  -s, --sourceEnv=sourceEnv        Source Environment
-
-  -t, --contentTypes=contentTypes  The Content-Types from which entries need to be published
-
-  -y, --yes                        Agree to process the command with the current configuration
-
-DESCRIPTION
-  The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types 
-  to
-  the specified Environments
-
-  Content Types, Environments and Source Environment are required for executing this command successfully.
-  But, if retryFailed flag is set, then only a logfile is required
-
-EXAMPLES
-  General Usage
-  csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
-  2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -s [SOURCE ENV]
-
-  Using --config or -c flag
-  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
-  csdx cm:bulk-publish:nonlocalized-field-changes --config [PATH TO CONFIG FILE]
-  csdx cm:bulk-publish:nonlocalized-field-changes -c [PATH TO CONFIG FILE]
-
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:nonlocalized-field-changes --retryFailed [LOG FILE NAME]
-  csdx cm:bulk-publish:nonlocalized-field-changes -r [LOG FILE NAME]
-
-  Using --branch or -B flag
-  csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
-  2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME] -s [SOURCE ENV]
-```
-
-_See code: [src/commands/cm/bulk-publish/nonlocalized-field-changes.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
 
 ## `csdx cm:bulk-publish:unpublish`
 
@@ -336,7 +284,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x 
+  csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x
   [DELIVERY TOKEN]
 
   Using --config or -c flag
@@ -349,21 +297,21 @@ EXAMPLES
   csdx cm:bulk-publish:unpublish -r [LOG FILE NAME]
 
   No content type
-  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all 
+  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all
   content types and assets from the source environment)
 
   Using --onlyAssets
-  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyAssets (Will unpublish only assets 
+  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyAssets (Will unpublish only assets
   from the source environment)
 
   Using --onlyEntries
-  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only 
+  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only
   entries, all entries, from the source environment)
   csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries
    (Will unpublish only entries, (from CONTENT TYPE) from the source environment)
 
   Using --branch or -B flag
-  csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x 
+  csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x
   [DELIVERY TOKEN] -B [BRANCH NAME]
 ```
 
@@ -399,10 +347,10 @@ OPTIONS
   -y, --yes                        Agree to process the command with the current configuration
 
 DESCRIPTION
-  The unpublished-entries command is used for publishing unpublished entries from the source environment, to other 
+  The unpublished-entries command is used for publishing unpublished entries from the source environment, to other
   environments and locales
 
-  Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the 
+  Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the
   command successfully
   But, if retryFailed flag is set, then only a logfile is required
 
@@ -461,7 +409,7 @@ OPTIONS
 
 DESCRIPTION
   The entries command is used for publishing entries from the specified content types, to the
-  specified environments and locales 
+  specified environments and locales
 
   Content Types, Environments and Locales are required for executing the command successfully
   But, if retry-failed flag is set, then only a logfile is required
@@ -471,7 +419,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:entries:publish -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] 
+  csdx cm:entries:publish -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1]
   [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -484,11 +432,62 @@ EXAMPLES
   csdx cm:entries:publish -r [LOG FILE NAME]
 
   Using --branch
-  csdx cm:entries:publish --content-type [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale 
+  csdx cm:entries:publish --content-type [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale
   [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
 ```
 
 _See code: [src/commands/cm/entries/publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish.js)_
+
+## `csdx cm:entries:publish-non-localized-fields`
+
+Publish non-localized-fields for given Content Types, from a particular source environment to specified environments
+
+```
+USAGE
+  $ csdx cm:entries:publish-non-localized-fields
+
+OPTIONS
+  -a, --alias=alias                Alias for the management token to be used
+  -c, --config=config              Path to config file to be used
+  -e, --environments=environments  Destination environments
+  -y, --yes                        Agree to process the command with the current configuration
+
+  --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
+
+  --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries
+
+  --content-types=content-types    The Content-Types from which entries need to be published
+
+  --retry-failed=retry-failed      Retry publishing failed entries from the logfile
+
+  --source-env=source-env          Source Environment
+
+DESCRIPTION
+  The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types
+  to the specified Environments
+
+  Content Types, Environments and Source Environment are required for executing this command successfully.
+  But, if retryFailed flag is set, then only a logfile is required
+
+EXAMPLES
+  General Usage
+  csdx cm:entries:publish-non-localized-fields --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --environments
+  [ENVIRONMENT 1] [ENVIRONMENT 2] --alias [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENV]
+
+  Using --config or -c flag
+  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
+  csdx cm:entries:publish-non-localized-fields --config [PATH TO CONFIG FILE]
+  csdx cm:entries:publish-non-localized-fields -c [PATH TO CONFIG FILE]
+
+  Using --retry-failed flag
+  csdx cm:entries:publish-non-localized-fields --retry-failed [LOG FILE NAME]
+
+  Using --branch flag
+  csdx cm:entries:publish-non-localized-fields --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --environments
+  [ENVIRONMENT 1] [ENVIRONMENT 2] --alias [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENV] --branch [BRANCH NAME]
+```
+
+_See code: [src/commands/cm/entries/publish-non-localized-fields.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish-non-localized-fields.js)_
 
 ## `csdx cm:entries:update-and-publish`
 
@@ -516,7 +515,7 @@ OPTIONS
                                    flags)
 
 DESCRIPTION
-  The add-fields command is used for updating already existing entries with the updated schema of their respective 
+  The add-fields command is used for updating already existing entries with the updated schema of their respective
   Content Type
 
   Content Types, Environments and Locales are required for executing the command successfully
@@ -619,4 +618,5 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/stacks/publish-revert.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-revert.js)_
+
 <!-- commandsstop -->
