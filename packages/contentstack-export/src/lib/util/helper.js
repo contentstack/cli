@@ -7,6 +7,7 @@
 var fs = require('fs')
 var path = require('path')
 var mkdirp = require('mkdirp')
+const json = require("big-json");
 
 exports.readFile = function (filePath, parse) {
   var data
@@ -21,6 +22,25 @@ exports.readFile = function (filePath, parse) {
 exports.writeFile = function (filePath, data) {
   data = (typeof data === 'object') ? JSON.stringify(data) : data || '{}'
   fs.writeFileSync(filePath, data)
+};
+
+
+exports.writeLargeFile = function (filePath, data) {
+  return new Promise((resolve, reject) => {
+    const stringifyStream = json.createStringifyStream({
+      body: data,
+    });
+    var writeStream = fs.createWriteStream(filePath, 'utf-8');
+    stringifyStream.pipe(writeStream)
+
+    writeStream.on("finish", () => {
+      resolve();
+    })
+
+    writeStream.on("error", (error) => {
+      reject(error);
+    })
+  });
 };
 
 exports.makeDirectory = function () {
