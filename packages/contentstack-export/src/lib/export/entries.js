@@ -122,7 +122,7 @@ exportEntries.prototype.getEntries = function (apiDetails) {
   let self = this
   return new Promise(function (resolve, reject) {
     console.log('started to export entries of ' + apiDetails.content_type +
-    ' to the ' + apiDetails.locale + ' language  , batch' + apiDetails.skip);
+    ' to the ' + apiDetails.locale + ' language  , page ' + apiDetails.skip || "0");
   
     if (typeof apiDetails.skip !== 'number') {
       apiDetails.skip = 0
@@ -140,7 +140,7 @@ exportEntries.prototype.getEntries = function (apiDetails) {
     }
 
     client.stack({api_key: config.source_stack, management_token: config.management_token}).contentType(apiDetails.content_type).entry().query(queryrequestObject).find()
-      .then(entriesList => {
+      .then(async entriesList => {
       // /entries/content_type_uid/locale.json
         if (apiDetails.skip === 0) {
           if (!fs.existsSync(path.join(entryFolderPath, apiDetails.content_type))) {
@@ -193,7 +193,7 @@ exportEntries.prototype.getEntries = function (apiDetails) {
         })
       }
       if (apiDetails.skip > entriesList.count) {
-          helper.writeFile(path.join(entryFolderPath, apiDetails.content_type, apiDetails.locale + '.json'), self.exportedEntries);
+          await helper.writeLargeFile(path.join(entryFolderPath, apiDetails.content_type, apiDetails.locale + '.json'), self.exportedEntries);
           self.exportedEntries = {}; // cleans
           const mu = process.memoryUsage();
           // # bytes / KB / MB / GB

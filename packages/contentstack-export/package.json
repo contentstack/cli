@@ -11,6 +11,7 @@
 		"@oclif/config": "^1.15.1",
 		"async": "^3.2.0",
 		"axios": "^0.21.1",
+		"big-json": "^3.1.0",
 		"bluebird": "^3.7.2",
 		"cli-ux": "^5.4.6",
 		"configstore": "^5.0.1",
