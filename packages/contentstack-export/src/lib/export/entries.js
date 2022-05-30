@@ -37,6 +37,8 @@ function exportEntries() {
     },
     json: true,
   }
+
+  this.exportedEntries = {};
 }
 
 exportEntries.prototype.start = function (credentialConfig) {
@@ -66,6 +68,7 @@ exportEntries.prototype.start = function (credentialConfig) {
           locale: config.master_locale.code,
         })
       })
+
       return Promise.map(apiBucket, function (apiDetails) {
         return self.getEntries(apiDetails)
       }, {
@@ -73,7 +76,10 @@ exportEntries.prototype.start = function (credentialConfig) {
       }).then(function () {
         addlogs(config, 'Entry migration completed successfully', 'success')
         return resolve()
-      }).catch(reject)
+      }).catch((error) => {
+        console.log("error", error);
+        reject(error);
+      })
     }
     addlogs(config, 'No content_types were found in the Stack', 'success')
     return resolve()
@@ -115,6 +121,9 @@ exportEntries.prototype.getEntry = function (apiDetails) {
 exportEntries.prototype.getEntries = function (apiDetails) {
   let self = this
   return new Promise(function (resolve, reject) {
+    console.log('started to export entries of ' + apiDetails.content_type +
+    ' to the ' + apiDetails.locale + ' language  , batch' + apiDetails.skip);
+  
     if (typeof apiDetails.skip !== 'number') {
       apiDetails.skip = 0
     }
@@ -126,25 +135,29 @@ exportEntries.prototype.getEntries = function (apiDetails) {
       include_count: true,
       include_publish_details: true,
       query: {
-        locale: apiDetails.locale,
+        locale: apiDetails.locale,    
       },
     }
+
     client.stack({api_key: config.source_stack, management_token: config.management_token}).contentType(apiDetails.content_type).entry().query(queryrequestObject).find()
       .then(entriesList => {
       // /entries/content_type_uid/locale.json
-      if (!fs.existsSync(path.join(entryFolderPath, apiDetails.content_type))) {
-        mkdirp.sync(path.join(entryFolderPath, apiDetails.content_type))
-      }
-      let entriesFilePath = path.join(entryFolderPath, apiDetails.content_type, apiDetails.locale + '.json')
-      let entries = helper.readFile(entriesFilePath)
-      entries = entries || {}
+        if (apiDetails.skip === 0) {
+          if (!fs.existsSync(path.join(entryFolderPath, apiDetails.content_type))) {
+            mkdirp.sync(path.join(entryFolderPath, apiDetails.content_type))
+          }
+        }
+      // let entriesFilePath = path.join(entryFolderPath, apiDetails.content_type, apiDetails.locale + '.json')
+      // let entries = helper.readFile(entriesFilePath)
+      // entries = entries || {}
       entriesList.items.forEach(function (entry) {
         invalidKeys.forEach(e => delete entry[e])
-        entries[entry.uid] = entry
+        self.exportedEntries[entry.uid] = entry
       })
-      helper.writeFile(entriesFilePath, entries)
+      // helper.writeFile(entriesFilePath, entries)
 
       if (typeof config.versioning === 'boolean' && config.versioning) {
+          console.log("Enabled config versioning", config.versioning);
         for (let locale in locales) {
           // make folders for each language
           content_types.forEach(function (content_type) {
@@ -154,7 +167,7 @@ exportEntries.prototype.getEntries = function (apiDetails) {
           })
         }
         return Promise.map(entriesList.items, function (entry) {
-          let entryDetails = {
+          let entryDetails = {    
             content_type: apiDetails.content_type,
             uid: entry.uid,
             version: entry._version,
@@ -180,15 +193,28 @@ exportEntries.prototype.getEntries = function (apiDetails) {
         })
       }
       if (apiDetails.skip > entriesList.count) {
-        addlogs(config, 'Exported entries of ' + apiDetails.content_type +
-            ' to the ' + apiDetails.locale + ' language successfully', 'success')
+          helper.writeFile(path.join(entryFolderPath, apiDetails.content_type, apiDetails.locale + '.json'), self.exportedEntries);
+          self.exportedEntries = {}; // cleans
+          const mu = process.memoryUsage();
+          // # bytes / KB / MB / GB
+          const gbNow = mu["heapUsed"] / 1024 / 1024 / 1024;
+          const gbRounded = Math.round(gbNow * 100) / 100;
+         
+          console.log(`Heap allocated ${gbRounded} GB`);
+          addlogs(config, 'Exported entries of ' + apiDetails.content_type +
+          ' to the ' + apiDetails.locale + ' language successfully', 'success')
+        
         return resolve()
       }
       apiDetails.skip += limit
       return self.getEntries(apiDetails)
       .then(resolve)
-      .catch(reject)
-    }).catch(error => {
+        .catch((error) => {
+          console.log("error 213", error);
+          reject(error);
+      })
+      }).catch(error => {
+        console.log("error 214", error);
       addlogs(config, error, 'error')
     })
   })
