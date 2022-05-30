@@ -75,7 +75,7 @@ module.exports = function (data, mappedUids, uidMapperPath) {
           }
         } else {
           _entry = _entry[_parent[j]];
-          var _keys = _.clone(_parent).splice(eval(j + 1), len);
+          var _keys = _.clone(_parent).splice((j+1), len);
           if (Array.isArray(_entry)) {
             for (var i = 0, _i = _entry.length; i < _i; i++) {
               update(_keys, form_id, _entry[i]);
