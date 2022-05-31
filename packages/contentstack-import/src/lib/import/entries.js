@@ -203,7 +203,7 @@ importEntries.prototype = {
           let entries = helper.readFile(eFilePath)
           if (!_.isPlainObject(entries) || _.isEmpty(entries)) {
             addlogs(config, chalk.white('No entries were found for Content type:\'' + ctUid + '\' in \'' + lang +
-              '\' language!'), 'success')
+              '\' language!'), 'success') 
           } else {
             addlogs(config, `Creating entries for content type ${ctUid} in language ${lang} ...`, 'success')
             for (let eUid in entries) {
@@ -251,7 +251,7 @@ importEntries.prototype = {
                   }) + ' as it is already created'), 'success')
                   self.success[ctUid] = createdEntries[eUid]
                   // if its a non-master language, i.e. the entry isn't present in the master language
-                  if (lang !== masterLanguage) {
+                  if (lang !== masterLanguage.code) {
                     self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
                     if (self.uniqueUids[eUid].locales) {
                       self.uniqueUids[eUid].locales.push(lang)
@@ -280,7 +280,7 @@ importEntries.prototype = {
                       self.mappedUids[eUid] = entryResponse.uid
                       createdEntries = entryResponse
                       // if its a non-master language, i.e. the entry isn't present in the master language
-                      if (lang !== masterLanguage) {
+                      if (lang !== masterLanguage.code) {
                         self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
                         if (self.uniqueUids[eUid].locales) {
                           self.uniqueUids[eUid].locales.push(lang)
@@ -311,7 +311,7 @@ importEntries.prototype = {
                     self.mappedUids[eUid] = entryResponse.uid
                     createdEntries = entryResponse
                     // if its a non-master language, i.e. the entry isn't present in the master language
-                    if (lang !== masterLanguage) {
+                    if (lang !== masterLanguage.code) {
                       self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
                       if (self.uniqueUids[eUid].locales) {
                         self.uniqueUids[eUid].locales.push(lang)

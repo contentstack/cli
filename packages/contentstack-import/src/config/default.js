@@ -358,7 +358,7 @@ module.exports = {
   rateLimit: 5,
   preserveStackVersion: false,
   entriesPublish: true,
-  concurrency: 1
-//  ,useBackedupDir: '_backup_397'
+  concurrency: 1,
+//  useBackedupDir: '/path/to/folder'
   // backupConcurrency: 10,
 }
