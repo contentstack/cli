@@ -40,16 +40,17 @@ USAGE
 - [`csdx auth:tokens:remove`](#csdx-authtokensremove)
 - [`csdx auth:whoami`](#csdx-authwhoami)
 - [`csdx cm:assets:publish`](#csdx-cmassetspublish)
+- [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
 - [`csdx cm:bootstrap`](#csdx-cmbootstrap)
 - [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 - [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
 - [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
-- [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
 - [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
 - [`csdx cm:entries:export-to-csv`](#csdx-cmentriesexport-to-csv)
 - [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
 - [`csdx cm:entries:publish`](#csdx-cmentriespublish)
 - [`csdx cm:entries:publish-non-localized-fields`](#csdx-cmentriespublish-non-localized-fields)
+- [`csdx cm:entries:unpublish`](#csdx-cmentriesunpublish)
 - [`csdx cm:entries:update-and-publish`](#csdx-cmentriesupdate-and-publish)
 - [`csdx cm:migration`](#csdx-cmmigration)
 - [`csdx cm:stacks:clone`](#csdx-cmstacksclone)
@@ -59,6 +60,7 @@ USAGE
 - [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
 - [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
 - [`csdx cm:stacks:seed`](#csdx-cmstacksseed)
+- [`csdx cm:stacks:unpublish`](#csdx-cmstacksunpublish)
 - [`csdx config:get:region`](#csdx-configgetregion)
 - [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 - [`csdx help [COMMAND]`](#csdx-help-command)
@@ -285,6 +287,62 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/assets/publish.js)_
 
+## `csdx cm:assets:unpublish`
+
+Unpublish assets from given environment
+
+```
+Unpublish assets from given environment
+The unpublish command is used for unpublishing assets from given environment
+
+Environment (Source Environment) and Locale are required for executing the command successfully
+But, if retry-failed flag is set, then only a logfile is required
+
+USAGE
+  $ csdx cm:assets:unpublish
+
+OPTIONS
+  -a, --alias=alias                Alias for the management token to be used
+  -c, --config=config              Path to config file to be used
+  -e, --environment=environment    Source Environment
+  -y, --yes                        Agree to process the command with the current configuration
+  --branch=branch                  [default: main] Specify the branch to fetch the content from (default is main branch)
+
+  --bulk-unpublish=bulk-unpublish  [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used for publishing the entries
+
+  --delivery-token=delivery-token  Delivery Token for source environment
+
+  --locale=locale                  Locale filter
+
+  --retry-failed=retry-failed      Retry publishing failed entries from the logfile
+
+DESCRIPTION
+  The unpublish command is used for unpublishing assets from given environment
+
+  Environment (Source Environment) and Locale are required for executing the command successfully
+  But, if retry-failed flag is set, then only a logfile is required
+
+EXAMPLES
+  General Usage
+  csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN
+  ALIAS] --delivery-token [DELIVERY TOKEN]
+
+  Using --config or -c flag
+  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure --alias [ALIAS]`
+  csdx cm:assets:unpublish --config [PATH TO CONFIG FILE]
+  csdx cm:assets:unpublish -c [PATH TO CONFIG FILE]
+
+  Using --retry-failed flag
+  csdx cm:assets:unpublish --retry-failed [LOG FILE NAME]
+
+  Using --branch flag
+  csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN
+  ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
+```
+
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/assets/unpublish.js)_
+
 ## `csdx cm:bootstrap`
 
 Bootstrap contentstack apps
@@ -463,102 +521,6 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entry-edits.js)_
-
-## `csdx cm:bulk-publish:unpublish`
-
-Unpublish entries of given Content Types from given environment
-
-```
-Unpublish entries of given Content Types from given environment
-The unpublish command is used for unpublishing entries from given environment
-
-Environment (Source Environment) and Locale are required for executing the command successfully
-But, if retryFailed flag is set, then only a logfile is required
-
-A Content Type can be specified for publishing entries, but if no content-type(s) is/are specified and --onlyAssets is not used,
-then all entries from all content types will be unpublished from the source environment
-
---onlyAssets can be used to unpublish only assets and --onlyEntries can be used to unpublish only entries.
-(--onlyAssets and --onlyEntries cannot be used together at the same time)
-
-
-USAGE
-  $ csdx cm:bulk-publish:unpublish
-
-OPTIONS
-  -B, --branch=branch                [default: main] Specify the branch to fetch the content from (default is main
-                                     branch)
-
-  -a, --alias=alias                  Alias for the management token to be used
-
-  -b, --bulkUnpublish=bulkUnpublish  [default: true] This flag is set to true by default. It indicates that
-                                     contentstack's bulkpublish API will be used for publishing the entries
-
-  -c, --config=config                Path to config file to be used
-
-  -e, --environment=environment      Source Environment
-
-  -l, --locale=locale                Locale filter
-
-  -r, --retryFailed=retryFailed      Retry publishing failed entries from the logfile
-
-  -t, --contentType=contentType      Content Type filter
-
-  -x, --deliveryToken=deliveryToken  Delivery Token for source environment
-
-  -y, --yes                          Agree to process the command with the current configuration
-
-  --onlyAssets                       Unpublish only assets
-
-  --onlyEntries                      Unpublish only entries
-
-DESCRIPTION
-  The unpublish command is used for unpublishing entries from given environment
-
-  Environment (Source Environment) and Locale are required for executing the command successfully
-  But, if retryFailed flag is set, then only a logfile is required
-
-  A Content Type can be specified for publishing entries, but if no content-type(s) is/are specified and --onlyAssets is
-  not used,
-  then all entries from all content types will be unpublished from the source environment
-
-  --onlyAssets can be used to unpublish only assets and --onlyEntries can be used to unpublish only entries.
-  (--onlyAssets and --onlyEntries cannot be used together at the same time)
-
-EXAMPLES
-  General Usage
-  csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x
-  [DELIVERY TOKEN]
-
-  Using --config or -c flag
-  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
-  csdx cm:bulk-publish:unpublish --config [PATH TO CONFIG FILE]
-  csdx cm:bulk-publish:unpublish -c [PATH TO CONFIG FILE]
-
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:unpublish --retryFailed [LOG FILE NAME]
-  csdx cm:bulk-publish:unpublish -r [LOG FILE NAME]
-
-  No content type
-  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all
-  content types and assets from the source environment)
-
-  Using --onlyAssets
-  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyAssets (Will unpublish only assets
-  from the source environment)
-
-  Using --onlyEntries
-  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only
-  entries, all entries, from the source environment)
-  csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries
-  (Will unpublish only entries, (from CONTENT TYPE) from the source environment)
-
-  Using --branch or -B flag
-  csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x
-  [DELIVERY TOKEN] -B [BRANCH NAME]
-```
-
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublish.js)_
 
 ## `csdx cm:bulk-publish:unpublished-entries`
 
@@ -803,6 +765,9 @@ DESCRIPTION
   Content Types, Environments and Source Environment are required for executing this command successfully.
   But, if retryFailed flag is set, then only a logfile is required
 
+ALIASES
+  $ csdx cm:bulk-publish:nonlocalized-field-changes
+
 EXAMPLES
   General Usage
   csdx cm:entries:publish-non-localized-fields --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --environments
@@ -822,6 +787,65 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish-non-localized-fields.js)_
+
+## `csdx cm:entries:unpublish`
+
+Unpublish entries from given environment
+
+```
+Unpublish entries from given environment
+The unpublish command is used for unpublishing entries from given environment
+
+Environment (Source Environment) and Locale are required for executing the command successfully
+But, if retry-failed flag is set, then only a logfile is required
+
+USAGE
+  $ csdx cm:entries:unpublish
+
+OPTIONS
+  -a, --alias=alias                Alias for the management token to be used
+  -c, --config=config              Path to config file to be used
+  -e, --environment=environment    Source Environment
+  -y, --yes                        Agree to process the command with the current configuration
+  --branch=branch                  [default: main] Specify the branch to fetch the content from (default is main branch)
+
+  --bulk-unpublish=bulk-unpublish  [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used for publishing the entries
+
+  --content-type=content-type      Content Type filter
+
+  --delivery-token=delivery-token  Delivery Token for source environment
+
+  --locale=locale                  Locale filter
+
+  --retry-failed=retry-failed      Retry publishing failed entries from the logfile
+
+DESCRIPTION
+  The unpublish command is used for unpublishing entries from given environment
+
+  Environment (Source Environment) and Locale are required for executing the command successfully
+  But, if retry-failed flag is set, then only a logfile is required
+
+EXAMPLES
+  General Usage
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE]
+  --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN]
+
+  Using --config or -c flag
+  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure --alias [ALIAS]`
+  csdx cm:stacks:unpublish --config [PATH TO CONFIG FILE]
+  csdx cm:stacks:unpublish -c [PATH TO CONFIG FILE]
+
+  Using --retry-failed flag
+  csdx cm:stacks:unpublish --retry-failed [LOG FILE NAME]
+
+
+  Using --branch flag
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE]
+  --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
+```
+
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/unpublish.js)_
 
 ## `csdx cm:entries:update-and-publish`
 
@@ -1151,6 +1175,95 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.11/src/commands/cm/stacks/seed.ts)_
+
+## `csdx cm:stacks:unpublish`
+
+Unpublish entries or assets of given Content Types from given environment
+
+```
+Unpublish entries or assets of given Content Types from given environment
+The unpublish command is used for unpublishing entries or assets from given environment
+
+Environment (Source Environment) and Locale are required for executing the command successfully
+But, if retry-failed flag is set, then only a logfile is required
+
+A Content Type can be specified for unpublishing entries, but if no content-type(s) is/are specified and --only-assets is not used,
+then all entries from all content types will be unpublished from the source environment
+
+--only-assets can be used to unpublish only assets and --only-entries can be used to unpublish only entries.
+(--only-assets and --only-entries cannot be used together at the same time)
+
+
+USAGE
+  $ csdx cm:stacks:unpublish
+
+OPTIONS
+  -a, --alias=alias                Alias for the management token to be used
+  -c, --config=config              Path to config file to be used
+  -e, --environment=environment    Source Environment
+  -y, --yes                        Agree to process the command with the current configuration
+  --locale=locale                  Locale filter
+
+  --branch=branch                  [default: main] Specify the branch to fetch the content from (default is main branch)
+
+  --bulk-unpublish=bulk-unpublish  [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used for publishing the entries
+
+  --content-type=content-type      Content Type filter
+
+  --delivery-token=delivery-token  Delivery Token for source environment
+
+  --retry-failed=retry-failed      Retry publishing failed entries from the logfile
+
+DESCRIPTION
+  The unpublish command is used for unpublishing entries or assets from given environment
+
+  Environment (Source Environment) and Locale are required for executing the command successfully
+  But, if retry-failed flag is set, then only a logfile is required
+
+  A Content Type can be specified for unpublishing entries, but if no content-type(s) is/are specified and --only-assets
+  is not used,
+  then all entries from all content types will be unpublished from the source environment
+
+  --only-assets can be used to unpublish only assets and --only-entries can be used to unpublish only entries.
+  (--only-assets and --only-entries cannot be used together at the same time)
+
+ALIASES
+  $ csdx cm:bulk-publish:unpublish
+
+EXAMPLES
+  General Usage
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE]
+  --alias [MANAGEMENT TOKEN ALIAS] ----delivery-token [DELIVERY TOKEN]
+
+  Using --config or -c flag
+  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure --alias [ALIAS]`
+  csdx cm:stacks:unpublish --config [PATH TO CONFIG FILE]
+  csdx cm:stacks:unpublish -c [PATH TO CONFIG FILE]
+
+  Using --retry-failed flag
+  csdx cm:stacks:unpublish --retry-failed [LOG FILE NAME]
+
+  No content type
+  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all content
+  types and assets from the source environment)
+
+  Using --only-assets
+  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] --only-assets (Will unpublish only assets from
+  the source environment)
+
+  Using --only-entries
+  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] --only-entries (Will unpublish only entries, all
+  entries, from the source environment)
+  csdx cm:stacks:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --only-entries
+  (Will unpublish only entries, (from CONTENT TYPE) from the source environment)
+
+  Using --branch flag
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE]
+  --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
+```
+
+_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/unpublish.js)_
 
 ## `csdx config:get:region`
 
