@@ -1071,11 +1071,13 @@ importEntries.prototype = {
             if (ctSchema[i].multiple) {
               entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map(jsonRteData => {
                 delete jsonRteData.uid // remove uid
+                jsonRteData.attrs.dirty = true
                 jsonRteData.children = jsonRteData.children.map(child => this.removeUidsFromChildren(child))
                 return jsonRteData
               })
             } else {
               delete entry[ctSchema[i].uid].uid // remove uid
+              entry[ctSchema[i].uid].attrs.dirty = true
               entry[ctSchema[i].uid].children = entry[ctSchema[i].uid].children.map(child => this.removeUidsFromChildren(child))
             }
           }
@@ -1090,6 +1092,7 @@ importEntries.prototype = {
       return children.map(child => {
         if(child.type && child.type.length > 0) {
           delete child.uid // remove uid
+          child.attrs.dirty = true
         }
         if(child.children && child.children.length > 0) {
           child.children = this.removeUidsFromChildren(child.children)
@@ -1099,6 +1102,7 @@ importEntries.prototype = {
     } else {
       if (children.type && children.type.length > 0) {
         delete children.uid // remove uid
+        children.attrs.dirty = true
       }
       if (children.children && children.children.length > 0) {
         children.children = this.removeUidsFromChildren(children.children)
@@ -1106,10 +1110,11 @@ importEntries.prototype = {
       return children
     }
   },
-  setDirtyTrue: function(jsonRteChild) {
+  setDirtyTrue: function(jsonRteChild) { // also removing uids in this function
     if (jsonRteChild.type) {
       jsonRteChild.attrs['dirty'] = true
-      
+      delete jsonRteChild.uid
+
       if (jsonRteChild.children && jsonRteChild.children.length > 0) {
         jsonRteChild.children = jsonRteChild.children.map(subElement => this.setDirtyTrue(subElement))
       }
