@@ -251,7 +251,7 @@ importEntries.prototype = {
                   }) + ' as it is already created'), 'success')
                   self.success[ctUid] = createdEntries[eUid]
                   // if its a non-master language, i.e. the entry isn't present in the master language
-                  if (lang !== masterLanguage) {
+                  if (lang !== masterLanguage.code) {
                     self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
                     if (self.uniqueUids[eUid].locales) {
                       self.uniqueUids[eUid].locales.push(lang)
@@ -280,7 +280,7 @@ importEntries.prototype = {
                       self.mappedUids[eUid] = entryResponse.uid
                       createdEntries = entryResponse
                       // if its a non-master language, i.e. the entry isn't present in the master language
-                      if (lang !== masterLanguage) {
+                      if (lang !== masterLanguage.code) {
                         self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
                         if (self.uniqueUids[eUid].locales) {
                           self.uniqueUids[eUid].locales.push(lang)
@@ -311,7 +311,7 @@ importEntries.prototype = {
                     self.mappedUids[eUid] = entryResponse.uid
                     createdEntries = entryResponse
                     // if its a non-master language, i.e. the entry isn't present in the master language
-                    if (lang !== masterLanguage) {
+                    if (lang !== masterLanguage.code) {
                       self.uniqueUids[eUid] = self.uniqueUids[eUid] || {}
                       if (self.uniqueUids[eUid].locales) {
                         self.uniqueUids[eUid].locales.push(lang)
