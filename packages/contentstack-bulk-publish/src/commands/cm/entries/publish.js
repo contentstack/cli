@@ -4,7 +4,7 @@ const { Command, flags } = require('@contentstack/cli-command');
 const { start: startPublish } = require('../../../producer/publish-entries');
 const { start: startCrossPublish } = require('../../../producer/cross-publish');
 const store = require('../../../util/store.js');
-const { cli } = require('cli-ux');
+const { cliux } = require('@contentstack/cli-utilities');
 const configKey = 'publish_entries';
 const configKeyCrossEnv = 'cross_env_publish';
 const { prettyPrint, formatError } = require('../../../util');
@@ -35,7 +35,7 @@ class PublishEntriesCommand extends Command {
       let stack;
       if (!updatedFlags.retryFailed) {
         if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Provide the alias of the management token to use');
+          updatedFlags.alias = await cliux.prompt('Provide the alias of the management token to use');
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish !== 'false';
         // Validate management token alias.
@@ -138,10 +138,12 @@ class PublishEntriesCommand extends Command {
 
   async confirmFlags(data) {
     prettyPrint(data);
+
     if (data.yes) {
       return true;
     }
-    return cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+
+    return await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 
