@@ -13,7 +13,7 @@ $ npm install -g @contentstack/cli-cm-bootstrap
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bootstrap/1.0.6 linux-x64 node-v16.14.2
+@contentstack/cli-cm-bootstrap/1.0.7 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -57,5 +57,5 @@ EXAMPLES
   $ csdx cm:bootstrap -t <github access token>
 ```
 
-_See code: [src/commands/cm/bootstrap.ts](https://github.com/contentstack/cli/blob/v1.0.6/src/commands/cm/bootstrap.ts)_
+_See code: [src/commands/cm/bootstrap.ts](https://github.com/contentstack/cli/blob/v1.0.7/src/commands/cm/bootstrap.ts)_
 <!-- commandsstop -->
