@@ -79,4 +79,6 @@ PublishOnlyUnpublished.examples = [
   'csdx cm:entries:publish-only-unpublished -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME] -s [SOURCE ENV]',
 ];
 
+PublishOnlyUnpublished.aliases = ['cm:bulk-publish:unpublished-entries'];
+
 module.exports = PublishOnlyUnpublished;
