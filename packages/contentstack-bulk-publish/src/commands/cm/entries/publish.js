@@ -1,10 +1,12 @@
 /* eslint-disable no-console */
 /* eslint-disable node/no-extraneous-require */
 const { Command, flags } = require('@contentstack/cli-command');
-const { start } = require('../../../producer/publish-entries');
+const { start: startPublish } = require('../../../producer/publish-entries');
+const { start: startCrossPublish } = require('../../../producer/cross-publish');
 const store = require('../../../util/store.js');
 const { cliux } = require('@contentstack/cli-utilities');
 const configKey = 'publish_entries';
+const configKeyCrossEnv = 'cross_env_publish';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
 const { printFlagDeprecation } = require('@contentstack/cli-utilities');
@@ -24,7 +26,8 @@ class PublishEntriesCommand extends Command {
 
     let updatedFlags;
     try {
-      updatedFlags = entriesFlags.config ? store.updateMissing(configKey, entriesFlags) : entriesFlags;
+      const storeConfigKey = entriesFlags['source-env'] ? configKeyCrossEnv : configKey
+      updatedFlags = entriesFlags.config ? store.updateMissing(storeConfigKey, entriesFlags) : entriesFlags;
     } catch (error) {
       this.error(error.message, { exit: 2 });
     }
@@ -44,18 +47,43 @@ class PublishEntriesCommand extends Command {
         config = {
           alias: updatedFlags.alias,
           host: this.region.cma,
+          cda: this.region.cda,
           branch: entriesFlags.branch,
         };
         stack = getStack(config);
       }
       if (await this.confirmFlags(updatedFlags)) {
         try {
-          // eslint-disable-next-line no-negated-condition
-          if (!updatedFlags.retryFailed) {
-            await start(updatedFlags, stack, config);
-          } else {
-            await start(updatedFlags);
+
+          const publishFunction = async (func) => {
+            // eslint-disable-next-line no-negated-condition
+            if (!updatedFlags.retryFailed) {
+              await func(updatedFlags, stack, config);
+            } else {
+              await func(updatedFlags);
+            }
           }
+
+          if (updatedFlags['source-env']) {
+            updatedFlags.deliveryToken = updatedFlags['delivery-token']
+            updatedFlags.destEnv = updatedFlags.environments
+            updatedFlags.environment = updatedFlags['source-env']
+            updatedFlags.onlyEntries = true
+            if (updatedFlags.locales instanceof Array) {
+              updatedFlags.locales.forEach(locale => {
+                updatedFlags.locale = locale
+                publishFunction(startCrossPublish)
+              });
+            } else {
+              updatedFlags.locale = locales
+              publishFunction(startCrossPublish)
+            }
+
+          }
+          else {
+            publishFunction(startPublish)
+          }
+
         } catch (error) {
           let message = formatError(error);
           this.error(message, { exit: 2 });
@@ -66,10 +94,17 @@ class PublishEntriesCommand extends Command {
     }
   }
 
-  validate({ contentTypes, locales, environments, retryFailed, publishAllContentTypes }) {
+  validate({ contentTypes, locales, environments, retryFailed, publishAllContentTypes, 'source-env': sourceEnv, 'delivery-token': deliveryToken }) {
     let missing = [];
     if (retryFailed) {
       return true;
+    }
+
+    if (sourceEnv && !deliveryToken) {
+      this.error(
+        'Specify source environment delivery token. Please check --help for more details',
+        { exit: 2 },
+      );
     }
 
     if (publishAllContentTypes && contentTypes && contentTypes.length > 0) {
@@ -113,7 +148,7 @@ class PublishEntriesCommand extends Command {
 }
 
 PublishEntriesCommand.description = `Publish entries from multiple content-types to multiple environments and locales
-The entries command is used for publishing entries from the specified content types, to the
+The publish command is used for publishing entries from the specified content types, to the
 specified environments and locales 
 
 Content Types, Environments and Locales are required for executing the command successfully
@@ -154,7 +189,7 @@ PublishEntriesCommand.flags = {
     hidden: true,
     parse: printFlagDeprecation(['-o', '--publishAllContentTypes'], ['--publish-all-content-types']),
   }),
-  'content-types': flags.string({
+  'content-type': flags.string({
     description: 'The Content-Types from which entries need to be published',
     multiple: true,
   }),
@@ -188,6 +223,8 @@ PublishEntriesCommand.flags = {
     description: 'Specify the branch to fetch the content from (default is main branch)',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
+  'delivery-token': flags.string({ description: 'Delivery Token for source environment' }),
+  'source-env': flags.string({ description: 'Destination Environments', multiple: true }),
 };
 
 PublishEntriesCommand.examples = [
