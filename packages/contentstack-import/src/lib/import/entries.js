@@ -303,7 +303,7 @@ importEntries.prototype = {
                   })
                 }
                 delete requestObject.json.entry.publish_details
-                return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry().create(requestObject.json)
+                return client.stack({api_key: config.target_stack, management_token: config.management_token}).contentType(ctUid).entry().create(requestObject.json, {locale: lang})
                 .then(async entryResponse => {
                   self.success[ctUid] = self.success[ctUid] || []
                   self.success[ctUid].push(entries[eUid])
