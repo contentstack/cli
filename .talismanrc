@@ -9,6 +9,10 @@ fileignoreconfig:
   checksum: 5f502b0036ec26e30d38dab695953a415f1c49e78a2867d74adf2c536a99cef2
 - filename: packages/contentstack-bootstrap/src/bootstrap/utils.ts
   checksum: 0cd620cbbb9204692fd4914ab4a890487bdbf724958a6bd6849ab9152c310651
+- filename: packages/contentstack-bulk-publish/src/commands/cm/assets/publish.js
+  checksum: 59f1546c9df214bbdbc85723271fb9b14fde055f6758b9037fffe4b867f184f1
+- filename: packages/contentstack-bulk-publish/src/commands/cm/entries/publish.js
+  checksum: 1b8cab64709e44c627ca782f770d0bd671d72e1bcb20c92367309a0191db7d7c
 - filename: packages/contentstack-clone/src/lib/util/clone-handler.js
   checksum: 56be60f744b35b1e4a2291dfebb480c7e29c4af337e2ea5d267ca6403d4f252f
 - filename: packages/contentstack-export/README.md
@@ -40,7 +44,7 @@ fileignoreconfig:
 - filename: packages/contentstack-utilities/src/config-handler.ts
   checksum: 7f8b00ee4e24e2a750aa748db01c1a8de2592d117e6374a7fb5ab1e89fb7cd38
 - filename: packages/contentstack/README.md
-  checksum: afb5db672874919b776217f688fede6d93cdf20487b7ba1f75df9c828d9b8d83
+  checksum: 3ef1b3d5e368a2c0aeb85afcfa3a0cd95e815aebef171a8125e669b83e8ab362
 - filename: packages/contentstack/package-lock.json
   checksum: be5da46c99ee2ea6c021a6dd4f903feda4f4c610033aba5ad3d25761810b52ff
 version: "1.0"
