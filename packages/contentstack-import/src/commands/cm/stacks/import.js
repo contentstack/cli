@@ -1,5 +1,4 @@
 const { Command, flags } = require('@contentstack/cli-command');
-const { cli } = require('cli-ux');
 let _ = require('lodash');
 const { configHandler } = require('@contentstack/cli-utilities');
 const {

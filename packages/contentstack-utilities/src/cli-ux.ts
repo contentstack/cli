@@ -1,8 +1,9 @@
-import cliux from 'cli-ux';
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
-import { PrintOptions, InquirePayload } from './interfaces';
+import { ux as cliux, Table } from '@oclif/core/lib/cli-ux'
+
 import messageHandler from './message-handler';
+import { PrintOptions, InquirePayload, CliUXPromptOptions } from './interfaces';
 
 /**
  * CLI Interface
@@ -14,6 +15,10 @@ class CLIInterface {
     this.loading = false;
   }
 
+  get uxTable(): typeof Table.table {
+    return cliux.table
+  }
+
   init(context) {}
 
   print(message: string, opts?: PrintOptions): void {
@@ -21,6 +26,7 @@ class CLIInterface {
       cliux.log(chalk[opts.color](messageHandler.parse(message)));
       return;
     }
+
     cliux.log(messageHandler.parse(message));
   }
 
@@ -32,7 +38,7 @@ class CLIInterface {
     cliux.log(chalk.red(messageHandler.parse(message) + (params && params.length > 0 ? ': ' : '')), ...params);
   }
 
-  loader(message: string): void {
+  loader(message: string = ''): void {
     if (!this.loading) {
       cliux.action.start(messageHandler.parse(message));
     } else {
@@ -41,14 +47,31 @@ class CLIInterface {
     this.loading = !this.loading;
   }
 
-  table(data: Array<object>, columns: any, options: object): void {
+  table(
+    data: Record<string, unknown>[],
+    columns: Table.table.Columns<Record<string, unknown>>,
+    options?: Table.table.Options
+  ): void {
     cliux.table(data, columns, options);
   }
 
   async inquire<T>(inquirePayload: InquirePayload): Promise<T> {
     inquirePayload.message = messageHandler.parse(inquirePayload.message);
     const result = await inquirer.prompt(inquirePayload as inquirer.QuestionCollection<T>);
+
     return result[inquirePayload.name] as T;
+  }
+
+  prompt(name: string, options?: CliUXPromptOptions): Promise<any> {
+    return cliux.prompt(name, options)
+  }
+
+  confirm(message?: string): Promise<boolean> {
+    return cliux.confirm(message)
+  }
+
+  progress(options?: any): any {
+    return cliux.progress(options)
   }
 }
 
