@@ -1,7 +1,7 @@
 const { Command, flags } = require('@contentstack/cli-command');
 const { start } = require('../../../producer/nonlocalized-field-changes');
 const store = require('../../../util/store.js');
-const { cli } = require('cli-ux');
+const { cliux } = require('@contentstack/cli-utilities');
 const configKey = 'nonlocalized_field_changes';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
@@ -104,7 +104,7 @@ class NonlocalizedFieldChangesCommand extends Command {
     if (data.yes) {
       return true;
     }
-    const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+    const confirmation = await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
     return confirmation;
   }
 }
