@@ -2,7 +2,7 @@ const { Command, flags } = require('@contentstack/cli-command');
 const { start } = require('../../../producer/publish-edits');
 const store = require('../../../util/store.js');
 // eslint-disable-next-line node/no-extraneous-require
-const { cli } = require('cli-ux');
+const { cliux } = require('@contentstack/cli-utilities');
 const configKey = 'publish_edits_on_env';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
@@ -31,7 +31,7 @@ class PublishModifiedCommand extends Command {
       let stack;
       if (!updatedFlags.retryFailed) {
         if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used');
+          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish !== 'false';
         // Validate management token alias.
@@ -101,7 +101,7 @@ class PublishModifiedCommand extends Command {
     if (data.yes) {
       return true;
     }
-    return cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+    return await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 

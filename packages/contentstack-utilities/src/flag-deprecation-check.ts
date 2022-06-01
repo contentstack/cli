@@ -6,7 +6,7 @@ import cliux from './cli-ux';
  * @param {String} customMessage [optional] a custom message
  * @returns flag parser
  */
-export default function (deprecatedFlags = [], suggestions = [], customMessage: string) {
+export default function (deprecatedFlags = [], suggestions = [], customMessage?: string) {
   return (input, command) => {
     let isCommandHasDeprecationFlag = false;
     deprecatedFlags.forEach((item) => {
