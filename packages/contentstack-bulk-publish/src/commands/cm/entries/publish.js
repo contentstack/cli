@@ -16,11 +16,11 @@ class PublishEntriesCommand extends Command {
   async run() {
     const entriesFlags = this.parse(PublishEntriesCommand).flags;
     entriesFlags.retryFailed = entriesFlags['retry-failed'] || entriesFlags.retryFailed;
-    entriesFlags.contentTypes = entriesFlags['content-type'] || entriesFlags.contentTypes;
+    entriesFlags.contentTypes = entriesFlags['content-types'] || entriesFlags.contentTypes;
     entriesFlags.bulkPublish = entriesFlags['bulk-publish'] || entriesFlags.bulkPublish;
     entriesFlags.publishAllContentTypes = entriesFlags['publish-all-content-types'] || entriesFlags.publishAllContentTypes;
     delete entriesFlags['retry-failed'];
-    delete entriesFlags['content-type'];
+    delete entriesFlags['content-types'];
     delete entriesFlags['bulk-publish'];
     delete entriesFlags['publish-all-content-types'];
 
@@ -189,7 +189,7 @@ PublishEntriesCommand.flags = {
     hidden: true,
     parse: printFlagDeprecation(['-o', '--publishAllContentTypes'], ['--publish-all-content-types']),
   }),
-  'content-type': flags.string({
+  'content-types': flags.string({
     description: 'The Content-Types from which entries need to be published',
     multiple: true,
   }),
@@ -229,7 +229,7 @@ PublishEntriesCommand.flags = {
 
 PublishEntriesCommand.examples = [
   'General Usage',
-  'csdx cm:entries:publish -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
+  'csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
   '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`',
@@ -241,7 +241,7 @@ PublishEntriesCommand.examples = [
   'csdx cm:entries:publish -r [LOG FILE NAME]',
   '',
   'Using --branch',
-  'csdx cm:entries:publish --content-type [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]',
+  'csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]',
 ];
 
 PublishEntriesCommand.aliases = ['cm:bulk-publish:entries']
