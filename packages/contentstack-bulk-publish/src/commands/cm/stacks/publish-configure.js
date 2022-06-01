@@ -1,7 +1,8 @@
-const { Command, flags } = require('@oclif/command');
-const { cli } = require('cli-ux');
 const fs = require('fs');
 const path = require('path');
+const { Command, flags } = require('@oclif/command');
+const { cliux } = require('@contentstack/cli-utilities');
+
 let config = require('../../../config/index.js');
 
 class ConfigureCommand extends Command {
@@ -9,7 +10,7 @@ class ConfigureCommand extends Command {
     const configureFlags = this.parse(ConfigureCommand).flags;
 
     if (!configureFlags.alias) {
-      configureFlags.alias = await cli.prompt('Please enter the management token alias to be used');
+      configureFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
     }
 
     await this.config.runHook('validateManagementTokenAlias', { alias: configureFlags.alias });

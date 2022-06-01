@@ -4,8 +4,7 @@
 const {expect, test} = require('@oclif/test')
 const nock = require('nock')
 const stack = require('../../src/util/client.js').getStack({apikey: "dummyApiKey", managementTokenAlias: "dummyManagementTokenAlias"})
-const { configHandler } = require('@contentstack/cli-utilities');
-const {cli} = require('cli-ux')
+const { cliux, configHandler } = require('@contentstack/cli-utilities');
 const dummyConfig = configHandler
 const store = require('../../src/util/store.js')
 
@@ -133,7 +132,7 @@ describe('entries', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stub(this.config.userConfig, 'getRegion', () => {
     return {
       cma: "dummyCma", cda: "dummyCda", name: "dummyName"

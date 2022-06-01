@@ -1,12 +1,13 @@
 const { Command, flags } = require('@contentstack/cli-command');
-const { start } = require('../../../producer/add-fields');
+const { printFlagDeprecation, cliux } = require('@contentstack/cli-utilities');
+
 const store = require('../../../util/store.js');
-const { cli } = require('cli-ux');
-const configKey = 'addFields';
-const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
-const { printFlagDeprecation } = require('@contentstack/cli-utilities');
+const { start } = require('../../../producer/add-fields');
+const { prettyPrint, formatError } = require('../../../util');
+
 let config;
+const configKey = 'addFields';
 
 class UpdateAndPublishCommand extends Command {
   async run() {
@@ -28,7 +29,7 @@ class UpdateAndPublishCommand extends Command {
       let stack;
       if (!updatedFlags.retryFailed) {
         if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used');
+          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
         // Validate management token alias.
@@ -94,7 +95,7 @@ class UpdateAndPublishCommand extends Command {
     if (data.yes) {
       return true;
     }
-    return cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 
