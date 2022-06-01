@@ -99,7 +99,7 @@ class UpdateAndPublishCommand extends Command {
 }
 
 UpdateAndPublishCommand.description = `Add fields from updated content types to their respective entries
-The add-fields command is used for updating already existing entries with the updated schema of their respective Content Type
+The update-and-publish command is used for updating already existing entries with the updated schema of their respective Content Type
 
 Content Types, Environments and Locales are required for executing the command successfully
 But, if retry-failed flag is set, then only a logfile is required
