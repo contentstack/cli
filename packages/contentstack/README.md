@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/1.0.0 darwin-arm64 node-v18.1.0
+@contentstack/cli/1.0.0 darwin-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -1006,13 +1006,13 @@ ALIASES
   $ csdx cm:export
 
 EXAMPLES
-  csdx cm:export -k <stack_ApiKey> -d <path/of/export/destination/dir>
-  csdx cm:export -c <path/to/config/dir>
-  csdx cm:export -a <management_token_alias>
-  csdx cm:export -a <management_token_alias> --data-dir <path/to/export/destination/dir>
-  csdx cm:export -a <management_token_alias> -c <path/to/config/file>
-  csdx cm:export --module <single module name>
-  csdx cm:export --branch [optional] branch name
+  csdx cm:stacks:export -k <stack_ApiKey> -d <path/of/export/destination/dir>
+  csdx cm:stacks:export -c <path/to/config/dir>
+  csdx cm:stacks:export -a <management_token_alias>
+  csdx cm:stacks:export -a <management_token_alias> --data-dir <path/to/export/destination/dir>
+  csdx cm:stacks:export -a <management_token_alias> -c <path/to/config/file>
+  csdx cm:stacks:export --module <single module name>
+  csdx cm:stacks:export --branch [optional] branch name
 ```
 
 _See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-export/src/commands/cm/stacks/export.js)_
