@@ -21,7 +21,7 @@ class ExportCommand extends Command {
     const securedAssets = exportCommandFlags['secured-assets'];
     const data = exportCommandFlags.data || exportCommandFlags['data-dir'];
     const moduleName = exportCommandFlags.module;
-    const contentTypes = exportCommandFlags['content-type'];
+    const contentTypes = exportCommandFlags['content-types'];
     const branchName = exportCommandFlags.branch;
     let _authToken = configHandler.get('authtoken');
     let host = this.region;
@@ -138,11 +138,11 @@ ExportCommand.flags = {
     description: '[optional] specific module name',
     parse: printFlagDeprecation(['-m'], ['--module']),
   }),
-  'content-type': flags.string({
+  'content-types': flags.string({
     char: 't',
     description: '[optional] content type',
     multiple: true,
-    parse: printFlagDeprecation(['-t'], ['--content-type']),
+    parse: printFlagDeprecation(['-t'], ['--content-types']),
   }),
   branch: flags.string({
     char: 'B',
