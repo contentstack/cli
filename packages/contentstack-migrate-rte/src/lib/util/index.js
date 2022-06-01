@@ -3,7 +3,7 @@ const { Command } = require('@contentstack/cli-command');
 const { logger } = require('@contentstack/cli-utilities');
 
 const command = new Command();
-const { cli } = require('cli-ux');
+const { cliux } = require('@contentstack/cli-utilities');
 const chalk = require('chalk');
 const {
   isEmpty,
@@ -61,7 +61,7 @@ function normalizeFlags(config){
   return normalizedConfig;
 }
 
-var customBar = cli.progress({
+var customBar = cliux.progress({
   format: 'Migrating entry for {content_type} ' + '| {bar} | {value}/{total} Entries',
   barCompleteChar: '\u2588',
   barIncompleteChar: '\u2591'

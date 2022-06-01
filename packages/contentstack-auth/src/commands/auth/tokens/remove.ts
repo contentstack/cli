@@ -1,8 +1,7 @@
 import { Command, flags } from '@contentstack/cli-command';
 import { logger, cliux, configHandler } from '@contentstack/cli-utilities';
+
 export default class TokensRemoveCommand extends Command {
-  private readonly parse: Function;
-  static run;
   static description = 'Removes selected tokens';
   static examples = ['$ csdx auth:tokens:remove', '$ csdx auth:tokens:remove -a <aliase>'];
   static flags = {
