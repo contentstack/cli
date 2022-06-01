@@ -44,7 +44,7 @@ PublishOnlyUnpublished.flags = {
     char: 't',
     description: 'The Content-Types from which entries need to be published',
     multiple: true,
-    parse: printFlagDeprecation(['--contentTypes', '-t'], ['--content-type']),
+    parse: printFlagDeprecation(['--contentTypes', '-t'], ['--content-types']),
   }),
   locale: flags.string({
     char: 'l',
