@@ -15,13 +15,13 @@ class UnpublishCommand extends Command {
     const unpublishFlags = this.parse(UnpublishCommand).flags;
     unpublishFlags.retryFailed = unpublishFlags['retry-failed'] || unpublishFlags.retryFailed;
     unpublishFlags.bulkUnpublish = unpublishFlags['bulk-unpublish'] || unpublishFlags.bulkUnpublish;
-    unpublishFlags.contentType = unpublishFlags['content-types'] || unpublishFlags.contentType;
+    unpublishFlags.contentType = unpublishFlags['content-type'] || unpublishFlags.contentType;
     unpublishFlags.deliveryToken = unpublishFlags['delivery-token'] || unpublishFlags.deliveryToken;
     unpublishFlags.onlyAssets = unpublishFlags['only-assets'] || unpublishFlags.onlyAssets;
     unpublishFlags.onlyEntries = unpublishFlags['only-entries'] || unpublishFlags.onlyEntries;
     delete unpublishFlags['retry-failed'];
     delete unpublishFlags['bulk-unpublish'];
-    delete unpublishFlags['content-types'];
+    delete unpublishFlags['content-type'];
     delete unpublishFlags['delivery-token'];
     delete unpublishFlags['only-assets'];
     delete unpublishFlags['only-entries'];
@@ -95,7 +95,7 @@ class UnpublishCommand extends Command {
 
     if (onlyAssets && contentType) {
       this.error(
-        `Specifying content-types and onlyAssets together will have unexpected results. Please do not use these 2 flags together. Thank you.`,
+        `Specifying content-type and onlyAssets together will have unexpected results. Please do not use these 2 flags together. Thank you.`,
       );
     }
 
@@ -191,7 +191,7 @@ UnpublishCommand.flags = {
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
     default: 'true',
   }),
-  'content-types': flags.string({
+  'content-type': flags.string({
     description: 'Content Type filter',
   }),
   'delivery-token': flags.string({
@@ -227,7 +227,7 @@ UnpublishCommand.flags = {
     char: 't',
     description: 'Content Type filter',
     hidden: true,
-    parse: printFlagDeprecation(['-t', '--contentType'], ['--content-types']),
+    parse: printFlagDeprecation(['-t', '--contentType'], ['--content-type']),
   }),
   deliveryToken: flags.string({
     char: 'x',
@@ -251,7 +251,7 @@ UnpublishCommand.flags = {
 
 UnpublishCommand.examples = [
   'General Usage',
-  'csdx cm:stacks:unpublish --bulk-unpublish --content-types [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] ----delivery-token [DELIVERY TOKEN]',
+  'csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] ----delivery-token [DELIVERY TOKEN]',
   '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure --alias [ALIAS]`',
@@ -272,7 +272,7 @@ UnpublishCommand.examples = [
   'csdx cm:stacks:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --only-entries (Will unpublish only entries, (from CONTENT TYPE) from the source environment)',
   '',
   'Using --branch flag',
-  'csdx cm:stacks:unpublish --bulk-unpublish --content-types [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]',
+  'csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]',
 ];
 
 UnpublishCommand.aliases = ['cm:bulk-publish:unpublish'];
