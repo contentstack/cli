@@ -18,13 +18,17 @@ PublishOnlyUnpublished.description = `Publish unpublished entries from the sourc
 The publish-only-unpublished command is used for publishing unpublished entries from the source environment, to other environments and locales
 
 Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the command successfully
-But, if retryFailed flag is set, then only a logfile is required
+But, if retry-failed flag is set, then only a logfile is required
 `;
 
 PublishOnlyUnpublished.flags = {
   alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
   retryFailed: flags.string({
     char: 'r',
+    description: 'Retry publishing failed entries from the logfile',
+    parse: printFlagDeprecation(['--retryFailed', '-r'], ['--retry-failed']),
+  }),
+  'retry-failed': flags.string({
     description: 'Retry publishing failed entries from the logfile',
     parse: printFlagDeprecation(['--retryFailed', '-r'], ['--retry-failed']),
   }),
@@ -40,16 +44,26 @@ PublishOnlyUnpublished.flags = {
     description: 'Source Env',
     parse: printFlagDeprecation(['--sourceEnv', '-s'], ['--source-env']),
   }),
+  'source-env': flags.string({
+    description: 'Source Env',
+  }),
   contentTypes: flags.string({
     char: 't',
     description: 'The Content-Types from which entries need to be published',
     multiple: true,
     parse: printFlagDeprecation(['--contentTypes', '-t'], ['--content-types']),
   }),
+  'content-types': flags.string({
+    description: 'The Content-Types from which entries need to be published',
+    multiple: true,
+  }),
   locale: flags.string({
     char: 'l',
     description: 'Source locale',
     parse: printFlagDeprecation(['-l'], ['--locales']),
+  }),
+  locales: flags.string({
+    description: 'Source locale',
   }),
   environments: flags.string({ char: 'e', description: 'Destination environments', multiple: true }),
   config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
@@ -64,19 +78,18 @@ PublishOnlyUnpublished.flags = {
 
 PublishOnlyUnpublished.examples = [
   'General Usage',
-  'csdx cm:entries:publish-only-unpublished -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] -s [SOURCE ENV]',
+  'csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a [MANAGEMENT TOKEN ALIAS] -source-env [SOURCE ENV]',
   '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
   'csdx cm:entries:publish-only-unpublished --config [PATH TO CONFIG FILE]',
   'csdx cm:entries:publish-only-unpublished -c [PATH TO CONFIG FILE]',
   '',
-  'Using --retryFailed or -r flag',
-  'csdx cm:entries:publish-only-unpublished --retryFailed [LOG FILE NAME]',
-  'csdx cm:entries:publish-only-unpublished -r [LOG FILE NAME]',
+  'Using --retry-failed',
+  'csdx cm:entries:publish-only-unpublished --retry-failed [LOG FILE NAME]',
   '',
-  'Using --branch or -B flag',
-  'csdx cm:entries:publish-only-unpublished -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME] -s [SOURCE ENV]',
+  'Using --branch',
+  'csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME] -source-env [SOURCE ENV]',
 ];
 
 PublishOnlyUnpublished.aliases = ['cm:bulk-publish:unpublished-entries'];
