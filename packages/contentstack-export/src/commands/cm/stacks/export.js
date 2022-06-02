@@ -21,7 +21,7 @@ class ExportCommand extends Command {
     const securedAssets = exportCommandFlags['secured-assets'];
     const data = exportCommandFlags.data || exportCommandFlags['data-dir'];
     const moduleName = exportCommandFlags.module;
-    const contentTypes = exportCommandFlags['content-type'];
+    const contentTypes = exportCommandFlags['content-types'];
     const branchName = exportCommandFlags.branch;
     let _authToken = configHandler.get('authtoken');
     let host = this.region;
@@ -93,30 +93,41 @@ ExportCommand.description = `Export content from a stack
 Export content from one stack to another
 `;
 ExportCommand.examples = [
-  'csdx cm:export -k <stack_ApiKey> -d <path/of/export/destination/dir>',
-  'csdx cm:export -c <path/to/config/dir>',
-  'csdx cm:export -a <management_token_alias>',
-  'csdx cm:export -a <management_token_alias> --data-dir <path/to/export/destination/dir>',
-  'csdx cm:export -a <management_token_alias> -c <path/to/config/file>',
-  'csdx cm:export --module <single module name>',
-  'csdx cm:export --branch [optional] branch name',
+  'csdx cm:stacks:export -k <stack_ApiKey> -d <path/of/export/destination/dir>',
+  'csdx cm:stacks:export -c <path/to/config/dir>',
+  'csdx cm:stacks:export -a <management_token_alias>',
+  'csdx cm:stacks:export -a <management_token_alias> --data-dir <path/to/export/destination/dir>',
+  'csdx cm:stacks:export -a <management_token_alias> -c <path/to/config/file>',
+  'csdx cm:stacks:export --module <single module name>',
+  'csdx cm:stacks:export --branch [optional] branch name',
 ];
 
 ExportCommand.flags = {
-  config: flags.string({ char: 'c', description: '[optional] path of the config' }),
+  config: flags.string({
+    char: 'c',
+    description: '[optional] path of the config',
+  }),
   'stack-uid': flags.string({
     char: 's',
     description: 'API key of the source stack',
     parse: printFlagDeprecation(['-s', '--stack-uid'], ['-k', '--stack-api-key']),
   }),
-  'stack-api-key': flags.string({ char: 'k', description: 'API key of the source stack' }),
+  'stack-api-key': flags.string({
+    char: 'k',
+    description: 'API key of the source stack',
+  }),
   data: flags.string({
     char: 'd',
     description: 'path or location to store the data',
     parse: printFlagDeprecation(['--data'], ['--data-dir']),
   }),
-  'data-dir': flags.string({ description: 'path or location to store the data' }),
-  'management-token-alias': flags.string({ char: 'a', description: 'alias of the management token' }),
+  'data-dir': flags.string({
+    description: 'path or location to store the data',
+  }),
+  'management-token-alias': flags.string({
+    char: 'a',
+    description: 'alias of the management token',
+  }),
   'auth-token': flags.boolean({
     char: 'A',
     description: 'to use auth token',
@@ -127,18 +138,20 @@ ExportCommand.flags = {
     description: '[optional] specific module name',
     parse: printFlagDeprecation(['-m'], ['--module']),
   }),
-  'content-type': flags.string({
+  'content-types': flags.string({
     char: 't',
     description: '[optional] content type',
     multiple: true,
-    parse: printFlagDeprecation(['-t'], ['--content-type']),
+    parse: printFlagDeprecation(['-t'], ['--content-types']),
   }),
   branch: flags.string({
     char: 'B',
     description: '[optional] branch name',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
-  'secured-assets': flags.boolean({ description: '[optional] use when assets are secured' }),
+  'secured-assets': flags.boolean({
+    description: '[optional] use when assets are secured',
+  }),
 };
 
 ExportCommand.aliases = ['cm:export'];
