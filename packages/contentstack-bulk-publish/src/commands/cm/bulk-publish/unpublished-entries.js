@@ -1,19 +1,20 @@
 const { Command, flags } = require('@contentstack/cli-command');
-const { start } = require('../../../producer/publish-edits');
+const { start } = require('../../../producer/publish-unpublished-env');
 const store = require('../../../util/store.js');
-// eslint-disable-next-line node/no-extraneous-require
-const { cli } = require('cli-ux');
-const configKey = 'publish_edits_on_env';
+const { cliux } = require('@contentstack/cli-utilities');
+const configKey = 'publish_unpublished_env';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
 let config;
 
-class EntryEditsCommand extends Command {
+class UnpublishedEntriesCommand extends Command {
   async run() {
-    const entryEditsFlags = this.parse(EntryEditsCommand).flags;
+    const unpublishedEntriesFlags = this.parse(UnpublishedEntriesCommand).flags;
     let updatedFlags;
     try {
-      updatedFlags = entryEditsFlags.config ? store.updateMissing(configKey, entryEditsFlags) : entryEditsFlags;
+      updatedFlags = unpublishedEntriesFlags.config
+        ? store.updateMissing(configKey, unpublishedEntriesFlags)
+        : unpublishedEntriesFlags;
     } catch (error) {
       this.error(error.message, { exit: 2 });
     }
@@ -21,9 +22,9 @@ class EntryEditsCommand extends Command {
       let stack;
       if (!updatedFlags.retryFailed) {
         if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used');
+          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
         }
-        updatedFlags.bulkPublish = updatedFlags.bulkPublish !== 'false';
+        updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
         // Validate management token alias.
         try {
           this.getToken(updatedFlags.alias);
@@ -33,7 +34,7 @@ class EntryEditsCommand extends Command {
         config = {
           alias: updatedFlags.alias,
           host: this.region.cma,
-          branch: entryEditsFlags.branch,
+          branch: unpublishedEntriesFlags.branch,
         };
         stack = getStack(config);
       }
@@ -54,7 +55,7 @@ class EntryEditsCommand extends Command {
     }
   }
 
-  validate({ contentTypes, environments, sourceEnv, locales, retryFailed }) {
+  validate({ contentTypes, environments, sourceEnv, locale, retryFailed }) {
     let missing = [];
     if (retryFailed) {
       return true;
@@ -64,7 +65,7 @@ class EntryEditsCommand extends Command {
       missing.push('Content Types');
     }
 
-    if (!sourceEnv || sourceEnv.length === 0) {
+    if (!sourceEnv) {
       missing.push('SourceEnv');
     }
 
@@ -72,8 +73,8 @@ class EntryEditsCommand extends Command {
       missing.push('Environments');
     }
 
-    if (!locales || locales.length === 0) {
-      missing.push('Locales');
+    if (!locale) {
+      missing.push('Source Locale');
     }
 
     if (missing.length > 0) {
@@ -91,42 +92,34 @@ class EntryEditsCommand extends Command {
     if (data.yes) {
       return true;
     }
-    const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+    const confirmation = await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
     return confirmation;
   }
 }
 
-EntryEditsCommand.description = `Publish edited entries from a specified Content Type to given locales and environments
-The entry-edits command is used for publishing entries from the specified content types, to the
-specified environments and locales
+UnpublishedEntriesCommand.description = `Publish unpublished entries from the source environment, to other environments and locales
+The unpublished-entries command is used for publishing unpublished entries from the source environment, to other environments and locales
 
-Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command successfully
+Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the command successfully
 But, if retryFailed flag is set, then only a logfile is required
 `;
 
-EntryEditsCommand.flags = {
+UnpublishedEntriesCommand.flags = {
   alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
-  retryFailed: flags.string({
-    char: 'r',
-    description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)',
-  }),
+  retryFailed: flags.string({ char: 'r', description: 'Retry publishing failed entries from the logfile' }),
   bulkPublish: flags.string({
     char: 'b',
     description:
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
     default: 'true',
   }),
-  sourceEnv: flags.string({ char: 's', description: 'Environment from which edited entries will be published' }),
+  sourceEnv: flags.string({ char: 's', description: 'Source Env' }),
   contentTypes: flags.string({
     char: 't',
-    description: 'The Content-Types which will be checked for edited entries',
+    description: 'The Content-Types from which entries need to be published',
     multiple: true,
   }),
-  locales: flags.string({
-    char: 'l',
-    description: 'Locales to which edited entries need to be published',
-    multiple: true,
-  }),
+  locale: flags.string({ char: 'l', description: 'Source locale' }),
   environments: flags.string({ char: 'e', description: 'Destination environments', multiple: true }),
   config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
@@ -137,21 +130,21 @@ EntryEditsCommand.flags = {
   }),
 };
 
-EntryEditsCommand.examples = [
+UnpublishedEntriesCommand.examples = [
   'General Usage',
-  'csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
+  'csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] -s [SOURCE ENV]',
   '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
-  'csdx cm:bulk-publish:entry-edits --config [PATH TO CONFIG FILE]',
-  'csdx cm:bulk-publish:entry-edits -c [PATH TO CONFIG FILE]',
+  'csdx cm:bulk-publish:unpublished-entries --config [PATH TO CONFIG FILE]',
+  'csdx cm:bulk-publish:unpublished-entries -c [PATH TO CONFIG FILE]',
   '',
   'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:entry-edits --retryFailed [LOG FILE NAME]',
-  'csdx cm:bulk-publish:entry-edits -r [LOG FILE NAME]',
+  'csdx cm:bulk-publish:unpublished-entries --retryFailed [LOG FILE NAME]',
+  'csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]',
   '',
   'Using --branch or -B flag',
-  'csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]',
+  'csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME] -s [SOURCE ENV]',
 ];
 
-module.exports = EntryEditsCommand;
+module.exports = UnpublishedEntriesCommand;
