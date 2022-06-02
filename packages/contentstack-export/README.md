@@ -67,7 +67,7 @@ OPTIONS
   -k, --stack-api-key=stack-api-key                    API key of the source stack
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
-  -t, --content-type=content-type                      [optional] content type
+  -t, --content-types=content-types                    [optional] content type
   --data-dir=data-dir                                  path or location to store the data
   --secured-assets                                     [optional] use when assets are secured
 
