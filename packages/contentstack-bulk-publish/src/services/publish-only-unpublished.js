@@ -111,6 +111,9 @@ function flagsAdapter(flags) {
   if ('retry-failed' in flags) {
     flags.retryFailed = flags['retry-failed'];
   }
+  if ('bulk-publish' in flags) {
+    flags.bulkPublish = flags['bulk-publish'];
+  }
   return flags;
 }
 
