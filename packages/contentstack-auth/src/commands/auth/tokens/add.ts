@@ -1,21 +1,15 @@
 import { Command, flags } from '@contentstack/cli-command';
-import { tokenValidation } from '../../../utils';
 import {
   logger,
   cliux,
-  messageHandler,
   CLIError,
   configHandler,
   printFlagDeprecation,
 } from '@contentstack/cli-utilities';
-export default class TokensAddCommand extends Command {
-  managementAPIClient: any;
-  private readonly parse: Function;
-  private cmaHost: string;
-  authToken: string;
-  private exit: Function;
-  static run;
 
+import { tokenValidation } from '../../../utils';
+
+export default class TokensAddCommand extends Command {
   static description = 'Adds management/delivery tokens to your session to use it with further CLI commands';
 
   static examples = [
