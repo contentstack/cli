@@ -11,7 +11,7 @@ const configKey = 'publish_unpublished_env';
 
 async function publishOnlyUnpublishedService(UnpublishedEntriesCommand) {
   let config;
-  const unpublishedEntriesFlags = this.parse(UnpublishedEntriesCommand).flags;
+  const unpublishedEntriesFlags = flagsAdapter(this.parse(UnpublishedEntriesCommand).flags);
   let updatedFlags;
   try {
     updatedFlags = unpublishedEntriesFlags.config
@@ -96,6 +96,22 @@ async function confirmFlags(data) {
   }
   const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]');
   return confirmation;
+}
+
+function flagsAdapter(flags) {
+  if ('content-types' in flags) {
+    flags.contentTypes = flags['content-types'];
+  }
+  if ('locales' in flags) {
+    flags.locale = flags.locales;
+  }
+  if ('source-env' in flags) {
+    flags.sourceEnv = flags['source-env'];
+  }
+  if ('retry-failed' in flags) {
+    flags.retryFailed = flags['retry-failed'];
+  }
+  return flags;
 }
 
 module.exports = {
