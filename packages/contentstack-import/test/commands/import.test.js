@@ -1,5 +1,5 @@
 const { expect, test, it } = require('@oclif/test');
-const { cli } = require('cli-ux');
+const { cliux } = require('@contentstack/cli-utilities');
 const { Client } = require('../../src/lib/util/contentstack-management-sdk');
 let defaultConfig = require('../../src/config/default');
 let _ = require('lodash');
@@ -139,7 +139,7 @@ test
       },
     };
   })
-  .stub(cli, 'prompt', (name) => async (name) => {
+  .stub(cliux, 'prompt', (name) => async (name) => {
     if (name === 'Please provide master locale ?') return 'en-us';
     if (name === 'Please provide target Stack') return 'newstackUid';
     if (name === 'Please provide path were you have stored the data')

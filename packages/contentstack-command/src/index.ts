@@ -103,3 +103,5 @@ module.exports = {
   Command: ContentstackCommand,
   flags,
 };
+
+export { ContentstackCommand as Command, flags }

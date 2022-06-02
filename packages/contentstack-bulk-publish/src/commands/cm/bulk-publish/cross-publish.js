@@ -1,6 +1,6 @@
 /* eslint-disable node/no-extraneous-require */
-const { Command, flags } = require('@contentstack/cli-command');
-const { cli } = require('cli-ux');
+const { Command, flags } = require('@oclif/command');
+const { cliux } = require('@contentstack/cli-utilities');
 const { start } = require('../../../producer/cross-publish');
 const store = require('../../../util/store.js');
 const configKey = 'cross_env_publish';
@@ -22,10 +22,10 @@ class CrossPublishCommand extends Command {
       let stack;
       if (!updatedFlags.retryFailed) {
         if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used');
+          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
         }
         if (!updatedFlags.deliveryToken) {
-          updatedFlags.deliveryToken = await cli.prompt('Enter delivery token of your source environment');
+          updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token of your source environment');
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
         // Validate management token alias.
@@ -109,7 +109,7 @@ class CrossPublishCommand extends Command {
     if (data.yes) {
       return true;
     }
-    const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+    const confirmation = await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
     return confirmation;
   }
 }

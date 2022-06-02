@@ -67,7 +67,7 @@ OPTIONS
   -k, --stack-api-key=stack-api-key                    API key of the source stack
   -m, --module=module                                  [optional] specific module name
   -s, --stack-uid=stack-uid                            API key of the source stack
-  -t, --content-type=content-type                      [optional] content type
+  -t, --content-types=content-types                    [optional] content type
   --data-dir=data-dir                                  path or location to store the data
   --secured-assets                                     [optional] use when assets are secured
 
@@ -79,13 +79,13 @@ ALIASES
   $ csdx cm:export
 
 EXAMPLES
-  csdx cm:export -k <stack_ApiKey> -d <path/of/export/destination/dir>
-  csdx cm:export -c <path/to/config/dir>
-  csdx cm:export -a <management_token_alias>
-  csdx cm:export -a <management_token_alias> --data-dir <path/to/export/destination/dir>
-  csdx cm:export -a <management_token_alias> -c <path/to/config/file>
-  csdx cm:export --module <single module name>
-  csdx cm:export --branch [optional] branch name
+  csdx cm:stacks:export -k <stack_ApiKey> -d <path/of/export/destination/dir>
+  csdx cm:stacks:export -c <path/to/config/dir>
+  csdx cm:stacks:export -a <management_token_alias>
+  csdx cm:stacks:export -a <management_token_alias> --data-dir <path/to/export/destination/dir>
+  csdx cm:stacks:export -a <management_token_alias> -c <path/to/config/file>
+  csdx cm:stacks:export --module <single module name>
+  csdx cm:stacks:export --branch [optional] branch name
 ```
 
 _See code: [src/commands/cm/stacks/export.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-export/src/commands/cm/stacks/export.js)_
