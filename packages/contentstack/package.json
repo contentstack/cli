@@ -43,7 +43,6 @@
     "@oclif/plugin-plugins": "^1.8.1",
     "axios": "^0.21.1",
     "chalk": "^4.0.0",
-    "cli-ux": "^5.4.6",
     "debug": "^4.1.1",
     "figlet": "^1.5.0",
     "inquirer": "^7.1.0",

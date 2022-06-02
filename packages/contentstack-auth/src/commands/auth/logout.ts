@@ -1,10 +1,9 @@
 import { Command, flags } from '@contentstack/cli-command';
-import { logger, cliux, messageHandler, configHandler, printFlagDeprecation } from '@contentstack/cli-utilities';
+import { logger, cliux, configHandler, printFlagDeprecation } from '@contentstack/cli-utilities';
+
 import { authHandler } from '../../utils';
+
 export default class LogoutCommand extends Command {
-  private readonly parse: Function;
-  managementAPIClient: any;
-  authToken: string;
   static run; // to fix the test issue
   static description = 'User session logout';
   static examples = ['$ csdx auth:logout', '$ csdx auth:logout -y', '$ csdx auth:logout --yes'];
@@ -13,13 +12,13 @@ export default class LogoutCommand extends Command {
     yes: flags.boolean({
       char: 'y',
       description: 'Force logging out for skipping the confirmation',
-      multiple: false,
+      // multiple: false,
       required: false,
     }),
     force: flags.boolean({
       char: 'f',
       description: 'Force logging out for skipping the confirmation',
-      multiple: false,
+      // multiple: false,
       required: false,
       hidden: true,
       parse: printFlagDeprecation(['-f', '--force'], ['-y', '--yes']),
