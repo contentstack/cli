@@ -61,6 +61,7 @@
       "cm:bulk-publish:revert": "command will be deprecated in two months, start using csdx cm:stacks:publish-revert instead",
       "cm:bulk-publish:assets": "command will be deprecated in two months, start using csdx cm:assets:publish instead",
       "cm:bulk-publish:add-fields": "command will be deprecated in two months, start using csdx cm:entries:update-and-publish instead",
+      "cm:bulk-publish:unpublished-entries": "command will be deprecated in two months, start using csdx cm:bulk-publish:unpublished-entries instead",
       "cm:bulk-publish:entries": "command will be deprecated in two months, start using csdx cm:entries:publish instead",
       "cm:bulk-publish:nonlocalized-field-changes": "command will be deprecated in two months, start using csdx cm:entries:publish-non-localized-fields instead",
       "cm:bulk-publish:unpublish": "command will be deprecated in two months, start using csdx cm:stacks:unpublish or cm:entries:unpublish or cm:assets:unpublish instead",
