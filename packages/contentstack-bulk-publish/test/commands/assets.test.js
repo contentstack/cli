@@ -1,16 +1,15 @@
-const {expect, test} = require('@oclif/test')
 const nock = require('nock')
-const stack = require('../../src/util/client.js').stack
-const { configHandler } = require('@contentstack/cli-utilities');
-const {cli} = require('cli-ux')
-const dummyConfig = configHandler
+const {expect, test} = require('@oclif/test')
+const { cliux, configHandler } = require('@contentstack/cli-utilities');
+
 const store = require('../../src/util/store.js')
+const stack = require('../../src/util/client.js').stack
 
 const bulkassetResponse1 = require('../dummy/bulkasset1')
 const bulkassetResponse2 = require('../dummy/bulkasset2')
-
 const assetPublishResponse = require('../dummy/assetpublished')
 
+const dummyConfig = configHandler
 const bulkPublishAssetsLog = '1587758242717.bulkPublishAssets.error'
 
 describe('assets', () => {
@@ -108,7 +107,7 @@ describe('assets', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stub(store, 'updateMissing', (key, flags) => flags)
   .stderr()
   .command(['cm:bulk-publish:assets'])
@@ -132,7 +131,7 @@ describe('assets', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout({print: true})
   .command(['cm:bulk-publish:assets', '-e', 'dummyEnvironment'])
   .it('runs assets with environment', ctx => {
@@ -154,7 +153,7 @@ describe('assets', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout()
   .command(['cm:bulk-publish:assets', '-e', 'dummyEnvironment', '--no-bulkPublish'])
   .it('runs assets with environment', ctx => {
@@ -176,7 +175,7 @@ describe('assets', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout()
   .command(['cm:bulk-publish:assets', '--retryFailed', bulkPublishAssetsLog])
   .it('runs assets with retryFailed', ctx => {

@@ -1,12 +1,12 @@
 const { Command, flags } = require('@oclif/command');
-const { start } = require('../../../producer/revert');
+const { cliux, printFlagDeprecation } = require('@contentstack/cli-utilities');
+
 const store = require('../../../util/store.js');
-const configKey = 'revert';
+const { start } = require('../../../producer/revert');
 const { prettyPrint, formatError } = require('../../../util');
-const { cli } = require('cli-ux');
-const { printFlagDeprecation } = require('@contentstack/cli-utilities');
 
 let config;
+const configKey = 'revert';
 
 class RevertCommand extends Command {
   async run() {
@@ -61,7 +61,7 @@ class RevertCommand extends Command {
     if (data.yes) {
       return true;
     }
-    return cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 

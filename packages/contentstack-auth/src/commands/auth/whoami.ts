@@ -2,8 +2,6 @@ import { Command } from '@contentstack/cli-command';
 import { logger, cliux } from '@contentstack/cli-utilities';
 
 export default class WhoamiCommand extends Command {
-  email: string;
-  static run;
   static description = 'Display current users email address';
 
   static examples = ['$ csdx auth:whoami'];
