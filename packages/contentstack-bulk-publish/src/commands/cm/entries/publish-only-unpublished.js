@@ -25,6 +25,7 @@ PublishOnlyUnpublished.flags = {
   alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
   retryFailed: flags.string({
     char: 'r',
+    hidden: true,
     description: 'Retry publishing failed entries from the logfile',
     parse: printFlagDeprecation(['--retryFailed', '-r'], ['--retry-failed']),
   }),
@@ -34,6 +35,14 @@ PublishOnlyUnpublished.flags = {
   }),
   bulkPublish: flags.string({
     char: 'b',
+    hidden: true,
+    description:
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+    default: 'true',
+    parse: printFlagDeprecation(['--bulkPublish', '-b'], ['--bulk-publish']),
+  }),
+  'bulk-publish': flags.string({
+    char: 'b',
     description:
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
     default: 'true',
@@ -41,6 +50,7 @@ PublishOnlyUnpublished.flags = {
   }),
   sourceEnv: flags.string({
     char: 's',
+    hidden: true,
     description: 'Source Env',
     parse: printFlagDeprecation(['--sourceEnv', '-s'], ['--source-env']),
   }),
@@ -51,6 +61,7 @@ PublishOnlyUnpublished.flags = {
     char: 't',
     description: 'The Content-Types from which entries need to be published',
     multiple: true,
+    hidden: true,
     parse: printFlagDeprecation(['--contentTypes', '-t'], ['--content-types']),
   }),
   'content-types': flags.string({
@@ -58,6 +69,7 @@ PublishOnlyUnpublished.flags = {
     multiple: true,
   }),
   locale: flags.string({
+    hidden: true,
     char: 'l',
     description: 'Source locale',
     parse: printFlagDeprecation(['-l'], ['--locales']),
