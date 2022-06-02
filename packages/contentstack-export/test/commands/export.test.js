@@ -1,5 +1,5 @@
 const {expect, test, it} = require('@oclif/test')
-const {cli} = require('cli-ux')
+const { cliux } = require('@contentstack/cli-utilities');
 const {Client} = require('../../src/lib/util/contentstack-management-sdk')
 let defaultConfig = require('../../src/config/default')
 let _ = require('lodash')
@@ -95,7 +95,7 @@ test
     },
   }
 })
-.stub(cli, 'prompt', name => async name => {
+.stub(cliux, 'prompt', name => async name => {
   if (name === message.promptMessageList.promptMasterLocale) return 'en-us'
   if (name === message.promptMessageList.promptSourceStack) return 'newstackUid'
   if (name === message.promptMessageList.promptPathStoredData) return '../contents'
@@ -124,7 +124,7 @@ test
     },
   }
 })
-.stub(cli, 'prompt', name => async name => {
+.stub(cliux, 'prompt', name => async name => {
   if (name === message.promptMessageList.promptMasterLocale) return 'en-us'
   if (name === message.promptMessageList.promptSourceStack) return 'newstackUid'
   if (name === message.promptMessageList.promptPathStoredData) return '../contents'
@@ -272,7 +272,7 @@ test
     },
   }
 })
-.stub(cli, 'prompt', name => async name => {
+.stub(cliux, 'prompt', name => async name => {
   if (name === message.promptMessageList.promptMasterLocale) return 'en-us'
   if (name === message.promptMessageList.promptSourceStack) return 'newstackUid'
   if (name === message.promptMessageList.promptPathStoredData) return '../contents'
@@ -308,7 +308,7 @@ test
     },
   }
 })
-.stub(cli, 'prompt', name => async name => {
+.stub(cliux, 'prompt', name => async name => {
   if (name === message.promptMessageList.promptSourceStack) return 'newstackUid'
   if (name === message.promptMessageList.promptPathStoredData) return '../contents-test'
 })
@@ -344,7 +344,7 @@ test
     },
   }
 })
-.stub(cli, 'prompt', name => async name => {
+.stub(cliux, 'prompt', name => async name => {
   if (name === message.promptMessageList.promptMasterLocale) return 'en-us'
   if (name === message.promptMessageList.promptSourceStack) return 'newstackUid'
   if (name === message.promptMessageList.promptPathStoredData) return '../contents'
