@@ -1014,17 +1014,63 @@ importEntries.prototype = {
           if (entry[ctSchema[i].uid] && ctSchema[i].field_metadata.rich_text_type) {
             if (ctSchema[i].multiple) {
               entry[ctSchema[i].uid] = entry[ctSchema[i].uid].map((field, index) => {
-                field.children = [
-                  ...field.children, 
-                  ...sourceStackEntry[ctSchema[i].uid][index].children.filter(e => this.doEntryReferencesExist(e)).map(e => this.setDirtyTrue(e)).map(e => this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls))
-                ]
+
+                // i am facing a Maximum call stack exceeded issue, 
+                // probably because of this loop operation
+                // using this as a reference for setTimeout Solution : https://stackoverflow.com/questions/20936486/node-js-maximum-call-stack-size-exceeded
+
+                let entryRefs = sourceStackEntry[ctSchema[i].uid][index].children
+                .map((e, index) => {
+                  return { index: index, value: e }
+                })
+                .filter(e => this.doEntryReferencesExist(e.value))
+                .map(e => {
+                  this.setDirtyTrue(e.value)
+                  return e
+                })
+                .map(e => {
+                  this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls)
+                  return e
+                })
+
+                if(entryRefs.length > 0) {
+                  entryRefs.forEach(element => {
+                    field.children.splice(element.index, 0, element.value)
+                  })
+                }
+
+                // field.children = [
+                //   ...field.children, 
+                //   ...sourceStackEntry[ctSchema[i].uid][index].children.filter(e => this.doEntryReferencesExist(e)).map(e => this.setDirtyTrue(e)).map(e => this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls))
+                // ]
                 return field
               })
             } else {
-              entry[ctSchema[i].uid].children = [
-                ...entry[ctSchema[i].uid].children, 
-                ...sourceStackEntry[ctSchema[i].uid].children.filter(e => this.doEntryReferencesExist(e)).map(e => this.setDirtyTrue(e)).map(e => this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls))
-              ]
+
+              let entryRefs = sourceStackEntry[ctSchema[i].uid].children
+              .map((e, index) => {
+                return { index: index, value: e }
+              })
+              .filter(e => this.doEntryReferencesExist(e.value))
+              .map(e => {
+                this.setDirtyTrue(e.value)
+                return e
+              })
+              .map(e => {
+                this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls)
+                return e
+              })
+
+              if(entryRefs.length > 0) {
+                entryRefs.forEach(element => {
+                  entry[ctSchema[i].uid].children.splice(element.index, 0, element.value)                  
+                })
+              }
+
+              // entry[ctSchema[i].uid].children = [
+              //   ...entry[ctSchema[i].uid].children, 
+              //   ...sourceStackEntry[ctSchema[i].uid].children.filter(e => this.doEntryReferencesExist(e)).map(e => this.setDirtyTrue(e)).map(e => this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls))
+              // ]
             }
           }
           break;
