@@ -15,7 +15,7 @@ export interface BootstrapOptions {
   appConfig: AppConfig;
   managementAPIClient: any;
   region: any;
-  accessToken: string;
+  accessToken?: string;
   appType: string;
 }
 
