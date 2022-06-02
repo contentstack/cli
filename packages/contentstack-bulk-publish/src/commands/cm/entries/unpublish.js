@@ -14,13 +14,13 @@ class UnpublishCommand extends Command {
     const unpublishFlags = this.parse(UnpublishCommand).flags;
     unpublishFlags.retryFailed = unpublishFlags['retry-failed'] || unpublishFlags.retryFailed;
     unpublishFlags.bulkUnpublish = unpublishFlags['bulk-unpublish'] || unpublishFlags.bulkUnpublish;
-    unpublishFlags.contentType = unpublishFlags['content-types'] || unpublishFlags.contentType;
+    unpublishFlags.contentType = unpublishFlags['content-type'] || unpublishFlags.contentType;
     unpublishFlags.deliveryToken = unpublishFlags['delivery-token'] || unpublishFlags.deliveryToken;
     unpublishFlags.onlyAssets = false;
     unpublishFlags.onlyEntries = true;
     delete unpublishFlags['retry-failed'];
     delete unpublishFlags['bulk-unpublish'];
-    delete unpublishFlags['content-types'];
+    delete unpublishFlags['content-type'];
     delete unpublishFlags['delivery-token'];
 
     let updatedFlags;
@@ -156,7 +156,7 @@ UnpublishCommand.flags = {
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
     default: 'true',
   }),
-  'content-types': flags.string({
+  'content-type': flags.string({
     description: 'Content Type filter',
   }),
   'delivery-token': flags.string({
@@ -166,7 +166,7 @@ UnpublishCommand.flags = {
 
 UnpublishCommand.examples = [
   'General Usage',
-  'csdx cm:stacks:unpublish --bulk-unpublish --content-types [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN]',
+  'csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN]',
   '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure --alias [ALIAS]`',
@@ -178,7 +178,7 @@ UnpublishCommand.examples = [
   '',
   '',
   'Using --branch flag',
-  'csdx cm:stacks:unpublish --bulk-unpublish --content-types [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]',
+  'csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]',
 ];
 
 module.exports = UnpublishCommand;
