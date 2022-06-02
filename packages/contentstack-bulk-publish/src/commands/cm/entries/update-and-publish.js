@@ -1,21 +1,22 @@
 const { Command, flags } = require('@contentstack/cli-command');
-const { start } = require('../../../producer/add-fields');
+const { printFlagDeprecation, cliux } = require('@contentstack/cli-utilities');
+
 const store = require('../../../util/store.js');
-const { cli } = require('cli-ux');
-const configKey = 'addFields';
-const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
-const { printFlagDeprecation } = require('@contentstack/cli-utilities');
+const { start } = require('../../../producer/add-fields');
+const { prettyPrint, formatError } = require('../../../util');
+
 let config;
+const configKey = 'addFields';
 
 class UpdateAndPublishCommand extends Command {
   async run() {
     const addFieldsFlags = this.parse(UpdateAndPublishCommand).flags;
     addFieldsFlags.retryFailed = addFieldsFlags['retry-failed'] || addFieldsFlags.retryFailed;
-    addFieldsFlags.contentTypes = addFieldsFlags['content-types'] || addFieldsFlags.contentTypes;
+    addFieldsFlags.contentTypes = addFieldsFlags['content-type'] || addFieldsFlags.contentTypes;
     addFieldsFlags.bulkPublish = addFieldsFlags['bulk-publish'] || addFieldsFlags.bulkPublish;
     delete addFieldsFlags['retry-failed'];
-    delete addFieldsFlags['content-types'];
+    delete addFieldsFlags['content-type'];
     delete addFieldsFlags['bulk-publish'];
 
     let updatedFlags;
@@ -28,7 +29,7 @@ class UpdateAndPublishCommand extends Command {
       let stack;
       if (!updatedFlags.retryFailed) {
         if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used');
+          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
         // Validate management token alias.
@@ -94,12 +95,12 @@ class UpdateAndPublishCommand extends Command {
     if (data.yes) {
       return true;
     }
-    return cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 
 UpdateAndPublishCommand.description = `Add fields from updated content types to their respective entries
-The add-fields command is used for updating already existing entries with the updated schema of their respective Content Type
+The update-and-publish command is used for updating already existing entries with the updated schema of their respective Content Type
 
 Content Types, Environments and Locales are required for executing the command successfully
 But, if retry-failed flag is set, then only a logfile is required
@@ -128,7 +129,7 @@ UpdateAndPublishCommand.flags = {
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
-  'content-types': flags.string({
+  'content-type': flags.string({
     description: 'The Content-Types from which entries need to be published',
     multiple: true,
   }),
@@ -136,7 +137,7 @@ UpdateAndPublishCommand.flags = {
     char: 't',
     description: 'The Content-Types from which entries need to be published',
     multiple: true,
-    parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-types']),
+    parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-type']),
   }),
   environments: flags.string({
     char: 'e',
@@ -161,7 +162,7 @@ UpdateAndPublishCommand.flags = {
 
 UpdateAndPublishCommand.examples = [
   'General Usage',
-  'csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
+  'csdx cm:entries:update-and-publish --content-type [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
   '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`',
@@ -171,7 +172,8 @@ UpdateAndPublishCommand.examples = [
   'Using --retry-failed',
   'csdx cm:entries:update-and-publish --retry-failed [LOG FILE NAME]',
   '',
-  'csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
+  'Using --branch',
+  'csdx cm:entries:update-and-publish --content-type [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]',
 ];
 
 UpdateAndPublishCommand.aliases = ['cm:bulk-publish:add-fields'];
