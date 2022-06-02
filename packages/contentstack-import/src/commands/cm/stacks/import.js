@@ -25,7 +25,7 @@ class ImportCommand extends Command {
     let branchName = importCommandFlags.branch;
     let host = self.cmaHost;
 
-    return new Promise(function (resolve, _reject) {
+    return new Promise(function (resolve, reject) {
       if (alias) {
         let managementTokens = self.getToken(alias);
 
@@ -35,16 +35,22 @@ class ImportCommand extends Command {
               () => {
                 return resolve();
               },
-            );
+            ).catch((error) => {
+              return reject(error);
+            });
           } else if (data) {
             parameterWithMToken(managementTokens, data, moduleName, host, _authToken, branchName, backupdir).then(
               () => {
                 return resolve();
               },
-            );
+            ).catch((error) => {
+              return reject(error);
+            });
           } else {
             withoutParameterMToken(managementTokens, moduleName, host, _authToken, branchName, backupdir).then(() => {
               return resolve();
+            }).catch((error) => {
+              return reject(error);
             });
           }
         } else {
