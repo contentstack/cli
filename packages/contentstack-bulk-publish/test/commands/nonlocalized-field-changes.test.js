@@ -1,8 +1,7 @@
 const { expect, test } = require('@oclif/test')
 const nock = require('nock')
 const stack = require('../../src/util/client.js').stack
-const { configHandler } = require('@contentstack/cli-utilities');
-const { cli } = require('cli-ux')
+const { cliux, configHandler } = require('@contentstack/cli-utilities');
 const dummyConfig = configHandler
 const store = require('../../src/util/store.js')
 
@@ -149,7 +148,7 @@ describe('nonlocalized-field-changes', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stub(store, 'updateMissing', (key, flags) => flags)
   .stderr()
   .command(['cm:bulk-publish:nonlocalized-field-changes'])
@@ -197,7 +196,7 @@ describe('nonlocalized-field-changes', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout({ print: true })
   .command(['cm:bulk-publish:nonlocalized-field-changes', '-s', 'dummyEnvironment', '-c', 'helloworld', '-e', 'dummyEnvironment'])
   .it('runs command', ctx => {
@@ -243,7 +242,7 @@ describe('nonlocalized-field-changes', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout({print: true})
   .command(['cm:bulk-publish:nonlocalized-field-changes', '-s', 'dummyEnvironment', '-c', 'helloworld', '-e', 'dummyEnvironment', '--no-bulkPublish'])
   .it('runs command', ctx => {
@@ -289,7 +288,7 @@ describe('nonlocalized-field-changes', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout({print: true})
   .command(['cm:bulk-publish:nonlocalized-field-changes', '-r', bulkNonLocalizedLog])
   .it('runs command', ctx => {
@@ -335,7 +334,7 @@ describe('nonlocalized-field-changes', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout({print: true})
   .command(['cm:bulk-publish:nonlocalized-field-changes', '-r', bulkNonLocalizedLog, '--no-bulkPublish'])
   .it('runs command', ctx => {
