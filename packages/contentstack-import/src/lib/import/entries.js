@@ -1017,7 +1017,6 @@ importEntries.prototype = {
 
                 // i am facing a Maximum call stack exceeded issue, 
                 // probably because of this loop operation
-                // using this as a reference for setTimeout Solution : https://stackoverflow.com/questions/20936486/node-js-maximum-call-stack-size-exceeded
 
                 let entryRefs = sourceStackEntry[ctSchema[i].uid][index].children
                 .map((e, index) => {
@@ -1042,11 +1041,6 @@ importEntries.prototype = {
                     field.children.splice(element.index, 0, element.value)
                   })
                 }
-
-                // field.children = [
-                //   ...field.children, 
-                //   ...sourceStackEntry[ctSchema[i].uid][index].children.filter(e => this.doEntryReferencesExist(e)).map(e => this.setDirtyTrue(e)).map(e => this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls))
-                // ]
                 return field
               })
             } else {
@@ -1070,11 +1064,6 @@ importEntries.prototype = {
                   entry[ctSchema[i].uid].children.splice(element.index, 0, element.value)                  
                 })
               }
-
-              // entry[ctSchema[i].uid].children = [
-              //   ...entry[ctSchema[i].uid].children, 
-              //   ...sourceStackEntry[ctSchema[i].uid].children.filter(e => this.doEntryReferencesExist(e)).map(e => this.setDirtyTrue(e)).map(e => this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls))
-              // ]
             }
           }
           break;
