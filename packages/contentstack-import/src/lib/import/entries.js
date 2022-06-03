@@ -1025,10 +1025,14 @@ importEntries.prototype = {
                 })
                 .filter(e => this.doEntryReferencesExist(e.value))
                 .map(e => {
+                  // commenting the line below resolved the maximum call stack exceeded issue
+                  // e.value = this.setDirtyTrue(e.value)
                   this.setDirtyTrue(e.value)
                   return e
                 })
                 .map(e => {
+                  // commenting the line below resolved the maximum call stack exceeded issue
+                  // e.value = this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls)
                   this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls)
                   return e
                 })
