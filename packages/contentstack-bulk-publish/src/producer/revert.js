@@ -4,7 +4,6 @@
 /* eslint-disable no-console */
 /* eslint-disable new-cap */
 /* eslint-disable camelcase */
-// const yesno = require('yesno')
 const chalk = require('chalk');
 const { getAllLogs } = require('../util/logger');
 const { getQueue } = require('../util/queue');
@@ -14,16 +13,6 @@ let config = configHandler
 const { initializeLogger, performBulkUnPublish, publishUsingVersion } = require('../consumer/publish');
 const getStack = require('../util/client.js').getStack;
 
-// for checking if a logfile has been provided by user
-// function getRevertAndLogfile(args) {
-//   if (args.length === 2) {
-//     console.error('Please provide a logfile to use for unpublishing.')
-//   }
-//   const logfilenameProvidedByUser = args[args.length - 1]
-//   return logfilenameProvidedByUser
-// }
-
-// const logfilenameProvidedByUser = getRevertAndLogfile(process.argv)
 const intervalBetweenPublishRequests = 3; // interval in seconds
 
 const unpublishQueue = getQueue();
@@ -182,7 +171,6 @@ async function revertUsingLogs(logFileName) {
   let bulkUnpublishSet = [];
   const setOfBulkPublishRequestPayloads = [];
   let bulkPublishSet = [];
-  // const bulkPublishRegex = new RegExp(`bulkPublishEntries`);
 
   if (validateFile(logFileName)) {
     const response = await getAllLogs(logFileName);
@@ -387,16 +375,9 @@ async function start({ retryFailed, logFile }, cfg) {
       revertUsingLogs(retryFailed);
     }
   } else {
-    // const ok = await yesno({
-    //   question: `Are you sure you want to revert using the file "${logfilenameProvidedByUser}" ?`,
-    // });
-    // if (ok) {
     revertUsingLogs(logFile);
-    // }
   }
 }
-
-// start()
 
 module.exports = {
   setConfig,
