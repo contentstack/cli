@@ -13,6 +13,8 @@ fileignoreconfig:
   checksum: 59f1546c9df214bbdbc85723271fb9b14fde055f6758b9037fffe4b867f184f1
 - filename: packages/contentstack-bulk-publish/src/commands/cm/entries/publish.js
   checksum: 1b8cab64709e44c627ca782f770d0bd671d72e1bcb20c92367309a0191db7d7c
+- filename: packages/contentstack-bulk-publish/src/util/index.js
+  checksum: 04613447793c3352e067daeb236a6406449025260ada8bb30d840ad1814f2748
 - filename: packages/contentstack-clone/src/lib/util/clone-handler.js
   checksum: 56be60f744b35b1e4a2291dfebb480c7e29c4af337e2ea5d267ca6403d4f252f
 - filename: packages/contentstack-export/README.md
