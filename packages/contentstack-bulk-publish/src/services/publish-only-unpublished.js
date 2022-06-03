@@ -94,8 +94,7 @@ async function confirmFlags(data) {
   if (data.yes) {
     return true;
   }
-  const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]');
-  return confirmation;
+  return cli.confirm('Do you want to continue with this configuration ? [yes or no]');
 }
 
 function flagsAdapter(flags) {
