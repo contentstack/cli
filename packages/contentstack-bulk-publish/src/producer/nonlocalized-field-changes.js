@@ -47,7 +47,7 @@ async function getContentTypeSchema(stack, contentType) {
 /* eslint-disable consistent-return */
 
 async function getLocalizedEntry(stack, entry, contentType, locale, sourceEnv) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _reject) => {
     let queryParams = {
       locale: locale,
       environment: sourceEnv,
@@ -82,18 +82,6 @@ function checkReferenceFieldChanges(ref1, ref2) {
     }
   }
 }
-
-// function checkFileField(entry, localizedEntry, multiple) {
-//   if (multiple) {
-//     for (let i = 0; i < (entry.length || localizedEntry.length); i += 1) {
-//       if (entry[i].uid != localizedEntry[i].uid) {
-//         changedFlag = true;
-//       }
-//     }
-//   } else if (entry.uid != localizedEntry.uid) {
-//     changedFlag = true;
-//   }
-// }
 
 function checkNonLocalizedFieldChanges(contentType, entry, localizedEntry, isNonLocalized = false) {
   contentType.forEach(field => {
@@ -325,7 +313,6 @@ async function start({retryFailed, bulkPublish, sourceEnv, contentTypes, environ
     setConfig(config, bulkPublish)  
     const masterLocale = 'en-us'
     const languages = await getLanguages(stack)
-    // const {contentTypes} = config.nonlocalized_field_changes
     for (let i = 0; i < contentTypes.length; i += 1) {
       /* eslint-disable no-await-in-loop */
       const schema = await getContentTypeSchema(stack, contentTypes[i])
@@ -335,7 +322,6 @@ async function start({retryFailed, bulkPublish, sourceEnv, contentTypes, environ
   }
 }
 
-// start();
 
 module.exports = {
   start,

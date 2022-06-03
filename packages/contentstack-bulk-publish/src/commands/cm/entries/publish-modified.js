@@ -101,7 +101,7 @@ class PublishModifiedCommand extends Command {
     if (data.yes) {
       return true;
     }
-    return await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
+    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 

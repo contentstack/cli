@@ -20,7 +20,6 @@ function get(key, filePath) {
   try {
     const missing = [];
     const bulkPublish = require(filePath);
-    // const bulkPublish = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
     if (!bulkPublish) {
       throw new Error('Unable to read config file');
     }

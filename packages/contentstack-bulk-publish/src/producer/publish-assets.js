@@ -5,7 +5,6 @@ const { getQueue } = require('../util/queue');
 const { performBulkPublish, publishAsset, initializeLogger } = require('../consumer/publish');
 const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
-const { setDelayForBulkPublish } = require('../util');
 const { isEmpty } = require('../util');
 
 const queue = getQueue();
@@ -76,23 +75,18 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, skip 
                 stack: stack,
               });
             }
-            // return resolve()
           }
           if (skip === assetResponse.count) {
             return resolve(true);
           }
           await getAssets(stack, folder, bulkPublish, environments, locale, skip);
           return resolve();
-        } else {
-          // throw new Error(JSON.stringify({errorMessage: "No Assets found"}))
         }
       })
       .catch((error) => {
         reject(error);
       });
   });
-
-  return true;
 }
 
 function setConfig(conf, bp) {
