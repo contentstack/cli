@@ -143,7 +143,7 @@ class PublishEntriesCommand extends Command {
       return true;
     }
 
-    return await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
+    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 
