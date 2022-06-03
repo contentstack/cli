@@ -8,7 +8,6 @@ const { getQueue } = require('../util/queue');
 const { performBulkPublish, publishEntry, initializeLogger } = require('../consumer/publish');
 const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
-const { setDelayForBulkPublish } = require('../util');
 const { isEmpty } = require('../util');
 
 const queue = getQueue();
@@ -63,7 +62,6 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
         if (responseEntries.items.length > 0) {
           let entries = responseEntries.items;
           for (let index = 0; index < responseEntries.items.length; index++) {
-            // const locale = locale || 'en-us'
             const publishedEntry = entries[index].publish_details.find(
               (publishEnv) => publishEnv.environment === environmentUid && publishEnv.locale === locale,
             );
