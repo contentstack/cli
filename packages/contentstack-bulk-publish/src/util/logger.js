@@ -7,22 +7,20 @@ let filename;
 
 module.exports.getLoggerInstance = (fileName) => {
   filename = path.join(logsDir, fileName);
-  const logger = winston.createLogger({
+  return winston.createLogger({
     transports: [
       new winston.transports.File({ filename: `${filename}.error`, level: 'error' }),
       new winston.transports.File({ filename: `${filename}.success`, level: 'info' }),
     ],
   });
-  return logger;
 };
 
 /* eslint-disable no-multi-assign */
 const getFileLoggerInstance = (module.exports.getFileLoggerInstance = (fileName) => {
   filename = path.join(logsDir, fileName);
-  const logger = winston.createLogger({
+  return winston.createLogger({
     transports: [new winston.transports.File({ filename })],
   });
-  return logger;
 });
 
 module.exports.getAllLogs = (fname) =>
