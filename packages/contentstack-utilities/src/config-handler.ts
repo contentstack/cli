@@ -93,7 +93,7 @@ class Config {
     try {
       this.config = new Conf({ configName: CONFIG_NAME })
 
-      if (!isEmpty(configData)) {
+      if (Object.keys(configData || {})?.length) {
         this.config.set(configData) // NOTE set config data if passed any
       }
     } catch (error) {
