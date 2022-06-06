@@ -110,6 +110,7 @@ module.exports = function (data, mappedUids, uidMapperPath) {
           parent.pop()
         }
         break
+      case 'global_field':
       case 'group':
         parent.push(schema[i].uid)
         find(schema[i].schema, entry)
