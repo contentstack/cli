@@ -13,13 +13,6 @@ const { printFlagDeprecation } = require('@contentstack/cli-utilities');
 let config;
 
 class PublishEntriesCommand extends Command {
-  constructor(context) {
-    super();
-    if (context) {
-      this.argv = context.argv;
-    }
-  }
-
   async run() {
     const entriesFlags = this.parse(PublishEntriesCommand).flags;
     entriesFlags.retryFailed = entriesFlags['retry-failed'] || entriesFlags.retryFailed;
