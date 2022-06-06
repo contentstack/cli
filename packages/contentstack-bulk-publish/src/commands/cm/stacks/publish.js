@@ -1,6 +1,6 @@
 'use strict';
 
-const { Command, flags } = require('@contentstack/cli-command');
+const { Command } = require('@contentstack/cli-command');
 const { getSelectedCommand } = require('../../../util/command-helper');
 const AssetsPublishReceiverCommand = require('../assets/publish');
 const EntriesPublishReceiverCommand = require('../entries/publish');
@@ -30,11 +30,30 @@ class StackPublishCommand extends Command {
   }
 }
 
-StackPublishCommand.description = ``;
+StackPublishCommand.description = `Publish entries and assets to multiple environments and locales
+The publish command is used for publishing entries and assets, to the specified environments and locales.
 
-StackPublishCommand.examples = ``;
+Content Types, Environments and Locales are required for executing the publish entries command successfully.
+Environments and Locales are required for executing the publish assets command successfully.
+But, if retry-failed flag is set, then only a logfile is required`;
 
-StackPublishCommand.flags = [];
+StackPublishCommand.examples = [
+  'General Usage',
+  'csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS]',
+  '',
+  'Using --config or -c flag',
+  'Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`',
+  'csdx cm:stacks:publish --config [PATH TO CONFIG FILE]',
+  'csdx cm:stacks:publish -c [PATH TO CONFIG FILE]',
+  '',
+  'Using --retry-failed flag',
+  'csdx cm:stacks:publish --retry-failed [LOG FILE NAME]',
+  '',
+  'Using --branch flag',
+  'csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]'
+];
+
+StackPublishCommand.flags = []; // Same as entries and assets.
 
 module.exports = StackPublishCommand;
 
