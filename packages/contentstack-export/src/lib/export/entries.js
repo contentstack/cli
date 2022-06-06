@@ -90,7 +90,7 @@ exportEntries.prototype.start = function (credentialConfig) {
           return resolve();
         })
         .catch((error) => {
-          console.log('Error getting enrtries', error);
+          console.log('Error getting entries', error && error.message);
         });
     }
     addlogs(config, 'No content_types were found in the Stack', 'success');
@@ -239,11 +239,11 @@ exportEntries.prototype.getEntries = function (apiDetails) {
           .getEntries(apiDetails)
           .then(resolve)
           .catch((error) => {
-            console.log('Get Entries errror', error);
+            console.log('Get Entries errror', error && error.message);
           });
       })
       .catch((error) => {
-        console.log('Entries fetch errror', error);
+        console.log('Entries fetch errror', error && error.message);
         addlogs(config, error, 'error');
       });
   });
