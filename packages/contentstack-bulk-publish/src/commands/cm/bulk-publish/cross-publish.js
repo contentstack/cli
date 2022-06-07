@@ -109,8 +109,7 @@ class CrossPublishCommand extends Command {
     if (data.yes) {
       return true;
     }
-    const confirmation = await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
-    return confirmation;
+    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 

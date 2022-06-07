@@ -46,7 +46,7 @@ class ClearCommand extends Command {
 
   listFiles(dirPath) {
     if (fs.existsSync(dirPath)) {
-      fs.readdir(dirPath, (err, files) => {
+      fs.readdir(dirPath, (_err, files) => {
         this.log('Total number of log files - ', files.length);
       });
     } else {
