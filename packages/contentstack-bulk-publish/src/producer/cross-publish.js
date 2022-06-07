@@ -196,7 +196,7 @@ async function start(
   {
     retryFailed,
     bulkPublish,
-    filter,
+    _filter,
     deliveryToken,
     contentType,
     environment,
