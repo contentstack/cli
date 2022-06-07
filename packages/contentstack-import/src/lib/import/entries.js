@@ -1032,7 +1032,7 @@ importEntries.prototype = {
                 .map(e => {
                   // commenting the line below resolved the maximum call stack exceeded issue
                   // e.value = this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls)
-                  this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls)
+                  this.resolveAssetRefsInEntryRefsForJsonRte(e.value, mappedAssetUids, mappedAssetUrls)
                   return e
                 })
 
@@ -1055,7 +1055,7 @@ importEntries.prototype = {
                 return e
               })
               .map(e => {
-                this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls)
+                this.resolveAssetRefsInEntryRefsForJsonRte(e.value, mappedAssetUids, mappedAssetUrls)
                 return e
               })
 
