@@ -171,8 +171,6 @@ async function start({ retryFailed, bulkPublish, sourceEnv, contentTypes, locale
   }
 }
 
-// start();
-
 module.exports = {
   getEntries,
   getEnvironment,

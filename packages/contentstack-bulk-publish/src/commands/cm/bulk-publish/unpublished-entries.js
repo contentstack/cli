@@ -29,7 +29,7 @@ class UnpublishedEntriesCommand extends Command {
         try {
           this.getToken(updatedFlags.alias);
         } catch (error) {
-          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, {exit: 2})
+          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, { exit: 2 })
         }
         config = {
           alias: updatedFlags.alias,
@@ -92,8 +92,7 @@ class UnpublishedEntriesCommand extends Command {
     if (data.yes) {
       return true;
     }
-    const confirmation = await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
-    return confirmation;
+    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 
