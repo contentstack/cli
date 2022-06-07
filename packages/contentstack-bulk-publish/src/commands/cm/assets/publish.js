@@ -11,13 +11,6 @@ const { printFlagDeprecation } = require('@contentstack/cli-utilities');
 let config;
 
 class AssetsPublishCommand extends Command {
-  constructor(context) {
-    super();
-    if (context) {
-      this.argv = context.argv;
-    }
-  }
-
   async run() {
     const assetsFlags = this.parse(AssetsPublishCommand).flags;
     assetsFlags.retryFailed = assetsFlags['retry-failed'] || assetsFlags.retryFailed;
