@@ -10,8 +10,8 @@ class StackPublishCommand extends Command {
     try {
       this.optionController = new OptionController();
 
-      this.entriesPublishReceiver = new EntriesPublishReceiverCommand(this);
-      this.assetsPublishReceiver = new AssetsPublishReceiverCommand(this);
+      this.entriesPublishReceiver = new EntriesPublishReceiverCommand(this.argv);
+      this.assetsPublishReceiver = new AssetsPublishReceiverCommand(this.argv);
       this.entriesAndAssetsPublishReceiver = new PublishEntriesAndAssetsCommand();
 
       this.publishEntriesCommand = new PublishEntriesCommand(this.entriesPublishReceiver);
