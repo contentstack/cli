@@ -1,4 +1,4 @@
-import * as winston from 'winston';
+import winston from 'winston';
 declare class LoggerService {
     name: string;
     data: object | null;

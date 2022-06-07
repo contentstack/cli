@@ -1,7 +1,7 @@
 import Conf from 'conf';
 import { v4 as uuid } from 'uuid';
 import { existsSync, unlinkSync } from 'fs'
-import isEmpty from 'lodash.isempty'
+import _ from './lodash';
 
 
 const ENC_KEY = 'encryptionKey';
@@ -59,7 +59,7 @@ class Config {
         const encryptionKey: any = this.getObfuscationKey()
         this.config = new Conf({ configName: CONFIG_NAME, encryptionKey })
 
-        if (!isEmpty(configData)) {
+        if (!_.isEmpty(configData)) {
           this.config.set(configData) // NOTE set config data if passed any
         }
       } catch (error) {
@@ -95,7 +95,7 @@ class Config {
     try {
       this.config = new Conf({ configName: CONFIG_NAME })
 
-      if (!isEmpty(configData)) {
+      if (!_.isEmpty(configData)) {
         this.config.set(configData) // NOTE set config data if passed any
       }
     } catch (error) {
