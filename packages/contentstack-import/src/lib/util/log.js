@@ -9,19 +9,27 @@ var path = require('path');
 var mkdirp = require('mkdirp');
 var slice = Array.prototype.slice;
 
+
+
+const ansiRegexPattern = [
+  '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
+'(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))'
+].join('|');
+
 function returnString(args) {
   var returnStr = '';
   if (args && args.length) {
     returnStr = args
       .map(function (item) {
         if (item && typeof item === 'object') {
-          return JSON.stringify(item);
+          return JSON.stringify(item).replace(/authtoken\":\"blt................/g, 'authtoken":"blt....');
         }
         return item;
       })
       .join('  ')
       .trim();
   }
+  returnStr = returnStr.replace(new RegExp(ansiRegexPattern, 'g'), "").trim();
   return returnStr;
 }
 
@@ -71,12 +79,18 @@ function init(_logPath) {
     };
 
     logger = winston.createLogger({
-      transports: [new winston.transports.File(successTransport), new winston.transports.Console()],
+      transports: [
+        new winston.transports.File(successTransport),
+        new winston.transports.Console({ format: winston.format.simple() }),
+      ],
       levels: myCustomLevels.levels,
     });
 
     errorLogger = winston.createLogger({
-      transports: [new winston.transports.File(errorTransport), new winston.transports.Console({ level: 'error' })],
+      transports: [
+        new winston.transports.File(errorTransport),
+        new winston.transports.Console({ level: 'error', format: winston.format.simple() }),
+      ],
       levels: { error: 0 },
     });
   }
@@ -114,8 +128,7 @@ function init(_logPath) {
 }
 
 exports.addlogs = async (config, message, type) => {
-  var configLogPath =
-    config.source_stack && config.target_stack ? config.data : config.oldPath;
+  var configLogPath = config.source_stack && config.target_stack ? config.data : config.oldPath;
   // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
     // removed type argument from init method
