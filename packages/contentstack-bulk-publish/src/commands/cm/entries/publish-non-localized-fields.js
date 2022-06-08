@@ -12,7 +12,7 @@ class NonlocalizedFieldChangesCommand extends Command {
   async run() {
     const nonlocalizedFieldChangesFlags = this.parse(NonlocalizedFieldChangesCommand).flags;
     nonlocalizedFieldChangesFlags.retryFailed =
-      nonlocalizedFieldChangesFlags['retry-failed'] || nonlocalizedFieldChangesFlags.retryFailed;
+      nonlocalizedFieldChangesFlags['retry-failed'] || nonlocalizedFieldChangesFlags.retryFailed || false;
     nonlocalizedFieldChangesFlags.bulkPublish =
       nonlocalizedFieldChangesFlags['bulk-publish'] || nonlocalizedFieldChangesFlags.bulkPublish;
     nonlocalizedFieldChangesFlags.sourceEnv =

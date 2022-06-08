@@ -12,7 +12,7 @@ let config;
 class UnpublishCommand extends Command {
   async run() {
     const unpublishFlags = this.parse(UnpublishCommand).flags;
-    unpublishFlags.retryFailed = unpublishFlags['retry-failed'] || unpublishFlags.retryFailed;
+    unpublishFlags.retryFailed = unpublishFlags['retry-failed'] || unpublishFlags.retryFailed || false;
     unpublishFlags.bulkUnpublish = unpublishFlags['bulk-unpublish'] || unpublishFlags.bulkUnpublish;
     unpublishFlags.deliveryToken = unpublishFlags['delivery-token'] || unpublishFlags.deliveryToken;
     unpublishFlags.onlyAssets = true;
