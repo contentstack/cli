@@ -38,10 +38,14 @@ exports.initial = function (configData) {
                 if (config.moduleName) {
                   singleImport(config.moduleName, types, config).then(() => {
                     return resolve();
+                  }).catch((e) => {
+                    return reject(e);
                   });
                 } else {
                   allImport(config, types).then(() => {
                     return resolve();
+                  }).catch((e) => {
+                    return reject(e);
                   });
                 }
               })
@@ -114,17 +118,22 @@ let allImport = async (config, types) => {
         }
         await exportedModule.start(config).then((_result) => {
           return;
-        });
+        }).catch(function (error) {
+          addlogs(config, 'Failed to migrate ' + type, 'error');
+          addlogs(config, error, 'error');
+          addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
+          return reject(error);
+        });;
       }
       if (config.target_stack && config.source_stack) {
         addlogs(
           config,
           chalk.green(
             'The data of the ' +
-              config.sourceStackName +
-              ' stack has been imported into ' +
-              config.destinationStackName +
-              ' stack successfully!',
+            config.sourceStackName +
+            ' stack has been imported into ' +
+            config.destinationStackName +
+            ' stack successfully!',
           ),
           'success',
         );
