@@ -13,7 +13,7 @@ let config;
 class AssetsPublishCommand extends Command {
   async run() {
     const assetsFlags = this.parse(AssetsPublishCommand).flags;
-    assetsFlags.retryFailed = assetsFlags['retry-failed'] || assetsFlags.retryFailed;
+    assetsFlags.retryFailed = assetsFlags['retry-failed'] || assetsFlags.retryFailed || false;
     assetsFlags.folderUid = assetsFlags['folder-uid'] || assetsFlags.folderUid;
     assetsFlags.bulkPublish = assetsFlags['bulk-publish'] || assetsFlags.bulkPublish;
     delete assetsFlags['retry-failed'];
