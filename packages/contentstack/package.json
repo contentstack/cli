@@ -13,7 +13,7 @@
     "@contentstack/cli-cm-bulk-publish": "0.1.1-beta.5",
     "@contentstack/cli-cm-clone": "0.1.0-beta.6",
     "@contentstack/cli-cm-export": "^0.1.1-beta.14",
-    "@contentstack/cli-cm-export-to-csv": "0.1.0-beta.2",
+    "@contentstack/cli-cm-export-to-csv": "0.1.0-beta.3",
     "@contentstack/cli-migration": "0.1.1-beta.3",
     "@contentstack/cli-cm-migrate-rte": "^1.0.5",
     "@contentstack/cli-cm-import": "^0.1.1-beta.17",
