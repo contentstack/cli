@@ -173,17 +173,29 @@ function getLanguages(managementAPIClient, stackApiKey) {
 	})
 }
 
-function getEntries(managementAPIClient, stackApiKey, contentType, language) {
+function getEntries(managementAPIClient, stackApiKey, contentType, language, skip) {
 	return new Promise(resolve => {
 		managementAPIClient
 		.stack({api_key: stackApiKey})
 		.contentType(contentType)
 		.entry()
-		.query({include_publish_details: true, locale: language})
+		.query({include_publish_details: true, locale: language, skip: skip * 100})
 		.find()
 		.then(entries => resolve(entries))
 	})
 }
+
+function getEntriesCount(managementAPIClient, stackApiKey, contentType, language) {
+	return new Promise((resolve) => {
+	  managementAPIClient
+		.stack({ api_key: stackApiKey })
+		.contentType(contentType)
+		.entry()
+		.query({ include_publish_details: true, locale: language })
+		.count()
+		.then((entriesData) => resolve(entriesData.entries));
+	});
+  }
 
 function getEnvironments(managementAPIClient, stackApiKey) {
 	let result = {}
@@ -413,4 +425,5 @@ module.exports = {
   getOrganizationsWhereUserIsAdmin: getOrganizationsWhereUserIsAdmin,
   kebabize: kebabize,
   flatten: flatten,
+  getEntriesCount: getEntriesCount,
 }	
