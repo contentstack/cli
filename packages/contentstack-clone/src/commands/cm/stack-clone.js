@@ -6,7 +6,6 @@ let config = require('../../lib/util/dummyConfig.json')
 const path = require('path')
 const rimraf = require('rimraf')
 let pathdir = path.join(__dirname.split('src')[0], 'contents')
-const forEach = require('lodash/forEach')
 const { readdirSync } = require('fs')
 
 class StackCloneCommand extends Command { 
@@ -87,8 +86,8 @@ class StackCloneCommand extends Command {
       if (exitOrError === true) process.exit()
     }
 
-    forEach(exceptions, event => process.on(event, cleanUp))
-    forEach(interrupt, signal => process.on(signal, () => cleanUp(true)))
+    exceptions.forEach(event => process.on(event, cleanUp))
+    interrupt.forEach(signal => process.on(signal, () => cleanUp(true)))
   }
 }
 
