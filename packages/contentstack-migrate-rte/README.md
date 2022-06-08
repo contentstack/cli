@@ -39,6 +39,7 @@ OPTIONS
   -a, --alias=alias              Alias for the management token to be used
   -c, --config-path=config-path  Path to config file to be used
   -y, --yes                      Agree to process the command with the current configuration
+  --batch-limit=batch-limit      [default: 50] Provide batch limit for updating entries
   --content-type=content-type    The content-type from which entries need to be migrated
   --delay=delay                  [default: 1000] Provide delay in ms between two entry update
 
