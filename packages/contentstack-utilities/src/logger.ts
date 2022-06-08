@@ -1,8 +1,6 @@
-import * as winston from 'winston';
-import config from './config-handler';
+import winston from 'winston';
 import messageHandler from './message-handler';
 
-// config.set('logger.level', 'debug');
 class LoggerService {
   name: string;
   data: object | null;
