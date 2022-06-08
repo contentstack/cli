@@ -5,7 +5,6 @@ const config = require('../../../util/config.js');
 
 class ExportToCsvCommand extends Command {
   get managementAPIClient() {
-    // this._managementAPIClient = ContentstackManagementSDK.client({host:this.cmaHost, authtoken: this.authToken})
     this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this.authToken });
     return this._managementAPIClient;
   }
@@ -41,7 +40,7 @@ class ExportToCsvCommand extends Command {
             let flatEntries = util.cleanEntries(entries.items, language.code, environments, contentType); // clean entries to be wderitten to file
             let fileName = `${stack.name}_${contentType}_${language.code}_entries_export.csv`;
   
-            util.write(this, flatEntries, fileName); // write to file
+            util.write(this, flatEntries, fileName, 'entries'); // write to file
           }
           break;
         }
@@ -53,13 +52,11 @@ class ExportToCsvCommand extends Command {
             const mappedUsers = util.getMappedUsers(orgUsers);
             const mappedRoles = util.getMappedRoles(orgRoles);
             const listOfUsers = util.cleanOrgUsers(orgUsers, mappedUsers, mappedRoles);
-            // const dateTime = util.getDateTime()
-            // const fileName = `${util.kebabize(organization.name.replace(config.organizationNameRegex, ''))}_users_export_${dateTime}.csv`
             const fileName = `${util.kebabize(
               organization.name.replace(config.organizationNameRegex, ''),
             )}_users_export.csv`;
   
-            util.write(this, listOfUsers, fileName);
+            util.write(this, listOfUsers, fileName, 'organization details');
           } catch (error) {
             this.error("failed export content to csv");
           }
