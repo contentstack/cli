@@ -16,6 +16,7 @@ const {
   cloneDeep,
   isNil,
   isNull,
+  isPlainObject
 } = require('lodash');
 const Validator = require('jsonschema').Validator;
 const configSchema = require('./config_schema.json');
@@ -62,9 +63,10 @@ function normalizeFlags(config){
 }
 
 var customBar = cliux.progress({
-  format: 'Migrating entry for {content_type} ' + '| {bar} | {value}/{total} Entries',
+  format: '{title} ' + '| {bar} | {value}/{total} Entries',
   barCompleteChar: '\u2588',
-  barIncompleteChar: '\u2591'
+  barIncompleteChar: '\u2591',
+  stream: process.stdout
 })
 async function getConfig(flags) {
   try {
@@ -84,8 +86,11 @@ async function getConfig(flags) {
           },
         ],
         delay: flags.delay,
-        locale : flags.locale
+        "batch-limit": flags["batch-limit"]
       };
+      if(flags.locale){
+        config.locale = [flags.locale]
+      }
     }
     if (checkConfig(config)) {
       let confirmed = await confirmConfig(config, flags.yes);
@@ -134,12 +139,14 @@ function throwConfigError(error) {
   const { name, path, argument } = error;
   let fieldName = path.join('.');
   if (fieldName === '') {
-    fieldName = 'Config';
+    fieldName = argument || 'Config';
   }
   if (name === 'required') {
     throw new Error(`${fieldName} is mandatory while defining config.`);
   } else if (name === 'type') {
     throw new Error(`Invalid key type. ${fieldName} must be of ${argument[0] || 'string'} type(s).`);
+  } else if (name === 'minimum' || name === 'maximum') {
+    throw new Error(`${fieldName} must be between 1 and 100.`)
   }
 }
 function checkConfig(config) {
@@ -157,47 +164,70 @@ async function confirmConfig(config, skipConfirmation) {
     return Promise.resolve(true);
   }
   prettyPrint(config);
-  return cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+  return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
 }
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
-async function updateEntriesInBatch(contentType, config, skip = 0) {
+async function updateEntriesInBatch(contentType, config, skip = 0, retry = 0, locale = undefined) {
+  let title = `Migrating entries for ${contentType.uid}`
   let extraParams = {}
-  if(config.locale){
-    extraParams.locale = config.locale
-    extraParams.query = {locale:config.locale}
+  if (locale) {
+    extraParams.locale = locale
+    extraParams.query = { locale: locale }
+  }
+  if(config["failed-entries"] && config["failed-entries"].length > 0){
+    title = `Migrating failed entries for ${contentType.uid}`
+    if(extraParams.query){
+      extraParams.query["uid"] = { "$in": config["failed-entries"] }
+    }else{
+      extraParams = {query: {uid: { "$in": config["failed-entries"] }}}
+    }
   }
   let entryQuery = {
     include_count: true,
     ...extraParams,
     skip: skip,
-    limit: 1
+    limit: config["batch-limit"] || 50
   };
-  await contentType
-    .entry()
-    .query(entryQuery)
-    .find()
-    .then(async (entriesResponse) => {
-      customBar.start(entriesResponse.count, skip,{
-        content_type: contentType.uid
-      })  
-      
-      skip += entriesResponse.items.length;
-      let entries = entriesResponse.items;
+  try {
+    await contentType
+      .entry()
+      .query(entryQuery)
+      .find()
+      .then(async (entriesResponse) => {
+        try {
+          customBar.start(entriesResponse.count, skip, {
+            title: title
+          })
+        } catch (error) { }
 
-      for (const entry of entries) {
-        customBar.increment()
-        await updateSingleEntry(entry, contentType, config);
-        await delay(config.delay || 1000);
-      }
-      if (skip === entriesResponse.count) {
-        return Promise.resolve();
-      }
-      await updateEntriesInBatch(contentType, config, skip);
-    })
-    .catch((error) => {
-      throw new Error(error.message);
-    });
+        skip += entriesResponse.items.length;
+        let entries = entriesResponse.items;
+
+        for (const entry of entries) {
+          customBar.increment()
+          await updateSingleEntry(entry, contentType, config);
+          await delay(config.delay || 1000);
+        }
+        if (skip === entriesResponse.count) {
+          return Promise.resolve();
+        }
+        await updateEntriesInBatch(contentType, config, skip, 0, locale);
+      })
+  } catch (error) {
+    console.error(`Error while fetching batch of entries: ${error.message}`);
+    if (retry < 3) {
+      retry += 1
+      console.error(`Retrying again in 5 seconds... (${retry}/3)`);
+      await delay(5000);
+      await updateEntriesInBatch(contentType, config, skip, retry, locale);
+    }
+    else {
+      throw new Error(`Max retry exceeded: Error while fetching batch of entries: ${error.message}`);
+    }
+  }
+
+
 }
 async function updateSingleContentTypeEntries(stack, contentTypeUid, config) {
   let contentType = await getContentType(stack, contentTypeUid);
@@ -209,7 +239,16 @@ async function updateSingleContentTypeEntries(stack, contentTypeUid, config) {
       throw new Error(`The ${contentTypeUid} content type contains an empty schema.`);
     }
   }
-  await updateEntriesInBatch(contentType, config);
+  if(config.locale && isArray(config.locale) && config.locale.length > 0){
+    const locales = config.locale
+    for (const locale of locales) {
+      console.log(`\nMigrating entries for "${contentTypeUid}" Content-type in "${locale}" locale`)
+      await updateEntriesInBatch(contentType, config,0,0,locale)
+      await delay(config.delay || 1000)
+    }
+  }else{
+    await updateEntriesInBatch(contentType, config)
+  }
   config.contentTypeCount += 1;
   try {
     customBar.stop()
@@ -220,7 +259,16 @@ async function updateSingleContentTypeEntriesWithGlobalField(contentType, config
   for (const path of config.paths) {
     isPathValid(schema, path);
   }
-  await updateEntriesInBatch(contentType, config);
+  if (config.locale && isArray(config.locale) && config.locale.length > 0) {
+    const locales = config.locale
+    for (const locale of locales) {
+      console.log(`\nMigrating entries for ${contentType.uid} in locale ${locale}`)
+      await updateEntriesInBatch(contentType, config, 0, 0, locale)
+      await delay(config.delay || 1000)
+    }
+  } else {
+    await updateEntriesInBatch(contentType, config)
+  }
   config.contentTypeCount += 1;
 }
 async function updateSingleEntry(entry, contentType, config) {
@@ -244,20 +292,39 @@ async function updateSingleEntry(entry, contentType, config) {
       let parentFileFieldPath = fileFieldPath.slice(0, fileFieldPath.length - 1).join('.');
       unsetResolvedUploadData(parentFileFieldPath, entry, schema, { fileUid });
     }
-    await entry.update({ locale: entry.locale });
-    config.entriesCount += 1;
   } catch (error) {
-    config.errorEntriesUid.push(entry.uid);
-    console.log(chalk.red(`Error while updating '${entry.uid}' entry`));
-    if (error.errors) {
-      const errVal = Object.entries(error.errors);
+    console.error(`Error while unsetting resolved upload data: ${error.message}`);
+  }
+  await handleEntryUpdate(entry,config,0)
+  // console.log("updated entry", entry)
+}
+async function handleEntryUpdate(entry,config,retry = 0){
+  try {
+    await entry.update({locale:entry.locale})
+    config.entriesCount += 1
+  } catch (error) {
+    console.log(chalk.red(`Error while updating '${entry.uid}' entry`))
+    if (error.errors && isPlainObject(error.errors)) {
+      const errVal = Object.entries(error.errors)
       errVal.forEach(([key, vals]) => {
-        console.log(chalk.red(` ${key}:-  ${vals.join(',')}`));
-      });
+        console.log(chalk.red(` ${key}:-  ${vals.join(',')}`))
+      })
+    }else{
+      console.log(chalk.red(`Error stack: ${error}`))
+    }
+    if (retry < 3) {
+      retry += 1
+      console.log(`Retrying again in 5 seconds... (${retry}/3)`);
+      await delay(5000);
+      await handleEntryUpdate(entry,config,retry)
+    }else{
+      if(config && config.errorEntriesUid && config.errorEntriesUid[entry.content_type_uid] &&config.errorEntriesUid[entry.content_type_uid][entry.locale]){
+        config.errorEntriesUid[entry.content_type_uid][entry.locale].push(entry.uid)
+      }else{
+        set(config,['errorEntriesUid',entry.content_type_uid,entry.locale],[entry.uid])
+      }
     }
   }
-
-  // console.log("updated entry", entry)
 }
 function traverseSchemaForField(schema, path, field_uid) {
   let paths = path.split('.');
