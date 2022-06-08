@@ -1,8 +1,10 @@
-const { Command, flags } = require('@oclif/command');
-const { start } = require('../../../producer/publish-assets');
+const { Command, flags } = require('@contentstack/cli-command');
+const { start: startPublish } = require('../../../producer/publish-assets');
+const { start: startCrossPublish } = require('../../../producer/cross-publish');
 const store = require('../../../util/store.js');
-const { cli } = require('cli-ux');
+const { cliux } = require('@contentstack/cli-utilities');
 const configKey = 'publish_assets';
+const configKeyCrossEnv = 'cross_env_publish';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
 const { printFlagDeprecation } = require('@contentstack/cli-utilities');
@@ -20,7 +22,8 @@ class AssetsPublishCommand extends Command {
 
     let updatedFlags;
     try {
-      updatedFlags = assetsFlags.config ? store.updateMissing(configKey, assetsFlags) : assetsFlags;
+      const storeConfigKey = assetsFlags['source-env'] ? configKeyCrossEnv : configKey
+      updatedFlags = assetsFlags.config ? store.updateMissing(storeConfigKey, assetsFlags) : assetsFlags;
     } catch (error) {
       this.error(error.message, { exit: 2 });
     }
@@ -28,28 +31,57 @@ class AssetsPublishCommand extends Command {
       let stack;
       if (!updatedFlags.retryFailed) {
         if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used');
+          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
         if (updatedFlags.folderUid === undefined) {
           // set default value for folderUid
           updatedFlags.folderUid = 'cs_root';
         }
-        await this.config.runHook('validateManagementTokenAlias', { alias: updatedFlags.alias });
+        // Validate management token alias.
+        try {
+          this.getToken(updatedFlags.alias);
+        } catch (error) {
+          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, { exit: 2 })
+        }
         config = {
           alias: updatedFlags.alias,
-          host: this.config.context.region.cma,
+          host: this.region.cma,
+          cda: this.region.cda,
           branch: assetsFlags.branch,
         };
         stack = getStack(config);
       }
       if (await this.confirmFlags(updatedFlags)) {
         try {
-          if (!updatedFlags.retryFailed) {
-            await start(updatedFlags, stack, config);
-          } else {
-            await start(updatedFlags);
+          const publishFunction = async (func) => {
+            if (!updatedFlags.retryFailed) {
+              await func(updatedFlags, stack, config);
+            } else {
+              await func(updatedFlags);
+            }
           }
+
+          if (updatedFlags['source-env']) {
+            updatedFlags.deliveryToken = updatedFlags['delivery-token']
+            updatedFlags.destEnv = updatedFlags.environments
+            updatedFlags.environment = updatedFlags['source-env']
+            updatedFlags.onlyAssets = true
+            if (updatedFlags.locales instanceof Array) {
+              updatedFlags.locales.forEach(locale => {
+                updatedFlags.locale = locale
+                publishFunction(startCrossPublish)
+              });
+            } else {
+              updatedFlags.locale = locales
+              publishFunction(startCrossPublish)
+            }
+
+          }
+          else {
+            publishFunction(startPublish)
+          }
+
         } catch (error) {
           let message = formatError(error);
           this.error(message, { exit: 2 });
@@ -60,10 +92,17 @@ class AssetsPublishCommand extends Command {
     }
   }
 
-  validate({ environments, retryFailed, locales }) {
+  validate({ environments, retryFailed, locales, 'source-env': sourceEnv, 'delivery-token': deliveryToken }) {
     let missing = [];
     if (retryFailed) {
       return true;
+    }
+
+    if (sourceEnv && !deliveryToken) {
+      this.error(
+        'Specify source environment delivery token. Please check --help for more details',
+        { exit: 2 },
+      );
     }
 
     if (!environments || environments.length === 0) {
@@ -89,7 +128,7 @@ class AssetsPublishCommand extends Command {
     if (data.yes) {
       return true;
     }
-    return cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 
@@ -163,6 +202,9 @@ AssetsPublishCommand.flags = {
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
+  'delivery-token': flags.string({ description: 'Delivery Token for source environment' }),
+  'source-env': flags.string({ description: 'Destination Environments', multiple: true }),
+  'content-types': flags.string({ description: 'Content types', multiple: true }), // this is a work around, as this command is to be run with entries:publish command and should not break flags check.
 };
 
 AssetsPublishCommand.examples = [

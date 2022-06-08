@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
 import { configHandler } from '@contentstack/cli-utilities';
+
 export default class CsdxContext {
   readonly id: string;
   readonly user?: object;
@@ -25,7 +26,7 @@ export default class CsdxContext {
       authtoken: configHandler.get('authtoken'),
       email: configHandler.get('email'),
     };
-    this.config = { ...config };
+    this.config = { ...config } // configHandler.init();
     this.region = configHandler.get('region');
     this.info = { command: cliOpts.id };
     if (command.pluginName) {

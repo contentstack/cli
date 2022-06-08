@@ -3,7 +3,7 @@ const { Command } = require('@contentstack/cli-command');
 const { logger } = require('@contentstack/cli-utilities');
 
 const command = new Command();
-const { cli } = require('cli-ux');
+const { cliux } = require('@contentstack/cli-utilities');
 const chalk = require('chalk');
 const {
   isEmpty,
@@ -62,7 +62,7 @@ function normalizeFlags(config){
   return normalizedConfig;
 }
 
-var customBar = cli.progress({
+var customBar = cliux.progress({
   format: '{title} ' + '| {bar} | {value}/{total} Entries',
   barCompleteChar: '\u2588',
   barIncompleteChar: '\u2591',
@@ -139,7 +139,7 @@ function throwConfigError(error) {
   const { name, path, argument } = error;
   let fieldName = path.join('.');
   if (fieldName === '') {
-    fieldName = 'Config';
+    fieldName = argument || 'Config';
   }
   if (name === 'required') {
     throw new Error(`${fieldName} is mandatory while defining config.`);
@@ -164,7 +164,7 @@ async function confirmConfig(config, skipConfirmation) {
     return Promise.resolve(true);
   }
   prettyPrint(config);
-  return cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+  return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
 }
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 

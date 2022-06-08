@@ -1,6 +1,7 @@
-import cli from 'cli-ux';
 import * as fs from 'fs';
 import * as path from 'path';
+import { cliux } from '@contentstack/cli-utilities';
+
 import { AppConfig } from '../config';
 import messageHandler from '../messages';
 
@@ -56,18 +57,18 @@ export const setupEnvironments = async (
             };
             await envFileHandler(appConfig.appConfigKey || '', environmentVariables, clonedDirectory, region);
           } else {
-            cli.log(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_TOKEN_FOR_ENV', environment.name));
+            cliux.print(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_TOKEN_FOR_ENV', environment.name));
           }
         } catch (error) {
           console.log('error', error);
-          cli.log(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_ENV_FILE_FOR_ENV', environment.name));
+          cliux.print(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_ENV_FILE_FOR_ENV', environment.name));
         }
       } else {
-        cli.log('No environments name found for the environment');
+        cliux.print('No environments name found for the environment');
       }
     }
   } else {
-    cli.error(messageHandler.parse('CLI_BOOTSTRAP_APP_ENV_NOT_FOUND_FOR_THE_STACK'));
+    cliux.error(messageHandler.parse('CLI_BOOTSTRAP_APP_ENV_NOT_FOUND_FOR_THE_STACK'));
   }
 };
 
@@ -98,7 +99,7 @@ const envFileHandler = async (
   region: any,
 ) => {
     if (!appConfigKey || !environmentVariables) {
-        return
+      return
     }
     let content
     let result
@@ -164,7 +165,7 @@ const envFileHandler = async (
             result = await writeEnvFile(content, filePath)
             break
         default:
-            cli.error(messageHandler.parse('CLI_BOOTSTRAP_INVALID_APP_NAME'))
+            cliux.error(messageHandler.parse('CLI_BOOTSTRAP_INVALID_APP_NAME'))
     }
 
   return result;
