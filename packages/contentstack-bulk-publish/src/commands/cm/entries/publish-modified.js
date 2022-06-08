@@ -12,7 +12,7 @@ let config;
 class PublishModifiedCommand extends Command {
   async run() {
     const entryEditsFlags = this.parse(PublishModifiedCommand).flags;
-    entryEditsFlags.retryFailed = entryEditsFlags['retry-failed'] || entryEditsFlags.retryFailed;
+    entryEditsFlags.retryFailed = entryEditsFlags['retry-failed'] || entryEditsFlags.retryFailed || false;
     entryEditsFlags.contentTypes = entryEditsFlags['content-types'] || entryEditsFlags.contentTypes;
     entryEditsFlags.bulkPublish = entryEditsFlags['bulk-publish'] || entryEditsFlags.bulkPublish;
     entryEditsFlags.sourceEnv = entryEditsFlags['source-env'] || entryEditsFlags.sourceEnv;
