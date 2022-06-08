@@ -321,7 +321,7 @@ function getDateTime() {
   return dateTime.join('_');
 }
 
-function write(command, entries, fileName) {
+function write(command, entries, fileName, message) {
   // eslint-disable-next-line no-undef
   if (process.cwd().split(delimeter).pop() !== 'data' && !fs.existsSync(directory)) {
     mkdirp.sync(directory);
@@ -332,7 +332,7 @@ function write(command, entries, fileName) {
     process.chdir(directory);
   }
   // eslint-disable-next-line no-undef
-  command.log(`Writing entries to file: ${process.cwd()}${delimeter}${fileName}`);
+  command.log(`Writing ${message} to file: ${process.cwd()}${delimeter}${fileName}`);
   fastcsv.writeToPath(fileName, entries, { headers: true });
 }
 
