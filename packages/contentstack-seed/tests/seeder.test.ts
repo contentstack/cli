@@ -2,7 +2,7 @@ jest.mock('../src/seed/github/client');
 jest.mock('../src/seed/contentstack/client');
 jest.mock('../src/seed/interactive');
 jest.mock('tmp');
-jest.mock('cli-ux');
+jest.mock('@contentstack/cli-utilities');
 jest.mock('inquirer');
 
 import GitHubClient from '../src/seed/github/client';
@@ -11,7 +11,7 @@ import ContentModelSeeder, { ContentModelSeederOptions } from '../src/seed';
 import { inquireOrganization, inquireProceed, inquireStack, inquireRepo } from '../src/seed/interactive';
 
 import * as tmp from 'tmp';
-import cli from 'cli-ux';
+import { cliux } from '@contentstack/cli-utilities';
 
 const org_name = 'Test Organization';
 const org_uid = 'xxxxxxxxxx';
@@ -60,9 +60,9 @@ describe('ContentModelSeeder', () => {
     const tmpDir = await seeder.downloadRelease();
 
     expect(dirSyncMock).toHaveBeenCalled();
-    expect(cli.action.start).toHaveBeenCalled();
+    expect(cliux.loader).toHaveBeenCalled();
     expect(GitHubClient.prototype.getLatest).toHaveBeenCalledWith(repo, tmpDirName);
-    expect(cli.action.stop).toHaveBeenCalled();
+    expect(cliux.loader).toHaveBeenCalled();
     expect(tmpDir).toBe(tmpDirName);
   });
 
@@ -113,9 +113,9 @@ describe('ContentModelSeeder', () => {
     const seeder = new ContentModelSeeder(options);
     const result = await seeder.createStack(organization, 'Test Stack');
 
-    expect(cli.action.start).toHaveBeenCalled();
+    expect(cliux.loader).toHaveBeenCalled();
     expect(ContentstackClient.prototype.createStack).toHaveBeenCalled();
-    expect(cli.action.stop).toHaveBeenCalled();
+    expect(cliux.loader).toHaveBeenCalled();
     expect(result).toBe(api_key);
   });
 
@@ -138,7 +138,7 @@ describe('ContentModelSeeder', () => {
 
     const seeder = new ContentModelSeeder(options);
     await seeder.getInput();
-    expect(cli.error).toHaveBeenCalled();
+    expect(cliux.error).toHaveBeenCalled();
   });
 
   test('should prompt for input when organizations and github folder exists', async () => {

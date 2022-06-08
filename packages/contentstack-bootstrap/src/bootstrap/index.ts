@@ -1,11 +1,12 @@
-import cli from 'cli-ux';
 import * as path from 'path';
+import { cliux } from '@contentstack/cli-utilities';
 import { default as ContentStackSeed } from '@contentstack/cli-cm-seed/lib/commands/cm/stacks/seed';
+
 import { AppConfig } from '../config';
-import GitHubClient, { Repo } from './github/client';
-import GithubError from './github/github-error';
-import { setupEnvironments } from './utils';
 import messageHandler from '../messages';
+import { setupEnvironments } from './utils';
+import GithubError from './github/github-error';
+import GitHubClient, { Repo } from './github/client';
 
 export const ENGLISH_LOCALE = 'en-us';
 
@@ -14,7 +15,7 @@ export interface BootstrapOptions {
   appConfig: AppConfig;
   managementAPIClient: any;
   region: any;
-  accessToken: string;
+  accessToken?: string;
   appType: string;
 }
 
@@ -52,18 +53,19 @@ export default class Bootstrap {
   }
 
   async run(): Promise<any> {
-    cli.action.start(messageHandler.parse('CLI_BOOTSTRAP_START_CLONE_APP'));
+    cliux.loader(messageHandler.parse('CLI_BOOTSTRAP_START_CLONE_APP'))
+
     try {
       await this.ghClient.getLatest(this.cloneDirectory);
     } catch (error) {
       if (error instanceof GithubError) {
         if (error.status === 404) {
-          cli.error(messageHandler.parse('CLI_BOOTSTRAP_REPO_NOT_FOUND', this.appConfig.source));
+          cliux.error(messageHandler.parse('CLI_BOOTSTRAP_REPO_NOT_FOUND', this.appConfig.source));
         }
       }
       throw error;
     } finally {
-      cli.action.stop();
+      cliux.loader();
     }
 
     // seed plugin start
@@ -80,9 +82,9 @@ export default class Bootstrap {
       } else {
         throw new Error(messageHandler.parse('CLI_BOOTSTRAP_NO_API_KEY_FOUND'));
       }
-      cli.log(messageHandler.parse('CLI_BOOTSTRAP_SUCCESS'));
+      cliux.print(messageHandler.parse('CLI_BOOTSTRAP_SUCCESS'))
     } catch (error) {
-      cli.error(messageHandler.parse('CLI_BOOTSTRAP_STACK_CREATION_FAILED', this.appConfig.stack));
+      cliux.error(messageHandler.parse('CLI_BOOTSTRAP_STACK_CREATION_FAILED', this.appConfig.stack))
     }
   }
 }

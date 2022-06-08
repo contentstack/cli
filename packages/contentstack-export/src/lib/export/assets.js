@@ -97,7 +97,7 @@ ExportAssets.prototype = {
                       helper.writeFile(assetContentsFile, self.assetContents);
                     })
                     .catch(function (error) {
-                      console.log('Error fetch/download the asset', error);
+                      console.log('Error fetch/download the asset', error && error.message);
                       addlogs(config, 'Asset batch ' + (batch + 1) + ' failed to download', 'error');
                       addlogs(config, error, 'error');
                       // log this error onto a file - send over retries
@@ -296,7 +296,7 @@ ExportAssets.prototype = {
             .catch(reject);
         })
         .catch((error) => {
-          console.log('Error on  fetch', error);
+          console.log('Error on  fetch', error && error.message);
           if (error.status === 408) {
             console.log('retrying', uid);
             // retrying when timeout

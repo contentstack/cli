@@ -1,6 +1,7 @@
 import { Command } from '@contentstack/cli-command';
+import { cliux, logger } from '@contentstack/cli-utilities';
+
 import { Region } from '../../../interfaces';
-import { cliux, logger, messageHandler } from '@contentstack/cli-utilities';
 
 export default class RegionGetCommand extends Command {
   static description = 'Get current region set for CLI';

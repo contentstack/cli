@@ -22,14 +22,14 @@ function initializeLogger(fileName) {
 /* eslint-disable camelcase */
 function removePublishDetails(elements) {
   if (elements && elements.length > 0) {
-    return elements.map(({ publish_details, ...rest }) => rest);
+    return elements.map(({ _publish_details, ...rest }) => rest);
   } else {
     delete elements.publish_details;
   }
   return elements;
 }
 
-async function publishEntry(data, config, queue) {
+async function publishEntry(data, _config, queue) {
   const lang = [];
   const entryObj = data.obj;
   const stack = entryObj.stack;
@@ -66,8 +66,7 @@ async function publishEntry(data, config, queue) {
         delete entryObj.stack;
         console.log(
           chalk.red(
-            `entry could not be published with ContentType uid=${entryObj.content_type} entry uid=${
-              entryObj.entryUid
+            `entry could not be published with ContentType uid=${entryObj.content_type} entry uid=${entryObj.entryUid
             } locale=${entryObj.locale} error=${formatError(error)}`,
           ),
         );
@@ -85,7 +84,7 @@ async function publishEntry(data, config, queue) {
     });
 }
 
-async function publishAsset(data, config, queue) {
+async function publishAsset(data, _config, queue) {
   const assetobj = data.obj;
   const stack = assetobj.stack;
 
@@ -126,7 +125,7 @@ async function publishAsset(data, config, queue) {
     });
 }
 
-async function UnpublishEntry(data, config, queue) {
+async function UnpublishEntry(data, _config, queue) {
   const lang = [];
   const entryObj = data.obj;
   const stack = entryObj.stack;
@@ -160,8 +159,7 @@ async function UnpublishEntry(data, config, queue) {
         delete entryObj.stack;
         console.log(
           chalk.red(
-            `Entry could not be unpublished with ContentType uid=${entryObj.content_type} Entry uid=${
-              entryObj.entryUid
+            `Entry could not be unpublished with ContentType uid=${entryObj.content_type} Entry uid=${entryObj.entryUid
             } locale=${entryObj.locale} error=${formatError(error)}`,
           ),
         );
@@ -174,7 +172,7 @@ async function UnpublishEntry(data, config, queue) {
     });
 }
 
-async function UnpublishAsset(data, config, queue) {
+async function UnpublishAsset(data, _config, queue) {
   const assetobj = data.obj;
   const stack = assetobj.stack;
 
@@ -210,7 +208,7 @@ async function UnpublishAsset(data, config, queue) {
     });
 }
 
-async function performBulkPublish(data, config, queue) {
+async function performBulkPublish(data, _config, queue) {
   let conf;
   const bulkPublishObj = data.obj;
   const stack = bulkPublishObj.stack;
@@ -314,7 +312,7 @@ async function performBulkPublish(data, config, queue) {
   }
 }
 
-async function performBulkUnPublish(data, config, queue) {
+async function performBulkUnPublish(data, _config, queue) {
   let conf;
   const bulkUnPublishObj = data.obj;
   const stack = bulkUnPublishObj.stack;
@@ -420,14 +418,13 @@ async function performBulkUnPublish(data, config, queue) {
 
 // short-term fix for reverting to previous versions
 /* eslint-disable no-case-declarations */
-async function publishUsingVersion(data, config, queue) {
+async function publishUsingVersion(data, _config, queue) {
   let conf;
   let successfullyPublished = [];
   let failedToPublish = [];
   let counter = 0;
   const bulkPublishObj = data.obj;
   const stack = bulkPublishObj.stack;
-  // addLogs(logger,bulkPublishObj);
   switch (bulkPublishObj.Type) {
     case 'entry':
       successfullyPublished = [];
