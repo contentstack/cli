@@ -11,7 +11,7 @@ import { printFlagDeprecation } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
 export default class BootstrapCommand extends Command {
-  private _managementAPIClient: any;
+  private bootstrapManagementAPIClient: any;
 
   static description = 'Bootstrap contentstack apps';
 
@@ -64,14 +64,6 @@ export default class BootstrapCommand extends Command {
       hidden: true,
       parse: printFlagDeprecation(['-d', '--directory'], ['--project-dir']),
     }),
-    accessToken: flags.string({
-      char: 't',
-      description: 'Access token for private github repo',
-      multiple: false,
-      required: false,
-      hidden: true,
-      parse: printFlagDeprecation(['-t', '--accessToken'], ['--access-token']),
-    }),
     appType: flags.string({
       char: 's',
       description: 'Sample or Starter app',
@@ -83,11 +75,12 @@ export default class BootstrapCommand extends Command {
   };
 
   get managementAPIClient() {
-    this._managementAPIClient = ContentstackManagementSDK.client({
+    this.bootstrapManagementAPIClient = ContentstackManagementSDK.client({
       host: this.cmaHost,
       authtoken: this.authToken,
     });
-    return this._managementAPIClient;
+
+    return this.bootstrapManagementAPIClient;
   }
 
   async run() {
@@ -133,10 +126,10 @@ export default class BootstrapCommand extends Command {
       }
 
       // Check the access token
-      let accessToken = bootstrapCommandFlags.accessToken as string;
-      if (appConfig.private && !accessToken) {
-        accessToken = await inquireGithubAccessToken();
-      }
+      // let accessToken = bootstrapCommandFlags.accessToken as string;
+      // if (appConfig.private && !accessToken) {
+      //   accessToken = await inquireGithubAccessToken();
+      // }
 
       // initiate bootstrsourceap
       const options: BootstrapOptions = {
@@ -144,7 +137,6 @@ export default class BootstrapCommand extends Command {
         cloneDirectory,
         managementAPIClient: this.managementAPIClient,
         region: this.region,
-        accessToken,
         appType,
       };
       const bootstrap = new Bootstrap(options);
