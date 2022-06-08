@@ -1,19 +1,16 @@
 import { Command } from '@contentstack/cli-command';
-import cli from 'cli-ux';
 import { logger, cliux, configHandler } from '@contentstack/cli-utilities';
 
 export default class TokensListCommand extends Command {
-  private readonly parse: Function;
-  static run;
-  static description = 'Lists all existing tokens added to the session';
   static aliases = ['tokens'];
   static examples = ['$ csdx auth:tokens'];
-  static flags = cli.table.flags(); // use the cli table flags as it displays tokens in table
-
+  static description = 'Lists all existing tokens added to the session';
+  static flags: Record<string, any> = cliux.uxTable.flags(); // use the cli table flags as it displays tokens in table
+  
   async run(): Promise<any> {
     try {
       const managementTokens = configHandler.get('tokens');
-      const tokenOptions: Array<object> = [];
+      const tokenOptions: Record<string, unknown>[] = [];
       if (managementTokens && Object.keys(managementTokens).length > 0) {
         Object.keys(managementTokens).forEach(function (item) {
           tokenOptions.push({
@@ -24,6 +21,7 @@ export default class TokensListCommand extends Command {
             type: managementTokens[item].type,
           });
         });
+
         const { flags } = this.parse(TokensListCommand);
 
         cliux.table(

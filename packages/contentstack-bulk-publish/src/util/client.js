@@ -12,7 +12,9 @@ function getStack(data) {
     },
     host: formatHostname(data.host),
     // eslint-disable-next-line no-unused-vars
-    logHandler: (level) => {},
+    logHandler: (_level) => {
+      // empty block
+    },
   });
   const stack = client.stack({ api_key: tokenDetails.apiKey, management_token: tokenDetails.token });
   stack.alias = data.alias;

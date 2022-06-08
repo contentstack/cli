@@ -6,7 +6,6 @@ const setupBranches = require('./lib/util/setup-branches');
 const chalk = require('chalk');
 let path = require('path');
 let _ = require('lodash');
-const cli = require('cli-ux');
 
 exports.initial = async function (config) {
   return new Promise(function (resolve, reject) {
@@ -43,14 +42,14 @@ exports.initial = async function (config) {
               await allExport(config, types);
             }
           } catch (error) {
-            console.log('failed export contents', error);
+            console.log('failed export contents', error && error.message);
           }
         }
         unlinkFileLogger();
         resolve();
       })
       .catch((error) => {
-        console.log('error', error);
+        console.log('error', error && error.message);
         if (error && error.errors && error.errors.api_key) {
           addlogs(config, chalk.red('Stack Api key ' + error.errors.api_key[0], 'Please enter valid Key', 'error'));
           addlogs(config, 'The log for this is stored at ' + config.data + '/export/logs', 'success');
