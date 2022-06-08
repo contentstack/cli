@@ -1,10 +1,9 @@
 import { Command, flags } from '@contentstack/cli-command';
 import { logger, cliux, CLIError, configHandler } from '@contentstack/cli-utilities';
-import { authHandler, interactive } from '../../utils';
+
 import { User } from '../../interfaces';
+import { authHandler, interactive } from '../../utils';
 export default class LoginCommand extends Command {
-  private readonly parse: Function;
-  managementAPIClient: any;
   static run; // to fix the test issue
   static description = 'User sessions login';
 
@@ -34,11 +33,12 @@ export default class LoginCommand extends Command {
   static aliases = ['login'];
 
   async run(): Promise<any> {
-    const { flags: loginFlags } = this.parse(LoginCommand);
+    const { flags: loginFlags } = this.parse(LoginCommand)
     authHandler.client = this.managementAPIClient;
+
     try {
-      const username = loginFlags.username ? loginFlags.username : await interactive.askUsername();
-      const password = loginFlags.password ? loginFlags.password : await interactive.askPassword();
+      const username = loginFlags?.username || await interactive.askUsername();
+      const password = loginFlags?.password || await interactive.askPassword();
       logger.debug('username', username);
       await this.login(username, password);
     } catch (error) {

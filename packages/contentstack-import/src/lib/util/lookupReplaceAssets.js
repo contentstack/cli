@@ -7,7 +7,7 @@
 var url = require('url');
 var path = require('path');
 var _ = require('lodash');
-var marked = require('marked');
+var { marked } = require('marked');
 
 var helper = require('./fs');
 

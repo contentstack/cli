@@ -1,5 +1,6 @@
-import cli from 'cli-ux';
 import * as tmp from 'tmp';
+import { cliux } from '@contentstack/cli-utilities';
+
 import * as importer from '../seed/importer';
 import ContentstackClient, { Organization, Stack } from '../seed/contentstack/client';
 import {
@@ -63,14 +64,14 @@ export default class ContentModelSeeder {
       const proceed = await this.shouldProceed(api_key);
 
       if (!proceed) {
-        cli.log('Exiting. Please re-run the command, if you wish to seed content.');
+        cliux.print('Exiting. Please re-run the command, if you wish to seed content.');
         return;
       }
     }
 
     const tmpPath = await this.downloadRelease();
 
-    cli.log(`Importing into '${stackResponse.name}'.`);
+    cliux.print(`Importing into '${stackResponse.name}'.`);
 
     await importer.run({
       api_key: api_key,
@@ -83,14 +84,17 @@ export default class ContentModelSeeder {
     return { api_key };
   }
 
-  async getInput() {
+  async getInput(): Promise<{
+    organizationResponse: Organization,
+    stackResponse: InquireStackResponse
+  } | any> {
     if (!this.ghRepo) {
       await this.inquireGitHubRepo();
     }
     const repoExists = await this.ghClient.checkIfRepoExists(this.ghRepo as string);
 
     if (repoExists === false) {
-      cli.error(`Could not find GitHub repository '${this.ghPath}'.`);
+      cliux.error(`Could not find GitHub repository '${this.ghPath}'.`);
     } else {
       let organizationResponse: Organization;
       let stackResponse: InquireStackResponse;
@@ -117,12 +121,13 @@ export default class ContentModelSeeder {
         const stacks = await this.csClient.getStacks(organizationResponse.uid);
         stackResponse = await inquireStack(stacks, this.options.stackName);
       }
+
       return { organizationResponse, stackResponse };
     }
   }
 
   async createStack(organization: Organization, stackName: string) {
-    cli.action.start(`Creating Stack '${stackName}' within Organization '${organization.name}'`);
+    cliux.loader(`Creating Stack '${stackName}' within Organization '${organization.name}'`);
     this.options.fetchLimit;
 
     const newStack = await this.csClient.createStack({
@@ -132,7 +137,7 @@ export default class ContentModelSeeder {
       org_uid: organization.uid,
     });
 
-    cli.action.stop();
+    cliux.loader();
 
     return newStack.api_key;
   }
@@ -156,19 +161,19 @@ export default class ContentModelSeeder {
       unsafeCleanup: true,
     });
 
-    cli.debug(`Creating temporary directory '${tmpDir.name}'.`);
-    cli.action.start('Downloading and extracting Stack');
+    cliux.print(`Creating temporary directory '${tmpDir.name}'.`);
+    cliux.loader('Downloading and extracting Stack');
 
     try {
       await this.ghClient.getLatest(this.ghRepo as string, tmpDir.name);
     } catch (error) {
       if (error instanceof GithubError) {
         if (error.status === 404) {
-          cli.error(`Unable to find a release for '${this.ghPath}'.`);
+          cliux.error(`Unable to find a release for '${this.ghPath}'.`);
         }
       }
     } finally {
-      cli.action.stop();
+      cliux.loader();
     }
 
     return tmpDir.name;
@@ -181,7 +186,7 @@ export default class ContentModelSeeder {
       const repoResponse = await inquireRepo(stackRepos);
       this.ghRepo = repoResponse.choice;
     } catch (error) {
-      cli.error(
+      cliux.error(
         `Unable to find any Stack repositories within the '${this.ghUsername}' GitHub account. Please re-run this command with a GitHub repository in the 'account/repo' format. You can also re-run the command without arguments to pull from the official Stack list.`,
       );
     }

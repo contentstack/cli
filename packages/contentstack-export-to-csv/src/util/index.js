@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const axios = require('axios');
 const os = require('os');
+const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 const config = require('./config.js');
 const fastcsv = require('fast-csv');
 const mkdirp = require('mkdirp');
@@ -8,6 +9,9 @@ const fs = require('fs');
 const debug = require('debug')('export-to-csv');
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
+
+// Register checkbox-plus here.
+inquirer.registerPrompt('checkbox-plus', checkboxPlus);
 
 function chooseOrganization(managementAPIClient, action) {
   return new Promise(async (resolve) => {
@@ -112,9 +116,9 @@ function getStacks(managementAPIClient, orgUid) {
   });
 }
 
-function chooseContentType(managementAPIClient, stackApiKey) {
+function chooseContentType(managementAPIClient, stackApiKey, skip) {
   return new Promise(async (resolve) => {
-    let contentTypes = await getContentTypes(managementAPIClient, stackApiKey);
+    let contentTypes = await getContentTypes(managementAPIClient, stackApiKey, skip);
     let contentTypesList = Object.values(contentTypes);
     // contentTypesList.push(config.cancelString)
 
@@ -136,13 +140,47 @@ function chooseContentType(managementAPIClient, stackApiKey) {
   });
 }
 
-function getContentTypes(managementAPIClient, stackApiKey) {
+function chooseInMemContentTypes(contentTypesList) {
+  return new Promise(async (resolve) => {
+    let _chooseContentType = [
+      {
+        type: 'checkbox-plus',
+        message: 'Choose Content Type',
+        choices: contentTypesList,
+        name: 'chosenContentTypes',
+        loop: false,
+        highlight: true,
+        searchable: true,
+        source: (_, input) => {
+          input = input || '';
+          const inputArray = input.split(' ');
+          return new Promise(resolveSource => {
+            const contentTypes = contentTypesList.filter(contentType => {
+              let shouldInclude = true;
+              inputArray.forEach(inputChunk => {
+                // if any term to filter by doesn't exist, exclude
+                if (!contentType.toLowerCase().includes(inputChunk.toLowerCase())) {
+                  shouldInclude = false;
+                }
+              });
+              return shouldInclude;
+            });
+            resolveSource(contentTypes);
+          });
+        }
+      }
+    ];
+    inquirer.prompt(_chooseContentType).then(({ chosenContentTypes }) => resolve(chosenContentTypes));
+  });
+}
+
+function getContentTypes(managementAPIClient, stackApiKey, skip) {
   return new Promise((resolve) => {
     let result = {};
     managementAPIClient
       .stack({ api_key: stackApiKey })
       .contentType()
-      .query()
+      .query({ skip: skip * 100 })
       .find()
       .then((contentTypes) => {
         contentTypes.items.forEach((contentType) => {
@@ -219,6 +257,19 @@ function getEnvironments(managementAPIClient, stackApiKey) {
     });
 }
 
+function getContentTypeCount(managementAPIClient, stackApiKey) {
+  return new Promise((resolve) => {
+    managementAPIClient
+      .stack({ api_key: stackApiKey })
+      .contentType()
+      .query()
+      .count()
+      .then((contentTypes) => {
+        resolve(contentTypes.content_types);
+      });
+  });
+}
+
 function exitProgram() {
   debug('Exiting');
   // eslint-disable-next-line no-undef
@@ -270,7 +321,7 @@ function getDateTime() {
   return dateTime.join('_');
 }
 
-function write(command, entries, fileName) {
+function write(command, entries, fileName, message) {
   // eslint-disable-next-line no-undef
   if (process.cwd().split(delimeter).pop() !== 'data' && !fs.existsSync(directory)) {
     mkdirp.sync(directory);
@@ -281,7 +332,7 @@ function write(command, entries, fileName) {
     process.chdir(directory);
   }
   // eslint-disable-next-line no-undef
-  command.log(`Writing entries to file: ${process.cwd()}${delimeter}${fileName}`);
+  command.log(`Writing ${message} to file: ${process.cwd()}${delimeter}${fileName}`);
   fastcsv.writeToPath(fileName, entries, { headers: true });
 }
 
@@ -441,4 +492,7 @@ module.exports = {
   getOrganizationsWhereUserIsAdmin: getOrganizationsWhereUserIsAdmin,
   kebabize: kebabize,
   flatten: flatten,
+  getContentTypeCount: getContentTypeCount,
+  getContentTypes: getContentTypes,
+  chooseInMemContentTypes: chooseInMemContentTypes,
 };

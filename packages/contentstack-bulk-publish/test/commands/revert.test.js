@@ -2,8 +2,7 @@ const {expect, test} = require('@oclif/test')
 const nock = require('nock')
 
 const stack = require('../../src/util/client.js').stack
-const { configHandler } = require('@contentstack/cli-utilities');
-const {cli} = require('cli-ux')
+const { cliux, configHandler } = require('@contentstack/cli-utilities');
 const dummyConfig = configHandler
 const store = require('../../src/util/store.js')
 
@@ -72,7 +71,7 @@ describe('revert', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout({print: true})
   .command(['cm:bulk-publish:revert', '-l', entriesLogFileName])
   .it('revert entries', ctx => {
