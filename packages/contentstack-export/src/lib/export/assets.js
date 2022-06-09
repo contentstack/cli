@@ -11,6 +11,7 @@ const fs = require('fs')
 const Promise = require('bluebird')
 const _ = require('lodash')
 const chalk = require('chalk')
+const progress = require('progress-stream')
 
 const helper = require('../util/helper')
 const {addlogs} = require('../util/log')
@@ -269,12 +270,22 @@ ExportAssets.prototype = {
 
       self.assetStream.url = encodeURI(self.assetStream.url);
       const assetStreamRequest = nativeRequest(self.assetStream)
-      assetStreamRequest.on('response', function () {
+      assetStreamRequest.on('response', function (response) {
+        const str = progress({
+          length: response.headers['content-length'],
+          time: 5000,
+        })
+
+        str.on('progress', function(progress) {
+          console.log(`${asset.filename}: ${Math.round(progress.percentage)}%`)
+        })
+
         helper.makeDirectory(assetFolderPath)
         const assetFileStream = fs.createWriteStream(assetFilePath)
-        assetStreamRequest.pipe(assetFileStream)
+        assetStreamRequest.pipe(str).pipe(assetFileStream)
         assetFileStream.on('close', function () {
           addlogs(config, 'Downloaded ' + asset.filename + ': ' + asset.uid + ' successfully!', 'success')
+          console.log('\n')
           return resolve()
         })
       }).on('error', reject)
