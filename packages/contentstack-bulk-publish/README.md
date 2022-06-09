@@ -37,8 +37,10 @@ USAGE
 * [`csdx cm:entries:publish`](#csdx-cmentriespublish)
 * [`csdx cm:entries:publish-modified`](#csdx-cmentriespublish-modified)
 * [`csdx cm:entries:publish-non-localized-fields`](#csdx-cmentriespublish-non-localized-fields)
+* [`csdx cm:entries:publish-only-unpublished`](#csdx-cmentriespublish-only-unpublished)
 * [`csdx cm:entries:unpublish`](#csdx-cmentriesunpublish)
 * [`csdx cm:entries:update-and-publish`](#csdx-cmentriesupdate-and-publish)
+* [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
 * [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
 * [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
 * [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
@@ -62,6 +64,8 @@ OPTIONS
 
   --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's
                                    bulkpublish API will be used for publishing the entries
+
+  --content-types=content-types    Content types
 
   --delivery-token=delivery-token  Delivery Token for source environment
 
@@ -464,6 +468,66 @@ EXAMPLES
 
 _See code: [src/commands/cm/entries/publish-non-localized-fields.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish-non-localized-fields.js)_
 
+## `csdx cm:entries:publish-only-unpublished`
+
+Publish unpublished entries from the source environment, to other environments and locales
+
+```
+USAGE
+  $ csdx cm:entries:publish-only-unpublished
+
+OPTIONS
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
+  -a, --alias=alias                Alias for the management token to be used
+
+  -b, --bulk-publish=bulk-publish  [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used for publishing the entries
+
+  -c, --config=config              Path to config file to be used
+
+  -e, --environments=environments  Destination environments
+
+  -y, --yes                        Agree to process the command with the current configuration
+
+  --content-types=content-types    The Content-Types from which entries need to be published
+
+  --locales=locales                Source locale
+
+  --retry-failed=retry-failed      Retry publishing failed entries from the logfile
+
+  --source-env=source-env          Source Env
+
+DESCRIPTION
+  The publish-only-unpublished command is used for publishing unpublished entries from the source environment, to other 
+  environments and locales
+
+  Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the 
+  command successfully
+  But, if retry-failed flag is set, then only a logfile is required
+
+ALIASES
+  $ csdx cm:bulk-publish:unpublished-entries
+
+EXAMPLES
+  General Usage
+  csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a 
+  [MANAGEMENT TOKEN ALIAS] -source-env [SOURCE ENV]
+
+  Using --config or -c flag
+  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
+  csdx cm:entries:publish-only-unpublished --config [PATH TO CONFIG FILE]
+  csdx cm:entries:publish-only-unpublished -c [PATH TO CONFIG FILE]
+
+  Using --retry-failed
+  csdx cm:entries:publish-only-unpublished --retry-failed [LOG FILE NAME]
+
+  Using --branch
+  csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a 
+  [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME] -source-env [SOURCE ENV]
+```
+
+_See code: [src/commands/cm/entries/publish-only-unpublished.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish-only-unpublished.js)_
+
 ## `csdx cm:entries:unpublish`
 
 Unpublish entries from given environment
@@ -571,6 +635,41 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/entries/update-and-publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/update-and-publish.js)_
+
+## `csdx cm:stacks:publish`
+
+Publish entries and assets to multiple environments and locales
+
+```
+USAGE
+  $ csdx cm:stacks:publish
+
+DESCRIPTION
+  The publish command is used for publishing entries and assets, to the specified environments and locales.
+
+  Content Types, Environments and Locales are required for executing the publish entries command successfully.
+  Environments and Locales are required for executing the publish assets command successfully.
+  But, if retry-failed flag is set, then only a logfile is required
+
+EXAMPLES
+  General Usage
+  csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
+  ALIAS]
+
+  Using --config or -c flag
+  Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`
+  csdx cm:stacks:publish --config [PATH TO CONFIG FILE]
+  csdx cm:stacks:publish -c [PATH TO CONFIG FILE]
+
+  Using --retry-failed flag
+  csdx cm:stacks:publish --retry-failed [LOG FILE NAME]
+
+  Using --branch flag
+  csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
+  ALIAS] --branch [BRANCH NAME]
+```
+
+_See code: [src/commands/cm/stacks/publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish.js)_
 
 ## `csdx cm:stacks:publish-clear-logs`
 
