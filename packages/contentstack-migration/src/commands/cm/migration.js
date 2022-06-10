@@ -21,9 +21,27 @@ const { success } = require('../../utils/logger');
 
 // Properties
 const { get, set, getMapInstance, resetMapInstance } = _map;
-const { requests: _requests, actionMapper, MANAGEMENT_SDK, MANAGEMENT_TOKEN, AUTH_TOKEN, API_KEY, BRANCH } = constants;
+const {
+  requests: _requests,
+  actionMapper,
+  MANAGEMENT_SDK,
+  MANAGEMENT_TOKEN,
+  AUTH_TOKEN,
+  API_KEY,
+  BRANCH,
+  MANAGEMENT_CLIENT,
+} = constants;
 
 class MigrationCommand extends Command {
+  static examples = [
+    '$ csdx cm:migration -A -n <migration/script/file/path> -k <api-key>',
+    '$ csdx cm:migration -A -n <migration/script/file/path> -k <api-key> -B <target branch name>',
+    '$ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... -n <migration/script/file/path>',
+    '$ csdx cm:migration --config-file <path/to/json/config/file> -n <migration/script/file/path>',
+    '$ csdx cm:migration --multi -n <migration/scripts/dir/path> ',
+    '$ csdx cm:migration -a -n <migration/script/file/path> -k <api-key>',
+  ];
+
   async run() {
     // TODO: filePath validation required.
     const migrationCommandFlags = this.parse(MigrationCommand).flags;
@@ -31,12 +49,29 @@ class MigrationCommand extends Command {
     const authtoken = migrationCommandFlags.authtoken;
     const apiKey = migrationCommandFlags['api-key'];
     const alias = migrationCommandFlags['management-token-alias'];
+    const config = migrationCommandFlags['config'];
 
-    let stackSDKInstance;
+    if (!filePath) {
+      this.log('Please provide the migration script file path, use -n or --filePath flag');
+      this.exit();
+    }
 
     // Reset map instance
     const mapInstance = getMapInstance();
     resetMapInstance(mapInstance);
+    if (migrationCommandFlags['config-file']) {
+      set('config-path', mapInstance, migrationCommandFlags['config-file']);
+    }
+
+    if (Array.isArray(config) && config.length > 0) {
+      let configObj = config.reduce((a, v) => {
+        let objArr = v.split(':');
+        return { ...a, [objArr[0]]: objArr[1] };
+      }, {});
+      set('config', mapInstance, configObj);
+    }
+
+    let stackSDKInstance;
     if (branch) {
       set(BRANCH, mapInstance, branch);
     }
@@ -66,13 +101,17 @@ class MigrationCommand extends Command {
       set(API_KEY, mapInstance, apiKey);
       this.managementAPIClient = { authtoken: this.authToken };
       if (branch) {
-        stackSDKInstance = this.managementAPIClient.stack({ api_key: apiKey, branch_uid: branch });
+        stackSDKInstance = this.managementAPIClient.stack({
+          api_key: apiKey,
+          branch_uid: branch,
+        });
       } else {
         stackSDKInstance = this.managementAPIClient.stack({ api_key: apiKey });
       }
     }
 
     set(MANAGEMENT_SDK, mapInstance, stackSDKInstance);
+    set(MANAGEMENT_CLIENT, mapInstance, this.managementAPIClient);
 
     if (multi) {
       await this.execMultiFiles(filePath, mapInstance);
@@ -121,8 +160,8 @@ class MigrationCommand extends Command {
     const resolvedMigrationPath = resolve(filePath);
     try {
       const files = fs.readdirSync(resolvedMigrationPath);
-      for (let index = 0; index < files.length; index++) {
-        const file = files[index];
+      for (const element of files) {
+        const file = element;
         if (extname(file) === '.js') {
           success(chalk`{white Executing file:} {grey {bold ${file}}}`);
           // eslint-disable-next-line no-await-in-loop
@@ -138,20 +177,20 @@ class MigrationCommand extends Command {
     const _tasks = [];
     const results = [];
 
-    for (let i = 0; i < requests.length; i++) {
-      let reqObj = requests[i];
+    for (const element of requests) {
+      let reqObj = element;
       const { title, failedTitle, successTitle, tasks } = reqObj;
       const task = {
         title: title,
-        task: async (ctx, _task) => {
+        task: async (ctx, task) => {
           const [err, result] = await safePromise(waterfall(tasks));
           if (err) {
             ctx.error = true;
-            _task.title = failedTitle;
+            task.title = failedTitle;
             throw err;
           }
           result && results.push(result);
-          _task.title = successTitle;
+          task.title = successTitle;
           return result;
         },
       };
@@ -204,7 +243,16 @@ MigrationCommand.flags = {
     char: 'B',
     description: 'Use this flag to add the branch name where you want to perform the migration.',
   }),
-  multi: flags.boolean({ description: 'This flag helps you to migrate multiple content files in a single instance.' }), // Add a better description
+  'config-file': flags.string({
+    description: '[optional] Path of the JSON configuration file',
+  }),
+  config: flags.string({
+    description: '[optional] inline configuration, <key1>:<value1>',
+    multiple: true,
+  }),
+  multi: flags.boolean({
+    description: 'This flag helps you to migrate multiple content files in a single instance.',
+  }), // Add a better description
 };
 
 module.exports = MigrationCommand;

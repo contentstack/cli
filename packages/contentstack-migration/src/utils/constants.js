@@ -7,10 +7,12 @@ exports.version = 3; // TODO: Fetch it from CMA
 exports.defaultDataType = 'text';
 
 exports.MANAGEMENT_SDK = 'MANAGEMENT_SDK';
+exports.MANAGEMENT_CLIENT = 'MANAGEMENT_CLIENT';
 exports.MANAGEMENT_SDK = 'MANAGEMENT_TOKEN';
 exports.AUTH_TOKEN = 'AUTH_TOKEN';
 exports.API_KEY = 'API_KEY';
 exports.BRANCH = 'BRANCH';
+exports.SOURCE_BRANCH = 'SOURCE_BRANCH';
 
 exports.data_type = 'data_type';
 exports.mandatory = 'mandatory';
