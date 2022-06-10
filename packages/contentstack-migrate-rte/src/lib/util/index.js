@@ -1,7 +1,6 @@
 const contentstacksdk = require('@contentstack/management');
 const { Command } = require('@contentstack/cli-command');
 const command = new Command();
-const { cli } = require('cli-ux');
 const chalk = require('chalk');
 const {
   isEmpty,
