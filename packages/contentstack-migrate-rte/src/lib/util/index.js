@@ -1,9 +1,6 @@
 const contentstacksdk = require('@contentstack/management');
 const { Command } = require('@contentstack/cli-command');
-const { logger } = require('@contentstack/cli-utilities');
-
 const command = new Command();
-const { cliux } = require('@contentstack/cli-utilities');
 const chalk = require('chalk');
 const {
   isEmpty,
@@ -16,7 +13,7 @@ const {
   cloneDeep,
   isNil,
   isNull,
-  isPlainObject
+  isPlainObject,
 } = require('lodash');
 const Validator = require('jsonschema').Validator;
 const configSchema = require('./config_schema.json');
@@ -24,7 +21,7 @@ const { JSDOM } = require('jsdom');
 const collapseWithSpace = require('collapse-whitespace');
 const { htmlToJson } = require('@contentstack/json-rte-serializer');
 const nodePath = require('path');
-
+const { cliux } = require('@contentstack/cli-utilities');
 const packageValue = require('../../../package.json');
 const isBlank = (variable) => {
   return isNil(variable) || isEmpty(variable);
@@ -37,7 +34,7 @@ function getStack(data) {
   const client = contentstacksdk.client({
     host: formatHostname(data.host),
     application: `json-rte-migration/${packageValue.version}`,
-    timeout: 120000
+    timeout: 120000,
   });
   const stack = client.stack({ api_key: tokenDetails.apiKey, management_token: tokenDetails.token });
 
@@ -45,20 +42,20 @@ function getStack(data) {
   return stack;
 }
 const deprecatedFields = {
-  "configPath": "config-path",
-  "content_type": "content-type",
-  "isGlobalField": "global-field",
-  "htmlPath": "html-path",
-  "jsonPath": "json-path"
-}
-function normalizeFlags(config){
+  configPath: 'config-path',
+  content_type: 'content-type',
+  isGlobalField: 'global-field',
+  htmlPath: 'html-path',
+  jsonPath: 'json-path',
+};
+function normalizeFlags(config) {
   let normalizedConfig = cloneDeep(config);
-  Object.keys(deprecatedFields).forEach(key => {
-    if(normalizedConfig.hasOwnProperty(key)){
+  Object.keys(deprecatedFields).forEach((key) => {
+    if (normalizedConfig.hasOwnProperty(key)) {
       normalizedConfig[deprecatedFields[key]] = normalizedConfig[key];
       delete normalizedConfig[key];
     }
-  })
+  });
   return normalizedConfig;
 }
 
@@ -66,8 +63,8 @@ var customBar = cliux.progress({
   format: '{title} ' + '| {bar} | {value}/{total} Entries',
   barCompleteChar: '\u2588',
   barIncompleteChar: '\u2591',
-  stream: process.stdout
-})
+  stream: process.stdout,
+});
 async function getConfig(flags) {
   try {
     let config;
@@ -77,8 +74,8 @@ async function getConfig(flags) {
     } else {
       config = {
         alias: flags.alias,
-        "content-type": flags['content-type'],
-        "global-field": flags['global-field'],
+        'content-type': flags['content-type'],
+        'global-field': flags['global-field'],
         paths: [
           {
             from: flags['html-path'] || flags.htmlPath,
@@ -86,10 +83,10 @@ async function getConfig(flags) {
           },
         ],
         delay: flags.delay,
-        "batch-limit": flags["batch-limit"]
+        'batch-limit': flags['batch-limit'],
       };
-      if(flags.locale){
-        config.locale = [flags.locale]
+      if (flags.locale) {
+        config.locale = [flags.locale];
       }
     }
     if (checkConfig(config)) {
@@ -146,7 +143,7 @@ function throwConfigError(error) {
   } else if (name === 'type') {
     throw new Error(`Invalid key type. ${fieldName} must be of ${argument[0] || 'string'} type(s).`);
   } else if (name === 'minimum' || name === 'maximum') {
-    throw new Error(`${fieldName} must be between 1 and 100.`)
+    throw new Error(`${fieldName} must be between 1 and 100.`);
   }
 }
 function checkConfig(config) {
@@ -169,25 +166,25 @@ async function confirmConfig(config, skipConfirmation) {
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 async function updateEntriesInBatch(contentType, config, skip = 0, retry = 0, locale = undefined) {
-  let title = `Migrating entries for ${contentType.uid}`
-  let extraParams = {}
+  let title = `Migrating entries for ${contentType.uid}`;
+  let extraParams = {};
   if (locale) {
-    extraParams.locale = locale
-    extraParams.query = { locale: locale }
+    extraParams.locale = locale;
+    extraParams.query = { locale: locale };
   }
-  if(config["failed-entries"] && config["failed-entries"].length > 0){
-    title = `Migrating failed entries for ${contentType.uid}`
-    if(extraParams.query){
-      extraParams.query["uid"] = { "$in": config["failed-entries"] }
-    }else{
-      extraParams = {query: {uid: { "$in": config["failed-entries"] }}}
+  if (config['failed-entries'] && config['failed-entries'].length > 0) {
+    title = `Migrating failed entries for ${contentType.uid}`;
+    if (extraParams.query) {
+      extraParams.query['uid'] = { $in: config['failed-entries'] };
+    } else {
+      extraParams = { query: { uid: { $in: config['failed-entries'] } } };
     }
   }
   let entryQuery = {
     include_count: true,
     ...extraParams,
     skip: skip,
-    limit: config["batch-limit"] || 50
+    limit: config['batch-limit'] || 50,
   };
   try {
     await contentType
@@ -197,15 +194,16 @@ async function updateEntriesInBatch(contentType, config, skip = 0, retry = 0, lo
       .then(async (entriesResponse) => {
         try {
           customBar.start(entriesResponse.count, skip, {
-            title: title
-          })
-        } catch (error) { }
-
+            title: title,
+          });
+        } catch (error) {}
         skip += entriesResponse.items.length;
         let entries = entriesResponse.items;
 
         for (const entry of entries) {
-          customBar.increment()
+          try {
+            customBar.increment();
+          } catch (error) {}
           await updateSingleEntry(entry, contentType, config);
           await delay(config.delay || 1000);
         }
@@ -213,21 +211,18 @@ async function updateEntriesInBatch(contentType, config, skip = 0, retry = 0, lo
           return Promise.resolve();
         }
         await updateEntriesInBatch(contentType, config, skip, 0, locale);
-      })
+      });
   } catch (error) {
     console.error(`Error while fetching batch of entries: ${error.message}`);
     if (retry < 3) {
-      retry += 1
+      retry += 1;
       console.error(`Retrying again in 5 seconds... (${retry}/3)`);
       await delay(5000);
       await updateEntriesInBatch(contentType, config, skip, retry, locale);
-    }
-    else {
+    } else {
       throw new Error(`Max retry exceeded: Error while fetching batch of entries: ${error.message}`);
     }
   }
-
-
 }
 async function updateSingleContentTypeEntries(stack, contentTypeUid, config) {
   let contentType = await getContentType(stack, contentTypeUid);
@@ -239,19 +234,19 @@ async function updateSingleContentTypeEntries(stack, contentTypeUid, config) {
       throw new Error(`The ${contentTypeUid} content type contains an empty schema.`);
     }
   }
-  if(config.locale && isArray(config.locale) && config.locale.length > 0){
-    const locales = config.locale
+  if (config.locale && isArray(config.locale) && config.locale.length > 0) {
+    const locales = config.locale;
     for (const locale of locales) {
-      console.log(`\nMigrating entries for "${contentTypeUid}" Content-type in "${locale}" locale`)
-      await updateEntriesInBatch(contentType, config,0,0,locale)
-      await delay(config.delay || 1000)
+      console.log(`\nMigrating entries for "${contentTypeUid}" Content-type in "${locale}" locale`);
+      await updateEntriesInBatch(contentType, config, 0, 0, locale);
+      await delay(config.delay || 1000);
     }
-  }else{
-    await updateEntriesInBatch(contentType, config)
+  } else {
+    await updateEntriesInBatch(contentType, config);
   }
   config.contentTypeCount += 1;
   try {
-    customBar.stop()
+    customBar.stop();
   } catch (error) {}
 }
 async function updateSingleContentTypeEntriesWithGlobalField(contentType, config) {
@@ -260,14 +255,14 @@ async function updateSingleContentTypeEntriesWithGlobalField(contentType, config
     isPathValid(schema, path);
   }
   if (config.locale && isArray(config.locale) && config.locale.length > 0) {
-    const locales = config.locale
+    const locales = config.locale;
     for (const locale of locales) {
-      console.log(`\nMigrating entries for ${contentType.uid} in locale ${locale}`)
-      await updateEntriesInBatch(contentType, config, 0, 0, locale)
-      await delay(config.delay || 1000)
+      console.log(`\nMigrating entries for ${contentType.uid} in locale ${locale}`);
+      await updateEntriesInBatch(contentType, config, 0, 0, locale);
+      await delay(config.delay || 1000);
     }
   } else {
-    await updateEntriesInBatch(contentType, config)
+    await updateEntriesInBatch(contentType, config);
   }
   config.contentTypeCount += 1;
 }
@@ -295,33 +290,38 @@ async function updateSingleEntry(entry, contentType, config) {
   } catch (error) {
     console.error(`Error while unsetting resolved upload data: ${error.message}`);
   }
-  await handleEntryUpdate(entry,config,0)
+  await handleEntryUpdate(entry, config, 0);
   // console.log("updated entry", entry)
 }
-async function handleEntryUpdate(entry,config,retry = 0){
+async function handleEntryUpdate(entry, config, retry = 0) {
   try {
-    await entry.update({locale:entry.locale})
-    config.entriesCount += 1
+    await entry.update({ locale: entry.locale });
+    config.entriesCount += 1;
   } catch (error) {
-    console.log(chalk.red(`Error while updating '${entry.uid}' entry`))
+    console.log(chalk.red(`Error while updating '${entry.uid}' entry`));
     if (error.errors && isPlainObject(error.errors)) {
-      const errVal = Object.entries(error.errors)
+      const errVal = Object.entries(error.errors);
       errVal.forEach(([key, vals]) => {
-        console.log(chalk.red(` ${key}:-  ${vals.join(',')}`))
-      })
-    }else{
-      console.log(chalk.red(`Error stack: ${error}`))
+        console.log(chalk.red(` ${key}:-  ${vals.join(',')}`));
+      });
+    } else {
+      console.log(chalk.red(`Error stack: ${error}`));
     }
     if (retry < 3) {
-      retry += 1
+      retry += 1;
       console.log(`Retrying again in 5 seconds... (${retry}/3)`);
       await delay(5000);
-      await handleEntryUpdate(entry,config,retry)
-    }else{
-      if(config && config.errorEntriesUid && config.errorEntriesUid[entry.content_type_uid] &&config.errorEntriesUid[entry.content_type_uid][entry.locale]){
-        config.errorEntriesUid[entry.content_type_uid][entry.locale].push(entry.uid)
-      }else{
-        set(config,['errorEntriesUid',entry.content_type_uid,entry.locale],[entry.uid])
+      await handleEntryUpdate(entry, config, retry);
+    } else {
+      if (
+        config &&
+        config.errorEntriesUid &&
+        config.errorEntriesUid[entry.content_type_uid] &&
+        config.errorEntriesUid[entry.content_type_uid][entry.locale]
+      ) {
+        config.errorEntriesUid[entry.content_type_uid][entry.locale].push(entry.uid);
+      } else {
+        set(config, ['errorEntriesUid', entry.content_type_uid, entry.locale], [entry.uid]);
       }
     }
   }
@@ -573,7 +573,7 @@ async function updateContentTypeForGlobalField(stack, global_field, config) {
       }
     }
     try {
-      customBar.stop()
+      customBar.stop();
     } catch (error) {}
   } else {
     throw new Error(`${globalField.uid} Global field is not referred in any content type.`);
@@ -699,5 +699,5 @@ module.exports = {
   updateSingleContentTypeEntries,
   updateContentTypeForGlobalField,
   command,
-  normalizeFlags
+  normalizeFlags,
 };
