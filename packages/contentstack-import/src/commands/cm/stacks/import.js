@@ -31,27 +31,29 @@ class ImportCommand extends Command {
 
         if (managementTokens) {
           if (extConfig && _authToken) {
-            configWithMToken(extConfig, managementTokens, moduleName, host, _authToken, branchName, backupdir).then(
-              () => {
+            configWithMToken(extConfig, managementTokens, moduleName, host, _authToken, branchName, backupdir)
+              .then(() => {
                 return resolve();
-              },
-            ).catch((error) => {
-              return reject(error);
-            });
+              })
+              .catch((error) => {
+                return reject(error);
+              });
           } else if (data) {
-            parameterWithMToken(managementTokens, data, moduleName, host, _authToken, branchName, backupdir).then(
-              () => {
+            parameterWithMToken(managementTokens, data, moduleName, host, _authToken, branchName, backupdir)
+              .then(() => {
                 return resolve();
-              },
-            ).catch((error) => {
-              return reject(error);
-            });
+              })
+              .catch((error) => {
+                return reject(error);
+              });
           } else {
-            withoutParameterMToken(managementTokens, moduleName, host, _authToken, branchName, backupdir).then(() => {
-              return resolve();
-            }).catch((error) => {
-              return reject(error);
-            });
+            withoutParameterMToken(managementTokens, moduleName, host, _authToken, branchName, backupdir)
+              .then(() => {
+                return resolve();
+              })
+              .catch((error) => {
+                return reject(error);
+              });
           }
         } else {
           console.log('management Token is not present please add managment token first');
@@ -82,15 +84,14 @@ ImportCommand.description = `Import script for importing the content into new st
 Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import command.
 `;
 ImportCommand.examples = [
-  `csdx cm:stacks:import -s <stack_ApiKey> -d <path/of/export/destination/dir>`,
-  `csdx cm:stacks:import -c <path/of/config/dir>`,
-  `csdx cm:stacks:import -m <single module name>`,
-  `csdx cm:stacks:import -m <single module name> -b <backup dir>`,
-  `csdx cm:stacks:import -a <management_token_alias>`,
-  `csdx cm:stacks:import -a <management_token_alias> -d <path/of/export/destination/dir>`,
-  `csdx cm:stacks:import -a <management_token_alias> -c <path/of/config/file>`,
-  `csdx cm:stacks:import -m <single module name>`,
-  `csdx cm:stacks:import -B <branch name>`,
+  `csdx cm:stacks:import --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>`,
+  `csdx cm:stacks:import --config <path/of/config/dir>`,
+  `csdx cm:stacks:import --module <single module name>`,
+  `csdx cm:stacks:import --module <single module name> --backup-dir <backup dir>`,
+  `csdx cm:stacks:import --management-token-alias <management_token_alias>`,
+  `csdx cm:stacks:import --management-token-alias <management_token_alias> --data-dir <path/of/export/destination/dir>`,
+  `csdx cm:stacks:import --management-token-alias <management_token_alias> --config <path/of/config/file>`,
+  `csdx cm:stacks:import --branch <branch name>`,
 ];
 ImportCommand.flags = {
   config: flags.string({
@@ -100,6 +101,7 @@ ImportCommand.flags = {
   'stack-uid': flags.string({
     char: 's',
     description: 'API key of the target stack',
+    hidden: true,
     parse: printFlagDeprecation(['-s', '--stack-uid'], ['-k', '--stack-api-key']),
   }),
   'stack-api-key': flags.string({
@@ -107,11 +109,12 @@ ImportCommand.flags = {
     description: 'API key of the target stack',
   }),
   data: flags.string({
-    char: 'd',
     description: 'path and location where data is stored',
+    hidden: true,
     parse: printFlagDeprecation(['--data'], ['--data-dir']),
   }),
   'data-dir': flags.string({
+    char: 'd',
     description: 'path and location where data is stored',
   }),
   'management-token-alias': flags.string({
@@ -121,19 +124,23 @@ ImportCommand.flags = {
   'auth-token': flags.boolean({
     char: 'A',
     description: 'to use auth token',
+    hidden: true,
     parse: printFlagDeprecation(['-A', '--auth-token']),
   }),
   module: flags.string({
     char: 'm',
     description: '[optional] specific module name',
+    parse: printFlagDeprecation(['-m'], ['--module']),
   }),
   'backup-dir': flags.string({
     char: 'b',
     description: '[optional] backup directory name when using specific module',
+    parse: printFlagDeprecation(['-b', '--backup-dir']),
   }),
   branch: flags.string({
     char: 'B',
     description: '[optional] branch name',
+    parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
 };
 
