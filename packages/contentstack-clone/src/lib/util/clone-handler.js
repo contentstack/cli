@@ -53,11 +53,11 @@ class CloneHandler {
 
       if (orgList) {
         const orgSelected = await inquirer.prompt(orgList);
-  
+
         if (isSource) {
-          config.sourceOrg = orgUidList[orgSelected.Organization]; 
+          config.sourceOrg = orgUidList[orgSelected.Organization];
         } else {
-          config.targetOrg = orgUidList[orgSelected.Organization]; 
+          config.targetOrg = orgUidList[orgSelected.Organization];
         }
 
         resolve(orgSelected)
@@ -72,7 +72,7 @@ class CloneHandler {
 
       if (stackList) {
         const selectedStack = await inquirer.prompt(stackList);
-  
+
         if (isSource) {
           config.sourceStackName = selectedStack.stack;
           master_locale = masterLocaleList[selectedStack.stack];
@@ -115,18 +115,18 @@ class CloneHandler {
       }
 
       if (config.source_stack) {
+        stackName.default = config.stackName || `Copy of ${sourceStack.stack || config.source_alias}`;
+        const exportRes = await this.cmdExport().catch(reject);
+
         if (!config.sourceStackBranch) {
           try {
             const branches = await client.stack({ api_key: config.source_stack }).branch().query().find();
-  
+
             if (branches && branches.items && branches.items.length) {
               config.sourceStackBranch = 'main';
             }
-          } catch (_error) {}
+          } catch (_error) { }
         }
-
-        stackName.default = config.stackName || `Copy of ${sourceStack.stack || config.source_alias}`;
-        const exportRes = await this.cmdExport().catch(reject);
 
         // NOTE Import section
         if (exportRes) {
