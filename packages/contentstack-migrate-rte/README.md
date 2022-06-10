@@ -1,15 +1,17 @@
-@contentstack/cli-cm-migrate-rte
-==========================
+# @contentstack/cli-cm-migrate-rte
 
 It is Contentstack’s CLI plugin to migrate rte. Using this command, you can copy existing value of HTML RTE into JSON RTE.
 
-
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @contentstack/cli-cm-migrate-rte
 $ csdx COMMAND
@@ -21,11 +23,15 @@ USAGE
   $ csdx COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
-* [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
-* [`csdx help [COMMAND]`](#csdx-help-command)
+
+- [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
+- [`csdx help [COMMAND]`](#csdx-help-command)
 
 ## `csdx cm:entries:migrate-html-rte`
 
@@ -60,18 +66,18 @@ EXAMPLES
   csdx cm:entries:migrate-html-rte --config-path path/to/config.json
 
   Using Flags
-  csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path html-path --json-path 
+  csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path html-path --json-path
   json-path
 
   Nested RTE
-  csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path 
+  csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path
   modular_block_uid.block_uid.html_rte_uid --json-path modular_block_uid.block_uid.json_rte_uid
 
-  csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path group_uid.html_rte_uid 
+  csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path group_uid.html_rte_uid
   --json-path group_uid.json_rte_uid
 
   Global Field
-  csdx cm:entries:migrate-html-rte --alias alias --content-type global_field_uid --global-field --html-path html-path 
+  csdx cm:entries:migrate-html-rte --alias alias --content-type global_field_uid --global-field --html-path html-path
   --json-path json-path
 ```
 
@@ -93,4 +99,5 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.18/src/commands/help.ts)_
+
 <!-- commandsstop -->
