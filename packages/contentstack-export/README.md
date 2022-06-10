@@ -64,16 +64,13 @@ USAGE
   $ csdx cm:stacks:export
 
 OPTIONS
-  -A, --auth-token                                     to use auth token
-  -B, --branch=branch                                  [optional] branch name
   -a, --management-token-alias=management-token-alias  alias of the management token
   -c, --config=config                                  [optional] path of the config
-  -d, --data=data                                      path or location to store the data
+  -d, --data-dir=data-dir                              path or location to store the data
   -k, --stack-api-key=stack-api-key                    API key of the source stack
-  -m, --module=module                                  [optional] specific module name
-  -s, --stack-uid=stack-uid                            API key of the source stack
-  -t, --content-types=content-types                    [optional] content type
-  --data-dir=data-dir                                  path or location to store the data
+  --branch=branch                                  [optional] branch name
+  --module=module                                  [optional] specific module name
+  --content-types=content-types                    [optional] content type
   --secured-assets                                     [optional] use when assets are secured
 
 DESCRIPTION
@@ -84,11 +81,11 @@ ALIASES
   $ csdx cm:export
 
 EXAMPLES
-  csdx cm:stacks:export -k <stack_ApiKey> -d <path/of/export/destination/dir>
-  csdx cm:stacks:export -c <path/to/config/dir>
-  csdx cm:stacks:export -a <management_token_alias>
-  csdx cm:stacks:export -a <management_token_alias> --data-dir <path/to/export/destination/dir>
-  csdx cm:stacks:export -a <management_token_alias> -c <path/to/config/file>
+  csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>
+  csdx cm:stacks:export --config <path/to/config/dir>
+  csdx cm:stacks:export --management-token-alias <management_token_alias>
+  csdx cm:stacks:export --management-token-alias <management_token_alias> --data-dir <path/to/export/destination/dir>
+  csdx cm:stacks:export --management-token-alias <management_token_alias> --config <path/to/config/file>
   csdx cm:stacks:export --module <single module name>
   csdx cm:stacks:export --branch [optional] branch name
 ```

@@ -1,7 +1,7 @@
 const path = require('path');
 const winston = require('winston');
-const homedir = require('os').homedir();
-const logsDir = path.join(homedir, 'contentstack-cli-logs', 'bulk-publish');
+const cwd = process.cwd();
+const logsDir = path.join(cwd, 'contentstack-cli-logs', 'bulk-publish');
 
 let filename;
 
