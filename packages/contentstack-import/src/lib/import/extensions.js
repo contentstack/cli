@@ -88,7 +88,7 @@ importExtensions.prototype = {
           // the extensions has already been created
           addlogs(
             config,
-            chalk.white("The extension: '" + ext.name + "' already exists. Skipping it to avoid duplicates!"),
+            chalk.white("The extension: '" + ext.title + "' already exists. Skipping it to avoid duplicates!"),
             'success',
           );
           // import 2 extensions at a time

@@ -1,4 +1,7 @@
 const contentstacksdk = require('@contentstack/management');
+const https = require('https');
+
+const { addlogs } = require('./log');
 
 exports.Client = function (config) {
   const option = {
@@ -8,12 +11,21 @@ exports.Client = function (config) {
     api_key: config.target_stack,
     maxContentLength: 100000000,
     maxBodyLength: 1000000000,
-    logHandler: (_level, _data) => {
-      // empty handler
-    },
+    maxRequests: 10,
+    retryLimit: 5,
+    timeout: 60000,
+    httpsAgent: new https.Agent({
+      maxSockets: 100,
+      maxFreeSockets: 10,
+      keepAlive: true,
+      timeout: 60000, // active socket keepalive for 60 seconds
+      freeSocketTimeout: 30000, // free socket keepalive for 30 seconds
+    }),
+    retryDelay: Math.floor(Math.random() * (8000 - 3000 + 1) + 3000),
+    logHandler: (level, data) => {},
     retryCondition: (error) => {
       // no async function should be used here
-      return (error.response && (error.response.status === 429 || error.response.status === 408))
+      return error.response && (error.response.status === 429 || error.response.status === 408);
     },
     retryDelayOptions: {
       base: 1000,
@@ -24,5 +36,6 @@ exports.Client = function (config) {
       branch: config.branchName,
     };
   }
-  return contentstacksdk.client(option);
+  const client = contentstacksdk.client(option);
+  return client;
 };
