@@ -8,34 +8,31 @@ The Contentstack CLI’s “Migration” plugin allows developers to automate th
 [![License](https://img.shields.io/npm/l/@contentstack/cli-migration.svg)](https://github.com/***REMOVED***/cli-migration/blob/master/package.json)
 
 <!-- toc -->
-
-- [Usage](#usage)
-- [Commands](#commands)
+* [@contentstack/cli-migration](#contentstackcli-migration)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli-migration
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-migration/1.0.0 darwin-arm64 node-v18.1.0
+@contentstack/cli-migration/1.0.0 darwin-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`csdx cm:migration`](#csdx-cmmigration)
+* [`csdx cm:migration`](#csdx-cmmigration)
 
 ## `csdx cm:migration`
 
@@ -59,12 +56,23 @@ OPTIONS
   -n, --filePath=filePath                              Use this flag to provide the path of the file of the migration
                                                        script provided by the user.
 
+  --config=config                                      [optional] inline configuration, <key1>:<value1>
+
+  --config-file=config-file                            [optional] Path of the JSON configuration file
+
   --multi                                              This flag helps you to migrate multiple content files in a single
                                                        instance.
+
+EXAMPLES
+  $ csdx cm:migration -A -n <migration/script/file/path> -k <api-key>
+  $ csdx cm:migration -A -n <migration/script/file/path> -k <api-key> -B <target branch name>
+  $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... -n <migration/script/file/path>
+  $ csdx cm:migration --config-file <path/to/json/config/file> -n <migration/script/file/path>
+  $ csdx cm:migration --multi -n <migration/scripts/dir/path> 
+  $ csdx cm:migration -a -n <migration/script/file/path> -k <api-key>
 ```
 
 _See code: [src/commands/cm/migration.js](https://github.com/contentstack/cli-migration/blob/v1.0.0/src/commands/cm/migration.js)_
-
 <!-- commandsstop -->
 
 ### Points to remember
