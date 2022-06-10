@@ -1,33 +1,39 @@
 @contentstack/cli-cm-import
 
-It is Contentstack’s CLI plugin to import content in the stack. To learn how to export and import content in Contentstack, refer to the [Migration guide](https://www.contentstack.com/docs/developers/cli/migration/). 
+It is Contentstack’s CLI plugin to import content in the stack. To learn how to export and import content in Contentstack, refer to the [Migration guide](https://www.contentstack.com/docs/developers/cli/migration/).
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 For switching to EU region update the hosts at config/default.js
+
 ```js
 {
   host:'https://eu-api.contentstack.com/v3',
   cdn: 'https://eu-cdn.contentstack.com/v3',
  ...
 }
-``` 
+```
 
 For switching to AZURE-NA region update the hosts at config/default.js
+
 ```js
 {
   host:'https://azure-na-api.contentstack.com/v3',
   cdn: 'https://azure-na-cdn.contentstack.com/v3'
  ...
 }
-``` 
+```
+
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
@@ -39,10 +45,14 @@ USAGE
   $ csdx COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
-* [`csdx cm:stacks:import`](#csdx-cmstacksimport)
+
+- [`csdx cm:stacks:import`](#csdx-cmstacksimport)
 
 ## `csdx cm:stacks:import`
 
@@ -66,7 +76,7 @@ OPTIONS
 
 DESCRIPTION
   ...
-  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import 
+  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import
   command.
 
 ALIASES
@@ -85,4 +95,5 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/stacks/import.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-import/src/commands/cm/stacks/import.js)_
+
 <!-- commandsstop -->

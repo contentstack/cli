@@ -1,7 +1,7 @@
 {
     "alias": "test1",
-    "content-type": "contenttypewithsinglerte",
-    "global-field": false,
+    "content_type": "contenttypewithsinglerte",
+    "isGlobalField": false,
     "paths": [
         {
             "from": "rich_text_editor",
@@ -9,8 +9,5 @@
         }
     ],
     "delay": 50,
-    "locale": [
-        "en-in",
-        "en-us"
-    ]
+    "locale":["en-in"]
 }

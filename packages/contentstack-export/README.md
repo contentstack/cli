@@ -5,9 +5,10 @@ It is Contentstack’s CLI plugin to export content from the stack. To learn how
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-* [@contentstack/cli-cm-export](#contentstackcli-cm-export)
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [@contentstack/cli-cm-export](#contentstackcli-cm-export)
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 For switching to EU region update the hosts at config/default.js
@@ -29,9 +30,11 @@ For switching to AZURE-NA region update the hosts at config/default.js
  ...
 }
 ```
+
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
@@ -43,12 +46,14 @@ USAGE
   $ csdx COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-* [`csdx cm:stacks:export`](#csdx-cmstacksexport)
+
+- [`csdx cm:stacks:export`](#csdx-cmstacksexport)
 
 ## `csdx cm:stacks:export`
 
@@ -89,4 +94,5 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/stacks/export.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-export/src/commands/cm/stacks/export.js)_
+
 <!-- commandsstop -->

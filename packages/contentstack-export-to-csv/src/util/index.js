@@ -154,10 +154,10 @@ function chooseInMemContentTypes(contentTypesList) {
         source: (_, input) => {
           input = input || '';
           const inputArray = input.split(' ');
-          return new Promise(resolveSource => {
-            const contentTypes = contentTypesList.filter(contentType => {
+          return new Promise((resolveSource) => {
+            const contentTypes = contentTypesList.filter((contentType) => {
               let shouldInclude = true;
-              inputArray.forEach(inputChunk => {
+              inputArray.forEach((inputChunk) => {
                 // if any term to filter by doesn't exist, exclude
                 if (!contentType.toLowerCase().includes(inputChunk.toLowerCase())) {
                   shouldInclude = false;
@@ -167,8 +167,8 @@ function chooseInMemContentTypes(contentTypesList) {
             });
             resolveSource(contentTypes);
           });
-        }
-      }
+        },
+      },
     ];
     inquirer.prompt(_chooseContentType).then(({ chosenContentTypes }) => resolve(chosenContentTypes));
   });
@@ -230,15 +230,27 @@ function getLanguages(managementAPIClient, stackApiKey) {
   });
 }
 
-function getEntries(managementAPIClient, stackApiKey, contentType, language) {
+function getEntries(managementAPIClient, stackApiKey, contentType, language, skip) {
+  return new Promise((resolve) => {
+    managementAPIClient
+      .stack({ api_key: stackApiKey })
+      .contentType(contentType)
+      .entry()
+      .query({ include_publish_details: true, locale: language, skip: skip * 100 })
+      .find()
+      .then((entries) => resolve(entries));
+  });
+}
+
+function getEntriesCount(managementAPIClient, stackApiKey, contentType, language) {
   return new Promise((resolve) => {
     managementAPIClient
       .stack({ api_key: stackApiKey })
       .contentType(contentType)
       .entry()
       .query({ include_publish_details: true, locale: language })
-      .find()
-      .then((entries) => resolve(entries));
+      .count()
+      .then((entriesData) => resolve(entriesData.entries));
   });
 }
 
@@ -495,4 +507,5 @@ module.exports = {
   getContentTypeCount: getContentTypeCount,
   getContentTypes: getContentTypes,
   chooseInMemContentTypes: chooseInMemContentTypes,
+  getEntriesCount: getEntriesCount,
 };

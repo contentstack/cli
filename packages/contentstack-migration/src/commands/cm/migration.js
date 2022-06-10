@@ -24,6 +24,15 @@ const { get, set, getMapInstance, resetMapInstance } = _map;
 const { requests: _requests, actionMapper, MANAGEMENT_SDK, MANAGEMENT_TOKEN, AUTH_TOKEN, API_KEY, BRANCH } = constants;
 
 class MigrationCommand extends Command {
+  static examples = [
+    '$ csdx cm:migration -A -n <migration/script/file/path> -k <api-key>',
+    '$ csdx cm:migration -A -n <migration/script/file/path> -k <api-key> -B <target branch name>',
+    '$ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... -n <migration/script/file/path>',
+    '$ csdx cm:migration --config-file <path/to/json/config/file> -n <migration/script/file/path>',
+    '$ csdx cm:migration --multi -n <migration/scripts/dir/path> ',
+    '$ csdx cm:migration -a -n <migration/script/file/path> -k <api-key>',
+  ];
+
   async run() {
     // TODO: filePath validation required.
     const migrationCommandFlags = this.parse(MigrationCommand).flags;
@@ -31,12 +40,29 @@ class MigrationCommand extends Command {
     const authtoken = migrationCommandFlags.authtoken;
     const apiKey = migrationCommandFlags['api-key'];
     const alias = migrationCommandFlags['management-token-alias'];
+    const config = migrationCommandFlags['config'];
 
-    let stackSDKInstance;
+    if (!filePath) {
+      this.log('Please provide the migration script file path, use -n or --filePath flag');
+      this.exit();
+    }
 
     // Reset map instance
     const mapInstance = getMapInstance();
     resetMapInstance(mapInstance);
+    if (migrationCommandFlags['config-file']) {
+      set('config-path', mapInstance, migrationCommandFlags['config-file']);
+    }
+
+    if (Array.isArray(config) && config.length > 0) {
+      let configObj = config.reduce((a, v) => {
+        let objArr = v.split(':');
+        return { ...a, [objArr[0]]: objArr[1] };
+      }, {});
+      set('config', mapInstance, configObj);
+    }
+
+    let stackSDKInstance;
     if (branch) {
       set(BRANCH, mapInstance, branch);
     }
@@ -73,6 +99,7 @@ class MigrationCommand extends Command {
     }
 
     set(MANAGEMENT_SDK, mapInstance, stackSDKInstance);
+    set(MANAGEMENT_CLIENT, mapInstance, this.managementAPIClient);
 
     if (multi) {
       await this.execMultiFiles(filePath, mapInstance);
@@ -204,7 +231,16 @@ MigrationCommand.flags = {
     char: 'B',
     description: 'Use this flag to add the branch name where you want to perform the migration.',
   }),
-  multi: flags.boolean({ description: 'This flag helps you to migrate multiple content files in a single instance.' }), // Add a better description
+  'config-file': flags.string({
+    description: '[optional] Path of the JSON configuration file',
+  }),
+  config: flags.string({
+    description: '[optional] inline configuration, <key1>:<value1>',
+    multiple: true,
+  }),
+  multi: flags.boolean({
+    description: 'This flag helps you to migrate multiple content files in a single instance.',
+  }), // Add a better description
 };
 
 module.exports = MigrationCommand;
