@@ -1,8 +1,8 @@
 const { Command, flags } = require('@contentstack/cli-command');
 const { configHandler } = require('@contentstack/cli-utilities');
 const ContentstackManagementSDK = require('@contentstack/management');
-const util = require('@contentstack/cli-cm-export-to-csv/src/util/index');
-const config = require('@contentstack/cli-cm-export-to-csv/src/util/config');
+const util = require('../../../util');
+const config = require('../../../util/config');
 
 class ExportToCsvCommand extends Command {
   static flags = {
@@ -13,14 +13,14 @@ class ExportToCsvCommand extends Command {
       description: `Choose Action
 a) ${config.exportEntries}
 b) ${config.exportUsers}`,
-      parse: action => {
+      parse: (action) => {
         const actionObj = {
           a: config.exportEntries,
-          b: config.exportUsers
-        }
+          b: config.exportUsers,
+        };
 
-        return actionObj[action]
-      }
+        return actionObj[action];
+      },
     }),
     'management-token-alias': flags.string({
       char: 'a',
@@ -29,20 +29,20 @@ b) ${config.exportUsers}`,
     org: flags.string({
       multiple: false,
       required: false,
-      description: 'Provide Organization UID to clone org users'
+      description: 'Provide Organization UID to clone org users',
     }),
     'stack-name': flags.string({
       char: 'n',
       hidden: true,
       multiple: false,
       required: false,
-      description: 'Name of the stack that needs to be created as csv filename.'
+      description: 'Name of the stack that needs to be created as csv filename.',
     }),
     'org-name': flags.string({
       hidden: true,
       multiple: false,
       required: false,
-      description: 'Name of the organization that needs to be created as csv filename.'
+      description: 'Name of the organization that needs to be created as csv filename.',
     }),
     'language-code': flags.string({
       required: false,
@@ -67,8 +67,8 @@ b) ${config.exportUsers}`,
 |  Page  | Header | Footer | Blog Post | Author  |
 |------------------------------------------------|
 \x1b[37m`,
-    })
-  }
+    }),
+  };
 
   get managementAPIClient() {
     this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this.authToken });
@@ -80,11 +80,11 @@ b) ${config.exportUsers}`,
       this.error(config.CLI_EXPORT_CSV_LOGIN_FAILED, {
         exit: 2,
         suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-      })
+      });
     }
 
     try {
-      let action
+      let action;
       const {
         flags: {
           org,
@@ -93,54 +93,54 @@ b) ${config.exportUsers}`,
           'stack-name': stackName,
           'language-code': languageCode,
           'content-type': contentTypesFlag,
-          'management-token-alias': managementTokenAlias
-        }
+          'management-token-alias': managementTokenAlias,
+        },
       } = this.parse(ExportToCsvCommand);
 
       if (actionFlag) {
-        action = actionFlag
+        action = actionFlag;
       } else {
         action = await util.startupQuestions();
       }
 
       switch (action) {
         case config.exportEntries: {
-          let stack
-          let language
+          let stack;
+          let language;
           let contentTypes = [];
           const listOfTokens = configHandler.get('tokens');
 
           if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
             stack = {
               name: stackName || managementTokenAlias,
-              apiKey: listOfTokens[managementTokenAlias].apiKey
-            }
+              apiKey: listOfTokens[managementTokenAlias].apiKey,
+            };
           } else if (managementTokenAlias) {
-            console.log('\x1b[31m ERROR: Provided management token alias not found in your config.!')
-            this.exit()
+            console.log('\x1b[31m ERROR: Provided management token alias not found in your config.!');
+            this.exit();
           } else {
-            let organization
+            let organization;
 
             if (org) {
-              organization = { uid: org }
+              organization = { uid: org };
             } else {
               organization = await util.chooseOrganization(this.managementAPIClient); // prompt for organization
             }
 
             stack = await util.chooseStack(this.managementAPIClient, organization.uid); // prompt for stack
           }
-  
+
           const contentTypeCount = await util.getContentTypeCount(this.managementAPIClient, stack.apiKey);
           const environments = await util.getEnvironments(this.managementAPIClient, stack.apiKey); // fetch environments, because in publish details only env uid are available and we need env names
 
           if (languageCode) {
-            language = { code: languageCode }
+            language = { code: languageCode };
           } else {
             language = await util.chooseLanguage(this.managementAPIClient, stack.apiKey); // prompt for language
           }
 
           if (contentTypesFlag) {
-            contentTypes = (contentTypesFlag || '').split(',').map(this.snakeCase)
+            contentTypes = (contentTypesFlag || '').split(',').map(this.snakeCase);
           } else {
             for (let index = 0; index <= contentTypeCount / 100; index++) {
               const contentTypesMap = await util.getContentTypes(this.managementAPIClient, stack.apiKey, index);
@@ -149,10 +149,10 @@ b) ${config.exportUsers}`,
           }
 
           if (contentTypes.length <= 0) {
-            this.log("No content types found for the given stack");
+            this.log('No content types found for the given stack');
             this.exit();
           }
-  
+
           if (!contentTypesFlag) {
             contentTypes = await util.chooseInMemContentTypes(contentTypes);
           }
@@ -162,17 +162,17 @@ b) ${config.exportUsers}`,
             let entries = await util.getEntries(this.managementAPIClient, stack.apiKey, contentType, language.code); // fetch entries
             let flatEntries = util.cleanEntries(entries.items, language.code, environments, contentType); // clean entries to be wderitten to file
             let fileName = `${stack.name}_${contentType}_${language.code}_entries_export.csv`;
-  
+
             util.write(this, flatEntries, fileName, 'entries'); // write to file
           }
           break;
         }
         case config.exportUsers: {
           try {
-            let organization
+            let organization;
 
             if (org) {
-              organization = { uid: org, name: orgName || org }
+              organization = { uid: org, name: orgName || org };
             } else {
               organization = await util.chooseOrganization(this.managementAPIClient, action); // prompt for organization
             }
@@ -189,25 +189,25 @@ b) ${config.exportUsers}`,
             util.write(this, listOfUsers, fileName, 'organization details');
           } catch (error) {
             if (error.message) {
-              this.log(`\x1b[31m Error: ${error.message}`)
+              this.log(`\x1b[31m Error: ${error.message}`);
             }
 
-            this.error("failed export content to csv");
+            this.error('failed export content to csv');
           }
           break;
         }
       }
     } catch (error) {
       if (error.message) {
-        this.log(`\x1b[31m Error: ${error.message}`)
+        this.log(`\x1b[31m Error: ${error.message}`);
       }
 
-      this.error("failed export content to csv");
+      this.error('failed export content to csv');
     }
   }
 
   snakeCase(string) {
-    return (string || '').split(' ').join('_').toLowerCase()
+    return (string || '').split(' ').join('_').toLowerCase();
   }
 }
 
@@ -215,7 +215,7 @@ ExportToCsvCommand.description = `Export entries or organization users to csv us
 
 ExportToCsvCommand.examples = [
   'csdx cm:entries:export-to-csv',
-  'csdx cm:entries:export-to-csv --action=<a|b> --language-code=<language-code> -a <management-token-alias> --content-type="Page,Blog" --org=<uid>'
+  'csdx cm:entries:export-to-csv --action=<a|b> --language-code=<language-code> -a <management-token-alias> --content-type="Page,Blog" --org=<uid>',
 ];
 
 ExportToCsvCommand.aliases = ['cm:export-to-csv'];
