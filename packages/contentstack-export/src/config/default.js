@@ -103,6 +103,7 @@ module.exports = {
       ],
       // no of asset version files (of a single asset) that'll be downloaded parallelly
       downloadLimit: 5,
+      enableDownloadStatus: false
     },
     content_types: {
       dirName: 'content_types',
