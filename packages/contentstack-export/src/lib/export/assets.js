@@ -271,21 +271,27 @@ ExportAssets.prototype = {
       self.assetStream.url = encodeURI(self.assetStream.url);
       const assetStreamRequest = nativeRequest(self.assetStream)
       assetStreamRequest.on('response', function (response) {
-        const str = progress({
-          length: response.headers['content-length'],
-          time: 5000,
-        })
-
-        str.on('progress', function(progress) {
-          console.log(`${asset.filename}: ${Math.round(progress.percentage)}%`)
-        })
 
         helper.makeDirectory(assetFolderPath)
         const assetFileStream = fs.createWriteStream(assetFilePath)
-        assetStreamRequest.pipe(str).pipe(assetFileStream)
+        
+        if(assetConfig.enableDownloadStatus) {
+          const str = progress({
+            length: response.headers['content-length'],
+            time: 5000,
+          })
+
+          str.on('progress', function (progressData) {
+            console.log(`${asset.filename}: ${Math.round(progressData.percentage)}%`)
+          })
+          
+          assetStreamRequest.pipe(str).pipe(assetFileStream)
+        } else {
+          assetStreamRequest.pipe(assetFileStream)
+        }
+
         assetFileStream.on('close', function () {
           addlogs(config, 'Downloaded ' + asset.filename + ': ' + asset.uid + ' successfully!', 'success')
-          console.log('\n')
           return resolve()
         })
       }).on('error', reject)
