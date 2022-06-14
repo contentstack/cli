@@ -8,14 +8,16 @@ The Contentstack CLI’s “Migration” plugin allows developers to automate th
 [![License](https://img.shields.io/npm/l/@contentstack/cli-migration.svg)](https://github.com/ninadhatkar/cli-migration/blob/master/package.json)
 
 <!-- toc -->
-* [@contentstack/cli-migration](#contentstackcli-migration)
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [@contentstack/cli-migration](#contentstackcli-migration)
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @contentstack/cli-migration
 $ csdx COMMAND
@@ -27,12 +29,14 @@ USAGE
   $ csdx COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-* [`csdx cm:migration`](#csdx-cmmigration)
+
+- [`csdx cm:migration`](#csdx-cmmigration)
 
 ## `csdx cm:migration`
 
@@ -68,11 +72,12 @@ EXAMPLES
   $ csdx cm:migration -A -n <migration/script/file/path> -k <api-key> -B <target branch name>
   $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... -n <migration/script/file/path>
   $ csdx cm:migration --config-file <path/to/json/config/file> -n <migration/script/file/path>
-  $ csdx cm:migration --multi -n <migration/scripts/dir/path> 
+  $ csdx cm:migration --multi -n <migration/scripts/dir/path>
   $ csdx cm:migration -a -n <migration/script/file/path> -k <api-key>
 ```
 
 _See code: [src/commands/cm/migration.js](https://github.com/contentstack/cli-migration/blob/v1.0.0/src/commands/cm/migration.js)_
+
 <!-- commandsstop -->
 
 ### Points to remember

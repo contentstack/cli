@@ -4,13 +4,14 @@
  * MIT Licensed
  */
 
-const nativeRequest = require('request');
-const mkdirp = require('mkdirp');
-const path = require('path');
-const fs = require('fs');
-const Promise = require('bluebird');
-const _ = require('lodash');
-const chalk = require('chalk');
+const nativeRequest = require('request')
+const mkdirp = require('mkdirp')
+const path = require('path')
+const fs = require('fs')
+const Promise = require('bluebird')
+const _ = require('lodash')
+const chalk = require('chalk')
+const progress = require('progress-stream')
 
 const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
@@ -327,16 +328,30 @@ ExportAssets.prototype = {
       };
 
       self.assetStream.url = encodeURI(self.assetStream.url);
-      const assetStreamRequest = nativeRequest(self.assetStream);
-      assetStreamRequest
-        .on('response', function () {
-          helper.makeDirectory(assetFolderPath);
-          const assetFileStream = fs.createWriteStream(assetFilePath);
-          assetStreamRequest.pipe(assetFileStream);
-          assetFileStream.on('close', function () {
-            addlogs(config, 'Downloaded ' + asset.filename + ': ' + asset.uid + ' successfully!', 'success');
-            return resolve();
-          });
+      const assetStreamRequest = nativeRequest(self.assetStream)
+      assetStreamRequest.on('response', function (response) {
+
+        helper.makeDirectory(assetFolderPath)
+        const assetFileStream = fs.createWriteStream(assetFilePath)
+
+        if(assetConfig.enableDownloadStatus) {
+          const str = progress({
+            length: response.headers['content-length'],
+            time: 5000,
+          })
+
+          str.on('progress', function (progressData) {
+            console.log(`${asset.filename}: ${Math.round(progressData.percentage)}%`)
+          })
+
+          assetStreamRequest.pipe(str).pipe(assetFileStream)
+        } else {
+          assetStreamRequest.pipe(assetFileStream)
+        }
+
+        assetFileStream.on('close', function () {
+          addlogs(config, 'Downloaded ' + asset.filename + ': ' + asset.uid + ' successfully!', 'success')
+          return resolve()
         })
         .on('error', reject);
     });
