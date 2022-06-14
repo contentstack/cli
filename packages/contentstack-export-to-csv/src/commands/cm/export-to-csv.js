@@ -24,8 +24,14 @@ class ExportToCsvCommand extends Command {
 				const environments = await util.getEnvironments(this.managementAPIClient, stack.apiKey) // fetch environments, because in publish details only env uid are available and we need env names
         while(contentTypes.length > 0) {
           let contentType = contentTypes.shift()
-          let entries = await util.getEntries(this.managementAPIClient, stack.apiKey, contentType, language.code) // fetch entries
-          let flatEntries = util.cleanEntries(entries.items, language.code, environments, contentType); // clean entries to be wderitten to file
+
+          const entriesCount = await util.getEntriesCount(this.managementAPIClient, stack.apiKey, contentType, language.code);
+          let flatEntries = [];
+          for (let index = 0; index < entriesCount / 100; index++) {
+            const entriesResult = await util.getEntries(this.managementAPIClient, stack.apiKey, contentType, language.code, index);
+            const flatEntriesResult = util.cleanEntries(entriesResult.items, language.code, environments, contentType);
+            flatEntries = flatEntries.concat(flatEntriesResult);
+          }
           // let dateTime = util.getDateTime()
           // let fileName = `${contentType}_${language.code}_entries_export_${dateTime}.csv`
           let fileName = `${stack.name}_${contentType}_${language.code}_entries_export.csv`
