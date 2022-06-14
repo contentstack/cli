@@ -62,9 +62,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       if (schema[i].data_type === "json" && schema[i].field_metadata.rich_text_type) {
         parent.push(schema[i].uid)
         // findFileUrls(schema[i], entry, assetUrls)
-        if (assetUids.length === 0) {
-          findAssetIdsFromJsonRte(data.entry, data.content_type.schema)
-        }
+        findAssetIdsFromJsonRte(data.entry, data.content_type.schema)
         // maybe only one of these checks would be enough
         parent.pop()
       }
@@ -114,11 +112,12 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       }
     }
   }
-
+  
   function gatherJsonRteAssetIds(jsonRteData) {
     jsonRteData.children.forEach(element => {
       if (element.type) {
         switch (element.type) {
+          case 'a':
           case 'p': {
             if (element.children && element.children.length > 0) {
               gatherJsonRteAssetIds(element)
@@ -127,8 +126,25 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
           }
           case 'reference': {
             if (Object.keys(element.attrs).length > 0 && element.attrs.type === "asset") {
-              assetUids.push(element.attrs['asset-uid'])
-              assetUrls.push(element.attrs['asset-link'])
+              if (assetUids.indexOf(element.attrs['asset-uid']) === -1) {
+                assetUids.push(element.attrs['asset-uid'])
+              }
+              // assets references inserted as link inside entry reference inserted as link did not have asset-link property
+              // instead it had an 'href' property. I haven't seen 'asset-link' and 'href' together yet
+              // writing this condition assuming that this never occurs, need to confirm
+              // (element.attrs['asset-link']) ? assetUrls.push(element.attrs['asset-link']) : assetUrls.push(element.attrs['asset-link'])
+              if (element.attrs['asset-link']) {
+                if (assetUrls.indexOf(element.attrs['asset-link']) === -1) {
+                  assetUrls.push(element.attrs['asset-link'])
+                }
+              } else if (element.attrs['href']) {
+                if (assetUrls.indexOf(element.attrs['href']) === -1) {
+                  assetUrls.push(element.attrs['href'])
+                }
+              }
+            }
+            if (element.children && element.children.length > 0) {
+              gatherJsonRteAssetIds(element)
             }
             break;
           }

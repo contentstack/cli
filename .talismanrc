@@ -1,4 +1,5 @@
 fileignoreconfig:
+
 - filename: package-lock.json
   checksum: d3c6e1d15482fa5e81fb3a82c387d43deccbe6ca978f561d9e18001f3160decc
 - filename: packages/contentstack-auth/src/commands/auth/login.ts
@@ -49,4 +50,4 @@ fileignoreconfig:
   checksum: 3ef1b3d5e368a2c0aeb85afcfa3a0cd95e815aebef171a8125e669b83e8ab362
 - filename: packages/contentstack/package-lock.json
   checksum: be5da46c99ee2ea6c021a6dd4f903feda4f4c610033aba5ad3d25761810b52ff
-version: "1.0"
+  version: "1.0"
