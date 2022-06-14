@@ -32,7 +32,6 @@ export default class MyHelpClass extends Help {
         console.log(this.topics(topics));
         console.log('');
       }
-
       return;
     }
 
