@@ -1,3 +1,5 @@
+import { IConfig, Plugin } from '@oclif/config';
+
 export interface PrintOptions {
   color?: string;
 }
@@ -14,4 +16,20 @@ export interface Region {
   name: string;
   cma: string;
   cda: string;
+}
+
+export interface Context {
+  id: string;
+  user: {
+    authtoken: string;
+    email: string;
+  };
+  region: any;
+  plugin: Plugin;
+  config: any;
+  info: any;
+  messageFilePath: any;
+}
+export interface CLIConfig extends IConfig {
+  context: Context;
 }
