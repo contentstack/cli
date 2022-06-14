@@ -6,10 +6,13 @@ let config = require('../../lib/util/dummyConfig.json')
 const path = require('path')
 const rimraf = require('rimraf')
 let pathdir = path.join(__dirname.split('src')[0], 'contents')
+const { readdirSync } = require('fs')
 
 class StackCloneCommand extends Command { 
   async run() {
     try {
+      await this.removeContentDirIfNotEmptyBeforeClone(pathdir) // NOTE remove if folder not empty before clone
+
       this.registerCleanupOnInterrupt(pathdir)
       let _authToken = credStore.get('authtoken')
       if (_authToken && _authToken !== undefined) {
@@ -30,6 +33,22 @@ class StackCloneCommand extends Command {
     }
   }
 
+  async removeContentDirIfNotEmptyBeforeClone(dir) {
+    try {
+      const dirNotEmpty = readdirSync(dir).length
+
+      if (dirNotEmpty) {
+        await this.cleanUp(dir)
+      }
+    } catch (error) {
+      const omit = ['ENOENT'] // NOTE add emittable error codes in the array
+
+      if (!omit.includes(error.code)) {
+        console.log(error.message)
+      }
+    }
+  }
+
   async cleanUp(pathDir, message) {
     return new Promise(resolve => {
       rimraf(pathDir, function (err) {
@@ -45,16 +64,30 @@ class StackCloneCommand extends Command {
   }
 
   registerCleanupOnInterrupt(pathDir) {
-    ['SIGINT', 'SIGQUIT', 'SIGTERM']
-    .forEach(signal => process.on(signal, async () => {
+    const interrupt = ['SIGINT', 'SIGQUIT', 'SIGTERM']
+    const exceptions = ['unhandledRejection', 'uncaughtException']
+
+    const cleanUp = async (exitOrError = null) => {
       // eslint-disable-next-line no-console
       console.log('\nCleaning up')
       await this.cleanUp(pathDir)
       // eslint-disable-next-line no-console
       console.log('done')
       // eslint-disable-next-line no-process-exit
-      process.exit()
-    }))
+
+      if (exitOrError instanceof Promise) {
+        exitOrError.catch(error => {
+          console.log(error && error.message || '')
+        })
+      } else if (exitOrError && exitOrError.message) {
+        console.log(exitOrError.message)
+      }
+
+      if (exitOrError === true) process.exit()
+    }
+
+    exceptions.forEach(event => process.on(event, cleanUp))
+    interrupt.forEach(signal => process.on(signal, () => cleanUp(true)))
   }
 }
 

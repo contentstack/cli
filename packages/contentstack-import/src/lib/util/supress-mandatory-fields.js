@@ -6,7 +6,7 @@
 
 var supress = module.exports = function (schema, flag) {
   for (var i in schema) {
-    if (schema[i].data_type === 'group') {
+    if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
       supress(schema[i].schema, flag);
     } else if (schema[i].data_type === 'blocks') {
       for (var block in schema[i].blocks) {
