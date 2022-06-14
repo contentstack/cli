@@ -38,8 +38,8 @@ class ImportCommand extends Command {
             moduleName,
             host,
             _authToken,
-            branchName,
-            backupdir
+            backupdir,
+            branchName
           )
           .then(() => {
             return resolve()
@@ -51,8 +51,8 @@ class ImportCommand extends Command {
             moduleName,
             host,
             _authToken,
-            branchName,
-            backupdir
+            backupdir,
+            branchName
           )
           .then(() => {
             return resolve()
@@ -63,8 +63,8 @@ class ImportCommand extends Command {
             moduleName,
             host,
             _authToken,
-            branchName,
-            backupdir
+            backupdir,
+            branchName
           )
           .then(() => {
             return resolve()
@@ -80,8 +80,8 @@ class ImportCommand extends Command {
           _authToken,
           moduleName,
           host,
-          branchName,
-          backupdir
+          backupdir,
+          branchName
         )
         .then(() => {
           return resolve()
