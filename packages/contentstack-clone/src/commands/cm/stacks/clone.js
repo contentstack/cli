@@ -5,6 +5,7 @@ let config = require('../../../lib/util/dummyConfig.json');
 const path = require('path');
 const rimraf = require('rimraf');
 let pathdir = path.join(__dirname.split('src')[0], 'contents');
+const { readdirSync } = require('fs');
 
 class StackCloneCommand extends Command {
   async run() {
@@ -21,9 +22,9 @@ class StackCloneCommand extends Command {
           'source-branch': sourceStackBranch,
           'target-branch': targetStackBranch,
           'source-management-token-alias': sourceManagementTokenAlias,
-          'destination-management-token-alias': destinationManagementTokenAlias
-        } = cloneCommandFlags
-  
+          'destination-management-token-alias': destinationManagementTokenAlias,
+        } = cloneCommandFlags;
+
         if (cloneType) {
           config.cloneType = cloneType;
         }
@@ -40,18 +41,16 @@ class StackCloneCommand extends Command {
           config.source_alias = sourceManagementTokenAlias;
           config.source_stack = listOfTokens[sourceManagementTokenAlias].apiKey;
         } else if (sourceManagementTokenAlias) {
-          console.log('Provided source token alias not found in your config.!')
+          console.log('Provided source token alias not found in your config.!');
         }
-        if (
-          destinationManagementTokenAlias &&
-          listOfTokens[destinationManagementTokenAlias]
-        ) {
+        if (destinationManagementTokenAlias && listOfTokens[destinationManagementTokenAlias]) {
           config.destination_alias = destinationManagementTokenAlias;
           config.target_stack = listOfTokens[destinationManagementTokenAlias].apiKey;
         } else if (destinationManagementTokenAlias) {
-          console.log('Provided destination token alias not found in your config.!')
+          console.log('Provided destination token alias not found in your config.!');
         }
-  
+
+        await this.removeContentDirIfNotEmptyBeforeClone(pathdir); // NOTE remove if folder not empty before clone
         this.registerCleanupOnInterrupt(pathdir);
 
         config.auth_token = _authToken;
@@ -71,6 +70,22 @@ class StackCloneCommand extends Command {
     }
   }
 
+  async removeContentDirIfNotEmptyBeforeClone(dir) {
+    try {
+      const dirNotEmpty = readdirSync(dir).length;
+
+      if (dirNotEmpty) {
+        await this.cleanUp(dir);
+      }
+    } catch (error) {
+      const omit = ['ENOENT']; // NOTE add emittable error codes in the array
+
+      if (!omit.includes(error.code)) {
+        console.log(error.message);
+      }
+    }
+  }
+
   cleanUp(pathDir, message) {
     return new Promise((resolve) => {
       rimraf(pathDir, function (err) {
@@ -85,17 +100,30 @@ class StackCloneCommand extends Command {
   }
 
   registerCleanupOnInterrupt(pathDir) {
-    ['SIGINT', 'SIGQUIT', 'SIGTERM'].forEach((signal) =>
-      process.on(signal, async () => {
-        // eslint-disable-next-line no-console
-        console.log('\nCleaning up');
-        await this.cleanUp(pathDir);
-        // eslint-disable-next-line no-console
-        console.log('done');
-        // eslint-disable-next-line no-process-exit
-        process.exit();
-      }),
-    );
+    const interrupt = ['SIGINT', 'SIGQUIT', 'SIGTERM'];
+    const exceptions = ['unhandledRejection', 'uncaughtException'];
+
+    const cleanUp = async (exitOrError = null) => {
+      // eslint-disable-next-line no-console
+      console.log('\nCleaning up');
+      await this.cleanUp(pathDir);
+      // eslint-disable-next-line no-console
+      console.log('done');
+      // eslint-disable-next-line no-process-exit
+
+      if (exitOrError instanceof Promise) {
+        exitOrError.catch((error) => {
+          console.log((error && error.message) || '');
+        });
+      } else if (exitOrError && exitOrError.message) {
+        console.log(exitOrError.message);
+      }
+
+      if (exitOrError === true) process.exit();
+    };
+
+    exceptions.forEach((event) => process.on(event, cleanUp));
+    interrupt.forEach((signal) => process.on(signal, () => cleanUp(true)));
   }
 }
 
@@ -138,7 +166,7 @@ StackCloneCommand.flags = {
     char: 'n',
     required: false,
     multiple: false,
-    description: 'Name for the new stack to store the cloned content.'
+    description: 'Name for the new stack to store the cloned content.',
   }),
   type: flags.string({
     required: false,
@@ -147,8 +175,8 @@ StackCloneCommand.flags = {
     description: `Type of data to clone
 a) Structure (all modules except entries & assets)
 b) Structure with content (all modules including entries & assets)
-    `
-  })
+    `,
+  }),
 };
 
 module.exports = StackCloneCommand;
