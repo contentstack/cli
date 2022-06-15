@@ -11,16 +11,9 @@ const { printFlagDeprecation } = require('@contentstack/cli-utilities');
 let config;
 
 class AssetsPublishCommand extends Command {
-  constructor(context) {
-    super();
-    if (context) {
-      this.argv = context.argv;
-    }
-  }
-
   async run() {
     const assetsFlags = this.parse(AssetsPublishCommand).flags;
-    assetsFlags.retryFailed = assetsFlags['retry-failed'] || assetsFlags.retryFailed;
+    assetsFlags.retryFailed = assetsFlags['retry-failed'] || assetsFlags.retryFailed || false;
     assetsFlags.folderUid = assetsFlags['folder-uid'] || assetsFlags.folderUid;
     assetsFlags.bulkPublish = assetsFlags['bulk-publish'] || assetsFlags.bulkPublish;
     delete assetsFlags['retry-failed'];

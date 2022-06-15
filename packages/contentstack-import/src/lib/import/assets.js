@@ -431,6 +431,7 @@ importAssets.prototype = {
           branch[parent_uid][coll[j].uid] = {};
           coll.splice(j, 1);
           self.findBranches(branch[parent_uid], coll);
+          --j;
         }
       }
     }
@@ -468,11 +469,11 @@ importAssets.prototype = {
         })
         .catch(function (err) {
           if (err && err.message) {
-            let error
+            let error;
             try {
               error = JSON.parse(err.message);
             } catch (cError) {
-              error = { errorMessage: err.message }
+              error = { errorMessage: err.message };
             }
 
             addlogs(config, chalk.red('Asset ' + assetUid + ' not published, ' + error.errorMessage), 'error');
