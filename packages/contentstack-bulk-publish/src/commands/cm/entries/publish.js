@@ -13,19 +13,12 @@ const { printFlagDeprecation } = require('@contentstack/cli-utilities');
 let config;
 
 class PublishEntriesCommand extends Command {
-  constructor(context) {
-    super();
-    if (context) {
-      this.argv = context.argv;
-    }
-  }
-
   async run() {
     const entriesFlags = this.parse(PublishEntriesCommand).flags;
-    entriesFlags.retryFailed = entriesFlags['retry-failed'] || entriesFlags.retryFailed;
+    entriesFlags.retryFailed = entriesFlags['retry-failed'] || entriesFlags.retryFailed || false;
     entriesFlags.contentTypes = entriesFlags['content-types'] || entriesFlags.contentTypes;
     entriesFlags.bulkPublish = entriesFlags['bulk-publish'] || entriesFlags.bulkPublish;
-    entriesFlags.publishAllContentTypes = entriesFlags['publish-all-content-types'] || entriesFlags.publishAllContentTypes;
+    entriesFlags.publishAllContentTypes = entriesFlags['publish-all-content-types'] || entriesFlags.publishAllContentTypes || false;
     delete entriesFlags['retry-failed'];
     delete entriesFlags['content-types'];
     delete entriesFlags['bulk-publish'];
