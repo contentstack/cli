@@ -1,4 +1,5 @@
 fileignoreconfig:
+
 - filename: package-lock.json
   checksum: d3c6e1d15482fa5e81fb3a82c387d43deccbe6ca978f561d9e18001f3160decc
 - filename: packages/contentstack-auth/src/commands/auth/login.ts
@@ -19,6 +20,8 @@ fileignoreconfig:
   checksum: 56be60f744b35b1e4a2291dfebb480c7e29c4af337e2ea5d267ca6403d4f252f
 - filename: packages/contentstack-export/README.md
   checksum: 5d68a84f733c41adddda5bee580910f6cb5ac2105407afd74e5ccc3baade45c5
+- filename: packages/contentstack-export/src/lib/export/stack.js
+  checksum: 91629d5020e42e30ce2c358fd1e403dbdf24049803ab8991af761aa0045a8bea
 - filename: packages/contentstack-import/package-lock.json
   checksum: 66126a79971d8afa929ac43e86261578431e4d63bc0de59a410d86c467bdcbcf
 - filename: packages/contentstack-import/src/lib/import/assets.js
@@ -49,4 +52,4 @@ fileignoreconfig:
   checksum: 3ef1b3d5e368a2c0aeb85afcfa3a0cd95e815aebef171a8125e669b83e8ab362
 - filename: packages/contentstack/package-lock.json
   checksum: be5da46c99ee2ea6c021a6dd4f903feda4f4c610033aba5ad3d25761810b52ff
-version: "1.0"
+  version: "1.0"

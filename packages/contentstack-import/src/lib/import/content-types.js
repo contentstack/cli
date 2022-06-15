@@ -221,39 +221,31 @@ importContentTypes.prototype = {
     let self = this;
     return new Promise(function (resolve, reject) {
       // eslint-disable-next-line no-undef
-      return Promise.map(
-        globalFieldPendingPath,
-        function (globalfield) {
-          let Obj = _.find(self.globalfields, { uid: globalfield });
-          let globalFieldObj = stack.globalField(globalfield);
-          Object.assign(globalFieldObj, _.cloneDeep(Obj));
-          return globalFieldObj
-            .update()
-            .then((globalFieldResponse) => {
-              let updateObjpos = _.findIndex(globalFieldMapperFolderPath, function (successobj) {
-                let global_field_uid = globalFieldResponse.uid;
-                return global_field_uid === successobj;
-              });
-              globalFieldMapperFolderPath.splice(updateObjpos, 1, Obj);
-              helper.writeFile(globalFieldUpdateFile, globalFieldMapperFolderPath);
-            })
-            .catch(function (err) {
-              let error = JSON.parse(err.message);
-              // eslint-disable-next-line no-console
-              addlogs(config, chalk.red('Global Field failed to update ' + JSON.stringify(error.errors)), 'error');
+      return Promise.map(globalFieldPendingPath, function (globalfield) {
+        let Obj = _.find(self.globalfields, { uid: globalfield });
+        supress(Obj.schema);
+        let globalFieldObj = stack.globalField(globalfield);
+        Object.assign(globalFieldObj, _.cloneDeep(Obj));
+        return globalFieldObj
+          .update()
+          .then((globalFieldResponse) => {
+            let updateObjpos = _.findIndex(globalFieldMapperFolderPath, function (successobj) {
+              let global_field_uid = globalFieldResponse.uid;
+              return global_field_uid === successobj;
             });
-        },
-        {
-          concurrency: reqConcurrency,
-        },
-      )
-        .then(function () {
-          return resolve();
-        })
-        .catch(function (error) {
-          // failed to update modified schemas back to their original form
-          return reject(error);
-        });
+            globalFieldMapperFolderPath.splice(updateObjpos, 1, Obj);
+            helper.writeFile(globalFieldUpdateFile, globalFieldMapperFolderPath);
+          })
+          .catch(function (err) {
+            let error = JSON.parse(err.message);
+            // eslint-disable-next-line no-console
+            addlogs(config, chalk.red('Global Field failed to update ' + JSON.stringify(error.errors)), 'error');
+          })
+          .catch(function (error) {
+            // failed to update modified schemas back to their original form
+            return reject(error);
+          });
+      });
     });
   },
 
