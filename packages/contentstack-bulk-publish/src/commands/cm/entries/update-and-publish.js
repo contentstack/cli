@@ -12,7 +12,7 @@ const configKey = 'addFields';
 class UpdateAndPublishCommand extends Command {
   async run() {
     const addFieldsFlags = this.parse(UpdateAndPublishCommand).flags;
-    addFieldsFlags.retryFailed = addFieldsFlags['retry-failed'] || addFieldsFlags.retryFailed;
+    addFieldsFlags.retryFailed = addFieldsFlags['retry-failed'] || addFieldsFlags.retryFailed || false;
     addFieldsFlags.contentTypes = addFieldsFlags['content-types'] || addFieldsFlags.contentTypes;
     addFieldsFlags.bulkPublish = addFieldsFlags['bulk-publish'] || addFieldsFlags.bulkPublish;
     delete addFieldsFlags['retry-failed'];

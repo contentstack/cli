@@ -154,10 +154,10 @@ function chooseInMemContentTypes(contentTypesList) {
         source: (_, input) => {
           input = input || '';
           const inputArray = input.split(' ');
-          return new Promise(resolveSource => {
-            const contentTypes = contentTypesList.filter(contentType => {
+          return new Promise((resolveSource) => {
+            const contentTypes = contentTypesList.filter((contentType) => {
               let shouldInclude = true;
-              inputArray.forEach(inputChunk => {
+              inputArray.forEach((inputChunk) => {
                 // if any term to filter by doesn't exist, exclude
                 if (!contentType.toLowerCase().includes(inputChunk.toLowerCase())) {
                   shouldInclude = false;
@@ -167,8 +167,8 @@ function chooseInMemContentTypes(contentTypesList) {
             });
             resolveSource(contentTypes);
           });
-        }
-      }
+        },
+      },
     ];
     inquirer.prompt(_chooseContentType).then(({ chosenContentTypes }) => resolve(chosenContentTypes));
   });
@@ -230,15 +230,27 @@ function getLanguages(managementAPIClient, stackApiKey) {
   });
 }
 
-function getEntries(managementAPIClient, stackApiKey, contentType, language) {
+function getEntries(managementAPIClient, stackApiKey, contentType, language, skip) {
+  return new Promise((resolve) => {
+    managementAPIClient
+      .stack({ api_key: stackApiKey })
+      .contentType(contentType)
+      .entry()
+      .query({ include_publish_details: true, locale: language, skip: skip * 100 })
+      .find()
+      .then((entries) => resolve(entries));
+  });
+}
+
+function getEntriesCount(managementAPIClient, stackApiKey, contentType, language) {
   return new Promise((resolve) => {
     managementAPIClient
       .stack({ api_key: stackApiKey })
       .contentType(contentType)
       .entry()
       .query({ include_publish_details: true, locale: language })
-      .find()
-      .then((entries) => resolve(entries));
+      .count()
+      .then((entriesData) => resolve(entriesData.entries));
   });
 }
 
@@ -321,7 +333,7 @@ function getDateTime() {
   return dateTime.join('_');
 }
 
-function write(command, entries, fileName) {
+function write(command, entries, fileName, message) {
   // eslint-disable-next-line no-undef
   if (process.cwd().split(delimeter).pop() !== 'data' && !fs.existsSync(directory)) {
     mkdirp.sync(directory);
@@ -332,7 +344,7 @@ function write(command, entries, fileName) {
     process.chdir(directory);
   }
   // eslint-disable-next-line no-undef
-  command.log(`Writing entries to file: ${process.cwd()}${delimeter}${fileName}`);
+  command.log(`Writing ${message} to file: ${process.cwd()}${delimeter}${fileName}`);
   fastcsv.writeToPath(fileName, entries, { headers: true });
 }
 
@@ -495,4 +507,5 @@ module.exports = {
   getContentTypeCount: getContentTypeCount,
   getContentTypes: getContentTypes,
   chooseInMemContentTypes: chooseInMemContentTypes,
+  getEntriesCount: getEntriesCount,
 };
