@@ -1,4 +1,4 @@
-import * as ora from 'ora'
+import ora from 'ora'
 import { default as config } from '../config-handler';
 import {
 	Token,
@@ -16,7 +16,6 @@ const inquirer = require('inquirer')
 inquirer.registerPrompt('search-list', require('inquirer-search-list'))
 inquirer.registerPrompt('search-checkbox', require('inquirer-search-checkbox'))
 const {Command} = require('@contentstack/cli-command')
-const ContentstackManagementSDK = require('@contentstack/management')
 
 export function chooseOrganization(client: any, displayMessage?: string, region?: string, orgUid?: string): Promise<selectedOrganization> {
 	return new Promise(async (resolve, reject) => {
