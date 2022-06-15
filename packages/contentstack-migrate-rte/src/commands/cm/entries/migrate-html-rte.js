@@ -24,7 +24,7 @@ class JsonMigrationCommand extends Command {
       let stack = getStack({ token: token, host: this.cmaHost });
       config.entriesCount = 0;
       config.contentTypeCount = 0;
-      config.errorEntriesUid = [];
+      config.errorEntriesUid = {};
       if (config['global-field']) {
         await updateContentTypeForGlobalField(stack, config['content-type'], config);
       } else {
@@ -33,8 +33,14 @@ class JsonMigrationCommand extends Command {
       console.log(
         chalk.green(`\nUpdated ${config.contentTypeCount} Content Type(s) and ${config.entriesCount} Entrie(s)`),
       );
-      if (config.errorEntriesUid.length > 0) {
-        console.log(chalk.red(`\nFaced issue while migrating some entrie(s),"${config.errorEntriesUid.join(', ')}"`));
+      if(config.errorEntriesUid && Object.keys(config.errorEntriesUid).length > 0) {
+        const failedCTs = Object.keys(config.errorEntriesUid)
+        for (const failedCT of failedCTs) {
+          const locales = Object.keys(config.errorEntriesUid[failedCT])
+          for (const locale of locales) {
+            console.log(chalk.red(`Faced issue while migrating some entrie(s) for "${failedCT}" Content-type in "${locale}" locale,"${config.errorEntriesUid[failedCT][locale].join(', ')}"`))
+          }
+        }
       }
     } catch (error) {
       this.error(error.message, { exit: 2 });
@@ -89,6 +95,7 @@ JsonMigrationCommand.flags = {
     description : 'The locale from which entries need to be migrated',
     required: false
   }),
+  "batch-limit" : flags.integer({description:'Provide batch limit for updating entries', default: 50 }),
   //To be deprecated
   configPath: flags.string({
     char: 'p',

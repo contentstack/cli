@@ -93,11 +93,11 @@ ExportCommand.description = `Export content from a stack
 Export content from one stack to another
 `;
 ExportCommand.examples = [
-  'csdx cm:stacks:export -k <stack_ApiKey> -d <path/of/export/destination/dir>',
-  'csdx cm:stacks:export -c <path/to/config/dir>',
-  'csdx cm:stacks:export -a <management_token_alias>',
-  'csdx cm:stacks:export -a <management_token_alias> --data-dir <path/to/export/destination/dir>',
-  'csdx cm:stacks:export -a <management_token_alias> -c <path/to/config/file>',
+  'csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>',
+  'csdx cm:stacks:export --config <path/to/config/dir>',
+  'csdx cm:stacks:export --management-token-alias <management_token_alias>',
+  'csdx cm:stacks:export --management-token-alias <management_token_alias> --data-dir <path/to/export/destination/dir>',
+  'csdx cm:stacks:export --management-token-alias <management_token_alias> --config <path/to/config/file>',
   'csdx cm:stacks:export --module <single module name>',
   'csdx cm:stacks:export --branch [optional] branch name',
 ];
@@ -110,6 +110,7 @@ ExportCommand.flags = {
   'stack-uid': flags.string({
     char: 's',
     description: 'API key of the source stack',
+    hidden: true,
     parse: printFlagDeprecation(['-s', '--stack-uid'], ['-k', '--stack-api-key']),
   }),
   'stack-api-key': flags.string({
@@ -117,11 +118,12 @@ ExportCommand.flags = {
     description: 'API key of the source stack',
   }),
   data: flags.string({
-    char: 'd',
     description: 'path or location to store the data',
+    hidden: true,
     parse: printFlagDeprecation(['--data'], ['--data-dir']),
   }),
   'data-dir': flags.string({
+    char: 'd',
     description: 'path or location to store the data',
   }),
   'management-token-alias': flags.string({
@@ -131,6 +133,7 @@ ExportCommand.flags = {
   'auth-token': flags.boolean({
     char: 'A',
     description: 'to use auth token',
+    hidden: true,
     parse: printFlagDeprecation(['-A', '--auth-token']),
   }),
   module: flags.string({

@@ -1,9 +1,6 @@
-let inquirer = require('inquirer');
-const _ = require('lodash');
-const fs = require('fs');
-let ora = require('ora');
-const async = require('async');
+const ora = require('ora');
 const path = require('path');
+const inquirer = require('inquirer');
 
 let sdkInstance = require('../../lib/util/contentstack-management-sdk');
 let exportCmd = require('@contentstack/cli-cm-export');
@@ -23,8 +20,8 @@ let stackCreationConfirmation = [
 let stackName = {
   type: 'input',
   name: 'stack',
-  message: 'Enter name for the new stack to store the cloned content ?',
   default: 'ABC',
+  message: 'Enter name for the new stack to store the cloned content ?'
 };
 
 let orgUidList = {};
@@ -41,7 +38,6 @@ let structureList = [
   'workflows',
   'labels',
 ];
-var oraMessage;
 let master_locale;
 
 class CloneHandler {
@@ -50,97 +46,130 @@ class CloneHandler {
     client = sdkInstance.Client(config);
   }
 
-  async start() {
+  #handleOrgSelection(options = {}) {
     return new Promise(async (resolve, reject) => {
-      oraMessage = 'Choose an organization where your source stack exists:';
-      // export section starts from here
-      let orgdetails = this.getOrganizationChoices(oraMessage);
-      orgdetails.then(async (orgList) => {
-        var stackMessage = 'Select the source stack';
-        var orgSelected = await inquirer.prompt(orgList);
-        let stackDetails = this.getStack(orgSelected, stackMessage);
-        stackDetails.then(async (stackList) => {
-          let stackSelected = await inquirer.prompt(stackList);
-          config.source_stack = stackUidList[stackSelected.stack];
-          master_locale = masterLocaleList[stackSelected.stack];
-          config.sourceStackName = stackSelected.stack;
-          if (!config.sourceStackBranch) {
-            try {
-              const branches = await client.stack({ api_key: config.source_stack }).branch().query().find();
-              if (branches && branches.items && branches.items.length) {
-                config.sourceStackBranch = 'main';
-              }
-            } catch (_error) {
-              // empty handler
+      const { msg = '', isSource = true } = options || {}
+      const orgList = await this.getOrganizationChoices(msg).catch(reject)
+
+      if (orgList) {
+        const orgSelected = await inquirer.prompt(orgList);
+
+        if (isSource) {
+          config.sourceOrg = orgUidList[orgSelected.Organization];
+        } else {
+          config.targetOrg = orgUidList[orgSelected.Organization];
+        }
+
+        resolve(orgSelected)
+      }
+    })
+  }
+
+  #handleStackSelection(options = {}) {
+    return new Promise(async (resolve, reject) => {
+      const { org = {}, msg = '', isSource = true } = options || {}
+      const stackList = await this.getStack(org, msg, isSource).catch(reject)
+
+      if (stackList) {
+        const selectedStack = await inquirer.prompt(stackList);
+
+        if (isSource) {
+          config.sourceStackName = selectedStack.stack;
+          master_locale = masterLocaleList[selectedStack.stack];
+          config.source_stack = stackUidList[selectedStack.stack];
+        } else {
+          config.target_stack = stackUidList[selectedStack.stack];
+          config.destinationStackName = selectedStack.stack;
+        }
+
+        resolve(selectedStack)
+      }
+    })
+  }
+
+  start() {
+    return new Promise(async (resolve, reject) => {
+      let sourceStack = {}
+      const handleOrgAndStackSelection = (orgMsg, stackMsg, isSource = true) => {
+        return new Promise(async (resolve) => {
+          const org = await this.#handleOrgSelection({ msg: orgMsg, isSource })
+            .catch((error) => reject(error.errorMessage))
+
+          if (org) {
+            await this.#handleStackSelection({
+              org,
+              isSource,
+              msg: stackMsg
+            }).then(resolve)
+              .catch((error) => reject(error.errorMessage))
+          }
+        })
+      }
+
+      if (!config.source_stack) {
+        // NOTE Export section
+        sourceStack = await handleOrgAndStackSelection(
+          'Choose an organization where your source stack exists:',
+          'Select the source stack'
+        )
+      }
+
+      if (config.source_stack) {
+        stackName.default = config.stackName || `Copy of ${sourceStack.stack || config.source_alias}`;
+        const exportRes = await this.cmdExport().catch(reject);
+
+        if (!config.sourceStackBranch) {
+          try {
+            const branches = await client.stack({ api_key: config.source_stack }).branch().query().find();
+
+            if (branches && branches.items && branches.items.length) {
+              config.sourceStackBranch = 'main';
+            }
+          } catch (_error) { }
+        }
+
+        // NOTE Import section
+        if (exportRes) {
+          let canCreateStack = false
+
+          if (!config.target_stack) {
+            canCreateStack = await inquirer.prompt(stackCreationConfirmation);
+          }
+
+          if (canCreateStack.stackCreate !== true) {
+            if (!config.target_stack) {
+              await handleOrgAndStackSelection(
+                'Choose an organization where the destination stack exists: ',
+                'Choose the destination stack:',
+                false
+              )
+            }
+
+            if (config.target_stack) {
+              this.cloneTypeSelection()
+                .then(resolve)
+                .catch((error) => reject(error.errorMessage));
+            }
+          } else {
+            const destinationOrg = await this.#handleOrgSelection({
+              isSource: false,
+              msg: 'Choose an organization where you want to create a stack: '
+            }).catch((error) => reject(error.errorMessage))
+            const orgUid = orgUidList[destinationOrg.Organization];
+            await this.createNewStack(orgUid).catch((error) => {
+              return reject(
+                error.errorMessage + ' Contact the Organization owner for Stack Creation access.',
+              )
+            })
+
+            if (config.target_stack) {
+              this.cloneTypeSelection()
+                .then(resolve)
+                .catch(reject)
             }
           }
-          stackName.default = 'Copy of ' + stackSelected.stack;
-          let cmdExport = this.cmdExport();
-          cmdExport
-            .then(async () => {
-              //Import section starts from here
-              var stackCreateConfirmation = await inquirer.prompt(stackCreationConfirmation);
-              if (stackCreateConfirmation.stackCreate !== true) {
-                oraMessage = 'Choose an organization where the destination stack exists: ';
-                let orgChoices = this.getOrganizationChoices(oraMessage);
-                orgChoices
-                  .then(async (_orgList) => {
-                    var destinationStackMessage = 'Choose the destination stack:';
-                    var selectedDestinationOrg = await inquirer.prompt(_orgList);
-                    let destinationStacks = this.getStack(selectedDestinationOrg, destinationStackMessage);
-                    destinationStacks
-                      .then(async (destinationStackList) => {
-                        let selectedDestinationStack = await inquirer.prompt(destinationStackList);
-                        config.target_stack = stackUidList[selectedDestinationStack.stack];
-                        config.destinationStackName = selectedDestinationStack.stack;
-                        this.cloneTypeSelection()
-                          .then((msgData) => {
-                            return resolve(msgData);
-                          })
-                          .catch((error) => {
-                            return reject(error.errorMessage);
-                          });
-                      })
-                      .catch((error) => {
-                        return reject(error.errorMessage);
-                      });
-                  })
-                  .catch((error) => {
-                    return reject(error.errorMessage);
-                  });
-              } else {
-                oraMessage = 'Choose an organization where you want to create a stack: ';
-                let createStackOrganizations = this.getOrganizationChoices(oraMessage);
-                createStackOrganizations
-                  .then(async (_orgList) => {
-                    var selectedOrgToCreateStack = await inquirer.prompt(_orgList);
-                    let orgUid = orgUidList[selectedOrgToCreateStack.Organization];
-                    this.createNewStack(orgUid)
-                      .then(() => {
-                        this.cloneTypeSelection()
-                          .then((msgData) => {
-                            return resolve(msgData);
-                          })
-                          .catch((error) => {
-                            return reject(error);
-                          });
-                      })
-                      .catch((error) => {
-                        return reject(
-                          error.errorMessage + ' Contact the Organization owner for Stack Creation access.',
-                        );
-                      });
-                  })
-                  .catch((error) => {
-                    return reject(error.errorMessage);
-                  });
-              }
-            })
-            .catch((error) => {
-              return reject(error);
-            });
-        });
-      });
+        }
+      }
     });
   }
 
@@ -178,10 +207,10 @@ class CloneHandler {
       };
       const spinner = ora('Fetching stacks').start();
       try {
-        let orgUid = orgUidList[answer.Organization];
-        let stackList = client.stack().query({ organization_uid: orgUid }).find();
+        const organization_uid = orgUidList[answer.Organization];
+        const stackList = client.stack().query({ organization_uid }).find();
         stackList
-          .then(async (stacklist) => {
+          .then((stacklist) => {
             for (let j = 0; j < stacklist.items.length; j++) {
               stackUidList[stacklist.items[j].name] = stacklist.items[j].api_key;
               masterLocaleList[stacklist.items[j].name] = stacklist.items[j].master_locale;
@@ -203,7 +232,14 @@ class CloneHandler {
 
   async createNewStack(orgUid) {
     return new Promise(async (resolve, reject) => {
-      let inputvalue = await inquirer.prompt(stackName);
+      let inputvalue
+
+      if (!config.stackName) {
+        inputvalue = await inquirer.prompt(stackName);
+      } else {
+        inputvalue = { stack: config.stackName }
+      }
+
       let stack = { name: inputvalue.stack, master_locale: master_locale };
       const spinner = ora('Creating New stack').start();
       let newStack = client.stack().create({ stack }, { organization_uid: orgUid });
@@ -223,40 +259,40 @@ class CloneHandler {
 
   async cloneTypeSelection() {
     return new Promise(async (resolve, reject) => {
-      let cloneTypeSelection = [
-        {
-          type: 'list',
-          name: 'type',
-          message: 'Choose the type of data to clone:',
-          choices: [
-            'Structure (all modules except entries & assets)',
-            'Structure with content (all modules including entries & assets)',
-          ],
-        },
-      ];
-      var selectedValue = await inquirer.prompt(cloneTypeSelection);
-      let cloneType = selectedValue.type;
-      config['data'] = path.join(__dirname.split('src')[0], 'contents', config.sourceStackBranch || '');
-      if (cloneType === 'Structure (all modules except entries & assets)') {
-        config['modules'] = structureList;
-        let cmdImport = this.cmdImport();
-        cmdImport
-          .then(() => {
-            return resolve('Stack clone Structure completed');
-          })
-          .catch((error) => {
-            return reject(error);
-          });
-      } else {
-        let cmdImport = this.cmdImport();
-        cmdImport
-          .then(() => {
-            return resolve('Stack clone completed with structure and content');
-          })
-          .catch((error) => {
-            return reject(error);
-          });
+      const choices = [
+        'Structure (all modules except entries & assets)',
+        'Structure with content (all modules including entries & assets)',
+      ]
+      const cloneTypeSelection = [{
+        choices,
+        type: 'list',
+        name: 'type',
+        message: 'Choose the type of data to clone:'
+      }];
+      let successMsg
+      let selectedValue = {}
+      config['data'] = path.join(
+        __dirname.split('src')[0],
+        'contents', config.sourceStackBranch || ''
+      );
+
+      if (!config.cloneType) {
+        selectedValue = await inquirer.prompt(cloneTypeSelection);
       }
+
+      if (
+        config.cloneType === 'a' ||
+        selectedValue.type === 'Structure (all modules except entries & assets)'
+      ) {
+        config['modules'] = structureList;
+        successMsg = 'Stack clone Structure completed'
+      } else {
+        successMsg = 'Stack clone completed with structure and content'
+      }
+
+      this.cmdImport()
+        .then(() => resolve(successMsg))
+        .catch(reject);
     });
   }
 
@@ -270,7 +306,7 @@ class CloneHandler {
       let exportData = exportCmd.run(cmd);
       exportData
         .then(async () => {
-          return resolve();
+          return resolve(true);
         })
         .catch((error) => {
           return reject(error);
