@@ -291,7 +291,6 @@ importEntries.prototype = {
                         }
                         return;
                       }
-
                       let requestObject = {
                         qs: {
                           locale: lang,
@@ -340,7 +339,7 @@ importEntries.prototype = {
                         .stack({ api_key: config.target_stack, management_token: config.management_token })
                         .contentType(ctUid)
                         .entry()
-                        .create(requestObject.json)
+                        .create(requestObject.json, { locale: lang })
                         .then(async (entryResponse) => {
                           self.success[ctUid] = self.success[ctUid] || [];
                           self.success[ctUid].push(entries[eUid]);
@@ -393,7 +392,6 @@ importEntries.prototype = {
                             error: error,
                           });
                         });
-
                       // create/update 5 entries at a time
                     },
                     {
@@ -530,7 +528,6 @@ importEntries.prototype = {
           // map failed reference uids @mapper/language/unmapped-uids.json
           let refUidMapperPath = path.join(entryMapperPath, lang);
 
-          // add entry references to JSON RTE fields
           entries = _.map(entries, function (entry) {
             try {
               let uid = entry.uid;
@@ -538,6 +535,7 @@ importEntries.prototype = {
 
               // restores json rte entry refs if they exist
               if (self.ctJsonRte.indexOf(ctUid) > -1) {
+                // the entries stored in eSuccessFilePath, have the same uids as the entries from source data
                 updatedEntry = self.restoreJsonRteEntryRefs(entry, sourceStackEntries[entry.uid], schema.schema);
               } else {
                 updatedEntry = entry;
@@ -1331,7 +1329,7 @@ importEntries.prototype = {
     return element.type === 'reference' && element.attrs.type === 'entry';
   },
   removeUidsFromJsonRteFields: function (entry, ctSchema) {
-    for (let i = 0; i < ctSchema.length; i++) {
+    for (const element of ctSchema) {
       switch (element.data_type) {
         case 'blocks': {
           if (entry[element.uid]) {
