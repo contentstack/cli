@@ -31,7 +31,7 @@ class ImportCommand extends Command {
 
         if (managementTokens) {
           if (extConfig && _authToken) {
-            configWithMToken(extConfig, managementTokens, moduleName, host, _authToken, branchName, backupdir)
+            configWithMToken(extConfig, managementTokens, moduleName, host, _authToken, backupdir, branchName)
               .then(() => {
                 return resolve();
               })
@@ -39,7 +39,7 @@ class ImportCommand extends Command {
                 return reject(error);
               });
           } else if (data) {
-            parameterWithMToken(managementTokens, data, moduleName, host, _authToken, branchName, backupdir)
+            parameterWithMToken(managementTokens, data, moduleName, host, _authToken, backupdir, branchName)
               .then(() => {
                 return resolve();
               })
@@ -47,7 +47,7 @@ class ImportCommand extends Command {
                 return reject(error);
               });
           } else {
-            withoutParameterMToken(managementTokens, moduleName, host, _authToken, branchName, backupdir)
+            withoutParameterMToken(managementTokens, moduleName, host, _authToken, backupdir, branchName)
               .then(() => {
                 return resolve();
               })
@@ -60,7 +60,7 @@ class ImportCommand extends Command {
         }
       } else if (_authToken) {
         if (extConfig) {
-          configWithAuthToken(extConfig, _authToken, moduleName, host, branchName, backupdir).then(() => {
+          configWithAuthToken(extConfig, _authToken, moduleName, host, backupdir, branchName).then(() => {
             return resolve();
           });
         } else if (targetStack && data) {
