@@ -31,7 +31,6 @@ PublishOnlyUnpublished.flags = {
   }),
   'retry-failed': flags.string({
     description: 'Retry publishing failed entries from the logfile',
-    parse: printFlagDeprecation(['--retryFailed', '-r'], ['--retry-failed']),
   }),
   bulkPublish: flags.string({
     char: 'b',
