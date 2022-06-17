@@ -1,6 +1,6 @@
 import { Command, flags } from '@contentstack/cli-command';
 const ContentstackManagementSDK = require('@contentstack/management');
-import Bootstrap, { BootstrapOptions } from '../../bootstrap';
+import Bootstrap, { BootstrapOptions, SeedParams } from '../../bootstrap';
 import {
   inquireCloneDirectory,
   inquireApp,
@@ -20,6 +20,8 @@ export default class BootstrapCommand extends Command {
     '$ csdx cm:bootstrap --project-dir <path/to/setup/the/app>',
     '$ csdx cm:bootstrap --access-token <github access token>',
     '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app>',
+    '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key" //seed content into specific stack',
+    '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid" --stack-name "stack-name" //create a new stack in given org uid',
   ];
 
   static flags = {
@@ -44,6 +46,28 @@ export default class BootstrapCommand extends Command {
       multiple: false,
       required: false,
       hidden: true,
+    }),
+    'stack-api-key': flags.string({
+      char: 'k',
+      description: 'Provide stack api key to seed content to',
+      multiple: false,
+      required: false,
+      exclusive: ['org','stack-name'],
+    }),
+    org: flags.string({
+      char: 'o',
+      description: 'Provide Organization UID to create a new stack',
+      multiple: false,
+      required: false,
+      exclusive: ['stack-api-key'],
+      parse: printFlagDeprecation(['-o'], ['--org']),
+    }),
+    'stack-name': flags.string({
+      char: 'n',
+      description: 'Name of a new stack that needs to be created.',
+      multiple: false,
+      required: false,
+      exclusive: ['stack-api-key'],
     }),
 
     // To be deprecated
@@ -125,6 +149,14 @@ export default class BootstrapCommand extends Command {
         cloneDirectory = await inquireCloneDirectory();
       }
 
+      const seedParams: SeedParams = {}
+      const stackAPIKey = bootstrapCommandFlags['stack-api-key']
+      const org = bootstrapCommandFlags['org']
+      const stackName = bootstrapCommandFlags['stack-name']
+      if (stackAPIKey) seedParams.stackAPIKey = stackAPIKey
+      if (org) seedParams.org = org
+      if (stackName) seedParams.stackName = stackName
+
       // Check the access token
       // let accessToken = bootstrapCommandFlags.accessToken as string;
       // if (appConfig.private && !accessToken) {
@@ -134,6 +166,7 @@ export default class BootstrapCommand extends Command {
       // initiate bootstrsourceap
       const options: BootstrapOptions = {
         appConfig,
+        seedParams,
         cloneDirectory,
         managementAPIClient: this.managementAPIClient,
         region: this.region,
