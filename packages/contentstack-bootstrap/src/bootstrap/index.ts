@@ -12,11 +12,18 @@ export const ENGLISH_LOCALE = 'en-us';
 
 export interface BootstrapOptions {
   cloneDirectory: string;
+  seedParams: SeedParams;
   appConfig: AppConfig;
   managementAPIClient: any;
   region: any;
   accessToken?: string;
   appType: string;
+}
+
+export interface SeedParams {
+  stackAPIKey?: string;
+  org?: string;
+  stackName?: string;
 }
 
 /**
@@ -70,7 +77,17 @@ export default class Bootstrap {
 
     // seed plugin start
     try {
-      const result = await ContentStackSeed.run(['-r', this.appConfig.stack]);
+      const cmd = ['--repo', this.appConfig.stack]
+      if (this.options.seedParams.stackAPIKey) {
+        cmd.push('--stack-api-key', this.options.seedParams.stackAPIKey)
+      }
+      if (this.options.seedParams.org) {
+        cmd.push('-o', this.options.seedParams.org)
+      }
+      if (this.options.seedParams.stackName) {
+        cmd.push('-n', this.options.seedParams.stackName)
+      }
+      const result = await ContentStackSeed.run(cmd);
       if (result.api_key) {
         await setupEnvironments(
           this.managementAPIClient,
