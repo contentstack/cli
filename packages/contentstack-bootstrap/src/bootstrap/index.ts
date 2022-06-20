@@ -82,7 +82,7 @@ export default class Bootstrap {
         cmd.push('--stack-api-key', this.options.seedParams.stackAPIKey)
       }
       if (this.options.seedParams.org) {
-        cmd.push('-o', this.options.seedParams.org)
+        cmd.push('--org', this.options.seedParams.org)
       }
       if (this.options.seedParams.stackName) {
         cmd.push('-n', this.options.seedParams.stackName)
