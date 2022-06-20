@@ -60,7 +60,7 @@
   },
   "csdxConfig": {
     "expiredCommands": {
-      "cm:migrate-rte": "command will be deprecated in two months, start using cm:entries:migrate-html-rte instead"
+      "cm:migrate-rte": "csdx cm:entries:migrate-html-rte"
     }
   },
   "repository": "contentstack/cli",
