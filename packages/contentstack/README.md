@@ -5,16 +5,14 @@ It is Contentstack’s CLI plugin to perform authentication-related activities. 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-
-- [@contentstack/cli-auth](#contentstackcli-auth)
-- [Usage](#usage)
-- [Commands](#commands)
+* [@contentstack/cli-auth](#contentstackcli-auth)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli
 $ csdx COMMAND
@@ -26,52 +24,49 @@ USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`csdx auth:login`](#csdx-authlogin)
-- [`csdx auth:logout`](#csdx-authlogout)
-- [`csdx auth:tokens`](#csdx-authtokens)
-- [`csdx auth:tokens:add`](#csdx-authtokensadd)
-- [`csdx auth:tokens:remove`](#csdx-authtokensremove)
-- [`csdx auth:whoami`](#csdx-authwhoami)
-- [`csdx cm:assets:publish`](#csdx-cmassetspublish)
-- [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
-- [`csdx cm:bootstrap`](#csdx-cmbootstrap)
-- [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
-- [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
-- [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
-- [`csdx cm:entries:export-to-csv`](#csdx-cmentriesexport-to-csv)
-- [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
-- [`csdx cm:entries:publish`](#csdx-cmentriespublish)
-- [`csdx cm:entries:publish-modified`](#csdx-cmentriespublish-modified)
-- [`csdx cm:entries:publish-non-localized-fields`](#csdx-cmentriespublish-non-localized-fields)
-- [`csdx cm:entries:publish-only-unpublished`](#csdx-cmentriespublish-only-unpublished)
-- [`csdx cm:entries:unpublish`](#csdx-cmentriesunpublish)
-- [`csdx cm:entries:update-and-publish`](#csdx-cmentriesupdate-and-publish)
-- [`csdx cm:migration`](#csdx-cmmigration)
-- [`csdx cm:stacks:clone`](#csdx-cmstacksclone)
-- [`csdx cm:stacks:export`](#csdx-cmstacksexport)
-- [`csdx cm:stacks:import`](#csdx-cmstacksimport)
-- [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
-- [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
-- [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
-- [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
-- [`csdx cm:stacks:seed`](#csdx-cmstacksseed)
-- [`csdx cm:stacks:unpublish`](#csdx-cmstacksunpublish)
-- [`csdx config:get:region`](#csdx-configgetregion)
-- [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
-- [`csdx help [COMMAND]`](#csdx-help-command)
-- [`csdx plugins`](#csdx-plugins)
-- [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
-- [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
-- [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
-- [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
-- [`csdx plugins:update`](#csdx-pluginsupdate)
+* [`csdx auth:login`](#csdx-authlogin)
+* [`csdx auth:logout`](#csdx-authlogout)
+* [`csdx auth:tokens`](#csdx-authtokens)
+* [`csdx auth:tokens:add`](#csdx-authtokensadd)
+* [`csdx auth:tokens:remove`](#csdx-authtokensremove)
+* [`csdx auth:whoami`](#csdx-authwhoami)
+* [`csdx cm:assets:publish`](#csdx-cmassetspublish)
+* [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
+* [`csdx cm:bootstrap`](#csdx-cmbootstrap)
+* [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
+* [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
+* [`csdx cm:entries:export-to-csv`](#csdx-cmentriesexport-to-csv)
+* [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
+* [`csdx cm:entries:publish`](#csdx-cmentriespublish)
+* [`csdx cm:entries:publish-modified`](#csdx-cmentriespublish-modified)
+* [`csdx cm:entries:publish-non-localized-fields`](#csdx-cmentriespublish-non-localized-fields)
+* [`csdx cm:entries:publish-only-unpublished`](#csdx-cmentriespublish-only-unpublished)
+* [`csdx cm:entries:unpublish`](#csdx-cmentriesunpublish)
+* [`csdx cm:entries:update-and-publish`](#csdx-cmentriesupdate-and-publish)
+* [`csdx cm:migration`](#csdx-cmmigration)
+* [`csdx cm:stacks:clone`](#csdx-cmstacksclone)
+* [`csdx cm:stacks:export`](#csdx-cmstacksexport)
+* [`csdx cm:stacks:import`](#csdx-cmstacksimport)
+* [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
+* [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
+* [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
+* [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
+* [`csdx cm:stacks:seed`](#csdx-cmstacksseed)
+* [`csdx cm:stacks:unpublish`](#csdx-cmstacksunpublish)
+* [`csdx config:get:region`](#csdx-configgetregion)
+* [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
+* [`csdx help [COMMAND]`](#csdx-help-command)
+* [`csdx plugins`](#csdx-plugins)
+* [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
+* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
+* [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
+* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
+* [`csdx plugins:update`](#csdx-pluginsupdate)
 
 ## `csdx auth:login`
 
@@ -291,6 +286,10 @@ EXAMPLES
   Using --branch flag
   csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN
   ALIAS] --branch [BRANCH NAME]
+
+  Using --source-env
+  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN
+  ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/assets/publish.js)_
@@ -463,71 +462,6 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
 
-## `csdx cm:bulk-publish:unpublished-entries`
-
-Publish unpublished entries from the source environment, to other environments and locales
-
-```
-Publish unpublished entries from the source environment, to other environments and locales
-The unpublished-entries command is used for publishing unpublished entries from the source environment, to other environments and locales
-
-Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the command successfully
-But, if retryFailed flag is set, then only a logfile is required
-
-
-USAGE
-  $ csdx cm:bulk-publish:unpublished-entries
-
-OPTIONS
-  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
-  -a, --alias=alias                Alias for the management token to be used
-
-  -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
-
-  -c, --config=config              Path to config file to be used
-
-  -e, --environments=environments  Destination environments
-
-  -l, --locale=locale              Source locale
-
-  -r, --retryFailed=retryFailed    Retry publishing failed entries from the logfile
-
-  -s, --sourceEnv=sourceEnv        Source Env
-
-  -t, --contentTypes=contentTypes  The Content-Types from which entries need to be published
-
-  -y, --yes                        Agree to process the command with the current configuration
-
-DESCRIPTION
-  The unpublished-entries command is used for publishing unpublished entries from the source environment, to other
-  environments and locales
-
-  Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the
-  command successfully
-  But, if retryFailed flag is set, then only a logfile is required
-
-EXAMPLES
-  General Usage
-  csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS]
-  -s [SOURCE ENV]
-
-  Using --config or -c flag
-  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
-  csdx cm:bulk-publish:unpublished-entries --config [PATH TO CONFIG FILE]
-  csdx cm:bulk-publish:unpublished-entries -c [PATH TO CONFIG FILE]
-
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:unpublished-entries --retryFailed [LOG FILE NAME]
-  csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]
-
-  Using --branch or -B flag
-  csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS]
-  -B [BRANCH NAME] -s [SOURCE ENV]
-```
-
-_See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
-
 ## `csdx cm:entries:export-to-csv`
 
 Export entries or organization users to csv using this command
@@ -687,7 +621,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale
+  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales
   [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -700,8 +634,12 @@ EXAMPLES
   csdx cm:entries:publish -r [LOG FILE NAME]
 
   Using --branch
-  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale
+  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales
   [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
+
+  Using --source-env
+  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales
+  [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish.js)_
@@ -1666,7 +1604,6 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v1.10.11/src/commands/plugins/update.ts)_
-
 <!-- commandsstop -->
 
 ```
