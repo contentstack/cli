@@ -5,7 +5,6 @@
 /* eslint-disable camelcase */
 const { getQueue } = require('../util/queue');
 const defaults = require('../config/defaults.json');
-const req = require('../util/request');
 const { performBulkUnPublish, UnpublishEntry, UnpublishAsset, initializeLogger } = require('../consumer/publish');
 const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
@@ -154,17 +153,37 @@ async function getSyncEntries(
 ) {
   return new Promise(async (resolve, reject) => {
     try {
-      let tokenDetails = command.getToken(config.alias);
-      const conf = {
-        uri: `${config.cda}/v${defaults.apiVersion}/stacks/sync?${
-          paginationToken ? `pagination_token=${paginationToken}` : 'init=true'
-        }${queryParams}`,
-        headers: {
-          api_key: tokenDetails.apiKey,
-          access_token: deliveryToken,
-        },
-      };
-      const entriesResponse = await req(conf);
+      const tokenDetails = command.getToken(config.alias);
+      const queryParamsObj = {};
+      const pairs = queryParams.split('&');
+      for (let i in pairs) {
+        const split = pairs[i].split('=');
+        queryParamsObj[decodeURIComponent(split[0])] = decodeURIComponent(split[1]);
+      }
+
+      const Stack = new command.deliveryAPIClient.Stack({
+        api_key: tokenDetails.apiKey,
+        delivery_token: deliveryToken,
+        environment: queryParamsObj.environment,
+        branch: config.branch,
+      });
+
+      const syncData = {};
+
+      if (paginationToken) {
+        syncData['pagination_token'] = paginationToken;
+      } else {
+        syncData['init'] = true;
+      }
+      if (queryParamsObj.locale) {
+        syncData['locale'] = queryParamsObj.locale;
+      }
+      if (queryParamsObj.type) {
+        syncData['type'] = queryParamsObj.type;
+      }
+
+      const entriesResponse = await Stack.sync(syncData);
+
       if (entriesResponse.items.length > 0) {
         await bulkAction(stack, entriesResponse.items, bulkUnpublish, environment, locale);
       }
