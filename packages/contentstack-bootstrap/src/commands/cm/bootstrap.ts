@@ -52,15 +52,13 @@ export default class BootstrapCommand extends Command {
       description: 'Provide stack api key to seed content to',
       multiple: false,
       required: false,
-      exclusive: ['org','stack-name'],
+      exclusive: ['org', 'stack-name'],
     }),
     org: flags.string({
-      char: 'o',
       description: 'Provide Organization UID to create a new stack',
       multiple: false,
       required: false,
       exclusive: ['stack-api-key'],
-      parse: printFlagDeprecation(['-o'], ['--org']),
     }),
     'stack-name': flags.string({
       char: 'n',
@@ -119,12 +117,12 @@ export default class BootstrapCommand extends Command {
       }
 
       // inquire user inputs
-      let appType = (bootstrapCommandFlags.appType as string) || 'starterapp';
+      let appType = (bootstrapCommandFlags.appType as string) || (bootstrapCommandFlags['app-type'] as string) || 'starterapp';
       if (!appType) {
         appType = await inquireAppType();
       }
 
-      const selectedAppName = bootstrapCommandFlags.appName as string;
+      const selectedAppName = bootstrapCommandFlags.appName as string || bootstrapCommandFlags['app-name'] as string;
       let selectedApp;
       if (!selectedAppName) {
         if (appType === 'sampleapp') {
@@ -144,7 +142,7 @@ export default class BootstrapCommand extends Command {
 
       const appConfig: AppConfig = getAppLevelConfigByName(selectedAppName || selectedApp.configKey);
 
-      let cloneDirectory = bootstrapCommandFlags.directory as string;
+      let cloneDirectory = bootstrapCommandFlags.directory as string || bootstrapCommandFlags['project-dir'] as string;
       if (!cloneDirectory) {
         cloneDirectory = await inquireCloneDirectory();
       }
