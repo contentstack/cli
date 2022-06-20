@@ -56,17 +56,17 @@
   },
   "csdxConfig": {
     "expiredCommands": {
-      "cm:bulk-publish:configure": "command will be deprecated in two months, start using csdx cm:stacks:publish-configure instead",
-      "cm:bulk-publish:clear": "command will be deprecated in two months, start using csdx cm:stacks:publish-clear-logs instead",
-      "cm:bulk-publish:revert": "command will be deprecated in two months, start using csdx cm:stacks:publish-revert instead",
-      "cm:bulk-publish:assets": "command will be deprecated in two months, start using csdx cm:assets:publish instead",
-      "cm:bulk-publish:add-fields": "command will be deprecated in two months, start using csdx cm:entries:update-and-publish instead",
-      "cm:bulk-publish:unpublished-entries": "command will be deprecated in two months, start using csdx cm:bulk-publish:unpublished-entries instead",
-      "cm:bulk-publish:entries": "command will be deprecated in two months, start using csdx cm:entries:publish instead",
-      "cm:bulk-publish:nonlocalized-field-changes": "command will be deprecated in two months, start using csdx cm:entries:publish-non-localized-fields instead",
-      "cm:bulk-publish:unpublish": "command will be deprecated in two months, start using csdx cm:stacks:unpublish or cm:entries:unpublish or cm:assets:unpublish instead",
-      "cm:bulk-publish:cross-publish": "command will be deprecated in two months, start using csdx cm:entries:publish or csdx cm:assets:publish instead with source-env flag",
-      "cm:bulk-publish:entry-edits": "command will be deprecated in two months, start using csdx cm:entries:publish-modified instead"
+      "cm:bulk-publish:configure": "csdx cm:stacks:publish-configure",
+      "cm:bulk-publish:clear": "csdx cm:stacks:publish-clear-logs",
+      "cm:bulk-publish:revert": "csdx cm:stacks:publish-revert",
+      "cm:bulk-publish:assets": "csdx cm:assets:publish",
+      "cm:bulk-publish:add-fields": "csdx cm:entries:update-and-publish",
+      "cm:bulk-publish:unpublished-entries": "csdx cm:entries:publish-only-unpublished",
+      "cm:bulk-publish:entries": "csdx cm:entries:publish",
+      "cm:bulk-publish:nonlocalized-field-changes": "csdx cm:entries:publish-non-localized-fields",
+      "cm:bulk-publish:unpublish": "csdx cm:stacks:unpublish or cm:entries:unpublish or cm:assets:unpublish",
+      "cm:bulk-publish:cross-publish": "csdx cm:entries:publish or csdx cm:assets:publish with source-env flag",
+      "cm:bulk-publish:entry-edits": "csdx cm:entries:publish-modified"
     }
   },
   "repository": "https://github.com/contentstack/cli",

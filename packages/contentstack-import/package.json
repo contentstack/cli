@@ -53,7 +53,7 @@
   },
   "csdxConfig": {
     "expiredCommands": {
-      "cm:import": "command will be deprecated in two months, start using cm:stacks:import instead"
+      "cm:import": "csdx cm:stacks:import"
     }
   },
   "main": "./src/commands/cm/stacks/import.js",
