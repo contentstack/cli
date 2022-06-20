@@ -10,3 +10,4 @@ _backup*
 oclif.manifest.json
 .vscode
 .nyc_output
+contentstack-cli-logs

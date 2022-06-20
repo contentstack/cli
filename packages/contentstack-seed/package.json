@@ -59,7 +59,7 @@
   },
   "csdxConfig": {
     "expiredCommands": {
-      "cm:seed": "command will be deprecated in two months, start using cm:stacks:seed instead"
+      "cm:seed": "csdx cm:stacks:seed"
     }
   },
   "repository": "contentstack/cli",

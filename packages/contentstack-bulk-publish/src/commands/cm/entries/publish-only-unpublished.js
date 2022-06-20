@@ -31,7 +31,6 @@ PublishOnlyUnpublished.flags = {
   }),
   'retry-failed': flags.string({
     description: 'Retry publishing failed entries from the logfile',
-    parse: printFlagDeprecation(['--retryFailed', '-r'], ['--retry-failed']),
   }),
   bulkPublish: flags.string({
     char: 'b',
@@ -46,7 +45,6 @@ PublishOnlyUnpublished.flags = {
     description:
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
     default: 'true',
-    parse: printFlagDeprecation(['--bulkPublish', '-b'], ['--bulk-publish']),
   }),
   sourceEnv: flags.string({
     char: 's',

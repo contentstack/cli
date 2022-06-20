@@ -221,6 +221,9 @@ AssetsPublishCommand.examples = [
   '',
   'Using --branch flag',
   'csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]',
+  '',
+  'Using --source-env',
+  'csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]',
 ];
 
 AssetsPublishCommand.aliases = ['cm:bulk-publish:assets'];
