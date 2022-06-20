@@ -3,27 +3,24 @@ Contentstack CLI’s “Bootstrap” plugin enables you to automate the process 
 This means that all the required steps such as stack, environment, and content type creation, entry and asset publishing are performed just by using a single command.
 
 <!-- toc -->
-
-- [Usage](#usage)
-- [Commands](#commands)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli-cm-bootstrap
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bootstrap/1.0.7 darwin-arm64 node-v18.1.0
+@contentstack/cli-cm-bootstrap/1.0.7 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 ```sh-session
@@ -39,8 +36,7 @@ USAGE
 # Commands
 
 <!-- commands -->
-
-- [`csdx cm:bootstrap`](#csdx-cmbootstrap)
+* [`csdx cm:bootstrap`](#csdx-cmbootstrap)
 
 ## `csdx cm:bootstrap`
 
@@ -51,19 +47,28 @@ USAGE
   $ csdx cm:bootstrap
 
 OPTIONS
-  --access-token=access-token  Access token for private github repo
-  --app-name=app-name          App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter
+  -k, --stack-api-key=stack-api-key  Provide stack api key to seed content to
+  -n, --stack-name=stack-name        Name of a new stack that needs to be created.
+  -o, --org=org                      Provide Organization UID to create a new stack
+  --access-token=access-token        Access token for private github repo
 
-  --project-dir=project-dir    Directory to setup the project. If directory name has a space then provide the path as a
-                               string or escap the space using back slash eg: "../../test space" or ../../test\ space
+  --app-name=app-name                App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter,
+                                     nuxt-starter
+
+  --project-dir=project-dir          Directory to setup the project. If directory name has a space then provide the path
+                                     as a string or escap the space using back slash eg: "../../test space" or
+                                     ../../test\ space
 
 EXAMPLES
   $ csdx cm:bootstrap
   $ csdx cm:bootstrap --project-dir <path/to/setup/the/app>
   $ csdx cm:bootstrap --access-token <github access token>
   $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app>
+  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key"
+   //seed content into specific stack
+  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid" 
+  --stack-name "stack-name" //create a new stack in given org uid
 ```
 
 _See code: [src/commands/cm/bootstrap.ts](https://github.com/contentstack/cli/blob/v1.0.7/src/commands/cm/bootstrap.ts)_
-
 <!-- commandsstop -->
