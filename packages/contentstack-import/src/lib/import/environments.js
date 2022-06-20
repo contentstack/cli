@@ -9,7 +9,6 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
 
-const request = require('../util/request');
 const helper = require('../util/fs');
 let { addlogs } = require('../util/log');
 let util = require('../util/');
