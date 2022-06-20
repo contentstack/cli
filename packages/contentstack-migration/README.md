@@ -8,16 +8,14 @@ The Contentstack CLI’s “Migration” plugin allows developers to automate th
 [![License](https://img.shields.io/npm/l/@contentstack/cli-migration.svg)](https://github.com/ninadhatkar/cli-migration/blob/master/package.json)
 
 <!-- toc -->
-
-- [@contentstack/cli-migration](#contentstackcli-migration)
-- [Usage](#usage)
-- [Commands](#commands)
+* [@contentstack/cli-migration](#contentstackcli-migration)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli-migration
 $ csdx COMMAND
@@ -29,14 +27,12 @@ USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`csdx cm:migration`](#csdx-cmmigration)
+* [`csdx cm:migration`](#csdx-cmmigration)
 
 ## `csdx cm:migration`
 
@@ -77,7 +73,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/migration.js](https://github.com/contentstack/cli-migration/blob/v1.0.0/src/commands/cm/migration.js)_
-
 <!-- commandsstop -->
 
 ### Points to remember
