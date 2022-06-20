@@ -96,19 +96,9 @@ export default class ContentModelSeeder {
     if (repoExists === false) {
       cliux.error(`Could not find GitHub repository '${this.ghPath}'.`);
     } else {
-      let organizationResponse: Organization;
+      let organizationResponse: Organization | undefined;
       let stackResponse: InquireStackResponse;
-      if (this.options.orgUid) {
-        organizationResponse = await this.csClient.getOrganization(this.options.orgUid);
-      } else {
-        const organizations = await this.csClient.getOrganizations();
-        if (!organizations || organizations.length === 0) {
-          throw new Error(
-            'You do not have access to any organizations. Please try again or ask an Administrator for assistance.',
-          );
-        }
-        organizationResponse = await inquireOrganization(organizations);
-      }
+
       if (this.options.stackUid) {
         const stack: Stack = await this.csClient.getStack(this.options.stackUid);
         stackResponse = {
@@ -118,6 +108,17 @@ export default class ContentModelSeeder {
           api_key: stack.api_key,
         };
       } else {
+        if (this.options.orgUid) {
+          organizationResponse = await this.csClient.getOrganization(this.options.orgUid);
+        } else {
+          const organizations = await this.csClient.getOrganizations();
+          if (!organizations || organizations.length === 0) {
+            throw new Error(
+              'You do not have access to any organizations. Please try again or ask an Administrator for assistance.',
+            );
+          }
+          organizationResponse = await inquireOrganization(organizations);
+        }
         const stacks = await this.csClient.getStacks(organizationResponse.uid);
         stackResponse = await inquireStack(stacks, this.options.stackName);
       }
