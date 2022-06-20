@@ -33,7 +33,6 @@ USAGE
 * [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
-* [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
 * [`csdx cm:entries:publish`](#csdx-cmentriespublish)
 * [`csdx cm:entries:publish-modified`](#csdx-cmentriespublish-modified)
 * [`csdx cm:entries:publish-non-localized-fields`](#csdx-cmentriespublish-non-localized-fields)
@@ -87,7 +86,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
+  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN
   ALIAS]
 
   Using --config or -c flag
@@ -99,8 +98,12 @@ EXAMPLES
   csdx cm:assets:publish --retry-failed [LOG FILE NAME]
 
   Using --branch flag
-  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
+  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN
   ALIAS] --branch [BRANCH NAME]
+
+  Using --source-env
+  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN
+  ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
 ```
 
 _See code: [src/commands/cm/assets/publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/assets/publish.js)_
@@ -137,7 +140,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN 
+  csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN
   ALIAS] --delivery-token [DELIVERY TOKEN]
 
   Using --config or -c flag
@@ -149,7 +152,7 @@ EXAMPLES
   csdx cm:assets:unpublish --retry-failed [LOG FILE NAME]
 
   Using --branch flag
-  csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN 
+  csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN
   ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
 ```
 
@@ -212,7 +215,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
+  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a
   [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]
 
   Using --config or -c flag
@@ -225,69 +228,11 @@ EXAMPLES
   csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]
 
   Using --branch or -B flag
-  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
+  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a
   [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]
 ```
 
 _See code: [src/commands/cm/bulk-publish/cross-publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
-
-## `csdx cm:bulk-publish:unpublished-entries`
-
-Publish unpublished entries from the source environment, to other environments and locales
-
-```
-USAGE
-  $ csdx cm:bulk-publish:unpublished-entries
-
-OPTIONS
-  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
-  -a, --alias=alias                Alias for the management token to be used
-
-  -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
-
-  -c, --config=config              Path to config file to be used
-
-  -e, --environments=environments  Destination environments
-
-  -l, --locale=locale              Source locale
-
-  -r, --retryFailed=retryFailed    Retry publishing failed entries from the logfile
-
-  -s, --sourceEnv=sourceEnv        Source Env
-
-  -t, --contentTypes=contentTypes  The Content-Types from which entries need to be published
-
-  -y, --yes                        Agree to process the command with the current configuration
-
-DESCRIPTION
-  The unpublished-entries command is used for publishing unpublished entries from the source environment, to other 
-  environments and locales
-
-  Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the 
-  command successfully
-  But, if retryFailed flag is set, then only a logfile is required
-
-EXAMPLES
-  General Usage
-  csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS]
-   -s [SOURCE ENV]
-
-  Using --config or -c flag
-  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
-  csdx cm:bulk-publish:unpublished-entries --config [PATH TO CONFIG FILE]
-  csdx cm:bulk-publish:unpublished-entries -c [PATH TO CONFIG FILE]
-
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:unpublished-entries --retryFailed [LOG FILE NAME]
-  csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]
-
-  Using --branch or -B flag
-  csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS]
-   -B [BRANCH NAME] -s [SOURCE ENV]
-```
-
-_See code: [src/commands/cm/bulk-publish/unpublished-entries.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
 
 ## `csdx cm:entries:publish`
 
@@ -327,7 +272,7 @@ OPTIONS
 
 DESCRIPTION
   The publish command is used for publishing entries from the specified content types, to the
-  specified environments and locales 
+  specified environments and locales
 
   Content Types, Environments and Locales are required for executing the command successfully
   But, if retry-failed flag is set, then only a logfile is required
@@ -337,8 +282,8 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale 
-  [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
+  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales
+   [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
   Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`
@@ -350,8 +295,12 @@ EXAMPLES
   csdx cm:entries:publish -r [LOG FILE NAME]
 
   Using --branch
-  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale 
-  [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
+  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales
+   [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
+
+  Using --source-env
+  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales
+   [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
 ```
 
 _See code: [src/commands/cm/entries/publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish.js)_
@@ -386,7 +335,7 @@ DESCRIPTION
   The publish-modified command is used for publishing entries from the specified content types, to the
   specified environments and locales
 
-  Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command 
+  Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command
   successfully
   But, if retry-failed flag is set, then only a logfile is required
 
@@ -395,7 +344,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e 
+  csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e
   [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -408,7 +357,7 @@ EXAMPLES
   csdx cm:entries:publish-modified -r [LOG FILE NAME]
 
   Using --branch
-  csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e 
+  csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e
   [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
 ```
 
@@ -439,7 +388,7 @@ OPTIONS
   --source-env=source-env          Source Environment
 
 DESCRIPTION
-  The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types 
+  The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types
   to the specified Environments
 
   Content Types, Environments and Source Environment are required for executing this command successfully.
@@ -450,7 +399,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:entries:publish-non-localized-fields --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --environments 
+  csdx cm:entries:publish-non-localized-fields --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --environments
   [ENVIRONMENT 1] [ENVIRONMENT 2] --alias [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENV]
 
   Using --config or -c flag
@@ -462,7 +411,7 @@ EXAMPLES
   csdx cm:entries:publish-non-localized-fields --retry-failed [LOG FILE NAME]
 
   Using --branch flag
-  csdx cm:entries:publish-non-localized-fields --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --environments 
+  csdx cm:entries:publish-non-localized-fields --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --environments
   [ENVIRONMENT 1] [ENVIRONMENT 2] --alias [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENV] --branch [BRANCH NAME]
 ```
 
@@ -498,10 +447,10 @@ OPTIONS
   --source-env=source-env          Source Env
 
 DESCRIPTION
-  The publish-only-unpublished command is used for publishing unpublished entries from the source environment, to other 
+  The publish-only-unpublished command is used for publishing unpublished entries from the source environment, to other
   environments and locales
 
-  Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the 
+  Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the
   command successfully
   But, if retry-failed flag is set, then only a logfile is required
 
@@ -510,7 +459,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a 
+  csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a
   [MANAGEMENT TOKEN ALIAS] -source-env [SOURCE ENV]
 
   Using --config or -c flag
@@ -522,7 +471,7 @@ EXAMPLES
   csdx cm:entries:publish-only-unpublished --retry-failed [LOG FILE NAME]
 
   Using --branch
-  csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a 
+  csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a
   [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME] -source-env [SOURCE ENV]
 ```
 
@@ -562,7 +511,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] 
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE]
   --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN]
 
   Using --config or -c flag
@@ -575,7 +524,7 @@ EXAMPLES
 
 
   Using --branch flag
-  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] 
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE]
   --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
 ```
 
@@ -607,7 +556,7 @@ OPTIONS
                                    flags)
 
 DESCRIPTION
-  The update-and-publish command is used for updating already existing entries with the updated schema of their 
+  The update-and-publish command is used for updating already existing entries with the updated schema of their
   respective Content Type
 
   Content Types, Environments and Locales are required for executing the command successfully
@@ -618,7 +567,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
+  csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT
   2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -630,7 +579,7 @@ EXAMPLES
   csdx cm:entries:update-and-publish --retry-failed [LOG FILE NAME]
 
   Using --branch
-  csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
+  csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT
   2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
 ```
 
@@ -653,7 +602,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
+  csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN
   ALIAS]
 
   Using --config or -c flag
@@ -665,7 +614,7 @@ EXAMPLES
   csdx cm:stacks:publish --retry-failed [LOG FILE NAME]
 
   Using --branch flag
-  csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
+  csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN
   ALIAS] --branch [BRANCH NAME]
 ```
 
@@ -789,7 +738,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] 
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE]
   --alias [MANAGEMENT TOKEN ALIAS] ----delivery-token [DELIVERY TOKEN]
 
   Using --config or -c flag
@@ -801,21 +750,21 @@ EXAMPLES
   csdx cm:stacks:unpublish --retry-failed [LOG FILE NAME]
 
   No content type
-  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all content 
+  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all content
   types and assets from the source environment)
 
   Using --only-assets
-  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] --only-assets (Will unpublish only assets from 
+  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] --only-assets (Will unpublish only assets from
   the source environment)
 
   Using --only-entries
   csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] --only-entries (Will unpublish only entries, all
    entries, from the source environment)
-  csdx cm:stacks:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --only-entries 
+  csdx cm:stacks:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --only-entries
   (Will unpublish only entries, (from CONTENT TYPE) from the source environment)
 
   Using --branch flag
-  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] 
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE]
   --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
 ```
 
