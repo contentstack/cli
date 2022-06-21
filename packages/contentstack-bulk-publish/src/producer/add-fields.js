@@ -7,7 +7,6 @@
 /* eslint-disable max-params */
 const { getQueue } = require('../util/queue');
 const defaultConfig = require('../config/defaults.json');
-const req = require('../util/request');
 const { performBulkPublish, publishEntry, initializeLogger } = require('../consumer/publish');
 const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
@@ -182,35 +181,16 @@ function addFields(contentType, entry) {
   return { entry, changedFlag };
 }
 
-async function updateEntry(config, updatedEntry, contentType, locale) {
-  const entry = {
-    entry: updatedEntry,
-  };
-  const tokenDetails = command.getToken(config.alias);
-  const conf = {
-    uri: `${config.host}/v${defaultConfig.apiVersion}/content_types/${contentType}/entries/${updatedEntry.uid}?locale=${
-      locale || 'en-us'
-    }`,
-    method: 'PUT',
-    headers: {
-      api_key: tokenDetails.apiKey,
-      authorization: tokenDetails.token,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      ...entry,
-    }),
-  };
-  try {
-    const update = await req(conf);
-    if (update.notice) {
+async function updateEntry(updatedEntry, locale) {
+  return updatedEntry
+    .update({ locale: locale || 'en-us' })
+    .then(() => {
       return Promise.resolve(true);
-    }
-    return Promise.resolve(false);
-  } catch (error) {
-    console.log(error);
-  }
-  return Promise.resolve(false);
+    })
+    .catch((error) => {
+      console.error(error);
+      return Promise.resolve(false);
+    });
 }
 
 /* eslint-disable no-param-reassign */
@@ -233,7 +213,7 @@ async function getEntries(stack, config, schema, contentType, locale, bulkPublis
         let updatedEntry = addFields(schema, entries[index]);
         if (updatedEntry.changedFlag) {
           updatedEntry = removeUnwanted(entries[index], deleteFields);
-          const flag = await updateEntry(config, updatedEntry, contentType, locale);
+          const flag = await updateEntry(updatedEntry, locale);
           if (flag) {
             if (bulkPublish) {
               if (bulkPublishSet.length < 10) {
