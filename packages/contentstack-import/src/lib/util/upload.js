@@ -6,9 +6,6 @@
 
 'use strict';
 
-var fs = require('fs');
-var Bluebird = require('bluebird');
-var request = Bluebird.promisify(require('request'));
 var debug = require('debug')('util:requests');
 var MAX_RETRY_LIMIT = 5;
 
