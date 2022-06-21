@@ -12,7 +12,6 @@ let chalk = require('chalk');
 
 let helper = require('../util/fs');
 let { addlogs } = require('../util/log');
-let util = require('../util');
 let extension_supress = require('../util/extensionsUidReplace');
 let removeReferenceFields = require('../util/removeReferenceFields');
 const stack = require('../util/contentstack-management-sdk');

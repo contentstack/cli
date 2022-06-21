@@ -6,11 +6,11 @@
  */
 
 var _ = require('lodash');
+const { HttpClient } = require('@contentstack/cli-utilities');
 var fs = require('./fs');
 var path = require('path');
 var chalk = require('chalk');
 var { addlogs } = require('./log');
-var request = require('./request');
 var defaultConfig = require('../../config/default');
 const stack = require('./contentstack-management-sdk');
 var config;
@@ -56,15 +56,17 @@ exports.sanitizeStack = function (importConfig) {
     return Promise.resolve();
   }
   addlogs(importConfig, 'Running script to maintain stack version.', 'success');
-  var getStackOptions = {
-    url: importConfig.host + importConfig.apis.stacks,
-    method: 'GET',
-    headers: importConfig.headers,
-    json: true,
-  };
+  // var getStackOptions = {
+  //   url: importConfig.host + importConfig.apis.stacks,
+  //   method: 'GET',
+  //   headers: importConfig.headers,
+  //   json: true,
+  // };
 
   try {
-    return request(getStackOptions).then((stackDetails) => {
+    const httpClient = HttpClient.create();
+    httpClient.headers(importConfig.headers);
+    return httpClient.get(importConfig.host + importConfig.apis.stacks).then((stackDetails) => {
       if (stackDetails.body && stackDetails.body.stack && stackDetails.body.stack.settings) {
         const newStackVersion = stackDetails.body.stack.settings.version;
         const newStackDate = new Date(newStackVersion).toString();
@@ -90,20 +92,26 @@ exports.sanitizeStack = function (importConfig) {
         }
         addlogs(importConfig, 'Updating stack version.', 'success');
         // Update the new stack
-        var updateStackOptions = {
-          url: importConfig.host + importConfig.apis.stacks + 'settings/set-version',
-          method: 'PUT',
-          headers: importConfig.headers,
-          body: {
+        // var updateStackOptions = {
+        //   url: importConfig.host + importConfig.apis.stacks + 'settings/set-version',
+        //   method: 'PUT',
+        //   headers: importConfig.headers,
+        //   body: {
+        //     stack_settings: {
+        //       version: '2017-10-14', // This can be used as a variable
+        //     },
+        //   },
+        // };
+
+        return httpClient
+          .put(importConfig.host + importConfig.apis.stacks + 'settings/set-version', {
             stack_settings: {
               version: '2017-10-14', // This can be used as a variable
             },
-          },
-        };
-
-        return request(updateStackOptions).then((response) => {
-          addlogs(importConfig, `Stack version preserved successfully!\n${JSON.stringify(response.body)}`, 'success');
-        });
+          })
+          .then((response) => {
+            addlogs(importConfig, `Stack version preserved successfully!\n${JSON.stringify(response.body)}`, 'success');
+          });
       }
       throw new Error(`Unexpected stack details ${stackDetails}. 'stackDetails.body.stack' not found!!`);
     });
