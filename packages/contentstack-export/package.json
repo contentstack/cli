@@ -17,6 +17,7 @@
 		"fs": "0.0.1-security",
 		"is-valid-path": "^0.1.1",
 		"lodash": "^4.17.20",
+		"mkdirp": "^1.0.4",
 		"path": "^0.12.7",
 		"progress-stream": "^2.0.0",
 		"proxyquire": "^2.1.3",
