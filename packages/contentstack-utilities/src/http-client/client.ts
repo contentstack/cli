@@ -329,7 +329,7 @@ export class HttpClient {
   async send<R>(method: HttpMethod, url: string): Promise<HttpResponse<R>> {
     try {
       return new HttpResponse<R>(await this.createAndSendRequest(method, url));
-    } catch (error) {
+    } catch (error: any) {
       if (error.response) {
         return new HttpResponse(error.response);
       }
@@ -347,7 +347,6 @@ export class HttpClient {
    * @returns {Request}
    */
   async createAndSendRequest(method: HttpMethod, url: string): Promise<AxiosResponse> {
-    console.log('request', this.request);
     return await this.axiosInstance({
       url,
       method,
