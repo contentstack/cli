@@ -4,7 +4,23 @@
 	"version": "1.0.0",
 	"author": "Contentstack",
 	"bugs": "https://github.com/contentstack/cli/issues",
+	"scripts": {
+		"build": "npm run clean && npm run compile",
+		"clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
+		"compile": "tsc -b tsconfig.json",
+		"postpack": "rm -f oclif.manifest.json",
+		"prepack": "npm run build && oclif-dev manifest && oclif-dev readme",
+		"version": "oclif-dev readme && git add README.md",
+		"test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+		"pretest": "tsc -p test",
+		"test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+		"posttest": "npm run lint",
+		"lint": "eslint src/**/*.ts",
+		"format": "eslint src/**/*.ts --fix"
+	},
 	"dependencies": {
+		"@contentstack/cli-command": "^1.0.0",
+		"@contentstack/cli-utilities": "^1.0.0",
 		"@oclif/command": "^1.8.16",
 		"@oclif/config": "^1.18.3",
 		"chalk": "^4.0.0",
