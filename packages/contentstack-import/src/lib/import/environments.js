@@ -11,7 +11,6 @@ const Promise = require('bluebird');
 
 const helper = require('../util/fs');
 let { addlogs } = require('../util/log');
-let util = require('../util/');
 const chalk = require('chalk');
 let stack = require('../util/contentstack-management-sdk');
 
