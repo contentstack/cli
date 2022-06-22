@@ -10,7 +10,7 @@ var path = require('path')
 
 var app = require('../../app')
 var helper = require('../util/helper')
-var {addlogs} = require('../util/log')
+var { addlogs } = require('../util/log')
 const stack = require('../util/contentstack-management-sdk')
 
 
@@ -19,7 +19,7 @@ let config = require('../../config/default')
 var stackConfig = config.modules.stack
 let client
 
-function ExportStack () {
+function ExportStack() {
   this.requestOption = {
     uri: config.host + config.apis.stacks,
     headers: config.headers,
@@ -30,38 +30,62 @@ function ExportStack () {
 ExportStack.prototype.start = function (credentialConfig) {
   config = credentialConfig
   client = stack.Client(config)
+  let self = this
   if (!config.preserveStackVersion && !config.hasOwnProperty("master_locale")) {
-    return new Promise((resolve, reject) => {
-    var result =  client.stack({ api_key: credentialConfig.source_stack, management_token: credentialConfig.management_token }).locale().query()     
-    result.find()
-      .then(response => {
-        var masterLocalObj = response.items.filter(obj => {
-            if (obj.fallback_locale === null) {
-              return obj
-            }
-            });
-        return resolve(masterLocalObj[0])
-      }).catch(error => {
-        return reject(error)
-      })
-    })
-  } else if(config.preserveStackVersion) {
+    const apiDetails = {
+      limit: 100,
+      skip: 0,
+      include_count: true,
+    }
+    return self.getLocales(apiDetails)
+  } else if (config.preserveStackVersion) {
     addlogs(config, 'Exporting stack details', 'success')
     let stackFolderPath = path.resolve(config.data, stackConfig.dirName)
     let stackContentsFile = path.resolve(stackFolderPath, stackConfig.fileName)
-  
+
     mkdirp.sync(stackFolderPath)
-  
+
     return new Promise((resolve, reject) => {
-      return client.stack({api_key: config.source_stack}).fetch()
-      .then(response => {
-        helper.writeFile(stackContentsFile, response)
-        addlogs(config, 'Exported stack details successfully!', 'success')
-        return resolve(response)
-      })
-      .catch(reject)
+      return client.stack({ api_key: config.source_stack }).fetch()
+        .then(response => {
+          helper.writeFile(stackContentsFile, response)
+          addlogs(config, 'Exported stack details successfully!', 'success')
+          return resolve(response)
+        })
+        .catch(reject)
     })
   }
+}
+
+ExportStack.prototype.getLocales = function (apiDetails) {
+  let self = this
+  return new Promise((resolve, reject) => {
+    const result = client
+      .stack({ api_key: config.source_stack, management_token: config.management_token })
+      .locale()
+      .query(apiDetails)
+
+    result
+      .find()
+      .then((response) => {
+        const masterLocalObj = response.items.find((obj) => {
+          if (obj.fallback_locale === null) {
+            return obj;
+          }
+        });
+        apiDetails.skip += apiDetails.limit;
+        if (masterLocalObj) { return resolve(masterLocalObj); }
+        else if (apiDetails.skip <= response.count) {
+          return resolve(self.getLocales(apiDetails))
+        }
+        else {
+          return reject('Master locale not found');
+        }
+      })
+      .catch((error) => {
+        return reject(error);
+      });
+  });
 }
 
 module.exports = new ExportStack()
