@@ -73,10 +73,12 @@ export default class GitHubClient {
   }
 
   async streamRelease(url: string): Promise<Stream> {
-    const response = await this.httpClient.get(url, {
-      responseType: 'stream',
-    });
-
+    const response = await this.httpClient
+      .options({
+        responseType: 'stream',
+      })
+      .get(url);
+    this.httpClient.resetConfig();
     return response.data as Stream;
   }
 
