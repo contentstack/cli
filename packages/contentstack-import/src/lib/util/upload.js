@@ -8,6 +8,7 @@
 
 var debug = require('debug')('util:requests');
 var MAX_RETRY_LIMIT = 5;
+var Bluebird = require('bluebird');
 
 var util = require('./index');
 var config = util.getConfig();
