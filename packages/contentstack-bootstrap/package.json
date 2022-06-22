@@ -73,10 +73,5 @@
       "@contentstack/cli-cm-seed"
     ]
   },
-  "csdxConfig": {
-    "protectedCommands": {
-      "cm:bootstrap": true
-    }
-  },
   "repository": "contentstack/cli"
 }
