@@ -1,7 +1,7 @@
 const mkdirp = require('mkdirp');
 const path = require('path');
-const request = require('./request');
 const helper = require('./helper');
+const { HttpClient } = require('@contentstack/cli-utilities');
 
 const setupBranches = async (config, branch) => {
   if (typeof config !== 'object') {
@@ -11,30 +11,23 @@ const setupBranches = async (config, branch) => {
 
   if (typeof branch === 'string') {
     //check branch exists
-    const result = await request({
-      url: `https://${config.host}/v3/stacks/branches/${branch}`,
-      headers: {
-        api_key: config.source_stack,
-        authtoken: config.auth_token,
-      },
-    });
-    if (result && typeof result.body === 'object' && typeof result.body.branch === 'object') {
-      branches.push(result.body.branch);
+    const result = await HttpClient.create()
+      .headers({ api_key: config.source_stack, authtoken: config.auth_token })
+      .get(`https://${config.host}/v3/stacks/branches/${branch}`);
+
+    if (result && typeof result.data === 'object' && typeof result.data.branch === 'object') {
+      branches.push(result.data.branch);
     } else {
       throw new Error('No branch found with the name ' + branch);
     }
   } else {
     try {
-      const result = await request({
-        url: `https://${config.host}/v3/stacks/branches`,
-        headers: {
-          api_key: config.source_stack,
-          authtoken: config.auth_token,
-        },
-      });
+      const result = await HttpClient.create()
+        .headers({ api_key: config.source_stack, authtoken: config.auth_token })
+        .get(`https://${config.host}/v3/stacks/branches`);
 
-      if (result && result.body && Array.isArray(result.body.branches) && result.body.branches.length > 0) {
-        branches = result.body.branches;
+      if (result && result.data && Array.isArray(result.data.branches) && result.data.branches.length > 0) {
+        branches = result.data.branches;
       } else {
         branches.push('main');
       }
