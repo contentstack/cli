@@ -4,7 +4,6 @@
  * MIT Licensed
  */
 
-const nativeRequest = require('request');
 const mkdirp = require('mkdirp');
 const path = require('path');
 const fs = require('fs');
@@ -12,6 +11,7 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const chalk = require('chalk');
 const progress = require('progress-stream');
+const { HttpClient } = require('@contentstack/cli-utilities');
 
 const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
@@ -20,6 +20,7 @@ let config = require('../../config/default');
 const stack = require('../util/contentstack-management-sdk');
 const assetConfig = config.modules.assets;
 const invalidKeys = assetConfig.invalidKeys;
+const httpClient = HttpClient.create();
 
 // The no. of assets fetched and processed in a batch
 const bLimit = assetConfig.batchLimit || 15;
@@ -312,7 +313,7 @@ ExportAssets.prototype = {
   },
   downloadAsset: function (asset) {
     let self = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise(async function (resolve, reject) {
       const assetFolderPath = path.resolve(assetsFolderPath, asset.uid);
       const assetFilePath = path.resolve(assetFolderPath, asset.filename);
       if (fs.existsSync(assetFilePath)) {
@@ -327,34 +328,32 @@ ExportAssets.prototype = {
         url: config.securedAssets ? `${asset.url}?authtoken=${config.authtoken || config.auth_token}` : asset.url,
       };
 
+      helper.makeDirectory(assetFolderPath);
+      const assetFileStream = fs.createWriteStream(assetFilePath);
       self.assetStream.url = encodeURI(self.assetStream.url);
-      const assetStreamRequest = nativeRequest(self.assetStream);
-      assetStreamRequest.on('response', function (response) {
-        helper.makeDirectory(assetFolderPath);
-        const assetFileStream = fs.createWriteStream(assetFilePath);
-
-        if (assetConfig.enableDownloadStatus) {
-          const str = progress({
-            length: response.headers['content-length'],
-            time: 5000,
-          });
-
-          str.on('progress', function (progressData) {
-            console.log(`${asset.filename}: ${Math.round(progressData.percentage)}%`);
-          });
-
-          assetStreamRequest.pipe(str).pipe(assetFileStream);
-        } else {
+      httpClient
+        .options({ responseType: 'stream' })
+        .get(self.assetStream.url)
+        .then(({ data: assetStreamRequest }) => {
+          if (assetConfig.enableDownloadStatus) {
+            const str = progress({
+              time: 5000,
+              length: assetStreamRequest.headers['content-length'],
+            });
+            str.on('progress', function (progressData) {
+              console.log(`${asset.filename}: ${Math.round(progressData.percentage)}%`);
+            });
+            assetStreamRequest.pipe(str).pipe(assetFileStream);
+          }
           assetStreamRequest.pipe(assetFileStream);
-        }
-
-        assetFileStream
-          .on('close', function () {
-            addlogs(config, 'Downloaded ' + asset.filename + ': ' + asset.uid + ' successfully!', 'success');
-            return resolve();
-          })
-          .on('error', reject);
-      });
+        })
+        .catch(reject);
+      assetFileStream
+        .on('close', function () {
+          addlogs(config, 'Downloaded ' + asset.filename + ': ' + asset.uid + ' successfully!', 'success');
+          return resolve();
+        })
+        .on('error', reject);
     });
   },
   getFolders: function () {
