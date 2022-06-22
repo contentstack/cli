@@ -5,9 +5,8 @@ It is Contentstack’s CLI plugin to import content in the stack. To learn how t
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-
-- [Usage](#usage)
-- [Commands](#commands)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 For switching to EU region update the hosts at config/default.js
@@ -33,7 +32,6 @@ For switching to AZURE-NA region update the hosts at config/default.js
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
@@ -45,14 +43,12 @@ USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`csdx cm:stacks:import`](#csdx-cmstacksimport)
+* [`csdx cm:stacks:import`](#csdx-cmstacksimport)
 
 ## `csdx cm:stacks:import`
 
@@ -91,5 +87,4 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/stacks/import.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-import/src/commands/cm/stacks/import.js)_
-
 <!-- commandsstop -->

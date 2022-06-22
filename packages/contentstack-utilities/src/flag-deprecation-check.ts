@@ -12,23 +12,23 @@ export default function (deprecatedFlags = [], suggestions = [], customMessage?:
     deprecatedFlags.forEach((item) => {
       if (command.argv.indexOf(item) !== -1) {
         isCommandHasDeprecationFlag = true;
-        return;
       }
     });
 
     if (isCommandHasDeprecationFlag) {
-      cliux.print(
-        `DEPRECATION WARNING: ${
-          customMessage
-            ? customMessage
-            : `flags ${deprecatedFlags.join(',')} will be removed in two months${
-                suggestions.length > 0 ? `, start using ${suggestions.join(',')} flags instead` : ''
-              }`
-        }`,
-        {
-          color: 'yellow',
-        },
-      );
+      let depreactionMessage = '';
+      if (customMessage) {
+        depreactionMessage = customMessage;
+      } else {
+        depreactionMessage = `WARNING!!! You're using the old (soon to be deprecated) Contentstack CLI flags (${deprecatedFlags.join(
+          ', ',
+        )}).`;
+
+        if (suggestions.length > 0) {
+          depreactionMessage += ` We recommend you to use the updated flags (${suggestions.join(', ')}).`;
+        }
+      }
+      cliux.print(depreactionMessage, { color: 'yellow' });
     }
 
     return input;
