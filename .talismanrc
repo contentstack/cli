@@ -1,4 +1,8 @@
 fileignoreconfig:
+- filename: packages/contentstack-export/src/lib/export/locales.js
+  checksum: 58611afacfca741e2740032b66f402d387e7fbf44de80916720721a960877e11
+- filename: packages/contentstack-export/src/lib/export/stack.js
+  checksum: 703e1d3c0f6ff3f681802b410e14b5582fb1b567a2761fefddb7f713c4e0ffd5
 - filename: packages/contentstack-import/package-lock.json
   checksum: 66126a79971d8afa929ac43e86261578431e4d63bc0de59a410d86c467bdcbcf
 - filename: packages/contentstack-import/src/lib/import/entries.js
