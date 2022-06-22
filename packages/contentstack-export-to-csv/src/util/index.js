@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const axios = require('axios');
+const { HttpClient } = require('@contentstack/cli-utilities');
 const os = require('os');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 const config = require('./config.js');
@@ -372,8 +372,9 @@ function getOrgUsers(managementAPIClient, orgUid, ecsv) {
       if (organization.is_owner === true) {
         let cma = ecsv.region.cma;
         let authtoken = ecsv.authToken;
-        return axios
-          .get(`${cma}/v3/organizations/${organization.uid}/share`, { headers: { authtoken: authtoken } })
+        return HttpClient.create()
+          .headers({ authtoken: authtoken })
+          .get(`${cma}/v3/organizations/${organization.uid}/share`)
           .then((_response) => resolve({ items: _response.data.shares }));
       }
       if (!organization.getInvitations) {
