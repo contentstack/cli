@@ -56,19 +56,12 @@ exports.sanitizeStack = function (importConfig) {
     return Promise.resolve();
   }
   addlogs(importConfig, 'Running script to maintain stack version.', 'success');
-  // var getStackOptions = {
-  //   url: importConfig.host + importConfig.apis.stacks,
-  //   method: 'GET',
-  //   headers: importConfig.headers,
-  //   json: true,
-  // };
-
   try {
     const httpClient = HttpClient.create();
     httpClient.headers(importConfig.headers);
-    return httpClient.get(importConfig.host + importConfig.apis.stacks).then((stackDetails) => {
-      if (stackDetails.body && stackDetails.body.stack && stackDetails.body.stack.settings) {
-        const newStackVersion = stackDetails.body.stack.settings.version;
+    return httpClient.get(`https://${importConfig.host}/v3${importConfig.apis.stacks}`).then((stackDetails) => {
+      if (stackDetails.data && stackDetails.data.stack && stackDetails.data.stack.settings) {
+        const newStackVersion = stackDetails.data.stack.settings.version;
         const newStackDate = new Date(newStackVersion).toString();
         const stackFilePath = path.join(
           importConfig.data,
@@ -91,29 +84,18 @@ exports.sanitizeStack = function (importConfig) {
           return Promise.resolve();
         }
         addlogs(importConfig, 'Updating stack version.', 'success');
-        // Update the new stack
-        // var updateStackOptions = {
-        //   url: importConfig.host + importConfig.apis.stacks + 'settings/set-version',
-        //   method: 'PUT',
-        //   headers: importConfig.headers,
-        //   body: {
-        //     stack_settings: {
-        //       version: '2017-10-14', // This can be used as a variable
-        //     },
-        //   },
-        // };
 
         return httpClient
-          .put(importConfig.host + importConfig.apis.stacks + 'settings/set-version', {
+          .put(`https://${importConfig.host}/v3${importConfig.apis.stacks}settings/set-version`, {
             stack_settings: {
               version: '2017-10-14', // This can be used as a variable
             },
           })
           .then((response) => {
-            addlogs(importConfig, `Stack version preserved successfully!\n${JSON.stringify(response.body)}`, 'success');
+            addlogs(importConfig, `Stack version preserved successfully!\n${JSON.stringify(response.data)}`, 'success');
           });
       }
-      throw new Error(`Unexpected stack details ${stackDetails}. 'stackDetails.body.stack' not found!!`);
+      throw new Error(`Unexpected stack details ${stackDetails && JSON.stringify(stackDetails.data)}`);
     });
   } catch (error) {
     console.log(error);
