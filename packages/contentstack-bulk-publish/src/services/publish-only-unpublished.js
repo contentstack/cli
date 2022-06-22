@@ -100,18 +100,23 @@ async function confirmFlags(data) {
 function flagsAdapter(flags) {
   if ('content-types' in flags) {
     flags.contentTypes = flags['content-types'];
+    delete flags['content-types'];
   }
   if ('locales' in flags) {
     flags.locale = flags.locales;
+    delete flags['locales'];
   }
   if ('source-env' in flags) {
     flags.sourceEnv = flags['source-env'];
+    delete flags['source-env'];
   }
   if ('retry-failed' in flags) {
     flags.retryFailed = flags['retry-failed'];
+    delete flags['retry-failed'];
   }
   if ('bulk-publish' in flags) {
     flags.bulkPublish = flags['bulk-publish'];
+    delete flags['bulk-publish'];
   }
   return flags;
 }
