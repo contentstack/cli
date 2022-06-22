@@ -41,7 +41,6 @@
     "@oclif/plugin-help": "^2.2.3",
     "@oclif/plugin-not-found": "^1.2.3",
     "@oclif/plugin-plugins": "^1.8.1",
-    "axios": "^0.21.1",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
     "figlet": "^1.5.0",
@@ -54,7 +53,6 @@
     "@oclif/dev-cli": "^1.22.2",
     "@oclif/plugin-help": "^3.2.0",
     "@oclif/test": "^1.2.8",
-    "@types/axios": "^0.14.0",
     "@types/chai": "^4.2.18",
     "@types/inquirer": "^7.3.1",
     "@types/mkdirp": "^1.0.1",
@@ -104,6 +102,15 @@
       },
       "config": {
         "description": "Perform configuration related activities"
+      },
+      "cm:assets": {
+        "description": "Assets related operations"
+      },
+      "cm:entries": {
+        "description": "Entries related operations"
+      },
+      "cm:stacks": {
+        "description": "Stacks related operations"
       },
       "plugins": {
         "description": "List installed plugins"
