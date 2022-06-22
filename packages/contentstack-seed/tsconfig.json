@@ -12,7 +12,5 @@
   },
   "include": [
     "src/**/*",
-    "src/typings/@contentstack/cli-command.ts",
-    "src/typings/@contentstack/cli-utilities.ts",
   ]
 }
