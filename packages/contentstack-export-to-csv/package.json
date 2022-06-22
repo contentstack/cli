@@ -53,7 +53,7 @@
   },
   "csdxConfig": {
     "expiredCommands": {
-      "cm:export-to-csv": "command will be deprecated in two months, start using cm:entries:export-to-csv instead"
+      "cm:export-to-csv": "csdx cm:entries:export-to-csv"
     }
   },
   "repository": "contentstack/cli",
