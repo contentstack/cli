@@ -28,7 +28,7 @@
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
     "inquirer": "^7.1.0",
-    "winston": "^3.3.3"
+    "winston": "^3.7.2"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
@@ -43,7 +43,7 @@
     "@types/tar": "^4.0.3",
     "@types/winston": "^2.4.4",
     "chai": "^4.3.4",
-    "eslint": "^5.16.0",
+    "eslint": "^8.18.0",
     "eslint-config-oclif": "^3.1.0",
     "eslint-config-oclif-typescript": "^0.1.0",
     "globby": "^10.0.2",
