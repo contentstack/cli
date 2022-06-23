@@ -23,13 +23,11 @@ class ExportToCsvCommand extends Command {
     }),
     'stack-name': flags.string({
       char: 'n',
-      hidden: true,
       multiple: false,
       required: false,
       description: 'Name of the stack that needs to be created as csv filename.',
     }),
     'org-name': flags.string({
-      hidden: true,
       multiple: false,
       required: false,
       description: 'Name of the organization that needs to be created as csv filename.',
@@ -219,8 +217,14 @@ ExportToCsvCommand.examples = [
   'Exporting entries to csv',
   'csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type>',
   '',
+  'Exporting entries to csv with stack name provided',
+  'csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type> --stack-name <stack-name>',
+  '',
   'Exporting organization users to csv',
   'csdx cm:export-to-csv --action <users> --org <org-uid>',
+  '',
+  'Exporting organization users to csv with organization name provided',
+  'csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>',
 ];
 
 ExportToCsvCommand.aliases = ['cm:export-to-csv'];
