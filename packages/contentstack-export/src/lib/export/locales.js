@@ -73,12 +73,12 @@ ExportLocales.prototype.getLocales = function (apiDetails) {
           helper.writeFile(path.join(self.localesFolderPath, localeConfig.fileName), self.locales);
 
           apiDetails.skip += apiDetails.limit;
-          
+
           if (apiDetails.skip > localeResponse.count) {
             addlogs(config, chalk.green('All the locales have been exported successfully'), 'success');
             return resolve();
           }
-          
+
           return self
             .getLocales(apiDetails)
             .then(resolve)
