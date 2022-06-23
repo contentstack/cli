@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/1.0.0 darwin-x64 node-v16.14.2
+@contentstack/cli/1.0.0 darwin-x64 node-v16.15.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -40,7 +40,6 @@ USAGE
 * [`csdx cm:bootstrap`](#csdx-cmbootstrap)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
-* [`csdx cm:entries:export-to-csv`](#csdx-cmentriesexport-to-csv)
 * [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
 * [`csdx cm:entries:publish`](#csdx-cmentriespublish)
 * [`csdx cm:entries:publish-modified`](#csdx-cmentriespublish-modified)
@@ -48,6 +47,7 @@ USAGE
 * [`csdx cm:entries:publish-only-unpublished`](#csdx-cmentriespublish-only-unpublished)
 * [`csdx cm:entries:unpublish`](#csdx-cmentriesunpublish)
 * [`csdx cm:entries:update-and-publish`](#csdx-cmentriesupdate-and-publish)
+* [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
 * [`csdx cm:migration`](#csdx-cmmigration)
 * [`csdx cm:stacks:clone`](#csdx-cmstacksclone)
 * [`csdx cm:stacks:export`](#csdx-cmstacksexport)
@@ -472,57 +472,6 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
-
-## `csdx cm:entries:export-to-csv`
-
-Export entries or organization users to csv using this command
-
-```
-Export entries or organization users to csv using this command
-
-USAGE
-  $ csdx cm:entries:export-to-csv
-
-OPTIONS
-  -a, --management-token-alias=management-token-alias
-      Alias of the management token
-
-  --action=a|b
-      Choose Action
-      a) Export entries to a .CSV file
-      b) Export organization users' data to a .CSV file
-
-  --content-type=content-type
-      [optional] Content type  Ex: csdx cm:entries:export-to-csv --content-type="Page,Blog Post,Author"
-      |------------------------------------------------|
-      |             Sample Content Types               |
-      |------------------------------------------------|
-      |  Page  | Header | Footer | Blog Post | Author  |
-      |------------------------------------------------|
-
-  --language-code=language-code
-      Choose Language  Ex: csdx cm:entries:export-to-csv --language-code=fr-fr
-      |--------------------------|---------|
-      |      Language            | code    |
-      |--------------------------|---------|
-      |  English - United States | en-us   |
-      |--------------------------|---------|
-      |  French - France         | fr-fr   |
-      |--------------------------|---------|
-
-  --org=org
-      Provide Organization UID to clone org users
-
-ALIASES
-  $ csdx cm:export-to-csv
-
-EXAMPLES
-  csdx cm:entries:export-to-csv
-  csdx cm:entries:export-to-csv --action=<a|b> --language-code=<language-code> -a <management-token-alias>
-  --content-type="Page,Blog" --org=<uid>
-```
-
-_See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/cm/entries/export-to-csv.js)_
 
 ## `csdx cm:entries:migrate-html-rte`
 
@@ -968,6 +917,39 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/update-and-publish.js)_
+
+## `csdx cm:export-to-csv`
+
+Export entries or organization users to csv using this command
+
+```
+Export entries or organization users to csv using this command
+
+USAGE
+  $ csdx cm:export-to-csv
+
+OPTIONS
+  -a, --alias=alias            Alias of the management token
+  --action=entries|users       Option to export data (entries, users)
+  --content-type=content-type  Content type for which entries needs to be exported
+  --locale=locale              Locale for which entries need to be exported
+  --org=org                    Organization UID to clone org users
+
+ALIASES
+  $ csdx cm:export-to-csv
+
+EXAMPLES
+  csdx cm:export-to-csv
+
+  Exporting entries to csv
+  csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type
+  <content-type>
+
+  Exporting organization users to csv
+  csdx cm:export-to-csv --action <users> --org <org-uid>
+```
+
+_See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/cm/export-to-csv.js)_
 
 ## `csdx cm:migration`
 
