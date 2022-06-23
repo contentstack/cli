@@ -930,10 +930,12 @@ USAGE
 
 OPTIONS
   -a, --alias=alias            Alias of the management token
+  -n, --stack-name=stack-name  Name of the stack that needs to be created as csv filename.
   --action=entries|users       Option to export data (entries, users)
   --content-type=content-type  Content type for which entries needs to be exported
   --locale=locale              Locale for which entries need to be exported
   --org=org                    Organization UID to clone org users
+  --org-name=org-name          Name of the organization that needs to be created as csv filename.
 
 ALIASES
   $ csdx cm:export-to-csv
@@ -945,8 +947,15 @@ EXAMPLES
   csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type
   <content-type>
 
+  Exporting entries to csv with stack name provided
+  csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type
+  <content-type> --stack-name <stack-name>
+
   Exporting organization users to csv
   csdx cm:export-to-csv --action <users> --org <org-uid>
+
+  Exporting organization users to csv with organization name provided
+  csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>
 ```
 
 _See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/cm/export-to-csv.js)_
