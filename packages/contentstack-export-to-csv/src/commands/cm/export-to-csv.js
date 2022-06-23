@@ -1,35 +1,25 @@
 const { Command, flags } = require('@contentstack/cli-command');
 const { configHandler } = require('@contentstack/cli-utilities');
 const ContentstackManagementSDK = require('@contentstack/management');
-const util = require('../../../util');
-const config = require('../../../util/config');
+const util = require('../../util');
+const config = require('../../util/config');
 
 class ExportToCsvCommand extends Command {
   static flags = {
     action: flags.string({
       required: false,
       multiple: false,
-      options: ['a', 'b'],
-      description: `Choose Action
-a) ${config.exportEntries}
-b) ${config.exportUsers}`,
-      parse: (action) => {
-        const actionObj = {
-          a: config.exportEntries,
-          b: config.exportUsers,
-        };
-
-        return actionObj[action];
-      },
+      options: ['entries', 'users'],
+      description: `Option to export data (entries, users)`,
     }),
-    'management-token-alias': flags.string({
+    alias: flags.string({
       char: 'a',
       description: 'Alias of the management token',
     }),
     org: flags.string({
       multiple: false,
       required: false,
-      description: 'Provide Organization UID to clone org users',
+      description: 'Organization UID to clone org users',
     }),
     'stack-name': flags.string({
       char: 'n',
@@ -44,29 +34,15 @@ b) ${config.exportUsers}`,
       required: false,
       description: 'Name of the organization that needs to be created as csv filename.',
     }),
-    'language-code': flags.string({
+    locale: flags.string({
       required: false,
       multiple: false,
-      description: `Choose Language \x1b[32m Ex: csdx cm:entries:export-to-csv --language-code=fr-fr \x1b[36m
-|--------------------------|---------|
-|      Language            | code    |
-|--------------------------|---------|
-|  English - United States | en-us   |
-|--------------------------|---------|
-|  French - France         | fr-fr   |
-|--------------------------|---------|
-\x1b[37m`,
+      description: 'Locale for which entries need to be exported',
     }),
     'content-type': flags.string({
+      description: 'Content type for which entries needs to be exported',
       required: false,
       multiple: false,
-      description: `[optional] Content type \x1b[32m Ex: csdx cm:entries:export-to-csv --content-type="Page,Blog Post,Author" \x1b[36m
-|------------------------------------------------|
-|             Sample Content Types               |
-|------------------------------------------------|
-|  Page  | Header | Footer | Blog Post | Author  |
-|------------------------------------------------|
-\x1b[37m`,
     }),
   };
 
@@ -91,9 +67,9 @@ b) ${config.exportUsers}`,
           action: actionFlag,
           'org-name': orgName,
           'stack-name': stackName,
-          'language-code': languageCode,
+          locale: locale,
           'content-type': contentTypesFlag,
-          'management-token-alias': managementTokenAlias,
+          alias: managementTokenAlias,
         },
       } = this.parse(ExportToCsvCommand);
 
@@ -104,7 +80,8 @@ b) ${config.exportUsers}`,
       }
 
       switch (action) {
-        case config.exportEntries: {
+        case config.exportEntries:
+        case 'entries': {
           let stack;
           let language;
           let contentTypes = [];
@@ -133,8 +110,8 @@ b) ${config.exportUsers}`,
           const contentTypeCount = await util.getContentTypeCount(this.managementAPIClient, stack.apiKey);
           const environments = await util.getEnvironments(this.managementAPIClient, stack.apiKey); // fetch environments, because in publish details only env uid are available and we need env names
 
-          if (languageCode) {
-            language = { code: languageCode };
+          if (locale) {
+            language = { code: locale };
           } else {
             language = await util.chooseLanguage(this.managementAPIClient, stack.apiKey); // prompt for language
           }
@@ -189,7 +166,8 @@ b) ${config.exportUsers}`,
           }
           break;
         }
-        case config.exportUsers: {
+        case config.exportUsers:
+        case 'users': {
           try {
             let organization;
 
@@ -236,8 +214,13 @@ b) ${config.exportUsers}`,
 ExportToCsvCommand.description = `Export entries or organization users to csv using this command`;
 
 ExportToCsvCommand.examples = [
-  'csdx cm:entries:export-to-csv',
-  'csdx cm:entries:export-to-csv --action=<a|b> --language-code=<language-code> -a <management-token-alias> --content-type="Page,Blog" --org=<uid>',
+  'csdx cm:export-to-csv',
+  '',
+  'Exporting entries to csv',
+  'csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type>',
+  '',
+  'Exporting organization users to csv',
+  'csdx cm:export-to-csv --action <users> --org <org-uid>',
 ];
 
 ExportToCsvCommand.aliases = ['cm:export-to-csv'];
