@@ -227,6 +227,4 @@ ExportToCsvCommand.examples = [
   'csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>',
 ];
 
-ExportToCsvCommand.aliases = ['cm:export-to-csv'];
-
 module.exports = ExportToCsvCommand;
