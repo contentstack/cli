@@ -75,13 +75,6 @@
       "@oclif/plugin-help"
     ]
   },
-  "csdxConfig": {
-    "protectedCommands": {
-      "auth:tokens": true,
-      "auth:tokens:add": true,
-      "auth:tokens:remove": true
-    }
-  },
   "husky": {
     "hooks": {
       "pre-commit": "npm run lint"
