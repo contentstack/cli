@@ -937,9 +937,6 @@ OPTIONS
   --org=org                    Organization UID to clone org users
   --org-name=org-name          Name of the organization that needs to be created as csv filename.
 
-ALIASES
-  $ csdx cm:export-to-csv
-
 EXAMPLES
   csdx cm:export-to-csv
 
