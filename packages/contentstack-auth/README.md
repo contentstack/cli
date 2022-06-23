@@ -1,6 +1,6 @@
 # @contentstack/cli-auth
 
-It is Contentstack’s CLI plugin to perform authentication-related activities. To get started with authenticating yourself with the CLI, refer to the [CLI’s Authentication documentation](https://www.contentstack.com/docs/developers/cli/authentication)
+It is Contentstack’s CLI plugin to perform authentication-related activities. To get started with authentication, refer to the [CLI’s Authentication documentation](https://www.contentstack.com/docs/developers/cli/authentication)
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
@@ -70,7 +70,7 @@ USAGE
   $ csdx auth:logout
 
 OPTIONS
-  -y, --yes  Force logging out for skipping the confirmation
+  -y, --yes  Force log out by skipping the confirmation
 
 ALIASES
   $ csdx logout
@@ -83,7 +83,7 @@ EXAMPLES
 
 _See code: [src/commands/auth/logout.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/logout.ts)_
 
-## `csdx auth:tokens`
+## `csdx auth:tokens` ##pending
 
 Lists all existing tokens added to the session
 
@@ -94,11 +94,11 @@ USAGE
 OPTIONS
   -x, --extended          show extra columns
   --columns=columns       only show provided columns (comma-separated)
-  --csv                   output is csv format [alias: --output=csv]
+  --csv                   output is in csv format [alias: --output=csv]
   --filter=filter         filter property by partial string matching, ex: name=foo
   --no-header             hide table header from output
   --no-truncate           do not truncate output to fit screen
-  --output=csv|json|yaml  output in a more machine friendly format
+  --output=csv|json|yaml  show output in a machine friendly format
   --sort=sort             property to sort by (prepend '-' for descending)
 
 ALIASES
@@ -112,7 +112,7 @@ _See code: [src/commands/auth/tokens/index.ts](https://github.com/contentstack/c
 
 ## `csdx auth:tokens:add`
 
-Adds management/delivery tokens to your session to use it with further CLI commands
+Adds management/delivery tokens to your session to use it with other CLI commands
 
 ```
 USAGE
@@ -120,12 +120,12 @@ USAGE
 
 OPTIONS
   -a, --alias=alias                  Name of the token alias
-  -d, --delivery                     Set this while saving delivery token
+  -d, --delivery                     Set this flag to save delivery token
   -e, --environment=environment      Environment name for delivery token
   -k, --stack-api-key=stack-api-key  Stack API Key
-  -m, --management                   Set this while saving management token
-  -t, --token=token                  Token
-  -y, --yes                          Skipping confirmation
+  -m, --management                   Set this flag to save management token
+  -t, --token=token                  Add the token name
+  -y, --yes                          Use this flag to skip confirmation
 
 EXAMPLES
   $ csdx auth:tokens:add
@@ -158,7 +158,7 @@ OPTIONS
 
 EXAMPLES
   $ csdx auth:tokens:remove
-  $ csdx auth:tokens:remove -a <aliase>
+  $ csdx auth:tokens:remove -a <alias>
 ```
 
 _See code: [src/commands/auth/tokens/remove.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/remove.ts)_
