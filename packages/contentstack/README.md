@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/1.0.0 darwin-x64 node-v16.15.1
+@contentstack/cli/1.0.0 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -48,10 +48,10 @@ USAGE
 * [`csdx cm:entries:unpublish`](#csdx-cmentriesunpublish)
 * [`csdx cm:entries:update-and-publish`](#csdx-cmentriesupdate-and-publish)
 * [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
-* [`csdx cm:migration`](#csdx-cmmigration)
 * [`csdx cm:stacks:clone`](#csdx-cmstacksclone)
 * [`csdx cm:stacks:export`](#csdx-cmstacksexport)
 * [`csdx cm:stacks:import`](#csdx-cmstacksimport)
+* [`csdx cm:stacks:migration`](#csdx-cmstacksmigration)
 * [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
 * [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
 * [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
@@ -178,7 +178,7 @@ EXAMPLES
   $ csdx auth:tokens:add -a <alias> -k <stack api key> --management --token <management token>
   $ csdx auth:tokens:add -a <alias> -k <stack api key> --delivery -e <environment> --token <delivery token>
   $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --management --token <management token>
-  $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery
+  $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery 
   token>
 ```
 
@@ -272,7 +272,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN
+  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
   ALIAS]
 
   Using --config or -c flag
@@ -284,11 +284,11 @@ EXAMPLES
   csdx cm:assets:publish --retry-failed [LOG FILE NAME]
 
   Using --branch flag
-  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN
+  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
   ALIAS] --branch [BRANCH NAME]
 
   Using --source-env
-  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN
+  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
   ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
 ```
 
@@ -332,7 +332,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN
+  csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN 
   ALIAS] --delivery-token [DELIVERY TOKEN]
 
   Using --config or -c flag
@@ -344,7 +344,7 @@ EXAMPLES
   csdx cm:assets:unpublish --retry-failed [LOG FILE NAME]
 
   Using --branch flag
-  csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN
+  csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN 
   ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
 ```
 
@@ -379,9 +379,9 @@ EXAMPLES
   $ csdx cm:bootstrap --project-dir <path/to/setup/the/app>
   $ csdx cm:bootstrap --access-token <github access token>
   $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app>
-  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key"
+  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key" 
   //seed content into specific stack
-  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid"
+  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid" 
   --stack-name "stack-name" //create a new stack in given org uid
 ```
 
@@ -454,7 +454,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a
+  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
   [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]
 
   Using --config or -c flag
@@ -467,7 +467,7 @@ EXAMPLES
   csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]
 
   Using --branch or -B flag
-  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a
+  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
   [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]
 ```
 
@@ -508,18 +508,18 @@ EXAMPLES
   csdx cm:entries:migrate-html-rte --config-path path/to/config.json
 
   Using Flags
-  csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path html-path --json-path
+  csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path html-path --json-path 
   json-path
 
   Nested RTE
-  csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path
+  csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path 
   modular_block_uid.block_uid.html_rte_uid --json-path modular_block_uid.block_uid.json_rte_uid
 
-  csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path group_uid.html_rte_uid
+  csdx cm:entries:migrate-html-rte --alias alias --content-type content_type_uid --html-path group_uid.html_rte_uid 
   --json-path group_uid.json_rte_uid
 
   Global Field
-  csdx cm:entries:migrate-html-rte --alias alias --content-type global_field_uid --global-field --html-path html-path
+  csdx cm:entries:migrate-html-rte --alias alias --content-type global_field_uid --global-field --html-path html-path 
   --json-path json-path
 ```
 
@@ -532,7 +532,7 @@ Publish entries from multiple content-types to multiple environments and locales
 ```
 Publish entries from multiple content-types to multiple environments and locales
 The publish command is used for publishing entries from the specified content types, to the
-specified environments and locales
+specified environments and locales 
 
 Content Types, Environments and Locales are required for executing the command successfully
 But, if retry-failed flag is set, then only a logfile is required
@@ -571,7 +571,7 @@ OPTIONS
 
 DESCRIPTION
   The publish command is used for publishing entries from the specified content types, to the
-  specified environments and locales
+  specified environments and locales 
 
   Content Types, Environments and Locales are required for executing the command successfully
   But, if retry-failed flag is set, then only a logfile is required
@@ -581,7 +581,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales
+  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales 
   [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -594,11 +594,11 @@ EXAMPLES
   csdx cm:entries:publish -r [LOG FILE NAME]
 
   Using --branch
-  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales
+  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales 
   [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
 
   Using --source-env
-  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales
+  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales 
   [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
 ```
 
@@ -642,7 +642,7 @@ DESCRIPTION
   The publish-modified command is used for publishing entries from the specified content types, to the
   specified environments and locales
 
-  Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command
+  Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command 
   successfully
   But, if retry-failed flag is set, then only a logfile is required
 
@@ -651,7 +651,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e
+  csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e 
   [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -664,7 +664,7 @@ EXAMPLES
   csdx cm:entries:publish-modified -r [LOG FILE NAME]
 
   Using --branch
-  csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e
+  csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e 
   [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
 ```
 
@@ -701,7 +701,7 @@ OPTIONS
   --source-env=source-env          Source Environment
 
 DESCRIPTION
-  The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types
+  The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types 
   to the specified Environments
 
   Content Types, Environments and Source Environment are required for executing this command successfully.
@@ -712,7 +712,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:entries:publish-non-localized-fields --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --environments
+  csdx cm:entries:publish-non-localized-fields --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --environments 
   [ENVIRONMENT 1] [ENVIRONMENT 2] --alias [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENV]
 
   Using --config or -c flag
@@ -724,7 +724,7 @@ EXAMPLES
   csdx cm:entries:publish-non-localized-fields --retry-failed [LOG FILE NAME]
 
   Using --branch flag
-  csdx cm:entries:publish-non-localized-fields --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --environments
+  csdx cm:entries:publish-non-localized-fields --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --environments 
   [ENVIRONMENT 1] [ENVIRONMENT 2] --alias [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENV] --branch [BRANCH NAME]
 ```
 
@@ -767,10 +767,10 @@ OPTIONS
   --source-env=source-env          Source Env
 
 DESCRIPTION
-  The publish-only-unpublished command is used for publishing unpublished entries from the source environment, to other
+  The publish-only-unpublished command is used for publishing unpublished entries from the source environment, to other 
   environments and locales
 
-  Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the
+  Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the 
   command successfully
   But, if retry-failed flag is set, then only a logfile is required
 
@@ -779,7 +779,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a
+  csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a 
   [MANAGEMENT TOKEN ALIAS] -source-env [SOURCE ENV]
 
   Using --config or -c flag
@@ -791,7 +791,7 @@ EXAMPLES
   csdx cm:entries:publish-only-unpublished --retry-failed [LOG FILE NAME]
 
   Using --branch
-  csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a
+  csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a 
   [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME] -source-env [SOURCE ENV]
 ```
 
@@ -837,7 +837,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE]
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] 
   --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN]
 
   Using --config or -c flag
@@ -850,7 +850,7 @@ EXAMPLES
 
 
   Using --branch flag
-  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE]
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] 
   --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
 ```
 
@@ -889,7 +889,7 @@ OPTIONS
                                    flags)
 
 DESCRIPTION
-  The update-and-publish command is used for updating already existing entries with the updated schema of their
+  The update-and-publish command is used for updating already existing entries with the updated schema of their 
   respective Content Type
 
   Content Types, Environments and Locales are required for executing the command successfully
@@ -900,7 +900,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT
+  csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
   2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
@@ -912,7 +912,7 @@ EXAMPLES
   csdx cm:entries:update-and-publish --retry-failed [LOG FILE NAME]
 
   Using --branch
-  csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT
+  csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
   2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
 ```
 
@@ -941,11 +941,11 @@ EXAMPLES
   csdx cm:export-to-csv
 
   Exporting entries to csv
-  csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type
+  csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type 
   <content-type>
 
   Exporting entries to csv with stack name provided
-  csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type
+  csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type 
   <content-type> --stack-name <stack-name>
 
   Exporting organization users to csv
@@ -956,48 +956,6 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/cm/export-to-csv.js)_
-
-## `csdx cm:migration`
-
-Contentstack migration script.
-
-```
-Contentstack migration script.
-
-USAGE
-  $ csdx cm:migration
-
-OPTIONS
-  -A, --authtoken                                      Use this flag to use the auth token of the current session. After
-                                                       logging in CLI, an auth token is generated for each new session.
-
-  -B, --branch=branch                                  Use this flag to add the branch name where you want to perform
-                                                       the migration.
-
-  -a, --management-token-alias=management-token-alias  Use this flag to add the management token alias.
-
-  -k, --api-key=api-key                                With this flag add the API key of your stack.
-
-  -n, --filePath=filePath                              Use this flag to provide the path of the file of the migration
-                                                       script provided by the user.
-
-  --config=config                                      [optional] inline configuration, <key1>:<value1>
-
-  --config-file=config-file                            [optional] Path of the JSON configuration file
-
-  --multi                                              This flag helps you to migrate multiple content files in a single
-                                                       instance.
-
-EXAMPLES
-  $ csdx cm:migration -A -n <migration/script/file/path> -k <api-key>
-  $ csdx cm:migration -A -n <migration/script/file/path> -k <api-key> -B <target branch name>
-  $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... -n <migration/script/file/path>
-  $ csdx cm:migration --config-file <path/to/json/config/file> -n <migration/script/file/path>
-  $ csdx cm:migration --multi -n <migration/scripts/dir/path>
-  $ csdx cm:migration -a -n <migration/script/file/path> -k <api-key>
-```
-
-_See code: [@contentstack/cli-migration](https://github.com/contentstack/cli-migration/blob/v1.0.0/src/commands/cm/migration.js)_
 
 ## `csdx cm:stacks:clone`
 
@@ -1041,9 +999,9 @@ EXAMPLES
   csdx cm:stacks:clone
   csdx cm:stacks:clone --source-branch --target-branch
   csdx cm:stacks:clone -a <management token alias>
-  csdx cm:stacks:clone --source-management-token-alias <management token alias> --destination-management-token-alias
+  csdx cm:stacks:clone --source-management-token-alias <management token alias> --destination-management-token-alias 
   <management token alias>
-  csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias>
+  csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> 
   --destination-management-token-alias <management token alias>
 ```
 
@@ -1115,7 +1073,7 @@ OPTIONS
 
 DESCRIPTION
   ...
-  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import
+  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import 
   command.
 
 ALIASES
@@ -1133,6 +1091,48 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-import/src/commands/cm/stacks/import.js)_
+
+## `csdx cm:stacks:migration`
+
+Contentstack migration script.
+
+```
+Contentstack migration script.
+
+USAGE
+  $ csdx cm:stacks:migration
+
+OPTIONS
+  -B, --branch=branch                                  Use this flag to add the branch name where you want to perform
+                                                       the migration.
+
+  -a, --management-token-alias=management-token-alias  Use this flag to add the management token alias.
+
+  -k, --stack-api-key=stack-api-key                    With this flag add the API key of your stack.
+
+  --config=config                                      [optional] inline configuration, <key1>:<value1>
+
+  --config-file=config-file                            [optional] Path of the JSON configuration file
+
+  --file-path=file-path                                Use this flag to provide the path of the file of the migration
+                                                       script provided by the user.
+
+  --multiple                                           This flag helps you to migrate multiple content files in a single
+                                                       instance.
+
+ALIASES
+  $ csdx cm:migration
+
+EXAMPLES
+  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key>
+  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key> --branch <target branch name>
+  $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... --file-path <migration/script/file/path>
+  $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+  $ csdx cm:migration -a --file-path <migration/script/file/path> -k <api-key>
+```
+
+_See code: [@contentstack/cli-migration](https://github.com/contentstack/cli-migration/blob/v1.0.0/src/commands/cm/stacks/migration.js)_
 
 ## `csdx cm:stacks:publish`
 
@@ -1158,7 +1158,7 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN
+  csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
   ALIAS]
 
   Using --config or -c flag
@@ -1170,7 +1170,7 @@ EXAMPLES
   csdx cm:stacks:publish --retry-failed [LOG FILE NAME]
 
   Using --branch flag
-  csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN
+  csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
   ALIAS] --branch [BRANCH NAME]
 ```
 
@@ -1285,7 +1285,7 @@ EXAMPLES
   $ csdx cm:stacks:seed --repo "account"
   $ csdx cm:stacks:seed --repo "account/repository"
   $ csdx cm:stacks:seed --repo "account/repository" --stack-api-key "stack-api-key" //seed content into specific stack
-  $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack
+  $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack 
   in given org uid
 ```
 
@@ -1335,7 +1335,7 @@ DESCRIPTION
   Environment (Source Environment) and Locale are required for executing the command successfully
   But, if retry-failed flag is set, then only a logfile is required
 
-  A Content Type can be specified for unpublishing entries, but if no content-type(s) is/are specified and --only-assets
+  A Content Type can be specified for unpublishing entries, but if no content-type(s) is/are specified and --only-assets 
   is not used,
   then all entries from all content types will be unpublished from the source environment
 
@@ -1347,7 +1347,7 @@ ALIASES
 
 EXAMPLES
   General Usage
-  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE]
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] 
   --alias [MANAGEMENT TOKEN ALIAS] ----delivery-token [DELIVERY TOKEN]
 
   Using --config or -c flag
@@ -1359,21 +1359,21 @@ EXAMPLES
   csdx cm:stacks:unpublish --retry-failed [LOG FILE NAME]
 
   No content type
-  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all content
+  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all content 
   types and assets from the source environment)
 
   Using --only-assets
-  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] --only-assets (Will unpublish only assets from
+  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] --only-assets (Will unpublish only assets from 
   the source environment)
 
   Using --only-entries
-  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] --only-entries (Will unpublish only entries, all
+  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] --only-entries (Will unpublish only entries, all 
   entries, from the source environment)
-  csdx cm:stacks:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --only-entries
+  csdx cm:stacks:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --only-entries 
   (Will unpublish only entries, (from CONTENT TYPE) from the source environment)
 
   Using --branch flag
-  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE]
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] 
   --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
 ```
 
@@ -1419,7 +1419,7 @@ EXAMPLES
   $ csdx config:set:region NA
   $ csdx config:set:region NA
   $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"
-  $ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com"
+  $ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com" 
   --name="India"
 ```
 
@@ -1515,15 +1515,15 @@ DESCRIPTION
 
   Installation of a user-installed plugin will override a core plugin.
 
-  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
-  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
+  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command 
+  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in 
   the CLI without the need to patch and update the whole CLI.
 
 ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:install myplugin
+  $ csdx plugins:install myplugin 
   $ csdx plugins:install https://github.com/someuser/someplugin
   $ csdx plugins:install someuser/someplugin
 ```
@@ -1554,7 +1554,7 @@ OPTIONS
 DESCRIPTION
   Installation of a linked plugin will override a user-installed or core plugin.
 
-  e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello'
+  e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello' 
   command will override the user-installed or core plugin implementation. This is useful for development work.
 
 EXAMPLE
