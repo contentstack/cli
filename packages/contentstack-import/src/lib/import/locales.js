@@ -13,7 +13,6 @@ let chalk = require('chalk');
 
 let helper = require('../util/fs');
 let { addlogs } = require('../util/log');
-let util = require('../util');
 let stack = require('../util/contentstack-management-sdk');
 let config = require('../../config/default');
 let _ = require('lodash');
