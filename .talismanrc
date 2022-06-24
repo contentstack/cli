@@ -49,10 +49,14 @@ fileignoreconfig:
   checksum: 27fe9ff50e8ccf7a33e09be01cdc1aa17703014efe55d553ded0b86edd9cbfc8
 - filename: packages/contentstack-import/test/mock/globalFields.js
   checksum: ebfcba93d888713142c8fe5bfa6a80c09344ab357bc13ac935d8c50c283bd1ae
+- filename: packages/contentstack-migration/README.md
+  checksum: a1a014aaa6f8c99a49d20a5381fcd3b5d808f23f4016a8ab4fdd6831a85cd401
+- filename: packages/contentstack-migration/package.json
+  checksum: f0fd72efaf71652fc3cdcc6e7cc53af31504327247c01be67b84535558ae63cd
 - filename: packages/contentstack-utilities/src/config-handler.ts
   checksum: 7f8b00ee4e24e2a750aa748db01c1a8de2592d117e6374a7fb5ab1e89fb7cd38
 - filename: packages/contentstack/README.md
-  checksum: 3a74cfb7984452391c8cb92d9dcf85d1275a4b94bd5abac9d59bfb51b595e40a
+  checksum: 8685e74692dcacbf92dfe064f738ff31dc62ecb0c6d2429777dbb00e3ca474a7
 - filename: packages/contentstack/package-lock.json
   checksum: be5da46c99ee2ea6c021a6dd4f903feda4f4c610033aba5ad3d25761810b52ff
 version: "1.0"
