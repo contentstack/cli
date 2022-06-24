@@ -9,7 +9,6 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
 const chalk = require('chalk');
-const _ = require('lodash');
 
 const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
