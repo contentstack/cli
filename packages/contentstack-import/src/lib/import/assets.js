@@ -17,7 +17,6 @@ const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
 const stack = require('../util/contentstack-management-sdk');
 
-let util = require('../util');
 let config = require('../../config/default');
 const assetsConfig = config.modules.assets;
 let assetBatchLimit =

@@ -13,7 +13,6 @@ let Promise = require('bluebird');
 let chalk = require('chalk');
 
 let helper = require('../util/fs');
-let util = require('../util');
 let { addlogs } = require('../util/log');
 let supress = require('../util/extensionsUidReplace');
 let sdkInstance = require('../util/contentstack-management-sdk');
