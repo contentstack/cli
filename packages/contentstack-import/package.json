@@ -10,14 +10,12 @@
     "@contentstack/cli-utilities": "^1.0.0",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
-    "axios": "^0.21.1",
     "bluebird": "3.5.1",
     "debug": "^4.1.0",
     "lodash": "^4.17.20",
     "marked": "^4.0.14",
     "mkdirp": "^1.0.4",
     "ncp": "2.0.0",
-    "request": "2.88.0",
     "winston": "^3.7.2"
   },
   "devDependencies": {
@@ -25,7 +23,7 @@
     "@oclif/plugin-help": "^3.0.1",
     "@oclif/test": "^1.2.6",
     "chai": "^4.2.0",
-    "eslint": "^5.16.0",
+    "eslint": "^8.18.0",
     "eslint-config-oclif": "^3.1.0",
     "globby": "^10.0.2"
   },

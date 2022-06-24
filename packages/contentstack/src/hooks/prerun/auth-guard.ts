@@ -1,5 +1,4 @@
-import { logger, cliux, configHandler } from '@contentstack/cli-utilities';
-import axios from 'axios';
+import { logger, cliux, configHandler, HttpClient } from '@contentstack/cli-utilities';
 
 // TBD: run region command if region is not there
 export default async function (opts): Promise<void> {
@@ -21,7 +20,7 @@ export default async function (opts): Promise<void> {
       this.exit();
     }
     try {
-      const result = await axios.get(`${region.cma}/v3/user`, { headers: { authtoken: authToken } });
+      const result = await HttpClient.create().headers({ authtoken: authToken }).get(`${region.cma}/v3/user`);
       if (result.status !== 200) {
         logger.error('error in auth validation');
         cliux.error('Please login to execute the command');
