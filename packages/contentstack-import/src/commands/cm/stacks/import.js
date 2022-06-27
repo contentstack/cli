@@ -79,7 +79,7 @@ class ImportCommand extends Command {
   }
 }
 
-ImportCommand.description = `Import script for importing the content into new stack
+ImportCommand.description = `Import script for importing the content into the new stack
 ...
 Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import command.
 `;
