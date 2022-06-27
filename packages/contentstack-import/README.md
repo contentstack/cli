@@ -69,7 +69,7 @@ OPTIONS
 
 DESCRIPTION
   ...
-  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import
+  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import 
   command.
 
 ALIASES
