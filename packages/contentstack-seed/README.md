@@ -14,7 +14,7 @@ To import content to your stack, you can choose from the following two sources:
 
 ## `csdx cm:stacks:seed`
 
-Create a Stack from existing content types, entries, assets, etc
+Create a stack from existing content types, entries, assets, etc
 
 ```
 USAGE
@@ -35,7 +35,7 @@ EXAMPLES
   $ csdx cm:stacks:seed --repo "account"
   $ csdx cm:stacks:seed --repo "account/repository"
   $ csdx cm:stacks:seed --repo "account/repository" --stack-api-key "stack-api-key" //seed content into specific stack
-  $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack 
+  $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack
   in given org uid
 ```
 
@@ -50,7 +50,7 @@ The account name can be a personal user account, organization account, or enterp
   $ csdx cm:seed -r "account/repository"
 ```
 
-**Step 1.** Export a Stack 
+**Step 1.** Export a Stack
 
 Identify a Stack that you would like to export.
 This stack might be used in conjunction with a sample web site or mobile app you have created.
