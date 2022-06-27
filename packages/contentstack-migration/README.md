@@ -68,7 +68,7 @@ EXAMPLES
   $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key> --branch <target branch name>
   $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... --file-path <migration/script/file/path>
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
   $ csdx cm:migration -a --file-path <migration/script/file/path> -k <api-key>
 ```
 
