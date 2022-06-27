@@ -35,7 +35,7 @@ EXAMPLES
   $ csdx cm:stacks:seed --repo "account"
   $ csdx cm:stacks:seed --repo "account/repository"
   $ csdx cm:stacks:seed --repo "account/repository" --stack-api-key "stack-api-key" //seed content into specific stack
-  $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack
+  $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack 
   in given org uid
 ```
 
