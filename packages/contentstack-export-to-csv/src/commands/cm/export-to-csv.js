@@ -19,7 +19,7 @@ class ExportToCsvCommand extends Command {
     org: flags.string({
       multiple: false,
       required: false,
-      description: 'Organization UID to clone org users',
+      description: 'Provide organization UID to clone org users',
     }),
     'stack-name': flags.string({
       char: 'n',
