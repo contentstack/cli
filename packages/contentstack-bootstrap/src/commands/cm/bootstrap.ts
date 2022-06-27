@@ -43,20 +43,20 @@ export default class BootstrapCommand extends Command {
     }),
     'stack-api-key': flags.string({
       char: 'k',
-      description: 'Provide stack api key to seed content to',
+      description: 'Provide stack API key to seed content',
       multiple: false,
       required: false,
       exclusive: ['org', 'stack-name'],
     }),
     org: flags.string({
-      description: 'Provide Organization UID to create a new stack',
+      description: 'Provide organization UID to create a new stack',
       multiple: false,
       required: false,
       exclusive: ['stack-api-key'],
     }),
     'stack-name': flags.string({
       char: 'n',
-      description: 'Name of a new stack that needs to be created.',
+      description: 'Name of a new stack that will be created.',
       multiple: false,
       required: false,
       exclusive: ['stack-api-key'],
@@ -74,7 +74,7 @@ export default class BootstrapCommand extends Command {
     directory: flags.string({
       char: 'd',
       description:
-        'Directory to setup the project. If directory name has a space then provide the path as a string or escap the space using back slash eg: "../../test space" or ../../test\\ space',
+        'Directory to set up the project. If directory name has a space then provide the path as a string or escape the space using backslash eg: "../../test space" or ../../test\\ space',
       multiple: false,
       required: false,
       hidden: true,
