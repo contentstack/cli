@@ -7,7 +7,7 @@ import { HttpRequestConfig, HttpClient } from '@contentstack/cli-utilities';
 import GithubError from './github-error';
 import messageHandler from '../../messages';
 
-const DEFAULT_BRANCH = 'master';
+const DEFAULT_BRANCH = 'cli-use';
 
 export interface Repo {
   user: string;
