@@ -24,10 +24,10 @@ class ConfigureCommand extends Command {
   }
 }
 
-ConfigureCommand.description = `The configure command is used for generating a configuration file for publish script.`;
+ConfigureCommand.description = `The configure command is used to generate a configuration file for publish scripts.`;
 
 ConfigureCommand.flags = {
-  alias: flags.string({ char: 'a', description: 'Management token alias for the stack' }),
+  alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
 };
 
 ConfigureCommand.examples = [
