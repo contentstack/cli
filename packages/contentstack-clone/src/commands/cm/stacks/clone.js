@@ -122,8 +122,8 @@ class StackCloneCommand extends Command {
       if (exitOrError === true) process.exit();
     };
 
-    // exceptions.forEach((event) => process.on(event, cleanUp));
-    // interrupt.forEach((signal) => process.on(signal, () => cleanUp(true)));
+    exceptions.forEach((event) => process.on(event, cleanUp));
+    interrupt.forEach((signal) => process.on(signal, () => cleanUp(true)));
   }
 }
 
