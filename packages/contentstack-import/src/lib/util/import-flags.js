@@ -24,12 +24,8 @@ exports.configWithMToken = function (config, managementTokens, moduleName, host,
     defaultConfig.auth_token = _authToken;
     defaultConfig = _.merge(defaultConfig, externalConfig);
     initial(defaultConfig)
-      .then(() => {
-        return resolve();
-      })
-      .catch((error) => {
-        return reject(error);
-      });
+      .then(resolve)
+      .catch(reject);
   });
 };
 
@@ -48,12 +44,8 @@ exports.parameterWithMToken = function (managementTokens, data, moduleName, host
       defaultConfig.useBackedupDir = backupdir;
     }
     initial(defaultConfig)
-      .then(() => {
-        return resolve();
-      })
-      .catch((error) => {
-        return reject(error);
-      });
+      .then(resolve)
+      .catch(reject);
   });
 };
 
@@ -74,12 +66,8 @@ exports.withoutParameterMToken = async (managementTokens, moduleName, host, _aut
       defaultConfig.useBackedupDir = backupdir;
     }
     initial(defaultConfig)
-      .then(() => {
-        return resolve();
-      })
-      .catch((error) => {
-        return reject(error);
-      });
+      .then(resolve)
+      .catch(reject);
   });
 };
 
@@ -103,17 +91,14 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host, ba
     }
     defaultConfig = _.merge(defaultConfig, externalConfig);
     initial(defaultConfig)
-      .then(() => {
-        return resolve();
-      })
-      .catch((error) => {
-        return reject(error);
-      });
+      .then(resolve)
+      .catch(reject);
   });
 };
 
-exports.parametersWithAuthToken = function (_authToken, targetStack, data, moduleName, host, backupdir, branchName) {
+exports.parametersWithAuthToken = function (_authToken, targetStack, data, moduleName, host, backupdir, branchName, config) {
   return new Promise(async function (resolve, reject) {
+    let externalConfig = require(config);
     defaultConfig.auth_token = _authToken;
     defaultConfig.target_stack = targetStack;
     defaultConfig.branchName = branchName;
@@ -125,14 +110,11 @@ exports.parametersWithAuthToken = function (_authToken, targetStack, data, modul
     }
     defaultConfig.data = data;
     defaultConfig.host = host;
+    defaultConfig = _.merge(defaultConfig, externalConfig);
 
     initial(defaultConfig)
-      .then(() => {
-        return resolve();
-      })
-      .catch((error) => {
-        return reject(error);
-      });
+      .then(resolve)
+      .catch(reject);
   });
 };
 
@@ -154,11 +136,7 @@ exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, ba
     defaultConfig.host = host;
 
     initial(defaultConfig)
-      .then(() => {
-        return resolve();
-      })
-      .catch((error) => {
-        return reject(error);
-      });
+      .then(resolve)
+      .catch(reject);
   });
 };
