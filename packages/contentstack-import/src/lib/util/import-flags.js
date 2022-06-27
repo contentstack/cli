@@ -12,17 +12,34 @@ let message = require('../../../messages/index.json');
 exports.configWithMToken = function (config, managementTokens, moduleName, host, _authToken, backupdir, branchName) {
   return new Promise(async function (resolve, reject) {
     let externalConfig = require(config);
-    defaultConfig.management_token = managementTokens.token;
+    const modules = externalConfig.modules
+
+    if (_.isArray(externalConfig['modules'])) {
+      externalConfig = _.omit(externalConfig, ['modules'])
+    }
+
+    defaultConfig.host = host;
     defaultConfig.branchName = branchName;
+    defaultConfig.management_token = managementTokens.token;
+
     if (moduleName && moduleName !== undefined) {
       defaultConfig.moduleName = moduleName;
     }
-    defaultConfig.host = host;
+
     if (backupdir) {
       defaultConfig.useBackedupDir = backupdir;
     }
+
     defaultConfig.auth_token = _authToken;
     defaultConfig = _.merge(defaultConfig, externalConfig);
+
+    if (_.isArray(modules)) {
+      defaultConfig.modules.types = _.filter(
+        defaultConfig.modules.types,
+        (module) => _.includes(modules, module)
+      )
+    }
+
     initial(defaultConfig)
       .then(resolve)
       .catch(reject);
