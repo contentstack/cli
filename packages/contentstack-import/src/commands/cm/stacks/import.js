@@ -32,7 +32,7 @@ class ImportCommand extends Command {
         if (managementTokens) {
           let result
 
-          if (extConfig && _authToken) {
+          if ((extConfig && _authToken) || alias) {
             result = configWithMToken(extConfig, managementTokens, moduleName, host, _authToken, backupdir, branchName)
           } else if (data) {
             result = parameterWithMToken(managementTokens, data, moduleName, host, _authToken, backupdir, branchName)
