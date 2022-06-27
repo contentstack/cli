@@ -10,7 +10,7 @@ import {
 import { tokenValidation } from '../../../utils';
 
 export default class TokensAddCommand extends Command {
-  static description = 'Adds management/delivery tokens to your session to use it with further CLI commands';
+  static description = 'Adds management/delivery tokens to your session to use it with other CLI commands';
 
   static examples = [
     '$ csdx auth:tokens:add',
@@ -30,13 +30,13 @@ export default class TokensAddCommand extends Command {
     alias: flags.string({ char: 'a', description: 'Name of the token alias' }),
     delivery: flags.boolean({
       char: 'd',
-      description: 'Set this while saving delivery token',
+      description: 'Set this flag to save delivery token',
       exclusive: ['management'],
       parse: printFlagDeprecation(['-d'], ['--delivery']),
     }),
     management: flags.boolean({
       char: 'm',
-      description: 'Set this while saving management token',
+      description: 'Set this flag to save management token',
       exclusive: ['delivery', 'environment'],
       parse: printFlagDeprecation(['-m'], ['--management']),
     }),
@@ -46,10 +46,10 @@ export default class TokensAddCommand extends Command {
       exclusive: ['management'],
     }),
     'stack-api-key': flags.string({ char: 'k', description: 'Stack API Key' }),
-    yes: flags.boolean({ char: 'y', description: 'Skipping confirmation' }),
+    yes: flags.boolean({ char: 'y', description: 'Use this flag to skip confirmation' }),
     token: flags.string({
       char: 't',
-      description: 'Token',
+      description: 'Add the token name',
       env: 'TOKEN',
       parse: printFlagDeprecation(['-t'], ['--token']),
     }),
