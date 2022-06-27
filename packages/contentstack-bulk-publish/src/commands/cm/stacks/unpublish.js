@@ -142,23 +142,23 @@ class UnpublishCommand extends Command {
   }
 }
 
-UnpublishCommand.description = `Unpublish entries or assets of given Content Types from given environment
-The unpublish command is used for unpublishing entries or assets from given environment
+UnpublishCommand.description = `Unpublish entries or assets of given content types from the specified environment
+The unpublish command is used to unpublish entries or assets from given environment
 
-Environment (Source Environment) and Locale are required for executing the command successfully
+Environment (Source Environment) and Locale are required to execute the command successfully
 But, if retry-failed flag is set, then only a logfile is required
 
-A Content Type can be specified for unpublishing entries, but if no content-type(s) is/are specified and --only-assets is not used,
+A content type can be specified for unpublishing entries, but if no content-type(s) is/are specified and --only-assets is not used,
 then all entries from all content types will be unpublished from the source environment
 
---only-assets can be used to unpublish only assets and --only-entries can be used to unpublish only entries.
+Note: --only-assets can be used to unpublish only assets and --only-entries can be used to unpublish only entries.
 (--only-assets and --only-entries cannot be used together at the same time)
 `;
 
 UnpublishCommand.flags = {
   alias: flags.string({
     char: 'a',
-    description: 'Alias for the management token to be used',
+    description: 'Alias(name) for the management token',
   }),
   environment: flags.string({
     char: 'e',
@@ -184,7 +184,7 @@ UnpublishCommand.flags = {
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
   'retry-failed': flags.string({
-    description: 'Retry publishing failed entries from the logfile',
+    description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)',
   }),
   'bulk-unpublish': flags.string({
     description:
