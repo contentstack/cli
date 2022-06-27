@@ -3,7 +3,7 @@ import { logger, cliux, configHandler } from '@contentstack/cli-utilities';
 
 export default class TokensRemoveCommand extends Command {
   static description = 'Removes selected tokens';
-  static examples = ['$ csdx auth:tokens:remove', '$ csdx auth:tokens:remove -a <aliase>'];
+  static examples = ['$ csdx auth:tokens:remove', '$ csdx auth:tokens:remove -a <alias>'];
   static flags = {
     alias: flags.string({ char: 'a', description: 'Token alias' }),
     ignore: flags.boolean({ char: 'i', description: 'Ignore' }),

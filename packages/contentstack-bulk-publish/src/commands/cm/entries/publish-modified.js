@@ -105,16 +105,16 @@ class PublishModifiedCommand extends Command {
   }
 }
 
-PublishModifiedCommand.description = `Publish edited entries from a specified Content Type to given locales and environments
+PublishModifiedCommand.description = `Publish edited entries from a specified content type to the given locales and environments
 The publish-modified command is used for publishing entries from the specified content types, to the
 specified environments and locales
 
-Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command successfully
+Note: Content type(s), Source Environment, Destination Environment(s) and Locale(s) are required to execute the command successfully
 But, if retry-failed flag is set, then only a logfile is required
 `;
 
 PublishModifiedCommand.flags = {
-  alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
+  alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
   retryFailed: flags.string({
     char: 'r',
     description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)',
@@ -153,22 +153,22 @@ PublishModifiedCommand.flags = {
     hidden: true,
   }),
   'content-types': flags.string({
-    description: 'The Content-Types which will be checked for edited entries',
+    description: 'The Contenttypes which will be checked for edited entries',
     multiple: true,
   }),
   locales: flags.string({
     char: 'l',
-    description: 'Locales to which edited entries need to be published',
+    description: 'Locales where edited entries will be published',
     multiple: true,
     parse: printFlagDeprecation(['-l'], ['--locales']),
   }),
   environments: flags.string({ char: 'e', description: 'Destination environments', multiple: true }),
-  config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
+  config: flags.string({ char: 'c', description: 'Path to config file' }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
   branch: flags.string({
     char: 'B',
     default: 'main',
-    description: 'Specify the branch to fetch the content from (default is main branch)',
+    description: 'Specify the branch to fetch the content (by default the main branch is selected)',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
 };
