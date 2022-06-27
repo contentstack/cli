@@ -109,16 +109,16 @@ class NonlocalizedFieldChangesCommand extends Command {
   }
 }
 
-NonlocalizedFieldChangesCommand.description = `Publish non-localized-fields for given Content Types, from a particular source environment to specified environments
-The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types to the specified Environments
+NonlocalizedFieldChangesCommand.description = `Publish non-localized fields for the given content types, from a particular source environment to the specified environments
+The non-localized field changes command is used for publishing non-localized field changes from the given content types to the specified environments
 
-Content Types, Environments and Source Environment are required for executing this command successfully.
+Note: Content types, Environments and Source Environment are required to execute this command successfully.
 But, if retryFailed flag is set, then only a logfile is required`;
 
 NonlocalizedFieldChangesCommand.flags = {
   alias: flags.string({
     char: 'a',
-    description: 'Alias for the management token to be used',
+    description: 'Alias(name) for the management token',
   }),
   'retry-failed': flags.string({
     description: 'Retry publishing failed entries from the logfile',
@@ -132,7 +132,7 @@ NonlocalizedFieldChangesCommand.flags = {
     description: 'Source Environment',
   }),
   'content-types': flags.string({
-    description: 'The Content-Types from which entries need to be published',
+    description: 'The Contenttypes from which entries will be published',
     multiple: true,
   }),
   environments: flags.string({
@@ -142,7 +142,7 @@ NonlocalizedFieldChangesCommand.flags = {
   }),
   config: flags.string({
     char: 'c',
-    description: 'Path to config file to be used',
+    description: 'Path to config file',
   }),
   yes: flags.boolean({
     char: 'y',
@@ -151,7 +151,7 @@ NonlocalizedFieldChangesCommand.flags = {
   branch: flags.string({
     char: 'B',
     default: 'main',
-    description: 'Specify the branch to fetch the content from (default is main branch)',
+    description: 'Specify the branch to fetch the content (by default the main branch is selected)',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
 
@@ -178,7 +178,7 @@ NonlocalizedFieldChangesCommand.flags = {
   }),
   contentTypes: flags.string({
     char: 't',
-    description: 'The Content-Types from which entries need to be published',
+    description: 'The contenttypes from which entries will be published',
     multiple: true,
     hidden: true,
     parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-types']),
