@@ -21,7 +21,7 @@ $ npm install -g @contentstack/cli-migration
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-migration/1.0.0 darwin-x64 node-v16.14.2
+@contentstack/cli-migration/1.0.0 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -32,47 +32,47 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`csdx cm:migration`](#csdx-cmmigration)
+* [`csdx cm:stacks:migration`](#csdx-cmstacksmigration)
 
-## `csdx cm:migration`
+## `csdx cm:stacks:migration`
 
 Contentstack migration script.
 
 ```
 USAGE
-  $ csdx cm:migration
+  $ csdx cm:stacks:migration
 
 OPTIONS
-  -A, --authtoken                                      Use this flag to use the auth token of the current session. After
-                                                       logging in CLI, an auth token is generated for each new session.
-
   -B, --branch=branch                                  Use this flag to add the branch name where you want to perform
                                                        the migration.
 
   -a, --management-token-alias=management-token-alias  Use this flag to add the management token alias.
 
-  -k, --api-key=api-key                                With this flag add the API key of your stack.
-
-  -n, --filePath=filePath                              Use this flag to provide the path of the file of the migration
-                                                       script provided by the user.
+  -k, --stack-api-key=stack-api-key                    With this flag add the API key of your stack.
 
   --config=config                                      [optional] inline configuration, <key1>:<value1>
 
   --config-file=config-file                            [optional] Path of the JSON configuration file
 
-  --multi                                              This flag helps you to migrate multiple content files in a single
+  --file-path=file-path                                Use this flag to provide the path of the file of the migration
+                                                       script provided by the user.
+
+  --multiple                                           This flag helps you to migrate multiple content files in a single
                                                        instance.
 
+ALIASES
+  $ csdx cm:migration
+
 EXAMPLES
-  $ csdx cm:migration -A -n <migration/script/file/path> -k <api-key>
-  $ csdx cm:migration -A -n <migration/script/file/path> -k <api-key> -B <target branch name>
-  $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... -n <migration/script/file/path>
-  $ csdx cm:migration --config-file <path/to/json/config/file> -n <migration/script/file/path>
-  $ csdx cm:migration --multi -n <migration/scripts/dir/path>
-  $ csdx cm:migration -a -n <migration/script/file/path> -k <api-key>
+  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key>
+  $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key> --branch <target branch name>
+  $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... --file-path <migration/script/file/path>
+  $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+  $ csdx cm:migration -a --file-path <migration/script/file/path> -k <api-key>
 ```
 
-_See code: [src/commands/cm/migration.js](https://github.com/contentstack/cli-migration/blob/v1.0.0/src/commands/cm/migration.js)_
+_See code: [src/commands/cm/stacks/migration.js](https://github.com/contentstack/cli-migration/blob/v1.0.0/src/commands/cm/stacks/migration.js)_
 <!-- commandsstop -->
 
 ### Points to remember
