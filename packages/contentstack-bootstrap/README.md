@@ -64,7 +64,7 @@ EXAMPLES
   $ csdx cm:bootstrap --project-dir <path/to/setup/the/app>
   $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app>
   $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key"
-  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid"
+  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid" 
   --stack-name "stack-name"
 ```
 
