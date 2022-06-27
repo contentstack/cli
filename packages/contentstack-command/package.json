@@ -23,7 +23,7 @@
     "contentstack": "^3.10.1"
   },
   "devDependencies": {
-    "@oclif/plugin-help": "^3.2.0",
+    "@oclif/plugin-help": "^5.1.12",
     "@oclif/test": "^1.2.8",
     "@types/chai": "^4.2.18",
     "@types/mkdirp": "^1.0.1",
