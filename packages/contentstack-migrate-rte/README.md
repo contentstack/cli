@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-cm-migrate-rte
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-migrate-rte/1.0.5 darwin-x64 node-v16.14.2
+@contentstack/cli-cm-migrate-rte/1.0.5 darwin-x64 node-v16.15.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -32,28 +32,28 @@ USAGE
 
 ## `csdx cm:entries:migrate-html-rte`
 
-Migration script for migrating HTML RTE to JSON RTE
+Migration script to migrate content from HTML RTE to JSON RTE
 
 ```
 USAGE
   $ csdx cm:entries:migrate-html-rte
 
 OPTIONS
-  -a, --alias=alias              Alias for the management token to be used
-  -c, --config-path=config-path  Path to config file to be used
+  -a, --alias=alias              Alias(name) for the management token
+  -c, --config-path=config-path  Path to config file
   -y, --yes                      Agree to process the command with the current configuration
   --batch-limit=batch-limit      [default: 50] Provide batch limit for updating entries
-  --content-type=content-type    The content-type from which entries need to be migrated
+  --content-type=content-type    The contenttype from which entries will be migrated
   --delay=delay                  [default: 1000] Provide delay in ms between two entry update
 
-  --global-field                 This flag is set to false by default. It indicates that current content-type is
-                                 global-field
+  --global-field                 This flag is set to false by default. It indicates that current contenttype is a
+                                 globalfield
 
   --html-path=html-path          Provide path of HTML RTE to migrate
 
   --json-path=json-path          Provide path of JSON RTE to migrate
 
-  --locale=locale                The locale from which entries need to be migrated
+  --locale=locale                The locale from which entries will be migrated
 
 ALIASES
   $ csdx cm:migrate-rte
