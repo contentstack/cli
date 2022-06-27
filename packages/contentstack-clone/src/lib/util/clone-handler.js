@@ -318,9 +318,9 @@ class CloneHandler {
     return new Promise(async (resolve, _reject) => {
       const cmd = ['-c', path.join(__dirname, 'dummyConfig.json')];
 
-      // if (config.destination_alias) {
-      //   cmd.push('-a', config.destination_alias);
-      // }
+      if (config.destination_alias) {
+        cmd.push('-a', config.destination_alias);
+      }
       if (config.sourceStackBranch) {
         cmd.push('-d', path.join(__dirname, config.sourceStackBranch));
       }
