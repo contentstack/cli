@@ -38,7 +38,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-export/1.0.0 darwin-x64 node-v16.14.2
+@contentstack/cli-cm-export/1.0.0 darwin-x64 node-v16.15.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -60,13 +60,13 @@ USAGE
   $ csdx cm:stacks:export
 
 OPTIONS
+  -B, --branch=branch                                  [optional] branch name
   -a, --management-token-alias=management-token-alias  alias of the management token
   -c, --config=config                                  [optional] path of the config
   -d, --data-dir=data-dir                              path or location to store the data
   -k, --stack-api-key=stack-api-key                    API key of the source stack
-  --branch=branch                                  [optional] branch name
-  --module=module                                  [optional] specific module name
-  --content-types=content-types                    [optional] content type
+  -m, --module=module                                  [optional] specific module name
+  -t, --content-types=content-types                    [optional] content type
   --secured-assets                                     [optional] use when assets are secured
 
 DESCRIPTION
