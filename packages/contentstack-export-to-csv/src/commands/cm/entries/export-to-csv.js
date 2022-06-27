@@ -29,7 +29,7 @@ b) ${config.exportUsers}`,
     org: flags.string({
       multiple: false,
       required: false,
-      description: 'Provide Organization UID to clone org users',
+      description: 'Provide organization UID to clone org users',
     }),
     'stack-name': flags.string({
       char: 'n',
