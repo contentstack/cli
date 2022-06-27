@@ -18,10 +18,9 @@ export default class BootstrapCommand extends Command {
   static examples = [
     '$ csdx cm:bootstrap',
     '$ csdx cm:bootstrap --project-dir <path/to/setup/the/app>',
-    '$ csdx cm:bootstrap --access-token <github access token>',
     '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app>',
-    '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key" //seed content into specific stack',
-    '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid" --stack-name "stack-name" //create a new stack in given org UID',
+    '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key"',
+    '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid" --stack-name "stack-name"',
   ];
 
   static flags = {
@@ -33,11 +32,6 @@ export default class BootstrapCommand extends Command {
     'project-dir': flags.string({
       description:
         'Directory to setup the project. If directory name has a space then provide the path as a string or escap the space using back slash eg: "../../test space" or ../../test\\ space',
-      multiple: false,
-      required: false,
-    }),
-    'access-token': flags.string({
-      description: 'Access token for private github repo',
       multiple: false,
       required: false,
     }),
@@ -117,12 +111,14 @@ export default class BootstrapCommand extends Command {
       }
 
       // inquire user inputs
-      let appType = (bootstrapCommandFlags.appType as string) || (bootstrapCommandFlags['app-type'] as string) || 'starterapp';
+      let appType =
+        (bootstrapCommandFlags.appType as string) || (bootstrapCommandFlags['app-type'] as string) || 'starterapp';
       if (!appType) {
         appType = await inquireAppType();
       }
 
-      const selectedAppName = bootstrapCommandFlags.appName as string || bootstrapCommandFlags['app-name'] as string;
+      const selectedAppName =
+        (bootstrapCommandFlags.appName as string) || (bootstrapCommandFlags['app-name'] as string);
       let selectedApp;
       if (!selectedAppName) {
         if (appType === 'sampleapp') {
@@ -142,18 +138,19 @@ export default class BootstrapCommand extends Command {
 
       const appConfig: AppConfig = getAppLevelConfigByName(selectedAppName || selectedApp.configKey);
 
-      let cloneDirectory = bootstrapCommandFlags.directory as string || bootstrapCommandFlags['project-dir'] as string;
+      let cloneDirectory =
+        (bootstrapCommandFlags.directory as string) || (bootstrapCommandFlags['project-dir'] as string);
       if (!cloneDirectory) {
         cloneDirectory = await inquireCloneDirectory();
       }
 
-      const seedParams: SeedParams = {}
-      const stackAPIKey = bootstrapCommandFlags['stack-api-key']
-      const org = bootstrapCommandFlags['org']
-      const stackName = bootstrapCommandFlags['stack-name']
-      if (stackAPIKey) seedParams.stackAPIKey = stackAPIKey
-      if (org) seedParams.org = org
-      if (stackName) seedParams.stackName = stackName
+      const seedParams: SeedParams = {};
+      const stackAPIKey = bootstrapCommandFlags['stack-api-key'];
+      const org = bootstrapCommandFlags['org'];
+      const stackName = bootstrapCommandFlags['stack-name'];
+      if (stackAPIKey) seedParams.stackAPIKey = stackAPIKey;
+      if (org) seedParams.org = org;
+      if (stackName) seedParams.stackName = stackName;
 
       // Check the access token
       // let accessToken = bootstrapCommandFlags.accessToken as string;
