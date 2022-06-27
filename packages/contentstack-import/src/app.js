@@ -4,63 +4,62 @@
  * MIT Licensed
  */
 
-let ncp = require('ncp');
-let Bluebird = require('bluebird');
 let fs = require('fs');
+let ncp = require('ncp');
+let _ = require('lodash');
 let path = require('path');
 const chalk = require('chalk');
-const helper = require('./lib/util/fs');
-let _ = require('lodash');
-let login = require('./lib/util/login');
 let util = require('./lib/util/index');
+let login = require('./lib/util/login');
 let { addlogs } = require('./lib/util/log');
 
 exports.initial = function (configData) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(async function (resolve, reject) {
     let config = util.initialization(configData);
     config.oldPath = config.data;
+
+    const backupAndImportData = async () => {
+      if (fs.existsSync(config.data)) {
+        let migrationBackupDirPath = path.join(process.cwd(), '_backup_' + Math.floor(Math.random() * 1000));
+        return createBackup(migrationBackupDirPath, config)
+          .then((basePath) => {
+            config.data = basePath;
+            return util.sanitizeStack(config);
+          }).then(() => {
+            let importRes
+            const types = config.modules.types
+
+            if (config.moduleName) {
+              importRes = singleImport(config.moduleName, types, config)
+            } else {
+              importRes = allImport(config, types)
+            }
+
+            importRes
+              .then(resolve)
+              .catch(reject)
+          }).catch((e) => {
+            console.error(e);
+            reject(e);
+            process.exit(1);
+          });
+      } else {
+        let filename = path.basename(config.data);
+        addlogs(config, chalk.red(filename + ' Folder does not Exist'), 'error');
+      }
+    }
+
     if (config) {
-      login(config)
-        .then(function () {
-          if (fs.existsSync(config.data)) {
-            let migrationBackupDirPath = path.join(process.cwd(), '_backup_' + Math.floor(Math.random() * 1000));
-            return createBackup(migrationBackupDirPath, config)
-              .then((basePath) => {
-                config.data = basePath;
-                return util.sanitizeStack(config);
-              })
-              .catch((e) => {
-                console.error(e);
-                process.exit(1);
-              })
-              .then(() => {
-                let types = config.modules.types;
-                if (config.moduleName) {
-                  singleImport(config.moduleName, types, config).then(() => {
-                    return resolve();
-                  }).catch((e) => {
-                    return reject(e);
-                  });
-                } else {
-                  allImport(config, types).then(() => {
-                    return resolve();
-                  }).catch((e) => {
-                    return reject(e);
-                  });
-                }
-              })
-              .catch((e) => {
-                console.error(e);
-                return reject(e);
-              });
-          } else {
-            let filename = path.basename(config.data);
-            addlogs(config, chalk.red(filename + ' Folder does not Exist'), 'error');
-          }
-        })
-        .catch((_error) => {
-          return;
-        });
+      if (
+        (config.email && config.password) ||
+        (config.auth_token)
+      ) {
+        login(config)
+          .then(backupAndImportData)
+          .catch(reject);
+      } else if (config.management_token) {
+        await backupAndImportData()
+      }
     }
   });
 };

@@ -34,9 +34,9 @@ class ExportCommand extends Command {
       let managementTokens = this.getToken(alias);
       if (managementTokens) {
         if (extConfig) {
-          configWithMToken(extConfig, managementTokens, host, contentTypes, branchName, securedAssets);
+          await configWithMToken(extConfig, managementTokens, host, contentTypes, branchName, securedAssets);
         } else if (data) {
-          parameterWithMToken(
+          await parameterWithMToken(
             managementTokens,
             data,
             moduleName,
@@ -47,7 +47,7 @@ class ExportCommand extends Command {
             securedAssets,
           );
         } else if (data === undefined && sourceStack === undefined) {
-          withoutParameterMToken(
+          await withoutParameterMToken(
             managementTokens,
             moduleName,
             host,
@@ -149,6 +149,7 @@ ExportCommand.flags = {
   }),
   branch: flags.string({
     char: 'B',
+    // default: 'main',
     description: '[optional] branch name',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
