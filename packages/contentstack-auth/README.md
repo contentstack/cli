@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-auth/1.0.0 darwin-x64 node-v16.14.2
+@contentstack/cli-auth/1.0.0 darwin-x64 node-v16.15.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -83,7 +83,7 @@ EXAMPLES
 
 _See code: [src/commands/auth/logout.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/logout.ts)_
 
-## `csdx auth:tokens` ##pending
+## `csdx auth:tokens`
 
 Lists all existing tokens added to the session
 
@@ -94,11 +94,11 @@ USAGE
 OPTIONS
   -x, --extended          show extra columns
   --columns=columns       only show provided columns (comma-separated)
-  --csv                   output is in csv format [alias: --output=csv]
+  --csv                   output is csv format [alias: --output=csv]
   --filter=filter         filter property by partial string matching, ex: name=foo
   --no-header             hide table header from output
   --no-truncate           do not truncate output to fit screen
-  --output=csv|json|yaml  show output in a machine friendly format
+  --output=csv|json|yaml  output in a more machine friendly format
   --sort=sort             property to sort by (prepend '-' for descending)
 
 ALIASES
@@ -138,7 +138,7 @@ EXAMPLES
   $ csdx auth:tokens:add -a <alias> -k <stack api key> --management --token <management token>
   $ csdx auth:tokens:add -a <alias> -k <stack api key> --delivery -e <environment> --token <delivery token>
   $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --management --token <management token>
-  $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery
+  $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery 
   token>
 ```
 
