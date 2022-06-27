@@ -15,7 +15,7 @@ $ npm install -g @contentstack/cli-cm-bootstrap
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bootstrap/1.0.7 darwin-x64 node-v16.14.2
+@contentstack/cli-cm-bootstrap/1.0.7 darwin-x64 node-v16.15.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -47,14 +47,13 @@ USAGE
   $ csdx cm:bootstrap
 
 OPTIONS
-  -k, --stack-api-key=stack-api-key  Provide stack api key to seed content to
-  -n, --stack-name=stack-name        Name of a new stack that needs to be created.
-  --access-token=access-token        Access token for private github repo
+  -k, --stack-api-key=stack-api-key  Provide stack API key to seed content
+  -n, --stack-name=stack-name        Name of a new stack that will be created.
 
   --app-name=app-name                App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter,
                                      nuxt-starter
 
-  --org=org                          Provide Organization UID to create a new stack
+  --org=org                          Provide organization UID to create a new stack
 
   --project-dir=project-dir          Directory to setup the project. If directory name has a space then provide the path
                                      as a string or escap the space using back slash eg: "../../test space" or
@@ -63,12 +62,10 @@ OPTIONS
 EXAMPLES
   $ csdx cm:bootstrap
   $ csdx cm:bootstrap --project-dir <path/to/setup/the/app>
-  $ csdx cm:bootstrap --access-token <github access token>
   $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app>
   $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key"
-   //seed content into specific stack
   $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid"
-  --stack-name "stack-name" //create a new stack in given org uid
+  --stack-name "stack-name"
 ```
 
 _See code: [src/commands/cm/bootstrap.ts](https://github.com/contentstack/cli/blob/v1.0.7/src/commands/cm/bootstrap.ts)_
