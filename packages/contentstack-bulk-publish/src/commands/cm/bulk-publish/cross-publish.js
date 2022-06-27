@@ -114,35 +114,35 @@ class CrossPublishCommand extends Command {
 }
 
 CrossPublishCommand.description = `Publish entries and assets from one environment to other environments
-The cross-publish command is used for publishing entries and assets from one evironment to other environments
+The cross-publish command is used to publish entries and assets from one environment to other environments
 
-Content Type, Environment, Destination Environment(s) and Locale are required for executing the command successfully
+Note: Content Type, Environment, Destination Environment(s) and Locale are required to execute the command successfully
 But, if retryFailed flag is set, then only a logfile is required
 `;
 
 CrossPublishCommand.flags = {
-  alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
+  alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
   retryFailed: flags.string({
     char: 'r',
-    description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)',
+    description: '(optional) Retry publishing failed entries from the logfile (this flag overrides all other flags)',
   }),
   bulkPublish: flags.string({
     char: 'b',
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
   }),
-  contentType: flags.string({ char: 't', description: 'Content-Type filter' }),
+  contentType: flags.string({ char: 't', description: 'Contenttype filter' }),
   locale: flags.string({ char: 'l', description: 'Locale filter' }),
   environment: flags.string({ char: 'e', description: 'Source Environment' }),
-  deliveryToken: flags.string({ char: 'x', description: 'Delivery Token for source environment' }),
+  deliveryToken: flags.string({ char: 'x', description: 'Delivery token for source environment' }),
   destEnv: flags.string({ char: 'd', description: 'Destination Environments', multiple: true }),
-  config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
+  config: flags.string({ char: 'c', description: 'Path to config file that will be used' }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
   branch: flags.string({
     char: 'B',
     default: 'main',
-    description: 'Specify the branch to fetch the content from (default is main branch)',
+    description: 'Specify the branch to fetch the content (by default the main branch is selected)',
   }),
   onlyAssets: flags.boolean({ description: 'Unpublish only assets', default: false }),
   onlyEntries: flags.boolean({ description: 'Unpublish only entries', default: false }),
