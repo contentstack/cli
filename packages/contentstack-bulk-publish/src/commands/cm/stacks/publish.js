@@ -31,10 +31,10 @@ class StackPublishCommand extends Command {
 }
 
 StackPublishCommand.description = `Publish entries and assets to multiple environments and locales
-The publish command is used for publishing entries and assets, to the specified environments and locales.
+The publish command is used to publish entries and assets, to the specified environments and locales.
 
-Content Types, Environments and Locales are required for executing the publish entries command successfully.
-Environments and Locales are required for executing the publish assets command successfully.
+Note: Content types, Environments and Locales are required to execute the publish entries command successfully.
+Note: Environments and Locales are required to execute the publish assets command successfully.
 But, if retry-failed flag is set, then only a logfile is required`;
 
 StackPublishCommand.examples = [
@@ -42,7 +42,7 @@ StackPublishCommand.examples = [
   'csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS]',
   '',
   'Using --config or -c flag',
-  'Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`',
+  'Generate a config file in the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`',
   'csdx cm:stacks:publish --config [PATH TO CONFIG FILE]',
   'csdx cm:stacks:publish -c [PATH TO CONFIG FILE]',
   '',
