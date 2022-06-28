@@ -76,7 +76,7 @@ PublishOnlyUnpublished.flags = {
     description: 'Source locale',
   }),
   environments: flags.string({ char: 'e', description: 'Destination environments', multiple: true }),
-  config: flags.string({ char: 'c', description: 'Path to config file' }),
+  config: flags.string({ char: 'c', description: 'Path to the config file' }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
   branch: flags.string({
     char: 'B',
