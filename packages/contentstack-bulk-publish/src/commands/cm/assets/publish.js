@@ -132,37 +132,37 @@ class AssetsPublishCommand extends Command {
   }
 }
 
-AssetsPublishCommand.description = `Publish assets to specified environments
-The assets command is used for publishing assets from the specified stack, to the specified environments
+AssetsPublishCommand.description = `Publish assets to the specified environments
+The assets command is used to publish assets from the specified stack, to the specified environments
 
-Environment(s) and Locale(s) are required for executing the command successfully
+Note: Environment(s) and Locale(s) are required to execute the command successfully
 But, if retryFailed flag is set, then only a logfile is required
 `;
 
 AssetsPublishCommand.flags = {
   alias: flags.string({
     char: 'a',
-    description: 'Alias for the management token to be used',
+    description: 'Alias(name) for the management token',
   }),
   'retry-failed': flags.string({
     description: 'Retry publishing failed assets from the logfile (optional, will override all other flags)',
   }),
   environments: flags.string({
     char: 'e',
-    description: 'Environments to which assets need to be published',
+    description: 'Environments where assets will be published',
     multiple: true,
   }),
   'folder-uid': flags.string({
-    description: '[default: cs_root] Folder-uid from which the assets need to be published',
+    description: '[default: cs_root] Folder-uid from where the assets will be published',
   }),
   'bulk-publish': flags.string({
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "By default this flag is set as true. It indicates that contentstack's bulkpublish API will be used to publish the assets",
     default: 'true',
   }),
   config: flags.string({
     char: 'c',
-    description: 'Path to config file to be used',
+    description: 'Path to the config file',
   }),
   yes: flags.boolean({
     char: 'y',
@@ -170,14 +170,14 @@ AssetsPublishCommand.flags = {
   }),
   locales: flags.string({
     char: 'l',
-    description: 'Locales to which assets need to be published',
+    description: 'Locales to where assets will be published',
     multiple: true,
     parse: printFlagDeprecation(['-l'], ['--locales']),
   }),
   branch: flags.string({
     char: 'B',
     default: 'main',
-    description: 'Specify the branch to fetch the content from (default is main branch)',
+    description: 'Specify the branch to fetch the content (by default the main branch is selected)',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
 
@@ -190,20 +190,20 @@ AssetsPublishCommand.flags = {
   }),
   folderUid: flags.string({
     char: 'u',
-    description: '[default: cs_root] Folder-uid from which the assets need to be published',
+    description: '[default: cs_root] Folder-uid from where the assets will be published',
     hidden: true,
     parse: printFlagDeprecation(['-u', '--folderUid'], ['--folder-uid']),
   }),
   bulkPublish: flags.string({
     char: 'b',
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "By default this flag is set as true. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     // default: 'true',
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
-  'delivery-token': flags.string({ description: 'Delivery Token for source environment' }),
-  'source-env': flags.string({ description: 'Destination Environments', multiple: true }),
+  'delivery-token': flags.string({ description: 'Delivery token for source environment' }),
+  'source-env': flags.string({ description: 'Source environment'}),
   'content-types': flags.string({ description: 'Content types', multiple: true }), // this is a work around, as this command is to be run with entries:publish command and should not break flags check.
 };
 
