@@ -37,7 +37,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-import/1.0.0 darwin-x64 node-v16.14.2
+@contentstack/cli-cm-import/1.0.0 darwin-x64 node-v16.15.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -52,24 +52,24 @@ USAGE
 
 ## `csdx cm:stacks:import`
 
-Import script for importing the content into new stack
+Import script for importing the content into the new stack
 
 ```
 USAGE
   $ csdx cm:stacks:import
 
 OPTIONS
+  -B, --branch=branch                                  [optional] branch name
   -a, --management-token-alias=management-token-alias  alias of the management token
+  -b, --backup-dir=backup-dir                          [optional] backup directory name when using specific module
   -c, --config=config                                  [optional] path of config file
   -d, --data-dir=data-dir                              path and location where data is stored
   -k, --stack-api-key=stack-api-key                    API key of the target stack
-  --branch=branch                                  [optional] branch name
-  --backup-dir=backup-dir                          [optional] backup directory name when using specific module
-  --module=module                                  [optional] specific module name
+  -m, --module=module                                  [optional] specific module name
 
 DESCRIPTION
   ...
-  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import
+  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import 
   command.
 
 ALIASES
