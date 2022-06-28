@@ -119,13 +119,13 @@ UpdateAndPublishCommand.flags = {
   }),
   'bulk-publish': flags.string({
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
   }),
   bulkPublish: flags.string({
     char: 'b',
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
@@ -144,7 +144,7 @@ UpdateAndPublishCommand.flags = {
     description: 'Environments where entries will be published',
     multiple: true,
   }),
-  config: flags.string({ char: 'c', description: 'Path to config file' }),
+  config: flags.string({ char: 'c', description: 'Path to the config file' }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
   locales: flags.string({
     char: 'l',
