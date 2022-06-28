@@ -166,7 +166,7 @@ UnpublishCommand.flags = {
   }),
   config: flags.string({
     char: 'c',
-    description: 'Path to config file to be used',
+    description: 'Path to the config file',
   }),
   yes: flags.boolean({
     char: 'y',
@@ -188,14 +188,14 @@ UnpublishCommand.flags = {
   }),
   'bulk-unpublish': flags.string({
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to unpublish the entries and assets",
     default: 'true',
   }),
   'content-type': flags.string({
-    description: 'Content Type filter',
+    description: 'Content type filter',
   }),
   'delivery-token': flags.string({
-    description: 'Delivery Token for source environment',
+    description: 'Delivery token for source environment',
   }),
   'only-assets': flags.boolean({
     description: 'Unpublish only assets',
