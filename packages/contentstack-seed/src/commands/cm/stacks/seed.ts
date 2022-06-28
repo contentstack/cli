@@ -3,7 +3,7 @@ import ContentModelSeeder, { ContentModelSeederOptions } from '../../../seed';
 import { printFlagDeprecation } from '@contentstack/cli-utilities';
 
 export default class SeedCommand extends Command {
-  static description = 'Create a Stack from existing content types, entries, assets, etc';
+  static description = 'Create a stack from existing content types, entries, assets, etc';
 
   static examples = [
     '$ csdx cm:stacks:seed',

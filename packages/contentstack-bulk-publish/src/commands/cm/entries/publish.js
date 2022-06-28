@@ -147,16 +147,16 @@ class PublishEntriesCommand extends Command {
   }
 }
 
-PublishEntriesCommand.description = `Publish entries from multiple content-types to multiple environments and locales
-The publish command is used for publishing entries from the specified content types, to the
+PublishEntriesCommand.description = `Publish entries from multiple contenttypes to multiple environments and locales
+The publish command is used to publish entries from the specified content types, to the
 specified environments and locales 
 
-Content Types, Environments and Locales are required for executing the command successfully
+Note: Content Types, Environments and Locales are required to execute the command successfully
 But, if retry-failed flag is set, then only a logfile is required
 `;
 
 PublishEntriesCommand.flags = {
-  alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
+  alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
   retryFailed: flags.string({
     char: 'r',
     description:
@@ -166,22 +166,22 @@ PublishEntriesCommand.flags = {
   }),
   'retry-failed': flags.string({
     description:
-      'Retry failed entries from the logfile (optional, overrides all other flags) This flag is used to retry publishing entries that failed to publish in a previous attempt. A log file for the previous session will be required for processing the failed entries',
+      '(optional) Retry failed entries from the logfile (overrides all other flags) This flag is used to retry publishing entries that failed to publish in a previous attempt. A log file for the previous session will be required for processing the failed entries',
   }),
   bulkPublish: flags.string({
     char: 'b',
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
   'bulk-publish': flags.string({
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
   }),
   'publish-all-content-types': flags.boolean({
-    description: 'Publish all content-types (optional, cannot be set when contentTypes flag is set)',
+    description: '(optional) Publish all contenttypes (cannot be set when contentTypes flag is set)',
   }),
   publishAllContentTypes: flags.boolean({
     char: 'o',
@@ -190,41 +190,41 @@ PublishEntriesCommand.flags = {
     parse: printFlagDeprecation(['-o', '--publishAllContentTypes'], ['--publish-all-content-types']),
   }),
   'content-types': flags.string({
-    description: 'The Content-Types from which entries need to be published',
+    description: 'The Contenttypes from which entries need to be published',
     multiple: true,
   }),
   contentTypes: flags.string({
     char: 't',
-    description: 'The Content-types from which entries need to be published',
+    description: 'The Contenttypes from which entries will be published',
     multiple: true,
     parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-types']),
     hidden: true,
   }),
   locales: flags.string({
     char: 'l',
-    description: 'Locales to which entries need to be published',
+    description: 'Locales where entries will be published',
     multiple: true,
     parse: printFlagDeprecation(['-l'], ['--locales']),
   }),
   environments: flags.string({
     char: 'e',
-    description: 'Environments to which entries need to be published',
+    description: 'Environments where entries will be published',
     multiple: true,
   }),
   config: flags.string({
     char: 'c',
     description:
-      'Path for the external config file to be used (A new config file can be generated at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`)',
+      'Path for the external config file (A new config file can be generated at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`)',
   }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
   branch: flags.string({
     char: 'B',
     default: 'main',
-    description: 'Specify the branch to fetch the content from (default is main branch)',
+    description: 'Specify the branch to fetch the content (by default the main branch is selected)',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
-  'delivery-token': flags.string({ description: 'Delivery Token for source environment' }),
-  'source-env': flags.string({ description: 'Destination Environments', multiple: true }),
+  'delivery-token': flags.string({ description: 'Delivery token for source environment' }),
+  'source-env': flags.string({ description: 'Source environment'}),
 };
 
 PublishEntriesCommand.examples = [

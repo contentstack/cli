@@ -100,14 +100,14 @@ class UpdateAndPublishCommand extends Command {
 }
 
 UpdateAndPublishCommand.description = `Add fields from updated content types to their respective entries
-The update-and-publish command is used for updating already existing entries with the updated schema of their respective Content Type
+The update-and-publish command is used to update existing entries with the updated schema of the respective content type
 
-Content Types, Environments and Locales are required for executing the command successfully
+Note: Content types, Environments and Locales are required to execute the command successfully
 But, if retry-failed flag is set, then only a logfile is required
 `;
 
 UpdateAndPublishCommand.flags = {
-  alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
+  alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
   'retry-failed': flags.string({
     description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)',
   }),
@@ -119,43 +119,43 @@ UpdateAndPublishCommand.flags = {
   }),
   'bulk-publish': flags.string({
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
   }),
   bulkPublish: flags.string({
     char: 'b',
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
   'content-types': flags.string({
-    description: 'The Content-Types from which entries need to be published',
+    description: 'The Contenttypes from which entries will be published',
     multiple: true,
   }),
   contentTypes: flags.string({
     char: 't',
-    description: 'The Content-Types from which entries need to be published',
+    description: 'The Contenttypes from which entries will be published',
     multiple: true,
     parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-types']),
   }),
   environments: flags.string({
     char: 'e',
-    description: 'Environments to which entries need to be published',
+    description: 'Environments where entries will be published',
     multiple: true,
   }),
-  config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
+  config: flags.string({ char: 'c', description: 'Path to the config file' }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
   locales: flags.string({
     char: 'l',
-    description: 'Locales to which entries need to be published',
+    description: 'Locales where entries will be published',
     multiple: true,
     parse: printFlagDeprecation(['-l'], ['--locales']),
   }),
   branch: flags.string({
     char: 'B',
     default: 'main',
-    description: 'Specify the branch to fetch the content from (default is main branch)',
+    description: 'Specify the branch to fetch the content (by default the main branch is selected)',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
 };
