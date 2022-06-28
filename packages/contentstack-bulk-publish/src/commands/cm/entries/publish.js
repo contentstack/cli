@@ -171,7 +171,7 @@ PublishEntriesCommand.flags = {
   bulkPublish: flags.string({
     char: 'b',
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
@@ -224,7 +224,7 @@ PublishEntriesCommand.flags = {
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
   'delivery-token': flags.string({ description: 'Delivery token for source environment' }),
-  'source-env': flags.string({ description: 'Destination environments', multiple: true }),
+  'source-env': flags.string({ description: 'Source environment'}),
 };
 
 PublishEntriesCommand.examples = [
