@@ -62,11 +62,11 @@ JsonMigrationCommand.flags = {
     required: false,
   }),
   'content-type': flags.string({
-    description: 'The contenttype from which entries will be migrated',
+    description: 'The content type from which entries will be migrated',
     required: false,
   }),
   'global-field': flags.boolean({
-    description: 'This flag is set to false by default. It indicates that current contenttype is a globalfield',
+    description: 'This flag is set to false by default. It indicates that current content type is a globalfield',
     default: false,
     required: false,
   }),
@@ -99,7 +99,7 @@ JsonMigrationCommand.flags = {
   //To be deprecated
   configPath: flags.string({
     char: 'p',
-    description: 'Path to config file to be used',
+    description: 'Path to the config file',
     hidden: true,
     parse: printFlagDeprecation(['-p', '--configPath'], ['-c', '--config-path']),
   }),

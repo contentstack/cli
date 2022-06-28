@@ -106,7 +106,7 @@ class PublishModifiedCommand extends Command {
 }
 
 PublishModifiedCommand.description = `Publish edited entries from a specified content type to the given locales and environments
-The publish-modified command is used for publishing entries from the specified content types, to the
+The publish-modified command is used to publish entries from the specified content types, to the
 specified environments and locales
 
 Note: Content type(s), Source Environment, Destination Environment(s) and Locale(s) are required to execute the command successfully
@@ -127,13 +127,13 @@ PublishModifiedCommand.flags = {
   bulkPublish: flags.string({
     char: 'b',
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
   'bulk-publish': flags.string({
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
   }),
   sourceEnv: flags.string({
@@ -163,7 +163,7 @@ PublishModifiedCommand.flags = {
     parse: printFlagDeprecation(['-l'], ['--locales']),
   }),
   environments: flags.string({ char: 'e', description: 'Destination environments', multiple: true }),
-  config: flags.string({ char: 'c', description: 'Path to config file' }),
+  config: flags.string({ char: 'c', description: 'Path to the config file' }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
   branch: flags.string({
     char: 'B',
