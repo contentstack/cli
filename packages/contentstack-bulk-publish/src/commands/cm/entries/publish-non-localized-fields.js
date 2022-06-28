@@ -110,7 +110,7 @@ class NonlocalizedFieldChangesCommand extends Command {
 }
 
 NonlocalizedFieldChangesCommand.description = `Publish non-localized fields for the given content types, from a particular source environment to the specified environments
-The non-localized field changes command is used for publishing non-localized field changes from the given content types to the specified environments
+The non-localized field changes command is used to publish non-localized field changes from the given content types to the specified environments
 
 Note: Content types, Environments and Source Environment are required to execute this command successfully.
 But, if retryFailed flag is set, then only a logfile is required`;
@@ -125,7 +125,7 @@ NonlocalizedFieldChangesCommand.flags = {
   }),
   'bulk-publish': flags.string({
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
   }),
   'source-env': flags.string({
@@ -142,7 +142,7 @@ NonlocalizedFieldChangesCommand.flags = {
   }),
   config: flags.string({
     char: 'c',
-    description: 'Path to config file',
+    description: 'Path to the config file',
   }),
   yes: flags.boolean({
     char: 'y',
@@ -165,7 +165,7 @@ NonlocalizedFieldChangesCommand.flags = {
   bulkPublish: flags.string({
     char: 'b',
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
