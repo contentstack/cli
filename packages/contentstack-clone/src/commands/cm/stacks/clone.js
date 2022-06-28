@@ -127,8 +127,8 @@ class StackCloneCommand extends Command {
   }
 }
 
-StackCloneCommand.description = `Clone data (structure or content or both) of a stack into another stack
-Use this plugin to automate the process of cloning a stack in a few steps.
+StackCloneCommand.description = `Clone data (structure/content or both) of a stack into another stack
+Use this plugin to automate the process of cloning a stack in few steps.
 `;
 
 StackCloneCommand.examples = [

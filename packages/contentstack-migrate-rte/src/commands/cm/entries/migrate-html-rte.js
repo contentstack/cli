@@ -48,25 +48,25 @@ class JsonMigrationCommand extends Command {
   }
 }
 
-JsonMigrationCommand.description = 'Migration script for migrating HTML RTE to JSON RTE';
+JsonMigrationCommand.description = 'Migration script to migrate content from HTML RTE to JSON RTE';
 
 JsonMigrationCommand.flags = {
   'config-path': flags.string({
     char: 'c',
-    description: 'Path to config file to be used',
+    description: 'Path to config file',
     required: false,
   }),
   alias: flags.string({
     char: 'a',
-    description: 'Alias for the management token to be used',
+    description: 'Alias(name) for the management token',
     required: false,
   }),
   'content-type': flags.string({
-    description: 'The content-type from which entries need to be migrated',
+    description: 'The content type from which entries will be migrated',
     required: false,
   }),
   'global-field': flags.boolean({
-    description: 'This flag is set to false by default. It indicates that current content-type is global-field',
+    description: 'This flag is set to false by default. It indicates that current content type is a globalfield',
     default: false,
     required: false,
   }),
@@ -92,14 +92,14 @@ JsonMigrationCommand.flags = {
     required: false
   }),
   locale: flags.string({
-    description : 'The locale from which entries need to be migrated',
+    description : 'The locale from which entries will be migrated',
     required: false
   }),
   "batch-limit" : flags.integer({description:'Provide batch limit for updating entries', default: 50 }),
   //To be deprecated
   configPath: flags.string({
     char: 'p',
-    description: 'Path to config file to be used',
+    description: 'Path to the config file',
     hidden: true,
     parse: printFlagDeprecation(['-p', '--configPath'], ['-c', '--config-path']),
   }),

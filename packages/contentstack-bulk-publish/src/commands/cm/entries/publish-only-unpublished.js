@@ -15,14 +15,14 @@ class PublishOnlyUnpublished extends Command {
 }
 
 PublishOnlyUnpublished.description = `Publish unpublished entries from the source environment, to other environments and locales
-The publish-only-unpublished command is used for publishing unpublished entries from the source environment, to other environments and locales
+The publish-only-unpublished command is used to publish unpublished entries from the source environment, to other environments and locales
 
-Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the command successfully
+Note: Content type(s), Source Environment, Destination Environment(s) and Source Locale are required to execute the command successfully
 But, if retry-failed flag is set, then only a logfile is required
 `;
 
 PublishOnlyUnpublished.flags = {
-  alias: flags.string({ char: 'a', description: 'Alias for the management token to be used' }),
+  alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
   retryFailed: flags.string({
     char: 'r',
     hidden: true,
@@ -36,14 +36,14 @@ PublishOnlyUnpublished.flags = {
     char: 'b',
     hidden: true,
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
     parse: printFlagDeprecation(['--bulkPublish', '-b'], ['--bulk-publish']),
   }),
   'bulk-publish': flags.string({
     char: 'b',
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
   }),
   sourceEnv: flags.string({
@@ -63,7 +63,7 @@ PublishOnlyUnpublished.flags = {
     parse: printFlagDeprecation(['--contentTypes', '-t'], ['--content-types']),
   }),
   'content-types': flags.string({
-    description: 'The Content-Types from which entries need to be published',
+    description: 'The Contenttypes from which entries will be published',
     multiple: true,
   }),
   locale: flags.string({
@@ -76,12 +76,12 @@ PublishOnlyUnpublished.flags = {
     description: 'Source locale',
   }),
   environments: flags.string({ char: 'e', description: 'Destination environments', multiple: true }),
-  config: flags.string({ char: 'c', description: 'Path to config file to be used' }),
+  config: flags.string({ char: 'c', description: 'Path to the config file' }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
   branch: flags.string({
     char: 'B',
     default: 'main',
-    description: 'Specify the branch to fetch the content from (default is main branch)',
+    description: 'Specify the branch to fetch the content (by default the main branch is selected)',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
 };
