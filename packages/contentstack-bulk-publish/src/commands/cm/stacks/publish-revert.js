@@ -66,7 +66,7 @@ class RevertCommand extends Command {
 }
 
 RevertCommand.description = `Revert publish operations by using a log file
-The revert command is used for reverting all publish operations performed using bulk-publish script.
+The revert command is used to revert all publish operations performed using bulk-publish script.
 A log file name is required to execute revert command
 `;
 
