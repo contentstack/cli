@@ -52,7 +52,7 @@ class ImportCommand extends Command {
         if (extConfig) {
           result = configWithAuthToken(extConfig, _authToken, moduleName, host, backupdir, branchName)
         } else if (targetStack && data) {
-          result = parametersWithAuthToken(_authToken, targetStack, data, moduleName, host, backupdir, branchName, extConfig)
+          result = parametersWithAuthToken(_authToken, targetStack, data, moduleName, host, backupdir, branchName)
         } else {
           result = withoutParametersWithAuthToken(_authToken, moduleName, host, backupdir, branchName)
         }
