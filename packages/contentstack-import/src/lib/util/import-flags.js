@@ -113,9 +113,8 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host, ba
   });
 };
 
-exports.parametersWithAuthToken = function (_authToken, targetStack, data, moduleName, host, backupdir, branchName, config) {
+exports.parametersWithAuthToken = function (_authToken, targetStack, data, moduleName, host, backupdir, branchName) {
   return new Promise(async function (resolve, reject) {
-    let externalConfig = require(config);
     defaultConfig.auth_token = _authToken;
     defaultConfig.target_stack = targetStack;
     defaultConfig.branchName = branchName;
@@ -127,7 +126,6 @@ exports.parametersWithAuthToken = function (_authToken, targetStack, data, modul
     }
     defaultConfig.data = data;
     defaultConfig.host = host;
-    defaultConfig = _.merge(defaultConfig, externalConfig);
 
     initial(defaultConfig)
       .then(resolve)
