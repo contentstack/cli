@@ -224,7 +224,7 @@ PublishEntriesCommand.flags = {
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
   'delivery-token': flags.string({ description: 'Delivery token for source environment' }),
-  'source-env': flags.string({ description: 'Destination environments', multiple: true }),
+  'source-env': flags.string({ description: 'Source environment'}),
 };
 
 PublishEntriesCommand.examples = [
