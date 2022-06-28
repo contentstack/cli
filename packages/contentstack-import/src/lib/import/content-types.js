@@ -80,12 +80,17 @@ importContentTypes.prototype = {
       return self.contentTypeUids.indexOf(contentType.uid) === -1
     })
     return new Promise(function (resolve, reject) {
-      return Promise.map(self.contentTypeUids, function (contentTypeUid) {
-        return self.seedContentTypes(contentTypeUid, self.uidToTitleMap[contentTypeUid]).then(function () {
-
-        }).catch(function (error) {
-          return reject(error)
-        })
+      return Promise.map(self.contentTypeUids, async function (contentTypeUid) {
+        try {
+          return await self.seedContentTypes(contentTypeUid, self.uidToTitleMap[contentTypeUid]);
+        } catch (error) {
+          if (error.errorCode === 115 && (error.errors.uid || error.errors.title)) {
+            // content type uid already exists
+            return resolve();
+          }
+          addlogs(config, error, 'error');
+          throw error;
+        }
       }, {
         // seed 3 content types at a time
         concurrency: reqConcurrency,

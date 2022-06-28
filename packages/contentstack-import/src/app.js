@@ -40,7 +40,9 @@ exports.initial = function (configData) {
                 } else {
                   allImport(config, types).then(() => {
                     return resolve()
-                  })
+                  }).catch(error => {
+                    return reject(error);
+                  });
                 }
               }).catch(e => {
                 console.error(e)

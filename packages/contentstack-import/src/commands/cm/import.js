@@ -110,6 +110,9 @@ class ImportCommand extends Command {
         .then(() => {
           return resolve()
         })
+        .catch(error => {
+          return reject(error);
+        });
       }
     } else  {
       console.log('Provide alias for managementToken or authtoken')
