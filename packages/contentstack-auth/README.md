@@ -1,6 +1,6 @@
 # @contentstack/cli-auth
 
-It is Contentstack’s CLI plugin to perform authentication-related activities. To get started with authenticating yourself with the CLI, refer to the [CLI’s Authentication documentation](https://www.contentstack.com/docs/developers/cli/authentication)
+It is Contentstack’s CLI plugin to perform authentication-related activities. To get started with authentication, refer to the [CLI’s Authentication documentation](https://www.contentstack.com/docs/developers/cli/authentication)
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-auth/1.0.0 darwin-x64 node-v16.14.2
+@contentstack/cli-auth/1.0.0 darwin-x64 node-v16.15.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -70,7 +70,7 @@ USAGE
   $ csdx auth:logout
 
 OPTIONS
-  -y, --yes  Force logging out for skipping the confirmation
+  -y, --yes  Force log out by skipping the confirmation
 
 ALIASES
   $ csdx logout
@@ -112,7 +112,7 @@ _See code: [src/commands/auth/tokens/index.ts](https://github.com/contentstack/c
 
 ## `csdx auth:tokens:add`
 
-Adds management/delivery tokens to your session to use it with further CLI commands
+Adds management/delivery tokens to your session to use it with other CLI commands
 
 ```
 USAGE
@@ -120,12 +120,12 @@ USAGE
 
 OPTIONS
   -a, --alias=alias                  Name of the token alias
-  -d, --delivery                     Set this while saving delivery token
+  -d, --delivery                     Set this flag to save delivery token
   -e, --environment=environment      Environment name for delivery token
   -k, --stack-api-key=stack-api-key  Stack API Key
-  -m, --management                   Set this while saving management token
-  -t, --token=token                  Token
-  -y, --yes                          Skipping confirmation
+  -m, --management                   Set this flag to save management token
+  -t, --token=token                  Add the token name
+  -y, --yes                          Use this flag to skip confirmation
 
 EXAMPLES
   $ csdx auth:tokens:add
@@ -138,7 +138,7 @@ EXAMPLES
   $ csdx auth:tokens:add -a <alias> -k <stack api key> --management --token <management token>
   $ csdx auth:tokens:add -a <alias> -k <stack api key> --delivery -e <environment> --token <delivery token>
   $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --management --token <management token>
-  $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery
+  $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery 
   token>
 ```
 
@@ -158,7 +158,7 @@ OPTIONS
 
 EXAMPLES
   $ csdx auth:tokens:remove
-  $ csdx auth:tokens:remove -a <aliase>
+  $ csdx auth:tokens:remove -a <alias>
 ```
 
 _See code: [src/commands/auth/tokens/remove.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/remove.ts)_

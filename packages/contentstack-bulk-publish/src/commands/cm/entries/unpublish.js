@@ -118,16 +118,16 @@ class UnpublishCommand extends Command {
   }
 }
 
-UnpublishCommand.description = `Unpublish entries from given environment
-The unpublish command is used for unpublishing entries from given environment
+UnpublishCommand.description = `Unpublish entries from the given environment
+The unpublish command is used to unpublish entries from the given environment
 
-Environment (Source Environment) and Locale are required for executing the command successfully
+Note: Environment (Source Environment) and Locale are required to execute the command successfully
 But, if retry-failed flag is set, then only a logfile is required`;
 
 UnpublishCommand.flags = {
   alias: flags.string({
     char: 'a',
-    description: 'Alias for the management token to be used',
+    description: 'Alias(name) for the management token',
   }),
   environment: flags.string({
     char: 'e',
@@ -135,7 +135,7 @@ UnpublishCommand.flags = {
   }),
   config: flags.string({
     char: 'c',
-    description: 'Path to config file to be used',
+    description: 'Path to the config file',
   }),
   yes: flags.boolean({
     char: 'y',
@@ -146,21 +146,21 @@ UnpublishCommand.flags = {
   }),
   branch: flags.string({
     default: 'main',
-    description: 'Specify the branch to fetch the content from (default is main branch)',
+    description: 'Specify the branch to fetch the content (by default the main branch is selected)',
   }),
   'retry-failed': flags.string({
     description: 'Retry publishing failed entries from the logfile',
   }),
   'bulk-unpublish': flags.string({
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to unpublish the entries",
     default: 'true',
   }),
   'content-type': flags.string({
-    description: 'Content Type filter',
+    description: 'Content type filter',
   }),
   'delivery-token': flags.string({
-    description: 'Delivery Token for source environment',
+    description: 'Delivery token for source environment',
   }),
 };
 
