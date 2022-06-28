@@ -133,7 +133,7 @@ class AssetsPublishCommand extends Command {
 }
 
 AssetsPublishCommand.description = `Publish assets to the specified environments
-The assets command is used for publishing assets from the specified stack, to the specified environments
+The assets command is used to publish assets from the specified stack, to the specified environments
 
 Note: Environment(s) and Locale(s) are required to execute the command successfully
 But, if retryFailed flag is set, then only a logfile is required
@@ -162,7 +162,7 @@ AssetsPublishCommand.flags = {
   }),
   config: flags.string({
     char: 'c',
-    description: 'Use this flag to specify the path to config file',
+    description: 'Path to the config file',
   }),
   yes: flags.boolean({
     char: 'y',
@@ -197,13 +197,13 @@ AssetsPublishCommand.flags = {
   bulkPublish: flags.string({
     char: 'b',
     description:
-      "By default this flag is set as true. It indicates that contentstack's bulkpublish API will be used for publishing the entries",
+      "By default this flag is set as true. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     // default: 'true',
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
-  'delivery-token': flags.string({ description: 'Delivery Token for source environment' }),
-  'source-env': flags.string({ description: 'Destination Environments', multiple: true }),
+  'delivery-token': flags.string({ description: 'Delivery token for source environment' }),
+  'source-env': flags.string({ description: 'Source environment'}),
   'content-types': flags.string({ description: 'Content types', multiple: true }), // this is a work around, as this command is to be run with entries:publish command and should not break flags check.
 };
 

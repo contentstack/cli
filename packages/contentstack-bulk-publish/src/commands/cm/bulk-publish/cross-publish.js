@@ -129,15 +129,15 @@ CrossPublishCommand.flags = {
   bulkPublish: flags.string({
     char: 'b',
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries and assets",
     default: 'true',
   }),
-  contentType: flags.string({ char: 't', description: 'Contenttype filter' }),
+  contentType: flags.string({ char: 't', description: 'Content type filter' }),
   locale: flags.string({ char: 'l', description: 'Locale filter' }),
   environment: flags.string({ char: 'e', description: 'Source Environment' }),
   deliveryToken: flags.string({ char: 'x', description: 'Delivery token for source environment' }),
   destEnv: flags.string({ char: 'd', description: 'Destination Environments', multiple: true }),
-  config: flags.string({ char: 'c', description: 'Path to config file that will be used' }),
+  config: flags.string({ char: 'c', description: 'Path to the config file' }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
   branch: flags.string({
     char: 'B',
