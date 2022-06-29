@@ -43,22 +43,16 @@ USAGE
   $ csdx cm:stacks:migration
 
 OPTIONS
-  -B, --branch=branch                                  Use this flag to add the branch name where you want to perform
-                                                       the migration.
+  -B, --branch=branch                Use this flag to add the branch name where you want to perform the migration.
+  -a, --alias=alias                  Use this flag to add the management token alias.
+  -k, --stack-api-key=stack-api-key  With this flag add the API key of your stack.
+  --config=config                    [optional] inline configuration, <key1>:<value1>
+  --config-file=config-file          [optional] Path of the JSON configuration file
 
-  -a, --management-token-alias=management-token-alias  Use this flag to add the management token alias.
+  --file-path=file-path              Use this flag to provide the path of the file of the migration script provided by
+                                     the user.
 
-  -k, --stack-api-key=stack-api-key                    With this flag add the API key of your stack.
-
-  --config=config                                      [optional] inline configuration, <key1>:<value1>
-
-  --config-file=config-file                            [optional] Path of the JSON configuration file
-
-  --file-path=file-path                                Use this flag to provide the path of the file of the migration
-                                                       script provided by the user.
-
-  --multiple                                           This flag helps you to migrate multiple content files in a single
-                                                       instance.
+  --multiple                         This flag helps you to migrate multiple content files in a single instance.
 
 ALIASES
   $ csdx cm:migration
@@ -69,7 +63,7 @@ EXAMPLES
   $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... --file-path <migration/script/file/path>
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
   $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
-  $ csdx cm:migration -a --file-path <migration/script/file/path> -k <api-key>
+  $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
 
 _See code: [src/commands/cm/stacks/migration.js](https://github.com/contentstack/cli-migration/blob/v1.0.0/src/commands/cm/stacks/migration.js)_

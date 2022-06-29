@@ -20,7 +20,7 @@ class ImportCommand extends Command {
     const data = importCommandFlags.data || importCommandFlags['data-dir'];
     const moduleName = importCommandFlags.module;
     const backupdir = importCommandFlags['backup-dir'];
-    const alias = importCommandFlags['alias'];
+    const alias = importCommandFlags['alias'] || importCommandFlags['management-token-alias'];
     let _authToken = configHandler.get('authtoken');
     let branchName = importCommandFlags.branch;
     let host = self.cmaHost;
@@ -120,6 +120,11 @@ ImportCommand.flags = {
   alias: flags.string({
     char: 'a',
     description: 'alias of the management token',
+  }),
+  'management-token-alias': flags.string({
+    description: 'alias of the management token',
+    hidden: true,
+    parse: printFlagDeprecation(['--management-token-alias'], ['-a', '--alias']),
   }),
   'auth-token': flags.boolean({
     char: 'A',
