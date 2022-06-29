@@ -52,7 +52,7 @@ class MigrationCommand extends Command {
     const multi = migrationCommandFlags.multiple || migrationCommandFlags.multi;
     const authtoken = configHandler.get('authtoken');
     const apiKey = migrationCommandFlags['api-key'] || migrationCommandFlags['stack-api-key'];
-    const alias = migrationCommandFlags['alias'];
+    const alias = migrationCommandFlags['alias'] || migrationCommandFlags['management-token-alias'];
     const config = migrationCommandFlags['config'];
 
     if (!authtoken && !alias) {
@@ -255,7 +255,13 @@ MigrationCommand.flags = {
     char: 'a',
     description: 'Use this flag to add the management token alias.',
     exclusive: ['authtoken'],
-  }), // Add a better description
+  }),
+  'management-token-alias': flags.string({
+    description: 'alias of the management token',
+    exclusive: ['authtoken'],
+    hidden: true,
+    parse: printFlagDeprecation(['--management-token-alias'], ['-a', '--alias']),
+  }),
   filePath: flags.string({
     char: 'n',
     description: 'Use this flag to provide the path of the file of the migration script provided by the user.',
@@ -281,7 +287,7 @@ MigrationCommand.flags = {
     description: 'This flag helps you to migrate multiple content files in a single instance.',
     parse: printFlagDeprecation(['--multi'], ['--multiple']),
     hidden: true,
-  }), // Add a better description
+  }),
   multiple: flags.boolean({
     description: 'This flag helps you to migrate multiple content files in a single instance.',
   }),

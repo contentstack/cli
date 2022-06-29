@@ -43,10 +43,10 @@ OPTIONS
   -c, --config-path=config-path  Path to config file
   -y, --yes                      Agree to process the command with the current configuration
   --batch-limit=batch-limit      [default: 50] Provide batch limit for updating entries
-  --content-type=content-type    The contenttype from which entries will be migrated
+  --content-type=content-type    The content type from which entries will be migrated
   --delay=delay                  [default: 1000] Provide delay in ms between two entry update
 
-  --global-field                 This flag is set to false by default. It indicates that current contenttype is a
+  --global-field                 This flag is set to false by default. It indicates that current content type is a
                                  globalfield
 
   --html-path=html-path          Provide path of HTML RTE to migrate
