@@ -8,9 +8,14 @@ import cliux from './cli-ux';
  */
 export default function (deprecatedFlags = [], suggestions = [], customMessage?: string) {
   return (input, command) => {
+    const { context: { flagWarningPrintState = {} } = {} } = command
     let isCommandHasDeprecationFlag = false;
     deprecatedFlags.forEach((item) => {
       if (command.argv.indexOf(item) !== -1) {
+        if (flagWarningPrintState[command.id + item]) {
+          return input
+        }
+        flagWarningPrintState[command.id + item] = true
         isCommandHasDeprecationFlag = true;
       }
     });
