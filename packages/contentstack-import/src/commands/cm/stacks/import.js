@@ -20,7 +20,7 @@ class ImportCommand extends Command {
     const data = importCommandFlags.data || importCommandFlags['data-dir'];
     const moduleName = importCommandFlags.module;
     const backupdir = importCommandFlags['backup-dir'];
-    const alias = importCommandFlags['management-token-alias'];
+    const alias = importCommandFlags['alias'];
     let _authToken = configHandler.get('authtoken');
     let branchName = importCommandFlags.branch;
     let host = self.cmaHost;
@@ -88,9 +88,9 @@ ImportCommand.examples = [
   `csdx cm:stacks:import --config <path/of/config/dir>`,
   `csdx cm:stacks:import --module <single module name>`,
   `csdx cm:stacks:import --module <single module name> --backup-dir <backup dir>`,
-  `csdx cm:stacks:import --management-token-alias <management_token_alias>`,
-  `csdx cm:stacks:import --management-token-alias <management_token_alias> --data-dir <path/of/export/destination/dir>`,
-  `csdx cm:stacks:import --management-token-alias <management_token_alias> --config <path/of/config/file>`,
+  `csdx cm:stacks:import --alias <management_token_alias>`,
+  `csdx cm:stacks:import --alias <management_token_alias> --data-dir <path/of/export/destination/dir>`,
+  `csdx cm:stacks:import --alias <management_token_alias> --config <path/of/config/file>`,
   `csdx cm:stacks:import --branch <branch name>`,
 ];
 ImportCommand.flags = {
@@ -117,7 +117,7 @@ ImportCommand.flags = {
     char: 'd',
     description: 'path and location where data is stored',
   }),
-  'management-token-alias': flags.string({
+  alias: flags.string({
     char: 'a',
     description: 'alias of the management token',
   }),
