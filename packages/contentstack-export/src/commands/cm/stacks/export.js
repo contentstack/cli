@@ -17,7 +17,7 @@ class ExportCommand extends Command {
     const exportCommandFlags = this.parse(ExportCommand).flags;
     const extConfig = exportCommandFlags.config;
     let sourceStack = exportCommandFlags['stack-uid'] || exportCommandFlags['stack-api-key'];
-    const alias = exportCommandFlags['management-token-alias'];
+    const alias = exportCommandFlags['alias'];
     const securedAssets = exportCommandFlags['secured-assets'];
     const data = exportCommandFlags.data || exportCommandFlags['data-dir'];
     const moduleName = exportCommandFlags.module;
@@ -95,9 +95,9 @@ Export content from one stack to another
 ExportCommand.examples = [
   'csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>',
   'csdx cm:stacks:export --config <path/to/config/dir>',
-  'csdx cm:stacks:export --management-token-alias <management_token_alias>',
-  'csdx cm:stacks:export --management-token-alias <management_token_alias> --data-dir <path/to/export/destination/dir>',
-  'csdx cm:stacks:export --management-token-alias <management_token_alias> --config <path/to/config/file>',
+  'csdx cm:stacks:export --alias <management_token_alias>',
+  'csdx cm:stacks:export --alias <management_token_alias> --data-dir <path/to/export/destination/dir>',
+  'csdx cm:stacks:export --alias <management_token_alias> --config <path/to/config/file>',
   'csdx cm:stacks:export --module <single module name>',
   'csdx cm:stacks:export --branch [optional] branch name',
 ];
@@ -126,7 +126,7 @@ ExportCommand.flags = {
     char: 'd',
     description: 'path or location to store the data',
   }),
-  'management-token-alias': flags.string({
+  alias: flags.string({
     char: 'a',
     description: 'alias of the management token',
   }),
