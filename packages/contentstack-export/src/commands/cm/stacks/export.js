@@ -17,7 +17,7 @@ class ExportCommand extends Command {
     const exportCommandFlags = this.parse(ExportCommand).flags;
     const extConfig = exportCommandFlags.config;
     let sourceStack = exportCommandFlags['stack-uid'] || exportCommandFlags['stack-api-key'];
-    const alias = exportCommandFlags['alias'];
+    const alias = exportCommandFlags['alias'] || exportCommandFlags['management-token-alias'];
     const securedAssets = exportCommandFlags['secured-assets'];
     const data = exportCommandFlags.data || exportCommandFlags['data-dir'];
     const moduleName = exportCommandFlags.module;
@@ -129,6 +129,11 @@ ExportCommand.flags = {
   alias: flags.string({
     char: 'a',
     description: 'alias of the management token',
+  }),
+  'management-token-alias': flags.string({
+    description: 'alias of the management token',
+    hidden: true,
+    parse: printFlagDeprecation(['--management-token-alias'], ['-a', '--alias']),
   }),
   'auth-token': flags.boolean({
     char: 'A',
