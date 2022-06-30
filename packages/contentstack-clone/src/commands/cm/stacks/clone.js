@@ -13,17 +13,19 @@ class StackCloneCommand extends Command {
       let self = this;
       let _authToken = configHandler.get('authtoken');
       const cloneCommandFlags = self.parse(StackCloneCommand).flags;
+      const {
+        type: cloneType,
+        'stack-name': stackName,
+        'source-branch': sourceStackBranch,
+        'target-branch': targetStackBranch,
+        'source-stack-api-key': sourceStackApiKey,
+        'destination-stack-api-key': destinationStackApiKey,
+        'source-management-token-alias': sourceManagementTokenAlias,
+        'destination-management-token-alias': destinationManagementTokenAlias,
+      } = cloneCommandFlags;
 
-      if (_authToken || cloneCommandFlags['source-management-token-alias']) {
+      const handleClone = async () => {
         const listOfTokens = configHandler.get('tokens');
-        const {
-          type: cloneType,
-          'stack-name': stackName,
-          'source-branch': sourceStackBranch,
-          'target-branch': targetStackBranch,
-          'source-management-token-alias': sourceManagementTokenAlias,
-          'destination-management-token-alias': destinationManagementTokenAlias,
-        } = cloneCommandFlags;
 
         if (cloneType) {
           config.cloneType = cloneType;
@@ -36,6 +38,12 @@ class StackCloneCommand extends Command {
         }
         if (targetStackBranch) {
           config.targetStackBranch = targetStackBranch;
+        }
+        if (sourceStackApiKey) {
+          config.source_stack = sourceStackApiKey;
+        }
+        if (destinationStackApiKey) {
+          config.target_stack = destinationStackApiKey;
         }
         if (sourceManagementTokenAlias && listOfTokens[sourceManagementTokenAlias]) {
           config.source_alias = sourceManagementTokenAlias;
@@ -60,8 +68,22 @@ class StackCloneCommand extends Command {
         await cloneHandler.start();
         let successMessage = 'Stack cloning process have been completed successfully';
         await this.cleanUp(pathdir, successMessage);
+      }
+
+      if (sourceManagementTokenAlias && destinationManagementTokenAlias) {
+        if (sourceStackBranch || targetStackBranch) {
+          if (_authToken) {
+            handleClone()
+          } else {
+            console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login")
+            this.exit(1)
+          }
+        }
+      } else if (_authToken) {
+        handleClone()
       } else {
         console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login");
+        this.exit(1)
       }
     } catch (error) {
       await this.cleanUp(pathdir);
@@ -135,8 +157,9 @@ StackCloneCommand.examples = [
   'csdx cm:stacks:clone',
   'csdx cm:stacks:clone --source-branch --target-branch',
   'csdx cm:stacks:clone -a <management token alias>',
+  'csdx cm:stacks:clone --source-stack-api-key <apiKey> --destination-stack-api-key <apiKey>',
   'csdx cm:stacks:clone --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>',
-  'csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>',
+  'csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>'
 ];
 
 StackCloneCommand.aliases = ['cm:stack-clone'];
@@ -177,6 +200,12 @@ a) Structure (all modules except entries & assets)
 b) Structure with content (all modules including entries & assets)
     `,
   }),
+  'source-stack-api-key': flags.string({
+    description: 'Source stack API Key'
+  }),
+  'destination-stack-api-key': flags.string({
+    description: 'Destination stack API Key'
+  })
 };
 
 module.exports = StackCloneCommand;
