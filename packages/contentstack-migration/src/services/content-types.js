@@ -12,7 +12,6 @@ const { ContentType, MANAGEMENT_SDK, actions: _actions } = constants;
 
 class ContentTypeService {
   constructor() {
-    sd;
     // Stores actions required for moveField function
     this.moveFieldActions = [];
     this.base = new Base();
