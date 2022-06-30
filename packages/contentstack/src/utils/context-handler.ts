@@ -11,6 +11,7 @@ export default class CsdxContext {
   readonly plugin: any;
   readonly pluginConfig: any;
   readonly messageFilePath: string;
+  public flagWarningPrintState: any;
 
   constructor(cliOpts: any, cliConfig: any) {
     const command = cliConfig.findCommand(cliOpts.id) || {};
@@ -38,6 +39,7 @@ export default class CsdxContext {
         this.plugin.config.messageFilePath || './messages/index.json',
       );
     }
+    this.flagWarningPrintState = {}
   }
 
   getToken(alias: string) {

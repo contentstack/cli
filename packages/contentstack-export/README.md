@@ -60,14 +60,14 @@ USAGE
   $ csdx cm:stacks:export
 
 OPTIONS
-  -B, --branch=branch                                  [optional] branch name
-  -a, --management-token-alias=management-token-alias  alias of the management token
-  -c, --config=config                                  [optional] path of the config
-  -d, --data-dir=data-dir                              path or location to store the data
-  -k, --stack-api-key=stack-api-key                    API key of the source stack
-  -m, --module=module                                  [optional] specific module name
-  -t, --content-types=content-types                    [optional] content type
-  --secured-assets                                     [optional] use when assets are secured
+  -B, --branch=branch                [optional] branch name
+  -a, --alias=alias                  alias of the management token
+  -c, --config=config                [optional] path of the config
+  -d, --data-dir=data-dir            path or location to store the data
+  -k, --stack-api-key=stack-api-key  API key of the source stack
+  -m, --module=module                [optional] specific module name
+  -t, --content-types=content-types  [optional] content type
+  --secured-assets                   [optional] use when assets are secured
 
 DESCRIPTION
   ...
@@ -79,9 +79,9 @@ ALIASES
 EXAMPLES
   csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>
   csdx cm:stacks:export --config <path/to/config/dir>
-  csdx cm:stacks:export --management-token-alias <management_token_alias>
-  csdx cm:stacks:export --management-token-alias <management_token_alias> --data-dir <path/to/export/destination/dir>
-  csdx cm:stacks:export --management-token-alias <management_token_alias> --config <path/to/config/file>
+  csdx cm:stacks:export --alias <management_token_alias>
+  csdx cm:stacks:export --alias <management_token_alias> --data-dir <path/to/export/destination/dir>
+  csdx cm:stacks:export --alias <management_token_alias> --config <path/to/config/file>
   csdx cm:stacks:export --module <single module name>
   csdx cm:stacks:export --branch [optional] branch name
 ```
