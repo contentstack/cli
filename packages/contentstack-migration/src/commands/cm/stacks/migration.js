@@ -56,7 +56,7 @@ class MigrationCommand extends Command {
     const config = migrationCommandFlags['config'];
 
     if (!authtoken && !alias) {
-      console.log(
+      this.log(
         "AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login or provide management token alias",
       );
       this.exit();
@@ -105,9 +105,7 @@ class MigrationCommand extends Command {
           });
         }
       }
-    }
-
-    if (authtoken) {
+    } else if (authtoken) {
       set(AUTH_TOKEN, mapInstance, authtoken);
       set(API_KEY, mapInstance, apiKey);
       this.managementAPIClient = { authtoken: this.authToken };
@@ -163,6 +161,7 @@ class MigrationCommand extends Command {
       requests.splice(0, requests.length);
     } catch (error) {
       // errorHandler(null, null, null, error)
+      this.log(error);
     }
   }
 
