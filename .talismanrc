@@ -27,4 +27,8 @@ fileignoreconfig:
   checksum: 0b43a8539608d7877ec32a0c9fa8b7e6202f088efa281803b58a46d858e6a360
 - filename: packages/contentstack/package-lock.json
   checksum: 1d1a4feac1c2eaceceee094534084c252064e2a8f169c60a45c00ebcd40d80c8
+- filename: .github/workflows/sast-scan.yml
+  checksum: 2e40a61225ec7b26139a4d94d936d06c39c7fc795d8f1ee2fb095ecde0f6bbb0
+version: ""
+
 version: "1.0"
