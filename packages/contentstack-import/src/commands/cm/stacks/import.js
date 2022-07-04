@@ -9,6 +9,7 @@ const {
   parametersWithAuthToken,
   withoutParametersWithAuthToken,
 } = require('../../../lib/util/import-flags');
+const defaultConfig = require('../../../config/default');
 const { printFlagDeprecation } = require('@contentstack/cli-utilities');
 
 class ImportCommand extends Command {
@@ -26,6 +27,10 @@ class ImportCommand extends Command {
     let host = self.cmaHost;
 
     return new Promise(function (resolve, reject) {
+      if (data) {
+        defaultConfig.data = data
+      }
+
       if (alias) {
         let managementTokens = self.getToken(alias);
 
