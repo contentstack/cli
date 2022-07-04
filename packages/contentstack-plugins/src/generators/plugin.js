@@ -364,7 +364,6 @@ module.exports = class extends Generator {
       }
     }
 
-    debugger
     return Promise.all([
     	this.npmInstall(dependencies, {...save}),
     	this.npmInstall(devDependencies, {...dev, ignoreScripts: true}),
