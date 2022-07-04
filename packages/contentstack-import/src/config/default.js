@@ -20,6 +20,7 @@ module.exports = {
       'workflows',
       'entries',
       'labels',
+      'marketplace-apps'
     ],
     locales: {
       dirName: 'locales',
@@ -74,7 +75,6 @@ module.exports = {
       limit: 50,
       assetBatchLimit: 5,
     },
-
     globalfields: {
       dirName: 'global_fields',
       fileName: 'globalfields.json',
@@ -85,6 +85,10 @@ module.exports = {
       dirName: 'stack',
       fileName: 'stack.json',
     },
+    marketplace_apps: {
+      dirName: 'marketplace_apps',
+      fileName: 'marketplace_apps.json'
+    }
   },
   languagesCode: [
     'af-za',
@@ -296,7 +300,6 @@ module.exports = {
     'xh',
     'zu',
   ],
-
   apis: {
     userSession: '/user-session/',
     locales: '/locales/',
@@ -315,6 +318,7 @@ module.exports = {
   preserveStackVersion: false,
   entriesPublish: true,
   concurrency: 1,
+  developerHubBaseUrl: 'https://developerhub-api.contentstack.com',
   //  ,useBackedupDir: '_backup_397'
   // backupConcurrency: 10,
 };

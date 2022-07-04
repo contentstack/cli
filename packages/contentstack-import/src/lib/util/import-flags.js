@@ -9,7 +9,15 @@ let _ = require('lodash');
 const { cliux } = require('@contentstack/cli-utilities');
 let message = require('../../../messages/index.json');
 
-exports.configWithMToken = function (config, managementTokens, moduleName, host, _authToken, backupdir, branchName) {
+exports.configWithMToken = function (
+  config = '../../config/default',
+  managementTokens,
+  moduleName,
+  host,
+  _authToken,
+  backupdir,
+  branchName
+) {
   return new Promise(async function (resolve, reject) {
     let externalConfig = require(config);
     const modules = externalConfig.modules
@@ -20,6 +28,7 @@ exports.configWithMToken = function (config, managementTokens, moduleName, host,
 
     defaultConfig.host = host;
     defaultConfig.branchName = branchName;
+    defaultConfig.target_stack = managementTokens.apiKey;
     defaultConfig.management_token = managementTokens.token;
 
     if (moduleName && moduleName !== undefined) {
