@@ -18,6 +18,7 @@ module.exports = {
       'workflows',
       'entries',
       'labels',
+      'marketplace-apps'
     ],
     locales: {
       dirName: 'locales',
@@ -101,6 +102,10 @@ module.exports = {
     dependency: {
       entries: ['stack', 'locales', 'content-types'],
     },
+    marketplace_apps: {
+      dirName: 'marketplace_apps',
+      fileName: 'marketplace_apps.json'
+    }
   },
   languagesCode: [
     'af-za',
@@ -327,4 +332,5 @@ module.exports = {
     stacks: '/stacks/',
   },
   preserveStackVersion: false,
+  developerHubBaseUrl: 'https://developerhub-api.contentstack.com',
 };
