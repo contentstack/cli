@@ -7,9 +7,11 @@ env.register(require.resolve('../../generators/plugin.js'), 'plugins:create')
 class CreateCommand extends Command {
   async run() {
     await new Promise((resolve, reject) => {
-      env.run('plugins:create', {}, (error, results) => {
-        if (error) reject(error)
-        else resolve(results)
+      env.run('plugins:create', {}).then((results) => {
+        resolve(results)
+      })
+      .catch((error) => {
+        reject(error)
       })
     })
   }
