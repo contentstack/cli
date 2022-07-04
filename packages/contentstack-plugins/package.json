@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-plugins-plugin",
   "description": "Plugin for generating plugin bootstrap code",
-  "version": "0.1.0-beta",
+  "version": "0.1.0-beta.1",
   "author": "contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
