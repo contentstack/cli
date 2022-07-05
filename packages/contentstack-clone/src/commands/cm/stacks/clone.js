@@ -78,6 +78,8 @@ class StackCloneCommand extends Command {
             console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login")
             this.exit(1)
           }
+        } else {
+          handleClone()
         }
       } else if (_authToken) {
         handleClone()
