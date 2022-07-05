@@ -14,7 +14,7 @@
     "bluebird": "3.5.1",
     "debug": "^4.1.0",
     "lodash": "^4.17.20",
-    "marked": "^4.0.14",
+    "marked": "^4.0.17",
     "mkdirp": "^1.0.4",
     "ncp": "2.0.0",
     "winston": "^3.7.2"
@@ -26,7 +26,9 @@
     "chai": "^4.2.0",
     "eslint": "^8.18.0",
     "eslint-config-oclif": "^3.1.0",
-    "globby": "^10.0.2"
+    "globby": "^10.0.2",
+    "mocha": "^10.0.0",
+    "nyc": "^14.1.1"
   },
   "engines": {
     "node": ">=8.0.0"
