@@ -48,7 +48,7 @@ function exportMarketplaceApps() {
         .find()
         .then(({ items }) => {
           const installedApps = _.map(
-            _.unionBy(_.filter(items, 'app_uid'), 'app_uid'),
+            _.filter(items, 'app_uid'),
             ({ uid, title, app_uid, app_installation_uid }) => ({ title, uid, app_uid, app_installation_uid })
           )
           const headers = {

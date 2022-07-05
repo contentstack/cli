@@ -23,7 +23,10 @@ function importMarketplaceApps() {
     config = credentialConfig;
     client = stack.Client(config);
     this.marketplaceAppFolderPath = path.resolve(config.data, marketplaceAppConfig.dirName);
-    this.marketplaceApps = readFile(path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName));
+    this.marketplaceApps = _.unionBy(
+      readFile(path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName)),
+      'app_uid'
+    );
 
     await this.getOrgUid()
     return await this.installAppsAndUpdateConfig()
@@ -59,13 +62,14 @@ function importMarketplaceApps() {
         httpClient.post(
           `${config.developerHubBaseUrl}/apps/${app.app_uid}/install`,
           { target_type: 'stack', target_uid: config.target_stack }
-        ).then(({ data: result }) => {
+        ).then(async ({ data: result }) => {
           const { data, error } = result
           const { title, configuration, server_configuration } = app
 
           if (error) {
             console.log(error)
             cb()
+            return void 0
           } else if (data) {
             log(config, `${title} app installed successfully.!`, 'success')
 
@@ -85,7 +89,8 @@ function importMarketplaceApps() {
                 httpClient.put(`${config.developerHubBaseUrl}/installations/${data.installation_uid}`, payload)
                   .then(() => {
                     log(config, `${title} app config updated successfully.!`, 'success')
-                  }).catch(err => {
+                  }).then(cb)
+                  .catch(err => {
                     console.log(err)
                     cb()
                   })
@@ -94,11 +99,10 @@ function importMarketplaceApps() {
           } else {
             cb()
           }
-        }).then(cb)
-          .catch(err => {
-            console.log(err)
-            cb()
-          })
+        }).catch(err => {
+          console.log(err)
+          cb()
+        })
       }, () => {
         resolve()
       })
