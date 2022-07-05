@@ -1,12 +1,15 @@
 const ora = require('ora');
 const path = require('path');
 const inquirer = require('inquirer');
+const rimraf = require('rimraf');
+const chalk = require('chalk');
 
 let sdkInstance = require('../../lib/util/contentstack-management-sdk');
 let exportCmd = require('@contentstack/cli-cm-export');
 let importCmd = require('@contentstack/cli-cm-import');
 let client = {};
 let config;
+let cloneCommand;
 
 let stackCreationConfirmation = [
   {
@@ -44,11 +47,14 @@ class CloneHandler {
   constructor(opt) {
     config = opt;
     client = sdkInstance.Client(config);
+    cloneCommand = new Clone();
+    process.stdin.setMaxListeners(50);
   }
 
-  #handleOrgSelection(options = {}) {
+  handleOrgSelection(options = {}) {
     return new Promise(async (resolve, reject) => {
       const { msg = '', isSource = true } = options || {}
+
       const orgList = await this.getOrganizationChoices(msg).catch(reject)
 
       if (orgList) {
@@ -60,117 +66,144 @@ class CloneHandler {
           config.targetOrg = orgUidList[orgSelected.Organization];
         }
 
-        resolve(orgSelected)
+        resolve(orgSelected);
       }
-    })
+    });
   }
 
-  #handleStackSelection(options = {}) {
+  handleStackSelection(options = {}) {
+    let keyPressHandler;
     return new Promise(async (resolve, reject) => {
-      const { org = {}, msg = '', isSource = true } = options || {}
-      const stackList = await this.getStack(org, msg, isSource).catch(reject)
-
-      if (stackList) {
-        const selectedStack = await inquirer.prompt(stackList);
-
-        if (isSource) {
-          config.sourceStackName = selectedStack.stack;
-          master_locale = masterLocaleList[selectedStack.stack];
-          config.source_stack = stackUidList[selectedStack.stack];
-        } else {
-          config.target_stack = stackUidList[selectedStack.stack];
-          config.destinationStackName = selectedStack.stack;
-        }
-
-        resolve(selectedStack)
-      }
-    })
-  }
-
-  start() {
-    return new Promise(async (resolve, reject) => {
-      let sourceStack = {}
-      const handleOrgAndStackSelection = (orgMsg, stackMsg, isSource = true) => {
-        return new Promise(async (resolve) => {
-          const org = await this.#handleOrgSelection({ msg: orgMsg, isSource })
-            .catch((error) => reject(error.errorMessage))
-
-          if (org) {
-            await this.#handleStackSelection({
-              org,
-              isSource,
-              msg: stackMsg
-            }).then(resolve)
-              .catch((error) => reject(error.errorMessage))
+      try {
+        const { org = {}, msg = '', isSource = true, stackAbortController } = options || {}
+  
+        keyPressHandler = async function (ch, key) {
+          if (key.name === 'backspace') {
+            // TODO: Clear the screen.
+            stackAbortController.abort();
+            console.clear();
+            process.stdin.removeListener('keypress', keyPressHandler);
+            await cloneCommand.undo();
           }
-        })
-      }
-
-      if (!config.source_stack) {
-        // NOTE Export section
-        sourceStack = await handleOrgAndStackSelection(
-          'Choose an organization where your source stack exists:',
-          'Select the source stack'
-        )
-      }
-
-      if (config.source_stack) {
-        stackName.default = config.stackName || `Copy of ${sourceStack.stack || config.source_alias}`;
-        const exportRes = await this.cmdExport().catch(reject);
-
-        if (!config.sourceStackBranch) {
-          try {
-            const branches = await client.stack({ api_key: config.source_stack }).branch().query().find();
-
-            if (branches && branches.items && branches.items.length) {
-              config.sourceStackBranch = 'main';
-            }
-          } catch (_error) { }
-        }
-
-        // NOTE Import section
-        if (exportRes) {
-          let canCreateStack = false
-
-          if (!config.target_stack) {
-            canCreateStack = await inquirer.prompt(stackCreationConfirmation);
+        };
+        process.stdin.addListener('keypress', keyPressHandler);
+  
+        const stackList = await this.getStack(org, msg, isSource).catch(reject)
+  
+        if (stackList) {
+          const ui = new inquirer.ui.BottomBar();
+          // Use chalk to prettify the text.
+          ui.updateBottomBar(chalk.blue('For undo operation press backspace\n'));
+  
+          const selectedStack = await inquirer.prompt(stackList);
+          
+          if (stackAbortController.signal.aborted) {
+            return reject('Operation cancelled [Stack]');
           }
-
-          if (canCreateStack.stackCreate !== true) {
-            if (!config.target_stack) {
-              await handleOrgAndStackSelection(
-                'Choose an organization where the destination stack exists: ',
-                'Choose the destination stack:',
-                false
-              )
-            }
-
-            if (config.target_stack) {
-              this.cloneTypeSelection()
-                .then(resolve)
-                .catch((error) => reject(error.errorMessage));
-            }
+          if (isSource) {
+            config.sourceStackName = selectedStack.stack;
+            master_locale = masterLocaleList[selectedStack.stack];
+            config.source_stack = stackUidList[selectedStack.stack];
           } else {
-            const destinationOrg = await this.#handleOrgSelection({
-              isSource: false,
-              msg: 'Choose an organization where you want to create a stack: '
-            }).catch((error) => reject(error.errorMessage))
-            const orgUid = orgUidList[destinationOrg.Organization];
-            await this.createNewStack(orgUid).catch((error) => {
-              return reject(
-                error.errorMessage + ' Contact the Organization owner for Stack Creation access.',
-              )
-            })
-
-            if (config.target_stack) {
-              this.cloneTypeSelection()
-                .then(resolve)
-                .catch(reject)
-            }
+            config.target_stack = stackUidList[selectedStack.stack];
+            config.destinationStackName = selectedStack.stack;
           }
+  
+          resolve(selectedStack)
+        }
+      } catch (error) {
+        return reject(error);
+      } finally {
+        if (keyPressHandler) {
+          process.stdin.removeListener('keypress', keyPressHandler);
+        }
+      }
+    })
+  }
+
+  execute(pathDir) {
+    return new Promise(async (resolve, reject) => {
+      let stackAbortController;
+      try {
+        if (!config.source_stack) {
+          const orgMsg = 'Choose an organization where your source stack exists:';
+          const stackMsg = 'Select the source stack';
+
+          stackAbortController = new AbortController();
+
+          const org = await cloneCommand.execute(new HandleOrgCommand({ msg: orgMsg, isSource: true }, this));
+          if (org) {
+            const sourceStack = await cloneCommand.execute(new HandleStackCommand({ org, isSource:true, msg: stackMsg, stackAbortController }, this));
+            if (stackAbortController.signal.aborted) {
+              return reject('Operation cancelled');
+            }
+            stackName.default = config.stackName || `Copy of ${sourceStack.stack || config.source_alias}`;
+
+            const exportRes = await cloneCommand.execute(new HandleExportCommand(null, this));
+            await cloneCommand.execute(new GetBranchCommand(null, this));
+
+            if (exportRes) {
+              let canCreateStack = false;
+
+              if (!config.target_stack) {
+                canCreateStack = await inquirer.prompt(stackCreationConfirmation);
+              }
+
+              if (canCreateStack.stackCreate) {
+                if (!config.target_stack) {
+                  const destOrgMsg = 'Choose an organization where the destination stack exists: ';
+                  const destOrg = await cloneCommand.execute(new HandleOrgCommand({ msg: destOrgMsg }, this));
+                  if (destOrg) {
+                    const destStackMsg = 'Choose the destination stack:';
+                    await cloneCommand.execute(new HandleStackCommand({ org: destOrg, msg: destStackMsg, stackAbortController }, this));
+                  }
+                } else {
+                  this.cloneTypeSelection()
+                    .then(resolve)
+                    .catch((error) => reject(error.errorMessage));
+                }
+              } else {
+                const destinationOrg = await this.handleOrgSelection({ isSource: false, msg: 'Choose an organization where you want to create a stack: ' });
+                const orgUid = orgUidList[destinationOrg.Organization];
+                await cloneCommand.execute(new CreateNewStackCommand(orgUid, this));
+              }
+              await cloneCommand.execute(new CloneTypeSelectionCommand(null, this));
+            }
+            return resolve();
+          } else {
+            return reject('Org not found.');
+          }
+        } else {
+          // await this.start();
+        }
+      } catch (error) {
+        return reject(error);
+      } finally {
+        if (stackAbortController) {
+          stackAbortController.abort();
+        }
+        // If not aborted and ran successfully
+        if (!stackAbortController.signal.aborted) {
+          // Call clean dir.
+          rimraf(pathDir, function () {
+            // eslint-disable-next-line no-console
+            console.log('Stack cloning process have been completed successfully');
+          });
         }
       }
     });
+  }
+
+  async getBranch() {
+    if (!config.sourceStackBranch) {
+      try {
+        const branches = await client.stack({ api_key: config.source_stack }).branch().query().find();
+
+        if (branches && branches.items && branches.items.length) {
+          config.sourceStackBranch = 'main';
+        }
+      } catch (_error) { }
+    }
   }
 
   getOrganizationChoices = async (orgMessage) => {
@@ -252,7 +285,7 @@ class CloneHandler {
         })
         .catch((error) => {
           spinner.fail();
-          return reject(error);
+          return reject(error.errorMessage + ' Contact the Organization owner for Stack Creation access.');
         });
     });
   }
@@ -329,6 +362,48 @@ class CloneHandler {
     });
   }
 }
+
+const CloneCommand = function (execute, undo, params, parentContext) {
+  this.execute = execute.bind(parentContext);
+  this.undo = undo && undo.bind(parentContext);
+  this.params = params;
+};
+const HandleOrgCommand = function (params, parentContext) {
+  return new CloneCommand(parentContext.handleOrgSelection, null, params, parentContext);
+};
+const HandleStackCommand = function (params, parentContext) {
+  return new CloneCommand(parentContext.handleStackSelection, parentContext.execute, params, parentContext);
+};
+const HandleExportCommand = function (params, parentContext) {
+  return new CloneCommand(parentContext.cmdExport, null, params, parentContext);
+};
+const GetBranchCommand = function (params, parentContext) {
+  return new CloneCommand(parentContext.getBranch, null, params, parentContext);
+};
+const CreateNewStackCommand = function (params, parentContext) {
+  return new CloneCommand(parentContext.getBranch, null, params, parentContext);
+};
+const CloneTypeSelectionCommand = function (params, parentContext) {
+  return new CloneCommand(parentContext.getBranch, null, params, parentContext);
+};
+
+const Clone = function () {
+  const commands = [];
+
+  return {
+    execute: async function (command) {
+      commands.push(command);
+      const result = await command.execute(command.params);
+      return result;
+    },
+    undo: async function () {
+      if (commands.length) {
+        const command = commands.pop();
+        command.undo && await command.undo(command.params);
+      }
+    },
+  };
+};
 
 module.exports = {
   CloneHandler,
