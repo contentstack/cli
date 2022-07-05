@@ -8,7 +8,7 @@ const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const eachOf = require('async/eachOf');
-const { HttpClient } = require('@contentstack/cli-utilities');
+const { HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
 
 let config = require('../../config/default');
 const { writeFile } = require('../util/helper');
@@ -56,6 +56,7 @@ function exportMarketplaceApps() {
             organization_uid: config.org_uid
           }
           const httpClient = new HttpClient().headers(headers);
+          const nodeCrypto = new NodeCrypto()
 
           eachOf(installedApps, (apps, key, cb) => {
             httpClient.get(`${config.developerHubBaseUrl}/installations/${apps.app_installation_uid}/installationData`)
@@ -67,10 +68,12 @@ function exportMarketplaceApps() {
                   (_.has(data, 'configuration') || _.has(data, 'server_configuration'))
                 ) {
                   const { configuration, server_configuration } = data
-                  installedApps[key] = {
-                    ...installedApps[key],
-                    configuration,
-                    server_configuration
+
+                  if (!_.isEmpty(configuration)) {
+                    installedApps[key]['configuration'] = nodeCrypto.encrypt(configuration)
+                  }
+                  if (!_.isEmpty(server_configuration)) {
+                    installedApps[key]['server_configuration'] = nodeCrypto.encrypt(server_configuration)
                   }
                 } else if (error) {
                   console.log(error)
