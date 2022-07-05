@@ -8,7 +8,7 @@ exports.defaultDataType = 'text';
 
 exports.MANAGEMENT_SDK = 'MANAGEMENT_SDK';
 exports.MANAGEMENT_CLIENT = 'MANAGEMENT_CLIENT';
-exports.MANAGEMENT_SDK = 'MANAGEMENT_TOKEN';
+exports.MANAGEMENT_TOKEN = 'MANAGEMENT_TOKEN';
 exports.AUTH_TOKEN = 'AUTH_TOKEN';
 exports.API_KEY = 'API_KEY';
 exports.BRANCH = 'BRANCH';
