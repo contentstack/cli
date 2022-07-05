@@ -60,3 +60,8 @@ fileignoreconfig:
 - filename: packages/contentstack/package-lock.json
   checksum: be5da46c99ee2ea6c021a6dd4f903feda4f4c610033aba5ad3d25761810b52ff
 version: "1.0"
+
+fileignoreconfig:
+- filename: packages/contentstack-clone/src/lib/util/clone-handler.js
+  checksum: 5ca2bd7c9e53eb29a5a8ddcfed5834a75742b46fa408315b6a2b554c6fb13a82
+version: ""
