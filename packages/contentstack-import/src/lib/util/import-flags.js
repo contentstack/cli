@@ -20,6 +20,7 @@ exports.configWithMToken = function (config, managementTokens, moduleName, host,
 
     defaultConfig.host = host;
     defaultConfig.branchName = branchName;
+    defaultConfig.target_stack = managementTokens.apiKey;
     defaultConfig.management_token = managementTokens.token;
 
     if (moduleName && moduleName !== undefined) {
