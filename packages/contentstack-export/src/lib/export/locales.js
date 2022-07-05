@@ -91,6 +91,9 @@ ExportLocales.prototype.getLocales = function (apiDetails) {
 
         } else if (localeResponse.items.length === 0) {
           addlogs(config, 'No languages found except the master language', 'success');
+          helper.writeFile(path.join(self.localesFolderPath, localeConfig.fileName), self.locales);
+          return resolve();
+
         }
       })
       .catch((error) => {
