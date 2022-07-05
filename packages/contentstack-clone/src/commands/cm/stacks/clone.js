@@ -49,13 +49,13 @@ class StackCloneCommand extends Command {
           config.source_alias = sourceManagementTokenAlias;
           config.source_stack = listOfTokens[sourceManagementTokenAlias].apiKey;
         } else if (sourceManagementTokenAlias) {
-          console.log('Provided source token alias not found in your config.!');
+          console.log(`Provided source token alias (${sourceManagementTokenAlias}) not found in your config.!`);
         }
         if (destinationManagementTokenAlias && listOfTokens[destinationManagementTokenAlias]) {
           config.destination_alias = destinationManagementTokenAlias;
           config.target_stack = listOfTokens[destinationManagementTokenAlias].apiKey;
         } else if (destinationManagementTokenAlias) {
-          console.log('Provided destination token alias not found in your config.!');
+          console.log(`Provided destination token alias (${destinationManagementTokenAlias}) not found in your config.!`);
         }
 
         await this.removeContentDirIfNotEmptyBeforeClone(pathdir); // NOTE remove if folder not empty before clone
@@ -75,7 +75,7 @@ class StackCloneCommand extends Command {
           if (_authToken) {
             handleClone()
           } else {
-            console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login")
+            console.log("Please login to execute this command, csdx auth:login")
             this.exit(1)
           }
         } else {
@@ -84,7 +84,7 @@ class StackCloneCommand extends Command {
       } else if (_authToken) {
         handleClone()
       } else {
-        console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login");
+        console.log("Please login to execute this command, csdx auth:login");
         this.exit(1)
       }
     } catch (error) {
