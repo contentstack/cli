@@ -16,11 +16,11 @@ module.exports = {
       'extensions',
       'webhooks',
       'global-fields',
+      'marketplace-apps', // NOTE marketplace app always should be before content-types
       'content-types',
       'workflows',
       'entries',
-      'labels',
-      'marketplace-apps'
+      'labels'
     ],
     locales: {
       dirName: 'locales',
