@@ -8,6 +8,9 @@ const fixpack = require('@oclif/fixpack')
 const fs = require('fs')
 const nps = require('nps-utils')
 
+// as install methods are deprecated, this is a temporary fix
+_.extend(Generator.prototype, require('yeoman-generator/lib/actions/install'));
+
 const isWindows = process.platform === 'win32'
 const rmrf = isWindows ? 'rimraf' : 'rm -rf'
 const rmf = isWindows ? 'rimraf' : 'rm -f'
