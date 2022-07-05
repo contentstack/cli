@@ -57,9 +57,7 @@ class StackCloneCommand extends Command {
         config.host = this.cmaHost;
         config.cdn = this.cdaHost;
         const cloneHandler = new CloneHandler(config);
-        await cloneHandler.start();
-        let successMessage = 'Stack cloning process have been completed successfully';
-        await this.cleanUp(pathdir, successMessage);
+        await cloneHandler.execute(pathdir);
       } else {
         console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login");
       }
