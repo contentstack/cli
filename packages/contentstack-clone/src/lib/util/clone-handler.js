@@ -7,6 +7,12 @@ const chalk = require('chalk');
 let sdkInstance = require('../../lib/util/contentstack-management-sdk');
 let exportCmd = require('@contentstack/cli-cm-export');
 let importCmd = require('@contentstack/cli-cm-import');
+
+const { 
+  HandleOrgCommand, HandleStackCommand, HandleDestinationStackCommand, HandleExportCommand,
+  SetBranchCommand, CreateNewStackCommand, CloneTypeSelectionCommand, Clone,
+} = require('../helpers/command-helpers');
+
 let client = {};
 let config;
 let cloneCommand;
@@ -79,7 +85,6 @@ class CloneHandler {
   
         keyPressHandler = async function (ch, key) {
           if (key.name === 'backspace') {
-            // TODO: Clear the screen.
             stackAbortController.abort();
             console.clear();
             process.stdin.removeListener('keypress', keyPressHandler);
@@ -98,7 +103,7 @@ class CloneHandler {
           const selectedStack = await inquirer.prompt(stackList);
           
           if (stackAbortController.signal.aborted) {
-            return reject('Operation cancelled [Stack]');
+            return reject();
           }
           if (isSource) {
             config.sourceStackName = selectedStack.stack;
@@ -135,53 +140,64 @@ class CloneHandler {
           if (org) {
             const sourceStack = await cloneCommand.execute(new HandleStackCommand({ org, isSource:true, msg: stackMsg, stackAbortController }, this));
             if (stackAbortController.signal.aborted) {
-              return reject('Operation cancelled');
+              return reject();
             }
             stackName.default = config.stackName || `Copy of ${sourceStack.stack || config.source_alias}`;
-
-            const exportRes = await cloneCommand.execute(new HandleExportCommand(null, this));
-            await cloneCommand.execute(new GetBranchCommand(null, this));
-
-            if (exportRes) {
-              let canCreateStack = false;
-
-              if (!config.target_stack) {
-                canCreateStack = await inquirer.prompt(stackCreationConfirmation);
-              }
-
-              if (canCreateStack.stackCreate) {
-                if (!config.target_stack) {
-                  const destOrgMsg = 'Choose an organization where the destination stack exists: ';
-                  const destOrg = await cloneCommand.execute(new HandleOrgCommand({ msg: destOrgMsg }, this));
-                  if (destOrg) {
-                    const destStackMsg = 'Choose the destination stack:';
-                    await cloneCommand.execute(new HandleStackCommand({ org: destOrg, msg: destStackMsg, stackAbortController }, this));
-                  }
-                } else {
-                  this.cloneTypeSelection()
-                    .then(resolve)
-                    .catch((error) => reject(error.errorMessage));
-                }
-              } else {
-                const destinationOrg = await this.handleOrgSelection({ isSource: false, msg: 'Choose an organization where you want to create a stack: ' });
-                const orgUid = orgUidList[destinationOrg.Organization];
-                await cloneCommand.execute(new CreateNewStackCommand(orgUid, this));
-              }
-              await cloneCommand.execute(new CloneTypeSelectionCommand(null, this));
-            }
-            return resolve();
           } else {
             return reject('Org not found.');
           }
-        } else {
-          // await this.start();
         }
+        const exportRes = await cloneCommand.execute(new HandleExportCommand(null, this));
+        await cloneCommand.execute(new SetBranchCommand(null, this));
+
+        if (exportRes) {
+          this.executeDestination(pathDir).catch(error => {
+            // exit process.
+            console.log(error);
+          });
+        }
+        return resolve();
       } catch (error) {
         return reject(error);
       } finally {
         if (stackAbortController) {
           stackAbortController.abort();
         }
+      }
+    });
+  }
+
+  async executeDestination(pathDir) {
+    return new Promise(async (resolve, reject) => {
+      let stackAbortController;
+      try {
+        stackAbortController = new AbortController();
+
+        let canCreateStack = false;
+
+        if (!config.target_stack) {
+          canCreateStack = await inquirer.prompt(stackCreationConfirmation);
+        }
+
+        if (!canCreateStack.stackCreate) {
+          if (!config.target_stack) {
+            const orgMsg = 'Choose an organization where the destination stack exists: ';
+            const org = await cloneCommand.execute(new HandleOrgCommand({ msg: orgMsg }, this));
+            if (org) {
+              const stackMsg = 'Choose the destination stack:';
+              await cloneCommand.execute(new HandleDestinationStackCommand({ org, msg: stackMsg, stackAbortController }, this));
+            }
+          }
+        } else {
+          const destinationOrg = await this.handleOrgSelection({ isSource: false, msg: 'Choose an organization where you want to create a stack: ' });
+          const orgUid = orgUidList[destinationOrg.Organization];
+          await cloneCommand.execute(new CreateNewStackCommand(orgUid, this));
+        }
+        await cloneCommand.execute(new CloneTypeSelectionCommand(null, this));
+        return resolve();
+      } catch (error) {
+        reject(error);
+      } finally {
         // If not aborted and ran successfully
         if (!stackAbortController.signal.aborted) {
           // Call clean dir.
@@ -194,7 +210,7 @@ class CloneHandler {
     });
   }
 
-  async getBranch() {
+  async setBranch() {
     if (!config.sourceStackBranch) {
       try {
         const branches = await client.stack({ api_key: config.source_stack }).branch().query().find();
@@ -362,48 +378,6 @@ class CloneHandler {
     });
   }
 }
-
-const CloneCommand = function (execute, undo, params, parentContext) {
-  this.execute = execute.bind(parentContext);
-  this.undo = undo && undo.bind(parentContext);
-  this.params = params;
-};
-const HandleOrgCommand = function (params, parentContext) {
-  return new CloneCommand(parentContext.handleOrgSelection, null, params, parentContext);
-};
-const HandleStackCommand = function (params, parentContext) {
-  return new CloneCommand(parentContext.handleStackSelection, parentContext.execute, params, parentContext);
-};
-const HandleExportCommand = function (params, parentContext) {
-  return new CloneCommand(parentContext.cmdExport, null, params, parentContext);
-};
-const GetBranchCommand = function (params, parentContext) {
-  return new CloneCommand(parentContext.getBranch, null, params, parentContext);
-};
-const CreateNewStackCommand = function (params, parentContext) {
-  return new CloneCommand(parentContext.getBranch, null, params, parentContext);
-};
-const CloneTypeSelectionCommand = function (params, parentContext) {
-  return new CloneCommand(parentContext.getBranch, null, params, parentContext);
-};
-
-const Clone = function () {
-  const commands = [];
-
-  return {
-    execute: async function (command) {
-      commands.push(command);
-      const result = await command.execute(command.params);
-      return result;
-    },
-    undo: async function () {
-      if (commands.length) {
-        const command = commands.pop();
-        command.undo && await command.undo(command.params);
-      }
-    },
-  };
-};
 
 module.exports = {
   CloneHandler,
