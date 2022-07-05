@@ -40,6 +40,7 @@ function importContentTypes() {
   this.requestOptions = {
     json: {},
   };
+  this.installedExtensions = []
 }
 
 importContentTypes.prototype = {
@@ -193,13 +194,21 @@ importContentTypes.prototype = {
   updateContentTypes: function (contentType) {
     let self = this;
     return new Promise(function (resolve, reject) {
-      setTimeout(function () {
+      setTimeout(async function () {
         let requestObject = _.cloneDeep(self.requestOptions);
         if (contentType.field_rules) {
           field_rules_ct.push(contentType.uid);
           delete contentType.field_rules;
         }
-        supress(contentType.schema);
+        if (
+          !_.isEmpty(self.installedExtensions) &&
+          _.find(contentType.schema, 'extension_uid') &&
+          _.find(contentType.schema, 'field_metadata.extension')
+        ) {
+          self.installedExtensions = await self.getExtensionUid()
+        }
+
+        supress(contentType.schema, config.preserveStackVersion, self.installedExtensions);
         requestObject.json.content_type = contentType;
         let contentTypeResponse = stack.contentType(contentType.uid);
         Object.assign(contentTypeResponse, _.cloneDeep(contentType));
@@ -220,9 +229,18 @@ importContentTypes.prototype = {
     let self = this;
     return new Promise(function (resolve, reject) {
       // eslint-disable-next-line no-undef
-      return Promise.map(globalFieldPendingPath, function (globalfield) {
+      return Promise.map(globalFieldPendingPath, async function (globalfield) {
         let Obj = _.find(self.globalfields, { uid: globalfield });
-        supress(Obj.schema);
+
+        if (
+          !_.isEmpty(self.installedExtensions) &&
+          _.find(contentType.schema, 'extension_uid') &&
+          _.find(contentType.schema, 'field_metadata.extension')
+        ) {
+          self.installedExtensions = await self.getExtensionUid()
+        }
+
+        supress(Obj.schema, config.preserveStackVersion, self.installedExtensions);
         let globalFieldObj = stack.globalField(globalfield);
         Object.assign(globalFieldObj, _.cloneDeep(Obj));
         return globalFieldObj
@@ -255,6 +273,26 @@ importContentTypes.prototype = {
     });
     return result;
   },
+
+  getExtensionUid: function () {
+    return new Promise((resolve, reject) => {
+      const queryRequestOptions = {
+        include_marketplace_extensions: true
+      }
+      const { target_stack: api_key, management_token } = config || {}
+
+      if (api_key && management_token) {
+        return stack
+          .extension()
+          .query(queryRequestOptions)
+          .find()
+          .then(({ items }) => resolve(items))
+          .catch(reject)
+      } else {
+        resolve([])
+      }
+    })
+  }
 };
 
 module.exports = new importContentTypes();
