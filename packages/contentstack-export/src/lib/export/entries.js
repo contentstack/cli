@@ -48,7 +48,7 @@ exportEntries.prototype.start = function (credentialConfig) {
   client = stack.Client(config)
   addlogs(config, 'Starting entry migration', 'success')
   return new Promise(function (resolve, reject) {
-    locales = helper.readFile(localesFilePath)
+    locales = helper.readFile(localesFilePath) || {};
     let apiBucket = []
     content_types = helper.readFile(schemaFilePath)
     if (content_types.length !== 0) {
