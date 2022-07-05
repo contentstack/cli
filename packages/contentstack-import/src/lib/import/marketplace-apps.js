@@ -6,7 +6,7 @@
 const _ = require('lodash')
 const path = require('path');
 const eachOf = require('async/eachOf');
-const { HttpClient } = require('@contentstack/cli-utilities');
+const { HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
 
 let config = require('../../config/default');
 const { readFile } = require('../util/fs');
@@ -56,6 +56,7 @@ function importMarketplaceApps() {
       organization_uid: config.org_uid
     }
     const httpClient = new HttpClient().headers(headers);
+    const nodeCrypto = new NodeCrypto()
 
     return new Promise(function (resolve, reject) {
       eachOf(self.marketplaceApps, (app, _key, cb) => {
@@ -77,10 +78,10 @@ function importMarketplaceApps() {
               const payload = {}
 
               if (!_.isEmpty(configuration)) {
-                payload['configuration'] = configuration
+                payload['configuration'] = nodeCrypto.decrypt(configuration)
               }
               if (!_.isEmpty(server_configuration)) {
-                payload['server_configuration'] = server_configuration
+                payload['server_configuration'] = nodeCrypto.decrypt(server_configuration)
               }
 
               if (_.isEmpty(payload) || !data.installation_uid) {

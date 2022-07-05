@@ -201,7 +201,7 @@ importContentTypes.prototype = {
           delete contentType.field_rules;
         }
         if (
-          !_.isEmpty(self.installedExtensions) &&
+          _.isEmpty(self.installedExtensions) &&
           _.find(contentType.schema, 'extension_uid') &&
           _.find(contentType.schema, 'field_metadata.extension')
         ) {
@@ -233,7 +233,7 @@ importContentTypes.prototype = {
         let Obj = _.find(self.globalfields, { uid: globalfield });
 
         if (
-          !_.isEmpty(self.installedExtensions) &&
+          _.isEmpty(self.installedExtensions) &&
           _.find(contentType.schema, 'extension_uid') &&
           _.find(contentType.schema, 'field_metadata.extension')
         ) {
