@@ -138,7 +138,7 @@ class CloneHandler {
 
           const org = await cloneCommand.execute(new HandleOrgCommand({ msg: orgMsg, isSource: true }, this));
           if (org) {
-            const sourceStack = await cloneCommand.execute(new HandleStackCommand({ org, isSource:true, msg: stackMsg, stackAbortController }, this));
+            const sourceStack = await cloneCommand.execute(new HandleStackCommand({ org, isSource: true, msg: stackMsg, stackAbortController }, this));
             if (stackAbortController.signal.aborted) {
               return reject();
             }
@@ -151,10 +151,7 @@ class CloneHandler {
         await cloneCommand.execute(new SetBranchCommand(null, this));
 
         if (exportRes) {
-          this.executeDestination(pathDir).catch(error => {
-            // exit process.
-            console.log(error);
-          });
+          this.executeDestination(pathDir).catch(() => reject());
         }
         return resolve();
       } catch (error) {
@@ -222,7 +219,7 @@ class CloneHandler {
     }
   }
 
-  getOrganizationChoices = async (orgMessage) => {
+  async getOrganizationChoices (orgMessage) {
     let orgChoice = {
       type: 'list',
       name: 'Organization',
@@ -246,7 +243,7 @@ class CloneHandler {
     });
   };
 
-  getStack = async (answer, stkMessage) => {
+  async getStack (answer, stkMessage) {
     return new Promise(async (resolve, reject) => {
       let stackChoice = {
         type: 'list',
