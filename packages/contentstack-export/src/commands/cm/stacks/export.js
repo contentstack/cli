@@ -88,10 +88,7 @@ class ExportCommand extends Command {
   }
 }
 
-ExportCommand.description = `Export content from a stack
-...
-Export content from one stack to another
-`;
+ExportCommand.description = `Export content from a stack`;
 ExportCommand.examples = [
   'csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>',
   'csdx cm:stacks:export --config <path/to/config/dir>',
