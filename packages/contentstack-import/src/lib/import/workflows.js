@@ -60,20 +60,17 @@ importWorkflows.prototype = {
           let workflow = self.workflows[workflowUid];
 
           if (!self.workflowUidMapper.hasOwnProperty(workflowUid)) {
-            for (let index = 0; index < workflow.workflow_stages.length; index++) {
+            const workflowStages = workflow.workflow_stages
+            for (const stage of workflowStages) {
               if (
-                workflow.workflow_stages[index].SYS_ACL.users.uids.length > 0 &&
-                workflow.workflow_stages[index].SYS_ACL.users.uids[0] !== '$all'
+                stage.SYS_ACL.users.uids.length > 0 &&
+                stage.SYS_ACL.users.uids[0] !== '$all'
               ) {
-                workflow.workflow_stages[index].SYS_ACL.users.uids = ['$all'];
+                stage.SYS_ACL.users.uids = ['$all'];
               }
 
-              if (workflow.workflow_stages[index].SYS_ACL.roles.uids.length > 0) {
-                workflow.workflow_stages[index].SYS_ACL.roles.uids = [];
-              }
-
-              if (workflow.workflow_stages[index].next_available_stages.length > 0) {
-                workflow.workflow_stages[index].next_available_stages = ['$all'];
+              if (stage.SYS_ACL.roles.uids.length > 0) {
+                stage.SYS_ACL.roles.uids = [];
               }
             }
 
