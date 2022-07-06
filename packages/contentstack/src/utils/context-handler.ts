@@ -15,7 +15,7 @@ export default class CsdxContext {
 
   constructor(cliOpts: any, cliConfig: any) {
     const command = cliConfig.findCommand(cliOpts.id) || {};
-    const config = configHandler
+    const config = configHandler;
     let sessionId = configHandler.get('sessionId');
     if (!sessionId) {
       sessionId = uuidv4();
@@ -27,7 +27,7 @@ export default class CsdxContext {
       authtoken: configHandler.get('authtoken'),
       email: configHandler.get('email'),
     };
-    this.config = { ...config } // configHandler.init();
+    this.config = { ...config };
     this.region = configHandler.get('region');
     this.info = { command: cliOpts.id };
     if (command.pluginName) {
@@ -39,7 +39,7 @@ export default class CsdxContext {
         this.plugin.config.messageFilePath || './messages/index.json',
       );
     }
-    this.flagWarningPrintState = {}
+    this.flagWarningPrintState = {};
   }
 
   getToken(alias: string) {
