@@ -111,13 +111,22 @@ class StackCloneCommand extends Command {
   }
 
   cleanUp(pathDir, message) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       rimraf(pathDir, function (err) {
-        if (err) throw err;
+        if (err) {
+          console.log('\nCleaning up');
+          const skipCodeArr = ['ENOENT', 'EBUSY', 'EPERM', 'EMFILE', 'ENOTEMPTY']
+
+          if (skipCodeArr.includes(err.code)) {
+            process.exit()
+          }
+        }
+
         if (message) {
           // eslint-disable-next-line no-console
           console.log(message);
         }
+
         resolve();
       });
     });
@@ -130,7 +139,7 @@ class StackCloneCommand extends Command {
     const cleanUp = async (exitOrError = null) => {
       // eslint-disable-next-line no-console
       console.log('\nCleaning up');
-      await this.cleanUp(pathDir);
+      await this.cleanUp(pathDir)
       // eslint-disable-next-line no-console
       console.log('done');
       // eslint-disable-next-line no-process-exit
@@ -140,6 +149,8 @@ class StackCloneCommand extends Command {
           console.log((error && error.message) || '');
         });
       } else if (exitOrError && exitOrError.message) {
+        console.log(exitOrError.message);
+      } else if (exitOrError && exitOrError.errorMessage) {
         console.log(exitOrError.message);
       }
 
