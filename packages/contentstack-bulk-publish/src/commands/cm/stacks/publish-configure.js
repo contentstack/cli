@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { Command, flags } = require('@oclif/command');
+const { Command, flags } = require('@contentstack/cli-command');
 const { cliux } = require('@contentstack/cli-utilities');
 
 let config = require('../../../config/index.js');
@@ -13,7 +13,12 @@ class ConfigureCommand extends Command {
       configureFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
     }
 
-    await this.config.runHook('validateManagementTokenAlias', { alias: configureFlags.alias });
+    try {
+      this.getToken(configureFlags.alias);
+    } catch (error) {
+      this.error(`The configured management token alias ${configureFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${configureFlags.alias}'`, { exit: 2 })
+    }
+
     this.setConfig(configureFlags);
     this.log('The configuration has been saved successfully.');
   }
