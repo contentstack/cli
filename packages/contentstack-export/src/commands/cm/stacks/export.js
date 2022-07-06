@@ -34,7 +34,7 @@ class ExportCommand extends Command {
       let managementTokens = this.getToken(alias);
       if (managementTokens) {
         if (extConfig) {
-          configWithMToken(extConfig, managementTokens, host, contentTypes, branchName, securedAssets);
+          configWithMToken(extConfig, managementTokens, host, contentTypes, branchName, securedAssets, moduleName);
         } else if (data) {
           parameterWithMToken(
             managementTokens,
