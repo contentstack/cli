@@ -34,7 +34,7 @@ class ExportCommand extends Command {
       let managementTokens = this.getToken(alias);
       if (managementTokens) {
         if (extConfig) {
-          await configWithMToken(extConfig, managementTokens, host, contentTypes, branchName, securedAssets);
+          await configWithMToken(extConfig, managementTokens, host, contentTypes, branchName, securedAssets, moduleName);
         } else if (data) {
           await parameterWithMToken(
             managementTokens,
@@ -88,10 +88,7 @@ class ExportCommand extends Command {
   }
 }
 
-ExportCommand.description = `Export content from a stack
-...
-Export content from one stack to another
-`;
+ExportCommand.description = `Export content from a stack`;
 ExportCommand.examples = [
   'csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>',
   'csdx cm:stacks:export --config <path/to/config/dir>',
