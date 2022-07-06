@@ -1088,10 +1088,6 @@ FLAGS
 DESCRIPTION
   Export content from a stack
 
-  ...
-
-  Export content from one stack to another
-
 ALIASES
   $ csdx cm:export
 
