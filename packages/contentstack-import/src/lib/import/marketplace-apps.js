@@ -29,7 +29,7 @@ function importMarketplaceApps() {
     );
 
     await this.getOrgUid()
-    return await this.installAppsAndUpdateConfig()
+    return await this.installApps()
   }
 
   this.getOrgUid = async () => {
@@ -48,7 +48,65 @@ function importMarketplaceApps() {
     }
   }
 
-  this.installAppsAndUpdateConfig = () => {
+  this.getInstalledExtensions = () => {
+    return new Promise((resolve, reject) => {
+      const queryRequestOptions = {
+        include_marketplace_extensions: true
+      }
+      const { target_stack: api_key, management_token } = config || {}
+
+      if (api_key && management_token) {
+        return client
+          .stack({ api_key, management_token })
+          .extension()
+          .query(queryRequestOptions)
+          .find()
+          .then(({ items }) => resolve(items))
+          .catch(reject)
+      } else {
+        resolve([])
+      }
+    })
+  }
+
+  this.updateAppsConfig = ({ data, app, httpClient, nodeCrypto }) => {
+    return new Promise((resolve, reject) => {
+      if (_.isEmpty(data)) {
+        return resolve()
+      } else {
+        const { title, configuration, server_configuration } = app
+        log(config, `${title} app config updated started.!`, 'success')
+
+        if (configuration || server_configuration) {
+          const payload = {}
+
+          if (!_.isEmpty(configuration)) {
+            payload['configuration'] = nodeCrypto.decrypt(configuration)
+          }
+          if (!_.isEmpty(server_configuration)) {
+            payload['server_configuration'] = nodeCrypto.decrypt(server_configuration)
+          }
+
+          if (_.isEmpty(payload) || !data.installation_uid) {
+            resolve()
+          } else {
+            httpClient.put(`${config.developerHubBaseUrl}/installations/${data.installation_uid}`, payload)
+              .then(() => {
+                log(config, `${title} app config updated successfully.!`, 'success')
+              }).then(resolve)
+              .catch(err => {
+                console.log(err)
+                reject()
+              })
+          }
+        } else {
+          return resolve()
+        }
+      }
+    })
+  }
+
+  this.installApps = async () => {
     const self = this
     log(config, 'Starting marketplace app installation', 'success');
     const headers = {
@@ -57,6 +115,7 @@ function importMarketplaceApps() {
     }
     const httpClient = new HttpClient().headers(headers);
     const nodeCrypto = new NodeCrypto()
+    const installedExtensions = await this.getInstalledExtensions()
 
     return new Promise(function (resolve, reject) {
       eachOf(self.marketplaceApps, (app, _key, cb) => {
@@ -64,39 +123,28 @@ function importMarketplaceApps() {
           `${config.developerHubBaseUrl}/apps/${app.app_uid}/install`,
           { target_type: 'stack', target_uid: config.target_stack }
         ).then(async ({ data: result }) => {
-          const { data, error } = result
-          const { title, configuration, server_configuration } = app
+          const { title } = app
+          const { data, error, message } = result
 
           if (error) {
-            console.log(error)
-            cb()
+            log(config, `${message} - ${title}`, 'success')
+            const ext = _.find(installedExtensions, { app_uid: app.app_uid })
+
+            if (ext) {
+              self.updateAppsConfig({
+                app,
+                nodeCrypto,
+                httpClient,
+                data: { ...ext, installation_uid: ext.app_installation_uid }
+              }).then(cb)
+                .catch(cb)
+            }
             return void 0
           } else if (data) {
             log(config, `${title} app installed successfully.!`, 'success')
-
-            if (configuration || server_configuration) {
-              const payload = {}
-
-              if (!_.isEmpty(configuration)) {
-                payload['configuration'] = nodeCrypto.decrypt(configuration)
-              }
-              if (!_.isEmpty(server_configuration)) {
-                payload['server_configuration'] = nodeCrypto.decrypt(server_configuration)
-              }
-
-              if (_.isEmpty(payload) || !data.installation_uid) {
-                cb()
-              } else {
-                httpClient.put(`${config.developerHubBaseUrl}/installations/${data.installation_uid}`, payload)
-                  .then(() => {
-                    log(config, `${title} app config updated successfully.!`, 'success')
-                  }).then(cb)
-                  .catch(err => {
-                    console.log(err)
-                    cb()
-                  })
-              }
-            }
+            self.updateAppsConfig({ data, app, nodeCrypto, httpClient })
+              .then(cb)
+              .catch(cb)
           } else {
             cb()
           }
