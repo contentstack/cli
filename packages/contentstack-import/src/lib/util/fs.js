@@ -7,6 +7,7 @@
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
+const bigJSON = require('big-json');
 
 exports.readFile = function (filePath, parse) {
   var data;
@@ -29,6 +30,26 @@ exports.makeDirectory = function () {
     if (!fs.existsSync(dirname)) {
       mkdirp.sync(dirname);
     }
+  }
+};
+
+exports.readLargeFile = function (filePath) {
+  filePath = path.resolve(filePath);
+  if (fs.existsSync(filePath)) {
+    return new Promise((resolve, reject) => {
+      const readStream = fs.createReadStream(filePath, { encoding: 'utf-8' });
+      const parseStream = bigJSON.createParseStream();
+
+      parseStream.on('data', function (data) {
+        resolve(data);
+      });
+
+      parseStream.on('error', function (error) {
+        console.log('error', error);
+        reject(error);
+      });
+      readStream.pipe(parseStream);
+    });
   }
 };
 
