@@ -12,8 +12,9 @@ exports.Client = function (config) {
     maxContentLength: 100000000,
     maxBodyLength: 1000000000,
     maxRequests: 10,
+    retryOnError: true,
     retryLimit: 5,
-    timeout: 60000,
+    timeout: 1200000,
     httpsAgent: new https.Agent({
       maxSockets: 100,
       maxFreeSockets: 10,
@@ -21,14 +22,21 @@ exports.Client = function (config) {
       timeout: 60000, // active socket keepalive for 60 seconds
       freeSocketTimeout: 30000, // free socket keepalive for 30 seconds
     }),
-    retryDelay: Math.floor(Math.random() * (8000 - 3000 + 1) + 3000),
+    retryDelay: Math.floor(Math.random() * (5000 - 3000 + 1) + 3000),
+    retryDelayOptions: {
+      base: 1500,
+    },
     logHandler: (level, data) => {},
     retryCondition: (error) => {
-      // no async function should be used here
-      return error.response && (error.response.status === 429 || error.response.status === 408);
-    },
-    retryDelayOptions: {
-      base: 1000,
+      if (error.response.status === 408) {
+        addlogs({ data: error.response }, 'Timeout error', 'error');
+        return true;
+      }
+      if (error.response.status === 429) {
+        addlogs({ data: error.response }, 'Rate limit excedded', 'error');
+        return true;
+      }
+      return false;
     },
   };
   if (typeof config.branchName === 'string') {
@@ -36,6 +44,5 @@ exports.Client = function (config) {
       branch: config.branchName,
     };
   }
-  const client = contentstacksdk.client(option);
-  return client;
+  return contentstacksdk.client(option);
 };
