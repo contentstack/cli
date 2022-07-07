@@ -57,16 +57,16 @@ class StackCloneCommand extends Command {
         config.host = this.cmaHost;
         config.cdn = this.cdaHost;
         const cloneHandler = new CloneHandler(config);
-        await cloneHandler.start();
-        let successMessage = 'Stack cloning process have been completed successfully';
-        await this.cleanUp(pathdir, successMessage);
+        cloneHandler.execute(pathdir).catch();
       } else {
         console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login");
       }
     } catch (error) {
-      await this.cleanUp(pathdir);
-      // eslint-disable-next-line no-console
-      console.log(error.message || error);
+      if (error) {
+        await this.cleanUp(pathdir);
+        // eslint-disable-next-line no-console
+        console.log(error.message || error);
+      }
     }
   }
 
@@ -104,22 +104,24 @@ class StackCloneCommand extends Command {
     const exceptions = ['unhandledRejection', 'uncaughtException'];
 
     const cleanUp = async (exitOrError = null) => {
-      // eslint-disable-next-line no-console
-      console.log('\nCleaning up');
-      await this.cleanUp(pathDir);
-      // eslint-disable-next-line no-console
-      console.log('done');
-      // eslint-disable-next-line no-process-exit
+      if (exitOrError) {
+        // eslint-disable-next-line no-console
+        console.log('\nCleaning up');
+        await this.cleanUp(pathDir);
+        // eslint-disable-next-line no-console
+        console.log('done');
+        // eslint-disable-next-line no-process-exit
 
-      if (exitOrError instanceof Promise) {
-        exitOrError.catch((error) => {
-          console.log((error && error.message) || '');
-        });
-      } else if (exitOrError && exitOrError.message) {
-        console.log(exitOrError.message);
+        if (exitOrError instanceof Promise) {
+          exitOrError.catch((error) => {
+            console.log((error && error.message) || '');
+          });
+        } else if (exitOrError && exitOrError.message) {
+          console.log(exitOrError.message);
+        }
+
+        if (exitOrError === true) process.exit();
       }
-
-      if (exitOrError === true) process.exit();
     };
 
     exceptions.forEach((event) => process.on(event, cleanUp));
