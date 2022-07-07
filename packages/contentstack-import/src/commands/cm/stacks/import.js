@@ -30,48 +30,36 @@ class ImportCommand extends Command {
         let managementTokens = self.getToken(alias);
 
         if (managementTokens) {
-          if (extConfig && _authToken) {
-            configWithMToken(extConfig, managementTokens, moduleName, host, _authToken, backupdir, branchName)
-              .then(() => {
-                return resolve();
-              })
-              .catch((error) => {
-                return reject(error);
-              });
+          let result
+
+          if ((extConfig && _authToken) || alias) {
+            result = configWithMToken(extConfig, managementTokens, moduleName, host, _authToken, backupdir, branchName)
           } else if (data) {
-            parameterWithMToken(managementTokens, data, moduleName, host, _authToken, backupdir, branchName)
-              .then(() => {
-                return resolve();
-              })
-              .catch((error) => {
-                return reject(error);
-              });
+            result = parameterWithMToken(managementTokens, data, moduleName, host, _authToken, backupdir, branchName)
           } else {
-            withoutParameterMToken(managementTokens, moduleName, host, _authToken, backupdir, branchName)
-              .then(() => {
-                return resolve();
-              })
-              .catch((error) => {
-                return reject(error);
-              });
+            result = withoutParameterMToken(managementTokens, moduleName, host, _authToken, backupdir, branchName)
           }
+
+          result
+            .then(resolve)
+            .catch(reject);
         } else {
           console.log('management Token is not present please add managment token first');
         }
       } else if (_authToken) {
+        let result
+
         if (extConfig) {
-          configWithAuthToken(extConfig, _authToken, moduleName, host, backupdir, branchName).then(() => {
-            return resolve();
-          });
+          result = configWithAuthToken(extConfig, _authToken, moduleName, host, backupdir, branchName)
         } else if (targetStack && data) {
-          parametersWithAuthToken(_authToken, targetStack, data, moduleName, host, backupdir, branchName).then(() => {
-            return resolve();
-          });
+          result = parametersWithAuthToken(_authToken, targetStack, data, moduleName, host, backupdir, branchName)
         } else {
-          withoutParametersWithAuthToken(_authToken, moduleName, host, backupdir, branchName).then(() => {
-            return resolve();
-          });
+          result = withoutParametersWithAuthToken(_authToken, moduleName, host, backupdir, branchName)
         }
+
+        result
+          .then(resolve)
+          .catch(reject);
       } else {
         console.log('Login or provide the alias for management token');
       }
