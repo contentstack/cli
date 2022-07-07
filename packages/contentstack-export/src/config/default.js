@@ -1,5 +1,6 @@
 module.exports = {
   versioning: false,
+  request_timeout: 120000,
   host: 'https://api.contentstack.io/v3',
   // use below hosts for eu region
   // host:'https://eu-api.contentstack.com/v3',
@@ -62,7 +63,7 @@ module.exports = {
       invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by', '_metadata', 'published'],
       // no of asset version files (of a single asset) that'll be downloaded parallelly
       downloadLimit: 5,
-      enableDownloadStatus: false
+      enableDownloadStatus: true
     },
     content_types: {
       dirName: 'content_types',
