@@ -75,20 +75,27 @@ ExportAssets.prototype = {
                   return Promise.map(
                     assetsJSON,
                     function (assetJSON) {
-                      return self
-                        .getVersionedAssetJSON(assetJSON.uid, assetJSON._version)
-                        .then(function () {
-                          self.assetContents[assetJSON.uid] = assetJSON;
-                          // log.success(chalk.white('The following asset has been downloaded successfully: ' +
-                          //     assetJSON.uid))
-                        })
-                        .catch(function (error) {
-                          addlogs(
-                            config,
-                            chalk.red('The following asset failed to download\n' + JSON.stringify(assetJSON)),
-                          );
-                          addlogs(config, error, 'error');
-                        });
+                      if (config.versioning) {
+                        return self
+                          .getVersionedAssetJSON(assetJSON.uid, assetJSON._version)
+                          .then(function () {
+                            self.assetContents[assetJSON.uid] = assetJSON;
+                          })
+                          .catch(function (error) {
+                            addlogs(
+                              config,
+                              chalk.red('The following asset failed to download\n' + JSON.stringify(assetJSON)),
+                            );
+                            addlogs(config, error, 'error');
+                          });
+                      } else {
+                        return self.downloadAsset(assetJSON)
+                          .then(function () {
+                            self.assetContents[assetJSON.uid] = assetJSON;
+                          }).catch((err) => {
+                            addlogs({ errorCode: (err && err.code), uid: assetJSON.uid }, 'Asset download failed', 'error');
+                          })
+                      }
                     },
                     {
                       concurrency: vLimit,

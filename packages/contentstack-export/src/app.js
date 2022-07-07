@@ -25,7 +25,10 @@ exports.initial = async function (config) {
             if (config.moduleName) {
               await singleExport(config.moduleName, types, config, branch.uid);
             } else {
-              await allExport(config, types, branch.uid);
+              await allExport(config, types, branch.uid)
+                .catch(err => {
+                  console.log(err.message)
+                });
             }
           } catch (error) {
             console.log('failed export branch', branch.uid, error);
@@ -36,7 +39,10 @@ exports.initial = async function (config) {
           if (config.moduleName) {
             await singleExport(config.moduleName, types, config);
           } else {
-            await allExport(config, types);
+            await allExport(config, types)
+              .catch(err => {
+                console.log(err.message)
+              });
           }
         } catch (error) {
           console.log('failed export contents', error && error.message);
@@ -117,7 +123,10 @@ var allExport = async (config, types, branchName) => {
       for (let i = 0; i < types.length; i++) {
         let type = types[i];
         var exportedModule = require('./lib/export/' + type);
-        const result = await exportedModule.start(config, branchName);
+        const result = await exportedModule.start(config, branchName)
+          .catch(error => {
+            console.log((error && error.code), 'Process failed.!')
+          });
         if (result && type === 'stack') {
           let master_locale = { master_locale: { code: result.code } };
           config = _.merge(config, master_locale);
