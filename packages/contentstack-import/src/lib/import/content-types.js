@@ -182,7 +182,8 @@ importContentTypes.prototype = {
         })
         .catch(function (err) {
           let error = JSON.parse(err.message);
-          if (error.error_code === 115 && (error.errors.uid || error.errors.title)) {
+          if (error.errorCode === 115 && (error.errors.uid || error.errors.title)) {
+            _.remove(self.contentTypes, { uid: uid });
             // content type uid already exists
             return resolve();
           }

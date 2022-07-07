@@ -37,6 +37,7 @@ function exportEntries() {
     },
     json: true,
   };
+  this.exportedEntries = {};
 }
 
 exportEntries.prototype.start = function (credentialConfig) {
@@ -79,6 +80,8 @@ exportEntries.prototype.start = function (credentialConfig) {
       return Promise.map(
         apiBucket,
         function (apiDetails) {
+          self.exportedEntries[apiDetails.content_type] = {};
+          self.exportedEntries[apiDetails.content_type][apiDetails.locale] = {};
           return self.getEntries(apiDetails);
         },
         {
@@ -161,19 +164,30 @@ exportEntries.prototype.getEntries = function (apiDetails) {
       .entry()
       .query(queryrequestObject)
       .find()
-      .then((entriesList) => {
+      .then(async (entriesList) => {
         // /entries/content_type_uid/locale.json
-        if (!fs.existsSync(path.join(entryFolderPath, apiDetails.content_type))) {
-          mkdirp.sync(path.join(entryFolderPath, apiDetails.content_type));
+        // if (!fs.existsSync(path.join(entryFolderPath, apiDetails.content_type))) {
+        //   mkdirp.sync(path.join(entryFolderPath, apiDetails.content_type));
+        // }
+
+        if (apiDetails.skip === 0) {
+          if (!fs.existsSync(path.join(entryFolderPath, apiDetails.content_type))) {
+            mkdirp.sync(path.join(entryFolderPath, apiDetails.content_type));
+          }
         }
-        let entriesFilePath = path.join(entryFolderPath, apiDetails.content_type, apiDetails.locale + '.json');
-        let entries = helper.readFile(entriesFilePath);
-        entries = entries || {};
         entriesList.items.forEach(function (entry) {
           invalidKeys.forEach((e) => delete entry[e]);
-          entries[entry.uid] = entry;
+          self.exportedEntries[apiDetails.content_type][apiDetails.locale][entry.uid] = entry;
         });
-        helper.writeFile(entriesFilePath, entries);
+
+        // let entriesFilePath = path.join(entryFolderPath, apiDetails.content_type, apiDetails.locale + '.json');
+        // let entries = helper.readFile(entriesFilePath);
+        // entries = entries || {};
+        // entriesList.items.forEach(function (entry) {
+        //   invalidKeys.forEach((e) => delete entry[e]);
+        //   entries[entry.uid] = entry;
+        // });
+        // helper.writeFile(entriesFilePath, entries);
 
         if (typeof config.versioning === 'boolean' && config.versioning) {
           for (let locale in locales) {
@@ -223,6 +237,8 @@ exportEntries.prototype.getEntries = function (apiDetails) {
           });
         }
         if (apiDetails.skip > entriesList.count) {
+          await helper.writeLargeFile(path.join(entryFolderPath, apiDetails.content_type, apiDetails.locale + '.json'), self.exportedEntries[apiDetails.content_type][apiDetails.locale]);
+          delete self.exportedEntries[apiDetails.content_type][apiDetails.locale];
           addlogs(
             config,
             'Exported entries of ' +
