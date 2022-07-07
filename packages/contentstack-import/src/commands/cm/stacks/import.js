@@ -10,6 +10,7 @@ const {
   withoutParametersWithAuthToken,
 } = require('../../../lib/util/import-flags');
 const { printFlagDeprecation } = require('@contentstack/cli-utilities');
+const defaultConfig = require('../../../config/default')
 
 class ImportCommand extends Command {
   async run() {
@@ -21,11 +22,18 @@ class ImportCommand extends Command {
     const moduleName = importCommandFlags.module;
     const backupdir = importCommandFlags['backup-dir'];
     const alias = importCommandFlags['alias'] || importCommandFlags['management-token-alias'];
+    const versioning = importCommandFlags['import-version']
     let _authToken = configHandler.get('authtoken');
     let branchName = importCommandFlags.branch;
     let host = self.cmaHost;
 
     return new Promise(function (resolve, reject) {
+      if (versioning) {
+        defaultConfig.versioning = versioning
+      }
+      if (data) {
+        defaultConfig.data = data
+      }
       if (alias) {
         let managementTokens = self.getToken(alias);
 
@@ -135,6 +143,9 @@ ImportCommand.flags = {
     description: '[optional] branch name',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
+  'import-version': flags.boolean({
+    description: '[optional] use when assets having versions'
+  })
 };
 
 ImportCommand.aliases = ['cm:import'];
