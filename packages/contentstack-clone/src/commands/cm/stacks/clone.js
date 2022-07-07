@@ -49,13 +49,13 @@ class StackCloneCommand extends Command {
           config.source_alias = sourceManagementTokenAlias;
           config.source_stack = listOfTokens[sourceManagementTokenAlias].apiKey;
         } else if (sourceManagementTokenAlias) {
-          console.log('Provided source token alias not found in your config.!');
+          console.log(`Provided source token alias (${sourceManagementTokenAlias}) not found in your config.!`);
         }
         if (destinationManagementTokenAlias && listOfTokens[destinationManagementTokenAlias]) {
           config.destination_alias = destinationManagementTokenAlias;
           config.target_stack = listOfTokens[destinationManagementTokenAlias].apiKey;
         } else if (destinationManagementTokenAlias) {
-          console.log('Provided destination token alias not found in your config.!');
+          console.log(`Provided destination token alias (${destinationManagementTokenAlias}) not found in your config.!`);
         }
 
         await this.removeContentDirIfNotEmptyBeforeClone(pathdir); // NOTE remove if folder not empty before clone
@@ -75,14 +75,16 @@ class StackCloneCommand extends Command {
           if (_authToken) {
             handleClone()
           } else {
-            console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login")
+            console.log("Please login to execute this command, csdx auth:login")
             this.exit(1)
           }
+        } else {
+          handleClone()
         }
       } else if (_authToken) {
         handleClone()
       } else {
-        console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login");
+        console.log("Please login to execute this command, csdx auth:login");
         this.exit(1)
       }
     } catch (error) {
@@ -109,13 +111,22 @@ class StackCloneCommand extends Command {
   }
 
   cleanUp(pathDir, message) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       rimraf(pathDir, function (err) {
-        if (err) throw err;
+        if (err) {
+          console.log('\nCleaning up');
+          const skipCodeArr = ['ENOENT', 'EBUSY', 'EPERM', 'EMFILE', 'ENOTEMPTY']
+
+          if (skipCodeArr.includes(err.code)) {
+            process.exit()
+          }
+        }
+
         if (message) {
           // eslint-disable-next-line no-console
           console.log(message);
         }
+
         resolve();
       });
     });
@@ -128,7 +139,7 @@ class StackCloneCommand extends Command {
     const cleanUp = async (exitOrError = null) => {
       // eslint-disable-next-line no-console
       console.log('\nCleaning up');
-      await this.cleanUp(pathDir);
+      await this.cleanUp(pathDir)
       // eslint-disable-next-line no-console
       console.log('done');
       // eslint-disable-next-line no-process-exit
@@ -138,6 +149,8 @@ class StackCloneCommand extends Command {
           console.log((error && error.message) || '');
         });
       } else if (exitOrError && exitOrError.message) {
+        console.log(exitOrError.message);
+      } else if (exitOrError && exitOrError.errorMessage) {
         console.log(exitOrError.message);
       }
 
@@ -159,7 +172,8 @@ StackCloneCommand.examples = [
   'csdx cm:stacks:clone -a <management token alias>',
   'csdx cm:stacks:clone --source-stack-api-key <apiKey> --destination-stack-api-key <apiKey>',
   'csdx cm:stacks:clone --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>',
-  'csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>'
+  'csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>',
+  'csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias> --type <value a or b>'
 ];
 
 StackCloneCommand.aliases = ['cm:stack-clone'];
