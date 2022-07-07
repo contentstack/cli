@@ -30,7 +30,7 @@ exports.configWithMToken = function (config, managementTokens, host, contentType
   initial(defaultConfig);
 };
 
-exports.parameterWithMToken = function (
+exports.parameterWithMToken = async function (
   managementTokens,
   data,
   moduleName,
@@ -57,7 +57,7 @@ exports.parameterWithMToken = function (
   }
   defaultConfig.source_stack = managementTokens.apiKey;
   defaultConfig.data = data;
-  initial(defaultConfig);
+  await initial(defaultConfig);
 };
 
 // using ManagementToken
