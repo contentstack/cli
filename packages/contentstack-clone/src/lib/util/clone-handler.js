@@ -299,24 +299,28 @@ class CloneHandler {
   async cmdExport() {
     return new Promise((resolve, reject) => {
       const cmd = ['-k', config.source_stack, '-d', __dirname.split('src')[0] + 'contents'];
+
+      if (config.source_alias) {
+        cmd.push('-a', config.source_alias);
+      }
       if (config.sourceStackBranch) {
         cmd.push('--branch', config.sourceStackBranch);
       }
 
       let exportData = exportCmd.run(cmd);
       exportData
-        .then(async () => {
-          return resolve(true);
-        })
-        .catch((error) => {
-          return reject(error);
-        });
+        .then(() => resolve(true))
+        .catch(reject);
     });
   }
 
   async cmdImport() {
     return new Promise(async (resolve, _reject) => {
       const cmd = ['-c', path.join(__dirname, 'dummyConfig.json')];
+
+      if (config.destination_alias) {
+        cmd.push('-a', config.destination_alias);
+      }
       if (config.sourceStackBranch) {
         cmd.push('-d', path.join(__dirname, config.sourceStackBranch));
       }
