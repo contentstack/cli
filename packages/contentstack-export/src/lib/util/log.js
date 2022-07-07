@@ -20,7 +20,11 @@ function returnString(args) {
     returnStr = args
       .map(function (item) {
         if (item && typeof item === 'object') {
-          return JSON.stringify(item).replace(/authtoken\":\"blt................/g, 'authtoken":"blt....');
+          try {
+            return JSON.stringify(item).replace(/authtoken\":\"blt................/g, 'authtoken":"blt....');
+          } catch (error) {
+            return item.message
+          }
         }
         return item;
       })
