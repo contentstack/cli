@@ -12,24 +12,38 @@ let message = require('../../../messages/index.json');
 exports.configWithMToken = function (config, managementTokens, moduleName, host, _authToken, backupdir, branchName) {
   return new Promise(async function (resolve, reject) {
     let externalConfig = require(config);
-    defaultConfig.management_token = managementTokens.token;
+    const modules = externalConfig.modules
+
+    if (_.isArray(externalConfig['modules'])) {
+      externalConfig = _.omit(externalConfig, ['modules'])
+    }
+
+    defaultConfig.host = host;
     defaultConfig.branchName = branchName;
+    defaultConfig.target_stack = managementTokens.apiKey;
+    defaultConfig.management_token = managementTokens.token;
+
     if (moduleName && moduleName !== undefined) {
       defaultConfig.moduleName = moduleName;
     }
-    defaultConfig.host = host;
+
     if (backupdir) {
       defaultConfig.useBackedupDir = backupdir;
     }
+
     defaultConfig.auth_token = _authToken;
     defaultConfig = _.merge(defaultConfig, externalConfig);
+
+    if (_.isArray(modules)) {
+      defaultConfig.modules.types = _.filter(
+        defaultConfig.modules.types,
+        (module) => _.includes(modules, module)
+      )
+    }
+
     initial(defaultConfig)
-      .then(() => {
-        return resolve();
-      })
-      .catch((error) => {
-        return reject(error);
-      });
+      .then(resolve)
+      .catch(reject);
   });
 };
 
@@ -48,12 +62,8 @@ exports.parameterWithMToken = function (managementTokens, data, moduleName, host
       defaultConfig.useBackedupDir = backupdir;
     }
     initial(defaultConfig)
-      .then(() => {
-        return resolve();
-      })
-      .catch((error) => {
-        return reject(error);
-      });
+      .then(resolve)
+      .catch(reject);
   });
 };
 
@@ -74,12 +84,8 @@ exports.withoutParameterMToken = async (managementTokens, moduleName, host, _aut
       defaultConfig.useBackedupDir = backupdir;
     }
     initial(defaultConfig)
-      .then(() => {
-        return resolve();
-      })
-      .catch((error) => {
-        return reject(error);
-      });
+      .then(resolve)
+      .catch(reject);
   });
 };
 
@@ -103,12 +109,8 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host, ba
     }
     defaultConfig = _.merge(defaultConfig, externalConfig);
     initial(defaultConfig)
-      .then(() => {
-        return resolve();
-      })
-      .catch((error) => {
-        return reject(error);
-      });
+      .then(resolve)
+      .catch(reject);
   });
 };
 
@@ -127,12 +129,8 @@ exports.parametersWithAuthToken = function (_authToken, targetStack, data, modul
     defaultConfig.host = host;
 
     initial(defaultConfig)
-      .then(() => {
-        return resolve();
-      })
-      .catch((error) => {
-        return reject(error);
-      });
+      .then(resolve)
+      .catch(reject);
   });
 };
 
@@ -154,11 +152,7 @@ exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, ba
     defaultConfig.host = host;
 
     initial(defaultConfig)
-      .then(() => {
-        return resolve();
-      })
-      .catch((error) => {
-        return reject(error);
-      });
+      .then(resolve)
+      .catch(reject);
   });
 };

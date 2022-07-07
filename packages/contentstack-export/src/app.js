@@ -8,56 +8,70 @@ let path = require('path');
 let _ = require('lodash');
 
 exports.initial = async function (config) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(async function (resolve, reject) {
     config = util.buildAppConfig(config);
     util.validateConfig(config);
     exports.getConfig = function () {
       return config;
     };
-    // try {
-    login
-      .login(config)
-      .then(async function () {
-        //setup branches
-        await setupBranches(config, config.branchName);
-        var types = config.modules.types;
-        if (Array.isArray(config.branches) && config.branches.length > 0) {
-          for (let branch of config.branches) {
-            config.branchName = branch.uid;
-            try {
-              if (config.moduleName) {
-                await singleExport(config.moduleName, types, config, branch.uid);
-              } else {
-                await allExport(config, types, branch.uid);
-              }
-            } catch (error) {
-              console.log('failed export branch', branch.uid, error);
-            }
-          }
-        } else {
+
+    const fetchBranchAndExport = async () => {
+      await setupBranches(config, config.branchName);
+      var types = config.modules.types;
+      if (Array.isArray(config.branches) && config.branches.length > 0) {
+        for (let branch of config.branches) {
+          config.branchName = branch.uid;
           try {
             if (config.moduleName) {
-              await singleExport(config.moduleName, types, config);
+              await singleExport(config.moduleName, types, config, branch.uid);
             } else {
-              await allExport(config, types);
+              await allExport(config, types, branch.uid);
             }
           } catch (error) {
-            console.log('failed export contents', error && error.message);
+            console.log('failed export branch', branch.uid, error);
           }
         }
-        unlinkFileLogger();
-        resolve();
-      })
-      .catch((error) => {
-        console.log('error', error && error.message);
-        if (error && error.errors && error.errors.api_key) {
-          addlogs(config, chalk.red('Stack Api key ' + error.errors.api_key[0], 'Please enter valid Key', 'error'));
-          addlogs(config, 'The log for this is stored at ' + config.data + '/export/logs', 'success');
-        } else {
-          console.log('Stack fail to export');
+      } else {
+        try {
+          if (config.moduleName) {
+            await singleExport(config.moduleName, types, config);
+          } else {
+            await allExport(config, types);
+          }
+        } catch (error) {
+          console.log('failed export contents', error && error.message);
         }
-        reject(error);
-      });
+      }
+    }
+
+    // try {
+    if (
+      (config.email && config.password) ||
+      (!config.email && !config.password && config.source_stack && config.access_token) ||
+      (config.auth_token && !config.management_token)
+    ) {
+      login
+        .login(config)
+        .then(async function () {
+          // setup branches
+          await fetchBranchAndExport()
+          unlinkFileLogger();
+          resolve();
+        })
+        .catch((error) => {
+          console.log('error', error && error.message);
+          if (error && error.errors && error.errors.api_key) {
+            addlogs(config, chalk.red('Stack Api key ' + error.errors.api_key[0], 'Please enter valid Key', 'error'));
+            addlogs(config, 'The log for this is stored at ' + config.data + '/export/logs', 'success');
+          } else {
+            console.log('Stack fail to export');
+          }
+          reject(error);
+        });
+    } else if (config.management_token) {
+      await fetchBranchAndExport()
+      resolve();
+    }
   });
 };
 
