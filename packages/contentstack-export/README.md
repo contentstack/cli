@@ -69,10 +69,6 @@ OPTIONS
   -t, --content-types=content-types  [optional] content type
   --secured-assets                   [optional] use when assets are secured
 
-DESCRIPTION
-  ...
-  Export content from one stack to another
-
 ALIASES
   $ csdx cm:export
 
