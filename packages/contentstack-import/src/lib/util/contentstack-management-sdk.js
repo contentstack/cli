@@ -30,10 +30,12 @@ exports.Client = function (config) {
     retryCondition: (error) => {
       if (error.response.status === 408) {
         addlogs({ data: error.response }, 'Timeout error', 'error');
+        addlogs('Retrying');
         return true;
       }
       if (error.response.status === 429) {
         addlogs({ data: error.response }, 'Rate limit excedded', 'error');
+        addlogs('Retrying');
         return true;
       }
       return false;
