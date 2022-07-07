@@ -187,15 +187,15 @@ importEntries.prototype = {
 
   createEntries: function (lang, mappedAssetUids, mappedAssetUrls) {
     let self = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise(async function (resolve, reject) {
       let contentTypeUids = Object.keys(self.ctSchemas);
       if (fs.existsSync(entryUidMapperPath)) {
-        self.mappedUids = helper.readFile(entryUidMapperPath);
+        self.mappedUids = await helper.readLargeFile(entryUidMapperPath);
       }
       self.mappedUids = self.mappedUids || {};
       return Promise.map(
         contentTypeUids,
-        function (ctUid) {
+        async function (ctUid) {
           let eLangFolderPath = path.join(entryMapperPath, lang);
           let eLogFolderPath = path.join(entryMapperPath, lang, ctUid);
           mkdirp.sync(eLogFolderPath);
@@ -213,11 +213,11 @@ importEntries.prototype = {
           });
 
           if (fs.existsSync(createdEntriesPath)) {
-            createdEntries = helper.readFile(createdEntriesPath);
+            createdEntries = await helper.readLargeFile(createdEntriesPath);
             createdEntries = createdEntries || {};
           }
           if (fs.existsSync(eFilePath)) {
-            let entries = helper.readFile(eFilePath);
+            let entries = await helper.readLargeFile(eFilePath);
             if (!_.isPlainObject(entries) || _.isEmpty(entries)) {
               addlogs(
                 config,
@@ -467,48 +467,57 @@ importEntries.prototype = {
   getCreatedEntriesWOUid: function () {
     let self = this;
     return new Promise(function (resolve) {
-      self.createdEntriesWOUid = helper.readFile(createdEntriesWOUidPath);
-      self.failedWO = [];
-      if (_.isArray(self.createdEntriesWOUid) && self.createdEntriesWOUid.length > 0) {
-        return Promise.map(
-          self.createdEntriesWOUid,
-          function (entry) {
-            return self.fetchEntry(entry);
-          },
-          {
-            concurrency: reqConcurrency,
-          },
-        ).then(function () {
-          helper.writeFile(failedWOPath, self.failedWO);
-          addlogs(config, 'Mapped entries without mapped uid successfully!', 'success');
-          return resolve();
-        });
+      try {
+        self.createdEntriesWOUid = helper.readFile(createdEntriesWOUidPath);
+        self.failedWO = [];
+        if (_.isArray(self.createdEntriesWOUid) && self.createdEntriesWOUid.length > 0) {
+          return Promise.map(
+            self.createdEntriesWOUid,
+            function (entry) {
+              return self.fetchEntry(entry);
+            },
+            {
+              concurrency: reqConcurrency,
+            },
+          ).then(function () {
+            helper.writeFile(failedWOPath, self.failedWO);
+            addlogs(config, 'Mapped entries without mapped uid successfully!', 'success');
+            return resolve();
+          });
+        }
+        addlogs(config, 'No entries without mapped uid found!', 'success');
+        return resolve();
+      } catch (error) {
+        addlogs(config, 'Failed tp map entries without mapped uid successfully!', 'error');
       }
-      addlogs(config, 'No entries without mapped uid found!', 'success');
-      return resolve();
     });
   },
   repostEntries: function (lang) {
     let self = this;
-    return new Promise(function (resolve, reject) {
-      let _mapped_ = helper.readFile(path.join(entryMapperPath, 'uid-mapping.json'));
+    return new Promise(async function (resolve, reject) {
+      let _mapped_ = await helper.readLargeFile(path.join(entryMapperPath, 'uid-mapping.json'));
       if (_.isPlainObject(_mapped_)) {
         self.mappedUids = _.merge(_mapped_, self.mappedUids);
       }
       return Promise.map(
         self.refSchemas,
-        function (ctUid) {
+        async function (ctUid) {
           let eFolderPath = path.join(entryMapperPath, lang, ctUid);
           let eSuccessFilePath = path.join(eFolderPath, 'success.json');
           let eFilePath = path.resolve(ePath, ctUid, lang + '.json');
-          let sourceStackEntries = helper.readFile(eFilePath);
+          let sourceStackEntries;
+          try {
+            sourceStackEntries = await helper.readLargeFile(eFilePath);
+          } catch (error) {
+            console.log('error', error);
+          }
 
           if (!fs.existsSync(eSuccessFilePath)) {
             addlogs(config, 'Success file was not found at: ' + eSuccessFilePath, 'success');
             return;
           }
 
-          let entries = helper.readFile(eSuccessFilePath);
+          let entries = await helper.readLargeFile(eSuccessFilePath);
           entries = entries || [];
           if (entries.length === 0) {
             addlogs(config, "No entries were created to be updated in '" + lang + "' language!", 'success');
@@ -516,8 +525,8 @@ importEntries.prototype = {
           }
 
           // Keep track of entries that have their references updated
-          let refsUpdatedUids = helper.readFile(path.join(eFolderPath, 'refsUpdatedUids.json'));
-          let refsUpdateFailed = helper.readFile(path.join(eFolderPath, 'refsUpdateFailed.json'));
+          let refsUpdatedUids = await helper.readLargeFile(path.join(eFolderPath, 'refsUpdatedUids.json'));
+          let refsUpdateFailed = await helper.readLargeFile(path.join(eFolderPath, 'refsUpdateFailed.json'));
           let schema = self.ctSchemas[ctUid];
 
           let batches = [];
@@ -574,7 +583,7 @@ importEntries.prototype = {
                       config,
                       'Entry: ' +
                         entry.uid +
-                        ' in Content Type: ' +
+                        ' in CsourceStackEntriesontent Type: ' +
                         ctUid +
                         ' in lang: ' +
                         lang +
@@ -810,7 +819,7 @@ importEntries.prototype = {
         .entry()
         .query(requestObject.qs)
         .find()
-        .then(function (response) {
+        .then(async function (response) {
           if (response.body.entries.length <= 0) {
             addlogs(config, 'Unable to map entry WO uid: ' + query.entry.uid, 'error');
             self.failedWO.push(query);
@@ -818,7 +827,7 @@ importEntries.prototype = {
           }
           self.mappedUids[query.entry.uid] = response.body.entries[0].uid;
           let _ePath = path.join(entryMapperPath, query.locale, query.content_type, 'success.json');
-          let entries = helper.readFile(_ePath);
+          let entries = await helper.readLargeFile(_ePath);
           entries.push(query.entry);
           helper.writeFile(_ePath, entries);
           addlogs(
@@ -906,8 +915,8 @@ importEntries.prototype = {
   },
   removeBuggedEntries: function () {
     let self = this;
-    return new Promise(function (resolve, reject) {
-      let entries = helper.readFile(uniqueUidMapperPath);
+    return new Promise(async function (resolve, reject) {
+      let entries = await helper.readLargeFile(uniqueUidMapperPath);
       let bugged = [];
       let removed = [];
       for (let uid in entries) {
@@ -962,7 +971,7 @@ importEntries.prototype = {
     });
   },
   field_rules_update: function (schema) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(async function (resolve, reject) {
       if (schema.field_rules) {
         let fieldRuleLength = schema.field_rules.length;
         for (let k = 0; k < fieldRuleLength; k++) {
@@ -974,7 +983,7 @@ importEntries.prototype = {
               let updatedValue = [];
               for (const element of fieldRulesArray) {
                 let splitedFieldRulesValue = element;
-                let oldUid = helper.readFile(path.join(entryUidMapperPath));
+                let oldUid = await helper.readLargeFile(path.join(entryUidMapperPath));
                 if (oldUid.hasOwnProperty(splitedFieldRulesValue)) {
                   updatedValue.push(oldUid[splitedFieldRulesValue]);
                 } else {
@@ -1006,14 +1015,14 @@ importEntries.prototype = {
         });
     });
   },
-  publish: function (langs) {
+  publish: async function (langs) {
     let self = this;
     let requestObject = {
       entry: {},
     };
 
     let contentTypeUids = Object.keys(self.ctSchemas);
-    let entryMapper = helper.readFile(entryUidMapperPath);
+    let entryMapper = await helper.readLargeFile(entryUidMapperPath);
 
     return new Promise(function (resolve, reject) {
       return Promise.map(
@@ -1022,9 +1031,9 @@ importEntries.prototype = {
           let lang = langs[counter];
           return Promise.map(
             contentTypeUids,
-            function (ctUid) {
+            async function (ctUid) {
               let eFilePath = path.resolve(ePath, ctUid, lang + '.json');
-              let entries = helper.readFile(eFilePath);
+              let entries = await helper.readLargeFile(eFilePath);
 
               let eUids = Object.keys(entries);
               let batches = [];
@@ -1230,9 +1239,9 @@ importEntries.prototype = {
     }
     return false;
   },
-  restoreJsonRteEntryRefs: function (entry, sourceStackEntry, ctSchema) {
-    let mappedAssetUids = helper.readFile(mappedAssetUidPath) || {};
-    let mappedAssetUrls = helper.readFile(mappedAssetUrlPath) || {};
+  restoreJsonRteEntryRefs: async function (entry, sourceStackEntry, ctSchema) {
+    let mappedAssetUids = (await helper.readLargeFile(mappedAssetUidPath)) || {};
+    let mappedAssetUrls = (await helper.readLargeFile(mappedAssetUrlPath)) || {};
     for (const element of ctSchema) {
       switch (element.data_type) {
         case 'blocks': {
