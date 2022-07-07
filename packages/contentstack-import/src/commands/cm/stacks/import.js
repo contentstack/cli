@@ -28,7 +28,7 @@ class ImportCommand extends Command {
     let host = self.cmaHost;
 
     return new Promise(function (resolve, reject) {
-      if (version) {
+      if (versioning) {
         defaultConfig.versioning = versioning
       }
       if (data) {
