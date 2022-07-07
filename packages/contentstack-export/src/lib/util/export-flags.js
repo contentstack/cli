@@ -46,7 +46,9 @@ exports.parameterWithMToken = function (
   defaultConfig.cdn = host.cda;
   defaultConfig.branchName = branchName;
   defaultConfig.securedAssets = securedAssets;
-  if (moduleName) {
+  if (!moduleName) {
+    defaultConfig.contentTypes = contentTypes;
+  } else {
     defaultConfig.moduleName = moduleName;
     // Specfic content type setting is only for entries module
     if (moduleName === 'entries' && Array.isArray(contentTypes) && contentTypes.length > 0) {
