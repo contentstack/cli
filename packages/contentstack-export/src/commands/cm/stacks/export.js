@@ -11,6 +11,7 @@ const {
   withoutParametersWithAuthToken,
 } = require('../../../lib/util/export-flags');
 const { configHandler } = require('@contentstack/cli-utilities');
+const defaultConfig = require('../../../config/default')
 
 class ExportCommand extends Command {
   async run() {
@@ -23,12 +24,17 @@ class ExportCommand extends Command {
     const moduleName = exportCommandFlags.module;
     const contentTypes = exportCommandFlags['content-types'];
     const branchName = exportCommandFlags.branch;
+    const exportVersion = exportCommandFlags['export-version']
     let _authToken = configHandler.get('authtoken');
     let host = this.region;
     let cmaHost = host.cma.split('//');
     let cdaHost = host.cda.split('//');
     host.cma = cmaHost[1];
     host.cda = cdaHost[1];
+
+    if (exportVersion) {
+      defaultConfig.versioning = exportVersion
+    }
 
     if (alias) {
       let managementTokens = this.getToken(alias);
@@ -157,6 +163,9 @@ ExportCommand.flags = {
   }),
   'secured-assets': flags.boolean({
     description: '[optional] use when assets are secured',
+  }),
+  'export-version': flags.boolean({
+    description: '[optional] use when assets having versions'
   }),
 };
 
