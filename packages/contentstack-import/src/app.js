@@ -31,15 +31,21 @@ exports.initial = function (configData) {
 
             if (config.moduleName) {
               importRes = singleImport(config.moduleName, types, config)
+                .catch(error => {
+                  addlogs(`Error ${error && error.message}`);
+                });
             } else {
               importRes = allImport(config, types)
+                .catch(error => {
+                  addlogs(`Error ${error && error.message}`);
+                });
             }
 
             importRes
               .then(resolve)
               .catch(reject)
           }).catch((e) => {
-            console.error(e);
+            addlogs('Issue with import content backup creation.!')
             reject(e);
             process.exit(1);
           });
@@ -69,13 +75,19 @@ let singleImport = async (moduleName, types, config) => {
     if (types.indexOf(moduleName) > -1) {
       if (!config.master_locale) {
         try {
-          var masterLocalResponse = await util.masterLocalDetails(config);
-          let master_locale = { code: masterLocalResponse.code };
-          config['master_locale'] = master_locale;
+          const masterLocalResponse = await util.masterLocalDetails(config)
+            .catch(error => {
+              addlogs(`Error ${error && error.message}`);
+            });
+
+          if (masterLocalResponse) {
+            config['master_locale'] = { code: masterLocalResponse.code };
+          }
         } catch (error) {
           console.log('Error to fetch the stack details' + error);
         }
       }
+
       let exportedModule = require('./lib/import/' + moduleName);
       exportedModule
         .start(config)
@@ -111,9 +123,14 @@ let allImport = async (config, types) => {
         let type = types[i];
         var exportedModule = require('./lib/import/' + type);
         if (i === 0 && !config.master_locale) {
-          var masterLocalResponse = await util.masterLocalDetails(config);
-          let master_locale = { code: masterLocalResponse.code };
-          config['master_locale'] = master_locale;
+          const masterLocalResponse = await util.masterLocalDetails(config)
+            .catch(error => {
+              addlogs(`Error ${error && error.message}`);
+            });
+
+          if (masterLocalResponse) {
+            config['master_locale'] = { code: masterLocalResponse.code };
+          }
         }
         await exportedModule.start(config).then((_result) => {
           return;
@@ -122,7 +139,7 @@ let allImport = async (config, types) => {
           addlogs(config, error, 'error');
           addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
           return reject(error);
-        });;
+        });
       }
       if (config.target_stack && config.source_stack) {
         addlogs(
