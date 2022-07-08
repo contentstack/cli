@@ -254,13 +254,14 @@ importEntries.prototype = {
               let eUids = Object.keys(entries);
               let batches = [];
 
+              let batchSize = Math.round(entryBatchLimit / 3);
               // Run entry creation in batches of ~16~ entries
-              for (let i = 0; i < eUids.length; i += Math.round(entryBatchLimit / 3)) {
-                batches.push(eUids.slice(i, i + Math.round(entryBatchLimit / 3)));
+              for (let i = 0; i < eUids.length; i += batchSize) {
+                batches.push(eUids.slice(i, i + batchSize));
               }
               return Promise.map(
                 batches,
-                async function (batch) {
+                async function (batch, batchIndex) {
                   return Promise.map(
                     batch,
                     async function (eUid) {
@@ -398,6 +399,7 @@ importEntries.prototype = {
                       concurrency: 1,
                     },
                   ).then(function () {
+                    console.log(`imported entry of batch ${batchIndex}`);
                     helper.writeFile(successEntryLogPath, self.success[ctUid]);
                     helper.writeFile(failedEntryLogPath, self.fails[ctUid]);
                     helper.writeFile(entryUidMapperPath, self.mappedUids);
