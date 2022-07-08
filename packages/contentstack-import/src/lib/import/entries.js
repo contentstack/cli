@@ -398,7 +398,7 @@ importEntries.prototype = {
                       concurrency: batchSize,
                     },
                   ).then(function () {
-                    console.log(`imported entry of batch ${batchIndex}`);
+                    console.log(`imported entry batch ${batchIndex} of ${ctUid}`);
                     helper.writeFile(successEntryLogPath, self.success[ctUid]);
                     helper.writeFile(failedEntryLogPath, self.fails[ctUid]);
                     helper.writeFile(entryUidMapperPath, self.mappedUids);
