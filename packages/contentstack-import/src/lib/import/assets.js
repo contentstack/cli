@@ -66,8 +66,15 @@ importAssets.prototype = {
       }
       let assetUids = Object.keys(self.assets);
       let batches = [];
-      for (let i = 0; i < assetUids.length; i += assetBatchLimit) {
-        batches.push(assetUids.slice(i, i + assetBatchLimit));
+
+      let batchSize = assetBatchLimit
+
+      if (config.rateLimit) {
+        batchSize = Math.round(config.rateLimit / 3)
+      }
+
+      for (let i = 0; i < assetUids.length; i += batchSize) {
+        batches.push(assetUids.slice(i, i + batchSize));
       }
 
       return self
@@ -99,7 +106,7 @@ importAssets.prototype = {
                           // empty function
                         })
                         .catch(function (error) {
-                          addlogs(config, (chalk.red('Asset upload failed \n' + error), 'error'));
+                          addlogs(config, (chalk.red(`Asset upload failed ${assetUid} \n` + error), 'error'));
                         });
                     }
                     let assetPath = path.resolve(currentAssetFolderPath, self.assets[assetUid].filename);
@@ -144,7 +151,7 @@ importAssets.prototype = {
                   addlogs(config, currentAssetFolderPath + ' does not exist!', 'error');
                 },
                 {
-                  concurrency: 1,
+                  concurrency: batchSize
                 },
               ).then(function () {
                 helper.writeFile(self.uidMapperPath, self.uidMapping);
@@ -156,7 +163,7 @@ importAssets.prototype = {
               });
             },
             {
-              concurrency: 1,
+              concurrency: 2
             },
           )
             .then(function () {
