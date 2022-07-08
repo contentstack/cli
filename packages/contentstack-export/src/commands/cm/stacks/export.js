@@ -36,6 +36,10 @@ class ExportCommand extends Command {
       defaultConfig.versioning = exportVersion
     }
 
+    if (data) {
+      defaultConfig.data = data
+    }
+
     if (alias) {
       let managementTokens = this.getToken(alias);
       if (managementTokens) {
