@@ -39,7 +39,6 @@ let failedWOPath;
 let masterLanguage;
 
 let skipFiles = ['__master.json', '__priority.json', 'schema.json'];
-let entryBatchLimit = config.rateLimit || 10;
 
 function importEntries() {
   let self = this;
@@ -253,7 +252,7 @@ importEntries.prototype = {
               }
               let eUids = Object.keys(entries);
               let batches = [];
-
+              let entryBatchLimit = config.rateLimit || 10;
               let batchSize = Math.round(entryBatchLimit / 3);
               // Run entry creation in batches of ~16~ entries
               for (let i = 0; i < eUids.length; i += batchSize) {
@@ -396,7 +395,7 @@ importEntries.prototype = {
                       // create/update 5 entries at a time
                     },
                     {
-                      concurrency: 1,
+                      concurrency: batchSize,
                     },
                   ).then(function () {
                     console.log(`imported entry of batch ${batchIndex}`);
@@ -409,7 +408,7 @@ importEntries.prototype = {
                   // process one batch at a time
                 },
                 {
-                  concurrency: 1,
+                  concurrency: 2,
                 },
               ).then(function () {
                 if (self.success && self.success[ctUid] && self.success[ctUid].length > 0)
@@ -569,9 +568,11 @@ importEntries.prototype = {
             }
           });
 
+          let entryBatchLimit = config.rateLimit || 10;
+          let batchSize = Math.round(entryBatchLimit / 3);
           // Run entry creation in batches of ~16~ entries
-          for (let i = 0; i < entries.length; i += Math.round(entryBatchLimit / 3)) {
-            batches.push(entries.slice(i, i + Math.round(entryBatchLimit / 3)));
+          for (let i = 0; i < entries.length; i += batchSize) {
+            batches.push(entries.slice(i, i + batchSize));
           }
           return Promise.map(
             batches,
@@ -641,7 +642,7 @@ importEntries.prototype = {
                   await promiseResult;
                 },
                 {
-                  concurrency: reqConcurrency,
+                  concurrency: batchSize,
                 },
               )
                 .then(function () {
@@ -658,7 +659,7 @@ importEntries.prototype = {
                 });
             },
             {
-              concurrency: reqConcurrency,
+              concurrency: 2,
             },
           )
             .then(function () {
