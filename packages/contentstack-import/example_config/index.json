@@ -1,7 +1,5 @@
-{"master_locale": {
-    "name": "English - United States",
-    "code": "en-us"
-  },
-  "target_stack": "dummy_value",
-  "data": "Path"
+{
+  "data": "",
+  "rateLimit": 100,
+  "target_stack": ""
 }
