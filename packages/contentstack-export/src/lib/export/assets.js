@@ -93,7 +93,7 @@ ExportAssets.prototype = {
                           .then(function () {
                             self.assetContents[assetJSON.uid] = assetJSON;
                           }).catch((err) => {
-                            addlogs({ errorCode: (err && err.code), uid: assetJSON.uid }, 'Asset download failed', 'error');
+                            addlogs({ errorCode: (err && err.code), uid: assetJSON.uid }, `Asset download failed - ${assetJSON.uid}`, 'error');
                           })
                       }
                     },
