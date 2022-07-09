@@ -34,6 +34,9 @@ exports.makeDirectory = function () {
 };
 
 exports.readLargeFile = function (filePath) {
+  if (typeof filePath !== 'string') {
+    return;
+  }
   filePath = path.resolve(filePath);
   if (fs.existsSync(filePath)) {
     return new Promise((resolve, reject) => {
@@ -51,6 +54,28 @@ exports.readLargeFile = function (filePath) {
       readStream.pipe(parseStream);
     });
   }
+};
+
+exports.writeLargeFile = function (filePath, data) {
+  if (typeof filePath !== 'string' || typeof data !== 'object') {
+    return;
+  }
+  filePath = path.resolve(filePath);
+  return new Promise((resolve, reject) => {
+    const stringifyStream = bigJSON.createStringifyStream({
+      body: data,
+    });
+    var writeStream = fs.createWriteStream(filePath, 'utf-8');
+    stringifyStream.pipe(writeStream);
+
+    writeStream.on('finish', () => {
+      resolve();
+    });
+
+    writeStream.on('error', (error) => {
+      reject(error);
+    });
+  });
 };
 
 exports.readdir = function (dirPath) {
