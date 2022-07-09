@@ -351,8 +351,9 @@ ExportAssets.prototype = {
               console.log(`${asset.filename}: ${Math.round(progressData.percentage)}%`);
             });
             assetStreamRequest.pipe(str).pipe(assetFileStream);
+          } else {
+            assetStreamRequest.pipe(assetFileStream);
           }
-          assetStreamRequest.pipe(assetFileStream);
         })
         .catch(reject);
       assetFileStream
