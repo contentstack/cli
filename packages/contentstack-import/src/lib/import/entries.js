@@ -399,18 +399,14 @@ importEntries.prototype = {
                     },
                   ).then(function () {
                     console.log(`imported entry batch ${batchIndex} of ${ctUid}`);
-                    helper.writeFile(successEntryLogPath, self.success[ctUid]);
-                    helper.writeFile(failedEntryLogPath, self.fails[ctUid]);
-                    helper.writeFile(entryUidMapperPath, self.mappedUids);
-                    helper.writeFile(uniqueUidMapperPath, self.uniqueUids);
-                    helper.writeFile(createdEntriesPath, createdEntries);
+                    // helper.writeFile(createdEntriesPath, createdEntries);
                   });
                   // process one batch at a time
                 },
                 {
                   concurrency: 2,
                 },
-              ).then(function () {
+              ).then(async function () {
                 if (self.success && self.success[ctUid] && self.success[ctUid].length > 0)
                   addlogs(
                     config,
@@ -433,6 +429,10 @@ importEntries.prototype = {
                       ' locale!',
                     'error',
                   );
+                await helper.writeLargeFile(successEntryLogPath, self.success[ctUid]);
+                await helper.writeLargeFile(failedEntryLogPath, self.fails[ctUid]);
+                await helper.writeLargeFile(entryUidMapperPath, self.mappedUids);
+                await helper.writeLargeFile(uniqueUidMapperPath, self.uniqueUids);
                 self.success[ctUid] = [];
                 self.fails[ctUid] = [];
               });
@@ -460,6 +460,7 @@ importEntries.prototype = {
           return resolve();
         })
         .catch(function (error) {
+          console.log('error', error);
           addlogs(config, chalk.red("Failed to create entries in '" + lang + "' language"), 'error');
           return reject(error);
         });
@@ -645,11 +646,11 @@ importEntries.prototype = {
                   concurrency: batchSize,
                 },
               )
-                .then(function () {
+                .then(async function () {
                   // batch completed successfully
-                  helper.writeFile(path.join(eFolderPath, 'success.json'), entries);
-                  helper.writeFile(path.join(eFolderPath, 'refsUpdatedUids.json'), refsUpdatedUids);
-                  helper.writeFile(path.join(eFolderPath, 'refsUpdateFailed.json'), refsUpdateFailed);
+                  await helper.writeLargeFile(path.join(eFolderPath, 'success.json'), entries);
+                  await helper.writeLargeFile(path.join(eFolderPath, 'refsUpdatedUids.json'), refsUpdatedUids);
+                  await helper.writeLargeFile(path.join(eFolderPath, 'refsUpdateFailed.json'), refsUpdateFailed);
                   addlogs(config, 'Completed re-post entries batch no: ' + (index + 1) + ' successfully!', 'success');
                 })
                 .catch(function (error) {
@@ -953,7 +954,7 @@ importEntries.prototype = {
           concurrency: reqConcurrency,
         },
       )
-        .then(function () {
+        .then(async function () {
           for (let i = 0; i < bugged.length; i++) {
             if (removed.indexOf(bugged[i].uid) !== -1) {
               bugged.splice(i, 1);
@@ -961,8 +962,8 @@ importEntries.prototype = {
             }
           }
 
-          helper.writeFile(path.join(entryMapperPath, 'removed-uids.json'), removed);
-          helper.writeFile(path.join(entryMapperPath, 'pending-uids.json'), bugged);
+          await helper.writeLargeFile(path.join(entryMapperPath, 'removed-uids.json'), removed);
+          await helper.writeLargeFile(path.join(entryMapperPath, 'pending-uids.json'), bugged);
 
           addlogs(config, chalk.green('The stack has been eradicated from bugged entries!'), 'success');
           return resolve();
