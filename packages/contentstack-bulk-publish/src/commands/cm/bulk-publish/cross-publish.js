@@ -230,6 +230,7 @@ CrossPublishCommand.flags = {
     char: 'B',
     default: 'main',
     description: 'Specify the branch to fetch the content (by default the main branch is selected)',
+    parse: printFlagDeprecation(['-B']),
   }),
   onlyAssets: flags.boolean({ description: 'Unpublish only assets', default: false }),
   onlyEntries: flags.boolean({ description: 'Unpublish only entries', default: false }),
@@ -248,8 +249,8 @@ CrossPublishCommand.examples = [
   'csdx cm:bulk-publish:cross-publish --retry-failed [LOG FILE NAME]',
   'csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]',
   '',
-  'Using --branch or -B flag',
-  'csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] -B [BRANCH NAME]',
+  'Using --branch flag',
+  'csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]',
 ];
 
 module.exports = CrossPublishCommand;
