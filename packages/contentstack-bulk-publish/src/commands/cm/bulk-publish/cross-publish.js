@@ -161,7 +161,6 @@ CrossPublishCommand.flags = {
     parse: printFlagDeprecation(['--retryFailed', '-r'], ['--retry-failed']),
   }),
   'retry-failed': flags.string({
-    char: 'r',
     description: '(optional) Retry publishing failed entries from the logfile (this flag overrides all other flags)',
   }),
   bulkPublish: flags.string({
@@ -173,7 +172,6 @@ CrossPublishCommand.flags = {
     parse: printFlagDeprecation(['--bulkPublish', '-b'], ['--bulk-publish']),
   }),
   'bulk-publish': flags.string({
-    char: 'b',
     description:
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
@@ -212,17 +210,16 @@ CrossPublishCommand.flags = {
     description: 'Destination Environments',
     multiple: true,
     hidden: true,
-    parse: printFlagDeprecation(['--destEnv', '-e'], ['--environment']),
+    parse: printFlagDeprecation(['--destEnv'], ['--environments']),
   }),
   'environments': flags.string({
-    char: 'e',
     description: 'Destination Environments',
   }),
   deliveryToken: flags.string({
     char: 'x',
     description: 'Delivery token for source environment',
     hidden: true,
-    parse: printFlagDeprecation(['--deliveryToken', '-e'], ['--delivery-token']),
+    parse: printFlagDeprecation(['--deliveryToken', '-x'], ['--delivery-token']),
   }),
   'delivery-token': flags.string({
     description: 'Delivery token for source environment',
@@ -240,19 +237,19 @@ CrossPublishCommand.flags = {
 
 CrossPublishCommand.examples = [
   'General Usage',
-  'csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]',
+  'csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN]',
   '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
   'csdx cm:bulk-publish:cross-publish --config [PATH TO CONFIG FILE]',
   'csdx cm:bulk-publish:cross-publish -c [PATH TO CONFIG FILE]',
   '',
-  'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:cross-publish --retryFailed [LOG FILE NAME]',
+  'Using --retry-failed flag',
+  'csdx cm:bulk-publish:cross-publish --retry-failed [LOG FILE NAME]',
   'csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]',
   '',
   'Using --branch or -B flag',
-  'csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]',
+  'csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] -B [BRANCH NAME]',
 ];
 
 module.exports = CrossPublishCommand;
