@@ -3,13 +3,15 @@
  * Copyright (c) 2019 Contentstack LLC
  * MIT Licensed
  */
+const fs = require('fs')
 const _ = require('lodash')
 const path = require('path');
+const mkdirp = require('mkdirp');
 const eachOf = require('async/eachOf');
 const { HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
 
 let config = require('../../config/default');
-const { readFile } = require('../util/fs');
+const { readFile, writeFile } = require('../util/fs');
 const { addlogs: log } = require('../util/log');
 let stack = require('../util/contentstack-management-sdk');
 
@@ -19,6 +21,7 @@ const marketplaceAppConfig = config.modules.marketplace_apps;
 function importMarketplaceApps() {
   this.marketplaceApps = []
   this.marketplaceAppFolderPath = ''
+
   this.start = async (credentialConfig) => {
     config = credentialConfig;
     client = stack.Client(config);
@@ -69,43 +72,6 @@ function importMarketplaceApps() {
     })
   }
 
-  this.updateAppsConfig = ({ data, app, httpClient, nodeCrypto }) => {
-    return new Promise((resolve, reject) => {
-      if (_.isEmpty(data)) {
-        return resolve()
-      } else {
-        const { title, configuration, server_configuration } = app
-        log(config, `${title} app config updated started.!`, 'success')
-
-        if (configuration || server_configuration) {
-          const payload = {}
-
-          if (!_.isEmpty(configuration)) {
-            payload['configuration'] = nodeCrypto.decrypt(configuration)
-          }
-          if (!_.isEmpty(server_configuration)) {
-            payload['server_configuration'] = nodeCrypto.decrypt(server_configuration)
-          }
-
-          if (_.isEmpty(payload) || !data.installation_uid) {
-            resolve()
-          } else {
-            httpClient.put(`${config.developerHubBaseUrl}/installations/${data.installation_uid}`, payload)
-              .then(() => {
-                log(config, `${title} app config updated successfully.!`, 'success')
-              }).then(resolve)
-              .catch(err => {
-                console.log(err)
-                reject()
-              })
-          }
-        } else {
-          return resolve()
-        }
-      }
-    })
-  }
-
   this.installApps = async () => {
     const self = this
     log(config, 'Starting marketplace app installation', 'success');
@@ -152,9 +118,82 @@ function importMarketplaceApps() {
           console.log(err)
           cb()
         })
-      }, () => {
+      }, async () => {
+        const installedExtensions = await self.getInstalledExtensions()
+        const mapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps');
+
+        if (!fs.existsSync(mapperFolderPath)) {
+          mkdirp.sync(mapperFolderPath);
+        }
+
+        const appUidMapperPath = path.join(mapperFolderPath, 'marketplace-apps.json')
+        const installedExt = _.map(
+          installedExtensions,
+          (row) => _.pick(row, ['uid', 'title', 'type', 'app_uid', 'app_installation_uid'])
+        )
+
+        writeFile(appUidMapperPath, installedExt);
+
         resolve()
       })
+    })
+  }
+
+  this.updateAppsConfig = ({ data, app, httpClient, nodeCrypto }) => {
+    return new Promise((resolve, reject) => {
+      if (_.isEmpty(data)) {
+        return resolve()
+      } else {
+        const { title, configuration, server_configuration } = app
+        log(config, `${title} app config updated started.!`, 'success')
+
+        if (configuration || server_configuration) {
+          const payload = {}
+
+          if (!_.isEmpty(configuration)) {
+            payload['configuration'] = nodeCrypto.decrypt(configuration)
+          }
+          if (!_.isEmpty(server_configuration)) {
+            payload['server_configuration'] = nodeCrypto.decrypt(server_configuration)
+          }
+
+          if (_.isEmpty(payload) || !data.installation_uid) {
+            resolve()
+          } else {
+            httpClient.put(`${config.developerHubBaseUrl}/installations/${data.installation_uid}`, payload)
+              .then(() => {
+                log(config, `${title} app config updated successfully.!`, 'success')
+              }).then(resolve)
+              .catch(err => {
+                console.log(err)
+                reject()
+              })
+          }
+        } else {
+          return resolve()
+        }
+      }
+    })
+  }
+
+  this.getExtensionUid = () => {
+    return new Promise((resolve, reject) => {
+      const queryRequestOptions = {
+        include_marketplace_extensions: true
+      }
+      const { target_stack: api_key, management_token } = config || {}
+
+      if (api_key && management_token) {
+        return client
+          .stack({ api_key, management_token })
+          .extension()
+          .query(queryRequestOptions)
+          .find()
+          .then(({ items }) => resolve(items))
+          .catch(reject)
+      } else {
+        resolve([])
+      }
     })
   }
 }
