@@ -8,6 +8,7 @@ module.exports = {
   // not passing `locale` will migrate all the locales present
   // locales: ['fr-fr'],
   host: 'https://api.contentstack.io/v3',
+  extensionHost: 'https://app.contentstack.com',
   modules: {
     types: [
       'locales',

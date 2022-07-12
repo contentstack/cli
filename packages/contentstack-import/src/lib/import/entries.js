@@ -10,16 +10,18 @@ const _ = require('lodash');
 const mkdirp = require('mkdirp');
 const chalk = require('chalk');
 
+const util = require('../util');
 const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
+const suppress = require('../util/supress-mandatory-fields');
+const stack = require('../util/contentstack-management-sdk');
+const extension_suppress = require('../util/extensionsUidReplace');
 const lookupReplaceAssets = require('../util/lookupReplaceAssets');
 const lookupReplaceEntries = require('../util/lookupReplaceEntries');
-const suppress = require('../util/supress-mandatory-fields');
-const extension_suppress = require('../util/extensionsUidReplace');
-const util = require('../util');
-let config = util.getConfig();
-const stack = require('../util/contentstack-management-sdk');
+const { getInstalledExtensions } = require('../util/marketplace-app-helper')
+
 let client;
+let config = util.getConfig();
 
 let reqConcurrency = config.concurrency;
 let eConfig = config.modules.entries;
@@ -118,7 +120,7 @@ importEntries.prototype = {
     }
 
     if (_.isEmpty(self.installedExtensions)) {
-      self.installedExtensions = await self.getExtensionUid()
+      self.installedExtensions = await getInstalledExtensions(config)
     }
 
     return new Promise(function (resolve, reject) {
@@ -1462,26 +1464,6 @@ importEntries.prototype = {
     }
 
     return jsonRteChild;
-  },
-  getExtensionUid: function () {
-    return new Promise((resolve, reject) => {
-      const queryRequestOptions = {
-        include_marketplace_extensions: true
-      }
-      const { target_stack: api_key, management_token } = config || {}
-
-      if (api_key && management_token) {
-        return client
-          .stack({ api_key, management_token })
-          .extension()
-          .query(queryRequestOptions)
-          .find()
-          .then(({ items }) => resolve(items))
-          .catch(reject)
-      } else {
-        resolve([])
-      }
-    })
   }
 };
 
