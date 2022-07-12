@@ -98,7 +98,7 @@ ExportCommand.examples = [
   'csdx cm:stacks:export --module <single module name>',
   'csdx cm:stacks:export --branch [optional] branch name',
 ];
-ExportCommand.usage = 'cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--branch <value>]';
+ExportCommand.usage = 'cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]';
 
 ExportCommand.flags = {
   config: flags.string({
