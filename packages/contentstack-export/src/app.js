@@ -88,7 +88,10 @@ var singleExport = async (moduleName, types, config, branchName) => {
 
       for (let i = 0; i < iterateList.length; i++) {
         var exportedModule = require('./lib/export/' + iterateList[i]);
-        const result = await exportedModule.start(config, branchName);
+        const result = await exportedModule.start(config, branchName)
+          .catch((error) => {
+            console.log(error && error.message)
+          });
         if (result && iterateList[i] === 'stack') {
           let master_locale = {
             master_locale: { code: result.code },
@@ -117,7 +120,11 @@ var allExport = async (config, types, branchName) => {
       for (let i = 0; i < types.length; i++) {
         let type = types[i];
         var exportedModule = require('./lib/export/' + type);
-        const result = await exportedModule.start(config, branchName);
+        const result = await exportedModule.start(config, branchName)
+          .catch((error) => {
+            console.log(error && error.message)
+          });
+
         if (result && type === 'stack') {
           let master_locale = { master_locale: { code: result.code } };
           config = _.merge(config, master_locale);
