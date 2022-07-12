@@ -1,6 +1,6 @@
 /* eslint-disable node/no-extraneous-require */
 const { Command, flags } = require('@contentstack/cli-command');
-const { cliux } = require('@contentstack/cli-utilities');
+const { cliux, printFlagDeprecation } = require('@contentstack/cli-utilities');
 const { start } = require('../../../producer/cross-publish');
 const store = require('../../../util/store.js');
 const configKey = 'cross_env_publish';
@@ -10,7 +10,7 @@ let config;
 
 class CrossPublishCommand extends Command {
   async run() {
-    const crossPublishFlags = this.parse(CrossPublishCommand).flags;
+    const crossPublishFlags = this.flagsAdapter(this.parse(CrossPublishCommand).flags);
     let updatedFlags;
     try {
       updatedFlags = crossPublishFlags.config ? store.updateMissing(configKey, crossPublishFlags) : crossPublishFlags;
@@ -111,6 +111,38 @@ class CrossPublishCommand extends Command {
     }
     return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
+
+  flagsAdapter(flags) {
+    if ('content-type' in flags) {
+      flags.contentType = flags['content-type'];
+      delete flags['content-type'];
+    }
+    if ('locales' in flags) {
+      flags.locale = flags.locales;
+      delete flags['locales'];
+    }
+    if ('retry-failed' in flags) {
+      flags.retryFailed = flags['retry-failed'];
+      delete flags['retry-failed'];
+    }
+    if ('bulk-publish' in flags) {
+      flags.bulkPublish = flags['bulk-publish'];
+      delete flags['bulk-publish'];
+    }
+    if ('source-env' in flags) {
+      flags.environment = flags['source-env'];
+      delete flags['source-env'];
+    }
+    if ('environments' in flags) {
+      flags.destEnv = flags['environments'];
+      delete flags['environments'];
+    }
+    if ('delivery-token' in flags) {
+      flags.deliveryToken = flags['delivery-token'];
+      delete flags['delivery-token'];
+    }
+    return flags;
+  }
 }
 
 CrossPublishCommand.description = `Publish entries and assets from one environment to other environments
@@ -125,24 +157,80 @@ CrossPublishCommand.flags = {
   retryFailed: flags.string({
     char: 'r',
     description: '(optional) Retry publishing failed entries from the logfile (this flag overrides all other flags)',
+    hidden: true,
+    parse: printFlagDeprecation(['--retryFailed', '-r'], ['--retry-failed']),
+  }),
+  'retry-failed': flags.string({
+    description: '(optional) Retry publishing failed entries from the logfile (this flag overrides all other flags)',
   }),
   bulkPublish: flags.string({
     char: 'b',
+    hidden: true,
     description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries and assets",
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
+    default: 'true',
+    parse: printFlagDeprecation(['--bulkPublish', '-b'], ['--bulk-publish']),
+  }),
+  'bulk-publish': flags.string({
+    description:
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
   }),
-  contentType: flags.string({ char: 't', description: 'Content type filter' }),
-  locale: flags.string({ char: 'l', description: 'Locale filter' }),
-  environment: flags.string({ char: 'e', description: 'Source Environment' }),
-  deliveryToken: flags.string({ char: 'x', description: 'Delivery token for source environment' }),
-  destEnv: flags.string({ char: 'd', description: 'Destination Environments', multiple: true }),
+  contentType: flags.string({
+    char: 't',
+    description: 'The Content-Types from which entries need to be published',
+    multiple: true,
+    hidden: true,
+    parse: printFlagDeprecation(['--contentType', '-t'], ['--content-type']),
+  }),
+  'content-type': flags.string({
+    description: 'The Contenttypes from which entries will be published',
+    multiple: true,
+  }),
+  locale: flags.string({
+    hidden: true,
+    char: 'l',
+    description: 'Source locale',
+    parse: printFlagDeprecation(['-l'], ['--locales']),
+  }),
+  locales: flags.string({
+    description: 'Source locale',
+  }),
+  environment: flags.string({
+    char: 'e',
+    description: 'Source Environment',
+    hidden: true,
+    parse: printFlagDeprecation(['--environment', '-e'], ['--source-env']),
+  }),
+  'source-env': flags.string({
+    description: 'Source Env',
+  }),
+  destEnv: flags.string({
+    char: 'd',
+    description: 'Destination Environments',
+    multiple: true,
+    hidden: true,
+    parse: printFlagDeprecation(['--destEnv'], ['--environments']),
+  }),
+  'environments': flags.string({
+    description: 'Destination Environments',
+  }),
+  deliveryToken: flags.string({
+    char: 'x',
+    description: 'Delivery token for source environment',
+    hidden: true,
+    parse: printFlagDeprecation(['--deliveryToken', '-x'], ['--delivery-token']),
+  }),
+  'delivery-token': flags.string({
+    description: 'Delivery token for source environment',
+  }),
   config: flags.string({ char: 'c', description: 'Path to the config file' }),
   yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
   branch: flags.string({
     char: 'B',
     default: 'main',
     description: 'Specify the branch to fetch the content (by default the main branch is selected)',
+    parse: printFlagDeprecation(['-B']),
   }),
   onlyAssets: flags.boolean({ description: 'Unpublish only assets', default: false }),
   onlyEntries: flags.boolean({ description: 'Unpublish only entries', default: false }),
@@ -150,19 +238,19 @@ CrossPublishCommand.flags = {
 
 CrossPublishCommand.examples = [
   'General Usage',
-  'csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]',
+  'csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN]',
   '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
   'csdx cm:bulk-publish:cross-publish --config [PATH TO CONFIG FILE]',
   'csdx cm:bulk-publish:cross-publish -c [PATH TO CONFIG FILE]',
   '',
-  'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:cross-publish --retryFailed [LOG FILE NAME]',
+  'Using --retry-failed flag',
+  'csdx cm:bulk-publish:cross-publish --retry-failed [LOG FILE NAME]',
   'csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]',
   '',
-  'Using --branch or -B flag',
-  'csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]',
+  'Using --branch flag',
+  'csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]',
 ];
 
 module.exports = CrossPublishCommand;
