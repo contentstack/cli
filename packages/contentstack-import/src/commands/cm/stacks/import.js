@@ -1,6 +1,5 @@
-let _ = require('lodash');
-const defaultConfig = require('../../../config/default')
 const { Command, flags } = require('@contentstack/cli-command');
+let _ = require('lodash');
 const { configHandler } = require('@contentstack/cli-utilities');
 const {
   configWithMToken,
@@ -26,23 +25,19 @@ class ImportCommand extends Command {
     let branchName = importCommandFlags.branch;
     let host = self.cmaHost;
 
-    return new Promise((resolve, reject) => {
-      if (data) {
-        defaultConfig.data = data;
-      }
-
+    return new Promise(function (resolve, reject) {
       if (alias) {
         let managementTokens = self.getToken(alias);
 
         if (managementTokens) {
-          let result;
+          let result
 
           if ((extConfig && _authToken) || alias) {
-            result = configWithMToken(extConfig, managementTokens, moduleName, host, _authToken, backupdir, branchName);
+            result = configWithMToken(extConfig, managementTokens, moduleName, host, _authToken, backupdir, branchName)
           } else if (data) {
-            result = parameterWithMToken(managementTokens, data, moduleName, host, _authToken, backupdir, branchName);
+            result = parameterWithMToken(managementTokens, data, moduleName, host, _authToken, backupdir, branchName)
           } else {
-            result = withoutParameterMToken(managementTokens, moduleName, host, _authToken, backupdir, branchName);
+            result = withoutParameterMToken(managementTokens, moduleName, host, _authToken, backupdir, branchName)
           }
 
           result
@@ -52,14 +47,14 @@ class ImportCommand extends Command {
           console.log('management Token is not present please add managment token first');
         }
       } else if (_authToken) {
-        let result;
+        let result
 
         if (extConfig) {
-          result = configWithAuthToken(extConfig, _authToken, moduleName, host, backupdir, branchName);
+          result = configWithAuthToken(extConfig, _authToken, moduleName, host, backupdir, branchName)
         } else if (targetStack && data) {
-          result = parametersWithAuthToken(_authToken, targetStack, data, moduleName, host, backupdir, branchName);
+          result = parametersWithAuthToken(_authToken, targetStack, data, moduleName, host, backupdir, branchName)
         } else {
-          result = withoutParametersWithAuthToken(_authToken, moduleName, host, backupdir, branchName);
+          result = withoutParametersWithAuthToken(_authToken, moduleName, host, backupdir, branchName)
         }
 
         result

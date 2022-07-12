@@ -11,7 +11,7 @@ let message = require('../../../messages/index.json');
 
 exports.configWithMToken = function (config, managementTokens, moduleName, host, _authToken, backupdir, branchName) {
   return new Promise(async function (resolve, reject) {
-    let externalConfig = config ? require(config) : {};
+    let externalConfig = require(config);
     const modules = externalConfig.modules
 
     if (_.isArray(externalConfig['modules'])) {
