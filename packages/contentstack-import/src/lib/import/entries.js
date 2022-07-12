@@ -35,6 +35,7 @@ let entryUidMapperPath;
 let uniqueUidMapperPath;
 let modifiedSchemaPath;
 let createdEntriesWOUidPath;
+let refSchemaPath;
 let failedWOPath;
 let masterLanguage;
 
@@ -49,6 +50,7 @@ function importEntries() {
   environmentPath = path.resolve(config.data, 'environments', 'environments.json');
   mkdirp.sync(entryMapperPath);
 
+  refSchemaPath = path.resolve(entryMapperPath, 'refSchema.json');
   entryUidMapperPath = path.join(entryMapperPath, 'uid-mapping.json');
   uniqueUidMapperPath = path.join(entryMapperPath, 'unique-mapping.json');
   modifiedSchemaPath = path.join(entryMapperPath, 'modified-schemas.json');
@@ -122,6 +124,7 @@ importEntries.prototype = {
       return self
         .supressFields()
         .then(async function () {
+          await helper.writeLargeFile(refSchemaPath, self.refSchemas);
           let mappedAssetUids = helper.readFile(mappedAssetUidPath) || {};
           let mappedAssetUrls = helper.readFile(mappedAssetUrlPath) || {};
 
@@ -137,6 +140,8 @@ importEntries.prototype = {
               ) {
                 await self.createEntries(lang, mappedAssetUids, mappedAssetUrls);
                 await self.getCreatedEntriesWOUid();
+                helper.writeFile(path.join(entryMapperPath, 'schema.json'), self.ctSchemas);
+                helper.writeFile(path.join(entryMapperPath, 'ctJsonRte.json'), self.ctJsonRte);
                 await self.repostEntries(lang);
                 addlogs(config, "Successfully imported '" + lang + "' entries!", 'success');
                 counter++;
@@ -250,6 +255,7 @@ importEntries.prototype = {
                   );
                 }
               }
+
               let eUids = Object.keys(entries);
               let batches = [];
               let entryBatchLimit = config.rateLimit || 10;
@@ -497,13 +503,21 @@ importEntries.prototype = {
   repostEntries: function (lang) {
     let self = this;
     return new Promise(async function (resolve, reject) {
+      let refSchemas = (await helper.readLargeFile(refSchemaPath, { type: 'array' })) || []; // TBD LARGE
       let _mapped_ = await helper.readLargeFile(path.join(entryMapperPath, 'uid-mapping.json'));
       if (_.isPlainObject(_mapped_)) {
         self.mappedUids = _.merge(_mapped_, self.mappedUids);
       }
+
+      console.log('Starting the refscema map for reposting');
+      addlogs(config, 'Starting the refscema map for reposting');
+
       return Promise.map(
-        self.refSchemas,
+        refSchemas,
         async function (ctUid) {
+          console.log('started the resposting for contenttype', ctUid);
+          addlogs(config, 'started the resposting for contenttype', ctUid);
+
           let eFolderPath = path.join(entryMapperPath, lang, ctUid);
           let eSuccessFilePath = path.join(eFolderPath, 'success.json');
           let eFilePath = path.resolve(ePath, ctUid, lang + '.json');
@@ -519,7 +533,7 @@ importEntries.prototype = {
             return;
           }
 
-          let entries = await helper.readLargeFile(eSuccessFilePath);
+          let entries = await helper.readLargeFile(eSuccessFilePath, { type: 'array' }); // TBD LARGE
           entries = entries || [];
           if (entries.length === 0) {
             addlogs(config, "No entries were created to be updated in '" + lang + "' language!", 'success');
@@ -528,16 +542,24 @@ importEntries.prototype = {
 
           // Keep track of entries that have their references updated
           let refsUpdatedUids = await helper.readLargeFile(path.join(eFolderPath, 'refsUpdatedUids.json'));
-          let refsUpdateFailed = await helper.readLargeFile(path.join(eFolderPath, 'refsUpdateFailed.json'));
+          let refsUpdateFailed = await helper.readLargeFile(path.join(eFolderPath, 'refsUpdateFailed.json'), {
+            type: 'array',
+          }); // TBD LARGE
           let schema = self.ctSchemas[ctUid];
 
           let batches = [];
-          refsUpdatedUids = refsUpdatedUids || [];
+          refsUpdatedUids = refsUpdatedUids || {};
           refsUpdateFailed = refsUpdateFailed || [];
 
           // map reference uids @mapper/language/mapped-uids.json
           // map failed reference uids @mapper/language/unmapped-uids.json
           let refUidMapperPath = path.join(entryMapperPath, lang);
+
+          console.log('staring to update the entry for reposting');
+          addlogs(config, 'staring to update the entry for reposting');
+
+          let contentTypeEntryMapUIds =
+            (await helper.readLargeFile(path.join(refUidMapperPath, 'mapped-uids.json'))) || {};
 
           entries = _.map(entries, function (entry) {
             try {
@@ -557,8 +579,9 @@ importEntries.prototype = {
                   content_type: schema,
                   entry: updatedEntry,
                 },
-                _.clone(self.mappedUids),
+                self.mappedUids,
                 refUidMapperPath,
+                contentTypeEntryMapUIds,
               );
               // if there's self references, the uid gets replaced
               _entry.uid = uid;
@@ -569,12 +592,21 @@ importEntries.prototype = {
             }
           });
 
+          // write the mapped contents to ./mapper/language/mapped-uids.json
+          await helper.writeLargeFile(path.join(refUidMapperPath, 'mapped-uids.json'), contentTypeEntryMapUIds);
+
+          console.log('Starting the batch creation process for reposting entries');
+          addlogs(config, 'Starting the batch creation process for reposting entries');
+
           let entryBatchLimit = config.rateLimit || 10;
           let batchSize = Math.round(entryBatchLimit / 3);
           // Run entry creation in batches of ~16~ entries
           for (let i = 0; i < entries.length; i += batchSize) {
             batches.push(entries.slice(i, i + batchSize));
           }
+
+          console.log('Starting the reposting process for entries');
+          addlogs(config, 'Starting the reposting process for entries');
           return Promise.map(
             batches,
             async function (batch, index) {
@@ -582,7 +614,7 @@ importEntries.prototype = {
                 batch,
                 async function (entry) {
                   entry.uid = self.mappedUids[entry.uid];
-                  if (refsUpdatedUids.indexOf(entry.uid) !== -1) {
+                  if (refsUpdatedUids[entry.uid]) {
                     addlogs(
                       config,
                       'Entry: ' +
@@ -607,13 +639,14 @@ importEntries.prototype = {
                     return entryResponse
                       .update({ locale: lang })
                       .then((response) => {
-                        for (let j = 0; j < entries.length; j++) {
-                          if (entries[j].uid === response.uid) {
-                            entries[j] = response;
-                            break;
-                          }
-                        }
-                        refsUpdatedUids.push(response.uid);
+                        // for better performance commenting below code
+                        // for (let j = 0; j < entries.length; j++) {
+                        //   if (entries[j].uid === response.uid) {
+                        //     entries[j] = response;
+                        //     break;
+                        //   }
+                        // }
+                        refsUpdatedUids[response.uid] = response.uid;
                         return resolveUpdatedUids();
                       })
                       .catch(function (error) {
@@ -648,10 +681,11 @@ importEntries.prototype = {
               )
                 .then(async function () {
                   // batch completed successfully
-                  await helper.writeLargeFile(path.join(eFolderPath, 'success.json'), entries);
-                  await helper.writeLargeFile(path.join(eFolderPath, 'refsUpdatedUids.json'), refsUpdatedUids);
-                  await helper.writeLargeFile(path.join(eFolderPath, 'refsUpdateFailed.json'), refsUpdateFailed);
-                  addlogs(config, 'Completed re-post entries batch no: ' + (index + 1) + ' successfully!', 'success');
+                  addlogs(
+                    config,
+                    'Completed ' + ctUid + ' re-post entries batch no: ' + (index + 1) + ' successfully!',
+                    'success',
+                  );
                 })
                 .catch(function (error) {
                   // error while executing entry in batch
@@ -663,8 +697,11 @@ importEntries.prototype = {
               concurrency: 2,
             },
           )
-            .then(function () {
+            .then(async function () {
               // finished updating entries with references
+              await helper.writeLargeFile(path.join(eFolderPath, 'success.json'), entries);
+              await helper.writeLargeFile(path.join(eFolderPath, 'refsUpdatedUids.json'), refsUpdatedUids);
+              await helper.writeLargeFile(path.join(eFolderPath, 'refsUpdateFailed.json'), refsUpdateFailed);
               addlogs(
                 config,
                 "Imported entries of Content Type: '" + ctUid + "' in language: '" + lang + "' successfully!",
@@ -688,7 +725,7 @@ importEntries.prototype = {
             });
         },
         {
-          concurrency: reqConcurrency,
+          concurrency: 1,
         },
       )
         .then(function () {
@@ -831,7 +868,7 @@ importEntries.prototype = {
           }
           self.mappedUids[query.entry.uid] = response.body.entries[0].uid;
           let _ePath = path.join(entryMapperPath, query.locale, query.content_type, 'success.json');
-          let entries = await helper.readLargeFile(_ePath);
+          let entries = await helper.readLargeFile(_ePath, { type: 'array' }); // TBD LARGE
           entries.push(query.entry);
           helper.writeFile(_ePath, entries);
           addlogs(
@@ -1041,10 +1078,14 @@ importEntries.prototype = {
 
               let eUids = Object.keys(entries);
               let batches = [];
+              let batchSize;
 
               if (eUids.length > 0) {
-                for (let i = 0; i < eUids.length; i += entryBatchLimit) {
-                  batches.push(eUids.slice(i, i + entryBatchLimit));
+                let entryBatchLimit = config.rateLimit || 10;
+                batchSize = Math.round(entryBatchLimit / 3);
+                // Run entry creation in batches of ~16~ entries
+                for (let i = 0; i < eUids.length; i += batchSize) {
+                  batches.push(eUids.slice(i, i + batchSize));
                 }
               } else {
                 return;
@@ -1106,11 +1147,17 @@ importEntries.prototype = {
                       }
                     },
                     {
-                      concurrency: reqConcurrency,
+                      concurrency: batchSize,
                     },
                   )
                     .then(function () {
                       // empty function
+                      addlogs(
+                        config,
+                        'Entries published successfully in ' + ctUid + ' content type' + ' batch' + batch,
+                        'success',
+                      );
+                      console.log('Entries published successfully in ' + ctUid + ' content type' + ' batch' + batch);
                     })
                     .catch(function (error) {
                       // error while executing entry in batch
@@ -1119,11 +1166,11 @@ importEntries.prototype = {
                     });
                 },
                 {
-                  concurrency: 1,
+                  concurrency: 2,
                 },
               )
                 .then(function () {
-                  // addlogs(config, 'Entries published successfully in ' + ctUid + ' content type', 'success')
+                  addlogs(config, 'Entries published successfully in ' + ctUid + ' content type', 'success');
                   console.log('Entries published successfully in ' + ctUid + ' content type');
                 })
                 .catch(function (error) {

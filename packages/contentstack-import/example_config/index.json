@@ -1,5 +1,6 @@
 {
-  "data": "/home/shafeeqpp/WORKSPACE/CLI/CONTENTS/exported-bootstrap-content",
+  "data": "/home/shafeeqpp/WORKSPACE/CLI/CONTENTS/contents-export-test",
   "rateLimit": 200,
-  "target_stack": "blt914ad529c07fb691"
+  "target_stack": "blt5af6c7925ca53d57",
+  "useBackedupDir": "/home/shafeeqpp/WORKSPACE/CLI/release-1.0.0/_backup_610"
 }
