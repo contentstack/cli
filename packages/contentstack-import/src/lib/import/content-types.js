@@ -44,7 +44,7 @@ function importContentTypes() {
 }
 
 importContentTypes.prototype = {
-  start: function (credentialConfig) {
+  start: async function (credentialConfig) {
     addlogs(config, 'Migrating contenttypes', 'success');
     let self = this;
     config = credentialConfig;
@@ -53,6 +53,7 @@ importContentTypes.prototype = {
     globalFieldsFolderPath = path.resolve(config.data, globalFieldConfig.dirName);
     contentTypesFolderPath = path.resolve(config.data, contentTypeConfig.dirName);
     mapperFolderPath = path.join(config.data, 'mapper', 'content_types');
+    const appMapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps');
     globalFieldMapperFolderPath = helper.readFile(path.join(config.data, 'mapper', 'global_fields', 'success.json'));
     globalFieldPendingPath = helper.readFile(
       path.join(config.data, 'mapper', 'global_fields', 'pending_global_fields.js'),
@@ -60,6 +61,7 @@ importContentTypes.prototype = {
     globalFieldUpdateFile = path.join(config.data, 'mapper', 'global_fields', 'success.json');
     fileNames = fs.readdirSync(path.join(contentTypesFolderPath));
     self.globalfields = helper.readFile(path.resolve(globalFieldsFolderPath, globalFieldConfig.fileName));
+
     for (let index in fileNames) {
       if (skipFiles.indexOf(fileNames[index]) === -1) {
         self.contentTypes.push(helper.readFile(path.join(contentTypesFolderPath, fileNames[index])));
@@ -75,6 +77,15 @@ importContentTypes.prototype = {
     if (fs.existsSync(path.join(mapperFolderPath, 'success.json'))) {
       self.createdContentTypeUids = helper.readFile(path.join(mapperFolderPath, 'success.json')) || [];
     }
+
+    if (fs.existsSync(path.join(appMapperFolderPath, 'marketplace-apps.json'))) {
+      self.installedExtensions = helper.readFile(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
+    }
+
+    if (_.isEmpty(self.installedExtensions)) {
+      self.installedExtensions = await self.getExtensionUid()
+    }
+
     self.contentTypeUids = _.difference(self.contentTypeUids, self.createdContentTypeUids);
     self.uidToTitleMap = self.mapUidToTitle(self.contentTypes);
     // remove contet types, already created
@@ -200,13 +211,6 @@ importContentTypes.prototype = {
           field_rules_ct.push(contentType.uid);
           delete contentType.field_rules;
         }
-        if (
-          _.isEmpty(self.installedExtensions) &&
-          _.find(contentType.schema, 'extension_uid') &&
-          _.find(contentType.schema, 'field_metadata.extension')
-        ) {
-          self.installedExtensions = await self.getExtensionUid()
-        }
 
         supress(contentType.schema, config.preserveStackVersion, self.installedExtensions);
         requestObject.json.content_type = contentType;
@@ -231,14 +235,6 @@ importContentTypes.prototype = {
       // eslint-disable-next-line no-undef
       return Promise.map(globalFieldPendingPath, async function (globalfield) {
         let Obj = _.find(self.globalfields, { uid: globalfield });
-
-        if (
-          _.isEmpty(self.installedExtensions) &&
-          _.find(contentType.schema, 'extension_uid') &&
-          _.find(contentType.schema, 'field_metadata.extension')
-        ) {
-          self.installedExtensions = await self.getExtensionUid()
-        }
 
         supress(Obj.schema, config.preserveStackVersion, self.installedExtensions);
         let globalFieldObj = stack.globalField(globalfield);
