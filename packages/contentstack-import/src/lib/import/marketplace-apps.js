@@ -11,9 +11,10 @@ const eachOf = require('async/eachOf');
 const { HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
 
 let config = require('../../config/default');
-const { readFile, writeFile } = require('../util/fs');
 const { addlogs: log } = require('../util/log');
+const { readFile, writeFile } = require('../util/fs');
 let stack = require('../util/contentstack-management-sdk');
+const { getInstalledExtensions } = require('../util/marketplace-app-helper')
 
 let client
 const marketplaceAppConfig = config.modules.marketplace_apps;
@@ -51,27 +52,6 @@ function importMarketplaceApps() {
     }
   }
 
-  this.getInstalledExtensions = () => {
-    return new Promise((resolve, reject) => {
-      const queryRequestOptions = {
-        include_marketplace_extensions: true
-      }
-      const { target_stack: api_key, management_token } = config || {}
-
-      if (api_key && management_token) {
-        return client
-          .stack({ api_key, management_token })
-          .extension()
-          .query(queryRequestOptions)
-          .find()
-          .then(({ items }) => resolve(items))
-          .catch(reject)
-      } else {
-        resolve([])
-      }
-    })
-  }
-
   this.installApps = async () => {
     const self = this
     log(config, 'Starting marketplace app installation', 'success');
@@ -81,7 +61,7 @@ function importMarketplaceApps() {
     }
     const httpClient = new HttpClient().headers(headers);
     const nodeCrypto = new NodeCrypto()
-    const installedExtensions = await this.getInstalledExtensions()
+    const installedExtensions = await getInstalledExtensions(config)
 
     return new Promise(function (resolve, reject) {
       eachOf(self.marketplaceApps, (app, _key, cb) => {
@@ -119,7 +99,7 @@ function importMarketplaceApps() {
           cb()
         })
       }, async () => {
-        const installedExtensions = await self.getInstalledExtensions()
+        const installedExtensions = await getInstalledExtensions(config)
         const mapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps');
 
         if (!fs.existsSync(mapperFolderPath)) {
@@ -172,27 +152,6 @@ function importMarketplaceApps() {
         } else {
           return resolve()
         }
-      }
-    })
-  }
-
-  this.getExtensionUid = () => {
-    return new Promise((resolve, reject) => {
-      const queryRequestOptions = {
-        include_marketplace_extensions: true
-      }
-      const { target_stack: api_key, management_token } = config || {}
-
-      if (api_key && management_token) {
-        return client
-          .stack({ api_key, management_token })
-          .extension()
-          .query(queryRequestOptions)
-          .find()
-          .then(({ items }) => resolve(items))
-          .catch(reject)
-      } else {
-        resolve([])
       }
     })
   }
