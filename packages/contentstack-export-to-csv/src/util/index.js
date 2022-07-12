@@ -133,8 +133,6 @@ function chooseContentType(managementAPIClient, stackApiKey, skip) {
     ];
 
     inquirer.prompt(_chooseContentType).then(({ chosenContentTypes }) => {
-      // if (chosenContentType === config.cancelString)
-      // 	exitProgram()
       resolve(chosenContentTypes);
     });
   });
@@ -293,7 +291,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
     return entry['locale'] === language && entry.publish_details.length > 0;
   });
 
-  const flatEntries = filteredEntries.map((entry) => {
+  return filteredEntries.map((entry) => {
     let workflow = '';
     const envArr = [];
     entry.publish_details.forEach((env) => {
@@ -320,8 +318,6 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
     delete entry.publishRequest;
     return entry;
   });
-
-  return flatEntries;
 }
 
 function getDateTime() {
@@ -465,16 +461,16 @@ function kebabize(str) {
 
 // https://stackoverflow.com/questions/19098797/fastest-way-to-flatten-un-flatten-nested-json-objects
 function flatten(data) {
-  var result = {};
+  let result = {};
   function recurse(cur, prop) {
     if (Object(cur) !== cur) {
       result[prop] = cur;
     } else if (Array.isArray(cur)) {
-      for (var i = 0, l = cur.length; i < l; i++) recurse(cur[i], prop + '[' + i + ']');
+      for (let i = 0, l = cur.length; i < l; i++) recurse(cur[i], prop + '[' + i + ']');
       if (l == 0) result[prop] = [];
     } else {
-      var isEmpty = true;
-      for (var p in cur) {
+      let isEmpty = true;
+      for (let p in cur) {
         isEmpty = false;
         recurse(cur[p], prop ? prop + '.' + p : p);
       }
