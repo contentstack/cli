@@ -12,6 +12,7 @@ module.exports = {
     types: [
       'locales',
       'environments',
+      'assets',
       'extensions',
       'webhooks',
       'global-fields',
