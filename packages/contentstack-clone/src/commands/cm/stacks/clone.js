@@ -65,9 +65,7 @@ class StackCloneCommand extends Command {
         config.host = this.cmaHost;
         config.cdn = this.cdaHost;
         const cloneHandler = new CloneHandler(config);
-        await cloneHandler.start();
-        let successMessage = 'Stack cloning process have been completed successfully';
-        await this.cleanUp(pathdir, successMessage);
+        cloneHandler.execute(pathdir).catch();
       }
 
       if (sourceManagementTokenAlias && destinationManagementTokenAlias) {
@@ -88,9 +86,11 @@ class StackCloneCommand extends Command {
         this.exit(1)
       }
     } catch (error) {
-      await this.cleanUp(pathdir);
-      // eslint-disable-next-line no-console
-      console.log(error.message || error);
+      if (error) {
+        await this.cleanUp(pathdir);
+        // eslint-disable-next-line no-console
+        console.log(error.message || error);
+      }
     }
   }
 
@@ -136,25 +136,27 @@ class StackCloneCommand extends Command {
     const interrupt = ['SIGINT', 'SIGQUIT', 'SIGTERM'];
     const exceptions = ['unhandledRejection', 'uncaughtException'];
 
-    const cleanUp = async (exitOrError = null) => {
-      // eslint-disable-next-line no-console
-      console.log('\nCleaning up');
-      await this.cleanUp(pathDir)
-      // eslint-disable-next-line no-console
-      console.log('done');
-      // eslint-disable-next-line no-process-exit
+    const cleanUp = async (exitOrError) => {
+      if (exitOrError) {
+        // eslint-disable-next-line no-console
+        console.log('\nCleaning up');
+        await this.cleanUp(pathDir)
+        // eslint-disable-next-line no-console
+        console.log('done');
+        // eslint-disable-next-line no-process-exit
 
-      if (exitOrError instanceof Promise) {
-        exitOrError.catch((error) => {
-          console.log((error && error.message) || '');
-        });
-      } else if (exitOrError && exitOrError.message) {
-        console.log(exitOrError.message);
-      } else if (exitOrError && exitOrError.errorMessage) {
-        console.log(exitOrError.message);
+        if (exitOrError instanceof Promise) {
+          exitOrError.catch((error) => {
+            console.log((error && error.message) || '');
+          });
+        } else if (exitOrError && exitOrError.message) {
+          console.log(exitOrError.message);
+        } else if (exitOrError && exitOrError.errorMessage) {
+          console.log(exitOrError.message);
+        }
+
+        if (exitOrError === true) process.exit();
       }
-
-      if (exitOrError === true) process.exit();
     };
 
     exceptions.forEach((event) => process.on(event, cleanUp));
