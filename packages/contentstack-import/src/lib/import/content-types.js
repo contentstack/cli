@@ -223,7 +223,11 @@ importContentTypes.prototype = {
       // eslint-disable-next-line no-undef
       return Promise.map(globalFieldPendingPath, function (globalfield) {
         let Obj = _.find(self.globalfields, { uid: globalfield });
-        supress(Obj.schema);
+        try {
+          supress(Obj.schema);
+        } catch (error) {
+          console.log('error', error);
+        }
         let globalFieldObj = stack.globalField(globalfield);
         Object.assign(globalFieldObj, _.cloneDeep(Obj));
         return globalFieldObj
@@ -240,12 +244,10 @@ importContentTypes.prototype = {
             let error = JSON.parse(err.message);
             // eslint-disable-next-line no-console
             addlogs(config, chalk.red('Global Field failed to update ' + JSON.stringify(error.errors)), 'error');
-          })
-          .catch(function (error) {
-            // failed to update modified schemas back to their original form
-            return reject(error);
           });
-      });
+      })
+        .then(resolve)
+        .catch(reject);
     });
   },
 

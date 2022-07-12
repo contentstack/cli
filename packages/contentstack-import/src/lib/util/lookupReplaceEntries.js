@@ -12,7 +12,7 @@ var util = require('.');
 var helper = require('./fs');
 var config = util.getConfig();
 // update references in entry object
-module.exports = function (data, mappedUids, uidMapperPath) {
+module.exports = function (data, mappedUids, uidMapperPath, contentTypeEntryMapUIds) {
   var parent = [];
   var uids = [];
   var unmapped = [];
@@ -22,35 +22,35 @@ module.exports = function (data, mappedUids, uidMapperPath) {
   var preserveStackVersion = config.preserveStackVersion;
 
   function gatherJsonRteEntryIds(jsonRteData) {
-    jsonRteData.children.forEach(element => {
+    jsonRteData.children.forEach((element) => {
       if (element.type) {
         switch (element.type) {
           case 'a':
           case 'p': {
             if (element.children && element.children.length > 0) {
-              gatherJsonRteEntryIds(element)
+              gatherJsonRteEntryIds(element);
             }
             break;
           }
           case 'reference': {
-            if (Object.keys(element.attrs).length > 0 && element.attrs.type === "entry") {
+            if (Object.keys(element.attrs).length > 0 && element.attrs.type === 'entry') {
               if (uids.indexOf(element.attrs['entry-uid']) === -1) {
-                uids.push(element.attrs['entry-uid'])
+                uids.push(element.attrs['entry-uid']);
               }
             }
             if (element.children && element.children.length > 0) {
-              gatherJsonRteEntryIds(element)
+              gatherJsonRteEntryIds(element);
             }
             break;
           }
         }
       }
-    })
+    });
   }
 
   var update = function (_parent, form_id, updateEntry) {
-    var _entry = updateEntry
-    var len = _parent.length
+    var _entry = updateEntry;
+    var len = _parent.length;
     for (var j = 0; j < len; j++) {
       if (_entry && _parent[j]) {
         if (j === len - 1 && _entry[_parent[j]]) {
@@ -81,7 +81,7 @@ module.exports = function (data, mappedUids, uidMapperPath) {
           }
         } else {
           _entry = _entry[_parent[j]];
-          var _keys = _.clone(_parent).splice((j+1), len);
+          var _keys = _.clone(_parent).splice(j + 1, len);
           if (Array.isArray(_entry)) {
             for (var i = 0, _i = _entry.length; i < _i; i++) {
               update(_keys, form_id, _entry[i]);
@@ -96,43 +96,43 @@ module.exports = function (data, mappedUids, uidMapperPath) {
   var find = function (schema, _entry) {
     for (var i = 0, _i = schema.length; i < _i; i++) {
       switch (schema[i].data_type) {
-      case 'reference':
-        if (Array.isArray(schema[i].reference_to)) {
-          isNewRefFields = true
-          schema[i].reference_to.forEach(reference => {
-            parent.push(schema[i].uid)
-            update(parent, reference, _entry)
-            parent.pop()
-          })
-        } else {
-          parent.push(schema[i].uid)
-          update(parent, schema[i].reference_to, _entry)
-          parent.pop()
-        }
-        break
-      case 'global_field':
-      case 'group':
-        parent.push(schema[i].uid)
-        find(schema[i].schema, _entry)
-        parent.pop()
-        break
-      case 'blocks':
-        for (var j = 0, _j = schema[i].blocks.length; j < _j; j++) {
-          parent.push(schema[i].uid)
-          parent.push(schema[i].blocks[j].uid)
-          find(schema[i].blocks[j].schema, _entry)
-          parent.pop()
-          parent.pop()
-        }
-        break
-      case 'json':
-        if (schema[i].field_metadata.rich_text_type) {
-          findEntryIdsFromJsonRte(data.entry, data.content_type.schema)
-        }
-        break
+        case 'reference':
+          if (Array.isArray(schema[i].reference_to)) {
+            isNewRefFields = true;
+            schema[i].reference_to.forEach((reference) => {
+              parent.push(schema[i].uid);
+              update(parent, reference, _entry);
+              parent.pop();
+            });
+          } else {
+            parent.push(schema[i].uid);
+            update(parent, schema[i].reference_to, _entry);
+            parent.pop();
+          }
+          break;
+        case 'global_field':
+        case 'group':
+          parent.push(schema[i].uid);
+          find(schema[i].schema, _entry);
+          parent.pop();
+          break;
+        case 'blocks':
+          for (var j = 0, _j = schema[i].blocks.length; j < _j; j++) {
+            parent.push(schema[i].uid);
+            parent.push(schema[i].blocks[j].uid);
+            find(schema[i].blocks[j].schema, _entry);
+            parent.pop();
+            parent.pop();
+          }
+          break;
+        case 'json':
+          if (schema[i].field_metadata.rich_text_type) {
+            findEntryIdsFromJsonRte(data.entry, data.content_type.schema);
+          }
+          break;
       }
     }
-  }
+  };
 
   function findEntryIdsFromJsonRte(entry, ctSchema) {
     for (let i = 0; i < ctSchema.length; i++) {
@@ -140,11 +140,11 @@ module.exports = function (data, mappedUids, uidMapperPath) {
         case 'blocks': {
           if (entry[ctSchema[i].uid]) {
             if (ctSchema[i].multiple) {
-              entry[ctSchema[i].uid].forEach(e => {
-                let key = Object.keys(e).pop()
-                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
-                findEntryIdsFromJsonRte(e[key], subBlock.schema)
-              })
+              entry[ctSchema[i].uid].forEach((e) => {
+                let key = Object.keys(e).pop();
+                let subBlock = ctSchema[i].blocks.filter((e) => e.uid === key).pop();
+                findEntryIdsFromJsonRte(e[key], subBlock.schema);
+              });
             }
           }
           break;
@@ -153,11 +153,11 @@ module.exports = function (data, mappedUids, uidMapperPath) {
         case 'group': {
           if (entry[ctSchema[i].uid]) {
             if (ctSchema[i].multiple) {
-              entry[ctSchema[i].uid].forEach(e => {
-                findEntryIdsFromJsonRte(e, ctSchema[i].schema)
-              })
+              entry[ctSchema[i].uid].forEach((e) => {
+                findEntryIdsFromJsonRte(e, ctSchema[i].schema);
+              });
             } else {
-              findEntryIdsFromJsonRte(entry[ctSchema[i].uid], ctSchema[i].schema)
+              findEntryIdsFromJsonRte(entry[ctSchema[i].uid], ctSchema[i].schema);
             }
           }
           break;
@@ -165,11 +165,11 @@ module.exports = function (data, mappedUids, uidMapperPath) {
         case 'json': {
           if (entry[ctSchema[i].uid] && ctSchema[i].field_metadata.rich_text_type) {
             if (ctSchema[i].multiple) {
-              entry[ctSchema[i].uid].forEach(jsonRteData => {
-                gatherJsonRteEntryIds(jsonRteData)
-              })
+              entry[ctSchema[i].uid].forEach((jsonRteData) => {
+                gatherJsonRteEntryIds(jsonRteData);
+              });
             } else {
-              gatherJsonRteEntryIds(entry[ctSchema[i].uid])
+              gatherJsonRteEntryIds(entry[ctSchema[i].uid]);
             }
           }
           break;
@@ -178,7 +178,7 @@ module.exports = function (data, mappedUids, uidMapperPath) {
     }
   }
 
-  find(data.content_type.schema, data.entry)
+  find(data.content_type.schema, data.entry);
   if (isNewRefFields) {
     findUidsInNewRefFields(data.entry, uids);
   }
@@ -191,7 +191,7 @@ module.exports = function (data, mappedUids, uidMapperPath) {
   uids = _.uniq(uids);
   var entry = JSON.stringify(data.entry);
   uids.forEach(function (uid) {
-    if (mappedUids.hasOwnProperty(uid)) {
+    if (mappedUids[uid]) {
       entry = entry.replace(new RegExp(uid, 'img'), mappedUids[uid]);
       mapped.push(uid);
     } else {
@@ -214,17 +214,13 @@ module.exports = function (data, mappedUids, uidMapperPath) {
   }
 
   if (mapped.length > 0) {
-    var _mappedUids = helper.readFile(path.join(uidMapperPath, 'mapped-uids.json'));
-    _mappedUids = _mappedUids || {};
-    if (_mappedUids.hasOwnProperty(data.content_type.uid)) {
-      _mappedUids[data.content_type.uid][data.entry.uid] = mapped;
+    if (contentTypeEntryMapUIds[data.content_type.uid]) {
+      contentTypeEntryMapUIds[data.content_type.uid][data.entry.uid] = mapped;
     } else {
-      _mappedUids[data.content_type.uid] = {
+      contentTypeEntryMapUIds[data.content_type.uid] = {
         [data.entry.uid]: mapped,
       };
     }
-    // write the mapped contents to ./mapper/language/mapped-uids.json
-    helper.writeFile(path.join(uidMapperPath, 'mapped-uids.json'), _mappedUids);
   }
 
   return JSON.parse(entry);
