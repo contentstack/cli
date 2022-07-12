@@ -21,8 +21,8 @@ exports.initial = function (configData) {
 
     if (configData.branchName) {
       await validateIfBranchExist(configData, configData.branchName)
-        .catch(error => {
-          throw new Error(error.message);
+        .catch(() => {
+          process.exit()
         })
     }
 
@@ -189,23 +189,22 @@ function createBackup(backupDirPath, config) {
 
 const validateIfBranchExist = async (config, branch) => {
   return new Promise(async function (resolve, reject) {
-    const headers = { api_key: config.source_stack }
-
-    if (config.auth_token) {
-      headers['authtoken'] = config.auth_token
-    } else if (config.management_token) {
-      headers['authorization'] = config.management_token
-    }
-
+    const headers = { api_key: config.target_stack, authtoken: config.auth_token }
     const httpClient = new HttpClient().headers(headers)
-    const result = httpClient
+    const result = await httpClient
       .get(`https://${config.host}/v3/stacks/branches/${branch}`)
       .then(({ data }) => {
         if (data.error_message) {
           addlogs(config, chalk.red(data.error_message), 'error');
+          addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
+          reject()
         }
 
         return data
+      }).catch((err) => {
+        console.log(err)
+        addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
+        reject()
       })
 
     if (
