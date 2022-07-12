@@ -20,7 +20,7 @@ let marketplaceAppConfig = config.modules.marketplace_apps;
 
 function exportMarketplaceApps() {
   this.marketplaceAppPath = null
-  this.start = (credentialConfig) => {
+  this.start = async (credentialConfig) => {
     config = credentialConfig;
     client = stack.Client(config);
     log(credentialConfig, 'Starting marketplace app export', 'success');
@@ -30,7 +30,7 @@ function exportMarketplaceApps() {
     );
     mkdirp.sync(this.marketplaceAppPath);
 
-    this.getInstalledExtensions()
+    return await this.getInstalledExtensions()
   }
 
   this.getInstalledExtensions = () => {
@@ -90,7 +90,7 @@ function exportMarketplaceApps() {
                 installedApps
               )
 
-              log(config, chalk.green('All the locales have been exported successfully'), 'success')
+              log(config, chalk.green('All the marketplace apps have been exported successfully'), 'success')
             } else {
               log(config, 'No marketplace apps found', 'success')
             }
