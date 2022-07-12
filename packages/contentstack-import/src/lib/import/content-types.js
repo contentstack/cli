@@ -14,10 +14,11 @@ let chalk = require('chalk');
 
 let helper = require('../util/fs');
 let { addlogs } = require('../util/log');
+let config = require('../../config/default');
 let supress = require('../util/extensionsUidReplace');
 let sdkInstance = require('../util/contentstack-management-sdk');
+const { getInstalledExtensions } = require('../util/marketplace-app-helper')
 
-let config = require('../../config/default');
 let reqConcurrency = config.concurrency;
 let requestLimit = config.rateLimit;
 let contentTypeConfig = config.modules.content_types;
@@ -83,7 +84,7 @@ importContentTypes.prototype = {
     }
 
     if (_.isEmpty(self.installedExtensions)) {
-      self.installedExtensions = await self.getExtensionUid()
+      self.installedExtensions = await getInstalledExtensions(config)
     }
 
     self.contentTypeUids = _.difference(self.contentTypeUids, self.createdContentTypeUids);
@@ -268,26 +269,6 @@ importContentTypes.prototype = {
       result[ct.uid] = ct.title;
     });
     return result;
-  },
-
-  getExtensionUid: function () {
-    return new Promise((resolve, reject) => {
-      const queryRequestOptions = {
-        include_marketplace_extensions: true
-      }
-      const { target_stack: api_key, management_token } = config || {}
-
-      if (api_key && management_token) {
-        return stack
-          .extension()
-          .query(queryRequestOptions)
-          .find()
-          .then(({ items }) => resolve(items))
-          .catch(reject)
-      } else {
-        resolve([])
-      }
-    })
   }
 };
 
