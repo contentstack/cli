@@ -33,7 +33,7 @@ exports.makeDirectory = function () {
   }
 };
 
-exports.readLargeFile = function (filePath) {
+exports.readLargeFile = function (filePath, opts = {}) {
   if (typeof filePath !== 'string') {
     return;
   }
@@ -44,6 +44,9 @@ exports.readLargeFile = function (filePath) {
       const parseStream = bigJSON.createParseStream();
 
       parseStream.on('data', function (data) {
+        if (opts.type === 'array') {
+          return resolve(Object.values(data));
+        }
         resolve(data);
       });
 
