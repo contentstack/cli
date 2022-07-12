@@ -9,6 +9,7 @@ const path = require('path');
 const _ = require('lodash');
 const mkdirp = require('mkdirp');
 const chalk = require('chalk');
+const v8 = require('v8');
 
 const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
@@ -138,11 +139,14 @@ importEntries.prototype = {
                 (config.hasOwnProperty('onlylocales') && config.onlylocales.indexOf(lang) !== -1) ||
                 !config.hasOwnProperty('onlylocales')
               ) {
+                helper.writeFile(path.join(entryMapperPath, 'heap-stat1.json'), v8.getHeapStatistics());
                 await self.createEntries(lang, mappedAssetUids, mappedAssetUrls);
+                helper.writeFile(path.join(entryMapperPath, 'heap-stat2.json'), v8.getHeapStatistics());
                 await self.getCreatedEntriesWOUid();
                 helper.writeFile(path.join(entryMapperPath, 'schema.json'), self.ctSchemas);
                 helper.writeFile(path.join(entryMapperPath, 'ctJsonRte.json'), self.ctJsonRte);
                 await self.repostEntries(lang);
+                helper.writeFile(path.join(entryMapperPath, 'heap-stat3.json'), v8.getHeapStatistics());
                 addlogs(config, "Successfully imported '" + lang + "' entries!", 'success');
                 counter++;
               } else {
