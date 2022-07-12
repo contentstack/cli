@@ -509,13 +509,11 @@ importEntries.prototype = {
         self.mappedUids = _.merge(_mapped_, self.mappedUids);
       }
 
-      console.log('Starting the refscema map for reposting');
       addlogs(config, 'Starting the refscema map for reposting');
 
       return Promise.map(
         refSchemas,
         async function (ctUid) {
-          console.log('started the resposting for contenttype', ctUid);
           addlogs(config, 'started the resposting for contenttype', ctUid);
 
           let eFolderPath = path.join(entryMapperPath, lang, ctUid);
@@ -555,7 +553,6 @@ importEntries.prototype = {
           // map failed reference uids @mapper/language/unmapped-uids.json
           let refUidMapperPath = path.join(entryMapperPath, lang);
 
-          console.log('staring to update the entry for reposting');
           addlogs(config, 'staring to update the entry for reposting');
 
           let contentTypeEntryMapUIds =
@@ -595,7 +592,6 @@ importEntries.prototype = {
           // write the mapped contents to ./mapper/language/mapped-uids.json
           await helper.writeLargeFile(path.join(refUidMapperPath, 'mapped-uids.json'), contentTypeEntryMapUIds);
 
-          console.log('Starting the batch creation process for reposting entries');
           addlogs(config, 'Starting the batch creation process for reposting entries');
 
           let entryBatchLimit = config.rateLimit || 10;
@@ -605,7 +601,6 @@ importEntries.prototype = {
             batches.push(entries.slice(i, i + batchSize));
           }
 
-          console.log('Starting the reposting process for entries');
           addlogs(config, 'Starting the reposting process for entries');
           return Promise.map(
             batches,
