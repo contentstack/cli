@@ -56,6 +56,7 @@ function importEntries() {
 
   createdEntriesWOUidPath = path.join(entryMapperPath, 'created-entries-wo-uid.json');
   failedWOPath = path.join(entryMapperPath, 'failedWO.json');
+  
   // Object of Schemas, referred to by their content type uid
   this.ctSchemas = {};
   // Array of content type uids, that have reference fields
@@ -76,6 +77,8 @@ function importEntries() {
   this.success = [];
   // Entries that failed to get created OR updated
   this.fails = [];
+  // List of installed extensions to replace uid
+  this.installedExtensions = []
 
   let files = fs.readdirSync(ctPath);
   this.environment = helper.readFile(environmentPath);
@@ -108,6 +111,16 @@ importEntries.prototype = {
     masterLanguage = config.master_locale;
     addlogs(config, 'Migrating entries', 'success');
     let languages = helper.readFile(lPath);
+    const appMapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps');
+
+    if (fs.existsSync(path.join(appMapperFolderPath, 'marketplace-apps.json'))) {
+      self.installedExtensions = helper.readFile(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
+    }
+
+    if (_.isEmpty(self.installedExtensions)) {
+      self.installedExtensions = await self.getExtensionUid()
+    }
+
     return new Promise(function (resolve, reject) {
       let langs = [masterLanguage.code];
       for (let i in languages) {
@@ -248,6 +261,7 @@ importEntries.prototype = {
                     mappedAssetUids,
                     mappedAssetUrls,
                     eLangFolderPath,
+                    self.installedExtensions
                   );
                 }
               }
@@ -694,7 +708,7 @@ importEntries.prototype = {
     // it should be spelled as suppressFields
     addlogs(config, chalk.white('Suppressing content type fields...'), 'success');
     let self = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise(async function (resolve, reject) {
       let modifiedSchemas = [];
       let suppressedSchemas = [];
 
@@ -750,7 +764,7 @@ importEntries.prototype = {
           }
 
           // Replace extensions with new UID
-          extension_suppress(contentTypeSchema.schema, config.preserveStackVersion);
+          extension_suppress(contentTypeSchema.schema, config.preserveStackVersion, self.installedExtensions);
         }
       }
 
@@ -834,7 +848,7 @@ importEntries.prototype = {
     });
   },
   unSuppressFields: function () {
-    return new Promise(function (resolve, reject) {
+    return new Promise(async function (resolve, reject) {
       let modifiedSchemas = helper.readFile(modifiedSchemaPath);
       let modifiedSchemasUids = [];
       let updatedExtensionUidsSchemas = [];
@@ -844,6 +858,7 @@ importEntries.prototype = {
           if (_contentTypeSchema.field_rules) {
             delete _contentTypeSchema.field_rules;
           }
+
           extension_suppress(_contentTypeSchema.schema, config.preserveStackVersion);
           updatedExtensionUidsSchemas.push(_contentTypeSchema);
         }
@@ -1448,6 +1463,26 @@ importEntries.prototype = {
 
     return jsonRteChild;
   },
+  getExtensionUid: function () {
+    return new Promise((resolve, reject) => {
+      const queryRequestOptions = {
+        include_marketplace_extensions: true
+      }
+      const { target_stack: api_key, management_token } = config || {}
+
+      if (api_key && management_token) {
+        return client
+          .stack({ api_key, management_token })
+          .extension()
+          .query(queryRequestOptions)
+          .find()
+          .then(({ items }) => resolve(items))
+          .catch(reject)
+      } else {
+        resolve([])
+      }
+    })
+  }
 };
 
 module.exports = new importEntries();
