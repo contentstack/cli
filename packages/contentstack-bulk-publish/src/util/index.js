@@ -16,9 +16,7 @@ function formatError(error) {
     } else {
       error = JSON.parse(error.message)
     }
-  } catch (e) {
-    error = error.message
-  }
+  } catch (e) {}
   let message = error.errorMessage || error.error_message || error
   if (error.errors && Object.keys(error.errors).length > 0) {
     Object.keys(error.errors).forEach((e) => {
