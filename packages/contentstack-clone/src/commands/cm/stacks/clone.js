@@ -168,8 +168,7 @@ Use this plugin to automate the process of cloning a stack in few steps.
 
 StackCloneCommand.examples = [
   'csdx cm:stacks:clone',
-  'csdx cm:stacks:clone --source-branch --target-branch',
-  'csdx cm:stacks:clone -a <management token alias>',
+  'csdx cm:stacks:clone --source-branch <source-branch-name> --target-branch <target-branch-name>',
   'csdx cm:stacks:clone --source-stack-api-key <apiKey> --destination-stack-api-key <apiKey>',
   'csdx cm:stacks:clone --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>',
   'csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>',
