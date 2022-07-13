@@ -77,7 +77,7 @@ let singleImport = async (moduleName, types, config) => {
     if (types.indexOf(moduleName) > -1) {
       if (!config.master_locale) {
         try {
-          var masterLocalResponse = await util.masterLocalDetails(config);
+          let masterLocalResponse = await util.masterLocalDetails(config);
           let master_locale = { code: masterLocalResponse.code };
           config['master_locale'] = master_locale;
         } catch (error) {
@@ -117,14 +117,14 @@ let allImport = async (config, types) => {
     try {
       for (let i = 0; i < types.length; i++) {
         let type = types[i];
-        var exportedModule = require('./lib/import/' + type);
+        let exportedModule = require('./lib/import/' + type);
         if (i === 0 && !config.master_locale) {
-          var masterLocalResponse = await util.masterLocalDetails(config);
+          let masterLocalResponse = await util.masterLocalDetails(config);
           let master_locale = { code: masterLocalResponse.code };
           config['master_locale'] = master_locale;
         }
         await exportedModule.start(config).then((_result) => {
-          return;
+          return
         }).catch(function (error) {
           addlogs(config, 'Failed to migrate ' + type, 'error');
           addlogs(config, error, 'error');

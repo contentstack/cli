@@ -22,6 +22,7 @@ class StackCloneCommand extends Command {
         'destination-stack-api-key': destinationStackApiKey,
         'source-management-token-alias': sourceManagementTokenAlias,
         'destination-management-token-alias': destinationManagementTokenAlias,
+        'import-webhook-status': importWebhookStatus,
       } = cloneCommandFlags;
 
       const handleClone = async () => {
@@ -55,7 +56,12 @@ class StackCloneCommand extends Command {
           config.destination_alias = destinationManagementTokenAlias;
           config.target_stack = listOfTokens[destinationManagementTokenAlias].apiKey;
         } else if (destinationManagementTokenAlias) {
-          console.log(`Provided destination token alias (${destinationManagementTokenAlias}) not found in your config.!`);
+          console.log(
+            `Provided destination token alias (${destinationManagementTokenAlias}) not found in your config.!`,
+          );
+        }
+        if (importWebhookStatus) {
+          config.importWebhookStatus = importWebhookStatus;
         }
 
         await this.removeContentDirIfNotEmptyBeforeClone(pathdir); // NOTE remove if folder not empty before clone
@@ -68,24 +74,24 @@ class StackCloneCommand extends Command {
         await cloneHandler.start();
         let successMessage = 'Stack cloning process have been completed successfully';
         await this.cleanUp(pathdir, successMessage);
-      }
+      };
 
       if (sourceManagementTokenAlias && destinationManagementTokenAlias) {
         if (sourceStackBranch || targetStackBranch) {
           if (_authToken) {
-            handleClone()
+            handleClone();
           } else {
-            console.log("Please login to execute this command, csdx auth:login")
-            this.exit(1)
+            console.log('Please login to execute this command, csdx auth:login');
+            this.exit(1);
           }
         } else {
-          handleClone()
+          handleClone();
         }
       } else if (_authToken) {
-        handleClone()
+        handleClone();
       } else {
-        console.log("Please login to execute this command, csdx auth:login");
-        this.exit(1)
+        console.log('Please login to execute this command, csdx auth:login');
+        this.exit(1);
       }
     } catch (error) {
       await this.cleanUp(pathdir);
@@ -111,14 +117,14 @@ class StackCloneCommand extends Command {
   }
 
   cleanUp(pathDir, message) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       rimraf(pathDir, function (err) {
         if (err) {
           console.log('\nCleaning up');
-          const skipCodeArr = ['ENOENT', 'EBUSY', 'EPERM', 'EMFILE', 'ENOTEMPTY']
+          const skipCodeArr = ['ENOENT', 'EBUSY', 'EPERM', 'EMFILE', 'ENOTEMPTY'];
 
           if (skipCodeArr.includes(err.code)) {
-            process.exit()
+            process.exit();
           }
         }
 
@@ -139,7 +145,7 @@ class StackCloneCommand extends Command {
     const cleanUp = async (exitOrError = null) => {
       // eslint-disable-next-line no-console
       console.log('\nCleaning up');
-      await this.cleanUp(pathDir)
+      await this.cleanUp(pathDir);
       // eslint-disable-next-line no-console
       console.log('done');
       // eslint-disable-next-line no-process-exit
@@ -168,12 +174,11 @@ Use this plugin to automate the process of cloning a stack in few steps.
 
 StackCloneCommand.examples = [
   'csdx cm:stacks:clone',
-  'csdx cm:stacks:clone --source-branch --target-branch',
-  'csdx cm:stacks:clone -a <management token alias>',
+  'csdx cm:stacks:clone --source-branch <source-branch-name> --target-branch <target-branch-name>',
   'csdx cm:stacks:clone --source-stack-api-key <apiKey> --destination-stack-api-key <apiKey>',
   'csdx cm:stacks:clone --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>',
   'csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>',
-  'csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias> --type <value a or b>'
+  'csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias> --type <value a or b>',
 ];
 
 StackCloneCommand.aliases = ['cm:stack-clone'];
@@ -215,11 +220,17 @@ b) Structure with content (all modules including entries & assets)
     `,
   }),
   'source-stack-api-key': flags.string({
-    description: 'Source stack API Key'
+    description: 'Source stack API Key',
   }),
   'destination-stack-api-key': flags.string({
-    description: 'Destination stack API Key'
-  })
+    description: 'Destination stack API Key',
+  }),
+  'import-webhook-status': flags.string({
+    description: 'Webhook state',
+    options: ['enable', 'disable', 'default'],
+    required: false,
+    default: 'disable',
+  }),
 };
 
 module.exports = StackCloneCommand;
