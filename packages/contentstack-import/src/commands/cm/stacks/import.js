@@ -1,5 +1,5 @@
-let _ = require('lodash');
-const defaultConfig = require('../../../config/default')
+const _ = require('lodash');
+const defaultConfig = require('../../../config/default');
 const { Command, flags } = require('@contentstack/cli-command');
 const { configHandler } = require('@contentstack/cli-utilities');
 const {
@@ -23,10 +23,13 @@ class ImportCommand extends Command {
     const backupdir = importCommandFlags['backup-dir'];
     const alias = importCommandFlags['alias'] || importCommandFlags['management-token-alias'];
     let _authToken = configHandler.get('authtoken');
-    let branchName = importCommandFlags.branch;
+    importCommandFlags.branchName = importCommandFlags.branch;
+    importCommandFlags.importWebhookStatus = importCommandFlags['import-webhook-status'];
+    delete importCommandFlags.branch;
+    delete importCommandFlags['import-webhook-status'];
     let host = self.cmaHost;
 
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       if (data) {
         defaultConfig.data = data;
       }
@@ -35,36 +38,63 @@ class ImportCommand extends Command {
         let managementTokens = self.getToken(alias);
 
         if (managementTokens) {
-          let result
+          let result;
 
           if ((extConfig && _authToken) || alias) {
-            result = configWithMToken(extConfig, managementTokens, moduleName, host, _authToken, backupdir, branchName)
+            result = configWithMToken(
+              extConfig,
+              managementTokens,
+              moduleName,
+              host,
+              _authToken,
+              backupdir,
+              importCommandFlags,
+            );
           } else if (data) {
-            result = parameterWithMToken(managementTokens, data, moduleName, host, _authToken, backupdir, branchName)
+            result = parameterWithMToken(
+              managementTokens,
+              data,
+              moduleName,
+              host,
+              _authToken,
+              backupdir,
+              importCommandFlags,
+            );
           } else {
-            result = withoutParameterMToken(managementTokens, moduleName, host, _authToken, backupdir, branchName)
+            result = withoutParameterMToken(
+              managementTokens,
+              moduleName,
+              host,
+              _authToken,
+              backupdir,
+              importCommandFlags,
+            );
           }
 
-          result
-            .then(resolve)
-            .catch(reject);
+          result.then(resolve).catch(reject);
         } else {
           console.log('management Token is not present please add managment token first');
         }
       } else if (_authToken) {
-        let result
+        let result;
 
         if (extConfig) {
-          result = configWithAuthToken(extConfig, _authToken, moduleName, host, backupdir, branchName)
+          result = configWithAuthToken(extConfig, _authToken, moduleName, host, backupdir, importCommandFlags);
         } else if (targetStack && data) {
-          result = parametersWithAuthToken(_authToken, targetStack, data, moduleName, host, backupdir, branchName)
+          result = parametersWithAuthToken(
+            _authToken,
+            targetStack,
+            data,
+            moduleName,
+            host,
+            backupdir,
+            importCommandFlags,
+          );
         } else {
-          result = withoutParametersWithAuthToken(_authToken, moduleName, host, backupdir, branchName)
+          result = withoutParametersWithAuthToken(_authToken, moduleName, host, backupdir, importCommandFlags);
         }
 
-        result
-          .then(resolve)
-          .catch(reject);
+        result.then(resolve).catch(reject);
       } else {
         console.log('Login or provide the alias for management token');
       }
@@ -139,6 +169,12 @@ ImportCommand.flags = {
     char: 'B',
     description: '[optional] branch name',
     parse: printFlagDeprecation(['-B'], ['--branch']),
+  }),
+  'import-webhook-status': flags.string({
+    description: 'Webhook state',
+    options: ['enable', 'disable', 'default'],
+    required: false,
+    default: 'disable',
   }),
 };
 
