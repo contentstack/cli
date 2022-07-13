@@ -25,27 +25,25 @@ exports.initial = function (configData) {
           .then((basePath) => {
             config.data = basePath;
             return util.sanitizeStack(config);
-          }).then(() => {
-            let importRes
-            const types = config.modules.types
+          })
+          .then(() => {
+            let importRes;
+            const types = config.modules.types;
 
             if (config.moduleName) {
-              importRes = singleImport(config.moduleName, types, config)
-                .catch(error => {
-                  addlogs(`Error ${error && error.message}`);
-                });
+              importRes = singleImport(config.moduleName, types, config).catch((error) => {
+                addlogs(`Error ${error && error.message}`);
+              });
             } else {
-              importRes = allImport(config, types)
-                .catch(error => {
-                  addlogs(`Error ${error && error.message}`);
-                });
+              importRes = allImport(config, types).catch((error) => {
+                addlogs(`Error ${error && error.message}`);
+              });
             }
 
-            importRes
-              .then(resolve)
-              .catch(reject)
-          }).catch((e) => {
-            addlogs('Issue with import content backup creation.!')
+            importRes.then(resolve).catch(reject);
+          })
+          .catch((e) => {
+            addlogs('Issue with import content backup creation.!');
             reject(e);
             process.exit(1);
           });
@@ -53,18 +51,13 @@ exports.initial = function (configData) {
         let filename = path.basename(config.data);
         addlogs(config, chalk.red(filename + ' Folder does not Exist'), 'error');
       }
-    }
+    };
 
     if (config) {
-      if (
-        (config.email && config.password) ||
-        (config.auth_token)
-      ) {
-        login(config)
-          .then(backupAndImportData)
-          .catch(reject);
+      if ((config.email && config.password) || config.auth_token) {
+        login(config).then(backupAndImportData).catch(reject);
       } else if (config.management_token) {
-        await backupAndImportData()
+        await backupAndImportData();
       }
     }
   });
@@ -75,10 +68,9 @@ let singleImport = async (moduleName, types, config) => {
     if (types.indexOf(moduleName) > -1) {
       if (!config.master_locale) {
         try {
-          const masterLocalResponse = await util.masterLocalDetails(config)
-            .catch(error => {
-              addlogs(`Error ${error && error.message}`);
-            });
+          const masterLocalResponse = await util.masterLocalDetails(config).catch((error) => {
+            addlogs(`Error ${error && error.message}`);
+          });
 
           if (masterLocalResponse) {
             config['master_locale'] = { code: masterLocalResponse.code };
@@ -123,33 +115,39 @@ let allImport = async (config, types) => {
         let type = types[i];
         var exportedModule = require('./lib/import/' + type);
         if (i === 0 && !config.master_locale) {
-          const masterLocalResponse = await util.masterLocalDetails(config)
-            .catch(error => {
-              addlogs(`Error ${error && error.message}`);
-            });
+          const masterLocalResponse = await util.masterLocalDetails(config).catch((error) => {
+            addlogs(`Error ${error && error.message}`);
+          });
 
           if (masterLocalResponse) {
             config['master_locale'] = { code: masterLocalResponse.code };
           }
         }
-        await exportedModule.start(config).then((_result) => {
-          return;
-        }).catch(function (error) {
-          addlogs(config, 'Failed to migrate ' + type, 'error');
-          addlogs(config, error, 'error');
-          addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
-          return reject(error);
-        });
+        await exportedModule
+          .start(config)
+          .then((_result) => {
+            return;
+          })
+          .catch(function (error) {
+            if (error) {
+              addlogs(config, 'Filed migration ' + type + 'error message:' + error.message, 'error');
+              addlogs(config, 'Filed migration ' + type + 'error message:' + error.errorMessage, 'error');
+            }
+            addlogs(config, 'Failed to migrate ' + type, 'error');
+            addlogs(config, error, 'error');
+            addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
+            return reject(error);
+          });
       }
       if (config.target_stack && config.source_stack) {
         addlogs(
           config,
           chalk.green(
             'The data of the ' +
-            config.sourceStackName +
-            ' stack has been imported into ' +
-            config.destinationStackName +
-            ' stack successfully!',
+              config.sourceStackName +
+              ' stack has been imported into ' +
+              config.destinationStackName +
+              ' stack successfully!',
           ),
           'success',
         );
@@ -160,6 +158,10 @@ let allImport = async (config, types) => {
       }
       return resolve();
     } catch (error) {
+      if (error) {
+        addlogs(config, 'Filed migration ' + error.message, 'error');
+        addlogs(config, 'Filed migration ' + error.errorMessage, 'error');
+      }
       addlogs(
         config,
         chalk.red('Failed to migrate stack: ' + config.target_stack + '. Please check error logs for more info'),

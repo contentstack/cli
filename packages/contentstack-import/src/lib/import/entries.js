@@ -167,7 +167,15 @@ importEntries.prototype = {
               for (const element of ct_field_visibility_uid) {
                 if (ct_files.indexOf(element + '.json') > -1) {
                   let schema = require(path.resolve(ctPath, element));
-                  await self.field_rules_update(schema);
+                  try {
+                    await self.field_rules_update(schema);
+                  } catch (error) {
+                    console.log('Failed to update the field rules for contenttype', element);
+                    if (error) {
+                      addlogs(config, error, 'error');
+                      addlogs(config, error.errorMessage, 'error');
+                    }
+                  }
                 }
               }
             }
@@ -334,7 +342,7 @@ importEntries.prototype = {
                           })
                           .catch(function (err) {
                             let error = JSON.parse(err.message);
-                            addlogs(config, chalk.red('Error updating entry', JSON.stringify(error)), 'error');
+                            addlogs(config, chalk.red('Error updating entry', error && error.message), 'error');
                             self.fails.push({
                               content_type: ctUid,
                               locale: lang,
@@ -379,7 +387,7 @@ importEntries.prototype = {
                             } else {
                               addlogs(
                                 config,
-                                chalk.red('Error creating entry due to: ' + JSON.stringify(error)),
+                                chalk.red('Error creating entry due to: ' + error && error.message),
                                 'error',
                               );
                             }
@@ -394,7 +402,7 @@ importEntries.prototype = {
                           }
                           // TODO: if status code: 422, check the reason
                           // 429 for rate limit
-                          addlogs(config, chalk.red('Error creating entry', JSON.stringify(error)), 'error');
+                          addlogs(config, chalk.red('Error creating entry ', error && error.message), 'error');
                           self.fails.push({
                             content_type: ctUid,
                             locale: lang,
@@ -518,7 +526,7 @@ importEntries.prototype = {
       return Promise.map(
         refSchemas,
         async function (ctUid) {
-          addlogs(config, 'started the resposting for contenttype', ctUid);
+          addlogs(config, 'started the resposting for contenttype ' + ctUid);
 
           let eFolderPath = path.join(entryMapperPath, lang, ctUid);
           let eSuccessFilePath = path.join(eFolderPath, 'success.json');
@@ -588,8 +596,10 @@ importEntries.prototype = {
               _entry.uid = uid;
               return _entry;
             } catch (error) {
-              console.error(error);
-              return error;
+              console.error('Failed to update entry while reposting entry id ' + uid, error);
+              addlogs(config, 'Failed to update entry while reposting entry id ' + uid);
+              addlogs(config, error, 'error');
+              // return error;
             }
           });
 
@@ -628,7 +638,7 @@ importEntries.prototype = {
                     return;
                   }
 
-                  let promiseResult = new Promise((resolveUpdatedUids, rejectUpdatedUids) => {
+                  return new Promise((resolveUpdatedUids, rejectUpdatedUids) => {
                     let entryResponse = client
                       .stack({ api_key: config.target_stack, management_token: config.management_token })
                       .contentType(ctUid)
@@ -672,7 +682,6 @@ importEntries.prototype = {
                         return rejectUpdatedUids(error);
                       });
                   });
-                  await promiseResult;
                 },
                 {
                   concurrency: batchSize,
@@ -703,7 +712,7 @@ importEntries.prototype = {
               await helper.writeLargeFile(path.join(eFolderPath, 'refsUpdateFailed.json'), refsUpdateFailed);
               addlogs(
                 config,
-                "Imported entries of Content Type: '" + ctUid + "' in language: '" + lang + "' successfully!",
+                "Updated entries of Content Type: '" + ctUid + "' in language: '" + lang + "' successfully!",
                 'success',
               );
             })
@@ -1024,7 +1033,7 @@ importEntries.prototype = {
               for (const element of fieldRulesArray) {
                 let splitedFieldRulesValue = element;
                 let oldUid = await helper.readLargeFile(path.join(entryUidMapperPath));
-                if (oldUid.hasOwnProperty(splitedFieldRulesValue)) {
+                if (oldUid[splitedFieldRulesValue]) {
                   updatedValue.push(oldUid[splitedFieldRulesValue]);
                 } else {
                   updatedValue.push(element);
@@ -1045,7 +1054,7 @@ importEntries.prototype = {
         .then((contentTypeResponse) => {
           // Object.assign(ctObj, _.cloneDeep(schema))
           contentTypeResponse.field_rules = schema.field_rules;
-          contentTypeResponse.update();
+          return contentTypeResponse.update();
         })
         .then(() => {
           return resolve();
@@ -1161,7 +1170,7 @@ importEntries.prototype = {
                     .catch(function (error) {
                       // error while executing entry in batch
                       addlogs(config, error, 'error');
-                      return error;
+                      // return error;
                     });
                 },
                 {
@@ -1178,7 +1187,8 @@ importEntries.prototype = {
                     'Failed some of the Entry publishing in ' + ctUid + ' content type, go through logs for details.',
                     'error',
                   );
-                  return error;
+                  addlogs(config, error, 'error');
+                  // return error;
                 });
             },
             {
@@ -1189,7 +1199,8 @@ importEntries.prototype = {
               // empty function
             })
             .catch(function (error) {
-              return error;
+              console.log('error', error);
+              addlogs(config, error, 'error');
             });
         },
         {
