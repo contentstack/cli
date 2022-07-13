@@ -92,7 +92,7 @@ class ExportToCsvCommand extends Command {
                 apiKey: listOfTokens[managementTokenAlias].apiKey,
               };
             } else if (managementTokenAlias) {
-              console.log('\x1b[31m ERROR: Provided management token alias not found in your config.!');
+              console.log('ERROR: Provided management token alias not found in your config.!');
               this.exit();
             } else {
               let organization;
@@ -116,7 +116,7 @@ class ExportToCsvCommand extends Command {
             }
 
             if (contentTypesFlag) {
-              contentTypes = (contentTypesFlag || '').split(',').map(this.snakeCase);
+              contentTypes = contentTypesFlag.split(',').map(this.snakeCase);
             } else {
               for (let index = 0; index <= contentTypeCount / 100; index++) {
                 const contentTypesMap = await util.getContentTypes(this.managementAPIClient, stack.apiKey, index);
@@ -193,7 +193,7 @@ class ExportToCsvCommand extends Command {
             util.write(this, listOfUsers, fileName, 'organization details');
           } catch (error) {
             if (error.message) {
-              this.log(`\x1b[31m Error: ${util.formatError(error)}`);
+              this.log(`Error: ${error.message}`);
             }
 
             this.error('failed export content to csv');
@@ -203,7 +203,7 @@ class ExportToCsvCommand extends Command {
       }
     } catch (error) {
       if (error.message) {
-        this.log(`\x1b[31m Error: ${util.formatError(error)}`);
+        this.log(`Error: ${util.formatError(error)}`);
       }
 
       this.error('failed export content to csv');
