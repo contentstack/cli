@@ -9,19 +9,28 @@ let _ = require('lodash');
 const { cliux } = require('@contentstack/cli-utilities');
 let message = require('../../../messages/index.json');
 
-exports.configWithMToken = function (config, managementTokens, moduleName, host, _authToken, backupdir, branchName) {
+exports.configWithMToken = function (
+  config,
+  managementTokens,
+  moduleName,
+  host,
+  _authToken,
+  backupdir,
+  importCommandFlags,
+) {
   return new Promise(async function (resolve, reject) {
-    let externalConfig = require(config);
-    const modules = externalConfig.modules
+    let externalConfig = config ? require(config) : {};
+    const modules = externalConfig.modules;
 
     if (_.isArray(externalConfig['modules'])) {
-      externalConfig = _.omit(externalConfig, ['modules'])
+      externalConfig = _.omit(externalConfig, ['modules']);
     }
 
     defaultConfig.host = host;
-    defaultConfig.branchName = branchName;
+    defaultConfig.branchName = importCommandFlags.branchName;
     defaultConfig.target_stack = managementTokens.apiKey;
     defaultConfig.management_token = managementTokens.token;
+    defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
 
     if (moduleName && moduleName !== undefined) {
       defaultConfig.moduleName = moduleName;
@@ -35,24 +44,28 @@ exports.configWithMToken = function (config, managementTokens, moduleName, host,
     defaultConfig = _.merge(defaultConfig, externalConfig);
 
     if (_.isArray(modules)) {
-      defaultConfig.modules.types = _.filter(
-        defaultConfig.modules.types,
-        (module) => _.includes(modules, module)
-      )
+      defaultConfig.modules.types = _.filter(defaultConfig.modules.types, (module) => _.includes(modules, module));
     }
 
-    initial(defaultConfig)
-      .then(resolve)
-      .catch(reject);
+    initial(defaultConfig).then(resolve).catch(reject);
   });
 };
 
-exports.parameterWithMToken = function (managementTokens, data, moduleName, host, _authToken, backupdir, branchName) {
+exports.parameterWithMToken = function (
+  managementTokens,
+  data,
+  moduleName,
+  host,
+  _authToken,
+  backupdir,
+  importCommandFlags,
+) {
   return new Promise(async function (resolve, reject) {
     defaultConfig.management_token = managementTokens.token;
     defaultConfig.target_stack = managementTokens.apiKey;
     defaultConfig.auth_token = _authToken;
-    defaultConfig.branchName = branchName;
+    defaultConfig.branchName = importCommandFlags.branchName;
+    defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
     if (moduleName && moduleName !== undefined) {
       defaultConfig.moduleName = moduleName;
     }
@@ -61,20 +74,26 @@ exports.parameterWithMToken = function (managementTokens, data, moduleName, host
     if (backupdir) {
       defaultConfig.useBackedupDir = backupdir;
     }
-    initial(defaultConfig)
-      .then(resolve)
-      .catch(reject);
+    initial(defaultConfig).then(resolve).catch(reject);
   });
 };
 
 // using ManagemetToken
-exports.withoutParameterMToken = async (managementTokens, moduleName, host, _authToken, backupdir, branchName) => {
+exports.withoutParameterMToken = async (
+  managementTokens,
+  moduleName,
+  host,
+  _authToken,
+  backupdir,
+  importCommandFlags,
+) => {
   return new Promise(async function (resolve, reject) {
     const exporteddata = await cliux.prompt(message.promptMessageList.promptPathStoredData);
     defaultConfig.management_token = managementTokens.token;
     defaultConfig.target_stack = managementTokens.apiKey;
     defaultConfig.auth_token = _authToken;
-    defaultConfig.branchName = branchName;
+    defaultConfig.branchName = importCommandFlags.branchName;
+    defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
     if (moduleName && moduleName !== undefined) {
       defaultConfig.moduleName = moduleName;
     }
@@ -83,17 +102,16 @@ exports.withoutParameterMToken = async (managementTokens, moduleName, host, _aut
     if (backupdir) {
       defaultConfig.useBackedupDir = backupdir;
     }
-    initial(defaultConfig)
-      .then(resolve)
-      .catch(reject);
+    initial(defaultConfig).then(resolve).catch(reject);
   });
 };
 
-exports.configWithAuthToken = function (config, _authToken, moduleName, host, backupdir, branchName) {
+exports.configWithAuthToken = function (config, _authToken, moduleName, host, backupdir, importCommandFlags) {
   return new Promise(async function (resolve, reject) {
     let externalConfig = require(config);
     defaultConfig.auth_token = _authToken;
-    defaultConfig.branchName = branchName;
+    defaultConfig.branchName = importCommandFlags.branchName;
+    defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
     if (moduleName && moduleName !== undefined) {
       defaultConfig.moduleName = moduleName;
     }
@@ -108,17 +126,24 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host, ba
       defaultConfig.useBackedupDir = backupdir;
     }
     defaultConfig = _.merge(defaultConfig, externalConfig);
-    initial(defaultConfig)
-      .then(resolve)
-      .catch(reject);
+    initial(defaultConfig).then(resolve).catch(reject);
   });
 };
 
-exports.parametersWithAuthToken = function (_authToken, targetStack, data, moduleName, host, backupdir, branchName) {
+exports.parametersWithAuthToken = function (
+  _authToken,
+  targetStack,
+  data,
+  moduleName,
+  host,
+  backupdir,
+  importCommandFlags,
+) {
   return new Promise(async function (resolve, reject) {
     defaultConfig.auth_token = _authToken;
     defaultConfig.target_stack = targetStack;
-    defaultConfig.branchName = branchName;
+    defaultConfig.branchName = importCommandFlags.branchName;
+    defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
     if (moduleName && moduleName !== undefined && backupdir === undefined) {
       defaultConfig.moduleName = moduleName;
     } else if (moduleName && moduleName !== undefined && backupdir !== undefined) {
@@ -128,20 +153,19 @@ exports.parametersWithAuthToken = function (_authToken, targetStack, data, modul
     defaultConfig.data = data;
     defaultConfig.host = host;
 
-    initial(defaultConfig)
-      .then(resolve)
-      .catch(reject);
+    initial(defaultConfig).then(resolve).catch(reject);
   });
 };
 
-exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, backupdir, branchName) => {
+exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, backupdir, importCommandFlags) => {
   return new Promise(async function (resolve, reject) {
     const stackUid = await cliux.prompt(message.promptMessageList.promptTargetStack);
     const exporteddata = await cliux.prompt(message.promptMessageList.promptPathStoredData);
     defaultConfig.auth_token = _authToken;
     defaultConfig.target_stack = stackUid;
     defaultConfig.data = exporteddata;
-    defaultConfig.branchName = branchName;
+    defaultConfig.branchName = importCommandFlags.branchName;
+    defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
     if (moduleName && moduleName !== undefined && backupdir === undefined) {
       defaultConfig.moduleName = moduleName;
     } else if (moduleName && moduleName !== undefined && backupdir !== undefined) {
@@ -151,8 +175,6 @@ exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, ba
 
     defaultConfig.host = host;
 
-    initial(defaultConfig)
-      .then(resolve)
-      .catch(reject);
+    initial(defaultConfig).then(resolve).catch(reject);
   });
 };

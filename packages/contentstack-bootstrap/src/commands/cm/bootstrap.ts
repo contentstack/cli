@@ -1,15 +1,11 @@
 import { Command, flags } from '@contentstack/cli-command';
 const ContentstackManagementSDK = require('@contentstack/management');
 import Bootstrap, { BootstrapOptions, SeedParams } from '../../bootstrap';
-import {
-  inquireCloneDirectory,
-  inquireApp,
-  inquireGithubAccessToken,
-  inquireAppType,
-} from '../../bootstrap/interactive';
+import { inquireCloneDirectory, inquireApp, inquireAppType } from '../../bootstrap/interactive';
 import { printFlagDeprecation } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
+
 export default class BootstrapCommand extends Command {
   private bootstrapManagementAPIClient: any;
 
