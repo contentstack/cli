@@ -59,13 +59,14 @@ USAGE
   $ csdx cm:stacks:import
 
 OPTIONS
-  -B, --branch=branch                                  [optional] branch name
-  -a, --management-token-alias=management-token-alias  alias of the management token
-  -b, --backup-dir=backup-dir                          [optional] backup directory name when using specific module
-  -c, --config=config                                  [optional] path of config file
-  -d, --data-dir=data-dir                              path and location where data is stored
-  -k, --stack-api-key=stack-api-key                    API key of the target stack
-  -m, --module=module                                  [optional] specific module name
+  -B, --branch=branch                             [optional] branch name
+  -a, --alias=alias                               alias of the management token
+  -b, --backup-dir=backup-dir                     [optional] backup directory name when using specific module
+  -c, --config=config                             [optional] path of config file
+  -d, --data-dir=data-dir                         path and location where data is stored
+  -k, --stack-api-key=stack-api-key               API key of the target stack
+  -m, --module=module                             [optional] specific module name
+  --import-webhook-status=enable|disable|default  [default: disable] Webhook state
 
 DESCRIPTION
   ...
@@ -80,9 +81,9 @@ EXAMPLES
   csdx cm:stacks:import --config <path/of/config/dir>
   csdx cm:stacks:import --module <single module name>
   csdx cm:stacks:import --module <single module name> --backup-dir <backup dir>
-  csdx cm:stacks:import --management-token-alias <management_token_alias>
-  csdx cm:stacks:import --management-token-alias <management_token_alias> --data-dir <path/of/export/destination/dir>
-  csdx cm:stacks:import --management-token-alias <management_token_alias> --config <path/of/config/file>
+  csdx cm:stacks:import --alias <management_token_alias>
+  csdx cm:stacks:import --alias <management_token_alias> --data-dir <path/of/export/destination/dir>
+  csdx cm:stacks:import --alias <management_token_alias> --config <path/of/config/file>
   csdx cm:stacks:import --branch <branch name>
 ```
 
