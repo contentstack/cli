@@ -1,5 +1,6 @@
-const { Command, flags } = require('@contentstack/cli-command');
 let _ = require('lodash');
+const defaultConfig = require('../../../config/default')
+const { Command, flags } = require('@contentstack/cli-command');
 const { configHandler } = require('@contentstack/cli-utilities');
 const {
   configWithMToken,
@@ -26,6 +27,10 @@ class ImportCommand extends Command {
     let host = self.cmaHost;
 
     return new Promise(function (resolve, reject) {
+      if (data) {
+        defaultConfig.data = data;
+      }
+
       if (alias) {
         let managementTokens = self.getToken(alias);
 
