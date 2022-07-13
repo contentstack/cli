@@ -12,11 +12,19 @@ const chalk = require('chalk');
 let util = require('./lib/util/index');
 let login = require('./lib/util/login');
 let { addlogs } = require('./lib/util/log');
+const { HttpClient } = require('@contentstack/cli-utilities');
 
 exports.initial = function (configData) {
   return new Promise(async function (resolve, reject) {
     let config = util.initialization(configData);
     config.oldPath = config.data;
+
+    if (configData.branchName) {
+      await validateIfBranchExist(configData, configData.branchName)
+        .catch(() => {
+          process.exit()
+        })
+    }
 
     const backupAndImportData = async () => {
       if (fs.existsSync(config.data)) {
@@ -178,3 +186,35 @@ function createBackup(backupDirPath, config) {
     }
   });
 }
+
+const validateIfBranchExist = async (config, branch) => {
+  return new Promise(async function (resolve, reject) {
+    const headers = { api_key: config.target_stack, authtoken: config.auth_token }
+    const httpClient = new HttpClient().headers(headers)
+    const result = await httpClient
+      .get(`https://${config.host}/v3/stacks/branches/${branch}`)
+      .then(({ data }) => {
+        if (data.error_message) {
+          addlogs(config, chalk.red(data.error_message), 'error');
+          addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
+          reject()
+        }
+
+        return data
+      }).catch((err) => {
+        console.log(err)
+        addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
+        reject()
+      })
+
+    if (
+      result &&
+      typeof result === 'object' &&
+      typeof result.branch === 'object'
+    ) {
+      resolve(result.branch)
+    } else {
+      reject({ message: 'No branch found with the name ' + branch })
+    }
+  });
+};
