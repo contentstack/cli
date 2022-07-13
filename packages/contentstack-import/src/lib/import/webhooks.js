@@ -58,6 +58,12 @@ importWebhooks.prototype = {
         webUids,
         function (webUid) {
           let web = self.webhooks[webUid];
+          if (config.importWebhookStatus === 'enable') {
+            web.disabled = false;
+          } else if (config.importWebhookStatus !== 'default' || config.importWebhookStatus === 'disable') {
+            web.disabled = true;
+          }
+
           if (!self.webUidMapper.hasOwnProperty(webUid)) {
             let requestOption = {
               json: {
@@ -65,26 +71,24 @@ importWebhooks.prototype = {
               },
             };
 
-            return (
-              client
-                .stack({ api_key: config.target_stack, management_token: config.management_token })
-                .webhook()
-                .create(requestOption.json)
-                .then(function (response) {
-                  self.success.push(response);
-                  self.webUidMapper[webUid] = response.uid;
-                  helper.writeFile(webUidMapperPath, self.webUidMapper);
-                })
-                .catch(function (err) {
-                  let error = JSON.parse(err.message);
-                  self.fails.push(web);
-                  addlogs(
-                    config,
-                    chalk.red("Webhooks: '" + web.name + "' failed to be import\n" + JSON.stringify(error)),
-                    'error',
-                  );
-                })
-            );
+            return client
+              .stack({ api_key: config.target_stack, management_token: config.management_token })
+              .webhook()
+              .create(requestOption.json)
+              .then(function (response) {
+                self.success.push(response);
+                self.webUidMapper[webUid] = response.uid;
+                helper.writeFile(webUidMapperPath, self.webUidMapper);
+              })
+              .catch(function (err) {
+                let error = JSON.parse(err.message);
+                self.fails.push(web);
+                addlogs(
+                  config,
+                  chalk.red("Webhooks: '" + web.name + "' failed to be import\n" + JSON.stringify(error)),
+                  'error',
+                );
+              });
           } else {
             // the webhooks has already been created
             addlogs(
