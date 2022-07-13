@@ -12,7 +12,7 @@
     "@contentstack/cli-utilities": "^1.0.0",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
-    "async": "^3.2.0",
+    "async": "^3.2.4",
     "child_process": "^1.0.2",
     "fancy-test": "^1.4.10",
     "inquirer": "^7.3.3",
@@ -29,7 +29,7 @@
     "eslint-config-oclif": "^3.1.0",
     "globby": "^10.0.2",
     "jest": "^26.6.3",
-    "mocha": "^9.2.2",
+    "mocha": "^10.0.0",
     "nyc": "^14.1.1",
     "sinon": "^9.2.4"
   },
