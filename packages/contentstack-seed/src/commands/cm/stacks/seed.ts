@@ -50,6 +50,10 @@ export default class SeedCommand extends Command {
       required: false,
       hidden: true,
     }),
+    yes: flags.string({
+      char: 'y',
+      required: false,
+    }),
 
     //To be deprecated
     stack: flags.string({
@@ -84,6 +88,7 @@ export default class SeedCommand extends Command {
         stackUid: flags['stack-api-key'] || flags.stack,
         stackName: flags['stack-name'],
         fetchLimit: flags['fetch-limit'],
+        skipStackConfirmation: flags['yes'],
       };
 
       const seeder = new ContentModelSeeder(options);
