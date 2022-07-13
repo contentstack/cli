@@ -41,22 +41,24 @@ class MigrationCommand extends Command {
     '$ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... --file-path <migration/script/file/path>',
     '$ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>',
     '$ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> ',
-    '$ csdx cm:migration -a --file-path <migration/script/file/path> -k <api-key>',
+    '$ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>',
   ];
 
   async run() {
     // TODO: filePath validation required.
     const migrationCommandFlags = this.parse(MigrationCommand).flags;
     const { branch } = migrationCommandFlags;
-    const filePath = migrationCommandFlags['file-path'] || migrationCommandFlags.filePath
-    const multi = migrationCommandFlags.multiple || migrationCommandFlags.multi
+    const filePath = migrationCommandFlags['file-path'] || migrationCommandFlags.filePath;
+    const multi = migrationCommandFlags.multiple || migrationCommandFlags.multi;
     const authtoken = configHandler.get('authtoken');
     const apiKey = migrationCommandFlags['api-key'] || migrationCommandFlags['stack-api-key'];
-    const alias = migrationCommandFlags['management-token-alias'];
+    const alias = migrationCommandFlags['alias'] || migrationCommandFlags['management-token-alias'];
     const config = migrationCommandFlags['config'];
 
     if (!authtoken && !alias) {
-      console.log("AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login or provide management token alias");
+      this.log(
+        "AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login or provide management token alias",
+      );
       this.exit();
     }
 
@@ -103,9 +105,7 @@ class MigrationCommand extends Command {
           });
         }
       }
-    }
-
-    if (authtoken) {
+    } else if (authtoken) {
       set(AUTH_TOKEN, mapInstance, authtoken);
       set(API_KEY, mapInstance, apiKey);
       this.managementAPIClient = { authtoken: this.authToken };
@@ -161,6 +161,7 @@ class MigrationCommand extends Command {
       requests.splice(0, requests.length);
     } catch (error) {
       // errorHandler(null, null, null, error)
+      this.log(error);
     }
   }
 
@@ -230,35 +231,41 @@ MigrationCommand.flags = {
     char: 'k',
     description: 'With this flag add the API key of your stack.',
     dependsOn: ['authtoken'],
-    exclusive: ['management-token-alias'],
+    exclusive: ['alias'],
     parse: printFlagDeprecation(['--api-key'], ['-k', '--stack-api-key']),
-    hidden: true
+    hidden: true,
   }),
   'stack-api-key': flags.string({
     char: 'k',
     description: 'With this flag add the API key of your stack.',
     dependsOn: ['authtoken'],
-    exclusive: ['management-token-alias'],
+    exclusive: ['alias'],
   }),
   authtoken: flags.boolean({
     char: 'A',
     description:
       'Use this flag to use the auth token of the current session. After logging in CLI, an auth token is generated for each new session.',
     dependsOn: ['api-key'],
-    exclusive: ['management-token-alias'],
+    exclusive: ['alias'],
     parse: printFlagDeprecation(['-A', '--authtoken']),
-    hidden: true
+    hidden: true,
   }),
-  'management-token-alias': flags.string({
+  alias: flags.string({
     char: 'a',
     description: 'Use this flag to add the management token alias.',
     exclusive: ['authtoken'],
-  }), // Add a better description
+  }),
+  'management-token-alias': flags.string({
+    description: 'alias of the management token',
+    exclusive: ['authtoken'],
+    hidden: true,
+    parse: printFlagDeprecation(['--management-token-alias'], ['-a', '--alias']),
+  }),
   filePath: flags.string({
     char: 'n',
     description: 'Use this flag to provide the path of the file of the migration script provided by the user.',
     parse: printFlagDeprecation(['-n', '--filePath'], ['--file-path']),
-    hidden: true
+    hidden: true,
   }),
   'file-path': flags.string({
     description: 'Use this flag to provide the path of the file of the migration script provided by the user.',
@@ -278,9 +285,9 @@ MigrationCommand.flags = {
   multi: flags.boolean({
     description: 'This flag helps you to migrate multiple content files in a single instance.',
     parse: printFlagDeprecation(['--multi'], ['--multiple']),
-    hidden: true
-  }), // Add a better description
-  'multiple': flags.boolean({
+    hidden: true,
+  }),
+  multiple: flags.boolean({
     description: 'This flag helps you to migrate multiple content files in a single instance.',
   }),
 };

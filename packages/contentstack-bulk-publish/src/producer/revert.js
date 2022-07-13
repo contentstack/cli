@@ -180,7 +180,9 @@ async function revertUsingLogs(logFileName) {
       initializeLogger(revertLogFileName);
       const stack = getStack({
         apikey: response.file[0].message.api_key,
-        managementTokenAlias: response.file[0].message.alias,
+        alias: response.file[0].message.alias,
+        host: response.file[0].message.host,
+        branch: response.file[0].message.branch || 'main'
       });
       logs = await formatLogData(stack, response.file);
 
