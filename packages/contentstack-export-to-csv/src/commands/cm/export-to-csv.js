@@ -80,87 +80,93 @@ class ExportToCsvCommand extends Command {
       switch (action) {
         case config.exportEntries:
         case 'entries': {
-          let stack;
-          let language;
-          let contentTypes = [];
-          const listOfTokens = configHandler.get('tokens');
+          try {
+            let stack;
+            let language;
+            let contentTypes = [];
+            const listOfTokens = configHandler.get('tokens');
 
-          if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
-            stack = {
-              name: stackName || managementTokenAlias,
-              apiKey: listOfTokens[managementTokenAlias].apiKey,
-            };
-          } else if (managementTokenAlias) {
-            console.log('\x1b[31m ERROR: Provided management token alias not found in your config.!');
-            this.exit();
-          } else {
-            let organization;
-
-            if (org) {
-              organization = { uid: org };
+            if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
+              stack = {
+                name: stackName || managementTokenAlias,
+                apiKey: listOfTokens[managementTokenAlias].apiKey,
+              };
+            } else if (managementTokenAlias) {
+              console.log('\x1b[31m ERROR: Provided management token alias not found in your config.!');
+              this.exit();
             } else {
-              organization = await util.chooseOrganization(this.managementAPIClient); // prompt for organization
+              let organization;
+
+              if (org) {
+                organization = { uid: org };
+              } else {
+                organization = await util.chooseOrganization(this.managementAPIClient); // prompt for organization
+              }
+
+              stack = await util.chooseStack(this.managementAPIClient, organization.uid); // prompt for stack
             }
 
-            stack = await util.chooseStack(this.managementAPIClient, organization.uid); // prompt for stack
-          }
+            const contentTypeCount = await util.getContentTypeCount(this.managementAPIClient, stack.apiKey);
+            const environments = await util.getEnvironments(this.managementAPIClient, stack.apiKey); // fetch environments, because in publish details only env uid are available and we need env names
 
-          const contentTypeCount = await util.getContentTypeCount(this.managementAPIClient, stack.apiKey);
-          const environments = await util.getEnvironments(this.managementAPIClient, stack.apiKey); // fetch environments, because in publish details only env uid are available and we need env names
-
-          if (locale) {
-            language = { code: locale };
-          } else {
-            language = await util.chooseLanguage(this.managementAPIClient, stack.apiKey); // prompt for language
-          }
-
-          if (contentTypesFlag) {
-            contentTypes = (contentTypesFlag || '').split(',').map(this.snakeCase);
-          } else {
-            for (let index = 0; index <= contentTypeCount / 100; index++) {
-              const contentTypesMap = await util.getContentTypes(this.managementAPIClient, stack.apiKey, index);
-              contentTypes = contentTypes.concat(Object.values(contentTypesMap)); // prompt for content Type
+            if (locale) {
+              language = { code: locale };
+            } else {
+              language = await util.chooseLanguage(this.managementAPIClient, stack.apiKey); // prompt for language
             }
-          }
 
-          if (contentTypes.length <= 0) {
-            this.log('No content types found for the given stack');
-            this.exit();
-          }
+            if (contentTypesFlag) {
+              contentTypes = (contentTypesFlag || '').split(',').map(this.snakeCase);
+            } else {
+              for (let index = 0; index <= contentTypeCount / 100; index++) {
+                const contentTypesMap = await util.getContentTypes(this.managementAPIClient, stack.apiKey, index);
+                contentTypes = contentTypes.concat(Object.values(contentTypesMap)); // prompt for content Type
+              }
+            }
 
-          if (!contentTypesFlag) {
-            contentTypes = await util.chooseInMemContentTypes(contentTypes);
-          }
+            if (contentTypes.length <= 0) {
+              this.log('No content types found for the given stack');
+              this.exit();
+            }
 
-          while (contentTypes.length > 0) {
-            let contentType = contentTypes.pop();
+            if (!contentTypesFlag) {
+              contentTypes = await util.chooseInMemContentTypes(contentTypes);
+            }
 
-            const entriesCount = await util.getEntriesCount(
-              this.managementAPIClient,
-              stack.apiKey,
-              contentType,
-              language.code,
-            );
-            let flatEntries = [];
-            for (let index = 0; index < entriesCount / 100; index++) {
-              const entriesResult = await util.getEntries(
+            while (contentTypes.length > 0) {
+              let contentType = contentTypes.pop();
+
+              const entriesCount = await util.getEntriesCount(
                 this.managementAPIClient,
                 stack.apiKey,
                 contentType,
                 language.code,
-                index,
               );
-              const flatEntriesResult = util.cleanEntries(
-                entriesResult.items,
-                language.code,
-                environments,
-                contentType,
-              );
-              flatEntries = flatEntries.concat(flatEntriesResult);
-            }
-            let fileName = `${stack.name}_${contentType}_${language.code}_entries_export.csv`;
+              let flatEntries = [];
+              for (let index = 0; index < entriesCount / 100; index++) {
+                const entriesResult = await util.getEntries(
+                  this.managementAPIClient,
+                  stack.apiKey,
+                  contentType,
+                  language.code,
+                  index,
+                );
+                const flatEntriesResult = util.cleanEntries(
+                  entriesResult.items,
+                  language.code,
+                  environments,
+                  contentType,
+                );
+                flatEntries = flatEntries.concat(flatEntriesResult);
+              }
+              let fileName = `${stack.name}_${contentType}_${language.code}_entries_export.csv`;
 
-            util.write(this, flatEntries, fileName, 'entries'); // write to file
+              util.write(this, flatEntries, fileName, 'entries'); // write to file
+            }
+
+          } catch(error) {
+            debugger
+            this.log(`\x1b[31m Error: ${util.formatError(error)}`);
           }
           break;
         }
@@ -187,7 +193,7 @@ class ExportToCsvCommand extends Command {
             util.write(this, listOfUsers, fileName, 'organization details');
           } catch (error) {
             if (error.message) {
-              this.log(`\x1b[31m Error: ${error.message}`);
+              this.log(`\x1b[31m Error: ${util.formatError(error)}`);
             }
 
             this.error('failed export content to csv');
@@ -197,7 +203,7 @@ class ExportToCsvCommand extends Command {
       }
     } catch (error) {
       if (error.message) {
-        this.log(`\x1b[31m Error: ${error.message}`);
+        this.log(`\x1b[31m Error: ${util.formatError(error)}`);
       }
 
       this.error('failed export content to csv');
