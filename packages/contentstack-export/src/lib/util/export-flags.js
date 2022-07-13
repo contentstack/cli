@@ -11,13 +11,14 @@ const helper = require('../util/helper');
 let _ = require('lodash');
 const { cliux } = require('@contentstack/cli-utilities');
 
-exports.configWithMToken = function (config, managementTokens, host, contentTypes, branchName, securedAssets) {
+exports.configWithMToken = function (config, managementTokens, host, contentTypes, branchName, securedAssets, moduleName) {
   let externalConfig = require(config);
   defaultConfig.securedAssets = securedAssets;
   defaultConfig.management_token = managementTokens.token;
   defaultConfig.host = host.cma;
   defaultConfig.cdn = host.cda;
   defaultConfig.branchName = branchName;
+  defaultConfig.source_stack = managementTokens.apiKey;
   if (moduleName) {
     defaultConfig.moduleName = moduleName;
     // Specfic content type setting is only for entries module
@@ -29,7 +30,7 @@ exports.configWithMToken = function (config, managementTokens, host, contentType
   initial(defaultConfig);
 };
 
-exports.parameterWithMToken = function (
+exports.parameterWithMToken = async function (
   managementTokens,
   data,
   moduleName,
@@ -45,7 +46,9 @@ exports.parameterWithMToken = function (
   defaultConfig.cdn = host.cda;
   defaultConfig.branchName = branchName;
   defaultConfig.securedAssets = securedAssets;
-  if (moduleName) {
+  if (!moduleName) {
+    defaultConfig.contentTypes = contentTypes;
+  } else {
     defaultConfig.moduleName = moduleName;
     // Specfic content type setting is only for entries module
     if (moduleName === 'entries' && Array.isArray(contentTypes) && contentTypes.length > 0) {
@@ -54,7 +57,7 @@ exports.parameterWithMToken = function (
   }
   defaultConfig.source_stack = managementTokens.apiKey;
   defaultConfig.data = data;
-  initial(defaultConfig);
+  await initial(defaultConfig);
 };
 
 // using ManagementToken

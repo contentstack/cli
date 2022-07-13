@@ -59,7 +59,7 @@ OPTIONS
 
   -a, --alias=alias                Alias(name) for the management token
 
-  -c, --config=config              Use this flag to specify the path to config file
+  -c, --config=config              Path to the config file
 
   -e, --environments=environments  Environments where assets will be published
 
@@ -72,17 +72,17 @@ OPTIONS
 
   --content-types=content-types    Content types
 
-  --delivery-token=delivery-token  Delivery Token for source environment
+  --delivery-token=delivery-token  Delivery token for source environment
 
   --folder-uid=folder-uid          [default: cs_root] Folder-uid from where the assets will be published
 
   --retry-failed=retry-failed      Retry publishing failed assets from the logfile (optional, will override all other
                                    flags)
 
-  --source-env=source-env          Destination Environments
+  --source-env=source-env          Source environment
 
 DESCRIPTION
-  The assets command is used for publishing assets from the specified stack, to the specified environments
+  The assets command is used to publish assets from the specified stack, to the specified environments
 
   Note: Environment(s) and Locale(s) are required to execute the command successfully
   But, if retryFailed flag is set, then only a logfile is required
@@ -186,34 +186,34 @@ USAGE
   $ csdx cm:bulk-publish:cross-publish
 
 OPTIONS
-  -B, --branch=branch                [default: main] Specify the branch to fetch the content (by default the main branch
-                                     is selected)
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
+                                   is selected)
 
-  -a, --alias=alias                  Alias(name) for the management token
+  -a, --alias=alias                Alias(name) for the management token
 
-  -b, --bulkPublish=bulkPublish      [default: true] This flag is set to true by default. It indicates that
-                                     contentstack's bulkpublish API will be used to publish the entries
+  -c, --config=config              Path to the config file
 
-  -c, --config=config                Path to config file that will be used
+  -y, --yes                        Agree to process the command with the current configuration
 
-  -d, --destEnv=destEnv              Destination Environments
+  --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used to publish the entries
 
-  -e, --environment=environment      Source Environment
+  --content-type=content-type      The Contenttypes from which entries will be published
 
-  -l, --locale=locale                Locale filter
+  --delivery-token=delivery-token  Delivery token for source environment
 
-  -r, --retryFailed=retryFailed      (optional) Retry publishing failed entries from the logfile (this flag overrides
-                                     all other flags)
+  --environments=environments      Destination Environments
 
-  -t, --contentType=contentType      Contenttype filter
+  --locales=locales                Source locale
 
-  -x, --deliveryToken=deliveryToken  Delivery token for source environment
+  --onlyAssets                     Unpublish only assets
 
-  -y, --yes                          Agree to process the command with the current configuration
+  --onlyEntries                    Unpublish only entries
 
-  --onlyAssets                       Unpublish only assets
+  --retry-failed=retry-failed      (optional) Retry publishing failed entries from the logfile (this flag overrides all
+                                   other flags)
 
-  --onlyEntries                      Unpublish only entries
+  --source-env=source-env          Source Env
 
 DESCRIPTION
   The cross-publish command is used to publish entries and assets from one environment to other environments
@@ -224,21 +224,21 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
-  [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]
+  csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION
+   ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN]
 
   Using --config or -c flag
   Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
   csdx cm:bulk-publish:cross-publish --config [PATH TO CONFIG FILE]
   csdx cm:bulk-publish:cross-publish -c [PATH TO CONFIG FILE]
 
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:cross-publish --retryFailed [LOG FILE NAME]
+  Using --retry-failed flag
+  csdx cm:bulk-publish:cross-publish --retry-failed [LOG FILE NAME]
   csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]
 
-  Using --branch or -B flag
-  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
-  [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]
+  Using --branch flag
+  csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION
+   ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
 ```
 
 _See code: [src/commands/cm/bulk-publish/cross-publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
@@ -280,7 +280,7 @@ OPTIONS
                                    attempt. A log file for the previous session will be required for processing the
                                    failed entries
 
-  --source-env=source-env          Destination environments
+  --source-env=source-env          Source environment
 
 DESCRIPTION
   The publish command is used to publish entries from the specified content types, to the
@@ -331,7 +331,7 @@ OPTIONS
 
   -a, --alias=alias                Alias(name) for the management token
 
-  -c, --config=config              Path to config file
+  -c, --config=config              Path to the config file
 
   -e, --environments=environments  Destination environments
 
@@ -340,7 +340,7 @@ OPTIONS
   -y, --yes                        Agree to process the command with the current configuration
 
   --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
+                                   bulkpublish API will be used to publish the entries
 
   --content-types=content-types    The Contenttypes which will be checked for edited entries
 
@@ -350,7 +350,7 @@ OPTIONS
   --source-env=source-env          Environment from which edited entries will be published
 
 DESCRIPTION
-  The publish-modified command is used for publishing entries from the specified content types, to the
+  The publish-modified command is used to publish entries from the specified content types, to the
   specified environments and locales
 
   Note: Content type(s), Source Environment, Destination Environment(s) and Locale(s) are required to execute the 
@@ -363,7 +363,7 @@ ALIASES
 EXAMPLES
   General Usage
   csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e 
-  [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
+  [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
   Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`
@@ -376,7 +376,7 @@ EXAMPLES
 
   Using --branch
   csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e 
-  [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
+  [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
 ```
 
 _See code: [src/commands/cm/entries/publish-modified.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish-modified.js)_
@@ -395,14 +395,14 @@ OPTIONS
 
   -a, --alias=alias                Alias(name) for the management token
 
-  -c, --config=config              Path to config file
+  -c, --config=config              Path to the config file
 
   -e, --environments=environments  Destination environments
 
   -y, --yes                        Agree to process the command with the current configuration
 
   --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
+                                   bulkpublish API will be used to publish the entries
 
   --content-types=content-types    The Contenttypes from which entries will be published
 
@@ -411,8 +411,8 @@ OPTIONS
   --source-env=source-env          Source Environment
 
 DESCRIPTION
-  The non-localized field changes command is used for publishing non-localized field changes from the given content 
-  types to the specified environments
+  The non-localized field changes command is used to publish non-localized field changes from the given content types to
+   the specified environments
 
   Note: Content types, Environments and Source Environment are required to execute this command successfully.
   But, if retryFailed flag is set, then only a logfile is required
@@ -457,7 +457,7 @@ OPTIONS
   -b, --bulk-publish=bulk-publish  [default: true] This flag is set to true by default. It indicates that contentstack's
                                    bulkpublish API will be used to publish the entries
 
-  -c, --config=config              Path to config file
+  -c, --config=config              Path to the config file
 
   -e, --environments=environments  Destination environments
 
@@ -512,7 +512,7 @@ USAGE
 
 OPTIONS
   -a, --alias=alias                Alias(name) for the management token
-  -c, --config=config              Path to config file
+  -c, --config=config              Path to the config file
   -e, --environment=environment    Source Environment
   -y, --yes                        Agree to process the command with the current configuration
 
@@ -520,9 +520,9 @@ OPTIONS
                                    is selected)
 
   --bulk-unpublish=bulk-unpublish  [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
+                                   bulkpublish API will be used to unpublish the entries
 
-  --content-type=content-type      Contenttype filter
+  --content-type=content-type      Content type filter
 
   --delivery-token=delivery-token  Delivery token for source environment
 
@@ -571,7 +571,7 @@ OPTIONS
 
   -a, --alias=alias                Alias(name) for the management token
 
-  -c, --config=config              Path to config file
+  -c, --config=config              Path to the config file
 
   -e, --environments=environments  Environments where entries will be published
 
@@ -582,7 +582,7 @@ OPTIONS
   -y, --yes                        Agree to process the command with the current configuration
 
   --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
+                                   bulkpublish API will be used to publish the entries
 
   --content-types=content-types    The Contenttypes from which entries will be published
 
@@ -740,17 +740,17 @@ USAGE
 OPTIONS
   -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
   -a, --alias=alias                Alias(name) for the management token
-  -c, --config=config              Path to config file to be used
+  -c, --config=config              Path to the config file
   -e, --environment=environment    Source Environment
   -l, --locale=locale              Locale filter
   -y, --yes                        Agree to process the command with the current configuration
 
   --bulk-unpublish=bulk-unpublish  [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
+                                   bulkpublish API will be used to unpublish the entries and assets
 
-  --content-type=content-type      Content Type filter
+  --content-type=content-type      Content type filter
 
-  --delivery-token=delivery-token  Delivery Token for source environment
+  --delivery-token=delivery-token  Delivery token for source environment
 
   --retry-failed=retry-failed      Retry publishing failed entries from the logfile (optional, overrides all other
                                    flags)
