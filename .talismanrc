@@ -66,7 +66,7 @@ fileignoreconfig:
 - filename: packages/contentstack-export-to-csv/src/util/index.js
   checksum: 3b2fca4feb41179a28b1996ea079bf5f5d866cb34c906d0b0e67d72d5544fa96
 - filename: packages/contentstack-import/src/app.js
-checksum: 01a736c3cb8f20ade675108f33a6597fff0e9e145988022976bb09eacefcb062
+  checksum: 01a736c3cb8f20ade675108f33a6597fff0e9e145988022976bb09eacefcb062
 
 
 version: ""
