@@ -4,63 +4,70 @@
  * MIT Licensed
  */
 
-let ncp = require('ncp');
-let Bluebird = require('bluebird');
 let fs = require('fs');
+let ncp = require('ncp');
+let _ = require('lodash');
 let path = require('path');
 const chalk = require('chalk');
-const helper = require('./lib/util/fs');
-let _ = require('lodash');
-let login = require('./lib/util/login');
 let util = require('./lib/util/index');
+let login = require('./lib/util/login');
 let { addlogs } = require('./lib/util/log');
+const { HttpClient } = require('@contentstack/cli-utilities');
 
 exports.initial = function (configData) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(async function (resolve, reject) {
     let config = util.initialization(configData);
     config.oldPath = config.data;
-    if (config) {
-      login(config)
-        .then(function () {
-          if (fs.existsSync(config.data)) {
-            let migrationBackupDirPath = path.join(process.cwd(), '_backup_' + Math.floor(Math.random() * 1000));
-            return createBackup(migrationBackupDirPath, config)
-              .then((basePath) => {
-                config.data = basePath;
-                return util.sanitizeStack(config);
-              })
-              .catch((e) => {
-                console.error(e);
-                process.exit(1);
-              })
-              .then(() => {
-                let types = config.modules.types;
-                if (config.moduleName) {
-                  singleImport(config.moduleName, types, config).then(() => {
-                    return resolve();
-                  }).catch((e) => {
-                    return reject(e);
-                  });
-                } else {
-                  allImport(config, types).then(() => {
-                    return resolve();
-                  }).catch((e) => {
-                    return reject(e);
-                  });
-                }
-              })
-              .catch((e) => {
-                console.error(e);
-                return reject(e);
-              });
-          } else {
-            let filename = path.basename(config.data);
-            addlogs(config, chalk.red(filename + ' Folder does not Exist'), 'error');
-          }
+
+    if (configData.branchName) {
+      await validateIfBranchExist(configData, configData.branchName)
+        .catch(() => {
+          process.exit()
         })
-        .catch((_error) => {
-          return;
-        });
+    }
+
+    const backupAndImportData = async () => {
+      if (fs.existsSync(config.data)) {
+        let migrationBackupDirPath = path.join(process.cwd(), '_backup_' + Math.floor(Math.random() * 1000));
+        return createBackup(migrationBackupDirPath, config)
+          .then((basePath) => {
+            config.data = basePath;
+            return util.sanitizeStack(config);
+          }).then(() => {
+            let importRes
+            const types = config.modules.types
+
+            if (config.moduleName) {
+              importRes = singleImport(config.moduleName, types, config)
+            } else {
+              importRes = allImport(config, types)
+            }
+
+            importRes
+              .then(resolve)
+              .catch(reject)
+          }).catch((e) => {
+            console.error(e);
+            reject(e);
+            process.exit(1);
+          });
+      } else {
+        let filename = path.basename(config.data);
+        addlogs(config, chalk.red(filename + ' Folder does not Exist'), 'error');
+      }
+    }
+
+    if (config) {
+      if (
+        (config.email && config.password) ||
+        (config.auth_token)
+      ) {
+        login(config)
+          .then(backupAndImportData)
+          .catch(reject);
+      } else if (config.management_token) {
+        await backupAndImportData()
+      }
     }
   });
 };
@@ -70,7 +77,7 @@ let singleImport = async (moduleName, types, config) => {
     if (types.indexOf(moduleName) > -1) {
       if (!config.master_locale) {
         try {
-          var masterLocalResponse = await util.masterLocalDetails(config);
+          let masterLocalResponse = await util.masterLocalDetails(config);
           let master_locale = { code: masterLocalResponse.code };
           config['master_locale'] = master_locale;
         } catch (error) {
@@ -110,14 +117,14 @@ let allImport = async (config, types) => {
     try {
       for (let i = 0; i < types.length; i++) {
         let type = types[i];
-        var exportedModule = require('./lib/import/' + type);
+        let exportedModule = require('./lib/import/' + type);
         if (i === 0 && !config.master_locale) {
-          var masterLocalResponse = await util.masterLocalDetails(config);
+          let masterLocalResponse = await util.masterLocalDetails(config);
           let master_locale = { code: masterLocalResponse.code };
           config['master_locale'] = master_locale;
         }
         await exportedModule.start(config).then((_result) => {
-          return;
+          return
         }).catch(function (error) {
           addlogs(config, 'Failed to migrate ' + type, 'error');
           addlogs(config, error, 'error');
@@ -179,3 +186,35 @@ function createBackup(backupDirPath, config) {
     }
   });
 }
+
+const validateIfBranchExist = async (config, branch) => {
+  return new Promise(async function (resolve, reject) {
+    const headers = { api_key: config.target_stack, authtoken: config.auth_token }
+    const httpClient = new HttpClient().headers(headers)
+    const result = await httpClient
+      .get(`https://${config.host}/v3/stacks/branches/${branch}`)
+      .then(({ data }) => {
+        if (data.error_message) {
+          addlogs(config, chalk.red(data.error_message), 'error');
+          addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
+          reject()
+        }
+
+        return data
+      }).catch((err) => {
+        console.log(err)
+        addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
+        reject()
+      })
+
+    if (
+      result &&
+      typeof result === 'object' &&
+      typeof result.branch === 'object'
+    ) {
+      resolve(result.branch)
+    } else {
+      reject({ message: 'No branch found with the name ' + branch })
+    }
+  });
+};

@@ -21,7 +21,7 @@ let stackName = {
   type: 'input',
   name: 'stack',
   default: 'ABC',
-  message: 'Enter name for the new stack to store the cloned content ?'
+  message: 'Enter name for the new stack to store the cloned content ?',
 };
 
 let orgUidList = {};
@@ -48,8 +48,8 @@ class CloneHandler {
 
   #handleOrgSelection(options = {}) {
     return new Promise(async (resolve, reject) => {
-      const { msg = '', isSource = true } = options || {}
-      const orgList = await this.getOrganizationChoices(msg).catch(reject)
+      const { msg = '', isSource = true } = options || {};
+      const orgList = await this.getOrganizationChoices(msg).catch(reject);
 
       if (orgList) {
         const orgSelected = await inquirer.prompt(orgList);
@@ -60,15 +60,15 @@ class CloneHandler {
           config.targetOrg = orgUidList[orgSelected.Organization];
         }
 
-        resolve(orgSelected)
+        resolve(orgSelected);
       }
-    })
+    });
   }
 
   #handleStackSelection(options = {}) {
     return new Promise(async (resolve, reject) => {
-      const { org = {}, msg = '', isSource = true } = options || {}
-      const stackList = await this.getStack(org, msg, isSource).catch(reject)
+      const { org = {}, msg = '', isSource = true } = options || {};
+      const stackList = await this.getStack(org, msg, isSource).catch(reject);
 
       if (stackList) {
         const selectedStack = await inquirer.prompt(stackList);
@@ -82,36 +82,38 @@ class CloneHandler {
           config.destinationStackName = selectedStack.stack;
         }
 
-        resolve(selectedStack)
+        resolve(selectedStack);
       }
-    })
+    });
   }
 
   start() {
     return new Promise(async (resolve, reject) => {
-      let sourceStack = {}
+      let sourceStack = {};
       const handleOrgAndStackSelection = (orgMsg, stackMsg, isSource = true) => {
-        return new Promise(async (resolve) => {
-          const org = await this.#handleOrgSelection({ msg: orgMsg, isSource })
-            .catch((error) => reject(error.errorMessage))
+        return new Promise(async (_resolve) => {
+          const org = await this.#handleOrgSelection({ msg: orgMsg, isSource }).catch((error) =>
+            reject(error.errorMessage),
+          );
 
           if (org) {
             await this.#handleStackSelection({
               org,
               isSource,
-              msg: stackMsg
-            }).then(resolve)
-              .catch((error) => reject(error.errorMessage))
+              msg: stackMsg,
+            })
+              .then(_resolve)
+              .catch((error) => reject(error.errorMessage));
           }
-        })
-      }
+        });
+      };
 
       if (!config.source_stack) {
         // NOTE Export section
         sourceStack = await handleOrgAndStackSelection(
           'Choose an organization where your source stack exists:',
-          'Select the source stack'
-        )
+          'Select the source stack',
+        );
       }
 
       if (config.source_stack) {
@@ -125,12 +127,12 @@ class CloneHandler {
             if (branches && branches.items && branches.items.length) {
               config.sourceStackBranch = 'main';
             }
-          } catch (_error) { }
+          } catch (_error) {}
         }
 
         // NOTE Import section
         if (exportRes) {
-          let canCreateStack = false
+          let canCreateStack = false;
 
           if (!config.target_stack) {
             canCreateStack = await inquirer.prompt(stackCreationConfirmation);
@@ -141,8 +143,8 @@ class CloneHandler {
               await handleOrgAndStackSelection(
                 'Choose an organization where the destination stack exists: ',
                 'Choose the destination stack:',
-                false
-              )
+                false,
+              );
             }
 
             if (config.target_stack) {
@@ -153,19 +155,15 @@ class CloneHandler {
           } else {
             const destinationOrg = await this.#handleOrgSelection({
               isSource: false,
-              msg: 'Choose an organization where you want to create a stack: '
-            }).catch((error) => reject(error.errorMessage))
+              msg: 'Choose an organization where you want to create a stack: ',
+            }).catch((error) => reject(error.errorMessage));
             const orgUid = orgUidList[destinationOrg.Organization];
             await this.createNewStack(orgUid).catch((error) => {
-              return reject(
-                error.errorMessage + ' Contact the Organization owner for Stack Creation access.',
-              )
-            })
+              return reject(error.errorMessage + ' Contact the Organization owner for Stack Creation access.');
+            });
 
             if (config.target_stack) {
-              this.cloneTypeSelection()
-                .then(resolve)
-                .catch(reject)
+              this.cloneTypeSelection().then(resolve).catch(reject);
             }
           }
         }
@@ -232,12 +230,12 @@ class CloneHandler {
 
   async createNewStack(orgUid) {
     return new Promise(async (resolve, reject) => {
-      let inputvalue
+      let inputvalue;
 
       if (!config.stackName) {
         inputvalue = await inquirer.prompt(stackName);
       } else {
-        inputvalue = { stack: config.stackName }
+        inputvalue = { stack: config.stackName };
       }
 
       let stack = { name: inputvalue.stack, master_locale: master_locale };
@@ -262,32 +260,28 @@ class CloneHandler {
       const choices = [
         'Structure (all modules except entries & assets)',
         'Structure with content (all modules including entries & assets)',
-      ]
-      const cloneTypeSelection = [{
-        choices,
-        type: 'list',
-        name: 'type',
-        message: 'Choose the type of data to clone:'
-      }];
-      let successMsg
-      let selectedValue = {}
-      config['data'] = path.join(
-        __dirname.split('src')[0],
-        'contents', config.sourceStackBranch || ''
-      );
+      ];
+      const cloneTypeSelection = [
+        {
+          choices,
+          type: 'list',
+          name: 'type',
+          message: 'Choose the type of data to clone:',
+        },
+      ];
+      let successMsg;
+      let selectedValue = {};
+      config['data'] = path.join(__dirname.split('src')[0], 'contents', config.sourceStackBranch || '');
 
       if (!config.cloneType) {
         selectedValue = await inquirer.prompt(cloneTypeSelection);
       }
 
-      if (
-        config.cloneType === 'a' ||
-        selectedValue.type === 'Structure (all modules except entries & assets)'
-      ) {
+      if (config.cloneType === 'a' || selectedValue.type === 'Structure (all modules except entries & assets)') {
         config['modules'] = structureList;
-        successMsg = 'Stack clone Structure completed'
+        successMsg = 'Stack clone Structure completed';
       } else {
-        successMsg = 'Stack clone completed with structure and content'
+        successMsg = 'Stack clone completed with structure and content';
       }
 
       this.cmdImport()
@@ -299,29 +293,34 @@ class CloneHandler {
   async cmdExport() {
     return new Promise((resolve, reject) => {
       const cmd = ['-k', config.source_stack, '-d', __dirname.split('src')[0] + 'contents'];
+
+      if (config.source_alias) {
+        cmd.push('-a', config.source_alias);
+      }
       if (config.sourceStackBranch) {
         cmd.push('--branch', config.sourceStackBranch);
       }
 
       let exportData = exportCmd.run(cmd);
-      exportData
-        .then(async () => {
-          return resolve(true);
-        })
-        .catch((error) => {
-          return reject(error);
-        });
+      exportData.then(() => resolve(true)).catch(reject);
     });
   }
 
   async cmdImport() {
     return new Promise(async (resolve, _reject) => {
       const cmd = ['-c', path.join(__dirname, 'dummyConfig.json')];
+
+      if (config.destination_alias) {
+        cmd.push('-a', config.destination_alias);
+      }
       if (config.sourceStackBranch) {
         cmd.push('-d', path.join(__dirname, config.sourceStackBranch));
       }
       if (config.targetStackBranch) {
         cmd.push('--branch', config.targetStackBranch);
+      }
+      if (config.importWebhookStatus) {
+        cmd.push('--import-webhook-status', config.importWebhookStatus);
       }
 
       await importCmd.run(cmd);
