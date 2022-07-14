@@ -2,9 +2,12 @@ const ora = require('ora');
 const path = require('path');
 const inquirer = require('inquirer');
 
-let sdkInstance = require('../../lib/util/contentstack-management-sdk');
 let exportCmd = require('@contentstack/cli-cm-export');
 let importCmd = require('@contentstack/cli-cm-import');
+const { HttpClient } = require('@contentstack/cli-utilities');
+let sdkInstance = require('../../lib/util/contentstack-management-sdk');
+const defaultConfig = require('@contentstack/cli-cm-export/src/config/default');
+
 let client = {};
 let config;
 
@@ -87,6 +90,70 @@ class CloneHandler {
     });
   }
 
+  #handleBranchSelection = async (options) => {
+    return new Promise(async (resolve, reject) => {
+      const { api_key, isSource = true, returnBranch = false } = options
+      const spinner = ora('Fetching Branches').start();
+      try {
+        const headers = { api_key }
+
+        if (config.auth_token) {
+          headers['authtoken'] = config.auth_token
+        } else if (config.management_token) {
+          headers['authorization'] = config.management_token
+        }
+
+        const baseUrl = defaultConfig.host.startsWith('http')
+          ? defaultConfig.host
+          : `https://${defaultConfig.host}/v3`;
+
+        const result = await new HttpClient()
+          .headers(headers)
+          .get(`${baseUrl}/stacks/branches`)
+          .then(({ data: { branches } }) => branches)
+
+        // NOTE if want to get only list of branches 
+        if (returnBranch) {
+          const res = (
+            result &&
+            Array.isArray(result) &&
+            result.length > 0
+          ) ? result : []
+
+          resolve(res)
+        } else {
+          // NOTE list options to use to select branch
+          if (
+            result &&
+            Array.isArray(result) &&
+            result.length > 0
+          ) {
+            spinner.succeed('Fetched Branches');
+            const { branch } = await inquirer.prompt({
+              type: 'list',
+              name: 'branch',
+              message: 'Choose an branch',
+              choices: result.map(row => row.uid),
+            });
+
+            if (isSource) {
+              config.sourceStackBranch = branch
+            } else {
+              config.targetStackBranch = branch
+            }
+          } else {
+            spinner.succeed('No branches found.!');
+          }
+
+          resolve()
+        }
+      } catch (e) {
+        spinner.fail();
+        reject(e);
+      }
+    });
+  };
+
   start() {
     return new Promise(async (resolve, reject) => {
       let sourceStack = {};
@@ -114,6 +181,13 @@ class CloneHandler {
           'Choose an organization where your source stack exists:',
           'Select the source stack',
         );
+      }
+
+      if (config.source_stack) {
+        await this.#handleBranchSelection({ api_key: config.source_stack })
+          .catch(error => {
+            console.log(error.message)
+          })
       }
 
       if (config.source_stack) {
@@ -147,6 +221,16 @@ class CloneHandler {
               );
             }
 
+            // NOTE GET list of branches if branches enabled
+            if (config.target_stack) {
+              await this.#handleBranchSelection({
+                isSource: false,
+                api_key: config.target_stack
+              }).catch(error => {
+                console.log(error.message)
+              })
+            }
+
             if (config.target_stack) {
               this.cloneTypeSelection()
                 .then(resolve)
@@ -168,7 +252,7 @@ class CloneHandler {
           }
         }
       }
-    });
+    })
   }
 
   getOrganizationChoices = async (orgMessage) => {
@@ -183,9 +267,9 @@ class CloneHandler {
       try {
         let organizations = await client.organization().fetchAll({ limit: 100 });
         spinner.succeed('Fetched Organization');
-        for (let i = 0; i < organizations.items.length; i++) {
-          orgUidList[organizations.items[i].name] = organizations.items[i].uid;
-          orgChoice.choices.push(organizations.items[i].name);
+        for (const element of organizations.items) {
+          orgUidList[element.name] = element.uid;
+          orgChoice.choices.push(element.name);
         }
         return resolve(orgChoice);
       } catch (e) {
@@ -209,10 +293,10 @@ class CloneHandler {
         const stackList = client.stack().query({ organization_uid }).find();
         stackList
           .then((stacklist) => {
-            for (let j = 0; j < stacklist.items.length; j++) {
-              stackUidList[stacklist.items[j].name] = stacklist.items[j].api_key;
-              masterLocaleList[stacklist.items[j].name] = stacklist.items[j].master_locale;
-              stackChoice.choices.push(stacklist.items[j].name);
+            for (const element of stacklist.items) {
+              stackUidList[element.name] = element.api_key;
+              masterLocaleList[element.name] = element.master_locale;
+              stackChoice.choices.push(element.name);
             }
             spinner.succeed('Fetched stack');
             return resolve(stackChoice);
