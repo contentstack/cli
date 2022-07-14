@@ -244,27 +244,33 @@ importEntries.prototype = {
               addlogs(config, `Creating entries for content type ${ctUid} in language ${lang} ...`, 'success');
               for (let eUid in entries) {
                 if (eUid) {
-                  // check ctUid in self.ctJsonRte array, if ct exists there... only then remove entry references for json rte
-                  // also with json rte, api creates the json-rte field with the same uid as passed in the payload.
+                  try {
+                    // check ctUid in self.ctJsonRte array, if ct exists there... only then remove entry references for json rte
+                    // also with json rte, api creates the json-rte field with the same uid as passed in the payload.
 
-                  if (self.ctJsonRte.indexOf(ctUid) > -1) {
-                    entries[eUid] = self.removeUidsFromJsonRteFields(entries[eUid], self.ctSchemas[ctUid].schema);
-                  }
+                    if (self.ctJsonRte.indexOf(ctUid) > -1) {
+                      entries[eUid] = self.removeUidsFromJsonRteFields(entries[eUid], self.ctSchemas[ctUid].schema);
+                    }
 
-                  // remove entry references from json-rte fields
-                  if (self.ctJsonRteWithEntryRefs.indexOf(ctUid) > -1) {
-                    entries[eUid] = self.removeEntryRefsFromJSONRTE(entries[eUid], self.ctSchemas[ctUid].schema);
+                    // remove entry references from json-rte fields
+                    if (self.ctJsonRteWithEntryRefs.indexOf(ctUid) > -1) {
+                      entries[eUid] = self.removeEntryRefsFromJSONRTE(entries[eUid], self.ctSchemas[ctUid].schema);
+                    }
+                    // will replace all old asset uid/urls with new ones
+                    entries[eUid] = lookupReplaceAssets(
+                      {
+                        content_type: self.ctSchemas[ctUid],
+                        entry: entries[eUid],
+                      },
+                      mappedAssetUids,
+                      mappedAssetUrls,
+                      eLangFolderPath,
+                    );
+                  } catch (error) {
+                    console.error('Failed to update entry while creating entry id ' + eUid, error);
+                    addlogs(config, 'Failed to update entry while creating entry id ' + eUid);
+                    addlogs(config, error, 'error');
                   }
-                  // will replace all old asset uid/urls with new ones
-                  entries[eUid] = lookupReplaceAssets(
-                    {
-                      content_type: self.ctSchemas[ctUid],
-                      entry: entries[eUid],
-                    },
-                    mappedAssetUids,
-                    mappedAssetUrls,
-                    eLangFolderPath,
-                  );
                 }
               }
 
