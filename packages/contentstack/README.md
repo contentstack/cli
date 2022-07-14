@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/1.0.0 darwin-x64 node-v16.15.1
+@contentstack/cli/1.0.0 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -1080,7 +1080,7 @@ Export content from a stack
 ```
 USAGE
   $ csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [-m <value>] [-t <value>] [-B <value>]
-    [--secured-assets]
+    [--secured-assets] [--export-version]
 
 FLAGS
   -B, --branch=<value>         [optional] branch name
@@ -1090,6 +1090,7 @@ FLAGS
   -k, --stack-api-key=<value>  API key of the source stack
   -m, --module=<value>         [optional] specific module name
   -t, --content-types=<value>  [optional] content type
+  --export-version             [optional] use when assets having versions
   --secured-assets             [optional] use when assets are secured
 
 DESCRIPTION
@@ -1123,6 +1124,7 @@ Import script for importing the content into the new stack
 ```
 USAGE
   $ csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [-m <value>] [-b <value>] [-B <value>]
+    [--import-version]
 
 FLAGS
   -B, --branch=<value>         [optional] branch name
@@ -1132,6 +1134,7 @@ FLAGS
   -d, --data-dir=<value>       path and location where data is stored
   -k, --stack-api-key=<value>  API key of the target stack
   -m, --module=<value>         [optional] specific module name
+  --import-version             [optional] use when assets having versions
 
 DESCRIPTION
   Import script for importing the content into the new stack
