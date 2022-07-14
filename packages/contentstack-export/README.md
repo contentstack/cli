@@ -38,7 +38,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-export/1.0.0 darwin-x64 node-v16.15.1
+@contentstack/cli-cm-export/1.0.0 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -67,6 +67,7 @@ OPTIONS
   -k, --stack-api-key=stack-api-key  API key of the source stack
   -m, --module=module                [optional] specific module name
   -t, --content-types=content-types  [optional] content type
+  --export-version                   [optional] use when assets having versions
   --secured-assets                   [optional] use when assets are secured
 
 ALIASES
