@@ -58,44 +58,53 @@ export default class BootstrapCommand extends Command {
 
     try {
       if (!this.authToken) {
-        this.error(messageHandler.parse('CLI_BOOTSTRAP_LOGIN_FAILED'), { exit: 2, suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'] })
+        this.error(messageHandler.parse("CLI_BOOTSTRAP_LOGIN_FAILED"), {
+          exit: 2,
+          suggestions: [
+            "https://www.contentstack.com/docs/developers/cli/authentication/",
+          ],
+        });
       }
 
       // inquire user inputs
-      let appType = bootstrapCommandFlags.appType as string || 'starterapp';
+      let appType = (bootstrapCommandFlags.appType as string) || "starterapp";
       if (!appType) {
-        appType = await inquireAppType()
+        appType = await inquireAppType();
       }
 
-      const selectedAppName = bootstrapCommandFlags.appName as string
-      let selectedApp
+      const selectedAppName = bootstrapCommandFlags.appName as string;
+      let selectedApp;
       if (!selectedAppName) {
-        if (appType === 'sampleapp') {
-          selectedApp = await inquireApp(config.sampleApps)
-        } else if (appType === 'starterapp') {
-          selectedApp = await inquireApp(config.starterApps)
+        if (appType === "sampleapp") {
+          selectedApp = await inquireApp(config.sampleApps);
+        } else if (appType === "starterapp") {
+          selectedApp = await inquireApp(config.starterApps);
         } else {
-          this.error('Invalid app type provided ' + appType, { exit: 1 })
+          this.error("Invalid app type provided " + appType, { exit: 1 });
         }
       }
 
       if (!selectedAppName && !selectedApp) {
-        this.error(messageHandler.parse('CLI_BOOTSTRAP_INVALID_APP_NAME'), { exit: 1 })
+        this.error(messageHandler.parse("CLI_BOOTSTRAP_INVALID_APP_NAME"), {
+          exit: 1,
+        });
       }
 
-      const appConfig: AppConfig = getAppLevelConfigByName(selectedAppName || selectedApp.configKey)
+      const appConfig: AppConfig = getAppLevelConfigByName(
+        selectedAppName || selectedApp.configKey
+      );
 
-      let cloneDirectory = bootstrapCommandFlags.directory as string
+      let cloneDirectory = bootstrapCommandFlags.directory as string;
       if (!cloneDirectory) {
-        cloneDirectory = await inquireCloneDirectory()
+        cloneDirectory = await inquireCloneDirectory();
       }
 
       // Check the access token
-      let accessToken = bootstrapCommandFlags.accessToken as string
+      let accessToken = bootstrapCommandFlags.accessToken as string;
       if (appConfig.private && !accessToken) {
-        accessToken = await inquireGithubAccessToken()
+        accessToken = await inquireGithubAccessToken();
       }
-      
+
       // initiate bootstrsourceap
       const options: BootstrapOptions = {
         appConfig,
@@ -104,11 +113,11 @@ export default class BootstrapCommand extends Command {
         region: this.region,
         accessToken,
         appType,
-      }
-      const bootstrap = new Bootstrap(options)
-      await bootstrap.run()
-    } catch (error) {
-      this.error(error, { exit: 1, suggestions: error.suggestions })
+      };
+      const bootstrap = new Bootstrap(options);
+      await bootstrap.run();
+    } catch (error: any) {
+      this.error(error, { exit: 1, suggestions: error.suggestions });
     }
   }
 }
