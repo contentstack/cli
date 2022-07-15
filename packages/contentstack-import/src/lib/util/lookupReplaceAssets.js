@@ -59,12 +59,12 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       }
       // added rich_text_type field check because some marketplace extensions also
       // have data_type has json
-      if (schema[i].data_type === "json" && schema[i].field_metadata.rich_text_type) {
-        parent.push(schema[i].uid)
+      if (schema[i].data_type === 'json' && schema[i].field_metadata.rich_text_type) {
+        parent.push(schema[i].uid);
         // findFileUrls(schema[i], entry, assetUrls)
-        findAssetIdsFromJsonRte(data.entry, data.content_type.schema)
+        findAssetIdsFromJsonRte(data.entry, data.content_type.schema);
         // maybe only one of these checks would be enough
-        parent.pop()
+        parent.pop();
       }
     }
   };
@@ -75,11 +75,11 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         case 'blocks': {
           if (entry[ctSchema[i].uid]) {
             if (ctSchema[i].multiple) {
-              entry[ctSchema[i].uid].forEach(e => {
-                let key = Object.keys(e).pop()
-                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
-                findAssetIdsFromJsonRte(e[key], subBlock.schema)
-              })
+              entry[ctSchema[i].uid].forEach((e) => {
+                let key = Object.keys(e).pop();
+                let subBlock = ctSchema[i].blocks.filter((e) => e.uid === key).pop();
+                findAssetIdsFromJsonRte(e[key], subBlock.schema);
+              });
             }
           }
           break;
@@ -88,11 +88,11 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         case 'group': {
           if (entry[ctSchema[i].uid]) {
             if (ctSchema[i].multiple) {
-              entry[ctSchema[i].uid].forEach(e => {
-                findAssetIdsFromJsonRte(e, ctSchema[i].schema)
-              })
+              entry[ctSchema[i].uid].forEach((e) => {
+                findAssetIdsFromJsonRte(e, ctSchema[i].schema);
+              });
             } else {
-              findAssetIdsFromJsonRte(entry[ctSchema[i].uid], ctSchema[i].schema)
+              findAssetIdsFromJsonRte(entry[ctSchema[i].uid], ctSchema[i].schema);
             }
           }
           break;
@@ -100,11 +100,11 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         case 'json': {
           if (entry[ctSchema[i].uid] && ctSchema[i].field_metadata.rich_text_type) {
             if (ctSchema[i].multiple) {
-              entry[ctSchema[i].uid].forEach(jsonRteData => {
-                gatherJsonRteAssetIds(jsonRteData)
-              })
+              entry[ctSchema[i].uid].forEach((jsonRteData) => {
+                gatherJsonRteAssetIds(jsonRteData);
+              });
             } else {
-              gatherJsonRteAssetIds(entry[ctSchema[i].uid])
+              gatherJsonRteAssetIds(entry[ctSchema[i].uid]);
             }
           }
           break;
@@ -112,22 +112,22 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       }
     }
   }
-  
+
   function gatherJsonRteAssetIds(jsonRteData) {
-    jsonRteData.children.forEach(element => {
+    jsonRteData.children.forEach((element) => {
       if (element.type) {
         switch (element.type) {
           case 'a':
           case 'p': {
             if (element.children && element.children.length > 0) {
-              gatherJsonRteAssetIds(element)
+              gatherJsonRteAssetIds(element);
             }
             break;
           }
           case 'reference': {
-            if (Object.keys(element.attrs).length > 0 && element.attrs.type === "asset") {
+            if (Object.keys(element.attrs).length > 0 && element.attrs.type === 'asset') {
               if (assetUids.indexOf(element.attrs['asset-uid']) === -1) {
-                assetUids.push(element.attrs['asset-uid'])
+                assetUids.push(element.attrs['asset-uid']);
               }
               // assets references inserted as link inside entry reference inserted as link did not have asset-link property
               // instead it had an 'href' property. I haven't seen 'asset-link' and 'href' together yet
@@ -135,22 +135,22 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
               // (element.attrs['asset-link']) ? assetUrls.push(element.attrs['asset-link']) : assetUrls.push(element.attrs['asset-link'])
               if (element.attrs['asset-link']) {
                 if (assetUrls.indexOf(element.attrs['asset-link']) === -1) {
-                  assetUrls.push(element.attrs['asset-link'])
+                  assetUrls.push(element.attrs['asset-link']);
                 }
               } else if (element.attrs['href']) {
                 if (assetUrls.indexOf(element.attrs['href']) === -1) {
-                  assetUrls.push(element.attrs['href'])
+                  assetUrls.push(element.attrs['href']);
                 }
               }
             }
             if (element.children && element.children.length > 0) {
-              gatherJsonRteAssetIds(element)
+              gatherJsonRteAssetIds(element);
             }
             break;
           }
         }
       }
-    })
+    });
   }
 
   find(data.content_type.schema, data.entry);
@@ -162,7 +162,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
   assetUrls.forEach(function (assetUrl) {
     var mappedAssetUrl = mappedAssetUrls[assetUrl];
     if (typeof mappedAssetUrl !== 'undefined') {
-      entry = entry.replace(new RegExp(assetUrl, 'img'), mappedAssetUrl);
+      entry = entry.replace(new RegExp(escapeUrl(assetUrl), 'img'), mappedAssetUrl);
       matchedUrls.push(mappedAssetUrl);
     } else {
       unmatchedUrls.push(assetUrl);
@@ -298,4 +298,11 @@ function updateFileFields(objekt, parent, pos, mappedAssetUids, matchedUids, unm
 
     parent[pos] = _.compact(objekt);
   }
+}
+
+function escapeUrl(assetUrl) {
+  if (typeof assetUrl !== 'string') {
+    throw new TypeError('url should be a string ' + assetUrl);
+  }
+  return assetUrl.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d');
 }

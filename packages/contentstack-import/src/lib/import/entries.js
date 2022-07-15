@@ -685,7 +685,35 @@ importEntries.prototype = {
                           locale: lang,
                           error: error,
                         });
-                        return rejectUpdatedUids(error);
+                        if (error) {
+                          addlogs(
+                            config,
+                            chalk.red(
+                              'Entry Uid: ' +
+                                entry.uid +
+                                ' of Content Type: ' +
+                                ctUid +
+                                ' failed to update in locale: ' +
+                                lang +
+                                error.message,
+                            ),
+                            'error',
+                          );
+                          addlogs(
+                            config,
+                            chalk.red(
+                              'Entry Uid: ' +
+                                entry.uid +
+                                ' of Content Type: ' +
+                                ctUid +
+                                ' failed to update in locale: ' +
+                                lang +
+                                error.errorMessage,
+                            ),
+                            'error',
+                          );
+                        }
+                        return resolveUpdatedUids();
                       });
                   });
                 },
@@ -704,7 +732,19 @@ importEntries.prototype = {
                 .catch(function (error) {
                   // error while executing entry in batch
                   addlogs(config, chalk.red('Failed re-post entries at batch no: ' + (index + 1)), 'error');
-                  throw error;
+                  if (error) {
+                    addlogs(
+                      config,
+                      chalk.red('Failed re-post entries at batch no: ' + (index + 1) + error.message),
+                      'error',
+                    );
+                    addlogs(
+                      config,
+                      chalk.red('Failed re-post entries at batch no: ' + (index + 1) + error.errorMessage),
+                      'error',
+                    );
+                  }
+                  // throw error;
                 });
             },
             {
@@ -726,16 +766,34 @@ importEntries.prototype = {
               // error while updating entries with references
               addlogs(
                 config,
-                chalk.red(
-                  "Failed while importing entries of Content Type: '" +
-                    ctUid +
-                    "' in language: '" +
-                    lang +
-                    "' successfully!",
-                ),
+                chalk.red("Failed while importing entries of Content Type: '" + ctUid + "' in language: '" + lang),
                 'error',
               );
-              throw error;
+              if (error) {
+                addlogs(
+                  config,
+                  chalk.red(
+                    "Failed while importing entries of Content Type: '" +
+                      ctUid +
+                      "' in language: '" +
+                      lang +
+                      error.message,
+                  ),
+                  'error',
+                );
+                addlogs(
+                  config,
+                  chalk.red(
+                    "Failed while importing entries of Content Type: '" +
+                      ctUid +
+                      "' in language: '" +
+                      lang +
+                      error.errorMessage,
+                  ),
+                  'error',
+                );
+              }
+              // throw error;
             });
         },
         {
