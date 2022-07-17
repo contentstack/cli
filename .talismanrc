@@ -74,3 +74,16 @@ fileignoreconfig:
 - filename: packages/contentstack-clone/src/lib/util/clone-handler.js
   checksum: c6e912ee2ef487d7cc68d8f7428838cf78c1a89c3efd0a55cc95a89aee86b864
 version: ""
+
+fileignoreconfig:
+- filename: packages/contentstack-import/src/lib/import/webhooks.js
+  checksum: 090255a47b15f0884d7ae485496dd8721776abdd0e43122eb4d6069b59042d10
+- filename: packages/contentstack-import/README.md
+  checksum: 2c661324ce281cc5ee6ad075b0a12abaf95cffe3d651e40db7faf232d1ff2eb2
+- filename: packages/contentstack-import/src/lib/util/lookupReplaceAssets.js
+  checksum: 3bcc45ff42a9d5d48c6874d4f32730ee9336df07da6b6300e3e434db90d232af
+- filename: packages/contentstack-import/src/app.js
+  checksum: 553540611bc50d40b3a50e9c3748db2f636f7bfc1d9d2002c897aa63e9bc495a
+- filename: packages/contentstack/README.md
+  checksum: e96fa3e38fb30389e7bee89fa643e3ccb3f8913ca3eaa9577ebc802000efaccf
+version: ""
