@@ -30,7 +30,7 @@ let stackName = {
   type: 'input',
   name: 'stack',
   default: 'ABC',
-  message: 'Enter name for the new stack to store the cloned content ?'
+  message: 'Enter name for the new stack to store the cloned content ?',
 };
 
 let orgUidList = {};
@@ -59,9 +59,8 @@ class CloneHandler {
 
   handleOrgSelection(options = {}) {
     return new Promise(async (resolve, reject) => {
-      const { msg = '', isSource = true } = options || {}
-
-      const orgList = await this.getOrganizationChoices(msg).catch(reject)
+      const { msg = '', isSource = true } = options || {};
+      const orgList = await this.getOrganizationChoices(msg).catch(reject);
 
       if (orgList) {
         const orgSelected = await inquirer.prompt(orgList);
@@ -123,7 +122,7 @@ class CloneHandler {
           process.stdin.removeListener('keypress', keyPressHandler);
         }
       }
-    })
+    });
   }
 
   execute(pathDir) {
@@ -278,12 +277,12 @@ class CloneHandler {
 
   async createNewStack(orgUid) {
     return new Promise(async (resolve, reject) => {
-      let inputvalue
+      let inputvalue;
 
       if (!config.stackName) {
         inputvalue = await inquirer.prompt(stackName);
       } else {
-        inputvalue = { stack: config.stackName }
+        inputvalue = { stack: config.stackName };
       }
 
       let stack = { name: inputvalue.stack, master_locale: master_locale };
@@ -308,32 +307,28 @@ class CloneHandler {
       const choices = [
         'Structure (all modules except entries & assets)',
         'Structure with content (all modules including entries & assets)',
-      ]
-      const cloneTypeSelection = [{
-        choices,
-        type: 'list',
-        name: 'type',
-        message: 'Choose the type of data to clone:'
-      }];
-      let successMsg
-      let selectedValue = {}
-      config['data'] = path.join(
-        __dirname.split('src')[0],
-        'contents', config.sourceStackBranch || ''
-      );
+      ];
+      const cloneTypeSelection = [
+        {
+          choices,
+          type: 'list',
+          name: 'type',
+          message: 'Choose the type of data to clone:',
+        },
+      ];
+      let successMsg;
+      let selectedValue = {};
+      config['data'] = path.join(__dirname.split('src')[0], 'contents', config.sourceStackBranch || '');
 
       if (!config.cloneType) {
         selectedValue = await inquirer.prompt(cloneTypeSelection);
       }
 
-      if (
-        config.cloneType === 'a' ||
-        selectedValue.type === 'Structure (all modules except entries & assets)'
-      ) {
+      if (config.cloneType === 'a' || selectedValue.type === 'Structure (all modules except entries & assets)') {
         config['modules'] = structureList;
-        successMsg = 'Stack clone Structure completed'
+        successMsg = 'Stack clone Structure completed';
       } else {
-        successMsg = 'Stack clone completed with structure and content'
+        successMsg = 'Stack clone completed with structure and content';
       }
 
       this.cmdImport()
@@ -354,9 +349,7 @@ class CloneHandler {
       }
 
       let exportData = exportCmd.run(cmd);
-      exportData
-        .then(() => resolve(true))
-        .catch(reject);
+      exportData.then(() => resolve(true)).catch(reject);
     });
   }
 
@@ -372,6 +365,9 @@ class CloneHandler {
       }
       if (config.targetStackBranch) {
         cmd.push('--branch', config.targetStackBranch);
+      }
+      if (config.importWebhookStatus) {
+        cmd.push('--import-webhook-status', config.importWebhookStatus);
       }
 
       await importCmd.run(cmd);

@@ -1,4 +1,4 @@
-const { expect, test } = require('@oclif/test')
+const { expect } = require('@oclif/test')
 const { setupEnvironments } = require('../lib/bootstrap/utils')
 const tmp = require("tmp");
 const fs = require("fs");
@@ -6,25 +6,25 @@ const path = require("path");
 
 function getDirectory() {
     return new Promise((resolve, reject) => {
-        tmp.dir(function (err, path) {
+        tmp.dir(function (err, _path) {
             if (err) reject(err)
-            resolve(path)
+            resolve(_path)
         });
     })
 }
 
-function getDirFiles(path) {
+function getDirFiles(_path) {
     return new Promise((resolve, reject) => {
-        fs.readdir(path, function (err, files) {
+        fs.readdir(_path, function (err, files) {
             if (err) reject(err)
             resolve(files)
         });
     })
 }
 
-function getFileContent(path) {
+function getFileContent(_path) {
     return new Promise((resolve, reject) => {
-        fs.readFile(path, 'utf-8', function (err, data) {
+        fs.readFile(_path, 'utf-8', function (err, data) {
             if (err) reject(err)
             resolve(data)
         });
@@ -97,24 +97,22 @@ describe('Utils', () => {
                 cma: 'https://stag-app.contentstack.com',
             }
             const managementAPIClient = {
-                stack: () => {
-                    return {
-                        environment: () => {
-                            return {
-                                query: () => {
-                                    return {
-                                        find: () => Promise.resolve(environments)
-                                    }
-                                },
-                            }
-                        },
-                        deliveryToken: () => {
-                            return {
-                                create: () => Promise.resolve({ token })
-                            }
-                        },
-                    }
-                },
+                stack: () => ({
+                    environment: () => {
+                        return {
+                            query: () => {
+                                return {
+                                    find: () => Promise.resolve(environments)
+                                };
+                            },
+                        };
+                    },
+                    deliveryToken: () => {
+                        return {
+                            create: () => Promise.resolve({ token })
+                        };
+                    },
+                }),
             }
 
             try {
@@ -143,24 +141,16 @@ describe('Utils', () => {
                 cma: 'https://stag-app.contentstack.com',
             }
             const managementAPIClient = {
-                stack: () => {
-                    return {
-                        environment: () => {
-                            return {
-                                query: () => {
-                                    return {
-                                        find: () => Promise.resolve(environments)
-                                    }
-                                },
-                            }
-                        },
-                        deliveryToken: () => {
-                            return {
-                                create: () => Promise.resolve({ token })
-                            }
-                        },
-                    }
-                },
+                stack: () => ({
+                    environment: () => ({
+                        query: () => ({
+                            find: () => Promise.resolve(environments)
+                        })
+                    }),
+                    deliveryToken: () => ({
+                        create: () => Promise.resolve({ token })
+                    })
+                })
             }
 
             try {
@@ -189,24 +179,16 @@ describe('Utils', () => {
                 cma: 'https://stag-app.contentstack.com',
             }
             const managementAPIClient = {
-                stack: () => {
-                    return {
-                        environment: () => {
-                            return {
-                                query: () => {
-                                    return {
-                                        find: () => Promise.resolve(environments)
-                                    }
-                                },
-                            }
-                        },
-                        deliveryToken: () => {
-                            return {
-                                create: () => Promise.resolve({ token })
-                            }
-                        },
-                    }
-                },
+                stack: () => ({
+                    environment: () => ({
+                        query: () => ({
+                            find: () => Promise.resolve(environments)
+                        }),
+                    }),
+                    deliveryToken: () => ({
+                        create: () => Promise.resolve({ token })
+                    }),
+                }),
             }
 
             await setupEnvironments(
