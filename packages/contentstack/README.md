@@ -49,7 +49,7 @@ USAGE
 * [`csdx cm:entries:update-and-publish`](#csdx-cmentriesupdate-and-publish)
 * [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
 * [`csdx cm:stacks:clone`](#csdx-cmstacksclone)
-* [`csdx cm:stacks:export`](#csdx-cmstacksexport)
+* [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets)
 * [`csdx cm:stacks:import`](#csdx-cmstacksimport)
 * [`csdx cm:stacks:migration`](#csdx-cmstacksmigration)
 * [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
@@ -436,26 +436,27 @@ Publish entries and assets from one environment to other environments
 
 ```
 USAGE
-  $ csdx cm:bulk-publish:cross-publish [-a <value>] [-r <value>] [-b <value>] [-t <value>] [-l <value>] [-e <value>] [-x <value>]
-    [-d <value>] [-c <value>] [-y] [-B <value>] [--onlyAssets] [--onlyEntries]
+  $ csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>]
+    [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [-B
+    <value>] [--onlyAssets] [--onlyEntries]
 
 FLAGS
-  -B, --branch=<value>         [default: main] Specify the branch to fetch the content (by default the main branch is
-                               selected)
-  -a, --alias=<value>          Alias(name) for the management token
-  -b, --bulkPublish=<value>    [default: true] This flag is set to true by default. It indicates that contentstack's
-                               bulkpublish API will be used to publish the entries and assets
-  -c, --config=<value>         Path to the config file
-  -d, --destEnv=<value>        Destination Environments
-  -e, --environment=<value>    Source Environment
-  -l, --locale=<value>         Locale filter
-  -r, --retryFailed=<value>    (optional) Retry publishing failed entries from the logfile (this flag overrides all
-                               other flags)
-  -t, --contentType=<value>    Content type filter
-  -x, --deliveryToken=<value>  Delivery token for source environment
-  -y, --yes                    Agree to process the command with the current configuration
-  --onlyAssets                 Unpublish only assets
-  --onlyEntries                Unpublish only entries
+  -B, --branch=<value>      [default: main] Specify the branch to fetch the content (by default the main branch is
+                            selected)
+  -a, --alias=<value>       Alias(name) for the management token
+  -c, --config=<value>      Path to the config file
+  -y, --yes                 Agree to process the command with the current configuration
+  --bulk-publish=<value>    [default: true] This flag is set to true by default. It indicates that contentstack's
+                            bulkpublish API will be used to publish the entries
+  --content-type=<value>    The Contenttypes from which entries will be published
+  --delivery-token=<value>  Delivery token for source environment
+  --environments=<value>    Destination Environments
+  --locales=<value>         Source locale
+  --onlyAssets              Unpublish only assets
+  --onlyEntries             Unpublish only entries
+  --retry-failed=<value>    (optional) Retry publishing failed entries from the logfile (this flag overrides all other
+                            flags)
+  --source-env=<value>      Source Env
 
 DESCRIPTION
   Publish entries and assets from one environment to other environments
@@ -470,7 +471,7 @@ DESCRIPTION
 EXAMPLES
   General Usage
 
-  $ csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]
+  $ csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN]
 
 
 
@@ -484,17 +485,17 @@ EXAMPLES
 
 
 
-  Using --retryFailed or -r flag
+  Using --retry-failed flag
 
-  $ csdx cm:bulk-publish:cross-publish --retryFailed [LOG FILE NAME]
+  $ csdx cm:bulk-publish:cross-publish --retry-failed [LOG FILE NAME]
 
   $ csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]
 
 
 
-  Using --branch or -B flag
+  Using --branch flag
 
-  $ csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]
+  $ csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
@@ -1030,13 +1031,18 @@ Clone data (structure/content or both) of a stack into another stack
 ```
 USAGE
   $ csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias
-    <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b]
+    <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>]
+    [--destination-stack-api-key <value>] [--import-webhook-status enable|disable|default]
 
 FLAGS
   -n, --stack-name=<value>                      Name for the new stack to store the cloned content.
   --destination-management-token-alias=<value>  Source API key of the target stack token alias.
+  --destination-stack-api-key=<value>           Destination stack API Key
+  --import-webhook-status=<option>              [default: disable] Webhook state
+                                                <options: enable|disable|default>
   --source-branch=<value>                       Branch of the source stack.
   --source-management-token-alias=<value>       Source API key of the target stack token alias.
+  --source-stack-api-key=<value>                Source stack API Key
   --target-branch=<value>                       Branch of the target stack.
   --type=<option>                               Type of data to clone
                                                 a) Structure (all modules except entries & assets)
@@ -1055,25 +1061,27 @@ ALIASES
 EXAMPLES
   $ csdx cm:stacks:clone
 
-  $ csdx cm:stacks:clone --source-branch --target-branch
+  $ csdx cm:stacks:clone --source-branch <source-branch-name> --target-branch <target-branch-name>
 
-  $ csdx cm:stacks:clone -a <management token alias>
+  $ csdx cm:stacks:clone --source-stack-api-key <apiKey> --destination-stack-api-key <apiKey>
 
   $ csdx cm:stacks:clone --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>
 
   $ csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>
+
+  $ csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias> --type <value a or b>
 ```
 
 _See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/cm/stacks/clone.js)_
 
-## `csdx cm:stacks:export`
+## `csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`
 
 Export content from a stack
 
 ```
 USAGE
-  $ csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [-m <value>] [-t <value>] [-B <value>]
-    [--secured-assets]
+  $ csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types
+    <value>] [--branch <value>] [--secured-assets]
 
 FLAGS
   -B, --branch=<value>         [optional] branch name
@@ -1116,15 +1124,18 @@ Import script for importing the content into the new stack
 ```
 USAGE
   $ csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [-m <value>] [-b <value>] [-B <value>]
+    [--import-webhook-status enable|disable|default]
 
 FLAGS
-  -B, --branch=<value>         [optional] branch name
-  -a, --alias=<value>          alias of the management token
-  -b, --backup-dir=<value>     [optional] backup directory name when using specific module
-  -c, --config=<value>         [optional] path of config file
-  -d, --data-dir=<value>       path and location where data is stored
-  -k, --stack-api-key=<value>  API key of the target stack
-  -m, --module=<value>         [optional] specific module name
+  -B, --branch=<value>              [optional] branch name
+  -a, --alias=<value>               alias of the management token
+  -b, --backup-dir=<value>          [optional] backup directory name when using specific module
+  -c, --config=<value>              [optional] path of config file
+  -d, --data-dir=<value>            path and location where data is stored
+  -k, --stack-api-key=<value>       API key of the target stack
+  -m, --module=<value>              [optional] specific module name
+  --import-webhook-status=<option>  [default: disable] Webhook state
+                                    <options: enable|disable|default>
 
 DESCRIPTION
   Import script for importing the content into the new stack

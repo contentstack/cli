@@ -423,7 +423,7 @@ importAssets.prototype = {
   },
   findBranches: function (branch, coll) {
     let self = this;
-    for (let _leaf in branch) {
+    _.forEach(_.keys(branch), () => {
       for (let j = 0; j < coll.length; j++) {
         let parent_uid = coll[j].parent_uid;
         if (branch.hasOwnProperty(parent_uid)) {
@@ -433,7 +433,7 @@ importAssets.prototype = {
           --j;
         }
       }
-    }
+    })
   },
   publish: function (assetUid, assetObject) {
     let self = this;
