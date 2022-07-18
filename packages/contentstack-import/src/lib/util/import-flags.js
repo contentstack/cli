@@ -149,6 +149,8 @@ exports.parametersWithAuthToken = function (
     } else if (moduleName && moduleName !== undefined && backupdir !== undefined) {
       defaultConfig.moduleName = moduleName;
       defaultConfig.useBackedupDir = backupdir;
+    } else if (backupdir) {
+      defaultConfig.useBackedupDir = backupdir;
     }
     defaultConfig.data = data;
     defaultConfig.host = host;
