@@ -75,3 +75,8 @@ fileignoreconfig:
 - filename: packages/contentstack/README.md
   checksum: e96fa3e38fb30389e7bee89fa643e3ccb3f8913ca3eaa9577ebc802000efaccf
 version: ""
+
+fileignoreconfig:
+- filename: packages/contentstack-import/src/lib/util/extensionsUidReplace.js
+  checksum: 0c89857448255a2021e1c22cfcdfd85d2d9e6b7d686c87a9bedc41b6199c4e04
+version: ""
