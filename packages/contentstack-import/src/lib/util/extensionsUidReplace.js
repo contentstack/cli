@@ -5,20 +5,20 @@
  */
 
 // eslint-disable-next-line unicorn/filename-case
-var path = require('path');
-var helper = require('./fs');
-var util = require('../util');
-var config = util.getConfig();
-var extensionPath = path.resolve(config.data, 'mapper/extensions', 'uid-mapping.json');
-var globalfieldsPath = path.resolve(config.data, 'mapper/globalfields', 'uid-mapping.json');
+let path = require('path');
+let helper = require('./fs');
+let util = require('../util');
+let config = util.getConfig();
+let extensionPath = path.resolve(config.data, 'mapper/extensions', 'uid-mapping.json');
+let globalfieldsPath = path.resolve(config.data, 'mapper/globalfields', 'uid-mapping.json');
 
 // eslint-disable-next-line camelcase
-var extension_uid_Replace = (module.exports = function (schema, preserveStackVersion) {
-  for (var i in schema) {
+let extension_uid_Replace = (module.exports = function (schema, preserveStackVersion) {
+  for (let i in schema) {
     if (schema[i].data_type === 'group') {
       extension_uid_Replace(schema[i].schema, preserveStackVersion);
     } else if (schema[i].data_type === 'blocks') {
-      for (var block in schema[i].blocks) {
+      for (let block in schema[i].blocks) {
         if (schema[i].blocks[block].hasOwnProperty('reference_to')) {
           delete schema[i].blocks[block].schema;
         } else {
@@ -36,8 +36,8 @@ var extension_uid_Replace = (module.exports = function (schema, preserveStackVer
         schema[i].field_metadata.ref_multiple_content_types = true;
       }
     } else if (schema[i].data_type === 'global_field') {
-      var global_fields_key_value = schema[i].reference_to;
-      var global_fields_data = helper.readFile(path.join(globalfieldsPath));
+      let global_fields_key_value = schema[i].reference_to;
+      let global_fields_data = helper.readFile(path.join(globalfieldsPath));
       if (global_fields_data && global_fields_data.hasOwnProperty(global_fields_key_value)) {
         schema[i].reference_to = global_fields_data[global_fields_key_value];
       }
@@ -59,4 +59,4 @@ var extension_uid_Replace = (module.exports = function (schema, preserveStackVer
       schema[i].plugins = newPluginUidsArray;
     }
   }
-});
+})
