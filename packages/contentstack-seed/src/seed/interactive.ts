@@ -19,16 +19,14 @@ export async function inquireRepo(repos: any[]): Promise<{ choice: string }> {
     return { name: formatStackName(r.name), value: extractRepoName(r.html_url) };
   });
 
-  const response = await inquirer.prompt([
+  return inquirer.prompt([
     {
       type: 'list',
       name: 'choice',
       message: 'Select a Stack to Import',
-      choices,
-    },
+      choices
+    }
   ]);
-
-  return response;
 }
 
 export async function inquireOrganization(organizations: Organization[]): Promise<Organization> {
