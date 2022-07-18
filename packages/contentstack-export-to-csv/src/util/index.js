@@ -69,8 +69,7 @@ function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
           const org_role = org.org_roles.shift();
           return org_role.admin;
         }
-        if (org.is_owner === true) return true;
-        return false;
+        return org.is_owner === true;
       });
       organizations.forEach((org) => {
         result[org.name] = org.uid;
