@@ -1170,7 +1170,7 @@ importEntries.prototype = {
             if (element.multiple) {
               entry[element.uid] = entry[element.uid].map((e) => {
                 let key = Object.keys(e).pop();
-                let subBlock = element.blocks.filter((e) => e.uid === key).pop();
+                let subBlock = element.blocks.filter((block) => block.uid === key).pop();
                 e[key] = this.removeEntryRefsFromJSONRTE(e[key], subBlock.schema);
                 return e;
               });
@@ -1225,14 +1225,14 @@ importEntries.prototype = {
     // only checking one level deep, not recursive
 
     if (element.length) {
-      for (let i = 0; i < element.length; i++) {
+      for (const item of element) {
         if (
-          (element[i].type === 'p' || element[i].type === 'a') &&
-          element[i].children &&
-          element[i].children.length > 0
+          (item.type === 'p' || item.type === 'a') &&
+          item.children &&
+          item.children.length > 0
         ) {
-          return this.doEntryReferencesExist(element[i].children);
-        } else if (this.isEntryRef(element[i])) {
+          return this.doEntryReferencesExist(item.children);
+        } else if (this.isEntryRef(item)) {
           return true;
         }
       }
@@ -1257,7 +1257,7 @@ importEntries.prototype = {
             if (element.multiple) {
               entry[element.uid] = entry[element.uid].map((e, eIndex) => {
                 let key = Object.keys(e).pop();
-                let subBlock = element.blocks.filter((e) => e.uid === key).pop();
+                let subBlock = element.blocks.filter((block) => block.uid === key).pop();
                 let sourceStackElement = sourceStackEntry[element.uid][eIndex][key];
                 e[key] = this.restoreJsonRteEntryRefs(e[key], sourceStackElement, subBlock.schema);
                 return e;
@@ -1290,8 +1290,8 @@ importEntries.prototype = {
                 // probably because of this loop operation
 
                 let entryRefs = sourceStackEntry[element.uid][index].children
-                  .map((e, index) => {
-                    return { index: index, value: e };
+                  .map((e, i) => {
+                    return { index: i, value: e };
                   })
                   .filter((e) => this.doEntryReferencesExist(e.value))
                   .map((e) => {
@@ -1308,8 +1308,8 @@ importEntries.prototype = {
                   });
 
                 if (entryRefs.length > 0) {
-                  entryRefs.forEach((element) => {
-                    field.children.splice(element.index, 0, element.value);
+                  entryRefs.forEach((entryRef) => {
+                    field.children.splice(entryRef.index, 0, entryRef.value);
                   });
                 }
                 return field;
@@ -1330,8 +1330,8 @@ importEntries.prototype = {
                 });
 
               if (entryRefs.length > 0) {
-                entryRefs.forEach((element) => {
-                  entry[element.uid].children.splice(element.index, 0, element.value);
+                entryRefs.forEach((entryRef) => {
+                  entry[entryRef.uid].children.splice(entryRef.index, 0, entryRef.value);
                 });
               }
             }
@@ -1353,7 +1353,7 @@ importEntries.prototype = {
             if (element.multiple) {
               entry[element.uid] = entry[element.uid].map((e) => {
                 let key = Object.keys(e).pop();
-                let subBlock = element.blocks.filter((e) => e.uid === key).pop();
+                let subBlock = element.blocks.filter((block) => block.uid === key).pop();
                 e[key] = this.removeUidsFromJsonRteFields(e[key], subBlock.schema);
                 return e;
               });
