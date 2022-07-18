@@ -59,13 +59,14 @@ USAGE
   $ csdx cm:stacks:import
 
 OPTIONS
-  -B, --branch=branch                [optional] branch name
-  -a, --alias=alias                  alias of the management token
-  -b, --backup-dir=backup-dir        [optional] backup directory name when using specific module
-  -c, --config=config                [optional] path of config file
-  -d, --data-dir=data-dir            path and location where data is stored
-  -k, --stack-api-key=stack-api-key  API key of the target stack
-  -m, --module=module                [optional] specific module name
+  -B, --branch=branch                             [optional] branch name
+  -a, --alias=alias                               alias of the management token
+  -b, --backup-dir=backup-dir                     [optional] backup directory name when using specific module
+  -c, --config=config                             [optional] path of config file
+  -d, --data-dir=data-dir                         path and location where data is stored
+  -k, --stack-api-key=stack-api-key               API key of the target stack
+  -m, --module=module                             [optional] specific module name
+  --import-webhook-status=enable|disable|default  [default: disable] Webhook state
 
 DESCRIPTION
   ...
