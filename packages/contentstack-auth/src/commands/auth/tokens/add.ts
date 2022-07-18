@@ -6,7 +6,7 @@ import {
   configHandler,
   printFlagDeprecation,
 } from '@contentstack/cli-utilities';
-
+import { askTokenType } from '../../../utils/interactive';
 import { tokenValidation } from '../../../utils';
 
 export default class TokensAddCommand extends Command {
@@ -76,10 +76,17 @@ export default class TokensAddCommand extends Command {
     let alias = addTokenFlags.alias;
     let apiKey = addTokenFlags['api-key'] || addTokenFlags['stack-api-key'];
     let token = addTokenFlags.token;
-    const isDelivery = addTokenFlags.delivery;
-    const isManagement = addTokenFlags.management;
+    let isDelivery = addTokenFlags.delivery;
+    let isManagement = addTokenFlags.management;
     let environment = addTokenFlags.environment;
     const configKeyTokens = 'tokens';
+
+    if (!isDelivery && !isManagement && !Boolean(environment)) {
+      let tokenType = await askTokenType();
+      isDelivery = tokenType === 'delivery';
+      isManagement = tokenType === 'management';
+    }
+
     const type = isDelivery || Boolean(environment) ? 'delivery' : 'management';
 
     logger.info(`adding ${type} token`);
