@@ -42,5 +42,6 @@
   "CLI_AUTH_TOKENS_VALIDATION_INVALID_ENVIRONMENT_NAME": "Invalid environment name",
   "CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN": "Invalid management token",
   "CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY": "Invalid api key",
-  "CLI_AUTH_EXIT_PROCESS": "Exiting the process..."
+  "CLI_AUTH_EXIT_PROCESS": "Exiting the process...",
+  "CLI_SELECT_TOKEN_TYPE": "Select the type of token to add"
 }
