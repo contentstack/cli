@@ -1,6 +1,9 @@
+const sdk = require('./contentstack-management-sdk');
 const { HttpClient } = require('@contentstack/cli-utilities');
 
 const getInstalledExtensions = (config) => {
+  const client = sdk.Client(config)
+
   return new Promise((resolve, reject) => {
     const queryRequestOptions = {
       include_marketplace_extensions: true
