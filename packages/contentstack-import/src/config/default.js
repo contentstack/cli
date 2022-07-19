@@ -14,12 +14,12 @@ module.exports = {
       'environments',
       'assets',
       'extensions',
-      'webhooks',
       'global-fields',
       'content-types',
       'workflows',
       'entries',
       'labels',
+      'webhooks',
     ],
     locales: {
       dirName: 'locales',
