@@ -13,7 +13,7 @@ const { HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
 let config = require('../../config/default');
 const { addlogs: log } = require('../util/log');
 const { readFile, writeFile } = require('../util/fs');
-let stack = require('../util/contentstack-management-sdk');
+const sdk = require('../util/contentstack-management-sdk');
 const { getInstalledExtensions } = require('../util/marketplace-app-helper')
 
 let client
@@ -25,7 +25,7 @@ function importMarketplaceApps() {
 
   this.start = async (credentialConfig) => {
     config = credentialConfig;
-    client = stack.Client(config);
+    client = sdk.Client(config);
     this.marketplaceAppFolderPath = path.resolve(config.data, marketplaceAppConfig.dirName);
     this.marketplaceApps = _.unionBy(
       readFile(path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName)),
@@ -33,7 +33,7 @@ function importMarketplaceApps() {
     );
 
     await this.getOrgUid()
-    return await this.installApps()
+    return this.installApps()
   }
 
   this.getOrgUid = async () => {
@@ -99,7 +99,7 @@ function importMarketplaceApps() {
           cb()
         })
       }, async () => {
-        const installedExtensions = await getInstalledExtensions(config)
+        const extensions = await getInstalledExtensions(config)
         const mapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps');
 
         if (!fs.existsSync(mapperFolderPath)) {
@@ -108,7 +108,7 @@ function importMarketplaceApps() {
 
         const appUidMapperPath = path.join(mapperFolderPath, 'marketplace-apps.json')
         const installedExt = _.map(
-          installedExtensions,
+          extensions,
           (row) => _.pick(row, ['uid', 'title', 'type', 'app_uid', 'app_installation_uid'])
         )
 
