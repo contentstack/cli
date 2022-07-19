@@ -365,11 +365,11 @@ function updateFileFields(objekt, parent, pos, mappedAssetUids, matchedUids, unm
           parent.uid = mappedAssetUids[parent.uid]
         }
 
-        if (_.isObject(parent[pos]) && parent[pos].uid && parent[pos].url) {
-          if (objekt.uid && mappedAssetUids[objekt.uid]) {
+        if (objekt && _.isObject(parent[pos]) && parent[pos].uid && parent[pos].url) {
+          if (objekt.uid && mappedAssetUids && mappedAssetUids[objekt.uid]) {
             parent[pos].uid = mappedAssetUids[objekt.uid];
           }
-          if (objekt.url && mappedAssetUrls[objekt.url]) {
+          if (objekt.url && mappedAssetUrls && mappedAssetUrls[objekt.url]) {
             parent[pos].url = mappedAssetUrls[objekt.url];
           }
         } else {
