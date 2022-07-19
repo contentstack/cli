@@ -24,6 +24,7 @@ export interface SeedParams {
   stackAPIKey?: string;
   org?: string;
   stackName?: string;
+  yes?: string;
 }
 
 /**
@@ -86,6 +87,9 @@ export default class Bootstrap {
       }
       if (this.options.seedParams.stackName) {
         cmd.push('-n', this.options.seedParams.stackName)
+      }
+      if (this.options.seedParams.yes) {
+        cmd.push('-y', this.options.seedParams.yes);
       }
       const result = await ContentStackSeed.run(cmd);
       if (result.api_key) {
