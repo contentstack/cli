@@ -252,7 +252,7 @@ class CloneHandler {
 
             if (org) {
               const stackMsg = 'Choose the destination stack:';
-              await cloneCommand.execute(new HandleDestinationStackCommand({ org, msg: stackMsg, stackAbortController }, this));
+              await cloneCommand.execute(new HandleDestinationStackCommand({ org, msg: stackMsg, stackAbortController, isSource: false }, this));
             }
           }
 
