@@ -65,7 +65,7 @@ importContentTypes.prototype = {
       }
     }
 
-    self.contentTypeUids = _.map(self.contentTypes, 'uid');
+    self.contentTypeUids = _.map(self.contentTypes, 'uid').filter(val => val);
     self.createdContentTypeUids = [];
     if (!fs.existsSync(mapperFolderPath)) {
       mkdirp.sync(mapperFolderPath);
@@ -76,22 +76,18 @@ importContentTypes.prototype = {
     }
     self.contentTypeUids = _.difference(self.contentTypeUids, self.createdContentTypeUids);
     self.uidToTitleMap = self.mapUidToTitle(self.contentTypes);
-    // remove contet types, already created
+    // remove content types, already created
     _.remove(this.contentTypes, function (contentType) {
       return self.contentTypeUids.indexOf(contentType.uid) === -1;
     });
+
     return new Promise(function (resolve, reject) {
       return Promise.map(
         self.contentTypeUids,
         function (contentTypeUid) {
           return self
             .seedContentTypes(contentTypeUid, self.uidToTitleMap[contentTypeUid])
-            .then(function () {
-              // empty function
-            })
-            .catch(function (error) {
-              return reject(error);
-            });
+            .catch(reject);
         },
         {
           // seed 3 content types at a time
@@ -111,55 +107,45 @@ importContentTypes.prototype = {
               return Promise.map(
                 batch,
                 async function (contentType) {
-                  await self.updateContentTypes(contentType);
+                  await self.updateContentTypes(contentType)
                   addlogs(config, contentType.uid + ' was updated successfully!', 'success');
                 },
                 {
                   concurrency: reqConcurrency,
                 },
-              )
-                .then(function () {
-                  // empty function
-                })
-                .catch((e) => {
-                  console.log('Something went wrong while migrating content type batch', e);
-                });
+              ).catch((e) => {
+                console.log('Something went wrong while migrating content type batch', e);
+              });
             },
             {
-              concurrency: reqConcurrency,
-            },
-          )
-            .then(async function () {
-              // eslint-disable-next-line quotes
-              if (field_rules_ct.length > 0) {
-                // fs.writeFile(contentTypesFolderPath + '/field_rules_uid.json', JSON.stringify(field_rules_ct), function (err) {
-                //   if (err) throw err
-                // })
+              concurrency: reqConcurrency
+            }
+          ).then(async function () {
+            // eslint-disable-next-line quotes
+            if (field_rules_ct.length > 0) {
+              await fsPromises.writeFile(
+                contentTypesFolderPath + '/field_rules_uid.json',
+                JSON.stringify(field_rules_ct),
+              );
+            }
 
-                await fsPromises.writeFile(
-                  contentTypesFolderPath + '/field_rules_uid.json',
-                  JSON.stringify(field_rules_ct),
-                );
-              }
-
-              if (globalFieldPendingPath && globalFieldPendingPath.length !== 0) {
-                return self
-                  .updateGlobalfields()
-                  .then(function () {
-                    addlogs(config, chalk.green('Content types have been imported successfully!'), 'success');
-                    return resolve();
-                  })
-                  .catch((_error) => {
-                    addlogs(config, chalk.green('Error in GlobalFields'), 'success');
-                    return reject();
-                  });
-              }
-              addlogs(config, chalk.green('Content types have been imported successfully!'), 'success');
-              return resolve();
-            })
-            .catch((error) => {
-              return reject(error);
-            });
+            if (globalFieldPendingPath && globalFieldPendingPath.length !== 0) {
+              return self
+                .updateGlobalfields()
+                .then(function () {
+                  addlogs(config, chalk.green('Content types have been imported successfully!'), 'success');
+                  return resolve();
+                })
+                .catch((_error) => {
+                  addlogs(config, chalk.green('Error in GlobalFields'), 'success');
+                  return reject();
+                });
+            }
+            addlogs(config, chalk.green('Content types have been imported successfully!'), 'success');
+            return resolve();
+          }).catch((error) => {
+            return reject(error);
+          });
         })
         .catch((error) => {
           return reject(error);
@@ -174,12 +160,11 @@ importContentTypes.prototype = {
       body.content_type.title = title;
       let requestObject = _.cloneDeep(self.requestOptions);
       requestObject.json = body;
+
       return stack
         .contentType()
         .create(requestObject.json)
-        .then(() => {
-          return resolve();
-        })
+        .then(resolve)
         .catch(function (err) {
           let error = JSON.parse(err.message);
           if (error.errorCode === 115 && (error.errors.uid || error.errors.title)) {
@@ -235,6 +220,8 @@ importContentTypes.prototype = {
             });
             globalFieldMapperFolderPath.splice(updateObjpos, 1, Obj);
             helper.writeFile(globalFieldUpdateFile, globalFieldMapperFolderPath);
+
+            resolve(globalFieldResponse)
           })
           .catch(function (err) {
             let error = JSON.parse(err.message);
