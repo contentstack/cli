@@ -650,6 +650,7 @@ importEntries.prototype = {
                       .contentType(ctUid)
                       .entry(entry.uid);
                     Object.assign(entryResponse, entry);
+                    delete entryResponse.title;
                     delete entryResponse.publish_details;
                     return entryResponse
                       .update({ locale: lang })
