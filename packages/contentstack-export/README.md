@@ -38,7 +38,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-export/1.0.0 darwin-x64 node-v16.15.1
+@contentstack/cli-cm-export/1.0.0 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -49,15 +49,16 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`csdx cm:stacks:export`](#csdx-cmstacksexport)
+* [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets)
 
-## `csdx cm:stacks:export`
+## `csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`
 
 Export content from a stack
 
 ```
 USAGE
-  $ csdx cm:stacks:export
+  $ csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types 
+  <value>] [--branch <value>] [--secured-assets]
 
 OPTIONS
   -B, --branch=branch                [optional] branch name

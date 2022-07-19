@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-cm-bulk-publish
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bulk-publish/1.0.0 darwin-x64 node-v16.15.1
+@contentstack/cli-cm-bulk-publish/1.0.0 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -186,34 +186,34 @@ USAGE
   $ csdx cm:bulk-publish:cross-publish
 
 OPTIONS
-  -B, --branch=branch                [default: main] Specify the branch to fetch the content (by default the main branch
-                                     is selected)
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
+                                   is selected)
 
-  -a, --alias=alias                  Alias(name) for the management token
+  -a, --alias=alias                Alias(name) for the management token
 
-  -b, --bulkPublish=bulkPublish      [default: true] This flag is set to true by default. It indicates that
-                                     contentstack's bulkpublish API will be used to publish the entries and assets
+  -c, --config=config              Path to the config file
 
-  -c, --config=config                Path to the config file
+  -y, --yes                        Agree to process the command with the current configuration
 
-  -d, --destEnv=destEnv              Destination Environments
+  --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used to publish the entries
 
-  -e, --environment=environment      Source Environment
+  --content-type=content-type      The Contenttypes from which entries will be published
 
-  -l, --locale=locale                Locale filter
+  --delivery-token=delivery-token  Delivery token for source environment
 
-  -r, --retryFailed=retryFailed      (optional) Retry publishing failed entries from the logfile (this flag overrides
-                                     all other flags)
+  --environments=environments      Destination Environments
 
-  -t, --contentType=contentType      Content type filter
+  --locales=locales                Source locale
 
-  -x, --deliveryToken=deliveryToken  Delivery token for source environment
+  --onlyAssets                     Unpublish only assets
 
-  -y, --yes                          Agree to process the command with the current configuration
+  --onlyEntries                    Unpublish only entries
 
-  --onlyAssets                       Unpublish only assets
+  --retry-failed=retry-failed      (optional) Retry publishing failed entries from the logfile (this flag overrides all
+                                   other flags)
 
-  --onlyEntries                      Unpublish only entries
+  --source-env=source-env          Source Env
 
 DESCRIPTION
   The cross-publish command is used to publish entries and assets from one environment to other environments
@@ -224,21 +224,21 @@ DESCRIPTION
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
-  [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]
+  csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION
+   ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN]
 
   Using --config or -c flag
   Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
   csdx cm:bulk-publish:cross-publish --config [PATH TO CONFIG FILE]
   csdx cm:bulk-publish:cross-publish -c [PATH TO CONFIG FILE]
 
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:cross-publish --retryFailed [LOG FILE NAME]
+  Using --retry-failed flag
+  csdx cm:bulk-publish:cross-publish --retry-failed [LOG FILE NAME]
   csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]
 
-  Using --branch or -B flag
-  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
-  [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]
+  Using --branch flag
+  csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION
+   ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
 ```
 
 _See code: [src/commands/cm/bulk-publish/cross-publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_

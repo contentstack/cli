@@ -37,7 +37,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-import/1.0.0 darwin-x64 node-v16.15.1
+@contentstack/cli-cm-import/1.0.0 linux-x64 node-v16.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -59,13 +59,14 @@ USAGE
   $ csdx cm:stacks:import
 
 OPTIONS
-  -B, --branch=branch                [optional] branch name
-  -a, --alias=alias                  alias of the management token
-  -b, --backup-dir=backup-dir        [optional] backup directory name when using specific module
-  -c, --config=config                [optional] path of config file
-  -d, --data-dir=data-dir            path and location where data is stored
-  -k, --stack-api-key=stack-api-key  API key of the target stack
-  -m, --module=module                [optional] specific module name
+  -B, --branch=branch                             [optional] branch name
+  -a, --alias=alias                               alias of the management token
+  -b, --backup-dir=backup-dir                     [optional] backup directory name when using specific module
+  -c, --config=config                             [optional] path of config file
+  -d, --data-dir=data-dir                         path and location where data is stored
+  -k, --stack-api-key=stack-api-key               API key of the target stack
+  -m, --module=module                             [optional] specific module name
+  --import-webhook-status=enable|disable|default  [default: disable] Webhook state
 
 DESCRIPTION
   ...
