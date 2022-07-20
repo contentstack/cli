@@ -4,13 +4,15 @@ const inquirer = require('inquirer');
 const rimraf = require('rimraf');
 const chalk = require('chalk');
 
-let sdkInstance = require('../../lib/util/contentstack-management-sdk');
 let exportCmd = require('@contentstack/cli-cm-export');
 let importCmd = require('@contentstack/cli-cm-import');
+const { HttpClient } = require('@contentstack/cli-utilities');
+let sdkInstance = require('../../lib/util/contentstack-management-sdk');
+const defaultConfig = require('@contentstack/cli-cm-export/src/config/default');
 
 const { 
   HandleOrgCommand, HandleStackCommand, HandleDestinationStackCommand, HandleExportCommand,
-  SetBranchCommand, CreateNewStackCommand, CloneTypeSelectionCommand, Clone,
+  SetBranchCommand, CreateNewStackCommand, CloneTypeSelectionCommand, Clone, HandleBranchCommand
 } = require('../helpers/command-helpers');
 
 let client = {};
@@ -82,7 +84,7 @@ class CloneHandler {
       try {
         const { org = {}, msg = '', isSource = true, stackAbortController } = options || {}
   
-        keyPressHandler = async function (ch, key) {
+        keyPressHandler = async function (_ch, key) {
           if (key.name === 'backspace') {
             stackAbortController.abort();
             console.clear();
@@ -125,6 +127,67 @@ class CloneHandler {
     });
   }
 
+  handleBranchSelection = async (options) => {
+    const { api_key, isSource = true, returnBranch = false } = options
+    const spinner = ora('Fetching Branches').start();
+    const headers = { api_key }
+
+    if (config.auth_token) {
+      headers['authtoken'] = config.auth_token
+    } else if (config.management_token) {
+      headers['authorization'] = config.management_token
+    }
+
+    const baseUrl = defaultConfig.host.startsWith('http')
+      ? defaultConfig.host
+      : `https://${defaultConfig.host}/v3`;
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const result = await new HttpClient()
+          .headers(headers)
+          .get(`${baseUrl}/stacks/branches`)
+          .then(({ data: { branches } }) => branches)
+        
+        const condition = (
+          result &&
+          Array.isArray(result) &&
+          result.length > 0
+        )
+
+        // NOTE if want to get only list of branches (Pass param -> returnBranch = true )
+        if (returnBranch) {
+          resolve(condition ? result : [])
+        } else {
+          // NOTE list options to use to select branch
+          if (condition) {
+            spinner.succeed('Fetched Branches');
+            const { branch } = await inquirer.prompt({
+              type: 'list',
+              name: 'branch',
+              message: 'Choose an branch',
+              choices: result.map(row => row.uid),
+            });
+
+            if (isSource) {
+              config.sourceStackBranch = branch
+            } else {
+              config.targetStackBranch = branch
+            }
+          } else {
+            spinner.succeed('No branches found.!');
+          }
+
+          resolve()
+        }
+      } catch (e) {
+        spinner.fail();
+        console.log(e && e.message)
+        resolve()
+      }
+    })
+  }
+
   execute(pathDir) {
     return new Promise(async (resolve, reject) => {
       let stackAbortController;
@@ -138,6 +201,13 @@ class CloneHandler {
           const org = await cloneCommand.execute(new HandleOrgCommand({ msg: orgMsg, isSource: true }, this));
           if (org) {
             const sourceStack = await cloneCommand.execute(new HandleStackCommand({ org, isSource: true, msg: stackMsg, stackAbortController }, this));
+
+            if (config.source_stack) {
+              await cloneCommand.execute(
+                new HandleBranchCommand({ api_key: config.source_stack }, this)
+              );
+            }
+
             if (stackAbortController.signal.aborted) {
               return reject();
             }
@@ -179,10 +249,21 @@ class CloneHandler {
           if (!config.target_stack) {
             const orgMsg = 'Choose an organization where the destination stack exists: ';
             const org = await cloneCommand.execute(new HandleOrgCommand({ msg: orgMsg }, this));
+
             if (org) {
               const stackMsg = 'Choose the destination stack:';
-              await cloneCommand.execute(new HandleDestinationStackCommand({ org, msg: stackMsg, stackAbortController }, this));
+              await cloneCommand.execute(new HandleDestinationStackCommand({ org, msg: stackMsg, stackAbortController, isSource: false }, this));
             }
+          }
+
+          // NOTE GET list of branches if branches enabled
+          if (config.target_stack) {
+            await cloneCommand.execute(
+              new HandleBranchCommand({
+                isSource: false,
+                api_key: config.target_stack
+              }, this)
+            );
           }
         } else {
           const destinationOrg = await this.handleOrgSelection({ isSource: false, msg: 'Choose an organization where you want to create a stack: ' });
@@ -203,7 +284,7 @@ class CloneHandler {
           });
         }
       }
-    });
+    })
   }
 
   async setBranch() {
@@ -230,9 +311,9 @@ class CloneHandler {
       try {
         let organizations = await client.organization().fetchAll({ limit: 100 });
         spinner.succeed('Fetched Organization');
-        for (let i = 0; i < organizations.items.length; i++) {
-          orgUidList[organizations.items[i].name] = organizations.items[i].uid;
-          orgChoice.choices.push(organizations.items[i].name);
+        for (const element of organizations.items) {
+          orgUidList[element.name] = element.uid;
+          orgChoice.choices.push(element.name);
         }
         return resolve(orgChoice);
       } catch (e) {
@@ -256,10 +337,10 @@ class CloneHandler {
         const stackList = client.stack().query({ organization_uid }).find();
         stackList
           .then((stacklist) => {
-            for (let j = 0; j < stacklist.items.length; j++) {
-              stackUidList[stacklist.items[j].name] = stacklist.items[j].api_key;
-              masterLocaleList[stacklist.items[j].name] = stacklist.items[j].master_locale;
-              stackChoice.choices.push(stacklist.items[j].name);
+            for (const element of stacklist.items) {
+              stackUidList[element.name] = element.api_key;
+              masterLocaleList[element.name] = element.master_locale;
+              stackChoice.choices.push(element.name);
             }
             spinner.succeed('Fetched stack');
             return resolve(stackChoice);
