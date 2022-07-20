@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-seed",
   "description": "create a Stack from existing content types, entries, assets, etc.",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
@@ -33,7 +33,7 @@
     "jest": "^26.6.1",
     "ts-jest": "^26.4.2",
     "ts-node": "^8.10.2",
-    "typescript": "^3.9.7"
+    "typescript": "^4.7.4"
   },
   "engines": {
     "node": ">=8.0.0"
