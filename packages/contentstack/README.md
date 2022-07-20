@@ -389,11 +389,13 @@ Bootstrap contentstack apps
 
 ```
 USAGE
-  $ csdx cm:bootstrap [--app-name <value>] [--project-dir <value>] [-k <value>] [--org <value>] [-n <value>]
+  $ csdx cm:bootstrap [--app-name <value>] [--project-dir <value>] [-k <value>] [--org <value>] [-n <value>] [-y
+    <value>]
 
 FLAGS
   -k, --stack-api-key=<value>  Provide stack API key to seed content
   -n, --stack-name=<value>     Name of a new stack that will be created.
+  -y, --yes=<value>
   --app-name=<value>           App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter
   --org=<value>                Provide organization UID to create a new stack
   --project-dir=<value>        Directory to setup the project. If directory name has a space then provide the path as a
@@ -1357,7 +1359,7 @@ Create a stack from existing content types, entries, assets, etc
 
 ```
 USAGE
-  $ csdx cm:stacks:seed [-r <value>] [-o <value>] [-k <value>] [-n <value>] [-s <value>]
+  $ csdx cm:stacks:seed [-r <value>] [-o <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]
 
 FLAGS
   -k, --stack-api-key=<value>  Provide stack api key to seed content to
@@ -1365,6 +1367,7 @@ FLAGS
   -o, --org=<value>            Provide Organization UID to create a new stack
   -r, --repo=<value>           GitHub account or GitHub account/repository
   -s, --stack=<value>          Provide stack UID to seed content to
+  -y, --yes=<value>
 
 DESCRIPTION
   Create a stack from existing content types, entries, assets, etc
