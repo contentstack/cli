@@ -1,13 +1,68 @@
-module.exports = ({migration}) => {
+module.exports = ({ migration, stackSDKInstance }) => {
   // Task 1
-  const blogPost = migration.editContentType('blog_post')
-  blogPost.createField('archived')
-  .display_name('Archived')
-  .data_type('boolean')
-  .mandatory(false)
-  migration.addTask(blogPost.getTaskDefinition())
+  const createContentType = contentTypeUID => {
+    return {
+      title: `Create content-type '${contentTypeUID}'`,
+      successMessage: `Content-type '${contentTypeUID}' created successfully`,
+      failedMessage: `Failed to create content-type '${contentTypeUID}'`,
+      task: async params => {
+        let blogCT
+        try {
+          blogCT = await stackSDKInstance.contentType(contentTypeUID).fetch()
+        } catch (error) {
+          console.log((error && error.errorMessage) || ` '${contentTypeUID}' not available`)
+        }
+        if (!blogCT) {
+          try {
+            const contentType = stackSDKInstance.contentType()
+            const content_type = {
+              title: 'Blog Post',
+              uid: contentTypeUID,
+              schema: [
+                {
+                  display_name: "Title",
+                  uid: "title",
+                  data_type: "text",
+                  field_metadata: {
+                    _default: true
+                  },
+                  unique: false,
+                  mandatory: true,
+                  multiple: false
+                },
+                {
+                  display_name: "URL",
+                  uid: "url",
+                  data_type: "text",
+                  field_metadata: {
+                    _default: true
+                  },
+                  unique: false,
+                  multiple: false
+                }
+              ]
+            }
+            await contentType.create({ content_type })
+          } catch (error) {
+            console.log((error && error.errorMessage) || ` '${contentTypeUID}' creation failed`)
+          }
+        }
+      },
+    }
+  }
+
+  migration.addTask(createContentType('blog_post'))
+
 
   // Task 2
+  const blogPost = migration.editContentType('blog_post')
+  blogPost.createField('archived')
+    .display_name('Archived')
+    .data_type('boolean')
+    .mandatory(false)
+  migration.addTask(blogPost.getTaskDefinition())
+
+  // Task 3
   const updateEntries = contentTypeUID => {
     return {
       title: `Migrate data to new field '${contentTypeUID}'`,
