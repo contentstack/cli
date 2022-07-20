@@ -130,7 +130,7 @@ let allImport = async (config, types) => {
           addlogs(config, error, 'error');
           addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
           return reject(error);
-        });;
+        });
       }
       if (config.target_stack && config.source_stack) {
         addlogs(
