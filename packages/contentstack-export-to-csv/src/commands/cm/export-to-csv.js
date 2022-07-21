@@ -165,8 +165,7 @@ class ExportToCsvCommand extends Command {
             }
 
           } catch(error) {
-            debugger
-            this.log(`\x1b[31m Error: ${util.formatError(error)}`);
+            this.log(`Error: ${util.formatError(error)}`);
           }
           break;
         }
