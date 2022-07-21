@@ -72,3 +72,19 @@ fileignoreconfig:
 version: ""
 
 version: "1.0"
+
+fileignoreconfig:
+- filename: packages/contentstack-import/README.md
+  checksum: 2c661324ce281cc5ee6ad075b0a12abaf95cffe3d651e40db7faf232d1ff2eb2
+- filename: packages/contentstack-import/src/lib/import/webhooks.js
+  checksum: 090255a47b15f0884d7ae485496dd8721776abdd0e43122eb4d6069b59042d10
+- filename: packages/contentstack-import/src/lib/util/lookupReplaceAssets.js
+  checksum: 3bcc45ff42a9d5d48c6874d4f32730ee9336df07da6b6300e3e434db90d232af
+- filename: packages/contentstack/README.md
+  checksum: e96fa3e38fb30389e7bee89fa643e3ccb3f8913ca3eaa9577ebc802000efaccf
+version: ""
+
+fileignoreconfig:
+- filename: packages/contentstack-import/src/lib/util/extensionsUidReplace.js
+  checksum: 0c89857448255a2021e1c22cfcdfd85d2d9e6b7d686c87a9bedc41b6199c4e04
+version: ""
