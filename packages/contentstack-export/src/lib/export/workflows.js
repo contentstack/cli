@@ -29,7 +29,7 @@ ExportWorkFlows.prototype.start = function (credentialConfig) {
 
   let workflowsFolderPath = path.resolve(config.data, config.branchName || '', workFlowConfig.dirName);
   mkdirp.sync(workflowsFolderPath);
-  return new Promise(function (resolve) {
+  return new Promise(function (resolve, reject) {
     return client
       .stack({ api_key: config.source_stack, management_token: config.management_token })
       .workflow()
@@ -46,7 +46,7 @@ ExportWorkFlows.prototype.start = function (credentialConfig) {
           helper.writeFile(path.join(workflowsFolderPath, workFlowConfig.fileName), self.workflows);
           return resolve();
         } catch (error) {
-          throw error;
+          return reject(error);
         }
       })
       .catch(function (error) {
@@ -92,7 +92,9 @@ const getWorkflowRoles = async (workflow) => {
       }
     }
   } catch (error) {
-    throw error;
+    console.log('Error getting roles', error && error.message);
+    addlogs(config, 'Error fetching roles in export workflows task.', 'error');
+    throw { message: 'Error fetching roles in export workflows task.' };
   }
 };
 
