@@ -88,7 +88,8 @@ importWorkflows.prototype = {
                     }
                   }
                 } catch (error) {
-                  throw error;
+                  addlogs(config, chalk.red('Error while importing workflows roles. ' + error && error.message), 'error');
+                  return reject({ message: 'Error while importing workflows roles' });
                 }
               }
             }
