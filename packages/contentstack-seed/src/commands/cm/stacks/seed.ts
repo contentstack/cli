@@ -50,6 +50,10 @@ export default class SeedCommand extends Command {
       required: false,
       hidden: true,
     }),
+    yes: flags.string({
+      char: 'y',
+      required: false,
+    }),
 
     //To be deprecated
     stack: flags.string({
@@ -84,10 +88,12 @@ export default class SeedCommand extends Command {
         stackUid: seedFlags['stack-api-key'] || seedFlags.stack,
         stackName: seedFlags['stack-name'],
         fetchLimit: seedFlags['fetch-limit'],
+        skipStackConfirmation: seedFlags['yes'],
       };
 
       const seeder = new ContentModelSeeder(options);
-      return await seeder.run();
+      const result = await seeder.run();
+      return result;
     } catch (error) {
       let errorObj: any = error;
       this.error(errorObj, { exit: 1, suggestions: errorObj.suggestions });

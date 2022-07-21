@@ -12,6 +12,10 @@ const HandleStackCommand = function (params, parentContext) {
   return new CloneCommand(parentContext.handleStackSelection, parentContext.execute, params, parentContext);
 };
 
+const HandleBranchCommand = function (params, parentContext) {
+  return new CloneCommand(parentContext.handleBranchSelection, parentContext.execute, params, parentContext);
+};
+
 const HandleDestinationStackCommand = function (params, parentContext) {
   return new CloneCommand(parentContext.handleStackSelection, parentContext.executeDestination, params, parentContext);
 };
@@ -53,6 +57,7 @@ const Clone = function () {
 module.exports = {
   HandleOrgCommand,
   HandleStackCommand,
+  HandleBranchCommand,
   HandleDestinationStackCommand,
   HandleExportCommand,
   SetBranchCommand,
