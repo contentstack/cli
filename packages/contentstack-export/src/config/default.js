@@ -9,6 +9,7 @@ module.exports = {
     types: [
       'stack',
       'assets',
+      'custom-roles',
       'locales',
       'environments',
       'extensions',
@@ -23,6 +24,10 @@ module.exports = {
       dirName: 'locales',
       fileName: 'locales.json',
       requiredKeys: ['code', 'uid', 'name', 'fallback_locale'],
+    },
+    customRoles: {
+      dirName: 'custom-roles',
+      fileName: 'custom-roles.json',
     },
     environments: {
       dirName: 'environments',
