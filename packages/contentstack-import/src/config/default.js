@@ -9,6 +9,7 @@ module.exports = {
   // locales: ['fr-fr'],
   host: 'https://api.contentstack.io/v3',
   extensionHost: 'https://app.contentstack.com',
+  developerHubBaseUrl: 'https://developerhub-api.contentstack.com',
   modules: {
     types: [
       'locales',
@@ -319,7 +320,6 @@ module.exports = {
   preserveStackVersion: false,
   entriesPublish: true,
   concurrency: 1,
-  developerHubBaseUrl: 'https://developerhub-api.contentstack.com',
   //  ,useBackedupDir: '_backup_397'
   // backupConcurrency: 10,
 };

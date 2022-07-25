@@ -14,6 +14,7 @@ let config = require('../../config/default');
 const { writeFile } = require('../util/helper');
 const { addlogs: log } = require('../util/log');
 let stack = require('../util/contentstack-management-sdk');
+const { getInstalledExtensions } = require('../util/marketplace-app-helper')
 
 let client
 let marketplaceAppConfig = config.modules.marketplace_apps;
@@ -30,23 +31,15 @@ function exportMarketplaceApps() {
     );
     mkdirp.sync(this.marketplaceAppPath);
 
-    return await this.getInstalledExtensions()
+    return this.exportInstalledExtensions()
   }
 
-  this.getInstalledExtensions = () => {
+  this.exportInstalledExtensions = () => {
     const self = this
-    const queryRequestOptions = {
-      include_marketplace_extensions: true
-    }
-    const { apiKey: api_key, token: management_token } = config.management_token_data || {}
 
-    return new Promise(function (resolve, reject) {
-      client
-        .stack({ api_key, management_token })
-        .extension()
-        .query(queryRequestOptions)
-        .find()
-        .then(({ items }) => {
+    return new Promise(async function (resolve, reject) {
+      getInstalledExtensions(config)
+        .then(async (items) => {
           const installedApps = _.map(
             _.filter(items, 'app_uid'),
             ({ uid, title, app_uid, app_installation_uid }) => ({ title, uid, app_uid, app_installation_uid })
@@ -57,11 +50,27 @@ function exportMarketplaceApps() {
           }
           const httpClient = new HttpClient().headers(headers);
           const nodeCrypto = new NodeCrypto()
+          const developerHubApps = await httpClient.get(`${config.developerHubBaseUrl}/apps`)
+            .then(({ data: { data } }) => data)
+            .catch(err => {
+              console.log(err)
+            }) || []
 
           eachOf(installedApps, (apps, key, cb) => {
+            log(config, `Exporting ${apps.title} app and it's config.`, 'success')
+
             httpClient.get(`${config.developerHubBaseUrl}/installations/${apps.app_installation_uid}/installationData`)
               .then(({ data: result }) => {
                 const { data, error } = result
+                const developerHubApp = _.find(developerHubApps, { uid: installedApps[key].app_uid })
+
+                if (developerHubApp) {
+                  installedApps[key]['visibility'] = developerHubApp.visibility
+                  installedApps[key]['manifest'] = _.pick(
+                    developerHubApp,
+                    ['name', 'description', 'icon', 'target_type', 'ui_location', 'webhook', 'oauth'] // NOTE keys can be passed to install new app in the developer hub
+                  )
+                }
 
                 if (
                   !_.isEmpty(data) &&
@@ -75,8 +84,11 @@ function exportMarketplaceApps() {
                   if (!_.isEmpty(server_configuration)) {
                     installedApps[key]['server_configuration'] = nodeCrypto.encrypt(server_configuration)
                   }
+
+                  log(config, `Exported ${apps.title} app and it's config.`, 'success')
                 } else if (error) {
                   console.log(error)
+                  log(config, `Error on exporting ${apps.title} app and it's config.`, 'error')
                 }
               }).then(cb)
               .catch(err => {
