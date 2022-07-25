@@ -56,40 +56,47 @@ function exportMarketplaceApps() {
               console.log(err)
             }) || []
 
-          eachOf(installedApps, (apps, key, cb) => {
-            log(config, `Exporting ${apps.title} app and it's config.`, 'success')
+          eachOf(_.uniqBy(installedApps, 'app_uid'), (app, key, cb) => {
+            log(config, `Exporting ${app.title} app and it's config.`, 'success')
+            const listOfIndexToBeUpdated = _.map(_.filter(installedApps, { app_uid: app.app_uid }), (_row, index) => index)
 
-            httpClient.get(`${config.developerHubBaseUrl}/installations/${apps.app_installation_uid}/installationData`)
+            httpClient.get(`${config.developerHubBaseUrl}/installations/${app.app_installation_uid}/installationData`)
               .then(({ data: result }) => {
                 const { data, error } = result
                 const developerHubApp = _.find(developerHubApps, { uid: installedApps[key].app_uid })
 
-                if (developerHubApp) {
-                  installedApps[key]['visibility'] = developerHubApp.visibility
-                  installedApps[key]['manifest'] = _.pick(
-                    developerHubApp,
-                    ['name', 'description', 'icon', 'target_type', 'ui_location', 'webhook', 'oauth'] // NOTE keys can be passed to install new app in the developer hub
-                  )
-                }
-
-                if (
-                  !_.isEmpty(data) &&
-                  (_.has(data, 'configuration') || _.has(data, 'server_configuration'))
-                ) {
-                  const { configuration, server_configuration } = data
-
-                  if (!_.isEmpty(configuration)) {
-                    installedApps[key]['configuration'] = nodeCrypto.encrypt(configuration)
+                _.forEach(listOfIndexToBeUpdated, (index) => {
+                  if (developerHubApp) {
+                    installedApps[index]['visibility'] = developerHubApp.visibility
+                    installedApps[index]['manifest'] = _.pick(
+                      developerHubApp,
+                      ['name', 'description', 'icon', 'target_type', 'ui_location', 'webhook', 'oauth'] // NOTE keys can be passed to install new app in the developer hub
+                    )
                   }
-                  if (!_.isEmpty(server_configuration)) {
-                    installedApps[key]['server_configuration'] = nodeCrypto.encrypt(server_configuration)
+  
+                  if (
+                    !_.isEmpty(data) &&
+                    (_.has(data, 'configuration') || _.has(data, 'server_configuration'))
+                  ) {
+                    const { configuration, server_configuration } = data
+  
+                    if (!_.isEmpty(configuration)) {
+                      installedApps[index]['configuration'] = nodeCrypto.encrypt(configuration)
+                    }
+                    if (!_.isEmpty(server_configuration)) {
+                      installedApps[index]['server_configuration'] = nodeCrypto.encrypt(server_configuration)
+                    }
+  
+                    if (index === 0) {
+                      log(config, `Exported ${app.title} app and it's config.`, 'success')
+                    }
+                  } else if (error) {
+                    console.log(error)
+                    if (index === 0) {
+                      log(config, `Error on exporting ${app.title} app and it's config.`, 'error')
+                    }
                   }
-
-                  log(config, `Exported ${apps.title} app and it's config.`, 'success')
-                } else if (error) {
-                  console.log(error)
-                  log(config, `Error on exporting ${apps.title} app and it's config.`, 'error')
-                }
+                })
               }).then(cb)
               .catch(err => {
                 console.log(err)
