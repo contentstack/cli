@@ -8,10 +8,13 @@ const getInstalledExtensions = (config) => {
     const queryRequestOptions = {
       include_marketplace_extensions: true
     }
-    const { target_stack: api_key, management_token, auth_token } = config || {}
+    const {
+      management_token_data: { apiKey: api_key, token: management_token } = { apiKey: config.source_stack },
+      auth_token
+    } = config || { management_token_data: {} }
 
     if (api_key && management_token) {
-      return client
+      client
         .stack({ api_key, management_token })
         .extension()
         .query(queryRequestOptions)
@@ -29,6 +32,7 @@ const getInstalledExtensions = (config) => {
         : `https://${config.host}/v3`;
       httpClient.get(`${baseUrl}/extensions/?include_marketplace_extensions=true`)
         .then(({ data: { extensions } }) => resolve(extensions))
+        .catch(reject)
     } else {
       resolve([])
     }

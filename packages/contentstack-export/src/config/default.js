@@ -1,6 +1,7 @@
 module.exports = {
   versioning: false,
   host: 'https://api.contentstack.io/v3',
+  developerHubBaseUrl: 'https://developerhub-api.contentstack.com',
   // use below hosts for eu region
   // host:'https://eu-api.contentstack.com/v3',
   // use below hosts for azure-na region
@@ -331,6 +332,5 @@ module.exports = {
     webhooks: '/webhooks/',
     stacks: '/stacks/',
   },
-  preserveStackVersion: false,
-  developerHubBaseUrl: 'https://developerhub-api.contentstack.com',
+  preserveStackVersion: false
 };
