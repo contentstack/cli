@@ -28,7 +28,7 @@ function importMarketplaceApps() {
     config = credentialConfig;
     client = sdk.Client(config);
     this.marketplaceAppFolderPath = path.resolve(config.data, marketplaceAppConfig.dirName);
-    this.marketplaceApps = _.unionBy(
+    this.marketplaceApps = _.uniqBy(
       readFile(path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName)),
       'app_uid'
     );
@@ -123,7 +123,7 @@ function importMarketplaceApps() {
       (app) => !_.includes(_.map(installedDeveloperHubApps, 'uid'), app.app_uid)
     )
 
-    return new Promise(function (resolve) {
+    return new Promise(async function (resolve) {
       if (!_.isEmpty(listOfNotInstalledPrivateApps)) {
         log(config, 'Starting developer hub private apps installation', 'success');
         const confirmation = await cliux.confirm(
