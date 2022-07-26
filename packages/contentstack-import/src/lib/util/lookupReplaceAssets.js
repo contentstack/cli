@@ -81,8 +81,8 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
 
           if (oldExt) {
             const ext = (
-              _.find(installedExtensions, { type: 'field', app_uid: oldExt.app_uid }) ||
-              _.find(installedExtensions, { type: 'field', app_uid: oldExt.new_app_uid })
+              _.find(installedExtensions, { type: 'field', app_uid: oldExt.new_app_uid }) ||
+              _.find(installedExtensions, { type: 'field', app_uid: oldExt.app_uid })
             )
 
             if (ext) {
@@ -108,8 +108,8 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
 
             if (oldExt) {
               const ext = (
-                _.find(installedExtensions, { type: 'field', app_uid: oldExt.app_uid }) ||
-                _.find(installedExtensions, { type: 'field', app_uid: oldExt.new_app_uid })
+                _.find(installedExtensions, { type: 'field', app_uid: oldExt.new_app_uid }) ||
+                _.find(installedExtensions, { type: 'field', app_uid: oldExt.app_uid })
               )
 
               if (ext) {
@@ -124,8 +124,8 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
 
             if (oldExt) {
               const ext = (
-                _.find(installedExtensions, { type: 'field', app_uid: oldExt.app_uid }) ||
-                _.find(installedExtensions, { type: 'field', app_uid: oldExt.new_app_uid })
+                _.find(installedExtensions, { type: 'field', app_uid: oldExt.new_app_uid }) ||
+                _.find(installedExtensions, { type: 'field', app_uid: oldExt.app_uid })
               )
 
               if (ext) {
