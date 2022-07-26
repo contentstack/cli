@@ -56,14 +56,17 @@ function exportMarketplaceApps() {
               console.log(err)
             }) || []
 
-          eachOf(_.uniqBy(installedApps, 'app_uid'), (app, key, cb) => {
+          eachOf(_.uniqBy(installedApps, 'app_uid'), (app, _key, cb) => {
             log(config, `Exporting ${app.title} app and it's config.`, 'success')
-            const listOfIndexToBeUpdated = _.map(_.filter(installedApps, { app_uid: app.app_uid }), (_row, index) => index)
+            const listOfIndexToBeUpdated = _.map(
+              installedApps,
+              ({ app_uid }, index) => (app_uid === app.app_uid ? index : undefined)
+            ).filter(val => val)
 
             httpClient.get(`${config.developerHubBaseUrl}/installations/${app.app_installation_uid}/installationData`)
               .then(({ data: result }) => {
                 const { data, error } = result
-                const developerHubApp = _.find(developerHubApps, { uid: installedApps[key].app_uid })
+                const developerHubApp = _.find(developerHubApps, { uid: app.app_uid })
 
                 _.forEach(listOfIndexToBeUpdated, (index) => {
                   if (developerHubApp) {
@@ -73,7 +76,7 @@ function exportMarketplaceApps() {
                       ['name', 'description', 'icon', 'target_type', 'ui_location', 'webhook', 'oauth'] // NOTE keys can be passed to install new app in the developer hub
                     )
                   }
-  
+
                   if (
                     !_.isEmpty(data) &&
                     (_.has(data, 'configuration') || _.has(data, 'server_configuration'))
@@ -86,18 +89,16 @@ function exportMarketplaceApps() {
                     if (!_.isEmpty(server_configuration)) {
                       installedApps[index]['server_configuration'] = nodeCrypto.encrypt(server_configuration)
                     }
-  
-                    if (index === 0) {
-                      log(config, `Exported ${app.title} app and it's config.`, 'success')
-                    }
+
+                    log(config, `Exported ${app.title} app and it's config.`, 'success')
                   } else if (error) {
                     console.log(error)
-                    if (index === 0) {
-                      log(config, `Error on exporting ${app.title} app and it's config.`, 'error')
-                    }
+                    log(config, `Error on exporting ${app.title} app and it's config.`, 'error')
                   }
                 })
-              }).then(cb)
+
+                cb()
+              })
               .catch(err => {
                 console.log(err)
                 cb()
