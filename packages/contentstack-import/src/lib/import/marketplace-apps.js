@@ -74,6 +74,12 @@ function importMarketplaceApps() {
     await this.installAllPrivateAppsInDeveloperHub({ httpClient })
     const installedExtensions = await getInstalledExtensions(config)
 
+    // NOTE after private app installation refetch marketplace apps from file
+    this.marketplaceApps = _.uniqBy(
+      readFile(path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName)),
+      'app_uid'
+    );
+
     return new Promise(function (resolve) {
       if (!_.isEmpty(self.marketplaceApps)) {
         log(config, 'Starting marketplace app installation', 'success');
@@ -120,14 +126,17 @@ function importMarketplaceApps() {
       }) || []
     const listOfNotInstalledPrivateApps = _.filter(
       _.filter(self.marketplaceApps, { visibility: 'private' }),
-      (app) => !_.includes(_.map(installedDeveloperHubApps, 'uid'), app.app_uid)
+      (app) => (
+        !_.includes(_.map(installedDeveloperHubApps, 'uid'), app.app_uid) &&
+        !_.includes(_.map(installedDeveloperHubApps, 'uid'), app.new_app_uid)
+      )
     )
 
     return new Promise(async function (resolve) {
       if (!_.isEmpty(listOfNotInstalledPrivateApps)) {
         log(config, 'Starting developer hub private apps installation', 'success');
         const confirmation = await cliux.confirm(
-          `Following list for apps are private apps which are not available for this stack (${_.map(title).join()}). Would you like to proceed to install them y/n.?`
+          `Following list for apps are private apps which are not available for this stack (${_.map(listOfNotInstalledPrivateApps, 'title').join()}). Would you like to proceed to install them y/n.?`
         );
 
         if (!confirmation) {
@@ -156,19 +165,20 @@ function importMarketplaceApps() {
             }
           } else if (data) { // NOTE new app installation
             log(config, `${title} app installed successfully.!`, 'success');
+            const allMarketplaceApps = readFile(path.resolve(self.marketplaceAppFolderPath, marketplaceAppConfig.fileName))
             const index = _.findIndex(
-              self.marketplaceApps,
+              allMarketplaceApps,
               { uid: app.uid, visibility: 'private' }
             )
             if (index > -1) {
-              self.marketplaceApps[index] = {
-                ...self.marketplaceApps[index],
+              allMarketplaceApps[index] = {
+                ...allMarketplaceApps[index],
                 new_app_uid: data.uid
               }
 
               writeFile(
                 path.join(self.marketplaceAppFolderPath, marketplaceAppConfig.fileName),
-                self.marketplaceApps
+                allMarketplaceApps
               )
             }
 
@@ -180,7 +190,9 @@ function importMarketplaceApps() {
           console.log(err)
           cb()
         })
-      }, resolve)
+      }, () => {
+        resolve()
+      })
     })
   }
 
@@ -195,7 +207,7 @@ function importMarketplaceApps() {
 
     return new Promise((resolve, reject) => {
       httpClient.post(
-        `${config.developerHubBaseUrl}/apps/${app.app_uid}/install`,
+        `${config.developerHubBaseUrl}/apps/${app.new_app_uid || app.app_uid}/install`,
         { target_type: 'stack', target_uid: config.target_stack }
       ).then(function ({ data: result }) {
         let updateParam
