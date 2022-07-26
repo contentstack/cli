@@ -253,8 +253,6 @@ function importMarketplaceApps() {
       if (_.isEmpty(data) || _.isEmpty(payload) || !data.installation_uid) {
         resolve()
       } else {
-        log(config, `${title} app config updated started.!`, 'success')
-
         httpClient.put(`${config.developerHubBaseUrl}/installations/${data.installation_uid}`, payload)
           .then(() => {
             log(config, `${title} app config updated successfully.!`, 'success')
