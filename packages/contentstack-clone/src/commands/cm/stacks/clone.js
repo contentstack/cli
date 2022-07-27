@@ -70,8 +70,9 @@ class StackCloneCommand extends Command {
         config.auth_token = _authToken;
         config.host = this.cmaHost;
         config.cdn = this.cdaHost;
+        config.pathDir = pathdir;
         const cloneHandler = new CloneHandler(config);
-        cloneHandler.execute(pathdir).catch();
+        cloneHandler.execute().catch();
       }
 
       if (sourceManagementTokenAlias && destinationManagementTokenAlias) {
