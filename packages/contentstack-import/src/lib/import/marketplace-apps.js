@@ -82,36 +82,38 @@ function importMarketplaceApps() {
       'app_uid'
     )
 
-    return new Promise(function (resolve) {
-      if (!_.isEmpty(self.marketplaceApps)) {
-        log(config, 'Starting marketplace app installation', 'success')
-      }
+    if (!_.isEmpty(self.marketplaceApps)) {
+      log(config, 'Starting marketplace app installation', 'success')
+    }
 
-      eachOf(self.marketplaceApps, (app, _key, cb) => {
-        self.installApps({ app, installedExtensions, httpClient, nodeCrypto })
-          .then(cb)
-          .catch(cb)
-      }, async () => {
-        const extensions = await getInstalledExtensions(config)
-        const mapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps')
+    for (let app of self.marketplaceApps) {
+      await self.installApps({ app, installedExtensions, httpClient, nodeCrypto })
+    }
 
-        if (!fs.existsSync(mapperFolderPath)) {
-          mkdirp.sync(mapperFolderPath)
-        }
+    // NOTE get all the extension again after all apps installed (To manage uid mapping in content type, entries)
+    const extensions = await getInstalledExtensions(config)
+    const mapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps')
 
-        const appUidMapperPath = path.join(mapperFolderPath, 'marketplace-apps.json')
-        const installedExt = _.map(
-          extensions,
-          (row) => _.pick(row, ['uid', 'title', 'type', 'app_uid', 'app_installation_uid'])
-        )
+    if (!fs.existsSync(mapperFolderPath)) {
+      mkdirp.sync(mapperFolderPath)
+    }
 
-        writeFile(appUidMapperPath, installedExt)
+    const appUidMapperPath = path.join(mapperFolderPath, 'marketplace-apps.json')
+    const installedExt = _.map(
+      extensions,
+      (row) => _.pick(row, ['uid', 'title', 'type', 'app_uid', 'app_installation_uid'])
+    )
 
-        resolve()
-      })
-    })
+    writeFile(appUidMapperPath, installedExt)
+
+    return Promise.resolve()
   }
 
+  /**
+   * @method handleAllPrivateAppsInstallationProcess
+   * @param {Object} options 
+   * @returns {Promise<void>}
+   */
   this.handleAllPrivateAppsInstallationProcess = async (options) => {
     const self = this
     const { httpClient } = options
@@ -135,34 +137,30 @@ function importMarketplaceApps() {
       )
     )
 
-    return new Promise(async function (resolve) {
-      if (!_.isEmpty(listOfNotInstalledPrivateApps)) {
-        log(config, 'Starting developer hub private apps installation', 'success')
-        const confirmation = await cliux.confirm(
-          chalk.yellow(`WARNING!!! The following list of apps are private apps which are not available for this stack [${_.map(listOfNotInstalledPrivateApps, 'title').join()}]. Would you like to proceed with installing them? y/n`)
+    if (!_.isEmpty(listOfNotInstalledPrivateApps)) {
+      log(config, 'Starting developer hub private apps installation', 'success')
+      const confirmation = await cliux.confirm(
+        chalk.yellow(`WARNING!!! The following list of apps are private apps which are not available for this stack [${_.map(listOfNotInstalledPrivateApps, 'title').join()}]. Would you like to proceed with installing them? y/n`)
+      )
+
+      if (!confirmation) {
+        const continueProcess = await cliux.confirm(
+          chalk.yellow(`WARNING!!! Hence, you canceled the installation which may break content-type and entry import. Would you like to proceed.? y/n`)
         )
 
-        if (!confirmation) {
-          const continueProcess = await cliux.confirm(
-            chalk.yellow(`WARNING!!! Hence, you canceled the installation which may break content-type and entry import. Would you like to proceed.? y/n`)
-          )
-
-          if (continueProcess) {
-            return resolve()
-          } else {
-            process.exit()
-          }
+        if (continueProcess) {
+          return resolve()
+        } else {
+          process.exit()
         }
       }
+    }
 
-      eachOf(listOfNotInstalledPrivateApps, (app, _key, cb) => {
-        self.installAllPrivateAppsInDeveloperHub({ app, httpClient })
-          .then(cb)
-          .catch(cb)
-      }, () => {
-        resolve()
-      })
-    })
+    for (let app of listOfNotInstalledPrivateApps) {
+      await self.installAllPrivateAppsInDeveloperHub({ app, httpClient })
+    }
+
+    return Promise.resolve()
   }
 
   /**
@@ -267,13 +265,35 @@ function importMarketplaceApps() {
           const ext = _.find(installedExtensions, { app_uid: app.app_uid })
 
           if (ext) {
-            updateParam = {
-              app,
-              nodeCrypto,
-              httpClient,
-              data: { ...ext, installation_uid: ext.app_installation_uid }
+            cliux.print(
+              'WARNING!!! The app already exists and it may have its own configuration. But the current app we install has its own config which is used internally to manage content.',
+              { color: 'yellow' }
+            )
+            const configOption = await inquirer.prompt([
+              {
+                choices: [
+                  'Update with new config',
+                  'Don\'t update config (WARNING!!! There may be some issues with contents which we import)',
+                  'Exit'
+                ],
+                type: 'list',
+                name: 'value',
+                message: 'Choose the option to proceed'
+              }
+            ])
+
+            if (configOption.value === 'Exit') {
+              process.exit()
+            } else if (configOption.value === 'Update with new config') {
+              updateParam = {
+                app,
+                nodeCrypto,
+                httpClient,
+                data: { ...ext, installation_uid: ext.app_installation_uid }
+              }
             }
           } else {
+            cliux.print(`WARNING!!! ${message}`, { color: 'yellow' })
             const confirmation = await cliux.confirm(
               chalk.yellow('WARNING!!! The above error may have an impact if the failed app has been referenced in entries/content type. Would you like to proceed.? (y/n)')
             )
@@ -287,7 +307,7 @@ function importMarketplaceApps() {
           updateParam = { data, app, nodeCrypto, httpClient }
         }
 
-        if (updateParam && !_.isEmpty(data)) {
+        if (updateParam) {
           self.updateAppsConfig(updateParam)
             .then(resolve)
             .catch(reject)
