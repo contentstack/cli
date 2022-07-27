@@ -9,6 +9,7 @@ let importCmd = require('@contentstack/cli-cm-import');
 const { HttpClient } = require('@contentstack/cli-utilities');
 let sdkInstance = require('../../lib/util/contentstack-management-sdk');
 const defaultConfig = require('@contentstack/cli-cm-export/src/config/default');
+const { CustomAbortController } = require('./abort-controller');
 
 const { 
   HandleOrgCommand, HandleStackCommand, HandleDestinationStackCommand, HandleExportCommand,
@@ -56,6 +57,7 @@ class CloneHandler {
     config = opt;
     client = sdkInstance.Client(config);
     cloneCommand = new Clone();
+    this.pathDir = opt.pathDir;
     process.stdin.setMaxListeners(50);
   }
 
@@ -99,7 +101,7 @@ class CloneHandler {
         if (stackList) {
           const ui = new inquirer.ui.BottomBar();
           // Use chalk to prettify the text.
-          ui.updateBottomBar(chalk.blue('For undo operation press backspace\n'));
+          ui.updateBottomBar(chalk.cyan('\nFor undo operation press backspace\n'));
   
           const selectedStack = await inquirer.prompt(stackList);
           
@@ -188,7 +190,7 @@ class CloneHandler {
     })
   }
 
-  execute(pathDir) {
+  execute() {
     return new Promise(async (resolve, reject) => {
       let stackAbortController;
       try {
@@ -196,16 +198,14 @@ class CloneHandler {
           const orgMsg = 'Choose an organization where your source stack exists:';
           const stackMsg = 'Select the source stack';
 
-          stackAbortController = new AbortController();
+          stackAbortController = new CustomAbortController();
 
           const org = await cloneCommand.execute(new HandleOrgCommand({ msg: orgMsg, isSource: true }, this));
           if (org) {
             const sourceStack = await cloneCommand.execute(new HandleStackCommand({ org, isSource: true, msg: stackMsg, stackAbortController }, this));
 
             if (config.source_stack) {
-              await cloneCommand.execute(
-                new HandleBranchCommand({ api_key: config.source_stack }, this)
-              );
+              await cloneCommand.execute(new HandleBranchCommand({ api_key: config.source_stack }, this));
             }
 
             if (stackAbortController.signal.aborted) {
@@ -220,7 +220,7 @@ class CloneHandler {
         await cloneCommand.execute(new SetBranchCommand(null, this));
 
         if (exportRes) {
-          this.executeDestination(pathDir).catch(() => reject());
+          this.executeDestination().catch(() => { reject(); });
         }
         return resolve();
       } catch (error) {
@@ -233,11 +233,11 @@ class CloneHandler {
     });
   }
 
-  async executeDestination(pathDir) {
+  async executeDestination() {
     return new Promise(async (resolve, reject) => {
       let stackAbortController;
       try {
-        stackAbortController = new AbortController();
+        stackAbortController = new CustomAbortController();
 
         let canCreateStack = false;
 
@@ -258,12 +258,7 @@ class CloneHandler {
 
           // NOTE GET list of branches if branches enabled
           if (config.target_stack) {
-            await cloneCommand.execute(
-              new HandleBranchCommand({
-                isSource: false,
-                api_key: config.target_stack
-              }, this)
-            );
+            await cloneCommand.execute(new HandleBranchCommand({ isSource: false, api_key: config.target_stack }, this));
           }
         } else {
           const destinationOrg = await this.handleOrgSelection({ isSource: false, msg: 'Choose an organization where you want to create a stack: ' });
@@ -278,7 +273,7 @@ class CloneHandler {
         // If not aborted and ran successfully
         if (!stackAbortController.signal.aborted) {
           // Call clean dir.
-          rimraf(pathDir, function () {
+          rimraf(this.pathDir, function () {
             // eslint-disable-next-line no-console
             console.log('Stack cloning process have been completed successfully');
           });
