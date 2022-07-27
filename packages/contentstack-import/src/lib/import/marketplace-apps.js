@@ -5,33 +5,35 @@
  */
 const fs = require('fs')
 const _ = require('lodash')
-const path = require('path');
-const mkdirp = require('mkdirp');
-const eachOf = require('async/eachOf');
-const { cliux } = require('@contentstack/cli-utilities');
-const { HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
+const path = require('path')
+const chalk = require('chalk')
+const mkdirp = require('mkdirp')
+const inquirer = require('inquirer')
+const eachOf = require('async/eachOf')
+const { cliux } = require('@contentstack/cli-utilities')
+const { HttpClient, NodeCrypto } = require('@contentstack/cli-utilities')
 
-let config = require('../../config/default');
-const { addlogs: log } = require('../util/log');
-const { readFile, writeFile } = require('../util/fs');
-const sdk = require('../util/contentstack-management-sdk');
+let config = require('../../config/default')
+const { addlogs: log } = require('../util/log')
+const { readFile, writeFile } = require('../util/fs')
+const sdk = require('../util/contentstack-management-sdk')
 const { getInstalledExtensions } = require('../util/marketplace-app-helper')
 
 let client
-const marketplaceAppConfig = config.modules.marketplace_apps;
+const marketplaceAppConfig = config.modules.marketplace_apps
 
 function importMarketplaceApps() {
   this.marketplaceApps = []
   this.marketplaceAppFolderPath = ''
 
   this.start = async (credentialConfig) => {
-    config = credentialConfig;
-    client = sdk.Client(config);
-    this.marketplaceAppFolderPath = path.resolve(config.data, marketplaceAppConfig.dirName);
+    config = credentialConfig
+    client = sdk.Client(config)
+    this.marketplaceAppFolderPath = path.resolve(config.data, marketplaceAppConfig.dirName)
     this.marketplaceApps = _.uniqBy(
       readFile(path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName)),
       'app_uid'
-    );
+    )
 
     await this.getOrgUid()
     return this.handleInstallationProcess()
@@ -67,34 +69,34 @@ function importMarketplaceApps() {
       authtoken: config.auth_token,
       organization_uid: config.org_uid
     }
-    const httpClient = new HttpClient().headers(headers);
+    const httpClient = new HttpClient().headers(headers)
     const nodeCrypto = new NodeCrypto()
 
     // NOTE install private apps which is not available for stack.
-    await this.installAllPrivateAppsInDeveloperHub({ httpClient })
+    await this.handleAllPrivateAppsInstallationProcess({ httpClient })
     const installedExtensions = await getInstalledExtensions(config)
 
     // NOTE after private app installation refetch marketplace apps from file
     this.marketplaceApps = _.uniqBy(
       readFile(path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName)),
       'app_uid'
-    );
+    )
 
     return new Promise(function (resolve) {
       if (!_.isEmpty(self.marketplaceApps)) {
-        log(config, 'Starting marketplace app installation', 'success');
+        log(config, 'Starting marketplace app installation', 'success')
       }
 
       eachOf(self.marketplaceApps, (app, _key, cb) => {
-        self.installApps({ cb, app, installedExtensions, httpClient, nodeCrypto })
+        self.installApps({ app, installedExtensions, httpClient, nodeCrypto })
           .then(cb)
           .catch(cb)
       }, async () => {
         const extensions = await getInstalledExtensions(config)
-        const mapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps');
+        const mapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps')
 
         if (!fs.existsSync(mapperFolderPath)) {
-          mkdirp.sync(mapperFolderPath);
+          mkdirp.sync(mapperFolderPath)
         }
 
         const appUidMapperPath = path.join(mapperFolderPath, 'marketplace-apps.json')
@@ -103,8 +105,61 @@ function importMarketplaceApps() {
           (row) => _.pick(row, ['uid', 'title', 'type', 'app_uid', 'app_installation_uid'])
         )
 
-        writeFile(appUidMapperPath, installedExt);
+        writeFile(appUidMapperPath, installedExt)
 
+        resolve()
+      })
+    })
+  }
+
+  this.handleAllPrivateAppsInstallationProcess = async (options) => {
+    const self = this
+    const { httpClient } = options
+    const listOfExportedPrivateApps = _.filter(self.marketplaceApps, { visibility: 'private' })
+
+    if (_.isEmpty(listOfExportedPrivateApps)) {
+      return Promise.resolve()
+    }
+
+    // NOTE get list of developer-hub installed apps (private)
+    const installedDeveloperHubApps = await httpClient.get(`${config.extensionHost}/apps-api/apps/`)
+      .then(({ data: { data } }) => data)
+      .catch(err => {
+        console.log(err)
+      }) || []
+    const listOfNotInstalledPrivateApps = _.filter(
+      listOfExportedPrivateApps,
+      (app) => (
+        !_.includes(_.map(installedDeveloperHubApps, 'uid'), app.app_uid) &&
+        !_.includes(_.map(installedDeveloperHubApps, 'uid'), app.new_app_uid)
+      )
+    )
+
+    return new Promise(async function (resolve) {
+      if (!_.isEmpty(listOfNotInstalledPrivateApps)) {
+        log(config, 'Starting developer hub private apps installation', 'success')
+        const confirmation = await cliux.confirm(
+          chalk.yellow(`WARNING!!! The following list of apps are private apps which are not available for this stack [${_.map(listOfNotInstalledPrivateApps, 'title').join()}]. Would you like to proceed with installing them? y/n`)
+        )
+
+        if (!confirmation) {
+          const continueProcess = await cliux.confirm(
+            chalk.yellow(`WARNING!!! Hence, you canceled the installation which may break content-type and entry import. Would you like to proceed.? y/n`)
+          )
+
+          if (continueProcess) {
+            return resolve()
+          } else {
+            process.exit()
+          }
+        }
+      }
+
+      eachOf(listOfNotInstalledPrivateApps, (app, _key, cb) => {
+        self.installAllPrivateAppsInDeveloperHub({ app, httpClient })
+          .then(cb)
+          .catch(cb)
+      }, () => {
         resolve()
       })
     })
@@ -117,83 +172,76 @@ function importMarketplaceApps() {
    */
   this.installAllPrivateAppsInDeveloperHub = async (options) => {
     const self = this
-    const { httpClient } = options
-    // NOTE get list of developer-hub installed apps (private)
-    const installedDeveloperHubApps = await httpClient.get(`${config.extensionHost}/apps-api/apps/`)
-      .then(({ data: { data } }) => data)
-      .catch(err => {
-        console.log(err)
-      }) || []
-    const listOfNotInstalledPrivateApps = _.filter(
-      _.filter(self.marketplaceApps, { visibility: 'private' }),
-      (app) => (
-        !_.includes(_.map(installedDeveloperHubApps, 'uid'), app.app_uid) &&
-        !_.includes(_.map(installedDeveloperHubApps, 'uid'), app.new_app_uid)
-      )
-    )
+    const { app, httpClient } = options
 
-    return new Promise(async function (resolve) {
-      if (!_.isEmpty(listOfNotInstalledPrivateApps)) {
-        log(config, 'Starting developer hub private apps installation', 'success');
-        const confirmation = await cliux.confirm(
-          `Following list for apps are private apps which are not available for this stack (${_.map(listOfNotInstalledPrivateApps, 'title').join()}). Would you like to proceed to install them y/n.?`
-        );
+    return new Promise((resolve) => {
+      httpClient.post(
+        `${config.extensionHost}/apps-api/apps`,
+        app.manifest
+      ).then(async ({ data: result }) => {
+        const { title } = app
+        const { data, error, message } = result
 
-        if (!confirmation) {
-          return resolve()
-        }
-      }
+        if (error) {
+          log(config, message, 'error')
 
-      eachOf(listOfNotInstalledPrivateApps, (app, _key, cb) => {
-        httpClient.post(
-          `${config.extensionHost}/apps-api/apps`,
-          app.manifest
-        ).then(async function ({ data: result }) {
-          const { title } = app;
-          const { data, error, message } = result;
-
-          if (error) {
-            log(config, message, 'error');
+          if (_.toLower(error) === 'conflict') {
+            const appName = await inquirer.prompt({
+              type: 'input',
+              name: 'name',
+              default: `Copy of ${app.manifest.name}`,
+              message: `${message}. Enter a new name to create an app.?`,
+            })
+            app.manifest.name = appName.name
+            await self.installAllPrivateAppsInDeveloperHub({ app, httpClient })
+              .then(resolve)
+              .catch(resolve)
+          } else {
             const confirmation = await cliux.confirm(
-              'The above error may have impact if the failed app has referenced with entries/content type. Would you like to proceed. (y/n)?'
-            );
+              chalk.yellow('WARNING!!! The above error may have an impact if the failed app has been referenced in entries/content type. Would you like to proceed.? (y/n)')
+            )
 
             if (confirmation) {
-              cb()
+              resolve()
             } else {
               process.exit()
             }
-          } else if (data) { // NOTE new app installation
-            log(config, `${title} app installed successfully.!`, 'success');
-            const allMarketplaceApps = readFile(path.resolve(self.marketplaceAppFolderPath, marketplaceAppConfig.fileName))
-            const index = _.findIndex(
-              allMarketplaceApps,
-              { uid: app.uid, visibility: 'private' }
-            )
-            if (index > -1) {
-              allMarketplaceApps[index] = {
-                ...allMarketplaceApps[index],
-                new_app_uid: data.uid
-              }
-
-              writeFile(
-                path.join(self.marketplaceAppFolderPath, marketplaceAppConfig.fileName),
-                allMarketplaceApps
-              )
-            }
-
-            cb()
-          } else {
-            cb();
           }
-        }).catch(err => {
-          console.log(err)
-          cb()
-        })
-      }, () => {
+        } else if (data) { // NOTE new app installation
+          log(config, `${title} app installed successfully.!`, 'success')
+          this.updatePrivateAppUid(app, data)
+        }
+
+        resolve()
+      }).catch(error => {
+        log(config, error.message, 'success')
         resolve()
       })
     })
+  }
+
+  /**
+   * @method updatePrivateAppUid
+   * @param {Object} app 
+   * @param {Object} data 
+   */
+  this.updatePrivateAppUid = (app, data) => {
+    const allMarketplaceApps = readFile(path.resolve(self.marketplaceAppFolderPath, marketplaceAppConfig.fileName))
+    const index = _.findIndex(
+      allMarketplaceApps,
+      { uid: app.uid, visibility: 'private' }
+    )
+    if (index > -1) {
+      allMarketplaceApps[index] = {
+        ...allMarketplaceApps[index],
+        new_app_uid: data.uid
+      }
+
+      writeFile(
+        path.join(self.marketplaceAppFolderPath, marketplaceAppConfig.fileName),
+        allMarketplaceApps
+      )
+    }
   }
 
   /**
@@ -209,14 +257,14 @@ function importMarketplaceApps() {
       httpClient.post(
         `${config.developerHubBaseUrl}/apps/${app.new_app_uid || app.app_uid}/install`,
         { target_type: 'stack', target_uid: config.target_stack }
-      ).then(function ({ data: result }) {
+      ).then(async ({ data: result }) => {
         let updateParam
-        const { title } = app;
-        const { data, error, message } = result;
+        const { title } = app
+        const { data, error, message } = result
 
         if (error) { // NOTE if already installed copy only config data
-          log(config, `${message} - ${title}`, 'success');
-          const ext = _.find(installedExtensions, { app_uid: app.app_uid });
+          log(config, `${message} - ${title}`, 'success')
+          const ext = _.find(installedExtensions, { app_uid: app.app_uid })
 
           if (ext) {
             updateParam = {
@@ -225,9 +273,17 @@ function importMarketplaceApps() {
               httpClient,
               data: { ...ext, installation_uid: ext.app_installation_uid }
             }
+          } else {
+            const confirmation = await cliux.confirm(
+              chalk.yellow('WARNING!!! The above error may have an impact if the failed app has been referenced in entries/content type. Would you like to proceed.? (y/n)')
+            )
+
+            if (!confirmation) {
+              process.exit()
+            }
           }
         } else if (data) { // NOTE new app installation
-          log(config, `${title} app installed successfully.!`, 'success');
+          log(config, `${title} app installed successfully.!`, 'success')
           updateParam = { data, app, nodeCrypto, httpClient }
         }
 
@@ -243,7 +299,7 @@ function importMarketplaceApps() {
         reject()
       })
     })
-  }
+  } 
 
   /**
    * @method updateAppsConfig
@@ -278,4 +334,4 @@ function importMarketplaceApps() {
   }
 }
 
-module.exports = new importMarketplaceApps();
+module.exports = new importMarketplaceApps()
