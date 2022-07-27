@@ -61,14 +61,14 @@ function exportMarketplaceApps() {
             const listOfIndexToBeUpdated = _.map(
               installedApps,
               ({ app_uid }, index) => (app_uid === app.app_uid ? index : undefined)
-            ).filter(val => val)
+            ).filter(val => val !== undefined)
 
             httpClient.get(`${config.developerHubBaseUrl}/installations/${app.app_installation_uid}/installationData`)
               .then(({ data: result }) => {
                 const { data, error } = result
                 const developerHubApp = _.find(developerHubApps, { uid: app.app_uid })
 
-                _.forEach(listOfIndexToBeUpdated, (index) => {
+                _.forEach(listOfIndexToBeUpdated, (index, i) => {
                   if (developerHubApp) {
                     installedApps[index]['visibility'] = developerHubApp.visibility
                     installedApps[index]['manifest'] = _.pick(
@@ -77,10 +77,7 @@ function exportMarketplaceApps() {
                     )
                   }
 
-                  if (
-                    !_.isEmpty(data) &&
-                    (_.has(data, 'configuration') || _.has(data, 'server_configuration'))
-                  ) {
+                  if (_.has(data, 'configuration') || _.has(data, 'server_configuration')) {
                     const { configuration, server_configuration } = data
   
                     if (!_.isEmpty(configuration)) {
@@ -90,10 +87,14 @@ function exportMarketplaceApps() {
                       installedApps[index]['server_configuration'] = nodeCrypto.encrypt(server_configuration)
                     }
 
-                    log(config, `Exported ${app.title} app and it's config.`, 'success')
+                    if (i === 0) {
+                      log(config, `Exported ${app.title} app and it's config.`, 'success')
+                    }
                   } else if (error) {
                     console.log(error)
-                    log(config, `Error on exporting ${app.title} app and it's config.`, 'error')
+                    if (i === 0) {
+                      log(config, `Error on exporting ${app.title} app and it's config.`, 'error')
+                    }
                   }
                 })
 
