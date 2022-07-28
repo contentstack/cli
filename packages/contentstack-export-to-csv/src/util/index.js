@@ -151,7 +151,7 @@ function chooseContentType(managementAPIClient, stackApiKey, skip) {
 }
 
 function chooseInMemContentTypes(contentTypesList) {
-  return new Promise(async (resolve) => {
+  return new Promise(async (resolve, reject) => {
     let _chooseContentType = [
       {
         type: 'checkbox-plus',
@@ -180,7 +180,12 @@ function chooseInMemContentTypes(contentTypesList) {
         },
       },
     ];
-    inquirer.prompt(_chooseContentType).then(({ chosenContentTypes }) => resolve(chosenContentTypes));
+    inquirer.prompt(_chooseContentType).then(({ chosenContentTypes }) => {
+      if (chosenContentTypes.length === 0) {
+        reject('Please select atleast one content type.')
+      }
+      resolve(chosenContentTypes)
+    });
   });
 }
 
