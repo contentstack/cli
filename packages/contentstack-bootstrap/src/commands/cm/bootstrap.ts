@@ -57,6 +57,10 @@ export default class BootstrapCommand extends Command {
       required: false,
       exclusive: ['stack-api-key'],
     }),
+    yes: flags.string({
+      char: 'y',
+      required: false,
+    }),
 
     // To be deprecated
     appName: flags.string({
@@ -132,6 +136,8 @@ export default class BootstrapCommand extends Command {
         });
       }
 
+      const yes = bootstrapCommandFlags.yes as string;
+
       const appConfig: AppConfig = getAppLevelConfigByName(selectedAppName || selectedApp.configKey);
 
       let cloneDirectory =
@@ -147,6 +153,7 @@ export default class BootstrapCommand extends Command {
       if (stackAPIKey) seedParams.stackAPIKey = stackAPIKey;
       if (org) seedParams.org = org;
       if (stackName) seedParams.stackName = stackName;
+      if (yes) seedParams.yes = yes;
 
       // initiate bootstrsourceap
       const options: BootstrapOptions = {
