@@ -11,13 +11,13 @@ module.exports = {
   modules: {
     types: [
       'locales',
-      'custom-roles',
       'environments',
       'assets',
       'extensions',
       'webhooks',
       'global-fields',
       'content-types',
+      'custom-roles',
       'workflows',
       'entries',
       'labels',
