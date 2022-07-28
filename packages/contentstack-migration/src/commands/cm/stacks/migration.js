@@ -294,4 +294,6 @@ MigrationCommand.flags = {
 
 MigrationCommand.aliases = ['cm:migration'];
 
+MigrationCommand.usage = 'cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple];'
+
 module.exports = MigrationCommand;
