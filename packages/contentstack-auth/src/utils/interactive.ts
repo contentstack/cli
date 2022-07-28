@@ -38,3 +38,15 @@ export const askUsername = async (): Promise<string> => {
     name: 'username',
   });
 };
+
+export const askTokenType = async (): Promise<string> => {
+  return cliux.inquire<string>({
+    type: 'list',
+    name: 'tokenType',
+    message: 'CLI_SELECT_TOKEN_TYPE',
+    choices: [
+      { name: 'Management Token', value: 'management'},
+      { name: 'Delivery Token', value: 'delivery'},
+    ]
+  });
+}
