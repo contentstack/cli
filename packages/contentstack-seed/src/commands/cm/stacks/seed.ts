@@ -50,6 +50,10 @@ export default class SeedCommand extends Command {
       required: false,
       hidden: true,
     }),
+    yes: flags.string({
+      char: 'y',
+      required: false,
+    }),
 
     //To be deprecated
     stack: flags.string({
@@ -66,7 +70,7 @@ export default class SeedCommand extends Command {
 
   async run() {
     try {
-      const { flags } = this.parse(SeedCommand);
+      const { flags: seedFlags } = this.parse(SeedCommand);
 
       if (!this.authToken) {
         this.error('You need to login, first. See: auth:login --help', {
@@ -79,16 +83,16 @@ export default class SeedCommand extends Command {
         cdaHost: this.cdaHost,
         cmaHost: this.cmaHost,
         authToken: this.authToken,
-        gitHubPath: flags.repo,
-        orgUid: flags.org,
-        stackUid: flags['stack-api-key'] || flags.stack,
-        stackName: flags['stack-name'],
-        fetchLimit: flags['fetch-limit'],
+        gitHubPath: seedFlags.repo,
+        orgUid: seedFlags.org,
+        stackUid: seedFlags['stack-api-key'] || seedFlags.stack,
+        stackName: seedFlags['stack-name'],
+        fetchLimit: seedFlags['fetch-limit'],
+        skipStackConfirmation: seedFlags['yes'],
       };
 
       const seeder = new ContentModelSeeder(options);
-      const result = await seeder.run();
-      return result;
+      return await seeder.run();
     } catch (error) {
       let errorObj: any = error;
       this.error(errorObj, { exit: 1, suggestions: errorObj.suggestions });
