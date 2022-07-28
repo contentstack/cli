@@ -72,7 +72,7 @@ function importMarketplaceApps() {
     const httpClient = new HttpClient().headers(headers)
     const nodeCrypto = new NodeCrypto()
 
-    // NOTE install private apps which is not available for stack.
+    // NOTE install all private apps which is not available for stack.
     await this.handleAllPrivateAppsInstallationProcess({ httpClient })
     const installedExtensions = await getInstalledExtensions(config)
 
@@ -224,6 +224,7 @@ function importMarketplaceApps() {
    * @param {Object} data 
    */
   this.updatePrivateAppUid = (app, data) => {
+    const self = this
     const allMarketplaceApps = readFile(path.resolve(self.marketplaceAppFolderPath, marketplaceAppConfig.fileName))
     const index = _.findIndex(
       allMarketplaceApps,
@@ -273,7 +274,7 @@ function importMarketplaceApps() {
               {
                 choices: [
                   'Update with new config',
-                  'Don\'t update config (WARNING!!! There may be some issues with contents which we import)',
+                  'Don\'t update config (WARNING!!! If we don\'t update, there may be some issues with content which we import.)',
                   'Exit'
                 ],
                 type: 'list',
