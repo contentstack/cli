@@ -58,9 +58,7 @@ importWebhooks.prototype = {
         webUids,
         function (webUid) {
           let web = self.webhooks[webUid];
-          if (config.importWebhookStatus === 'enable') {
-            web.disabled = false;
-          } else if (config.importWebhookStatus !== 'default' || config.importWebhookStatus === 'disable') {
+          if (config.importWebhookStatus !== 'current' || config.importWebhookStatus === 'disable') {
             web.disabled = true;
           }
 
