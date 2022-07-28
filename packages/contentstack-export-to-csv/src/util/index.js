@@ -490,7 +490,8 @@ function flatten(data) {
     if (Object(cur) !== cur) {
       result[prop] = cur;
     } else if (Array.isArray(cur)) {
-      for (let i = 0, l = cur.length; i < l; i++) recurse(cur[i], prop + '[' + i + ']');
+      let i, l
+      for (i = 0, l = cur.length; i < l; i++) recurse(cur[i], prop + '[' + i + ']');
       if (l == 0) result[prop] = [];
     } else {
       let isEmpty = true;
