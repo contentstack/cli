@@ -172,7 +172,7 @@ ImportCommand.flags = {
   }),
   'import-webhook-status': flags.string({
     description: 'Webhook state',
-    options: ['enable', 'disable', 'default'],
+    options: ['disable', 'current'],
     required: false,
     default: 'disable',
   }),
