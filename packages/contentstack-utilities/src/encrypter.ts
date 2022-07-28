@@ -1,12 +1,12 @@
 import crypto from 'node:crypto'
 
-type cryptoConfig = {
+type CryptoConfig = {
   algorithm?: string
   encryptionKey?: string
   typeIdentifier?: string
 }
 
-const defaultValues = {
+const defaultValues: CryptoConfig = {
   typeIdentifier: '◈',
   algorithm: 'aes-192-cbc',
   encryptionKey: 'nF2ejRQcTv'
@@ -17,7 +17,7 @@ export default class NodeCrypto {
   private readonly algorithm: string
   private readonly typeIdentifier: string
 
-  constructor(config: cryptoConfig = defaultValues) {
+  constructor(config: CryptoConfig = defaultValues) {
     const {
       algorithm,
       encryptionKey,
@@ -64,7 +64,6 @@ export default class NodeCrypto {
     switch (type) {
       case 'number':
         return Number(data)
-        break;
       case 'object':
         return JSON.parse(data)
     }
