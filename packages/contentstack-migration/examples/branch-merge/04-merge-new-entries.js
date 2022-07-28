@@ -26,7 +26,7 @@ module.exports = async ({
     task: async () => {
       // initiating source stack client based on the authentication method provided managementToken/apiKey
       let stackSDKInstanceSource;
-      if (typeof managementToken === "string") {
+      if (typeof managementToken === "object") {
         stackSDKInstanceSource = managementAPIClient.stack({
           management_token: managementToken.token,
           api_key: managementToken.apiKey,
