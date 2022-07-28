@@ -27,12 +27,15 @@ export interface ContentModelSeederOptions {
   stackUid: string | undefined;
   stackName: string | undefined;
   fetchLimit: string | undefined;
+  skipStackConfirmation: string | undefined;
 }
 
 export default class ContentModelSeeder {
   private readonly csClient: ContentstackClient;
 
   private readonly ghClient: GitHubClient;
+
+  private readonly _options: ContentModelSeederOptions;
 
   private ghUsername: string = DEFAULT_OWNER;
 
@@ -43,6 +46,7 @@ export default class ContentModelSeeder {
   }
 
   constructor(public options: ContentModelSeederOptions) {
+    this._options = options;
     const gh = GitHubClient.parsePath(options.gitHubPath);
     this.ghUsername = gh.username || DEFAULT_OWNER;
     this.ghRepo = gh.repo;
@@ -129,7 +133,6 @@ export default class ContentModelSeeder {
 
   async createStack(organization: Organization, stackName: string) {
     cliux.loader(`Creating Stack '${stackName}' within Organization '${organization.name}'`);
-    this.options.fetchLimit;
 
     const newStack = await this.csClient.createStack({
       name: stackName,
@@ -146,7 +149,7 @@ export default class ContentModelSeeder {
   async shouldProceed(api_key: string) {
     const count = await this.csClient.getContentTypeCount(api_key);
 
-    if (count > 0) {
+    if (count > 0 && this._options.skipStackConfirmation !== 'yes') {
       const proceed = await inquireProceed();
 
       if (!proceed) {

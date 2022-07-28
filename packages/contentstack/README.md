@@ -389,11 +389,13 @@ Bootstrap contentstack apps
 
 ```
 USAGE
-  $ csdx cm:bootstrap [--app-name <value>] [--project-dir <value>] [-k <value>] [--org <value>] [-n <value>]
+  $ csdx cm:bootstrap [--app-name <value>] [--project-dir <value>] [-k <value>] [--org <value>] [-n <value>] [-y
+    <value>]
 
 FLAGS
   -k, --stack-api-key=<value>  Provide stack API key to seed content
   -n, --stack-name=<value>     Name of a new stack that will be created.
+  -y, --yes=<value>
   --app-name=<value>           App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter
   --org=<value>                Provide organization UID to create a new stack
   --project-dir=<value>        Directory to setup the project. If directory name has a space then provide the path as a
@@ -1032,14 +1034,14 @@ Clone data (structure/content or both) of a stack into another stack
 USAGE
   $ csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias
     <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>]
-    [--destination-stack-api-key <value>] [--import-webhook-status enable|disable|default]
+    [--destination-stack-api-key <value>] [--import-webhook-status disable|current]
 
 FLAGS
   -n, --stack-name=<value>                      Name for the new stack to store the cloned content.
   --destination-management-token-alias=<value>  Source API key of the target stack token alias.
   --destination-stack-api-key=<value>           Destination stack API Key
   --import-webhook-status=<option>              [default: disable] Webhook state
-                                                <options: enable|disable|default>
+                                                <options: disable|current>
   --source-branch=<value>                       Branch of the source stack.
   --source-management-token-alias=<value>       Source API key of the target stack token alias.
   --source-stack-api-key=<value>                Source stack API Key
@@ -1124,7 +1126,7 @@ Import script for importing the content into the new stack
 ```
 USAGE
   $ csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [-m <value>] [-b <value>] [-B <value>]
-    [--import-webhook-status enable|disable|default]
+    [--import-webhook-status disable|current]
 
 FLAGS
   -B, --branch=<value>              [optional] branch name
@@ -1135,7 +1137,7 @@ FLAGS
   -k, --stack-api-key=<value>       API key of the target stack
   -m, --module=<value>              [optional] specific module name
   --import-webhook-status=<option>  [default: disable] Webhook state
-                                    <options: enable|disable|default>
+                                    <options: disable|current>
 
 DESCRIPTION
   Import script for importing the content into the new stack
@@ -1357,7 +1359,7 @@ Create a stack from existing content types, entries, assets, etc
 
 ```
 USAGE
-  $ csdx cm:stacks:seed [-r <value>] [-o <value>] [-k <value>] [-n <value>] [-s <value>]
+  $ csdx cm:stacks:seed [-r <value>] [-o <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]
 
 FLAGS
   -k, --stack-api-key=<value>  Provide stack api key to seed content to
@@ -1365,6 +1367,7 @@ FLAGS
   -o, --org=<value>            Provide Organization UID to create a new stack
   -r, --repo=<value>           GitHub account or GitHub account/repository
   -s, --stack=<value>          Provide stack UID to seed content to
+  -y, --yes=<value>
 
 DESCRIPTION
   Create a stack from existing content types, entries, assets, etc
