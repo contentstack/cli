@@ -25,8 +25,6 @@ class CustomAbortSignal {
     const handlerName = `on${type}`;
 
     if (typeof this[handlerName] === 'function') this[handlerName](event);
-
-    // this.eventEmitter.emit(type, event);
   }
 }
 
