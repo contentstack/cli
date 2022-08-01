@@ -159,9 +159,16 @@ const envFileHandler = async (
             break
         case 'nuxtjs':
         case 'nuxt-starter':
+        case 'stencil-starter':  
             fileName = (production ? '.env.production' : '.env')
             filePath = path.join(clonedDirectory, fileName)
             content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nCONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : '')}`
+            result = await writeEnvFile(content, filePath)
+            break
+        case 'vue-starter':
+            fileName = '.env'
+            filePath = path.join(clonedDirectory, fileName)
+            content = `VUE_CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nVUE_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nVUE_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nVUE_CONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost ? '\nVUE_CONTENTSTACK_REGION=' + region.name : '')}`
             result = await writeEnvFile(content, filePath)
             break
         default:
