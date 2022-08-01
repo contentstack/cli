@@ -15,6 +15,7 @@ module.exports = {
       'webhooks',
       'global-fields',
       'content-types',
+      'custom-roles',
       'workflows',
       'entries',
       'labels',
@@ -23,6 +24,10 @@ module.exports = {
       dirName: 'locales',
       fileName: 'locales.json',
       requiredKeys: ['code', 'uid', 'name', 'fallback_locale'],
+    },
+    customRoles: {
+      dirName: 'custom-roles',
+      fileName: 'custom-roles.json',
     },
     environments: {
       dirName: 'environments',
