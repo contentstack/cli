@@ -80,7 +80,10 @@ function fileFields(entry, uid, multiple) {
   }
 }
 
-function addFields(contentType, entry) {
+function addFields(contentType, entry, forceUpdate=false) {
+  if (forceUpdate) {
+    changedFlag = true
+  }
   contentType.forEach(schema => {
     if (schema.uid && !schema.schema) {
       if (Object.prototype.hasOwnProperty.call(entry, schema.uid) && schema.data_type === 'file') {
@@ -210,7 +213,7 @@ async function updateEntry(config, updatedEntry, contentType, locale) {
 }
 
 /* eslint-disable no-param-reassign */
-async function getEntries(stack, config, schema, contentType, locale, bulkPublish, environments, skip = 0) {
+async function getEntries(stack, config, schema, contentType, locale, bulkPublish, environments, forceUpdate, skip = 0) {
   let queryParams = {
     locale: locale || 'en-us',
     include_count: true,
@@ -222,7 +225,7 @@ async function getEntries(stack, config, schema, contentType, locale, bulkPublis
     skip += entriesResponse.items.length
     let entries = entriesResponse.items
     for (let index = 0; index < entriesResponse.items.length; index++) {
-      let updatedEntry = addFields(schema, entries[index])
+      let updatedEntry = addFields(schema, entries[index], forceUpdate)
       if (updatedEntry.changedFlag) {
         updatedEntry = removeUnwanted(entries[index], deleteFields)
         const flag = await updateEntry(config, updatedEntry, contentType, locale)
@@ -273,7 +276,7 @@ async function getEntries(stack, config, schema, contentType, locale, bulkPublis
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-loop-func */
 
-async function start({contentTypes, locales, environments, retryFailed, bulkPublish}, stack, config) {
+async function start({contentTypes, locales, environments, retryFailed, bulkPublish, 'force': forceUpdate}, stack, config) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`)
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`)
@@ -307,7 +310,7 @@ async function start({contentTypes, locales, environments, retryFailed, bulkPubl
       .then(async schema => {
         for (let j = 0; j < locales.length; j += 1) {
           try {
-            await getEntries(stack, config, schema, contentTypes[i], locales[j], bulkPublish, environments)
+            await getEntries(stack, config, schema, contentTypes[i], locales[j], bulkPublish, environments, forceUpdate)
           } catch (err) {
             console.log(`Failed to get Entries with contentType ${contentTypes[i]} and locale ${locales[j]}`)
           }
