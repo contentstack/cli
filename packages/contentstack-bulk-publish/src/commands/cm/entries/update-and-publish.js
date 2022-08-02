@@ -36,7 +36,10 @@ class UpdateAndPublishCommand extends Command {
         try {
           this.getToken(updatedFlags.alias);
         } catch (error) {
-          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, {exit: 2})
+          this.error(
+            `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
+            { exit: 2 },
+          );
         }
         config = {
           alias: updatedFlags.alias,
@@ -158,6 +161,10 @@ UpdateAndPublishCommand.flags = {
     description: 'Specify the branch to fetch the content (by default the main branch is selected)',
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
+  force: flags.boolean({
+    default: false,
+    description: 'Update and publish all entries even if no fields have been added',
+  }),
 };
 
 UpdateAndPublishCommand.examples = [
@@ -178,6 +185,7 @@ UpdateAndPublishCommand.examples = [
 
 UpdateAndPublishCommand.aliases = ['cm:bulk-publish:add-fields'];
 
-UpdateAndPublishCommand.usage = 'cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]'
+UpdateAndPublishCommand.usage =
+  'cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]';
 
 module.exports = UpdateAndPublishCommand;
