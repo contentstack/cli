@@ -80,10 +80,7 @@ function fileFields(entry, uid, multiple) {
   }
 }
 
-function addFields(contentType, entry, forceUpdate=false) {
-  if (forceUpdate) {
-    changedFlag = true
-  }
+function addFields(contentType, entry) {
   contentType.forEach(schema => {
     if (schema.uid && !schema.schema) {
       if (Object.prototype.hasOwnProperty.call(entry, schema.uid) && schema.data_type === 'file') {
@@ -225,8 +222,8 @@ async function getEntries(stack, config, schema, contentType, locale, bulkPublis
     skip += entriesResponse.items.length
     let entries = entriesResponse.items
     for (let index = 0; index < entriesResponse.items.length; index++) {
-      let updatedEntry = addFields(schema, entries[index], forceUpdate)
-      if (updatedEntry.changedFlag) {
+      let updatedEntry = addFields(schema, entries[index])
+      if (updatedEntry.changedFlag || forceUpdate) {
         updatedEntry = removeUnwanted(entries[index], deleteFields)
         const flag = await updateEntry(config, updatedEntry, contentType, locale)
         if (flag) {
@@ -267,7 +264,7 @@ async function getEntries(stack, config, schema, contentType, locale, bulkPublis
     if (skip === entriesResponse.count) {
       return Promise.resolve()
     }
-    return setTimeout(async () => getEntries(stack, config, schema, contentType, locale, bulkPublish, environments, skip), 2000)
+    return setTimeout(async () => getEntries(stack, config, schema, contentType, locale, bulkPublish, environments, forceUpdate, skip), 2000)
   })
   .catch(error => console.log(error))
   return true
