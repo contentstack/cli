@@ -100,6 +100,7 @@ AddFieldsCommand.flags = {
   config: flags.string({char: 'c', description: 'Path to config file to be used'}),
   yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
   branch: flags.string({char: 'B', default: 'main', description: 'Specify the branch to fetch the content from (default is main branch)'}),
+  'force': flags.boolean({default: false, description: 'Update and publish all entries even if no fields have been added'})
 }
 
 AddFieldsCommand.examples = [
