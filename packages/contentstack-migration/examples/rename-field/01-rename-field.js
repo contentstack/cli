@@ -54,7 +54,9 @@ module.exports = ({ migration, stackSDKInstance }) => {
           }
           try {
             await stackSDKInstance.contentType(contentTypeUID).entry().create({ entry })
-          } catch (error) { }
+          } catch (error) {
+            console.log((error && error.errorMessage) || ` Entries creation for content-type '${contentTypeUID}' failed`)
+          }
         }
       },
     }
