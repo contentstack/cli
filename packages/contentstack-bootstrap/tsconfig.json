@@ -8,7 +8,7 @@
     "target": "es2017",
     "allowJs": true,
     "skipLibCheck": true
-},
+  },
   "include": [
     "src/**/*",
     "src/typings/@contentstack/cli-utilities.ts",
