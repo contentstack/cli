@@ -178,4 +178,6 @@ UpdateAndPublishCommand.examples = [
 
 UpdateAndPublishCommand.aliases = ['cm:bulk-publish:add-fields'];
 
+UpdateAndPublishCommand.usage = 'cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]'
+
 module.exports = UpdateAndPublishCommand;
