@@ -68,6 +68,8 @@ export default class TokensAddCommand extends Command {
     }),
   };
 
+  static usage = 'auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]';
+
   async run(): Promise<any> {
     this.managementAPIClient = { host: this.cmaHost, authtoken: this.authToken };
     const { flags: addTokenFlags } = this.parse(TokensAddCommand);

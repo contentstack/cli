@@ -228,4 +228,6 @@ AssetsPublishCommand.examples = [
 
 AssetsPublishCommand.aliases = ['cm:bulk-publish:assets'];
 
+AssetsPublishCommand.usage = 'cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--content-types <value>]'
+
 module.exports = AssetsPublishCommand;
