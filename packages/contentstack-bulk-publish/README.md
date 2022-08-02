@@ -29,29 +29,31 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`csdx cm:assets:publish`](#csdx-cmassetspublish)
+* [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--content-types <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value---content-types-value)
 * [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
-* [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
-* [`csdx cm:entries:publish`](#csdx-cmentriespublish)
-* [`csdx cm:entries:publish-modified`](#csdx-cmentriespublish-modified)
-* [`csdx cm:entries:publish-non-localized-fields`](#csdx-cmentriespublish-non-localized-fields)
-* [`csdx cm:entries:publish-only-unpublished`](#csdx-cmentriespublish-only-unpublished)
+* [`csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`](#csdx-cmbulk-publishcross-publish--a-value---retry-failed-value---bulk-publish-value---content-type-value---locales-value---source-env-value---environments-value---delivery-token-value--c-value--y---branch-value---onlyassets---onlyentries)
+* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value)
+* [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
+* [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value)
+* [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
 * [`csdx cm:entries:unpublish`](#csdx-cmentriesunpublish)
-* [`csdx cm:entries:update-and-publish`](#csdx-cmentriesupdate-and-publish)
+* [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
 * [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
 * [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
 * [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
 * [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
-* [`csdx cm:stacks:unpublish`](#csdx-cmstacksunpublish)
+* [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries)
 
-## `csdx cm:assets:publish`
+## `csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--content-types <value>]`
 
 Publish assets to the specified environments
 
 ```
 USAGE
-  $ csdx cm:assets:publish
+  $ csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish 
+  <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>] 
+  [--content-types <value>]
 
 OPTIONS
   -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
@@ -177,13 +179,15 @@ USAGE
 
 _See code: [src/commands/cm/bulk-publish/index.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/index.js)_
 
-## `csdx cm:bulk-publish:cross-publish`
+## `csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`
 
 Publish entries and assets from one environment to other environments
 
 ```
 USAGE
-  $ csdx cm:bulk-publish:cross-publish
+  $ csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type 
+  <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] 
+  [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]
 
 OPTIONS
   -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
@@ -243,13 +247,15 @@ EXAMPLES
 
 _See code: [src/commands/cm/bulk-publish/cross-publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
 
-## `csdx cm:entries:publish`
+## `csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`
 
 Publish entries from multiple contenttypes to multiple environments and locales
 
 ```
 USAGE
-  $ csdx cm:entries:publish
+  $ csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types]
+   [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token 
+  <value>] [--source-env <value>]
 
 OPTIONS
   -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
@@ -317,13 +323,14 @@ EXAMPLES
 
 _See code: [src/commands/cm/entries/publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish.js)_
 
-## `csdx cm:entries:publish-modified`
+## `csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`
 
 Publish edited entries from a specified content type to the given locales and environments
 
 ```
 USAGE
-  $ csdx cm:entries:publish-modified
+  $ csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env 
+  <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]
 
 OPTIONS
   -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
@@ -381,13 +388,14 @@ EXAMPLES
 
 _See code: [src/commands/cm/entries/publish-modified.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish-modified.js)_
 
-## `csdx cm:entries:publish-non-localized-fields`
+## `csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`
 
 Publish non-localized fields for the given content types, from a particular source environment to the specified environments
 
 ```
 USAGE
-  $ csdx cm:entries:publish-non-localized-fields
+  $ csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] 
+  [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]
 
 OPTIONS
   -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
@@ -440,13 +448,14 @@ EXAMPLES
 
 _See code: [src/commands/cm/entries/publish-non-localized-fields.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish-non-localized-fields.js)_
 
-## `csdx cm:entries:publish-only-unpublished`
+## `csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`
 
 Publish unpublished entries from the source environment, to other environments and locales
 
 ```
 USAGE
-  $ csdx cm:entries:publish-only-unpublished
+  $ csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] 
+  [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]
 
 OPTIONS
   -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
@@ -557,13 +566,14 @@ EXAMPLES
 
 _See code: [src/commands/cm/entries/unpublish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/unpublish.js)_
 
-## `csdx cm:entries:update-and-publish`
+## `csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`
 
 Add fields from updated content types to their respective entries
 
 ```
 USAGE
-  $ csdx cm:entries:update-and-publish
+  $ csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types 
+  <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]
 
 OPTIONS
   -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
@@ -729,13 +739,15 @@ EXAMPLES
 
 _See code: [src/commands/cm/stacks/publish-revert.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-revert.js)_
 
-## `csdx cm:stacks:unpublish`
+## `csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`
 
 Unpublish entries or assets of given content types from the specified environment
 
 ```
 USAGE
-  $ csdx cm:stacks:unpublish
+  $ csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] 
+  [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] 
+  [--only-assets] [--only-entries]
 
 OPTIONS
   -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
