@@ -203,4 +203,6 @@ NonlocalizedFieldChangesCommand.examples = [
 
 NonlocalizedFieldChangesCommand.aliases = ['cm:bulk-publish:nonlocalized-field-changes'];
 
+NonlocalizedFieldChangesCommand.usage = 'cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]'
+
 module.exports = NonlocalizedFieldChangesCommand;
