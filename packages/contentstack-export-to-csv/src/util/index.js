@@ -14,33 +14,37 @@ const delimeter = os.platform() === 'win32' ? '\\' : '/';
 inquirer.registerPrompt('checkbox-plus', checkboxPlus);
 
 function chooseOrganization(managementAPIClient, action) {
-  return new Promise(async (resolve) => {
-    let organizations;
-    if (action === config.exportUsers) {
-      organizations = await getOrganizationsWhereUserIsAdmin(managementAPIClient);
-    } else {
-      organizations = await getOrganizations(managementAPIClient);
+  return new Promise(async (resolve, reject) => {
+    try {
+      let organizations;
+      if (action === config.exportUsers) {
+        organizations = await getOrganizationsWhereUserIsAdmin(managementAPIClient);
+      } else {
+        organizations = await getOrganizations(managementAPIClient);
+      }
+      let orgList = Object.keys(organizations);
+      orgList.push(config.cancelString);
+      let _chooseOrganization = [
+        {
+          type: 'list',
+          name: 'chosenOrg',
+          message: 'Choose an Organization',
+          choices: orgList,
+          loop: false,
+        },
+      ];
+      inquirer.prompt(_chooseOrganization).then(({ chosenOrg }) => {
+        if (chosenOrg === config.cancelString) exitProgram();
+        resolve({ name: chosenOrg, uid: organizations[chosenOrg] });
+      });
+    } catch(error) {
+      reject(error);
     }
-    let orgList = Object.keys(organizations);
-    orgList.push(config.cancelString);
-    let _chooseOrganization = [
-      {
-        type: 'list',
-        name: 'chosenOrg',
-        message: 'Choose an Organization',
-        choices: orgList,
-        loop: false,
-      },
-    ];
-    inquirer.prompt(_chooseOrganization).then(({ chosenOrg }) => {
-      if (chosenOrg === config.cancelString) exitProgram();
-      resolve({ name: chosenOrg, uid: organizations[chosenOrg] });
-    });
   });
 }
 
 function getOrganizations(managementAPIClient) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let result = {};
 
     managementAPIClient
@@ -51,12 +55,13 @@ function getOrganizations(managementAPIClient) {
           result[org.name] = org.uid;
         });
         resolve(result);
-      });
+      })
+      .catch(error => reject(error));
   });
 }
 
 function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let result = {};
     managementAPIClient.getUser({ include_orgs_roles: true }).then((response) => {
       let organizations = response.organizations.filter((org) => {
@@ -64,36 +69,40 @@ function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
           const org_role = org.org_roles.shift();
           return org_role.admin;
         }
-        if (org.is_owner === true) return true;
-        return false;
+        return org.is_owner === true;
       });
       organizations.forEach((org) => {
         result[org.name] = org.uid;
       });
       resolve(result);
-    });
+    })
+    .catch(error => reject(error));
   });
 }
 
 function chooseStack(managementAPIClient, orgUid) {
-  return new Promise(async (resolve) => {
-    let stacks = await getStacks(managementAPIClient, orgUid);
-    let stackList = Object.keys(stacks);
-    stackList.push(config.cancelString);
+  return new Promise(async (resolve, reject) => {
+    try {
+      let stacks = await getStacks(managementAPIClient, orgUid);
+      let stackList = Object.keys(stacks);
+      stackList.push(config.cancelString);
 
-    let _chooseStack = [
-      {
-        type: 'list',
-        name: 'chosenStack',
-        message: 'Choose a Stack',
-        choices: stackList,
-      },
-    ];
+      let _chooseStack = [
+        {
+          type: 'list',
+          name: 'chosenStack',
+          message: 'Choose a Stack',
+          choices: stackList,
+        },
+      ];
 
-    inquirer.prompt(_chooseStack).then(({ chosenStack }) => {
-      if (chosenStack === config.cancelString) exitProgram();
-      resolve({ name: chosenStack, apiKey: stacks[chosenStack] });
-    });
+      inquirer.prompt(_chooseStack).then(({ chosenStack }) => {
+        if (chosenStack === config.cancelString) exitProgram();
+        resolve({ name: chosenStack, apiKey: stacks[chosenStack] });
+      });
+    } catch(error) {
+      reject(error);
+    }
   });
 }
 
@@ -101,7 +110,7 @@ function getStacks(managementAPIClient, orgUid) {
   // Adding a query object in query, because it throws an error
   // the error is coming from query function lib/entity.js, @contentstack/management pacakge
   // where params.query is being set
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let result = {};
     managementAPIClient
       .stack({ organization_uid: orgUid })
@@ -112,6 +121,9 @@ function getStacks(managementAPIClient, orgUid) {
           result[stack.name] = stack.api_key;
         });
         resolve(result);
+      })
+      .catch(error => {
+        reject(error)
       });
   });
 }
@@ -173,7 +185,7 @@ function chooseInMemContentTypes(contentTypesList) {
 }
 
 function getContentTypes(managementAPIClient, stackApiKey, skip) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let result = {};
     managementAPIClient
       .stack({ api_key: stackApiKey })
@@ -185,7 +197,8 @@ function getContentTypes(managementAPIClient, stackApiKey, skip) {
           result[contentType.title] = contentType.uid;
         });
         resolve(result);
-      });
+      })
+      .catch(error => reject(error));
   });
 }
 
@@ -212,7 +225,7 @@ function chooseLanguage(managementAPIClient, stackApiKey) {
 }
 
 function getLanguages(managementAPIClient, stackApiKey) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let result = {};
     managementAPIClient
       .stack({ api_key: stackApiKey })
@@ -224,31 +237,34 @@ function getLanguages(managementAPIClient, stackApiKey) {
           result[language.name] = language.code;
         });
         resolve(result);
-      });
+      })
+      .catch(error => reject(error));
   });
 }
 
 function getEntries(managementAPIClient, stackApiKey, contentType, language, skip) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     managementAPIClient
       .stack({ api_key: stackApiKey })
       .contentType(contentType)
       .entry()
       .query({ include_publish_details: true, locale: language, skip: skip * 100 })
       .find()
-      .then((entries) => resolve(entries));
+      .then((entries) => resolve(entries))
+      .catch(error => reject(error));
   });
 }
 
 function getEntriesCount(managementAPIClient, stackApiKey, contentType, language) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     managementAPIClient
       .stack({ api_key: stackApiKey })
       .contentType(contentType)
       .entry()
       .query({ include_publish_details: true, locale: language })
       .count()
-      .then((entriesData) => resolve(entriesData.entries));
+      .then((entriesData) => resolve(entriesData.entries))
+      .catch(error => reject(formatError(error)));
   });
 }
 
@@ -268,7 +284,7 @@ function getEnvironments(managementAPIClient, stackApiKey) {
 }
 
 function getContentTypeCount(managementAPIClient, stackApiKey) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     managementAPIClient
       .stack({ api_key: stackApiKey })
       .contentType()
@@ -276,7 +292,8 @@ function getContentTypeCount(managementAPIClient, stackApiKey) {
       .count()
       .then((contentTypes) => {
         resolve(contentTypes.content_types);
-      });
+      })
+      .catch(error => reject(error));
   });
 }
 
@@ -377,7 +394,8 @@ function getOrgUsers(managementAPIClient, orgUid, ecsv) {
         return reject(new Error(config.adminError));
       }
       organization.getInvitations().then((users) => resolve(users));
-    });
+    })
+    .catch(error => reject(error));
   });
 }
 
@@ -413,7 +431,8 @@ function getOrgRoles(managementAPIClient, orgUid, ecsv) {
         return reject(new Error(config.adminError));
       }
       organization.roles().then((roles) => resolve(roles));
-    });
+    })
+    .catch(error => reject(error));
   });
 }
 
@@ -466,7 +485,8 @@ function flatten(data) {
     if (Object(cur) !== cur) {
       result[prop] = cur;
     } else if (Array.isArray(cur)) {
-      for (let i = 0, l = cur.length; i < l; i++) recurse(cur[i], prop + '[' + i + ']');
+      let i, l
+      for (i = 0, l = cur.length; i < l; i++) recurse(cur[i], prop + '[' + i + ']');
       if (l == 0) result[prop] = [];
     } else {
       let isEmpty = true;
@@ -479,6 +499,32 @@ function flatten(data) {
   }
   recurse(data, '');
   return result;
+}
+
+function formatError(error) {
+  try {
+    if (typeof error === 'string') {
+      error = JSON.parse(error)
+    } else {
+      error = JSON.parse(error.message)
+    }
+  } catch (e) {}
+  let message = error.errorMessage || error.error_message || error
+  if (error.errors && Object.keys(error.errors).length > 0) {
+    Object.keys(error.errors).forEach((e) => {
+      let entity = e
+      if (e === 'authorization')
+        entity = 'Management Token'
+      if (e === 'api_key')
+        entity = 'Stack API key'
+      if (e === 'uid')
+        entity = 'Content Type'
+      if (e === 'access_token')
+        entity = 'Delivery Token'
+      message += ' ' + [entity, error.errors[e]].join(' ')
+    })
+  }
+  return message
 }
 
 module.exports = {
@@ -505,4 +551,5 @@ module.exports = {
   getContentTypes: getContentTypes,
   chooseInMemContentTypes: chooseInMemContentTypes,
   getEntriesCount: getEntriesCount,
+  formatError: formatError,
 };
