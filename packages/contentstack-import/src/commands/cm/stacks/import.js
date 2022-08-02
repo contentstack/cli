@@ -180,6 +180,7 @@ ImportCommand.flags = {
 
 ImportCommand.aliases = ['cm:import'];
 
-ImportCommand.usage = 'cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status enable|disable|default]';
+ImportCommand.usage =
+  'cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]';
 
 module.exports = ImportCommand;
