@@ -416,7 +416,7 @@ EXAMPLES
   $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid" --stack-name "stack-name"
 ```
 
-_See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/v1.0.7/src/commands/cm/bootstrap.ts)_
+_See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/v1.0.8/src/commands/cm/bootstrap.ts)_
 
 ## `csdx cm:bulk-publish`
 
@@ -930,6 +930,7 @@ FLAGS
   --bulk-publish=<value>      [default: true] This flag is set to true by default. It indicates that contentstack's
                               bulkpublish API will be used to publish the entries
   --content-types=<value>     The Contenttypes from which entries will be published
+  --force                     Update and publish all entries even if no fields have been added
   --retry-failed=<value>      Retry publishing failed entries from the logfile (optional, overrides all other flags)
 
 DESCRIPTION
@@ -1388,7 +1389,7 @@ EXAMPLES
   $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack in given org uid
 ```
 
-_See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.11/src/commands/cm/stacks/seed.ts)_
+_See code: [@contentstack/cli-cm-seed](https://github.com/contentstack/cli/blob/v1.0.12/src/commands/cm/stacks/seed.ts)_
 
 ## `csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`
 
