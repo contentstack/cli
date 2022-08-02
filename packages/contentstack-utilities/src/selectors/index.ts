@@ -10,18 +10,18 @@ import {
 	Entry,
 	Locale
 } from './interfaces'
-import { shouldNotBeEmpty } from './validations'; 
+import { shouldNotBeEmpty } from './validations';
 
 const inquirer = require('inquirer')
 inquirer.registerPrompt('search-list', require('inquirer-search-list'))
 inquirer.registerPrompt('search-checkbox', require('inquirer-search-checkbox'))
-const {Command} = require('@contentstack/cli-command')
+const { Command } = require('@contentstack/cli-command')
 
 export function chooseOrganization(client: any, displayMessage?: string, region?: string, orgUid?: string): Promise<selectedOrganization> {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const spinner = ora('Loading Organizations').start()
-			let {items: organizations} = await client.organization().fetchAll()
+			let { items: organizations } = await client.organization().fetchAll()
 			spinner.stop()
 			let orgMap: any = {}
 			if (orgUid) {
@@ -29,7 +29,7 @@ export function chooseOrganization(client: any, displayMessage?: string, region?
 					orgMap[org.uid] = org.name
 				})
 				if (orgMap[orgUid]) {
-					resolve({orgUid: orgUid, orgName: orgMap[orgUid]})
+					resolve({ orgUid: orgUid, orgName: orgMap[orgUid] })
 				} else {
 					return reject(new Error('The given orgUid doesn\'t exist or you might not have access to it.'))
 				}
@@ -46,8 +46,8 @@ export function chooseOrganization(client: any, displayMessage?: string, region?
 					loop: false,
 					validate: shouldNotBeEmpty
 				}
-				inquirer.prompt(inquirerConfig).then(({chosenOrganization}: {chosenOrganization: string}) => {
-					resolve({orgUid: orgMap[chosenOrganization], orgName: chosenOrganization})
+				inquirer.prompt(inquirerConfig).then(({ chosenOrganization }: { chosenOrganization: string }) => {
+					resolve({ orgUid: orgMap[chosenOrganization], orgName: chosenOrganization })
 				})
 			}
 		} catch (error) {
@@ -56,11 +56,11 @@ export function chooseOrganization(client: any, displayMessage?: string, region?
 	})
 }
 
-export function chooseStack(client: any, organizationId: string, displayMessage?: string, region?: string) : Promise<Stack> {
+export function chooseStack(client: any, organizationId: string, displayMessage?: string, region?: string): Promise<Stack> {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const spinner = ora('Loading Stacks').start()
-			let {items: stacks} = await client.stack({organization_uid: organizationId}).query({query: {}}).find()
+			let { items: stacks } = await client.stack({ organization_uid: organizationId }).query({ query: {} }).find()
 			spinner.stop()
 			let stackMap: any = {}
 			stacks.forEach((stack: Stack) => {
@@ -74,8 +74,8 @@ export function chooseStack(client: any, organizationId: string, displayMessage?
 				message: displayMessage || 'Choose a stack',
 				loop: false,
 			}
-			inquirer.prompt(inquirerConfig).then(({chosenStack}: {chosenStack: string}) => {
-				resolve({api_key: stackMap[chosenStack], name: chosenStack})
+			inquirer.prompt(inquirerConfig).then(({ chosenStack }: { chosenStack: string }) => {
+				resolve({ api_key: stackMap[chosenStack], name: chosenStack })
 			})
 		} catch (error) {
 			console.error(error.message)
@@ -86,12 +86,12 @@ export function chooseStack(client: any, organizationId: string, displayMessage?
 export function chooseContentType(stackApiKey: string, displayMessage?: string, region?: string): Promise<ContentType> {
 	return new Promise(async (resolve, reject) => {
 		const command = new Command()
-		command.managementAPIClient = {host: command.cmaHost, authtoken: command.authToken}
+		command.managementAPIClient = { host: command.cmaHost, authtoken: command.authToken }
 		const client = command.managementAPIClient
 		try {
 			const spinner = ora('Loading Content Types').start()
 			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
-			let contentTypes = await getAll(client.stack({api_key: stackApiKey}).contentType())
+			let contentTypes = await getAll(client.stack({ api_key: stackApiKey }).contentType())
 			spinner.stop()
 			let contentTypeMap: any = {}
 			contentTypes.forEach((contentType: ContentType) => {
@@ -105,23 +105,23 @@ export function chooseContentType(stackApiKey: string, displayMessage?: string, 
 				message: displayMessage || 'Choose a content type',
 				loop: false,
 			}
-			inquirer.prompt(inquirerConfig).then(({chosenContentType}: {chosenContentType: string}) => {
-				resolve({uid: contentTypeMap[chosenContentType], title: chosenContentType})
+			inquirer.prompt(inquirerConfig).then(({ chosenContentType }: { chosenContentType: string }) => {
+				resolve({ uid: contentTypeMap[chosenContentType], title: chosenContentType })
 			})
 		} catch (error) {
 			console.error(error.message)
 		}
-	})	
+	})
 }
 
 export function chooseEntry(contentTypeUid: string, stackApiKey: string, displayMessage?: string, region?: string): Promise<Entry> {
 	return new Promise(async (resolve, reject) => {
 		const command = new Command()
-		command.managementAPIClient = {host: command.cmaHost, authtoken: command.authToken}
+		command.managementAPIClient = { host: command.cmaHost, authtoken: command.authToken }
 		const client = command.managementAPIClient
 		try {
 			const spinner = ora('Loading Entries').start()
-			let entries = await getAll(client.stack({api_key: stackApiKey}).contentType(contentTypeUid).entry())
+			let entries = await getAll(client.stack({ api_key: stackApiKey }).contentType(contentTypeUid).entry())
 			spinner.stop()
 			let entryMap: any = {}
 			entries.forEach((entry: Entry) => {
@@ -135,13 +135,13 @@ export function chooseEntry(contentTypeUid: string, stackApiKey: string, display
 				message: displayMessage || 'Choose an entry',
 				loop: false
 			}
-			inquirer.prompt(inquirerConfig).then(({chosenEntry}: {chosenEntry: string}) => {
-				resolve({uid: entryMap[chosenEntry], title: chosenEntry})
+			inquirer.prompt(inquirerConfig).then(({ chosenEntry }: { chosenEntry: string }) => {
+				resolve({ uid: entryMap[chosenEntry], title: chosenEntry })
 			})
 		} catch (error) {
 			console.error(error.message)
 		}
-	})	
+	})
 }
 
 export function chooseContentTypes(stack: any, displayMessage?: string): Promise<ContentType[]> {
@@ -163,7 +163,7 @@ export function chooseContentTypes(stack: any, displayMessage?: string): Promise
 				message: displayMessage || 'Choose a content type',
 				loop: false,
 			}
-			inquirer.prompt(inquirerConfig).then(({ chosenContentTypes }: { chosenContentTypes: string[]}) => {
+			inquirer.prompt(inquirerConfig).then(({ chosenContentTypes }: { chosenContentTypes: string[] }) => {
 				let result: ContentType[] = chosenContentTypes.map(ct => {
 					let foo: ContentType = { uid: contentTypeMap[ct], title: ct }
 					return foo
@@ -173,7 +173,7 @@ export function chooseContentTypes(stack: any, displayMessage?: string): Promise
 		} catch (error) {
 			console.error(error.message)
 		}
-	})	
+	})
 }
 
 export function chooseEnvironments(stack: any, displayMessage?: string): Promise<Environment[]> {
@@ -272,7 +272,7 @@ export function chooseLocales(stack: any, displayMessage?: string): Promise<Loca
 	})
 }
 
-export function chooseLocale(stack: any, displayMessage?: string): Promise<Locale> {
+export function chooseLocale(stack: any, displayMessage?: string, defaultLocale?: Locale): Promise<Locale> {
 	return new Promise(async (resolve, reject) => {
 		try {
 			const spinner = ora('Loading Locales').start()
@@ -288,6 +288,7 @@ export function chooseLocale(stack: any, displayMessage?: string): Promise<Local
 				type: 'search-list',
 				name: 'chosenLocale',
 				choices: localeList,
+				default: defaultLocale,
 				message: displayMessage || 'Choose locale',
 				loop: false,
 				validate: shouldNotBeEmpty
@@ -338,7 +339,7 @@ export function chooseDeliveryTokenAlias(): Promise<Token> {
 	})
 }
 
-async function getAll (element: any, skip: number=0): Promise<any> {
+async function getAll(element: any, skip: number = 0): Promise<any> {
 	return new Promise(async resolve => {
 		let result: any[] = []
 		result = await fetch(element, skip, result)
@@ -348,8 +349,8 @@ async function getAll (element: any, skip: number=0): Promise<any> {
 
 async function fetch(element: any, skip: number, accumulator: any[]): Promise<any[]> {
 	return new Promise(async resolve => {
-		let queryParams = {include_count: true, skip: skip}
-		let {items: result, count: count} = await element.query(queryParams).find()
+		let queryParams = { include_count: true, skip: skip }
+		let { items: result, count: count } = await element.query(queryParams).find()
 		accumulator = accumulator.concat(result)
 		skip += result.length
 		if (skip < count)
