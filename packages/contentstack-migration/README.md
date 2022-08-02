@@ -32,15 +32,16 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`csdx cm:stacks:migration`](#csdx-cmstacksmigration)
+* [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
 
-## `csdx cm:stacks:migration`
+## `csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`
 
 Contentstack migration script.
 
 ```
 USAGE
-  $ csdx cm:stacks:migration
+  $ csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] 
+  [--config <value>] [--multiple]
 
 OPTIONS
   -B, --branch=branch                Use this flag to add the branch name where you want to perform the migration.
