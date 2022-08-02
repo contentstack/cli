@@ -23,6 +23,7 @@ class StackCloneCommand extends Command {
         'source-management-token-alias': sourceManagementTokenAlias,
         'destination-management-token-alias': destinationManagementTokenAlias,
         'import-webhook-status': importWebhookStatus,
+        'master-locale': masterLocale
       } = cloneCommandFlags;
 
       const handleClone = async () => {
@@ -67,11 +68,13 @@ class StackCloneCommand extends Command {
         await this.removeContentDirIfNotEmptyBeforeClone(pathdir); // NOTE remove if folder not empty before clone
         this.registerCleanupOnInterrupt(pathdir);
 
+        config.master_locale = { code: masterLocale }
         config.auth_token = _authToken;
         config.host = this.cmaHost;
         config.cdn = this.cdaHost;
+        config.pathDir = pathdir;
         const cloneHandler = new CloneHandler(config);
-        cloneHandler.execute(pathdir).catch();
+        cloneHandler.execute().catch();
       }
 
       if (sourceManagementTokenAlias && destinationManagementTokenAlias) {
@@ -233,6 +236,12 @@ b) Structure with content (all modules including entries & assets)
     required: false,
     default: 'disable',
   }),
+  'master-locale': flags.string({
+    description: 'Master language for stack clone',
+  }),
 };
+
+StackCloneCommand.usage =
+  'cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]';
 
 module.exports = StackCloneCommand;
