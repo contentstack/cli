@@ -241,4 +241,7 @@ b) Structure with content (all modules including entries & assets)
   }),
 };
 
+StackCloneCommand.usage =
+  'cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]';
+
 module.exports = StackCloneCommand;
