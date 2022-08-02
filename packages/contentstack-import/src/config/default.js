@@ -16,18 +16,23 @@ module.exports = {
       'environments',
       'assets',
       'extensions',
-      'webhooks',
       'global-fields',
       'marketplace-apps', // NOTE marketplace app always should be before content-types
       'content-types',
+      'custom-roles',
       'workflows',
       'entries',
-      'labels'
+      'labels',
+      'webhooks',
     ],
     locales: {
       dirName: 'locales',
       fileName: 'locales.json',
       requiredKeys: ['code', 'uid', 'name', 'fallback_locale'],
+    },
+    customRoles: {
+      dirName: 'custom-roles',
+      fileName: 'custom-roles.json',
     },
     environments: {
       dirName: 'environments',
