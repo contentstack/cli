@@ -596,6 +596,8 @@ OPTIONS
 
   --content-types=content-types    The Contenttypes from which entries will be published
 
+  --force                          Update and publish all entries even if no fields have been added
+
   --retry-failed=retry-failed      Retry publishing failed entries from the logfile (optional, overrides all other
                                    flags)
 
