@@ -104,4 +104,6 @@ PublishOnlyUnpublished.examples = [
 
 PublishOnlyUnpublished.aliases = ['cm:bulk-publish:unpublished-entries'];
 
+PublishOnlyUnpublished.usage = 'cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]';
+
 module.exports = PublishOnlyUnpublished;

@@ -1,3 +1,4 @@
+
 import { Command, flags } from '@contentstack/cli-command';
 import ContentModelSeeder, { ContentModelSeederOptions } from '../../../seed';
 import { printFlagDeprecation } from '@contentstack/cli-utilities';
@@ -12,6 +13,8 @@ export default class SeedCommand extends Command {
     '$ csdx cm:stacks:seed --repo "account/repository" --stack-api-key "stack-api-key" //seed content into specific stack',
     '$ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack in given org uid',
   ];
+
+  static usage = 'cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]';
 
   static flags = {
     repo: flags.string({
