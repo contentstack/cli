@@ -48,15 +48,16 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`csdx cm:stacks:import`](#csdx-cmstacksimport)
+* [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
 
-## `csdx cm:stacks:import`
+## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
 Import script for importing the content into the new stack
 
 ```
 USAGE
-  $ csdx cm:stacks:import
+  $ csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] 
+  [--branch <value>] [--import-webhook-status disable|current]
 
 OPTIONS
   -B, --branch=branch                      [optional] branch name
