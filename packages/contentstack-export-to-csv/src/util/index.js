@@ -37,7 +37,7 @@ function chooseOrganization(managementAPIClient, action) {
         if (chosenOrg === config.cancelString) exitProgram();
         resolve({ name: chosenOrg, uid: organizations[chosenOrg] });
       });
-    } catch(error) {
+    } catch (error) {
       reject(error);
     }
   });
@@ -56,27 +56,29 @@ function getOrganizations(managementAPIClient) {
         });
         resolve(result);
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 }
 
 function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
   return new Promise((resolve, reject) => {
     let result = {};
-    managementAPIClient.getUser({ include_orgs_roles: true }).then((response) => {
-      let organizations = response.organizations.filter((org) => {
-        if (org.org_roles) {
-          const org_role = org.org_roles.shift();
-          return org_role.admin;
-        }
-        return org.is_owner === true;
-      });
-      organizations.forEach((org) => {
-        result[org.name] = org.uid;
-      });
-      resolve(result);
-    })
-    .catch(error => reject(error));
+    managementAPIClient
+      .getUser({ include_orgs_roles: true })
+      .then((response) => {
+        let organizations = response.organizations.filter((org) => {
+          if (org.org_roles) {
+            const org_role = org.org_roles.shift();
+            return org_role.admin;
+          }
+          return org.is_owner === true;
+        });
+        organizations.forEach((org) => {
+          result[org.name] = org.uid;
+        });
+        resolve(result);
+      })
+      .catch((error) => reject(error));
   });
 }
 
@@ -100,7 +102,7 @@ function chooseStack(managementAPIClient, orgUid) {
         if (chosenStack === config.cancelString) exitProgram();
         resolve({ name: chosenStack, apiKey: stacks[chosenStack] });
       });
-    } catch(error) {
+    } catch (error) {
       reject(error);
     }
   });
@@ -122,8 +124,8 @@ function getStacks(managementAPIClient, orgUid) {
         });
         resolve(result);
       })
-      .catch(error => {
-        reject(error)
+      .catch((error) => {
+        reject(error);
       });
   });
 }
@@ -182,9 +184,9 @@ function chooseInMemContentTypes(contentTypesList) {
     ];
     inquirer.prompt(_chooseContentType).then(({ chosenContentTypes }) => {
       if (chosenContentTypes.length === 0) {
-        reject('Please select atleast one content type.')
+        reject('Please select atleast one content type.');
       }
-      resolve(chosenContentTypes)
+      resolve(chosenContentTypes);
     });
   });
 }
@@ -202,7 +204,7 @@ function getContentTypes(stack, skip) {
         });
         resolve(result);
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 }
 
@@ -241,7 +243,7 @@ function getLanguages(stack) {
         });
         resolve(result);
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 }
 
@@ -253,7 +255,7 @@ function getEntries(stack, contentType, language, skip) {
       .query({ include_publish_details: true, locale: language, skip: skip * 100 })
       .find()
       .then((entries) => resolve(entries))
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 }
 
@@ -265,7 +267,7 @@ function getEntriesCount(stack, contentType, language) {
       .query({ include_publish_details: true, locale: language })
       .count()
       .then((entriesData) => resolve(entriesData.entries))
-      .catch(error => reject(formatError(error)));
+      .catch((error) => reject(formatError(error)));
   });
 }
 
@@ -292,7 +294,7 @@ function getContentTypeCount(stack) {
       .then((contentTypes) => {
         resolve(contentTypes.content_types);
       })
-      .catch(error => reject(error));
+      .catch((error) => reject(error));
   });
 }
 
@@ -379,22 +381,24 @@ function startupQuestions() {
 
 function getOrgUsers(managementAPIClient, orgUid, ecsv) {
   return new Promise((resolve, reject) => {
-    managementAPIClient.getUser({ include_orgs_roles: true }).then((response) => {
-      let organization = response.organizations.filter((org) => org.uid === orgUid).pop();
-      if (organization.is_owner === true) {
-        let cma = ecsv.region.cma;
-        let authtoken = ecsv.authToken;
-        return HttpClient.create()
-          .headers({ authtoken: authtoken })
-          .get(`${cma}/v3/organizations/${organization.uid}/share`)
-          .then((_response) => resolve({ items: _response.data.shares }));
-      }
-      if (!organization.getInvitations) {
-        return reject(new Error(config.adminError));
-      }
-      organization.getInvitations().then((users) => resolve(users));
-    })
-    .catch(error => reject(error));
+    managementAPIClient
+      .getUser({ include_orgs_roles: true })
+      .then((response) => {
+        let organization = response.organizations.filter((org) => org.uid === orgUid).pop();
+        if (organization.is_owner === true) {
+          let cma = ecsv.region.cma;
+          let authtoken = ecsv.authToken;
+          return HttpClient.create()
+            .headers({ authtoken: authtoken })
+            .get(`${cma}/v3/organizations/${organization.uid}/share`)
+            .then((_response) => resolve({ items: _response.data.shares }));
+        }
+        if (!organization.getInvitations) {
+          return reject(new Error(config.adminError));
+        }
+        organization.getInvitations().then((users) => resolve(users));
+      })
+      .catch((error) => reject(error));
   });
 }
 
@@ -417,21 +421,23 @@ function getMappedRoles(roles) {
 
 function getOrgRoles(managementAPIClient, orgUid, ecsv) {
   return new Promise((resolve, reject) => {
-    managementAPIClient.getUser({ include_orgs_roles: true }).then((response) => {
-      let organization = response.organizations.filter((org) => org.uid === orgUid).pop();
-      if (organization.is_owner === true) {
-        let cma = ecsv.region.cma;
-        let authtoken = ecsv.authToken;
-        return axios
-          .get(`${cma}/v3/organizations/${organization.uid}/roles`, { headers: { authtoken: authtoken } })
-          .then((_response) => resolve({ items: _response.data.roles }));
-      }
-      if (!organization.roles) {
-        return reject(new Error(config.adminError));
-      }
-      organization.roles().then((roles) => resolve(roles));
-    })
-    .catch(error => reject(error));
+    managementAPIClient
+      .getUser({ include_orgs_roles: true })
+      .then((response) => {
+        let organization = response.organizations.filter((org) => org.uid === orgUid).pop();
+        if (organization.is_owner === true) {
+          let cma = ecsv.region.cma;
+          let authtoken = ecsv.authToken;
+          return axios
+            .get(`${cma}/v3/organizations/${organization.uid}/roles`, { headers: { authtoken: authtoken } })
+            .then((_response) => resolve({ items: _response.data.roles }));
+        }
+        if (!organization.roles) {
+          return reject(new Error(config.adminError));
+        }
+        organization.roles().then((roles) => resolve(roles));
+      })
+      .catch((error) => reject(error));
   });
 }
 
@@ -484,7 +490,7 @@ function flatten(data) {
     if (Object(cur) !== cur) {
       result[prop] = cur;
     } else if (Array.isArray(cur)) {
-      let i, l
+      let i, l;
       for (i = 0, l = cur.length; i < l; i++) recurse(cur[i], prop + '[' + i + ']');
       if (l == 0) result[prop] = [];
     } else {
@@ -503,27 +509,23 @@ function flatten(data) {
 function formatError(error) {
   try {
     if (typeof error === 'string') {
-      error = JSON.parse(error)
+      error = JSON.parse(error);
     } else {
-      error = JSON.parse(error.message)
+      error = JSON.parse(error.message);
     }
   } catch (e) {}
-  let message = error.errorMessage || error.error_message || error.message || error
+  let message = error.errorMessage || error.error_message || error.message || error;
   if (error.errors && Object.keys(error.errors).length > 0) {
     Object.keys(error.errors).forEach((e) => {
-      let entity = e
-      if (e === 'authorization')
-        entity = 'Management Token'
-      if (e === 'api_key')
-        entity = 'Stack API key'
-      if (e === 'uid')
-        entity = 'Content Type'
-      if (e === 'access_token')
-        entity = 'Delivery Token'
-      message += ' ' + [entity, error.errors[e]].join(' ')
-    })
+      let entity = e;
+      if (e === 'authorization') entity = 'Management Token';
+      if (e === 'api_key') entity = 'Stack API key';
+      if (e === 'uid') entity = 'Content Type';
+      if (e === 'access_token') entity = 'Delivery Token';
+      message += ' ' + [entity, error.errors[e]].join(' ');
+    });
   }
-  return message
+  return message;
 }
 
 module.exports = {
