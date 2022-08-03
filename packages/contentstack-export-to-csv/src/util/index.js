@@ -128,9 +128,9 @@ function getStacks(managementAPIClient, orgUid) {
   });
 }
 
-function chooseContentType(managementAPIClient, stackApiKey, skip) {
+function chooseContentType(stack, skip) {
   return new Promise(async (resolve) => {
-    let contentTypes = await getContentTypes(managementAPIClient, stackApiKey, skip);
+    let contentTypes = await getContentTypes(stack, skip);
     let contentTypesList = Object.values(contentTypes);
     // contentTypesList.push(config.cancelString)
 
@@ -189,11 +189,10 @@ function chooseInMemContentTypes(contentTypesList) {
   });
 }
 
-function getContentTypes(managementAPIClient, stackApiKey, skip) {
+function getContentTypes(stack, skip) {
   return new Promise((resolve, reject) => {
     let result = {};
-    managementAPIClient
-      .stack({ api_key: stackApiKey })
+    stack
       .contentType()
       .query({ skip: skip * 100 })
       .find()
@@ -207,9 +206,9 @@ function getContentTypes(managementAPIClient, stackApiKey, skip) {
   });
 }
 
-function chooseLanguage(managementAPIClient, stackApiKey) {
+function chooseLanguage(stack) {
   return new Promise(async (resolve) => {
-    let languages = await getLanguages(managementAPIClient, stackApiKey);
+    let languages = await getLanguages(stack);
     let languagesList = Object.keys(languages);
     languagesList.push(config.cancelString);
 
@@ -229,11 +228,10 @@ function chooseLanguage(managementAPIClient, stackApiKey) {
   });
 }
 
-function getLanguages(managementAPIClient, stackApiKey) {
+function getLanguages(stack) {
   return new Promise((resolve, reject) => {
     let result = {};
-    managementAPIClient
-      .stack({ api_key: stackApiKey })
+    stack
       .locale()
       .query()
       .find()
@@ -247,10 +245,9 @@ function getLanguages(managementAPIClient, stackApiKey) {
   });
 }
 
-function getEntries(managementAPIClient, stackApiKey, contentType, language, skip) {
+function getEntries(stack, contentType, language, skip) {
   return new Promise((resolve, reject) => {
-    managementAPIClient
-      .stack({ api_key: stackApiKey })
+    stack
       .contentType(contentType)
       .entry()
       .query({ include_publish_details: true, locale: language, skip: skip * 100 })
@@ -260,10 +257,9 @@ function getEntries(managementAPIClient, stackApiKey, contentType, language, ski
   });
 }
 
-function getEntriesCount(managementAPIClient, stackApiKey, contentType, language) {
+function getEntriesCount(stack, contentType, language) {
   return new Promise((resolve, reject) => {
-    managementAPIClient
-      .stack({ api_key: stackApiKey })
+    stack
       .contentType(contentType)
       .entry()
       .query({ include_publish_details: true, locale: language })
@@ -273,10 +269,9 @@ function getEntriesCount(managementAPIClient, stackApiKey, contentType, language
   });
 }
 
-function getEnvironments(managementAPIClient, stackApiKey) {
+function getEnvironments(stack) {
   let result = {};
-  return managementAPIClient
-    .stack({ api_key: stackApiKey })
+  return stack
     .environment()
     .query()
     .find()
@@ -288,10 +283,9 @@ function getEnvironments(managementAPIClient, stackApiKey) {
     });
 }
 
-function getContentTypeCount(managementAPIClient, stackApiKey) {
+function getContentTypeCount(stack) {
   return new Promise((resolve, reject) => {
-    managementAPIClient
-      .stack({ api_key: stackApiKey })
+    stack
       .contentType()
       .query()
       .count()
