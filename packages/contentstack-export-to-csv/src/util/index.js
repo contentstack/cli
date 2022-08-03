@@ -508,7 +508,7 @@ function formatError(error) {
       error = JSON.parse(error.message)
     }
   } catch (e) {}
-  let message = error.errorMessage || error.error_message || error
+  let message = error.errorMessage || error.error_message || error.message || error
   if (error.errors && Object.keys(error.errors).length > 0) {
     Object.keys(error.errors).forEach((e) => {
       let entity = e
