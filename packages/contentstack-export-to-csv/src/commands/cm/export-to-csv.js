@@ -109,12 +109,6 @@ class ExportToCsvCommand extends Command {
             const contentTypeCount = await util.getContentTypeCount(this.managementAPIClient, stack.apiKey);
             const environments = await util.getEnvironments(this.managementAPIClient, stack.apiKey); // fetch environments, because in publish details only env uid are available and we need env names
 
-            if (locale) {
-              language = { code: locale };
-            } else {
-              language = await util.chooseLanguage(this.managementAPIClient, stack.apiKey); // prompt for language
-            }
-
             if (contentTypesFlag) {
               contentTypes = contentTypesFlag.split(',').map(this.snakeCase);
             } else {
@@ -131,6 +125,12 @@ class ExportToCsvCommand extends Command {
 
             if (!contentTypesFlag) {
               contentTypes = await util.chooseInMemContentTypes(contentTypes);
+            }
+
+            if (locale) {
+              language = { code: locale };
+            } else {
+              language = await util.chooseLanguage(this.managementAPIClient, stack.apiKey); // prompt for language
             }
 
             while (contentTypes.length > 0) {

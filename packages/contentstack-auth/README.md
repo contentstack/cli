@@ -32,7 +32,7 @@ USAGE
 * [`csdx auth:login`](#csdx-authlogin)
 * [`csdx auth:logout`](#csdx-authlogout)
 * [`csdx auth:tokens`](#csdx-authtokens)
-* [`csdx auth:tokens:add`](#csdx-authtokensadd)
+* [`csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`](#csdx-authtokensadd--a-value---delivery---management--e-value--k-value--y---token-value)
 * [`csdx auth:tokens:remove`](#csdx-authtokensremove)
 * [`csdx auth:whoami`](#csdx-authwhoami)
 
@@ -110,13 +110,13 @@ EXAMPLE
 
 _See code: [src/commands/auth/tokens/index.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/index.ts)_
 
-## `csdx auth:tokens:add`
+## `csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`
 
 Adds management/delivery tokens to your session to use it with other CLI commands
 
 ```
 USAGE
-  $ csdx auth:tokens:add
+  $ csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]
 
 OPTIONS
   -a, --alias=alias                  Name of the token alias
