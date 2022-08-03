@@ -6,12 +6,12 @@ import SetRegionCommand from '../../src/commands/config/set/region';
 import { cliux } from '../../src/utils';
 import { Region } from '../../src/interfaces';
 
-const config = configHandler
+const config = configHandler;
 describe('Region command', function () {
   const region: Region = {
     name: 'test',
-    cma: 'https://in-api.contentstack.com',
-    cda: 'https://in-cda.contentstack.com',
+    cma: 'https://api.contentstack.com',
+    cda: 'https://cda.contentstack.com',
   };
   let cliuxPrintStub;
   beforeEach(function () {
