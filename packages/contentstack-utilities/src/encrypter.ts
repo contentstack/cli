@@ -1,73 +1,70 @@
-import crypto from 'node:crypto'
+import crypto from "crypto";
 
 type CryptoConfig = {
-  algorithm?: string
-  encryptionKey?: string
-  typeIdentifier?: string
-}
+  algorithm?: string;
+  encryptionKey?: string;
+  typeIdentifier?: string;
+};
 
 const defaultValues: CryptoConfig = {
-  typeIdentifier: '◈',
-  algorithm: 'aes-192-cbc',
-  encryptionKey: 'nF2ejRQcTv'
-}
+  typeIdentifier: "◈",
+  algorithm: "aes-192-cbc",
+  encryptionKey: "nF2ejRQcTv",
+};
 
 export default class NodeCrypto {
-  private readonly key: Buffer
-  private readonly algorithm: string
-  private readonly typeIdentifier: string
+  private readonly key: Buffer;
+  private readonly algorithm: string;
+  private readonly typeIdentifier: string;
 
   constructor(config: CryptoConfig = defaultValues) {
-    const {
-      algorithm,
-      encryptionKey,
-      typeIdentifier
-    } = config
+    const { algorithm, encryptionKey, typeIdentifier } = config;
     this.algorithm = algorithm;
-    this.typeIdentifier = typeIdentifier
-    this.key = crypto.scryptSync(encryptionKey, 'salt', 24);
+    this.typeIdentifier = typeIdentifier;
+    this.key = crypto.scryptSync(encryptionKey, "salt", 24);
   }
 
   encrypt(plainData) {
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv(this.algorithm, this.key, iv);
-    let data = plainData
+    let data = plainData;
 
     switch (typeof plainData) {
-      case 'number':
-        data = `${String(plainData)}${this.typeIdentifier}number`
+      case "number":
+        data = `${String(plainData)}${this.typeIdentifier}number`;
         break;
-      case 'object':
-        data = `${JSON.stringify(plainData)}${this.typeIdentifier}object`
+      case "object":
+        data = `${JSON.stringify(plainData)}${this.typeIdentifier}object`;
         break;
     }
 
-    const encrypted = cipher.update(data, 'utf8', 'hex');
+    const encrypted = cipher.update(data, "utf8", "hex");
 
     return [
-      encrypted + cipher.final('hex'),
-      Buffer.from(iv).toString('hex'),
-    ].join('|');
+      encrypted + cipher.final("hex"),
+      Buffer.from(iv).toString("hex"),
+    ].join("|");
   }
 
   decrypt(encryptedData) {
-    const [encrypted, iv] = encryptedData.split('|');
-    if (!iv) throw new Error('IV not found');
+    const [encrypted, iv] = encryptedData.split("|");
+    if (!iv) throw new Error("IV not found");
     const decipher = crypto.createDecipheriv(
       this.algorithm,
       this.key,
-      Buffer.from(iv, 'hex')
+      Buffer.from(iv, "hex")
     );
-    const result = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
-    const [data, type] = result.split(this.typeIdentifier)
+    const result =
+      decipher.update(encrypted, "hex", "utf8") + decipher.final("utf8");
+    const [data, type] = result.split(this.typeIdentifier);
 
     switch (type) {
-      case 'number':
-        return Number(data)
-      case 'object':
-        return JSON.parse(data)
+      case "number":
+        return Number(data);
+      case "object":
+        return JSON.parse(data);
     }
 
-    return data
+    return data;
   }
 }
