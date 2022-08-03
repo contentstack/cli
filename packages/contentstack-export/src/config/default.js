@@ -1,6 +1,7 @@
 module.exports = {
   versioning: false,
   host: 'https://api.contentstack.io/v3',
+  developerHubBaseUrl: 'https://developerhub-api.contentstack.com',
   // use below hosts for eu region
   // host:'https://eu-api.contentstack.com/v3',
   // use below hosts for azure-na region
@@ -19,6 +20,7 @@ module.exports = {
       'workflows',
       'entries',
       'labels',
+      'marketplace-apps'
     ],
     locales: {
       dirName: 'locales',
@@ -106,6 +108,10 @@ module.exports = {
     dependency: {
       entries: ['stack', 'locales', 'content-types'],
     },
+    marketplace_apps: {
+      dirName: 'marketplace_apps',
+      fileName: 'marketplace_apps.json'
+    }
   },
   languagesCode: [
     'af-za',
@@ -331,5 +337,5 @@ module.exports = {
     webhooks: '/webhooks/',
     stacks: '/stacks/',
   },
-  preserveStackVersion: false,
+  preserveStackVersion: false
 };
