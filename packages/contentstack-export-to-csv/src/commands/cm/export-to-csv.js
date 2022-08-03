@@ -44,8 +44,17 @@ class ExportToCsvCommand extends Command {
     }),
   };
 
+  get getAuthToken() {
+    try {
+      return this.authToken
+    } catch (error) {
+      return undefined
+    }
+  }
+  
   get managementAPIClient() {
-    this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this.authToken });
+    debugger
+    this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this.getAuthToken });
     return this._managementAPIClient;
   }
 
@@ -91,7 +100,7 @@ class ExportToCsvCommand extends Command {
             } else {
               let organization;
 
-              if (!this.authToken) {
+              if (!this.getAuthToken) {
                 this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
                   exit: 2,
                   suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
@@ -172,7 +181,7 @@ class ExportToCsvCommand extends Command {
         case config.exportUsers:
         case 'users': {
           try {
-            if (!this._authToken) {
+            if (!this.getAuthToken) {
               this.error(config.CLI_EXPORT_CSV_LOGIN_FAILED, {
                 exit: 2,
                 suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
