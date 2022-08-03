@@ -46,14 +46,14 @@ class ExportToCsvCommand extends Command {
 
   get getAuthToken() {
     try {
-      return this.authToken
+      return this.authToken;
     } catch (error) {
-      return undefined
+      return undefined;
     }
   }
-  
+
   get managementAPIClient() {
-    debugger
+    debugger;
     this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this.getAuthToken });
     return this._managementAPIClient;
   }
@@ -116,7 +116,7 @@ class ExportToCsvCommand extends Command {
               stack = await util.chooseStack(this.managementAPIClient, organization.uid); // prompt for stack
             }
 
-            stackClient = this.getStackClient(stack)
+            stackClient = this.getStackClient(stack);
             const contentTypeCount = await util.getContentTypeCount(stackClient);
             const environments = await util.getEnvironments(stackClient); // fetch environments, because in publish details only env uid are available and we need env names
 
@@ -147,19 +147,10 @@ class ExportToCsvCommand extends Command {
             while (contentTypes.length > 0) {
               let contentType = contentTypes.pop();
 
-              const entriesCount = await util.getEntriesCount(
-                stackClient,
-                contentType,
-                language.code,
-              );
+              const entriesCount = await util.getEntriesCount(stackClient, contentType, language.code);
               let flatEntries = [];
               for (let index = 0; index < entriesCount / 100; index++) {
-                const entriesResult = await util.getEntries(
-                  stackClient,
-                  contentType,
-                  language.code,
-                  index,
-                );
+                const entriesResult = await util.getEntries(stackClient, contentType, language.code, index);
                 const flatEntriesResult = util.cleanEntries(
                   entriesResult.items,
                   language.code,
@@ -172,8 +163,7 @@ class ExportToCsvCommand extends Command {
 
               util.write(this, flatEntries, fileName, 'entries'); // write to file
             }
-
-          } catch(error) {
+          } catch (error) {
             this.log(util.formatError(error));
           }
           break;
@@ -226,9 +216,12 @@ class ExportToCsvCommand extends Command {
 
   getStackClient(stack) {
     if (stack.token) {
-      return ContentstackManagementSDK.client({ host:this.cmaHost }).stack({api_key: stack.apiKey, management_token: stack.token})
+      return ContentstackManagementSDK.client({ host: this.cmaHost }).stack({
+        api_key: stack.apiKey,
+        management_token: stack.token,
+      });
     }
-    return this.managementAPIClient.stack({api_key: stack.apiKey})
+    return this.managementAPIClient.stack({ api_key: stack.apiKey });
   }
 }
 
