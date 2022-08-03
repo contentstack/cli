@@ -88,8 +88,8 @@ module.exports = {
   },
   preserveStackVersion: false,
   headers: {
-    api_key: '***REMOVED***',
-    authorization: 'ydeytdcgdhgc',
+    api_key: '',
+    authorization: '',
     'X-User-Agent': 'contentstack-export/v',
   },
 };
