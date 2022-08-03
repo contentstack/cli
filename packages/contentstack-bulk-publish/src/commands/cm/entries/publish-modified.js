@@ -192,4 +192,6 @@ PublishModifiedCommand.examples = [
 
 PublishModifiedCommand.aliases = ['cm:bulk-publish:entry-edits']
 
+PublishModifiedCommand.usage = 'cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]'
+
 module.exports = PublishModifiedCommand;
