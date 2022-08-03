@@ -49,7 +49,7 @@ importWorkflows.prototype = {
     workflowFailsPath = path.resolve(config.data, 'workflows', 'fails.json');
     mkdirp.sync(workflowMapperPath);
     return new Promise(function (resolve, reject) {
-      if (self.workflows == undefined) {
+      if (self.workflows == undefined || Object.keys(self.workflows).length === 0) {
         addlogs(config, chalk.white('No workflow Found'), 'error');
         return resolve();
       }
