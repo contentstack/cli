@@ -13,11 +13,13 @@ let helper = require('./fs');
 
 // get assets object
 module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMapperPath) {
-  if (!_.has(data, 'entry') ||
+  if (
+    !_.has(data, 'entry') ||
     !_.has(data, 'content_type') ||
     !_.isPlainObject(mappedAssetUids) ||
     !_.isPlainObject(mappedAssetUrls) ||
-    typeof assetUidMapperPath !== 'string') {
+    typeof assetUidMapperPath !== 'string'
+  ) {
     throw new Error('Invalid inputs for lookupAssets!');
   }
   let parent = [];
@@ -30,9 +32,11 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
 
   let find = function (schema, entryToFind) {
     for (let i = 0, _i = schema.length; i < _i; i++) {
-      if (schema[i].data_type === 'text' &&
+      if (
+        schema[i].data_type === 'text' &&
         schema[i].field_metadata &&
-        (schema[i].field_metadata.markdown || schema[i].field_metadata.rich_text_type)) {
+        (schema[i].field_metadata.markdown || schema[i].field_metadata.rich_text_type)
+      ) {
         parent.push(schema[i].uid);
         findFileUrls(schema[i], entryToFind, assetUrls);
         parent.pop();
@@ -55,7 +59,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       }
       // added rich_text_type field check because some marketplace extensions also
       // have data_type has json
-      if (schema[i].data_type === "json" && schema[i].field_metadata.rich_text_type) {
+      if (schema[i].data_type === 'json' && schema[i].field_metadata.rich_text_type) {
         parent.push(schema[i].uid);
         // findFileUrls(schema[i], entry, assetUrls)
         findAssetIdsFromJsonRte(data.entry, data.content_type.schema);
@@ -71,9 +75,9 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         case 'blocks': {
           if (entryObj[element.uid]) {
             if (element.multiple) {
-              entryObj[element.uid].forEach(e => {
+              entryObj[element.uid].forEach((e) => {
                 let key = Object.keys(e).pop();
-                let subBlock = element.blocks.filter(block => block.uid === key).pop();
+                let subBlock = element.blocks.filter((block) => block.uid === key).pop();
                 findAssetIdsFromJsonRte(e[key], subBlock.schema);
               });
             }
@@ -84,7 +88,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         case 'group': {
           if (entryObj[element.uid]) {
             if (element.multiple) {
-              entryObj[element.uid].forEach(e => {
+              entryObj[element.uid].forEach((e) => {
                 findAssetIdsFromJsonRte(e, element.schema);
               });
             } else {
@@ -96,7 +100,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         case 'json': {
           if (entryObj[element.uid] && element.field_metadata.rich_text_type) {
             if (element.multiple) {
-              entryObj[element.uid].forEach(jsonRteData => {
+              entryObj[element.uid].forEach((jsonRteData) => {
                 gatherJsonRteAssetIds(jsonRteData);
               });
             } else {
@@ -110,7 +114,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
   }
 
   function gatherJsonRteAssetIds(jsonRteData) {
-    jsonRteData.children.forEach(element => {
+    jsonRteData.children.forEach((element) => {
       if (element.type) {
         switch (element.type) {
           case 'a':
@@ -121,7 +125,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
             break;
           }
           case 'reference': {
-            if (Object.keys(element.attrs).length > 0 && element.attrs.type === "asset") {
+            if (Object.keys(element.attrs).length > 0 && element.attrs.type === 'asset') {
               if (assetUids.indexOf(element.attrs['asset-uid']) === -1) {
                 assetUids.push(element.attrs['asset-uid']);
               }
@@ -263,7 +267,7 @@ function findFileUrls(schema, _entry, assetUrls) {
     text = JSON.stringify(_entry);
   }
   markdownRegEx = new RegExp(
-    '(https://(assets|(eu-|azure-na-|stag-)?images).contentstack.(io|com)/v3/assets/(.*?)/(.*?)/(.*?)/(.*?)(?="))',
+    '(https://(assets|(eu-|azure-na-)?images).contentstack.(io|com)/v3/assets/(.*?)/(.*?)/(.*?)/(.*?)(?="))',
     'g',
   );
   while ((markdownMatch = markdownRegEx.exec(text)) !== null) {
