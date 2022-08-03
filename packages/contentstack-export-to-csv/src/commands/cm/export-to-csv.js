@@ -45,7 +45,7 @@ class ExportToCsvCommand extends Command {
   };
 
   get managementAPIClient() {
-    this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this._authToken });
+    this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this.authToken });
     return this._managementAPIClient;
   }
 
@@ -91,7 +91,7 @@ class ExportToCsvCommand extends Command {
             } else {
               let organization;
 
-              if (!this._authToken) {
+              if (!this.authToken) {
                 this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
                   exit: 2,
                   suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
