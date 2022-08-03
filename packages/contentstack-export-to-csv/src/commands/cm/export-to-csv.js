@@ -174,7 +174,7 @@ class ExportToCsvCommand extends Command {
             }
 
           } catch(error) {
-            this.log(`${util.formatError(error)}`);
+            this.log(util.formatError(error));
           }
           break;
         }
@@ -207,7 +207,7 @@ class ExportToCsvCommand extends Command {
             util.write(this, listOfUsers, fileName, 'organization details');
           } catch (error) {
             if (error.message) {
-              this.log(`${util.formatError(error)}`);
+              this.log(util.formatError(error));
             }
           }
           break;
@@ -215,7 +215,7 @@ class ExportToCsvCommand extends Command {
       }
     } catch (error) {
       if (error.message) {
-        this.log(`${util.formatError(error)}`);
+        this.log(util.formatError(error));
       }
     }
   }
