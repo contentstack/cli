@@ -277,4 +277,6 @@ UnpublishCommand.examples = [
 
 UnpublishCommand.aliases = ['cm:bulk-publish:unpublish'];
 
+UnpublishCommand.usage = 'csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]'
+
 module.exports = UnpublishCommand;

@@ -47,6 +47,17 @@ module.exports = ({ migration, stackSDKInstance }) => {
             console.log((error && error.errorMessage) || ` '${contentTypeUID}' creation failed`)
           }
         }
+        for (let index = 0; index < 4; index++) {
+          let entry = {
+            title: `Awesome Blog ${index}`,
+            url: `/awesome-blog-${index}`,
+          }
+          try {
+            await stackSDKInstance.contentType(contentTypeUID).entry().create({ entry })
+          } catch (error) {
+            console.log((error && error.errorMessage) || ` Entries creation for content-type '${contentTypeUID}' failed`)
+          }
+        }
       },
     }
   }
