@@ -166,9 +166,8 @@ export default class BootstrapCommand extends Command {
       };
       const bootstrap = new Bootstrap(options);
       await bootstrap.run();
-    } catch (error) {
-      const errorObj: any = error;
-      this.error(errorObj, { exit: 1, suggestions: errorObj.suggestions });
+    } catch (error: any) {
+      this.error(error, { exit: 1, suggestions: error.suggestions });
     }
   }
 }
