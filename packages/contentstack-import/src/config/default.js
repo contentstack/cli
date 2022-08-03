@@ -8,6 +8,8 @@ module.exports = {
   // not passing `locale` will migrate all the locales present
   // locales: ['fr-fr'],
   host: 'https://api.contentstack.io/v3',
+  extensionHost: 'https://app.contentstack.com',
+  developerHubBaseUrl: 'https://developerhub-api.contentstack.com',
   modules: {
     types: [
       'locales',
@@ -15,6 +17,7 @@ module.exports = {
       'assets',
       'extensions',
       'global-fields',
+      'marketplace-apps', // NOTE marketplace app always should be before content-types
       'content-types',
       'custom-roles',
       'workflows',
@@ -79,7 +82,6 @@ module.exports = {
       limit: 50,
       assetBatchLimit: 5,
     },
-
     globalfields: {
       dirName: 'global_fields',
       fileName: 'globalfields.json',
@@ -90,6 +92,10 @@ module.exports = {
       dirName: 'stack',
       fileName: 'stack.json',
     },
+    marketplace_apps: {
+      dirName: 'marketplace_apps',
+      fileName: 'marketplace_apps.json'
+    }
   },
   languagesCode: [
     'af-za',
@@ -301,7 +307,6 @@ module.exports = {
     'xh',
     'zu',
   ],
-
   apis: {
     userSession: '/user-session/',
     locales: '/locales/',
