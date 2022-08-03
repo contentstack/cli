@@ -7,6 +7,6 @@ export declare function chooseContentTypes(stack: any, displayMessage?: string):
 export declare function chooseEnvironments(stack: any, displayMessage?: string): Promise<Environment[]>;
 export declare function chooseEnvironment(stack: any, displayMessage?: string): Promise<Environment>;
 export declare function chooseLocales(stack: any, displayMessage?: string): Promise<Locale[]>;
-export declare function chooseLocale(stack: any, displayMessage?: string): Promise<Locale>;
+export declare function chooseLocale(stack: any, displayMessage?: string, defaultLocale?: Locale): Promise<Locale>;
 export declare function chooseTokenAlias(): Promise<Token>;
 export declare function chooseDeliveryTokenAlias(): Promise<Token>;
