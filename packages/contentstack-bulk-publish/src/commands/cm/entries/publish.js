@@ -249,4 +249,6 @@ PublishEntriesCommand.examples = [
 
 PublishEntriesCommand.aliases = ['cm:bulk-publish:entries']
 
+PublishEntriesCommand.usage = 'cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]'
+
 module.exports = PublishEntriesCommand;

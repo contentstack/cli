@@ -10,15 +10,15 @@ To import content to your stack, you can choose from the following two sources:
 <!-- usagestop -->
 ## Commands
 <!-- commands -->
-* [`csdx cm:stacks:seed`](#csdx-cmstacksseed)
+* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value)
 
-## `csdx cm:stacks:seed`
+## `csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]`
 
 Create a stack from existing content types, entries, assets, etc
 
 ```
 USAGE
-  $ csdx cm:stacks:seed
+  $ csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]
 
 OPTIONS
   -k, --stack-api-key=stack-api-key  Provide stack api key to seed content to
@@ -40,7 +40,7 @@ EXAMPLES
   in given org uid
 ```
 
-_See code: [src/commands/cm/stacks/seed.ts](https://github.com/contentstack/cli/blob/v1.0.11/src/commands/cm/stacks/seed.ts)_
+_See code: [src/commands/cm/stacks/seed.ts](https://github.com/contentstack/cli/blob/v1.0.12/src/commands/cm/stacks/seed.ts)_
 <!-- commandsstop -->
 
 ## Advanced Flags
