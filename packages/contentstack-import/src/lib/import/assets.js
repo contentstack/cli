@@ -60,7 +60,7 @@ importAssets.prototype = {
     mkdirp.sync(mapperDirPath);
 
     return new Promise(function (resolve, reject) {
-      if (self.assets === undefined || Object.keys(self.assets).length === 0) {
+      if (self.assets === undefined || !_.isEmpty(self.assets)) {
         addlogs(config, 'No Assets Found', 'success');
         return resolve({empty: true});
       }
