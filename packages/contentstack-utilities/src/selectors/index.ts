@@ -1,5 +1,4 @@
 import ora from 'ora'
-import { URL } from 'url';
 import { default as CLIError } from '../cli-error';
 import { default as config } from '../config-handler';
 import {
