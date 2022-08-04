@@ -130,10 +130,14 @@ function init(_logPath) {
 exports.addlogs = async (config, message, type) => {
   var configLogPath = config.source_stack && config.target_stack ? config.data : config.oldPath;
   // ignoring the type argument, as we are not using it to create a logfile anymore
-  if (type !== 'error') {
-    // removed type argument from init method
-    init(configLogPath).log(message);
+  if (configLogPath) {
+    if (type !== 'error') {
+      // removed type argument from init method
+      init(configLogPath).log(message);
+    } else {
+      init(configLogPath).error(message);
+    }
   } else {
-    init(configLogPath).error(message);
+    console.error('Path cannot be empty');
   }
 };
