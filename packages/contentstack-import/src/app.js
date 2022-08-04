@@ -52,7 +52,7 @@ exports.initial = function (configData) {
             process.exit(1);
           });
       } else {
-        let filename = config.data ? path.basename(config.data): '';
+        let filename = path.basename(config.data);
         addlogs(config, chalk.red(filename + ' Folder does not Exist'), 'error');
       }
     }
