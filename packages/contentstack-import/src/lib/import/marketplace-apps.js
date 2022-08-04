@@ -8,10 +8,7 @@ const _ = require('lodash')
 const path = require('path')
 const chalk = require('chalk')
 const mkdirp = require('mkdirp')
-const inquirer = require('inquirer')
-const eachOf = require('async/eachOf')
-const { cliux } = require('@contentstack/cli-utilities')
-const { HttpClient, NodeCrypto } = require('@contentstack/cli-utilities')
+const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities')
 
 let config = require('../../config/default')
 const { addlogs: log } = require('../util/log')
@@ -184,7 +181,7 @@ function importMarketplaceApps() {
           log(config, message, 'error')
 
           if (_.toLower(error) === 'conflict') {
-            const appName = await inquirer.prompt({
+            const appName = await cliux.inquire({
               type: 'input',
               name: 'name',
               default: `Copy of ${app.manifest.name}`,
@@ -270,18 +267,16 @@ function importMarketplaceApps() {
               'WARNING!!! The app already exists and it may have its own configuration. But the current app we install has its own config which is used internally to manage content.',
               { color: 'yellow' }
             )
-            const configOption = await inquirer.prompt([
-              {
-                choices: [
-                  'Update with new config',
-                  'Don\'t update config (WARNING!!! If we don\'t update, there may be some issues with content which we import.)',
-                  'Exit'
-                ],
-                type: 'list',
-                name: 'value',
-                message: 'Choose the option to proceed'
-              }
-            ])
+            const configOption = await cliux.inquire({
+              choices: [
+                'Update with new config',
+                'Don\'t update config (WARNING!!! If we don\'t update, there may be some issues with content which we import.)',
+                'Exit'
+              ],
+              type: 'list',
+              name: 'value',
+              message: 'Choose the option to proceed'
+            })
 
             if (configOption.value === 'Exit') {
               process.exit()
