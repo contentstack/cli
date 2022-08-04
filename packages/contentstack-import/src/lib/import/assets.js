@@ -60,9 +60,9 @@ importAssets.prototype = {
     mkdirp.sync(mapperDirPath);
 
     return new Promise(function (resolve, reject) {
-      if (self.assets === undefined) {
+      if (self.assets === undefined || Object.keys(self.assets).length === 0) {
         addlogs(config, 'No Assets Found', 'success');
-        return resolve();
+        return resolve({empty: true});
       }
       let assetUids = Object.keys(self.assets);
       let batches = [];
