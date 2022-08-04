@@ -1331,7 +1331,9 @@ importEntries.prototype = {
 
               if (entryRefs.length > 0) {
                 entryRefs.forEach((entryRef) => {
-                  entry[entryRef.uid].children.splice(entryRef.index, 0, entryRef.value);
+                  if (!_.isEmpty(entry[entryRef.uid]) && entry[entryRef.uid].children) {
+                    entry[entryRef.uid].children.splice(entryRef.index, 0, entryRef.value);
+                  }
                 });
               }
             }
