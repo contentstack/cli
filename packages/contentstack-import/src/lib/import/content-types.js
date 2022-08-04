@@ -18,7 +18,6 @@ let supress = require('../util/extensionsUidReplace');
 let sdkInstance = require('../util/contentstack-management-sdk');
 
 let config = require('../../config/default');
-const { resolve } = require('path');
 let reqConcurrency = config.concurrency;
 let requestLimit = config.rateLimit;
 let contentTypeConfig = config.modules.content_types;
