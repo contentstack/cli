@@ -18,6 +18,7 @@ let supress = require('../util/extensionsUidReplace');
 let sdkInstance = require('../util/contentstack-management-sdk');
 
 let config = require('../../config/default');
+const { resolve } = require('path');
 let reqConcurrency = config.concurrency;
 let requestLimit = config.rateLimit;
 let contentTypeConfig = config.modules.content_types;
@@ -82,6 +83,10 @@ importContentTypes.prototype = {
     });
 
     return new Promise(function (resolve, reject) {
+      if (self.contentTypes === undefined || Object.keys(self.contentTypes).length === 0) {
+        addlogs(config, chalk.yellow('No Content types found'), 'success');
+        return resolve({ empty: true })
+      }
       return Promise.map(
         self.contentTypeUids,
         function (contentTypeUid) {
