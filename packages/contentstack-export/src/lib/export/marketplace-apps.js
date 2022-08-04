@@ -42,7 +42,7 @@ function exportMarketplaceApps() {
         .then(async (items) => {
           const installedApps = _.map(
             _.filter(items, 'app_uid'),
-            ({ uid, title, app_uid, app_installation_uid }) => ({ title, uid, app_uid, app_installation_uid })
+            ({ uid, title, app_uid, app_installation_uid, type }) => ({ title, uid, app_uid, app_installation_uid, type })
           )
           const headers = {
             authtoken: config.auth_token,
