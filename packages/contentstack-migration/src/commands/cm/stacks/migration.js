@@ -179,7 +179,7 @@ class MigrationCommand extends Command {
         }
       }
     } catch (error) {
-      errorHelper(error);
+      error(error);
     }
   }
 
