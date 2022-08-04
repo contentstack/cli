@@ -1,4 +1,6 @@
 import ora from 'ora'
+import * as url from 'url';
+import { default as CLIError } from '../cli-error';
 import { default as config } from '../config-handler';
 import {
 	Token,
@@ -11,11 +13,61 @@ import {
 	Locale
 } from './interfaces'
 import { shouldNotBeEmpty } from './validations';
+import * as ContentstackManagementSDK from '@contentstack/management';
 
 const inquirer = require('inquirer')
 inquirer.registerPrompt('search-list', require('inquirer-search-list'))
 inquirer.registerPrompt('search-checkbox', require('inquirer-search-checkbox'))
-const { Command } = require('@contentstack/cli-command')
+
+interface Region {
+  name: string;
+  cma: string;
+  cda: string;
+}
+
+class Command {
+	private _region: Region;
+	private _authToken: string;
+	private _managementAPIClient: object;
+
+	get managementAPIClient(): any {
+    if (this._managementAPIClient) return this._managementAPIClient;
+    this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost });
+    return this._managementAPIClient;
+  }
+
+  set managementAPIClient(params) {
+    this._managementAPIClient = ContentstackManagementSDK.client(params);
+  }
+
+  get region() {
+    if (!this._region) {
+			this._region = config.get('region');
+		}
+
+    return this._region;
+  }
+
+	get cmaHost() {
+    let cma = this.region.cma;
+    if (cma.startsWith('http')) {
+      const u = url.parse(cma);
+      if (u.host) return u.host;
+    }
+    return cma;
+  }
+
+	get authToken() {
+    if (!this._authToken) {
+			this._authToken = config.get('authtoken');
+		}
+    if (!this._authToken) {
+			throw new CLIError('You are not logged in. Please login with command $ csdx auth:login');
+		}
+
+		return this._authToken;
+  }
+}
 
 export function chooseOrganization(client: any, displayMessage?: string, region?: string, orgUid?: string): Promise<selectedOrganization> {
 	return new Promise(async (resolve, reject) => {
@@ -119,6 +171,7 @@ export function chooseEntry(contentTypeUid: string, stackApiKey: string, display
 		const command = new Command()
 		command.managementAPIClient = { host: command.cmaHost, authtoken: command.authToken }
 		const client = command.managementAPIClient
+
 		try {
 			const spinner = ora('Loading Entries').start()
 			let entries = await getAll(client.stack({ api_key: stackApiKey }).contentType(contentTypeUid).entry())
