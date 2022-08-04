@@ -50,8 +50,8 @@ importWorkflows.prototype = {
     mkdirp.sync(workflowMapperPath);
     return new Promise(function (resolve, reject) {
       if (self.workflows == undefined || Object.keys(self.workflows).length === 0) {
-        addlogs(config, chalk.white('No workflow Found'), 'error');
-        return resolve();
+        addlogs(config, chalk.white('No workflow Found'), 'success');
+        return resolve({empty: true});
       }
       self.workflowsUids = Object.keys(self.workflows);
       return Promise.map(
