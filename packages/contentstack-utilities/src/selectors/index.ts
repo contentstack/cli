@@ -1,5 +1,5 @@
 import ora from 'ora'
-import * as url from 'url';
+import { URL } from 'url';
 import { default as CLIError } from '../cli-error';
 import { default as config } from '../config-handler';
 import {
@@ -13,7 +13,7 @@ import {
 	Locale
 } from './interfaces'
 import { shouldNotBeEmpty } from './validations';
-import * as ContentstackManagementSDK from '@contentstack/management';
+import ContentstackManagementSDK from '@contentstack/management';
 
 const inquirer = require('inquirer')
 inquirer.registerPrompt('search-list', require('inquirer-search-list'))
@@ -25,48 +25,46 @@ interface Region {
   cda: string;
 }
 
-class Command {
-	private _region: Region;
-	private _authToken: string;
-	private _managementAPIClient: object;
+let _region: Region;
+let _authToken: string;
+let _managementAPIClient: ContentstackManagementSDK.ContentstackClient;
 
-	get managementAPIClient(): any {
-    if (this._managementAPIClient) return this._managementAPIClient;
-    this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost });
-    return this._managementAPIClient;
-  }
+const region = (): Region => {
+	if (!_region) {
+		_region = config.get('region');
+	}
 
-  set managementAPIClient(params) {
-    this._managementAPIClient = ContentstackManagementSDK.client(params);
-  }
+	return _region;
+}
 
-  get region() {
-    if (!this._region) {
-			this._region = config.get('region');
-		}
+const cmaHost = () => {
+	let cma = region().cma;
+	if (cma.startsWith('http')) {
+		const u = new URL(cma);
+		if (u.host) return u.host;
+	}
+	return cma;
+}
 
-    return this._region;
-  }
+const managementAPIClient = (params) => {
+	if (params) {
+		_managementAPIClient = ContentstackManagementSDK.client(params)
+	} else if (!_managementAPIClient) {
+		_managementAPIClient = ContentstackManagementSDK.client({ host: cmaHost() });
+	}
 
-	get cmaHost() {
-    let cma = this.region.cma;
-    if (cma.startsWith('http')) {
-      const u = url.parse(cma);
-      if (u.host) return u.host;
-    }
-    return cma;
-  }
+	return _managementAPIClient;
+}
 
-	get authToken() {
-    if (!this._authToken) {
-			this._authToken = config.get('authtoken');
-		}
-    if (!this._authToken) {
-			throw new CLIError('You are not logged in. Please login with command $ csdx auth:login');
-		}
+const authToken = () => {
+	if (!_authToken) {
+		_authToken = config.get('authtoken');
+	}
+	if (!_authToken) {
+		throw new CLIError('You are not logged in. Please login with command $ csdx auth:login');
+	}
 
-		return this._authToken;
-  }
+	return _authToken;
 }
 
 export function chooseOrganization(client: any, displayMessage?: string, region?: string, orgUid?: string): Promise<selectedOrganization> {
@@ -137,9 +135,8 @@ export function chooseStack(client: any, organizationId: string, displayMessage?
 
 export function chooseContentType(stackApiKey: string, displayMessage?: string, region?: string): Promise<ContentType> {
 	return new Promise(async (resolve, reject) => {
-		const command = new Command()
-		command.managementAPIClient = { host: command.cmaHost, authtoken: command.authToken }
-		const client = command.managementAPIClient
+		const client = managementAPIClient({ host: cmaHost(), authtoken: authToken() })
+
 		try {
 			const spinner = ora('Loading Content Types').start()
 			// let {items: contentTypes} = await client.stack({api_key: stackApiKey}).contentType().query({include_count: true}).find()
@@ -168,9 +165,7 @@ export function chooseContentType(stackApiKey: string, displayMessage?: string, 
 
 export function chooseEntry(contentTypeUid: string, stackApiKey: string, displayMessage?: string, region?: string): Promise<Entry> {
 	return new Promise(async (resolve, reject) => {
-		const command = new Command()
-		command.managementAPIClient = { host: command.cmaHost, authtoken: command.authToken }
-		const client = command.managementAPIClient
+		const client = managementAPIClient({ host: cmaHost(), authtoken: authToken() })
 
 		try {
 			const spinner = ora('Loading Entries').start()
