@@ -861,7 +861,7 @@ importEntries.prototype = {
             delete _contentTypeSchema.field_rules;
           }
 
-          extension_suppress(_contentTypeSchema.schema, config.preserveStackVersion);
+          extension_suppress(_contentTypeSchema.schema, config.preserveStackVersion, self.installedExtensions);
           updatedExtensionUidsSchemas.push(_contentTypeSchema);
         }
       }
