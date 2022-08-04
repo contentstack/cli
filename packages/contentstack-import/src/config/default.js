@@ -16,8 +16,8 @@ module.exports = {
       'environments',
       'assets',
       'extensions',
+      'marketplace-apps',
       'global-fields',
-      'marketplace-apps', // NOTE marketplace app always should be before content-types
       'content-types',
       'custom-roles',
       'workflows',
