@@ -52,7 +52,7 @@ exports.initial = function (configData) {
             process.exit(1);
           });
       } else {
-        let filename = path.basename(config.data);
+        let filename = config.data ? path.basename(config.data): '';
         addlogs(config, chalk.red(filename + ' Folder does not Exist'), 'error');
       }
     }
@@ -95,7 +95,7 @@ let singleImport = async (moduleName, types, config) => {
               await util.field_rules_update(config, ctPath);
             }
           }
-          if (!data) {
+          if (!(data && data.empty)) {
             addlogs(config, moduleName + ' imported successfully!', 'success');
           }
           addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
