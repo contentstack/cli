@@ -136,5 +136,4 @@ exports.addlogs = async (config, message, type) => {
   } else {
     init(configLogPath).error(message);
   }
-  
 };
