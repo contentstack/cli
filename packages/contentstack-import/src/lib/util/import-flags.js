@@ -43,11 +43,6 @@ exports.configWithMToken = function (
     defaultConfig.auth_token = _authToken;
     defaultConfig = _.merge(defaultConfig, externalConfig);
 
-    if (!defaultConfig.data) {
-      const exporteddata = await cliux.prompt(message.promptMessageList.promptPathStoredData)
-      defaultConfig.data = exporteddata;
-    }
-
     if (_.isArray(modules)) {
       defaultConfig.modules.types = _.filter(defaultConfig.modules.types, (module) => _.includes(modules, module));
     }
@@ -131,10 +126,6 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host, ba
       defaultConfig.useBackedupDir = backupdir;
     }
     defaultConfig = _.merge(defaultConfig, externalConfig);
-    if (!defaultConfig.data) {
-      const exporteddata = await cliux.prompt(message.promptMessageList.promptPathStoredData)
-      defaultConfig.data = exporteddata;
-    }
     initial(defaultConfig).then(resolve).catch(reject);
   });
 };
