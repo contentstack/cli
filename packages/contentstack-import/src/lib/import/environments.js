@@ -48,7 +48,7 @@ importEnvironments.prototype = {
 
     mkdirp.sync(envMapperPath);
     return new Promise(function (resolve, reject) {
-      if (self.environments === undefined || Object.keys(self.environments).length === 0) {
+      if (self.environments === undefined || !_.isEmpty(self.environments)) {
         addlogs(config, chalk.yellow('No Environment Found'), 'success');
         return resolve({empty: true});
       }

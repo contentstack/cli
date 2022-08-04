@@ -62,7 +62,7 @@ importGlobalFields.prototype = {
     }
     client = stack.Client(config);
     return new Promise(function (resolve, reject) {
-      if (self.globalfields === undefined || Object.keys(self.globalfields).length === 0) {
+      if (self.globalfields === undefined || !_.isEmpty(self.globalfields)) {
         addlogs(config, chalk.white('No globalfields Found'), 'success');
         helper.writeFile(globalFieldsPending, _globalField_pending);
         return resolve({empty: true});

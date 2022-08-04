@@ -52,7 +52,7 @@ importLanguages.prototype = {
     }
 
     return new Promise(function (resolve, reject) {
-      if (self.languages === undefined || Object.keys(self.languages).length === 0) {
+      if (self.languages === undefined || !_.isEmpty(self.languages)) {
         addlogs(config, chalk.white('No Languages Found'), 'success');
         return resolve({empty: true});
       }
