@@ -214,6 +214,7 @@ CrossPublishCommand.flags = {
   }),
   'environments': flags.string({
     description: 'Destination Environments',
+    multiple: true,
   }),
   deliveryToken: flags.string({
     char: 'x',
