@@ -18,13 +18,13 @@ const marketplaceAppPath = path.resolve(config.data, 'marketplace_apps', 'market
 let extension_uid_Replace = (module.exports = function (schema, preserveStackVersion, installedExtensions) {
   for (let i in schema) {
     if (schema[i].data_type === 'group') {
-      extension_uid_Replace(schema[i].schema, preserveStackVersion);
+      extension_uid_Replace(schema[i].schema, preserveStackVersion, installedExtensions);
     } else if (schema[i].data_type === 'blocks') {
       for (let block in schema[i].blocks) {
         if (schema[i].blocks[block].hasOwnProperty('reference_to')) {
           delete schema[i].blocks[block].schema;
         } else {
-          extension_uid_Replace(schema[i].blocks[block].schema, preserveStackVersion);
+          extension_uid_Replace(schema[i].blocks[block].schema, preserveStackVersion, installedExtensions);
         }
       }
     } else if (
@@ -56,8 +56,8 @@ let extension_uid_Replace = (module.exports = function (schema, preserveStackVer
 
           if (oldExt) {
             const ext = (
-              _.find(installedExtensions, { type: 'field', app_uid: oldExt.new_app_uid }) ||
-              _.find(installedExtensions, { type: 'field', app_uid: oldExt.app_uid })
+              _.find(installedExtensions, { type: 'field', title: oldExt.title, app_uid: oldExt.new_app_uid }) ||
+              _.find(installedExtensions, { type: 'field', title: oldExt.title, app_uid: oldExt.app_uid })
             )
 
             if (ext) {
