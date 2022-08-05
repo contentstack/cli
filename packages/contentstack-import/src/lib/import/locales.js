@@ -15,7 +15,7 @@ let helper = require('../util/fs');
 let { addlogs } = require('../util/log');
 let stack = require('../util/contentstack-management-sdk');
 let config = require('../../config/default');
-let _ = require('lodash');
+let {isEmpty, cloneDeep} = require('lodash');
 let reqConcurrency = config.concurrency;
 let langConfig = config.modules.locales;
 let langFolderPath;
@@ -52,7 +52,7 @@ importLanguages.prototype = {
     }
 
     return new Promise(function (resolve, reject) {
-      if (self.languages === undefined || _.isEmpty(self.languages)) {
+      if (self.languages === undefined || isEmpty(self.languages)) {
         addlogs(config, chalk.white('No Languages Found'), 'success');
         return resolve({ empty: true });
       }
@@ -133,7 +133,7 @@ importLanguages.prototype = {
           let langobj = client
             .stack({ api_key: config.target_stack, management_token: config.management_token })
             .locale(lang.code);
-          Object.assign(langobj, _.cloneDeep(lang));
+          Object.assign(langobj, cloneDeep(lang));
           langobj.update().then(() => {
             // empty function
           });
