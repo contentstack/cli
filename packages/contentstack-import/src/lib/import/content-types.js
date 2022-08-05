@@ -82,7 +82,7 @@ importContentTypes.prototype = {
     });
 
     return new Promise(function (resolve, reject) {
-      if (self.contentTypes === undefined || !_.isEmpty(self.contentTypes)) {
+      if (self.contentTypes === undefined || _.isEmpty(self.contentTypes)) {
         addlogs(config, chalk.yellow('No Content types found'), 'success');
         return resolve({ empty: true })
       }
