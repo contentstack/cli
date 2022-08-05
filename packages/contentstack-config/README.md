@@ -64,8 +64,6 @@ EXAMPLES
   $ csdx config:set:region NA
   $ csdx config:set:region NA
   $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"
-  $ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com" 
-  --name="India"
 ```
 
 _See code: [src/commands/config/set/region.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/config/set/region.ts)_
