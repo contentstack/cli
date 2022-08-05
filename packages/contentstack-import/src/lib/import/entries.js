@@ -861,7 +861,7 @@ importEntries.prototype = {
             delete _contentTypeSchema.field_rules;
           }
 
-          extension_suppress(_contentTypeSchema.schema, config.preserveStackVersion);
+          extension_suppress(_contentTypeSchema.schema, config.preserveStackVersion, self.installedExtensions);
           updatedExtensionUidsSchemas.push(_contentTypeSchema);
         }
       }
@@ -1331,7 +1331,9 @@ importEntries.prototype = {
 
               if (entryRefs.length > 0) {
                 entryRefs.forEach((entryRef) => {
-                  entry[entryRef.uid].children.splice(entryRef.index, 0, entryRef.value);
+                  if (!_.isEmpty(entry[entryRef.uid]) && entry[entryRef.uid].children) {
+                    entry[entryRef.uid].children.splice(entryRef.index, 0, entryRef.value);
+                  }
                 });
               }
             }
