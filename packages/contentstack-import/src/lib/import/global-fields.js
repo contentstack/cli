@@ -9,6 +9,7 @@ let fs = require('fs');
 let path = require('path');
 let Promise = require('bluebird');
 let chalk = require('chalk');
+const {isEmpty} = require('lodash');
 
 let helper = require('../util/fs');
 let { addlogs } = require('../util/log');
@@ -62,7 +63,7 @@ importGlobalFields.prototype = {
     }
     client = stack.Client(config);
     return new Promise(function (resolve, reject) {
-      if (self.globalfields === undefined || _.isEmpty(self.globalfields)) {
+      if (self.globalfields === undefined || isEmpty(self.globalfields)) {
         addlogs(config, chalk.white('No globalfields Found'), 'success');
         helper.writeFile(globalFieldsPending, _globalField_pending);
         return resolve({ empty: true });
