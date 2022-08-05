@@ -81,8 +81,8 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
 
           if (oldExt) {
             const ext = (
-              _.find(installedExtensions, { type: 'field', app_uid: oldExt.new_app_uid }) ||
-              _.find(installedExtensions, { type: 'field', app_uid: oldExt.app_uid })
+              _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.new_app_uid }) ||
+              _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid })
             )
 
             if (ext) {
@@ -108,8 +108,8 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
 
             if (oldExt) {
               const ext = (
-                _.find(installedExtensions, { type: 'field', app_uid: oldExt.new_app_uid }) ||
-                _.find(installedExtensions, { type: 'field', app_uid: oldExt.app_uid })
+                _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.new_app_uid }) ||
+                _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid })
               )
 
               if (ext) {
@@ -124,8 +124,8 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
 
             if (oldExt) {
               const ext = (
-                _.find(installedExtensions, { type: 'field', app_uid: oldExt.new_app_uid }) ||
-                _.find(installedExtensions, { type: 'field', app_uid: oldExt.app_uid })
+                _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.new_app_uid }) ||
+                _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid })
               )
 
               if (ext) {
@@ -375,19 +375,27 @@ function updateFileFields(objekt, parent, pos, mappedAssetUids, matchedUids, unm
         }
 
         if (
-          _.has(parent, 'asset'),
+          objekt &&
+          _.isObject(parent[pos]) &&
+          parent[pos].uid &&
+          parent[pos].url &&
+          _.has(parent, 'asset') &&
           _.has(parent, '_content_type_uid') &&
           parent._content_type_uid === 'sys_assets'
         ) {
-          parent = _.omit(parent, ['asset'])
-        }
+          if (
+            _.has(parent, 'asset') &&
+            _.has(parent, '_content_type_uid') &&
+            parent._content_type_uid === 'sys_assets'
+          ) {
+            parent = _.omit(parent, ['asset'])
+          }
 
-        if (objekt && _.isObject(parent[pos]) && parent[pos].uid && parent[pos].url) {
           if (objekt.uid && mappedAssetUids && mappedAssetUids[objekt.uid]) {
-            parent[pos].uid = mappedAssetUids[objekt.uid];
+            objekt.uid = mappedAssetUids[objekt.uid];
           }
           if (objekt.url && mappedAssetUrls && mappedAssetUrls[objekt.url]) {
-            parent[pos].url = mappedAssetUrls[objekt.url];
+            objekt.url = mappedAssetUrls[objekt.url];
           }
         } else {
           replacer()
