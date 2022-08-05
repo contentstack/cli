@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
 const chalk = require('chalk');
+const {isEmpty} = require('lodash');
 
 const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
@@ -49,7 +50,7 @@ importWebhooks.prototype = {
     mkdirp.sync(webMapperPath);
 
     return new Promise(function (resolve, reject) {
-      if (self.webhooks == undefined || _.isEmpty(self.webhooks)) {
+      if (self.webhooks == undefined || isEmpty(self.webhooks)) {
         addlogs(config, chalk.white('No Webhooks Found'), 'success');
         return resolve({ empty: true });
       }
