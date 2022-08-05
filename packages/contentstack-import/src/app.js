@@ -87,7 +87,7 @@ let singleImport = async (moduleName, types, config) => {
       let exportedModule = require('./lib/import/' + moduleName);
       exportedModule
         .start(config)
-        .then(async function () {
+        .then(async function (data) {
           if (moduleName === 'content-types') {
             let ctPath = path.resolve(config.data, config.modules.content_types.dirName);
             let fieldPath = path.join(ctPath + '/field_rules_uid.json');
@@ -95,7 +95,9 @@ let singleImport = async (moduleName, types, config) => {
               await util.field_rules_update(config, ctPath);
             }
           }
-          addlogs(config, moduleName + ' imported successfully!', 'success');
+          if (!(data && data.empty)) {
+            addlogs(config, moduleName + ' imported successfully!', 'success');
+          }
           addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
           return resolve();
         })
