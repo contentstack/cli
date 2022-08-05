@@ -52,9 +52,9 @@ importExtensions.prototype = {
     mkdirp.sync(extMapperPath);
 
     return new Promise(function (resolve, reject) {
-      if (self.extensions === undefined) {
+      if (self.extensions === undefined || _.isEmpty(self.extensions)) {
         addlogs(config, chalk.white('No Extensions Found'), 'success');
-        return resolve();
+        return resolve({ empty: true });
       }
       let extUids = Object.keys(self.extensions);
       return Promise.map(

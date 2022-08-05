@@ -49,9 +49,9 @@ importWebhooks.prototype = {
     mkdirp.sync(webMapperPath);
 
     return new Promise(function (resolve, reject) {
-      if (self.webhooks == undefined) {
+      if (self.webhooks == undefined || _.isEmpty(self.webhooks)) {
         addlogs(config, chalk.white('No Webhooks Found'), 'success');
-        return resolve();
+        return resolve({ empty: true });
       }
       let webUids = Object.keys(self.webhooks);
       return Promise.map(

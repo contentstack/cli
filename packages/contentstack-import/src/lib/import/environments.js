@@ -48,9 +48,9 @@ importEnvironments.prototype = {
 
     mkdirp.sync(envMapperPath);
     return new Promise(function (resolve, reject) {
-      if (self.environments === undefined) {
+      if (self.environments === undefined || _.isEmpty(self.environments)) {
         addlogs(config, chalk.yellow('No Environment Found'), 'success');
-        return resolve();
+        return resolve({ empty: true });
       }
 
       let envUids = Object.keys(self.environments);
