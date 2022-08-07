@@ -44,6 +44,7 @@ let structureList = [
   'locales',
   'environments',
   'extensions',
+  'marketplace-apps',
   'webhooks',
   'global-fields',
   'content-types',
