@@ -23,17 +23,17 @@ describe("ContentStack-Config plugin test", () => {
     messageHandler.init({ messageFilePath: "" });
   });
 
-  describe("Running config:set:region command without any flags", () => {
+  describe('Running config:set:region command without any flags and set AZURE-NA as Region', () => {
     test
-      .stub(cliux, "inquire", async () => "AZURE-NA")
+      .stub(cliux, 'inquire', async () => 'AZURE-NA')
       .stdout({ print: PRINT_LOGS || false })
-      .command(["config:set:region"])
-      .it("Check config:set:region command output", (ctx) => {
+      .command(['config:set:region'])
+      .it('Check config:set:region command output [It should set AZURE-NA as region]', (ctx) => {
         expect(ctx.stdout)
-          .to.be.a("string")
+          .to.be.a('string')
           .that.have.includes(
-            "Region has been set to AZURE-NA\nCDA HOST: https://azure-na-cdn.contentstack.com\nCMA HOST: https://azure-na-api.contentstack.com\n",
-            "AZURE-NA region is not setup.!"
+            'Region has been set to AZURE-NA\nCDA HOST: https://azure-na-cdn.contentstack.com\nCMA HOST: https://azure-na-api.contentstack.com\n',
+            'AZURE-NA region is not setup.!',
           );
       });
   });
