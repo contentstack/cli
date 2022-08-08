@@ -1,0 +1,6 @@
+{
+  "PRINT_LOGS": false,
+  "DEFAULT_TIMEOUT": 600000,
+  "API_KEY": "***REMOVED***",
+  "EXPORT_PATH": "./contents"
+}
