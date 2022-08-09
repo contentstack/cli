@@ -4,8 +4,8 @@ const uniqBy = require('lodash/uniqBy')
 const { expect, test } = require("@oclif/test")
 const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 
-const { getAssetAndFolderCount } = require('./helper')
 const { modules } = require('../../src/config/default')
+const { getAssetAndFolderCount } = require('./utils/helper')
 const { PRINT_LOGS, API_KEY, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
 
 const exportBasePath = path.join(
