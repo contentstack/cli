@@ -22,12 +22,28 @@ const getFileName = (file) => {
 };
 
 /**
+ * @method includeInitFileIfExist
+ * @param {String} basePath 
+ */
+const includeInitFileIfExist = (basePath) => {
+  const filePath = join(__dirname, basePath, `init.test${testFileExtension}`);
+
+  try {
+    if (existsSync(filePath)) {
+      require(filePath);
+    }
+  } catch (err) { }
+}
+
+/**
  * @method includeTestFiles
  * @param {Array<string>} files
  * @param {string} basePath
  */
 const includeTestFiles = (files, basePath = "integration") => {
-  forEach(files, (file) => {
+  includeInitFileIfExist(basePath) // NOTE Run all the pre configurations
+
+  forEach(filter(files, (name) => !includes('init.test.js', name)), (file) => {
     const filename = getFileName(file);
     const filePath = join(__dirname, basePath, filename);
     try {

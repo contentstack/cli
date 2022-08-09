@@ -1,6 +1,13 @@
 const fs = require('fs');
-const config = require('../../src/config/default');
-const managementSdk = require('../../src/lib/util/contentstack-management-sdk');
+const config = require('../../../src/config/default');
+const { Command } = require('@contentstack/cli-command');
+const managementSdk = require('../../../src/lib/util/contentstack-management-sdk');
+
+class Helper extends Command {
+  async run() {
+    return this.region
+  }
+}
 
 const getStack = () => {
   return managementSdk.Client(config)
@@ -64,7 +71,7 @@ const readJsonFileContents = (filePath) => {
 
       const processLine = (line) => { // here's where we do something with a line
         if (line[line.length - 1] == '\r') line = line.substr(0, line.length - 1); // discard CR (0x0D)
-  
+
         if (line.length > 0) { // ignore empty lines
           resolve(JSON.parse(line)) // parse the JSON
         }
@@ -72,7 +79,7 @@ const readJsonFileContents = (filePath) => {
 
       const pump = () => {
         let pos;
-  
+
         while ((pos = buf.indexOf('\n')) >= 0) { // keep going while there's a newline somewhere in the buffer
           if (pos == 0) { // if there's more than one newline in a row, the buffer will now start with a newline
             buf = buf.slice(1); // discard it
@@ -82,7 +89,7 @@ const readJsonFileContents = (filePath) => {
           buf = buf.slice(pos + 1); // and slice the processed data off the buffer
         }
       }
-  
+
       stream.on('data', function (d) {
         buf += d.toString(); // when data is read, stash it in a string buffer
         pump(); // then process the buffer
@@ -95,6 +102,7 @@ const readJsonFileContents = (filePath) => {
 }
 
 module.exports = {
+  Helper,
   getStack,
   getLocalesCount,
   readJsonFileContents,
