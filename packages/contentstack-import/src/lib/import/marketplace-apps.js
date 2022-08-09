@@ -32,6 +32,13 @@ function importMarketplaceApps() {
       'app_uid'
     )
 
+    if (!config.auth_token && !_.isEmpty(this.marketplaceApps)) {
+      cliux.print('WARNING!!! To import marketplace apps, you should be logged in. Kindly check csdx auth:login --help to login', { color: 'yellow' })
+      return Promise.resolve()
+    } else if(_.isEmpty(this.marketplaceApps)) {
+      return Promise.resolve()
+    }
+
     await this.getOrgUid()
     return this.handleInstallationProcess()
   }
@@ -187,7 +194,7 @@ function importMarketplaceApps() {
               default: `Copy of ${app.manifest.name}`,
               message: `${message}. Enter a new name to create an app.?`,
             })
-            app.manifest.name = appName.name
+            app.manifest.name = appName
             await self.installAllPrivateAppsInDeveloperHub({ app, httpClient })
               .then(resolve)
               .catch(resolve)
@@ -264,7 +271,7 @@ function importMarketplaceApps() {
 
           if (ext) {
             cliux.print(
-              'WARNING!!! The app already exists and it may have its own configuration. But the current app we install has its own config which is used internally to manage content.',
+              `WARNING!!! The ${title} app already exists and it may have its own configuration. But the current app we install has its own config which is used internally to manage content.`,
               { color: 'yellow' }
             )
             const configOption = await cliux.inquire({
@@ -278,9 +285,9 @@ function importMarketplaceApps() {
               message: 'Choose the option to proceed'
             })
 
-            if (configOption.value === 'Exit') {
+            if (configOption === 'Exit') {
               process.exit()
-            } else if (configOption.value === 'Update with new config') {
+            } else if (configOption === 'Update with new config') {
               updateParam = {
                 app,
                 nodeCrypto,
@@ -315,7 +322,7 @@ function importMarketplaceApps() {
         reject()
       })
     })
-  } 
+  }
 
   /**
    * @method updateAppsConfig
