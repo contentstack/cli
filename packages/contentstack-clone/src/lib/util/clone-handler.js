@@ -168,7 +168,7 @@ class CloneHandler {
             const { branch } = await inquirer.prompt({
               type: 'list',
               name: 'branch',
-              message: 'Choose an branch',
+              message: 'Choose a branch',
               choices: result.map(row => row.uid),
             });
 
