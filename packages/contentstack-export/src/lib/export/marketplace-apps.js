@@ -24,6 +24,12 @@ function exportMarketplaceApps() {
   this.start = async (credentialConfig) => {
     config = credentialConfig;
     client = stack.Client(config);
+
+    if (!config.auth_token) {
+      cliux.print('WARNING!!! To export marketplace apps, you should be logged in. Kindly check csdx auth:login --help to login', { color: 'yellow' })
+      return Promise.resolve()
+    }
+
     log(credentialConfig, 'Starting marketplace app export', 'success');
     this.marketplaceAppPath = path.resolve(
       config.data, config.branchName || '',
