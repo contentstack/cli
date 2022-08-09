@@ -1,37 +1,38 @@
 const fs = require('fs')
-const path = require("path");
-const { expect, test } = require("@oclif/test");
-const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities");
+const path = require("path")
+const uniqBy = require('lodash/uniqBy')
+const { expect, test } = require("@oclif/test")
+const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 
-const { modules } = require('../../src/config/default');
 const { getAssetAndFolderCount } = require('./helper')
-const { PRINT_LOGS, API_KEY, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json");
+const { modules } = require('../../src/config/default')
+const { PRINT_LOGS, API_KEY, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
 
 const exportBasePath = path.join(
   __dirname,
   "..",
   "..",
   EXPORT_PATH
-);
+)
 const assetsBasePath = path.join(
   exportBasePath,
   modules.assets.dirName
-);
+)
 const assetsFolderPath = path.join(
   assetsBasePath,
   'folders.json'
-);
+)
 const assetsJson = path.join(
   assetsBasePath,
   modules.assets.fileName
-);
+)
 const messageFilePath = path.join(
   __dirname,
   "..",
   "..",
   "messages/index.json"
-);
-messageHandler.init({ messageFilePath });
+)
+messageHandler.init({ messageFilePath })
 const { promptMessageList } = require(messageFilePath)
 
 describe("ContentStack-Export plugin test", () => {
@@ -48,14 +49,14 @@ describe("ContentStack-Export plugin test", () => {
       })
       .stdout({ print: PRINT_LOGS || false })
       .command(["cm:stacks:export", "--module", "assets"])
-      .it("Check the exported assets and folder count match with the stack assets and folder counts", async () => {
+      .it("Check the exported assets and folder count match with the stack assets and folder count", async () => {
         let exportedAssetsCount = 0
         let exportedAssetsFolderCount = 0
         const { assetCount, folderCount } = await getAssetAndFolderCount()
 
         try {
           if (fs.existsSync(assetsFolderPath)) {
-            exportedAssetsFolderCount = JSON.parse(fs.readFileSync(assetsFolderPath, 'utf-8')).length
+            exportedAssetsFolderCount = uniqBy(JSON.parse(fs.readFileSync(assetsFolderPath, 'utf-8')), 'uid').length
           }
           if (fs.existsSync(assetsJson)) {
             exportedAssetsCount = Object.keys(JSON.parse(fs.readFileSync(assetsJson, 'utf-8'))).length
@@ -66,8 +67,8 @@ describe("ContentStack-Export plugin test", () => {
 
         expect(assetCount).to.be.an('number').eq(exportedAssetsCount)
         expect(folderCount).to.be.an('number').eq(exportedAssetsFolderCount)
-      });
-  });
+      })
+  })
 
   describe("Export assets using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\"", () => {
     test
@@ -77,16 +78,14 @@ describe("ContentStack-Export plugin test", () => {
       .it("Check the exported assets and folder count match with the stack assets and folder counts", async () => {
         let exportedAssetsCount = 0
         let exportedAssetsFolderCount = 0
-        const { assetCount, folderCount } = await getAssetAndFolderCount()
+        const { assetCount, folderCount } = await getAssetAndFolderCount();
 
         try {
           if (fs.existsSync(assetsFolderPath)) {
-            const array = JSON.parse(fs.readFileSync(assetsFolderPath, 'utf-8'))
-            exportedAssetsFolderCount = array.length
+            exportedAssetsFolderCount = uniqBy(JSON.parse(fs.readFileSync(assetsFolderPath, 'utf-8')), 'uid').length
           }
           if (fs.existsSync(assetsJson)) {
-            const json = JSON.parse(fs.readFileSync(assetsJson, 'utf-8'))
-            exportedAssetsCount = Object.keys(json || {}).length
+            exportedAssetsCount = Object.keys(JSON.parse(fs.readFileSync(assetsJson, 'utf-8'))).length
           }
         } catch (error) {
           console.trace(error)
@@ -94,6 +93,6 @@ describe("ContentStack-Export plugin test", () => {
 
         expect(assetCount).to.be.an('number').eq(exportedAssetsCount)
         expect(folderCount).to.be.an('number').eq(exportedAssetsFolderCount)
-      });
-  });
-});
+      })
+  })
+})
