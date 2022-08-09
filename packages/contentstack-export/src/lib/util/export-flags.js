@@ -11,7 +11,7 @@ const helper = require('../util/helper');
 let _ = require('lodash');
 const { cliux } = require('@contentstack/cli-utilities');
 
-exports.configWithMToken = function (config, managementTokens, host, contentTypes, branchName, securedAssets, moduleName) {
+exports.configWithMToken = async function (config, managementTokens, host, contentTypes, branchName, securedAssets, moduleName) {
   let externalConfig = require(config);
   defaultConfig.securedAssets = securedAssets;
   defaultConfig.management_token = managementTokens.token;
@@ -27,7 +27,7 @@ exports.configWithMToken = function (config, managementTokens, host, contentType
     }
   }
   defaultConfig = _.merge(defaultConfig, externalConfig);
-  initial(defaultConfig);
+  await initial(defaultConfig);
 };
 
 exports.parameterWithMToken = async function (
@@ -87,10 +87,10 @@ exports.withoutParameterMToken = async (
   }
   defaultConfig.source_stack = stackUid;
   defaultConfig.data = pathOfExport;
-  initial(defaultConfig);
+  await initial(defaultConfig);
 };
 
-exports.configWithAuthToken = function (config, _authToken, moduleName, host, contentTypes, branchName, securedAssets) {
+exports.configWithAuthToken = async function (config, _authToken, moduleName, host, contentTypes, branchName, securedAssets) {
   let externalConfig = helper.readFile(path.resolve(config));
   defaultConfig.auth_token = _authToken;
   defaultConfig.host = host.cma;
@@ -105,7 +105,7 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host, co
     }
   }
   defaultConfig = _.merge(defaultConfig, externalConfig);
-  initial(defaultConfig);
+  await initial(defaultConfig);
 };
 
 exports.parametersWithAuthToken = function (
@@ -133,8 +133,7 @@ exports.parametersWithAuthToken = function (
     defaultConfig.cdn = host.cda;
     defaultConfig.data = data;
     defaultConfig.securedAssets = securedAssets;
-    var exportStart = initial(defaultConfig);
-    exportStart
+    await initial(defaultConfig)
       .then(() => {
         return resolve();
       })
@@ -168,5 +167,5 @@ exports.withoutParametersWithAuthToken = async (
   defaultConfig.data = pathOfExport;
   defaultConfig.host = host.cma;
   defaultConfig.cdn = host.cda;
-  initial(defaultConfig);
+  await initial(defaultConfig);
 };
