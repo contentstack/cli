@@ -35,7 +35,7 @@ const messageFilePath = path.join(
 messageHandler.init({ messageFilePath })
 const { promptMessageList } = require(messageFilePath)
 
-describe("ContentStack-Export plugin test", () => {
+describe("ContentStack-Export plugin test [--module=assets]", () => {
   describe("Export assets using cm:stacks:export command without any flags", () => {
     test
       .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
