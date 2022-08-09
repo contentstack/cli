@@ -3,7 +3,7 @@ const path = require("path")
 const { expect, test } = require("@oclif/test")
 const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 
-const { getLocalesCount } = require('./helper')
+const { getLocalesCount } = require('./utils/helper')
 const { modules } = require('../../src/config/default')
 const { PRINT_LOGS, API_KEY, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
 
