@@ -28,6 +28,34 @@ const getAssetAndFolderCount = () => {
   })
 }
 
+const getLocalesCount = () => {
+  return new Promise(async (resolve) => {
+    const localeConfig = config.modules.locales;
+    const masterLocale = config.master_locale;
+    const requiredKeys = localeConfig.requiredKeys;
+    const queryVariables = {
+      limit: 1,
+      asc: 'updated_at',
+      include_count: true,
+      query: {
+        code: {
+          $nin: [masterLocale.code]
+        },
+      },
+      only: {
+        BASE: [requiredKeys]
+      }
+    }
+    const localeCount = await getStack()
+      .locale()
+      .query(queryVariables)
+      .find()
+      .then(({ count }) => count)
+
+    resolve(localeCount)
+  })
+}
+
 const readJsonFileContents = (filePath) => {
   return new Promise((resolve, reject) => {
     try {
@@ -68,6 +96,7 @@ const readJsonFileContents = (filePath) => {
 
 module.exports = {
   getStack,
+  getLocalesCount,
   readJsonFileContents,
   getAssetAndFolderCount
 }
