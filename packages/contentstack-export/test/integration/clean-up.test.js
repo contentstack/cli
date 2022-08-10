@@ -43,6 +43,15 @@ describe("Clear all the configurations used to perform the export.", () => {
       .stdout({ print: PRINT_LOGS || false })
       .do(() => {
         if (config && config.path) {
+          let keyPath = config.path.split('/')
+          keyPath.pop()
+          keyPath.push(`${process.env.ENC_CONFIG_NAME}.json`)
+          keyPath = keyPath.join('/')
+
+          if (existsSync(keyPath)) {
+            unlinkSync(keyPath) // NOTE remove test config encryption key file
+          }
+
           if (existsSync(config.path)) {
             unlinkSync(config.path) // NOTE remove test config file
             console.log('Config file removed.!')
