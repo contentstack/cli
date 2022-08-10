@@ -1,6 +1,6 @@
 'use strict';
 
-const { cli } = require('cli-ux');
+const { cliux } = require('@contentstack/cli-utilities');
 
 const { start } = require('../producer/publish-unpublished-env');
 const { prettyPrint, formatError } = require('../util');
@@ -24,14 +24,17 @@ async function publishOnlyUnpublishedService(UnpublishedEntriesCommand) {
     let stack;
     if (!updatedFlags.retryFailed) {
       if (!updatedFlags.alias) {
-        updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used');
+        updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
       }
       updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
       // Validate management token alias.
       try {
         this.getToken(updatedFlags.alias);
       } catch (error) {
-        this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, {exit: 2})
+        this.error(
+          `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
+          { exit: 2 },
+        );
       }
       config = {
         alias: updatedFlags.alias,
@@ -80,10 +83,9 @@ function validate({ contentTypes, environments, sourceEnv, locale, retryFailed }
   }
 
   if (missing.length > 0) {
-    this.error(
-      `${missing.join(', ')} are required for processing this command. Please check --help for more details`,
-      { exit: 2 },
-    );
+    this.error(`${missing.join(', ')} are required for processing this command. Please check --help for more details`, {
+      exit: 2,
+    });
   } else {
     return true;
   }
@@ -94,7 +96,7 @@ async function confirmFlags(data) {
   if (data.yes) {
     return true;
   }
-  return cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+  return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
 }
 
 function flagsAdapter(flags) {
