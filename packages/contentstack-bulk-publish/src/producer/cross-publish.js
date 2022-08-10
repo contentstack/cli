@@ -11,7 +11,6 @@ const { validateFile } = require('../util/fs');
 const queue = getQueue();
 const entryQueue = getQueue();
 const assetQueue = getQueue();
-const { setDelayForBulkPublish } = require('../util');
 const { Command } = require('@contentstack/cli-command');
 const command = new Command();
 const { isEmpty } = require('../util');
