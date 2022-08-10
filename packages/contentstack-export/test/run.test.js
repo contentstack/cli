@@ -7,7 +7,18 @@ const includes = require("lodash/includes");
 const { existsSync, readdirSync } = require("fs");
 const { INTEGRATION_EXECUTION_ORDER, IS_TS } = require("./config.json");
 
+let testType = 'integration'
+const args = process.argv.slice(2);
 const testFileExtension = IS_TS ? '.ts' : '.js'
+
+if (includes(args, "--unit-test")) {
+  testType = 'unit'
+}
+
+process.env.ENCRYPT_CONF = true
+process.env.ENC_KEY = `${testType}TestEncryptionKey`;
+process.env.CONFIG_NAME = `${testType}_test_contentstack_cli`;
+process.env.ENC_CONFIG_NAME = `${testType}_test_contentstack_cli_obfuscate`;
 
 /**
  * @method getFileName
@@ -36,6 +47,20 @@ const includeInitFileIfExist = (basePath) => {
 }
 
 /**
+ * @method includeCleanUpFileIfExist
+ * @param {String} basePath 
+ */
+const includeCleanUpFileIfExist = (basePath) => {
+  const filePath = join(__dirname, basePath, `clean-up.test${testFileExtension}`);
+
+  try {
+    if (existsSync(filePath)) {
+      require(filePath);
+    }
+  } catch (err) { }
+}
+
+/**
  * @method includeTestFiles
  * @param {Array<string>} files
  * @param {string} basePath
@@ -43,7 +68,12 @@ const includeInitFileIfExist = (basePath) => {
 const includeTestFiles = (files, basePath = "integration") => {
   includeInitFileIfExist(basePath) // NOTE Run all the pre configurations
 
-  forEach(filter(files, (name) => !includes('init.test.js', name)), (file) => {
+  files = filter(files, (name) => (
+    !includes(`init.test${testFileExtension}`, name) &&
+    !includes(`clean-up.test${testFileExtension}`, name)
+  )) // NOTE remove init, clean-up files
+
+  forEach(files, (file) => {
     const filename = getFileName(file);
     const filePath = join(__dirname, basePath, filename);
     try {
@@ -54,6 +84,8 @@ const includeTestFiles = (files, basePath = "integration") => {
       }
     } catch (err) { }
   });
+
+  includeCleanUpFileIfExist(basePath) // NOTE run all cleanup code/commands
 };
 
 /**
@@ -78,8 +110,6 @@ const run = (
     includeTestFiles(allIntegrationTestFiles);
   }
 };
-
-const args = process.argv.slice(2);
 
 if (includes(args, "--integration-test")) {
   run(INTEGRATION_EXECUTION_ORDER);
