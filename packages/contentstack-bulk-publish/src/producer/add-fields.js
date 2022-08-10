@@ -6,13 +6,9 @@
 /* eslint-disable no-console */
 /* eslint-disable max-params */
 const { getQueue } = require('../util/queue');
-const defaultConfig = require('../config/defaults.json');
 const { performBulkPublish, publishEntry, initializeLogger } = require('../consumer/publish');
 const retryFailedLogs = require('../util/retryfailed');
 const { validateFile } = require('../util/fs');
-const { setDelayForBulkPublish } = require('../util');
-const { Command } = require('@contentstack/cli-command');
-const command = new Command();
 const { isEmpty } = require('../util');
 
 const queue = getQueue();
