@@ -1,13 +1,12 @@
 /* eslint-disable no-console */
 /* eslint-disable node/no-extraneous-require */
 const { Command, flags } = require('@contentstack/cli-command');
-const { cli } = require('cli-ux');
 const { start } = require('../../../producer/unpublish');
 const store = require('../../../util/store.js');
 const configKey = 'Unpublish';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
-const { printFlagDeprecation } = require('@contentstack/cli-utilities');
+const { printFlagDeprecation, cliux } = require('@contentstack/cli-utilities');
 let config;
 
 class UnpublishCommand extends Command {
@@ -37,10 +36,10 @@ class UnpublishCommand extends Command {
       let stack;
       if (!updatedFlags.retryFailed) {
         if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used');
+          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
         }
         if (!updatedFlags.deliveryToken) {
-          updatedFlags.deliveryToken = await cli.prompt('Enter delivery token of your source environment');
+          updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token of your source environment');
         }
         updatedFlags.bulkUnpublish = updatedFlags.bulkUnpublish === 'false' ? false : true;
         // Validate management token alias.
@@ -132,11 +131,11 @@ class UnpublishCommand extends Command {
     }
 
     if (!data.contentType && !data.onlyAssets) {
-      confirmation = await cli.confirm(
+      confirmation = await cliux.confirm(
         'Do you want to continue with this configuration. This will unpublish all the entries from all content types? [yes or no]',
       );
     } else {
-      confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+      confirmation = await cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
     }
     return confirmation;
   }
@@ -277,6 +276,7 @@ UnpublishCommand.examples = [
 
 UnpublishCommand.aliases = ['cm:bulk-publish:unpublish'];
 
-UnpublishCommand.usage = 'csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]'
+UnpublishCommand.usage =
+  'csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]';
 
 module.exports = UnpublishCommand;
