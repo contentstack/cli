@@ -1,6 +1,6 @@
 {
   "PRINT_LOGS": false,
-  "ENCRYPTION_KEY": "***REMOVED***",
+  "ENCRYPTION_KEY": "key",
   "USERNAME": "***REMOVED***|***REMOVED***",
   "PASSWORD": "***REMOVED***|***REMOVED***"
 }

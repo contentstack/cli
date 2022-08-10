@@ -82,7 +82,7 @@ describe('contentstack-auth plugin test', () => {
     test
       .stdout({ print: PRINT_LOGS || false })
       .command(['auth:login', `-u=${username}`, `-p=${password}`])
-      .it('Login should fail due to wrong credentials.!', (ctx) => {
+      .it('Login should succeed!', (ctx) => {
         expect(ctx.stdout).to.a('string').includes('Successfully logged in!!');
       });
   });
