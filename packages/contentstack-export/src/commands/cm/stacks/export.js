@@ -41,7 +41,15 @@ class ExportCommand extends Command {
 
       if (managementTokens) {
         if (extConfig) {
-          await configWithMToken(extConfig, managementTokens, host, contentTypes, branchName, securedAssets, moduleName);
+          await configWithMToken(
+            extConfig,
+            managementTokens,
+            host,
+            contentTypes,
+            branchName,
+            securedAssets,
+            moduleName,
+          );
         } else if (data) {
           await parameterWithMToken(
             managementTokens,
@@ -105,7 +113,8 @@ ExportCommand.examples = [
   'csdx cm:stacks:export --module <single module name>',
   'csdx cm:stacks:export --branch [optional] branch name',
 ];
-ExportCommand.usage = 'cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]';
+ExportCommand.usage =
+  'cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]';
 
 ExportCommand.flags = {
   config: flags.string({
@@ -149,12 +158,14 @@ ExportCommand.flags = {
   module: flags.string({
     char: 'm',
     description: '[optional] specific module name',
+    exclusive: ['content-types'],
     parse: printFlagDeprecation(['-m'], ['--module']),
   }),
   'content-types': flags.string({
     char: 't',
     description: '[optional] content type',
     multiple: true,
+    exclusive: ['module'],
     parse: printFlagDeprecation(['-t'], ['--content-types']),
   }),
   branch: flags.string({

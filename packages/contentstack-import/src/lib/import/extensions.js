@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
 const chalk = require('chalk');
+const {isEmpty} = require('lodash');
 
 const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
@@ -52,9 +53,9 @@ importExtensions.prototype = {
     mkdirp.sync(extMapperPath);
 
     return new Promise(function (resolve, reject) {
-      if (self.extensions === undefined) {
+      if (self.extensions === undefined || isEmpty(self.extensions)) {
         addlogs(config, chalk.white('No Extensions Found'), 'success');
-        return resolve();
+        return resolve({ empty: true });
       }
       let extUids = Object.keys(self.extensions);
       return Promise.map(
