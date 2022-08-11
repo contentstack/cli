@@ -8,6 +8,7 @@ const mkdirp = require('mkdirp');
 const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
+const { isEmpty } = require('lodash');
 
 const helper = require('../util/fs');
 let { addlogs } = require('../util/log');
@@ -48,9 +49,9 @@ importEnvironments.prototype = {
 
     mkdirp.sync(envMapperPath);
     return new Promise(function (resolve, reject) {
-      if (self.environments === undefined) {
+      if (self.environments === undefined || isEmpty(self.environments)) {
         addlogs(config, chalk.yellow('No Environment Found'), 'success');
-        return resolve();
+        return resolve({ empty: true });
       }
 
       let envUids = Object.keys(self.environments);
