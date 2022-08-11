@@ -8,7 +8,7 @@ const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const eachOf = require('async/eachOf');
-const { HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
+const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
 
 let config = require('../../config/default');
 const { writeFile } = require('../util/helper');
