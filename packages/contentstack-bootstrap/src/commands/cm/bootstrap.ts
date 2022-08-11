@@ -1,43 +1,84 @@
-import { Command, flags } from '@contentstack/cli-command'
-const ContentstackManagementSDK = require('@contentstack/management')
-import Bootstrap, { BootstrapOptions } from '../../bootstrap'
-import {
-  inquireCloneDirectory,
-  inquireApp,
-  inquireGithubAccessToken,
-  inquireAppType,
-} from '../../bootstrap/interactive'
-import config, { getAppLevelConfigByName, AppConfig } from '../../config'
-import messageHandler from '../../messages'
+import { Command, flags } from '@contentstack/cli-command';
+const ContentstackManagementSDK = require('@contentstack/management');
+import Bootstrap, { BootstrapOptions, SeedParams } from '../../bootstrap';
+import { inquireCloneDirectory, inquireApp, inquireAppType } from '../../bootstrap/interactive';
+import { printFlagDeprecation } from '@contentstack/cli-utilities';
+import config, { getAppLevelConfigByName, AppConfig } from '../../config';
+import messageHandler from '../../messages';
+
 export default class BootstrapCommand extends Command {
-  private _managementAPIClient: any;
+  private bootstrapManagementAPIClient: any;
 
   static description = 'Bootstrap contentstack apps';
 
   static examples = [
     '$ csdx cm:bootstrap',
-    '$ csdx cm:bootstrap -d <path/to/setup/the/app>',
-    '$ csdx cm:bootstrap -t <github access token>',
+    '$ csdx cm:bootstrap --project-dir <path/to/setup/the/app>',
+    '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app>',
+    '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key"',
+    '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid" --stack-name "stack-name"',
   ];
 
   static flags = {
+    'app-name': flags.string({
+      description: 'App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter',
+      multiple: false,
+      required: false,
+    }),
+    'project-dir': flags.string({
+      description:
+        'Directory to setup the project. If directory name has a space then provide the path as a string or escap the space using back slash eg: "../../test space" or ../../test\\ space',
+      multiple: false,
+      required: false,
+    }),
+    'app-type': flags.string({
+      description: 'Sample or Starter app',
+      multiple: false,
+      required: false,
+      hidden: true,
+    }),
+    'stack-api-key': flags.string({
+      char: 'k',
+      description: 'Provide stack API key to seed content',
+      multiple: false,
+      required: false,
+      exclusive: ['org', 'stack-name'],
+    }),
+    org: flags.string({
+      description: 'Provide organization UID to create a new stack',
+      multiple: false,
+      required: false,
+      exclusive: ['stack-api-key'],
+    }),
+    'stack-name': flags.string({
+      char: 'n',
+      description: 'Name of a new stack that will be created.',
+      multiple: false,
+      required: false,
+      exclusive: ['stack-api-key'],
+    }),
+    yes: flags.string({
+      char: 'y',
+      required: false,
+    }),
+
+    // To be deprecated
     appName: flags.string({
       char: 'a',
       description: 'App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter',
       multiple: false,
       required: false,
+      hidden: true,
+      parse: printFlagDeprecation(['-a', '--appName'], ['--app-name']),
     }),
     directory: flags.string({
       char: 'd',
-      description: 'Directory to setup the project. If directory name has a space then provide the path as a string or escap the space using back slash eg: "../../test space" or ../../test\\ space',
+      description:
+        'Directory to set up the project. If directory name has a space then provide the path as a string or escape the space using backslash eg: "../../test space" or ../../test\\ space',
       multiple: false,
       required: false,
-    }),
-    accessToken: flags.string({
-      char: 't',
-      description: 'Access token for private github repo',
-      multiple: false,
-      required: false,
+      hidden: true,
+      parse: printFlagDeprecation(['-d', '--directory'], ['--project-dir']),
     }),
     appType: flags.string({
       char: 's',
@@ -45,73 +86,82 @@ export default class BootstrapCommand extends Command {
       multiple: false,
       required: false,
       hidden: true,
+      parse: printFlagDeprecation(['-s', '--appType'], ['--app-type']),
     }),
   };
 
   get managementAPIClient() {
-    this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this.authToken })
-    return this._managementAPIClient
+    this.bootstrapManagementAPIClient = ContentstackManagementSDK.client({
+      host: this.cmaHost,
+      authtoken: this.authToken,
+    });
+
+    return this.bootstrapManagementAPIClient;
   }
 
   async run() {
-    const bootstrapCommandFlags = this.parse(BootstrapCommand).flags
+    const bootstrapCommandFlags = this.parse(BootstrapCommand).flags;
 
     try {
       if (!this.authToken) {
-        this.error(messageHandler.parse("CLI_BOOTSTRAP_LOGIN_FAILED"), {
+        this.error(messageHandler.parse('CLI_BOOTSTRAP_LOGIN_FAILED'), {
           exit: 2,
-          suggestions: [
-            "https://www.contentstack.com/docs/developers/cli/authentication/",
-          ],
+          suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
         });
       }
 
       // inquire user inputs
-      let appType = (bootstrapCommandFlags.appType as string) || "starterapp";
+      let appType =
+        (bootstrapCommandFlags.appType as string) || (bootstrapCommandFlags['app-type'] as string) || 'starterapp';
       if (!appType) {
         appType = await inquireAppType();
       }
 
-      const selectedAppName = bootstrapCommandFlags.appName as string;
+      const selectedAppName =
+        (bootstrapCommandFlags.appName as string) || (bootstrapCommandFlags['app-name'] as string);
       let selectedApp;
       if (!selectedAppName) {
-        if (appType === "sampleapp") {
+        if (appType === 'sampleapp') {
           selectedApp = await inquireApp(config.sampleApps);
-        } else if (appType === "starterapp") {
+        } else if (appType === 'starterapp') {
           selectedApp = await inquireApp(config.starterApps);
         } else {
-          this.error("Invalid app type provided " + appType, { exit: 1 });
+          this.error('Invalid app type provided ' + appType, { exit: 1 });
         }
       }
 
       if (!selectedAppName && !selectedApp) {
-        this.error(messageHandler.parse("CLI_BOOTSTRAP_INVALID_APP_NAME"), {
+        this.error(messageHandler.parse('CLI_BOOTSTRAP_INVALID_APP_NAME'), {
           exit: 1,
         });
       }
 
-      const appConfig: AppConfig = getAppLevelConfigByName(
-        selectedAppName || selectedApp.configKey
-      );
+      const yes = bootstrapCommandFlags.yes as string;
 
-      let cloneDirectory = bootstrapCommandFlags.directory as string;
+      const appConfig: AppConfig = getAppLevelConfigByName(selectedAppName || selectedApp.configKey);
+
+      let cloneDirectory =
+        (bootstrapCommandFlags.directory as string) || (bootstrapCommandFlags['project-dir'] as string);
       if (!cloneDirectory) {
         cloneDirectory = await inquireCloneDirectory();
       }
 
-      // Check the access token
-      let accessToken = bootstrapCommandFlags.accessToken as string;
-      if (appConfig.private && !accessToken) {
-        accessToken = await inquireGithubAccessToken();
-      }
+      const seedParams: SeedParams = {};
+      const stackAPIKey = bootstrapCommandFlags['stack-api-key'];
+      const org = bootstrapCommandFlags['org'];
+      const stackName = bootstrapCommandFlags['stack-name'];
+      if (stackAPIKey) seedParams.stackAPIKey = stackAPIKey;
+      if (org) seedParams.org = org;
+      if (stackName) seedParams.stackName = stackName;
+      if (yes) seedParams.yes = yes;
 
       // initiate bootstrsourceap
       const options: BootstrapOptions = {
         appConfig,
+        seedParams,
         cloneDirectory,
         managementAPIClient: this.managementAPIClient,
         region: this.region,
-        accessToken,
         appType,
       };
       const bootstrap = new Bootstrap(options);

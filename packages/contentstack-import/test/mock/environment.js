@@ -1,17 +1,17 @@
 module.exports = {
       stackHeaders: {
-        api_key: '***REMOVED***',
-        authorization: '***REMOVED***'
+        api_key: 'dummyAPIKey',
+        authorization: 'dummyAuthorization'
       },
-      urlPath: '/environments/blt0d9e179deb12cbf2',
+      urlPath: '/environments/dummyuid',
       deploy_content: false,
       servers: [],
       urls: [Array],
       name: 'demo',
       _version: 1,
-      uid: 'blt0d9e179deb12cbf2',
-      created_by: '***REMOVED***',
-      updated_by: '***REMOVED***',
+      uid: 'dummyuid',
+      created_by: 'dummyuid',
+      updated_by: 'dummyuid',
       created_at: '2020-07-05T18:16:03.597Z',
       updated_at: '2020-07-05T18:16:03.597Z',
       ACL: [],

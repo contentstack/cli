@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 module.exports = {
   map: require('./map'),
@@ -18,4 +18,4 @@ module.exports = {
   getBatches: require('./get-batches'),
   autoRetry: require('./auto-retry'),
   contentstackSdk: require('./contentstack-sdk'),
-}
+};

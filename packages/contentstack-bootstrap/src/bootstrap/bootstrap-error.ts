@@ -2,15 +2,15 @@ export default class BootstrapError extends Error {
   suggestions: string[];
 
   constructor(message: string, suggestions: string[]) {
-    super(message)
+    super(message);
 
-    this.suggestions = suggestions
-    this.name = this.constructor.name
+    this.suggestions = suggestions;
+    this.name = this.constructor.name;
 
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, this.constructor)
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, this.constructor);
     } else {
-      this.stack = new Error(message).stack
+      this.stack = new Error(message).stack;
     }
   }
 }

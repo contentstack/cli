@@ -1,10 +1,9 @@
 const {expect, test} = require('@oclif/test')
 const nock = require('nock')
-const {cli} = require('cli-ux')
 const stack = require('../../src/util/client.js').stack
 
-const Configstore = require('configstore')
-const dummyConfig = new Configstore('contentstack_cli')
+const { cliux, configHandler } = require('@contentstack/cli-utilities');
+const dummyConfig = configHandler
 const store = require('../../src/util/store.js')
 
 const environmentResponse = require('../dummy/environment')
@@ -107,7 +106,7 @@ describe('unpublished-entries', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stub(store, 'updateMissing', (key, flags) => flags)
   .stderr()
   .command(['cm:bulk-publish:unpublished-entries'])
@@ -142,7 +141,7 @@ describe('unpublished-entries', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout()
   .command(['cm:bulk-publish:unpublished-entries', '-c', 'dummyContentType', '-e', 'dummyEnvironment', '-s', 'dummyEnvironment'])
   .it('runs hello', ctx => {
@@ -175,7 +174,7 @@ describe('unpublished-entries', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout()
   .command(['cm:bulk-publish:unpublished-entries', '-r', bulkPublishDraftsLog])
   .it('runs hello', ctx => {
@@ -208,7 +207,7 @@ describe('unpublished-entries', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout()
   .command(['cm:bulk-publish:unpublished-entries', '-c', 'dummyContentType', '-e', 'dummyEnvironment', '-s', 'dummyEnvironment', '--no-bulkPublish'])
   .it('runs command with --no-bulkPublish', ctx => {

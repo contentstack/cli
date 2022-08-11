@@ -1,74 +1,72 @@
-'use strict'
+'use strict';
 
 // Utils
-const {safePromise, constants, map: _map} = require('../utils')
-const {MANAGEMENT_SDK} = constants
-const {get, getMapInstance} = _map
-const mapInstance = getMapInstance()
-this.stackSDKInstance = get(MANAGEMENT_SDK, mapInstance)
+const { safePromise, constants, map: _map } = require('../utils');
+const { MANAGEMENT_SDK } = constants;
+const { get, getMapInstance } = _map;
+const mapInstance = getMapInstance();
+this.stackSDKInstance = get(MANAGEMENT_SDK, mapInstance);
 
 class LocaleService {
   constructor() {
-    this.stackSDKInstance = get(MANAGEMENT_SDK, mapInstance)
+    this.stackSDKInstance = get(MANAGEMENT_SDK, mapInstance);
   }
 
   async getLocale() {
-    const [err, result] = await safePromise(
-      this.stackSDKInstance.locale().query().find()
-    )
-    if (err) throw err
-    let orderedResult = this.getOrderedResult(result)
-    return orderedResult
+    const [err, result] = await safePromise(this.stackSDKInstance.locale().query().find());
+    if (err) throw err;
+    let orderedResult = this.getOrderedResult(result);
+    return orderedResult;
   }
 
   getOrderedResult(result) {
     if (result && result.items) {
-      const locales = result.items
+      const locales = result.items;
 
-      let i = 0
-      let noEventTookPlace = 0 // counter which tracks if the list is sorted by fallback language
-      let len = locales.length
+      let i = 0;
+      let noEventTookPlace = 0; // counter which tracks if the list is sorted by fallback language
+      let len = locales.length;
 
       // Circular loop (Time complexity => Order of n^2, complexity of splice op is ignored)
       do {
-        i = i % len + 1
-        noEventTookPlace++
+        i = (i % len) + 1;
+        noEventTookPlace++;
 
-        let correctedI = i - 1
+        let correctedI = i - 1;
 
-        let a = locales[correctedI]
+        let a = locales[correctedI];
 
         if (a.fallback_locale) {
-          let fallbackLangIndex = 0
-          let currentLangIndex = 0
+          let fallbackLangIndex = 0;
+          let currentLangIndex = 0;
 
           for (let x = 0; x < len; x++) {
             if (locales[x].code === a.code) {
-              currentLangIndex = x
+              currentLangIndex = x;
             }
             if (locales[x].code === a.fallback_locale) {
-              fallbackLangIndex = x
+              fallbackLangIndex = x;
             }
           }
 
           // if index of fallback langauge is smaller no operation is required, it might be sorted
           if (currentLangIndex > fallbackLangIndex) {
-            continue
+            continue;
           }
-          let temp = a
+          let temp = a;
           // remove the object
-          locales.splice(correctedI, 1)
+          locales.splice(correctedI, 1);
           // add the object at fallbackLangIndex cus size of locales is decremented
-          locales.splice(fallbackLangIndex, 0, temp)
-          i--
-          noEventTookPlace--
+          locales.splice(fallbackLangIndex, 0, temp);
+          i--;
+          noEventTookPlace--;
         }
-      } while (noEventTookPlace < len)
+      } while (noEventTookPlace < len);
 
-      return locales
+      return locales;
     }
-    throw {message: 'Something went wrong.'}
+    throw { message: 'Something went wrong.' };
   }
 }
 
-module.exports = LocaleService
+module.exports = LocaleService;

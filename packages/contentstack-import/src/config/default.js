@@ -14,22 +14,17 @@ module.exports = {
       'environments',
       'assets',
       'extensions',
-      'webhooks',
       'global-fields',
       'content-types',
       'workflows',
       'entries',
       'labels',
+      'webhooks',
     ],
     locales: {
       dirName: 'locales',
       fileName: 'locales.json',
-      requiredKeys: [
-        'code',
-        'uid',
-        'name',
-        'fallback_locale'
-      ],
+      requiredKeys: ['code', 'uid', 'name', 'fallback_locale'],
     },
     environments: {
       dirName: 'environments',
@@ -50,26 +45,12 @@ module.exports = {
     releases: {
       dirName: 'releases',
       fileName: 'releases.json',
-      invalidKeys: [
-        'stackHeaders',
-        'urlPath',
-        'created_at',
-        'updated_at',
-        'created_by',
-        'updated_by',
-      ],
+      invalidKeys: ['stackHeaders', 'urlPath', 'created_at', 'updated_at', 'created_by', 'updated_by'],
     },
     workflows: {
       dirName: 'workflows',
       fileName: 'workflows.json',
-      invalidKeys: [
-        'stackHeaders',
-        'urlPath',
-        'created_at',
-        'updated_at',
-        'created_by',
-        'updated_by',
-      ],
+      invalidKeys: ['stackHeaders', 'urlPath', 'created_at', 'updated_at', 'created_by', 'updated_by'],
     },
     assets: {
       dirName: 'assets',
@@ -77,38 +58,19 @@ module.exports = {
       // This is the total no. of asset objects fetched in each 'get assets' call
       limit: 100,
       host: 'https://api.contentstack.io',
-      validKeys: [
-        'uid',
-        'filename',
-        'url',
-        'status',
-      ],
+      validKeys: ['uid', 'filename', 'url', 'status'],
       assetBatchLimit: 1,
     },
     content_types: {
       dirName: 'content_types',
       fileName: 'content_types.json',
-      validKeys: [
-        'title',
-        'uid',
-        'schema',
-        'options',
-        'singleton',
-        'description',
-      ],
+      validKeys: ['title', 'uid', 'schema', 'options', 'singleton', 'description'],
       limit: 100,
     },
     entries: {
       dirName: 'entries',
       fileName: 'entries.json',
-      invalidKeys: [
-        'created_at',
-        'updated_at',
-        'created_by',
-        'updated_by',
-        '_metadata',
-        'published',
-      ],
+      invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by', '_metadata', 'published'],
       limit: 50,
       assetBatchLimit: 5,
     },
@@ -116,14 +78,7 @@ module.exports = {
     globalfields: {
       dirName: 'global_fields',
       fileName: 'globalfields.json',
-      validKeys: [
-        'title',
-        'uid',
-        'schema',
-        'options',
-        'singleton',
-        'description',
-      ],
+      validKeys: ['title', 'uid', 'schema', 'options', 'singleton', 'description'],
       limit: 100,
     },
     stack: {
@@ -339,7 +294,8 @@ module.exports = {
     'lt-uz-uz',
     'vi-vn',
     'xh',
-    'zu'],
+    'zu',
+  ],
 
   apis: {
     userSession: '/user-session/',
@@ -358,7 +314,7 @@ module.exports = {
   rateLimit: 5,
   preserveStackVersion: false,
   entriesPublish: true,
-  concurrency: 1
-//  ,useBackedupDir: '_backup_397'
+  concurrency: 1,
+  //  ,useBackedupDir: '_backup_397'
   // backupConcurrency: 10,
-}
+};

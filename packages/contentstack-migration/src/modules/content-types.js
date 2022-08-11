@@ -1,25 +1,25 @@
 /* eslint-disable camelcase */
-'use strict'
+'use strict';
 
-const Field = require('./fields')
+const Field = require('./fields');
 
 // Services
-const {ContentTypeService} = require('../services')
+const { ContentTypeService } = require('../services');
 
 // Config
-const {defaultOptions} = require('../config')
+const { defaultOptions } = require('../config');
 
 // Utils
-const {map: _map, schemaHelper, constants, getCallsite} = require('../utils')
+const { map: _map, schemaHelper, constants, getCallsite } = require('../utils');
 
 // Base class
-const Base = require('./base')
+const Base = require('./base');
 
 // Properties
-const {getMapInstance, set, get} = _map
-const {actions, validationAction} = constants
-const {getUid} = schemaHelper
-const {create, edit} = validationAction
+const { getMapInstance, set, get } = _map;
+const { actions, validationAction } = constants;
+const { getUid } = schemaHelper;
+const { create, edit } = validationAction;
 
 /**
  * ContentType class
@@ -28,8 +28,8 @@ const {create, edit} = validationAction
  */
 class ContentType extends Base {
   constructor() {
-    super()
-    this.contentTypeService = new ContentTypeService()
+    super();
+    this.contentTypeService = new ContentTypeService();
   }
 
   /**
@@ -45,39 +45,39 @@ class ContentType extends Base {
    * }
    */
   createContentType(id, opts = {}) {
-    const callsite = getCallsite()
+    const callsite = getCallsite();
     // base class method
-    let options = {...defaultOptions, ...opts}
-    delete options.title
-    delete options.description
-    this.dispatch(callsite, id, opts, create)
-    const {title, description} = opts
-    const mapInstance = getMapInstance()
+    let options = { ...defaultOptions, ...opts };
+    delete options.title;
+    delete options.description;
+    this.dispatch(callsite, id, opts, create);
+    const { title, description } = opts;
+    const mapInstance = getMapInstance();
 
-    const {CREATE_CT} = actions
-    const uid = getUid(id)
+    const { CREATE_CT } = actions;
+    const uid = getUid(id);
 
-    const ctObj = {content_type: {title, uid, description, options}}
+    const ctObj = { content_type: { title, uid, description, options } };
 
-    const ctActionObj = {[CREATE_CT]: ctObj}
+    const ctActionObj = { [CREATE_CT]: ctObj };
 
-    const {contentTypeService} = this
+    const { contentTypeService } = this;
     // Sets data to post in map object
-    set(id, mapInstance, ctActionObj)
+    set(id, mapInstance, ctActionObj);
     // Sets action and id in content type service
-    contentTypeService.setIdAndAction(id, CREATE_CT)
-    const tasks = [contentTypeService.postContentTypes.bind(contentTypeService, callsite, id, CREATE_CT)]
+    contentTypeService.setIdAndAction(id, CREATE_CT);
+    const tasks = [contentTypeService.postContentTypes.bind(contentTypeService, callsite, id, CREATE_CT)];
     const req = {
       title: `Adding content type: ${id}`,
       failMessage: `Failed to create content type: ${id}`,
       successMessage: `Successfully added content type: ${id}`,
       tasks,
-    }
-    let field = new Field(id, CREATE_CT, contentTypeService, req)
+    };
+    let field = new Field(id, CREATE_CT, contentTypeService, req);
     // TODO: should find better way to attach content type level methods
-    field.singleton = this.singleton
-    field.isPage = this.isPage
-    return field
+    field.singleton = this.singleton;
+    field.isPage = this.isPage;
+    return field;
   }
 
   /**
@@ -86,12 +86,12 @@ class ContentType extends Base {
    * @returns {ContentType} instance of ContentType for chaining
    */
   singleton(value) {
-    const mapInstance = getMapInstance()
-    const {id, action} = this
-    const contentType = get(id, mapInstance)
+    const mapInstance = getMapInstance();
+    const { id, action } = this;
+    const contentType = get(id, mapInstance);
 
-    contentType[action].content_type.options.singleton = value
-    return this
+    contentType[action].content_type.options.singleton = value;
+    return this;
   }
 
   /**
@@ -100,12 +100,12 @@ class ContentType extends Base {
    * @returns {ContentType} instance of ContentType for chaining
    */
   isPage(value) {
-    const mapInstance = getMapInstance()
-    const {id, action} = this
-    const contentType = get(id, mapInstance)
+    const mapInstance = getMapInstance();
+    const { id, action } = this;
+    const contentType = get(id, mapInstance);
 
-    contentType[action].content_type.options.is_page = value
-    return this
+    contentType[action].content_type.options.is_page = value;
+    return this;
   }
 
   /**
@@ -122,50 +122,50 @@ class ContentType extends Base {
    * }
    */
   editContentType(id, opts = {}) {
-    let options = {...defaultOptions, ...opts}
-    delete options.title
-    delete options.description
+    let options = { ...defaultOptions, ...opts };
+    delete options.title;
+    delete options.description;
 
-    const callsite = getCallsite()
+    const callsite = getCallsite();
     // base class method
-    this.dispatch(callsite, id, {}, edit)
-    const {title, description} = opts
-    const mapInstance = getMapInstance()
+    this.dispatch(callsite, id, {}, edit);
+    const { title, description } = opts;
+    const mapInstance = getMapInstance();
 
-    const {EDIT_CT} = actions
+    const { EDIT_CT } = actions;
 
-    const uid = id
+    const uid = id;
 
-    const ctObj = {content_type: {title, uid, description, options}}
-    const ctActionObj = {[EDIT_CT]: ctObj}
+    const ctObj = { content_type: { title, uid, description, options } };
+    const ctActionObj = { [EDIT_CT]: ctObj };
 
-    const {contentTypeService} = this
+    const { contentTypeService } = this;
 
     // Sets data to update in map object
-    let ctAction = get(id, mapInstance)
+    let ctAction = get(id, mapInstance);
 
-    set(id, mapInstance, {...ctActionObj, ...ctAction})
+    set(id, mapInstance, { ...ctActionObj, ...ctAction });
     // Sets action and id in content type service
-    contentTypeService.setIdAndAction(id, EDIT_CT)
+    contentTypeService.setIdAndAction(id, EDIT_CT);
     const tasks = [
       contentTypeService.fetchContentType.bind(contentTypeService, callsite, id),
       contentTypeService.applyActionsOnFields.bind(contentTypeService, callsite),
       contentTypeService.editContentType.bind(contentTypeService, callsite),
-    ]
+    ];
 
     const req = {
       title: `Editing content type: ${id}`,
       failMessage: `Failed to edit content type: ${id}`,
       successMessage: `Successfully updated content type: ${id}`,
       tasks,
-    }
+    };
 
     // Keeping the same instance of contentTypeService in Field class
-    let fieldI = new Field(id, EDIT_CT, contentTypeService, req)
+    let fieldI = new Field(id, EDIT_CT, contentTypeService, req);
     // TODO: should find better way to attach content type level methods
-    fieldI.singleton = this.singleton
-    fieldI.isPage = this.isPage
-    return fieldI
+    fieldI.singleton = this.singleton;
+    fieldI.isPage = this.isPage;
+    return fieldI;
   }
 
   /**
@@ -178,31 +178,31 @@ class ContentType extends Base {
    * }
    */
   deleteContentType(id) {
-    const callsite = getCallsite()
+    const callsite = getCallsite();
 
-    const mapInstance = getMapInstance()
+    const mapInstance = getMapInstance();
 
-    const {DELETE_CT} = actions
+    const { DELETE_CT } = actions;
 
-    const uid = getUid(id)
+    const uid = getUid(id);
 
-    const ctObj = {content_type: {uid, force: false}} // keep by default false
+    const ctObj = { content_type: { uid, force: false } }; // keep by default false
 
-    const ctActionObj = {[DELETE_CT]: ctObj}
+    const ctActionObj = { [DELETE_CT]: ctObj };
 
-    const {contentTypeService} = this
+    const { contentTypeService } = this;
 
     // Sets data to delete in map object
-    set(id, mapInstance, ctActionObj)
+    set(id, mapInstance, ctActionObj);
     // Sets action and id in content type service
-    contentTypeService.setIdAndAction(id, DELETE_CT)
+    contentTypeService.setIdAndAction(id, DELETE_CT);
 
-    const tasks = [contentTypeService.deleteContentType.bind(contentTypeService, callsite)]
+    const tasks = [contentTypeService.deleteContentType.bind(contentTypeService, callsite)];
 
-    const req = {title: 'Deleting content type', tasks}
+    const req = { title: 'Deleting content type', tasks };
 
-    return new Field(id, DELETE_CT, contentTypeService, req)
+    return new Field(id, DELETE_CT, contentTypeService, req);
   }
 }
 
-module.exports = ContentType
+module.exports = ContentType;
