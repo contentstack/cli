@@ -1,7 +1,7 @@
-const contentstacksdk = require("@contentstack/management");
-const https = require("https");
+const contentstacksdk = require('@contentstack/management');
+const https = require('https');
 
-const { addlogs } = require("./log");
+const { addlogs } = require('./log');
 
 exports.Client = function (config) {
   const option = {
@@ -25,19 +25,13 @@ exports.Client = function (config) {
     logHandler: (level, data) => {},
     retryCondition: (error) => {
       // no async function should be used here
-      if (
-        error.response &&
-        (error.response.status === 429 || error.response.status === 408)
-      ) {
-        return true;
-      }
-      return false;
+      return error.response && (error.response.status === 429 || error.response.status === 408);
     },
     retryDelayOptions: {
       base: 1000,
     },
   };
-  if (typeof config.branchName === "string") {
+  if (typeof config.branchName === 'string') {
     option.headers = {
       branch: config.branchName,
     };

@@ -4,34 +4,33 @@
  * MIT Licensed
  */
 
-var chalk = require('chalk')
-var mkdirp = require('mkdirp')
-var path = require('path')
+var chalk = require('chalk');
+var mkdirp = require('mkdirp');
+var path = require('path');
 
-var app = require('../../app')
-var helper = require('../util/helper')
-var { addlogs } = require('../util/log')
-const stack = require('../util/contentstack-management-sdk')
+var app = require('../../app');
+var helper = require('../util/helper');
+var { addlogs } = require('../util/log');
+const stack = require('../util/contentstack-management-sdk');
 
+let config = require('../../config/default');
 
-let config = require('../../config/default')
-
-var stackConfig = config.modules.stack
-let client
+var stackConfig = config.modules.stack;
+let client;
 
 function ExportStack() {
   this.requestOption = {
     uri: config.host + config.apis.stacks,
     headers: config.headers,
-    json: true
-  }
+    json: true,
+  };
 }
 
 ExportStack.prototype.start = function (credentialConfig) {
-  config = credentialConfig
-  client = stack.Client(config)
-  let self = this
-  if (!config.preserveStackVersion && !config.hasOwnProperty("master_locale")) {
+  config = credentialConfig;
+  client = stack.Client(config);
+  const self = this
+  if (!config.preserveStackVersion && !config.hasOwnProperty('master_locale')) {
     const apiDetails = {
       limit: 100,
       skip: 0,
@@ -39,23 +38,25 @@ ExportStack.prototype.start = function (credentialConfig) {
     }
     return self.getLocales(apiDetails)
   } else if (config.preserveStackVersion) {
-    addlogs(config, 'Exporting stack details', 'success')
-    let stackFolderPath = path.resolve(config.data, stackConfig.dirName)
-    let stackContentsFile = path.resolve(stackFolderPath, stackConfig.fileName)
+    addlogs(config, 'Exporting stack details', 'success');
+    let stackFolderPath = path.resolve(config.data, stackConfig.dirName);
+    let stackContentsFile = path.resolve(stackFolderPath, stackConfig.fileName);
 
-    mkdirp.sync(stackFolderPath)
+    mkdirp.sync(stackFolderPath);
 
     return new Promise((resolve, reject) => {
-      return client.stack({ api_key: config.source_stack }).fetch()
-        .then(response => {
-          helper.writeFile(stackContentsFile, response)
-          addlogs(config, 'Exported stack details successfully!', 'success')
-          return resolve(response)
+      return client
+        .stack({ api_key: config.source_stack })
+        .fetch()
+        .then((response) => {
+          helper.writeFile(stackContentsFile, response);
+          addlogs(config, 'Exported stack details successfully!', 'success');
+          return resolve(response);
         })
-        .catch(reject)
-    })
+        .catch(reject);
+    });
   }
-}
+};
 
 ExportStack.prototype.getLocales = function (apiDetails) {
   let self = this
@@ -88,4 +89,4 @@ ExportStack.prototype.getLocales = function (apiDetails) {
   });
 }
 
-module.exports = new ExportStack()
+module.exports = new ExportStack();

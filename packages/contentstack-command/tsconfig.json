@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "declaration": false,
+    "importHelpers": true,
+    "module": "commonjs",
+    "outDir": "lib",
+    "rootDir": "src",
+    "strict": false,
+    "target": "es2017",
+    "sourceMap": false,
+    "allowJs": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*",
+    "../contentstack-config/src/types"
+  ],
+  "exclude": [
+    "src/**/*.d.ts"
+  ]
+}

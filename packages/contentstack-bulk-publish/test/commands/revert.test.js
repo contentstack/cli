@@ -2,9 +2,8 @@ const {expect, test} = require('@oclif/test')
 const nock = require('nock')
 
 const stack = require('../../src/util/client.js').stack
-const Configstore = require('configstore')
-const {cli} = require('cli-ux')
-const dummyConfig = new Configstore('contentstack_cli')
+const { cliux, configHandler } = require('@contentstack/cli-utilities');
+const dummyConfig = configHandler
 const store = require('../../src/util/store.js')
 
 const entriesLogFileName = '1587758242717.PublishEntries.success'
@@ -72,7 +71,7 @@ describe('revert', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stdout({print: true})
   .command(['cm:bulk-publish:revert', '-l', entriesLogFileName])
   .it('revert entries', ctx => {
