@@ -42,7 +42,7 @@ describe("ContentStack-Export plugin test [--module=assets]", () => {
       .stub(cliUX, "prompt", async (name) => {
         switch (name) {
           case promptMessageList.promptSourceStack:
-            return API_KEY
+            return API_KEY || undefined
           case promptMessageList.promptPathStoredData:
             return EXPORT_PATH
         }
@@ -74,7 +74,7 @@ describe("ContentStack-Export plugin test [--module=assets]", () => {
     test
       .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
       .stdout({ print: PRINT_LOGS || false })
-      .command(["cm:stacks:export", "--stack-api-key", API_KEY, "--data-dir", EXPORT_PATH, "--module", "assets"])
+      .command(["cm:stacks:export", "--stack-api-key", API_KEY || undefined, "--data-dir", EXPORT_PATH, "--module", "assets"])
       .it("Check the exported assets and folder count match with the stack assets and folder counts", async () => {
         let exportedAssetsCount = 0
         let exportedAssetsFolderCount = 0
