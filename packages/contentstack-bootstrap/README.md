@@ -1,4 +1,4 @@
-Contentstack CLI’s “Bootstrap” plugin enables you to automate the process of setting up projects for sample and starter apps  in Contentstack.
+Contentstack CLI’s “Bootstrap” plugin enables you to automate the process of setting up projects for sample and starter apps in Contentstack.
 
 This means that all the required steps such as stack, environment, and content type creation, entry and asset publishing are performed just by using a single command.
 
@@ -6,20 +6,23 @@ This means that all the required steps such as stack, environment, and content t
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
 ```sh-session
 $ npm install -g @contentstack/cli-cm-bootstrap
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bootstrap/1.0.7 linux-x64 node-v16.14.2
+@contentstack/cli-cm-bootstrap/1.1.0 darwin-x64 node-v16.15.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
 <!-- usagestop -->
+
 ```sh-session
 $ npm install -g @contentstack/cli-cm-clone
 $ csdx COMMAND
@@ -29,7 +32,9 @@ USAGE
   $ csdx COMMAND
 ...
 ```
+
 # Commands
+
 <!-- commands -->
 * [`csdx cm:bootstrap`](#csdx-cmbootstrap)
 
@@ -42,20 +47,27 @@ USAGE
   $ csdx cm:bootstrap
 
 OPTIONS
-  -a, --appName=appName          App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter,
-                                 nuxt-starter
+  -k, --stack-api-key=stack-api-key  Provide stack API key to seed content
+  -n, --stack-name=stack-name        Name of a new stack that will be created.
+  -y, --yes=yes
 
-  -d, --directory=directory      Directory to setup the project. If directory name has a space then provide the path as
-                                 a string or escap the space using back slash eg: "../../test space" or ../../test\
-                                 space
+  --app-name=app-name                App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter,
+                                     nuxt-starter
 
-  -t, --accessToken=accessToken  Access token for private github repo
+  --org=org                          Provide organization UID to create a new stack
+
+  --project-dir=project-dir          Directory to setup the project. If directory name has a space then provide the path
+                                     as a string or escap the space using back slash eg: "../../test space" or
+                                     ../../test\ space
 
 EXAMPLES
   $ csdx cm:bootstrap
-  $ csdx cm:bootstrap -d <path/to/setup/the/app>
-  $ csdx cm:bootstrap -t <github access token>
+  $ csdx cm:bootstrap --project-dir <path/to/setup/the/app>
+  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app>
+  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key"
+  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid" 
+  --stack-name "stack-name"
 ```
 
-_See code: [src/commands/cm/bootstrap.ts](https://github.com/contentstack/cli/blob/v1.0.7/src/commands/cm/bootstrap.ts)_
+_See code: [src/commands/cm/bootstrap.ts](https://github.com/contentstack/cli/blob/v1.1.0/src/commands/cm/bootstrap.ts)_
 <!-- commandsstop -->

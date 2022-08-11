@@ -1,145 +1,259 @@
 /* eslint-disable node/no-extraneous-require */
-const {Command, flags} = require('@oclif/command')
-const {cli} = require('cli-ux')
-const {start} = require('../../../producer/cross-publish')
-const store = require('../../../util/store.js')
-const configKey = 'cross_env_publish'
-const { prettyPrint, formatError } = require('../../../util')
-const { getStack } = require('../../../util/client.js')
-let config
+const { Command, flags } = require('@contentstack/cli-command');
+const { cliux, printFlagDeprecation } = require('@contentstack/cli-utilities');
+const { start } = require('../../../producer/cross-publish');
+const store = require('../../../util/store.js');
+const configKey = 'cross_env_publish';
+const { prettyPrint, formatError } = require('../../../util');
+const { getStack } = require('../../../util/client.js');
+let config;
 
 class CrossPublishCommand extends Command {
   async run() {
-    const crossPublishFlags = this.parse(CrossPublishCommand).flags
-    let updatedFlags
+    const crossPublishFlags = this.flagsAdapter(this.parse(CrossPublishCommand).flags);
+    let updatedFlags;
     try {
-      updatedFlags = (crossPublishFlags.config) ? store.updateMissing(configKey, crossPublishFlags) : crossPublishFlags
-    } catch(error) {
-      this.error(error.message, {exit: 2})
+      updatedFlags = crossPublishFlags.config ? store.updateMissing(configKey, crossPublishFlags) : crossPublishFlags;
+    } catch (error) {
+      this.error(error.message, { exit: 2 });
     }
 
     if (this.validate(updatedFlags)) {
-      let stack
+      let stack;
       if (!updatedFlags.retryFailed) {
         if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used')
+          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
         }
         if (!updatedFlags.deliveryToken) {
-          updatedFlags.deliveryToken = await cli.prompt('Enter delivery token of your source environment')
+          updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token of your source environment');
         }
-        updatedFlags.bulkPublish = (updatedFlags.bulkPublish === 'false') ? false : true
-        await this.config.runHook('validateManagementTokenAlias', {alias: updatedFlags.alias})
+        updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
+        // Validate management token alias.
+        try {
+          this.getToken(updatedFlags.alias);
+        } catch (error) {
+          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, {exit: 2})
+        }
         config = {
           alias: updatedFlags.alias,
-          host: this.config.userConfig.getRegion().cma,
-          cda: this.config.userConfig.getRegion().cda,
+          host: this.region.cma,
+          cda: this.region.cda,
           branch: crossPublishFlags.branch,
-        }
-        stack = getStack(config)
+        };
+        stack = getStack(config);
       }
 
       if (!updatedFlags.deliveryToken && updatedFlags.deliveryToken.length === 0) {
-        this.error('Delivery Token is required for executing this command', {exit: 2})
+        this.error('Delivery Token is required for executing this command', { exit: 2 });
       }
 
       if (await this.confirmFlags(updatedFlags)) {
         try {
           if (!updatedFlags.retryFailed) {
-            await start(updatedFlags, stack, config)
+            await start(updatedFlags, stack, config);
           } else {
-            await start(updatedFlags)
+            await start(updatedFlags);
           }
-        } catch(error) {
-          let message = formatError(error)
-          this.error(message, {exit: 2})
+        } catch (error) {
+          let message = formatError(error);
+          this.error(message, { exit: 2 });
         }
       } else {
-        this.exit(0)
+        this.exit(0);
       }
     }
   }
 
-  validate({environment, retryFailed, destEnv, onlyAssets, contentType, onlyEntries, locale}) {
-    let missing = []
+  validate({ environment, retryFailed, destEnv, onlyAssets, contentType, onlyEntries, locale }) {
+    let missing = [];
     if (retryFailed) {
-      return true
+      return true;
     }
 
     if (onlyAssets && onlyEntries) {
-      this.error(`The flags onlyAssets and onlyEntries need not be used at the same time. Unpublish command unpublishes entries and assts at the same time by default`)
+      this.error(
+        `The flags onlyAssets and onlyEntries need not be used at the same time. Unpublish command unpublishes entries and assts at the same time by default`,
+      );
     }
 
     if (onlyAssets && contentType) {
-      this.error(`Specifying content-type and onlyAssets together will have unexpected results. Please do not use these 2 flags together. Thank you.`)
+      this.error(
+        `Specifying content-type and onlyAssets together will have unexpected results. Please do not use these 2 flags together. Thank you.`,
+      );
     }
 
     if (!environment) {
-      missing.push('Environment')
+      missing.push('Environment');
     }
 
     if (!destEnv) {
-      missing.push('Destination Environment')
+      missing.push('Destination Environment');
     }
 
     if (!locale) {
-      missing.push('Locale')
+      missing.push('Locale');
     }
 
     if (missing.length > 0) {
-      this.error(`${missing.join(', ')} is required for processing this command. Please check --help for more details`, {exit: 2})
+      this.error(
+        `${missing.join(', ')} is required for processing this command. Please check --help for more details`,
+        { exit: 2 },
+      );
     } else {
-      return true
+      return true;
     }
   }
 
   async confirmFlags(data) {
-    prettyPrint(data)
+    prettyPrint(data);
     if (data.yes) {
-      return true
+      return true;
     }
-    const confirmation = await cli.confirm('Do you want to continue with this configuration ? [yes or no]')
-    return confirmation
+    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
+  }
+
+  flagsAdapter(flags) {
+    if ('content-type' in flags) {
+      flags.contentType = flags['content-type'];
+      delete flags['content-type'];
+    }
+    if ('locales' in flags) {
+      flags.locale = flags.locales;
+      delete flags['locales'];
+    }
+    if ('retry-failed' in flags) {
+      flags.retryFailed = flags['retry-failed'];
+      delete flags['retry-failed'];
+    }
+    if ('bulk-publish' in flags) {
+      flags.bulkPublish = flags['bulk-publish'];
+      delete flags['bulk-publish'];
+    }
+    if ('source-env' in flags) {
+      flags.environment = flags['source-env'];
+      delete flags['source-env'];
+    }
+    if ('environments' in flags) {
+      flags.destEnv = flags['environments'];
+      delete flags['environments'];
+    }
+    if ('delivery-token' in flags) {
+      flags.deliveryToken = flags['delivery-token'];
+      delete flags['delivery-token'];
+    }
+    return flags;
   }
 }
 
 CrossPublishCommand.description = `Publish entries and assets from one environment to other environments
-The cross-publish command is used for publishing entries and assets from one evironment to other environments
+The cross-publish command is used to publish entries and assets from one environment to other environments
 
-Content Type, Environment, Destination Environment(s) and Locale are required for executing the command successfully
+Note: Content Type, Environment, Destination Environment(s) and Locale are required to execute the command successfully
 But, if retryFailed flag is set, then only a logfile is required
-`
+`;
 
 CrossPublishCommand.flags = {
-  alias: flags.string({char: 'a', description: 'Alias for the management token to be used'}),
-  retryFailed: flags.string({char: 'r', description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)'}),
-  bulkPublish: flags.string({char: 'b', description: 'This flag is set to true by default. It indicates that contentstack\'s bulkpublish API will be used for publishing the entries', default: 'true'}),
-  contentType: flags.string({char: 't', description: 'Content-Type filter'}),
-  locale: flags.string({char: 'l', description: 'Locale filter'}),
-  environment: flags.string({char: 'e', description: 'Source Environment'}),
-  deliveryToken: flags.string({char: 'x', description: 'Delivery Token for source environment'}),
-  destEnv: flags.string({char: 'd', description: 'Destination Environments', multiple: true}),
-  config: flags.string({char: 'c', description: 'Path to config file to be used'}),
-  yes: flags.boolean({char: 'y', description: 'Agree to process the command with the current configuration'}),
-  branch: flags.string({char: 'B', default: 'main', description: 'Specify the branch to fetch the content from (default is main branch)'}),
-  onlyAssets: flags.boolean({description: 'Unpublish only assets', default: false}),
-  onlyEntries: flags.boolean({description: 'Unpublish only entries', default: false}),
-}
+  alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
+  retryFailed: flags.string({
+    char: 'r',
+    description: '(optional) Retry publishing failed entries from the logfile (this flag overrides all other flags)',
+    hidden: true,
+    parse: printFlagDeprecation(['--retryFailed', '-r'], ['--retry-failed']),
+  }),
+  'retry-failed': flags.string({
+    description: '(optional) Retry publishing failed entries from the logfile (this flag overrides all other flags)',
+  }),
+  bulkPublish: flags.string({
+    char: 'b',
+    hidden: true,
+    description:
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
+    default: 'true',
+    parse: printFlagDeprecation(['--bulkPublish', '-b'], ['--bulk-publish']),
+  }),
+  'bulk-publish': flags.string({
+    description:
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
+    default: 'true',
+  }),
+  contentType: flags.string({
+    char: 't',
+    description: 'The Content-Types from which entries need to be published',
+    multiple: true,
+    hidden: true,
+    parse: printFlagDeprecation(['--contentType', '-t'], ['--content-type']),
+  }),
+  'content-type': flags.string({
+    description: 'The Contenttypes from which entries will be published',
+    multiple: true,
+  }),
+  locale: flags.string({
+    hidden: true,
+    char: 'l',
+    description: 'Source locale',
+    parse: printFlagDeprecation(['-l'], ['--locales']),
+  }),
+  locales: flags.string({
+    description: 'Source locale',
+  }),
+  environment: flags.string({
+    char: 'e',
+    description: 'Source Environment',
+    hidden: true,
+    parse: printFlagDeprecation(['--environment', '-e'], ['--source-env']),
+  }),
+  'source-env': flags.string({
+    description: 'Source Env',
+  }),
+  destEnv: flags.string({
+    char: 'd',
+    description: 'Destination Environments',
+    multiple: true,
+    hidden: true,
+    parse: printFlagDeprecation(['--destEnv'], ['--environments']),
+  }),
+  'environments': flags.string({
+    description: 'Destination Environments',
+    multiple: true,
+  }),
+  deliveryToken: flags.string({
+    char: 'x',
+    description: 'Delivery token for source environment',
+    hidden: true,
+    parse: printFlagDeprecation(['--deliveryToken', '-x'], ['--delivery-token']),
+  }),
+  'delivery-token': flags.string({
+    description: 'Delivery token for source environment',
+  }),
+  config: flags.string({ char: 'c', description: 'Path to the config file' }),
+  yes: flags.boolean({ char: 'y', description: 'Agree to process the command with the current configuration' }),
+  branch: flags.string({
+    char: 'B',
+    default: 'main',
+    description: 'Specify the branch to fetch the content (by default the main branch is selected)',
+    parse: printFlagDeprecation(['-B']),
+  }),
+  onlyAssets: flags.boolean({ description: 'Unpublish only assets', default: false }),
+  onlyEntries: flags.boolean({ description: 'Unpublish only entries', default: false }),
+};
 
 CrossPublishCommand.examples = [
   'General Usage',
-  'csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]',
+  'csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN]',
   '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`',
   'csdx cm:bulk-publish:cross-publish --config [PATH TO CONFIG FILE]',
   'csdx cm:bulk-publish:cross-publish -c [PATH TO CONFIG FILE]',
   '',
-  'Using --retryFailed or -r flag',
-  'csdx cm:bulk-publish:cross-publish --retryFailed [LOG FILE NAME]',
+  'Using --retry-failed flag',
+  'csdx cm:bulk-publish:cross-publish --retry-failed [LOG FILE NAME]',
   'csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]',
   '',
-  'Using --branch or -B flag',
-  'csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]',
-]
+  'Using --branch flag',
+  'csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]',
+];
 
-module.exports = CrossPublishCommand
+CrossPublishCommand.usage = `cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`
+
+module.exports = CrossPublishCommand;

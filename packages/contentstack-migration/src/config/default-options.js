@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
-'use strict'
+'use strict';
 
 module.exports = {
   is_page: true,
   singleton: false,
-}
+};

@@ -1,12 +1,12 @@
 const { getAllLogs } = require('./logger');
-const {getStack} = require('./client.js')
+const { getStack } = require('./client.js');
 
 module.exports = async (filename, queue, Type) => {
   const logs = await getAllLogs(filename);
   if (logs.file.length > 0) {
     logs.file.forEach((log) => {
       if (Type === 'bulk') {
-        log.message.options.stack = getStack({alias: log.message.alias, host: log.message.host})
+        log.message.options.stack = getStack({ alias: log.message.alias, host: log.message.host });
         queue.Enqueue(log.message.options);
       }
       if (Type === 'publish') {
@@ -18,11 +18,15 @@ module.exports = async (filename, queue, Type) => {
             entryUid: log.message.options.entryUid,
             locale: log.message.options.locale,
             Type: 'entry',
-            stack: getStack({alias: log.message.alias, host: log.message.host})
+            stack: getStack({ alias: log.message.alias, host: log.message.host }),
           });
         } else {
           queue.assetQueue.Enqueue({
-            assetUid: log.message.options.assetUid, publish_details: log.message.options.publish_assets, environments: log.message.options.environments, Type: 'asset', stack: getStack({alias: log.message.alias, host: log.message.host})
+            assetUid: log.message.options.assetUid,
+            publish_details: log.message.options.publish_assets,
+            environments: log.message.options.environments,
+            Type: 'asset',
+            stack: getStack({ alias: log.message.alias, host: log.message.host }),
           });
         }
       }

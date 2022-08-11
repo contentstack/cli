@@ -1,45 +1,41 @@
 const path = require('path');
 const winston = require('winston');
-const homedir = require('os').homedir()
-const logsDir = path.join(homedir, 'contentstack-cli-logs', 'bulk-publish')
+const cwd = process.cwd();
+const logsDir = path.join(cwd, 'contentstack-cli-logs', 'bulk-publish');
 
 let filename;
 
 module.exports.getLoggerInstance = (fileName) => {
   filename = path.join(logsDir, fileName);
-  const logger = winston.createLogger({
+  return winston.createLogger({
     transports: [
       new winston.transports.File({ filename: `${filename}.error`, level: 'error' }),
       new winston.transports.File({ filename: `${filename}.success`, level: 'info' }),
     ],
   });
-  return logger;
 };
 
 /* eslint-disable no-multi-assign */
-const getFileLoggerInstance = module.exports.getFileLoggerInstance = (fileName) => {
+const getFileLoggerInstance = (module.exports.getFileLoggerInstance = (fileName) => {
   filename = path.join(logsDir, fileName);
-  const logger = winston.createLogger({
-    transports: [
-      new winston.transports.File({ filename }),
-    ],
-  });
-  return logger;
-};
-
-
-module.exports.getAllLogs = (fname) => new Promise((resolve, reject) => {
-  const options = {
-    limit: 1000000000000,
-    start: 0,
-    order: 'desc',
-  };
-  const logger = getFileLoggerInstance(fname);
-  logger.query(options, async (err, result) => {
-    if (err) return reject(err);
-    return resolve(result);
+  return winston.createLogger({
+    transports: [new winston.transports.File({ filename })],
   });
 });
+
+module.exports.getAllLogs = (fname) =>
+  new Promise((resolve, reject) => {
+    const options = {
+      limit: 1000000000000,
+      start: 0,
+      order: 'desc',
+    };
+    const logger = getFileLoggerInstance(fname);
+    logger.query(options, async (err, result) => {
+      if (err) return reject(err);
+      return resolve(result);
+    });
+  });
 
 module.exports.addLogs = (logger, data, Type) => {
   switch (Type) {
@@ -55,5 +51,5 @@ module.exports.addLogs = (logger, data, Type) => {
 };
 
 module.exports.getLogsDirPath = () => {
-  return logsDir
-}
+  return logsDir;
+};
