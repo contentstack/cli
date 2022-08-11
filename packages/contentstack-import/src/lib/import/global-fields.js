@@ -9,14 +9,14 @@ let fs = require('fs');
 let path = require('path');
 let Promise = require('bluebird');
 let chalk = require('chalk');
-const _ = require('lodash')
+const { isEmpty } = require('lodash');
 
 let helper = require('../util/fs');
 let { addlogs } = require('../util/log');
 let extension_supress = require('../util/extensionsUidReplace');
 let removeReferenceFields = require('../util/removeReferenceFields');
 const stack = require('../util/contentstack-management-sdk');
-const { getInstalledExtensions } = require('../util/marketplace-app-helper')
+const { getInstalledExtensions } = require('../util/marketplace-app-helper');
 
 let config = require('../../config/default');
 let reqConcurrency = config.concurrency;
@@ -40,7 +40,7 @@ function importGlobalFields() {
     headers: config.headers,
     method: 'POST',
   };
-  this.installedExtensions = []
+  this.installedExtensions = [];
 }
 
 importGlobalFields.prototype = {
@@ -70,16 +70,16 @@ importGlobalFields.prototype = {
       self.installedExtensions = helper.readFile(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
     }
 
-    if (_.isEmpty(self.installedExtensions)) {
-      self.installedExtensions = await getInstalledExtensions(config)
+    if (isEmpty(self.installedExtensions)) {
+      self.installedExtensions = await getInstalledExtensions(config);
     }
 
     client = stack.Client(config);
     return new Promise(function (resolve, reject) {
-      if (self.globalfields === undefined) {
+      if (self.globalfields === undefined || isEmpty(self.globalfields)) {
         addlogs(config, chalk.white('No globalfields Found'), 'success');
         helper.writeFile(globalFieldsPending, _globalField_pending);
-        return resolve();
+        return resolve({ empty: true });
       }
       let snipUids = Object.keys(self.globalfields);
       return Promise.map(
