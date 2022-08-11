@@ -1,33 +1,33 @@
-'use strict'
+'use strict';
 
 // Service
-const {LocaleService} = require('../services')
+const { LocaleService } = require('../services');
 
 // Config
-const {masterLocale} = require('../config')
+const { masterLocale } = require('../config');
 
 // Utils
-const {safePromise} = require('../utils')
+const { safePromise } = require('../utils');
 
 class Locale {
   constructor() {
-    this.localeService = new LocaleService()
+    this.localeService = new LocaleService();
   }
 
   async fetchLocales(callback) {
-    let {master_locale} = masterLocale
+    let { master_locale } = masterLocale;
 
-    let {localeService} = this
-    let [err, result] = await safePromise(localeService.getLocale())
+    let { localeService } = this;
+    let [err, result] = await safePromise(localeService.getLocale());
 
-    if (err) throw new Error(err)
+    if (err) throw new Error(err);
 
     // Use default code, if no result is found
-    result = result.length ? result : [master_locale]
+    result = result.length ? result : [master_locale];
 
-    if (callback) return callback(null, result)
-    return result
+    if (callback) return callback(null, result);
+    return result;
   }
 }
 
-module.exports = Locale
+module.exports = Locale;

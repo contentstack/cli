@@ -4,15 +4,15 @@
  * MIT Licensed
  */
 
-const mkdirp = require("mkdirp");
-const path = require("path");
-const chalk = require("chalk");
+const mkdirp = require('mkdirp');
+const path = require('path');
+const chalk = require('chalk');
 
-const stack = require("../util/contentstack-management-sdk");
-const helper = require("../util/helper");
-const { addlogs } = require("../util/log");
+const stack = require('../util/contentstack-management-sdk');
+const helper = require('../util/helper');
+const { addlogs } = require('../util/log');
 
-let config = require("../../config/default");
+let config = require('../../config/default');
 const limit = 100;
 const validKeys = config.modules.globalfields.validKeys;
 let globalfieldsFolderPath;
@@ -22,7 +22,7 @@ function ExportGlobalFields() {
   this.requestOptions = {
     qs: {
       include_count: true,
-      asc: "updated_at",
+      asc: 'updated_at',
       limit: limit,
     },
   };
@@ -34,16 +34,12 @@ ExportGlobalFields.prototype = {
   start: function (credentialConfig) {
     this.master = {};
     this.globalfields = {};
-    config = {...config, ...credentialConfig};
-    globalfieldsFolderPath = path.resolve(
-      config.data,
-      (config.branchName || ""),
-      globalfieldsConfig.dirName
-    );
+    config = { ...config, ...credentialConfig };
+    globalfieldsFolderPath = path.resolve(config.data, config.branchName || '', globalfieldsConfig.dirName);
     // Create folder for Global Fields
     mkdirp.sync(globalfieldsFolderPath);
     const self = this;
-    addlogs(config, "Starting Global Fields export", "success");
+    addlogs(config, 'Starting Global Fields export', 'success');
     return new Promise(function (resolve, reject) {
       try {
         return self
@@ -71,7 +67,7 @@ ExportGlobalFields.prototype = {
   },
   getGlobalFields: function (skip, globalFieldConfig) {
     const self = this;
-    if (typeof skip !== "number") {
+    if (typeof skip !== 'number') {
       skip = 0;
       self.requestOptions.qs.skip = skip;
     } else {
@@ -91,8 +87,8 @@ ExportGlobalFields.prototype = {
         .then((globalFieldResponse) => {
           try {
             if (globalFieldResponse.items.length === 0) {
-              addlogs(globalFieldConfig, "No global fields found", "success");
-              return resolve("No Global Fields");
+              addlogs(globalFieldConfig, 'No global fields found', 'success');
+              return resolve('No Global Fields');
             }
             globalFieldResponse.items.forEach(function (globalField) {
               for (const key in globalField) {
@@ -109,10 +105,7 @@ ExportGlobalFields.prototype = {
               return resolve();
             }
 
-            return self
-              .getGlobalFields(skip, globalFieldConfig)
-              .then(resolve)
-              .catch(reject);
+            return self.getGlobalFields(skip, globalFieldConfig).then(resolve).catch(reject);
           } catch (error) {
             return reject(error);
           }
@@ -122,15 +115,8 @@ ExportGlobalFields.prototype = {
   writeGlobalFields: function () {
     const self = this;
     return new Promise(function (resolve) {
-      helper.writeFile(
-        path.join(globalfieldsFolderPath, globalfieldsConfig.fileName),
-        self.global_fields
-      );
-      addlogs(
-        config,
-        chalk.green("Global Fields export completed successfully"),
-        "success"
-      );
+      helper.writeFile(path.join(globalfieldsFolderPath, globalfieldsConfig.fileName), self.global_fields);
+      addlogs(config, chalk.green('Global Fields export completed successfully'), 'success');
       return resolve();
     });
   },
