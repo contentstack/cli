@@ -4,7 +4,7 @@
  * MIT Licensed
  */
 
-var supress = module.exports = function (schema, flag) {
+var supress = (module.exports = function (schema, flag) {
   for (var i in schema) {
     if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
       supress(schema[i].schema, flag);
@@ -20,13 +20,15 @@ var supress = module.exports = function (schema, flag) {
         flag.jsonRteEmbeddedEntries = true;
     }
 
-    if ((schema[i].hasOwnProperty('mandatory') && schema[i].mandatory) || (schema[i].hasOwnProperty('unique') &&
-        schema[i].unique)) {
-      if(schema[i].uid !== 'title') {
+    if (
+      (schema[i].hasOwnProperty('mandatory') && schema[i].mandatory) ||
+      (schema[i].hasOwnProperty('unique') && schema[i].unique)
+    ) {
+      if (schema[i].uid !== 'title') {
         schema[i].unique = false;
         schema[i].mandatory = false;
         flag.suppressed = true;
-      }    
+      }
     }
   }
-};
+});

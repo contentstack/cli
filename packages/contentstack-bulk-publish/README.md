@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-cm-bulk-publish
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bulk-publish/0.1.1-beta.5 linux-x64 node-v12.22.7
+@contentstack/cli-cm-bulk-publish/1.0.0 darwin-x64 node-v16.15.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -29,18 +29,144 @@ USAGE
 # Commands
 
 <!-- commands -->
+* [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--content-types <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value---content-types-value)
+* [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
-* [`csdx cm:bulk-publish:add-fields`](#csdx-cmbulk-publishadd-fields)
-* [`csdx cm:bulk-publish:assets`](#csdx-cmbulk-publishassets)
-* [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
-* [`csdx cm:bulk-publish:configure`](#csdx-cmbulk-publishconfigure)
-* [`csdx cm:bulk-publish:cross-publish`](#csdx-cmbulk-publishcross-publish)
-* [`csdx cm:bulk-publish:entries`](#csdx-cmbulk-publishentries)
-* [`csdx cm:bulk-publish:entry-edits`](#csdx-cmbulk-publishentry-edits)
-* [`csdx cm:bulk-publish:nonlocalized-field-changes`](#csdx-cmbulk-publishnonlocalized-field-changes)
-* [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
-* [`csdx cm:bulk-publish:unpublish`](#csdx-cmbulk-publishunpublish)
-* [`csdx cm:bulk-publish:unpublished-entries`](#csdx-cmbulk-publishunpublished-entries)
+* [`csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`](#csdx-cmbulk-publishcross-publish--a-value---retry-failed-value---bulk-publish-value---content-type-value---locales-value---source-env-value---environments-value---delivery-token-value--c-value--y---branch-value---onlyassets---onlyentries)
+* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value)
+* [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
+* [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value)
+* [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
+* [`csdx cm:entries:unpublish`](#csdx-cmentriesunpublish)
+* [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
+* [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
+* [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
+* [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
+* [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
+* [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries)
+
+## `csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--content-types <value>]`
+
+Publish assets to the specified environments
+
+```
+USAGE
+  $ csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish 
+  <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>] 
+  [--content-types <value>]
+
+OPTIONS
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
+                                   is selected)
+
+  -a, --alias=alias                Alias(name) for the management token
+
+  -c, --config=config              Path to the config file
+
+  -e, --environments=environments  Environments where assets will be published
+
+  -l, --locales=locales            Locales to where assets will be published
+
+  -y, --yes                        Agree to process the command with the current configuration
+
+  --bulk-publish=bulk-publish      [default: true] By default this flag is set as true. It indicates that contentstack's
+                                   bulkpublish API will be used to publish the assets
+
+  --content-types=content-types    Content types
+
+  --delivery-token=delivery-token  Delivery token for source environment
+
+  --folder-uid=folder-uid          [default: cs_root] Folder-uid from where the assets will be published
+
+  --retry-failed=retry-failed      Retry publishing failed assets from the logfile (optional, will override all other
+                                   flags)
+
+  --source-env=source-env          Source environment
+
+DESCRIPTION
+  The assets command is used to publish assets from the specified stack, to the specified environments
+
+  Note: Environment(s) and Locale(s) are required to execute the command successfully
+  But, if retryFailed flag is set, then only a logfile is required
+
+ALIASES
+  $ csdx cm:bulk-publish:assets
+
+EXAMPLES
+  General Usage
+  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
+  ALIAS]
+
+  Using --config or -c flag
+  Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`
+  csdx cm:assets:publish --config [PATH TO CONFIG FILE]
+  csdx cm:assets:publish -c [PATH TO CONFIG FILE]
+
+  Using --retry-failed flag
+  csdx cm:assets:publish --retry-failed [LOG FILE NAME]
+
+  Using --branch flag
+  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
+  ALIAS] --branch [BRANCH NAME]
+
+  Using --source-env
+  csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
+  ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
+```
+
+_See code: [src/commands/cm/assets/publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/assets/publish.js)_
+
+## `csdx cm:assets:unpublish`
+
+Unpublish assets from given environment
+
+```
+USAGE
+  $ csdx cm:assets:unpublish
+
+OPTIONS
+  -a, --alias=alias                Alias(name) for the management token
+  -c, --config=config              Path to the config file
+  -e, --environment=environment    Source Environment
+  -y, --yes                        Agree to process the command with the current configuration
+
+  --branch=branch                  [default: main] Specify the branch to fetch the content (by default the main branch
+                                   is selected)
+
+  --bulk-unpublish=bulk-unpublish  [default: true] By default this flag is set as true. It indicates that contentstack's
+                                   bulkpublish API will be used to unpublish the assets
+
+  --delivery-token=delivery-token  Delivery Token for source environment
+
+  --locale=locale                  Locale filter
+
+  --retry-failed=retry-failed      Retry unpublishing failed assets from the logfile
+
+DESCRIPTION
+  The unpublish command is used for unpublishing assets from the given environment
+
+  Note: Environment (Source Environment) and Locale are required to execute the command successfully
+  But, if retry-failed flag is set, then only a logfile is required
+
+EXAMPLES
+  General Usage
+  csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN 
+  ALIAS] --delivery-token [DELIVERY TOKEN]
+
+  Using --config or -c flag
+  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure --alias [ALIAS]`
+  csdx cm:assets:unpublish --config [PATH TO CONFIG FILE]
+  csdx cm:assets:unpublish -c [PATH TO CONFIG FILE]
+
+  Using --retry-failed flag
+  csdx cm:assets:unpublish --retry-failed [LOG FILE NAME]
+
+  Using --branch flag
+  csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN 
+  ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
+```
+
+_See code: [src/commands/cm/assets/unpublish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/assets/unpublish.js)_
 
 ## `csdx cm:bulk-publish`
 
@@ -51,564 +177,645 @@ USAGE
   $ csdx cm:bulk-publish
 ```
 
-_See code: [src/commands/cm/bulk-publish/index.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/index.js)_
+_See code: [src/commands/cm/bulk-publish/index.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/index.js)_
 
-## `csdx cm:bulk-publish:add-fields`
-
-Add fields from updated content types to their respective entries
-
-```
-USAGE
-  $ csdx cm:bulk-publish:add-fields
-
-OPTIONS
-  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
-  -a, --alias=alias                Alias for the management token to be used
-
-  -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
-
-  -c, --config=config              Path to config file to be used
-
-  -e, --environments=environments  Environments to which entries need to be published
-
-  -l, --locales=locales            Locales to which entries need to be published
-
-  -r, --retryFailed=retryFailed    Retry publishing failed entries from the logfile (optional, overrides all other
-                                   flags)
-
-  -t, --contentTypes=contentTypes  The Content-Types from which entries need to be published
-
-  -y, --yes                        Agree to process the command with the current configuration
-
-DESCRIPTION
-  The add-fields command is used for updating already existing entries with the updated schema of their respective 
-  Content Type
-
-  Content Types, Environments and Locales are required for executing the command successfully
-  But, if retryFailed flag is set, then only a logfile is required
-
-EXAMPLES
-  General Usage
-  csdx cm:bulk-publish:add-fields -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] 
-  [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
-
-  Using --config or -c flag
-  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
-  csdx cm:bulk-publish:add-fields --config [PATH TO CONFIG FILE]
-  csdx cm:bulk-publish:add-fields -c [PATH TO CONFIG FILE]
-
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:add-fields --retryFailed [LOG FILE NAME]
-  csdx cm:bulk-publish:add-fields -r [LOG FILE NAME]
-
-  Using --branch or -B flag
-  csdx cm:bulk-publish:add-fields -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] 
-  [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
-```
-
-_See code: [src/commands/cm/bulk-publish/add-fields.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/add-fields.js)_
-
-## `csdx cm:bulk-publish:assets`
-
-Publish assets to specified environments
-
-```
-USAGE
-  $ csdx cm:bulk-publish:assets
-
-OPTIONS
-  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
-  -a, --alias=alias                Alias for the management token to be used
-
-  -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
-
-  -c, --config=config              Path to config file to be used
-
-  -e, --environments=environments  Environments to which assets need to be published
-
-  -l, --locales=locales            Locales to which assets need to be published
-
-  -r, --retryFailed=retryFailed    Retry publishing failed assets from the logfile (optional, will override all other
-                                   flags)
-
-  -u, --folderUid=folderUid        [default: cs_root] Folder-uid from which the assets need to be published
-
-  -y, --yes                        Agree to process the command with the current configuration
-
-DESCRIPTION
-  The assets command is used for publishing assets from the specified stack, to the specified environments
-
-  Environment(s) and Locale(s) are required for executing the command successfully
-  But, if retryFailed flag is set, then only a logfile is required
-
-EXAMPLES
-  General Usage
-  csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS]
-
-  Using --config or -c flag
-  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
-  csdx cm:bulk-publish:assets --config [PATH TO CONFIG FILE]
-  csdx cm:bulk-publish:assets -c [PATH TO CONFIG FILE]
-
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:assets --retryFailed [LOG FILE NAME]
-  csdx cm:bulk-publish:assets -r [LOG FILE NAME]
-
-  Using --branch or -B flag
-  csdx cm:bulk-publish:assets -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH 
-  NAME]
-```
-
-_See code: [src/commands/cm/bulk-publish/assets.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/assets.js)_
-
-## `csdx cm:bulk-publish:clear`
-
-Clear the log folder
-
-```
-USAGE
-  $ csdx cm:bulk-publish:clear
-
-OPTIONS
-  -l, --list  List number of log files
-  -y, --yes   Delete all files without asking for confirmation
-```
-
-_See code: [src/commands/cm/bulk-publish/clear.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/clear.js)_
-
-## `csdx cm:bulk-publish:configure`
-
-Generate configuration template
-
-```
-USAGE
-  $ csdx cm:bulk-publish:configure
-
-OPTIONS
-  -a, --alias=alias  Management token alias for the stack
-
-DESCRIPTION
-  The configure command is used for generating a configuration file for bulk-publish script.
-
-  Here is a detailed description for all the available flags
-
-  -----------------------------------------------------------------------------------------------------------
-  --alias or -a : Management token Alias for the stack in use.
-
-  EXAMPLE : cm:bulk-publish:configure --alias [MANAGEMENT TOKEN Alias]
-  EXAMPLE : cm:bulk-publish:configure -a [MANAGEMENT TOKEN Alias]
-```
-
-_See code: [src/commands/cm/bulk-publish/configure.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/configure.js)_
-
-## `csdx cm:bulk-publish:cross-publish`
+## `csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`
 
 Publish entries and assets from one environment to other environments
 
 ```
 USAGE
-  $ csdx cm:bulk-publish:cross-publish
+  $ csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type 
+  <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] 
+  [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]
 
 OPTIONS
-  -B, --branch=branch                [default: main] Specify the branch to fetch the content from (default is main
-                                     branch)
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
+                                   is selected)
 
-  -a, --alias=alias                  Alias for the management token to be used
+  -a, --alias=alias                Alias(name) for the management token
 
-  -b, --bulkPublish=bulkPublish      [default: true] This flag is set to true by default. It indicates that
-                                     contentstack's bulkpublish API will be used for publishing the entries
+  -c, --config=config              Path to the config file
 
-  -c, --config=config                Path to config file to be used
+  -y, --yes                        Agree to process the command with the current configuration
 
-  -d, --destEnv=destEnv              Destination Environments
+  --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used to publish the entries
 
-  -e, --environment=environment      Source Environment
+  --content-type=content-type      The Contenttypes from which entries will be published
 
-  -l, --locale=locale                Locale filter
+  --delivery-token=delivery-token  Delivery token for source environment
 
-  -r, --retryFailed=retryFailed      Retry publishing failed entries from the logfile (optional, overrides all other
-                                     flags)
+  --environments=environments      Destination Environments
 
-  -t, --contentType=contentType      Content-Type filter
+  --locales=locales                Source locale
 
-  -x, --deliveryToken=deliveryToken  Delivery Token for source environment
+  --onlyAssets                     Unpublish only assets
 
-  -y, --yes                          Agree to process the command with the current configuration
+  --onlyEntries                    Unpublish only entries
 
-  --onlyAssets                       Unpublish only assets
+  --retry-failed=retry-failed      (optional) Retry publishing failed entries from the logfile (this flag overrides all
+                                   other flags)
 
-  --onlyEntries                      Unpublish only entries
+  --source-env=source-env          Source Env
 
 DESCRIPTION
-  The cross-publish command is used for publishing entries and assets from one evironment to other environments
+  The cross-publish command is used to publish entries and assets from one environment to other environments
 
-  Content Type, Environment, Destination Environment(s) and Locale are required for executing the command successfully
+  Note: Content Type, Environment, Destination Environment(s) and Locale are required to execute the command 
+  successfully
   But, if retryFailed flag is set, then only a logfile is required
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
-  [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN]
+  csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION
+   ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN]
 
   Using --config or -c flag
   Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
   csdx cm:bulk-publish:cross-publish --config [PATH TO CONFIG FILE]
   csdx cm:bulk-publish:cross-publish -c [PATH TO CONFIG FILE]
 
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:cross-publish --retryFailed [LOG FILE NAME]
+  Using --retry-failed flag
+  csdx cm:bulk-publish:cross-publish --retry-failed [LOG FILE NAME]
   csdx cm:bulk-publish:cross-publish -r [LOG FILE NAME]
 
-  Using --branch or -B flag
-  csdx cm:bulk-publish:cross-publish -t [CONTENT TYPE] -e [SOURCE ENV] -d [DESTINATION ENVIRONMENT] -l [LOCALE] -a 
-  [MANAGEMENT TOKEN ALIAS] -x [DELIVERY TOKEN] -B [BRANCH NAME]
+  Using --branch flag
+  csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION
+   ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
 ```
 
-_See code: [src/commands/cm/bulk-publish/cross-publish.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
+_See code: [src/commands/cm/bulk-publish/cross-publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
 
-## `csdx cm:bulk-publish:entries`
+## `csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`
 
-Publish entries from multiple content-types to multiple environments and locales
+Publish entries from multiple contenttypes to multiple environments and locales
 
 ```
 USAGE
-  $ csdx cm:bulk-publish:entries
+  $ csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types]
+   [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token 
+  <value>] [--source-env <value>]
 
 OPTIONS
-  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
-  -a, --alias=alias                Alias for the management token to be used
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
+                                   is selected)
 
-  -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
+  -a, --alias=alias                Alias(name) for the management token
 
-  -c, --config=config              Path for the external config file to be used (A new config file can be generated at
-                                   the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`)
+  -c, --config=config              Path for the external config file (A new config file can be generated at the current
+                                   working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`)
 
-  -e, --environments=environments  Environments to which entries need to be published
+  -e, --environments=environments  Environments where entries will be published
 
-  -l, --locales=locales            Locales to which entries need to be published
-
-  -o, --publishAllContentTypes     Publish all content-types (optional, cannot be set when contentTypes flag is set)
-
-  -r, --retryFailed=retryFailed    Retry failed entries from the logfile (optional, overrides all other flags) This flag
-                                   is used to retry publishing entries that failed to publish in a previous attempt. A
-                                   log file for the previous session will be required for processing the failed entries
-
-  -t, --contentTypes=contentTypes  The Content-types from which entries need to be published
+  -l, --locales=locales            Locales where entries will be published
 
   -y, --yes                        Agree to process the command with the current configuration
 
+  --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used to publish the entries
+
+  --content-types=content-types    The Contenttypes from which entries need to be published
+
+  --delivery-token=delivery-token  Delivery token for source environment
+
+  --publish-all-content-types      (optional) Publish all contenttypes (cannot be set when contentTypes flag is set)
+
+  --retry-failed=retry-failed      (optional) Retry failed entries from the logfile (overrides all other flags) This
+                                   flag is used to retry publishing entries that failed to publish in a previous
+                                   attempt. A log file for the previous session will be required for processing the
+                                   failed entries
+
+  --source-env=source-env          Source environment
+
 DESCRIPTION
-  The entries command is used for publishing entries from the specified content types, to the
+  The publish command is used to publish entries from the specified content types, to the
   specified environments and locales 
 
-  Content Types, Environments and Locales are required for executing the command successfully
-  But, if retryFailed flag is set, then only a logfile is required
+  Note: Content Types, Environments and Locales are required to execute the command successfully
+  But, if retry-failed flag is set, then only a logfile is required
+
+ALIASES
+  $ csdx cm:bulk-publish:entries
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:entries -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] 
-  [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
+  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales
+   [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
-  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
-  csdx cm:bulk-publish:entries --config [PATH TO CONFIG FILE]
-  csdx cm:bulk-publish:entries -c [PATH TO CONFIG FILE]
+  Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`
+  csdx cm:entries:publish --config [PATH TO CONFIG FILE]
+  csdx cm:entries:publish -c [PATH TO CONFIG FILE]
 
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:entries --retryFailed [LOG FILE NAME]
-  csdx cm:bulk-publish:entries -r [LOG FILE NAME]
+  Using --retry-failed
+  csdx cm:entries:publish --retry-failed [LOG FILE NAME]
+  csdx cm:entries:publish -r [LOG FILE NAME]
 
-  Using --branch or -B flag
-  csdx cm:bulk-publish:entries -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] -l [LOCALE 1] 
-  [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
+  Using --branch
+  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales
+   [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
+
+  Using --source-env
+  csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales
+   [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
 ```
 
-_See code: [src/commands/cm/bulk-publish/entries.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entries.js)_
+_See code: [src/commands/cm/entries/publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish.js)_
 
-## `csdx cm:bulk-publish:entry-edits`
+## `csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`
 
-Publish edited entries from a specified Content Type to given locales and environments
+Publish edited entries from a specified content type to the given locales and environments
 
 ```
 USAGE
-  $ csdx cm:bulk-publish:entry-edits
+  $ csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env 
+  <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]
 
 OPTIONS
-  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
-  -a, --alias=alias                Alias for the management token to be used
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
+                                   is selected)
 
-  -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
+  -a, --alias=alias                Alias(name) for the management token
 
-  -c, --config=config              Path to config file to be used
+  -c, --config=config              Path to the config file
 
   -e, --environments=environments  Destination environments
 
-  -l, --locales=locales            Locales to which edited entries need to be published
+  -l, --locales=locales            Locales where edited entries will be published
 
-  -r, --retryFailed=retryFailed    Retry publishing failed entries from the logfile (optional, overrides all other
+  -y, --yes                        Agree to process the command with the current configuration
+
+  --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used to publish the entries
+
+  --content-types=content-types    The Contenttypes which will be checked for edited entries
+
+  --retry-failed=retry-failed      Retry publishing failed entries from the logfile (optional, overrides all other
                                    flags)
 
-  -s, --sourceEnv=sourceEnv        Environment from which edited entries will be published
-
-  -t, --contentTypes=contentTypes  The Content-Types which will be checked for edited entries
-
-  -y, --yes                        Agree to process the command with the current configuration
+  --source-env=source-env          Environment from which edited entries will be published
 
 DESCRIPTION
-  The entry-edits command is used for publishing entries from the specified content types, to the
+  The publish-modified command is used to publish entries from the specified content types, to the
   specified environments and locales
 
-  Content Type(s), Source Environment, Destination Environment(s) and Locale(s) are required for executing the command 
-  successfully
-  But, if retryFailed flag is set, then only a logfile is required
+  Note: Content type(s), Source Environment, Destination Environment(s) and Locale(s) are required to execute the 
+  command successfully
+  But, if retry-failed flag is set, then only a logfile is required
+
+ALIASES
+  $ csdx cm:bulk-publish:entry-edits
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 
-  2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
+  csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e 
+  [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
 
   Using --config or -c flag
-  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
-  csdx cm:bulk-publish:entry-edits --config [PATH TO CONFIG FILE]
-  csdx cm:bulk-publish:entry-edits -c [PATH TO CONFIG FILE]
+  Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`
+  csdx cm:entries:publish-modified --config [PATH TO CONFIG FILE]
+  csdx cm:entries:publish-modified -c [PATH TO CONFIG FILE]
 
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:entry-edits --retryFailed [LOG FILE NAME]
-  csdx cm:bulk-publish:entry-edits -r [LOG FILE NAME]
+  Using --retry-failed
+  csdx cm:entries:publish-modified --retry-failed [LOG FILE NAME]
+  csdx cm:entries:publish-modified -r [LOG FILE NAME]
 
-  Using --branch or -B flag
-  csdx cm:bulk-publish:entry-edits -t [CONTENT TYPE 1] [CONTENT TYPE 2] -s [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 
-  2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME]
+  Using --branch
+  csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e 
+  [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
 ```
 
-_See code: [src/commands/cm/bulk-publish/entry-edits.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/entry-edits.js)_
+_See code: [src/commands/cm/entries/publish-modified.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish-modified.js)_
 
-## `csdx cm:bulk-publish:nonlocalized-field-changes`
+## `csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`
 
-Publish non-localized-fields for given Content Types, from a particular source environment to specified environments
+Publish non-localized fields for the given content types, from a particular source environment to the specified environments
 
 ```
 USAGE
-  $ csdx cm:bulk-publish:nonlocalized-field-changes
+  $ csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] 
+  [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]
 
 OPTIONS
-  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
-  -a, --alias=alias                Alias for the management token to be used
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
+                                   is selected)
 
-  -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
+  -a, --alias=alias                Alias(name) for the management token
 
-  -c, --config=config              Path to config file to be used
+  -c, --config=config              Path to the config file
 
   -e, --environments=environments  Destination environments
 
-  -r, --retryFailed=retryFailed    Retry publishing failed entries from the logfile
-
-  -s, --sourceEnv=sourceEnv        Source Environment
-
-  -t, --contentTypes=contentTypes  The Content-Types from which entries need to be published
-
   -y, --yes                        Agree to process the command with the current configuration
 
-DESCRIPTION
-  The nonlocalized-field-changes command is used for publishing nonlocalized field changes from the given Content Types 
-  to
-  the specified Environments
+  --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used to publish the entries
 
-  Content Types, Environments and Source Environment are required for executing this command successfully.
+  --content-types=content-types    The Contenttypes from which entries will be published
+
+  --retry-failed=retry-failed      Retry publishing failed entries from the logfile
+
+  --source-env=source-env          Source Environment
+
+DESCRIPTION
+  The non-localized field changes command is used to publish non-localized field changes from the given content types to
+   the specified environments
+
+  Note: Content types, Environments and Source Environment are required to execute this command successfully.
   But, if retryFailed flag is set, then only a logfile is required
+
+ALIASES
+  $ csdx cm:bulk-publish:nonlocalized-field-changes
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
-  2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -s [SOURCE ENV]
+  csdx cm:entries:publish-non-localized-fields --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --environments 
+  [ENVIRONMENT 1] [ENVIRONMENT 2] --alias [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENV]
 
   Using --config or -c flag
   Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
-  csdx cm:bulk-publish:nonlocalized-field-changes --config [PATH TO CONFIG FILE]
-  csdx cm:bulk-publish:nonlocalized-field-changes -c [PATH TO CONFIG FILE]
+  csdx cm:entries:publish-non-localized-fields --config [PATH TO CONFIG FILE]
+  csdx cm:entries:publish-non-localized-fields -c [PATH TO CONFIG FILE]
 
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:nonlocalized-field-changes --retryFailed [LOG FILE NAME]
-  csdx cm:bulk-publish:nonlocalized-field-changes -r [LOG FILE NAME]
+  Using --retry-failed flag
+  csdx cm:entries:publish-non-localized-fields --retry-failed [LOG FILE NAME]
 
-  Using --branch or -B flag
-  csdx cm:bulk-publish:nonlocalized-field-changes -t [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
-  2] -l [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] -B [BRANCH NAME] -s [SOURCE ENV]
+  Using --branch flag
+  csdx cm:entries:publish-non-localized-fields --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --environments 
+  [ENVIRONMENT 1] [ENVIRONMENT 2] --alias [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENV] --branch [BRANCH NAME]
 ```
 
-_See code: [src/commands/cm/bulk-publish/nonlocalized-field-changes.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/nonlocalized-field-changes.js)_
+_See code: [src/commands/cm/entries/publish-non-localized-fields.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish-non-localized-fields.js)_
 
-## `csdx cm:bulk-publish:revert`
-
-Revert publish operations by using a log file
-
-```
-USAGE
-  $ csdx cm:bulk-publish:revert
-
-OPTIONS
-  -l, --logFile=logFile          logfile to be used to revert
-  -r, --retryFailed=retryFailed  retry publishing failed entries from the logfile
-
-DESCRIPTION
-  The revert command is used for reverting all publish operations performed using bulk-publish script.
-  A log file name is required to execute revert command
-
-EXAMPLES
-  Using --logFile
-  cm:bulk-publish:revert --logFile [LOG FILE NAME]
-  cm:bulk-publish:revert -l [LOG FILE NAME]
-
-  Using --retryFailed
-  cm:bulk-publish:revert --retryFailed [LOG FILE NAME]
-  cm:bulk-publish:revert -r [LOG FILE NAME]
-```
-
-_See code: [src/commands/cm/bulk-publish/revert.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/revert.js)_
-
-## `csdx cm:bulk-publish:unpublish`
-
-Unpublish entries of given Content Types from given environment
-
-```
-USAGE
-  $ csdx cm:bulk-publish:unpublish
-
-OPTIONS
-  -B, --branch=branch                [default: main] Specify the branch to fetch the content from (default is main
-                                     branch)
-
-  -a, --alias=alias                  Alias for the management token to be used
-
-  -b, --bulkUnpublish=bulkUnpublish  [default: true] This flag is set to true by default. It indicates that
-                                     contentstack's bulkpublish API will be used for publishing the entries
-
-  -c, --config=config                Path to config file to be used
-
-  -e, --environment=environment      Source Environment
-
-  -l, --locale=locale                Locale filter
-
-  -r, --retryFailed=retryFailed      Retry publishing failed entries from the logfile
-
-  -t, --contentType=contentType      Content Type filter
-
-  -x, --deliveryToken=deliveryToken  Delivery Token for source environment
-
-  -y, --yes                          Agree to process the command with the current configuration
-
-  --onlyAssets                       Unpublish only assets
-
-  --onlyEntries                      Unpublish only entries
-
-DESCRIPTION
-  The unpublish command is used for unpublishing entries from given environment
-
-  Environment (Source Environment) and Locale are required for executing the command successfully
-  But, if retryFailed flag is set, then only a logfile is required
-
-  A Content Type can be specified for publishing entries, but if no content-type(s) is/are specified and --onlyAssets is 
-  not used,
-  then all entries from all content types will be unpublished from the source environment
-
-  --onlyAssets can be used to unpublish only assets and --onlyEntries can be used to unpublish only entries.
-  (--onlyAssets and --onlyEntries cannot be used together at the same time)
-
-EXAMPLES
-  General Usage
-  csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x 
-  [DELIVERY TOKEN]
-
-  Using --config or -c flag
-  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
-  csdx cm:bulk-publish:unpublish --config [PATH TO CONFIG FILE]
-  csdx cm:bulk-publish:unpublish -c [PATH TO CONFIG FILE]
-
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:unpublish --retryFailed [LOG FILE NAME]
-  csdx cm:bulk-publish:unpublish -r [LOG FILE NAME]
-
-  No content type
-  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all 
-  content types and assets from the source environment)
-
-  Using --onlyAssets
-  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyAssets (Will unpublish only assets 
-  from the source environment)
-
-  Using --onlyEntries
-  csdx cm:bulk-publish:unpublish --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries (Will unpublish only 
-  entries, all entries, from the source environment)
-  csdx cm:bulk-publish:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --onlyEntries 
-  (Will unpublish only entries, (from CONTENT TYPE) from the source environment)
-
-  Using --branch or -B flag
-  csdx cm:bulk-publish:unpublish -b -t [CONTENT TYPE] -e [SOURCE ENV] -l [LOCALE] -a [MANAGEMENT TOKEN ALIAS] -x 
-  [DELIVERY TOKEN] -B [BRANCH NAME]
-```
-
-_See code: [src/commands/cm/bulk-publish/unpublish.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublish.js)_
-
-## `csdx cm:bulk-publish:unpublished-entries`
+## `csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`
 
 Publish unpublished entries from the source environment, to other environments and locales
 
 ```
 USAGE
-  $ csdx cm:bulk-publish:unpublished-entries
+  $ csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] 
+  [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]
 
 OPTIONS
-  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
-  -a, --alias=alias                Alias for the management token to be used
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
+                                   is selected)
 
-  -b, --bulkPublish=bulkPublish    [default: true] This flag is set to true by default. It indicates that contentstack's
-                                   bulkpublish API will be used for publishing the entries
+  -a, --alias=alias                Alias(name) for the management token
 
-  -c, --config=config              Path to config file to be used
+  -b, --bulk-publish=bulk-publish  [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used to publish the entries
+
+  -c, --config=config              Path to the config file
 
   -e, --environments=environments  Destination environments
 
-  -l, --locale=locale              Source locale
-
-  -r, --retryFailed=retryFailed    Retry publishing failed entries from the logfile
-
-  -s, --sourceEnv=sourceEnv        Source Env
-
-  -t, --contentTypes=contentTypes  The Content-Types from which entries need to be published
-
   -y, --yes                        Agree to process the command with the current configuration
 
+  --content-types=content-types    The Contenttypes from which entries will be published
+
+  --locales=locales                Source locale
+
+  --retry-failed=retry-failed      Retry publishing failed entries from the logfile
+
+  --source-env=source-env          Source Env
+
 DESCRIPTION
-  The unpublished-entries command is used for publishing unpublished entries from the source environment, to other 
+  The publish-only-unpublished command is used to publish unpublished entries from the source environment, to other 
   environments and locales
 
-  Content Type(s), Source Environment, Destination Environment(s) and Source Locale are required for executing the 
+  Note: Content type(s), Source Environment, Destination Environment(s) and Source Locale are required to execute the 
   command successfully
-  But, if retryFailed flag is set, then only a logfile is required
+  But, if retry-failed flag is set, then only a logfile is required
+
+ALIASES
+  $ csdx cm:bulk-publish:unpublished-entries
 
 EXAMPLES
   General Usage
-  csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] 
-  -s [SOURCE ENV]
+  csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a 
+  [MANAGEMENT TOKEN ALIAS] -source-env [SOURCE ENV]
 
   Using --config or -c flag
   Generate a config file at the current working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`
-  csdx cm:bulk-publish:unpublished-entries --config [PATH TO CONFIG FILE]
-  csdx cm:bulk-publish:unpublished-entries -c [PATH TO CONFIG FILE]
+  csdx cm:entries:publish-only-unpublished --config [PATH TO CONFIG FILE]
+  csdx cm:entries:publish-only-unpublished -c [PATH TO CONFIG FILE]
 
-  Using --retryFailed or -r flag
-  csdx cm:bulk-publish:unpublished-entries --retryFailed [LOG FILE NAME]
-  csdx cm:bulk-publish:unpublished-entries -r [LOG FILE NAME]
+  Using --retry-failed
+  csdx cm:entries:publish-only-unpublished --retry-failed [LOG FILE NAME]
 
-  Using --branch or -B flag
-  csdx cm:bulk-publish:unpublished-entries -b -t [CONTENT TYPES] -e [ENVIRONMENTS] -l LOCALE -a [MANAGEMENT TOKEN ALIAS] 
-  -B [BRANCH NAME] -s [SOURCE ENV]
+  Using --branch
+  csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a 
+  [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME] -source-env [SOURCE ENV]
 ```
 
-_See code: [src/commands/cm/bulk-publish/unpublished-entries.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.5/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/unpublished-entries.js)_
+_See code: [src/commands/cm/entries/publish-only-unpublished.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/publish-only-unpublished.js)_
+
+## `csdx cm:entries:unpublish`
+
+Unpublish entries from the given environment
+
+```
+USAGE
+  $ csdx cm:entries:unpublish
+
+OPTIONS
+  -a, --alias=alias                Alias(name) for the management token
+  -c, --config=config              Path to the config file
+  -e, --environment=environment    Source Environment
+  -y, --yes                        Agree to process the command with the current configuration
+
+  --branch=branch                  [default: main] Specify the branch to fetch the content (by default the main branch
+                                   is selected)
+
+  --bulk-unpublish=bulk-unpublish  [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used to unpublish the entries
+
+  --content-type=content-type      Content type filter
+
+  --delivery-token=delivery-token  Delivery token for source environment
+
+  --locale=locale                  Locale filter
+
+  --retry-failed=retry-failed      Retry publishing failed entries from the logfile
+
+DESCRIPTION
+  The unpublish command is used to unpublish entries from the given environment
+
+  Note: Environment (Source Environment) and Locale are required to execute the command successfully
+  But, if retry-failed flag is set, then only a logfile is required
+
+EXAMPLES
+  General Usage
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] 
+  --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN]
+
+  Using --config or -c flag
+  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure --alias [ALIAS]`
+  csdx cm:stacks:unpublish --config [PATH TO CONFIG FILE]
+  csdx cm:stacks:unpublish -c [PATH TO CONFIG FILE]
+
+  Using --retry-failed flag
+  csdx cm:stacks:unpublish --retry-failed [LOG FILE NAME]
+
+
+  Using --branch flag
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] 
+  --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
+```
+
+_See code: [src/commands/cm/entries/unpublish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/unpublish.js)_
+
+## `csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`
+
+Add fields from updated content types to their respective entries
+
+```
+USAGE
+  $ csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types 
+  <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]
+
+OPTIONS
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content (by default the main branch
+                                   is selected)
+
+  -a, --alias=alias                Alias(name) for the management token
+
+  -c, --config=config              Path to the config file
+
+  -e, --environments=environments  Environments where entries will be published
+
+  -l, --locales=locales            Locales where entries will be published
+
+  -t, --contentTypes=contentTypes  The Contenttypes from which entries will be published
+
+  -y, --yes                        Agree to process the command with the current configuration
+
+  --bulk-publish=bulk-publish      [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used to publish the entries
+
+  --content-types=content-types    The Contenttypes from which entries will be published
+
+  --force                          Update and publish all entries even if no fields have been added
+
+  --retry-failed=retry-failed      Retry publishing failed entries from the logfile (optional, overrides all other
+                                   flags)
+
+DESCRIPTION
+  The update-and-publish command is used to update existing entries with the updated schema of the respective content 
+  type
+
+  Note: Content types, Environments and Locales are required to execute the command successfully
+  But, if retry-failed flag is set, then only a logfile is required
+
+ALIASES
+  $ csdx cm:bulk-publish:add-fields
+
+EXAMPLES
+  General Usage
+  csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
+  2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]
+
+  Using --config or -c flag
+  Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`
+  csdx cm:entries:update-and-publish --config [PATH TO CONFIG FILE]
+  csdx cm:entries:update-and-publish -c [PATH TO CONFIG FILE]
+
+  Using --retry-failed
+  csdx cm:entries:update-and-publish --retry-failed [LOG FILE NAME]
+
+  Using --branch
+  csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 
+  2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
+```
+
+_See code: [src/commands/cm/entries/update-and-publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/entries/update-and-publish.js)_
+
+## `csdx cm:stacks:publish`
+
+Publish entries and assets to multiple environments and locales
+
+```
+USAGE
+  $ csdx cm:stacks:publish
+
+DESCRIPTION
+  The publish command is used to publish entries and assets, to the specified environments and locales.
+
+  Note: Content types, Environments and Locales are required to execute the publish entries command successfully.
+  Note: Environments and Locales are required to execute the publish assets command successfully.
+  But, if retry-failed flag is set, then only a logfile is required
+
+EXAMPLES
+  General Usage
+  csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
+  ALIAS]
+
+  Using --config or -c flag
+  Generate a config file in the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`
+  csdx cm:stacks:publish --config [PATH TO CONFIG FILE]
+  csdx cm:stacks:publish -c [PATH TO CONFIG FILE]
+
+  Using --retry-failed flag
+  csdx cm:stacks:publish --retry-failed [LOG FILE NAME]
+
+  Using --branch flag
+  csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN 
+  ALIAS] --branch [BRANCH NAME]
+```
+
+_See code: [src/commands/cm/stacks/publish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish.js)_
+
+## `csdx cm:stacks:publish-clear-logs`
+
+Clear the log folder
+
+```
+USAGE
+  $ csdx cm:stacks:publish-clear-logs
+
+OPTIONS
+  -y, --yes          Delete all files without asking for confirmation
+  --log-files-count  List number of log files
+
+ALIASES
+  $ csdx cm:bulk-publish:clear
+
+EXAMPLES
+  csdx cm:stacks:publish-clear-logs
+  csdx cm:stacks:publish-clear-logs --log-files-count
+  csdx cm:stacks:publish-clear-logs --yes
+  csdx cm:stacks:publish-clear-logs -y
+```
+
+_See code: [src/commands/cm/stacks/publish-clear-logs.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-clear-logs.js)_
+
+## `csdx cm:stacks:publish-configure`
+
+The configure command is used to generate a configuration file for publish scripts.
+
+```
+USAGE
+  $ csdx cm:stacks:publish-configure
+
+OPTIONS
+  -a, --alias=alias  Alias(name) for the management token
+
+ALIASES
+  $ csdx cm:bulk-publish:configure
+
+EXAMPLES
+  csdx cm:stacks:publish-configure
+  csdx cm:stacks:publish-configure -a <management_token_alias>
+  csdx cm:stacks:publish-configure --alias <management_token_alias>
+```
+
+_See code: [src/commands/cm/stacks/publish-configure.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-configure.js)_
+
+## `csdx cm:stacks:publish-revert`
+
+Revert publish operations by using a log file
+
+```
+USAGE
+  $ csdx cm:stacks:publish-revert
+
+OPTIONS
+  --log-file=log-file          logfile to be used to revert
+  --retry-failed=retry-failed  retry publishing failed entries from the logfile
+
+DESCRIPTION
+  The revert command is used to revert all publish operations performed using bulk-publish script.
+  A log file name is required to execute revert command
+
+ALIASES
+  $ csdx cm:bulk-publish:revert
+
+EXAMPLES
+  Using --log-file
+  cm:bulk-publish:revert --log-file [LOG FILE NAME]
+
+  Using --retry-failed
+  cm:bulk-publish:revert --retry-failed [LOG FILE NAME]
+```
+
+_See code: [src/commands/cm/stacks/publish-revert.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-revert.js)_
+
+## `csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`
+
+Unpublish entries or assets of given content types from the specified environment
+
+```
+USAGE
+  $ csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] 
+  [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] 
+  [--only-assets] [--only-entries]
+
+OPTIONS
+  -B, --branch=branch              [default: main] Specify the branch to fetch the content from (default is main branch)
+  -a, --alias=alias                Alias(name) for the management token
+  -c, --config=config              Path to the config file
+  -e, --environment=environment    Source Environment
+  -l, --locale=locale              Locale filter
+  -y, --yes                        Agree to process the command with the current configuration
+
+  --bulk-unpublish=bulk-unpublish  [default: true] This flag is set to true by default. It indicates that contentstack's
+                                   bulkpublish API will be used to unpublish the entries and assets
+
+  --content-type=content-type      Content type filter
+
+  --delivery-token=delivery-token  Delivery token for source environment
+
+  --retry-failed=retry-failed      Retry publishing failed entries from the logfile (optional, overrides all other
+                                   flags)
+
+DESCRIPTION
+  The unpublish command is used to unpublish entries or assets from given environment
+
+  Environment (Source Environment) and Locale are required to execute the command successfully
+  But, if retry-failed flag is set, then only a logfile is required
+
+  A content type can be specified for unpublishing entries, but if no content-type(s) is/are specified and --only-assets
+   is not used,
+  then all entries from all content types will be unpublished from the source environment
+
+  Note: --only-assets can be used to unpublish only assets and --only-entries can be used to unpublish only entries.
+  (--only-assets and --only-entries cannot be used together at the same time)
+
+ALIASES
+  $ csdx cm:bulk-publish:unpublish
+
+EXAMPLES
+  General Usage
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] 
+  --alias [MANAGEMENT TOKEN ALIAS] ----delivery-token [DELIVERY TOKEN]
+
+  Using --config or -c flag
+  Generate a config file at the current working directory using `csdx cm:bulk-publish:configure --alias [ALIAS]`
+  csdx cm:stacks:unpublish --config [PATH TO CONFIG FILE]
+  csdx cm:stacks:unpublish -c [PATH TO CONFIG FILE]
+
+  Using --retry-failed flag
+  csdx cm:stacks:unpublish --retry-failed [LOG FILE NAME]
+
+  No content type
+  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] (Will unpublish all entries from all content 
+  types and assets from the source environment)
+
+  Using --only-assets
+  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] --only-assets (Will unpublish only assets from 
+  the source environment)
+
+  Using --only-entries
+  csdx cm:stacks:unpublish --environment [SOURCE ENV] --locale [LOCALE] --only-entries (Will unpublish only entries, all
+   entries, from the source environment)
+  csdx cm:stacks:unpublish --contentType [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --only-entries 
+  (Will unpublish only entries, (from CONTENT TYPE) from the source environment)
+
+  Using --branch flag
+  csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] 
+  --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
+```
+
+_See code: [src/commands/cm/stacks/unpublish.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-bulk-publish/src/commands/cm/stacks/unpublish.js)_
 <!-- commandsstop -->

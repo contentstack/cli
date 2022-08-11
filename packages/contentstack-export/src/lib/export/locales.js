@@ -4,19 +4,18 @@
  * MIT Licensed
  */
 
-const mkdirp = require('mkdirp')
-const path = require('path')
-const chalk = require('chalk')
+const mkdirp = require('mkdirp');
+const path = require('path');
+const chalk = require('chalk');
 
-const helper = require('../util/helper')
-const { addlogs } = require('../util/log')
-let config = require('../../config/default')
-let localeConfig = config.modules.locales
-const masterLocale = config.master_locale
-let requiredKeys = localeConfig.requiredKeys
-let stack = require('../util/contentstack-management-sdk')
+const helper = require('../util/helper');
+const { addlogs } = require('../util/log');
+let config = require('../../config/default');
+let localeConfig = config.modules.locales;
+const masterLocale = config.master_locale;
+let requiredKeys = localeConfig.requiredKeys;
+let stack = require('../util/contentstack-management-sdk');
 let client
-
 function ExportLocales() {
   this.qs = {
     include_count: true,
@@ -29,19 +28,17 @@ function ExportLocales() {
     only: {
       BASE: requiredKeys,
     },
-  }
-  this.locales = {}
+  };
+  this.locales = {};
 }
 
 ExportLocales.prototype.start = function (credentialConfig) {
-  this.locales = {}
-  addlogs(credentialConfig, 'Starting locale export', 'success')
-  let self = this
-  config = credentialConfig
-  let localesFolderPath = path.resolve(config.data, (config.branchName || ""), localeConfig.dirName)
-  mkdirp.sync(localesFolderPath)
-  self.localesFolderPath = localesFolderPath
-
+  this.locales = {};
+  addlogs(credentialConfig, 'Starting locale export', 'success');
+  let self = this;
+  config = credentialConfig;
+  self.localesFolderPath = path.resolve(config.data, config.branchName || '', localeConfig.dirName);
+  mkdirp.sync(self.localesFolderPath);
   client = stack.Client(config);
   const apiDetails = {
     limit: 100,
@@ -50,7 +47,7 @@ ExportLocales.prototype.start = function (credentialConfig) {
   }
   return self.getLocales(apiDetails)
 
-}
+};
 
 ExportLocales.prototype.getLocales = function (apiDetails) {
   let self = this
@@ -103,4 +100,4 @@ ExportLocales.prototype.getLocales = function (apiDetails) {
   });
 }
 
-module.exports = new ExportLocales()
+module.exports = new ExportLocales();
