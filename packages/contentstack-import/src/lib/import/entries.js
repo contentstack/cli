@@ -850,6 +850,7 @@ importEntries.prototype = {
     });
   },
   unSuppressFields: function () {
+    let self = this;
     return new Promise(async function (resolve, reject) {
       let modifiedSchemas = helper.readFile(modifiedSchemaPath);
       let modifiedSchemasUids = [];
