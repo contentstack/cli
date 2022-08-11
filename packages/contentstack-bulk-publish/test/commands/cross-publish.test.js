@@ -1,10 +1,9 @@
 /* eslint-disable no-console */
 const {expect, test} = require('@oclif/test')
 const nock = require('nock')
-const {cli} = require('cli-ux')
+const { cliux, configHandler } = require('@contentstack/cli-utilities');
 const stack = require('../../src/util/client.js').stack
-const Configstore = require('configstore')
-const dummyConfig = new Configstore('contentstack_cli')
+const dummyConfig = configHandler
 const store = require('../../src/util/store.js')
 
 // const {assetQueue} = require('../../src/producer/cross-publish.js')
@@ -70,8 +69,8 @@ describe('cross-publish', () => {
   })
 
   test
-  .stub(cli, 'prompt', () => async () => deliveryToken)
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'prompt', () => async () => deliveryToken)
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stub(store, 'updateMissing', (key, flags) => flags)
   .stderr()
   .command(['cm:bulk-publish:cross-publish'])
@@ -92,8 +91,8 @@ describe('cross-publish', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
-  .stub(cli, 'prompt', () => async () => deliveryToken)
+  .stub(cliux, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'prompt', () => async () => deliveryToken)
   .stdout()
   .command(['cm:bulk-publish:cross-publish', '-t', 'asset_published', 'entry_published', '-e', 'dummyEnvironment', '-c', 'dummyContentType', '-d', 'dummyEnvironment'])
   .it('runs hello --name jeff', ctx => {
@@ -134,8 +133,8 @@ describe('cross-publish', () => {
       }
     }
   })
-  .stub(cli, 'confirm', () => async () => 'yes')
-  .stub(cli, 'prompt', () => async () => deliveryToken)
+  .stub(cliux, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'prompt', () => async () => deliveryToken)
   .stdout({print: true})
   .command(['cm:bulk-publish:cross-publish', '-r', bulkCrossPublishLog])
   .it('runs hello --name jeff', ctx => {

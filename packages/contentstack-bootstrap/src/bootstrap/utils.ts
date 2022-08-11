@@ -1,13 +1,14 @@
-import cli from 'cli-ux'
-import * as fs from 'fs'
-import * as path from 'path'
-import { AppConfig } from '../config'
-import messageHandler from '../messages'
+import * as fs from 'fs';
+import * as path from 'path';
+import { cliux } from '@contentstack/cli-utilities';
+
+import { AppConfig } from '../config';
+import messageHandler from '../messages';
 
 interface EnviornmentVariables {
-    api_key: string;
-    deliveryToken: string;
-    environment: string;
+  api_key: string;
+  deliveryToken: string;
+  environment: string;
 }
 
 /**
@@ -18,82 +19,73 @@ interface EnviornmentVariables {
  */
 
 export const setupEnvironments = async (
-    managementAPIClient: any,
-    api_key: string,
-    appConfig: AppConfig,
-    clonedDirectory: string,
-    region: any
+  managementAPIClient: any,
+  api_key: string,
+  appConfig: AppConfig,
+  clonedDirectory: string,
+  region: any,
 ) => {
-    const environmentResult = await managementAPIClient.stack({ api_key }).environment().query().find()
-    if (Array.isArray(environmentResult.items) && environmentResult.items.length > 0) {
-        for (const environment of environmentResult.items) {
-            if (environment.name) {
-                const body = {
-                    'token': {
-                        'name': `Sample app ${environment.name}`,
-                        'description': 'Sample app',
-                        'scope': [
-                            {
-                                'module': 'environment',
-                                'environments': [environment.name],
-                                'acl': {'read': true }
-                            },
-                            {
-                                module: "branch",
-                                acl: { read: true },
-                                branches: ["main"]
-                            }
-                        ]
-                    },
-                }
-                try {
-                    const tokenResult = await managementAPIClient.stack({ api_key}).deliveryToken().create(body)
-                    if (tokenResult.token) {
-                        const environmentVariables: EnviornmentVariables = {
-                            api_key,
-                            deliveryToken: tokenResult.token,
-                            environment: environment.name
-                        }
-                        await envFileHandler(
-                            appConfig.appConfigKey || "",
-                            environmentVariables,
-                            clonedDirectory,
-                            region,
-                        )
-                    } else {
-                        cli.log(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_TOKEN_FOR_ENV', environment.name))
-                    }
-                } catch (error) {
-                    console.log("error", error);
-                    cli.log(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_ENV_FILE_FOR_ENV', environment.name))
-                }
-            } else {
-                cli.log('No environments name found for the environment')
-            }
+  const environmentResult = await managementAPIClient.stack({ api_key }).environment().query().find();
+  if (Array.isArray(environmentResult.items) && environmentResult.items.length > 0) {
+    for (const environment of environmentResult.items) {
+      if (environment.name) {
+        const body = {
+          token: {
+            name: `Sample app ${environment.name}`,
+            description: 'Sample app',
+            scope: [
+              {
+                module: 'environment',
+                environments: [environment.name],
+                acl: { read: true },
+              },
+              {
+                module: 'branch',
+                acl: { read: true },
+                branches: ['main'],
+              },
+            ],
+          },
+        };
+        try {
+          const tokenResult = await managementAPIClient.stack({ api_key }).deliveryToken().create(body);
+          if (tokenResult.token) {
+            const environmentVariables: EnviornmentVariables = {
+              api_key,
+              deliveryToken: tokenResult.token,
+              environment: environment.name,
+            };
+            await envFileHandler(appConfig.appConfigKey || '', environmentVariables, clonedDirectory, region);
+          } else {
+            cliux.print(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_TOKEN_FOR_ENV', environment.name));
+          }
+        } catch (error) {
+          console.log('error', error);
+          cliux.print(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_ENV_FILE_FOR_ENV', environment.name));
         }
-    } else {
-        cli.error(messageHandler.parse('CLI_BOOTSTRAP_APP_ENV_NOT_FOUND_FOR_THE_STACK'))
+      } else {
+        cliux.print('No environments name found for the environment');
+      }
     }
-}
+  } else {
+    cliux.error(messageHandler.parse('CLI_BOOTSTRAP_APP_ENV_NOT_FOUND_FOR_THE_STACK'));
+  }
+};
 
 const writeEnvFile = (content: string, fileName: string) => {
-    if (!content || !fileName) {
-        return
-    }
-    return new Promise((resolve, reject) => {
-        fs.writeFile(
-            fileName,
-            content,
-            'utf8',
-            error => {
-                if (error) {
-                    reject(error)
-                } else {
-                    resolve('done')
-                }
-            })
-    })
-}
+  if (!content || !fileName) {
+    return;
+  }
+  return new Promise((resolve, reject) => {
+    fs.writeFile(fileName, content, 'utf8', (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve('done');
+      }
+    });
+  });
+};
 
 /**
  * @description Create environment files for each app
@@ -101,13 +93,13 @@ const writeEnvFile = (content: string, fileName: string) => {
  */
 
 const envFileHandler = async (
-    appConfigKey: string,
-    environmentVariables: EnviornmentVariables,
-    clonedDirectory: string,
-    region: any
+  appConfigKey: string,
+  environmentVariables: EnviornmentVariables,
+  clonedDirectory: string,
+  region: any,
 ) => {
     if (!appConfigKey || !environmentVariables) {
-        return
+      return
     }
     let content
     let result
@@ -173,8 +165,8 @@ const envFileHandler = async (
             result = await writeEnvFile(content, filePath)
             break
         default:
-            cli.error(messageHandler.parse('CLI_BOOTSTRAP_INVALID_APP_NAME'))
+            cliux.error(messageHandler.parse('CLI_BOOTSTRAP_INVALID_APP_NAME'))
     }
 
-    return result
-}
+  return result;
+};

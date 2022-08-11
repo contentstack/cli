@@ -2,10 +2,9 @@
 /* eslint-disable node/no-extraneous-require */
 const nock = require('nock')
 const {expect, test} = require('@oclif/test')
-const {cli} = require('cli-ux')
 
-const Configstore = require('configstore')
-const dummyConfig = new Configstore('contentstack_cli')
+const { cliux, configHandler } = require('@contentstack/cli-utilities');
+const dummyConfig = configHandler
 const store = require('../../src/util/store.js')
 
 const deliveryToken = 'dummyDeliveryToken'
@@ -90,8 +89,8 @@ describe('unpublish', () => {
   })
 
   test
-  .stub(cli, 'prompt', () => async () => deliveryToken)
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'prompt', () => async () => deliveryToken)
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stub(store, 'updateMissing', (key, flags) => flags)
   .stderr({print: true})
   .command(['cm:bulk-publish:unpublish'])
@@ -101,8 +100,8 @@ describe('unpublish', () => {
   .it('runs unpublish command without any flags')
 
   test
-  .stub(cli, 'prompt', () => async () => deliveryToken)
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'prompt', () => async () => deliveryToken)
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stub(store, 'updateMissing', (key, flags) => flags)
   .stdout({print: true})
   .command(['cm:bulk-publish:unpublish', '-e', 'dummyEnvironment', '-t', 'asset_published', 'entry_published', '-c', 'dummyContentType'])
@@ -111,8 +110,8 @@ describe('unpublish', () => {
   })
 
   test
-  .stub(cli, 'prompt', () => async () => deliveryToken)
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'prompt', () => async () => deliveryToken)
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stub(store, 'updateMissing', (key, flags) => flags)
   .stdout({print: true})
   .command(['cm:bulk-publish:unpublish', '-e', 'dummyEnvironment', '-t', 'asset_published', 'entry_published', '-c', 'dummyContentType', '--no-bulkUnpublish'])
@@ -121,8 +120,8 @@ describe('unpublish', () => {
   })
 
   test
-  .stub(cli, 'prompt', () => async () => deliveryToken)
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'prompt', () => async () => deliveryToken)
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stub(store, 'updateMissing', (key, flags) => flags)
   .stdout({print: true})
   .command(['cm:bulk-publish:unpublish', '-r', bulkUnpublishLog])
@@ -131,8 +130,8 @@ describe('unpublish', () => {
   })
 
   test
-  .stub(cli, 'prompt', () => async () => deliveryToken)
-  .stub(cli, 'confirm', () => async () => 'yes')
+  .stub(cliux, 'prompt', () => async () => deliveryToken)
+  .stub(cliux, 'confirm', () => async () => 'yes')
   .stub(store, 'updateMissing', (key, flags) => flags)
   .stdout({print: true})
   .command(['cm:bulk-publish:unpublish', '-r', bulkUnpublishLog, '--no-bulkUnpublish'])
