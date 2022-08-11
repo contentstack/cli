@@ -1,0 +1,6 @@
+{
+    "CLI_CORE_INVALID_CUSTOM_REGION": "Invalid custom region",
+    "CLI_CORE_LOGIN_AGAIN": "Please login to execute the command",
+    "CLI_CORE_NO_REGION_FOUND": "Please set the region",
+    "CLI_CORE_FAILED_UUID_GENERATION": "Failed to generate unique id"
+}

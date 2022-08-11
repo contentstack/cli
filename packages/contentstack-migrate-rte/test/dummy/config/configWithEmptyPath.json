@@ -1,7 +1,7 @@
 {
-    "alias": "test2",
-    "content_type": "contenttypewithsinglerte",
-    "isGlobalField": false,
-    "paths": [],
-    "delay": 50
+  "alias": "test2",
+  "content-type": "contenttypewithsinglerte",
+  "global-field": false,
+  "paths": [],
+  "delay": 50
 }

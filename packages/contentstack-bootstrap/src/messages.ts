@@ -1,24 +1,24 @@
-const messageFile  = require('../messages/index.json')
+const messageFile = require('../messages/index.json');
 
 class Messages {
   private readonly messages: any;
 
   constructor() {
-    this.messages = messageFile
+    this.messages = messageFile;
   }
 
   parse(messageKey: string, ...substitutions: any) {
-    const msg = this.messages[messageKey]
+    const msg = this.messages[messageKey];
     if (!msg) {
-      return
+      return;
     }
     if (substitutions.length > 0) {
-      const callSite = msg.split('%s')
-      callSite.push('')
-      return String.raw({raw: callSite} as TemplateStringsArray, ...substitutions)
+      const callSite = msg.split('%s');
+      callSite.push('');
+      return String.raw({ raw: callSite } as TemplateStringsArray, ...substitutions);
     }
-    return msg
+    return msg;
   }
 }
 
-export default new Messages()
+export default new Messages();

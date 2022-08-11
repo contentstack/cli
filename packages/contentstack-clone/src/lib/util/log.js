@@ -9,15 +9,18 @@ var path = require('path');
 var mkdirp = require('mkdirp');
 var slice = Array.prototype.slice;
 
-function returnString (args) {
+function returnString(args) {
   var returnStr = '';
   if (args && args.length) {
-    returnStr = args.map(function (item) {
-      if (item && typeof (item) === 'object') {
-        return JSON.stringify(item);
-      }
-      return item;
-    }).join('  ').trim();
+    returnStr = args
+      .map(function (item) {
+        if (item && typeof item === 'object') {
+          return JSON.stringify(item);
+        }
+        return item;
+      })
+      .join('  ')
+      .trim();
   }
   return returnStr;
 }
@@ -27,35 +30,37 @@ var myCustomLevels = {
     error: 0,
     warn: 1,
     info: 2,
-    debug: 3
+    debug: 3,
   },
   colors: {
     info: 'blue',
     debug: 'green',
     warn: 'yellow',
-    error: 'red'
-  }
+    error: 'red',
+  },
 };
 
-function init (_logPath, logfileName) {
-  var logsDir = path.resolve(_logPath, 'logs', 'import')  
+function init(_logPath, logfileName) {
+  var logsDir = path.resolve(_logPath, 'logs', 'import');
   // Create dir if doesn't already exist
-  mkdirp.sync(logsDir)
+  mkdirp.sync(logsDir);
   var logPath = path.join(logsDir, logfileName + '.log');
 
-  var transports = [new(winston.transports.File)({
-    filename: logPath,
-    maxFiles: 20,
-    maxsize: 1000000,
-    tailable: true,
-    json: true
-  })];
+  var transports = [
+    new winston.transports.File({
+      filename: logPath,
+      maxFiles: 20,
+      maxsize: 1000000,
+      tailable: true,
+      json: true,
+    }),
+  ];
 
-  transports.push(new(winston.transports.Console)());
+  transports.push(new winston.transports.Console());
 
-  var logger = new(winston.Logger)({
+  var logger = winston.createLogger({
     transports: transports,
-    levels: myCustomLevels.levels
+    levels: myCustomLevels.levels,
   });
 
   return {
@@ -86,14 +91,14 @@ function init (_logPath, logfileName) {
       if (logString) {
         logger.log('debug', logString);
       }
-    }
+    },
   };
 }
 
 exports.addlogs = async (config, message, type) => {
   if (type !== 'error') {
-    init(config.oldPath, type).log(message)
+    init(config.oldPath, type).log(message);
   } else {
-    init(config.oldPath, type).error(message)
+    init(config.oldPath, type).error(message);
   }
-}
+};

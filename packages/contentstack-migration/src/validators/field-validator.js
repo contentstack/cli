@@ -1,19 +1,21 @@
-'use strict'
+'use strict';
 
 class FieldValidator {
   validate(data) {
     if (data.payload.field) {
-      return [{
-        ...data,
-        message: data.payload.field.message,
-      }]
+      return [
+        {
+          ...data,
+          message: data.payload.field.message,
+        },
+      ];
     }
-    return []
+    return [];
   }
 
   isApplicable(action) {
-    return action.type === 'field'
+    return action.type === 'field';
   }
 }
 
-module.exports = FieldValidator
+module.exports = FieldValidator;

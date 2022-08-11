@@ -1,9 +1,9 @@
-'use strict'
+'use strict';
 
 exports.getEntryObj = (fields, obj) => {
-  let entryObj = {}
-  fields.forEach(field => {
-    entryObj[field] = obj[field]
-  })
-  return entryObj
-}
+  let entryObj = {};
+  fields.forEach((field) => {
+    entryObj[field] = obj[field];
+  });
+  return entryObj;
+};
