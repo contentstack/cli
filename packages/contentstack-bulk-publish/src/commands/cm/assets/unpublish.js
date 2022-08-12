@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable node/no-extraneous-require */
 const { Command, flags } = require('@contentstack/cli-command');
-const { cli } = require('cli-ux');
+const { cliux } = require('@contentstack/cli-utilities');
 const { start } = require('../../../producer/unpublish');
 const store = require('../../../util/store.js');
 const configKey = 'Unpublish';
@@ -32,10 +32,10 @@ class UnpublishCommand extends Command {
       let stack;
       if (!updatedFlags.retryFailed) {
         if (!updatedFlags.alias) {
-          updatedFlags.alias = await cli.prompt('Please enter the management token alias to be used');
+          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
         }
         if (!updatedFlags.deliveryToken) {
-          updatedFlags.deliveryToken = await cli.prompt('Enter delivery token of your source environment');
+          updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token of your source environment');
         }
         updatedFlags.bulkUnpublish = updatedFlags.bulkUnpublish === 'false' ? false : true;
         // Validate management token alias.
@@ -113,7 +113,7 @@ class UnpublishCommand extends Command {
       return true;
     }
 
-    return cli.confirm('Do you want to continue with this configuration ? [yes or no]');
+    return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 }
 
