@@ -21,7 +21,8 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
     !_.has(data, 'content_type') ||
     !_.isPlainObject(mappedAssetUids) ||
     !_.isPlainObject(mappedAssetUrls) ||
-    typeof assetUidMapperPath !== 'string') {
+    typeof assetUidMapperPath !== 'string'
+  ) {
     throw new Error('Invalid inputs for lookupAssets!');
   }
   let parent = [];
@@ -34,9 +35,11 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
 
   let find = function (schema, entryToFind) {
     for (let i = 0, _i = schema.length; i < _i; i++) {
-      if (schema[i].data_type === 'text' &&
+      if (
+        schema[i].data_type === 'text' &&
         schema[i].field_metadata &&
-        (schema[i].field_metadata.markdown || schema[i].field_metadata.rich_text_type)) {
+        (schema[i].field_metadata.markdown || schema[i].field_metadata.rich_text_type)
+      ) {
         parent.push(schema[i].uid);
         findFileUrls(schema[i], entryToFind, assetUrls);
         parent.pop();
@@ -59,34 +62,30 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       }
       // added rich_text_type field check because some marketplace extensions also
       // have data_type has json
-      if (schema[i].data_type === "json" && schema[i].field_metadata.rich_text_type) {
+      if (schema[i].data_type === 'json' && schema[i].field_metadata.rich_text_type) {
         parent.push(schema[i].uid);
         // findFileUrls(schema[i], entry, assetUrls)
         findAssetIdsFromJsonRte(data.entry, data.content_type.schema);
         // maybe only one of these checks would be enough
-        parent.pop()
+        parent.pop();
       } else if (
-        schema[i].data_type === "json" &&
+        schema[i].data_type === 'json' &&
         schema[i].field_metadata.extension &&
         schema[i].field_metadata.is_asset
       ) {
-        findAssetIdsFromJsonCustomFields(data.entry, data.content_type.schema)
-      } else if (
-        schema[i].data_type === "json" &&
-        schema[i].field_metadata.extension
-      ) {
+        findAssetIdsFromJsonCustomFields(data.entry, data.content_type.schema);
+      } else if (schema[i].data_type === 'json' && schema[i].field_metadata.extension) {
         if (installedExtensions) {
           const marketplaceApps = helper.readFile(marketplaceAppPath);
-          const oldExt = _.find(marketplaceApps, { uid: schema[i].extension_uid })
+          const oldExt = _.find(marketplaceApps, { uid: schema[i].extension_uid });
 
           if (oldExt) {
-            const ext = (
+            const ext =
               _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.new_app_uid }) ||
-              _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid })
-            )
+              _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid });
 
             if (ext) {
-              schema[i].extension_uid = ext.uid
+              schema[i].extension_uid = ext.uid;
             }
           }
         }
@@ -95,49 +94,43 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
   };
 
   function findAssetIdsFromJsonCustomFields(entryObj, ctSchema) {
-    ctSchema.map(row => {
+    ctSchema.map((row) => {
       if (row.data_type === 'json') {
-        if (
-          entryObj[row.uid] &&
-          row.field_metadata.extension &&
-          row.field_metadata.is_asset
-        ) {
+        if (entryObj[row.uid] && row.field_metadata.extension && row.field_metadata.is_asset) {
           if (installedExtensions) {
             const marketplaceApps = helper.readFile(marketplaceAppPath);
-            const oldExt = _.find(marketplaceApps, { uid: row.extension_uid })
+            const oldExt = _.find(marketplaceApps, { uid: row.extension_uid });
 
             if (oldExt) {
-              const ext = (
+              const ext =
                 _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.new_app_uid }) ||
-                _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid })
-              )
+                _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid });
 
               if (ext) {
-                row.extension_uid = ext.uid
+                row.extension_uid = ext.uid;
               }
             }
           }
 
           if (entryObj[row.uid].metadata && entryObj[row.uid].metadata.extension_uid) {
             const marketplaceApps = helper.readFile(marketplaceAppPath);
-            const oldExt = _.find(marketplaceApps, { uid: entryObj[row.uid].metadata.extension_uid })
+            const oldExt = _.find(marketplaceApps, { uid: entryObj[row.uid].metadata.extension_uid });
 
             if (oldExt) {
-              const ext = (
+              const ext =
                 _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.new_app_uid }) ||
-                _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid })
-              )
+                _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid });
 
               if (ext) {
-                entryObj[row.uid].metadata.extension_uid = ext.uid
+                entryObj[row.uid].metadata.extension_uid = ext.uid;
               }
             }
           }
         }
       }
 
-      return row
-    })
+      return row;
+    });
   }
 
   function findAssetIdsFromJsonRte(entryObj, ctSchema) {
@@ -146,9 +139,9 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         case 'blocks': {
           if (entryObj[element.uid]) {
             if (element.multiple) {
-              entryObj[element.uid].forEach(e => {
+              entryObj[element.uid].forEach((e) => {
                 let key = Object.keys(e).pop();
-                let subBlock = element.blocks.filter(block => block.uid === key).pop();
+                let subBlock = element.blocks.filter((block) => block.uid === key).pop();
                 findAssetIdsFromJsonRte(e[key], subBlock.schema);
               });
             }
@@ -159,7 +152,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         case 'group': {
           if (entryObj[element.uid]) {
             if (element.multiple) {
-              entryObj[element.uid].forEach(e => {
+              entryObj[element.uid].forEach((e) => {
                 findAssetIdsFromJsonRte(e, element.schema);
               });
             } else {
@@ -171,7 +164,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         case 'json': {
           if (entryObj[element.uid] && element.field_metadata.rich_text_type) {
             if (element.multiple) {
-              entryObj[element.uid].forEach(jsonRteData => {
+              entryObj[element.uid].forEach((jsonRteData) => {
                 gatherJsonRteAssetIds(jsonRteData);
               });
             } else {
@@ -185,7 +178,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
   }
 
   function gatherJsonRteAssetIds(jsonRteData) {
-    jsonRteData.children.forEach(element => {
+    jsonRteData.children.forEach((element) => {
       if (element.type) {
         switch (element.type) {
           case 'a':
@@ -196,7 +189,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
             break;
           }
           case 'reference': {
-            if (Object.keys(element.attrs).length > 0 && element.attrs.type === "asset") {
+            if (Object.keys(element.attrs).length > 0 && element.attrs.type === 'asset') {
               if (assetUids.indexOf(element.attrs['asset-uid']) === -1) {
                 assetUids.push(element.attrs['asset-uid']);
               }
@@ -225,15 +218,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
   }
 
   find(data.content_type.schema, data.entry);
-  updateFileFields(
-    data.entry,
-    data,
-    null,
-    mappedAssetUids,
-    matchedUids,
-    unmatchedUids,
-    mappedAssetUrls
-  );
+  updateFileFields(data.entry, data, null, mappedAssetUids, matchedUids, unmatchedUids, mappedAssetUrls);
   assetUids = _.uniq(assetUids);
   assetUrls = _.uniq(assetUrls);
   let entry = JSON.stringify(data.entry);
@@ -346,7 +331,7 @@ function findFileUrls(schema, _entry, assetUrls) {
     text = JSON.stringify(_entry);
   }
   markdownRegEx = new RegExp(
-    '(https://(assets|(eu-|azure-na-|stag-)?images).contentstack.(io|com)/v3/assets/(.*?)/(.*?)/(.*?)/(.*?)(?="))',
+    '(https://(assets|(eu-|azure-na-)?images).contentstack.(io|com)/v3/assets/(.*?)/(.*?)/(.*?)/(.*?)(?="))',
     'g',
   );
   while ((markdownMatch = markdownRegEx.exec(text)) !== null) {
@@ -368,10 +353,10 @@ function updateFileFields(objekt, parent, pos, mappedAssetUids, matchedUids, unm
             parent[pos] = '';
             unmatchedUids.push(objekt.uid);
           }
-        }
+        };
 
         if (parent.uid && mappedAssetUids[parent.uid]) {
-          parent.uid = mappedAssetUids[parent.uid]
+          parent.uid = mappedAssetUids[parent.uid];
         }
 
         if (
@@ -388,7 +373,7 @@ function updateFileFields(objekt, parent, pos, mappedAssetUids, matchedUids, unm
             _.has(parent, '_content_type_uid') &&
             parent._content_type_uid === 'sys_assets'
           ) {
-            parent = _.omit(parent, ['asset'])
+            parent = _.omit(parent, ['asset']);
           }
 
           if (objekt.uid && mappedAssetUids && mappedAssetUids[objekt.uid]) {
@@ -398,7 +383,7 @@ function updateFileFields(objekt, parent, pos, mappedAssetUids, matchedUids, unm
             objekt.url = mappedAssetUrls[objekt.url];
           }
         } else {
-          replacer()
+          replacer();
         }
       }
     }

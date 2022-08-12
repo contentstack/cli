@@ -1,7 +1,7 @@
 import { configHandler } from '@contentstack/cli-utilities';
 
 function validURL(str) {
-  var pattern = new RegExp(
+  const pattern = new RegExp(
     '^(https?:\\/\\/)?' + // protocol
       '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
       '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
@@ -17,7 +17,11 @@ function validURL(str) {
 const regions = {
   NA: { cma: 'https://api.contentstack.io', cda: 'https://cdn.contentstack.io', name: 'NA' },
   EU: { cma: 'https://eu-api.contentstack.com', cda: 'https://eu-cdn.contentstack.com', name: 'EU' },
-  'AZURE-NA': { cma: 'https://azure-na-api.contentstack.com', cda: 'https://azure-na-cdn.contentstack.com', name: 'AZURE-NA' },
+  'AZURE-NA': {
+    cma: 'https://azure-na-api.contentstack.com',
+    cda: 'https://azure-na-cdn.contentstack.com',
+    name: 'AZURE-NA',
+  },
 };
 
 class UserConfig {
