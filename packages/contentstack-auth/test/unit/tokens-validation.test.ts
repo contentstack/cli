@@ -3,13 +3,14 @@ import * as sinon from 'sinon';
 import { tokenValidation } from '../../src/utils';
 
 describe('Tokens Validation', () => {
-  const validAPIkey = 'validapikey';
-  const invalidAPIkey = 'invalidapikey';
-  const validDeliveryToken = 'validDToken';
-  const invalidDeliveryToken = 'invalidDToken';
-  const validManagementToken = 'validMToken';
-  const invalidManagementToken = 'invalidMToken';
-  const validEnvironemnt = 'validEnvironment';
+  const validAPIkey = '';
+  const invalidAPIkey = '';
+  const validDeliveryToken = '';
+  const invalidDeliveryToken = '';
+  const validManagementToken = '';
+  const invalidManagementToken = '';
+  const validEnvironemnt = '';
+  const invalidEnvironemnt = '';
   let contentStackClient: {
     stack: any;
     deliveryToken: any;
@@ -81,7 +82,7 @@ describe('Tokens Validation', () => {
       expect(result.valid).to.be.true;
     });
     it('invalid environment, should return false', async function () {
-      const result = await tokenValidation.validateEnvironment(contentStackClient, validAPIkey, 'invalid');
+      const result = await tokenValidation.validateEnvironment(contentStackClient, validAPIkey, invalidEnvironemnt);
       expect(result.valid).to.be.false;
     });
   });
@@ -95,7 +96,11 @@ describe('Tokens Validation', () => {
       expect(result.valid).to.be.true;
     });
     it('invalid Management token, should return false', async function () {
-      const result = await tokenValidation.validateManagementToken(contentStackClient, validAPIkey, 'invalid');
+      const result = await tokenValidation.validateManagementToken(
+        contentStackClient,
+        validAPIkey,
+        invalidManagementToken,
+      );
       expect(result.valid).to.be.false;
     });
   });
@@ -105,7 +110,7 @@ describe('Tokens Validation', () => {
       expect(result.valid).to.be.true;
     });
     it('invalid API Key, should return false', async function () {
-      const result = await tokenValidation.validateAPIKey(contentStackClient, 'invalid');
+      const result = await tokenValidation.validateAPIKey(contentStackClient, invalidAPIkey);
       expect(result.valid).to.be.false;
     });
   });

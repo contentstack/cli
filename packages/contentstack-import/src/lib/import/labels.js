@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
 const chalk = require('chalk');
+const {isEmpty} = require('lodash');
 
 const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
@@ -49,9 +50,9 @@ importLabels.prototype = {
     labelFailsPath = path.resolve(config.data, 'labels', 'fails.json');
     mkdirp.sync(labelMapperPath);
     return new Promise(function (resolve, reject) {
-      if (self.labels == undefined) {
-        addlogs(config, chalk.white('No Label Found'), 'error');
-        return resolve();
+      if (self.labels == undefined || isEmpty(self.labels)) {
+        addlogs(config, chalk.white('No Label Found'), 'success');
+        return resolve({ empty: true });
       }
       self.labelUids = Object.keys(self.labels);
       return Promise.map(
