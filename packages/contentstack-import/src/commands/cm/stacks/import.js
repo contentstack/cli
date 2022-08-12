@@ -163,7 +163,7 @@ ImportCommand.flags = {
   'backup-dir': flags.string({
     char: 'b',
     description: '[optional] backup directory name when using specific module',
-    parse: printFlagDeprecation(['-b', '--backup-dir']),
+    parse: printFlagDeprecation(['-b'], ['--backup-dir']),
   }),
   branch: flags.string({
     char: 'B',
