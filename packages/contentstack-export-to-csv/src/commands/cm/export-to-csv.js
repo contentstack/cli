@@ -44,19 +44,21 @@ class ExportToCsvCommand extends Command {
     }),
   };
 
+  get getAuthToken() {
+    try {
+      return this.authToken;
+    } catch (error) {
+      return undefined;
+    }
+  }
+
   get managementAPIClient() {
-    this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this.authToken });
+    debugger;
+    this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this.getAuthToken });
     return this._managementAPIClient;
   }
 
   async run() {
-    if (!this.authToken) {
-      this.error(config.CLI_EXPORT_CSV_LOGIN_FAILED, {
-        exit: 2,
-        suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-      });
-    }
-
     try {
       let action;
       const {
@@ -82,6 +84,7 @@ class ExportToCsvCommand extends Command {
         case 'entries': {
           try {
             let stack;
+            let stackClient;
             let language;
             let contentTypes = [];
             const listOfTokens = configHandler.get('tokens');
@@ -90,12 +93,19 @@ class ExportToCsvCommand extends Command {
               stack = {
                 name: stackName || managementTokenAlias,
                 apiKey: listOfTokens[managementTokenAlias].apiKey,
+                token: listOfTokens[managementTokenAlias].token,
               };
             } else if (managementTokenAlias) {
-              console.log('ERROR: Provided management token alias not found in your config.!');
-              this.exit();
+              this.error('Provided management token alias not found in your config.!');
             } else {
               let organization;
+
+              if (!this.getAuthToken) {
+                this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
+                  exit: 2,
+                  suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
+                });
+              }
 
               if (org) {
                 organization = { uid: org };
@@ -106,14 +116,15 @@ class ExportToCsvCommand extends Command {
               stack = await util.chooseStack(this.managementAPIClient, organization.uid); // prompt for stack
             }
 
-            const contentTypeCount = await util.getContentTypeCount(this.managementAPIClient, stack.apiKey);
-            const environments = await util.getEnvironments(this.managementAPIClient, stack.apiKey); // fetch environments, because in publish details only env uid are available and we need env names
+            stackClient = this.getStackClient(stack);
+            const contentTypeCount = await util.getContentTypeCount(stackClient);
+            const environments = await util.getEnvironments(stackClient); // fetch environments, because in publish details only env uid are available and we need env names
 
             if (contentTypesFlag) {
               contentTypes = contentTypesFlag.split(',').map(this.snakeCase);
             } else {
               for (let index = 0; index <= contentTypeCount / 100; index++) {
-                const contentTypesMap = await util.getContentTypes(this.managementAPIClient, stack.apiKey, index);
+                const contentTypesMap = await util.getContentTypes(stackClient, index);
                 contentTypes = contentTypes.concat(Object.values(contentTypesMap)); // prompt for content Type
               }
             }
@@ -130,27 +141,16 @@ class ExportToCsvCommand extends Command {
             if (locale) {
               language = { code: locale };
             } else {
-              language = await util.chooseLanguage(this.managementAPIClient, stack.apiKey); // prompt for language
+              language = await util.chooseLanguage(stackClient); // prompt for language
             }
 
             while (contentTypes.length > 0) {
               let contentType = contentTypes.pop();
 
-              const entriesCount = await util.getEntriesCount(
-                this.managementAPIClient,
-                stack.apiKey,
-                contentType,
-                language.code,
-              );
+              const entriesCount = await util.getEntriesCount(stackClient, contentType, language.code);
               let flatEntries = [];
               for (let index = 0; index < entriesCount / 100; index++) {
-                const entriesResult = await util.getEntries(
-                  this.managementAPIClient,
-                  stack.apiKey,
-                  contentType,
-                  language.code,
-                  index,
-                );
+                const entriesResult = await util.getEntries(stackClient, contentType, language.code, index);
                 const flatEntriesResult = util.cleanEntries(
                   entriesResult.items,
                   language.code,
@@ -163,15 +163,20 @@ class ExportToCsvCommand extends Command {
 
               util.write(this, flatEntries, fileName, 'entries'); // write to file
             }
-
-          } catch(error) {
-            this.log(`Error: ${util.formatError(error)}`);
+          } catch (error) {
+            this.log(util.formatError(error));
           }
           break;
         }
         case config.exportUsers:
         case 'users': {
           try {
+            if (!this.getAuthToken) {
+              this.error(config.CLI_EXPORT_CSV_LOGIN_FAILED, {
+                exit: 2,
+                suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
+              });
+            }
             let organization;
 
             if (org) {
@@ -192,25 +197,31 @@ class ExportToCsvCommand extends Command {
             util.write(this, listOfUsers, fileName, 'organization details');
           } catch (error) {
             if (error.message) {
-              this.log(`Error: ${error.message}`);
+              this.log(util.formatError(error));
             }
-
-            this.error('failed export content to csv');
           }
           break;
         }
       }
     } catch (error) {
       if (error.message) {
-        this.log(`Error: ${util.formatError(error)}`);
+        this.log(util.formatError(error));
       }
-
-      this.error('failed export content to csv');
     }
   }
 
   snakeCase(string) {
     return (string || '').split(' ').join('_').toLowerCase();
+  }
+
+  getStackClient(stack) {
+    if (stack.token) {
+      return ContentstackManagementSDK.client({ host: this.cmaHost }).stack({
+        api_key: stack.apiKey,
+        management_token: stack.token,
+      });
+    }
+    return this.managementAPIClient.stack({ api_key: stack.apiKey });
   }
 }
 
