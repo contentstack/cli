@@ -55,6 +55,15 @@ ImportCustomRoles.prototype.start = async function(credentialConfig) {
       }
 
       try {
+        // rules.branch is required to create custom roles.
+        const branchRuleExists = customRole.rules.find(rule => rule.module === 'branch');
+        if (!branchRuleExists) {
+          customRole.rules.push({
+            module: 'branch',
+            branches: ['main'],
+            acl: { read: true }
+          });
+        }
         const role = await this.client.stack({ api_key: config.target_stack, management_token: config.management_token })
           .role().create({ role: customRole });
 
