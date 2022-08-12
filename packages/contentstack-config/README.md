@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-config/1.0.1 darwin-x64 node-v16.15.1
+@contentstack/cli-config/1.0.0 darwin-x64 node-v16.15.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -40,7 +40,7 @@ EXAMPLE
   $ csdx config:get:region
 ```
 
-_See code: [src/commands/config/get/region.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/config/get/region.ts)_
+_See code: [src/commands/config/get/region.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/config/get/region.ts)_
 
 ## `csdx config:set:region [REGION]`
 
@@ -64,9 +64,7 @@ EXAMPLES
   $ csdx config:set:region NA
   $ csdx config:set:region NA
   $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"
-  $ csdx config:set:region --cma="https://in-api.contentstack.com" --cda="https://in-cda.contentstack.com" 
-  --name="India"
 ```
 
-_See code: [src/commands/config/set/region.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/config/set/region.ts)_
+_See code: [src/commands/config/set/region.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/config/set/region.ts)_
 <!-- commandsstop -->

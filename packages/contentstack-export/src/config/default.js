@@ -65,11 +65,11 @@ module.exports = {
       fileName: 'assets.json',
       // This is the total no. of asset objects fetched in each 'get assets' call
       batchLimit: 20,
-      host: 'https://stag-images.contentstack.io',
+      host: 'https://images.contentstack.io',
       invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by', '_metadata', 'published'],
       // no of asset version files (of a single asset) that'll be downloaded parallelly
       downloadLimit: 5,
-      enableDownloadStatus: false
+      enableDownloadStatus: false,
     },
     content_types: {
       dirName: 'content_types',
