@@ -1,7 +1,7 @@
 import { Command, flags } from '@contentstack/cli-command';
 const ContentstackManagementSDK = require('@contentstack/management');
 import Bootstrap, { BootstrapOptions, SeedParams } from '../../bootstrap';
-import { inquireCloneDirectory, inquireApp, inquireAppType } from '../../bootstrap/interactive';
+import { inquireCloneDirectory, inquireApp, inquireAppType, inquireLivePreviewSupport } from '../../bootstrap/interactive';
 import { printFlagDeprecation } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
@@ -146,6 +146,8 @@ export default class BootstrapCommand extends Command {
         cloneDirectory = await inquireCloneDirectory();
       }
 
+      const livePreviewEnabled = await inquireLivePreviewSupport();
+
       const seedParams: SeedParams = {};
       const stackAPIKey = bootstrapCommandFlags['stack-api-key'];
       const org = bootstrapCommandFlags['org'];
@@ -163,6 +165,7 @@ export default class BootstrapCommand extends Command {
         managementAPIClient: this.managementAPIClient,
         region: this.region,
         appType,
+        livePreviewEnabled,
       };
       const bootstrap = new Bootstrap(options);
       await bootstrap.run();
