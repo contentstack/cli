@@ -5,7 +5,7 @@ const isEmpty = require("lodash/isEmpty");
 const isArray = require("lodash/isArray");
 const includes = require("lodash/includes");
 const { existsSync, readdirSync } = require("fs");
-const { INTEGRATION_EXECUTION_ORDER, IS_TS } = require("./config.json");
+const { INTEGRATION_EXECUTION_ORDER, IS_TS, ENCRYPT_CONF } = require("./config.json");
 
 let testType = 'integration'
 const args = process.argv.slice(2);
@@ -15,7 +15,7 @@ if (includes(args, "--unit-test")) {
   testType = 'unit'
 }
 
-process.env.ENCRYPT_CONF = true
+process.env.ENCRYPT_CONF = ENCRYPT_CONF || false
 process.env.ENC_KEY = `${testType}TestEncryptionKey`;
 process.env.CONFIG_NAME = `${testType}_test_contentstack_cli`;
 process.env.ENC_CONFIG_NAME = `${testType}_test_contentstack_cli_obfuscate`;
