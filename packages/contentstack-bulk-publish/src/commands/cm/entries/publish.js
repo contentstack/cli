@@ -14,7 +14,7 @@ let config;
 
 class PublishEntriesCommand extends Command {
   async run() {
-    const entriesFlags = this.parse(PublishEntriesCommand).flags;
+    const { flags: entriesFlags } = await this.parse(PublishEntriesCommand);
     entriesFlags.retryFailed = entriesFlags['retry-failed'] || entriesFlags.retryFailed || false;
     entriesFlags.contentTypes = entriesFlags['content-types'] || entriesFlags.contentTypes;
     entriesFlags.bulkPublish = entriesFlags['bulk-publish'] || entriesFlags.bulkPublish;
@@ -224,7 +224,7 @@ PublishEntriesCommand.flags = {
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
   'delivery-token': flags.string({ description: 'Delivery token for source environment' }),
-  'source-env': flags.string({ description: 'Source environment'}),
+  'source-env': flags.string({ description: 'Source environment' }),
 };
 
 PublishEntriesCommand.examples = [
