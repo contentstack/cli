@@ -81,6 +81,16 @@ importWorkflows.prototype = {
                   for (let i = 0; i < stage.SYS_ACL.roles.uids.length; i++) {
                     const roleData = stage.SYS_ACL.roles.uids[i];
                     if (!roleNameMap[roleData.name]) {
+                      // rules.branch is required to create custom roles.
+                      const branchRuleExists = roleData.rules.find(rule => rule.module === 'branch');
+                      if (!branchRuleExists) {
+                        roleData.rules.push({
+                          module: 'branch',
+                          branches: ['main'],
+                          acl: { read: true }
+                        });
+                      }
+
                       const role = await client.stack({ api_key: config.target_stack, management_token: config.management_token }).role().create({ role: roleData });
                       stage.SYS_ACL.roles.uids[i] = role.uid;
                       roleNameMap[roleData.name] = role.uid;
@@ -98,6 +108,10 @@ importWorkflows.prototype = {
             if (workflow.admin_users !== undefined) {
               addlogs(config, chalk.yellow('We are skipping import of `Workflow superuser(s)` from workflow'), 'info');
               delete workflow.admin_users;
+            }
+            // One branch is required to create workflow.
+            if (!workflow.branches) {
+              workflow.branches = ['main'];
             }
 
             return client
