@@ -10,7 +10,8 @@ let config;
 
 class CrossPublishCommand extends Command {
   async run() {
-    const crossPublishFlags = this.flagsAdapter(this.parse(CrossPublishCommand).flags);
+    const { _flags } = await this.parse(CrossPublishCommand);
+    const crossPublishFlags = this.flagsAdapter(_flags);
     let updatedFlags;
     try {
       updatedFlags = crossPublishFlags.config ? store.updateMissing(configKey, crossPublishFlags) : crossPublishFlags;
@@ -32,7 +33,7 @@ class CrossPublishCommand extends Command {
         try {
           this.getToken(updatedFlags.alias);
         } catch (error) {
-          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, {exit: 2})
+          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, { exit: 2 })
         }
         config = {
           alias: updatedFlags.alias,
