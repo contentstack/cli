@@ -1,6 +1,7 @@
 const { join } = require('path')
-const { test, expect } = require("./oclif-test")
 const { NodeCrypto, messageHandler } = require("@contentstack/cli-utilities")
+const { test, expect } = require("@contentstack/cli-utilities/lib/oclif-test")
+
 const LoginCommand = require('@contentstack/cli-auth/lib/commands/auth/login').default
 const AddTokeCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/add').default
 const RegionGetCommand = require('@contentstack/cli-config/lib/commands/config/set/region').default
@@ -80,5 +81,4 @@ describe("Set all the configurations to perform the export.", () => {
         });
     })
   }
-
 })

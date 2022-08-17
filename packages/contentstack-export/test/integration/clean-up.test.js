@@ -1,7 +1,7 @@
 const { join } = require('path')
 const { existsSync, unlinkSync } = require('fs')
-const { test, expect } = require("./oclif-test")
 const { DEFAULT_TIMEOUT, PRINT_LOGS } = require("./config.json")
+const { test, expect } = require("@contentstack/cli-utilities/lib/oclif-test")
 const LogoutCommand = require('@contentstack/cli-auth/lib/commands/auth/logout').default
 const { cliux: CliUx, messageHandler, configHandler } = require("@contentstack/cli-utilities")
 
