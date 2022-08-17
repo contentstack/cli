@@ -11,7 +11,7 @@ let config;
 
 class PublishModifiedCommand extends Command {
   async run() {
-    const entryEditsFlags = this.parse(PublishModifiedCommand).flags;
+    const { flags: entryEditsFlags } = await this.parse(PublishModifiedCommand);
     entryEditsFlags.retryFailed = entryEditsFlags['retry-failed'] || entryEditsFlags.retryFailed || false;
     entryEditsFlags.contentTypes = entryEditsFlags['content-types'] || entryEditsFlags.contentTypes;
     entryEditsFlags.bulkPublish = entryEditsFlags['bulk-publish'] || entryEditsFlags.bulkPublish;
