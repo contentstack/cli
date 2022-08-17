@@ -1,4 +1,4 @@
-import { IConfig, Plugin } from '@oclif/config';
+import { Config, Plugin } from '@oclif/core';
 
 export interface PrintOptions {
   color?: string;
@@ -30,6 +30,6 @@ export interface Context {
   info: any;
   messageFilePath: any;
 }
-export interface CLIConfig extends IConfig {
+export interface CLIConfig extends Config {
   context: Context;
 }
