@@ -12,7 +12,7 @@ let config;
 
 class AssetsPublishCommand extends Command {
   async run() {
-    const assetsFlags = this.parse(AssetsPublishCommand).flags;
+    const { flags: assetsFlags } = await this.parse(AssetsPublishCommand);
     assetsFlags.retryFailed = assetsFlags['retry-failed'] || assetsFlags.retryFailed || false;
     assetsFlags.folderUid = assetsFlags['folder-uid'] || assetsFlags.folderUid;
     assetsFlags.bulkPublish = assetsFlags['bulk-publish'] || assetsFlags.bulkPublish;
@@ -203,7 +203,7 @@ AssetsPublishCommand.flags = {
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
   'delivery-token': flags.string({ description: 'Delivery token for source environment' }),
-  'source-env': flags.string({ description: 'Source environment'}),
+  'source-env': flags.string({ description: 'Source environment' }),
   'content-types': flags.string({ description: 'Content types', multiple: true }), // this is a work around, as this command is to be run with entries:publish command and should not break flags check.
 };
 
