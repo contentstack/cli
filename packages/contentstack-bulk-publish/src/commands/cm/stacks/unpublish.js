@@ -11,7 +11,7 @@ let config;
 
 class UnpublishCommand extends Command {
   async run() {
-    const unpublishFlags = this.parse(UnpublishCommand).flags;
+    const { flags: unpublishFlags } = await this.parse(UnpublishCommand);
     unpublishFlags.retryFailed = unpublishFlags['retry-failed'] || unpublishFlags.retryFailed;
     unpublishFlags.bulkUnpublish = unpublishFlags['bulk-unpublish'] || unpublishFlags.bulkUnpublish;
     unpublishFlags.contentType = unpublishFlags['content-type'] || unpublishFlags.contentType;

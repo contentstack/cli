@@ -6,7 +6,7 @@ export default class TokensListCommand extends Command {
   static examples = ['$ csdx auth:tokens'];
   static description = 'Lists all existing tokens added to the session';
   static flags: Record<string, any> = cliux.uxTable.flags(); // use the cli table flags as it displays tokens in table
-  
+
   async run(): Promise<any> {
     try {
       const managementTokens = configHandler.get('tokens');
@@ -22,7 +22,7 @@ export default class TokensListCommand extends Command {
           });
         });
 
-        const { flags } = this.parse(TokensListCommand);
+        const { flags } = await this.parse(TokensListCommand);
 
         cliux.table(
           tokenOptions,
