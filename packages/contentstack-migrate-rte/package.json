@@ -20,7 +20,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "oclif": "^3",
+    "oclif": "^3.1.2",
     "@oclif/test": "^1.2.8",
     "chai": "^4.3.4",
     "eslint": "^8.18.0",
