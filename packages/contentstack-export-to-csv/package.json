@@ -15,7 +15,7 @@
     "mkdirp": "^1.0.4"
   },
   "devDependencies": {
-    "oclif": "^3",
+    "oclif": "^3.1.2",
     "@oclif/test": "^1.2.8",
     "chai": "^4.2.0",
     "debug": "^4.3.1",
