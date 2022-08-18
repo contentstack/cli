@@ -16,7 +16,7 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "oclif": "^3",
+    "oclif": "^3.1.2",
     "@oclif/test": "^1.2.6",
     "chai": "^4.2.0",
     "eslint": "^8.18.0",

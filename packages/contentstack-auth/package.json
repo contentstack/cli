@@ -27,7 +27,7 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "oclif": "^3",
+    "oclif": "^3.1.2",
     "@oclif/test": "^1.2.8",
     "@types/chai": "^4.2.18",
     "@types/inquirer": "^7.3.1",
