@@ -16,7 +16,7 @@
     "tslib": "^1.13.0"
   },
   "devDependencies": {
-    "oclif": "^3",
+    "oclif": "^3.1.2",
     "@types/inquirer": "^7.3.1",
     "@types/jest": "^26.0.15",
     "@types/mkdirp": "^1.0.1",
