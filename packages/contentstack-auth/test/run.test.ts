@@ -7,6 +7,9 @@ import {
   // @ts-ignore
 } from "./config.json";
 
+// NOTE init env variables
+require('dotenv').config()
+
 const filter = require("lodash/filter");
 const forEach = require("lodash/forEach");
 const isEmpty = require("lodash/isEmpty");
@@ -74,5 +77,5 @@ const args = process.argv.slice(2);
 if (includes(args, "--integration-test")) {
   run(INTEGRATION_EXECUTION_ORDER);
 } else if (includes(args, "--unit-test")) {
-  run(UNIT_EXECUTION_ORDER, false);
+  // run(UNIT_EXECUTION_ORDER, false);
 }
