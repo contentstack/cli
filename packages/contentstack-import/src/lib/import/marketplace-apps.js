@@ -237,7 +237,9 @@ function importMarketplaceApps() {
     if (index > -1) {
       allMarketplaceApps[index] = {
         ...allMarketplaceApps[index],
-        new_app_uid: data.uid
+        new_app_uid: data.uid,
+        title: data.name,
+        old_title: allMarketplaceApps[index].title
       }
 
       writeFile(
