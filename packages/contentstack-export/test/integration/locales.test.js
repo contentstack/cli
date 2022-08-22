@@ -44,7 +44,7 @@ describe("ContentStack-Export plugin test [--module=locales]", () => {
       })
       .stdout({ print: PRINT_LOGS || false })
       .command(["cm:stacks:export", "--module", "locales"])
-      .it("Check the exported locale count match with the stack locale count", async () => {
+      .it("Check locale count is done", async () => {
         let exportedLocaleCount = 0
         const localeCount = await getLocalesCount()
 
@@ -65,7 +65,7 @@ describe("ContentStack-Export plugin test [--module=locales]", () => {
       .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
       .stdout({ print: PRINT_LOGS || false })
       .command(["cm:stacks:export", "--stack-api-key", STACK_API_KEY || undefined, "--data-dir", EXPORT_PATH, "--module", "locales"])
-      .it("Check the exported locale count match with the stack locale count", async () => {
+      .it("Check locale count is done", async () => {
         let exportedLocaleCount = 0
         const localeCount = await getLocalesCount()
 

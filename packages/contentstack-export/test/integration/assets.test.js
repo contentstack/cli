@@ -49,7 +49,7 @@ describe("ContentStack-Export plugin test [--module=assets]", () => {
       })
       .stdout({ print: PRINT_LOGS || false })
       .command(["cm:stacks:export", "--module", "assets"])
-      .it("Check the exported assets and folder count match with the stack assets and folder count", async () => {
+      .it("Check folder count done", async () => {
         let exportedAssetsCount = 0
         let exportedAssetsFolderCount = 0
         const { assetCount, folderCount } = await getAssetAndFolderCount()
@@ -75,7 +75,7 @@ describe("ContentStack-Export plugin test [--module=assets]", () => {
       .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
       .stdout({ print: PRINT_LOGS || false })
       .command(["cm:stacks:export", "--stack-api-key", STACK_API_KEY || undefined, "--data-dir", EXPORT_PATH, "--module", "assets"])
-      .it("Check the exported assets and folder count match with the stack assets and folder counts", async () => {
+      .it("Check folder counts done", async () => {
         let exportedAssetsCount = 0
         let exportedAssetsFolderCount = 0
         const { assetCount, folderCount } = await getAssetAndFolderCount();
