@@ -29,6 +29,7 @@
     "@oclif/test": "^1.2.6",
     "assert": "^2.0.0",
     "chai": "^4.2.0",
+    "dotenv": "^16.0.1",
     "eslint": "^8.18.0",
     "eslint-config-oclif": "^3.1.0",
     "globby": "^10.0.2",
