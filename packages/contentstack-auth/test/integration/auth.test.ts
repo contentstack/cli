@@ -6,14 +6,17 @@ import { Helper } from './helper';
 import { PRINT_LOGS, USERNAME, PASSWORD, ENCRYPTION_KEY } from './config.json';
 import { cliux as CliUx, messageHandler, NodeCrypto } from '@contentstack/cli-utilities';
 
+const messageFilePath = path.join(__dirname, '..', '..', '..', 'contentstack-utilities', 'messages/auth.json');
 const crypto = new NodeCrypto({
   typeIdentifier: '◈',
   algorithm: 'aes-192-cbc',
-  encryptionKey: ENCRYPTION_KEY || 'gjh67567mn',
+  encryptionKey: process.env.ENCRYPTION_KEY || ENCRYPTION_KEY || 'gjh67567mn'
 });
-const username = ENCRYPTION_KEY ? crypto.decrypt(USERNAME) : USERNAME;
-const password = ENCRYPTION_KEY ? crypto.decrypt(PASSWORD) : PASSWORD;
-const messageFilePath = path.join(__dirname, '..', '..', '..', 'contentstack-utilities', 'messages/auth.json');
+let username = process.env.ENCRYPTION_KEY ? crypto.decrypt(process.env.USERNAME) : process.env.USERNAME
+let password = process.env.ENCRYPTION_KEY ? crypto.decrypt(process.env.PASSWORD) : process.env.PASSWORD
+
+if (!username) username = ENCRYPTION_KEY ? crypto.decrypt(USERNAME) : USERNAME
+if (!password) password = ENCRYPTION_KEY ? crypto.decrypt(PASSWORD) : PASSWORD
 
 describe('contentstack-auth plugin test', () => {
   beforeEach(() => {
