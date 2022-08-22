@@ -5,22 +5,16 @@ const { NodeCrypto, messageHandler } = require("@contentstack/cli-utilities")
 const LoginCommand = require('@contentstack/cli-auth/lib/commands/auth/login').default
 const AddTokeCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/add').default
 const RegionGetCommand = require('@contentstack/cli-config/lib/commands/config/set/region').default
-const {
-  USERNAME, PASSWORD, ENCRYPTION_KEY,
-  DEFAULT_TIMEOUT, PRINT_LOGS, REGION_NAME,
-  ALIAS_NAME, STACK_API_KEY, MANAGEMENT_TOKEN
-} = require("./config.json")
+const { DEFAULT_TIMEOUT, PRINT_LOGS, REGION_NAME, ALIAS_NAME } = require("./config.json")
 
 const crypto = new NodeCrypto({
   typeIdentifier: '◈',
   algorithm: 'aes-192-cbc',
-  encryptionKey: process.env.ENCRYPTION_KEY || ENCRYPTION_KEY || 'gjh67567mn'
+  encryptionKey: process.env.ENCRYPTION_KEY || 'gjh67567mn'
 });
-let username = process.env.ENCRYPTION_KEY ? crypto.decrypt(process.env.USERNAME) : process.env.USERNAME
-let password = process.env.ENCRYPTION_KEY ? crypto.decrypt(process.env.PASSWORD) : process.env.PASSWORD
 
-if (!username) username = ENCRYPTION_KEY ? crypto.decrypt(USERNAME) : USERNAME
-if (!password) password = ENCRYPTION_KEY ? crypto.decrypt(PASSWORD) : PASSWORD
+const username = process.env.ENCRYPTION_KEY ? crypto.decrypt(process.env.USERNAME) : process.env.USERNAME
+const password = process.env.ENCRYPTION_KEY ? crypto.decrypt(process.env.PASSWORD) : process.env.PASSWORD
 
 describe("Setting Pre-requests.", () => {
   let messageFilePath = join(__dirname, '..', '..', '..', 'contentstack-config', 'messages/index.json');
@@ -38,7 +32,7 @@ describe("Setting Pre-requests.", () => {
       messageFilePath = join(__dirname, '..', '..', '..', 'contentstack-utilities', 'messages/auth.json');
       messageHandler.init({ messageFilePath });
     })
-    .command(AddTokeCommand, ['-a', ALIAS_NAME, '-k', STACK_API_KEY, '--management', '--token', MANAGEMENT_TOKEN])
+    .command(AddTokeCommand, ['-a', ALIAS_NAME, '-k', process.env.STACK_API_KEY, '--management', '--token', process.env.MANAGEMENT_TOKEN])
     .it('Pre-config is done', () => {
       messageFilePath = ''
       messageHandler.init({ messageFilePath: '' })
