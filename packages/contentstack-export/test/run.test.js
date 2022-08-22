@@ -1,24 +1,18 @@
-const { join } = require("path");
+const { join, resolve } = require("path");
 const filter = require("lodash/filter");
 const forEach = require("lodash/forEach");
 const isEmpty = require("lodash/isEmpty");
 const isArray = require("lodash/isArray");
 const includes = require("lodash/includes");
 const { existsSync, readdirSync } = require("fs");
-const { INTEGRATION_EXECUTION_ORDER, IS_TS, ENCRYPT_CONF } = require("./config.json");
+const { INTEGRATION_EXECUTION_ORDER, IS_TS } = require("./config.json");
 
-let testType = 'integration'
+// NOTE init env variables
+require('dotenv').config()
+// require('dotenv').config({ path: resolve(process.cwd(), '.env.test') })
+
 const args = process.argv.slice(2);
 const testFileExtension = IS_TS ? '.ts' : '.js'
-
-if (includes(args, "--unit-test")) {
-  testType = 'unit'
-}
-
-process.env.ENCRYPT_CONF = ENCRYPT_CONF || false
-process.env.ENC_KEY = `${testType}TestEncryptionKey`;
-process.env.CONFIG_NAME = `${testType}_test_contentstack_cli`;
-process.env.ENC_CONFIG_NAME = `${testType}_test_contentstack_cli_obfuscate`;
 
 /**
  * @method getFileName

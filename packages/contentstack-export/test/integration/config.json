@@ -2,9 +2,6 @@
   "PRINT_LOGS": false,
   "REGION_NAME": "NA",
   "DEFAULT_TIMEOUT": 600000,
-  "API_KEY": "",
   "EXPORT_PATH": "./contents",
-  "ENCRYPTION_KEY": "key",
-  "USERNAME": "***REMOVED***|***REMOVED***",
-  "PASSWORD": "***REMOVED***|***REMOVED***"
+  "ALIAS_NAME": "marketplace_api"
 }
