@@ -6,7 +6,7 @@ const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 
 const { modules } = require('../../src/config/default')
 const { getAssetAndFolderCount } = require('./utils/helper')
-const { PRINT_LOGS, STACK_API_KEY, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
+const { PRINT_LOGS, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
 
 const exportBasePath = path.join(
   __dirname,
@@ -42,7 +42,7 @@ describe("ContentStack-Export plugin test [--module=assets]", () => {
       .stub(cliUX, "prompt", async (name) => {
         switch (name) {
           case promptMessageList.promptSourceStack:
-            return STACK_API_KEY || undefined
+            return process.env.STACK_API_KEY
           case promptMessageList.promptPathStoredData:
             return EXPORT_PATH
         }
@@ -74,7 +74,7 @@ describe("ContentStack-Export plugin test [--module=assets]", () => {
     test
       .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
       .stdout({ print: PRINT_LOGS || false })
-      .command(["cm:stacks:export", "--stack-api-key", STACK_API_KEY || undefined, "--data-dir", EXPORT_PATH, "--module", "assets"])
+      .command(["cm:stacks:export", "--stack-api-key", process.env.STACK_API_KEY, "--data-dir", EXPORT_PATH, "--module", "assets"])
       .it("Check folder counts done", async () => {
         let exportedAssetsCount = 0
         let exportedAssetsFolderCount = 0
