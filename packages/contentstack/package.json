@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run"
@@ -13,7 +13,7 @@
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "npm run build && oclif-dev manifest && oclif-dev readme",
-    "version": "oclif-dev readme && git add README.md",
+    "version": "oclif-dev readme  && git add README.md",
     "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "pretest": "tsc -p test",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
@@ -120,7 +120,6 @@
     "commands": "./lib/commands",
     "bin": "csdx",
     "plugins": [
-      "@oclif/plugin-help",
       "@oclif/plugin-not-found",
       "@oclif/plugin-plugins",
       "@contentstack/cli-config",
@@ -146,10 +145,5 @@
       ]
     }
   },
-  "repository": "https://github.com/contentstack/cli",
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint"
-    }
-  }
+  "repository": "https://github.com/contentstack/cli"
 }
