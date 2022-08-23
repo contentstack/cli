@@ -139,7 +139,13 @@
         "./lib/hooks/init/context-init",
         "./lib/hooks/init/utils-init"
       ]
-    }
+    },
+    "additionalHelpFlags": [
+      "-h"
+    ],
+    "additionalVersionFlags": [
+      "-v"
+    ]
   },
   "repository": "https://github.com/contentstack/cli",
   "husky": {
