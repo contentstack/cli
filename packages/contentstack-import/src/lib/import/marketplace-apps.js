@@ -192,6 +192,7 @@ function importMarketplaceApps() {
               type: 'input',
               name: 'name',
               default: `Copy of ${app.manifest.name}`,
+              validate: this.validateAppName,
               message: `${message}. Enter a new name to create an app.?`,
             })
             app.manifest.name = appName
@@ -356,6 +357,13 @@ function importMarketplaceApps() {
           })
       }
     })
+  }
+
+  this.validateAppName = (name) => {
+    if (name.length < 3 || name.length > 20) {
+      return "The app name should be atleast 3 characters long, and not be longer than 20 characters";
+    }
+    return true;
   }
 }
 
