@@ -4,7 +4,7 @@ import { logger, cliux, configHandler, printFlagDeprecation } from '@contentstac
 import { authHandler } from '../../utils';
 
 export default class LogoutCommand extends Command {
-  static run; // to fix the test issue
+  static run;
   static description = 'User session logout';
   static examples = ['$ csdx auth:logout', '$ csdx auth:logout -y', '$ csdx auth:logout --yes'];
 
@@ -12,15 +12,15 @@ export default class LogoutCommand extends Command {
     yes: flags.boolean({
       char: 'y',
       description: 'Force log out by skipping the confirmation',
-      // multiple: false,
       required: false,
+      default: false,
     }),
     force: flags.boolean({
       char: 'f',
       description: 'Force log out by skipping the confirmation',
-      // multiple: false,
       required: false,
       hidden: true,
+      default: false,
       parse: printFlagDeprecation(['-f', '--force'], ['-y', '--yes']),
     }),
   };
@@ -30,22 +30,22 @@ export default class LogoutCommand extends Command {
   async run(): Promise<any> {
     const { flags: logoutFlags } = this.parse(LogoutCommand);
     authHandler.client = this.managementAPIClient;
-    let confirm = false;
-    confirm =
-      logoutFlags.force || logoutFlags.yes
-        ? true
-        : await cliux.inquire({
-            type: 'confirm',
-            message: 'CLI_AUTH_LOGOUT_CONFIRM',
-            name: 'confirmation',
-          });
+    let confirm = logoutFlags.force === true || logoutFlags.yes === true;
+    if (!confirm) {
+      confirm = await cliux.inquire({
+        type: 'confirm',
+        message: 'CLI_AUTH_LOGOUT_CONFIRM',
+        name: 'confirmation',
+      });
+    }
+
     try {
       if (this.authToken) {
-        if (confirm) {
+        if (confirm === true) {
           cliux.loader('CLI_AUTH_LOGOUT_LOADER_START');
           const authtoken = this.authToken;
           await authHandler.logout(authtoken);
-          cliux.loader(''); //stops loading
+          cliux.loader('');
           logger.info('successfully logged out');
           cliux.success('CLI_AUTH_LOGOUT_SUCCESS');
         }
@@ -55,8 +55,10 @@ export default class LogoutCommand extends Command {
       cliux.print('CLI_AUTH_LOGOUT_FAILED', { color: 'yellow' });
       cliux.print(error.message, { color: 'red' });
     } finally {
-      configHandler.delete('authtoken');
-      configHandler.delete('email');
+      if (confirm === true) {
+        configHandler.delete('authtoken');
+        configHandler.delete('email');
+      }
     }
   }
 }
