@@ -1,7 +1,7 @@
 const { join } = require('path')
 const { existsSync, unlinkSync } = require('fs')
+const { test } = require("@contentstack/cli-dev-dependencies")
 const { DEFAULT_TIMEOUT, PRINT_LOGS } = require("./config.json")
-const { test } = require("@contentstack/cli-utilities/lib/oclif-test")
 const LogoutCommand = require('@contentstack/cli-auth/lib/commands/auth/logout').default
 const { cliux: CliUx, messageHandler, configHandler } = require("@contentstack/cli-utilities")
 
@@ -15,7 +15,7 @@ describe("Cleaning up", () => {
 
   test
     .timeout(DEFAULT_TIMEOUT || 600000)
-    .stub(CliUx, 'inquire', async () => 'Yes')
+    .stub(CliUx, 'inquire', async () => true)
     .stdout({ print: PRINT_LOGS || false })
     .command(LogoutCommand)
     .do(() => {
