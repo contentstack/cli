@@ -36,7 +36,9 @@
     "inquirer-search-checkbox": "^1.0.0",
     "inquirer-search-list": "^1.2.6",
     "ora": "^5.4.0",
-    "winston": "^3.7.2"
+    "unique-string": "^2.0.0",
+    "winston": "^3.7.2",
+    "xdg-basedir": "^4.0.0"
   },
   "devDependencies": {
     "@oclif/plugin-help": "^5.1.12",
