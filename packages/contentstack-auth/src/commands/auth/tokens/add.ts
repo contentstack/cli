@@ -114,9 +114,12 @@ export default class TokensAddCommand extends Command {
         apiKey = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_API_KEY', name: 'apiKey' });
       }
 
-      const apiKeyValidationResult = await tokenValidation.validateAPIKey(this.managementAPIClient, apiKey);
-      if (!apiKeyValidationResult.valid) {
-        throw new CLIError({ message: apiKeyValidationResult.message });
+      // Skip this check, so that management tokens can be added without login.
+      if (this.authToken) {
+        const apiKeyValidationResult = await tokenValidation.validateAPIKey(this.managementAPIClient, apiKey);
+        if (!apiKeyValidationResult.valid) {
+          throw new CLIError({ message: apiKeyValidationResult.message });
+        }
       }
 
       if (!token) {
