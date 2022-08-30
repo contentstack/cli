@@ -87,7 +87,7 @@ abstract class ContentstackCommand extends Command {
     if (this._authToken) return this._authToken;
     this._authToken = configHandler.get('authtoken');
     if (this._authToken) return this._authToken;
-    throw new CLIError('You are not logged in. Please login with command $ csdx auth:login');
+    // throw new CLIError('You are not logged in. Please login with command $ csdx auth:login');
   }
 
   getToken(alias) {
