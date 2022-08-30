@@ -1,5 +1,5 @@
 const { join } = require('path')
-const { test } = require("@contentstack/cli-utilities/lib/oclif-test")
+const { test } = require("@contentstack/cli-dev-dependencies")
 const { NodeCrypto, messageHandler } = require("@contentstack/cli-utilities")
 
 const LoginCommand = require('@contentstack/cli-auth/lib/commands/auth/login').default
