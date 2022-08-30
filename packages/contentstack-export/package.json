@@ -22,6 +22,7 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
+    "@contentstack/cli-dev-dependencies": "^1.0.0",
     "@contentstack/cli-auth": "^1.0.0",
     "@contentstack/cli-config": "^1.0.0",
     "@oclif/dev-cli": "^1.22.2",
