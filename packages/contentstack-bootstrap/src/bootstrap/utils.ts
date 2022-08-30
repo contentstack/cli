@@ -172,7 +172,7 @@ const envFileHandler = async (
         case 'vue-starter':
             fileName = '.env'
             filePath = path.join(clonedDirectory, fileName)
-            content = `VUE_CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nVUE_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nVUE_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nVUE_CONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost ? '\nVUE_CONTENTSTACK_REGION=' + region.name : '')}\nVUE_APP_CONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`
+            content = `VUE_APP_CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nVUE_APP_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nVUE_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nVUE_APP_CONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost ? '\nVUE_APP_CONTENTSTACK_REGION=' + region.name : '')}\nVUE_APP_CONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`
             result = await writeEnvFile(content, filePath)
             break
         default:
