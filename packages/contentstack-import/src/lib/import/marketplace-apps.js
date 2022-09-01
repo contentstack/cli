@@ -33,7 +33,7 @@ function importMarketplaceApps() {
     )
 
     if (!config.auth_token && !_.isEmpty(this.marketplaceApps)) {
-      cliux.print('WARNING!!! To import marketplace apps, you should be logged in. Kindly check csdx auth:login --help to login', { color: 'yellow' })
+      cliux.print('WARNING!!! To import Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in', { color: 'yellow' })
       return Promise.resolve()
     } else if(_.isEmpty(this.marketplaceApps)) {
       return Promise.resolve()
@@ -144,12 +144,12 @@ function importMarketplaceApps() {
     if (!_.isEmpty(listOfNotInstalledPrivateApps)) {
       log(config, 'Starting developer hub private apps installation', 'success')
       const confirmation = await cliux.confirm(
-        chalk.yellow(`WARNING!!! The following list of apps are private apps which are not available for this stack [${_.map(listOfNotInstalledPrivateApps, 'title').join()}]. Would you like to proceed with installing them? y/n`)
+        chalk.yellow(`WARNING!!! The listed apps are private apps that are not available in the destination stack: [${_.map(listOfNotInstalledPrivateApps, 'title').join()}]. Would you like to proceed with the installation? (y/n)`)
       )
 
       if (!confirmation) {
         const continueProcess = await cliux.confirm(
-          chalk.yellow(`WARNING!!! Hence, you canceled the installation which may break content-type and entry import. Would you like to proceed.? y/n`)
+          chalk.yellow(`WARNING!!! Canceling the installation may break the content type and entry import. Would you like to proceed? (y/n)`)
         )
 
         if (continueProcess) {
@@ -201,7 +201,7 @@ function importMarketplaceApps() {
               .catch(resolve)
           } else {
             const confirmation = await cliux.confirm(
-              chalk.yellow('WARNING!!! The above error may have an impact if the failed app has been referenced in entries/content type. Would you like to proceed.? (y/n)')
+              chalk.yellow('WARNING!!! The above error may have an impact if the failed app is referenced in entries/content type. Would you like to proceed? (y/n)')
             )
 
             if (confirmation) {
@@ -274,13 +274,13 @@ function importMarketplaceApps() {
 
           if (ext) {
             cliux.print(
-              `WARNING!!! The ${title} app already exists and it may have its own configuration. But the current app we install has its own config which is used internally to manage content.`,
+              `WARNING!!! The ${title} app already exists and it may have its own configuration. But the current app you install has its own configuration which is used internally to manage content.`,
               { color: 'yellow' }
             )
             const configOption = await cliux.inquire({
               choices: [
-                'Update with new config',
-                'Don\'t update config (WARNING!!! If we don\'t update, there may be some issues with content which we import.)',
+                'Update it with the new configuration.',
+                'Do not update the configuration (WARNING!!! If you do not update the configuration, there may be some issues with the content which you import).',
                 'Exit'
               ],
               type: 'list',
@@ -301,7 +301,7 @@ function importMarketplaceApps() {
           } else {
             cliux.print(`WARNING!!! ${message}`, { color: 'yellow' })
             const confirmation = await cliux.confirm(
-              chalk.yellow('WARNING!!! The above error may have an impact if the failed app has been referenced in entries/content type. Would you like to proceed.? (y/n)')
+              chalk.yellow('WARNING!!! The above error may have an impact if the failed app is referenced in entries/content type. Would you like to proceed? (y/n)')
             )
 
             if (!confirmation) {
@@ -361,8 +361,9 @@ function importMarketplaceApps() {
 
   this.validateAppName = (name) => {
     if (name.length < 3 || name.length > 20) {
-      return "The app name should be atleast 3 characters long, and not be longer than 20 characters";
+      return 'The app name should be within 3-20 characters long.';
     }
+
     return true;
   }
 }
