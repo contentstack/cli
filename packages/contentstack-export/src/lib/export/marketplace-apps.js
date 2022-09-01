@@ -26,7 +26,7 @@ function exportMarketplaceApps() {
     client = stack.Client(config);
 
     if (!config.auth_token) {
-      cliux.print('WARNING!!! To export marketplace apps, you should be logged in. Kindly check csdx auth:login --help to login', { color: 'yellow' })
+      cliux.print('WARNING!!! To export Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in', { color: 'yellow' })
       return Promise.resolve()
     }
 
