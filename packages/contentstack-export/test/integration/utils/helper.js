@@ -1,13 +1,35 @@
 const fs = require('fs');
+const _ = require('lodash')
 const config = require('../../../src/config/default');
 const { Command } = require('@contentstack/cli-command');
 const managementSdk = require('../../../src/lib/util/contentstack-management-sdk');
+
+let envData = { NA: {}, EU: {}, 'AZURE-NA': {}, env_pushed: false }
 
 class Helper extends Command {
   async run() {
     return this.region
   }
 }
+
+const initEnvData = (regions = ['NA', 'EU', 'AZURE-NA']) => {
+  if (!envData.env_pushed) envData = { ...envData, ...process.env, env_pushed: true }
+
+  const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = envData
+
+  _.forEach(regions, (region) => {
+    if (!envData[region] || _.isEmpty(envData[region][module])) {
+      if (envData[`${APP_ENV}_${region}_BRANCH`]) {
+        envData[region]['BRANCH'] = _.fromPairs(_.map(_.split(envData[`${APP_ENV}_${region}_BRANCH`], DELIMITER), val => _.split(val, KEY_VAL_DELIMITER)))
+      }
+      if (envData[`${APP_ENV}_${region}_NON_BRANCH`]) {
+        envData[region]['NON_BRANCH'] = _.fromPairs(_.map(_.split(envData[`${APP_ENV}_${region}_NON_BRANCH`], DELIMITER), val => _.split(val, KEY_VAL_DELIMITER)))
+      }
+    }
+  })
+}
+
+const getEnvData = () => envData
 
 const getStack = () => {
   return managementSdk.Client(config)
@@ -104,6 +126,8 @@ const readJsonFileContents = (filePath) => {
 module.exports = {
   Helper,
   getStack,
+  initEnvData,
+  getEnvData,
   getLocalesCount,
   readJsonFileContents,
   getAssetAndFolderCount
