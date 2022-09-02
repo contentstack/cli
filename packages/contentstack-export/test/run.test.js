@@ -1,15 +1,19 @@
-const { join, resolve } = require("path");
+const { join } = require("path");
 const filter = require("lodash/filter");
 const forEach = require("lodash/forEach");
 const isEmpty = require("lodash/isEmpty");
 const isArray = require("lodash/isArray");
 const includes = require("lodash/includes");
 const { existsSync, readdirSync } = require("fs");
+
+const { initEnvData } = require('./integration/utils/helper')
 const { INTEGRATION_EXECUTION_ORDER, IS_TS } = require("./config.json");
 
 // NOTE init env variables
-require('dotenv').config()
+require('dotenv-expand').expand(require('dotenv').config())
 // require('dotenv').config({ path: resolve(process.cwd(), '.env.test') })
+
+initEnvData() // NOTE Prepare env data
 
 const args = process.argv.slice(2);
 const testFileExtension = IS_TS ? '.ts' : '.js'
