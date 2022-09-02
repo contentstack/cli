@@ -22,15 +22,16 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "@contentstack/cli-dev-dependencies": "^1.0.0",
     "@contentstack/cli-auth": "^1.0.0",
     "@contentstack/cli-config": "^1.0.0",
+    "@contentstack/cli-dev-dependencies": "^1.0.0",
     "@oclif/dev-cli": "^1.22.2",
     "@oclif/plugin-help": "^5.1.12",
     "@oclif/test": "^1.2.6",
     "assert": "^2.0.0",
     "chai": "^4.2.0",
     "dotenv": "^16.0.1",
+    "dotenv-expand": "^9.0.0",
     "eslint": "^8.18.0",
     "eslint-config-oclif": "^3.1.0",
     "globby": "^10.0.2",

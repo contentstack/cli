@@ -1,10 +1,13 @@
 const { join } = require('path')
 const { existsSync, unlinkSync } = require('fs')
 const { test } = require("@contentstack/cli-dev-dependencies")
+
+const { getEnvData } = require('./utils/helper')
 const { DEFAULT_TIMEOUT, PRINT_LOGS } = require("./config.json")
 const LogoutCommand = require('@contentstack/cli-auth/lib/commands/auth/logout').default
 const { cliux: CliUx, messageHandler, configHandler } = require("@contentstack/cli-utilities")
 
+const { ENC_CONFIG_NAME } = getEnvData()
 
 describe("Cleaning up", () => {
   let config
@@ -25,7 +28,7 @@ describe("Cleaning up", () => {
       if (config && config.path) {
         let keyPath = config.path.split('/')
         keyPath.pop()
-        keyPath.push(`${process.env.ENC_CONFIG_NAME}.json`)
+        keyPath.push(`${ENC_CONFIG_NAME}.json`)
         keyPath = keyPath.join('/')
 
         if (existsSync(keyPath)) {
