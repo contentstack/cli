@@ -19,10 +19,10 @@ const initEnvData = (regions = ['NA', 'EU', 'AZURE-NA']) => {
 
   _.forEach(regions, (region) => {
     if (!envData[region] || _.isEmpty(envData[region][module])) {
-      if (envData[`${APP_ENV}_${region}_BRANCH`]) {
+      if (envData[`${APP_ENV}_${region}_BRANCH`] && !envData[region]['BRANCH']) {
         envData[region]['BRANCH'] = _.fromPairs(_.map(_.split(envData[`${APP_ENV}_${region}_BRANCH`], DELIMITER), val => _.split(val, KEY_VAL_DELIMITER)))
       }
-      if (envData[`${APP_ENV}_${region}_NON_BRANCH`]) {
+      if (envData[`${APP_ENV}_${region}_NON_BRANCH`] && !envData[region]['NON_BRANCH']) {
         envData[region]['NON_BRANCH'] = _.fromPairs(_.map(_.split(envData[`${APP_ENV}_${region}_NON_BRANCH`], DELIMITER), val => _.split(val, KEY_VAL_DELIMITER)))
       }
     }
