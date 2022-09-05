@@ -12,7 +12,6 @@ const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
 let config = require('../../config/default');
 let localeConfig = config.modules.locales;
-const masterLocale = config.master_locale;
 let requiredKeys = localeConfig.requiredKeys;
 let stack = require('../util/contentstack-management-sdk');
 let client
@@ -20,11 +19,7 @@ function ExportLocales() {
   this.qs = {
     include_count: true,
     asc: 'updated_at',
-    query: {
-      code: {
-        $nin: [masterLocale.code],
-      },
-    },
+    query: {},
     only: {
       BASE: requiredKeys,
     },

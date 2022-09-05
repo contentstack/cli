@@ -11,11 +11,16 @@ const stack = require('../util/contentstack-management-sdk');
 let config = require('../../config/default');
 
 const customRolesConfig = config.modules.customRoles;
+const localeConfig = config.modules.locales;
 let customRolesFolderPath;
+let localesFolderPath;
+// Mapper file paths variables.
 let customRolesMapperPath;
 let customRolesUidMapperPath;
 let customRolesSuccessPath;
 let customRolesFailsPath;
+let environmentsUidMapperFolderPath;
+let entriesUidMapperFolderPath;
 
 function ImportCustomRoles() {
   this.fails = [];
@@ -35,10 +40,15 @@ ImportCustomRoles.prototype.start = async function(credentialConfig) {
     addlogs(config, chalk.white('Migrating custom-roles'), 'success');
     customRolesFolderPath = path.resolve(config.data, customRolesConfig.dirName);
     self.customRoles = helper.readFile(path.resolve(customRolesFolderPath, customRolesConfig.fileName));
+    localesFolderPath = path.resolve(config.data, localeConfig.dirName);
+    self.locales = helper.readFile(path.resolve(localesFolderPath, localeConfig.fileName));
+    // Mapper file paths.
     customRolesMapperPath = path.resolve(config.data, 'mapper', 'custom-roles');
     customRolesUidMapperPath = path.resolve(config.data, 'mapper', 'custom-roles', 'uid-mapping.json');
     customRolesSuccessPath = path.resolve(config.data, 'custom-roles', 'success.json');
     customRolesFailsPath = path.resolve(config.data, 'custom-roles', 'fails.json');
+    environmentsUidMapperFolderPath = path.resolve(config.data, 'mapper', 'environments');
+    entriesUidMapperFolderPath = path.resolve(config.data, 'mapper', 'entries');
     mkdirp.sync(customRolesMapperPath);
 
     if (!self.customRoles) {
@@ -46,6 +56,16 @@ ImportCustomRoles.prototype.start = async function(credentialConfig) {
       return;
     }
     self.customRolesUids = Object.keys(self.customRoles);
+
+    self.localesUidMap = await getLocalesUidMap(this.client, config, self.locales);
+
+    if (fs.existsSync(environmentsUidMapperFolderPath)) {
+      self.environmentsUidMap = helper.readFile(path.resolve(environmentsUidMapperFolderPath, 'uid-mapping.json'));
+    }
+    if (fs.existsSync(entriesUidMapperFolderPath)) {
+      self.entriesUidMap = helper.readFile(path.resolve(entriesUidMapperFolderPath, 'uid-mapping.json'));
+    }
+
     for (const uid of self.customRolesUids) {
       const customRole = self.customRoles[uid];
 
@@ -55,6 +75,10 @@ ImportCustomRoles.prototype.start = async function(credentialConfig) {
       }
 
       try {
+        customRole.rules.forEach(rule => {
+          const transformUids = getTransformUidsFactory(rule);
+          rule = transformUids(rule, self.environmentsUidMap, self.localesUidMap, self.entriesUidMap);
+        });
         // rules.branch is required to create custom roles.
         const branchRuleExists = customRole.rules.find(rule => rule.module === 'branch');
         if (!branchRuleExists) {
@@ -71,10 +95,10 @@ ImportCustomRoles.prototype.start = async function(credentialConfig) {
         helper.writeFile(customRolesUidMapperPath, self.customRolesUidMapper); 
       } catch (error) {
         self.fails.push(customRole);
-        if (error.errors.name) {
+        if (error && error.errors && error.errors.name) {
           addlogs(config, chalk.red(`custom-role: ${customRole.name} already exists`), 'error');
         } else {
-          addlogs(config, chalk.red(`custom-role: ${workflow.name} failed`), 'error');
+          addlogs(config, chalk.red(`custom-role: ${customRole.name} failed`), 'error');
         }
       }
     }
@@ -86,4 +110,51 @@ ImportCustomRoles.prototype.start = async function(credentialConfig) {
   }
 };
 
+const getTransformUidsFactory = (rule) => {
+  if (rule.module === 'environment') {
+    return environmentUidTransformer;
+  } else if (rule.module === 'locale') {
+    return localeUidTransformer;
+  } else if (rule.module === 'entry') {
+    return entryUidTransformer;
+  } else {
+    return noopTransformer;
+  }
+};
+
+const environmentUidTransformer = (rule, environmentsUidMap) => {
+  rule.environments = rule.environments.map(env => environmentsUidMap[env]);
+  return rule;
+};
+
+const localeUidTransformer = (rule, environmentsUidMap, localesUidMap) => {
+  rule.locales = rule.locales.map(locale => localesUidMap[locale]);
+  return rule;
+};
+
+const entryUidTransformer = (rule, environmentsUidMap, localesUidMap, entriesUidMap) => {
+  rule.entries = rule.entries.map(entry => entriesUidMap[entry]);
+  return rule;
+};
+
+const noopTransformer = (rule) => {
+  return rule;
+};
+
+const getLocalesUidMap = async (client, config, sourceLocales) => {
+  const { items } = await client.stack({ api_key: config.target_stack, management_token: config.management_token }).locale().query().find();
+  const [targetLocalesMap, sourceLocalesMap] = [{}, {}];
+
+  items.forEach(locale => {
+    targetLocalesMap[locale.code] = locale.uid;
+  });
+  for (const key in sourceLocales) {
+    sourceLocalesMap[sourceLocales[key].code] = key;
+  }
+  const localesUidMap = {};
+  for (const key in sourceLocalesMap) {
+    localesUidMap[sourceLocalesMap[key]] = targetLocalesMap[key];
+  }
+  return localesUidMap;
+}
 module.exports = new ImportCustomRoles();

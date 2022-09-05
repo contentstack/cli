@@ -8,12 +8,10 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
 const Promise = require('bluebird');
-const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const { addlogs } = require('../util/log');
 
 const helper = require('../util/helper');
-const log = require('../util/log');
 const stack = require('../util/contentstack-management-sdk');
 
 let config = require('../../config/default');
@@ -61,9 +59,9 @@ exportEntries.prototype.start = function (credentialConfig) {
     locales = helper.readFile(localesFilePath);
     let apiBucket = [];
     content_types = helper.readFile(schemaFilePath);
-    if (content_types.length !== 0) {
+    if (content_types.length) {
       content_types.forEach((content_type) => {
-        if (Object.keys(locales).length !== 0) {
+        if (Object.keys(locales).length) {
           for (let _locale in locales) {
             apiBucket.push({
               content_type: content_type.uid,
@@ -71,10 +69,6 @@ exportEntries.prototype.start = function (credentialConfig) {
             });
           }
         }
-        apiBucket.push({
-          content_type: content_type.uid,
-          locale: config.master_locale.code,
-        });
       });
       return Promise.map(
         apiBucket,

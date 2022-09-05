@@ -24,8 +24,7 @@ let langUidMapperPath;
 let langSuccessPath;
 let langFailsPath;
 let client;
-
-let masterLanguage = config.master_locale;
+let masterLanguage;
 
 function importLanguages() {
   this.fails = [];
@@ -44,6 +43,7 @@ importLanguages.prototype = {
     langUidMapperPath = path.resolve(config.data, 'mapper', 'languages', 'uid-mapper.json');
     langSuccessPath = path.resolve(config.data, 'mapper', 'languages', 'success.json');
     langFailsPath = path.resolve(config.data, 'mapper', 'languages', 'fails.json');
+    masterLanguage = config.master_locale;
     mkdirp.sync(langMapperPath);
     self.languages = helper.readFile(path.resolve(langFolderPath, langConfig.fileName));
     
@@ -62,7 +62,7 @@ importLanguages.prototype = {
         langUids,
         function (langUid) {
           let lang = self.languages[langUid];
-          if (!self.langUidMapper.hasOwnProperty(langUid) && lang.code !== masterLanguage) {
+          if (!self.langUidMapper.hasOwnProperty(langUid) && lang.code !== masterLanguage.code) {
             let requestOption = {
               locale: {
                 code: lang.code,
@@ -90,7 +90,8 @@ importLanguages.prototype = {
               });
           } else {
             // the language has already been created
-            addlogs(config, chalk.yellow("The language: '" + lang.code + "' already exists."), 'error');
+            if (lang.code !== masterLanguage.code)
+              addlogs(config, chalk.yellow("The language: '" + lang.code + "' already exists."), 'error');
           }
 
           // import 2 languages at a time
