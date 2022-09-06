@@ -33,6 +33,46 @@ export const validateDeliveryToken = async (
 };
 
 /**
+ * Validate delivery token
+ * @param contentStackClient
+ * @param apiKey
+ * @param deliveryToken
+ * @param environment
+ * @param region
+ * @returns
+ */
+export const validateDeliveryTokenWithDeliverySDK = async (
+  contentStackClient: any,
+  apiKey: string,
+  deliveryToken: string,
+  environment: string,
+  region: any,
+): Promise<any> => {
+  let result: { valid: boolean; message: string };
+  try {
+    const regionMap = {
+      EU: 'eu',
+      NA: 'us',
+      AZURE_NA: 'azure-na',
+    };
+    const deliveryTokenResult = await contentStackClient
+      .Stack({ api_key: apiKey, delivery_token: deliveryToken, environment, region: regionMap[region] })
+      .getContentTypes({ limit: 1 });
+
+    logger.debug('delivery token validation result', deliveryTokenResult);
+    if (deliveryTokenResult?.content_types?.length) {
+      result = { valid: true, message: deliveryTokenResult };
+    } else {
+      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_DELIVERY_TOKEN') };
+    }
+  } catch (error) {
+    logger.debug('validate delivery token error', error);
+    result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_DELIVERY_TOKEN') };
+  }
+  return result;
+};
+
+/**
  * Validate environment
  * @param contentStackClient
  * @param apiKey
@@ -114,4 +154,12 @@ export const validateAPIKey = async (contentStackClient: any, apiKey: string): P
   }
 
   return result;
+};
+
+export const getValidateDeliveryTokenFactory = (authToken) => {
+  if (authToken) {
+    return validateDeliveryToken;
+  } else {
+    return validateDeliveryTokenWithDeliverySDK;
+  }
 };
