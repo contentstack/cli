@@ -6,6 +6,7 @@ const ENC_KEY = 'encryptionKey';
 const ENCRYPT_CONF: boolean = true
 const CONFIG_NAME = 'contentstack_cli';
 const ENC_CONFIG_NAME = 'contentstack_cli_obfuscate';
+const OLD_CONFIG_BACKUP_FLAG = 'isOldConfigBackup'
 
 const xdgBasedir = require('xdg-basedir');
 const path = require('path');
@@ -31,15 +32,18 @@ class Config {
   }
 
   importOldConfig() {
-    try {
-      const oldConfigStoreData = this.getOldConfig()
-      if (oldConfigStoreData) {
-        this.setOldConfigStoreData(oldConfigStoreData, '')
-        this.removeOldConfigStoreFile()
-      }
-    } catch (error) {
-      console.log("No data to be imported from Old config file");
+    if (!this.get(OLD_CONFIG_BACKUP_FLAG)) {
+      try {
+        const oldConfigStoreData = this.getOldConfig()
+        if (oldConfigStoreData) {
+          this.setOldConfigStoreData(oldConfigStoreData, '')
+          this.removeOldConfigStoreFile()
+        }
+      } catch (error) {
+        console.log("No data to be imported from Old config file");
 
+      }
+      this.set(OLD_CONFIG_BACKUP_FLAG, true)
     }
   }
 
