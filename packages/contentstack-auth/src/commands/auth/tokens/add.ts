@@ -126,16 +126,6 @@ export default class TokensAddCommand extends Command {
         token = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_TOKEN', name: 'token' });
       }
 
-      let tokenValidationResult;
-      if (type === 'delivery') {
-        tokenValidationResult = await tokenValidation.validateDeliveryToken(this.managementAPIClient, apiKey, token);
-      } else if (type === 'management') {
-        tokenValidationResult = await tokenValidation.validateManagementToken(this.managementAPIClient, apiKey, token);
-      }
-      if (!tokenValidationResult.valid) {
-        throw new CLIError(tokenValidationResult.message);
-      }
-
       if (isDelivery && !environment) {
         environment = await cliux.inquire({
           type: 'input',
@@ -144,7 +134,20 @@ export default class TokensAddCommand extends Command {
         });
       }
 
-      if (environment) {
+      let tokenValidationResult;
+      let environmentValidated = false;
+      if (type === 'delivery') {
+        const validateDeliveryTokenFactory = tokenValidation.getValidateDeliveryTokenFactory(this.authToken);
+        tokenValidationResult = await validateDeliveryTokenFactory(this.authToken ? this.managementAPIClient : this.deliveryAPIClient, apiKey, token, environment, this.region.name);
+        environmentValidated = true;
+      } else if (type === 'management') {
+        tokenValidationResult = await tokenValidation.validateManagementToken(this.managementAPIClient, apiKey, token);
+      }
+      if (!tokenValidationResult.valid) {
+        throw new CLIError(tokenValidationResult.message);
+      }
+
+      if (environment && !environmentValidated) {
         const envValidationResult = await tokenValidation.validateEnvironment(
           this.managementAPIClient,
           apiKey,
