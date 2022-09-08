@@ -71,7 +71,6 @@ export default class TokensAddCommand extends Command {
   static usage = 'auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]';
 
   async run(): Promise<any> {
-    this.managementAPIClient = { host: this.cmaHost, authtoken: this.authToken };
     const { flags: addTokenFlags } = this.parse(TokensAddCommand);
     let isAliasExist = false;
     const skipAliasReplaceConfirmation = addTokenFlags.force || addTokenFlags.yes;
@@ -114,14 +113,6 @@ export default class TokensAddCommand extends Command {
         apiKey = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_API_KEY', name: 'apiKey' });
       }
 
-      // Skip this check, so that management tokens can be added without login.
-      if (this.authToken) {
-        const apiKeyValidationResult = await tokenValidation.validateAPIKey(this.managementAPIClient, apiKey);
-        if (!apiKeyValidationResult.valid) {
-          throw new CLIError({ message: apiKeyValidationResult.message });
-        }
-      }
-
       if (!token) {
         token = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_TOKEN', name: 'token' });
       }
@@ -135,27 +126,14 @@ export default class TokensAddCommand extends Command {
       }
 
       let tokenValidationResult;
-      let environmentValidated = false;
       if (type === 'delivery') {
-        const validateDeliveryTokenFactory = tokenValidation.getValidateDeliveryTokenFactory(this.authToken);
-        tokenValidationResult = await validateDeliveryTokenFactory(this.authToken ? this.managementAPIClient : this.deliveryAPIClient, apiKey, token, environment, this.region.name);
-        environmentValidated = true;
+        tokenValidationResult = await tokenValidation.validateDeliveryToken(this.deliveryAPIClient, apiKey, token, environment, this.region.name, this.cdaHost);
       } else if (type === 'management') {
+        this.managementAPIClient = { host: this.cmaHost, authorization: token, api_key: apiKey };
         tokenValidationResult = await tokenValidation.validateManagementToken(this.managementAPIClient, apiKey, token);
       }
       if (!tokenValidationResult.valid) {
         throw new CLIError(tokenValidationResult.message);
-      }
-
-      if (environment && !environmentValidated) {
-        const envValidationResult = await tokenValidation.validateEnvironment(
-          this.managementAPIClient,
-          apiKey,
-          environment,
-        );
-        if (!envValidationResult.valid) {
-          throw new CLIError(envValidationResult.message);
-        }
       }
 
       if (isManagement) {
