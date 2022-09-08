@@ -5,48 +5,17 @@ import { messageHandler, logger } from '@contentstack/cli-utilities';
  * @param contentStackClient
  * @param apiKey
  * @param deliveryToken
+ * @param environment
+ * @param region
  * @returns
  */
 export const validateDeliveryToken = async (
   contentStackClient: any,
   apiKey: string,
   deliveryToken: string,
-): Promise<any> => {
-  let result: { valid: boolean; message: string };
-  try {
-    const deliveryTokenResult = await contentStackClient
-      .stack({ api_key: apiKey })
-      .deliveryToken()
-      .query({ query: { token: deliveryToken } })
-      .find();
-    logger.debug('delivery token validation result', deliveryTokenResult);
-    if (Array.isArray(deliveryTokenResult.items) && deliveryTokenResult.items.length > 0) {
-      result = { valid: true, message: deliveryTokenResult };
-    } else {
-      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_DELIVERY_TOKEN') };
-    }
-  } catch (error) {
-    logger.debug('validate delivery token error', error);
-    result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_DELIVERY_TOKEN') };
-  }
-  return result;
-};
-
-/**
- * Validate delivery token
- * @param contentStackClient
- * @param apiKey
- * @param deliveryToken
- * @param environment
- * @param region
- * @returns
- */
-export const validateDeliveryTokenWithDeliverySDK = async (
-  contentStackClient: any,
-  apiKey: string,
-  deliveryToken: string,
   environment: string,
-  region: any,
+  region: string,
+  host: string,
 ): Promise<any> => {
   let result: { valid: boolean; message: string };
   try {
@@ -55,9 +24,18 @@ export const validateDeliveryTokenWithDeliverySDK = async (
       NA: 'us',
       AZURE_NA: 'azure-na',
     };
-    const deliveryTokenResult = await contentStackClient
-      .Stack({ api_key: apiKey, delivery_token: deliveryToken, environment, region: regionMap[region] })
-      .getContentTypes({ limit: 1 });
+    
+    const stack = contentStackClient
+      .Stack({
+        api_key: apiKey,
+        delivery_token: deliveryToken,
+        environment,
+        region: regionMap[region],
+        host,
+       });
+    const parsedHost = host.replace(/^https?:\/\//, '');
+    stack.setHost(parsedHost);
+    const deliveryTokenResult = await stack.getContentTypes({ limit: 1 });
 
     logger.debug('delivery token validation result', deliveryTokenResult);
     if (deliveryTokenResult?.content_types?.length) {
@@ -156,10 +134,3 @@ export const validateAPIKey = async (contentStackClient: any, apiKey: string): P
   return result;
 };
 
-export const getValidateDeliveryTokenFactory = (authToken) => {
-  if (authToken) {
-    return validateDeliveryToken;
-  } else {
-    return validateDeliveryTokenWithDeliverySDK;
-  }
-};
