@@ -16,7 +16,6 @@
     "jsonschema": "^1.4.0",
     "lodash": "^4.17.21",
     "nock": "^13.1.0",
-    "node-fetch": "^3.2.10",
     "omit-deep-lodash": "^1.1.5",
     "sinon": "^11.1.1",
     "uuid": "^8.3.2"
