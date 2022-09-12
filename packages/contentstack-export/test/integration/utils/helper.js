@@ -19,26 +19,54 @@ const initEnvData = (regions = ['NA', 'EU', 'AZURE-NA']) => {
 
   _.forEach(regions, (region) => {
     if (!envData[region] || _.isEmpty(envData[region][module])) {
-      if (envData[`${APP_ENV}_${region}_BRANCH`] && !envData[region]['BRANCH']) {
+      if (envData[`${APP_ENV}_${region}_BRANCH`]) {
         envData[region]['BRANCH'] = _.fromPairs(_.map(_.split(envData[`${APP_ENV}_${region}_BRANCH`], DELIMITER), val => _.split(val, KEY_VAL_DELIMITER)))
       }
-      if (envData[`${APP_ENV}_${region}_NON_BRANCH`] && !envData[region]['NON_BRANCH']) {
+      if (envData[`${APP_ENV}_${region}_NON_BRANCH`]) {
         envData[region]['NON_BRANCH'] = _.fromPairs(_.map(_.split(envData[`${APP_ENV}_${region}_NON_BRANCH`], DELIMITER), val => _.split(val, KEY_VAL_DELIMITER)))
       }
     }
   })
 }
 
-const getEnvData = () => envData
-
-const getStack = () => {
-  return managementSdk.Client(config)
-    .stack({ api_key: config.source_stack, management_token: config.management_token })
+const getStacksFromEnv = () => {
+  const { APP_ENV } = process.env
+  const keys = Object.keys(process.env).filter(key => key.includes(`${APP_ENV}_`))
+  return keys;
 }
 
-const getAssetAndFolderCount = () => {
+const getStackDetailsFromEnv = (key) => {
+  let result = {}
+  process.env[key].split(DELIMITER).forEach(element => {
+    let [key, value] = element.split(KEY_VAL_DELIMITER)
+    result[key] = value;
+  })
+  return result
+}
+
+const getBranches = async (data) => {
+  const branches = await getStack(data)
+    .branch()
+    .query()
+    .find()
+    .then(branches => branches.map(branch => branch.uid))
+
+  return branches;
+}
+
+const getEnvData = () => envData
+
+const getStack = (data={}) => {
+  return managementSdk.Client(config)
+    .stack({ 
+      api_key: data.STACK_API_KEY || config.source_stack, 
+      management_token: data.MANAGEMENT_TOKEN || config.management_token 
+    })
+}
+
+const getAssetAndFolderCount = (data) => {
   return new Promise(async (resolve) => {
-    const stack = getStack()
+    const stack = getStack(data)
     const assetCount = await stack.asset()
       .query({ include_count: true, limit: 1 })
       .find()
@@ -57,7 +85,7 @@ const getAssetAndFolderCount = () => {
   })
 }
 
-const getLocalesCount = () => {
+const getLocalesCount = (data) => {
   return new Promise(async (resolve) => {
     const localeConfig = config.modules.locales;
     const masterLocale = config.master_locale;
@@ -75,7 +103,7 @@ const getLocalesCount = () => {
         BASE: [requiredKeys]
       }
     }
-    const localeCount = await getStack()
+    const localeCount = await getStack(data)
       .locale()
       .query(queryVariables)
       .find()
@@ -83,6 +111,151 @@ const getLocalesCount = () => {
 
     resolve(localeCount)
   })
+}
+
+const getEnvironmentsCount = async (data) => {
+  const queryVariables = {
+    include_count: true
+  }
+
+  const environmentCount = await getStack(data)
+    .environment()
+    .query(queryVariables)
+    .find()
+    .then(({ count }) => count);
+
+  return environmentCount;
+}
+
+const getExtensionsCount = async (data) => {
+  const queryVariables = {
+    include_count: true
+  }
+
+  const extensionCount = await getStack(data)
+    .extension()
+    .query(queryVariables)
+    .find()
+    .then(({ count }) => count)
+
+  return extensionCount;
+}
+const getMarketplaceAppsCount = async (data) => { 
+  const queryVariables = {
+    include_count: true,
+    include_marketplace_extensions: true
+  }
+
+  const marketplaceExtensionsCount = await getStack(data)
+    .extension()
+    .query(queryVariables)
+    .find()
+    .then(({ count }) => count)
+
+  return marketplaceExtensionsCount;
+}
+
+const getGlobalFieldsCount = async (data) => {
+  const queryVariables = {
+    include_count: true
+  }
+
+  const globalFieldCount = await getStack(data)
+    .globalField()
+    .query(queryVariables)
+    .find()
+    .then(({ count }) => count)
+
+  return globalFieldCount;
+}
+
+const getContentTypesCount = async (data) => {
+  const queryVariables = {
+    include_count: true
+  }
+
+  const contentTypeCount = await getStack(data)
+    .contentType()
+    .query(queryVariables)
+    .find()
+    .then(({ count }) => count)
+
+  return contentTypeCount;
+}
+
+const getEntriesCount = async (data) => {
+  let entriesCount;
+  const stack = await getStack(data);
+  const queryVariables = {
+    include_count: true
+  };
+
+  const contentTypes = await stack
+    .contentType()
+    .query()
+    .find()
+    .then(({ items }) => items.map(item => item.uid));
+
+  for (let contentType of contentTypes) {
+    let entries = await stack
+      .contentType(contentType)
+      .entry()
+      .query(queryVariables)
+      .find()
+      .then(({ count }) => count)
+
+    entriesCount += entries
+  }
+
+  return entriesCount;
+}
+
+const getCustomRolesCount = async () => {
+  const EXISTING_ROLES = {
+    Admin: 1,
+    Developer: 1,
+    'Content Manager': 1,
+  };
+
+  const queryVariables = {
+    include_count: true
+  }
+
+  const customRoles = await getStack(data)
+    .role()
+    .fetchAll(queryVariables)
+    .then(({ items }) => {
+      items.filter(role => !EXISTING_ROLES[role.name])
+      return items.count
+    })
+
+  return customRoles;
+ }
+
+const getWebhooksCount = async (data) => {
+  const queryVariables = {
+    include_count: true
+  }
+
+  const webhooksCount = await getStack(data)
+    .webhook()
+    .fetchAll(queryVariables)
+    .then(({ count }) => count);
+
+  return webhooksCount;
+}
+
+const getWorkflowsCount = async (data) => {
+  const queryVariables = {
+    include_count: true
+  }
+
+  const workflowCount = await getStack(data)
+    .workflow()
+    .fetchAll(queryVariables)
+    .then(({ count }) => count);
+
+  return workflowCount;
 }
 
 const readJsonFileContents = (filePath) => {
@@ -130,5 +303,17 @@ module.exports = {
   getEnvData,
   getLocalesCount,
   readJsonFileContents,
-  getAssetAndFolderCount
+  getAssetAndFolderCount,
+  getEnvironmentsCount,
+  getExtensionsCount,
+  getMarketplaceAppsCount,
+  getGlobalFieldsCount,
+  getContentTypesCount,
+  getEntriesCount,
+  getCustomRolesCount,
+  getWebhooksCount,
+  getWorkflowsCount,
+  getStacksFromEnv,
+  getBranches,
+  getStackDetailsFromEnv
 }

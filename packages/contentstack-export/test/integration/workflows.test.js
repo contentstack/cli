@@ -4,15 +4,15 @@ const { expect, test } = require("@oclif/test")
 const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 
 const { modules } = require('../../src/config/default')
-const { getStacksFromEnv, getLocalesCount } = require('./utils/helper')
+const { getStacksFromEnv, getWorkflowsCount } = require('./utils/helper')
 const { PRINT_LOGS, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
-const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = process.env
+const { DELIMITER, KEY_VAL_DELIMITER } = process.env
 
 async function exec() {
   let stacksFromEnv = getStacksFromEnv()
+
   for (let stack of stacksFromEnv) {
     let stackDetails = {}
-    stackDetails[stack] = stack
     stackDetails['region'] = stack.split('_', 2).pop()
     stackDetails['isBranch'] = (stack.split('_', 3).pop() === 'NON') ? false : true;
     process.env[stack].split(DELIMITER).forEach(element => {
@@ -32,14 +32,13 @@ async function exec() {
       "..",
       `${EXPORT_PATH}_${stack}`
     )
-
-    const localeBasePath = path.join(
+    const workflowsBasePath = path.join(
       exportBasePath,
-      modules.locales.dirName
+      modules.workflows.dirName
     )
-    const localeJson = path.join(
-      localeBasePath,
-      modules.locales.fileName
+    const workflowsJson = path.join(
+      workflowsBasePath,
+      modules.workflows.fileName
     )
     const messageFilePath = path.join(
       __dirname,
@@ -47,11 +46,12 @@ async function exec() {
       "..",
       "messages/index.json"
     )
+
     messageHandler.init({ messageFilePath })
     const { promptMessageList } = require(messageFilePath)
 
-    describe("ContentStack-Export plugin test [--module=locales]", () => {
-      describe("Export locales using cm:stacks:export command without any flags", () => {
+    describe("ContentStack-Export plugin test [--module=workflows]", () => {
+      describe("Export workflows using cm:stacks:export command without any flags", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stub(cliUX, "prompt", async (name) => {
@@ -63,41 +63,41 @@ async function exec() {
             }
           })
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails)
+          .command(["cm:stacks:export", "--module", "workflows"])
+          .it("Check workflows count", async () => {
+            let exportedWorkflowsCount = 0
+            const workflowsCount = await getWorkflowsCount(stackDetails)
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(workflowsJson)) {
+                exportedWorkflowsCount = Object.keys(JSON.parse(fs.readFileSync(workflowsJson, 'utf-8'))).length
               }
             } catch (error) {
               console.trace(error)
             }
 
-            expect(localeCount).to.be.an('number').eq(exportedLocaleCount)
+            expect(workflowsCount).to.be.an('number').eq(exportedWorkflowsCount)
           })
       })
 
-      describe("Export locales using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\" and management token", () => {
+      describe("Export workflows using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\" and management token", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--stack-api-key", STACK_API_KEY, "--data-dir", EXPORT_PATH, "--alias", stackDetails.ALIAS_NAME, "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails)
+          .command(["cm:stacks:export", "--stack-api-key", stackDetails.STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails.ALIAS_NAME, "--module", "workflows"])
+          .it("Check workflows counts", async () => {
+            let exportedWorkflowsCount = 0
+            const workflowsCount = await getWorkflowsCount(stackDetails);
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(workflowsJson)) {
+                exportedWorkflowsCount = Object.keys(JSON.parse(fs.readFileSync(workflowsJson, 'utf-8'))).length
               }
             } catch (error) {
               console.trace(error)
             }
 
-            expect(localeCount).to.be.an('number').eq(exportedLocaleCount)
+            expect(workflowsCount).to.be.an('number').eq(exportedWorkflowsCount)
           })
       })
     })
@@ -105,3 +105,4 @@ async function exec() {
 }
 
 exec();
+

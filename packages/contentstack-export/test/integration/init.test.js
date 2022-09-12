@@ -2,13 +2,24 @@ const { join } = require('path')
 const { test } = require("@contentstack/cli-dev-dependencies")
 const { NodeCrypto, messageHandler } = require("@contentstack/cli-utilities")
 
-const { getEnvData } = require('./utils/helper')
+const { getEnvData, getStacksFromEnv, getStackDetailsFromEnv } = require('./utils/helper')
 const LoginCommand = require('@contentstack/cli-auth/lib/commands/auth/login').default
 const AddTokeCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/add').default
 const RegionGetCommand = require('@contentstack/cli-config/lib/commands/config/set/region').default
 const { DEFAULT_TIMEOUT, PRINT_LOGS, REGION_NAME, ALIAS_NAME } = require("./config.json")
 
-const { ENCRYPTION_KEY, USERNAME, PASSWORD, NA: { BRANCH: { STACK_API_KEY, MANAGEMENT_TOKEN } } } = getEnvData()
+const { ENCRYPTION_KEY, USERNAME, PASSWORD } = getEnvData()
+const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = process.env
+
+const stacksFromEnv = getStacksFromEnv()
+const stackDetails = {}
+for (let stack of stacksFromEnv) {
+  stackDetails[stack] = {}
+  process.env[stack].split(DELIMITER).forEach(element => {
+    let [key, value] = element.split(KEY_VAL_DELIMITER)
+    stackDetails[stack][key] = value;
+  })
+}
 
 const crypto = new NodeCrypto({
   typeIdentifier: '◈',
@@ -35,7 +46,8 @@ describe("Setting Pre-requests.", () => {
       messageFilePath = join(__dirname, '..', '..', '..', 'contentstack-utilities', 'messages/auth.json');
       messageHandler.init({ messageFilePath });
     })
-    .command(AddTokeCommand, ['-a', ALIAS_NAME, '-k', STACK_API_KEY, '--management', '--token', MANAGEMENT_TOKEN])
+    .command(AddTokeCommand, ['-a', stackDetails['DEV_NA_BRANCH'].ALIAS_NAME, '-k', stackDetails['DEV_NA_BRANCH'].STACK_API_KEY, '--management', '--token', stackDetails['DEV_NA_BRANCH'].MANAGEMENT_TOKEN])
+    .command(AddTokeCommand, ['-a', stackDetails['DEV_NA_NON_BRANCH'].ALIAS_NAME, '-k', stackDetails['DEV_NA_NON_BRANCH'].STACK_API_KEY, '--management', '--token', stackDetails['DEV_NA_NON_BRANCH'].MANAGEMENT_TOKEN])
     .it('Pre-config is done', () => {
       messageFilePath = ''
       messageHandler.init({ messageFilePath: '' })

@@ -6,8 +6,8 @@ const isArray = require("lodash/isArray");
 const includes = require("lodash/includes");
 const { existsSync, readdirSync } = require("fs");
 
-const { initEnvData } = require('./integration/utils/helper')
-const { INTEGRATION_EXECUTION_ORDER, IS_TS } = require("./config.json");
+const { initEnvData, getStacksFromEnv } = require('./integration/utils/helper')
+const { INTEGRATION_EXECUTION_ORDER, IS_TS, ENABLE_PREREQUISITES } = require("./config.json");
 
 // NOTE init env variables
 require('dotenv-expand').expand(require('dotenv').config())
@@ -64,7 +64,9 @@ const includeCleanUpFileIfExist = (basePath) => {
  * @param {string} basePath
  */
 const includeTestFiles = (files, basePath = "integration") => {
-  includeInitFileIfExist(basePath) // NOTE Run all the pre configurations
+  if (ENABLE_PREREQUISITES) {
+    includeInitFileIfExist(basePath) // NOTE Run all the pre configurations
+  }
 
   files = filter(files, (name) => (
     !includes(`init.test${testFileExtension}`, name) &&

@@ -3,8 +3,9 @@ const { existsSync, unlinkSync } = require('fs')
 const { test } = require("@contentstack/cli-dev-dependencies")
 
 const { getEnvData } = require('./utils/helper')
-const { DEFAULT_TIMEOUT, PRINT_LOGS } = require("./config.json")
+const { DEFAULT_TIMEOUT, PRINT_LOGS, ALIAS_NAME } = require("./config.json")
 const LogoutCommand = require('@contentstack/cli-auth/lib/commands/auth/logout').default
+const RemoveTokenCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/remove').default
 const { cliux: CliUx, messageHandler, configHandler } = require("@contentstack/cli-utilities")
 
 const { ENC_CONFIG_NAME } = getEnvData()
@@ -40,6 +41,7 @@ describe("Cleaning up", () => {
         }
       }
     })
+    .command(RemoveTokenCommand, ['-a', ALIAS_NAME])
     .it('Cleaning up is done', () => {
       config = ''
       messageHandler.init({ messageFilePath: '' });
