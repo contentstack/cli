@@ -8,7 +8,7 @@ const _ = require('lodash')
 const path = require('path')
 const chalk = require('chalk')
 const mkdirp = require('mkdirp')
-const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities')
+const { cliux, configHandler, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities')
 
 let config = require('../../config/default')
 const { addlogs: log } = require('../util/log')
@@ -21,11 +21,13 @@ const marketplaceAppConfig = config.modules.marketplace_apps
 
 function importMarketplaceApps() {
   this.marketplaceApps = []
+  this.developerHuBaseUrl = null
   this.marketplaceAppFolderPath = ''
 
   this.start = async (credentialConfig) => {
     config = credentialConfig
     client = sdk.Client(config)
+    this.developerHuBaseUrl = await this.getDeveloperHubUrl()
     this.marketplaceAppFolderPath = path.resolve(config.data, marketplaceAppConfig.dirName)
     this.marketplaceApps = _.uniqBy(
       readFile(path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName)),
@@ -77,7 +79,7 @@ function importMarketplaceApps() {
     const nodeCrypto = new NodeCrypto()
 
     // NOTE install all private apps which is not available for stack.
-    await this.handleAllPrivateAppsInstallationProcess({ httpClient })
+    await this.handleAllPrivateAppsCreationProcess({ httpClient })
     const installedExtensions = await getInstalledExtensions(config)
 
     // NOTE after private app installation refetch marketplace apps from file
@@ -114,11 +116,11 @@ function importMarketplaceApps() {
   }
 
   /**
-   * @method handleAllPrivateAppsInstallationProcess
+   * @method handleAllPrivateAppsCreationProcess
    * @param {Object} options 
    * @returns {Promise<void>}
    */
-  this.handleAllPrivateAppsInstallationProcess = async (options) => {
+  this.handleAllPrivateAppsCreationProcess = async (options) => {
     const self = this
     const { httpClient } = options
     const listOfExportedPrivateApps = _.filter(self.marketplaceApps, { visibility: 'private' })
@@ -161,18 +163,18 @@ function importMarketplaceApps() {
     }
 
     for (let app of listOfNotInstalledPrivateApps) {
-      await self.installAllPrivateAppsInDeveloperHub({ app, httpClient })
+      await self.createAllPrivateAppsInDeveloperHub({ app, httpClient })
     }
 
     return Promise.resolve()
   }
 
   /**
-   * @method installAllPrivateAppsInDeveloperHub
+   * @method createAllPrivateAppsInDeveloperHub
    * @param {Object} options 
    * @returns {Promise<void>}
    */
-  this.installAllPrivateAppsInDeveloperHub = async (options) => {
+  this.createAllPrivateAppsInDeveloperHub = async (options) => {
     const self = this
     const { app, httpClient } = options
 
@@ -196,7 +198,7 @@ function importMarketplaceApps() {
               message: `${message}. Enter a new name to create an app.?`,
             })
             app.manifest.name = appName
-            await self.installAllPrivateAppsInDeveloperHub({ app, httpClient })
+            await self.createAllPrivateAppsInDeveloperHub({ app, httpClient })
               .then(resolve)
               .catch(resolve)
           } else {
@@ -261,15 +263,15 @@ function importMarketplaceApps() {
 
     return new Promise((resolve, reject) => {
       httpClient.post(
-        `${config.developerHubBaseUrl}/apps/${app.new_app_uid || app.app_uid}/install`,
+        `${self.developerHuBaseUrl}/apps/${app.new_app_uid || app.app_uid}/install`,
         { target_type: 'stack', target_uid: config.target_stack }
       ).then(async ({ data: result }) => {
         let updateParam
         const { title } = app
-        const { data, error, message } = result
+        const { data, error, message, error_code, error_message } = result
 
-        if (error) { // NOTE if already installed copy only config data
-          log(config, `${message} - ${title}`, 'success')
+        if (error || error_code) { // NOTE if already installed copy only config data
+          log(config, `${message || error_message} - ${title}`, 'success')
           const ext = _.find(installedExtensions, { app_uid: app.app_uid })
 
           if (ext) {
@@ -299,7 +301,7 @@ function importMarketplaceApps() {
               }
             }
           } else {
-            cliux.print(`WARNING!!! ${message}`, { color: 'yellow' })
+            cliux.print(`WARNING!!! ${message || error_message}`, { color: 'yellow' })
             const confirmation = await cliux.confirm(
               chalk.yellow('WARNING!!! The above error may have an impact if the failed app is referenced in entries/content type. Would you like to proceed? (y/n)')
             )
@@ -347,7 +349,7 @@ function importMarketplaceApps() {
       if (_.isEmpty(data) || _.isEmpty(payload) || !data.installation_uid) {
         resolve()
       } else {
-        httpClient.put(`${config.developerHubBaseUrl}/installations/${data.installation_uid}`, payload)
+        httpClient.put(`${this.developerHuBaseUrl}/installations/${data.installation_uid}`, payload)
           .then(() => {
             log(config, `${title} app config updated successfully.!`, 'success')
           }).then(resolve)
@@ -365,6 +367,26 @@ function importMarketplaceApps() {
     }
 
     return true;
+  }
+
+  this.getDeveloperHubUrl = async () => {
+    const { cma, name } = configHandler.get('region') || {}
+    let developerHubBaseUrl = config.developerHubUrls[cma]
+
+    if (!developerHubBaseUrl) {
+      developerHubBaseUrl = await cliux.inquire({
+        type: 'input',
+        name: 'name',
+        validate: (url) => {
+          if (!url) return 'Developer-hub URL cant be empty.'
+
+          return true
+        },
+        message: `Enter the developer-hub base URL for the ${name} region.`,
+      })
+    }
+
+    return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`
   }
 }
 
