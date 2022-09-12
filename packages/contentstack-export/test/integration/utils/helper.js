@@ -164,7 +164,7 @@ const getGlobalFieldsCount = async (data) => {
     .globalField()
     .query(queryVariables)
     .find()
-    .then(({ count }) => count)
+    .then(({items}) => items.length)
 
   return globalFieldCount;
 }
@@ -210,7 +210,7 @@ const getEntriesCount = async (data) => {
   return entriesCount;
 }
 
-const getCustomRolesCount = async () => {
+const getCustomRolesCount = async (data) => {
   const EXISTING_ROLES = {
     Admin: 1,
     Developer: 1,
@@ -225,8 +225,7 @@ const getCustomRolesCount = async () => {
     .role()
     .fetchAll(queryVariables)
     .then(({ items }) => {
-      items.filter(role => !EXISTING_ROLES[role.name])
-      return items.count
+      return items.filter(role => !EXISTING_ROLES[role.name]).length
     })
 
   return customRoles;

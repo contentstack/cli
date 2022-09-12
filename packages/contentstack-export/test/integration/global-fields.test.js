@@ -50,7 +50,7 @@ async function exec() {
     messageHandler.init({ messageFilePath })
     const { promptMessageList } = require(messageFilePath)
 
-    describe("ContentStack-Export plugin test [--module=globalfields]", () => {
+    describe("ContentStack-Export plugin test [--module=global-fields]", () => {
       describe("Export globalfields using cm:stacks:export command without any flags", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
@@ -63,7 +63,7 @@ async function exec() {
             }
           })
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--module", "globalfields"])
+          .command(["cm:stacks:export", "--module", "global-fields"])
           .it("Check globalfields count", async () => {
             let exportedGlobalFieldsCount = 0
             const globalFieldsCount = await getGlobalFieldsCount(stackDetails)
@@ -84,7 +84,7 @@ async function exec() {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--stack-api-key", stackDetails.STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails.ALIAS_NAME, "--module", "globalfields"])
+          .command(["cm:stacks:export", "--stack-api-key", stackDetails.STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails.ALIAS_NAME, "--module", "global-fields"])
           .it("Check Global fields counts", async () => {
             let exportedGlobalFieldsCount = 0
             const globalFieldsCount = await getGlobalFieldsCount(stackDetails);

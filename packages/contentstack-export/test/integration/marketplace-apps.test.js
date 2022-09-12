@@ -38,7 +38,7 @@ async function exec() {
       modules.marketplace_apps.dirName
     )
     const marketplaceAppsJson = path.join(
-      extensionsBasePath,
+      marketplaceAppsBasePath,
       modules.marketplace_apps.fileName
     )
     const messageFilePath = path.join(
@@ -64,7 +64,7 @@ async function exec() {
             }
           })
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--module", "marketplace_apps"])
+          .command(["cm:stacks:export", "--module", "marketplace-apps"])
           .it("Check marketplace_apps count", async () => {
             let exportedMarketplaceAppsCount = 0
             const marketplaceAppsCount = await getMarketplaceAppsCount(stackDetails)
@@ -85,7 +85,7 @@ async function exec() {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--stack-api-key", stackDetails.STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", ALIAS_NAME, "--module", "marketplace_apps"])
+          .command(["cm:stacks:export", "--stack-api-key", stackDetails.STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", ALIAS_NAME, "--module", "marketplace-apps"])
           .it("Check MarketplaceApps counts", async () => {
             let exportedMarketplaceAppsCount = 0
             const marketplaceAppsCount = await getMarketplaceAppsCount(stackDetails);

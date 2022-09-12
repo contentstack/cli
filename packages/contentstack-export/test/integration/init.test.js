@@ -4,7 +4,7 @@ const { NodeCrypto, messageHandler } = require("@contentstack/cli-utilities")
 
 const { getEnvData, getStacksFromEnv, getStackDetailsFromEnv } = require('./utils/helper')
 const LoginCommand = require('@contentstack/cli-auth/lib/commands/auth/login').default
-const AddTokeCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/add').default
+const AddTokenCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/add').default
 const RegionGetCommand = require('@contentstack/cli-config/lib/commands/config/set/region').default
 const { DEFAULT_TIMEOUT, PRINT_LOGS, REGION_NAME, ALIAS_NAME } = require("./config.json")
 
@@ -46,10 +46,17 @@ describe("Setting Pre-requests.", () => {
       messageFilePath = join(__dirname, '..', '..', '..', 'contentstack-utilities', 'messages/auth.json');
       messageHandler.init({ messageFilePath });
     })
-    .command(AddTokeCommand, ['-a', stackDetails['DEV_NA_BRANCH'].ALIAS_NAME, '-k', stackDetails['DEV_NA_BRANCH'].STACK_API_KEY, '--management', '--token', stackDetails['DEV_NA_BRANCH'].MANAGEMENT_TOKEN])
-    .command(AddTokeCommand, ['-a', stackDetails['DEV_NA_NON_BRANCH'].ALIAS_NAME, '-k', stackDetails['DEV_NA_NON_BRANCH'].STACK_API_KEY, '--management', '--token', stackDetails['DEV_NA_NON_BRANCH'].MANAGEMENT_TOKEN])
     .it('Pre-config is done', () => {
       messageFilePath = ''
       messageHandler.init({ messageFilePath: '' })
     })
+
+    for(let stack of stacksFromEnv) {
+      test
+        .command(AddTokenCommand, ['-a', stackDetails[stack].ALIAS_NAME, '-k', stackDetails[stack].STACK_API_KEY, '--management', '--token', stackDetails[stack].MANAGEMENT_TOKEN])
+        .it(`Adding token for ${stack}`, (_, done) => {
+          console.log('done')
+          done()
+        })
+    }
 })

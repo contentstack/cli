@@ -70,7 +70,9 @@ const includeTestFiles = (files, basePath = "integration") => {
 
   files = filter(files, (name) => (
     !includes(`init.test${testFileExtension}`, name) &&
-    !includes(`clean-up.test${testFileExtension}`, name)
+    !includes(`clean-up.test${testFileExtension}`, name) &&
+    !includes(`entries.test${testFileExtension}`, name) &&
+    !includes(`assets.test${testFileExtension}`, name)
   )) // NOTE remove init, clean-up files
 
   forEach(files, (file) => {

@@ -1,13 +1,12 @@
 const fs = require('fs')
-const {promises: fsPromises} = fs
+const { promises: fsPromises } = fs
 const path = require("path")
 const { expect, test } = require("@oclif/test")
 const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 
 const { modules } = require('../../src/config/default')
-const { getStacksFromEnv, getContentTypesCount } = require('./utils/helper')
+const { getStacksFromEnv, getEntriesCount } = require('./utils/helper')
 const { PRINT_LOGS, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
-const { doesNotThrow } = require('assert')
 const { DELIMITER, KEY_VAL_DELIMITER } = process.env
 
 async function exec() {
@@ -34,13 +33,13 @@ async function exec() {
       "..",
       `${EXPORT_PATH}_${stack}`
     )
-    const contentTypesBasePath = path.join(
+    const entriesBasePath = path.join(
       exportBasePath,
-      modules.content_types.dirName
+      modules.entries.dirName
     )
-    const contentTypesJson = path.join(
-      contentTypesBasePath,
-      modules.content_types.fileName
+    const entriesJson = path.join(
+      entriesBasePath,
+      modules.entries.fileName
     )
     const messageFilePath = path.join(
       __dirname,
@@ -52,8 +51,8 @@ async function exec() {
     messageHandler.init({ messageFilePath })
     const { promptMessageList } = require(messageFilePath)
 
-    describe("ContentStack-Export plugin test [--module=content-types]", () => {
-      describe("Export Content types using cm:stacks:export command without any flags", () => {
+    describe("ContentStack-Export plugin test [--module=entries]", () => {
+      describe("Export Entries using cm:stacks:export command without any flags", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stub(cliUX, "prompt", async (name) => {
@@ -65,22 +64,28 @@ async function exec() {
             }
           })
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--module", "content-types"])
-          .it("Check content_types count", async (_, done) => {
-            let exportedContentTypesCount = 0
-            const contentTypesCount = await getContentTypesCount(stackDetails)
+          .command(["cm:stacks:export", "--module", "entries"])
+          .it("Check entries count", async () => {
+            let exportedEntriesCount = 0
+            const entriesCount = await getEntriesCount(stackDetails)
 
             try {
-              if (fs.existsSync(contentTypesBasePath)) {
-                let contentTypes = await fsPromises.readdir(contentTypesBasePath)
-                exportedContentTypesCount = contentTypes.filter(ct => !ct.includes('schema.json')).length
+              if (fs.existsSync(entriesBasePath)) {
+                let contentTypes = await fsPromises.readdir(entriesBasePath)
+                for (let contentType of contentTypes) {
+                  let ctPath = path.join(entriesBasePath, contentType)
+                  let locales = await fsPromises.readdir(ctPath)
+                  for (let locale of locales) {
+                    let entries = await fsPromises.readFile(path.join(ctPath, locale), 'utf-8')
+                    exportedEntriesCount += Object.keys(JSON.parse(entries)).length
+                  }
+                }
               }
             } catch (error) {
               console.trace(error)
             }
 
-            expect(contentTypesCount).to.be.an('number').eq(exportedContentTypesCount)
-            done();
+            expect(entriesCount).to.be.an('number').eq(exportedEntriesCount)
           })
       })
 
@@ -88,22 +93,28 @@ async function exec() {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--stack-api-key", stackDetails.STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails.ALIAS_NAME, "--module", "content-types"])
-          .it("Check content_types counts", async (_, done) => {
-            let exportedContentTypesCount = 0
-            const contentTypesCount = await getContentTypesCount(stackDetails);
+          .command(["cm:stacks:export", "--stack-api-key", stackDetails.STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails.ALIAS_NAME, "--module", "entries"])
+          .it("Check content_types counts", async () => {
+            let exportedEntriesCount = 0
+            const entriesCount = await getentriesCount(stackDetails);
 
             try {
-              if (fs.existsSync(contentTypesBasePath)) {
-                let contentTypes = await fsPromises.readdir(contentTypesBasePath)
-                exportedContentTypesCount = contentTypes.filter(ct => !ct.includes('schema.json')).length
+              if (fs.existsSync(entriesBasePath)) {
+                let contentTypes = await fsPromises.readdir(entriesBasePath)
+                for (let contentType of contentTypes) {
+                  let ctPath = path.join(entriesBasePath, contentType)
+                  let locales = await fsPromises.readdir(ctPath)
+                  for (let locale of locales) {
+                    let entries = await fsPromises.readFile(path.join(ctPath, locale), 'utf-8')
+                    exportedEntriesCount += Object.keys(JSON.parse(entries)).length
+                  }
+                }
               }
             } catch (error) {
               console.trace(error)
             }
 
-            expect(contentTypesCount).to.be.an('number').eq(exportedContentTypesCount)
-            done();
+            expect(entriesCount).to.be.an('number').eq(exportedEntriesCount)
           })
       })
     })
