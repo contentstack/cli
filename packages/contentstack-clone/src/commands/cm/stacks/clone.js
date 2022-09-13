@@ -12,7 +12,7 @@ class StackCloneCommand extends Command {
     try {
       let self = this;
       let _authToken = configHandler.get('authtoken');
-      const cloneCommandFlags = self.parse(StackCloneCommand).flags;
+      const { flags: cloneCommandFlags } = await self.parse(StackCloneCommand);
       const {
         type: cloneType,
         'stack-name': stackName,

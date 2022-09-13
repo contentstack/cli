@@ -15,7 +15,7 @@ const { printFlagDeprecation } = require('@contentstack/cli-utilities');
 class ImportCommand extends Command {
   async run() {
     let self = this;
-    const importCommandFlags = self.parse(ImportCommand).flags;
+    const { flags: importCommandFlags } = await self.parse(ImportCommand);
     const extConfig = importCommandFlags.config;
     let targetStack = importCommandFlags['stack-uid'] || importCommandFlags['stack-api-key'];
     const data = importCommandFlags.data || importCommandFlags['data-dir'];
