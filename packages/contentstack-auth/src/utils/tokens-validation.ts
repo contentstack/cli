@@ -45,7 +45,13 @@ export const validateDeliveryToken = async (
     }
   } catch (error) {
     logger.debug('validate delivery token error', error);
-    result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_DELIVERY_TOKEN') };
+    if (error.error_code === 109) {
+      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY') };
+    } else if (error.error_code === 141) {
+      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_ENVIRONMENT_NAME') };
+    } else {
+      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_DELIVERY_TOKEN') };
+    }
   }
   return result;
 };
@@ -105,7 +111,11 @@ export const validateManagementToken = async (
     }
   } catch (error) {
     logger.error('Failed to validate management token', error);
-    result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN') };
+    if (error.response && error.response.status === 401) {
+      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN') };
+    } else {
+      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY') };
+    }
   }
   return result;
 };
