@@ -9,8 +9,8 @@
     "clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "npm run build && oclif-dev manifest && oclif-dev readme",
-    "version": "oclif-dev readme && git add README.md",
+    "prepack": "npm run build && oclif manifest && oclif readme",
+    "version": "oclif readme && git add README.md",
     "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "pretest": "tsc -p test",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
@@ -21,16 +21,13 @@
   "dependencies": {
     "@contentstack/cli-command": "^1.0.0",
     "@contentstack/cli-utilities": "^1.0.0",
-    "@oclif/command": "^1.8.16",
-    "@oclif/config": "^1.18.3",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
     "inquirer": "^7.1.0",
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1.22.2",
-    "@oclif/plugin-help": "^5.1.12",
+    "oclif": "^3.1.2",
     "@oclif/test": "^1.2.8",
     "@types/chai": "^4.2.18",
     "@types/inquirer": "^7.3.1",
@@ -69,10 +66,7 @@
   "license": "MIT",
   "oclif": {
     "commands": "./lib/commands",
-    "bin": "csdx",
-    "devPlugins": [
-      "@oclif/plugin-help"
-    ]
+    "bin": "csdx"
   },
   "husky": {
     "hooks": {
