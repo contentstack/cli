@@ -73,7 +73,7 @@ export default class SeedCommand extends Command {
 
   async run() {
     try {
-      const { flags: seedFlags } = this.parse(SeedCommand);
+      const { flags: seedFlags } = await this.parse(SeedCommand);
 
       if (!this.authToken) {
         this.error('You need to login, first. See: auth:login --help', {

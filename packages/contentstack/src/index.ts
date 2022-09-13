@@ -1,1 +1,1 @@
-export default '@oclif/command';
+export default '@oclif/core';
