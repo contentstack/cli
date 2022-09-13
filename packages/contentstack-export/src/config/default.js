@@ -1,7 +1,13 @@
 module.exports = {
   versioning: false,
   host: 'https://api.contentstack.io/v3',
-  developerHubBaseUrl: 'https://developerhub-api.contentstack.com',
+  developerHubUrls: {
+    // NOTE CDA url used as developer-hub url mapper to avoid conflict if user used any custom name
+    'https://api.contentstack.io': 'https://developerhub-api.contentstack.com',
+    'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
+    'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
+    'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com'
+  },
   // use below hosts for eu region
   // host:'https://eu-api.contentstack.com/v3',
   // use below hosts for azure-na region
