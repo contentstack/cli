@@ -9,8 +9,6 @@
     "@contentstack/cli-utilities": "^1.0.0",
     "@contentstack/json-rte-serializer": "^1.0.2",
     "@contentstack/management": "^1.3.0",
-    "@oclif/command": "^1.8.16",
-    "@oclif/config": "^1.18.3",
     "collapse-whitespace": "^1.1.7",
     "jsdom": "^16.6.0",
     "jsonschema": "^1.4.0",
@@ -21,8 +19,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1.26.0",
-    "@oclif/plugin-help": "^5.1.12",
+    "oclif": "^3.1.2",
     "@oclif/test": "^1.2.8",
     "chai": "^4.3.4",
     "eslint": "^8.18.0",
@@ -49,13 +46,7 @@
   "license": "MIT",
   "oclif": {
     "commands": "./src/commands",
-    "bin": "csdx",
-    "devPlugins": [
-      "@oclif/plugin-help"
-    ],
-    "plugins": [
-      "@oclif/plugin-help"
-    ]
+    "bin": "csdx"
   },
   "csdxConfig": {
     "expiredCommands": {
@@ -65,8 +56,8 @@
   "repository": "contentstack/cli",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "oclif readme && git add README.md"
   }
 }
