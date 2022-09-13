@@ -10,26 +10,23 @@
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
-    "prepack": "npm run build && oclif-dev manifest && oclif-dev readme",
-    "version": "oclif-dev readme && git add README.md",
+    "prepack": "npm run build && oclif manifest && oclif readme",
+    "version": "oclif readme && git add README.md",
     "test": "npm run build && npm run test:e2e",
     "test:e2e": "nyc mocha \"test/**/*.test.js\"",
     "test:report": "nyc --reporter=lcov mocha \"test/**/*.test.js\""
   },
   "dependencies": {
-    "@contentstack/cli-cm-seed": "^1.1.0",
     "@contentstack/cli-command": "^1.0.0",
+    "@contentstack/cli-cm-seed": "^1.0.11",
     "@contentstack/cli-utilities": "^1.0.0",
     "@contentstack/management": "^1.3.0",
-    "@oclif/command": "^1.8.16",
-    "@oclif/config": "^1.18.3",
     "inquirer": "^8.0.0",
     "mkdirp": "^1.0.4",
     "tar": "^6.0.5"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1.22.2",
-    "@oclif/plugin-help": "^5.1.12",
+    "oclif": "^3.1.2",
     "@oclif/test": "^1.2.8",
     "@types/inquirer": "^7.3.1",
     "@types/mkdirp": "^1.0.1",
@@ -66,9 +63,6 @@
   "oclif": {
     "commands": "./lib/commands",
     "bin": "csdx",
-    "devPlugins": [
-      "@oclif/plugin-help"
-    ],
     "plugin": [
       "@contentstack/cli-cm-seed"
     ]

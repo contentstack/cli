@@ -1,25 +1,25 @@
 fileignoreconfig:
-- filename: packages/contentstack-clone/src/lib/util/clone-handler.js
-  checksum: d58041bf7d7afb2a9e05dc31c3956e54b3e9c86361b69639fe19bd10890f94c1
-- filename: packages/contentstack-utilities/src/selectors/index.ts
-  checksum: 23093be5ccb05cc60877e4532e85a1d0a0fef8122fd285e2c6e0741a4c5b00f8
-- filename: packages/contentstack/README.md
-  checksum: fc222b7a6babca4acea472c538a5f40a070bf6ce64a0df3e4c01fe54649b4bbe
+- filename: package-lock.json
+  checksum: 73397309add9ebf38e13672563554e8287c51ed3a1cdee193897f1e1aa02af0b
 version: ""
-ntstack/README.md
-  checksum: fc222b7a6babca4acea472c538a5f40a070bf6ce64a0df3e4c01fe54649b4bbe
-version: ""
-285e2c6e0741a4c5b00f8
+packages/contentstack-auth/README.md
+  checksum: 49b3b4a0d4275ed7204e7173db4f3042717fea95760eec6d1ee61304be1269f7
+- filename: packages/contentstack-auth/src/commands/auth/tokens/remove.ts
+  checksum: 4d6732f61b066ddeaf3178572e0afc533c6bb4539487329b3081f7bb23a47d83
+- filename: packages/contentstack-bootstrap/README.md
+  checksum: e8d4e1425dcbe49203f119039246309411d86cdd092e8459b4713d5c9e624e0a
+- filename: packages/contentstack-export/README.md
+  checksum: d12c21617d1c20021a04d8e17f2e4571ce28d6c8df601a62826c2d77d23f6c77
+- filename: packages/contentstack-import/README.md
+  checksum: 905fee47e54fb35cca6cec8f17c3f0179e64fa6aa0d4480f4c86d72c64e3140c
+- filename: packages/contentstack-migration/README.md
+  checksum: 2036a3ed1cd1bae331ab1519add1c078631ae2e5e96166ce3ecbe4248f96a627
+- filename: packages/contentstack-seed/README.md
+  checksum: 7cbaf79141f477783f4a74267588209394fbaf31f3ad1e3b8f9ed2dd81fc79fc
 - filename: packages/contentstack/README.md
-  checksum: fc222b7a6babca4acea472c538a5f40a070bf6ce64a0df3e4c01fe54649b4bbe
-version: "1.0"
-e: packages/contentstack-bootstrap/src/bootstrap/utils.ts
-  checksum: 0cd620cbbb9204692fd4914ab4a890487bdbf724958a6bd6849ab9152c310651
-- filename: packages/contentstack-bootstrap/src/commands/cm/bootstrap.ts
-  checksum: b31bd483cc4c4d4baf95a9f011beb86f581bac5a5af7f6053a17ba05de9ba019
-- filename: packages/contentstack-bulk-publish/src/commands/cm/assets/publish.js
-  checksum: 59f1546c9df214bbdbc85723271fb9b14fde055f6758b9037fffe4b867f184f1
-- filename: packages/contentstack-bulk-publish/src/commands/cm/entries/publish.js
+  checksum: c9b63efcda92c51bf1482d1b05cc51ddd10f7d4e199726c62221bc89d972b915
+version: ""
+tack-bulk-publish/src/commands/cm/entries/publish.js
   checksum: 1b8cab64709e44c627ca782f770d0bd671d72e1bcb20c92367309a0191db7d7c
 - filename: packages/contentstack-bulk-publish/src/util/index.js
   checksum: 04613447793c3352e067daeb236a6406449025260ada8bb30d840ad1814f2748

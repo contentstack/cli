@@ -71,7 +71,7 @@ class ExportToCsvCommand extends Command {
           'content-type': contentTypesFlag,
           alias: managementTokenAlias,
         },
-      } = this.parse(ExportToCsvCommand);
+      } = await this.parse(ExportToCsvCommand);
 
       if (actionFlag) {
         action = actionFlag;

@@ -100,7 +100,7 @@ export default class BootstrapCommand extends Command {
   }
 
   async run() {
-    const bootstrapCommandFlags = this.parse(BootstrapCommand).flags;
+    const { flags: bootstrapCommandFlags } = await this.parse(BootstrapCommand);
 
     try {
       if (!this.authToken) {

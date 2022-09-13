@@ -13,7 +13,7 @@ let {
 
 class JsonMigrationCommand extends Command {
   async run() {
-    const migrateRteFlags = this.parse(JsonMigrationCommand).flags;
+    const { flags: migrateRteFlags } = await this.parse(JsonMigrationCommand);
     try {
       const normalizedFlags = normalizeFlags(migrateRteFlags);
       let config = await getConfig(normalizedFlags);
@@ -33,7 +33,7 @@ class JsonMigrationCommand extends Command {
       console.log(
         chalk.green(`\nUpdated ${config.contentTypeCount} Content Type(s) and ${config.entriesCount} Entrie(s)`),
       );
-      if(config.errorEntriesUid && Object.keys(config.errorEntriesUid).length > 0) {
+      if (config.errorEntriesUid && Object.keys(config.errorEntriesUid).length > 0) {
         const failedCTs = Object.keys(config.errorEntriesUid)
         for (const failedCT of failedCTs) {
           const locales = Object.keys(config.errorEntriesUid[failedCT])
@@ -92,10 +92,10 @@ JsonMigrationCommand.flags = {
     required: false
   }),
   locale: flags.string({
-    description : 'The locale from which entries will be migrated',
+    description: 'The locale from which entries will be migrated',
     required: false
   }),
-  "batch-limit" : flags.integer({description:'Provide batch limit for updating entries', default: 50 }),
+  "batch-limit": flags.integer({ description: 'Provide batch limit for updating entries', default: 50 }),
   //To be deprecated
   configPath: flags.string({
     char: 'p',
