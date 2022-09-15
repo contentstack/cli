@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-auth/1.0.0 darwin-x64 node-v16.15.1
+@contentstack/cli-auth/1.0.1 darwin-x64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -59,7 +59,7 @@ EXAMPLES
   $ csdx auth:login --username <username> --password <password>
 ```
 
-_See code: [src/commands/auth/login.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/login.ts)_
+_See code: [src/commands/auth/login.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/login.ts)_
 
 ## `csdx auth:logout`
 
@@ -81,7 +81,7 @@ EXAMPLES
   $ csdx auth:logout --yes
 ```
 
-_See code: [src/commands/auth/logout.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/logout.ts)_
+_See code: [src/commands/auth/logout.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/logout.ts)_
 
 ## `csdx auth:tokens`
 
@@ -108,7 +108,7 @@ EXAMPLE
   $ csdx auth:tokens
 ```
 
-_See code: [src/commands/auth/tokens/index.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/index.ts)_
+_See code: [src/commands/auth/tokens/index.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/tokens/index.ts)_
 
 ## `csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`
 
@@ -142,7 +142,7 @@ EXAMPLES
   token>
 ```
 
-_See code: [src/commands/auth/tokens/add.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/add.ts)_
+_See code: [src/commands/auth/tokens/add.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/tokens/add.ts)_
 
 ## `csdx auth:tokens:remove`
 
@@ -161,7 +161,7 @@ EXAMPLES
   $ csdx auth:tokens:remove -a <alias>
 ```
 
-_See code: [src/commands/auth/tokens/remove.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/remove.ts)_
+_See code: [src/commands/auth/tokens/remove.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/tokens/remove.ts)_
 
 ## `csdx auth:whoami`
 
@@ -178,5 +178,5 @@ EXAMPLE
   $ csdx auth:whoami
 ```
 
-_See code: [src/commands/auth/whoami.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/whoami.ts)_
+_See code: [src/commands/auth/whoami.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/whoami.ts)_
 <!-- commandsstop -->
