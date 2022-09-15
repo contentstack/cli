@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/1.0.3 linux-x64 node-v16.14.2
+@contentstack/cli/1.0.4 darwin-x64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -97,7 +97,7 @@ EXAMPLES
   $ csdx auth:login --username <username> --password <password>
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/login.ts)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/login.ts)_
 
 ## `csdx auth:logout`
 
@@ -124,7 +124,7 @@ EXAMPLES
   $ csdx auth:logout --yes
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/logout.ts)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/logout.ts)_
 
 ## `csdx auth:tokens`
 
@@ -156,7 +156,7 @@ EXAMPLES
   $ csdx auth:tokens
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/index.ts)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/tokens/index.ts)_
 
 ## `csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`
 
@@ -202,7 +202,7 @@ EXAMPLES
   $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery token>
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/add.ts)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/tokens/add.ts)_
 
 ## `csdx auth:tokens:remove`
 
@@ -225,7 +225,7 @@ EXAMPLES
   $ csdx auth:tokens:remove -a <alias>
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/remove.ts)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/tokens/remove.ts)_
 
 ## `csdx auth:whoami`
 
@@ -245,7 +245,7 @@ EXAMPLES
   $ csdx auth:whoami
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/whoami.ts)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/whoami.ts)_
 
 ## `csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--content-types <value>]`
 
@@ -1169,7 +1169,7 @@ EXAMPLES
   $ csdx cm:stacks:import --branch <branch name>
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-import/src/commands/cm/stacks/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v1.0.1/packages/contentstack-import/src/commands/cm/stacks/import.js)_
 
 ## `csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`
 
