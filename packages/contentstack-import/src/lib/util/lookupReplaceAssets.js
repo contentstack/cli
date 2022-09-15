@@ -80,9 +80,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
           const oldExt = _.find(marketplaceApps, { uid: schema[i].extension_uid });
 
           if (oldExt) {
-            const ext =
-              _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.new_app_uid }) ||
-              _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid });
+            const ext = _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid })
 
             if (ext) {
               schema[i].extension_uid = ext.uid;
@@ -102,9 +100,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
             const oldExt = _.find(marketplaceApps, { uid: row.extension_uid });
 
             if (oldExt) {
-              const ext =
-                _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.new_app_uid }) ||
-                _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid });
+              const ext = _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid })
 
               if (ext) {
                 row.extension_uid = ext.uid;
@@ -117,9 +113,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
             const oldExt = _.find(marketplaceApps, { uid: entryObj[row.uid].metadata.extension_uid });
 
             if (oldExt) {
-              const ext =
-                _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.new_app_uid }) ||
-                _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid });
+              const ext = _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid })
 
               if (ext) {
                 entryObj[row.uid].metadata.extension_uid = ext.uid;
