@@ -11,6 +11,4 @@ oclif.manifest.json
 .vscode
 .nyc_output
 contentstack-cli-logs
-.env
-bkp
-*.todo
+packages/**/package-lock.json
