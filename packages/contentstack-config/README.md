@@ -1,7 +1,7 @@
-@contentstack/cli-auth
+@contentstack/cli-config
 ===
 
-It is Contentstack’s CLI plugin to perform authentication-related activities. To get started with authenticating yourself with the CLI, refer to the [CLI’s Authentication documentation](https://www.contentstack.com/docs/developers/cli/authentication)
+The config namespace contains all the commands that you will need to configure the CLI as per your requirements. Contentstack currently supports three regions: North America, Europe and Azure North America. [Configure the CLI documentation](https://www.contentstack.com/docs/developers/cli/configure-the-cli)
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
@@ -15,8 +15,8 @@ It is Contentstack’s CLI plugin to perform authentication-related activities. 
 $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
-$ csdx (--version)
-@contentstack/cli-config/1.0.0 linux-x64 node-v16.17.0
+$ csdx (-v|--version|version)
+@contentstack/cli-config/1.0.0 darwin-x64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND

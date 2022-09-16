@@ -17,8 +17,13 @@ It is Contentstack’s CLI plugin to perform authentication-related activities. 
 $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
+<<<<<<< HEAD
 $ csdx (--version)
 @contentstack/cli-auth/1.0.0 linux-x64 node-v16.17.0
+=======
+$ csdx (-v|--version|version)
+@contentstack/cli-auth/1.0.1 darwin-x64 node-v16.17.0
+>>>>>>> sprint21
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -70,7 +75,7 @@ EXAMPLES
   $ csdx auth:login --username <username> --password <password>
 ```
 
-_See code: [src/commands/auth/login.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/login.ts)_
+_See code: [src/commands/auth/login.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/login.ts)_
 
 ## `csdx auth:logout`
 
@@ -97,7 +102,7 @@ EXAMPLES
   $ csdx auth:logout --yes
 ```
 
-_See code: [src/commands/auth/logout.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/logout.ts)_
+_See code: [src/commands/auth/logout.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/logout.ts)_
 
 ## `csdx auth:tokens`
 
@@ -129,7 +134,7 @@ EXAMPLES
   $ csdx auth:tokens
 ```
 
-_See code: [src/commands/auth/tokens/index.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/index.ts)_
+_See code: [src/commands/auth/tokens/index.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/tokens/index.ts)_
 
 ## `csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`
 
@@ -175,7 +180,7 @@ EXAMPLES
   $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery token>
 ```
 
-_See code: [src/commands/auth/tokens/add.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/add.ts)_
+_See code: [src/commands/auth/tokens/add.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/tokens/add.ts)_
 
 ## `csdx auth:tokens:remove`
 
@@ -198,7 +203,7 @@ EXAMPLES
   $ csdx auth:tokens:remove -a <alias>
 ```
 
-_See code: [src/commands/auth/tokens/remove.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/remove.ts)_
+_See code: [src/commands/auth/tokens/remove.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/tokens/remove.ts)_
 
 ## `csdx auth:whoami`
 
@@ -218,6 +223,7 @@ EXAMPLES
   $ csdx auth:whoami
 ```
 
+<<<<<<< HEAD
 _See code: [src/commands/auth/whoami.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/whoami.ts)_
 
 ## `csdx login`
@@ -322,4 +328,7 @@ ALIASES
 EXAMPLES
   $ csdx auth:whoami
 ```
+=======
+_See code: [src/commands/auth/whoami.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/whoami.ts)_
+>>>>>>> sprint21
 <!-- commandsstop -->

@@ -14,8 +14,8 @@ This means that all the required steps such as stack, environment, and content t
 $ npm install -g @contentstack/cli-cm-bootstrap
 $ csdx COMMAND
 running command...
-$ csdx (--version)
-@contentstack/cli-cm-bootstrap/1.1.0 linux-x64 node-v16.17.0
+$ csdx (-v|--version|version)
+@contentstack/cli-cm-bootstrap/1.1.0 darwin-x64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
