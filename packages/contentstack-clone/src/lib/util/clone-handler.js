@@ -88,7 +88,7 @@ class CloneHandler {
         const { org = {}, msg = '', isSource = true, stackAbortController } = options || {}
 
         keyPressHandler = async function (_ch, key) {
-          if (key.name === 'backspace') {
+          if (key.name === 'left' && key.shift) {
             stackAbortController.abort();
             console.clear();
             process.stdin.removeListener('keypress', keyPressHandler);
@@ -101,8 +101,7 @@ class CloneHandler {
 
         if (stackList) {
           const ui = new inquirer.ui.BottomBar();
-          // Use chalk to prettify the text.
-          ui.updateBottomBar(chalk.cyan('\nFor undo operation press backspace\n'));
+          ui.updateBottomBar(chalk.cyan('\nPress shift & left arrow together to undo the operation\n'));
 
           const selectedStack = await inquirer.prompt(stackList);
 
@@ -273,9 +272,10 @@ class CloneHandler {
             await cloneCommand.execute(new HandleBranchCommand({ isSource: false, api_key: config.target_stack }, this));
           }
         } else {
-          const destinationOrg = await this.handleOrgSelection({ isSource: false, msg: 'Choose an organization where you want to create a stack: ' });
+          const orgMsg = 'Choose an organization where you want to create a stack: ';
+          const destinationOrg = await cloneCommand.execute(new HandleOrgCommand({ msg: orgMsg }, this));
           const orgUid = orgUidList[destinationOrg.Organization];
-          await cloneCommand.execute(new CreateNewStackCommand(orgUid, this));
+          await cloneCommand.execute(new CreateNewStackCommand({ orgUid, stackAbortController }, this));
         }
         await cloneCommand.execute(new CloneTypeSelectionCommand(null, this));
         return resolve();
@@ -363,30 +363,63 @@ class CloneHandler {
     });
   };
 
-  async createNewStack(orgUid) {
+  async createNewStack(options) {
+    let keyPressHandler;
     return new Promise(async (resolve, reject) => {
-      let inputvalue;
+      try {
+        const { orgUid, stackAbortController } = options;
+        let inputvalue;
+        let uiPromise;
 
-      if (!config.stackName) {
-        inputvalue = await inquirer.prompt(stackName);
-      } else {
-        inputvalue = { stack: config.stackName };
+        keyPressHandler = async function (_ch, key) {
+          if (key.name === 'left' && key.shift) {
+            stackAbortController.abort();
+            // We need to close the inquirer promise correctly, otherwise the unclosed question/answer text is displayed in next line.
+            if (uiPromise) {
+              uiPromise.ui.close();
+            }
+            console.clear();
+            process.stdin.removeListener('keypress', keyPressHandler);
+            await cloneCommand.undo();
+          }
+        };
+        process.stdin.addListener('keypress', keyPressHandler);
+
+        const ui = new inquirer.ui.BottomBar();
+        ui.updateBottomBar(chalk.cyan('\nPress shift & left arrow together to undo the operation\n'));
+
+        if (!config.stackName) {
+          uiPromise = inquirer.prompt(stackName);
+          inputvalue = await uiPromise;
+        } else {
+          inputvalue = { stack: config.stackName };
+        }
+
+        if (stackAbortController.signal.aborted) {
+          return reject();
+        }
+
+        let stack = { name: inputvalue.stack, master_locale: master_locale };
+        const spinner = ora('Creating New stack').start();
+        let newStack = client.stack().create({ stack }, { organization_uid: orgUid });
+        newStack
+          .then((result) => {
+            spinner.succeed('New Stack created Successfully name as ' + result.name);
+            config.target_stack = result.api_key;
+            config.destinationStackName = result.name;
+            return resolve(result);
+          })
+          .catch((error) => {
+            spinner.fail();
+            return reject(error.errorMessage + ' Contact the Organization owner for Stack Creation access.');
+          });
+      } catch (error) {
+        return reject(error);
+      } finally {
+        if (keyPressHandler) {
+          process.stdin.removeListener('keypress', keyPressHandler);
+        }
       }
-
-      let stack = { name: inputvalue.stack, master_locale: master_locale };
-      const spinner = ora('Creating New stack').start();
-      let newStack = client.stack().create({ stack }, { organization_uid: orgUid });
-      newStack
-        .then((result) => {
-          spinner.succeed('New Stack created Successfully name as ' + result.name);
-          config.target_stack = result.api_key;
-          config.destinationStackName = result.name;
-          return resolve(result);
-        })
-        .catch((error) => {
-          spinner.fail();
-          return reject(error.errorMessage + ' Contact the Organization owner for Stack Creation access.');
-        });
     });
   }
 
