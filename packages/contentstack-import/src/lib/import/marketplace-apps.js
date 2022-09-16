@@ -166,15 +166,40 @@ function importMarketplaceApps() {
   }
 
   /**
+   * @method removeUidFromManifestUILocations
+   * @param {Array<Object>} locations 
+   * @returns {Array<Object>}
+   */
+  this.removeUidFromManifestUILocations = (locations) => {
+    return _.map(locations, (location) => {
+      if (location.meta) {
+        location.meta = _.map(
+          location.meta,
+          (meta) => _.omit(meta, ['uid'])
+        )
+      }
+
+      return location
+    })
+  }
+
+  /**
    * @method createAllPrivateAppsInDeveloperHub
    * @param {Object} options 
    * @returns {Promise<void>}
    */
-  this.createAllPrivateAppsInDeveloperHub = async (options) => {
+  this.createAllPrivateAppsInDeveloperHub = async (options, uidCleaned = false) => {
     const self = this
     const { app, httpClient } = options
 
     return new Promise((resolve) => {
+      if (
+        !uidCleaned &&
+        app.manifest.ui_location &&
+        !_.isEmpty(app.manifest.ui_location.locations)
+      ) {
+        app.manifest.ui_location.locations = this.removeUidFromManifestUILocations(app.manifest.ui_location.locations)
+      }
       httpClient.post(
         `${config.extensionHost}/apps-api/apps`,
         app.manifest
@@ -195,7 +220,7 @@ function importMarketplaceApps() {
             })
             app.manifest.name = appName
 
-            await self.createAllPrivateAppsInDeveloperHub({ app, httpClient })
+            await self.createAllPrivateAppsInDeveloperHub({ app, httpClient }, true)
               .then(resolve)
               .catch(resolve)
           } else {
