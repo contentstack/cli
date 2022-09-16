@@ -5,29 +5,53 @@ import { messageHandler, logger } from '@contentstack/cli-utilities';
  * @param contentStackClient
  * @param apiKey
  * @param deliveryToken
+ * @param environment
+ * @param region
  * @returns
  */
 export const validateDeliveryToken = async (
   contentStackClient: any,
   apiKey: string,
   deliveryToken: string,
+  environment: string,
+  region: string,
+  host: string,
 ): Promise<any> => {
   let result: { valid: boolean; message: string };
   try {
-    const deliveryTokenResult = await contentStackClient
-      .stack({ api_key: apiKey })
-      .deliveryToken()
-      .query({ query: { token: deliveryToken } })
-      .find();
+    const regionMap = {
+      EU: 'eu',
+      NA: 'us',
+      AZURE_NA: 'azure-na',
+    };
+    
+    const stack = contentStackClient
+      .Stack({
+        api_key: apiKey,
+        delivery_token: deliveryToken,
+        environment,
+        region: regionMap[region],
+        host,
+       });
+    const parsedHost = host.replace(/^https?:\/\//, '');
+    stack.setHost(parsedHost);
+    const deliveryTokenResult = await stack.getContentTypes({ limit: 1 });
+
     logger.debug('delivery token validation result', deliveryTokenResult);
-    if (Array.isArray(deliveryTokenResult.items) && deliveryTokenResult.items.length > 0) {
+    if (deliveryTokenResult?.content_types?.length) {
       result = { valid: true, message: deliveryTokenResult };
     } else {
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_DELIVERY_TOKEN') };
     }
   } catch (error) {
     logger.debug('validate delivery token error', error);
-    result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_DELIVERY_TOKEN') };
+    if (error.error_code === 109) {
+      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY') };
+    } else if (error.error_code === 141) {
+      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_ENVIRONMENT_NAME') };
+    } else {
+      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_DELIVERY_TOKEN') };
+    }
   }
   return result;
 };
@@ -87,7 +111,11 @@ export const validateManagementToken = async (
     }
   } catch (error) {
     logger.error('Failed to validate management token', error);
-    result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN') };
+    if (error.response && error.response.status === 401) {
+      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN') };
+    } else {
+      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY') };
+    }
   }
   return result;
 };
@@ -115,3 +143,4 @@ export const validateAPIKey = async (contentStackClient: any, apiKey: string): P
 
   return result;
 };
+
