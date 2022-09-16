@@ -37,8 +37,8 @@ For switching to AZURE-NA region update the hosts at config/default.js
 $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
-$ csdx (--version)
-@contentstack/cli-cm-export/1.0.0 linux-x64 node-v16.17.0
+$ csdx (-v|--version|version)
+@contentstack/cli-cm-export/1.0.0 darwin-x64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
