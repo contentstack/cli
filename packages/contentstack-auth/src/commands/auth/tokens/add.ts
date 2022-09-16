@@ -71,6 +71,7 @@ export default class TokensAddCommand extends Command {
   static usage = 'auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]';
 
   async run(): Promise<any> {
+    // @ts-ignore
     const { flags: addTokenFlags } = await this.parse(TokensAddCommand);
     let isAliasExist = false;
     const skipAliasReplaceConfirmation = addTokenFlags.force || addTokenFlags.yes;
