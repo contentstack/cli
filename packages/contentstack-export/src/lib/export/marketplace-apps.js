@@ -8,7 +8,7 @@ const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const eachOf = require('async/eachOf');
-const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
+const { cliux, configHandler, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
 
 let config = require('../../config/default');
 const { writeFile } = require('../util/helper');
@@ -21,12 +21,14 @@ let marketplaceAppConfig = config.modules.marketplace_apps;
 
 function exportMarketplaceApps() {
   this.marketplaceAppPath = null
+  this.developerHuBaseUrl = null
   this.start = async (credentialConfig) => {
     config = credentialConfig;
     client = stack.Client(config);
+    this.developerHuBaseUrl = await this.getDeveloperHubUrl()
 
     if (!config.auth_token) {
-      cliux.print('WARNING!!! To export marketplace apps, you should be logged in. Kindly check csdx auth:login --help to login', { color: 'yellow' })
+      cliux.print('WARNING!!! To export Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in', { color: 'yellow' })
       return Promise.resolve()
     }
 
@@ -56,7 +58,7 @@ function exportMarketplaceApps() {
           }
           const httpClient = new HttpClient().headers(headers);
           const nodeCrypto = new NodeCrypto()
-          const developerHubApps = await httpClient.get(`${config.developerHubBaseUrl}/apps`)
+          const developerHubApps = await httpClient.get(`${self.developerHuBaseUrl}/apps`)
             .then(({ data: { data } }) => data)
             .catch(err => {
               console.log(err)
@@ -69,7 +71,7 @@ function exportMarketplaceApps() {
               ({ app_uid }, index) => (app_uid === app.app_uid ? index : undefined)
             ).filter(val => val !== undefined)
 
-            httpClient.get(`${config.developerHubBaseUrl}/installations/${app.app_installation_uid}/installationData`)
+            httpClient.get(`${self.developerHuBaseUrl}/installations/${app.app_installation_uid}/installationData`)
               .then(({ data: result }) => {
                 const { data, error } = result
                 const developerHubApp = _.find(developerHubApps, { uid: app.app_uid })
@@ -126,6 +128,26 @@ function exportMarketplaceApps() {
           })
         }).catch(reject)
     })
+  }
+
+  this.getDeveloperHubUrl = async () => {
+    const { cma, name } = configHandler.get('region') || {}
+    let developerHubBaseUrl = config.developerHubUrls[cma]
+
+    if (!developerHubBaseUrl) {
+      developerHubBaseUrl = await cliux.inquire({
+        type: 'input',
+        name: 'name',
+        validate: (url) => {
+          if (!url) return 'Developer-hub URL cant be empty.'
+
+          return true
+        },
+        message: `Enter the developer-hub base URL for the ${name} region.`,
+      })
+    }
+
+    return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`
   }
 }
 
