@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-auth",
   "description": "Contentstack CLI plugin for authentication activities",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
@@ -42,7 +42,6 @@
     "@types/node": "^14.14.32",
     "@types/sinon": "^10.0.2",
     "@types/tar": "^4.0.3",
-    "@types/winston": "^2.4.4",
     "chai": "^4.3.4",
     "dotenv": "^16.0.1",
     "eslint": "^8.18.0",
@@ -63,7 +62,8 @@
   "files": [
     "/lib",
     "/npm-shrinkwrap.json",
-    "/oclif.manifest.json"
+    "/oclif.manifest.json",
+    "/messages"
   ],
   "homepage": "https://github.com/contentstack/cli",
   "keywords": [

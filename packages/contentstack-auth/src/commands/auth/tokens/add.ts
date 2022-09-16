@@ -71,7 +71,6 @@ export default class TokensAddCommand extends Command {
   static usage = 'auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]';
 
   async run(): Promise<any> {
-    this.managementAPIClient = { host: this.cmaHost, authtoken: this.authToken };
     const { flags: addTokenFlags } = this.parse(TokensAddCommand);
     let isAliasExist = false;
     const skipAliasReplaceConfirmation = addTokenFlags.force || addTokenFlags.yes;
@@ -114,23 +113,8 @@ export default class TokensAddCommand extends Command {
         apiKey = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_API_KEY', name: 'apiKey' });
       }
 
-      const apiKeyValidationResult = await tokenValidation.validateAPIKey(this.managementAPIClient, apiKey);
-      if (!apiKeyValidationResult.valid) {
-        throw new CLIError({ message: apiKeyValidationResult.message });
-      }
-
       if (!token) {
         token = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_TOKEN', name: 'token' });
-      }
-
-      let tokenValidationResult;
-      if (type === 'delivery') {
-        tokenValidationResult = await tokenValidation.validateDeliveryToken(this.managementAPIClient, apiKey, token);
-      } else if (type === 'management') {
-        tokenValidationResult = await tokenValidation.validateManagementToken(this.managementAPIClient, apiKey, token);
-      }
-      if (!tokenValidationResult.valid) {
-        throw new CLIError(tokenValidationResult.message);
       }
 
       if (isDelivery && !environment) {
@@ -141,15 +125,15 @@ export default class TokensAddCommand extends Command {
         });
       }
 
-      if (environment) {
-        const envValidationResult = await tokenValidation.validateEnvironment(
-          this.managementAPIClient,
-          apiKey,
-          environment,
-        );
-        if (!envValidationResult.valid) {
-          throw new CLIError(envValidationResult.message);
-        }
+      let tokenValidationResult;
+      if (type === 'delivery') {
+        tokenValidationResult = await tokenValidation.validateDeliveryToken(this.deliveryAPIClient, apiKey, token, environment, this.region.name, this.cdaHost);
+      } else if (type === 'management') {
+        this.managementAPIClient = { host: this.cmaHost, authorization: token, api_key: apiKey };
+        tokenValidationResult = await tokenValidation.validateManagementToken(this.managementAPIClient, apiKey, token);
+      }
+      if (!tokenValidationResult.valid) {
+        throw new CLIError(tokenValidationResult.message);
       }
 
       if (isManagement) {
