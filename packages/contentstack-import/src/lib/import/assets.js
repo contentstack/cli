@@ -418,22 +418,20 @@ importAssets.prototype = {
         i--;
       }
     }
-    this.findBranches(tree, coll);
+    this.findBranches(tree, _.keys(tree), coll);
     return tree;
   },
-  findBranches: function (branch, coll) {
+  findBranches: function (tree, branches, coll) {
     let self = this;
-    _.forEach(_.keys(branch), () => {
+    _.forEach(branches, (branch) => {
       for (let j = 0; j < coll.length; j++) {
-        let parent_uid = coll[j].parent_uid;
-        if (branch.hasOwnProperty(parent_uid)) {
-          branch[parent_uid][coll[j].uid] = {};
-          coll.splice(j, 1);
-          self.findBranches(branch[parent_uid], coll);
-          --j;
+        if (branch === coll[j].parent_uid) {
+          let childUid = coll[j].uid;
+          tree[branch][childUid] = {};
+          self.findBranches(tree[branch], [childUid], coll);
         }
       }
-    })
+    });
   },
   publish: function (assetUid, assetObject) {
     let self = this;
