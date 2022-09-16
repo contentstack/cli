@@ -414,7 +414,7 @@ function importMarketplaceApps() {
 
           return true
         },
-        message: `Enter the developer-hub base URL for the ${name} region.`,
+        message: `Enter the developer-hub base URL for the ${name} region - `,
       })
     }
 
