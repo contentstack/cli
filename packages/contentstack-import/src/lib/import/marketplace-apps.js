@@ -205,7 +205,7 @@ function importMarketplaceApps() {
         app.manifest
       ).then(async ({ data: result }) => {
         const { name } = app.manifest
-        const { data, error, message } = result
+        const { data, error, message } = result || {}
 
         if (error) {
           log(config, message, 'error')
@@ -241,7 +241,12 @@ function importMarketplaceApps() {
 
         resolve()
       }).catch(error => {
-        log(config, error.message, 'success')
+        if (error && (error.message || error.error_message)) {
+          log(config, (error && (error.message || error.error_message)), 'error')
+        } else {
+          log(config, 'Something went wrong.!', 'error')
+        }
+
         resolve()
       })
     })
@@ -354,8 +359,13 @@ function importMarketplaceApps() {
         } else {
           resolve()
         }
-      }).catch(err => {
-        log(config, err.message, 'error')
+      }).catch(error => {
+        if (error && (error.message || error.error_message)) {
+          log(config, (error && (error.message || error.error_message)), 'error')
+        } else {
+          log(config, 'Something went wrong.!', 'error')
+        }
+
         reject()
       })
     })
@@ -385,8 +395,13 @@ function importMarketplaceApps() {
           .then(() => {
             log(config, `${title} app config updated successfully.!`, 'success')
           }).then(resolve)
-          .catch(err => {
-            log(config, err.message, 'error')
+          .catch(error => {
+            if (error && (error.message || error.error_message)) {
+              log(config, (error && (error.message || error.error_message)), 'error')
+            } else {
+              log(config, 'Something went wrong.!', 'error')
+            }
+
             reject()
           })
       }
