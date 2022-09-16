@@ -53,7 +53,6 @@ class ExportToCsvCommand extends Command {
   }
 
   get managementAPIClient() {
-    debugger;
     this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this.getAuthToken });
     return this._managementAPIClient;
   }

@@ -55,10 +55,7 @@ let extension_uid_Replace = (module.exports = function (schema, preserveStackVer
           const oldExt = _.find(marketplaceApps, { uid: schema[i].extension_uid })
 
           if (oldExt) {
-            const ext = (
-              _.find(installedExtensions, { type: 'field', title: oldExt.title, app_uid: oldExt.new_app_uid }) ||
-              _.find(installedExtensions, { type: 'field', title: oldExt.title, app_uid: oldExt.app_uid })
-            )
+            const ext = _.find(installedExtensions, { type: 'field', title: oldExt.title, app_uid: oldExt.app_uid })
 
             if (ext) {
               schema[i].extension_uid = ext.uid
