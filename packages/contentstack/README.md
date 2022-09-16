@@ -1,11 +1,11 @@
-# @contentstack/cli-auth
+# @contentstack/cli
 
-It is Contentstack’s CLI plugin to perform authentication-related activities. To get started with authenticating yourself with the CLI, refer to the [CLI’s Authentication documentation](https://www.contentstack.com/docs/developers/cli/authentication)
+Use Contentstack Command-line Interface to command Contentstack for executing a set of operations from the terminal. To get started with CLI, refer to the  [CLI’s documentation](https://www.contentstack.com/docs/developers/cli)
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-* [@contentstack/cli-auth](#contentstackcli-auth)
+* [@contentstack/cli](#contentstackcli)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/1.0.0 darwin-x64 node-v16.15.1
+@contentstack/cli/1.0.4 darwin-x64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -60,7 +60,6 @@ USAGE
 * [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
-* [`csdx help [COMMAND]`](#csdx-help-command)
 * [`csdx plugins`](#csdx-plugins)
 * [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
 * [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
@@ -98,7 +97,7 @@ EXAMPLES
   $ csdx auth:login --username <username> --password <password>
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/login.ts)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/login.ts)_
 
 ## `csdx auth:logout`
 
@@ -125,7 +124,7 @@ EXAMPLES
   $ csdx auth:logout --yes
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/logout.ts)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/logout.ts)_
 
 ## `csdx auth:tokens`
 
@@ -157,7 +156,7 @@ EXAMPLES
   $ csdx auth:tokens
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/index.ts)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/tokens/index.ts)_
 
 ## `csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`
 
@@ -203,7 +202,7 @@ EXAMPLES
   $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery token>
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/add.ts)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/tokens/add.ts)_
 
 ## `csdx auth:tokens:remove`
 
@@ -226,7 +225,7 @@ EXAMPLES
   $ csdx auth:tokens:remove -a <alias>
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/tokens/remove.ts)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/tokens/remove.ts)_
 
 ## `csdx auth:whoami`
 
@@ -246,7 +245,7 @@ EXAMPLES
   $ csdx auth:whoami
 ```
 
-_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/whoami.ts)_
+_See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/whoami.ts)_
 
 ## `csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--content-types <value>]`
 
@@ -558,7 +557,7 @@ EXAMPLES
   $ csdx cm:entries:migrate-html-rte --alias alias --content-type global_field_uid --global-field --html-path html-path --json-path json-path
 ```
 
-_See code: [@contentstack/cli-cm-migrate-rte](https://github.com/contentstack/cli/blob/v1.1.0/src/commands/cm/entries/migrate-html-rte.js)_
+_See code: [@contentstack/cli-cm-migrate-rte](https://github.com/contentstack/cli/blob/v1.1.1/src/commands/cm/entries/migrate-html-rte.js)_
 
 ## `csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`
 
@@ -1171,7 +1170,7 @@ EXAMPLES
   $ csdx cm:stacks:import --branch <branch name>
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-import/src/commands/cm/stacks/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/v1.0.1/packages/contentstack-import/src/commands/cm/stacks/import.js)_
 
 ## `csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`
 
@@ -1532,26 +1531,6 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/config/set/region.ts)_
-
-## `csdx help [COMMAND]`
-
-display help for csdx
-
-```
-USAGE
-  $ csdx help [COMMAND] [--all]
-
-ARGUMENTS
-  COMMAND  command to show help for
-
-FLAGS
-  --all  see all commands in CLI
-
-DESCRIPTION
-  display help for csdx
-```
-
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.18/src/commands/help.ts)_
 
 ## `csdx plugins`
 
