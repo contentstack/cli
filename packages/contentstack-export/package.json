@@ -12,7 +12,7 @@
     "@oclif/config": "^1.18.3",
     "async": "^3.2.4",
     "bluebird": "^3.7.2",
-    "fs": "0.0.1-security",
+    "fs": "0.0.2",
     "is-valid-path": "^0.1.1",
     "lodash": "^4.17.20",
     "mkdirp": "^1.0.4",
