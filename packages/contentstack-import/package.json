@@ -11,7 +11,7 @@
     "@contentstack/cli-cm-export": "^1.0.0",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
-    "bluebird": "3.5.1",
+    "bluebird": "3.7.2",
     "debug": "^4.1.0",
     "lodash": "^4.17.20",
     "marked": "^4.0.17",
