@@ -19,11 +19,11 @@ module.exports = {
       'marketplace-apps',
       'global-fields',
       'content-types',
-      'custom-roles',
       'workflows',
       'entries',
       'labels',
       'webhooks',
+      'custom-roles',
     ],
     locales: {
       dirName: 'locales',
@@ -33,6 +33,7 @@ module.exports = {
     customRoles: {
       dirName: 'custom-roles',
       fileName: 'custom-roles.json',
+      customRolesLocalesFileName: 'custom-roles-locales.json',
     },
     environments: {
       dirName: 'environments',
