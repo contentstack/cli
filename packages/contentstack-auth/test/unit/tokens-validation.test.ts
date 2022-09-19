@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { tokenValidation } from '../src/utils';
+import { tokenValidation } from '../../src/utils';
 
 describe('Tokens Validation', () => {
   const validAPIkey = '';
