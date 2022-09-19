@@ -30,6 +30,7 @@ module.exports = {
     customRoles: {
       dirName: 'custom-roles',
       fileName: 'custom-roles.json',
+      customRolesLocalesFileName: 'custom-roles-locales.json',
     },
     environments: {
       dirName: 'environments',
