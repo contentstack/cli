@@ -140,7 +140,7 @@ function importMarketplaceApps() {
 
     if (!_.isEmpty(listOfNotInstalledPrivateApps)) {
       const confirmation = await cliux.confirm(
-        chalk.yellow(`WARNING!!! The listed apps are private apps that are not available in the destination stack: \n\n${_.map(listOfNotInstalledPrivateApps, ({ title }, index) => `${String(index + 1)}) ${title}`).join('\n')}\n\nWould you like to re-create the private app and then proceed with the installation? (y/n)`)
+        chalk.yellow(`WARNING!!! The listed apps are private apps that are not available in the destination stack: \n\n${_.map(listOfNotInstalledPrivateApps, ({ manifest: { name } }, index) => `${String(index + 1)}) ${name}`).join('\n')}\n\nWould you like to re-create the private app and then proceed with the installation? (y/n)`)
       )
 
       if (!confirmation) {
@@ -204,8 +204,8 @@ function importMarketplaceApps() {
         `${config.extensionHost}/apps-api/apps`,
         app.manifest
       ).then(async ({ data: result }) => {
-        const { title } = app
-        const { data, error, message } = result
+        const { name } = app.manifest
+        const { data, error, message } = result || {}
 
         if (error) {
           log(config, message, 'error')
@@ -235,13 +235,18 @@ function importMarketplaceApps() {
             }
           }
         } else if (data) { // NOTE new app installation
-          log(config, `${title} app created successfully.!`, 'success')
+          log(config, `${name} app created successfully.!`, 'success')
           this.updatePrivateAppUid(app, data, app.manifest.name)
         }
 
         resolve()
       }).catch(error => {
-        log(config, error.message, 'success')
+        if (error && (error.message || error.error_message)) {
+          log(config, (error && (error.message || error.error_message)), 'error')
+        } else {
+          log(config, 'Something went wrong.!', 'error')
+        }
+
         resolve()
       })
     })
@@ -354,8 +359,13 @@ function importMarketplaceApps() {
         } else {
           resolve()
         }
-      }).catch(err => {
-        log(config, err.message, 'error')
+      }).catch(error => {
+        if (error && (error.message || error.error_message)) {
+          log(config, (error && (error.message || error.error_message)), 'error')
+        } else {
+          log(config, 'Something went wrong.!', 'error')
+        }
+
         reject()
       })
     })
@@ -385,8 +395,13 @@ function importMarketplaceApps() {
           .then(() => {
             log(config, `${title} app config updated successfully.!`, 'success')
           }).then(resolve)
-          .catch(err => {
-            log(config, err.message, 'error')
+          .catch(error => {
+            if (error && (error.message || error.error_message)) {
+              log(config, (error && (error.message || error.error_message)), 'error')
+            } else {
+              log(config, 'Something went wrong.!', 'error')
+            }
+
             reject()
           })
       }
@@ -414,7 +429,7 @@ function importMarketplaceApps() {
 
           return true
         },
-        message: `Enter the developer-hub base URL for the ${name} region.`,
+        message: `Enter the developer-hub base URL for the ${name} region - `,
       })
     }
 
