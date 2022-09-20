@@ -11,13 +11,13 @@
     "@contentstack/cli-cm-export": "^1.0.0",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
-    "bluebird": "^3.7.2",
+    "bluebird": "3.5.1",
     "debug": "^4.1.0",
     "lodash": "^4.17.20",
     "marked": "^4.0.17",
     "mkdirp": "^1.0.4",
-    "ncp": "^2.0.0",
-    "winston": "^3.8.2"
+    "ncp": "2.0.0",
+    "winston": "^3.7.2"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
