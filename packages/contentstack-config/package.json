@@ -27,10 +27,10 @@
     "@contentstack/cli-utilities": "^1.0.0",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
-    "chalk": "^4.0.0",
+    "chalk": "^5.0.1",
     "debug": "^4.1.1",
-    "inquirer": "^7.1.0",
-    "winston": "^3.7.2"
+    "inquirer": "^9.1.2",
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
