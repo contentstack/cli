@@ -13,8 +13,8 @@
     "bluebird": "^3.7.2",
     "lodash": "^4.17.15",
     "nock": "^13.0.2",
-    "winston": "^3.8.2",
-    "inquirer": "^9.1.2"
+    "winston": "^3.7.2",
+    "inquirer": "^8.0.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
