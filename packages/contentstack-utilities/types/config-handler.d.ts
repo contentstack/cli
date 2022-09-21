@@ -3,6 +3,10 @@ declare class Config {
     private config;
     constructor();
     init(): Conf<Record<string, unknown>>;
+    importOldConfig(): void;
+    setOldConfigStoreData(data: any, _path?: string): void;
+    removeOldConfigStoreFile(): void;
+    private getOldConfig;
     private fallbackInit;
     private getObfuscationKey;
     private getConfigDataAndUnlinkConfigFile;

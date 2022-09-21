@@ -8,12 +8,11 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
 const Promise = require('bluebird');
-const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const { addlogs } = require('../util/log');
 
 const helper = require('../util/helper');
-const log = require('../util/log');
+const { FsUtility } = require('@contentstack/cli-utilities')
 const stack = require('../util/contentstack-management-sdk');
 
 let config = require('../../config/default');
@@ -26,6 +25,7 @@ let entryFolderPath;
 let localesFilePath;
 let schemaFilePath;
 let client;
+const fsUtilityInstances = {}
 
 function exportEntries() {
   this.requestOptions = {
@@ -37,6 +37,17 @@ function exportEntries() {
     },
     json: true,
   };
+
+  this.createFsUtilityInstance = (options) => {
+    const { entryFolderPath, content_type, locale } = options
+    fsUtilityInstances[locale.code] = new FsUtility({
+      chunkFileSize: 5,
+      omitKeys: invalidKeys,
+      moduleName: 'entries',
+      indexFileName: 'entries.json',
+      basePath: path.resolve(entryFolderPath, content_type.uid, locale.code)
+    })
+  }
 }
 
 exportEntries.prototype.start = function (credentialConfig) {
@@ -57,25 +68,37 @@ exportEntries.prototype.start = function (credentialConfig) {
   );
   client = stack.Client(config);
   addlogs(config, 'Starting entry migration', 'success');
+
   return new Promise(function (resolve) {
-    locales = helper.readFile(localesFilePath);
     let apiBucket = [];
+    locales = helper.readFile(localesFilePath);
     content_types = helper.readFile(schemaFilePath);
+
     if (content_types.length !== 0) {
       content_types.forEach((content_type) => {
-        if (Object.keys(locales).length !== 0) {
-          for (let _locale in locales) {
+        if (Object.keys(locales).length) {
+          for (let [uid, locale] of Object.entries(locales)) {
             apiBucket.push({
               content_type: content_type.uid,
-              locale: locales[_locale].code,
+              locale: locale.code,
+              isLast: _.last(Object.entries(locales)) === uid
             });
+            if (_.isEmpty(fsUtilityInstances[locale.code])) {
+              self.createFsUtilityInstance({ locale, entryFolderPath, content_type })
+            }
           }
         }
         apiBucket.push({
+          isLast: !content_types.length,
           content_type: content_type.uid,
-          locale: config.master_locale.code,
+          locale: config.master_locale.code
         });
+
+        if (_.isEmpty(fsUtilityInstances['en'])) {
+          self.createFsUtilityInstance({ entryFolderPath, content_type, locale: { code: 'en' } })
+        }
       });
+
       return Promise.map(
         apiBucket,
         function (apiDetails) {
@@ -161,19 +184,33 @@ exportEntries.prototype.getEntries = function (apiDetails) {
       .entry()
       .query(queryrequestObject)
       .find()
-      .then((entriesList) => {
+      .then(({ items, count }) => {
         // /entries/content_type_uid/locale.json
-        if (!fs.existsSync(path.join(entryFolderPath, apiDetails.content_type))) {
-          mkdirp.sync(path.join(entryFolderPath, apiDetails.content_type));
+        // if (!fs.existsSync(path.join(entryFolderPath, apiDetails.content_type))) {
+        //   mkdirp.sync(path.join(entryFolderPath, apiDetails.content_type));
+        // }
+
+        let closeIndexer = false
+        let closeFile = ((count <= limit) || (apiDetails.skip >= (count - apiDetails.skip)))
+
+        if (apiDetails.isLast && closeFile) {
+          closeIndexer = true
         }
-        let entriesFilePath = path.join(entryFolderPath, apiDetails.content_type, apiDetails.locale + '.json');
-        let entries = helper.readFile(entriesFilePath);
-        entries = entries || {};
-        entriesList.items.forEach(function (entry) {
-          invalidKeys.forEach((e) => delete entry[e]);
-          entries[entry.uid] = entry;
-        });
-        helper.writeFile(entriesFilePath, entries);
+
+        if (apiDetails.locale === 'en') {
+          console.log('en')
+        }
+
+        fsUtilityInstances[apiDetails.locale].writeIntoFile(items, { closeFile, closeIndexer, mapKeyVal: true })
+
+        // let entriesFilePath = path.join(entryFolderPath, apiDetails.content_type, apiDetails.locale + '.json');
+        // let entries = helper.readFile(entriesFilePath);
+        // entries = entries || {};
+        // items.forEach(function (entry) {
+        //   invalidKeys.forEach((e) => delete entry[e]);
+        //   entries[entry.uid] = entry;
+        // });
+        // helper.writeFile(entriesFilePath, entries);
 
         if (typeof config.versioning === 'boolean' && config.versioning) {
           for (let locale in locales) {
@@ -185,7 +222,7 @@ exportEntries.prototype.getEntries = function (apiDetails) {
             });
           }
           return Promise.map(
-            entriesList.items,
+            items,
             function (entry) {
               let entryDetails = {
                 content_type: apiDetails.content_type,
@@ -199,7 +236,7 @@ exportEntries.prototype.getEntries = function (apiDetails) {
               concurrency: 1,
             },
           ).then(function () {
-            if (apiDetails.skip > entriesList.items.length) {
+            if ((count <= limit) || (apiDetails.skip > items.length)) {
               addlogs(
                 config,
                 'Completed fetching ' +
@@ -222,7 +259,7 @@ exportEntries.prototype.getEntries = function (apiDetails) {
               });
           });
         }
-        if (apiDetails.skip > entriesList.count) {
+        if ((count <= limit) || (apiDetails.skip > count)) {
           addlogs(
             config,
             'Exported entries of ' +
