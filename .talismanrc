@@ -1,7 +1,10 @@
 fileignoreconfig:
-  - filename: package-lock.json
-    checksum: fa49d8b72d8df678f1041c4413dc544c3003d573fdc3b928726ac3ce29b9fa3f
-    ignore_detectors: [filecontent]
-  - filename: packages/contentstack-bulk-publish/src/commands/cm/assets/publish.js
-    checksum: 6e8f3c0586d2ccb7d6b7c217ddc51f4ebc5be5e467289f71a2aefc275ec56c1b
-version: ''
+
+- filename: package-lock.json
+  checksum: fa49d8b72d8df678f1041c4413dc544c3003d573fdc3b928726ac3ce29b9fa3f
+  ignore_detectors: [filecontent]
+- filename: packages/contentstack-bulk-publish/src/commands/cm/assets/publish.js
+  checksum: 6e8f3c0586d2ccb7d6b7c217ddc51f4ebc5be5e467289f71a2aefc275ec56c1b
+- filename: packages/contentstack-bulk-publish/src/util/index.js
+  checksum: 6b9bc7ae10df7d5d3f1067aa5226a867e6ed6fff63d2d61f2932ba612811df9b
+  version: ''
