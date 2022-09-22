@@ -99,7 +99,7 @@ export default class FsUtility {
     this.writableStream.write(fileContent)
 
     if (fileSizeReachedLimit) {
-      this.closeFile((options.closeIndexer === true))
+      this.closeFile((options.closeFile === true))
     }
   }
 
