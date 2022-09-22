@@ -205,7 +205,7 @@ AssetsPublishCommand.flags = {
     char: 'b',
     description:
       "By default this flag is set as true. It indicates that contentstack's bulkpublish API will be used to publish the entries",
-    // default: 'true',
+    default: 'true',
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
