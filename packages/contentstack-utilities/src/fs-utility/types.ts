@@ -3,6 +3,14 @@ enum FileType {
   text = 'txt'
 }
 
+type PageInfo = {
+  after: number
+  before: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+  pageInfoUpdated?: boolean
+}
+
 type WriteFileOptions = {
   keyName?: string
   closeFile?: boolean
@@ -22,6 +30,7 @@ type FsConstructorOptions = {
 
 export {
   FileType,
+  PageInfo,
   WriteFileOptions,
   FsConstructorOptions
 }
