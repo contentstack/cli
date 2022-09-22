@@ -94,8 +94,8 @@ exportEntries.prototype.start = function (credentialConfig) {
           locale: config.master_locale.code
         });
 
-        if (_.isEmpty(self.fsUtilityInstances[`${content_type.uid}_en`])) {
-          self.createFsUtilityInstance({ entryFolderPath, content_type, locale: { code: 'en' } })
+        if (_.isEmpty(self.fsUtilityInstances[`${content_type.uid}_${config.master_locale.code}`])) {
+          self.createFsUtilityInstance({ entryFolderPath, content_type, locale: { code: config.master_locale.code } })
         }
       });
 
@@ -193,11 +193,11 @@ exportEntries.prototype.getEntries = function (apiDetails) {
 
         const closeFile = ((count - apiDetails.skip) <= limit)
 
-        if (apiDetails.locale === 'en') {
-          console.log('en')
+        if (count === 0) {
+          self.fsUtilityInstances[`${content_type}_${locale}`].closeFile()
+        } else {
+          self.fsUtilityInstances[`${content_type}_${locale}`].writeIntoFile(items, { closeFile, mapKeyVal: true })
         }
-
-        self.fsUtilityInstances[`${content_type}_${locale}`].writeIntoFile(items, { closeFile, mapKeyVal: true })
 
         // let entriesFilePath = path.join(entryFolderPath, apiDetails.content_type, apiDetails.locale + '.json');
         // let entries = helper.readFile(entriesFilePath);

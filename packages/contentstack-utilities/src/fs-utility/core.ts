@@ -1,10 +1,11 @@
 import { log } from 'winston'
 import keys from 'lodash/keys'
+import isEmpty from 'lodash/isEmpty'
 import { v4 as uidV4 } from 'uuid'
-import { createWriteStream, existsSync, mkdirSync, statSync, writeFileSync, WriteStream } from "fs"
+import { createWriteStream, existsSync, mkdirSync, readFileSync, statSync, writeFileSync, WriteStream } from "fs"
 
 import { mapKeyAndVal } from './helper'
-import { FileType, WriteFileOptions, FsConstructorOptions } from './types'
+import { PageInfo, FileType, WriteFileOptions, FsConstructorOptions } from './types'
 
 export default class FsUtility {
   private basePath: string
@@ -17,7 +18,9 @@ export default class FsUtility {
   private defaultInitContent: string
   private writableStream: WriteStream
   private currentFileRelativePath: string
-  private indexer: Record<string, string> = {}
+  private readIndexer: Record<string, string> = {}
+  private writeIndexer: Record<string, string> = {}
+  public pageInfo: PageInfo = { after: 0, before: 0, hasNextPage: false, hasPreviousPage: false, pageInfoUpdated: false }
 
   constructor(options?: FsConstructorOptions) {
     const { fileExt, omitKeys, chunkFileSize, moduleName, indexFileName, basePath, defaultInitContent } = (options || {})
@@ -30,6 +33,10 @@ export default class FsUtility {
     this.defaultInitContent = defaultInitContent || (this.fileExt === 'json' ? '{' : '')
 
     this.createFolderIfNotExist(this.basePath)
+  }
+
+  get currentPageDetails() {
+    return this.pageInfo
   }
 
   /**
@@ -63,7 +70,7 @@ export default class FsUtility {
   createNewFile() {
     const fileName = `${uidV4()}-${this.moduleName || 'chunk'}.${this.fileExt}`
     this.currentFileName = fileName
-    this.indexer[keys(this.indexer).length + 1] = fileName
+    this.writeIndexer[keys(this.writeIndexer).length + 1] = fileName
     this.currentFileRelativePath = `${this.basePath}/${fileName}`
     writeFileSync(this.currentFileRelativePath, this.defaultInitContent)
     this.writableStream = createWriteStream(this.currentFileRelativePath, { flags: 'a' })
@@ -111,7 +118,7 @@ export default class FsUtility {
   onErrorCompleteFile() {
     if (this.writableStream) {
       if (this.fileExt === 'json') {
-        this.writableStream.write(`"": {} \n}`)
+        this.writableStream.write(`"": {}}`)
       }
       this.closeFile()
       log('info', this.currentFileName)
@@ -125,9 +132,88 @@ export default class FsUtility {
    */
   closeFile(closeIndexer = true) {
     if (closeIndexer) {
-      writeFileSync(`${this.basePath}/${this.indexFileName}`, JSON.stringify(this.indexer))
+      writeFileSync(`${this.basePath}/${this.indexFileName}`, JSON.stringify(this.writeIndexer))
     }
-    this.writableStream.end()
+    if (this.writableStream instanceof WriteStream) {
+      this.writableStream.end()
+    }
+     
     this.writableStream = null
+  }
+
+  readFile() {
+    return {
+      next: this.next,
+      previous: this.previous,
+      get: this.getFileByIndex
+    }
+  }
+
+  getFileByIndex(index: number = 1) {
+    return new Promise<string>((resolve, reject) => {
+      if (index <= 0) return reject({ code: 400, message: 'Invalid index' })
+
+      this.updatePageInfo(null, index)
+  
+      if (isEmpty(this.readIndexer[index])) {
+        return reject({ code: 404, message: 'File not found!' })
+      }
+  
+      resolve(readFileSync(this.readIndexer[index], { encoding: 'utf-8' }))
+    })
+  }
+
+  next() {
+    return new Promise<string>((resolve, reject) => {
+      this.updatePageInfo(true)
+  
+      if (isEmpty(this.readIndexer[this.pageInfo.after])) {
+        return reject({ code: 404, message: 'File not found!' })
+      }
+  
+      resolve(readFileSync(this.readIndexer[this.pageInfo.after], { encoding: 'utf-8' }))
+    })
+  }
+
+  previous() {
+    return new Promise<string>((resolve, reject) => {
+      this.updatePageInfo(false)
+  
+      if (isEmpty(this.readIndexer[this.pageInfo.before])) {
+        return reject({ code: 404, message: 'File not found!' })
+      }
+  
+      resolve(readFileSync(this.readIndexer[this.pageInfo.before], { encoding: 'utf-8' }))
+    })
+  }
+
+  updatePageInfo(isNext: boolean = true, index: number = null) {
+    if (!this.pageInfo.pageInfoUpdated) {
+      const indexPath = `${this.basePath}/${this.indexFileName}`
+
+      if (existsSync(indexPath) && isEmpty(this.readIndexer)) {
+        this.readIndexer = JSON.parse(readFileSync(indexPath, 'utf-8'))
+      }
+    }
+
+    const { after, before } = this.pageInfo
+
+    if (isNext === true) {
+      this.pageInfo.before = 1
+      this.pageInfo.after = after + 1
+    } else if(isNext === false) {
+      this.pageInfo.after = 0
+      this.pageInfo.before = before - 1
+    } else {
+      this.pageInfo.after = index || 0
+      this.pageInfo.before = 1
+    }
+
+    if (!isEmpty(this.readIndexer[this.pageInfo.after + 1])) {
+      this.pageInfo.hasNextPage = true
+    }
+    if (!isEmpty(this.readIndexer[this.pageInfo.after - 1])) {
+      this.pageInfo.hasPreviousPage = true
+    }
   }
 }

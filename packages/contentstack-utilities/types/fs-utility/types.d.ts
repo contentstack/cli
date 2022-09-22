@@ -2,6 +2,13 @@ declare enum FileType {
     json = "json",
     text = "txt"
 }
+declare type PageInfo = {
+    after: number;
+    before: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+    pageInfoUpdated?: boolean;
+};
 declare type WriteFileOptions = {
     keyName?: string;
     closeFile?: boolean;
@@ -17,4 +24,4 @@ declare type FsConstructorOptions = {
     omitKeys?: Array<string>;
     defaultInitContent?: string;
 };
-export { FileType, WriteFileOptions, FsConstructorOptions };
+export { FileType, PageInfo, WriteFileOptions, FsConstructorOptions };

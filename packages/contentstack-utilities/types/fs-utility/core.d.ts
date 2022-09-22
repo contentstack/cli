@@ -1,4 +1,4 @@
-import { WriteFileOptions, FsConstructorOptions } from './types';
+import { PageInfo, WriteFileOptions, FsConstructorOptions } from './types';
 export default class FsUtility {
     private basePath;
     private fileExt;
@@ -10,8 +10,11 @@ export default class FsUtility {
     private defaultInitContent;
     private writableStream;
     private currentFileRelativePath;
-    private indexer;
+    private readIndexer;
+    private writeIndexer;
+    pageInfo: PageInfo;
     constructor(options?: FsConstructorOptions);
+    get currentPageDetails(): PageInfo;
     /**
      * @method createFolderIfNotExist
      * @return {void}
@@ -47,4 +50,13 @@ export default class FsUtility {
      * @description closing current write stream
      */
     closeFile(closeIndexer?: boolean): void;
+    readFile(): {
+        next: () => Promise<string>;
+        previous: () => Promise<string>;
+        get: (index?: number) => Promise<string>;
+    };
+    getFileByIndex(index?: number): Promise<string>;
+    next(): Promise<string>;
+    previous(): Promise<string>;
+    updatePageInfo(isNext?: boolean, index?: number): void;
 }
