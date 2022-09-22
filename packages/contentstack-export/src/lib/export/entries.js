@@ -25,7 +25,6 @@ let entryFolderPath;
 let localesFilePath;
 let schemaFilePath;
 let client;
-const fsUtilityInstances = {}
 
 function exportEntries() {
   this.requestOptions = {
@@ -38,9 +37,11 @@ function exportEntries() {
     json: true,
   };
 
+  this.fsUtilityInstances = {}
+
   this.createFsUtilityInstance = (options) => {
     const { entryFolderPath, content_type, locale } = options
-    fsUtilityInstances[locale.code] = new FsUtility({
+    this.fsUtilityInstances[`${content_type.uid}_${locale.code}`] = new FsUtility({
       chunkFileSize: 5,
       omitKeys: invalidKeys,
       moduleName: 'entries',
@@ -74,27 +75,26 @@ exportEntries.prototype.start = function (credentialConfig) {
     locales = helper.readFile(localesFilePath);
     content_types = helper.readFile(schemaFilePath);
 
-    if (content_types.length !== 0) {
-      content_types.forEach((content_type) => {
+    if (content_types.length) {
+      _.forEach(content_types, (content_type) => {
         if (Object.keys(locales).length) {
-          for (let [uid, locale] of Object.entries(locales)) {
+          for (let [_uid, locale] of Object.entries(locales)) {
             apiBucket.push({
-              content_type: content_type.uid,
               locale: locale.code,
-              isLast: _.last(Object.entries(locales)) === uid
+              content_type: content_type.uid,
             });
-            if (_.isEmpty(fsUtilityInstances[locale.code])) {
+            if (_.isEmpty(self.fsUtilityInstances[`${content_type.uid}_${locale.code}`])) {
               self.createFsUtilityInstance({ locale, entryFolderPath, content_type })
             }
           }
         }
+
         apiBucket.push({
-          isLast: !content_types.length,
           content_type: content_type.uid,
           locale: config.master_locale.code
         });
 
-        if (_.isEmpty(fsUtilityInstances['en'])) {
+        if (_.isEmpty(self.fsUtilityInstances[`${content_type.uid}_en`])) {
           self.createFsUtilityInstance({ entryFolderPath, content_type, locale: { code: 'en' } })
         }
       });
@@ -168,21 +168,22 @@ exportEntries.prototype.getEntries = function (apiDetails) {
       apiDetails.skip = 0;
     }
 
-    let queryrequestObject = {
-      locale: apiDetails.locale,
-      skip: apiDetails.skip,
+    const { skip, locale, content_type } = apiDetails
+
+    let queryRequestObject = {
+      skip: skip,
       limit: limit,
+      locale: locale,
       include_count: true,
       include_publish_details: true,
-      query: {
-        locale: apiDetails.locale,
-      },
-    };
+      query: { locale: locale }
+    }
+
     client
       .stack({ api_key: config.source_stack, management_token: config.management_token })
-      .contentType(apiDetails.content_type)
+      .contentType(content_type)
       .entry()
-      .query(queryrequestObject)
+      .query(queryRequestObject)
       .find()
       .then(({ items, count }) => {
         // /entries/content_type_uid/locale.json
@@ -190,18 +191,13 @@ exportEntries.prototype.getEntries = function (apiDetails) {
         //   mkdirp.sync(path.join(entryFolderPath, apiDetails.content_type));
         // }
 
-        let closeIndexer = false
-        let closeFile = ((count <= limit) || (apiDetails.skip >= (count - apiDetails.skip)))
-
-        if (apiDetails.isLast && closeFile) {
-          closeIndexer = true
-        }
+        const closeFile = ((count - apiDetails.skip) <= limit)
 
         if (apiDetails.locale === 'en') {
           console.log('en')
         }
 
-        fsUtilityInstances[apiDetails.locale].writeIntoFile(items, { closeFile, closeIndexer, mapKeyVal: true })
+        self.fsUtilityInstances[`${content_type}_${locale}`].writeIntoFile(items, { closeFile, mapKeyVal: true })
 
         // let entriesFilePath = path.join(entryFolderPath, apiDetails.content_type, apiDetails.locale + '.json');
         // let entries = helper.readFile(entriesFilePath);
@@ -259,7 +255,7 @@ exportEntries.prototype.getEntries = function (apiDetails) {
               });
           });
         }
-        if ((count <= limit) || (apiDetails.skip > count)) {
+        if ((count - apiDetails.skip) <= limit) {
           addlogs(
             config,
             'Exported entries of ' +
