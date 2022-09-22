@@ -114,6 +114,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv) {
           await assetQueue.Enqueue({
             assetUid: items[index].data.uid,
             publish_details: [items[index].data.publish_details],
+            locale: filter.locale,
             environments: destEnv,
             Type: 'asset',
             stack: stack,
