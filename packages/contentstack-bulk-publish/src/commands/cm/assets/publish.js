@@ -161,6 +161,7 @@ AssetsPublishCommand.flags = {
   }),
   'folder-uid': flags.string({
     description: '[default: cs_root] Folder-uid from where the assets will be published',
+    exclusive: ['source-env'],
   }),
   'bulk-publish': flags.string({
     description:
@@ -200,6 +201,7 @@ AssetsPublishCommand.flags = {
     description: '[default: cs_root] Folder-uid from where the assets will be published',
     hidden: true,
     parse: printFlagDeprecation(['-u', '--folderUid'], ['--folder-uid']),
+    exclusive: ['source-env'],
   }),
   bulkPublish: flags.string({
     char: 'b',
@@ -211,7 +213,7 @@ AssetsPublishCommand.flags = {
   }),
   'delivery-token': flags.string({ description: 'Delivery token for source environment' }),
   'source-env': flags.string({ description: 'Source environment' }),
-  'content-types': flags.string({ description: 'Content types', multiple: true }), // this is a work around, as this command is to be run with entries:publish command and should not break flags check.
+  'content-types': flags.string({ description: 'Content types', hidden: true, multiple: true }), // this is a work around, as this command is to be run with entries:publish command and should not break flags check.
 };
 
 AssetsPublishCommand.examples = [
@@ -236,6 +238,6 @@ AssetsPublishCommand.examples = [
 AssetsPublishCommand.aliases = ['cm:bulk-publish:assets'];
 
 AssetsPublishCommand.usage =
-  'cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--content-types <value>]';
+  'cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]';
 
 module.exports = AssetsPublishCommand;
