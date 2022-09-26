@@ -46,86 +46,89 @@ class MigrationCommand extends Command {
 
   async run() {
     // TODO: filePath validation required.
-    const migrationCommandFlags = this.parse(MigrationCommand).flags;
-    const { branch } = migrationCommandFlags;
-    const filePath = migrationCommandFlags['file-path'] || migrationCommandFlags.filePath;
-    const multi = migrationCommandFlags.multiple || migrationCommandFlags.multi;
-    const authtoken = configHandler.get('authtoken');
-    const apiKey = migrationCommandFlags['api-key'] || migrationCommandFlags['stack-api-key'];
-    const alias = migrationCommandFlags['alias'] || migrationCommandFlags['management-token-alias'];
-    const config = migrationCommandFlags['config'];
+    try {
+      const migrationCommandFlags = this.parse(MigrationCommand).flags;
+      const { branch } = migrationCommandFlags;
+      const filePath = migrationCommandFlags['file-path'] || migrationCommandFlags.filePath;
+      const multi = migrationCommandFlags.multiple || migrationCommandFlags.multi;
+      const authtoken = configHandler.get('authtoken');
+      const apiKey = migrationCommandFlags['api-key'] || migrationCommandFlags['stack-api-key'];
+      const alias = migrationCommandFlags['alias'] || migrationCommandFlags['management-token-alias'];
+      const config = migrationCommandFlags['config'];
 
-    if (!authtoken && !alias) {
-      this.log(
-        "AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login or provide management token alias",
-      );
-      this.exit();
-    }
+      if (!authtoken && !alias) {
+        this.log(
+          "AuthToken is not present in local drive, Hence use 'csdx auth:login' command for login or provide management token alias",
+        );
+        this.exit();
+      }
 
-    if (!filePath) {
-      this.log('Please provide the migration script file path, use --file-path flag');
-      this.exit();
-    }
+      if (!filePath) {
+        this.log('Please provide the migration script file path, use --file-path flag');
+        this.exit();
+      }
 
-    // Reset map instance
-    const mapInstance = getMapInstance();
-    resetMapInstance(mapInstance);
-    if (migrationCommandFlags['config-file']) {
-      set('config-path', mapInstance, migrationCommandFlags['config-file']);
-    }
+      // Reset map instance
+      const mapInstance = getMapInstance();
+      resetMapInstance(mapInstance);
+      if (migrationCommandFlags['config-file']) {
+        set('config-path', mapInstance, migrationCommandFlags['config-file']);
+      }
 
-    if (Array.isArray(config) && config.length > 0) {
-      let configObj = config.reduce((a, v) => {
-        let objArr = v.split(':');
-        return { ...a, [objArr[0]]: objArr[1] };
-      }, {});
-      set('config', mapInstance, configObj);
-    }
+      if (Array.isArray(config) && config.length > 0) {
+        let configObj = config.reduce((a, v) => {
+          let objArr = v.split(':');
+          return { ...a, [objArr[0]]: objArr[1] };
+        }, {});
+        set('config', mapInstance, configObj);
+      }
 
-    let stackSDKInstance;
-    if (branch) {
-      set(BRANCH, mapInstance, branch);
-    }
+      let stackSDKInstance;
+      if (branch) {
+        set(BRANCH, mapInstance, branch);
+      }
 
-    if (alias) {
-      let managementToken = this.getToken(alias);
-      if (managementToken) {
-        set(MANAGEMENT_TOKEN, mapInstance, managementToken);
-        set(API_KEY, mapInstance, managementToken.apiKey);
+      if (alias) {
+        let managementToken = this.getToken(alias);
+        if (managementToken) {
+          set(MANAGEMENT_TOKEN, mapInstance, managementToken);
+          set(API_KEY, mapInstance, managementToken.apiKey);
+          if (branch) {
+            stackSDKInstance = this.managementAPIClient.stack({
+              management_token: managementToken.token,
+              api_key: managementToken.apiKey,
+              branch_uid: branch,
+            });
+          } else {
+            stackSDKInstance = this.managementAPIClient.stack({
+              management_token: managementToken.token,
+              api_key: managementToken.apiKey,
+            });
+          }
+        }
+      } else if (authtoken) {
+        set(AUTH_TOKEN, mapInstance, authtoken);
+        set(API_KEY, mapInstance, apiKey);
+        this.managementAPIClient = { authtoken: this.authToken };
         if (branch) {
           stackSDKInstance = this.managementAPIClient.stack({
-            management_token: managementToken.token,
-            api_key: managementToken.apiKey,
+            api_key: apiKey,
             branch_uid: branch,
           });
         } else {
-          stackSDKInstance = this.managementAPIClient.stack({
-            management_token: managementToken.token,
-            api_key: managementToken.apiKey,
-          });
+          stackSDKInstance = this.managementAPIClient.stack({ api_key: apiKey });
         }
       }
-    } else if (authtoken) {
-      set(AUTH_TOKEN, mapInstance, authtoken);
-      set(API_KEY, mapInstance, apiKey);
-      this.managementAPIClient = { authtoken: this.authToken };
-      if (branch) {
-        stackSDKInstance = this.managementAPIClient.stack({
-          api_key: apiKey,
-          branch_uid: branch,
-        });
+      set(MANAGEMENT_SDK, mapInstance, stackSDKInstance);
+      set(MANAGEMENT_CLIENT, mapInstance, this.managementAPIClient);
+
+      if (multi) {
+        await this.execMultiFiles(filePath, mapInstance);
       } else {
-        stackSDKInstance = this.managementAPIClient.stack({ api_key: apiKey });
+        await this.execSingleFile(filePath, mapInstance);
       }
-    }
-
-    set(MANAGEMENT_SDK, mapInstance, stackSDKInstance);
-    set(MANAGEMENT_CLIENT, mapInstance, this.managementAPIClient);
-
-    if (multi) {
-      await this.execMultiFiles(filePath, mapInstance);
-    } else {
-      await this.execSingleFile(filePath, mapInstance);
+    } catch (error) {
+      console.log('error', error);
     }
   }
 
@@ -230,7 +233,6 @@ MigrationCommand.flags = {
   'api-key': flags.string({
     char: 'k',
     description: 'With this flag add the API key of your stack.',
-    dependsOn: ['authtoken'],
     exclusive: ['alias'],
     parse: printFlagDeprecation(['--api-key'], ['-k', '--stack-api-key']),
     hidden: true,
@@ -238,14 +240,12 @@ MigrationCommand.flags = {
   'stack-api-key': flags.string({
     char: 'k',
     description: 'With this flag add the API key of your stack.',
-    dependsOn: ['authtoken'],
     exclusive: ['alias'],
   }),
   authtoken: flags.boolean({
     char: 'A',
     description:
       'Use this flag to use the auth token of the current session. After logging in CLI, an auth token is generated for each new session.',
-    dependsOn: ['api-key'],
     exclusive: ['alias'],
     parse: printFlagDeprecation(['-A', '--authtoken']),
     hidden: true,
@@ -294,6 +294,7 @@ MigrationCommand.flags = {
 
 MigrationCommand.aliases = ['cm:migration'];
 
-MigrationCommand.usage = 'cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]';
+MigrationCommand.usage =
+  'cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]';
 
 module.exports = MigrationCommand;
