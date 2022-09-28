@@ -68,7 +68,9 @@ class StackCloneCommand extends Command {
         await this.removeContentDirIfNotEmptyBeforeClone(pathdir); // NOTE remove if folder not empty before clone
         this.registerCleanupOnInterrupt(pathdir);
 
-        config.master_locale = { code: masterLocale }
+        if (masterLocale) {
+          config.master_locale = { code: masterLocale }
+        }
         config.auth_token = _authToken;
         config.host = this.cmaHost;
         config.cdn = this.cdaHost;
