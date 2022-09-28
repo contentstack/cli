@@ -1,8 +1,10 @@
+import mkdirp from 'mkdirp'
 import { log } from 'winston'
 import keys from 'lodash/keys'
-import isEmpty from 'lodash/isEmpty'
+import { resolve } from 'path'
 import { v4 as uidV4 } from 'uuid'
-import { createWriteStream, existsSync, mkdirSync, readFileSync, statSync, writeFileSync, WriteStream } from "fs"
+import isEmpty from 'lodash/isEmpty'
+import { createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync, WriteStream } from "fs"
 
 import { mapKeyAndVal } from './helper'
 import { PageInfo, FileType, WriteFileOptions, FsConstructorOptions } from './types'
@@ -38,6 +40,63 @@ export default class FsUtility {
   get currentPageDetails() {
     return this.pageInfo
   }
+
+  // STUB old utility methods
+  /**
+   * @method readFile
+   * @param filePath string
+   * @param parse boolean | undefined
+   * @returns string | undefined
+   */
+  readFile(filePath, parse) {
+    let data;
+    filePath = resolve(filePath);
+    parse = typeof parse === 'undefined' ? true : parse;
+
+    if (existsSync(filePath)) {
+      data = parse ? JSON.parse(readFileSync(filePath, 'utf-8')) : data
+    }
+
+    return data
+  }
+
+  /**
+   * @method writeFile
+   * @param filePath 
+   * @param data Object | undefined
+   * @return void
+   */
+  writeFile (filePath, data) {
+    data = typeof data === 'object' ? JSON.stringify(data) : data || '{}';
+    writeFileSync(filePath, data)
+  }
+  
+  /**
+   * @method makeDirectory
+   * @return void
+   */
+  makeDirectory () {
+    for (var key in arguments) {
+      let dirname = resolve(arguments[key])
+      if (!existsSync(dirname)) {
+        mkdirp.sync(dirname)
+      }
+    }
+  }
+  
+  /**
+   * @method readdir
+   * @param dirPath String
+   * @returns [string]
+   */
+  readdir (dirPath) {
+    if (existsSync(dirPath)) {
+      return readdirSync(dirPath)
+    } else {
+      return []
+    }
+  }
+  // STUB End of old utility
 
   /**
    * @method createFolderIfNotExist
@@ -137,11 +196,15 @@ export default class FsUtility {
     if (this.writableStream instanceof WriteStream) {
       this.writableStream.end()
     }
-     
+
     this.writableStream = null
   }
 
-  readFile() {
+  /**
+   * @method readChunkFiles
+   * @returns Object
+   */
+  readChunkFiles() {
     return {
       next: this.next,
       previous: this.previous,
@@ -149,6 +212,11 @@ export default class FsUtility {
     }
   }
 
+  /**
+   * @method getFileByIndex
+   * @param index number
+   * @returns Promise<string>
+   */
   getFileByIndex(index: number = 1) {
     return new Promise<string>((resolve, reject) => {
       if (index <= 0) return reject({ code: 400, message: 'Invalid index' })
@@ -163,6 +231,10 @@ export default class FsUtility {
     })
   }
 
+  /**
+   * @method next
+   * @returns Promise<string>
+   */
   next() {
     return new Promise<string>((resolve, reject) => {
       this.updatePageInfo(true)
@@ -175,6 +247,10 @@ export default class FsUtility {
     })
   }
 
+  /**
+   * @method previous
+   * @returns Promise<string>
+   */
   previous() {
     return new Promise<string>((resolve, reject) => {
       this.updatePageInfo(false)
@@ -187,6 +263,12 @@ export default class FsUtility {
     })
   }
 
+  /**
+   * @method updatePageInfo
+   * @param isNext boolean
+   * @param index number
+   * @returns void
+   */
   updatePageInfo(isNext: boolean = true, index: number = null) {
     if (!this.pageInfo.pageInfoUpdated) {
       const indexPath = `${this.basePath}/${this.indexFileName}`
