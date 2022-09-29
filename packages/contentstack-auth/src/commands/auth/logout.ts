@@ -56,8 +56,7 @@ export default class LogoutCommand extends Command {
       cliux.print(error.message, { color: 'red' });
     } finally {
       if (confirm === true) {
-        configHandler.delete('authtoken');
-        configHandler.delete('email');
+        await authHandler.setConfigData('logout');
       }
     }
   }
