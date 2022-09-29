@@ -32,13 +32,29 @@ export default class FsUtility {
     this.fileExt = fileExt || FileType.json
     this.chunkFileSize = chunkFileSize || 10
     this.indexFileName = indexFileName || 'index.json'
+    this.pageInfo.hasNextPage = keys(this.indexFileContent).length > 0
     this.defaultInitContent = defaultInitContent || (this.fileExt === 'json' ? '{' : '')
 
     this.createFolderIfNotExist(this.basePath)
   }
 
+  get isIndexFileExist() {
+    return existsSync(`${this.basePath}/${this.indexFileName}`)
+  }
+
   get currentPageDetails() {
     return this.pageInfo
+  }
+
+  get indexFileContent() {
+    let indexData = {}
+    const indexPath = `${this.basePath}/${this.indexFileName}`
+
+    if (existsSync(indexPath)) {
+      indexData = JSON.parse(readFileSync(indexPath, 'utf-8'))
+    }
+
+    return indexData
   }
 
   // STUB old utility methods
@@ -271,11 +287,8 @@ export default class FsUtility {
    */
   updatePageInfo(isNext: boolean = true, index: number = null) {
     if (!this.pageInfo.pageInfoUpdated) {
-      const indexPath = `${this.basePath}/${this.indexFileName}`
-
-      if (existsSync(indexPath) && isEmpty(this.readIndexer)) {
-        this.readIndexer = JSON.parse(readFileSync(indexPath, 'utf-8'))
-      }
+      this.readIndexer = this.indexFileContent
+      this.pageInfo.pageInfoUpdated = true
     }
 
     const { after, before } = this.pageInfo
