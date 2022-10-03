@@ -92,7 +92,7 @@ export default class FsUtility {
    * @return void
    */
   makeDirectory () {
-    for (var key in arguments) {
+    for (let key in arguments) {
       let dirname = resolve(arguments[key])
       if (!existsSync(dirname)) {
         mkdirp.sync(dirname)
