@@ -114,6 +114,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv) {
           await assetQueue.Enqueue({
             assetUid: items[index].data.uid,
             publish_details: [items[index].data.publish_details],
+            locale: filter.locale,
             environments: destEnv,
             Type: 'asset',
             stack: stack,
@@ -139,7 +140,7 @@ async function getSyncEntries(
     try {
       const tokenDetails = command.getToken(config.alias);
       const queryParamsObj = {};
-      const pairs = queryParams.split('&');
+      const pairs = queryParams.split('&').filter((e) => e !== null && e !== '' && e !== undefined);
       for (let i in pairs) {
         const split = pairs[i].split('=');
         queryParamsObj[decodeURIComponent(split[0])] = decodeURIComponent(split[1]);
@@ -187,10 +188,10 @@ async function getSyncEntries(
           entriesResponse.pagination_token,
         );
       }, 3000);
+      return resolve();
     } catch (error) {
       reject(error);
     }
-    return resolve();
   });
 }
 
@@ -244,10 +245,10 @@ async function start(
         return false;
       }
 
-      bulkPublish = retryFailed.match(new RegExp('bulk')) ? true : false;
-      setConfig(config, bulkPublish);
+      const bulkPublishFlag = retryFailed.match(/bulk/) ? true : false;
+      setConfig(config, bulkPublishFlag);
 
-      if (bulkPublish) {
+      if (bulkPublishFlag) {
         await retryFailedLogs(retryFailed, queue, 'bulk');
       } else {
         await retryFailedLogs(retryFailed, { entryQueue, assetQueue }, 'publish');
