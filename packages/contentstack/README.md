@@ -35,7 +35,7 @@ USAGE
 * [`csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`](#csdx-authtokensadd--a-value---delivery---management--e-value--k-value--y---token-value)
 * [`csdx auth:tokens:remove`](#csdx-authtokensremove)
 * [`csdx auth:whoami`](#csdx-authwhoami)
-* [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--content-types <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value---content-types-value)
+* [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value)
 * [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
 * [`csdx cm:bootstrap`](#csdx-cmbootstrap)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
@@ -247,7 +247,7 @@ EXAMPLES
 
 _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/whoami.ts)_
 
-## `csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>] [--content-types <value>]`
+## `csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`
 
 Publish assets to the specified environments
 
@@ -255,7 +255,6 @@ Publish assets to the specified environments
 USAGE
   $ csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish
     <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]
-    [--content-types <value>]
 
 FLAGS
   -B, --branch=<value>        [default: main] Specify the branch to fetch the content (by default the main branch is
@@ -267,7 +266,6 @@ FLAGS
   -y, --yes                   Agree to process the command with the current configuration
   --bulk-publish=<value>      [default: true] By default this flag is set as true. It indicates that contentstack's
                               bulkpublish API will be used to publish the assets
-  --content-types=<value>     Content types
   --delivery-token=<value>    Delivery token for source environment
   --folder-uid=<value>        [default: cs_root] Folder-uid from where the assets will be published
   --retry-failed=<value>      Retry publishing failed assets from the logfile (optional, will override all other flags)
