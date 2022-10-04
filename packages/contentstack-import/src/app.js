@@ -139,9 +139,9 @@ let allImport = async (config, types) => {
           config,
           chalk.green(
             'The data of the ' +
-            config.sourceStackName +
+            (config.sourceStackName || config.source_stack) +
             ' stack has been imported into ' +
-            config.destinationStackName +
+            (config.destinationStackName || config.target_stack) +
             ' stack successfully!',
           ),
           'success',

@@ -10,6 +10,7 @@ const {
   parametersWithAuthToken,
   withoutParametersWithAuthToken,
 } = require('../../../lib/util/export-flags');
+const config = require('../../../config/default');
 const { configHandler } = require('@contentstack/cli-utilities');
 
 class ExportCommand extends Command {
@@ -32,6 +33,12 @@ class ExportCommand extends Command {
 
     if (alias) {
       let managementTokens = this.getToken(alias);
+
+      if (alias) {
+        const listOfTokens = configHandler.get('tokens');
+        config.management_token_data = listOfTokens[alias];
+      }
+
       if (managementTokens) {
         if (extConfig) {
           await configWithMToken(
