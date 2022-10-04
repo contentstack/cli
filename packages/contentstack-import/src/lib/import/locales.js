@@ -46,6 +46,7 @@ importLanguages.prototype = {
     langFailsPath = path.resolve(config.data, 'mapper', 'languages', 'fails.json');
     mkdirp.sync(langMapperPath);
     self.languages = helper.readFile(path.resolve(langFolderPath, langConfig.fileName));
+    
     if (fs.existsSync(langUidMapperPath)) {
       self.langUidMapper = helper.readFile(langUidMapperPath);
       self.langUidMapper = self.langUidMapper || {};

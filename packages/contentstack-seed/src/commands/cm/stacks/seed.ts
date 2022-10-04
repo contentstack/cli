@@ -95,7 +95,8 @@ export default class SeedCommand extends Command {
       };
 
       const seeder = new ContentModelSeeder(options);
-      return await seeder.run();
+      const result = await seeder.run();
+      return result;
     } catch (error) {
       let errorObj: any = error;
       this.error(errorObj, { exit: 1, suggestions: errorObj.suggestions });
