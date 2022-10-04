@@ -8,23 +8,37 @@ module.exports = {
   // not passing `locale` will migrate all the locales present
   // locales: ['fr-fr'],
   host: 'https://api.contentstack.io/v3',
+  extensionHost: 'https://app.contentstack.com',
+  developerHubUrls: {
+    'https://api.contentstack.io': 'https://developerhub-api.contentstack.com',
+    'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
+    'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
+    'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com'
+  },
   modules: {
     types: [
       'locales',
       'environments',
       'assets',
       'extensions',
+      'marketplace-apps',
       'global-fields',
       'content-types',
       'workflows',
       'entries',
       'labels',
       'webhooks',
+      'custom-roles',
     ],
     locales: {
       dirName: 'locales',
       fileName: 'locales.json',
       requiredKeys: ['code', 'uid', 'name', 'fallback_locale'],
+    },
+    customRoles: {
+      dirName: 'custom-roles',
+      fileName: 'custom-roles.json',
+      customRolesLocalesFileName: 'custom-roles-locales.json',
     },
     environments: {
       dirName: 'environments',
@@ -74,7 +88,6 @@ module.exports = {
       limit: 50,
       assetBatchLimit: 5,
     },
-
     globalfields: {
       dirName: 'global_fields',
       fileName: 'globalfields.json',
@@ -85,6 +98,10 @@ module.exports = {
       dirName: 'stack',
       fileName: 'stack.json',
     },
+    marketplace_apps: {
+      dirName: 'marketplace_apps',
+      fileName: 'marketplace_apps.json'
+    }
   },
   languagesCode: [
     'af-za',
@@ -296,7 +313,6 @@ module.exports = {
     'xh',
     'zu',
   ],
-
   apis: {
     userSession: '/user-session/',
     locales: '/locales/',

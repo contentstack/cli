@@ -1041,6 +1041,7 @@ FLAGS
   --destination-stack-api-key=<value>           Destination stack API Key
   --import-webhook-status=<option>              [default: disable] Webhook state
                                                 <options: disable|current>
+  --master-locale=<value>                       Master language for stack clone
   --source-branch=<value>                       Branch of the source stack.
   --source-management-token-alias=<value>       Source API key of the target stack token alias.
   --source-stack-api-key=<value>                Source stack API Key
