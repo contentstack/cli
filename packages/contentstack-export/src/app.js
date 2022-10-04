@@ -1,11 +1,11 @@
 /* eslint-disable no-redeclare */
-var util = require('./lib/util');
-var login = require('./lib/util/login');
-var { addlogs, unlinkFileLogger } = require('./lib/util/log');
-const setupBranches = require('./lib/util/setup-branches');
+const _ = require('lodash');
+const path = require('path');
 const chalk = require('chalk');
-let path = require('path');
-let _ = require('lodash');
+const util = require('./lib/util');
+const login = require('./lib/util/login');
+const setupBranches = require('./lib/util/setup-branches');
+const { addlogs, unlinkFileLogger } = require('./lib/util/log');
 
 exports.initial = async function (config) {
   return new Promise(async function (resolve, reject) {
@@ -17,7 +17,8 @@ exports.initial = async function (config) {
 
     const fetchBranchAndExport = async () => {
       await setupBranches(config, config.branchName);
-      var types = config.modules.types;
+      let types = config.modules.types;
+
       if (Array.isArray(config.branches) && config.branches.length > 0) {
         for (let branch of config.branches) {
           config.branchName = branch.uid;
@@ -75,7 +76,7 @@ exports.initial = async function (config) {
   });
 };
 
-var singleExport = async (moduleName, types, config, branchName) => {
+const singleExport = async (moduleName, types, config, branchName) => {
   try {
     if (types.indexOf(moduleName) > -1) {
       let iterateList;
@@ -86,10 +87,13 @@ var singleExport = async (moduleName, types, config, branchName) => {
       }
       iterateList.push(moduleName);
 
-      for (let i = 0; i < iterateList.length; i++) {
-        var exportedModule = require('./lib/export/' + iterateList[i]);
-        const result = await exportedModule.start(config, branchName);
-        if (result && iterateList[i] === 'stack') {
+      for (const element of iterateList) {
+        let exportedModule = require('./lib/export/' + element);
+        const result = await exportedModule.start(config, branchName)
+          .catch((error) => {
+            console.log(error && error.message)
+          });
+        if (result && element === 'stack') {
           let master_locale = {
             master_locale: { code: result.code },
           };
@@ -110,14 +114,16 @@ var singleExport = async (moduleName, types, config, branchName) => {
   }
 };
 
-var allExport = async (config, types, branchName) => {
-  // eslint-disable-next-line no-async-promise-executor
+const allExport = async (config, types, branchName) => {
   return new Promise(async (resolve, reject) => {
     try {
-      for (let i = 0; i < types.length; i++) {
-        let type = types[i];
-        var exportedModule = require('./lib/export/' + type);
-        const result = await exportedModule.start(config, branchName);
+      for (const type of types) {
+        const exportedModule = require('./lib/export/' + type);
+        const result = await exportedModule.start(config, branchName)
+          .catch((error) => {
+            console.log(error && error.message)
+          });
+
         if (result && type === 'stack') {
           let master_locale = { master_locale: { code: result.code } };
           config = _.merge(config, master_locale);
