@@ -1,285 +1,191 @@
-/*!
- * Contentstack Export
- * Copyright (c) 2019 Contentstack LLC
- * MIT Licensed
- */
-
 const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
-const Promise = require('bluebird');
-const mkdirp = require('mkdirp');
-const { addlogs } = require('../util/log');
+const mkdirp = require('mkdirp')
+const cluster = require('cluster')
+const { Worker } = require('worker_threads')
 
-const helper = require('../util/helper');
-const { FsUtility } = require('@contentstack/cli-utilities')
+const helper = require('../util/helper')
+const config = require('../../config/default')
+const { addlogs: log } = require('../util/log')
 const stack = require('../util/contentstack-management-sdk');
 
-let config = require('../../config/default');
-let entriesConfig = config.modules.entries;
-let invalidKeys = entriesConfig.invalidKeys;
-let limit = entriesConfig.limit;
-let content_types;
-let locales;
-let entryFolderPath;
-let localesFilePath;
-let schemaFilePath;
-let client;
+class ExportEntries {
+  client
+  config
+  entriesConfig
 
-function exportEntries() {
-  this.requestOptions = {
-    headers: config.headers,
-    qs: {
-      include_count: true,
-      include_publish_details: true,
-      limit: limit,
-    },
-    json: true,
-  };
+  constructor() {
+    this.config = config
+    this.noOfWorkers = 5
+    this.concurrencyLimit = 10
+    this.entriesConfig = config.modules.entries
+    this.limit = this.entriesConfig.limit || 100
+  }
 
-  this.fsUtilityInstances = {}
+  initClient(config) {
+    if (!this.client) this.client = stack.Client(config)
+  }
 
-  this.createFsUtilityInstance = (options) => {
-    const { entryFolderPath, content_type, locale } = options
-    this.fsUtilityInstances[`${content_type.uid}_${locale.code}`] = new FsUtility({
-      chunkFileSize: 5,
-      omitKeys: invalidKeys,
-      moduleName: 'entries',
-      indexFileName: 'entries.json',
-      basePath: path.resolve(entryFolderPath, content_type.uid, locale.code)
+  start(credentialConfig) {
+    this.config = credentialConfig
+    this.initClient(credentialConfig)
+    const entryFolderPath = path.resolve(
+      this.config.data,
+      this.config.branchName || '', this.config.modules.entries.dirName
+    )
+
+    if (credentialConfig.noOfWorkers) {
+      this.noOfWorkers = credentialConfig.noOfWorkers
+    }
+
+    const { apiBucket, schemaFilePath, localesFilePath } = this.getContentTypeAndLocalMap()
+
+    return this.makeConcurrentWorker({
+      apiBucket,
+      schemaFilePath,
+      localesFilePath,
+      entryFolderPath
+    }, this.noOfWorkers)
+  }
+
+  makeConcurrentWorker(options, noOfWorker = 5, worker = null) {
+    return new Promise((resolve) => {
+      const { apiBucket, schemaFilePath, localesFilePath, entryFolderPath } = options
+
+      if (_.isEmpty(apiBucket)) {
+        if (worker) {
+          worker.terminate()
+          workerCount--
+        }
+
+        return resolve()
+      }
+
+      const makeWorkerCall = () => {
+        this.createWorkerOnDemand(
+          options,
+          { ..._.first(apiBucket), schemaFilePath, localesFilePath, entryFolderPath },
+          worker
+        )
+        apiBucket.shift()
+      }
+
+      if (worker) {
+        makeWorkerCall()
+      } else {
+        for (let index = 0; index < noOfWorker; index++) {
+          makeWorkerCall()
+        }
+      }
     })
+  }
+
+  async createWorkerOnDemand(options, data, existingWorker = null) {
+    const self = this
+    const totalCount = await this.getEntriesCount(data)
+
+    const postMessage = (worker) => {
+      worker.postMessage({
+        operation: 'get-entries',
+        env: {
+          ...data,
+          totalCount,
+          config: self.config,
+          concurrencyLimit: self.concurrencyLimit
+        }
+      })
+    }
+
+    if (totalCount > 0) {
+      if (existingWorker) {
+        postMessage(existingWorker)
+      } else {
+        const worker = new Worker(`${__dirname}/worker.js`)
+
+        // NOTE Set worker thread event handlers
+        worker.on('message', (result) => {
+          // NOTE kill worker
+          if (result.action === 'terminate') {
+            worker.terminate()
+          }
+          if (result.action === 'done') {
+            self.makeConcurrentWorker(options, 1, worker)
+          }
+          if (result.action === 'log') {
+            log(self.config, result.message, 'success')
+          }
+        })
+
+        workerCount++
+
+        worker.on('exit', (code) => {
+          console.log(`Worker exited with code ${code}`)
+        })
+
+        postMessage(worker)
+      }
+    } else {
+      self.makeConcurrentWorker(options, 1, existingWorker)
+    }
+  }
+
+  getContentTypeAndLocalMap() {
+    const apiBucket = []
+    const schemaFilePath = path.resolve(
+      this.config.data,
+      this.config.branchName || '',
+      this.config.modules.content_types.dirName,
+      'schema.json',
+    )
+    const localesFilePath = path.resolve(
+      this.config.data,
+      this.config.branchName || '',
+      this.config.modules.locales.dirName,
+      this.config.modules.locales.fileName
+    )
+
+    const locales = helper.readFile(localesFilePath)
+    const content_types = helper.readFile(schemaFilePath)
+
+    _.forEach(content_types, (content_type) => {
+      if (Object.keys(locales).length) {
+        for (let [_uid, locale] of Object.entries(locales)) {
+          apiBucket.push({
+            locale: locale.code,
+            content_type: content_type.uid,
+          })
+        }
+      }
+
+      apiBucket.push({
+        content_type: content_type.uid,
+        locale: config.master_locale.code
+      })
+    })
+
+    return { apiBucket, schemaFilePath, localesFilePath }
+  }
+
+  getEntriesCount(options = {}) {
+    const { content_type, locale } = options
+    const { source_stack: api_key, management_token } = this.config
+    const queryParam = {
+      limit: 1,
+      locale: locale,
+      skip: 999999999,
+      include_count: true,
+      query: { locale: locale }
+    }
+  
+    return this.client
+      .stack({ api_key, management_token })
+      .contentType(content_type)
+      .entry()
+      .query(queryParam)
+      .find()
+      .then(({ count }) => count)
   }
 }
 
-exportEntries.prototype.start = function (credentialConfig) {
-  let self = this;
-  config = credentialConfig;
-  entryFolderPath = path.resolve(config.data, config.branchName || '', config.modules.entries.dirName);
-  localesFilePath = path.resolve(
-    config.data,
-    config.branchName || '',
-    config.modules.locales.dirName,
-    config.modules.locales.fileName,
-  );
-  schemaFilePath = path.resolve(
-    config.data,
-    config.branchName || '',
-    config.modules.content_types.dirName,
-    'schema.json',
-  );
-  client = stack.Client(config);
-  addlogs(config, 'Starting entry migration', 'success');
-
-  return new Promise(function (resolve) {
-    let apiBucket = [];
-    locales = helper.readFile(localesFilePath);
-    content_types = helper.readFile(schemaFilePath);
-
-    if (content_types.length) {
-      _.forEach(content_types, (content_type) => {
-        if (Object.keys(locales).length) {
-          for (let [_uid, locale] of Object.entries(locales)) {
-            apiBucket.push({
-              locale: locale.code,
-              content_type: content_type.uid,
-            });
-            if (_.isEmpty(self.fsUtilityInstances[`${content_type.uid}_${locale.code}`])) {
-              self.createFsUtilityInstance({ locale, entryFolderPath, content_type })
-            }
-          }
-        }
-
-        apiBucket.push({
-          content_type: content_type.uid,
-          locale: config.master_locale.code
-        });
-
-        if (_.isEmpty(self.fsUtilityInstances[`${content_type.uid}_${config.master_locale.code}`])) {
-          self.createFsUtilityInstance({ entryFolderPath, content_type, locale: { code: config.master_locale.code } })
-        }
-      });
-
-      return Promise.map(
-        apiBucket,
-        function (apiDetails) {
-          return self.getEntries(apiDetails);
-        },
-        {
-          concurrency: 1,
-        },
-      )
-        .then(function () {
-          addlogs(config, 'Entry migration completed successfully', 'success');
-          return resolve();
-        })
-        .catch((error) => {
-          console.log('Error getting entries', error && error.message);
-        });
-    }
-    addlogs(config, 'No content_types were found in the Stack', 'success');
-    return resolve();
-  });
-};
-
-exportEntries.prototype.getEntry = function (apiDetails) {
-  let self = this;
-  return new Promise(function (resolve, reject) {
-    let queryRequestObject = {
-      locale: apiDetails.locale,
-      except: {
-        BASE: invalidKeys,
-      },
-      version: apiDetails.version,
-    };
-    client
-      .stack({ api_key: config.source_stack, management_token: config.management_token })
-      .contentType(apiDetails.content_type)
-      .entry(apiDetails.uid)
-      .fetch(queryRequestObject)
-      .then((singleEntry) => {
-        let entryPath = path.join(entryFolderPath, apiDetails.locale, apiDetails.content_type, singleEntry.uid);
-        mkdirp.sync(entryPath);
-        helper.writeFile(path.join(entryPath, 'version-' + singleEntry._version + '.json'), singleEntry);
-        addlogs(
-          config,
-          'Completed version backup of entry: ' +
-            singleEntry.uid +
-            ', version: ' +
-            singleEntry._version +
-            ', content type: ' +
-            apiDetails.content_type,
-          'success',
-        );
-        if (--apiDetails.version !== 0) {
-          return self.getEntry(apiDetails).then(resolve).catch(reject);
-        }
-        return resolve();
-      })
-      .catch((error) => {
-        addlogs(config, error, 'error');
-      });
-  });
-};
-
-exportEntries.prototype.getEntries = function (apiDetails) {
-  let self = this;
-  return new Promise(function (resolve, reject) {
-    if (typeof apiDetails.skip !== 'number') {
-      apiDetails.skip = 0;
-    }
-
-    const { skip, locale, content_type } = apiDetails
-
-    let queryRequestObject = {
-      skip: skip,
-      limit: limit,
-      locale: locale,
-      include_count: true,
-      include_publish_details: true,
-      query: { locale: locale }
-    }
-
-    client
-      .stack({ api_key: config.source_stack, management_token: config.management_token })
-      .contentType(content_type)
-      .entry()
-      .query(queryRequestObject)
-      .find()
-      .then(({ items, count }) => {
-        // /entries/content_type_uid/locale.json
-        // if (!fs.existsSync(path.join(entryFolderPath, apiDetails.content_type))) {
-        //   mkdirp.sync(path.join(entryFolderPath, apiDetails.content_type));
-        // }
-
-        const closeFile = ((count - apiDetails.skip) <= limit)
-
-        if (count === 0) {
-          self.fsUtilityInstances[`${content_type}_${locale}`].closeFile()
-        } else {
-          self.fsUtilityInstances[`${content_type}_${locale}`].writeIntoFile(items, { closeFile, mapKeyVal: true })
-        }
-
-        // let entriesFilePath = path.join(entryFolderPath, apiDetails.content_type, apiDetails.locale + '.json');
-        // let entries = helper.readFile(entriesFilePath);
-        // entries = entries || {};
-        // items.forEach(function (entry) {
-        //   invalidKeys.forEach((e) => delete entry[e]);
-        //   entries[entry.uid] = entry;
-        // });
-        // helper.writeFile(entriesFilePath, entries);
-
-        if (typeof config.versioning === 'boolean' && config.versioning) {
-          for (let locale in locales) {
-            // make folders for each language
-            content_types.forEach(function (content_type) {
-              // make folder for each content type
-              let versionedEntryFolderPath = path.join(entryFolderPath, locales[locale].code, content_type.uid);
-              mkdirp.sync(versionedEntryFolderPath);
-            });
-          }
-          return Promise.map(
-            items,
-            function (entry) {
-              let entryDetails = {
-                content_type: apiDetails.content_type,
-                uid: entry.uid,
-                version: entry._version,
-                locale: apiDetails.locale,
-              };
-              return self.getEntry(entryDetails).catch(reject);
-            },
-            {
-              concurrency: 1,
-            },
-          ).then(function () {
-            if ((count <= limit) || (apiDetails.skip > items.length)) {
-              addlogs(
-                config,
-                'Completed fetching ' +
-                  apiDetails.content_type +
-                  " content type's entries in " +
-                  apiDetails.locale +
-                  ' locale',
-                'success',
-              );
-              return resolve();
-            }
-            apiDetails.skip += limit;
-            return self
-              .getEntries(apiDetails)
-              .then(function () {
-                return resolve();
-              })
-              .catch(function (error) {
-                return reject(error);
-              });
-          });
-        }
-        if ((count - apiDetails.skip) <= limit) {
-          addlogs(
-            config,
-            'Exported entries of ' +
-              apiDetails.content_type +
-              ' to the ' +
-              apiDetails.locale +
-              ' language successfully',
-            'success',
-          );
-          return resolve();
-        }
-        apiDetails.skip += limit;
-        return self
-          .getEntries(apiDetails)
-          .then(resolve)
-          .catch((error) => {
-            console.log('Get Entries errror', error && error.message);
-          });
-      })
-      .catch((error) => {
-        console.log('Entries fetch errror', error && error.message);
-        addlogs(config, error, 'error');
-      });
-  });
-};
-
-module.exports = new exportEntries();
+module.exports = new ExportEntries()
