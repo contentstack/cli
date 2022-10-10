@@ -34,10 +34,8 @@ class ExportCommand extends Command {
     if (alias) {
       let managementTokens = this.getToken(alias);
 
-      if (alias) {
-        const listOfTokens = configHandler.get('tokens');
-        config.management_token_data = listOfTokens[alias];
-      }
+      const listOfTokens = configHandler.get('tokens');
+      config.management_token_data = listOfTokens[alias];
 
       if (managementTokens) {
         if (extConfig) {
@@ -81,7 +79,7 @@ class ExportCommand extends Command {
       if (extConfig) {
         await configWithAuthToken(extConfig, _authToken, moduleName, host, contentTypes, branchName, securedAssets);
       } else if (sourceStack && data) {
-        return await parametersWithAuthToken(
+        await parametersWithAuthToken(
           _authToken,
           sourceStack,
           data,
@@ -99,7 +97,6 @@ class ExportCommand extends Command {
     } else {
       this.log('Login or provide the alias for management token');
     }
-    // return
   }
 }
 
