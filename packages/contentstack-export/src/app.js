@@ -2,6 +2,7 @@
 const _ = require('lodash');
 const path = require('path');
 const chalk = require('chalk');
+
 const util = require('./lib/util');
 const login = require('./lib/util/login');
 const setupBranches = require('./lib/util/setup-branches');
@@ -45,7 +46,6 @@ exports.initial = async function (config) {
       }
     }
 
-    // try {
     if (
       (config.email && config.password) ||
       (!config.email && !config.password && config.source_stack && config.access_token) ||
@@ -89,10 +89,16 @@ const singleExport = async (moduleName, types, config, branchName) => {
 
       for (const element of iterateList) {
         let exportedModule = require('./lib/export/' + element);
+
+        if (element === 'entries') {
+          exportedModule = new exportedModule.class()
+        }
+
         const result = await exportedModule.start(config, branchName)
           .catch((error) => {
-            console.log(error && error.message)
+            console.log(error && error.message, error)
           });
+
         if (result && element === 'stack') {
           let master_locale = {
             master_locale: { code: result.code },
@@ -112,7 +118,7 @@ const singleExport = async (moduleName, types, config, branchName) => {
     addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error');
     throw error;
   }
-};
+}
 
 const allExport = async (config, types, branchName) => {
   return new Promise(async (resolve, reject) => {
