@@ -1,10 +1,9 @@
 let fs = require('fs').promises;
 let path = require('path')
-let config = require('./config.json')
 let crypto = require('crypto')
 let supportedLocales = require('./locales.json')
 
-module.exports = async ({migration}) => {
+module.exports = async ({migration, config}) => {
     let changeMasterLocale = {
       title: 'Change master locale',
       successMessage: 'Changed master locale successfully for the given data',
@@ -12,7 +11,7 @@ module.exports = async ({migration}) => {
       task: async (params) => {
 
         if (!supportedLocales[config.target_locale]) {
-          throw new Error('Please specify a supported language in config.json. Refer to locales.json for all the supported languages')
+          throw new Error('Please specify a supported language in config.json. For a list of all supported languages, refer to https://www.contentstack.com/docs/developers/multilingual-content/list-of-supported-languages')
         }
 
         function getMasterLocale(locales) {
