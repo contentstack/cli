@@ -41,10 +41,10 @@ export default class RegionSetCommand extends Command {
   ];
 
   async run() {
-    const { args, flags } = this.parse(RegionSetCommand);
-    let cda = flags.cda;
-    let cma = flags.cma;
-    let name = flags.name;
+    const { args, flags: regionSetFlags } = this.parse(RegionSetCommand);
+    let cda = regionSetFlags.cda;
+    let cma = regionSetFlags.cma;
+    let name = regionSetFlags.name;
     let selectedRegion = args.region;
     if (!(cda && cma && name) && !selectedRegion) {
       selectedRegion = await interactive.askRegions();
