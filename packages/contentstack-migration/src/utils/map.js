@@ -10,10 +10,10 @@ exports.get = (id, mapInstance, data = []) => {
   // Create key if does not exist
   let __data = mapInstance.get(id)
 
-  !__data && (
-    mapInstance.set(id, data),
+  if (!__data) {
+    mapInstance.set(id, data)
     __data = mapInstance.get(id)
-  )
+  }
 
   return __data
 }
