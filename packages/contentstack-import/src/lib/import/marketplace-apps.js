@@ -328,7 +328,7 @@ function importMarketplaceApps() {
   
               if (configOption === 'Exit') {
                 process.exit()
-              } else if (configOption === 'Update with new config') {
+              } else if (configOption === 'Update it with the new configuration.') {
                 updateParam = {
                   app,
                   nodeCrypto,
