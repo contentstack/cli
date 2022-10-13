@@ -331,14 +331,14 @@ function importMarketplaceApps() {
                 });
 
                 if (configOption === 'Exit') {
-                  process.exit();
+                  process.exit()
                 } else if (configOption === 'Update it with the new configuration.') {
                   updateParam = {
                     app,
                     nodeCrypto,
                     httpClient,
-                    data: { ...ext, installation_uid: ext.app_installation_uid },
-                  };
+                    data: { ...ext, installation_uid: ext.app_installation_uid }
+                  }
                 }
               }
             } else {
@@ -346,8 +346,8 @@ function importMarketplaceApps() {
               const confirmation = await cliux.confirm(
                 chalk.yellow(
                   'WARNING!!! The above error may have an impact if the failed app is referenced in entries/content type. Would you like to proceed? (y/n)',
-                ),
-              );
+                )
+              )
 
               if (!confirmation) {
                 process.exit();
