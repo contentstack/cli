@@ -151,7 +151,7 @@ const envFileHandler = async (
             result = await writeEnvFile(content, filePath)
             break
         case 'angular-starter':
-            content = `export const environment = { \n\tproduction: true \n}; \nexport const Config = { \n\tapi_key: '${environmentVariables.api_key}', \n\tdelivery_token: '${environmentVariables.deliveryToken}', \n\tenvironment: '${environmentVariables.environment}'${( !isUSRegion && !customHost ? `,\n\tregion: '${region.name}'`: '') },\n\tapi_host: '${customHost ? customHost: ''}',\n\tapp_host: '',\n\tmanagement_token: '',\n\tlive_preview: ${livePreviewEnabled}\n};`
+            content = `export const environment = { \n\tproduction: true \n}; \nexport const Config = { \n\tapi_key: '${environmentVariables.api_key}', \n\tdelivery_token: '${environmentVariables.deliveryToken}', \n\tenvironment: '${environmentVariables.environment}'${( !isUSRegion && !customHost ? `,\n\tregion: '${region.name}'`: '') },\n\tapi_host: '${customHost ? customHost: managementAPIHost}',\n\tapp_host: '',\n\tmanagement_token: '',\n\tlive_preview: ${livePreviewEnabled}\n};`
             fileName = `environment${(environmentVariables.environment === 'production' ? '.prod.' : ".")}ts`
             filePath = path.join(
                 clonedDirectory,

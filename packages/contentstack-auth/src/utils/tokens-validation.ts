@@ -38,7 +38,7 @@ export const validateDeliveryToken = async (
     const deliveryTokenResult = await stack.getContentTypes({ limit: 1 });
 
     logger.debug('delivery token validation result', deliveryTokenResult);
-    if (deliveryTokenResult?.content_types?.length) {
+    if (deliveryTokenResult?.content_types) {
       result = { valid: true, message: deliveryTokenResult };
     } else {
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_DELIVERY_TOKEN') };
