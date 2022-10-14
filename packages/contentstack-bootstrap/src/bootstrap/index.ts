@@ -18,6 +18,7 @@ export interface BootstrapOptions {
   region: any;
   accessToken?: string;
   appType: string;
+  livePreviewEnabled?: boolean;
 }
 
 export interface SeedParams {
@@ -99,6 +100,7 @@ export default class Bootstrap {
           this.appConfig,
           this.cloneDirectory,
           this.region,
+          this.options.livePreviewEnabled as boolean,
         );
       } else {
         throw new Error(messageHandler.parse('CLI_BOOTSTRAP_NO_API_KEY_FOUND'));

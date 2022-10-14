@@ -9,13 +9,14 @@ let fs = require('fs');
 let path = require('path');
 let Promise = require('bluebird');
 let chalk = require('chalk');
-const {isEmpty} = require('lodash');
+const { isEmpty } = require('lodash');
 
 let helper = require('../util/fs');
 let { addlogs } = require('../util/log');
 let extension_supress = require('../util/extensionsUidReplace');
 let removeReferenceFields = require('../util/removeReferenceFields');
 const stack = require('../util/contentstack-management-sdk');
+const { getInstalledExtensions } = require('../util/marketplace-app-helper');
 
 let config = require('../../config/default');
 let reqConcurrency = config.concurrency;
@@ -39,10 +40,11 @@ function importGlobalFields() {
     headers: config.headers,
     method: 'POST',
   };
+  this.installedExtensions = [];
 }
 
 importGlobalFields.prototype = {
-  start: function (credential) {
+  start: async function (credential) {
     addlogs(config, chalk.white('Migrating global-fields'), 'success');
     let self = this;
     config = credential;
@@ -53,6 +55,8 @@ importGlobalFields.prototype = {
     globalFieldsPending = path.resolve(config.data, 'mapper', 'global_fields', 'pending_global_fields.js');
     globalfieldsFailsPath = path.resolve(config.data, 'mapper', 'global_fields', 'fails.json');
     self.globalfields = helper.readFile(path.resolve(globalfieldsFolderPath, globalfieldsConfig.fileName));
+    const appMapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps');
+
     if (fs.existsSync(globalfieldsUidMapperPath)) {
       self.snipUidMapper = helper.readFile(globalfieldsUidMapperPath);
       self.snipUidMapper = this.snipUidMapper || {};
@@ -61,6 +65,15 @@ importGlobalFields.prototype = {
     if (!fs.existsSync(globalfieldsMapperPath)) {
       mkdirp.sync(globalfieldsMapperPath);
     }
+
+    if (fs.existsSync(path.join(appMapperFolderPath, 'marketplace-apps.json'))) {
+      self.installedExtensions = helper.readFile(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
+    }
+
+    if (isEmpty(self.installedExtensions)) {
+      self.installedExtensions = await getInstalledExtensions(config);
+    }
+
     client = stack.Client(config);
     return new Promise(function (resolve, reject) {
       if (self.globalfields === undefined || isEmpty(self.globalfields)) {
@@ -76,7 +89,7 @@ importGlobalFields.prototype = {
             supressed: false,
           };
           let snip = self.globalfields[snipUid];
-          extension_supress(snip.schema);
+          extension_supress(snip.schema, config.preserveStackVersion, self.installedExtensions);
           removeReferenceFields(snip.schema, flag);
 
           if (flag.supressed) {

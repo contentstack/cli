@@ -3,13 +3,13 @@ import { configHandler } from '@contentstack/cli-utilities';
 function validURL(str) {
   const pattern = new RegExp(
     '^(https?:\\/\\/)?' + // protocol
-      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+      '(([a-z0-9A-Z]\\.)*[a-z0-9-]+\\.([a-z0-9]{2,})+(\\.[a-z]{2,}\\.([a-z]{2,})|\\.([a-z]{2,}))|' + // domain name
       '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
       '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
       '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
       '(\\#[-a-z\\d_]*)?$',
     'i',
-  ); // fragment locator
+  )
   return Boolean(pattern.test(str));
 }
 
