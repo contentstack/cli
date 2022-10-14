@@ -1,7 +1,7 @@
 module.exports = {
         stackHeaders: {
-          api_key: 'dummyUid',
-          authorization: 'DummyUId'
+          api_key: '',
+          authorization: ''
         },
         urlPath: '/locales/en-it',
         code: 'en-it',

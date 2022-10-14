@@ -1,6 +1,13 @@
 module.exports = {
   versioning: false,
   host: 'https://api.contentstack.io/v3',
+  developerHubUrls: {
+    // NOTE CDA url used as developer-hub url mapper to avoid conflict if user used any custom name
+    'https://api.contentstack.io': 'https://developerhub-api.contentstack.com',
+    'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
+    'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
+    'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com'
+  },
   // use below hosts for eu region
   // host:'https://eu-api.contentstack.com/v3',
   // use below hosts for azure-na region
@@ -15,14 +22,21 @@ module.exports = {
       'webhooks',
       'global-fields',
       'content-types',
+      'custom-roles',
       'workflows',
       'entries',
       'labels',
+      'marketplace-apps'
     ],
     locales: {
       dirName: 'locales',
       fileName: 'locales.json',
       requiredKeys: ['code', 'uid', 'name', 'fallback_locale'],
+    },
+    customRoles: {
+      dirName: 'custom-roles',
+      fileName: 'custom-roles.json',
+      customRolesLocalesFileName: 'custom-roles-locales.json',
     },
     environments: {
       dirName: 'environments',
@@ -101,6 +115,10 @@ module.exports = {
     dependency: {
       entries: ['stack', 'locales', 'content-types'],
     },
+    marketplace_apps: {
+      dirName: 'marketplace_apps',
+      fileName: 'marketplace_apps.json'
+    }
   },
   languagesCode: [
     'af-za',
@@ -326,5 +344,5 @@ module.exports = {
     webhooks: '/webhooks/',
     stacks: '/stacks/',
   },
-  preserveStackVersion: false,
+  preserveStackVersion: false
 };

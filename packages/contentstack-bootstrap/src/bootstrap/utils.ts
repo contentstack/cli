@@ -9,6 +9,7 @@ interface EnviornmentVariables {
   api_key: string;
   deliveryToken: string;
   environment: string;
+  livePreviewEnabled?: boolean;
 }
 
 /**
@@ -24,6 +25,7 @@ export const setupEnvironments = async (
   appConfig: AppConfig,
   clonedDirectory: string,
   region: any,
+  livePreviewEnabled: boolean,
 ) => {
   const environmentResult = await managementAPIClient.stack({ api_key }).environment().query().find();
   if (Array.isArray(environmentResult.items) && environmentResult.items.length > 0) {
@@ -54,8 +56,9 @@ export const setupEnvironments = async (
               api_key,
               deliveryToken: tokenResult.token,
               environment: environment.name,
+              livePreviewEnabled,
             };
-            await envFileHandler(appConfig.appConfigKey || '', environmentVariables, clonedDirectory, region);
+            await envFileHandler(appConfig.appConfigKey || '', environmentVariables, clonedDirectory, region, livePreviewEnabled);
           } else {
             cliux.print(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_TOKEN_FOR_ENV', environment.name));
           }
@@ -97,6 +100,7 @@ const envFileHandler = async (
   environmentVariables: EnviornmentVariables,
   clonedDirectory: string,
   region: any,
+  livePreviewEnabled: boolean,
 ) => {
     if (!appConfigKey || !environmentVariables) {
       return
@@ -118,21 +122,21 @@ const envFileHandler = async (
         case 'reactjs-starter':
             fileName = `.env.${environmentVariables.environment}.local`
             filePath = path.join(clonedDirectory, fileName)
-            content = `REACT_APP_CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nREACT_APP_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nREACT_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nREACT_APP_CONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost) ? '\nREACT_APP_CONTENTSTACK_REGION=' + region.name : ''}\nSKIP_PREFLIGHT_CHECK=true`
+            content = `REACT_APP_CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nREACT_APP_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nREACT_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nREACT_APP_CONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost) ? '\nREACT_APP_CONTENTSTACK_REGION=' + region.name : ''}\nSKIP_PREFLIGHT_CHECK=true\nREACT_APP_CONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`
             result = await writeEnvFile(content, filePath)
             break
         case 'nextjs':
         case 'nextjs-starter':
             fileName = `.env.${environmentVariables.environment}.local`
             filePath = path.join(clonedDirectory, fileName)
-            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nCONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : '')}`
+            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nCONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : '')}\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`
             result = await writeEnvFile(content, filePath)
             break
         case 'gatsby':
         case 'gatsby-starter':
             fileName = `.env.${environmentVariables.environment}`
             filePath = path.join(clonedDirectory, fileName)
-            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_API_HOST=${managementAPIHost}`
+            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_API_HOST=${managementAPIHost}\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`
             result = await writeEnvFile(content, filePath)
             break
         case 'angular':
@@ -147,7 +151,7 @@ const envFileHandler = async (
             result = await writeEnvFile(content, filePath)
             break
         case 'angular-starter':
-            content = `export const environment = { \n\tproduction: true \n}; \nexport const Config = { \n\tapi_key: '${environmentVariables.api_key}', \n\tdelivery_token: '${environmentVariables.deliveryToken}', \n\tenvironment: '${environmentVariables.environment}'${( !isUSRegion && !customHost ? `,\n\tregion: '${region.name}'`: '') },\n\tapi_host: '${customHost ? customHost: ''}',\n\tapp_host: '',\n\tmanagement_token: '',\n\tlive_preview: ''\n};`
+            content = `export const environment = { \n\tproduction: true \n}; \nexport const Config = { \n\tapi_key: '${environmentVariables.api_key}', \n\tdelivery_token: '${environmentVariables.deliveryToken}', \n\tenvironment: '${environmentVariables.environment}'${( !isUSRegion && !customHost ? `,\n\tregion: '${region.name}'`: '') },\n\tapi_host: '${customHost ? customHost: managementAPIHost}',\n\tapp_host: '',\n\tmanagement_token: '',\n\tlive_preview: ${livePreviewEnabled}\n};`
             fileName = `environment${(environmentVariables.environment === 'production' ? '.prod.' : ".")}ts`
             filePath = path.join(
                 clonedDirectory,
@@ -159,9 +163,16 @@ const envFileHandler = async (
             break
         case 'nuxtjs':
         case 'nuxt-starter':
+        case 'stencil-starter':  
             fileName = (production ? '.env.production' : '.env')
             filePath = path.join(clonedDirectory, fileName)
-            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nCONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : '')}`
+            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nCONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : '')}\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`
+            result = await writeEnvFile(content, filePath)
+            break
+        case 'vue-starter':
+            fileName = '.env'
+            filePath = path.join(clonedDirectory, fileName)
+            content = `VUE_APP_CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nVUE_APP_CONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nVUE_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nVUE_APP_CONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost ? '\nVUE_APP_CONTENTSTACK_REGION=' + region.name : '')}\nVUE_APP_CONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`
             result = await writeEnvFile(content, filePath)
             break
         default:
