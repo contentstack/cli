@@ -91,7 +91,7 @@ let singleImport = async (moduleName, types, config) => {
           if (moduleName === 'content-types') {
             let ctPath = path.resolve(config.data, config.modules.content_types.dirName);
             let fieldPath = path.join(ctPath + '/field_rules_uid.json');
-            if (fieldPath && fieldPath !== undefined) {
+            if (fieldPath) {
               await util.field_rules_update(config, ctPath);
             }
           }
