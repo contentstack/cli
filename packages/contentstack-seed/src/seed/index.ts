@@ -133,6 +133,7 @@ export default class ContentModelSeeder {
 
   async createStack(organization: Organization, stackName: string) {
     cliux.loader(`Creating Stack '${stackName}' within Organization '${organization.name}'`);
+    this.options.fetchLimit;
 
     const newStack = await this.csClient.createStack({
       name: stackName,
