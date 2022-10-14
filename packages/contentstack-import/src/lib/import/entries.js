@@ -10,16 +10,18 @@ const _ = require('lodash');
 const mkdirp = require('mkdirp');
 const chalk = require('chalk');
 
+const util = require('../util');
 const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
+const suppress = require('../util/supress-mandatory-fields');
+const stack = require('../util/contentstack-management-sdk');
+const extension_suppress = require('../util/extensionsUidReplace');
 const lookupReplaceAssets = require('../util/lookupReplaceAssets');
 const lookupReplaceEntries = require('../util/lookupReplaceEntries');
-const suppress = require('../util/supress-mandatory-fields');
-const extension_suppress = require('../util/extensionsUidReplace');
-const util = require('../util');
-let config = util.getConfig();
-const stack = require('../util/contentstack-management-sdk');
+const { getInstalledExtensions } = require('../util/marketplace-app-helper')
+
 let client;
+let config = util.getConfig();
 
 let reqConcurrency = config.concurrency;
 let eConfig = config.modules.entries;
@@ -56,6 +58,7 @@ function importEntries() {
 
   createdEntriesWOUidPath = path.join(entryMapperPath, 'created-entries-wo-uid.json');
   failedWOPath = path.join(entryMapperPath, 'failedWO.json');
+  
   // Object of Schemas, referred to by their content type uid
   this.ctSchemas = {};
   // Array of content type uids, that have reference fields
@@ -76,6 +79,8 @@ function importEntries() {
   this.success = [];
   // Entries that failed to get created OR updated
   this.fails = [];
+  // List of installed extensions to replace uid
+  this.installedExtensions = []
 
   let files = fs.readdirSync(ctPath);
   this.environment = helper.readFile(environmentPath);
@@ -108,6 +113,16 @@ importEntries.prototype = {
     masterLanguage = config.master_locale;
     addlogs(config, 'Migrating entries', 'success');
     let languages = helper.readFile(lPath);
+    const appMapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps');
+
+    if (fs.existsSync(path.join(appMapperFolderPath, 'marketplace-apps.json'))) {
+      self.installedExtensions = helper.readFile(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
+    }
+
+    if (_.isEmpty(self.installedExtensions)) {
+      self.installedExtensions = await getInstalledExtensions(config)
+    }
+
     return new Promise(function (resolve, reject) {
       let langs = [masterLanguage.code];
       for (let i in languages) {
@@ -248,6 +263,7 @@ importEntries.prototype = {
                     mappedAssetUids,
                     mappedAssetUrls,
                     eLangFolderPath,
+                    self.installedExtensions
                   );
                 }
               }
@@ -694,7 +710,7 @@ importEntries.prototype = {
     // it should be spelled as suppressFields
     addlogs(config, chalk.white('Suppressing content type fields...'), 'success');
     let self = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise(async function (resolve, reject) {
       let modifiedSchemas = [];
       let suppressedSchemas = [];
 
@@ -750,7 +766,7 @@ importEntries.prototype = {
           }
 
           // Replace extensions with new UID
-          extension_suppress(contentTypeSchema.schema, config.preserveStackVersion);
+          extension_suppress(contentTypeSchema.schema, config.preserveStackVersion, self.installedExtensions);
         }
       }
 
@@ -834,7 +850,8 @@ importEntries.prototype = {
     });
   },
   unSuppressFields: function () {
-    return new Promise(function (resolve, reject) {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
       let modifiedSchemas = helper.readFile(modifiedSchemaPath);
       let modifiedSchemasUids = [];
       let updatedExtensionUidsSchemas = [];
@@ -844,7 +861,8 @@ importEntries.prototype = {
           if (_contentTypeSchema.field_rules) {
             delete _contentTypeSchema.field_rules;
           }
-          extension_suppress(_contentTypeSchema.schema, config.preserveStackVersion);
+
+          extension_suppress(_contentTypeSchema.schema, config.preserveStackVersion, self.installedExtensions);
           updatedExtensionUidsSchemas.push(_contentTypeSchema);
         }
       }
@@ -1314,7 +1332,9 @@ importEntries.prototype = {
 
               if (entryRefs.length > 0) {
                 entryRefs.forEach((entryRef) => {
-                  entry[entryRef.uid].children.splice(entryRef.index, 0, entryRef.value);
+                  if (!_.isEmpty(entry[entryRef.uid]) && entry[entryRef.uid].children) {
+                    entry[entryRef.uid].children.splice(entryRef.index, 0, entryRef.value);
+                  }
                 });
               }
             }
@@ -1447,7 +1467,7 @@ importEntries.prototype = {
     }
 
     return jsonRteChild;
-  },
+  }
 };
 
 module.exports = new importEntries();

@@ -1,7 +1,8 @@
 import { Command, flags } from '@contentstack/cli-command';
+import { resolve } from 'path';
 const ContentstackManagementSDK = require('@contentstack/management');
 import Bootstrap, { BootstrapOptions, SeedParams } from '../../bootstrap';
-import { inquireCloneDirectory, inquireApp, inquireAppType } from '../../bootstrap/interactive';
+import { inquireCloneDirectory, inquireApp, inquireAppType, inquireLivePreviewSupport } from '../../bootstrap/interactive';
 import { printFlagDeprecation } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
@@ -21,7 +22,7 @@ export default class BootstrapCommand extends Command {
 
   static flags = {
     'app-name': flags.string({
-      description: 'App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter',
+      description: 'App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter, vue-starter, stencil-starter',
       multiple: false,
       required: false,
     }),
@@ -145,6 +146,9 @@ export default class BootstrapCommand extends Command {
       if (!cloneDirectory) {
         cloneDirectory = await inquireCloneDirectory();
       }
+      cloneDirectory = resolve(cloneDirectory);
+
+      const livePreviewEnabled = await inquireLivePreviewSupport();
 
       const seedParams: SeedParams = {};
       const stackAPIKey = bootstrapCommandFlags['stack-api-key'];
@@ -163,6 +167,7 @@ export default class BootstrapCommand extends Command {
         managementAPIClient: this.managementAPIClient,
         region: this.region,
         appType,
+        livePreviewEnabled,
       };
       const bootstrap = new Bootstrap(options);
       await bootstrap.run();
