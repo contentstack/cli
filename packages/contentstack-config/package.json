@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run"
@@ -23,8 +23,8 @@
     "test:unit": "mocha --forbid-only \"test/unit/*.test.ts\" --unit-test"
   },
   "dependencies": {
-    "@contentstack/cli-command": "^1.0.0",
-    "@contentstack/cli-utilities": "^1.0.0",
+    "@contentstack/cli-command": "^1.0.1",
+    "@contentstack/cli-utilities": "^1.0.2",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
     "chalk": "^4.0.0",
