@@ -14,10 +14,11 @@ let chalk = require('chalk');
 
 let helper = require('../util/fs');
 let { addlogs } = require('../util/log');
+let config = require('../../config/default');
 let supress = require('../util/extensionsUidReplace');
 let sdkInstance = require('../util/contentstack-management-sdk');
+const { getInstalledExtensions } = require('../util/marketplace-app-helper')
 
-let config = require('../../config/default');
 let reqConcurrency = config.concurrency;
 let requestLimit = config.rateLimit;
 let contentTypeConfig = config.modules.content_types;
@@ -40,10 +41,11 @@ function importContentTypes() {
   this.requestOptions = {
     json: {},
   };
+  this.installedExtensions = []
 }
 
 importContentTypes.prototype = {
-  start: function (credentialConfig) {
+  start: async function (credentialConfig) {
     addlogs(config, 'Migrating contenttypes', 'success');
     let self = this;
     config = credentialConfig;
@@ -52,6 +54,7 @@ importContentTypes.prototype = {
     globalFieldsFolderPath = path.resolve(config.data, globalFieldConfig.dirName);
     contentTypesFolderPath = path.resolve(config.data, contentTypeConfig.dirName);
     mapperFolderPath = path.join(config.data, 'mapper', 'content_types');
+    const appMapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps');
     globalFieldMapperFolderPath = helper.readFile(path.join(config.data, 'mapper', 'global_fields', 'success.json'));
     globalFieldPendingPath = helper.readFile(
       path.join(config.data, 'mapper', 'global_fields', 'pending_global_fields.js'),
@@ -59,6 +62,7 @@ importContentTypes.prototype = {
     globalFieldUpdateFile = path.join(config.data, 'mapper', 'global_fields', 'success.json');
     fileNames = fs.readdirSync(path.join(contentTypesFolderPath));
     self.globalfields = helper.readFile(path.resolve(globalFieldsFolderPath, globalFieldConfig.fileName));
+
     for (let index in fileNames) {
       if (skipFiles.indexOf(fileNames[index]) === -1) {
         self.contentTypes.push(helper.readFile(path.join(contentTypesFolderPath, fileNames[index])));
@@ -74,6 +78,15 @@ importContentTypes.prototype = {
     if (fs.existsSync(path.join(mapperFolderPath, 'success.json'))) {
       self.createdContentTypeUids = helper.readFile(path.join(mapperFolderPath, 'success.json')) || [];
     }
+
+    if (fs.existsSync(path.join(appMapperFolderPath, 'marketplace-apps.json'))) {
+      self.installedExtensions = helper.readFile(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
+    }
+
+    if (_.isEmpty(self.installedExtensions)) {
+      self.installedExtensions = await getInstalledExtensions(config)
+    }
+
     self.contentTypeUids = _.difference(self.contentTypeUids, self.createdContentTypeUids);
     self.uidToTitleMap = self.mapUidToTitle(self.contentTypes);
     // remove content types, already created
@@ -182,13 +195,14 @@ importContentTypes.prototype = {
   updateContentTypes: function (contentType) {
     let self = this;
     return new Promise(function (resolve, reject) {
-      setTimeout(function () {
+      setTimeout(async function () {
         let requestObject = _.cloneDeep(self.requestOptions);
         if (contentType.field_rules) {
           field_rules_ct.push(contentType.uid);
           delete contentType.field_rules;
         }
-        supress(contentType.schema);
+
+        supress(contentType.schema, config.preserveStackVersion, self.installedExtensions);
         requestObject.json.content_type = contentType;
         let contentTypeResponse = stack.contentType(contentType.uid);
         Object.assign(contentTypeResponse, _.cloneDeep(contentType));
@@ -209,9 +223,10 @@ importContentTypes.prototype = {
     let self = this;
     return new Promise(function (resolve, reject) {
       // eslint-disable-next-line no-undef
-      return Promise.map(globalFieldPendingPath, function (globalfield) {
+      return Promise.map(globalFieldPendingPath, async function (globalfield) {
         let Obj = _.find(self.globalfields, { uid: globalfield });
-        supress(Obj.schema);
+
+        supress(Obj.schema, config.preserveStackVersion, self.installedExtensions);
         let globalFieldObj = stack.globalField(globalfield);
         Object.assign(globalFieldObj, _.cloneDeep(Obj));
         return globalFieldObj
@@ -245,7 +260,7 @@ importContentTypes.prototype = {
       result[ct.uid] = ct.title;
     });
     return result;
-  },
+  }
 };
 
 module.exports = new importContentTypes();

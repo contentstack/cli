@@ -57,21 +57,51 @@ importWorkflows.prototype = {
       self.workflowsUids = Object.keys(self.workflows);
       return Promise.map(
         self.workflowsUids,
-        function (workflowUid) {
+        async function (workflowUid) {
           let workflow = self.workflows[workflowUid];
 
           if (!self.workflowUidMapper.hasOwnProperty(workflowUid)) {
-            const workflowStages = workflow.workflow_stages
-            for (const stage of workflowStages) {
+            const workflowStages = workflow.workflow_stages;
+            const roleNameMap = {};
+            const roles = await client.stack({ api_key: config.target_stack, management_token: config.management_token }).role().fetchAll();
+            for (const role of roles.items) {
+              roleNameMap[role.name] = role.uid;
+            }
+            for (let i = 0; i < workflowStages.length; i++) {
+              const stage = workflowStages[i];
               if (
-                stage.SYS_ACL.users.uids.length > 0 &&
+                stage.SYS_ACL.users.uids.length &&
                 stage.SYS_ACL.users.uids[0] !== '$all'
               ) {
                 stage.SYS_ACL.users.uids = ['$all'];
               }
 
-              if (stage.SYS_ACL.roles.uids.length > 0) {
-                stage.SYS_ACL.roles.uids = [];
+              if (stage.SYS_ACL.roles.uids.length) {
+                try {
+                  for (let i = 0; i < stage.SYS_ACL.roles.uids.length; i++) {
+                    const roleData = stage.SYS_ACL.roles.uids[i];
+                    if (!roleNameMap[roleData.name]) {
+                      // rules.branch is required to create custom roles.
+                      const branchRuleExists = roleData.rules.find(rule => rule.module === 'branch');
+                      if (!branchRuleExists) {
+                        roleData.rules.push({
+                          module: 'branch',
+                          branches: ['main'],
+                          acl: { read: true }
+                        });
+                      }
+
+                      const role = await client.stack({ api_key: config.target_stack, management_token: config.management_token }).role().create({ role: roleData });
+                      stage.SYS_ACL.roles.uids[i] = role.uid;
+                      roleNameMap[roleData.name] = role.uid;
+                    } else {
+                      stage.SYS_ACL.roles.uids[i] = roleNameMap[roleData.name];
+                    }
+                  }
+                } catch (error) {
+                  addlogs(config, chalk.red('Error while importing workflows roles. ' + error && error.message), 'error');
+                  return reject({ message: 'Error while importing workflows roles' });
+                }
               }
             }
 
@@ -79,15 +109,15 @@ importWorkflows.prototype = {
               addlogs(config, chalk.yellow('We are skipping import of `Workflow superuser(s)` from workflow'), 'info');
               delete workflow.admin_users;
             }
-
-            let requestOption = {
-              workflow,
-            };
+            // One branch is required to create workflow.
+            if (!workflow.branches) {
+              workflow.branches = ['main'];
+            }
 
             return client
               .stack({ api_key: config.target_stack, management_token: config.management_token })
               .workflow()
-              .create(requestOption)
+              .create({ workflow })
               .then(function (response) {
                 self.workflowUidMapper[workflowUid] = response;
                 helper.writeFile(workflowUidMapperPath, self.workflowUidMapper);

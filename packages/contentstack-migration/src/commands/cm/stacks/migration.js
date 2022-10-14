@@ -187,24 +187,30 @@ class MigrationCommand extends Command {
     const _tasks = [];
     const results = [];
 
+    const taskFn = (reqObj) => {
+      const { failedTitle, successTitle, tasks } = reqObj;
+
+      return async (ctx, task) => {
+        const [err, result] = await safePromise(waterfall(tasks));
+        if (err) {
+          ctx.error = true;
+          task.title = failedTitle;
+          throw err;
+        }
+        result && results.push(result);
+        task.title = successTitle;
+        return result;
+      }
+    }
+
     for (const element of requests) {
       let reqObj = element;
-      const { title, failedTitle, successTitle, tasks } = reqObj;
-      const task = {
+      const { title } = reqObj;
+      const taskObj = {
         title: title,
-        task: async (ctx, task) => {
-          const [err, result] = await safePromise(waterfall(tasks));
-          if (err) {
-            ctx.error = true;
-            task.title = failedTitle;
-            throw err;
-          }
-          result && results.push(result);
-          task.title = successTitle;
-          return result;
-        },
+        task: taskFn(reqObj)
       };
-      _tasks.push(task);
+      _tasks.push(taskObj);
     }
     return _tasks;
   }
