@@ -66,7 +66,8 @@ async function publishEntry(data, _config, queue) {
         delete entryObj.stack;
         console.log(
           chalk.red(
-            `entry could not be published with ContentType uid=${entryObj.content_type} entry uid=${entryObj.entryUid
+            `entry could not be published with ContentType uid=${entryObj.content_type} entry uid=${
+              entryObj.entryUid
             } locale=${entryObj.locale} error=${formatError(error)}`,
           ),
         );
@@ -159,7 +160,8 @@ async function UnpublishEntry(data, _config, queue) {
         delete entryObj.stack;
         console.log(
           chalk.red(
-            `Entry could not be unpublished with ContentType uid=${entryObj.content_type} Entry uid=${entryObj.entryUid
+            `Entry could not be unpublished with ContentType uid=${entryObj.content_type} Entry uid=${
+              entryObj.entryUid
             } locale=${entryObj.locale} error=${formatError(error)}`,
           ),
         );
