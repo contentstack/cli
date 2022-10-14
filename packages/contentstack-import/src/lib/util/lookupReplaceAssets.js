@@ -10,9 +10,12 @@ let _ = require('lodash');
 let { marked } = require('marked');
 
 let helper = require('./fs');
+const { getConfig } = require('./');
+let config = getConfig();
+const marketplaceAppPath = path.resolve(config.data, 'marketplace_apps', 'marketplace_apps.json');
 
 // get assets object
-module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMapperPath) {
+module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMapperPath, installedExtensions) {
   if (
     !_.has(data, 'entry') ||
     !_.has(data, 'content_type') ||
@@ -65,9 +68,64 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         findAssetIdsFromJsonRte(data.entry, data.content_type.schema);
         // maybe only one of these checks would be enough
         parent.pop();
+      } else if (
+        schema[i].data_type === 'json' &&
+        schema[i].field_metadata.extension &&
+        schema[i].field_metadata.is_asset
+      ) {
+        findAssetIdsFromJsonCustomFields(data.entry, data.content_type.schema);
+      } else if (schema[i].data_type === 'json' && schema[i].field_metadata.extension) {
+        if (installedExtensions) {
+          const marketplaceApps = helper.readFile(marketplaceAppPath);
+          const oldExt = _.find(marketplaceApps, { uid: schema[i].extension_uid });
+
+          if (oldExt) {
+            const ext = _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid })
+
+            if (ext) {
+              schema[i].extension_uid = ext.uid;
+            }
+          }
+        }
       }
     }
   };
+
+  function findAssetIdsFromJsonCustomFields(entryObj, ctSchema) {
+    ctSchema.map((row) => {
+      if (row.data_type === 'json') {
+        if (entryObj[row.uid] && row.field_metadata.extension && row.field_metadata.is_asset) {
+          if (installedExtensions) {
+            const marketplaceApps = helper.readFile(marketplaceAppPath);
+            const oldExt = _.find(marketplaceApps, { uid: row.extension_uid });
+
+            if (oldExt) {
+              const ext = _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid })
+
+              if (ext) {
+                row.extension_uid = ext.uid;
+              }
+            }
+          }
+
+          if (entryObj[row.uid].metadata && entryObj[row.uid].metadata.extension_uid) {
+            const marketplaceApps = helper.readFile(marketplaceAppPath);
+            const oldExt = _.find(marketplaceApps, { uid: entryObj[row.uid].metadata.extension_uid });
+
+            if (oldExt) {
+              const ext = _.find(installedExtensions, { type: oldExt.type, title: oldExt.title, app_uid: oldExt.app_uid })
+
+              if (ext) {
+                entryObj[row.uid].metadata.extension_uid = ext.uid;
+              }
+            }
+          }
+        }
+      }
+
+      return row;
+    });
+  }
 
   function findAssetIdsFromJsonRte(entryObj, ctSchema) {
     for (const element of ctSchema) {
@@ -154,7 +212,7 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
   }
 
   find(data.content_type.schema, data.entry);
-  updateFileFields(data.entry, data, null, mappedAssetUids, matchedUids, unmatchedUids);
+  updateFileFields(data.entry, data, null, mappedAssetUids, matchedUids, unmatchedUids, mappedAssetUrls);
   assetUids = _.uniq(assetUids);
   assetUrls = _.uniq(assetUrls);
   let entry = JSON.stringify(data.entry);
@@ -277,16 +335,49 @@ function findFileUrls(schema, _entry, assetUrls) {
   }
 }
 
-function updateFileFields(objekt, parent, pos, mappedAssetUids, matchedUids, unmatchedUids) {
+function updateFileFields(objekt, parent, pos, mappedAssetUids, matchedUids, unmatchedUids, mappedAssetUrls) {
   if (_.isPlainObject(objekt) && _.has(objekt, 'filename') && _.has(objekt, 'uid')) {
     if (typeof pos !== 'undefined') {
       if (typeof pos === 'number' || typeof pos === 'string') {
-        if (mappedAssetUids.hasOwnProperty(objekt.uid)) {
-          parent[pos] = mappedAssetUids[objekt.uid];
-          matchedUids.push(objekt.uid);
+        const replacer = () => {
+          if (mappedAssetUids.hasOwnProperty(objekt.uid)) {
+            parent[pos] = mappedAssetUids[objekt.uid];
+            matchedUids.push(objekt.uid);
+          } else {
+            parent[pos] = '';
+            unmatchedUids.push(objekt.uid);
+          }
+        };
+
+        if (parent.uid && mappedAssetUids[parent.uid]) {
+          parent.uid = mappedAssetUids[parent.uid];
+        }
+
+        if (
+          objekt &&
+          _.isObject(parent[pos]) &&
+          parent[pos].uid &&
+          parent[pos].url &&
+          _.has(parent, 'asset') &&
+          _.has(parent, '_content_type_uid') &&
+          parent._content_type_uid === 'sys_assets'
+        ) {
+          if (
+            _.has(parent, 'asset') &&
+            _.has(parent, '_content_type_uid') &&
+            parent._content_type_uid === 'sys_assets'
+          ) {
+            parent = _.omit(parent, ['asset']);
+          }
+
+          if (objekt.uid && mappedAssetUids && mappedAssetUids[objekt.uid]) {
+            objekt.uid = mappedAssetUids[objekt.uid];
+          }
+          if (objekt.url && mappedAssetUrls && mappedAssetUrls[objekt.url]) {
+            objekt.url = mappedAssetUrls[objekt.url];
+          }
         } else {
-          parent[pos] = '';
-          unmatchedUids.push(objekt.uid);
+          replacer();
         }
       }
     }
