@@ -121,7 +121,7 @@ class Config {
           const config = this.fallbackInit()
           const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config)
           this.getEncryptedConfig(oldConfigData, true)
-        } catch (error) {
+        } catch (_error) {
           // console.trace(error.message)
         }
       }
@@ -159,14 +159,14 @@ class Config {
         let config = new Conf({ configName: CONFIG_NAME, encryptionKey })
         const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config)
         this.getDecryptedConfig(oldConfigData) // NOTE NOTE reinitialize the config with old data and new decrypted file
-      } catch (error) {
+      } catch (_error) {
         // console.trace(error.message)
 
         try {
           const config = this.fallbackInit()
-          const configData = this.getConfigDataAndUnlinkConfigFile(config)
-          this.getDecryptedConfig(configData) // NOTE reinitialize the config with old data and new decrypted file
-        } catch (error) {
+          const _configData = this.getConfigDataAndUnlinkConfigFile(config)
+          this.getDecryptedConfig(_configData) // NOTE reinitialize the config with old data and new decrypted file
+        } catch (__error) {
           // console.trace(error.message)
         }
       }
