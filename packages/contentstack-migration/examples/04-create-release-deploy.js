@@ -8,17 +8,13 @@ module.exports = async ({migration, stackSDKInstance}) => {
       successMessage: 'Created release',
       failedMessage: 'Failed to deploy release',
       task: async () => {
-        try {
-          const release = {
-            name: 'Release Name4',
-            description: '2018-12-12',
-            locked: false,
-            archived: false,
-          }
-          releaseObj = await stackSDKInstance.release().create({release})
-        } catch (error) {
-          throw error
+        const release = {
+          name: 'Release Name4',
+          description: '2018-12-12',
+          locked: false,
+          archived: false,
         }
+        releaseObj = await stackSDKInstance.release().create({release})
       },
     }
   }
@@ -29,8 +25,7 @@ module.exports = async ({migration, stackSDKInstance}) => {
       failedMessage: `Failed to add entries to release for '${contentTypeUID}'`,
       task: async params => {
         const items = []
-        try {
-          let entries = await stackSDKInstance.contentType(contentTypeUID).entry().query().find()
+        let entries = await stackSDKInstance.contentType(contentTypeUID).entry().query().find()
           entries = entries.items
           for (let index = 0; index < entries.length; index++) {
             const entry = entries[index]
@@ -43,9 +38,6 @@ module.exports = async ({migration, stackSDKInstance}) => {
             })
           }
           await stackSDKInstance.release(releaseObj.uid).item().create({items})
-        } catch (error) {
-          throw error
-        }
       },
     }
   }
@@ -56,20 +48,16 @@ module.exports = async ({migration, stackSDKInstance}) => {
       successMessage: 'Deployed release',
       failedMessage: 'Failed to deploy release',
       task: async () => {
-        try {
-          const publishDetails = {
-            locales: [
-              'en-us',
-            ],
-            environments: [
-              'development',
-            ],
-            action: 'publish',
-          }
-          await stackSDKInstance.release(releaseObj.uid).deploy(publishDetails)
-        } catch (error) {
-          throw error
+        const publishDetails = {
+          locales: [
+            'en-us',
+          ],
+          environments: [
+            'development',
+          ],
+          action: 'publish',
         }
+        await stackSDKInstance.release(releaseObj.uid).deploy(publishDetails)
       },
     }
   }
