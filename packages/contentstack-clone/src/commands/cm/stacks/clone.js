@@ -14,6 +14,7 @@ class StackCloneCommand extends Command {
       let _authToken = configHandler.get('authtoken');
       const cloneCommandFlags = self.parse(StackCloneCommand).flags;
       const {
+        yes,
         type: cloneType,
         'stack-name': stackName,
         'source-branch': sourceStackBranch,
@@ -28,6 +29,8 @@ class StackCloneCommand extends Command {
 
       const handleClone = async () => {
         const listOfTokens = configHandler.get('tokens');
+
+        config.forceMarketplaceAppsImport = yes
 
         if (cloneType) {
           config.cloneType = cloneType;
@@ -160,9 +163,9 @@ class StackCloneCommand extends Command {
           exitOrError.catch((error) => {
             console.log((error && error.message) || '');
           });
-        } else if (exitOrError && exitOrError.message) {
+        } else if (exitOrError.message) {
           console.log(exitOrError.message);
-        } else if (exitOrError && exitOrError.errorMessage) {
+        } else if (exitOrError.errorMessage) {
           console.log(exitOrError.message);
         }
 
@@ -241,6 +244,10 @@ b) Structure with content (all modules including entries & assets)
   'master-locale': flags.string({
     description: 'Master language for stack clone',
   }),
+  yes: flags.boolean({
+    char: 'y',
+    required: false
+  })
 };
 
 StackCloneCommand.usage =

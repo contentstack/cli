@@ -34,6 +34,8 @@ class ImportCommand extends Command {
         defaultConfig.data = data;
       }
 
+      defaultConfig.forceMarketplaceAppsImport = importCommandFlags.yes
+
       if (alias) {
         let managementTokens = self.getToken(alias);
 
@@ -176,6 +178,10 @@ ImportCommand.flags = {
     required: false,
     default: 'disable',
   }),
+  yes: flags.boolean({
+    char: 'y',
+    required: false,
+  })
 };
 
 ImportCommand.aliases = ['cm:import'];

@@ -492,6 +492,8 @@ class CloneHandler {
         cmd.push('--import-webhook-status', config.importWebhookStatus);
       }
 
+      if (config.forceMarketplaceAppsImport) cmd.push('-y')
+
       await importCmd.run(cmd);
       return resolve();
     });
