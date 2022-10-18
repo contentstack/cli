@@ -32,6 +32,50 @@ exports.makeDirectory = function () {
   }
 };
 
+exports.readLargeFile = function (filePath, opts = {}) {
+  if (typeof filePath !== 'string') {
+    return;
+  }
+  filePath = path.resolve(filePath);
+  if (fs.existsSync(filePath)) {
+    return new Promise((resolve, reject) => {
+      const readStream = fs.createReadStream(filePath, { encoding: 'utf-8' });
+      const parseStream = bigJSON.createParseStream();
+      parseStream.on('data', function (data) {
+        if (opts.type === 'array') {
+          return resolve(Object.values(data));
+        }
+        resolve(data);
+      });
+      parseStream.on('error', function (error) {
+        console.log('error', error);
+        reject(error);
+      });
+      readStream.pipe(parseStream);
+    });
+  }
+};
+
+exports.writeLargeFile = function (filePath, data) {
+  if (typeof filePath !== 'string' || typeof data !== 'object') {
+    return;
+  }
+  filePath = path.resolve(filePath);
+  return new Promise((resolve, reject) => {
+    const stringifyStream = bigJSON.createStringifyStream({
+      body: data,
+    });
+    var writeStream = fs.createWriteStream(filePath, 'utf-8');
+    stringifyStream.pipe(writeStream);
+    writeStream.on('finish', () => {
+      resolve();
+    });
+    writeStream.on('error', (error) => {
+      reject(error);
+    });
+  });
+};
+
 exports.readdir = function (dirPath) {
   if (fs.existsSync(path)) {
     return fs.readdirSync(dirPath);
