@@ -82,7 +82,7 @@ function importMarketplaceApps() {
 
     // NOTE install all private apps which is not available for stack.
     await this.handleAllPrivateAppsCreationProcess({ httpClient })
-    const installedExtensions = await getInstalledExtensions(config)
+    const installedExtensions = await getInstalledExtensions(config, self.developerHuBaseUrl)
 
     // NOTE after private app installation, refetch marketplace apps from file
     const marketplaceAppsFromFile = readFile(path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName))
@@ -128,7 +128,7 @@ function importMarketplaceApps() {
     }
 
     // NOTE get list of developer-hub installed apps (private)
-    const installedDeveloperHubApps = await httpClient.get(`${config.extensionHost}/apps-api/apps/`)
+    const installedDeveloperHubApps = await httpClient.get(`${this.developerHuBaseUrl}/apps/`)
       .then(({ data: { data } }) => data)
       .catch(err => {
         console.log(err)
@@ -201,7 +201,7 @@ function importMarketplaceApps() {
         app.manifest.ui_location.locations = this.removeUidFromManifestUILocations(app.manifest.ui_location.locations)
       }
       httpClient.post(
-        `${config.extensionHost}/apps-api/apps`,
+        `${this.developerHuBaseUrl}/apps`,
         app.manifest
       ).then(async ({ data: result }) => {
         const { name } = app.manifest
