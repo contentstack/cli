@@ -2,7 +2,7 @@ let config = require('../../config/default');
 const sdk = require('./contentstack-management-sdk');
 const { HttpClient, configHandler } = require('@contentstack/cli-utilities');
 
-const getInstalledExtensions = (config, baseUrl) => {
+const getInstalledExtensions = (config) => {
   const client = sdk.Client(config)
 
   return new Promise((resolve, reject) => {
