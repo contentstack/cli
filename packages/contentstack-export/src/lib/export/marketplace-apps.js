@@ -14,7 +14,7 @@ let config = require('../../config/default');
 const { writeFile } = require('../util/helper');
 const { addlogs: log } = require('../util/log');
 let stack = require('../util/contentstack-management-sdk');
-const { getInstalledExtensions } = require('../util/marketplace-app-helper')
+const { getDeveloperHubUrl, getInstalledExtensions } = require('../util/marketplace-app-helper')
 
 let client
 let marketplaceAppConfig = config.modules.marketplace_apps;
@@ -25,7 +25,7 @@ function exportMarketplaceApps() {
   this.start = async (credentialConfig) => {
     config = credentialConfig;
     client = stack.Client(config);
-    this.developerHuBaseUrl = await this.getDeveloperHubUrl()
+    this.developerHuBaseUrl = await getDeveloperHubUrl()
 
     if (!config.auth_token) {
       cliux.print('WARNING!!! To export Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in', { color: 'yellow' })
@@ -128,26 +128,6 @@ function exportMarketplaceApps() {
           })
         }).catch(reject)
     })
-  }
-
-  this.getDeveloperHubUrl = async () => {
-    const { cma, name } = configHandler.get('region') || {}
-    let developerHubBaseUrl = config.developerHubUrls[cma]
-
-    if (!developerHubBaseUrl) {
-      developerHubBaseUrl = await cliux.inquire({
-        type: 'input',
-        name: 'name',
-        validate: (url) => {
-          if (!url) return 'Developer-hub URL cant be empty.'
-
-          return true
-        },
-        message: `Enter the developer-hub base URL for the ${name} region - `,
-      })
-    }
-
-    return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`
   }
 }
 
