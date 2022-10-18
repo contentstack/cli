@@ -1,7 +1,7 @@
 const sdk = require('./contentstack-management-sdk');
 const { HttpClient } = require('@contentstack/cli-utilities');
 
-const getInstalledExtensions = (config) => {
+const getInstalledExtensions = (config, baseUrl) => {
   const client = sdk.Client(config)
 
   return new Promise((resolve, reject) => {
@@ -24,9 +24,6 @@ const getInstalledExtensions = (config) => {
         authtoken: auth_token
       }
       const httpClient = new HttpClient().headers(headers);
-      const baseUrl = config.host.startsWith('http')
-        ? config.host
-        : `https://${config.host}/v3`;
       httpClient.get(`${baseUrl}/extensions/?include_marketplace_extensions=true`)
         .then(({ data: { extensions } }) => resolve(extensions))
     } else {
