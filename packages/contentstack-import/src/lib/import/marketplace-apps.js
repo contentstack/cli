@@ -82,7 +82,7 @@ function importMarketplaceApps() {
 
     // NOTE install all private apps which is not available for stack.
     await this.handleAllPrivateAppsCreationProcess({ httpClient })
-    const installedExtensions = await getInstalledExtensions(config, self.developerHuBaseUrl)
+    const installedExtensions = await getInstalledExtensions(config)
 
     // NOTE after private app installation, refetch marketplace apps from file
     const marketplaceAppsFromFile = readFile(path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName))
@@ -138,7 +138,7 @@ function importMarketplaceApps() {
       (app) => !_.includes(_.map(installedDeveloperHubApps, 'uid'), app.app_uid)
     )
 
-    if (!_.isEmpty(listOfNotInstalledPrivateApps) && !config.forceMarketplaceAppsImport) {
+    if (!_.isEmpty(listOfNotInstalledPrivateApps)) {
       const confirmation = await cliux.confirm(
         chalk.yellow(`WARNING!!! The listed apps are private apps that are not available in the destination stack: \n\n${_.map(listOfNotInstalledPrivateApps, ({ manifest: { name } }, index) => `${String(index + 1)}) ${name}`).join('\n')}\n\nWould you like to re-create the private app and then proceed with the installation? (y/n)`)
       )
@@ -181,14 +181,6 @@ function importMarketplaceApps() {
 
       return location
     })
-  }
-
-  this.getAppName = (name) => {
-    name += `-1`
-
-    if (name.length > 20) name = name.slice(18)
-
-    return name
   }
 
   /**
