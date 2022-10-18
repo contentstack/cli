@@ -1,5 +1,6 @@
+let config = require('../../config/default');
 const sdk = require('./contentstack-management-sdk');
-const { HttpClient } = require('@contentstack/cli-utilities');
+const { HttpClient, configHandler } = require('@contentstack/cli-utilities');
 
 const getInstalledExtensions = (config, baseUrl) => {
   const client = sdk.Client(config)
@@ -22,12 +23,13 @@ const getInstalledExtensions = (config, baseUrl) => {
         .then(({ items }) => resolve(items))
         .catch(reject)
     } else if (api_key && auth_token) {
+      const { cma } = configHandler.get('region') || {};
       const headers = {
         api_key,
         authtoken: auth_token
       }
       const httpClient = new HttpClient().headers(headers);
-      httpClient.get(`${baseUrl}/extensions/?include_marketplace_extensions=true`)
+      httpClient.get(`${cma}/v3/extensions/?include_marketplace_extensions=true`)
         .then(({ data: { extensions } }) => resolve(extensions))
         .catch(reject)
     } else {
@@ -36,4 +38,24 @@ const getInstalledExtensions = (config, baseUrl) => {
   })
 }
 
-module.exports = { getInstalledExtensions }
+const getDeveloperHubUrl = async () => {
+  const { cma, name } = configHandler.get('region') || {};
+  let developerHubBaseUrl = config.developerHubUrls[cma];
+
+  if (!developerHubBaseUrl) {
+    developerHubBaseUrl = await cliux.inquire({
+      type: 'input',
+      name: 'name',
+      validate: (url) => {
+        if (!url) return "Developer-hub URL can't be empty.";
+
+        return true;
+      },
+      message: `Enter the developer-hub base URL for the ${name} region - `,
+    });
+  }
+
+  return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
+}
+
+module.exports = { getInstalledExtensions, getDeveloperHubUrl }
