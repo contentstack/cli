@@ -8,13 +8,13 @@ const _ = require('lodash');
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
-const { cliux, configHandler, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
+const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
 
 let config = require('../../config/default');
 const { addlogs: log } = require('../util/log');
 const { readFile, writeFile } = require('../util/fs');
 const sdk = require('../util/contentstack-management-sdk');
-const { getInstalledExtensions } = require('../util/marketplace-app-helper');
+const { getDeveloperHubUrl, getInstalledExtensions } = require('../util/marketplace-app-helper');
 
 let client;
 const marketplaceAppConfig = config.modules.marketplace_apps;
@@ -28,7 +28,7 @@ function importMarketplaceApps() {
   this.start = async (credentialConfig) => {
     config = credentialConfig;
     client = sdk.Client(config);
-    this.developerHuBaseUrl = await this.getDeveloperHubUrl();
+    this.developerHuBaseUrl = await getDeveloperHubUrl()
     this.marketplaceAppFolderPath = path.resolve(config.data, marketplaceAppConfig.dirName);
     this.marketplaceApps = _.uniqBy(
       readFile(path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName)),
@@ -132,19 +132,20 @@ function importMarketplaceApps() {
     }
 
     // NOTE get list of developer-hub installed apps (private)
-    const installedDeveloperHubApps =
-      (await httpClient
-        .get(`${config.extensionHost}/apps-api/apps/`)
+    const installedDeveloperHubApps = (
+      await httpClient
+        .get(`${this.developerHuBaseUrl}/apps/`)
         .then(({ data: { data } }) => data)
         .catch((err) => {
           console.log(err);
-        })) || [];
+        })
+    ) || []
     const listOfNotInstalledPrivateApps = _.filter(
       listOfExportedPrivateApps,
       (app) => !_.includes(_.map(installedDeveloperHubApps, 'uid'), app.app_uid),
     );
 
-    if (!_.isEmpty(listOfNotInstalledPrivateApps)) {
+    if (!_.isEmpty(listOfNotInstalledPrivateApps) && !config.forceMarketplaceAppsImport) {
       const confirmation = await cliux.confirm(
         chalk.yellow(
           `WARNING!!! The listed apps are private apps that are not available in the destination stack: \n\n${_.map(
@@ -193,6 +194,14 @@ function importMarketplaceApps() {
     });
   };
 
+  this.getAppName = (name) => {
+    name += `-1`
+
+    if (name.length > 20) name = name.slice(18)
+
+    return name
+  }
+
   /**
    * @method createAllPrivateAppsInDeveloperHub
    * @param {Object} options
@@ -203,11 +212,16 @@ function importMarketplaceApps() {
     const { app, httpClient } = options;
 
     return new Promise((resolve) => {
-      if (!uidCleaned && app.manifest.ui_location && !_.isEmpty(app.manifest.ui_location.locations)) {
+      if (
+        !uidCleaned &&
+        app.manifest.ui_location &&
+        !_.isEmpty(app.manifest.ui_location.locations)
+      ) {
         app.manifest.ui_location.locations = this.removeUidFromManifestUILocations(app.manifest.ui_location.locations);
       }
+
       httpClient
-        .post(`${config.extensionHost}/apps-api/apps`, app.manifest)
+        .post(`${this.developerHuBaseUrl}/apps`, app.manifest)
         .then(async ({ data: result }) => {
           const { name } = app.manifest;
           const { data, error, message } = result || {};
@@ -216,17 +230,21 @@ function importMarketplaceApps() {
             log(config, message, 'error');
 
             if (_.toLower(error) === 'conflict') {
-              const appName = await cliux.inquire({
-                type: 'input',
-                name: 'name',
-                default: `Copy of ${app.manifest.name}`,
-                validate: this.validateAppName,
-                message: `${message}. Enter a new name to create an app.?`,
-              });
-              app.manifest.name = appName;
+              const appName = config.forceMarketplaceAppsImport
+                ? self.getAppName(app.manifest.name)
+                : await cliux.inquire({
+                  type: 'input',
+                  name: 'name',
+                  default: `${app.manifest.name}-1`,
+                  validate: this.validateAppName,
+                  message: `${message}. Enter a new name to create an app.?`,
+                })
+              app.manifest.name = appName
 
               await self.createAllPrivateAppsInDeveloperHub({ app, httpClient }, true).then(resolve).catch(resolve);
             } else {
+              if (config.forceMarketplaceAppsImport) return resolve()
+
               const confirmation = await cliux.confirm(
                 chalk.yellow(
                   'WARNING!!! The above error may have an impact if the failed app is referenced in entries/content type. Would you like to proceed? (y/n)',
@@ -249,7 +267,7 @@ function importMarketplaceApps() {
         })
         .catch((error) => {
           if (error && (error.message || error.error_message)) {
-            log(config, error && (error.message || error.error_message), 'error');
+            log(config, (error.message || error.error_message), 'error');
           } else {
             log(config, 'Something went wrong.!', 'error');
           }
@@ -319,16 +337,18 @@ function importMarketplaceApps() {
                   { color: 'yellow' },
                 );
 
-                const configOption = await cliux.inquire({
-                  choices: [
-                    'Update it with the new configuration.',
-                    'Do not update the configuration (WARNING!!! If you do not update the configuration, there may be some issues with the content which you import).',
-                    'Exit',
-                  ],
-                  type: 'list',
-                  name: 'value',
-                  message: 'Choose the option to proceed',
-                });
+                const configOption = config.forceMarketplaceAppsImport
+                  ? 'Update it with the new configuration.'
+                  : await cliux.inquire({
+                    choices: [
+                      'Update it with the new configuration.',
+                      'Do not update the configuration (WARNING!!! If you do not update the configuration, there may be some issues with the content which you import).',
+                      'Exit',
+                    ],
+                    type: 'list',
+                    name: 'value',
+                    message: 'Choose the option to proceed',
+                  })
 
                 if (configOption === 'Exit') {
                   process.exit()
@@ -342,15 +362,17 @@ function importMarketplaceApps() {
                 }
               }
             } else {
-              cliux.print(`WARNING!!! ${message || error_message}`, { color: 'yellow' });
-              const confirmation = await cliux.confirm(
-                chalk.yellow(
-                  'WARNING!!! The above error may have an impact if the failed app is referenced in entries/content type. Would you like to proceed? (y/n)',
+              if (!config.forceMarketplaceAppsImport) {
+                cliux.print(`WARNING!!! ${message || error_message}`, { color: 'yellow' });
+                const confirmation = await cliux.confirm(
+                  chalk.yellow(
+                    'WARNING!!! The above error may have an impact if the failed app is referenced in entries/content type. Would you like to proceed? (y/n)',
+                  )
                 )
-              )
 
-              if (!confirmation) {
-                process.exit();
+                if (!confirmation) {
+                  process.exit();
+                }
               }
             }
           } else if (data) {
@@ -367,7 +389,7 @@ function importMarketplaceApps() {
         })
         .catch((error) => {
           if (error && (error.message || error.error_message)) {
-            log(config, error && (error.message || error.error_message), 'error');
+            log(config, (error.message || error.error_message), 'error');
           } else {
             log(config, 'Something went wrong.!', 'error');
           }
@@ -405,44 +427,24 @@ function importMarketplaceApps() {
           .then(resolve)
           .catch((error) => {
             if (error && (error.message || error.error_message)) {
-              log(config, error && (error.message || error.error_message), 'error');
+              log(config, (error.message || error.error_message), 'error');
             } else {
               log(config, 'Something went wrong.!', 'error');
             }
 
             reject();
-          });
+          })
       }
-    });
-  };
+    })
+  }
 
   this.validateAppName = (name) => {
     if (name.length < 3 || name.length > 20) {
-      return 'The app name should be within 3-20 characters long.';
+      return 'The app name should be within 3-20 characters long.'
     }
 
-    return true;
-  };
-
-  this.getDeveloperHubUrl = async () => {
-    const { cma, name } = configHandler.get('region') || {};
-    let developerHubBaseUrl = config.developerHubUrls[cma];
-
-    if (!developerHubBaseUrl) {
-      developerHubBaseUrl = await cliux.inquire({
-        type: 'input',
-        name: 'name',
-        validate: (url) => {
-          if (!url) return "Developer-hub URL can't be empty.";
-
-          return true;
-        },
-        message: `Enter the developer-hub base URL for the ${name} region - `,
-      });
-    }
-
-    return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
-  };
+    return true
+  }
 }
 
 module.exports = new importMarketplaceApps();
