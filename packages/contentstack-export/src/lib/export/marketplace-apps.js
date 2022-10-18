@@ -46,7 +46,7 @@ function exportMarketplaceApps() {
     const self = this
 
     return new Promise(async function (resolve, reject) {
-      getInstalledExtensions(config, self.developerHuBaseUrl)
+      getInstalledExtensions(config)
         .then(async (items) => {
           const installedApps = _.map(
             _.filter(items, 'app_uid'),
