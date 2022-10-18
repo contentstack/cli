@@ -40,7 +40,7 @@ function importGlobalFields() {
     headers: config.headers,
     method: 'POST',
   };
-  this.installedExtensions = [];
+  this.installedExtensions = []
 }
 
 importGlobalFields.prototype = {
