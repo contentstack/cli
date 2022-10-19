@@ -6,7 +6,7 @@ module.exports = {
     'https://api.contentstack.io': 'https://developerhub-api.contentstack.com',
     'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
     'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
-    'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com'
+    'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com',
   },
   // use below hosts for eu region
   // host:'https://eu-api.contentstack.com/v3',
@@ -26,7 +26,7 @@ module.exports = {
       'workflows',
       'entries',
       'labels',
-      'marketplace-apps'
+      'marketplace-apps',
     ],
     locales: {
       dirName: 'locales',
@@ -117,8 +117,8 @@ module.exports = {
     },
     marketplace_apps: {
       dirName: 'marketplace_apps',
-      fileName: 'marketplace_apps.json'
-    }
+      fileName: 'marketplace_apps.json',
+    },
   },
   languagesCode: [
     'af-za',
@@ -344,5 +344,7 @@ module.exports = {
     webhooks: '/webhooks/',
     stacks: '/stacks/',
   },
-  preserveStackVersion: false
+  preserveStackVersion: false,
+  fetchConcurrency: 10,
+  writeConcurrency: 5,
 };
