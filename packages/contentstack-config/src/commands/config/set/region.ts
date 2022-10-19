@@ -1,4 +1,4 @@
-import { Command, flags } from '@contentstack/cli-command';
+import { Command, flags as _flags } from '@contentstack/cli-command';
 import { cliux, logger, printFlagDeprecation } from '@contentstack/cli-utilities';
 import { Region } from '../../../interfaces';
 import { regionHandler, interactive } from '../../../utils';
@@ -7,21 +7,21 @@ export default class RegionSetCommand extends Command {
   config: any;
   static description = 'Set region for CLI';
   static flags = {
-    cda: flags.string({
+    cda: _flags.string({
       char: 'd',
       description:
         'Custom host to set for content delivery API, if this flag is added then cma and name flags are required',
       dependsOn: ['cma', 'name'],
       parse: printFlagDeprecation(['-d'], ['--cda']),
     }),
-    cma: flags.string({
+    cma: _flags.string({
       char: 'm',
       description:
         'Custom host to set for content management API, , if this flag is added then cda and name flags are required',
       dependsOn: ['cda', 'name'],
       parse: printFlagDeprecation(['-m'], ['--cma']),
     }),
-    name: flags.string({
+    name: _flags.string({
       char: 'n',
       description: 'Name for the region, if this flag is added then cda and cma flags are required',
       dependsOn: ['cda', 'cma'],
