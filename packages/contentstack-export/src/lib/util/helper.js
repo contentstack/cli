@@ -18,6 +18,13 @@ exports.readFile = function (filePath, parse) {
   return data;
 };
 
+exports.makeDirectory = async function (path) {
+  if (!path) {
+    throw new Error('Invalid path to create directory');
+  }
+  return mkdirp(path);
+};
+
 exports.readLargeFile = function (filePath, opts = {}) {
   if (typeof filePath !== 'string') {
     return;
@@ -62,9 +69,21 @@ exports.writeLargeFile = function (filePath, data) {
   });
 };
 
-exports.writeFile = function (filePath, data) {
+exports.writeFileSync = function (filePath, data) {
   data = typeof data === 'object' ? JSON.stringify(data) : data || '{}';
   fs.writeFileSync(filePath, data);
+};
+
+exports.writeFile = function (filePath, data) {
+  return new Promise((resolve, reject) => {
+    data = typeof data === 'object' ? JSON.stringify(data) : data || '{}';
+    fs.writeFile(filePath, data, (error) => {
+      if (error) {
+        return reject(error);
+      }
+      resolve('done');
+    });
+  });
 };
 
 exports.makeDirectory = function () {
