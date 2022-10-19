@@ -273,12 +273,11 @@ FLAGS
 
 DESCRIPTION
   Publish assets to the specified environments
-
   The assets command is used to publish assets from the specified stack, to the specified environments
 
   Note: Environment(s) and Locale(s) are required to execute the command successfully
-
   But, if retryFailed flag is set, then only a logfile is required
+
 
 ALIASES
   $ csdx cm:bulk-publish:assets
@@ -343,11 +342,9 @@ FLAGS
 
 DESCRIPTION
   Unpublish assets from given environment
-
   The unpublish command is used for unpublishing assets from the given environment
 
   Note: Environment (Source Environment) and Locale are required to execute the command successfully
-
   But, if retry-failed flag is set, then only a logfile is required
 
 EXAMPLES
@@ -460,13 +457,12 @@ FLAGS
 
 DESCRIPTION
   Publish entries and assets from one environment to other environments
-
   The cross-publish command is used to publish entries and assets from one environment to other environments
 
   Note: Content Type, Environment, Destination Environment(s) and Locale are required to execute the command
   successfully
-
   But, if retryFailed flag is set, then only a logfile is required
+
 
 EXAMPLES
   General Usage
@@ -589,14 +585,12 @@ FLAGS
 
 DESCRIPTION
   Publish entries from multiple contenttypes to multiple environments and locales
-
   The publish command is used to publish entries from the specified content types, to the
-
   specified environments and locales
 
   Note: Content Types, Environments and Locales are required to execute the command successfully
-
   But, if retry-failed flag is set, then only a logfile is required
+
 
 ALIASES
   $ csdx cm:bulk-publish:entries
@@ -664,15 +658,13 @@ FLAGS
 
 DESCRIPTION
   Publish edited entries from a specified content type to the given locales and environments
-
   The publish-modified command is used to publish entries from the specified content types, to the
-
   specified environments and locales
 
   Note: Content type(s), Source Environment, Destination Environment(s) and Locale(s) are required to execute the
   command successfully
-
   But, if retry-failed flag is set, then only a logfile is required
+
 
 ALIASES
   $ csdx cm:bulk-publish:entry-edits
@@ -734,12 +726,10 @@ FLAGS
 DESCRIPTION
   Publish non-localized fields for the given content types, from a particular source environment to the specified
   environments
-
   The non-localized field changes command is used to publish non-localized field changes from the given content types to
   the specified environments
 
   Note: Content types, Environments and Source Environment are required to execute this command successfully.
-
   But, if retryFailed flag is set, then only a logfile is required
 
 ALIASES
@@ -801,14 +791,13 @@ FLAGS
 
 DESCRIPTION
   Publish unpublished entries from the source environment, to other environments and locales
-
   The publish-only-unpublished command is used to publish unpublished entries from the source environment, to other
   environments and locales
 
   Note: Content type(s), Source Environment, Destination Environment(s) and Source Locale are required to execute the
   command successfully
-
   But, if retry-failed flag is set, then only a logfile is required
+
 
 ALIASES
   $ csdx cm:bulk-publish:unpublished-entries
@@ -868,11 +857,9 @@ FLAGS
 
 DESCRIPTION
   Unpublish entries from the given environment
-
   The unpublish command is used to unpublish entries from the given environment
 
   Note: Environment (Source Environment) and Locale are required to execute the command successfully
-
   But, if retry-failed flag is set, then only a logfile is required
 
 EXAMPLES
@@ -933,13 +920,12 @@ FLAGS
 
 DESCRIPTION
   Add fields from updated content types to their respective entries
-
   The update-and-publish command is used to update existing entries with the updated schema of the respective content
   type
 
   Note: Content types, Environments and Locales are required to execute the command successfully
-
   But, if retry-failed flag is set, then only a logfile is required
+
 
 ALIASES
   $ csdx cm:bulk-publish:add-fields
@@ -1055,8 +1041,8 @@ FLAGS
 
 DESCRIPTION
   Clone data (structure/content or both) of a stack into another stack
-
   Use this plugin to automate the process of cloning a stack in few steps.
+
 
 ALIASES
   $ csdx cm:stack-clone
@@ -1142,11 +1128,10 @@ FLAGS
 
 DESCRIPTION
   Import script for importing the content into the new stack
-
   ...
-
   Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import
   command.
+
 
 ALIASES
   $ csdx cm:import
@@ -1222,13 +1207,10 @@ USAGE
 
 DESCRIPTION
   Publish entries and assets to multiple environments and locales
-
   The publish command is used to publish entries and assets, to the specified environments and locales.
 
   Note: Content types, Environments and Locales are required to execute the publish entries command successfully.
-
   Note: Environments and Locales are required to execute the publish assets command successfully.
-
   But, if retry-failed flag is set, then only a logfile is required
 
 EXAMPLES
@@ -1332,10 +1314,9 @@ FLAGS
 
 DESCRIPTION
   Revert publish operations by using a log file
-
   The revert command is used to revert all publish operations performed using bulk-publish script.
-
   A log file name is required to execute revert command
+
 
 ALIASES
   $ csdx cm:bulk-publish:revert
@@ -1415,21 +1396,18 @@ FLAGS
 
 DESCRIPTION
   Unpublish entries or assets of given content types from the specified environment
-
   The unpublish command is used to unpublish entries or assets from given environment
 
   Environment (Source Environment) and Locale are required to execute the command successfully
-
   But, if retry-failed flag is set, then only a logfile is required
 
   A content type can be specified for unpublishing entries, but if no content-type(s) is/are specified and --only-assets
   is not used,
-
   then all entries from all content types will be unpublished from the source environment
 
   Note: --only-assets can be used to unpublish only assets and --only-entries can be used to unpublish only entries.
-
   (--only-assets and --only-entries cannot be used together at the same time)
+
 
 ALIASES
   $ csdx cm:bulk-publish:unpublish
@@ -1549,7 +1527,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.0/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.4/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:inspect PLUGIN...`
 
@@ -1573,7 +1551,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.0/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.4/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -1593,7 +1571,6 @@ FLAGS
 
 DESCRIPTION
   Installs a plugin into the CLI.
-
   Can be installed from npm or a git url.
 
   Installation of a user-installed plugin will override a core plugin.
@@ -1601,6 +1578,7 @@ DESCRIPTION
   e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
   will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
   the CLI without the need to patch and update the whole CLI.
+
 
 ALIASES
   $ csdx plugins:add
@@ -1613,7 +1591,7 @@ EXAMPLES
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.0/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.4/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
@@ -1632,17 +1610,17 @@ FLAGS
 
 DESCRIPTION
   Links a plugin into the CLI for development.
-
   Installation of a linked plugin will override a user-installed or core plugin.
 
   e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello'
   command will override the user-installed or core plugin implementation. This is useful for development work.
 
+
 EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.0/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.4/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -1667,7 +1645,7 @@ ALIASES
   $ csdx plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.0/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.4/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:update`
 
@@ -1685,7 +1663,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.0/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.4/src/commands/plugins/update.ts)_
 <!-- commandsstop -->
 
 ```
