@@ -15,7 +15,7 @@ let localeConfig = config.modules.locales;
 const masterLocale = config.master_locale;
 let requiredKeys = localeConfig.requiredKeys;
 let stack = require('../util/contentstack-management-sdk');
-let client
+let client;
 function ExportLocales() {
   this.qs = {
     include_count: true,
@@ -44,13 +44,12 @@ ExportLocales.prototype.start = function (credentialConfig) {
     limit: 100,
     skip: 0,
     include_count: true,
-  }
-  return self.getLocales(apiDetails)
-
+  };
+  return self.getLocales(apiDetails);
 };
 
 ExportLocales.prototype.getLocales = function (apiDetails) {
-  let self = this
+  let self = this;
 
   return new Promise(function (resolve, reject) {
     client
@@ -85,12 +84,10 @@ ExportLocales.prototype.getLocales = function (apiDetails) {
             .catch((error) => {
               console.log('Get locales errror', error && error.message);
             });
-
         } else if (localeResponse.items.length === 0) {
           addlogs(config, 'No languages found except the master language', 'success');
           helper.writeFile(path.join(self.localesFolderPath, localeConfig.fileName), self.locales);
           return resolve();
-
         }
       })
       .catch((error) => {
@@ -98,6 +95,6 @@ ExportLocales.prototype.getLocales = function (apiDetails) {
         return reject(error);
       });
   });
-}
+};
 
-module.exports = new ExportLocales();
+module.exports = ExportLocales;

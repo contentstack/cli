@@ -6,8 +6,8 @@
 
 var _ = require('lodash');
 var defaultConfig = require('../../config/default');
-var { addlogs } = require('../util/log');
 const chalk = require('chalk');
+const promiseLimit = require('promise-limit');
 
 exports.validateConfig = function (config) {
   if (!config.host || !config.cdn) {
@@ -73,9 +73,8 @@ exports.executeTask = function (tasks = [], handler, options) {
   const { concurrency = 1 } = options;
   const limit = promiseLimit(concurrency);
   return Promise.all(
-    tasks.map((name) => {
-      console.log(name);
-      return limit(() => handler(name));
+    tasks.map((task) => {
+      return limit(() => handler(task));
     }),
   );
 };
