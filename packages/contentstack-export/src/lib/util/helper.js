@@ -8,7 +8,7 @@ var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
 
-exports.readFile = function (filePath, parse) {
+exports.readFileSync = function (filePath, parse) {
   var data;
   parse = typeof parse === 'undefined' ? true : parse;
   filePath = path.resolve(filePath);
@@ -16,6 +16,23 @@ exports.readFile = function (filePath, parse) {
     data = parse ? JSON.parse(fs.readFileSync(filePath, 'utf-8')) : data;
   }
   return data;
+};
+
+// by default file type is json
+exports.readFile = async (filePath, options = {}) => {
+  return new Promise((resolve, reject) => {
+    filePath = path.resolve(filePath);
+    fs.readFile(filePath, 'utf-8', (error, data) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (options.type !== 'json') {
+          return resolve(data);
+        }
+        resolve(JSON.parse(data));
+      }
+    });
+  });
 };
 
 exports.makeDirectory = async function (path) {

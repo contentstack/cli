@@ -1,116 +1,87 @@
-/*!
- * Contentstack Export
- * Copyright (c) 2019 Contentstack LLC
- * MIT Licensed
- */
-
-const mkdirp = require('mkdirp');
 const path = require('path');
+const fileHelper = require('../util/helper');
 const chalk = require('chalk');
-const Promise = require('bluebird');
-
-const helper = require('../util/helper');
-const stack = require('../util/contentstack-management-sdk');
+const { executeTask, formatError } = require('../util');
 const { addlogs } = require('../util/log');
 
-let config = require('../../config/default');
-const contentTypeConfig = config.modules.content_types;
-const validKeys = contentTypeConfig.validKeys;
-let client;
-let contentTypesFolderPath;
-
-function ExportContentTypes() {
-  this.content_types = [];
-
-  this.requestOptions = {
-    qs: {
+class ContentTypesExport {
+  constructor(exportConfig, stackAPIClient) {
+    this.stackAPIClient = stackAPIClient;
+    this.exportConfig = exportConfig;
+    this.contentTypesConfig = exportConfig.modules.content_types;
+    this.qs = {
       include_count: true,
       asc: 'updated_at',
-      limit: config.modules.content_types.limit,
+      limit: this.contentTypesConfig.limit,
       include_global_field_schema: true,
-    },
-  };
+    };
+    // If content type id is provided then use it as part of query
+    if (Array.isArray(this.exportConfig.contentTypes) && this.exportConfig.length > 0) {
+      this.qs.uid = { $in: this.exportConfig.contentTypes };
+    }
+    this.contentTypesPath = path.resolve(
+      exportConfig.data,
+      exportConfig.branchName || '',
+      this.contentTypesConfig.dirName,
+    );
+    this.contentTypes = [];
+    this.fetchConcurrency = this.contentTypesConfig.fetchConcurrency || this.exportConfig.fetchConcurrency;
+    this.writeConcurrency = this.contentTypesConfig.writeConcurrency || this.exportConfig.writeConcurrency;
+  }
+
+  async start() {
+    addlogs(this.exportConfig, 'Starting content type export', 'success');
+    try {
+      await fileHelper.makeDirectory(this.contentTypesPath);
+      await this.getContentTypes();
+      await this.writeContentTypes(this.contentTypes);
+      addlogs(this.exportConfig, chalk.green('Content type(s) exported successfully'), 'success');
+    } catch (error) {
+      addlogs(this.exportConfig, chalk.red(`Failed to export content types ${formatError(error)}`), 'error');
+      throw new Error('Failed to export content types');
+    }
+  }
+
+  async getContentTypes(skip = 0) {
+    if (skip) {
+      this.qs.skip = skip;
+    }
+
+    const contentTypeSearchResponse = await this.stackAPIClient.contentType().query(this.qs).find();
+    if (Array.isArray(contentTypeSearchResponse.items) && contentTypeSearchResponse.items.length > 0) {
+      let updatedContentTypes = this.sanitizeAttribs(contentTypeSearchResponse.items);
+      this.contentTypes.push(...updatedContentTypes);
+
+      skip += this.contentTypesConfig.limit;
+      if (skip > contentTypeSearchResponse.count) {
+        return;
+      }
+      return await this.getContentTypes(skip);
+    } else {
+      console.log('No content types returned for the given query');
+    }
+  }
+
+  sanitizeAttribs(contentTypes) {
+    let updatedContentTypes = [];
+    contentTypes.forEach((contentType) => {
+      for (let key in contentType) {
+        if (this.contentTypesConfig.validKeys.indexOf(key) === -1) {
+          delete contentType[key];
+        }
+      }
+      updatedContentTypes.push(contentType);
+    });
+    return updatedContentTypes;
+  }
+
+  async writeContentTypes(contentTypes) {
+    function write(contentType) {
+      return fileHelper.writeFile(path.join(this.contentTypesPath, contentType.uid + '.json'), contentType);
+    }
+    await executeTask(contentTypes, write.bind(this), { concurrency: this.writeConcurrency });
+    return fileHelper.writeFile(path.join(this.contentTypesPath, 'schema.json'), contentTypes);
+  }
 }
 
-ExportContentTypes.prototype = {
-  start: function (credentialConfig) {
-    this.content_types = [];
-    let self = this;
-    config = credentialConfig;
-    contentTypesFolderPath = path.resolve(config.data, config.branchName || '', contentTypeConfig.dirName);
-
-    client = stack.Client(config);
-    // If content type id is provided then use it as part of query
-    if (Array.isArray(config.contentTypes) && config.contentTypes.length > 0) {
-      self.requestOptions.qs.uid = { $in: config.contentTypes };
-    }
-    // Create folder for content types
-    mkdirp.sync(contentTypesFolderPath);
-    addlogs(config, 'Starting content type export', 'success');
-    return new Promise(function (resolve, reject) {
-      return self
-        .getContentTypes()
-        .then(function () {
-          return self
-            .writeContentTypes()
-            .then(() => {
-              return resolve();
-            })
-            .catch((error) => {
-              return reject(error);
-            });
-        })
-        .catch(reject);
-    });
-  },
-  getContentTypes: function (skip) {
-    let self = this;
-    if (typeof skip !== 'number') {
-      skip = 0;
-      self.requestOptions.qs.skip = skip;
-    } else {
-      self.requestOptions.qs.skip = skip;
-    }
-
-    return new Promise(function (resolve, reject) {
-      client
-        .stack({ api_key: config.source_stack, management_token: config.management_token })
-        .contentType()
-        .query(self.requestOptions.qs)
-        .find()
-        .then((contenttypeResponse) => {
-          if (contenttypeResponse.items.length === 0) {
-            addlogs(config, 'No content types were found in the Stack', 'success');
-            return resolve();
-          }
-          contenttypeResponse.items.forEach(function (content_type) {
-            for (let key in content_type) {
-              if (validKeys.indexOf(key) === -1) {
-                delete content_type[key];
-              }
-            }
-            self.content_types.push(content_type);
-          });
-
-          skip += config.modules.content_types.limit;
-          if (skip > contenttypeResponse.count) {
-            return resolve();
-          }
-          return self.getContentTypes(skip).then(resolve).catch(reject);
-        });
-    });
-  },
-  writeContentTypes: function () {
-    let self = this;
-    return new Promise(function (resolve) {
-      helper.writeFile(path.join(contentTypesFolderPath, 'schema.json'), self.content_types);
-      self.content_types.forEach(function (content_type) {
-        helper.writeFile(path.join(contentTypesFolderPath, content_type.uid + '.json'), content_type);
-      });
-      addlogs(config, chalk.green('Content type(s) exported successfully'), 'success');
-      return resolve();
-    });
-  },
-};
-
-module.exports = new ExportContentTypes();
+module.exports = ContentTypesExport;
