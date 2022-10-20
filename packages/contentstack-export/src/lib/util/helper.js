@@ -19,7 +19,7 @@ exports.readFileSync = function (filePath, parse) {
 };
 
 // by default file type is json
-exports.readFile = async (filePath, options = {}) => {
+exports.readFile = async (filePath, options = { type: 'json' }) => {
   return new Promise((resolve, reject) => {
     filePath = path.resolve(filePath);
     fs.readFile(filePath, 'utf-8', (error, data) => {
