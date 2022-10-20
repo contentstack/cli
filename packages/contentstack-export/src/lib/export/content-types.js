@@ -30,8 +30,8 @@ class ContentTypesExport {
   }
 
   async start() {
-    addlogs(this.exportConfig, 'Starting content type export', 'success');
     try {
+      addlogs(this.exportConfig, 'Starting content type export', 'success');
       await fileHelper.makeDirectory(this.contentTypesPath);
       await this.getContentTypes();
       await this.writeContentTypes(this.contentTypes);
