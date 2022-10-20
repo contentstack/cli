@@ -13,7 +13,22 @@ module.exports = {
   // use below hosts for azure-na region
   // host:'https://azure-na-api.contentstack.com/v3',
   modules: {
-    types: ['stack', 'locales', 'content-types'],
+    // types: ['stack', 'locales', 'content-types'],
+    types: [
+      'stack',
+      'assets',
+      'locales',
+      'environments',
+      'extensions',
+      'webhooks',
+      'global-fields',
+      'content-types',
+      'custom-roles',
+      'workflows',
+      'entries',
+      'labels',
+      'marketplace-apps'
+    ],
     locales: {
       dirName: 'locales',
       fileName: 'locales.json',
@@ -61,8 +76,21 @@ module.exports = {
       host: 'https://images.contentstack.io',
       invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by', '_metadata', 'published'],
       // no of asset version files (of a single asset) that'll be downloaded parallelly
-      downloadLimit: 5,
+      downloadLimit: 2,
       enableDownloadStatus: false,
+
+      // New keys
+      useNewScript: true,
+      concurrencyLimit: 5,
+      fetchPolicy: 'cache-first',
+      downloadVersionAssets: true,
+      displayExecutionLogTime: true,
+      makeConcurrentNetworkCalls: true,
+      saveData: {
+        onError: true, // NOTE on internal error
+        onInterrupt: true, // NOTE keyboard interrupt
+        onException: true // NOTE global exception
+      }
     },
     content_types: {
       dirName: 'content_types',
