@@ -7,7 +7,7 @@ const { formatError } = require('./lib/util');
 const login = require('./lib/util/login');
 const setupBranches = require('./lib/util/setup-branches');
 const { addlogs, unlinkFileLogger } = require('./lib/util/log');
-const stack = require('../util/contentstack-management-sdk');
+const stack = require('./lib/util/contentstack-management-sdk');
 
 exports.initial = async function (config) {
   return new Promise(async function (resolve, reject) {
@@ -123,7 +123,9 @@ const singleExport = async (moduleName, types, config, branchName) => {
 
 const allExport = async (config, types, branchName) => {
   try {
-    const stackClient = stack.Client(config);
+    const stackClient = stack
+      .Client(config)
+      .stack({ api_key: config.source_stack, management_token: config.management_token });
     for (const type of types) {
       const ExportModule = require('./lib/export/' + type);
       const result = await new ExportModule(config, stackClient).start(config, branchName);
