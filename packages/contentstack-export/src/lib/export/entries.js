@@ -1,252 +1,196 @@
-/*!
- * Contentstack Export
- * Copyright (c) 2019 Contentstack LLC
- * MIT Licensed
- */
-
-const fs = require('fs');
 const path = require('path');
-const _ = require('lodash');
-const Promise = require('bluebird');
 const chalk = require('chalk');
-const mkdirp = require('mkdirp');
 const { addlogs } = require('../util/log');
+const fileHelper = require('../util/helper');
+const { executeTask, formatError } = require('../util');
 
-const helper = require('../util/helper');
-const log = require('../util/log');
-const stack = require('../util/contentstack-management-sdk');
+class EntriesExport {
+  constructor(exportConfig, stackAPIClient) {
+    this.stackAPIClient = stackAPIClient;
+    this.exportConfig = exportConfig;
+    this.entriesConfig = exportConfig.modules.entries;
+    this.entriesRootPath = path.resolve(exportConfig.data, exportConfig.branchName || '', this.entriesConfig.dirName);
+    this.localesFilePath = path.resolve(
+      exportConfig.data,
+      exportConfig.branchName || '',
+      exportConfig.modules.locales.dirName,
+      exportConfig.modules.locales.fileName,
+    );
+    this.schemaFilePath = path.resolve(
+      exportConfig.data,
+      exportConfig.branchName || '',
+      exportConfig.modules.content_types.dirName,
+      'schema.json',
+    );
+    this.fetchConcurrency = this.entriesConfig.fetchConcurrency || exportConfig.fetchConcurrency;
+    this.writeConcurrency = this.entriesConfig.writeConcurrency || exportConfig.writeConcurrency;
+  }
 
-let config = require('../../config/default');
-let entriesConfig = config.modules.entries;
-let invalidKeys = entriesConfig.invalidKeys;
-let limit = entriesConfig.limit;
-let content_types;
-let locales;
-let entryFolderPath;
-let localesFilePath;
-let schemaFilePath;
-let client;
-
-function exportEntries() {
-  this.requestOptions = {
-    headers: config.headers,
-    qs: {
-      include_count: true,
-      include_publish_details: true,
-      limit: limit,
-    },
-    json: true,
-  };
-}
-
-exportEntries.prototype.start = function (credentialConfig) {
-  let self = this;
-  config = credentialConfig;
-  entryFolderPath = path.resolve(config.data, config.branchName || '', config.modules.entries.dirName);
-  localesFilePath = path.resolve(
-    config.data,
-    config.branchName || '',
-    config.modules.locales.dirName,
-    config.modules.locales.fileName,
-  );
-  schemaFilePath = path.resolve(
-    config.data,
-    config.branchName || '',
-    config.modules.content_types.dirName,
-    'schema.json',
-  );
-  client = stack.Client(config);
-  addlogs(config, 'Starting entry migration', 'success');
-  return new Promise(function (resolve) {
-    locales = helper.readFile(localesFilePath);
-    let apiBucket = [];
-    content_types = helper.readFile(schemaFilePath);
-    if (content_types.length !== 0) {
-      content_types.forEach((content_type) => {
-        if (Object.keys(locales).length !== 0) {
-          for (let _locale in locales) {
-            apiBucket.push({
-              content_type: content_type.uid,
-              locale: locales[_locale].code,
-            });
-          }
-        }
-        apiBucket.push({
-          content_type: content_type.uid,
-          locale: config.master_locale.code,
-        });
-      });
-      return Promise.map(
-        apiBucket,
-        function (apiDetails) {
-          return self.getEntries(apiDetails);
-        },
-        {
-          concurrency: 1,
-        },
-      )
-        .then(function () {
-          addlogs(config, 'Entry migration completed successfully', 'success');
-          return resolve();
-        })
-        .catch((error) => {
-          console.log('Error getting entries', error && error.message);
-        });
-    }
-    addlogs(config, 'No content_types were found in the Stack', 'success');
-    return resolve();
-  });
-};
-
-exportEntries.prototype.getEntry = function (apiDetails) {
-  let self = this;
-  return new Promise(function (resolve, reject) {
-    let queryRequestObject = {
-      locale: apiDetails.locale,
-      except: {
-        BASE: invalidKeys,
-      },
-      version: apiDetails.version,
-    };
-    client
-      .stack({ api_key: config.source_stack, management_token: config.management_token })
-      .contentType(apiDetails.content_type)
-      .entry(apiDetails.uid)
-      .fetch(queryRequestObject)
-      .then((singleEntry) => {
-        let entryPath = path.join(entryFolderPath, apiDetails.locale, apiDetails.content_type, singleEntry.uid);
-        mkdirp.sync(entryPath);
-        helper.writeFile(path.join(entryPath, 'version-' + singleEntry._version + '.json'), singleEntry);
+  async start() {
+    try {
+      addlogs(this.exportConfig, 'Starting entries export', 'info');
+      const locales = await fileHelper.readFile(this.localesFilePath);
+      const contentTypes = await fileHelper.readFile(this.schemaFilePath);
+      if (contentTypes.length === 0) {
+        addlogs(this.exportConfig, 'No content types found to export entries');
+        return;
+      }
+      const entryRequestOptions = this.createRequestObjects(locales, contentTypes);
+      for (let requestOption of entryRequestOptions) {
+        await fileHelper.makeDirectory(path.join(this.entriesRootPath, requestOption.content_type));
+        const entries = await this.getEntries(requestOption);
+        let entriesFilePath = path.join(
+          this.entriesRootPath,
+          requestOption.content_type,
+          requestOption.locale + '.json',
+        );
+        await fileHelper.writeFile(entriesFilePath, entries);
         addlogs(
-          config,
-          'Completed version backup of entry: ' +
-            singleEntry.uid +
-            ', version: ' +
-            singleEntry._version +
-            ', content type: ' +
-            apiDetails.content_type,
+          this.exportConfig,
+          `Exported entries of type ${requestOption.content_type} locale ${requestOption.locale}`,
           'success',
         );
-        if (--apiDetails.version !== 0) {
-          return self.getEntry(apiDetails).then(resolve).catch(reject);
+        if (this.exportConfig.versioning) {
+          addlogs(
+            this.exportConfig,
+            `Started export versioned entries of type ${requestOption.content_type} locale ${requestOption.locale}`,
+            'info',
+          );
+          for (let entry of entries) {
+            const versionedEntries = await this.getEntryByVersion(
+              {
+                ...requestOption,
+                uid: entry.uid,
+              },
+              entry._version,
+            );
+            let versionedEntryPath = path.join(
+              this.entriesRootPath,
+              requestOption.locale,
+              requestOption.content_type,
+              entry.uid,
+            );
+            await fileHelper.makeDirectory(versionedEntryPath);
+            if (versionedEntries.length > 0) {
+              const write = (versionedEntry) =>
+                fileHelper.writeFile(
+                  path.join(versionedEntryPath, 'version-' + versionedEntry._version + '.json'),
+                  versionedEntry,
+                );
+              await executeTask(versionedEntries, write.bind(this), { concurrency: this.writeConcurrency });
+              addlogs(
+                this.exportConfig,
+                `Exported versioned entries of type ${requestOption.content_type} locale ${requestOption.locale}`,
+                'success',
+              );
+            }
+          }
         }
-        return resolve();
-      })
-      .catch((error) => {
-        addlogs(config, error, 'error');
-      });
-  });
-};
-
-exportEntries.prototype.getEntries = function (apiDetails) {
-  let self = this;
-  return new Promise(function (resolve, reject) {
-    if (typeof apiDetails.skip !== 'number') {
-      apiDetails.skip = 0;
+      }
+      addlogs(this.exportConfig, chalk.green('Entries exported successfully'), 'success');
+    } catch (error) {
+      addlogs(this.exportConfig, chalk.red(`Failed to export entries ${formatError(error)}`), 'error');
+      throw new Error('Failed to export entries');
     }
+  }
 
-    let queryrequestObject = {
-      locale: apiDetails.locale,
-      skip: apiDetails.skip,
-      limit: limit,
+  async getEntries(requestOptions, skip = 0, entries = {}) {
+    let requestObject = {
+      locale: requestOptions.locale,
+      skip,
+      limit: this.entriesConfig.limit,
       include_count: true,
       include_publish_details: true,
       query: {
-        locale: apiDetails.locale,
+        locale: requestOptions.locale,
       },
     };
-    client
-      .stack({ api_key: config.source_stack, management_token: config.management_token })
-      .contentType(apiDetails.content_type)
+
+    const entriesSearchResponse = await this.stackAPIClient
+      .contentType(requestOptions.content_type)
       .entry()
-      .query(queryrequestObject)
-      .find()
-      .then((entriesList) => {
-        // /entries/content_type_uid/locale.json
-        if (!fs.existsSync(path.join(entryFolderPath, apiDetails.content_type))) {
-          mkdirp.sync(path.join(entryFolderPath, apiDetails.content_type));
-        }
-        let entriesFilePath = path.join(entryFolderPath, apiDetails.content_type, apiDetails.locale + '.json');
-        let entries = helper.readFile(entriesFilePath);
-        entries = entries || {};
-        entriesList.items.forEach(function (entry) {
-          invalidKeys.forEach((e) => delete entry[e]);
-          entries[entry.uid] = entry;
-        });
-        helper.writeFile(entriesFilePath, entries);
+      .query(requestObject)
+      .find();
 
-        if (typeof config.versioning === 'boolean' && config.versioning) {
-          for (let locale in locales) {
-            // make folders for each language
-            content_types.forEach(function (content_type) {
-              // make folder for each content type
-              let versionedEntryFolderPath = path.join(entryFolderPath, locales[locale].code, content_type.uid);
-              mkdirp.sync(versionedEntryFolderPath);
-            });
-          }
-          return Promise.map(
-            entriesList.items,
-            function (entry) {
-              let entryDetails = {
-                content_type: apiDetails.content_type,
-                uid: entry.uid,
-                version: entry._version,
-                locale: apiDetails.locale,
-              };
-              return self.getEntry(entryDetails).catch(reject);
-            },
-            {
-              concurrency: 1,
-            },
-          ).then(function () {
-            if (apiDetails.skip > entriesList.items.length) {
-              addlogs(
-                config,
-                'Completed fetching ' +
-                  apiDetails.content_type +
-                  " content type's entries in " +
-                  apiDetails.locale +
-                  ' locale',
-                'success',
-              );
-              return resolve();
-            }
-            apiDetails.skip += limit;
-            return self
-              .getEntries(apiDetails)
-              .then(function () {
-                return resolve();
-              })
-              .catch(function (error) {
-                return reject(error);
-              });
+    executeTask();
+    if (Array.isArray(entriesSearchResponse.items) && entriesSearchResponse.items.length > 0) {
+      // clean up attribs and add to parent entry list
+      this.sanitizeAttribs(entriesSearchResponse.items, entries);
+      skip += this.entriesConfig.limit || 100;
+      if (skip > entriesSearchResponse.count) {
+        return entries;
+      }
+      return await this.getEntries(requestOptions, skip, entries);
+    }
+    return entries;
+  }
+
+  async getEntryByVersion(requestOptions, version, entries = []) {
+    const queryRequestObject = {
+      locale: requestOptions.locale,
+      except: {
+        BASE: this.entriesConfig.invalidKeys,
+      },
+      version,
+    };
+    const entryResponse = await this.stackAPIClient
+      .contentType(requestOptions.content_type)
+      .entry(requestOptions.uid)
+      .fetch(queryRequestObject);
+    entries.push(entryResponse);
+    if (--version > 0) {
+      return await this.getEntryByVersion(requestOptions, version, entries);
+    }
+    return entries;
+  }
+
+  async getEntriesCount(requestOptions) {
+    let requestObject = {
+      locale: requestOptions.locale,
+      limit: 1,
+      include_count: true,
+      include_publish_details: true,
+      query: {
+        locale: requestOptions.locale,
+      },
+    };
+
+    const entriesSearchResponse = await this.stackAPIClient
+      .contentType(requestOptions.content_type)
+      .entry()
+      .query(requestObject)
+      .find();
+
+    return entriesSearchResponse.count;
+  }
+
+  createRequestObjects(locales, contentTypes) {
+    let requestObjects = [];
+    contentTypes.forEach((contentType) => {
+      if (Object.keys(locales).length !== 0) {
+        for (let locale in locales) {
+          requestObjects.push({
+            content_type: contentType.uid,
+            locale: locales[locale].code,
           });
         }
-        if (apiDetails.skip > entriesList.count) {
-          addlogs(
-            config,
-            'Exported entries of ' +
-              apiDetails.content_type +
-              ' to the ' +
-              apiDetails.locale +
-              ' language successfully',
-            'success',
-          );
-          return resolve();
-        }
-        apiDetails.skip += limit;
-        return self
-          .getEntries(apiDetails)
-          .then(resolve)
-          .catch((error) => {
-            console.log('Get Entries errror', error && error.message);
-          });
-      })
-      .catch((error) => {
-        console.log('Entries fetch errror', error && error.message);
-        addlogs(config, error, 'error');
+      }
+      requestObjects.push({
+        content_type: contentType.uid,
+        locale: this.exportConfig.master_locale.code,
       });
-  });
-};
+    });
 
-module.exports = new exportEntries();
+    return requestObjects;
+  }
+
+  sanitizeAttribs(entries, entriesList = {}) {
+    entries.forEach((entry) => {
+      this.entriesConfig.invalidKeys.forEach((key) => delete entry[key]);
+      entriesList[entry.uid] = entry;
+    });
+    return entriesList;
+  }
+}
+
+module.exports = EntriesExport;
