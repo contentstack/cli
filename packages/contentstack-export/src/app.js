@@ -61,7 +61,7 @@ exports.initial = async function (config) {
             await fetchBranchAndExport();
             unlinkFileLogger();
           } catch (error) {
-            addlogs(config, `failed export contents ${formatError(error)}`, 'error');
+            addlogs(config, `${formatError(error)}`, 'error');
           }
           resolve();
         })
@@ -71,7 +71,7 @@ exports.initial = async function (config) {
             addlogs(config, chalk.red('Stack Api key ' + error.errors.api_key[0], 'Please enter valid Key', 'error'));
             addlogs(config, 'The log for this is stored at ' + config.data + '/export/logs', 'success');
           } else {
-            addlogs(config, `failed to login ${formatError(error)}`, 'error');
+            addlogs(config, `${formatError(error)}`, 'error');
           }
           // reject(error);
         });
@@ -79,7 +79,7 @@ exports.initial = async function (config) {
       try {
         await fetchBranchAndExport();
       } catch (error) {
-        addlogs(config, `failed export contents ${formatError(error)}`, 'error');
+        addlogs(config, `${formatError(error)}`, 'error');
       }
       resolve();
     }
@@ -115,9 +115,9 @@ const singleExport = async (moduleName, types, config, branchName) => {
     }
     return true;
   } catch (error) {
+    addlogs(config, `${formatError(error)}`, 'error');
     addlogs(config, 'Failed to migrate ' + moduleName, 'error');
     addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error');
-    throw error;
   }
 };
 
@@ -142,12 +142,12 @@ const allExport = async (config, types, branchName) => {
     addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success');
     return true;
   } catch (error) {
+    addlogs(config, `${formatError(error)}`, 'error');
     addlogs(
       config,
       chalk.red('Failed to migrate stack: ' + config.source_stack + '. Please check error logs for more info'),
       'error',
     );
     addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error');
-    throw error;
   }
 };
