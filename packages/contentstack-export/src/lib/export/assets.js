@@ -5,10 +5,8 @@
  */
 
 const _ = require('lodash')
-const fetch = require('node-fetch')
-const { resolve } = require('path')
 const chalk = require('chalk')
-const mkdirp = require('mkdirp')
+const { resolve } = require('path')
 const Promise = require('bluebird')
 const progress = require('progress-stream')
 const { HttpClient } = require('@contentstack/cli-utilities')
@@ -163,14 +161,17 @@ module.exports = class ExportAssets extends BaseClass {
     if (this.assetConfig.retryIfAssetDownloadFailed) {
       const apiBatches = _.chunk(this.failedAssets, 2)
       log(this.config, 'Retrying failed to download assets.', 'success')
-  
+      this.failedAssets = []
+
       for (const batch of apiBatches) {
         const allPromise = []
 
         for (const asset of batch) {
           const promise = await new Promise((resolve, reject) => {
             this.assetsDownloadAPICall({ self: this, resolve, reject, asset })
-          }).catch(() => {})
+          }).catch(() => {
+            this.failedAssets.push(asset)
+          })
           allPromise.push(promise)
         }
 
@@ -178,6 +179,11 @@ module.exports = class ExportAssets extends BaseClass {
       }
 
       log(this.config, 'Retry asset download completed.!', 'success')
+    }
+
+    if (!_.isEmpty(this.failedAssets)) {
+      log(this.config, `Number of ${this.failedAssets.length} assets not download.!`, 'success')
+      writeFileSync(resolve(this.assetsRootPath, 'download-failed-assets.json'), JSON.stringify(this.failedAssets))
     }
   }
 
