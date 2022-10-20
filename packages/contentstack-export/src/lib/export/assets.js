@@ -41,6 +41,7 @@ module.exports = class ExportAssets extends BaseClass {
 
   constructor(config) {
     super({ config })
+    this.failedAssets = []
     this.assetApiObject = {}
     this.assetFolderApiObject = {}
     this.assetConfig = config.modules.assets
@@ -156,6 +157,27 @@ module.exports = class ExportAssets extends BaseClass {
             log(this.config, 'Versioned Assets downloaded successfully.!', 'success')
           })
       }
+    }
+
+    // NOTE retry if assets download failed
+    if (this.assetConfig.retryIfAssetDownloadFailed) {
+      const apiBatches = _.chunk(this.failedAssets, 2)
+      log(this.config, 'Retrying failed to download assets.', 'success')
+  
+      for (const batch of apiBatches) {
+        const allPromise = []
+
+        for (const asset of batch) {
+          const promise = await new Promise((resolve, reject) => {
+            this.assetsDownloadAPICall({ self: this, resolve, reject, asset })
+          }).catch(() => {})
+          allPromise.push(promise)
+        }
+
+        await Promise.all(allPromise)
+      }
+
+      log(this.config, 'Retry asset download completed.!', 'success')
     }
   }
 
@@ -445,7 +467,8 @@ module.exports = class ExportAssets extends BaseClass {
         }
         assetStreamRequest.pipe(assetFileStream)
       }).catch((error) => {
-        console.log(assetStreamURL, asset)
+        // console.log(assetStreamURL, asset)
+        this.failedAssets.push(asset)
         log(this.config, error, 'error')
       
         reject(error)
@@ -497,6 +520,10 @@ module.exports = class ExportAssets extends BaseClass {
       { code }
     )
 
+    this.onExistHookAction()
+  }
+
+  onExistHookAction() {
     // NOTE write fetch details into-file
     if (!_.isEmpty(this.fetchDetails) && this.updateFetchDetails) {
       this.writeIntoFile(this.exportDetailsPath, this.fetchDetails)
@@ -518,7 +545,7 @@ module.exports = class ExportAssets extends BaseClass {
 
   onInterrupt(_self) {
     _self.setSyncData()
-    _self.beforeExit()
+    _self.onExistHookAction()
     process.exit()
   }
 
