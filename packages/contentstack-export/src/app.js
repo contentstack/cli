@@ -99,15 +99,8 @@ const singleExport = async (moduleName, types, config, branchName) => {
       iterateList.push(moduleName);
 
       for (let element of iterateList) {
-        let type = element
-        if (
-          type === 'assets' &&
-          !config.modules.assets.useNewScript
-        ) {
-          type = 'assets-old'
-        }
 
-        const ExportModule = require('./lib/export/' + type)
+        const ExportModule = require('./lib/export/' + element)
         const result = await new ExportModule(config, stackClient).start(config, branchName);
         if (result && element === 'stack') {
           let master_locale = {
@@ -129,21 +122,13 @@ const singleExport = async (moduleName, types, config, branchName) => {
   }
 };
 
-const allExport = async (config, iterateList, branchName) => {
+const allExport = async (config, types, branchName) => {
   try {
     const stackClient = stack
       .Client(config)
       .stack({ api_key: config.source_stack, management_token: config.management_token });
 
-    for (let element of iterateList) {
-      let type = element
-      if (
-        type === 'assets' &&
-        config.modules.assets.useNewScript
-      ) {
-        type = 'assets-new'
-      }
-
+    for (let type of types) {
       const ExportModule = require('./lib/export/' + type)
       const result = await new ExportModule(config, stackClient).start(config, branchName);
 
