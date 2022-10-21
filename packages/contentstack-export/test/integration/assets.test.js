@@ -7,14 +7,13 @@ const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 const { modules } = require('../../src/config/default')
 const { getStacksFromEnv, getAssetAndFolderCount } = require('./utils/helper')
 const { PRINT_LOGS, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
-const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = process.env
+const { DELIMITER, KEY_VAL_DELIMITER } = process.env
 
 async function exec() {
   let stacksFromEnv = getStacksFromEnv()
   for (let stack of stacksFromEnv) {
     let stackDetails = {}
     stackDetails[stack] = stack
-    stackDetails['region'] = stack.split('_', 2).pop()
     stackDetails['isBranch'] = (stack.split('_', 3).pop() === 'NON') ? false : true;
     process.env[stack].split(DELIMITER).forEach(element => {
       let [key, value] = element.split(KEY_VAL_DELIMITER)

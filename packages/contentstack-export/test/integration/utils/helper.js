@@ -3,6 +3,7 @@ const _ = require('lodash')
 const config = require('../../../src/config/default');
 const { Command } = require('@contentstack/cli-command');
 const managementSdk = require('../../../src/lib/util/contentstack-management-sdk');
+const pjson = require('../../../package.json')
 
 let envData = { NA: {}, EU: {}, 'AZURE-NA': {}, env_pushed: false }
 
@@ -30,8 +31,9 @@ const initEnvData = (regions = ['NA', 'EU', 'AZURE-NA']) => {
 }
 
 const getStacksFromEnv = () => {
+  let pluginName = pjson.name.split('/')[1].split('-').pop() // get plugin name from package.json
   const { APP_ENV } = process.env
-  const keys = Object.keys(process.env).filter(key => key.includes(`${APP_ENV}_`))
+  const keys = Object.keys(process.env).filter(key => key.includes(`${APP_ENV}_`) && key.includes(`${pluginName.toUpperCase()}`))
   return keys;
 }
 

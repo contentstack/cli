@@ -2,7 +2,7 @@ const { join } = require('path')
 const { test } = require("@contentstack/cli-dev-dependencies")
 const { NodeCrypto, messageHandler } = require("@contentstack/cli-utilities")
 
-const { getEnvData, getStacksFromEnv, getStackDetailsFromEnv } = require('./utils/helper')
+const { getEnvData, getStacksFromEnv } = require('./utils/helper')
 const LoginCommand = require('@contentstack/cli-auth/lib/commands/auth/login').default
 const AddTokenCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/add').default
 const RegionGetCommand = require('@contentstack/cli-config/lib/commands/config/set/region').default

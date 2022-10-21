@@ -13,7 +13,6 @@ async function exec() {
 
   for (let stack of stacksFromEnv) {
     let stackDetails = {}
-    stackDetails['region'] = stack.split('_', 2).pop()
     stackDetails['isBranch'] = (stack.split('_', 3).pop() === 'NON') ? false : true;
     process.env[stack].split(DELIMITER).forEach(element => {
       let [key, value] = element.split(KEY_VAL_DELIMITER)
