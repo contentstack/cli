@@ -139,9 +139,9 @@ const allExport = async (config, iterateList, branchName) => {
       let type = element
       if (
         type === 'assets' &&
-        !config.modules.assets.useNewScript
+        config.modules.assets.useNewScript
       ) {
-        type = 'assets-old'
+        type = 'assets-new'
       }
 
       const ExportModule = require('./lib/export/' + type)
