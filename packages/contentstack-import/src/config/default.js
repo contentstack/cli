@@ -74,6 +74,8 @@ module.exports = {
       host: 'https://api.contentstack.io',
       validKeys: ['uid', 'filename', 'url', 'status'],
       assetBatchLimit: 1,
+      uploadAssetsConcurrency: 1,
+      importFoldersConcurrency: 1
     },
     content_types: {
       dirName: 'content_types',
