@@ -80,7 +80,7 @@ module.exports = {
       enableDownloadStatus: false,
 
       // New keys
-      useNewScript: true,
+      useNewScript: false,
       concurrencyLimit: 5,
       fetchPolicy: 'cache-first',
       downloadVersionAssets: false,
