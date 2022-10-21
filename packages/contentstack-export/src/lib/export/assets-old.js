@@ -53,7 +53,7 @@ module.exports = class ExportAssets {
     addlogs(this.config, 'Starting assets export', 'success')
 
     // Create asset folder
-    mkdirp.sync(assetsFolderPath)
+    mkdirp.sync(this.assetsFolderPath)
 
     return new Promise(function (resolve, reject) {
       // TBD: getting all the assets should have optimized
@@ -79,7 +79,7 @@ module.exports = class ExportAssets {
                   return Promise.map(
                     assetsJSON,
                     function (assetJSON) {
-                      if (config.downloadVersionAssets) {
+                      if (self.assetConfig.downloadVersionAssets) {
                         return self
                           .getVersionedAssetJSON(assetJSON.uid, assetJSON._version)
                           .then(function () {
@@ -104,7 +104,7 @@ module.exports = class ExportAssets {
                     { concurrency: self.vLimit }
                   ).then(function () {
                     addlogs(self.config, 'Batch no ' + (batch + 1) + ' of assets is complete', 'success');
-                    helper.writeFile(this.assetContentsFile, self.assetContents)
+                    // helper.writeFile(this.assetContentsFile, self.assetContents)
                   }).catch(function (error) {
                     console.log('Error fetch/download the asset', error && error.message)
                     addlogs(self.config, 'Asset batch ' + (batch + 1) + ' failed to download', 'error')
@@ -117,6 +117,8 @@ module.exports = class ExportAssets {
             },
             { concurrency: self.assetConfig.concurrencyLimit || 1 }
           ).then(function () {
+            helper.writeFile(self.assetContentsFile, self.assetContents)
+
             return self
               .exportFolders()
               .then(function () {
@@ -128,9 +130,10 @@ module.exports = class ExportAssets {
                 reject(error)
               })
           }).catch(function (error) {
+            helper.writeFile(self.assetContentsFile, self.assetContents)
             addlogs(
               self.config,
-              chalk.red('Asset export failed due to the following errrors ' + JSON.stringify(error), 'error'),
+              chalk.red('Asset export failed due to the following errors ' + JSON.stringify(error), 'error'),
             )
             addlogs(self.config, error, 'success')
             reject(error)
