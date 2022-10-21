@@ -10,7 +10,7 @@ const { resolve } = require('path')
 const Promise = require('bluebird')
 const progress = require('progress-stream')
 const { HttpClient } = require('@contentstack/cli-utilities')
-const { existsSync, mkdirSync, writeFileSync, readFileSync, createWriteStream } = require('fs')
+const { rmSync, existsSync, mkdirSync, writeFileSync, readFileSync, createWriteStream } = require('fs')
 
 const helper = require('../util/helper')
 const BaseClass = require('./base-class')
@@ -184,6 +184,8 @@ module.exports = class ExportAssets extends BaseClass {
     if (!_.isEmpty(this.failedAssets)) {
       log(this.config, `Number of ${this.failedAssets.length} assets not download.!`, 'success')
       writeFileSync(resolve(this.assetsRootPath, 'download-failed-assets.json'), JSON.stringify(this.failedAssets))
+    } else if (existsSync(this.assetDownloadMetaFilePath)) {
+      rmSync(this.assetDownloadMetaFilePath, { force: true })
     }
   }
 
