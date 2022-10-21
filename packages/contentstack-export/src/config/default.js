@@ -77,21 +77,7 @@ module.exports = {
       invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by', '_metadata', 'published'],
       // no of asset version files (of a single asset) that'll be downloaded parallelly
       downloadLimit: 3,
-      enableDownloadStatus: false,
-
-      // New keys
-      useNewScript: false,
-      concurrencyLimit: 5,
-      fetchPolicy: 'cache-first',
-      downloadVersionAssets: false,
-      displayExecutionLogTime: true,
-      retryIfAssetDownloadFailed: true,
-      makeConcurrentNetworkCalls: true,
-      saveData: {
-        onError: true, // NOTE on internal error
-        onInterrupt: true, // NOTE keyboard interrupt
-        onException: true // NOTE global exception
-      }
+      enableDownloadStatus: false
     },
     content_types: {
       dirName: 'content_types',
