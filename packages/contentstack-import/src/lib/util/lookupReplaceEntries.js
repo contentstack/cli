@@ -143,7 +143,7 @@ module.exports = function (data, mappedUids, uidMapperPath) {
             if (element.multiple) {
               entry[element.uid].forEach(e => {
                 let key = Object.keys(e).pop()
-                let subBlock = element.blocks.filter(e => e.uid === key).pop()
+                let subBlock = element.blocks.filter(_e => _e.uid === key).pop()
                 findEntryIdsFromJsonRte(e[key], subBlock.schema)
               })
             }
