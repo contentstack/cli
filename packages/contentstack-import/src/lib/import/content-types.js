@@ -17,7 +17,7 @@ let { addlogs } = require('../util/log');
 let config = require('../../config/default');
 let supress = require('../util/extensionsUidReplace');
 let sdkInstance = require('../util/contentstack-management-sdk');
-const { getInstalledExtensions } = require('../util/marketplace-app-helper')
+const { getInstalledExtensions } = require('../util/marketplace-app-helper');
 
 let reqConcurrency = config.concurrency;
 let requestLimit = config.rateLimit;
@@ -41,7 +41,7 @@ function importContentTypes() {
   this.requestOptions = {
     json: {},
   };
-  this.installedExtensions = []
+  this.installedExtensions = [];
 }
 
 importContentTypes.prototype = {
@@ -55,36 +55,38 @@ importContentTypes.prototype = {
     contentTypesFolderPath = path.resolve(config.data, contentTypeConfig.dirName);
     mapperFolderPath = path.join(config.data, 'mapper', 'content_types');
     const appMapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps');
-    globalFieldMapperFolderPath = helper.readFile(path.join(config.data, 'mapper', 'global_fields', 'success.json'));
-    globalFieldPendingPath = helper.readFile(
+    globalFieldMapperFolderPath = helper.readFileSync(
+      path.join(config.data, 'mapper', 'global_fields', 'success.json'),
+    );
+    globalFieldPendingPath = helper.readFileSync(
       path.join(config.data, 'mapper', 'global_fields', 'pending_global_fields.js'),
     );
     globalFieldUpdateFile = path.join(config.data, 'mapper', 'global_fields', 'success.json');
     fileNames = fs.readdirSync(path.join(contentTypesFolderPath));
-    self.globalfields = helper.readFile(path.resolve(globalFieldsFolderPath, globalFieldConfig.fileName));
+    self.globalfields = helper.readFileSync(path.resolve(globalFieldsFolderPath, globalFieldConfig.fileName));
 
     for (let index in fileNames) {
       if (skipFiles.indexOf(fileNames[index]) === -1) {
-        self.contentTypes.push(helper.readFile(path.join(contentTypesFolderPath, fileNames[index])));
+        self.contentTypes.push(helper.readFileSync(path.join(contentTypesFolderPath, fileNames[index])));
       }
     }
 
-    self.contentTypeUids = _.map(self.contentTypes, 'uid').filter(val => val);
+    self.contentTypeUids = _.map(self.contentTypes, 'uid').filter((val) => val);
     self.createdContentTypeUids = [];
     if (!fs.existsSync(mapperFolderPath)) {
       mkdirp.sync(mapperFolderPath);
     }
     // avoid re-creating content types that already exists in the stack
     if (fs.existsSync(path.join(mapperFolderPath, 'success.json'))) {
-      self.createdContentTypeUids = helper.readFile(path.join(mapperFolderPath, 'success.json')) || [];
+      self.createdContentTypeUids = helper.readFileSync(path.join(mapperFolderPath, 'success.json')) || [];
     }
 
     if (fs.existsSync(path.join(appMapperFolderPath, 'marketplace-apps.json'))) {
-      self.installedExtensions = helper.readFile(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
+      self.installedExtensions = helper.readFileSync(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
     }
 
     if (_.isEmpty(self.installedExtensions)) {
-      self.installedExtensions = await getInstalledExtensions(config)
+      self.installedExtensions = await getInstalledExtensions(config);
     }
 
     self.contentTypeUids = _.difference(self.contentTypeUids, self.createdContentTypeUids);
@@ -97,14 +99,12 @@ importContentTypes.prototype = {
     return new Promise(function (resolve, reject) {
       if (self.contentTypes === undefined || _.isEmpty(self.contentTypes)) {
         addlogs(config, chalk.yellow('No Content types found'), 'success');
-        return resolve({ empty: true })
+        return resolve({ empty: true });
       }
       return Promise.map(
         self.contentTypeUids,
         function (contentTypeUid) {
-          return self
-            .seedContentTypes(contentTypeUid, self.uidToTitleMap[contentTypeUid])
-            .catch(reject);
+          return self.seedContentTypes(contentTypeUid, self.uidToTitleMap[contentTypeUid]).catch(reject);
         },
         {
           // seed 3 content types at a time
@@ -124,7 +124,7 @@ importContentTypes.prototype = {
               return Promise.map(
                 batch,
                 async function (contentType) {
-                  await self.updateContentTypes(contentType)
+                  await self.updateContentTypes(contentType);
                   addlogs(config, contentType.uid + ' was updated successfully!', 'success');
                 },
                 {
@@ -135,34 +135,36 @@ importContentTypes.prototype = {
               });
             },
             {
-              concurrency: reqConcurrency
-            }
-          ).then(async function () {
-            // eslint-disable-next-line quotes
-            if (field_rules_ct.length > 0) {
-              await fsPromises.writeFile(
-                contentTypesFolderPath + '/field_rules_uid.json',
-                JSON.stringify(field_rules_ct),
-              );
-            }
+              concurrency: reqConcurrency,
+            },
+          )
+            .then(async function () {
+              // eslint-disable-next-line quotes
+              if (field_rules_ct.length > 0) {
+                await fsPromises.writeFile(
+                  contentTypesFolderPath + '/field_rules_uid.json',
+                  JSON.stringify(field_rules_ct),
+                );
+              }
 
-            if (globalFieldPendingPath && globalFieldPendingPath.length !== 0) {
-              return self
-                .updateGlobalfields()
-                .then(function () {
-                  addlogs(config, chalk.green('Content types have been imported successfully!'), 'success');
-                  return resolve();
-                })
-                .catch((_error) => {
-                  addlogs(config, chalk.green('Error in GlobalFields'), 'success');
-                  return reject();
-                });
-            }
-            addlogs(config, chalk.green('Content types have been imported successfully!'), 'success');
-            return resolve();
-          }).catch((error) => {
-            return reject(error);
-          });
+              if (globalFieldPendingPath && globalFieldPendingPath.length !== 0) {
+                return self
+                  .updateGlobalfields()
+                  .then(function () {
+                    addlogs(config, chalk.green('Content types have been imported successfully!'), 'success');
+                    return resolve();
+                  })
+                  .catch((_error) => {
+                    addlogs(config, chalk.green('Error in GlobalFields'), 'success');
+                    return reject();
+                  });
+              }
+              addlogs(config, chalk.green('Content types have been imported successfully!'), 'success');
+              return resolve();
+            })
+            .catch((error) => {
+              return reject(error);
+            });
         })
         .catch((error) => {
           return reject(error);
@@ -239,7 +241,7 @@ importContentTypes.prototype = {
             globalFieldMapperFolderPath.splice(updateObjpos, 1, Obj);
             helper.writeFile(globalFieldUpdateFile, globalFieldMapperFolderPath);
 
-            resolve(globalFieldResponse)
+            resolve(globalFieldResponse);
           })
           .catch(function (err) {
             let error = JSON.parse(err.message);
@@ -260,7 +262,7 @@ importContentTypes.prototype = {
       result[ct.uid] = ct.title;
     });
     return result;
-  }
+  },
 };
 
 module.exports = new importContentTypes();

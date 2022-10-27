@@ -15,7 +15,7 @@ let helper = require('../util/fs');
 let { addlogs } = require('../util/log');
 let stack = require('../util/contentstack-management-sdk');
 let config = require('../../config/default');
-let {isEmpty, cloneDeep} = require('lodash');
+let { isEmpty, cloneDeep } = require('lodash');
 let reqConcurrency = config.concurrency;
 let langConfig = config.modules.locales;
 let langFolderPath;
@@ -45,10 +45,10 @@ importLanguages.prototype = {
     langSuccessPath = path.resolve(config.data, 'mapper', 'languages', 'success.json');
     langFailsPath = path.resolve(config.data, 'mapper', 'languages', 'fails.json');
     mkdirp.sync(langMapperPath);
-    self.languages = helper.readFile(path.resolve(langFolderPath, langConfig.fileName));
-    
+    self.languages = helper.readFileSync(path.resolve(langFolderPath, langConfig.fileName));
+
     if (fs.existsSync(langUidMapperPath)) {
-      self.langUidMapper = helper.readFile(langUidMapperPath);
+      self.langUidMapper = helper.readFileSync(langUidMapperPath);
       self.langUidMapper = self.langUidMapper || {};
     }
 
