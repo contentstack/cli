@@ -98,10 +98,15 @@ function chooseStack(managementAPIClient, orgUid) {
         },
       ];
 
-      inquirer.prompt(_chooseStack).then(({ chosenStack }) => {
-        if (chosenStack === config.cancelString) exitProgram();
-        resolve({ name: chosenStack, apiKey: stacks[chosenStack] });
-      });
+      inquirer
+        .prompt(_chooseStack)
+        .then(({ chosenStack }) => {
+          if (chosenStack === config.cancelString) exitProgram();
+          resolve({ name: chosenStack, apiKey: stacks[chosenStack] });
+        })
+        .catch((error) => {
+          reject(error);
+        });
     } catch (error) {
       reject(error);
     }
