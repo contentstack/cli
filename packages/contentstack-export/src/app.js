@@ -88,7 +88,9 @@ exports.initial = async function (config) {
 
 const singleExport = async (moduleName, types, config, branchName) => {
   try {
-    const stackClient = stack.Client(config);
+    const stackClient = stack
+      .Client(config)
+      .stack({ api_key: config.source_stack, management_token: config.management_token });
     if (types.indexOf(moduleName) > -1) {
       let iterateList;
       if (config.modules.dependency && config.modules.dependency[moduleName]) {

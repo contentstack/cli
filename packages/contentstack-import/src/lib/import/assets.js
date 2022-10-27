@@ -48,13 +48,13 @@ importAssets.prototype = {
     self.uidMapperPath = path.join(mapperDirPath, 'uid-mapping.json');
     self.urlMapperPath = path.join(mapperDirPath, 'url-mapping.json');
     self.failsPath = path.join(mapperDirPath, 'fail.json');
-    self.assets = helper.readFile(path.join(assetsFolderPath, assetsConfig.fileName));
-    self.environment = helper.readFile(environmentPath);
+    self.assets = helper.readFileSync(path.join(assetsFolderPath, assetsConfig.fileName));
+    self.environment = helper.readFileSync(environmentPath);
     if (fs.existsSync(self.uidMapperPath)) {
-      self.uidMapping = helper.readFile(self.uidMapperPath);
+      self.uidMapping = helper.readFileSync(self.uidMapperPath);
     }
     if (fs.existsSync(self.urlMapperPath)) {
-      self.urlMapping = helper.readFile(self.urlMapperPath);
+      self.urlMapping = helper.readFileSync(self.urlMapperPath);
     }
 
     mkdirp.sync(mapperDirPath);
@@ -183,7 +183,7 @@ importAssets.prototype = {
   uploadVersionedAssets: function (uid, assetFolderPath) {
     let self = this;
     return new Promise(function (resolve, reject) {
-      let versionedAssetMetadata = helper.readFile(path.join(assetFolderPath, '_contentstack_' + uid + '.json'));
+      let versionedAssetMetadata = helper.readFileSync(path.join(assetFolderPath, '_contentstack_' + uid + '.json'));
       // using last version, find asset's parent
 
       let lastVersion = versionedAssetMetadata[versionedAssetMetadata.length - 1];
@@ -321,7 +321,7 @@ importAssets.prototype = {
     let self = this;
     return new Promise(function (resolve, reject) {
       let mappedFolderPath = path.resolve(config.data, 'mapper', 'assets', 'folder-mapping.json');
-      self.folderDetails = helper.readFile(path.resolve(assetsFolderPath, 'folders.json'));
+      self.folderDetails = helper.readFileSync(path.resolve(assetsFolderPath, 'folders.json'));
 
       if (_.isEmpty(self.folderDetails)) {
         addlogs(config, 'No folders were found at: ' + path.join(assetsFolderPath, 'folders.json'), 'success');
@@ -332,7 +332,7 @@ importAssets.prototype = {
       let createdFolderUids = [];
       // if a few folders have already been created, skip re-creating them
       if (fs.existsSync(mappedFolderPath)) {
-        createdFolders = helper.readFile(mappedFolderPath);
+        createdFolders = helper.readFileSync(mappedFolderPath);
         // check if the read file has mapped objects
         if (_.isPlainObject(createdFolders)) {
           createdFolderUids = Object.keys(createdFolders);
@@ -374,7 +374,7 @@ importAssets.prototype = {
         },
       )
         .then(function () {
-          self.mappedFolderUids = helper.readFile(mappedFolderPath);
+          self.mappedFolderUids = helper.readFileSync(mappedFolderPath);
           // completed creating folders
           return resolve();
         })
