@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
 const chalk = require('chalk');
-const {isEmpty} = require('lodash');
+const { isEmpty } = require('lodash');
 
 const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
@@ -31,7 +31,7 @@ function importLabels() {
   this.labelUidMapper = {};
   this.labelUids = [];
   if (fs.existsSync(labelUidMapperPath)) {
-    this.labelUidMapper = helper.readFile(labelUidMapperPath);
+    this.labelUidMapper = helper.readFileSync(labelUidMapperPath);
     this.labelUidMapper = this.labelUidMapper || {};
   }
 }
@@ -43,7 +43,7 @@ importLabels.prototype = {
     client = stack.Client(config);
     addlogs(config, chalk.white('Migrating labels'), 'success');
     labelsFolderPath = path.resolve(config.data, labelConfig.dirName);
-    self.labels = helper.readFile(path.resolve(labelsFolderPath, labelConfig.fileName));
+    self.labels = helper.readFileSync(path.resolve(labelsFolderPath, labelConfig.fileName));
     labelMapperPath = path.resolve(config.data, 'mapper', 'labels');
     labelUidMapperPath = path.resolve(config.data, 'mapper', 'labels', 'uid-mapping.json');
     labelSuccessPath = path.resolve(config.data, 'labels', 'success.json');
@@ -124,7 +124,7 @@ importLabels.prototype = {
   updateLabels: function () {
     let self = this;
     return new Promise(function (resolve, reject) {
-      let labelsObj = helper.readFile(path.resolve(labelsFolderPath, labelConfig.fileName));
+      let labelsObj = helper.readFileSync(path.resolve(labelsFolderPath, labelConfig.fileName));
       return Promise.map(
         self.labelUids,
         function (labelUid) {

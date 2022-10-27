@@ -8,7 +8,7 @@ var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
 
-exports.readFile = function (filePath, parse) {
+exports.readFileSync = function (filePath, parse) {
   var data;
   parse = typeof parse === 'undefined' ? true : parse;
   filePath = path.resolve(filePath);
@@ -18,18 +18,45 @@ exports.readFile = function (filePath, parse) {
   return data;
 };
 
-exports.writeFile = function (filePath, data) {
+// by default file type is json
+exports.readFile = async (filePath, options = { type: 'json' }) => {
+  return new Promise((resolve, reject) => {
+    filePath = path.resolve(filePath);
+    fs.readFile(filePath, 'utf-8', (error, data) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (options.type !== 'json') {
+          return resolve(data);
+        }
+        resolve(JSON.parse(data));
+      }
+    });
+  });
+};
+
+exports.writeFileSync = function (filePath, data) {
   data = typeof data === 'object' ? JSON.stringify(data) : data || '{}';
   fs.writeFileSync(filePath, data);
 };
 
-exports.makeDirectory = function () {
-  for (var key in arguments) {
-    var dirname = path.resolve(arguments[key]);
-    if (!fs.existsSync(dirname)) {
-      mkdirp.sync(dirname);
-    }
+exports.writeFile = function (filePath, data) {
+  return new Promise((resolve, reject) => {
+    data = typeof data === 'object' ? JSON.stringify(data) : data || '{}';
+    fs.writeFile(filePath, data, (error) => {
+      if (error) {
+        return reject(error);
+      }
+      resolve('done');
+    });
+  });
+};
+
+exports.makeDirectory = async function (path) {
+  if (!path) {
+    throw new Error('Invalid path to create directory');
   }
+  return mkdirp(path);
 };
 
 exports.readLargeFile = function (filePath, opts = {}) {

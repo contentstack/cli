@@ -69,7 +69,7 @@ exports.sanitizeStack = function (importConfig) {
           importConfig.modules.stack.fileName,
         );
 
-        const oldStackDetails = fs.readFile(stackFilePath);
+        const oldStackDetails = fs.readFileSync(stackFilePath);
         if (!oldStackDetails || !oldStackDetails.settings || !oldStackDetails.settings.hasOwnProperty('version')) {
           throw new Error(`${JSON.stringify(oldStackDetails)} is invalid!`);
         }
@@ -129,7 +129,7 @@ exports.field_rules_update = function (importConfig, ctPath) {
   return new Promise(function (resolve, reject) {
     let client = stack.Client(importConfig);
 
-    fs.readFile(path.join(ctPath + '/field_rules_uid.json'), async (err, data) => {
+    fs.readFileSync(path.join(ctPath + '/field_rules_uid.json'), async (err, data) => {
       if (err) {
         throw err;
       }
@@ -152,7 +152,7 @@ exports.field_rules_update = function (importConfig, ctPath) {
                   let updatedValue = [];
                   for (let j = 0; j < fieldRulesArray.length; j++) {
                     let splitedFieldRulesValue = fieldRulesArray[j];
-                    let oldUid = helper.readFile(path.join(entryUidMapperPath));
+                    let oldUid = helper.readFileSync(path.join(entryUidMapperPath));
                     if (oldUid.hasOwnProperty(splitedFieldRulesValue)) {
                       updatedValue.push(oldUid[splitedFieldRulesValue]);
                     } else {
@@ -215,9 +215,8 @@ exports.executeTask = function (tasks = [], handler, options) {
   const { concurrency = 1 } = options;
   const limit = promiseLimit(concurrency);
   return Promise.all(
-    tasks.map((name) => {
-      console.log(name);
-      return limit(() => handler(name));
+    tasks.map((task) => {
+      return limit(() => handler(task));
     }),
   );
 };

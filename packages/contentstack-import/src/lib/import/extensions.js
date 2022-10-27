@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
 const chalk = require('chalk');
-const {isEmpty} = require('lodash');
+const { isEmpty } = require('lodash');
 
 const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
@@ -44,9 +44,9 @@ importExtensions.prototype = {
     extUidMapperPath = path.resolve(config.data, 'mapper/extensions', 'uid-mapping.json');
     extSuccessPath = path.resolve(config.data, 'extensions', 'success.json');
     extFailsPath = path.resolve(config.data, 'extensions', 'fails.json');
-    self.extensions = helper.readFile(path.resolve(extensionsFolderPath, extensionsConfig.fileName));
+    self.extensions = helper.readFileSync(path.resolve(extensionsFolderPath, extensionsConfig.fileName));
     if (fs.existsSync(extUidMapperPath)) {
-      self.extUidMapper = helper.readFile(extUidMapperPath);
+      self.extUidMapper = helper.readFileSync(extUidMapperPath);
       self.extUidMapper = self.extUidMapper || {};
     }
 
