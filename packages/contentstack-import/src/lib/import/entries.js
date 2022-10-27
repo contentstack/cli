@@ -18,7 +18,7 @@ const stack = require('../util/contentstack-management-sdk');
 const extension_suppress = require('../util/extensionsUidReplace');
 const lookupReplaceAssets = require('../util/lookupReplaceAssets');
 const lookupReplaceEntries = require('../util/lookupReplaceEntries');
-const { getInstalledExtensions } = require('../util/marketplace-app-helper')
+const { getInstalledExtensions } = require('../util/marketplace-app-helper');
 
 let client;
 let config = util.getConfig();
@@ -58,7 +58,7 @@ function importEntries() {
 
   createdEntriesWOUidPath = path.join(entryMapperPath, 'created-entries-wo-uid.json');
   failedWOPath = path.join(entryMapperPath, 'failedWO.json');
-  
+
   // Object of Schemas, referred to by their content type uid
   this.ctSchemas = {};
   // Array of content type uids, that have reference fields
@@ -80,10 +80,10 @@ function importEntries() {
   // Entries that failed to get created OR updated
   this.fails = [];
   // List of installed extensions to replace uid
-  this.installedExtensions = []
+  this.installedExtensions = [];
 
   let files = fs.readdirSync(ctPath);
-  this.environment = helper.readFile(environmentPath);
+  this.environment = helper.readFileSync(environmentPath);
   for (let index in files) {
     if (index) {
       try {
@@ -112,15 +112,15 @@ importEntries.prototype = {
     client = stack.Client(config);
     masterLanguage = config.master_locale;
     addlogs(config, 'Migrating entries', 'success');
-    let languages = helper.readFile(lPath);
+    let languages = helper.readFileSync(lPath);
     const appMapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps');
 
     if (fs.existsSync(path.join(appMapperFolderPath, 'marketplace-apps.json'))) {
-      self.installedExtensions = helper.readFile(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
+      self.installedExtensions = helper.readFileSync(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
     }
 
     if (_.isEmpty(self.installedExtensions)) {
-      self.installedExtensions = await getInstalledExtensions(config)
+      self.installedExtensions = await getInstalledExtensions(config);
     }
 
     return new Promise(function (resolve, reject) {
@@ -138,8 +138,8 @@ importEntries.prototype = {
       return self
         .supressFields()
         .then(async function () {
-          let mappedAssetUids = helper.readFile(mappedAssetUidPath) || {};
-          let mappedAssetUrls = helper.readFile(mappedAssetUrlPath) || {};
+          let mappedAssetUids = helper.readFileSync(mappedAssetUidPath) || {};
+          let mappedAssetUrls = helper.readFileSync(mappedAssetUrlPath) || {};
 
           // Step 2: Iterate over available languages to create entries in each.
           let counter = 0;
@@ -168,7 +168,7 @@ importEntries.prototype = {
             // Step 3: Revert all the changes done in content type in step 1
             await self.unSuppressFields();
             await self.removeBuggedEntries();
-            let ct_field_visibility_uid = helper.readFile(path.join(ctPath + '/field_rules_uid.json'));
+            let ct_field_visibility_uid = helper.readFileSync(path.join(ctPath + '/field_rules_uid.json'));
             let ct_files = fs.readdirSync(ctPath);
             if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
               for (const element of ct_field_visibility_uid) {
@@ -205,7 +205,7 @@ importEntries.prototype = {
     return new Promise(function (resolve, reject) {
       let contentTypeUids = Object.keys(self.ctSchemas);
       if (fs.existsSync(entryUidMapperPath)) {
-        self.mappedUids = helper.readFile(entryUidMapperPath);
+        self.mappedUids = helper.readFileSync(entryUidMapperPath);
       }
       self.mappedUids = self.mappedUids || {};
       return Promise.map(
@@ -228,11 +228,11 @@ importEntries.prototype = {
           });
 
           if (fs.existsSync(createdEntriesPath)) {
-            createdEntries = helper.readFile(createdEntriesPath);
+            createdEntries = helper.readFileSync(createdEntriesPath);
             createdEntries = createdEntries || {};
           }
           if (fs.existsSync(eFilePath)) {
-            let entries = helper.readFile(eFilePath);
+            let entries = helper.readFileSync(eFilePath);
             if (!_.isPlainObject(entries) || _.isEmpty(entries)) {
               addlogs(
                 config,
@@ -263,7 +263,7 @@ importEntries.prototype = {
                     mappedAssetUids,
                     mappedAssetUrls,
                     eLangFolderPath,
-                    self.installedExtensions
+                    self.installedExtensions,
                   );
                 }
               }
@@ -483,7 +483,7 @@ importEntries.prototype = {
   getCreatedEntriesWOUid: function () {
     let self = this;
     return new Promise(function (resolve) {
-      self.createdEntriesWOUid = helper.readFile(createdEntriesWOUidPath);
+      self.createdEntriesWOUid = helper.readFileSync(createdEntriesWOUidPath);
       self.failedWO = [];
       if (_.isArray(self.createdEntriesWOUid) && self.createdEntriesWOUid.length > 0) {
         return Promise.map(
@@ -507,7 +507,7 @@ importEntries.prototype = {
   repostEntries: function (lang) {
     let self = this;
     return new Promise(function (resolve, reject) {
-      let _mapped_ = helper.readFile(path.join(entryMapperPath, 'uid-mapping.json'));
+      let _mapped_ = helper.readFileSync(path.join(entryMapperPath, 'uid-mapping.json'));
       if (_.isPlainObject(_mapped_)) {
         self.mappedUids = _.merge(_mapped_, self.mappedUids);
       }
@@ -517,14 +517,14 @@ importEntries.prototype = {
           let eFolderPath = path.join(entryMapperPath, lang, ctUid);
           let eSuccessFilePath = path.join(eFolderPath, 'success.json');
           let eFilePath = path.resolve(ePath, ctUid, lang + '.json');
-          let sourceStackEntries = helper.readFile(eFilePath);
+          let sourceStackEntries = helper.readFileSync(eFilePath);
 
           if (!fs.existsSync(eSuccessFilePath)) {
             addlogs(config, 'Success file was not found at: ' + eSuccessFilePath, 'success');
             return;
           }
 
-          let entries = helper.readFile(eSuccessFilePath);
+          let entries = helper.readFileSync(eSuccessFilePath);
           entries = entries || [];
           if (entries.length === 0) {
             addlogs(config, "No entries were created to be updated in '" + lang + "' language!", 'success');
@@ -532,8 +532,8 @@ importEntries.prototype = {
           }
 
           // Keep track of entries that have their references updated
-          let refsUpdatedUids = helper.readFile(path.join(eFolderPath, 'refsUpdatedUids.json'));
-          let refsUpdateFailed = helper.readFile(path.join(eFolderPath, 'refsUpdateFailed.json'));
+          let refsUpdatedUids = helper.readFileSync(path.join(eFolderPath, 'refsUpdatedUids.json'));
+          let refsUpdateFailed = helper.readFileSync(path.join(eFolderPath, 'refsUpdateFailed.json'));
           let schema = self.ctSchemas[ctUid];
 
           let batches = [];
@@ -834,7 +834,7 @@ importEntries.prototype = {
           }
           self.mappedUids[query.entry.uid] = response.body.entries[0].uid;
           let _ePath = path.join(entryMapperPath, query.locale, query.content_type, 'success.json');
-          let entries = helper.readFile(_ePath);
+          let entries = helper.readFileSync(_ePath);
           entries.push(query.entry);
           helper.writeFile(_ePath, entries);
           addlogs(
@@ -852,7 +852,7 @@ importEntries.prototype = {
   unSuppressFields: function () {
     let self = this;
     return new Promise(async function (resolve, reject) {
-      let modifiedSchemas = helper.readFile(modifiedSchemaPath);
+      let modifiedSchemas = helper.readFileSync(modifiedSchemaPath);
       let modifiedSchemasUids = [];
       let updatedExtensionUidsSchemas = [];
       for (let uid in modifiedSchemas) {
@@ -925,7 +925,7 @@ importEntries.prototype = {
   removeBuggedEntries: function () {
     let self = this;
     return new Promise(function (resolve, reject) {
-      let entries = helper.readFile(uniqueUidMapperPath);
+      let entries = helper.readFileSync(uniqueUidMapperPath);
       let bugged = [];
       let removed = [];
       for (let uid in entries) {
@@ -992,7 +992,7 @@ importEntries.prototype = {
               let updatedValue = [];
               for (const element of fieldRulesArray) {
                 let splitedFieldRulesValue = element;
-                let oldUid = helper.readFile(path.join(entryUidMapperPath));
+                let oldUid = helper.readFileSync(path.join(entryUidMapperPath));
                 if (oldUid.hasOwnProperty(splitedFieldRulesValue)) {
                   updatedValue.push(oldUid[splitedFieldRulesValue]);
                 } else {
@@ -1031,7 +1031,7 @@ importEntries.prototype = {
     };
 
     let contentTypeUids = Object.keys(self.ctSchemas);
-    let entryMapper = helper.readFile(entryUidMapperPath);
+    let entryMapper = helper.readFileSync(entryUidMapperPath);
 
     return new Promise(function (resolve, reject) {
       return Promise.map(
@@ -1042,7 +1042,7 @@ importEntries.prototype = {
             contentTypeUids,
             function (ctUid) {
               let eFilePath = path.resolve(ePath, ctUid, lang + '.json');
-              let entries = helper.readFile(eFilePath);
+              let entries = helper.readFileSync(eFilePath);
 
               let eUids = Object.keys(entries);
               let batches = [];
@@ -1227,11 +1227,7 @@ importEntries.prototype = {
 
     if (element.length) {
       for (const item of element) {
-        if (
-          (item.type === 'p' || item.type === 'a') &&
-          item.children &&
-          item.children.length > 0
-        ) {
+        if ((item.type === 'p' || item.type === 'a') && item.children && item.children.length > 0) {
           return this.doEntryReferencesExist(item.children);
         } else if (this.isEntryRef(item)) {
           return true;
@@ -1249,8 +1245,8 @@ importEntries.prototype = {
     return false;
   },
   restoreJsonRteEntryRefs: function (entry, sourceStackEntry, ctSchema) {
-    let mappedAssetUids = helper.readFile(mappedAssetUidPath) || {};
-    let mappedAssetUrls = helper.readFile(mappedAssetUrlPath) || {};
+    let mappedAssetUids = helper.readFileSync(mappedAssetUidPath) || {};
+    let mappedAssetUrls = helper.readFileSync(mappedAssetUrlPath) || {};
     for (const element of ctSchema) {
       switch (element.data_type) {
         case 'blocks': {
@@ -1467,7 +1463,7 @@ importEntries.prototype = {
     }
 
     return jsonRteChild;
-  }
+  },
 };
 
 module.exports = new importEntries();
