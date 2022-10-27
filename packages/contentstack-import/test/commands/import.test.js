@@ -139,7 +139,7 @@ test
       },
     };
   })
-  .stub(cliux, 'prompt', (name) => async (name) => {
+  .stub(cliux, 'prompt', (_name) => async (name) => {
     if (name === 'Please provide master locale ?') return 'en-us';
     if (name === 'Please provide target Stack') return 'newstackUid';
     if (name === 'Please provide path were you have stored the data')
