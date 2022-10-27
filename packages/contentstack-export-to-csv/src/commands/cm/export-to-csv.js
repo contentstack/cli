@@ -1,5 +1,5 @@
 const { Command, flags } = require('@contentstack/cli-command');
-const { configHandler } = require('@contentstack/cli-utilities');
+const { configHandler, managementClient } = require('@contentstack/cli-utilities');
 const ContentstackManagementSDK = require('@contentstack/management');
 const util = require('../../util');
 const config = require('../../util/config');
@@ -52,14 +52,10 @@ class ExportToCsvCommand extends Command {
     }
   }
 
-  get managementAPIClient() {
-    this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost, authtoken: this.getAuthToken });
-    return this._managementAPIClient;
-  }
-
   async run() {
     try {
-      let action;
+      let action, managementAPIClient;
+
       const {
         flags: {
           org,
@@ -71,6 +67,10 @@ class ExportToCsvCommand extends Command {
           alias: managementTokenAlias,
         },
       } = this.parse(ExportToCsvCommand);
+
+      if (!managementTokenAlias) {
+        managementAPIClient = await managementClient({ host: this.cmaHost });
+      }
 
       if (actionFlag) {
         action = actionFlag;
@@ -89,6 +89,10 @@ class ExportToCsvCommand extends Command {
             const listOfTokens = configHandler.get('tokens');
 
             if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
+              managementAPIClient = await managementClient({
+                host: this.cmaHost,
+                management_token: listOfTokens[managementTokenAlias].token,
+              });
               stack = {
                 name: stackName || managementTokenAlias,
                 apiKey: listOfTokens[managementTokenAlias].apiKey,
@@ -99,7 +103,7 @@ class ExportToCsvCommand extends Command {
             } else {
               let organization;
 
-              if (!this.getAuthToken) {
+              if (!this.isAuthenticated()) {
                 this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
                   exit: 2,
                   suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
@@ -109,13 +113,13 @@ class ExportToCsvCommand extends Command {
               if (org) {
                 organization = { uid: org };
               } else {
-                organization = await util.chooseOrganization(this.managementAPIClient); // prompt for organization
+                organization = await util.chooseOrganization(managementAPIClient); // prompt for organization
               }
 
-              stack = await util.chooseStack(this.managementAPIClient, organization.uid); // prompt for stack
+              stack = await util.chooseStack(managementAPIClient, organization.uid); // prompt for stack
             }
 
-            stackClient = this.getStackClient(stack);
+            stackClient = this.getStackClient(managementAPIClient, stack);
             const contentTypeCount = await util.getContentTypeCount(stackClient);
             const environments = await util.getEnvironments(stackClient); // fetch environments, because in publish details only env uid are available and we need env names
 
@@ -170,7 +174,7 @@ class ExportToCsvCommand extends Command {
         case config.exportUsers:
         case 'users': {
           try {
-            if (!this.getAuthToken) {
+            if (!this.isAuthenticated()) {
               this.error(config.CLI_EXPORT_CSV_LOGIN_FAILED, {
                 exit: 2,
                 suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
@@ -181,11 +185,11 @@ class ExportToCsvCommand extends Command {
             if (org) {
               organization = { uid: org, name: orgName || org };
             } else {
-              organization = await util.chooseOrganization(this.managementAPIClient, action); // prompt for organization
+              organization = await util.chooseOrganization(managementAPIClient, action); // prompt for organization
             }
 
-            const orgUsers = await util.getOrgUsers(this.managementAPIClient, organization.uid, this);
-            const orgRoles = await util.getOrgRoles(this.managementAPIClient, organization.uid, this);
+            const orgUsers = await util.getOrgUsers(managementAPIClient, organization.uid, this);
+            const orgRoles = await util.getOrgRoles(managementAPIClient, organization.uid, this);
             const mappedUsers = util.getMappedUsers(orgUsers);
             const mappedRoles = util.getMappedRoles(orgRoles);
             const listOfUsers = util.cleanOrgUsers(orgUsers, mappedUsers, mappedRoles);
@@ -213,14 +217,14 @@ class ExportToCsvCommand extends Command {
     return (string || '').split(' ').join('_').toLowerCase();
   }
 
-  getStackClient(stack) {
+  getStackClient(managementAPIClient, stack) {
     if (stack.token) {
-      return ContentstackManagementSDK.client({ host: this.cmaHost }).stack({
+      return managementAPIClient.stack({
         api_key: stack.apiKey,
         management_token: stack.token,
       });
     }
-    return this.managementAPIClient.stack({ api_key: stack.apiKey });
+    return managementAPIClient.stack({ api_key: stack.apiKey });
   }
 }
 

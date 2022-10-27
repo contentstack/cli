@@ -1,5 +1,7 @@
 node_modules
 .todo
+.env
+.dccache
 logs
 contents
 lerna-debug.log
