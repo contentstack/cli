@@ -3,18 +3,18 @@
  * Copyright (c) 2019 Contentstack LLC
  * MIT Licensed
  */
-const fs = require('fs')
-const _ = require('lodash')
-const path = require('path')
-const chalk = require('chalk')
-const mkdirp = require('mkdirp')
-const { cliux, configHandler, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities')
+const fs = require('fs');
+const _ = require('lodash');
+const path = require('path');
+const chalk = require('chalk');
+const mkdirp = require('mkdirp');
+const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
 
-let config = require('../../config/default')
-const { addlogs: log } = require('../util/log')
-const { readFile, writeFile } = require('../util/fs')
-const sdk = require('../util/contentstack-management-sdk')
-const { getInstalledExtensions } = require('../util/marketplace-app-helper')
+let config = require('../../config/default');
+const { addlogs: log } = require('../util/log');
+const { readFile, writeFile } = require('../util/fs');
+const sdk = require('../util/contentstack-management-sdk');
+const { getDeveloperHubUrl, getInstalledExtensions } = require('../util/marketplace-app-helper');
 
 let client
 const marketplaceAppConfig = config.modules.marketplace_apps
@@ -26,10 +26,10 @@ function importMarketplaceApps() {
   this.marketplaceAppFolderPath = ''
 
   this.start = async (credentialConfig) => {
-    config = credentialConfig
-    client = sdk.Client(config)
-    this.developerHuBaseUrl = await this.getDeveloperHubUrl()
-    this.marketplaceAppFolderPath = path.resolve(config.data, marketplaceAppConfig.dirName)
+    config = credentialConfig;
+    client = sdk.Client(config);
+    this.developerHuBaseUrl = await getDeveloperHubUrl()
+    this.marketplaceAppFolderPath = path.resolve(config.data, marketplaceAppConfig.dirName);
     this.marketplaceApps = _.uniqBy(
       readFile(path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName)),
       'app_uid'
@@ -128,7 +128,7 @@ function importMarketplaceApps() {
     }
 
     // NOTE get list of developer-hub installed apps (private)
-    const installedDeveloperHubApps = await httpClient.get(`${config.extensionHost}/apps-api/apps/`)
+    const installedDeveloperHubApps = await httpClient.get(`${this.developerHuBaseUrl}/apps/`)
       .then(({ data: { data } }) => data)
       .catch(err => {
         console.log(err)
@@ -201,7 +201,7 @@ function importMarketplaceApps() {
         app.manifest.ui_location.locations = this.removeUidFromManifestUILocations(app.manifest.ui_location.locations)
       }
       httpClient.post(
-        `${config.extensionHost}/apps-api/apps`,
+        `${this.developerHuBaseUrl}/apps`,
         app.manifest
       ).then(async ({ data: result }) => {
         const { name } = app.manifest
@@ -410,30 +410,10 @@ function importMarketplaceApps() {
 
   this.validateAppName = (name) => {
     if (name.length < 3 || name.length > 20) {
-      return 'The app name should be within 3-20 characters long.';
+      return 'The app name should be within 3-20 characters long.'
     }
 
-    return true;
-  }
-
-  this.getDeveloperHubUrl = async () => {
-    const { cma, name } = configHandler.get('region') || {}
-    let developerHubBaseUrl = config.developerHubUrls[cma]
-
-    if (!developerHubBaseUrl) {
-      developerHubBaseUrl = await cliux.inquire({
-        type: 'input',
-        name: 'name',
-        validate: (url) => {
-          if (!url) return 'Developer-hub URL can\'t be empty.'
-
-          return true
-        },
-        message: `Enter the developer-hub base URL for the ${name} region - `,
-      })
-    }
-
-    return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`
+    return true
   }
 }
 
