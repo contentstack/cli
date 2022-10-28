@@ -116,7 +116,7 @@ ImportCommand.examples = [
   `csdx cm:stacks:import --alias <management_token_alias>`,
   `csdx cm:stacks:import --alias <management_token_alias> --data-dir <path/of/export/destination/dir>`,
   `csdx cm:stacks:import --alias <management_token_alias> --config <path/of/config/file>`,
-  `csdx cm:stacks:import --branch <branch name>`,
+  `csdx cm:stacks:import --branch <branch name>  --yes`,
 ];
 ImportCommand.flags = {
   config: flags.string({
@@ -181,6 +181,7 @@ ImportCommand.flags = {
   yes: flags.boolean({
     char: 'y',
     required: false,
+    description: '[optional] Override marketplace prompts'
   })
 };
 
