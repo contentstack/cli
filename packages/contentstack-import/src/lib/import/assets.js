@@ -148,8 +148,8 @@ module.exports = class ImportAssets {
                 },
                 { concurrency: self.assetConfig.assetBatchLimit }
               ).then(function () {
-                helper.writeFile(self.uidMapperPath, self.uidMapping)
-                helper.writeFile(self.urlMapperPath, self.urlMapping)
+                helper.writeFileSync(self.uidMapperPath, self.uidMapping)
+                helper.writeFileSync(self.urlMapperPath, self.urlMapping)
                 // completed uploading assets
                 addlogs(self.config, 'Completed asset import of batch no: ' + (index + 1), 'success')
                 return index + 1
@@ -359,7 +359,7 @@ module.exports = class ImportAssets {
               addlogs(self.config, "Created folder: '" + folder.json.asset.name + "'", 'success')
               // assigning newUid to oldUid
               createdFolders[folder.oldUid] = response.uid
-              helper.writeFile(mappedFolderPath, createdFolders)
+              helper.writeFileSync(mappedFolderPath, createdFolders)
               idx++
             }).catch(function (err) {
               let error = JSON.parse(err.message)
