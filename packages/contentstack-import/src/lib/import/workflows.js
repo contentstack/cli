@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
 const chalk = require('chalk');
-const {isEmpty} = require('lodash');
+const { isEmpty } = require('lodash');
 
 const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
@@ -31,7 +31,7 @@ function importWorkflows() {
   this.workflowUidMapper = {};
   this.labelUids = [];
   if (fs.existsSync(workflowUidMapperPath)) {
-    this.workflowUidMapper = helper.readFile(workflowUidMapperPath);
+    this.workflowUidMapper = helper.readFileSync(workflowUidMapperPath);
     this.workflowUidMapper = this.workflowUidMapper || {};
   }
 }
@@ -43,7 +43,7 @@ importWorkflows.prototype = {
     client = stack.Client(config);
     addlogs(config, chalk.white('Migrating workflows'), 'success');
     workflowFolderPath = path.resolve(config.data, workflowConfig.dirName);
-    self.workflows = helper.readFile(path.resolve(workflowFolderPath, workflowConfig.fileName));
+    self.workflows = helper.readFileSync(path.resolve(workflowFolderPath, workflowConfig.fileName));
     workflowMapperPath = path.resolve(config.data, 'mapper', 'workflows');
     workflowUidMapperPath = path.resolve(config.data, 'mapper', 'workflows', 'uid-mapping.json');
     workflowSuccessPath = path.resolve(config.data, 'workflows', 'success.json');
@@ -63,16 +63,16 @@ importWorkflows.prototype = {
           if (!self.workflowUidMapper.hasOwnProperty(workflowUid)) {
             const workflowStages = workflow.workflow_stages;
             const roleNameMap = {};
-            const roles = await client.stack({ api_key: config.target_stack, management_token: config.management_token }).role().fetchAll();
+            const roles = await client
+              .stack({ api_key: config.target_stack, management_token: config.management_token })
+              .role()
+              .fetchAll();
             for (const role of roles.items) {
               roleNameMap[role.name] = role.uid;
             }
             for (let i = 0; i < workflowStages.length; i++) {
               const stage = workflowStages[i];
-              if (
-                stage.SYS_ACL.users.uids.length &&
-                stage.SYS_ACL.users.uids[0] !== '$all'
-              ) {
+              if (stage.SYS_ACL.users.uids.length && stage.SYS_ACL.users.uids[0] !== '$all') {
                 stage.SYS_ACL.users.uids = ['$all'];
               }
 
@@ -82,16 +82,19 @@ importWorkflows.prototype = {
                     const roleData = stage.SYS_ACL.roles.uids[i];
                     if (!roleNameMap[roleData.name]) {
                       // rules.branch is required to create custom roles.
-                      const branchRuleExists = roleData.rules.find(rule => rule.module === 'branch');
+                      const branchRuleExists = roleData.rules.find((rule) => rule.module === 'branch');
                       if (!branchRuleExists) {
                         roleData.rules.push({
                           module: 'branch',
                           branches: ['main'],
-                          acl: { read: true }
+                          acl: { read: true },
                         });
                       }
 
-                      const role = await client.stack({ api_key: config.target_stack, management_token: config.management_token }).role().create({ role: roleData });
+                      const role = await client
+                        .stack({ api_key: config.target_stack, management_token: config.management_token })
+                        .role()
+                        .create({ role: roleData });
                       stage.SYS_ACL.roles.uids[i] = role.uid;
                       roleNameMap[roleData.name] = role.uid;
                     } else {
@@ -99,7 +102,11 @@ importWorkflows.prototype = {
                     }
                   }
                 } catch (error) {
-                  addlogs(config, chalk.red('Error while importing workflows roles. ' + error && error.message), 'error');
+                  addlogs(
+                    config,
+                    chalk.red('Error while importing workflows roles. ' + error && error.message),
+                    'error',
+                  );
                   return reject({ message: 'Error while importing workflows roles' });
                 }
               }

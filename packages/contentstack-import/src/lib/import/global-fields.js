@@ -54,11 +54,11 @@ importGlobalFields.prototype = {
     globalfieldsSuccessPath = path.resolve(config.data, 'mapper', 'global_fields', 'success.json');
     globalFieldsPending = path.resolve(config.data, 'mapper', 'global_fields', 'pending_global_fields.js');
     globalfieldsFailsPath = path.resolve(config.data, 'mapper', 'global_fields', 'fails.json');
-    self.globalfields = helper.readFile(path.resolve(globalfieldsFolderPath, globalfieldsConfig.fileName));
+    self.globalfields = helper.readFileSync(path.resolve(globalfieldsFolderPath, globalfieldsConfig.fileName));
     const appMapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps');
 
     if (fs.existsSync(globalfieldsUidMapperPath)) {
-      self.snipUidMapper = helper.readFile(globalfieldsUidMapperPath);
+      self.snipUidMapper = helper.readFileSync(globalfieldsUidMapperPath);
       self.snipUidMapper = this.snipUidMapper || {};
     }
 
@@ -67,7 +67,7 @@ importGlobalFields.prototype = {
     }
 
     if (fs.existsSync(path.join(appMapperFolderPath, 'marketplace-apps.json'))) {
-      self.installedExtensions = helper.readFile(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
+      self.installedExtensions = helper.readFileSync(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
     }
 
     if (isEmpty(self.installedExtensions)) {
