@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
 const chalk = require('chalk');
-const {isEmpty} = require('lodash');
+const { isEmpty } = require('lodash');
 
 const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
@@ -90,11 +90,25 @@ importWebhooks.prototype = {
               });
           } else {
             // the webhooks has already been created
-            addlogs(
-              config,
-              chalk.white("The Webhooks: '" + web.name + "' already exists. Skipping it to avoid duplicates!"),
-              'success',
-            );
+            return client
+              .stack({ api_key: config.target_stack, management_token: config.management_token })
+              .webhook(webUid)
+              .fetch()
+              .then(function (webhook) {
+                Object.keys(web).forEach(function (key) {
+                  webhook[key] = web[key];
+                });
+                return webhook.update();
+              })
+              .catch(function (err) {
+                let error = JSON.parse(err.message);
+                self.fails.push(web);
+                addlogs(
+                  config,
+                  chalk.red("Webhooks: '" + web.name + "' failed to be update\n" + JSON.stringify(error)),
+                  'error',
+                );
+              });
           }
           // import 2 webhooks at a time
         },
