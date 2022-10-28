@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
 const chalk = require('chalk');
-const {isEmpty} = require('lodash');
+const { isEmpty } = require('lodash');
 
 const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
@@ -42,9 +42,9 @@ importWebhooks.prototype = {
     webUidMapperPath = path.resolve(config.data, 'mapper', 'webhooks', 'uid-mapping.json');
     webSuccessPath = path.resolve(config.data, 'mapper', 'webhooks', 'success.json');
     webFailsPath = path.resolve(config.data, 'mapper', 'webhooks', 'fails.json');
-    self.webhooks = helper.readFile(path.resolve(webhooksFolderPath, webhooksConfig.fileName));
+    self.webhooks = helper.readFileSync(path.resolve(webhooksFolderPath, webhooksConfig.fileName));
     if (fs.existsSync(webUidMapperPath)) {
-      self.webUidMapper = helper.readFile(webUidMapperPath);
+      self.webUidMapper = helper.readFileSync(webUidMapperPath);
       self.webUidMapper = self.webUidMapper || {};
     }
     mkdirp.sync(webMapperPath);

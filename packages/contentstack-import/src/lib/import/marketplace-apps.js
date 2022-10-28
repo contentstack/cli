@@ -12,7 +12,7 @@ const { cliux, configHandler, HttpClient, NodeCrypto } = require('@contentstack/
 
 let config = require('../../config/default');
 const { addlogs: log } = require('../util/log');
-const { readFile, writeFile } = require('../util/fs');
+const { readFileSync, writeFile } = require('../util/fs');
 const sdk = require('../util/contentstack-management-sdk');
 const { getInstalledExtensions } = require('../util/marketplace-app-helper');
 
@@ -31,7 +31,7 @@ function importMarketplaceApps() {
     this.developerHuBaseUrl = await this.getDeveloperHubUrl();
     this.marketplaceAppFolderPath = path.resolve(config.data, marketplaceAppConfig.dirName);
     this.marketplaceApps = _.uniqBy(
-      readFile(path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName)),
+      readFileSync(path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName)),
       'app_uid',
     );
     this.marketplaceAppsUid = _.map(this.marketplaceApps, 'uid');
@@ -88,7 +88,7 @@ function importMarketplaceApps() {
     const installedExtensions = await getInstalledExtensions(config);
 
     // NOTE after private app installation, refetch marketplace apps from file
-    const marketplaceAppsFromFile = readFile(
+    const marketplaceAppsFromFile = readFileSync(
       path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName),
     );
     this.marketplaceApps = _.filter(marketplaceAppsFromFile, ({ uid }) => _.includes(this.marketplaceAppsUid, uid));
@@ -266,7 +266,7 @@ function importMarketplaceApps() {
    */
   this.updatePrivateAppUid = (app, data, appName) => {
     const self = this;
-    const allMarketplaceApps = readFile(path.resolve(self.marketplaceAppFolderPath, marketplaceAppConfig.fileName));
+    const allMarketplaceApps = readFileSync(path.resolve(self.marketplaceAppFolderPath, marketplaceAppConfig.fileName));
     const index = _.findIndex(allMarketplaceApps, { uid: app.uid, visibility: 'private' });
     if (index > -1) {
       allMarketplaceApps[index] = {
