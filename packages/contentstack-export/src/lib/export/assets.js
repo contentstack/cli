@@ -40,7 +40,7 @@ module.exports = class ExportAssets {
     this.assetDownloadRetryLimit = 3
     this.invalidKeys = this.assetConfig.invalidKeys
     this.bLimit = this.assetConfig.batchLimit || 15
-    this.vLimit = this.assetConfig.downloadLimit || 3
+    this.vLimit = this.assetConfig.downloadLimit || config.fetchConcurrency || 3
   }
 
   start() {
@@ -104,7 +104,7 @@ module.exports = class ExportAssets {
                     { concurrency: self.vLimit }
                   ).then(function () {
                     addlogs(self.config, 'Batch no ' + (batch + 1) + ' of assets is complete', 'success');
-                    // helper.writeFile(this.assetContentsFile, self.assetContents)
+                    // helper.writeFileSync(this.assetContentsFile, self.assetContents)
                   }).catch(function (error) {
                     console.log('Error fetch/download the asset', error && error.message)
                     addlogs(self.config, 'Asset batch ' + (batch + 1) + ' failed to download', 'error')
@@ -117,7 +117,7 @@ module.exports = class ExportAssets {
             },
             { concurrency: self.assetConfig.concurrencyLimit || 1 }
           ).then(function () {
-            helper.writeFile(self.assetContentsFile, self.assetContents)
+            helper.writeFileSync(self.assetContentsFile, self.assetContents)
 
             return self
               .exportFolders()
@@ -130,7 +130,7 @@ module.exports = class ExportAssets {
                 reject(error)
               })
           }).catch(function (error) {
-            helper.writeFile(self.assetContentsFile, self.assetContents)
+            helper.writeFileSync(self.assetContentsFile, self.assetContents)
             addlogs(
               self.config,
               chalk.red('Asset export failed due to the following errors ' + JSON.stringify(error), 'error'),
@@ -183,7 +183,7 @@ module.exports = class ExportAssets {
       }
 
       if (skip >= fCount) {
-        helper.writeFile(self.folderJSONPath, self.folderData)
+        helper.writeFileSync(self.folderJSONPath, self.folderData)
         return resolve()
       }
 
@@ -283,7 +283,7 @@ module.exports = class ExportAssets {
 
       if (version <= 0) {
         const assetVersionInfoFile = path.resolve(self.assetsFolderPath, uid, '_contentstack_' + uid + '.json');
-        helper.writeFile(assetVersionInfoFile, assetVersionInfo)
+        helper.writeFileSync(assetVersionInfoFile, assetVersionInfo)
         return resolve()
       }
       let queryrequestOption = {
@@ -417,7 +417,7 @@ module.exports = class ExportAssets {
         skip = 0
       }
       if (skip > tCount) {
-        helper.writeFile(self.folderJSONPath, self.folderContents)
+        helper.writeFileSync(self.folderJSONPath, self.folderContents)
         return resolve()
       }
       let queryRequestObj = {
