@@ -40,10 +40,10 @@ importEnvironments.prototype = {
     envUidMapperPath = path.resolve(config.data, 'mapper', 'environments', 'uid-mapping.json');
     envSuccessPath = path.resolve(config.data, 'environments', 'success.json');
     envFailsPath = path.resolve(config.data, 'environments', 'fails.json');
-    self.environments = helper.readFile(path.resolve(environmentsFolderPath, environmentConfig.fileName));
+    self.environments = helper.readFileSync(path.resolve(environmentsFolderPath, environmentConfig.fileName));
     client = stack.Client(config);
     if (fs.existsSync(envUidMapperPath)) {
-      self.envUidMapper = helper.readFile(envUidMapperPath);
+      self.envUidMapper = helper.readFileSync(envUidMapperPath);
       self.envUidMapper = self.envUidMapper || {};
     }
 
