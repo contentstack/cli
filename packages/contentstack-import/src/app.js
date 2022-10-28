@@ -10,6 +10,7 @@ let _ = require('lodash');
 let path = require('path');
 const chalk = require('chalk');
 let util = require('./lib/util/index');
+let { formatError } = require('./lib/util');
 let login = require('./lib/util/login');
 let { addlogs } = require('./lib/util/log');
 const { HttpClient } = require('@contentstack/cli-utilities');
@@ -20,10 +21,9 @@ exports.initial = function (configData) {
     config.oldPath = config.data;
 
     if (configData.branchName) {
-      await validateIfBranchExist(configData, configData.branchName)
-        .catch(() => {
-          process.exit()
-        })
+      await validateIfBranchExist(configData, configData.branchName).catch(() => {
+        process.exit();
+      });
     }
 
     const backupAndImportData = async () => {
@@ -33,21 +33,21 @@ exports.initial = function (configData) {
           .then((basePath) => {
             config.data = basePath;
             return util.sanitizeStack(config);
-          }).then(() => {
-            let importRes
-            const types = config.modules.types
+          })
+          .then(() => {
+            let importRes;
+            const types = config.modules.types;
 
             if (config.moduleName) {
-              importRes = singleImport(config.moduleName, types, config)
+              importRes = singleImport(config.moduleName, types, config);
             } else {
-              importRes = allImport(config, types)
+              importRes = allImport(config, types);
             }
 
-            importRes
-              .then(resolve)
-              .catch(reject)
-          }).catch((e) => {
-            console.error(e);
+            importRes.then(resolve).catch(reject);
+          })
+          .catch((error) => {
+            addlogs(config, `Failed to import contents ${formatError(error)}`, 'error');
             reject(e);
             process.exit(1);
           });
@@ -55,18 +55,13 @@ exports.initial = function (configData) {
         let filename = path.basename(config.data);
         addlogs(config, chalk.red(filename + ' Folder does not Exist'), 'error');
       }
-    }
+    };
 
     if (config) {
-      if (
-        (config.email && config.password) ||
-        (config.auth_token)
-      ) {
-        login(config)
-          .then(backupAndImportData)
-          .catch(reject);
+      if ((config.email && config.password) || config.auth_token) {
+        login(config).then(backupAndImportData).catch(reject);
       } else if (config.management_token) {
-        await backupAndImportData()
+        await backupAndImportData();
       }
     }
   });
@@ -81,7 +76,7 @@ let singleImport = async (moduleName, types, config) => {
           let master_locale = { code: masterLocalResponse.code }
           config['master_locale'] = master_locale
         } catch (error) {
-          console.log('Error to fetch the stack details' + error)
+          addlogs(config, `Failed to get master locale detail from the stack ${formatError(error)}`, 'error');
         }
       }
 
@@ -129,24 +124,27 @@ let allImport = async (config, types) => {
           let master_locale = { code: masterLocalResponse.code };
           config['master_locale'] = master_locale;
         }
-        await exportedModule.start(config).then((_result) => {
-          return
-        }).catch(function (error) {
-          addlogs(config, 'Failed to migrate ' + type, 'error');
-          addlogs(config, error, 'error');
-          addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
-          return reject(error);
-        });
+        await exportedModule
+          .start(config)
+          .then((_result) => {
+            return;
+          })
+          .catch(function (error) {
+            addlogs(config, 'Failed to migrate ' + type, 'error');
+            addlogs(config, error, 'error');
+            addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
+            return reject(error);
+          });
       }
       if (config.target_stack && config.source_stack) {
         addlogs(
           config,
           chalk.green(
             'The data of the ' +
-            (config.sourceStackName || config.source_stack) +
-            ' stack has been imported into ' +
-            (config.destinationStackName || config.target_stack) +
-            ' stack successfully!',
+              (config.sourceStackName || config.source_stack) +
+              ' stack has been imported into ' +
+              (config.destinationStackName || config.target_stack) +
+              ' stack successfully!',
           ),
           'success',
         );
@@ -195,32 +193,29 @@ function createBackup(backupDirPath, config) {
 
 const validateIfBranchExist = async (config, branch) => {
   return new Promise(async function (resolve, reject) {
-    const headers = { api_key: config.target_stack, authtoken: config.auth_token }
-    const httpClient = new HttpClient().headers(headers)
+    const headers = { api_key: config.target_stack, authtoken: config.auth_token };
+    const httpClient = new HttpClient().headers(headers);
     const result = await httpClient
       .get(`https://${config.host}/v3/stacks/branches/${branch}`)
       .then(({ data }) => {
         if (data.error_message) {
           addlogs(config, chalk.red(data.error_message), 'error');
           addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
-          reject()
+          reject();
         }
 
-        return data
-      }).catch((err) => {
-        console.log(err)
-        addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
-        reject()
+        return data;
       })
+      .catch((err) => {
+        console.log(err);
+        addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
+        reject();
+      });
 
-    if (
-      result &&
-      typeof result === 'object' &&
-      typeof result.branch === 'object'
-    ) {
-      resolve(result.branch)
+    if (result && typeof result === 'object' && typeof result.branch === 'object') {
+      resolve(result.branch);
     } else {
-      reject({ message: 'No branch found with the name ' + branch })
+      reject({ message: 'No branch found with the name ' + branch });
     }
   });
 };
