@@ -80,7 +80,7 @@ let singleImport = async (moduleName, types, config) => {
         }
       }
 
-      let exportedModule = _.includes(['assets'], moduleName)
+      let exportedModule = _.includes(['assets', 'global-fields'], moduleName)
         ? new (require('./lib/import/' + moduleName))(config)
         : require('./lib/import/' + moduleName)
 
