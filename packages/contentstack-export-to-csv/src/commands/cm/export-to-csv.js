@@ -1,6 +1,5 @@
 const { Command, flags } = require('@contentstack/cli-command');
 const { configHandler, managementClient } = require('@contentstack/cli-utilities');
-const ContentstackManagementSDK = require('@contentstack/management');
 const util = require('../../util');
 const config = require('../../util/config');
 

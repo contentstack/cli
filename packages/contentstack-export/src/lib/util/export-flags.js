@@ -11,7 +11,16 @@ const helper = require('../util/helper');
 let _ = require('lodash');
 const { cliux } = require('@contentstack/cli-utilities');
 
-exports.configWithMToken = async function (config, managementTokens, host, contentTypes, branchName, securedAssets, moduleName) {
+exports.configWithMToken = async (
+  config,
+  managementTokens,
+  host,
+  contentTypes,
+  branchName,
+  securedAssets,
+  moduleName,
+  exportCommandFlags,
+) => {
   let externalConfig = require(config);
   defaultConfig.securedAssets = securedAssets;
   defaultConfig.management_token = managementTokens.token;
@@ -19,6 +28,7 @@ exports.configWithMToken = async function (config, managementTokens, host, conte
   defaultConfig.cdn = host.cda;
   defaultConfig.branchName = branchName;
   defaultConfig.source_stack = managementTokens.apiKey;
+  defaultConfig.isAuthenticated = exportCommandFlags.isAuthenticated;
   if (moduleName) {
     defaultConfig.moduleName = moduleName;
     // Specfic content type setting is only for entries module
@@ -30,7 +40,7 @@ exports.configWithMToken = async function (config, managementTokens, host, conte
   await initial(defaultConfig);
 };
 
-exports.parameterWithMToken = async function (
+exports.parameterWithMToken = async (
   managementTokens,
   data,
   moduleName,
@@ -39,13 +49,15 @@ exports.parameterWithMToken = async function (
   contentTypes,
   branchName,
   securedAssets,
-) {
+  exportCommandFlags,
+) => {
   defaultConfig.management_token = managementTokens.token;
   defaultConfig.auth_token = _authToken;
   defaultConfig.host = host.cma;
   defaultConfig.cdn = host.cda;
   defaultConfig.branchName = branchName;
   defaultConfig.securedAssets = securedAssets;
+  defaultConfig.isAuthenticated = exportCommandFlags.isAuthenticated;
   if (!moduleName) {
     defaultConfig.contentTypes = contentTypes;
   } else {
@@ -69,6 +81,7 @@ exports.withoutParameterMToken = async (
   contentTypes,
   branchName,
   securedAssets,
+  exportCommandFlags,
 ) => {
   const stackUid = managementTokens.apiKey;
   const pathOfExport = await cliux.prompt(message.promptMessageList.promptPathStoredData);
@@ -78,6 +91,7 @@ exports.withoutParameterMToken = async (
   defaultConfig.branchName = branchName;
   defaultConfig.auth_token = _authToken;
   defaultConfig.securedAssets = securedAssets;
+  defaultConfig.isAuthenticated = exportCommandFlags.isAuthenticated;
   if (moduleName) {
     defaultConfig.moduleName = moduleName;
     // Specfic content type setting is only for entries module
@@ -90,13 +104,23 @@ exports.withoutParameterMToken = async (
   await initial(defaultConfig);
 };
 
-exports.configWithAuthToken = async function (config, _authToken, moduleName, host, contentTypes, branchName, securedAssets) {
+exports.configWithAuthToken = async (
+  config,
+  _authToken,
+  moduleName,
+  host,
+  contentTypes,
+  branchName,
+  securedAssets,
+  exportCommandFlags,
+) => {
   let externalConfig = helper.readFile(path.resolve(config));
   defaultConfig.auth_token = _authToken;
   defaultConfig.host = host.cma;
   defaultConfig.cdn = host.cda;
   defaultConfig.branchName = branchName;
   defaultConfig.securedAssets = securedAssets;
+  defaultConfig.isAuthenticated = exportCommandFlags.isAuthenticated;
   if (moduleName) {
     defaultConfig.moduleName = moduleName;
     // Specfic content type setting is only for entries module
@@ -108,7 +132,7 @@ exports.configWithAuthToken = async function (config, _authToken, moduleName, ho
   await initial(defaultConfig);
 };
 
-exports.parametersWithAuthToken = function (
+exports.parametersWithAuthToken = async (
   _authToken,
   sourceStack,
   data,
@@ -117,30 +141,24 @@ exports.parametersWithAuthToken = function (
   contentTypes,
   branchName,
   securedAssets,
-) {
-  return new Promise(async (resolve, reject) => {
-    defaultConfig.auth_token = _authToken;
-    defaultConfig.source_stack = sourceStack;
-    if (moduleName) {
-      defaultConfig.moduleName = moduleName;
-      // Specfic content type setting is only for entries module
-      if (moduleName === 'entries' && Array.isArray(contentTypes) && contentTypes.length > 0) {
-        defaultConfig.contentTypes = contentTypes;
-      }
+  exportCommandFlags,
+) => {
+  defaultConfig.auth_token = _authToken;
+  defaultConfig.source_stack = sourceStack;
+  defaultConfig.isAuthenticated = exportCommandFlags.isAuthenticated;
+  if (moduleName) {
+    defaultConfig.moduleName = moduleName;
+    // Specfic content type setting is only for entries module
+    if (moduleName === 'entries' && Array.isArray(contentTypes) && contentTypes.length > 0) {
+      defaultConfig.contentTypes = contentTypes;
     }
-    defaultConfig.branchName = branchName;
-    defaultConfig.host = host.cma;
-    defaultConfig.cdn = host.cda;
-    defaultConfig.data = data;
-    defaultConfig.securedAssets = securedAssets;
-    await initial(defaultConfig)
-      .then(() => {
-        return resolve();
-      })
-      .catch((error) => {
-        return reject(error);
-      });
-  });
+  }
+  defaultConfig.branchName = branchName;
+  defaultConfig.host = host.cma;
+  defaultConfig.cdn = host.cda;
+  defaultConfig.data = data;
+  defaultConfig.securedAssets = securedAssets;
+  await initial(defaultConfig);
 };
 
 exports.withoutParametersWithAuthToken = async (
@@ -150,12 +168,14 @@ exports.withoutParametersWithAuthToken = async (
   contentTypes,
   branchName,
   securedAssets,
+  exportCommandFlags,
 ) => {
   const stackUid = await cliux.prompt(message.promptMessageList.promptSourceStack);
   const pathOfExport = await cliux.prompt(message.promptMessageList.promptPathStoredData);
   defaultConfig.auth_token = _authToken;
   defaultConfig.source_stack = stackUid;
   defaultConfig.securedAssets = securedAssets;
+  defaultConfig.isAuthenticated = exportCommandFlags.isAuthenticated;
   if (moduleName) {
     defaultConfig.moduleName = moduleName;
     // Specfic content type setting is only for entries module
