@@ -28,7 +28,7 @@ module.exports = {
     //   'labels',
     //   'marketplace-apps'
     // ],
-    types: ['stack', 'assets', 'locales', 'content-types', 'entries'],
+    types: ['stack', 'assets', 'locales', 'environments', 'content-types', 'entries'],
     locales: {
       dirName: 'locales',
       fileName: 'locales.json',
