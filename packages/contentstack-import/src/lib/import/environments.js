@@ -102,7 +102,7 @@ module.exports = class ImportEnvironments {
         })
         .catch(function (error) {
           helper.writeFile(envFailsPath, self.fails);
-          addlogs(this.exportConfig, chalk.red(`Failed to import environment ${formatError(error)}`), 'error');
+          addlogs(self.config, chalk.red(`Failed to import environment ${formatError(error)}`), 'error');
           reject(error);
         });
     });
