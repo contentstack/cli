@@ -331,6 +331,8 @@ module.exports = {
   preserveStackVersion: false,
   entriesPublish: true,
   concurrency: 1,
+  importConcurrency: 5,
+  writeConcurrency: 5,
   //  ,useBackedupDir: '_backup_397'
   // backupConcurrency: 10,
 };
