@@ -24,6 +24,9 @@ exports.readFile = async (filePath, options = { type: 'json' }) => {
     filePath = path.resolve(filePath);
     fs.readFile(filePath, 'utf-8', (error, data) => {
       if (error) {
+        if (error.code === 'ENOENT') {
+          return resolve();
+        }
         reject(error);
       } else {
         if (options.type !== 'json') {
@@ -103,7 +106,7 @@ exports.writeLargeFile = function (filePath, data) {
   });
 };
 
-exports.readdir = function (dirPath) {
+exports.readdirSync = function (dirPath) {
   if (fs.existsSync(path)) {
     return fs.readdirSync(dirPath);
   } else {
