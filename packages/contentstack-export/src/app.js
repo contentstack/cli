@@ -7,11 +7,11 @@ const login = require('./lib/util/login');
 const setupBranches = require('./lib/util/setup-branches');
 const { addlogs, unlinkFileLogger } = require('./lib/util/log');
 
-exports.initial = async function (config) {
-  return new Promise(async function (resolve, reject) {
+exports.initial = async (config) => {
+  return new Promise(async (resolve, reject) => {
     config = util.buildAppConfig(config);
     util.validateConfig(config);
-    exports.getConfig = function () {
+    exports.getConfig = () => {
       return config;
     };
 
@@ -43,19 +43,19 @@ exports.initial = async function (config) {
           console.log('failed export contents', error && error.message);
         }
       }
-    }
+    };
 
-    // try {
-    if (
+    if (config.management_token || config.isAuthenticated) {
+      await fetchBranchAndExport();
+      resolve();
+    } else if (
       (config.email && config.password) ||
-      (!config.email && !config.password && config.source_stack && config.access_token) ||
-      (config.auth_token && !config.management_token)
+      (!config.email && !config.password && config.source_stack && config.access_token)
     ) {
       login
         .login(config)
-        .then(async function () {
-          // setup branches
-          await fetchBranchAndExport()
+        .then(async () => {
+          await fetchBranchAndExport();
           unlinkFileLogger();
           resolve();
         })
@@ -69,9 +69,8 @@ exports.initial = async function (config) {
           }
           reject(error);
         });
-    } else if (config.management_token) {
-      await fetchBranchAndExport()
-      resolve();
+    } else {
+      reject('Kindly login or provide management_token');
     }
   });
 };
@@ -89,10 +88,9 @@ const singleExport = async (moduleName, types, config, branchName) => {
 
       for (const element of iterateList) {
         let exportedModule = require('./lib/export/' + element);
-        const result = await exportedModule.start(config, branchName)
-          .catch((error) => {
-            console.log(error && error.message)
-          });
+        const result = await exportedModule.start(config, branchName).catch((error) => {
+          console.log(error && error.message);
+        });
         if (result && element === 'stack') {
           let master_locale = {
             master_locale: { code: result.code },
@@ -119,10 +117,9 @@ const allExport = async (config, types, branchName) => {
     try {
       for (const type of types) {
         const exportedModule = require('./lib/export/' + type);
-        const result = await exportedModule.start(config, branchName)
-          .catch((error) => {
-            console.log(error && error.message)
-          });
+        const result = await exportedModule.start(config, branchName).catch((error) => {
+          console.log(error && error.message);
+        });
 
         if (result && type === 'stack') {
           let master_locale = { master_locale: { code: result.code } };
