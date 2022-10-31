@@ -14,8 +14,9 @@ let config = require('../../config/default');
 let localeConfig = config.modules.locales;
 const masterLocale = config.master_locale;
 let requiredKeys = localeConfig.requiredKeys;
-let stack = require('../util/contentstack-management-sdk');
-let client
+const { managementClient } = require('@contentstack/cli-utilities');
+let managementAPIClient;
+
 function ExportLocales() {
   this.qs = {
     include_count: true,
@@ -32,35 +33,34 @@ function ExportLocales() {
   this.locales = {};
 }
 
-ExportLocales.prototype.start = function (credentialConfig) {
+ExportLocales.prototype.start = async (credentialConfig) => {
   this.locales = {};
   addlogs(credentialConfig, 'Starting locale export', 'success');
   let self = this;
   config = credentialConfig;
   self.localesFolderPath = path.resolve(config.data, config.branchName || '', localeConfig.dirName);
   mkdirp.sync(self.localesFolderPath);
-  client = stack.Client(config);
+  managementAPIClient = await managementClient(config);
   const apiDetails = {
     limit: 100,
     skip: 0,
     include_count: true,
-  }
-  return self.getLocales(apiDetails)
-
+  };
+  return self.getLocales(apiDetails);
 };
 
-ExportLocales.prototype.getLocales = function (apiDetails) {
-  let self = this
+ExportLocales.prototype.getLocales = (apiDetails) => {
+  let self = this;
 
-  return new Promise(function (resolve, reject) {
-    client
+  return new Promise((resolve, reject) => {
+    return managementAPIClient
       .stack({ api_key: config.source_stack, management_token: config.management_token })
       .locale()
       .query({ ...self.qs, ...apiDetails })
       .find()
       .then((localeResponse) => {
         if (localeResponse.items.length !== 0) {
-          localeResponse.items.forEach(function (locale) {
+          localeResponse.items.forEach((locale) => {
             addlogs(config, locale.name + ' locale was exported successfully', 'success');
             for (const key in locale) {
               if (requiredKeys.indexOf(key) === -1) {
@@ -85,12 +85,10 @@ ExportLocales.prototype.getLocales = function (apiDetails) {
             .catch((error) => {
               console.log('Get locales errror', error && error.message);
             });
-
         } else if (localeResponse.items.length === 0) {
           addlogs(config, 'No languages found except the master language', 'success');
           helper.writeFile(path.join(self.localesFolderPath, localeConfig.fileName), self.locales);
           return resolve();
-
         }
       })
       .catch((error) => {
@@ -98,6 +96,6 @@ ExportLocales.prototype.getLocales = function (apiDetails) {
         return reject(error);
       });
   });
-}
+};
 
 module.exports = new ExportLocales();
