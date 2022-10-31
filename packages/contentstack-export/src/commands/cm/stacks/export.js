@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 const { Command, flags } = require('@contentstack/cli-command');
-const { printFlagDeprecation } = require('@contentstack/cli-utilities');
+const { printFlagDeprecation, configHandler } = require('@contentstack/cli-utilities');
 
 const {
   configWithMToken,
@@ -11,7 +11,6 @@ const {
   withoutParametersWithAuthToken,
 } = require('../../../lib/util/export-flags');
 const config = require('../../../config/default');
-const { configHandler } = require('@contentstack/cli-utilities');
 
 class ExportCommand extends Command {
   async run() {
@@ -30,6 +29,7 @@ class ExportCommand extends Command {
     let cdaHost = host.cda.split('//');
     host.cma = cmaHost[1];
     host.cda = cdaHost[1];
+    exportCommandFlags['isAuthenticated'] = this.isAuthenticated();
 
     if (alias) {
       let managementTokens = this.getToken(alias);
@@ -49,6 +49,7 @@ class ExportCommand extends Command {
             branchName,
             securedAssets,
             moduleName,
+            exportCommandFlags,
           );
         } else if (data) {
           await parameterWithMToken(
@@ -60,6 +61,7 @@ class ExportCommand extends Command {
             contentTypes,
             branchName,
             securedAssets,
+            exportCommandFlags,
           );
         } else if (data === undefined && sourceStack === undefined) {
           await withoutParameterMToken(
@@ -70,6 +72,7 @@ class ExportCommand extends Command {
             contentTypes,
             branchName,
             securedAssets,
+            exportCommandFlags,
           );
         } else {
           this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage');
@@ -77,11 +80,20 @@ class ExportCommand extends Command {
       } else {
         this.log(alias + ' management token is not present, please add managment token first');
       }
-    } else if (_authToken) {
+    } else if (exportCommandFlags.isAuthenticated) {
       if (extConfig) {
-        await configWithAuthToken(extConfig, _authToken, moduleName, host, contentTypes, branchName, securedAssets);
+        await configWithAuthToken(
+          extConfig,
+          _authToken,
+          moduleName,
+          host,
+          contentTypes,
+          branchName,
+          securedAssets,
+          exportCommandFlags,
+        );
       } else if (sourceStack && data) {
-        return await parametersWithAuthToken(
+        await parametersWithAuthToken(
           _authToken,
           sourceStack,
           data,
@@ -90,16 +102,24 @@ class ExportCommand extends Command {
           contentTypes,
           branchName,
           securedAssets,
+          exportCommandFlags,
         );
       } else if (data === undefined && sourceStack === undefined) {
-        await withoutParametersWithAuthToken(_authToken, moduleName, host, contentTypes, branchName, securedAssets);
+        await withoutParametersWithAuthToken(
+          _authToken,
+          moduleName,
+          host,
+          contentTypes,
+          branchName,
+          securedAssets,
+          exportCommandFlags,
+        );
       } else {
         this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage');
       }
     } else {
       this.log('Login or provide the alias for management token');
     }
-    // return
   }
 }
 
