@@ -14,6 +14,7 @@ let { formatError } = require('./lib/util');
 let login = require('./lib/util/login');
 let { addlogs } = require('./lib/util/log');
 const { HttpClient } = require('@contentstack/cli-utilities');
+const stack = require('./lib/util/contentstack-management-sdk');
 
 exports.initial = function (configData) {
   return new Promise(async function (resolve, reject) {
@@ -68,7 +69,10 @@ exports.initial = function (configData) {
 };
 
 let singleImport = async (moduleName, types, config) => {
-  return new Promise(async (resolve, reject) => {
+  try {
+    const stackClient = stack
+      .Client(config)
+      .stack({ api_key: config.source_stack, management_token: config.management_token });
     if (types.indexOf(moduleName) > -1) {
       if (!config.master_locale) {
         try {
@@ -79,88 +83,73 @@ let singleImport = async (moduleName, types, config) => {
           addlogs(config, `Failed to get master locale detail from the stack ${formatError(error)}`, 'error');
         }
       }
-      let exportedModule = require('./lib/import/' + moduleName);
-      exportedModule
-        .start(config)
-        .then(async function (data) {
-          if (moduleName === 'content-types') {
-            let ctPath = path.resolve(config.data, config.modules.content_types.dirName);
-            let fieldPath = path.join(ctPath + '/field_rules_uid.json');
-            if (fieldPath) {
-              await util.field_rules_update(config, ctPath);
-            }
-          }
-          if (!(data && data.empty)) {
-            addlogs(config, moduleName + ' imported successfully!', 'success');
-          }
-          addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
-          return resolve();
-        })
-        .catch(function (error) {
-          addlogs(config, 'Failed to migrate ' + moduleName, 'error');
-          addlogs(config, error, 'error');
-          addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
-          return reject(error);
-        });
+      let ImportModule = require('./lib/import/' + moduleName);
+      const importResponse = await new ImportModule(config, stackClient).start(config, branchName);
+      if (moduleName === 'content-types') {
+        let ctPath = path.resolve(config.data, config.modules.content_types.dirName);
+        let fieldPath = path.join(ctPath + '/field_rules_uid.json');
+        if (fieldPath) {
+          await util.field_rules_update(config, ctPath);
+        }
+      }
+
+      if (!(importResponse && importResponse.empty)) {
+        addlogs(config, moduleName + ' imported successfully!', 'success');
+      }
+      addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
+      return true;
     } else {
       addlogs(config, 'Please provide valid module name.', 'error');
-      return reject();
     }
-  });
+  } catch (error) {
+    addlogs(config, 'Failed to migrate ' + moduleName, 'error');
+    addlogs(config, formatError(error), 'error');
+    addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
+  }
 };
 
 let allImport = async (config, types) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      for (let i = 0; i < types.length; i++) {
-        let type = types[i];
-        let exportedModule = require('./lib/import/' + type);
-        if (i === 0 && !config.master_locale) {
-          let masterLocalResponse = await util.masterLocalDetails(config);
-          let master_locale = { code: masterLocalResponse.code };
-          config['master_locale'] = master_locale;
-        }
-        await exportedModule
-          .start(config)
-          .then((_result) => {
-            return;
-          })
-          .catch(function (error) {
-            addlogs(config, 'Failed to migrate ' + type, 'error');
-            addlogs(config, error, 'error');
-            addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
-            return reject(error);
-          });
+  try {
+    const stackClient = stack
+      .Client(config)
+      .stack({ api_key: config.source_stack, management_token: config.management_token });
+    for (let i = 0; i < types.length; i++) {
+      let type = types[i];
+      if (i === 0 && !config.master_locale) {
+        let masterLocalResponse = await util.masterLocalDetails(config);
+        let master_locale = { code: masterLocalResponse.code };
+        config['master_locale'] = master_locale;
       }
-      if (config.target_stack && config.source_stack) {
-        addlogs(
-          config,
-          chalk.green(
-            'The data of the ' +
-              (config.sourceStackName || config.source_stack) +
-              ' stack has been imported into ' +
-              (config.destinationStackName || config.target_stack) +
-              ' stack successfully!',
-          ),
-          'success',
-        );
-        addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'import'), 'success');
-      } else {
-        addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported succesfully!'), 'success');
-        addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
-      }
-      return resolve();
-    } catch (error) {
+      let ImportModule = require('./lib/import/' + type);
+      await new ImportModule(config, stackClient).start(config, branchName);
+    }
+    if (config.target_stack && config.source_stack) {
       addlogs(
         config,
-        chalk.red('Failed to migrate stack: ' + config.target_stack + '. Please check error logs for more info'),
-        'error',
+        chalk.green(
+          'The data of the ' +
+            (config.sourceStackName || config.source_stack) +
+            ' stack has been imported into ' +
+            (config.destinationStackName || config.target_stack) +
+            ' stack successfully!',
+        ),
+        'success',
       );
-      addlogs(config, error, 'error');
-      addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
-      return reject(error);
+      addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'import'), 'success');
+    } else {
+      addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported succesfully!'), 'success');
+      addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
     }
-  });
+    return true;
+  } catch (error) {
+    addlogs(
+      config,
+      chalk.red('Failed to migrate stack: ' + config.target_stack + '. Please check error logs for more info'),
+      'error',
+    );
+    addlogs(config, formatError(error), 'error');
+    addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
+  }
 };
 
 function createBackup(backupDirPath, config) {
