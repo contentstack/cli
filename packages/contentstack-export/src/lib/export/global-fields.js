@@ -10,6 +10,7 @@ const mkdirp = require('mkdirp')
 
 const helper = require('../util/helper')
 const { addlogs } = require('../util/log')
+const { formatError } = require('../util')
 let config = require('../../config/default')
 const stack = require('../util/contentstack-management-sdk')
 
@@ -109,8 +110,8 @@ module.exports = class ExportGlobalFields {
               .then(resolve)
               .catch(reject)
           } catch (error) {
-            addlogs(globalFieldConfig, error, 'error')
-            return reject(error)
+            addlogs(globalFieldConfig, chalk.red(`Failed to export global-fields ${formatError(error)}`), 'error')
+            reject(error)
           }
         })
     })
