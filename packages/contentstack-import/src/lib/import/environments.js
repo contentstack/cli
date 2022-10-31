@@ -28,16 +28,16 @@ module.exports = class ImportEnvironments {
   }
 
   start() {
-    addlogs(config, 'Migrating environment', 'success');
+    addlogs(this.config, 'Migrating environment', 'success');
 
     const self = this;
     const client = stack.Client(this.config);
     let environmentConfig = config.modules.environments;
-    let environmentsFolderPath = path.resolve(config.data, environmentConfig.dirName);
-    let envMapperPath = path.resolve(config.data, 'mapper', 'environments');
-    let envUidMapperPath = path.resolve(config.data, 'mapper', 'environments', 'uid-mapping.json');
-    let envSuccessPath = path.resolve(config.data, 'environments', 'success.json');
-    let envFailsPath = path.resolve(config.data, 'environments', 'fails.json');
+    let environmentsFolderPath = path.resolve(this.config.data, environmentConfig.dirName);
+    let envMapperPath = path.resolve(this.config.data, 'mapper', 'environments');
+    let envUidMapperPath = path.resolve(this.config.data, 'mapper', 'environments', 'uid-mapping.json');
+    let envSuccessPath = path.resolve(this.config.data, 'environments', 'success.json');
+    let envFailsPath = path.resolve(this.config.data, 'environments', 'fails.json');
     self.environments = helper.readFileSync(path.resolve(environmentsFolderPath, environmentConfig.fileName));
 
     if (fs.existsSync(envUidMapperPath)) {
@@ -48,7 +48,7 @@ module.exports = class ImportEnvironments {
     mkdirp.sync(envMapperPath);
     return new Promise(function (resolve, reject) {
       if (self.environments === undefined || isEmpty(self.environments)) {
-        addlogs(config, chalk.yellow('No Environment Found'), 'success');
+        addlogs(self.config, chalk.yellow('No Environment Found'), 'success');
         return resolve({ empty: true });
       }
 
@@ -73,7 +73,7 @@ module.exports = class ImportEnvironments {
                 let error = JSON.parse(err.message);
 
                 if (error.errors.name) {
-                  addlogs(config, chalk.white("Environment: '" + env.name + "' already exists"), 'error');
+                  addlogs(self.config, chalk.white("Environment: '" + env.name + "' already exists"), 'error');
                 } else {
                   addlogs(
                     config,
@@ -97,7 +97,7 @@ module.exports = class ImportEnvironments {
       )
         .then(function () {
           helper.writeFile(envSuccessPath, self.success);
-          addlogs(config, chalk.green('Environments have been imported successfully!'), 'success');
+          addlogs(self.config, chalk.green('Environments have been imported successfully!'), 'success');
           resolve();
         })
         .catch(function (error) {
