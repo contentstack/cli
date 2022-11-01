@@ -33,14 +33,14 @@ module.exports = class ImportExtensions {
   start() {
     addlogs(this.config, chalk.white('Migrating extensions'), 'success');
 
-    let self = this;
+    const self = this;
     const client = stack.Client(this.config);
     let extensionsFolderPath = path.resolve(this.config.data, this.extensionsConfig.dirName);
     let extMapperPath = path.resolve(this.config.data, 'mapper', 'extensions');
     let extUidMapperPath = path.resolve(this.config.data, 'mapper/extensions', 'uid-mapping.json');
     let extSuccessPath = path.resolve(this.config.data, 'extensions', 'success.json');
     let extFailsPath = path.resolve(this.config.data, 'extensions', 'fails.json');
-    this.extensions = helper.readFileSync(path.resolve(extensionsFolderPath, extensionsConfig.fileName));
+    this.extensions = helper.readFileSync(path.resolve(extensionsFolderPath, this.extensionsConfig.fileName));
     if (fs.existsSync(extUidMapperPath)) {
       self.extUidMapper = helper.readFileSync(extUidMapperPath);
       self.extUidMapper = self.extUidMapper || {};

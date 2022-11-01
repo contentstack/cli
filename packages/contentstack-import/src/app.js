@@ -123,10 +123,10 @@ let allImport = async (config, types) => {
         let type = types[i];
         let exportedModule = _.includes(
           ['assets', 'environments', 'extensions', 'marketplace-apps', 'global-fields'],
-          moduleName,
+          type,
         )
-          ? new (require('./lib/import/' + moduleName))(config)
-          : require('./lib/import/' + moduleName);
+          ? new (require('./lib/import/' + type))(config)
+          : require('./lib/import/' + type);
 
         if (i === 0 && !config.master_locale) {
           let masterLocalResponse = await util.masterLocalDetails(config);
