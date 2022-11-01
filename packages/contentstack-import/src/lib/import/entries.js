@@ -42,8 +42,10 @@ let masterLanguage;
 
 let skipFiles = ['__master.json', '__priority.json', 'schema.json'];
 let entryBatchLimit = config.rateLimit || 10;
+const importConcurrency = eConfig.importConcurrency || config.importConcurrency;
+const writeConcurrency = eConfig.writeConcurrency || config.writeConcurrency;
 
-function importEntries() {
+function EntriesImport() {
   let self = this;
   mappedAssetUidPath = path.resolve(config.data, 'mapper', 'assets', 'uid-mapping.json');
   mappedAssetUrlPath = path.resolve(config.data, 'mapper', 'assets', 'url-mapping.json');
@@ -94,14 +96,14 @@ function importEntries() {
           }
         }
       } catch (error) {
-        console.error(error);
+        addlogs(config, `Failed to read the content types to import entries ${util.formatError(error)}`);
         process.exit(0);
       }
     }
   }
 }
 
-importEntries.prototype = {
+EntriesImport.prototype = {
   /**
    * Start point for entry import
    * @return promise
@@ -138,6 +140,8 @@ importEntries.prototype = {
       return self
         .supressFields()
         .then(async function () {
+          addlogs(config, 'Completed suppressing content type reference fields', 'success');
+
           let mappedAssetUids = helper.readFileSync(mappedAssetUidPath) || {};
           let mappedAssetUrls = helper.readFileSync(mappedAssetUrlPath) || {};
 
@@ -151,8 +155,18 @@ importEntries.prototype = {
                 (config.hasOwnProperty('onlylocales') && config.onlylocales.indexOf(lang) !== -1) ||
                 !config.hasOwnProperty('onlylocales')
               ) {
+                addlogs(config, 'Starting to create entries', 'info');
                 await self.createEntries(lang, mappedAssetUids, mappedAssetUrls);
-                await self.getCreatedEntriesWOUid();
+                addlogs(config, 'Entries created successfully', 'info');
+                try {
+                  await self.getCreatedEntriesWOUid();
+                } catch (error) {
+                  addlogs(
+                    config,
+                    `Failed get the existing entries to update the mapper ${util.formatError(error)}, 'error`,
+                  );
+                }
+                addlogs(config, 'Starting to update entries with references', 'info');
                 await self.repostEntries(lang);
                 addlogs(config, "Successfully imported '" + lang + "' entries!", 'success');
                 counter++;
@@ -166,51 +180,62 @@ importEntries.prototype = {
             },
           ).then(async function () {
             // Step 3: Revert all the changes done in content type in step 1
+            addlogs(config, 'Restoring content type changes', 'info');
             await self.unSuppressFields();
+            addlogs(config, 'Removing entries from master language which got created by default', 'info');
             await self.removeBuggedEntries();
+            addlogs(config, 'Updating the field rules of content type', 'info');
             let ct_field_visibility_uid = helper.readFileSync(path.join(ctPath + '/field_rules_uid.json'));
             let ct_files = fs.readdirSync(ctPath);
             if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
               for (const element of ct_field_visibility_uid) {
                 if (ct_files.indexOf(element + '.json') > -1) {
                   let schema = require(path.resolve(ctPath, element));
-                  await self.field_rules_update(schema);
+                  try {
+                    await self.field_rules_update(schema);
+                  } catch (error) {
+                    addlogs(
+                      config,
+                      `Failed to update the field rules for content type ${schema.uid} ${util.formatError(error)}`,
+                    );
+                  }
                 }
               }
             }
             addlogs(config, chalk.green('Entries have been imported successfully!'), 'success');
             if (config.entriesPublish) {
+              addlogs(config, chalk.green('Publishing entries'), 'success');
               return self
                 .publish(langs)
                 .then(function () {
                   addlogs(config, chalk.green('All the entries have been published successfully'), 'success');
                   return resolve();
                 })
-                .catch((errors) => {
-                  addlogs(config, chalk.error('Some entries might have failed to publish.'), 'error');
-                  return reject(errors);
+                .catch((error) => {
+                  addlogs(config, `Error in publishing entries ${util.formatError(error)}`, 'error');
                 });
             }
             return resolve();
           });
         })
         .catch(function (error) {
-          return reject(error);
+          addlogs.log(config, util.formatError(error), 'error');
+          reject('Failed import entries');
         });
     });
   },
 
   createEntries: function (lang, mappedAssetUids, mappedAssetUrls) {
     let self = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise(async function (resolve, reject) {
       let contentTypeUids = Object.keys(self.ctSchemas);
       if (fs.existsSync(entryUidMapperPath)) {
-        self.mappedUids = helper.readFileSync(entryUidMapperPath);
+        self.mappedUids = await helper.readLargeFile(entryUidMapperPath);
       }
       self.mappedUids = self.mappedUids || {};
       return Promise.map(
         contentTypeUids,
-        function (ctUid) {
+        async function (ctUid) {
           let eLangFolderPath = path.join(entryMapperPath, lang);
           let eLogFolderPath = path.join(entryMapperPath, lang, ctUid);
           mkdirp.sync(eLogFolderPath);
@@ -228,11 +253,11 @@ importEntries.prototype = {
           });
 
           if (fs.existsSync(createdEntriesPath)) {
-            createdEntries = helper.readFileSync(createdEntriesPath);
+            createdEntries = await helper.readLargeFile(createdEntriesPath);
             createdEntries = createdEntries || {};
           }
           if (fs.existsSync(eFilePath)) {
-            let entries = helper.readFileSync(eFilePath);
+            let entries = await helper.readLargeFile(eFilePath);
             if (!_.isPlainObject(entries) || _.isEmpty(entries)) {
               addlogs(
                 config,
@@ -243,43 +268,51 @@ importEntries.prototype = {
               addlogs(config, `Creating entries for content type ${ctUid} in language ${lang} ...`, 'success');
               for (let eUid in entries) {
                 if (eUid) {
-                  // check ctUid in self.ctJsonRte array, if ct exists there... only then remove entry references for json rte
-                  // also with json rte, api creates the json-rte field with the same uid as passed in the payload.
+                  try {
+                    // check ctUid in self.ctJsonRte array, if ct exists there... only then remove entry references for json rte
+                    // also with json rte, api creates the json-rte field with the same uid as passed in the payload.
 
-                  if (self.ctJsonRte.indexOf(ctUid) > -1) {
-                    entries[eUid] = self.removeUidsFromJsonRteFields(entries[eUid], self.ctSchemas[ctUid].schema);
-                  }
+                    if (self.ctJsonRte.indexOf(ctUid) > -1) {
+                      entries[eUid] = self.removeUidsFromJsonRteFields(entries[eUid], self.ctSchemas[ctUid].schema);
+                    }
 
-                  // remove entry references from json-rte fields
-                  if (self.ctJsonRteWithEntryRefs.indexOf(ctUid) > -1) {
-                    entries[eUid] = self.removeEntryRefsFromJSONRTE(entries[eUid], self.ctSchemas[ctUid].schema);
+                    // remove entry references from json-rte fields
+                    if (self.ctJsonRteWithEntryRefs.indexOf(ctUid) > -1) {
+                      entries[eUid] = self.removeEntryRefsFromJSONRTE(entries[eUid], self.ctSchemas[ctUid].schema);
+                    }
+                    // will replace all old asset uid/urls with new ones
+                    entries[eUid] = lookupReplaceAssets(
+                      {
+                        content_type: self.ctSchemas[ctUid],
+                        entry: entries[eUid],
+                      },
+                      mappedAssetUids,
+                      mappedAssetUrls,
+                      eLangFolderPath,
+                      self.installedExtensions,
+                    );
+                  } catch (error) {
+                    addlogs(config, 'Failed to update entry while creating entry id ' + eUid);
+                    addlogs(config, util.formatError(error), 'error');
                   }
-                  // will replace all old asset uid/urls with new ones
-                  entries[eUid] = lookupReplaceAssets(
-                    {
-                      content_type: self.ctSchemas[ctUid],
-                      entry: entries[eUid],
-                    },
-                    mappedAssetUids,
-                    mappedAssetUrls,
-                    eLangFolderPath,
-                    self.installedExtensions,
-                  );
                 }
               }
               let eUids = Object.keys(entries);
               let batches = [];
 
+              let entryBatchLimit = eConfig.batchLimit || 10;
+              let batchSize = Math.round(entryBatchLimit / 3);
+
               // Run entry creation in batches of ~16~ entries
-              for (let i = 0; i < eUids.length; i += Math.round(entryBatchLimit / 3)) {
-                batches.push(eUids.slice(i, i + Math.round(entryBatchLimit / 3)));
+              for (let i = 0; i < eUids.length; i += batchSize) {
+                batches.push(eUids.slice(i, i + batchSize));
               }
               return Promise.map(
                 batches,
                 async function (batch) {
                   return Promise.map(
                     batch,
-                    async function (eUid) {
+                    async function (eUid, batchIndex) {
                       // if entry is already created
                       if (createdEntries.hasOwnProperty(eUid)) {
                         addlogs(
@@ -338,16 +371,15 @@ importEntries.prototype = {
                               }
                             }
                           })
-                          .catch(function (err) {
-                            let error = JSON.parse(err.message);
-                            addlogs(config, chalk.red('Error updating entry', JSON.stringify(error)), 'error');
+                          .catch(function (error) {
+                            addlogs(config, `Failed to update an entry ${eUid} ${util.formatError(error)}`, 'error');
                             self.fails.push({
                               content_type: ctUid,
                               locale: lang,
                               entry: entries[eUid],
-                              error: error,
+                              error: util.formatError(error),
                             });
-                            return err;
+                            return error;
                           });
                       }
                       delete requestObject.json.entry.publish_details;
@@ -383,11 +415,7 @@ importEntries.prototype = {
                                 'error',
                               );
                             } else {
-                              addlogs(
-                                config,
-                                chalk.red('Error creating entry due to: ' + JSON.stringify(error)),
-                                'error',
-                              );
+                              addlogs(config, `Failed to create an entry ${eUid} ${util.formatError(error)}`, 'error');
                             }
                             self.createdEntriesWOUid.push({
                               content_type: ctUid,
@@ -395,12 +423,12 @@ importEntries.prototype = {
                               entry: entries[eUid],
                               error: error,
                             });
-                            helper.writeFile(createdEntriesWOUidPath, self.createdEntriesWOUid);
+                            helper.writeFileSync(createdEntriesWOUidPath, self.createdEntriesWOUid);
                             return;
                           }
                           // TODO: if status code: 422, check the reason
                           // 429 for rate limit
-                          addlogs(config, chalk.red('Error creating entry', JSON.stringify(error)), 'error');
+                          addlogs(config, `Failed to create an entry ${eUid} ${util.formatError(error)}`, 'error');
                           self.fails.push({
                             content_type: ctUid,
                             locale: lang,
@@ -411,14 +439,14 @@ importEntries.prototype = {
                       // create/update 5 entries at a time
                     },
                     {
-                      concurrency: 1,
+                      concurrency: importConcurrency,
                     },
                   ).then(function () {
-                    helper.writeFile(successEntryLogPath, self.success[ctUid]);
-                    helper.writeFile(failedEntryLogPath, self.fails[ctUid]);
-                    helper.writeFile(entryUidMapperPath, self.mappedUids);
-                    helper.writeFile(uniqueUidMapperPath, self.uniqueUids);
-                    helper.writeFile(createdEntriesPath, createdEntries);
+                    helper.writeFileSync(successEntryLogPath, self.success[ctUid]);
+                    helper.writeFileSync(failedEntryLogPath, self.fails[ctUid]);
+                    helper.writeFileSync(entryUidMapperPath, self.mappedUids);
+                    helper.writeFileSync(uniqueUidMapperPath, self.uniqueUids);
+                    helper.writeFileSync(createdEntriesPath, createdEntries);
                   });
                   // process one batch at a time
                 },
@@ -467,7 +495,7 @@ importEntries.prototype = {
           }
         },
         {
-          concurrency: reqConcurrency,
+          concurrency: 1,
         },
       )
         .then(function () {
@@ -492,10 +520,10 @@ importEntries.prototype = {
             return self.fetchEntry(entry);
           },
           {
-            concurrency: reqConcurrency,
+            concurrency: importConcurrency,
           },
         ).then(function () {
-          helper.writeFile(failedWOPath, self.failedWO);
+          helper.writeFileSync(failedWOPath, self.failedWO);
           addlogs(config, 'Mapped entries without mapped uid successfully!', 'success');
           return resolve();
         });
@@ -506,25 +534,25 @@ importEntries.prototype = {
   },
   repostEntries: function (lang) {
     let self = this;
-    return new Promise(function (resolve, reject) {
-      let _mapped_ = helper.readFileSync(path.join(entryMapperPath, 'uid-mapping.json'));
+    return new Promise(async function (resolve, reject) {
+      let _mapped_ = await helper.readLargeFile(path.join(entryMapperPath, 'uid-mapping.json'));
       if (_.isPlainObject(_mapped_)) {
         self.mappedUids = _.merge(_mapped_, self.mappedUids);
       }
       return Promise.map(
         self.refSchemas,
-        function (ctUid) {
+        async function (ctUid) {
           let eFolderPath = path.join(entryMapperPath, lang, ctUid);
           let eSuccessFilePath = path.join(eFolderPath, 'success.json');
           let eFilePath = path.resolve(ePath, ctUid, lang + '.json');
-          let sourceStackEntries = helper.readFileSync(eFilePath);
+          let sourceStackEntries = await helper.readLargeFile(eFilePath);
 
           if (!fs.existsSync(eSuccessFilePath)) {
             addlogs(config, 'Success file was not found at: ' + eSuccessFilePath, 'success');
             return;
           }
 
-          let entries = helper.readFileSync(eSuccessFilePath);
+          let entries = await helper.readLargeFile(eSuccessFilePath, { type: 'array' }); // TBD LARGE
           entries = entries || [];
           if (entries.length === 0) {
             addlogs(config, "No entries were created to be updated in '" + lang + "' language!", 'success');
@@ -543,6 +571,8 @@ importEntries.prototype = {
           // map reference uids @mapper/language/mapped-uids.json
           // map failed reference uids @mapper/language/unmapped-uids.json
           let refUidMapperPath = path.join(entryMapperPath, lang);
+
+          addlogs(config, 'staring to update the entry for reposting');
 
           entries = _.map(entries, function (entry) {
             try {
@@ -569,14 +599,20 @@ importEntries.prototype = {
               _entry.uid = uid;
               return _entry;
             } catch (error) {
-              console.error(error);
-              return error;
+              addlogs(
+                config,
+                `Failed to update the entry ${uid} references while reposting ${util.formatError(error)}`,
+              );
             }
           });
 
-          // Run entry creation in batches of ~16~ entries
-          for (let i = 0; i < entries.length; i += Math.round(entryBatchLimit / 3)) {
-            batches.push(entries.slice(i, i + Math.round(entryBatchLimit / 3)));
+          addlogs(config, 'Starting the reposting process for entries');
+
+          const entryBatchLimit = eConfig.batchLimit || 10;
+          const batchSize = Math.round(entryBatchLimit / 3);
+          // Run entry creation in batches
+          for (let i = 0; i < entries.length; i += batchSize) {
+            batches.push(entries.slice(i, i + batchSize));
           }
           return Promise.map(
             batches,
@@ -610,12 +646,12 @@ importEntries.prototype = {
                     return entryResponse
                       .update({ locale: lang })
                       .then((response) => {
-                        for (let j = 0; j < entries.length; j++) {
-                          if (entries[j].uid === response.uid) {
-                            entries[j] = response;
-                            break;
-                          }
-                        }
+                        // for (let j = 0; j < entries.length; j++) {
+                        //   if (entries[j].uid === response.uid) {
+                        //     entries[j] = response;
+                        //     break;
+                        //   }
+                        // }
                         refsUpdatedUids.push(response.uid);
                         return resolveUpdatedUids();
                       })
@@ -633,7 +669,7 @@ importEntries.prototype = {
                           'error',
                         );
 
-                        addlogs(config, error, 'error');
+                        addlogs(config, util.formatError(error), 'error');
                         refsUpdateFailed.push({
                           content_type: ctUid,
                           entry: entry,
@@ -646,24 +682,25 @@ importEntries.prototype = {
                   await promiseResult;
                 },
                 {
-                  concurrency: reqConcurrency,
+                  concurrency: importConcurrency,
                 },
               )
                 .then(function () {
                   // batch completed successfully
-                  helper.writeFile(path.join(eFolderPath, 'success.json'), entries);
-                  helper.writeFile(path.join(eFolderPath, 'refsUpdatedUids.json'), refsUpdatedUids);
-                  helper.writeFile(path.join(eFolderPath, 'refsUpdateFailed.json'), refsUpdateFailed);
+                  helper.writeFileSync(path.join(eFolderPath, 'success.json'), entries);
+                  helper.writeFileSync(path.join(eFolderPath, 'refsUpdatedUids.json'), refsUpdatedUids);
+                  helper.writeFileSync(path.join(eFolderPath, 'refsUpdateFailed.json'), refsUpdateFailed);
                   addlogs(config, 'Completed re-post entries batch no: ' + (index + 1) + ' successfully!', 'success');
                 })
                 .catch(function (error) {
                   // error while executing entry in batch
                   addlogs(config, chalk.red('Failed re-post entries at batch no: ' + (index + 1)), 'error');
-                  throw error;
+                  addlogs(config, util.formatError(error), 'error');
+                  // throw error;
                 });
             },
             {
-              concurrency: reqConcurrency,
+              concurrency: 1,
             },
           )
             .then(function () {
@@ -676,22 +713,13 @@ importEntries.prototype = {
             })
             .catch(function (error) {
               // error while updating entries with references
-              addlogs(
-                config,
-                chalk.red(
-                  "Failed while importing entries of Content Type: '" +
-                    ctUid +
-                    "' in language: '" +
-                    lang +
-                    "' successfully!",
-                ),
-                'error',
-              );
-              throw error;
+              addlogs(config, chalk.red(`Failed re-post entries of content type ${ctUid} locale ${lang}`, 'error'));
+              addlogs(config, util.formatError(error), 'error');
+              // throw error;
             });
         },
         {
-          concurrency: reqConcurrency,
+          concurrency: 1,
         },
       )
         .then(function () {
@@ -708,7 +736,7 @@ importEntries.prototype = {
   },
   supressFields: async function () {
     // it should be spelled as suppressFields
-    addlogs(config, chalk.white('Suppressing content type fields...'), 'success');
+    addlogs(config, 'Suppressing content type reference fields', 'success');
     let self = this;
     return new Promise(async function (resolve, reject) {
       let modifiedSchemas = [];
@@ -771,7 +799,7 @@ importEntries.prototype = {
       }
 
       // write modified schema in backup file
-      helper.writeFile(modifiedSchemaPath, modifiedSchemas);
+      helper.writeFileSync(modifiedSchemaPath, modifiedSchemas);
 
       return Promise.map(
         suppressedSchemas,
@@ -786,25 +814,22 @@ importEntries.prototype = {
               // empty function
             })
             .catch(function (_error) {
-              addlogs(
-                config,
-                chalk.red("Failed to modify mandatory field of '" + schema.uid + "' content type"),
-                'error',
-              );
+              addlogs(config, util.formatError(error), 'error');
+              reject(`Failed suppress content type ${schema.uid} reference fields`);
             });
           // update 5 content types at a time
         },
         {
           // update reqConcurrency content types at a time
-          concurrency: reqConcurrency,
+          concurrency: importConcurrency,
         },
       )
         .then(function () {
           return resolve();
         })
         .catch(function (error) {
-          addlogs(config, chalk.red('Error while suppressing mandatory field schemas'), 'error');
-          return reject(error);
+          addlogs(config, util.formatError(error), 'error');
+          return reject('Failed to suppress reference fields in content type');
         });
     });
   },
@@ -836,7 +861,7 @@ importEntries.prototype = {
           let _ePath = path.join(entryMapperPath, query.locale, query.content_type, 'success.json');
           let entries = helper.readFileSync(_ePath);
           entries.push(query.entry);
-          helper.writeFile(_ePath, entries);
+          helper.writeFileSync(_ePath, entries);
           addlogs(
             config,
             'Completed mapping entry wo uid: ' + query.entry.uid + ': ' + response.body.entries[0].uid,
@@ -912,7 +937,7 @@ importEntries.prototype = {
             }
           }
           // re-write, in case some schemas failed to update
-          helper.writeFile(modifiedSchemaPath, _.compact(modifiedSchemas));
+          helper.writeFileSync(modifiedSchemaPath, _.compact(modifiedSchemas));
           addlogs(config, 'Re-modified content type schemas to their original form!', 'success');
           return resolve();
         })
@@ -951,12 +976,11 @@ importEntries.prototype = {
             })
             .catch(function (error) {
               addlogs(config, chalk.red('Failed to remove bugged entry from master language'), 'error');
-              addlogs(config, error, 'error');
-              addlogs(config, JSON.stringify(entry), 'error');
+              addlogs(config, util.formatError(error), 'error');
             });
         },
         {
-          concurrency: reqConcurrency,
+          concurrency: importConcurrency,
         },
       )
         .then(function () {
@@ -967,15 +991,15 @@ importEntries.prototype = {
             }
           }
 
-          helper.writeFile(path.join(entryMapperPath, 'removed-uids.json'), removed);
-          helper.writeFile(path.join(entryMapperPath, 'pending-uids.json'), bugged);
+          helper.writeFileSync(path.join(entryMapperPath, 'removed-uids.json'), removed);
+          helper.writeFileSync(path.join(entryMapperPath, 'pending-uids.json'), bugged);
 
           addlogs(config, chalk.green('The stack has been eradicated from bugged entries!'), 'success');
           return resolve();
         })
         .catch(function (error) {
           // error while removing bugged entries from stack
-          return reject(error);
+          addlogs(config, util.formatError(error), 'error');
         });
     });
   },
@@ -1004,7 +1028,7 @@ importEntries.prototype = {
           }
         }
       } else {
-        addlogs(config, 'field_rules is not available...', 'error');
+        addlogs(config, 'field_rules is not available', 'error');
       }
 
       client
@@ -1014,13 +1038,13 @@ importEntries.prototype = {
         .then((contentTypeResponse) => {
           // Object.assign(ctObj, _.cloneDeep(schema))
           contentTypeResponse.field_rules = schema.field_rules;
-          contentTypeResponse.update();
+          return contentTypeResponse.update();
         })
         .then(() => {
           return resolve();
         })
         .catch(function (error) {
-          return reject(error);
+          addlogs(config, `failed to update the field rules ${util.formatError(error)}`);
         });
     });
   },
@@ -1040,16 +1064,20 @@ importEntries.prototype = {
           let lang = langs[counter];
           return Promise.map(
             contentTypeUids,
-            function (ctUid) {
+            async function (ctUid) {
               let eFilePath = path.resolve(ePath, ctUid, lang + '.json');
-              let entries = helper.readFileSync(eFilePath);
+              let entries = await helper.readLargeFile(eFilePath);
 
               let eUids = Object.keys(entries);
               let batches = [];
+              let batchSize;
 
               if (eUids.length > 0) {
-                for (let i = 0; i < eUids.length; i += entryBatchLimit) {
-                  batches.push(eUids.slice(i, i + entryBatchLimit));
+                let entryBatchLimit = eConfig.batchLimit || 10;
+                batchSize = Math.round(entryBatchLimit / 3);
+                // Run entry creation in batches
+                for (let i = 0; i < eUids.length; i += batchSize) {
+                  batches.push(eUids.slice(i, i + batchSize));
                 }
               } else {
                 return;
@@ -1057,7 +1085,7 @@ importEntries.prototype = {
 
               return Promise.map(
                 batches,
-                async function (batch) {
+                async function (batch, index) {
                   return Promise.map(
                     batch,
                     async function (eUid) {
@@ -1093,16 +1121,20 @@ importEntries.prototype = {
                               // eslint-disable-next-line max-nested-callbacks
                               .then((result) => {
                                 // addlogs(config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
-                                console.log('Entry ' + eUid + ' published successfully in ' + ctUid + ' content type');
+                                addlogs(
+                                  config,
+                                  'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type',
+                                  'success',
+                                );
                                 return resolveEntryPublished(result);
                                 // eslint-disable-next-line max-nested-callbacks
                               })
                               .catch(function (err) {
-                                // addlogs(config, 'Entry ' + eUid + ' not published successfully in ' + ctUid + ' content type', 'error')
-                                console.log(
-                                  'Entry ' + eUid + ' not published successfully in ' + ctUid + ' content type',
+                                addlogs(
+                                  config,
+                                  `failed to publish entry ${eUid} content type ${ctUid} ${util.formatError(err)}`,
                                 );
-                                return rejectEntryPublished(err.errorMessage);
+                                return resolveEntryPublished('');
                               });
                           });
                         }
@@ -1111,7 +1143,7 @@ importEntries.prototype = {
                       }
                     },
                     {
-                      concurrency: reqConcurrency,
+                      concurrency: 1,
                     },
                   )
                     .then(function () {
@@ -1119,8 +1151,7 @@ importEntries.prototype = {
                     })
                     .catch(function (error) {
                       // error while executing entry in batch
-                      addlogs(config, error, 'error');
-                      return error;
+                      addlogs(config, util.formatError(error), 'error');
                     });
                 },
                 {
@@ -1129,15 +1160,10 @@ importEntries.prototype = {
               )
                 .then(function () {
                   // addlogs(config, 'Entries published successfully in ' + ctUid + ' content type', 'success')
-                  console.log('Entries published successfully in ' + ctUid + ' content type');
+                  addlogs('Entries published successfully in ' + ctUid + ' content type');
                 })
                 .catch(function (error) {
-                  addlogs(
-                    config,
-                    'Failed some of the Entry publishing in ' + ctUid + ' content type, go through logs for details.',
-                    'error',
-                  );
-                  return error;
+                  addlogs(config, `failed to publish entry in content type ${ctUid} ${util.formatError(error)}`);
                 });
             },
             {
@@ -1146,9 +1172,10 @@ importEntries.prototype = {
           )
             .then(function () {
               // empty function
+              // addlogs('Published entries successfully in ' +);
             })
             .catch(function (error) {
-              return error;
+              addlogs(`Failed to publish few entries in ${lang} ${util.formatError(error)}`);
             });
         },
         {
@@ -1159,7 +1186,8 @@ importEntries.prototype = {
           return resolve();
         })
         .catch((error) => {
-          return reject(error);
+          addlogs(`Failed to publish entries ${util.formatError(error)}`);
+          // return reject(error);
         });
     });
   },
@@ -1466,4 +1494,4 @@ importEntries.prototype = {
   },
 };
 
-module.exports = new importEntries();
+module.exports = EntriesImport;
