@@ -6,7 +6,7 @@ const chalk = require('chalk');
 
 let exportCmd = require('@contentstack/cli-cm-export');
 let importCmd = require('@contentstack/cli-cm-import');
-const { HttpClient, chooseLocalePrompt } = require('@contentstack/cli-utilities');
+const { HttpClient } = require('@contentstack/cli-utilities');
 let sdkInstance = require('../../lib/util/contentstack-management-sdk');
 const defaultConfig = require('@contentstack/cli-cm-export/src/config/default');
 const { CustomAbortController } = require('./abort-controller');
@@ -240,15 +240,6 @@ class CloneHandler {
             const sourceStack = await cloneCommand.execute(new HandleStackCommand({ org, isSource: true, msg: stackMsg, stackAbortController }, this));
 
             if (config.source_stack) {
-              // if (!(config.master_locale && config.master_locale.code)) {
-
-              //   const res = await chooseLocalePrompt(client.stack({ api_key: config.source_stack }), 'Choose Master Locale', master_locale)
-              //   master_locale = res.code
-              //   config.master_locale = res
-              // }
-              // else {
-              //   master_locale = config.master_locale.code
-              // }
               await cloneCommand.execute(
                 new HandleBranchCommand({ api_key: config.source_stack }, this)
               );
