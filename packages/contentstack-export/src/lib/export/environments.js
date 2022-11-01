@@ -57,7 +57,7 @@ module.exports = class ExportEnvironments {
               delete self.environments[envUid].uid;
               delete self.environments[envUid]['ACL'];
             }
-            helper.writeFile(path.join(environmentsFolderPath, environmentConfig.fileName), self.environments);
+            helper.writeFileSync(path.join(environmentsFolderPath, environmentConfig.fileName), self.environments);
             addlogs(self.config, chalk.green('All the environments have been exported successfully'), 'success');
             return resolve();
           }
