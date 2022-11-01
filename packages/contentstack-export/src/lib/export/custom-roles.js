@@ -51,7 +51,7 @@ ExportCustomRoles.prototype.start = async function (credentialConfig) {
       addlogs(config, role.name + ' role was exported successfully', 'success');
       self.customRoles[role.uid] = role;
     });
-    helper.writeFile(path.join(rolesFolderPath, rolesConfig.fileName), self.customRoles);
+    helper.writeFileSync(path.join(rolesFolderPath, rolesConfig.fileName), self.customRoles);
     addlogs(config, chalk.green('All the custom roles have been exported successfully'), 'success');
   } catch (error) {
     if (error.statusCode === 401) {
@@ -84,7 +84,7 @@ async function getCustomRolesLocales(customRoles, customRolesLocalesFilepath, cl
       delete sourceLocalesMap[locale]['stackHeaders'];
       localesMap[locale] = sourceLocalesMap[locale];
     }
-    helper.writeFile(customRolesLocalesFilepath, localesMap);
+    helper.writeFileSync(customRolesLocalesFilepath, localesMap);
   }
 }
 
