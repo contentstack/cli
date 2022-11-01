@@ -54,7 +54,7 @@ module.exports = class ExportExtensions {
               delete self.extensions[extUid].uid;
               delete self.extensions[extUid].SYS_ACL;
             }
-            helper.writeFile(path.join(extensionsFolderPath, self.extensionConfig.fileName), self.extensions);
+            helper.writeFileSync(path.join(extensionsFolderPath, self.extensionConfig.fileName), self.extensions);
             addlogs(config, chalk.green('All the extensions have been exported successfully'), 'success');
             return resolve();
           }

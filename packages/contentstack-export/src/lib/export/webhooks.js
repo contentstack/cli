@@ -56,7 +56,7 @@ module.exports = class ExportWebhooks {
               delete self.webhooks[webUid].uid;
               delete self.webhooks[webUid].SYS_ACL;
             }
-            helper.writeFile(path.join(webhooksFolderPath, self.webhooksConfig.fileName), self.webhooks);
+            helper.writeFileSync(path.join(webhooksFolderPath, self.webhooksConfig.fileName), self.webhooks);
             addlogs(config, chalk.green('All the webhooks have been exported successfully'), 'success');
             return resolve();
           }

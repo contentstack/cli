@@ -68,7 +68,7 @@ module.exports = class ImportGlobalFields {
     return new Promise(function (resolve, reject) {
       if (self.globalfields === undefined || isEmpty(self.globalfields)) {
         addlogs(self.config, chalk.white('No globalfields Found'), 'success');
-        helper.writeFile(globalFieldsPending, _globalField_pending);
+        helper.writeFileSync(globalFieldsPending, _globalField_pending);
         return resolve({ empty: true });
       }
       let snipUids = Object.keys(self.globalfields);
@@ -95,7 +95,7 @@ module.exports = class ImportGlobalFields {
                 self.success.push(globalField.items);
                 let global_field_uid = globalField.uid;
                 self.snipUidMapper[snipUid] = globalField.items;
-                helper.writeFile(globalfieldsUidMapperPath, self.snipUidMapper);
+                helper.writeFileSync(globalfieldsUidMapperPath, self.snipUidMapper);
                 addlogs(
                   self.config,
                   chalk.green('Global field ' + global_field_uid + ' created successfully'),
@@ -127,8 +127,8 @@ module.exports = class ImportGlobalFields {
       )
         .then(function () {
           // globalfields have imported successfully
-          helper.writeFile(globalfieldsSuccessPath, self.success);
-          helper.writeFile(globalFieldsPending, _globalField_pending);
+          helper.writeFileSync(globalfieldsSuccessPath, self.success);
+          helper.writeFileSync(globalFieldsPending, _globalField_pending);
           addlogs(self.config, chalk.green('globalfields have been imported successfully!'), 'success');
           return resolve();
         })
@@ -136,7 +136,7 @@ module.exports = class ImportGlobalFields {
           let error = JSON.parse(err);
           // error while importing globalfields
           addlogs(self.config, err, 'error');
-          helper.writeFile(globalfieldsFailsPath, self.fails);
+          helper.writeFileSync(globalfieldsFailsPath, self.fails);
           addlogs(self.config, chalk.red('globalfields import failed'), 'error');
           return reject(error);
         });
