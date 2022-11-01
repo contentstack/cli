@@ -240,15 +240,15 @@ class CloneHandler {
             const sourceStack = await cloneCommand.execute(new HandleStackCommand({ org, isSource: true, msg: stackMsg, stackAbortController }, this));
 
             if (config.source_stack) {
-              if (!(config.master_locale && config.master_locale.code)) {
+              // if (!(config.master_locale && config.master_locale.code)) {
 
-                const res = await chooseLocalePrompt(client.stack({ api_key: config.source_stack }), 'Choose Master Locale', master_locale)
-                master_locale = res.code
-                config.master_locale = res
-              }
-              else {
-                master_locale = config.master_locale.code
-              }
+              //   const res = await chooseLocalePrompt(client.stack({ api_key: config.source_stack }), 'Choose Master Locale', master_locale)
+              //   master_locale = res.code
+              //   config.master_locale = res
+              // }
+              // else {
+              //   master_locale = config.master_locale.code
+              // }
               await cloneCommand.execute(
                 new HandleBranchCommand({ api_key: config.source_stack }, this)
               );
