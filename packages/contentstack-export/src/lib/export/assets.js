@@ -97,7 +97,7 @@ module.exports = class ExportAssets {
                             self.assetContents[assetJSON.uid] = assetJSON
                           }).catch((err) => {
                             addlogs({ errorCode: (err && err.code), uid: assetJSON.uid }, `Asset download failed - ${assetJSON.uid}`, 'error')
-                            return error
+                            return err
                           })
                       }
                     },
@@ -106,7 +106,7 @@ module.exports = class ExportAssets {
                     addlogs(self.config, 'Batch no ' + (batch + 1) + ' of assets is complete', 'success');
                     // helper.writeFileSync(this.assetContentsFile, self.assetContents)
                   }).catch(function (error) {
-                    console.log('Error fetch/download the asset', error && error.message)
+                    console.log('Error fetch/download the asset', (error && error.message))
                     addlogs(self.config, 'Asset batch ' + (batch + 1) + ' failed to download', 'error')
                     addlogs(self.config, error, 'error')
                   })

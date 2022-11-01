@@ -170,5 +170,3 @@ module.exports = class ExportMarketplaceApps {
     return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
   };
 };
-
-module.exports = new exportMarketplaceApps();
