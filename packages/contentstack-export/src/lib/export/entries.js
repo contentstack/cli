@@ -112,7 +112,6 @@ class EntriesExport {
       .query(requestObject)
       .find();
 
-    executeTask();
     if (Array.isArray(entriesSearchResponse.items) && entriesSearchResponse.items.length > 0) {
       // clean up attribs and add to parent entry list
       this.sanitizeAttribs(entriesSearchResponse.items, entries);
