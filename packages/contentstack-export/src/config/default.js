@@ -28,7 +28,7 @@ module.exports = {
     //   'labels',
     //   'marketplace-apps'
     // ],
-    types: ['stack', 'assets', 'locales', 'environments', 'content-types', 'entries'],
+    types: ['stack', 'assets', 'locales', 'environments', 'global-fields', 'content-types', 'entries'],
     locales: {
       dirName: 'locales',
       fileName: 'locales.json',
@@ -77,7 +77,7 @@ module.exports = {
       invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by', '_metadata', 'published'],
       // no of asset version files (of a single asset) that'll be downloaded parallelly
       downloadLimit: 3,
-      enableDownloadStatus: false
+      enableDownloadStatus: false,
     },
     content_types: {
       dirName: 'content_types',
