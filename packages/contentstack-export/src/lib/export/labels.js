@@ -49,7 +49,7 @@ module.exports = class ExportLabels {
           } else {
             addlogs(self.config, 'No labels found', 'success');
           }
-          helper.writeFile(path.join(labelsFolderPath, self.labelConfig.fileName), self.labels);
+          helper.writeFileSync(path.join(labelsFolderPath, self.labelConfig.fileName), self.labels);
           resolve();
         })
         .catch(function (error) {
