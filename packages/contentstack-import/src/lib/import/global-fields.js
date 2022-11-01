@@ -77,7 +77,7 @@ module.exports = class ImportGlobalFields {
         function (snipUid) {
           let flag = { supressed: false };
           let snip = self.globalfields[snipUid];
-          extension_supress(snip.schema, config.preserveStackVersion, self.installedExtensions);
+          extension_supress(snip.schema, self.config.preserveStackVersion, self.installedExtensions);
           removeReferenceFields(snip.schema, flag);
 
           if (flag.supressed) {
@@ -88,7 +88,7 @@ module.exports = class ImportGlobalFields {
           if (!self.snipUidMapper.hasOwnProperty(snipUid)) {
             let requestOption = { global_field: snip };
             return client
-              .stack({ api_key: config.target_stack, management_token: config.management_token })
+              .stack({ api_key: self.config.target_stack, management_token: self.config.management_token })
               .globalField()
               .create(requestOption)
               .then((globalField) => {
@@ -116,7 +116,7 @@ module.exports = class ImportGlobalFields {
           } else {
             // globalfields has already been created
             addlogs(
-              config,
+              self.config,
               chalk.white('The globalfields already exists. Skipping it to avoid duplicates!'),
               'success',
             );
