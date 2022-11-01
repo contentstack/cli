@@ -12,6 +12,7 @@ let Promise = require('bluebird');
 let chalk = require('chalk');
 
 let helper = require('../util/fs');
+const { formatError } = require('../util');
 let { addlogs } = require('../util/log');
 let stack = require('../util/contentstack-management-sdk');
 let config = require('../../config/default');
@@ -26,14 +27,13 @@ let langFailsPath;
 let client;
 
 let masterLanguage = config.master_locale;
-
-function importLanguages() {
+function LocalesImport() {
   this.fails = [];
   this.success = [];
   this.langUidMapper = {};
 }
 
-importLanguages.prototype = {
+LocalesImport.prototype = {
   start: function (credentialConfig) {
     addlogs(config, 'Migrating languages', 'success');
     let self = this;
@@ -77,26 +77,24 @@ importLanguages.prototype = {
               .then((locale) => {
                 self.success.push(locale.items);
                 self.langUidMapper[langUid] = locale.uid;
-                helper.writeFile(langUidMapperPath, self.langUidMapper);
+                helper.writeFileSync(langUidMapperPath, self.langUidMapper);
               })
-              .catch(function (err) {
+              .catch(function (error) {
                 let error = JSON.parse(err.message);
                 if (error.hasOwnProperty('errorCode') && error.errorCode === 247) {
                   addlogs(config, error.errors.code[0], 'success');
                   return;
                 }
                 self.fails.push(lang);
-                addlogs(config, chalk.red("Language: '" + lang.code + "' failed to be import\n"), 'error');
+                addlogs(config, `Language: ${lang.code} failed to be import ${formatError(error)}`, 'error');
               });
           } else {
             // the language has already been created
             addlogs(config, chalk.yellow("The language: '" + lang.code + "' already exists."), 'error');
           }
-
-          // import 2 languages at a time
         },
         {
-          concurrency: reqConcurrency,
+          concurrency: config.importConcurrency,
         },
       )
         .then(function () {
@@ -104,19 +102,20 @@ importLanguages.prototype = {
           self
             .update_locales(langUids)
             .then(() => {
-              helper.writeFile(langSuccessPath, self.success);
+              helper.writeFileSync(langSuccessPath, self.success);
               addlogs(config, chalk.green('Languages have been imported successfully!'), 'success');
               return resolve();
             })
             .catch(function (error) {
-              return reject(error);
+              addlogs(config, formatError(error), 'error');
+              return reject('Error while updating the locales');
             });
         })
         .catch(function (error) {
           // error while importing languages
-          helper.writeFile(langFailsPath, self.fails);
-          addlogs(config, chalk.red('Language import failed'), 'error');
-          return reject(error);
+          helper.writeFileSync(langFailsPath, self.fails);
+          addlogs(config, formatError(error), 'error');
+          return reject('Failed to import locales');
         });
     });
   },
@@ -150,4 +149,4 @@ importLanguages.prototype = {
   },
 };
 
-module.exports = new importLanguages();
+module.exports = LocalesImport;
