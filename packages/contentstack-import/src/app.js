@@ -80,7 +80,7 @@ let singleImport = async (moduleName, types, config) => {
         }
       }
 
-      let exportedModule = _.includes(['assets', 'environments', 'global-fields'], moduleName)
+      let exportedModule = _.includes(['assets', 'environments', 'extensions', 'global-fields'], moduleName)
         ? new (require('./lib/import/' + moduleName))(config)
         : require('./lib/import/' + moduleName);
 
@@ -118,7 +118,7 @@ let allImport = async (config, types) => {
     try {
       for (let i = 0; i < types.length; i++) {
         let type = types[i];
-        let exportedModule = _.includes(['assets', 'environments', 'global-fields'], moduleName)
+        let exportedModule = _.includes(['assets', 'environments', 'extensions', 'global-fields'], moduleName)
           ? new (require('./lib/import/' + moduleName))(config)
           : require('./lib/import/' + moduleName);
 
