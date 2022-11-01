@@ -31,7 +31,11 @@ module.exports = class ExportExtensions {
     addlogs(this.config, 'Starting extension export', 'success');
 
     const self = this;
-    const extensionsFolderPath = path.resolve(this.config.data, this.config.branchName || '', extensionConfig.dirName);
+    const extensionsFolderPath = path.resolve(
+      this.config.data,
+      this.config.branchName || '',
+      this.extensionConfig.dirName,
+    );
     // Create folder for extensions
     mkdirp.sync(extensionsFolderPath);
     let client = stack.Client(this.config);
@@ -50,7 +54,7 @@ module.exports = class ExportExtensions {
               delete self.extensions[extUid].uid;
               delete self.extensions[extUid].SYS_ACL;
             }
-            helper.writeFile(path.join(extensionsFolderPath, extensionConfig.fileName), self.extensions);
+            helper.writeFile(path.join(extensionsFolderPath, self.extensionConfig.fileName), self.extensions);
             addlogs(config, chalk.green('All the extensions have been exported successfully'), 'success');
             return resolve();
           }
