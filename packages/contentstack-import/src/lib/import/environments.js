@@ -67,7 +67,7 @@ module.exports = class ImportEnvironments {
               .then((environment) => {
                 self.success.push(environment.items);
                 self.envUidMapper[envUid] = environment.uid;
-                helper.writeFile(envUidMapperPath, self.envUidMapper);
+                helper.writeFileSync(envUidMapperPath, self.envUidMapper);
               })
               .catch(function (err) {
                 let error = JSON.parse(err.message);
@@ -96,12 +96,12 @@ module.exports = class ImportEnvironments {
         { concurrency: self.fetchConcurrency },
       )
         .then(function () {
-          helper.writeFile(envSuccessPath, self.success);
+          helper.writeFileSync(envSuccessPath, self.success);
           addlogs(self.config, chalk.green('Environments have been imported successfully!'), 'success');
           resolve();
         })
         .catch(function (error) {
-          helper.writeFile(envFailsPath, self.fails);
+          helper.writeFileSync(envFailsPath, self.fails);
           addlogs(self.config, chalk.red(`Failed to import environment ${formatError(error)}`), 'error');
           reject(error);
         });
