@@ -33,10 +33,12 @@ module.exports = {
       'assets',
       'locales',
       'environments',
+      'webhooks',
       'extensions',
       'global-fields',
       'content-types',
       'entries',
+      'labels',
       'marketplace-apps',
     ],
     locales: {
