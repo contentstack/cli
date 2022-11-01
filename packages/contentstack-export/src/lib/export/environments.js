@@ -29,22 +29,22 @@ module.exports = class ExportEnvironments {
   }
 
   start() {
-    let self = this;
-    let client = stack.Client(this.config);
-    const environmentConfig = this.config.modules.environments;
+    const self = this;
+    const client = stack.Client(self.config);
+    const environmentConfig = self.config.modules.environments;
     const environmentsFolderPath = path.resolve(
-      this.config.data,
-      this.config.branchName || '',
+      self.config.data,
+      self.config.branchName || '',
       environmentConfig.dirName,
     );
 
     // Create folder for environments
     mkdirp.sync(environmentsFolderPath);
-    addlogs(this.config, 'Starting environment export', 'success');
+    addlogs(self.config, 'Starting environment export', 'success');
 
     return new Promise(function (resolve, reject) {
       client
-        .stack({ api_key: this.config.source_stack, management_token: this.config.management_token })
+        .stack({ api_key: self.config.source_stack, management_token: self.config.management_token })
         .environment()
         .query(self.requestOptions.qs)
         .find()
