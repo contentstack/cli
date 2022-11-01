@@ -19,6 +19,7 @@ const stack = require('../util/contentstack-management-sdk')
 module.exports = class ImportAssets {
   config
   client
+  assets
   fails = []
   assetConfig
   mapperDirPath
@@ -50,13 +51,13 @@ module.exports = class ImportAssets {
     this.uidMapperPath = path.join(this.mapperDirPath, 'uid-mapping.json')
     this.urlMapperPath = path.join(this.mapperDirPath, 'url-mapping.json')
     this.failsPath = path.join(this.mapperDirPath, 'fail.json')
-    this.assets = helper.readFile(path.join(this.assetsFolderPath, this.assetConfig.fileName))
-    this.environment = helper.readFile(this.environmentPath)
+    this.assets = helper.readFileSync(path.join(this.assetsFolderPath, this.assetConfig.fileName))
+    this.environment = helper.readFileSync(this.environmentPath)
     if (fs.existsSync(this.uidMapperPath)) {
-      this.uidMapping = helper.readFile(this.uidMapperPath)
+      this.uidMapping = helper.readFileSync(this.uidMapperPath)
     }
     if (fs.existsSync(this.urlMapperPath)) {
-      this.urlMapping = helper.readFile(this.urlMapperPath)
+      this.urlMapping = helper.readFileSync(this.urlMapperPath)
     }
 
     mkdirp.sync(this.mapperDirPath)
@@ -182,7 +183,7 @@ module.exports = class ImportAssets {
   uploadVersionedAssets(uid, assetFolderPath) {
     let self = this
     return new Promise(function (resolve, reject) {
-      let versionedAssetMetadata = helper.readFile(path.join(assetFolderPath, '_contentstack_' + uid + '.json'))
+      let versionedAssetMetadata = helper.readFileSync(path.join(assetFolderPath, '_contentstack_' + uid + '.json'))
       // using last version, find asset's parent
       let lastVersion = versionedAssetMetadata[versionedAssetMetadata.length - 1]
 
@@ -323,7 +324,7 @@ module.exports = class ImportAssets {
     let self = this
     return new Promise(function (resolve, reject) {
       let mappedFolderPath = path.resolve(self.config.data, 'mapper', 'assets', 'folder-mapping.json')
-      self.folderDetails = helper.readFile(path.resolve(self.assetsFolderPath, 'folders.json'))
+      self.folderDetails = helper.readFileSync(path.resolve(self.assetsFolderPath, 'folders.json'))
 
       if (_.isEmpty(self.folderDetails)) {
         addlogs(self.config, 'No folders were found at: ' + path.join(self.assetsFolderPath, 'folders.json'), 'success')
@@ -334,7 +335,7 @@ module.exports = class ImportAssets {
       let createdFolderUids = []
       // if a few folders have already been created, skip re-creating them
       if (fs.existsSync(mappedFolderPath)) {
-        createdFolders = helper.readFile(mappedFolderPath)
+        createdFolders = helper.readFileSync(mappedFolderPath)
         // check if the read file has mapped objects
         if (_.isPlainObject(createdFolders)) {
           createdFolderUids = Object.keys(createdFolders)
@@ -374,7 +375,7 @@ module.exports = class ImportAssets {
         },
         { concurrency: self.assetConfig.importFoldersConcurrency }
       ).then(function () {
-        self.mappedFolderUids = helper.readFile(mappedFolderPath)
+        self.mappedFolderUids = helper.readFileSync(mappedFolderPath)
         // completed creating folders
         return resolve()
       }).catch(function (error) {

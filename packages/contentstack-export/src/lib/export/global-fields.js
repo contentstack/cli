@@ -15,22 +15,25 @@ let config = require('../../config/default');
 const stack = require('../util/contentstack-management-sdk');
 
 module.exports = class ExportGlobalFields {
+  limit = 100;
   config = {};
   global_fields = [];
-  requestOptions = {
-    qs: {
-      limit: 100,
-      asc: 'updated_at',
-      include_count: true,
-    },
-  };
   master = {};
   globalfields = {};
+  requestOptions = {};
   globalfieldsFolderPath;
   globalfieldsConfig = config.modules.globalfields;
   validKeys = config.modules.globalfields.validKeys;
 
   constructor(credentialConfig) {
+    this.requestOptions = {
+      qs: {
+        skip: 0,
+        limit: this.limit,
+        asc: 'updated_at',
+        include_count: true,
+      },
+    };
     this.config = { ...config, ...credentialConfig };
     this.globalfieldsFolderPath = path.resolve(
       this.config.data,
@@ -48,7 +51,7 @@ module.exports = class ExportGlobalFields {
     return new Promise(function (resolve, reject) {
       try {
         return self
-          .getGlobalFields(null, self.config)
+          .getGlobalFields(0, self.config)
           .then(function (result) {
             if (!result) {
               return self.writeGlobalFields().then(resolve).catch(reject);
@@ -67,12 +70,7 @@ module.exports = class ExportGlobalFields {
     const self = this;
     let client = stack.Client(globalFieldConfig);
 
-    if (typeof skip !== 'number') {
-      skip = 0;
-      self.requestOptions.qs.skip = skip;
-    } else {
-      self.requestOptions.qs.skip = skip;
-    }
+    self.requestOptions.qs.skip = skip;
 
     return new Promise(function (resolve, reject) {
       client
