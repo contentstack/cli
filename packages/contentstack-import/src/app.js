@@ -80,7 +80,10 @@ let singleImport = async (moduleName, types, config) => {
         }
       }
 
-      let exportedModule = _.includes(['assets', 'environments', 'extensions', 'global-fields'], moduleName)
+      let exportedModule = _.includes(
+        ['assets', 'environments', 'extensions', 'marketplace-apps', 'global-fields'],
+        moduleName,
+      )
         ? new (require('./lib/import/' + moduleName))(config)
         : require('./lib/import/' + moduleName);
 
@@ -118,9 +121,12 @@ let allImport = async (config, types) => {
     try {
       for (let i = 0; i < types.length; i++) {
         let type = types[i];
-        let exportedModule = _.includes(['assets', 'environments', 'extensions', 'global-fields'], moduleName)
-          ? new (require('./lib/import/' + moduleName))(config)
-          : require('./lib/import/' + moduleName);
+        let exportedModule = _.includes(
+          ['assets', 'environments', 'extensions', 'marketplace-apps', 'global-fields'],
+          type,
+        )
+          ? new (require('./lib/import/' + type))(config)
+          : require('./lib/import/' + type);
 
         if (i === 0 && !config.master_locale) {
           let masterLocalResponse = await util.masterLocalDetails(config);
