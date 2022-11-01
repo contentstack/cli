@@ -72,17 +72,17 @@ let singleImport = async (moduleName, types, config) => {
     if (types.indexOf(moduleName) > -1) {
       if (!config.master_locale) {
         try {
-          let masterLocalResponse = await util.masterLocalDetails(config)
-          let master_locale = { code: masterLocalResponse.code }
-          config['master_locale'] = master_locale
+          let masterLocalResponse = await util.masterLocalDetails(config);
+          let master_locale = { code: masterLocalResponse.code };
+          config['master_locale'] = master_locale;
         } catch (error) {
           addlogs(config, `Failed to get master locale detail from the stack ${formatError(error)}`, 'error');
         }
       }
 
-      let exportedModule = _.includes(['assets'], moduleName)
+      let exportedModule = _.includes(['assets', 'environments', 'extensions', 'global-fields'], moduleName)
         ? new (require('./lib/import/' + moduleName))(config)
-        : require('./lib/import/' + moduleName)
+        : require('./lib/import/' + moduleName);
 
       exportedModule
         .start(config)
@@ -91,7 +91,7 @@ let singleImport = async (moduleName, types, config) => {
             let ctPath = path.resolve(config.data, config.modules.content_types.dirName);
             let fieldPath = path.join(ctPath + '/field_rules_uid.json');
             if (fieldPath) {
-              await util.field_rules_update(config, ctPath)
+              await util.field_rules_update(config, ctPath);
             }
           }
           if (!(data && data.empty)) {
@@ -118,12 +118,16 @@ let allImport = async (config, types) => {
     try {
       for (let i = 0; i < types.length; i++) {
         let type = types[i];
-        let exportedModule = require('./lib/import/' + type);
+        let exportedModule = _.includes(['assets', 'environments', 'extensions', 'global-fields'], moduleName)
+          ? new (require('./lib/import/' + moduleName))(config)
+          : require('./lib/import/' + moduleName);
+
         if (i === 0 && !config.master_locale) {
           let masterLocalResponse = await util.masterLocalDetails(config);
           let master_locale = { code: masterLocalResponse.code };
           config['master_locale'] = master_locale;
         }
+
         await exportedModule
           .start(config)
           .then((_result) => {
