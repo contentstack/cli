@@ -54,11 +54,15 @@
     "bin": "csdx",
     "devPlugins": [
       "@oclif/plugin-help"
-    ]
+    ],
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-clone/<%- commandPath %>"
   },
   "repository": "https://github.com/contentstack/cli",
   "scripts": {
-    "test": "nyc --reporter=html mocha \"test/**/*.test.js\"",
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "test": "nyc --reporter=html mocha --forbid-only \"test/**/*.test.js\"",
+    "posttest": "eslint .",
     "version": "oclif-dev readme && git add README.md"
   },
   "csdxConfig": {
