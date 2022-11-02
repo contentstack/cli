@@ -115,7 +115,7 @@ module.exports = class ImportLanguages {
           helper.writeFileSync(langFailsPath, self.fails);
           addlogs(self.config, chalk.red('Language import failed'), 'error');
           addlogs(self.config, formatError(error), 'error');
-          reject(error);
+          reject('failed to import Languages');
         });
     });
   }
