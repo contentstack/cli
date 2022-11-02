@@ -66,7 +66,7 @@ module.exports = class ImportExtensions {
               .then((response) => {
                 self.success.push(response);
                 self.extUidMapper[extUid] = response.uid;
-                helper.writeFile(extUidMapperPath, self.extUidMapper);
+                helper.writeFileSync(extUidMapperPath, self.extUidMapper);
               })
               .catch(function (err) {
                 let error = JSON.parse(err.message);
@@ -96,13 +96,13 @@ module.exports = class ImportExtensions {
       )
         .then(function () {
           // extensions have imported successfully
-          helper.writeFile(extSuccessPath, self.success);
+          helper.writeFileSync(extSuccessPath, self.success);
           addlogs(self.config, chalk.green('Extensions have been imported successfully!'), 'success');
           resolve();
         })
         .catch(function (error) {
           // error while importing extensions
-          helper.writeFile(extFailsPath, self.fails);
+          helper.writeFileSync(extFailsPath, self.fails);
           addlogs(self.config, chalk.red(`Extension import failed ${formatError(error)}`), 'error');
           reject(error);
         });
