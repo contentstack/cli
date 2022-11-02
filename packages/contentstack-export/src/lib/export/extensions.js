@@ -55,10 +55,10 @@ module.exports = class ExportExtensions {
               delete self.extensions[extUid].SYS_ACL;
             }
             helper.writeFileSync(path.join(extensionsFolderPath, self.extensionConfig.fileName), self.extensions);
-            addlogs(config, chalk.green('All the extensions have been exported successfully'), 'success');
+            addlogs(self.config, chalk.green('All the extensions have been exported successfully'), 'success');
             return resolve();
           }
-          addlogs(config, 'No extensions found', 'success');
+          addlogs(self.config, 'No extensions found', 'success');
           resolve();
         })
         .catch((error) => {
