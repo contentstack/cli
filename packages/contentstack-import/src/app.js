@@ -93,7 +93,6 @@ let singleImport = async (moduleName, types, config) => {
           await util.field_rules_update(config, ctPath);
         }
       }
-
       if (!(importResponse && importResponse.empty)) {
         addlogs(config, moduleName + ' imported successfully!', 'success');
       }

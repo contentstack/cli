@@ -96,12 +96,12 @@ module.exports = class ImportLabels {
         { concurrency: self.reqConcurrency },
       )
         .then(function () {
-          helper.writeFile(labelUidMapperPath, self.labelUidMapper);
+          helper.writeFileSync(labelUidMapperPath, self.labelUidMapper);
           // eslint-disable-next-line no-undef
           return self
             .updateLabels()
             .then(function () {
-              helper.writeFile(labelSuccessPath, self.success);
+              helper.writeFileSync(labelSuccessPath, self.success);
               addlogs(self.config, chalk.green('Labels have been imported successfully!'), 'success');
               return resolve();
             })
@@ -113,8 +113,8 @@ module.exports = class ImportLabels {
         })
         .catch(function (error) {
           // error while importing labels
-          helper.writeFile(labelUidMapperPath, self.labelUidMapper);
-          helper.writeFile(labelFailsPath, self.fails);
+          helper.writeFileSync(labelUidMapperPath, self.labelUidMapper);
+          helper.writeFileSync(labelFailsPath, self.fails);
           addlogs(self.config, chalk.red(`Failed to import label ${formatError(error)}`), 'error');
           return reject(error);
         });
