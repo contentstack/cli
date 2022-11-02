@@ -336,6 +336,6 @@ module.exports = {
   importConcurrency: 5,
   fetchConcurrency: 5,
   writeConcurrency: 5,
-  useBackedupDir: '/Users/shafeeq.pp/WORKSPACE/CLI/main/_backup_389',
+  // useBackedupDir: '',
   // backupConcurrency: 10,
 };
