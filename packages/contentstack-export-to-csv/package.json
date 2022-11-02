@@ -43,23 +43,25 @@
     "cli",
     "plugin"
   ],
+  "scripts": {
+    "pack": "npm pack && mv *.tgz ../../build",
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "csdxConfig": {
+    "expiredCommands": {}
+  },
+  "main": "./src/commands/cm/export-to-csv.js",
   "license": "MIT",
   "oclif": {
     "commands": "./src/commands",
     "bin": "csdx",
     "devPlugins": [
       "@oclif/plugin-help"
-    ]
+    ],
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-export-to-csv/<%- commandPath %>"
   },
-  "csdxConfig": {
-    "expiredCommands": {}
-  },
-  "repository": "contentstack/cli",
-  "scripts": {
-    "postpack": "rm -f oclif.manifest.json",
-    "posttest": "eslint .",
-    "prepack": "oclif-dev manifest && oclif-dev readme",
-    "test": "nyc --reporter=html mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif-dev readme && git add README.md"
-  }
+  "repository": "https://github.com/contentstack/cli"
 }
