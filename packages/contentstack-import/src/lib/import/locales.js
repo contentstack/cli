@@ -13,30 +13,35 @@ let Promise = require('bluebird');
 let { isEmpty, merge, cloneDeep } = require('lodash');
 
 let helper = require('../util/fs');
-const { formatError } = require('../util');
 let { addlogs } = require('../util/log');
 const { formatError } = require('../util');
 let config = require('../../config/default');
 let stack = require('../util/contentstack-management-sdk');
 
-let masterLanguage = config.master_locale;
-function LocalesImport() {
-  this.fails = [];
-  this.success = [];
-  this.langUidMapper = {};
-}
+module.exports = class ImportLanguages {
+  client;
+  fails = [];
+  success = [];
+  langUidMapper = {};
+  masterLanguage = config.master_locale;
+  langConfig = config.modules.locales;
+  reqConcurrency = config.concurrency || config.fetchConcurrency || 1;
 
-LocalesImport.prototype = {
-  start: function (credentialConfig) {
-    addlogs(config, 'Migrating languages', 'success');
-    let self = this;
-    config = credentialConfig;
-    client = stack.Client(config);
-    langFolderPath = path.resolve(config.data, langConfig.dirName);
-    langMapperPath = path.resolve(config.data, 'mapper', 'languages');
-    langUidMapperPath = path.resolve(config.data, 'mapper', 'languages', 'uid-mapper.json');
-    langSuccessPath = path.resolve(config.data, 'mapper', 'languages', 'success.json');
-    langFailsPath = path.resolve(config.data, 'mapper', 'languages', 'fails.json');
+  constructor(credentialConfig) {
+    this.config = merge(config, credentialConfig);
+    this.client = stack.Client(this.config);
+  }
+
+  start() {
+    addlogs(this.config, 'Migrating languages', 'success');
+
+    const self = this;
+    let langMapperPath = path.resolve(this.config.data, 'mapper', 'languages');
+    let langFolderPath = path.resolve(this.config.data, this.langConfig.dirName);
+    let langFailsPath = path.resolve(this.config.data, 'mapper', 'languages', 'fails.json');
+    let langSuccessPath = path.resolve(this.config.data, 'mapper', 'languages', 'success.json');
+    let langUidMapperPath = path.resolve(this.config.data, 'mapper', 'languages', 'uid-mapper.json');
+    self.languages = helper.readFileSync(path.resolve(langFolderPath, this.langConfig.fileName));
 
     mkdirp.sync(langMapperPath);
 
@@ -79,16 +84,17 @@ LocalesImport.prototype = {
                   return err;
                 }
                 self.fails.push(lang);
-                addlogs(config, `Language: ${lang.code} failed to be import ${formatError(err)}`, 'error');
+                addlogs(self.config, chalk.red("Language: '" + lang.code + "' failed to be import\n"), 'error');
+                addlogs(self.config, formatError(err), 'error');
               });
           } else {
             // the language has already been created
             addlogs(self.config, chalk.yellow("The language: '" + lang.code + "' already exists."), 'error');
           }
+
+          // import 2 languages at a time
         },
-        {
-          concurrency: config.importConcurrency,
-        },
+        { concurrency: self.reqConcurrency },
       )
         .then(function () {
           // languages have imported successfully
@@ -96,23 +102,25 @@ LocalesImport.prototype = {
             .updateLocales(langUids)
             .then(() => {
               helper.writeFileSync(langSuccessPath, self.success);
-              addlogs(config, chalk.green('Languages have been imported successfully!'), 'success');
-              return resolve();
+              addlogs(self.config, chalk.green('Languages have been imported successfully!'), 'success');
+              resolve();
             })
             .catch(function (error) {
-              addlogs(config, formatError(error), 'error');
-              return reject('Error while updating the locales');
+              addlogs(self.config, formatError(error), 'error');
+              reject(error);
             });
         })
         .catch(function (error) {
           // error while importing languages
           helper.writeFileSync(langFailsPath, self.fails);
-          addlogs(config, formatError(error), 'error');
-          return reject('Failed to import locales');
+          addlogs(self.config, chalk.red('Language import failed'), 'error');
+          addlogs(self.config, formatError(error), 'error');
+          reject('failed to import Languages');
         });
     });
-  },
-  updateLocales: function (langUids) {
+  }
+
+  updateLocales(langUids) {
     let self = this;
     return new Promise(function (resolve, reject) {
       Promise.all(
@@ -138,7 +146,5 @@ LocalesImport.prototype = {
           reject(error);
         });
     });
-  },
+  }
 };
-
-module.exports = LocalesImport;
