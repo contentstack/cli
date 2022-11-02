@@ -31,7 +31,7 @@ module.exports = class importWorkflows {
   }
 
   start() {
-    addlogs(config, chalk.white('Migrating workflows'), 'success');
+    addlogs(this.config, chalk.white('Migrating workflows'), 'success');
 
     let self = this;
     let workflowMapperPath = path.resolve(this.config.data, 'mapper', 'workflows');
