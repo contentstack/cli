@@ -148,7 +148,7 @@ let allImport = async (config, types) => {
         );
         addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'import'), 'success');
       } else {
-        addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported succesfully!'), 'success');
+        addlogs(config, chalk.green('Data has been imported to stack ' + (config.destinationStackName || config.target_stack) + '  succesfully!'), 'success');
         addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
       }
       return resolve();

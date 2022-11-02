@@ -38,7 +38,8 @@ module.exports = function (config) {
       client
         .stack({ api_key: config.target_stack, management_token: config.management_token })
         .fetch()
-        .then(function () {
+        .then(function (stack) {
+          config.destinationStackName = stack.name
           return resolve();
         })
         .catch((error) => {
