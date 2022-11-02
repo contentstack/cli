@@ -128,7 +128,7 @@ const allExport = async (config, types, branchName) => {
       }
       addlogs(
         config,
-        chalk.green('The content of the ' + config.source_stack + ' has been exported successfully!'),
+        chalk.green('The content of stack ' + (config.source_stack_name || config.source_stack) + ' has been exported successfully!'),
         'success',
       );
       addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success');
