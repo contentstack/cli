@@ -7,6 +7,7 @@
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
+var bigJSON = require('big-json');
 
 exports.readFileSync = function (filePath, parse) {
   var data;
