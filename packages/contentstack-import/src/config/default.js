@@ -75,7 +75,7 @@ module.exports = {
       validKeys: ['uid', 'filename', 'url', 'status'],
       assetBatchLimit: 1,
       uploadAssetsConcurrency: 1,
-      importFoldersConcurrency: 1
+      importFoldersConcurrency: 1,
     },
     content_types: {
       dirName: 'content_types',
@@ -334,7 +334,7 @@ module.exports = {
   entriesPublish: true,
   concurrency: 1,
   fetchConcurrency: 5,
-  writeConcurrency: 5
+  writeConcurrency: 5,
   //  ,useBackedupDir: '_backup_397'
   // backupConcurrency: 10,
 };

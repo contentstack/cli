@@ -75,7 +75,7 @@ module.exports = class ImportWebhooks {
               .then(function (response) {
                 self.success.push(response);
                 self.webUidMapper[webUid] = response.uid;
-                helper.writeFile(webUidMapperPath, self.webUidMapper);
+                helper.writeFileSync(webUidMapperPath, self.webUidMapper);
               })
               .catch(function (err) {
                 let error = JSON.parse(err.message);
@@ -100,13 +100,13 @@ module.exports = class ImportWebhooks {
       )
         .then(function () {
           // webhooks have imported successfully
-          helper.writeFile(webSuccessPath, self.success);
+          helper.writeFileSync(webSuccessPath, self.success);
           addlogs(self.config, chalk.green('Webhooks have been imported successfully!'), 'success');
           return resolve();
         })
         .catch(function (error) {
           // error while importing environments
-          helper.writeFile(webFailsPath, self.fails);
+          helper.writeFileSync(webFailsPath, self.fails);
           addlogs(self.config, chalk.red('Webhooks import failed'), 'error');
           return reject(error);
         });
