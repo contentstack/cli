@@ -32,7 +32,7 @@ module.exports = class ExportWebhooks {
   }
 
   start() {
-    addlogs(config, 'Starting webhooks export', 'success');
+    addlogs(this.config, 'Starting webhooks export', 'success');
 
     const self = this;
     const client = stack.Client(this.config);
@@ -57,10 +57,10 @@ module.exports = class ExportWebhooks {
               delete self.webhooks[webUid].SYS_ACL;
             }
             helper.writeFileSync(path.join(webhooksFolderPath, self.webhooksConfig.fileName), self.webhooks);
-            addlogs(config, chalk.green('All the webhooks have been exported successfully'), 'success');
+            addlogs(self.config, chalk.green('All the webhooks have been exported successfully'), 'success');
             return resolve();
           }
-          addlogs(config, 'No webhooks found', 'success');
+          addlogs(self.config, 'No webhooks found', 'success');
           resolve();
         })
         .catch(function (error) {
