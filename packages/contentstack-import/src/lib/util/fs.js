@@ -7,13 +7,18 @@
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
+const bigJSON = require('big-json');
 
 exports.readFileSync = function (filePath, parse) {
   var data;
   parse = typeof parse === 'undefined' ? true : parse;
   filePath = path.resolve(filePath);
   if (fs.existsSync(filePath)) {
-    data = parse ? JSON.parse(fs.readFileSync(filePath, 'utf-8')) : data;
+    try {
+      data = parse ? JSON.parse(fs.readFileSync(filePath, 'utf-8')) : data;
+    } catch (error) {
+      return data;
+    }
   }
   return data;
 };
@@ -107,7 +112,7 @@ exports.writeLargeFile = function (filePath, data) {
 };
 
 exports.readdirSync = function (dirPath) {
-  if (fs.existsSync(path)) {
+  if (fs.existsSync(dirPath)) {
     return fs.readdirSync(dirPath);
   } else {
     return [];

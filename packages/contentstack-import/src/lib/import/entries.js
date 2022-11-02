@@ -155,7 +155,7 @@ EntriesImport.prototype = {
                 (config.hasOwnProperty('onlylocales') && config.onlylocales.indexOf(lang) !== -1) ||
                 !config.hasOwnProperty('onlylocales')
               ) {
-                addlogs(config, 'Starting to create entries', 'info');
+                addlogs(config, `Starting to create entries ${lang} locale`, 'info');
                 await self.createEntries(lang, mappedAssetUids, mappedAssetUrls);
                 addlogs(config, 'Entries created successfully', 'info');
                 try {
