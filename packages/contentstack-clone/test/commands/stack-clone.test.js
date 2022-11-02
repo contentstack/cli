@@ -35,14 +35,12 @@ test
 test
   .it('cmdExport function', async () => {
     // var spy = sinon.spy(messages, 'cmdExport')
-    var spy = sinon.stub(inquirer, 'prompt')
     messages.cmdExport();
    // expect(spy.calledOnce).to.be.true
   })
 
 test
   .it('start function', async () => {
-    var spy = sinon.spy(messages, 'start')
     messages.start();
    // expect(spy.calledOnce).to.be.true
   })  
