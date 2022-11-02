@@ -24,13 +24,12 @@ class StackCloneCommand extends Command {
         'source-management-token-alias': sourceManagementTokenAlias,
         'destination-management-token-alias': destinationManagementTokenAlias,
         'import-webhook-status': importWebhookStatus,
-        'master-locale': masterLocale
       } = cloneCommandFlags;
 
       const handleClone = async () => {
         const listOfTokens = configHandler.get('tokens');
 
-        config.forceMarketplaceAppsImport = yes
+        config.forceMarketplaceAppsImport = yes;
 
         if (cloneType) {
           config.cloneType = cloneType;
@@ -71,16 +70,13 @@ class StackCloneCommand extends Command {
         await this.removeContentDirIfNotEmptyBeforeClone(pathdir); // NOTE remove if folder not empty before clone
         this.registerCleanupOnInterrupt(pathdir);
 
-        if (masterLocale) {
-          config.master_locale = { code: masterLocale }
-        }
         config.auth_token = _authToken;
         config.host = this.cmaHost;
         config.cdn = this.cdaHost;
         config.pathDir = pathdir;
         const cloneHandler = new CloneHandler(config);
         cloneHandler.execute().catch();
-      }
+      };
 
       if (sourceManagementTokenAlias && destinationManagementTokenAlias) {
         if (sourceStackBranch || targetStackBranch) {
@@ -154,7 +150,7 @@ class StackCloneCommand extends Command {
       if (exitOrError) {
         // eslint-disable-next-line no-console
         console.log('\nCleaning up');
-        await this.cleanUp(pathDir)
+        await this.cleanUp(pathDir);
         // eslint-disable-next-line no-console
         console.log('done');
         // eslint-disable-next-line no-process-exit
@@ -241,14 +237,11 @@ b) Structure with content (all modules including entries & assets)
     required: false,
     default: 'disable',
   }),
-  'master-locale': flags.string({
-    description: 'Master language for stack clone',
-  }),
   yes: flags.boolean({
     char: 'y',
     required: false,
-    description: '[optional] Override marketplace prompts'
-  })
+    description: '[optional] Override marketplace prompts',
+  }),
 };
 
 StackCloneCommand.usage =
