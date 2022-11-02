@@ -39,13 +39,13 @@ module.exports = class ImportGlobalFields {
     let self = this;
     let globalfieldsConfig = config.modules.globalfields;
     let globalfieldsFolderPath = path.resolve(this.config.data, globalfieldsConfig.dirName);
+    let appMapperFolderPath = path.join(this.config.data, 'mapper', 'marketplace_apps');
     let globalfieldsMapperPath = path.resolve(this.config.data, 'mapper', 'global_fields');
     let globalfieldsUidMapperPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'uid-mapping.json');
     let globalfieldsSuccessPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'success.json');
     let globalFieldsPending = path.resolve(this.config.data, 'mapper', 'global_fields', 'pending_global_fields.js');
     let globalfieldsFailsPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'fails.json');
     self.globalfields = helper.readFileSync(path.resolve(globalfieldsFolderPath, globalfieldsConfig.fileName));
-    const appMapperFolderPath = path.join(this.config.data, 'mapper', 'marketplace_apps');
 
     if (fs.existsSync(globalfieldsUidMapperPath)) {
       self.snipUidMapper = helper.readFileSync(globalfieldsUidMapperPath);
@@ -68,7 +68,7 @@ module.exports = class ImportGlobalFields {
     return new Promise(function (resolve, reject) {
       if (self.globalfields === undefined || isEmpty(self.globalfields)) {
         addlogs(self.config, chalk.white('No globalfields Found'), 'success');
-        helper.writeFile(globalFieldsPending, _globalField_pending);
+        helper.writeFileSync(globalFieldsPending, _globalField_pending);
         return resolve({ empty: true });
       }
       let snipUids = Object.keys(self.globalfields);
@@ -95,7 +95,7 @@ module.exports = class ImportGlobalFields {
                 self.success.push(globalField.items);
                 let global_field_uid = globalField.uid;
                 self.snipUidMapper[snipUid] = globalField.items;
-                helper.writeFile(globalfieldsUidMapperPath, self.snipUidMapper);
+                helper.writeFileSync(globalfieldsUidMapperPath, self.snipUidMapper);
                 addlogs(
                   self.config,
                   chalk.green('Global field ' + global_field_uid + ' created successfully'),
@@ -127,8 +127,8 @@ module.exports = class ImportGlobalFields {
       )
         .then(function () {
           // globalfields have imported successfully
-          helper.writeFile(globalfieldsSuccessPath, self.success);
-          helper.writeFile(globalFieldsPending, _globalField_pending);
+          helper.writeFileSync(globalfieldsSuccessPath, self.success);
+          helper.writeFileSync(globalFieldsPending, _globalField_pending);
           addlogs(self.config, chalk.green('globalfields have been imported successfully!'), 'success');
           return resolve();
         })
@@ -136,7 +136,7 @@ module.exports = class ImportGlobalFields {
           let error = JSON.parse(err);
           // error while importing globalfields
           addlogs(self.config, err, 'error');
-          helper.writeFile(globalfieldsFailsPath, self.fails);
+          helper.writeFileSync(globalfieldsFailsPath, self.fails);
           addlogs(self.config, chalk.red('globalfields import failed'), 'error');
           return reject(error);
         });

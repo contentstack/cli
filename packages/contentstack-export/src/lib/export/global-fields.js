@@ -115,7 +115,7 @@ module.exports = class ExportGlobalFields {
     const self = this;
     return new Promise(function (resolve, reject) {
       try {
-        helper.writeFile(path.join(self.globalfieldsFolderPath, self.globalfieldsConfig.fileName), self.global_fields);
+        helper.writeFileSync(path.join(self.globalfieldsFolderPath, self.globalfieldsConfig.fileName), self.global_fields);
         addlogs(self.config, chalk.green('Global Fields export completed successfully'), 'success');
 
         resolve();
