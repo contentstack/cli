@@ -88,7 +88,7 @@ module.exports = class ExportWorkFlows {
       }
     } catch (error) {
       console.log('Error getting roles', error && error.message);
-      addlogs(config, 'Error fetching roles in export workflows task.', 'error');
+      addlogs(self.config, 'Error fetching roles in export workflows task.', 'error');
       throw new Error({ message: 'Error fetching roles in export workflows task.' });
     }
   }
@@ -96,7 +96,7 @@ module.exports = class ExportWorkFlows {
   async getWorkflowsData(self, workflows) {
     try {
       for (const workflow of workflows) {
-        addlogs(config, workflow.name + ' workflow was exported successfully', 'success');
+        addlogs(self.config, workflow.name + ' workflow was exported successfully', 'success');
         await self.getWorkflowRoles(self, workflow);
         self.workflows[workflow.uid] = workflow;
         let deleteItems = config.modules.workflows.invalidKeys;
