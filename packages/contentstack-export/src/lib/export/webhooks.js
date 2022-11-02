@@ -12,7 +12,7 @@ const { merge } = require('lodash');
 const helper = require('../util/helper');
 const { formatError } = require('../util');
 const { addlogs } = require('../util/log');
-let config = require('../../config/default');
+const config = require('../../config/default');
 const stack = require('../util/contentstack-management-sdk');
 
 // Create folder for environments
@@ -44,7 +44,7 @@ module.exports = class ExportWebhooks {
     mkdirp.sync(webhooksFolderPath);
     return new Promise(function (resolve, reject) {
       client
-        .stack({ api_key: this.config.source_stack, management_token: this.config.management_token })
+        .stack({ api_key: self.config.source_stack, management_token: self.config.management_token })
         .webhook()
         .fetchAll(self.requestOptions)
         .then((webhooks) => {
