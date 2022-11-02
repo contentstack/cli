@@ -20,11 +20,11 @@ class ContentTypesImport {
     this.writeConcurrency = this.contentTypeConfig.writeConcurrency || this.importConfig.writeConcurrency;
     this.contentTypesFolderPath = path.join(this.importConfig.data, this.contentTypeConfig.dirName);
     this.mapperFolderPath = path.join(this.importConfig.data, 'mapper', 'content_types');
-    this.existingContentTypesPath = path.join(mapperFolderPath, 'success.json');
-    this.globalFieldsFolderPath = path.resolve(this.importConfig.data, globalFieldConfig.dirName);
-    this.globalFieldMapperFolderPath = path.join(config.data, 'mapper', 'global_fields', 'success.json');
-    this.globalFieldPendingPath = path.join(config.data, 'mapper', 'global_fields', 'pending_global_fields.js');
-    this.appMapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps');
+    this.existingContentTypesPath = path.join(this.mapperFolderPath, 'success.json');
+    this.globalFieldsFolderPath = path.resolve(this.importConfig.data, this.globalFieldConfig.dirName);
+    this.globalFieldMapperFolderPath = path.join(importConfig.data, 'mapper', 'global_fields', 'success.json');
+    this.globalFieldPendingPath = path.join(importConfig.data, 'mapper', 'global_fields', 'pending_global_fields.js');
+    this.appMapperFolderPath = path.join(importConfig.data, 'mapper', 'marketplace_apps');
     this.ignoredFilesInContentTypesFolder = new Map([
       ['__master.json', 'true'],
       ['__priority.json', 'true'],
@@ -32,7 +32,7 @@ class ContentTypesImport {
       ['.DS_Store', 'true'],
     ]);
     this.contentTypes = [];
-    this.existingContentTypesUIds = [];
+    this.existingContentTypesUIds;
     this.titleToUIdMap = new Map();
     this.requestOptions = {
       json: {},
@@ -48,17 +48,17 @@ class ContentTypesImport {
     try {
       // read content types
       // remove content types already existing
-      if (fs.existsSync(existingContentTypesPath)) {
-        this.existingContentTypesUIds = fileHelper.readFileSync(existingContentTypesPath) || [];
+      if (fs.existsSync(this.existingContentTypesPath)) {
+        this.existingContentTypesUIds = fileHelper.readFileSync(this.existingContentTypesPath) || [];
         this.existingContentTypesUIds = new Map(this.existingContentTypesUIds.map((id) => [id, 'true']));
       }
 
-      const contentTypeFiles = fileHelper.readdirSync(contentTypesFolderPath);
+      const contentTypeFiles = fileHelper.readdirSync(this.contentTypesFolderPath);
       for (let contentTypeName of contentTypeFiles) {
-        if (this.ignoredFilesInContentTypesFolder.has(contentTypeName)) {
-          const contentTypePath = path.join(contentTypesFolderPath, contentTypeName);
+        if (!this.ignoredFilesInContentTypesFolder.has(contentTypeName)) {
+          const contentTypePath = path.join(this.contentTypesFolderPath, contentTypeName);
           const contentType = await fileHelper.readFile(contentTypePath);
-          if (!existingContentTypesUIds.has(contentType.uid)) {
+          if (!this.existingContentTypesUIds?.has(contentType.uid)) {
             this.contentTypes.push(await fileHelper.readFile(contentTypePath));
           }
         }
@@ -71,7 +71,8 @@ class ContentTypesImport {
       addlogs(this.importConfig, 'Created content types', 'success');
 
       // update content type
-      this.installedExtensions = fileHelper.readFileSync(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
+      this.installedExtensions =
+        fileHelper.readFileSync(path.join(this.appMapperFolderPath, 'marketplace-apps.json')) || {};
       if (isEmpty(this.installedExtensions)) {
         this.installedExtensions = await getInstalledExtensions(this.importConfig);
       }
@@ -83,7 +84,9 @@ class ContentTypesImport {
       // global field update
       this.pendingGlobalFields = fileHelper.readFileSync(this.globalFieldPendingPath);
       if (Array.isArray(this.pendingGlobalFields) && this.pendingGlobalFields.length > 0) {
-        this.globalFields = fileHelper.readFileSync(path.resolve(globalFieldsFolderPath, globalFieldConfig.fileName));
+        this.globalFields = fileHelper.readFileSync(
+          path.resolve(this.globalFieldsFolderPath, this.globalFieldConfig.fileName),
+        );
         this.existingGlobalFields = fileHelper.readFileSync(this.globalFieldMapperFolderPath);
         try {
           addlogs(this.importConfig, 'Started to update pending global field with content type references', 'info');
@@ -145,10 +148,10 @@ class ContentTypesImport {
 
     supress(contentType.schema, this.importConfig.preserveStackVersion, this.installedExtensions);
     requestObject.json.content_type = contentType;
-    const contentTypeResponse = stack.contentType(contentType.uid);
-    Object.assign(contentTypeResponse, _.cloneDeep(contentType));
+    const contentTypeResponse = this.stackAPIClient.contentType(contentType.uid);
+    Object.assign(contentTypeResponse, cloneDeep(contentType));
     await contentTypeResponse.update();
-    addlogs(this.importConfig, contentType.uid + 'updated with references', 'success');
+    addlogs(this.importConfig, contentType.uid + ' updated with references', 'success');
   }
 
   async updateGlobalFields({ uid }) {
