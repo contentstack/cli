@@ -3,6 +3,7 @@
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
+const { merge } = require('lodash');
 
 const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
