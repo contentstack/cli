@@ -39,13 +39,13 @@ module.exports = class ImportGlobalFields {
     let self = this;
     let globalfieldsConfig = config.modules.globalfields;
     let globalfieldsFolderPath = path.resolve(this.config.data, globalfieldsConfig.dirName);
+    let appMapperFolderPath = path.join(this.config.data, 'mapper', 'marketplace_apps');
     let globalfieldsMapperPath = path.resolve(this.config.data, 'mapper', 'global_fields');
     let globalfieldsUidMapperPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'uid-mapping.json');
     let globalfieldsSuccessPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'success.json');
     let globalFieldsPending = path.resolve(this.config.data, 'mapper', 'global_fields', 'pending_global_fields.js');
     let globalfieldsFailsPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'fails.json');
     self.globalfields = helper.readFileSync(path.resolve(globalfieldsFolderPath, globalfieldsConfig.fileName));
-    const appMapperFolderPath = path.join(this.config.data, 'mapper', 'marketplace_apps');
 
     if (fs.existsSync(globalfieldsUidMapperPath)) {
       self.snipUidMapper = helper.readFileSync(globalfieldsUidMapperPath);
