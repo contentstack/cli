@@ -22,8 +22,7 @@ class StackCloneCommand extends Command {
         'destination-stack-api-key': destinationStackApiKey,
         'source-management-token-alias': sourceManagementTokenAlias,
         'destination-management-token-alias': destinationManagementTokenAlias,
-        'import-webhook-status': importWebhookStatus,
-        'master-locale': masterLocale
+        'import-webhook-status': importWebhookStatus
       } = cloneCommandFlags;
 
       const handleClone = async () => {
@@ -68,9 +67,6 @@ class StackCloneCommand extends Command {
         await this.removeContentDirIfNotEmptyBeforeClone(pathdir); // NOTE remove if folder not empty before clone
         this.registerCleanupOnInterrupt(pathdir);
 
-        if (masterLocale) {
-          config.master_locale = { code: masterLocale }
-        }
         config.auth_token = _authToken;
         config.host = this.cmaHost;
         config.cdn = this.cdaHost;
@@ -237,10 +233,7 @@ b) Structure with content (all modules including entries & assets)
     options: ['disable', 'current'],
     required: false,
     default: 'disable',
-  }),
-  'master-locale': flags.string({
-    description: 'Master language for stack clone',
-  }),
+  })
 };
 
 StackCloneCommand.usage =
