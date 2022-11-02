@@ -7,13 +7,18 @@
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
+const bigJSON = require('big-json');
 
 exports.readFileSync = function (filePath, parse) {
   let data;
   parse = typeof parse === 'undefined' ? true : parse;
   filePath = path.resolve(filePath);
   if (fs.existsSync(filePath)) {
-    data = parse ? JSON.parse(fs.readFileSync(filePath, 'utf-8') || '{}') : data;
+    try {
+      data = parse ? JSON.parse(fs.readFileSync(filePath, 'utf-8')) : data;
+    } catch (error) {
+      return data;
+    }
   }
   return data;
 };
@@ -24,6 +29,9 @@ exports.readFile = async (filePath, options = { type: 'json' }) => {
     filePath = path.resolve(filePath);
     fs.readFile(filePath, 'utf-8', (error, data) => {
       if (error) {
+        if (error.code === 'ENOENT') {
+          return resolve();
+        }
         reject(error);
       } else {
         if (options.type !== 'json') {
@@ -103,8 +111,8 @@ exports.writeLargeFile = function (filePath, data) {
   });
 };
 
-exports.readdir = function (dirPath) {
-  if (fs.existsSync(path)) {
+exports.readdirSync = function (dirPath) {
+  if (fs.existsSync(dirPath)) {
     return fs.readdirSync(dirPath);
   } else {
     return [];

@@ -24,11 +24,11 @@ module.exports = {
       'marketplace-apps',
       'global-fields',
       'content-types',
-      'workflows',
+      // 'workflows',
       'entries',
       'labels',
       'webhooks',
-      'custom-roles',
+      // 'custom-roles',
     ],
     locales: {
       dirName: 'locales',
@@ -333,8 +333,9 @@ module.exports = {
   preserveStackVersion: false,
   entriesPublish: true,
   concurrency: 1,
+  importConcurrency: 5,
   fetchConcurrency: 5,
   writeConcurrency: 5,
-  //  ,useBackedupDir: '_backup_397'
+  // useBackedupDir: '',
   // backupConcurrency: 10,
 };
