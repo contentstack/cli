@@ -10,7 +10,7 @@ var mkdirp = require('mkdirp');
 const bigJSON = require('big-json');
 
 exports.readFileSync = function (filePath, parse) {
-  var data;
+  let data;
   parse = typeof parse === 'undefined' ? true : parse;
   filePath = path.resolve(filePath);
   if (fs.existsSync(filePath)) {
