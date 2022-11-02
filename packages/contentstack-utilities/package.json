@@ -38,7 +38,8 @@
     "ora": "^5.4.0",
     "unique-string": "^2.0.0",
     "winston": "^3.7.2",
-    "xdg-basedir": "^4.0.0"
+    "xdg-basedir": "^4.0.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@oclif/plugin-help": "^5.1.12",

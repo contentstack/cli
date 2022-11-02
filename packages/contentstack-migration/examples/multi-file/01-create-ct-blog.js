@@ -37,20 +37,16 @@ module.exports = async ({migration, stackSDKInstance}) => {
     successMessage: 'Blog entries added successfully.',
     failedMessage: 'Failed to add Blog entries.',
     tasks: async () => {
-      try {
-        for (let index = 0; index < 4; index++) {
-          let entry = {
-            title: `Awesome Blog ${index}`,
-            url: `/awesome-log-${index}`,
-            body: `This is ${index} blog.`,
-            author_name: `Firstname-${index} Lastname-${index}`,
-          }
-          // eslint-disable-next-line no-await-in-loop
-          let entryObj = await stackSDKInstance.contentType(blogUID).entry().create({entry})
-          entries.push(entryObj)
+      for (let index = 0; index < 4; index++) {
+        let entry = {
+          title: `Awesome Blog ${index}`,
+          url: `/awesome-log-${index}`,
+          body: `This is ${index} blog.`,
+          author_name: `Firstname-${index} Lastname-${index}`,
         }
-      } catch (error) {
-        throw error
+        // eslint-disable-next-line no-await-in-loop
+        let entryObj = await stackSDKInstance.contentType(blogUID).entry().create({entry})
+        entries.push(entryObj)
       }
     },
     paramsToBind: entries,
