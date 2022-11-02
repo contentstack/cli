@@ -4,114 +4,122 @@ const mkdirp = require('mkdirp');
 const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
+const { merge } = require('lodash');
 
 const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
-const stack = require('../util/contentstack-management-sdk');
+const { formatError } = require('../util');
 let config = require('../../config/default');
+const stack = require('../util/contentstack-management-sdk');
 
-const customRolesConfig = config.modules.customRoles;
-let customRolesFolderPath;
-// Mapper file paths variables.
-let customRolesMapperPath;
-let customRolesUidMapperPath;
-let customRolesSuccessPath;
-let customRolesFailsPath;
-let environmentsUidMapperFolderPath;
-let entriesUidMapperFolderPath;
-let customRolesLocalesFilePath;
+module.exports = class ImportCustomRoles {
+  fails = [];
+  client = null;
+  labelUids = [];
+  customRolesUidMapper = {};
+  customRolesConfig = config.modules.customRoles;
 
-function ImportCustomRoles() {
-  this.fails = [];
-  this.customRolesUidMapper = {};
-  this.labelUids = [];
-  this.client = null;
-  if (fs.existsSync(customRolesMapperPath)) {
-    this.customRolesUidMapper = helper.readFileSync(customRolesUidMapperPath) || {};
+  constructor(credentialConfig) {
+    this.config = merge(config, credentialConfig);
+    this.client = stack.Client(this.config);
   }
-}
 
-ImportCustomRoles.prototype.start = async function (credentialConfig) {
-  let self = this;
-  try {
-    config = credentialConfig;
-    this.client = stack.Client(config);
-    addlogs(config, chalk.white('Migrating custom-roles'), 'success');
-    customRolesFolderPath = path.resolve(config.data, customRolesConfig.dirName);
-    self.customRoles = helper.readFileSync(path.resolve(customRolesFolderPath, customRolesConfig.fileName));
-    customRolesLocalesFilePath = path.resolve(customRolesFolderPath, customRolesConfig.customRolesLocalesFileName);
-    self.customRolesLocales = helper.readFileSync(customRolesLocalesFilePath);
-    // Mapper file paths.
-    customRolesMapperPath = path.resolve(config.data, 'mapper', 'custom-roles');
-    customRolesUidMapperPath = path.resolve(config.data, 'mapper', 'custom-roles', 'uid-mapping.json');
-    customRolesSuccessPath = path.resolve(config.data, 'custom-roles', 'success.json');
-    customRolesFailsPath = path.resolve(config.data, 'custom-roles', 'fails.json');
-    environmentsUidMapperFolderPath = path.resolve(config.data, 'mapper', 'environments');
-    entriesUidMapperFolderPath = path.resolve(config.data, 'mapper', 'entries');
-    mkdirp.sync(customRolesMapperPath);
+  async start() {
+    const self = this;
+    addlogs(this.config, chalk.white('Migrating custom-roles'), 'success');
 
-    if (!self.customRoles) {
-      addlogs(config, chalk.white('No custom-roles found'), 'error');
-      return;
-    }
-    self.customRolesUids = Object.keys(self.customRoles);
+    let customRolesFolderPath = path.resolve(this.config.data, this.customRolesConfig.dirName);
+    let customRolesMapperPath = path.resolve(this.config.data, 'mapper', 'custom-roles');
+    let entriesUidMapperFolderPath = path.resolve(this.config.data, 'mapper', 'entries');
+    let customRolesFailsPath = path.resolve(this.config.data, 'custom-roles', 'fails.json');
+    let environmentsUidMapperFolderPath = path.resolve(this.config.data, 'mapper', 'environments');
+    let customRolesUidMapperPath = path.resolve(this.config.data, 'mapper', 'custom-roles', 'uid-mapping.json');
+    let customRolesLocalesFilePath = path.resolve(
+      customRolesFolderPath,
+      this.customRolesConfig.customRolesLocalesFileName,
+    );
 
-    self.localesUidMap = await getLocalesUidMap(this.client, config, self.customRolesLocales);
+    try {
+      self.customRoles = helper.readFileSync(path.resolve(customRolesFolderPath, this.customRolesConfig.fileName));
+      self.customRolesLocales = helper.readFileSync(customRolesLocalesFilePath);
+      // Mapper file paths.
 
-    if (fs.existsSync(environmentsUidMapperFolderPath)) {
-      self.environmentsUidMap = helper.readFileSync(path.resolve(environmentsUidMapperFolderPath, 'uid-mapping.json'));
-    }
-    if (fs.existsSync(entriesUidMapperFolderPath)) {
-      self.entriesUidMap = helper.readFileSync(path.resolve(entriesUidMapperFolderPath, 'uid-mapping.json'));
-    }
+      if (fs.existsSync(customRolesMapperPath)) {
+        this.customRolesUidMapper = helper.readFileSync(customRolesUidMapperPath) || {};
+      }
 
-    for (const uid of self.customRolesUids) {
-      const customRole = self.customRoles[uid];
+      mkdirp.sync(customRolesMapperPath);
 
-      if (uid in self.customRolesUidMapper) {
-        addlogs(
-          config,
-          chalk.white(`The custom-role ${customRole.name} already exists. Skipping it to avoid duplicates!`),
-          'success',
+      if (!self.customRoles) {
+        addlogs(self.config, chalk.white('No custom-roles found'), 'error');
+        return;
+      }
+      self.customRolesUids = Object.keys(self.customRoles);
+
+      self.localesUidMap = await getLocalesUidMap(self.client, self.config, self.customRolesLocales);
+
+      if (fs.existsSync(environmentsUidMapperFolderPath)) {
+        self.environmentsUidMap = helper.readFileSync(
+          path.resolve(environmentsUidMapperFolderPath, 'uid-mapping.json'),
         );
-        continue;
+      }
+      if (fs.existsSync(entriesUidMapperFolderPath)) {
+        self.entriesUidMap = helper.readFileSync(path.resolve(entriesUidMapperFolderPath, 'uid-mapping.json'));
       }
 
-      try {
-        customRole.rules.forEach((rule) => {
-          const transformUids = getTransformUidsFactory(rule);
-          rule = transformUids(rule, self.environmentsUidMap, self.localesUidMap, self.entriesUidMap);
-        });
-        // rules.branch is required to create custom roles.
-        const branchRuleExists = customRole.rules.find((rule) => rule.module === 'branch');
-        if (!branchRuleExists) {
-          customRole.rules.push({
-            module: 'branch',
-            branches: ['main'],
-            acl: { read: true },
+      for (const uid of self.customRolesUids) {
+        const customRole = self.customRoles[uid];
+
+        if (uid in self.customRolesUidMapper) {
+          addlogs(
+            self.config,
+            chalk.white(`The custom-role ${customRole.name} already exists. Skipping it to avoid duplicates!`),
+            'success',
+          );
+          continue;
+        }
+
+        try {
+          customRole.rules.forEach((rule) => {
+            const transformUids = getTransformUidsFactory(rule);
+            rule = transformUids(rule, self.environmentsUidMap, self.localesUidMap, self.entriesUidMap);
           });
-        }
-        const role = await this.client
-          .stack({ api_key: config.target_stack, management_token: config.management_token })
-          .role()
-          .create({ role: customRole });
+          // rules.branch is required to create custom roles.
+          const branchRuleExists = customRole.rules.find((rule) => rule.module === 'branch');
+          if (!branchRuleExists) {
+            customRole.rules.push({
+              module: 'branch',
+              branches: ['main'],
+              acl: { read: true },
+            });
+          }
+          const role = await self.client
+            .stack({ api_key: self.config.target_stack, management_token: self.config.management_token })
+            .role()
+            .create({ role: customRole });
 
-        self.customRolesUidMapper[uid] = role;
-        helper.writeFile(customRolesUidMapperPath, self.customRolesUidMapper);
-      } catch (error) {
-        self.fails.push(customRole);
-        if (error && error.errors && error.errors.name) {
-          addlogs(config, chalk.red(`custom-role: ${customRole.name} already exists`), 'error');
-        } else {
-          addlogs(config, chalk.red(`custom-role: ${customRole.name} failed`), 'error');
+          self.customRolesUidMapper[uid] = role;
+          helper.writeFileSync(customRolesUidMapperPath, self.customRolesUidMapper);
+        } catch (error) {
+          self.fails.push(customRole);
+
+          if (error && error.errors && error.errors.name) {
+            addlogs(self.config, chalk.red(`custom-role: ${customRole.name} already exists`), 'error');
+          } else {
+            addlogs(self.config, chalk.red(`custom-role: ${customRole.name} failed`), 'error');
+          }
+
+          addlogs(self.self.config, formatError(error), 'error');
         }
       }
+      addlogs(self.config, chalk.green('Custom-roles have been imported successfully!'), 'success');
+    } catch (error) {
+      helper.writeFileSync(customRolesFailsPath, self.fails);
+      addlogs(self.config, chalk.red('Custom-roles import failed'), 'error');
+      addlogs(self.config, formatError(error), 'error');
+
+      throw error;
     }
-    addlogs(config, chalk.green('Custom-roles have been imported successfully!'), 'success');
-  } catch (error) {
-    helper.writeFile(customRolesFailsPath, self.fails);
-    addlogs(config, chalk.red('Custom-roles import failed'), 'error');
-    throw error;
   }
 };
 
@@ -166,4 +174,3 @@ const getLocalesUidMap = async (client, config, sourceLocales) => {
   }
   return localesUidMap;
 };
-module.exports = new ImportCustomRoles();
