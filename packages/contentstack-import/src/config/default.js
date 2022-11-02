@@ -18,16 +18,16 @@ module.exports = {
   modules: {
     types: [
       'locales',
-      // 'environments',
-      // 'assets',
-      // 'extensions',
-      // 'marketplace-apps',
-      // 'global-fields',
+      'environments',
+      'assets',
+      'extensions',
+      'marketplace-apps',
+      'global-fields',
       'content-types',
       // 'workflows',
       'entries',
-      // 'labels',
-      // 'webhooks',
+      'labels',
+      'webhooks',
       // 'custom-roles',
     ],
     locales: {
@@ -74,6 +74,8 @@ module.exports = {
       host: 'https://api.contentstack.io',
       validKeys: ['uid', 'filename', 'url', 'status'],
       assetBatchLimit: 1,
+      uploadAssetsConcurrency: 1,
+      importFoldersConcurrency: 1,
     },
     content_types: {
       dirName: 'content_types',
@@ -332,7 +334,8 @@ module.exports = {
   entriesPublish: true,
   concurrency: 1,
   importConcurrency: 5,
+  fetchConcurrency: 5,
   writeConcurrency: 5,
-  //  ,useBackedupDir: '_backup_397'
+  useBackedupDir: '/Users/shafeeq.pp/WORKSPACE/CLI/main/_backup_389',
   // backupConcurrency: 10,
 };
