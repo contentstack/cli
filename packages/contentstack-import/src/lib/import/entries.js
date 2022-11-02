@@ -1430,7 +1430,10 @@ EntriesImport.prototype = {
       return children.map((child) => {
         if (child.type && child.type.length > 0) {
           delete child.uid; // remove uid
-          child.attrs.dirty = true;
+
+          if (!_.isEmpty(child.attrs) && _.isObject(child.attrs)) {
+            child.attrs.dirty = true;
+          }
         }
         if (child.children && child.children.length > 0) {
           child.children = this.removeUidsFromChildren(child.children);
@@ -1440,7 +1443,9 @@ EntriesImport.prototype = {
     } else {
       if (children.type && children.type.length > 0) {
         delete children.uid; // remove uid
-        children.attrs.dirty = true;
+        if (!_.isEmpty(children.attrs) && _.isObject(children.attrs)) {
+          children.attrs.dirty = true;
+        }
       }
       if (children.children && children.children.length > 0) {
         children.children = this.removeUidsFromChildren(children.children);
@@ -1451,7 +1456,9 @@ EntriesImport.prototype = {
   setDirtyTrue: function (jsonRteChild) {
     // also removing uids in this function
     if (jsonRteChild.type) {
-      jsonRteChild.attrs['dirty'] = true;
+      if (!_.isEmpty(jsonRteChild.attrs) && _.isObject(jsonRteChild.attrs)) {
+        jsonRteChild.attrs['dirty'] = true;
+      }
       delete jsonRteChild.uid;
 
       if (jsonRteChild.children && jsonRteChild.children.length > 0) {
