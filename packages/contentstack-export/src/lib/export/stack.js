@@ -4,19 +4,16 @@
  * MIT Licensed
  */
 
-var chalk = require('chalk');
-var mkdirp = require('mkdirp');
-var path = require('path');
+let path = require('path');
+let mkdirp = require('mkdirp');
 
-var app = require('../../app');
-var helper = require('../util/helper');
-var { addlogs } = require('../util/log');
+let helper = require('../util/helper');
+let { addlogs } = require('../util/log');
+let config = require('../../config/default');
 const stack = require('../util/contentstack-management-sdk');
 
-let config = require('../../config/default');
-
-var stackConfig = config.modules.stack;
 let client;
+let stackConfig = config.modules.stack;
 
 function ExportStack() {
   this.requestOption = {
@@ -42,6 +39,7 @@ ExportStack.prototype.start = async function (credentialConfig) {
 
     if (stack && stack.org_uid) {
       config.org_uid = stack.org_uid;
+      config.sourceStackName = stack.name;
     }
   }
 
