@@ -4,6 +4,7 @@ const mkdirp = require('mkdirp');
 const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
+const { merge } = require('lodash');
 
 const helper = require('../util/fs');
 const { addlogs } = require('../util/log');

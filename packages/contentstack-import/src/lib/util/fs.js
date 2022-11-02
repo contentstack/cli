@@ -9,11 +9,11 @@ var path = require('path');
 var mkdirp = require('mkdirp');
 
 exports.readFileSync = function (filePath, parse) {
-  var data;
+  let data;
   parse = typeof parse === 'undefined' ? true : parse;
   filePath = path.resolve(filePath);
   if (fs.existsSync(filePath)) {
-    data = parse ? JSON.parse(fs.readFileSync(filePath, 'utf-8')) : data;
+    data = parse ? JSON.parse(fs.readFileSync(filePath, 'utf-8') || '{}') : data;
   }
   return data;
 };
