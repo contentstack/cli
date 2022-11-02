@@ -1,7 +1,7 @@
 const {expect, test, it} = require('@oclif/test')
 const { cliux } = require('@contentstack/cli-utilities');
-const {Client} = require('../../src/lib/util/contentstack-management-sdk')
-let defaultConfig = require('../../src/config/default')
+const {Client} = require('../../../src/lib/util/contentstack-management-sdk')
+let defaultConfig = require('../../../src/config/default')
 let _ = require('lodash')
 var environmentsMock = require('../mock/environment')
 var extensionsMock = require('../mock/extensions')
@@ -14,7 +14,7 @@ var assetFetchMock = require('../mock/assetFetch')
 var entriesMock = require('../mock/entries')
 var entriesFetchMock = require('../mock/entryFetch')
 var contentTypeMock = require('../mock/content-types')
-let message = require('../../messages/index.json')
+let message = require('../../../messages/index.json')
 
 // test
 // .stub(require('../../src/lib/util/contentstack-management-sdk'), 'Client', (e) => {
@@ -76,7 +76,7 @@ let message = require('../../messages/index.json')
 // })
 
 test
-.stub(require('../../src/lib/util/contentstack-management-sdk'), 'Client', e => {
+.stub(require('../../../src/lib/util/contentstack-management-sdk'), 'Client', e => {
   return {
     stack: function () {
       return {
@@ -105,7 +105,7 @@ test
 })
 
 test
-.stub(require('../../src/lib/util/contentstack-management-sdk'), 'Client', e => {
+.stub(require('../../../src/lib/util/contentstack-management-sdk'), 'Client', e => {
   return {
     stack: function () {
       return {
@@ -253,7 +253,7 @@ test
 // })
 
 test
-.stub(require('../../src/lib/util/contentstack-management-sdk'), 'Client', e => {
+.stub(require('../../../src/lib/util/contentstack-management-sdk'), 'Client', e => {
   return {
     stack: function () {
       return {
@@ -282,7 +282,7 @@ test
 })
 
 test
-.stub(require('../../src/lib/util/contentstack-management-sdk'), 'Client', e => {
+.stub(require('../../../src/lib/util/contentstack-management-sdk'), 'Client', e => {
   return {
     stack: function () {
       return {
@@ -318,7 +318,7 @@ test
 
 
 test
-.stub(require('../../src/lib/util/contentstack-management-sdk'), 'Client', e => {
+.stub(require('../../../src/lib/util/contentstack-management-sdk'), 'Client', e => {
   return {
     stack: function () {
       return {

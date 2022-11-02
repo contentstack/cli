@@ -42,6 +42,7 @@ ExportStack.prototype.start = async function (credentialConfig) {
 
     if (stack && stack.org_uid) {
       config.org_uid = stack.org_uid
+      config.sourceStackName = stack.name
     }
   }
 
