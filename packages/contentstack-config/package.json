@@ -78,7 +78,8 @@
     ],
     "protected": [
       "config:get:region"
-    ]
+    ],
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-config/<%- commandPath %>"
   },
   "husky": {
     "hooks": {

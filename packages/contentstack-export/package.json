@@ -62,7 +62,7 @@
     "devPlugins": [
       "@oclif/plugin-help"
     ],
-    "repositoryPrefix": "<%- repo %>/blob/v<%- version %>/packages/contentstack-export/<%- commandPath %>"
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-export/<%- commandPath %>"
   },
   "csdxConfig": {
     "expiredCommands": {
