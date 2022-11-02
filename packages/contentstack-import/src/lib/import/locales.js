@@ -79,14 +79,14 @@ LocalesImport.prototype = {
                 self.langUidMapper[langUid] = locale.uid;
                 helper.writeFileSync(langUidMapperPath, self.langUidMapper);
               })
-              .catch(function (error) {
+              .catch(function (err) {
                 let error = JSON.parse(err.message);
                 if (error.hasOwnProperty('errorCode') && error.errorCode === 247) {
                   addlogs(config, error.errors.code[0], 'success');
                   return;
                 }
                 self.fails.push(lang);
-                addlogs(config, `Language: ${lang.code} failed to be import ${formatError(error)}`, 'error');
+                addlogs(config, `Language: ${lang.code} failed to be import ${formatError(err)}`, 'error');
               });
           } else {
             // the language has already been created

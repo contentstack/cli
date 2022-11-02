@@ -72,7 +72,8 @@ let singleImport = async (moduleName, types, config) => {
   try {
     const stackClient = stack
       .Client(config)
-      .stack({ api_key: config.source_stack, management_token: config.management_token });
+      .stack({ api_key: config.target_stack, management_token: config.management_token });
+
     if (types.indexOf(moduleName) > -1) {
       if (!config.master_locale) {
         try {
@@ -84,7 +85,7 @@ let singleImport = async (moduleName, types, config) => {
         }
       }
       let ImportModule = require('./lib/import/' + moduleName);
-      const importResponse = await new ImportModule(config, stackClient).start(config, branchName);
+      const importResponse = await new ImportModule(config, stackClient).start(config);
       if (moduleName === 'content-types') {
         let ctPath = path.resolve(config.data, config.modules.content_types.dirName);
         let fieldPath = path.join(ctPath + '/field_rules_uid.json');
@@ -112,7 +113,7 @@ let allImport = async (config, types) => {
   try {
     const stackClient = stack
       .Client(config)
-      .stack({ api_key: config.source_stack, management_token: config.management_token });
+      .stack({ api_key: config.target_stack, management_token: config.management_token });
     for (let i = 0; i < types.length; i++) {
       let type = types[i];
       if (i === 0 && !config.master_locale) {
@@ -121,7 +122,7 @@ let allImport = async (config, types) => {
         config['master_locale'] = master_locale;
       }
       let ImportModule = require('./lib/import/' + type);
-      await new ImportModule(config, stackClient).start(config, branchName);
+      await new ImportModule(config, stackClient).start(config);
     }
     if (config.target_stack && config.source_stack) {
       addlogs(
