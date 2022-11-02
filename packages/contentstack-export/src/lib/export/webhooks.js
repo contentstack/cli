@@ -42,7 +42,7 @@ module.exports = class ExportWebhooks {
       self.webhooksConfig.dirName,
     );
     mkdirp.sync(webhooksFolderPath);
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       client
         .stack({ api_key: self.config.source_stack, management_token: self.config.management_token })
         .webhook()
@@ -73,7 +73,7 @@ module.exports = class ExportWebhooks {
             return resolve();
           }
           addlogs(self.config, formatError(error), 'error');
-          reject();
+          reject('Failed export webhooks');
         });
     });
   }
