@@ -13,6 +13,7 @@ var chalk = require('chalk');
 var { addlogs } = require('./log');
 var defaultConfig = require('../../config/default');
 const stack = require('./contentstack-management-sdk');
+const promiseLimit = require('promise-limit');
 var config;
 
 exports.initialization = function (configData) {
