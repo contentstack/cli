@@ -11,4 +11,20 @@ fileignoreconfig:
   checksum: 9deadfa4c37d54698a4b906127f0fc6a56a00007c69809cbafb5befee807d080
 - filename: packages/contentstack-utilities/src/encrypter.ts
   checksum: 6feae1433add66736221ff952b599642cc32c138d55b6e29ec083e43b9153f2e
+- filename: packages/contentstack-auth/test/integration/auth.test.ts
+  checksum: 3752c59396c89d359a4bc774910bd20fd60a756a74406a030a374f19985104ff
+- filename: packages/contentstack-export/test/integration/utils/helper.js
+  checksum: 2aa433e21a319b088d751263bd94fce4b78aa51b994545a7064a8afc09a6ed50
+- filename: packages/contentstack-export/test/integration/clean-up.test.js
+  checksum: 15519652a7eaa522b7c7e4b48d94aa6dab03f59916e35e2099646b51dc74d1b1
+- filename: packages/contentstack-export/test/integration/assets.test.js
+  checksum: b30217a1615c859bc4d2aadeeb089f82953504817d0a5c2172c3c2bf43033349
+- filename: packages/contentstack-utilities/src/config-handler.ts
+  checksum: 0fc16d55f7cb3a95e36ea89a945862a4a3d40ac11db86888e89adab38ae2de96
+- filename: packages/contentstack-export/test/integration/init.test.js
+  checksum: 415925892a7cb57c1c2f8c00a627fabcfb666b61b46da0b2c5cc4c0f65a47fcd
+- filename: packages/contentstack-export/test/integration/locales.test.js
+  checksum: 9343775a1f65340ab06ec62fdb1e236066d8e74bf1d9d25ff81938ed0a881923
+- filename: packages/contentstack-dev-dependencies/.eslintrc
+  checksum: e9a639c687a9340cf203ab93d880527a149f319365bc171ea65871960a7209b2
   version: ''
