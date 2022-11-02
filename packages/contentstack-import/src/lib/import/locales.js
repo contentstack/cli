@@ -29,7 +29,7 @@ module.exports = class ImportLanguages {
 
   constructor(credentialConfig) {
     this.config = merge(config, credentialConfig);
-    this.client = stack.Client(config);
+    this.client = stack.Client(this.config);
   }
 
   start() {
