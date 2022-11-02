@@ -13,30 +13,17 @@ module.exports = {
   // use below hosts for azure-na region
   // host:'https://azure-na-api.contentstack.com/v3',
   modules: {
-    // types: [
-    //   'stack',
-    //   'assets',
-    //   'locales',
-    //   'environments',
-    //   'extensions',
-    //   'webhooks',
-    //   'global-fields',
-    //   'content-types',
-    //   'custom-roles',
-    //   'workflows',
-    //   'entries',
-    //   'labels',
-    //   'marketplace-apps'
-    // ],
     types: [
       'stack',
       'assets',
       'locales',
       'environments',
-      'webhooks',
       'extensions',
+      'webhooks',
       'global-fields',
       'content-types',
+      'custom-roles',
+      'workflows',
       'entries',
       'labels',
       'marketplace-apps',
