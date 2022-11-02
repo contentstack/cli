@@ -95,7 +95,7 @@ test
     },
   }
 })
-.stub(cliux, 'prompt', name => async name => {
+.stub(cliux, 'prompt', _name => async name => {
   if (name === message.promptMessageList.promptMasterLocale) return 'en-us'
   if (name === message.promptMessageList.promptSourceStack) return 'newstackUid'
   if (name === message.promptMessageList.promptPathStoredData) return '../contents'
@@ -124,7 +124,7 @@ test
     },
   }
 })
-.stub(cliux, 'prompt', name => async name => {
+.stub(cliux, 'prompt', _name => async name => {
   if (name === message.promptMessageList.promptMasterLocale) return 'en-us'
   if (name === message.promptMessageList.promptSourceStack) return 'newstackUid'
   if (name === message.promptMessageList.promptPathStoredData) return '../contents'
@@ -272,7 +272,7 @@ test
     },
   }
 })
-.stub(cliux, 'prompt', name => async name => {
+.stub(cliux, 'prompt', _name => async name => {
   if (name === message.promptMessageList.promptMasterLocale) return 'en-us'
   if (name === message.promptMessageList.promptSourceStack) return 'newstackUid'
   if (name === message.promptMessageList.promptPathStoredData) return '../contents'
@@ -308,7 +308,7 @@ test
     },
   }
 })
-.stub(cliux, 'prompt', name => async name => {
+.stub(cliux, 'prompt', _name => async name => {
   if (name === message.promptMessageList.promptSourceStack) return 'newstackUid'
   if (name === message.promptMessageList.promptPathStoredData) return '../contents-test'
 })
@@ -344,7 +344,7 @@ test
     },
   }
 })
-.stub(cliux, 'prompt', name => async name => {
+.stub(cliux, 'prompt', _name => async name => {
   if (name === message.promptMessageList.promptMasterLocale) return 'en-us'
   if (name === message.promptMessageList.promptSourceStack) return 'newstackUid'
   if (name === message.promptMessageList.promptPathStoredData) return '../contents'
