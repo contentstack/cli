@@ -6,8 +6,8 @@
 
 var _ = require('lodash');
 var defaultConfig = require('../../config/default');
-var { addlogs } = require('../util/log');
 const chalk = require('chalk');
+const promiseLimit = require('promise-limit');
 
 exports.validateConfig = function (config) {
   if (!config.host || !config.cdn) {
@@ -42,4 +42,39 @@ exports.validateConfig = function (config) {
 exports.buildAppConfig = function (config) {
   config = _.merge(defaultConfig, config);
   return config;
+};
+
+exports.formatError = function (error) {
+  try {
+    if (typeof error === 'string') {
+      error = JSON.parse(error);
+    } else {
+      error = JSON.parse(error.message);
+    }
+  } catch (e) {}
+  let message = error.errorMessage || error.error_message || error.message || error;
+  if (error.errors && Object.keys(error.errors).length > 0) {
+    Object.keys(error.errors).forEach((e) => {
+      let entity = e;
+      if (e === 'authorization') entity = 'Management Token';
+      if (e === 'api_key') entity = 'Stack API key';
+      if (e === 'uid') entity = 'Content Type';
+      if (e === 'access_token') entity = 'Delivery Token';
+      message += ' ' + [entity, error.errors[e]].join(' ');
+    });
+  }
+  return message;
+};
+
+exports.executeTask = function (tasks = [], handler, options) {
+  if (typeof handler !== 'function') {
+    throw new Error('Invalid handler');
+  }
+  const { concurrency = 1 } = options;
+  const limit = promiseLimit(concurrency);
+  return Promise.all(
+    tasks.map((task) => {
+      return limit(() => handler(task));
+    }),
+  );
 };
