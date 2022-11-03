@@ -1,7 +1,7 @@
-@contentstack/cli-auth
+@contentstack/cli-config
 ===
 
-It is Contentstack’s CLI plugin to perform authentication-related activities. To get started with authenticating yourself with the CLI, refer to the [CLI’s Authentication documentation](https://www.contentstack.com/docs/developers/cli/authentication)
+The config namespace contains all the commands that you will need to configure the CLI as per your requirements. Contentstack currently supports three regions: North America, Europe and Azure North America. [Configure the CLI documentation](https://www.contentstack.com/docs/developers/cli/configure-the-cli)
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-config/1.0.0 darwin-x64 node-v16.15.1
+@contentstack/cli-config/1.0.1 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -40,7 +40,7 @@ EXAMPLE
   $ csdx config:get:region
 ```
 
-_See code: [src/commands/config/get/region.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/config/get/region.ts)_
+_See code: [src/commands/config/get/region.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/config/get/region.ts)_
 
 ## `csdx config:set:region [REGION]`
 
@@ -66,5 +66,5 @@ EXAMPLES
   $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"
 ```
 
-_See code: [src/commands/config/set/region.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/config/set/region.ts)_
+_See code: [src/commands/config/set/region.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/config/set/region.ts)_
 <!-- commandsstop -->

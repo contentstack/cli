@@ -91,7 +91,7 @@ let singleImport = async (moduleName, types, config) => {
           if (moduleName === 'content-types') {
             let ctPath = path.resolve(config.data, config.modules.content_types.dirName);
             let fieldPath = path.join(ctPath + '/field_rules_uid.json');
-            if (fieldPath && fieldPath !== undefined) {
+            if (fieldPath) {
               await util.field_rules_update(config, ctPath);
             }
           }
@@ -148,7 +148,7 @@ let allImport = async (config, types) => {
         );
         addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'import'), 'success');
       } else {
-        addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported succesfully!'), 'success');
+        addlogs(config, chalk.green('Data has been imported to stack ' + (config.destinationStackName || config.target_stack) + '  succesfully!'), 'success');
         addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
       }
       return resolve();

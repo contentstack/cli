@@ -15,7 +15,7 @@ $ npm install -g @contentstack/cli-cm-bootstrap
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bootstrap/1.1.0 darwin-x64 node-v16.15.1
+@contentstack/cli-cm-bootstrap/1.1.1 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -52,7 +52,7 @@ OPTIONS
   -y, --yes=yes
 
   --app-name=app-name                App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter,
-                                     nuxt-starter
+                                     nuxt-starter, vue-starter, stencil-starter
 
   --org=org                          Provide organization UID to create a new stack
 
@@ -69,5 +69,5 @@ EXAMPLES
   --stack-name "stack-name"
 ```
 
-_See code: [src/commands/cm/bootstrap.ts](https://github.com/contentstack/cli/blob/v1.1.0/src/commands/cm/bootstrap.ts)_
+_See code: [src/commands/cm/bootstrap.ts](https://github.com/contentstack/cli/blob/v1.1.1/src/commands/cm/bootstrap.ts)_
 <!-- commandsstop -->
