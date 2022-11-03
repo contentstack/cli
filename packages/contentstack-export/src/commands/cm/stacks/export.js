@@ -79,9 +79,9 @@ class ExportCommand extends Command {
       }
     } else if (_authToken) {
       if (extConfig) {
-        configWithAuthToken(extConfig, _authToken, moduleName, host, contentTypes, branchName, securedAssets);
+        await configWithAuthToken(extConfig, _authToken, moduleName, host, contentTypes, branchName, securedAssets);
       } else if (sourceStack && data) {
-        return parametersWithAuthToken(
+        return await parametersWithAuthToken(
           _authToken,
           sourceStack,
           data,
@@ -92,7 +92,7 @@ class ExportCommand extends Command {
           securedAssets,
         );
       } else if (data === undefined && sourceStack === undefined) {
-        withoutParametersWithAuthToken(_authToken, moduleName, host, contentTypes, branchName, securedAssets);
+        await withoutParametersWithAuthToken(_authToken, moduleName, host, contentTypes, branchName, securedAssets);
       } else {
         this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage');
       }

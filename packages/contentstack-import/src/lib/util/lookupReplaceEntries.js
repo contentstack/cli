@@ -5,21 +5,21 @@
  */
 
 // eslint-disable-next-line unicorn/filename-case
-var path = require('path');
-var _ = require('lodash');
+const path = require('path');
+const _ = require('lodash');
 
-var util = require('.');
-var helper = require('./fs');
-var config = util.getConfig();
+const util = require('.');
+const helper = require('./fs');
+const config = util.getConfig();
 // update references in entry object
 module.exports = function (data, mappedUids, uidMapperPath) {
-  var parent = [];
-  var uids = [];
-  var unmapped = [];
-  var mapped = [];
+  let parent = [];
+  let uids = [];
+  let unmapped = [];
+  let mapped = [];
 
-  var isNewRefFields = false;
-  var preserveStackVersion = config.preserveStackVersion;
+  let isNewRefFields = false;
+  let preserveStackVersion = config.preserveStackVersion;
 
   function gatherJsonRteEntryIds(jsonRteData) {
     jsonRteData.children.forEach(element => {
@@ -48,10 +48,11 @@ module.exports = function (data, mappedUids, uidMapperPath) {
     })
   }
 
-  var update = function (_parent, form_id, updateEntry) {
-    var _entry = updateEntry
-    var len = _parent.length
-    for (var j = 0; j < len; j++) {
+  const update = function (_parent, form_id, updateEntry) {
+    let _entry = updateEntry
+    let len = _parent.length
+
+    for (let j = 0; j < len; j++) {
       if (_entry && _parent[j]) {
         if (j === len - 1 && _entry[_parent[j]]) {
           if (form_id !== '_assets') {
@@ -71,9 +72,9 @@ module.exports = function (data, mappedUids, uidMapperPath) {
               });
             }
           } else if (Array.isArray(_entry[_parent[j]])) {
-            for (var k = 0; k < _entry[_parent[j]].length; k++) {
-              if (_entry[_parent[j]][k].uid.length) {
-                uids.push(_entry[_parent[j]][k].uid);
+            for (const element of _entry[_parent[j]]) {
+              if (element.uid.length) {
+                uids.push(element.uid);
               }
             }
           } else if (_entry[_parent[j]].uid.length) {
@@ -81,9 +82,9 @@ module.exports = function (data, mappedUids, uidMapperPath) {
           }
         } else {
           _entry = _entry[_parent[j]];
-          var _keys = _.clone(_parent).splice((j+1), len);
+          let _keys = _.clone(_parent).splice((j+1), len);
           if (Array.isArray(_entry)) {
-            for (var i = 0, _i = _entry.length; i < _i; i++) {
+            for (let i = 0, _i = _entry.length; i < _i; i++) {
               update(_keys, form_id, _entry[i]);
             }
           } else if (!(_entry instanceof Object)) {
@@ -93,8 +94,8 @@ module.exports = function (data, mappedUids, uidMapperPath) {
       }
     }
   };
-  var find = function (schema, _entry) {
-    for (var i = 0, _i = schema.length; i < _i; i++) {
+  const find = function (schema, _entry) {
+    for (let i = 0, _i = schema.length; i < _i; i++) {
       switch (schema[i].data_type) {
       case 'reference':
         if (Array.isArray(schema[i].reference_to)) {
@@ -117,7 +118,7 @@ module.exports = function (data, mappedUids, uidMapperPath) {
         parent.pop()
         break
       case 'blocks':
-        for (var j = 0, _j = schema[i].blocks.length; j < _j; j++) {
+        for (let j = 0, _j = schema[i].blocks.length; j < _j; j++) {
           parent.push(schema[i].uid)
           parent.push(schema[i].blocks[j].uid)
           find(schema[i].blocks[j].schema, _entry)
@@ -135,14 +136,14 @@ module.exports = function (data, mappedUids, uidMapperPath) {
   }
 
   function findEntryIdsFromJsonRte(entry, ctSchema) {
-    for (let i = 0; i < ctSchema.length; i++) {
-      switch (ctSchema[i].data_type) {
+    for (const element of ctSchema) {
+      switch (element.data_type) {
         case 'blocks': {
-          if (entry[ctSchema[i].uid]) {
-            if (ctSchema[i].multiple) {
-              entry[ctSchema[i].uid].forEach(e => {
+          if (entry[element.uid]) {
+            if (element.multiple) {
+              entry[element.uid].forEach(e => {
                 let key = Object.keys(e).pop()
-                let subBlock = ctSchema[i].blocks.filter(e => e.uid === key).pop()
+                let subBlock = element.blocks.filter(_e => _e.uid === key).pop()
                 findEntryIdsFromJsonRte(e[key], subBlock.schema)
               })
             }
@@ -151,25 +152,25 @@ module.exports = function (data, mappedUids, uidMapperPath) {
         }
         case 'global_field':
         case 'group': {
-          if (entry[ctSchema[i].uid]) {
-            if (ctSchema[i].multiple) {
-              entry[ctSchema[i].uid].forEach(e => {
-                findEntryIdsFromJsonRte(e, ctSchema[i].schema)
+          if (entry[element.uid]) {
+            if (element.multiple) {
+              entry[element.uid].forEach(e => {
+                findEntryIdsFromJsonRte(e, element.schema)
               })
             } else {
-              findEntryIdsFromJsonRte(entry[ctSchema[i].uid], ctSchema[i].schema)
+              findEntryIdsFromJsonRte(entry[element.uid], element.schema)
             }
           }
           break;
         }
         case 'json': {
-          if (entry[ctSchema[i].uid] && ctSchema[i].field_metadata.rich_text_type) {
-            if (ctSchema[i].multiple) {
-              entry[ctSchema[i].uid].forEach(jsonRteData => {
+          if (entry[element.uid] && element.field_metadata.rich_text_type) {
+            if (element.multiple) {
+              entry[element.uid].forEach(jsonRteData => {
                 gatherJsonRteEntryIds(jsonRteData)
               })
             } else {
-              gatherJsonRteEntryIds(entry[ctSchema[i].uid])
+              gatherJsonRteEntryIds(entry[element.uid])
             }
           }
           break;
@@ -189,7 +190,7 @@ module.exports = function (data, mappedUids, uidMapperPath) {
   }
 
   uids = _.uniq(uids);
-  var entry = JSON.stringify(data.entry);
+  let entry = JSON.stringify(data.entry);
   uids.forEach(function (uid) {
     if (mappedUids.hasOwnProperty(uid)) {
       entry = entry.replace(new RegExp(uid, 'img'), mappedUids[uid]);
@@ -200,7 +201,7 @@ module.exports = function (data, mappedUids, uidMapperPath) {
   });
 
   if (unmapped.length > 0) {
-    var unmappedUids = helper.readFile(path.join(uidMapperPath, 'unmapped-uids.json'));
+    let unmappedUids = helper.readFile(path.join(uidMapperPath, 'unmapped-uids.json'));
     unmappedUids = unmappedUids || {};
     if (unmappedUids.hasOwnProperty(data.content_type.uid)) {
       unmappedUids[data.content_type.uid][data.entry.uid] = unmapped;
@@ -214,7 +215,7 @@ module.exports = function (data, mappedUids, uidMapperPath) {
   }
 
   if (mapped.length > 0) {
-    var _mappedUids = helper.readFile(path.join(uidMapperPath, 'mapped-uids.json'));
+    let _mappedUids = helper.readFile(path.join(uidMapperPath, 'mapped-uids.json'));
     _mappedUids = _mappedUids || {};
     if (_mappedUids.hasOwnProperty(data.content_type.uid)) {
       _mappedUids[data.content_type.uid][data.entry.uid] = mapped;
@@ -239,7 +240,7 @@ function findUidsInNewRefFields(entry, uids) {
         findUidsInNewRefFields(elem, uids);
       });
     } else if (Object.keys(entry).length) {
-      for (var key in entry) {
+      for (let key in entry) {
         if (key) {
           findUidsInNewRefFields(entry[key], uids);
         }

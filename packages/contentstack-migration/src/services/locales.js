@@ -5,7 +5,6 @@ const { safePromise, constants, map: _map } = require('../utils');
 const { MANAGEMENT_SDK } = constants;
 const { get, getMapInstance } = _map;
 const mapInstance = getMapInstance();
-this.stackSDKInstance = get(MANAGEMENT_SDK, mapInstance);
 
 class LocaleService {
   constructor() {
