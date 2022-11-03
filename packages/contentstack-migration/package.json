@@ -54,7 +54,8 @@
     "bin": "csdx",
     "devPlugins": [
       "@oclif/plugin-help"
-    ]
+    ],
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-migration/<%- commandPath %>"
   },
   "repository": "contentstack/cli-migration",
   "scripts": {

@@ -12,31 +12,33 @@ const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities')
 
 let config = require('../../config/default');
 const { addlogs: log } = require('../util/log');
-const { readFile, writeFile } = require('../util/fs');
+const { readFileSync, writeFile } = require('../util/fs');
 const sdk = require('../util/contentstack-management-sdk');
 const { getDeveloperHubUrl, getInstalledExtensions } = require('../util/marketplace-app-helper');
 
-let client;
-const marketplaceAppConfig = config.modules.marketplace_apps;
+module.exports = class ImportMarketplaceApps {
+  client;
+  marketplaceApps = [];
+  marketplaceAppsUid = [];
+  developerHubBaseUrl = null;
+  marketplaceAppFolderPath = '';
+  marketplaceAppConfig = config.modules.marketplace_apps;
 
-function importMarketplaceApps() {
-  this.marketplaceApps = [];
-  this.marketplaceAppsUid = [];
-  this.developerHubBaseUrl = null;
-  this.marketplaceAppFolderPath = '';
+  constructor(credentialConfig) {
+    this.config = _.merge(config, credentialConfig);
+  }
 
-  this.start = async (credentialConfig) => {
-    config = credentialConfig;
-    client = sdk.Client(config);
+  async start() {
+    this.client = sdk.Client(this.config);
     this.developerHubBaseUrl = await getDeveloperHubUrl();
-    this.marketplaceAppFolderPath = path.resolve(config.data, marketplaceAppConfig.dirName);
+    this.marketplaceAppFolderPath = path.resolve(this.config.data, this.marketplaceAppConfig.dirName);
     this.marketplaceApps = _.uniqBy(
-      readFile(path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName)),
+      readFileSync(path.resolve(this.marketplaceAppFolderPath, this.marketplaceAppConfig.fileName)),
       'app_uid',
     );
     this.marketplaceAppsUid = _.map(this.marketplaceApps, 'uid');
 
-    if (!config.auth_token && !_.isEmpty(this.marketplaceApps)) {
+    if (!this.config.auth_token && !_.isEmpty(this.marketplaceApps)) {
       cliux.print(
         'WARNING!!! To import Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in',
         { color: 'yellow' },
@@ -48,24 +50,26 @@ function importMarketplaceApps() {
 
     await this.getOrgUid();
     return this.handleInstallationProcess();
-  };
+  }
 
   /**
    * @method getOrgUid
    * @returns {Void}
    */
-  this.getOrgUid = async () => {
+  getOrgUid = async () => {
+    const self = this;
     // NOTE get org uid
-    if (config.auth_token) {
-      const stack = await client
-        .stack({ api_key: config.target_stack, authtoken: config.auth_token })
+    if (self.config.auth_token) {
+      const stack = await this.client
+        .stack({ api_key: self.config.target_stack, authtoken: self.config.auth_token })
         .fetch()
         .catch((error) => {
           console.log(error);
+          log(self.config, 'Starting marketplace app installation', 'success');
         });
 
       if (stack && stack.org_uid) {
-        config.org_uid = stack.org_uid;
+        self.config.org_uid = stack.org_uid;
       }
     }
   };
@@ -74,34 +78,34 @@ function importMarketplaceApps() {
    * @method handleInstallationProcess
    * @returns {Promise<void>}
    */
-  this.handleInstallationProcess = async () => {
+  handleInstallationProcess = async () => {
     const self = this;
     const headers = {
-      authtoken: config.auth_token,
-      organization_uid: config.org_uid,
+      authtoken: self.config.auth_token,
+      organization_uid: self.config.org_uid,
     };
     const httpClient = new HttpClient().headers(headers);
     const nodeCrypto = new NodeCrypto();
 
     // NOTE install all private apps which is not available for stack.
     await this.handleAllPrivateAppsCreationProcess({ httpClient });
-    const installedExtensions = await getInstalledExtensions(config);
+    const installedExtensions = await getInstalledExtensions(self.config);
 
     // NOTE after private app installation, refetch marketplace apps from file
-    const marketplaceAppsFromFile = readFile(
-      path.resolve(this.marketplaceAppFolderPath, marketplaceAppConfig.fileName),
+    const marketplaceAppsFromFile = readFileSync(
+      path.resolve(this.marketplaceAppFolderPath, self.marketplaceAppConfig.fileName),
     );
     this.marketplaceApps = _.filter(marketplaceAppsFromFile, ({ uid }) => _.includes(this.marketplaceAppsUid, uid));
 
-    log(config, 'Starting marketplace app installation', 'success');
+    log(self.config, 'Starting marketplace app installation', 'success');
 
     for (let app of self.marketplaceApps) {
       await self.installApps({ app, installedExtensions, httpClient, nodeCrypto });
     }
 
     // NOTE get all the extension again after all apps installed (To manage uid mapping in content type, entries)
-    const extensions = await getInstalledExtensions(config);
-    const mapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps');
+    const extensions = await getInstalledExtensions(self.config);
+    const mapperFolderPath = path.join(self.config.data, 'mapper', 'marketplace_apps');
 
     if (!fs.existsSync(mapperFolderPath)) {
       mkdirp.sync(mapperFolderPath);
@@ -122,7 +126,7 @@ function importMarketplaceApps() {
    * @param {Object} options
    * @returns {Promise<void>}
    */
-  this.handleAllPrivateAppsCreationProcess = async (options) => {
+  handleAllPrivateAppsCreationProcess = async (options) => {
     const self = this;
     const { httpClient } = options;
     const listOfExportedPrivateApps = _.filter(self.marketplaceApps, { visibility: 'private' });
@@ -134,7 +138,7 @@ function importMarketplaceApps() {
     // NOTE get list of developer-hub installed apps (private)
     const installedDeveloperHubApps =
       (await httpClient
-        .get(`${this.developerHubBaseUrl}/apps/`)
+        .get(`${this.developerHubBaseUrl}/apps`)
         .then(({ data: { data } }) => data)
         .catch((err) => {
           console.log(err);
@@ -144,7 +148,7 @@ function importMarketplaceApps() {
       (app) => !_.includes(_.map(installedDeveloperHubApps, 'uid'), app.app_uid),
     );
 
-    if (!_.isEmpty(listOfNotInstalledPrivateApps) && !config.forceMarketplaceAppsImport) {
+    if (!_.isEmpty(listOfNotInstalledPrivateApps) && !self.config.forceMarketplaceAppsImport) {
       const confirmation = await cliux.confirm(
         chalk.yellow(
           `WARNING!!! The listed apps are private apps that are not available in the destination stack: \n\n${_.map(
@@ -169,7 +173,7 @@ function importMarketplaceApps() {
       }
     }
 
-    log(config, 'Starting developer hub private apps re-creation', 'success');
+    log(self.config, 'Starting developer hub private apps re-creation', 'success');
 
     for (let app of listOfNotInstalledPrivateApps) {
       await self.createAllPrivateAppsInDeveloperHub({ app, httpClient });
@@ -183,7 +187,7 @@ function importMarketplaceApps() {
    * @param {Array<Object>} locations
    * @returns {Array<Object>}
    */
-  this.removeUidFromManifestUILocations = (locations) => {
+  removeUidFromManifestUILocations = (locations) => {
     return _.map(locations, (location) => {
       if (location.meta) {
         location.meta = _.map(location.meta, (meta) => _.omit(meta, ['uid']));
@@ -193,20 +197,12 @@ function importMarketplaceApps() {
     });
   };
 
-  this.getAppName = (name) => {
-    name += `-1`;
-
-    if (name.length > 20) name = name.slice(18);
-
-    return name;
-  };
-
   /**
    * @method createAllPrivateAppsInDeveloperHub
    * @param {Object} options
    * @returns {Promise<void>}
    */
-  this.createAllPrivateAppsInDeveloperHub = async (options, uidCleaned = false) => {
+  createAllPrivateAppsInDeveloperHub = async (options, uidCleaned = false) => {
     const self = this;
     const { app, httpClient } = options;
 
@@ -222,10 +218,10 @@ function importMarketplaceApps() {
           const { data, error, message } = result || {};
 
           if (error) {
-            log(config, message, 'error');
+            log(self.config, message, 'error');
 
             if (_.toLower(error) === 'conflict') {
-              const appName = config.forceMarketplaceAppsImport
+              const appName = self.config.forceMarketplaceAppsImport
                 ? self.getAppName(app.manifest.name)
                 : await cliux.inquire({
                     type: 'input',
@@ -238,7 +234,7 @@ function importMarketplaceApps() {
 
               await self.createAllPrivateAppsInDeveloperHub({ app, httpClient }, true).then(resolve).catch(resolve);
             } else {
-              if (config.forceMarketplaceAppsImport) return resolve();
+              if (self.config.forceMarketplaceAppsImport) return resolve();
 
               const confirmation = await cliux.confirm(
                 chalk.yellow(
@@ -254,7 +250,7 @@ function importMarketplaceApps() {
             }
           } else if (data) {
             // NOTE new app installation
-            log(config, `${name} app created successfully.!`, 'success');
+            log(self.config, `${name} app created successfully.!`, 'success');
             this.updatePrivateAppUid(app, data, app.manifest.name);
           }
 
@@ -262,9 +258,9 @@ function importMarketplaceApps() {
         })
         .catch((error) => {
           if (error && (error.message || error.error_message)) {
-            log(config, error.message || error.error_message, 'error');
+            log(self.config, error.message || error.error_message, 'error');
           } else {
-            log(config, 'Something went wrong.!', 'error');
+            log(self.config, 'Something went wrong.!', 'error');
           }
 
           resolve();
@@ -277,10 +273,13 @@ function importMarketplaceApps() {
    * @param {Object} app
    * @param {Object} data
    */
-  this.updatePrivateAppUid = (app, data, appName) => {
+  updatePrivateAppUid = (app, data, appName) => {
     const self = this;
-    const allMarketplaceApps = readFile(path.resolve(self.marketplaceAppFolderPath, marketplaceAppConfig.fileName));
+    const allMarketplaceApps = readFileSync(
+      path.resolve(self.marketplaceAppFolderPath, self.marketplaceAppConfig.fileName),
+    );
     const index = _.findIndex(allMarketplaceApps, { uid: app.uid, visibility: 'private' });
+
     if (index > -1) {
       allMarketplaceApps[index] = {
         ...allMarketplaceApps[index],
@@ -296,7 +295,7 @@ function importMarketplaceApps() {
       // NOTE Update app name
       allMarketplaceApps[index].manifest.name = appName;
 
-      writeFile(path.join(self.marketplaceAppFolderPath, marketplaceAppConfig.fileName), allMarketplaceApps);
+      writeFile(path.join(self.marketplaceAppFolderPath, self.marketplaceAppConfig.fileName), allMarketplaceApps);
     }
   };
 
@@ -305,7 +304,7 @@ function importMarketplaceApps() {
    * @param {Object} options
    * @returns {Void}
    */
-  this.installApps = (options) => {
+  installApps = (options) => {
     const self = this;
     const { app, installedExtensions, httpClient, nodeCrypto } = options;
 
@@ -313,7 +312,7 @@ function importMarketplaceApps() {
       httpClient
         .post(`${self.developerHubBaseUrl}/apps/${app.app_uid}/install`, {
           target_type: 'stack',
-          target_uid: config.target_stack,
+          target_uid: self.config.target_stack,
         })
         .then(async ({ data: result }) => {
           let updateParam;
@@ -322,7 +321,7 @@ function importMarketplaceApps() {
 
           if (error || error_code) {
             // NOTE if already installed copy only config data
-            log(config, `${message || error_message} - ${title}`, 'success');
+            log(self.config, `${message || error_message} - ${title}`, 'success');
             const ext = _.find(installedExtensions, { app_uid: app.app_uid });
 
             if (ext) {
@@ -332,7 +331,7 @@ function importMarketplaceApps() {
                   { color: 'yellow' },
                 );
 
-                const configOption = config.forceMarketplaceAppsImport
+                const configOption = self.config.forceMarketplaceAppsImport
                   ? 'Update it with the new configuration.'
                   : await cliux.inquire({
                       choices: [
@@ -357,7 +356,7 @@ function importMarketplaceApps() {
                 }
               }
             } else {
-              if (!config.forceMarketplaceAppsImport) {
+              if (!self.config.forceMarketplaceAppsImport) {
                 cliux.print(`WARNING!!! ${message || error_message}`, { color: 'yellow' });
                 const confirmation = await cliux.confirm(
                   chalk.yellow(
@@ -372,7 +371,7 @@ function importMarketplaceApps() {
             }
           } else if (data) {
             // NOTE new app installation
-            log(config, `${title} app installed successfully.!`, 'success');
+            log(self.config, `${title} app installed successfully.!`, 'success');
             updateParam = { data, app, nodeCrypto, httpClient };
           }
 
@@ -384,9 +383,9 @@ function importMarketplaceApps() {
         })
         .catch((error) => {
           if (error && (error.message || error.error_message)) {
-            log(config, error.message || error.error_message, 'error');
+            log(self.config, error.message || error.error_message, 'error');
           } else {
-            log(config, 'Something went wrong.!', 'error');
+            log(self.config, 'Something went wrong.!', 'error');
           }
 
           reject();
@@ -399,7 +398,8 @@ function importMarketplaceApps() {
    * @param {Object<{ data, app, httpClient, nodeCrypto }>} param
    * @returns {Promise<void>}
    */
-  this.updateAppsConfig = ({ data, app, httpClient, nodeCrypto }) => {
+  updateAppsConfig = ({ data, app, httpClient, nodeCrypto }) => {
+    const self = this;
     return new Promise((resolve, reject) => {
       const payload = {};
       const { title, configuration, server_configuration } = app;
@@ -417,14 +417,14 @@ function importMarketplaceApps() {
         httpClient
           .put(`${this.developerHubBaseUrl}/installations/${data.installation_uid}`, payload)
           .then(() => {
-            log(config, `${title} app config updated successfully.!`, 'success');
+            log(self.config, `${title} app config updated successfully.!`, 'success');
           })
           .then(resolve)
           .catch((error) => {
             if (error && (error.message || error.error_message)) {
-              log(config, error.message || error.error_message, 'error');
+              log(self.config, error.message || error.error_message, 'error');
             } else {
-              log(config, 'Something went wrong.!', 'error');
+              log(self.config, 'Something went wrong.!', 'error');
             }
 
             reject();
@@ -433,13 +433,11 @@ function importMarketplaceApps() {
     });
   };
 
-  this.validateAppName = (name) => {
+  validateAppName = (name) => {
     if (name.length < 3 || name.length > 20) {
       return 'The app name should be within 3-20 characters long.';
     }
 
     return true;
   };
-}
-
-module.exports = new importMarketplaceApps();
+};
