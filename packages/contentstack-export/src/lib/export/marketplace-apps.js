@@ -20,7 +20,7 @@ const { getDeveloperHubUrl, getInstalledExtensions } = require('../util/marketpl
 module.exports = class ExportMarketplaceApps {
   config;
   marketplaceAppPath = null;
-  developerHuBaseUrl = null;
+  developerHubBaseUrl = null;
   marketplaceAppConfig = config.modules.marketplace_apps;
 
   constructor(credentialConfig) {
@@ -28,7 +28,7 @@ module.exports = class ExportMarketplaceApps {
   }
 
   async start() {
-    this.developerHuBaseUrl = await getDeveloperHubUrl();
+    this.developerHubBaseUrl = await getDeveloperHubUrl();
 
     if (!this.config.auth_token) {
       cliux.print(
@@ -73,7 +73,7 @@ module.exports = class ExportMarketplaceApps {
           const nodeCrypto = new NodeCrypto();
           const developerHubApps =
             (await httpClient
-              .get(`${self.developerHuBaseUrl}/apps`)
+              .get(`${self.developerHubBaseUrl}/apps`)
               .then(({ data: { data } }) => data)
               .catch((err) => {
                 console.log(err);
@@ -88,7 +88,7 @@ module.exports = class ExportMarketplaceApps {
               ).filter((val) => val !== undefined);
 
               httpClient
-                .get(`${self.developerHuBaseUrl}/installations/${app.app_installation_uid}/installationData`)
+                .get(`${self.developerHubBaseUrl}/installations/${app.app_installation_uid}/installationData`)
                 .then(({ data: result }) => {
                   const { data, error } = result;
                   const developerHubApp = _.find(developerHubApps, { uid: app.app_uid });
