@@ -1408,7 +1408,7 @@ EntriesImport.prototype = {
               entry[element.uid] = entry[element.uid].map((jsonRteData) => {
                 delete jsonRteData.uid; // remove uid
 
-                if (!_.isEmpty(jsonRteData.attrs) && _.isObject(jsonRteData.attrs)) {
+                if (_.isObject(jsonRteData.attrs)) {
                   jsonRteData.attrs.dirty = true;
                 }
 
@@ -1420,7 +1420,7 @@ EntriesImport.prototype = {
               });
             } else {
               delete entry[element.uid].uid; // remove uid
-              if (entry[element.uid] && !_.isEmpty(entry[element.uid].attrs) && _.isObject(entry[element.uid].attrs)) {
+              if (entry[element.uid]  && _.isObject(entry[element.uid].attrs)) {
                 entry[element.uid].attrs.dirty = true;
               }
               if (entry[element.uid] && !_.isEmpty(entry[element.uid].children)) {
@@ -1442,7 +1442,7 @@ EntriesImport.prototype = {
         if (child.type && child.type.length > 0) {
           delete child.uid; // remove uid
 
-          if (!_.isEmpty(child.attrs) && _.isObject(child.attrs)) {
+          if (_.isObject(child.attrs)) {
             child.attrs.dirty = true;
           }
         }
@@ -1454,7 +1454,7 @@ EntriesImport.prototype = {
     } else {
       if (children.type && children.type.length > 0) {
         delete children.uid; // remove uid
-        if (!_.isEmpty(children.attrs) && _.isObject(children.attrs)) {
+        if (_.isObject(children.attrs)) {
           children.attrs.dirty = true;
         }
       }
@@ -1467,7 +1467,7 @@ EntriesImport.prototype = {
   setDirtyTrue: function (jsonRteChild) {
     // also removing uids in this function
     if (jsonRteChild.type) {
-      if (!_.isEmpty(jsonRteChild.attrs) && _.isObject(jsonRteChild.attrs)) {
+      if (_.isObject(jsonRteChild.attrs)) {
         jsonRteChild.attrs['dirty'] = true;
       }
       delete jsonRteChild.uid;
