@@ -6,7 +6,7 @@
 
 // eslint-disable-next-line unicorn/filename-case
 let path = require('path');
-const _ = require('lodash')
+const _ = require('lodash');
 let helper = require('./fs');
 let util = require('../util');
 let config = util.getConfig();
@@ -39,33 +39,33 @@ let extension_uid_Replace = (module.exports = function (schema, preserveStackVer
       }
     } else if (schema[i].data_type === 'global_field') {
       let global_fields_key_value = schema[i].reference_to;
-      let global_fields_data = helper.readFile(path.join(globalfieldsPath));
+      let global_fields_data = helper.readFileSync(path.join(globalfieldsPath));
       if (global_fields_data && global_fields_data.hasOwnProperty(global_fields_key_value)) {
         schema[i].reference_to = global_fields_data[global_fields_key_value];
       }
     } else if (schema[i].hasOwnProperty('extension_uid')) {
       const extension_key_value = schema[i].extension_uid;
-      const data = helper.readFile(path.join(extensionPath));
+      const data = helper.readFileSync(path.join(extensionPath));
       if (data && data.hasOwnProperty(extension_key_value)) {
         // eslint-disable-next-line camelcase
         schema[i].extension_uid = data[extension_key_value];
       } else if (schema[i].field_metadata && schema[i].field_metadata.extension) {
         if (installedExtensions) {
-          const marketplaceApps = helper.readFile(marketplaceAppPath);
-          const oldExt = _.find(marketplaceApps, { uid: schema[i].extension_uid })
+          const marketplaceApps = helper.readFileSync(marketplaceAppPath);
+          const oldExt = _.find(marketplaceApps, { uid: schema[i].extension_uid });
 
           if (oldExt) {
-            const ext = _.find(installedExtensions, { type: 'field', title: oldExt.title, app_uid: oldExt.app_uid })
+            const ext = _.find(installedExtensions, { type: 'field', title: oldExt.title, app_uid: oldExt.app_uid });
 
             if (ext) {
-              schema[i].extension_uid = ext.uid
+              schema[i].extension_uid = ext.uid;
             }
           }
         }
       }
     } else if (schema[i].data_type === 'json' && schema[i].hasOwnProperty('plugins') && schema[i].plugins.length > 0) {
       const newPluginUidsArray = [];
-      const data = helper.readFile(path.join(extensionPath));
+      const data = helper.readFileSync(path.join(extensionPath));
       schema[i].plugins.forEach((extension_key_value) => {
         if (data && data.hasOwnProperty(extension_key_value)) {
           newPluginUidsArray.push(data[extension_key_value]);
@@ -74,4 +74,4 @@ let extension_uid_Replace = (module.exports = function (schema, preserveStackVer
       schema[i].plugins = newPluginUidsArray;
     }
   }
-})
+});
