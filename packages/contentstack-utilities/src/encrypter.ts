@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from 'crypto';
 
 type CryptoConfig = {
   algorithm?: string;
@@ -7,9 +7,10 @@ type CryptoConfig = {
 };
 
 const defaultValues: CryptoConfig = {
-  typeIdentifier: "◈",
-  algorithm: "aes-192-cbc",
-  encryptionKey: "nF2ejRQcTv",
+  typeIdentifier: '◈',
+  algorithm: 'aes-192-cbc',
+  //   file deepcode ignore HardcodedNonCryptoSecret: <This is a ToDo>
+  encryptionKey: 'nF2ejRQcTv',
 };
 
 export default class NodeCrypto {
@@ -21,7 +22,7 @@ export default class NodeCrypto {
     const { algorithm, encryptionKey, typeIdentifier } = config;
     this.algorithm = algorithm;
     this.typeIdentifier = typeIdentifier;
-    this.key = crypto.scryptSync(encryptionKey, "salt", 24);
+    this.key = crypto.scryptSync(encryptionKey, 'salt', 24);
   }
 
   encrypt(plainData) {
@@ -30,38 +31,30 @@ export default class NodeCrypto {
     let data = plainData;
 
     switch (typeof plainData) {
-      case "number":
+      case 'number':
         data = `${String(plainData)}${this.typeIdentifier}number`;
         break;
-      case "object":
+      case 'object':
         data = `${JSON.stringify(plainData)}${this.typeIdentifier}object`;
         break;
     }
 
-    const encrypted = cipher.update(data, "utf8", "hex");
+    const encrypted = cipher.update(data, 'utf8', 'hex');
 
-    return [
-      encrypted + cipher.final("hex"),
-      Buffer.from(iv).toString("hex"),
-    ].join("|");
+    return [encrypted + cipher.final('hex'), Buffer.from(iv).toString('hex')].join('|');
   }
 
   decrypt(encryptedData) {
-    const [encrypted, iv] = encryptedData.split("|");
-    if (!iv) throw new Error("IV not found");
-    const decipher = crypto.createDecipheriv(
-      this.algorithm,
-      this.key,
-      Buffer.from(iv, "hex")
-    );
-    const result =
-      decipher.update(encrypted, "hex", "utf8") + decipher.final("utf8");
+    const [encrypted, iv] = encryptedData.split('|');
+    if (!iv) throw new Error('IV not found');
+    const decipher = crypto.createDecipheriv(this.algorithm, this.key, Buffer.from(iv, 'hex'));
+    const result = decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
     const [data, type] = result.split(this.typeIdentifier);
 
     switch (type) {
-      case "number":
+      case 'number':
         return Number(data);
-      case "object":
+      case 'object':
         return JSON.parse(data);
     }
 
