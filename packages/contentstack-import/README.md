@@ -37,7 +37,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-import/1.0.0 darwin-x64 node-v16.15.1
+@contentstack/cli-cm-import/1.1.0 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -88,5 +88,5 @@ EXAMPLES
   csdx cm:stacks:import --branch <branch name>
 ```
 
-_See code: [src/commands/cm/stacks/import.js](https://github.com/contentstack/cli/blob/v1.0.0/packages/contentstack-import/src/commands/cm/stacks/import.js)_
+_See code: [src/commands/cm/stacks/import.js](https://github.com/contentstack/cli/blob/v1.1.0/packages/contentstack-import/src/commands/cm/stacks/import.js)_
 <!-- commandsstop -->

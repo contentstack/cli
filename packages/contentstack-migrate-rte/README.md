@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-cm-migrate-rte
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-migrate-rte/1.1.0 darwin-x64 node-v16.15.1
+@contentstack/cli-cm-migrate-rte/1.1.2 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -28,7 +28,6 @@ USAGE
 
 <!-- commands -->
 * [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
-* [`csdx help [COMMAND]`](#csdx-help-command)
 
 ## `csdx cm:entries:migrate-html-rte`
 
@@ -78,22 +77,5 @@ EXAMPLES
   --json-path json-path
 ```
 
-_See code: [src/commands/cm/entries/migrate-html-rte.js](https://github.com/contentstack/cli/blob/v1.1.0/src/commands/cm/entries/migrate-html-rte.js)_
-
-## `csdx help [COMMAND]`
-
-display help for csdx
-
-```
-USAGE
-  $ csdx help [COMMAND]
-
-ARGUMENTS
-  COMMAND  command to show help for
-
-OPTIONS
-  --all  see all commands in CLI
-```
-
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.18/src/commands/help.ts)_
+_See code: [src/commands/cm/entries/migrate-html-rte.js](https://github.com/contentstack/cli/blob/v1.1.2/src/commands/cm/entries/migrate-html-rte.js)_
 <!-- commandsstop -->
