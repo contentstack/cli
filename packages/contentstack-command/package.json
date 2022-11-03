@@ -62,5 +62,13 @@
       "pre-commit": "npm run lint"
     }
   },
+  "oclif": {
+    "commands": "./src/commands",
+    "bin": "csdx",
+    "devPlugins": [
+      "@oclif/plugin-help"
+    ],
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-command/<%- commandPath %>"
+  },
   "repository": "contentstack/cli"
 }

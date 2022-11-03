@@ -15,7 +15,7 @@ $ npm install -g @contentstack/cli-cm-bootstrap
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bootstrap/1.1.1 darwin-arm64 node-v16.17.0
+@contentstack/cli-cm-bootstrap/1.1.2 darwin-x64 node-v16.18.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -69,5 +69,5 @@ EXAMPLES
   --stack-name "stack-name"
 ```
 
-_See code: [src/commands/cm/bootstrap.ts](https://github.com/contentstack/cli/blob/v1.1.1/src/commands/cm/bootstrap.ts)_
+_See code: [src/commands/cm/bootstrap.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-bootstrap/src/commands/cm/bootstrap.ts)_
 <!-- commandsstop -->
