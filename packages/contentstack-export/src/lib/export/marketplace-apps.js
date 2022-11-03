@@ -8,13 +8,14 @@ const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const eachOf = require('async/eachOf');
-const { cliux, configHandler, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
+const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
 
 const { formatError } = require('../util');
 let config = require('../../config/default');
 const { writeFile } = require('../util/helper');
 const { addlogs: log } = require('../util/log');
-const { getInstalledExtensions } = require('../util/marketplace-app-helper');
+let stack = require('../util/contentstack-management-sdk');
+const { getDeveloperHubUrl, getInstalledExtensions } = require('../util/marketplace-app-helper');
 
 module.exports = class ExportMarketplaceApps {
   config;
@@ -27,9 +28,9 @@ module.exports = class ExportMarketplaceApps {
   }
 
   async start() {
-    this.developerHuBaseUrl = await this.getDeveloperHubUrl();
+    this.developerHuBaseUrl = await getDeveloperHubUrl();
 
-    if (!config.auth_token) {
+    if (!this.config.auth_token) {
       cliux.print(
         'WARNING!!! To export Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in',
         { color: 'yellow' },
@@ -148,25 +149,5 @@ module.exports = class ExportMarketplaceApps {
           reject(error);
         });
     });
-  };
-
-  getDeveloperHubUrl = async () => {
-    const { cma, name } = configHandler.get('region') || {};
-    let developerHubBaseUrl = this.config.developerHubUrls[cma];
-
-    if (!developerHubBaseUrl) {
-      developerHubBaseUrl = await cliux.inquire({
-        type: 'input',
-        name: 'name',
-        validate: (url) => {
-          if (!url) return 'Developer-hub URL cant be empty.';
-
-          return true;
-        },
-        message: `Enter the developer-hub base URL for the ${name} region - `,
-      });
-    }
-
-    return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
   };
 };
