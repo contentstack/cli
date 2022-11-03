@@ -1412,7 +1412,10 @@ EntriesImport.prototype = {
                   jsonRteData.attrs.dirty = true;
                 }
 
-                jsonRteData.children = jsonRteData.children.map((child) => this.removeUidsFromChildren(child));
+                if (!_.isEmpty(jsonRteData.children)) {
+                  jsonRteData.children = _.map(jsonRteData.children, (child) => this.removeUidsFromChildren(child));
+                }
+
                 return jsonRteData;
               });
             } else {
@@ -1420,9 +1423,11 @@ EntriesImport.prototype = {
               if (entry[element.uid] && !_.isEmpty(entry[element.uid].attrs) && _.isObject(entry[element.uid].attrs)) {
                 entry[element.uid].attrs.dirty = true;
               }
-              entry[element.uid].children = entry[element.uid].children.map((child) =>
-                this.removeUidsFromChildren(child),
-              );
+              if (entry[element.uid] && !_.isEmpty(entry[element.uid].children)) {
+                entry[element.uid].children = _.map(entry[element.uid].children, (child) =>
+                  this.removeUidsFromChildren(child),
+                );
+              }
             }
           }
           break;
