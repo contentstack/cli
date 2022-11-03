@@ -21,7 +21,7 @@ $ npm install -g @contentstack/cli-migration
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-migration/1.0.1 darwin-arm64 node-v16.17.0
+@contentstack/cli-migration/1.0.1 darwin-x64 node-v16.18.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -67,7 +67,7 @@ EXAMPLES
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
 
-_See code: [src/commands/cm/stacks/migration.js](https://github.com/contentstack/cli-migration/blob/v1.0.1/src/commands/cm/stacks/migration.js)_
+_See code: [src/commands/cm/stacks/migration.js](https://github.com/contentstack/cli-migration/blob/main/packages/contentstack-migration/src/commands/cm/stacks/migration.js)_
 <!-- commandsstop -->
 
 ### Points to remember
