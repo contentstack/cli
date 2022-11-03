@@ -20,7 +20,7 @@ module.exports = class ImportMarketplaceApps {
   client;
   marketplaceApps = [];
   marketplaceAppsUid = [];
-  developerHuBaseUrl = null;
+  developerHubBaseUrl = null;
   marketplaceAppFolderPath = '';
   marketplaceAppConfig = config.modules.marketplace_apps;
 
@@ -30,7 +30,7 @@ module.exports = class ImportMarketplaceApps {
 
   async start() {
     this.client = sdk.Client(this.config);
-    this.developerHuBaseUrl = await getDeveloperHubUrl();
+    this.developerHubBaseUrl = await getDeveloperHubUrl();
     this.marketplaceAppFolderPath = path.resolve(this.config.data, this.marketplaceAppConfig.dirName);
     this.marketplaceApps = _.uniqBy(
       readFileSync(path.resolve(this.marketplaceAppFolderPath, this.marketplaceAppConfig.fileName)),
