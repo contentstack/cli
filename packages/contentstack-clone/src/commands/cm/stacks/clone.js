@@ -14,6 +14,7 @@ class StackCloneCommand extends Command {
       let _authToken = configHandler.get('authtoken');
       const cloneCommandFlags = self.parse(StackCloneCommand).flags;
       const {
+        yes,
         type: cloneType,
         'stack-name': stackName,
         'source-branch': sourceStackBranch,
@@ -22,11 +23,13 @@ class StackCloneCommand extends Command {
         'destination-stack-api-key': destinationStackApiKey,
         'source-management-token-alias': sourceManagementTokenAlias,
         'destination-management-token-alias': destinationManagementTokenAlias,
-        'import-webhook-status': importWebhookStatus
+        'import-webhook-status': importWebhookStatus,
       } = cloneCommandFlags;
 
       const handleClone = async () => {
         const listOfTokens = configHandler.get('tokens');
+
+        config.forceMarketplaceAppsImport = yes;
 
         if (cloneType) {
           config.cloneType = cloneType;
@@ -73,7 +76,7 @@ class StackCloneCommand extends Command {
         config.pathDir = pathdir;
         const cloneHandler = new CloneHandler(config);
         cloneHandler.execute().catch();
-      }
+      };
 
       if (sourceManagementTokenAlias && destinationManagementTokenAlias) {
         if (sourceStackBranch || targetStackBranch) {
@@ -147,7 +150,7 @@ class StackCloneCommand extends Command {
       if (exitOrError) {
         // eslint-disable-next-line no-console
         console.log('\nCleaning up');
-        await this.cleanUp(pathDir)
+        await this.cleanUp(pathDir);
         // eslint-disable-next-line no-console
         console.log('done');
         // eslint-disable-next-line no-process-exit
@@ -156,9 +159,9 @@ class StackCloneCommand extends Command {
           exitOrError.catch((error) => {
             console.log((error && error.message) || '');
           });
-        } else if (exitOrError && exitOrError.message) {
+        } else if (exitOrError.message) {
           console.log(exitOrError.message);
-        } else if (exitOrError && exitOrError.errorMessage) {
+        } else if (exitOrError.errorMessage) {
           console.log(exitOrError.message);
         }
 
@@ -177,7 +180,7 @@ Use this plugin to automate the process of cloning a stack in few steps.
 
 StackCloneCommand.examples = [
   'csdx cm:stacks:clone',
-  'csdx cm:stacks:clone --source-branch <source-branch-name> --target-branch <target-branch-name>',
+  'csdx cm:stacks:clone --source-branch <source-branch-name> --target-branch <target-branch-name> --yes',
   'csdx cm:stacks:clone --source-stack-api-key <apiKey> --destination-stack-api-key <apiKey>',
   'csdx cm:stacks:clone --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>',
   'csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>',
@@ -233,7 +236,12 @@ b) Structure with content (all modules including entries & assets)
     options: ['disable', 'current'],
     required: false,
     default: 'disable',
-  })
+  }),
+  yes: flags.boolean({
+    char: 'y',
+    required: false,
+    description: '[optional] Override marketplace prompts',
+  }),
 };
 
 StackCloneCommand.usage =
