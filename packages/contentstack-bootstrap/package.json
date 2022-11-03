@@ -71,7 +71,8 @@
     ],
     "plugin": [
       "@contentstack/cli-cm-seed"
-    ]
+    ],
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-bootstrap/<%- commandPath %>"
   },
   "repository": "contentstack/cli"
 }
