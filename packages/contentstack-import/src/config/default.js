@@ -9,7 +9,12 @@ module.exports = {
   // locales: ['fr-fr'],
   host: 'https://api.contentstack.io/v3',
   extensionHost: 'https://app.contentstack.com',
-  developerHubBaseUrl: 'https://developerhub-api.contentstack.com',
+  developerHubUrls: {
+    'https://api.contentstack.io': 'https://developerhub-api.contentstack.com',
+    'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
+    'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
+    'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com'
+  },
   modules: {
     types: [
       'locales',
@@ -19,11 +24,11 @@ module.exports = {
       'marketplace-apps',
       'global-fields',
       'content-types',
-      'custom-roles',
       'workflows',
       'entries',
       'labels',
       'webhooks',
+      'custom-roles',
     ],
     locales: {
       dirName: 'locales',
@@ -33,6 +38,7 @@ module.exports = {
     customRoles: {
       dirName: 'custom-roles',
       fileName: 'custom-roles.json',
+      customRolesLocalesFileName: 'custom-roles-locales.json',
     },
     environments: {
       dirName: 'environments',
