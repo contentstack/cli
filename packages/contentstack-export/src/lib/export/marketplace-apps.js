@@ -3,132 +3,151 @@
  * Copyright (c) 2019 Contentstack LLC
  * MIT Licensed
  */
-const _ = require('lodash')
+const _ = require('lodash');
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const eachOf = require('async/eachOf');
-const { cliux, configHandler, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
+const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
 
+const { formatError } = require('../util');
 let config = require('../../config/default');
 const { writeFile } = require('../util/helper');
 const { addlogs: log } = require('../util/log');
 let stack = require('../util/contentstack-management-sdk');
-const { getDeveloperHubUrl, getInstalledExtensions } = require('../util/marketplace-app-helper')
+const { getDeveloperHubUrl, getInstalledExtensions } = require('../util/marketplace-app-helper');
 
-let client
-let marketplaceAppConfig = config.modules.marketplace_apps;
+module.exports = class ExportMarketplaceApps {
+  config;
+  marketplaceAppPath = null;
+  developerHuBaseUrl = null;
+  marketplaceAppConfig = config.modules.marketplace_apps;
 
-function exportMarketplaceApps() {
-  this.marketplaceAppPath = null
-  this.developerHuBaseUrl = null
-  this.start = async (credentialConfig) => {
-    config = credentialConfig;
-    client = stack.Client(config);
-    this.developerHuBaseUrl = await getDeveloperHubUrl()
+  constructor(credentialConfig) {
+    this.config = credentialConfig;
+  }
 
-    if (!config.auth_token) {
-      cliux.print('WARNING!!! To export Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in', { color: 'yellow' })
-      return Promise.resolve()
+  async start() {
+    this.developerHuBaseUrl = await getDeveloperHubUrl();
+
+    if (!this.config.auth_token) {
+      cliux.print(
+        'WARNING!!! To export Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in',
+        { color: 'yellow' },
+      );
+      return Promise.resolve();
     }
 
-    log(credentialConfig, 'Starting marketplace app export', 'success');
+    log(this.config, 'Starting marketplace app export', 'success');
     this.marketplaceAppPath = path.resolve(
-      config.data, config.branchName || '',
-      marketplaceAppConfig.dirName
+      this.config.data,
+      this.config.branchName || '',
+      this.marketplaceAppConfig.dirName,
     );
     mkdirp.sync(this.marketplaceAppPath);
 
-    return this.exportInstalledExtensions()
+    return this.exportInstalledExtensions();
   }
 
-  this.exportInstalledExtensions = () => {
-    const self = this
+  exportInstalledExtensions = () => {
+    const self = this;
 
     return new Promise(async function (resolve, reject) {
-      getInstalledExtensions(config)
+      getInstalledExtensions(self.config)
         .then(async (items) => {
           const installedApps = _.map(
             _.filter(items, 'app_uid'),
-            ({ uid, title, app_uid, app_installation_uid, type }) => ({ title, uid, app_uid, app_installation_uid, type })
-          )
+            ({ uid, title, app_uid, app_installation_uid, type }) => ({
+              title,
+              uid,
+              app_uid,
+              app_installation_uid,
+              type,
+            }),
+          );
           const headers = {
-            authtoken: config.auth_token,
-            organization_uid: config.org_uid
-          }
+            authtoken: self.config.auth_token,
+            organization_uid: self.config.org_uid,
+          };
           const httpClient = new HttpClient().headers(headers);
-          const nodeCrypto = new NodeCrypto()
-          const developerHubApps = await httpClient.get(`${self.developerHuBaseUrl}/apps`)
-            .then(({ data: { data } }) => data)
-            .catch(err => {
-              console.log(err)
-            }) || []
+          const nodeCrypto = new NodeCrypto();
+          const developerHubApps =
+            (await httpClient
+              .get(`${self.developerHuBaseUrl}/apps`)
+              .then(({ data: { data } }) => data)
+              .catch((err) => {
+                console.log(err);
+              })) || [];
 
-          eachOf(_.uniqBy(installedApps, 'app_uid'), (app, _key, cb) => {
-            log(config, `Exporting ${app.title} app and it's config.`, 'success')
-            const listOfIndexToBeUpdated = _.map(
-              installedApps,
-              ({ app_uid }, index) => (app_uid === app.app_uid ? index : undefined)
-            ).filter(val => val !== undefined)
+          eachOf(
+            _.uniqBy(installedApps, 'app_uid'),
+            (app, _key, cb) => {
+              log(self.config, `Exporting ${app.title} app and it's config.`, 'success');
+              const listOfIndexToBeUpdated = _.map(installedApps, ({ app_uid }, index) =>
+                app_uid === app.app_uid ? index : undefined,
+              ).filter((val) => val !== undefined);
 
-            httpClient.get(`${self.developerHuBaseUrl}/installations/${app.app_installation_uid}/installationData`)
-              .then(({ data: result }) => {
-                const { data, error } = result
-                const developerHubApp = _.find(developerHubApps, { uid: app.app_uid })
+              httpClient
+                .get(`${self.developerHuBaseUrl}/installations/${app.app_installation_uid}/installationData`)
+                .then(({ data: result }) => {
+                  const { data, error } = result;
+                  const developerHubApp = _.find(developerHubApps, { uid: app.app_uid });
 
-                _.forEach(listOfIndexToBeUpdated, (index, i) => {
-                  if (developerHubApp) {
-                    installedApps[index]['visibility'] = developerHubApp.visibility
-                    installedApps[index]['manifest'] = _.pick(
-                      developerHubApp,
-                      ['name', 'description', 'icon', 'target_type', 'ui_location', 'webhook', 'oauth'] // NOTE keys can be passed to install new app in the developer hub
-                    )
-                  }
-
-                  if (_.has(data, 'configuration') || _.has(data, 'server_configuration')) {
-                    const { configuration, server_configuration } = data
-  
-                    if (!_.isEmpty(configuration)) {
-                      installedApps[index]['configuration'] = nodeCrypto.encrypt(configuration)
-                    }
-                    if (!_.isEmpty(server_configuration)) {
-                      installedApps[index]['server_configuration'] = nodeCrypto.encrypt(server_configuration)
+                  _.forEach(listOfIndexToBeUpdated, (index, i) => {
+                    if (developerHubApp) {
+                      installedApps[index]['visibility'] = developerHubApp.visibility;
+                      installedApps[index]['manifest'] = _.pick(
+                        developerHubApp,
+                        ['name', 'description', 'icon', 'target_type', 'ui_location', 'webhook', 'oauth'], // NOTE keys can be passed to install new app in the developer hub
+                      );
                     }
 
-                    if (i === 0) {
-                      log(config, `Exported ${app.title} app and it's config.`, 'success')
+                    if (_.has(data, 'configuration') || _.has(data, 'server_configuration')) {
+                      const { configuration, server_configuration } = data;
+
+                      if (!_.isEmpty(configuration)) {
+                        installedApps[index]['configuration'] = nodeCrypto.encrypt(configuration);
+                      }
+                      if (!_.isEmpty(server_configuration)) {
+                        installedApps[index]['server_configuration'] = nodeCrypto.encrypt(server_configuration);
+                      }
+
+                      if (i === 0) {
+                        log(self.config, `Exported ${app.title} app and it's config.`, 'success');
+                      }
+                    } else if (error) {
+                      console.log(error);
+                      if (i === 0) {
+                        log(self.config, `Error on exporting ${app.title} app and it's config.`, 'error');
+                      }
                     }
-                  } else if (error) {
-                    console.log(error)
-                    if (i === 0) {
-                      log(config, `Error on exporting ${app.title} app and it's config.`, 'error')
-                    }
-                  }
+                  });
+
+                  cb();
                 })
+                .catch((err) => {
+                  addlogs(self.config, `Failed to export ${app.title} app config ${formatError(error)}`, 'error');
+                  console.log(err);
+                  cb();
+                });
+            },
+            () => {
+              if (!_.isEmpty(installedApps)) {
+                writeFile(path.join(self.marketplaceAppPath, self.marketplaceAppConfig.fileName), installedApps);
 
-                cb()
-              })
-              .catch(err => {
-                console.log(err)
-                cb()
-              })
-          }, () => {
-            if (!_.isEmpty(installedApps)) {
-              writeFile(
-                path.join(self.marketplaceAppPath, marketplaceAppConfig.fileName),
-                installedApps
-              )
+                log(self.config, chalk.green('All the marketplace apps have been exported successfully'), 'success');
+              } else {
+                log(self.config, 'No marketplace apps found', 'success');
+              }
 
-              log(config, chalk.green('All the marketplace apps have been exported successfully'), 'success')
-            } else {
-              log(config, 'No marketplace apps found', 'success')
-            }
-
-            resolve()
-          })
-        }).catch(reject)
-    })
-  }
-}
-
-module.exports = new exportMarketplaceApps();
+              resolve();
+            },
+          );
+        })
+        .catch((error) => {
+          addlogs(self.config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
+          reject(error);
+        });
+    });
+  };
+};
