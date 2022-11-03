@@ -1407,13 +1407,19 @@ EntriesImport.prototype = {
             if (element.multiple) {
               entry[element.uid] = entry[element.uid].map((jsonRteData) => {
                 delete jsonRteData.uid; // remove uid
-                jsonRteData.attrs.dirty = true;
+
+                if (!_.isEmpty(jsonRteData.attrs) && _.isObject(jsonRteData.attrs)) {
+                  jsonRteData.attrs.dirty = true;
+                }
+
                 jsonRteData.children = jsonRteData.children.map((child) => this.removeUidsFromChildren(child));
                 return jsonRteData;
               });
             } else {
               delete entry[element.uid].uid; // remove uid
-              entry[element.uid].attrs.dirty = true;
+              if (entry[element.uid] && !_.isEmpty(entry[element.uid].attrs) && _.isObject(entry[element.uid].attrs)) {
+                entry[element.uid].attrs.dirty = true;
+              }
               entry[element.uid].children = entry[element.uid].children.map((child) =>
                 this.removeUidsFromChildren(child),
               );
