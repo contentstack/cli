@@ -52,7 +52,8 @@
     "bin": "csdx",
     "devPlugins": [
       "@oclif/plugin-help"
-    ]
+    ],
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-migrate-rte/<%- commandPath %>"
   },
   "csdxConfig": {
     "expiredCommands": {

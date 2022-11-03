@@ -52,7 +52,7 @@
     "hooks": {
       "validateConfig": "./src/hooks/config.js"
     },
-    "repositoryPrefix": "<%- repo %>/blob/v<%- version %>/packages/contentstack-bulk-publish/<%- commandPath %>"
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-bulk-publish/<%- commandPath %>"
   },
   "csdxConfig": {
     "expiredCommands": {
