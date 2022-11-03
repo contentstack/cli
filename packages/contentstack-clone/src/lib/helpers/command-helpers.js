@@ -29,7 +29,7 @@ const SetBranchCommand = function (params, parentContext) {
 };
 
 const CreateNewStackCommand = function (params, parentContext) {
-  return new CloneCommand(parentContext.createNewStack, null, params, parentContext);
+  return new CloneCommand(parentContext.createNewStack, parentContext.executeDestination, params, parentContext);
 };
 
 const CloneTypeSelectionCommand = function (params, parentContext) {
