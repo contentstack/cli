@@ -40,7 +40,7 @@ EXAMPLES
   in given org uid
 ```
 
-_See code: [src/commands/cm/stacks/seed.ts](https://github.com/contentstack/cli/blob/v1.1.1/src/commands/cm/stacks/seed.ts)_
+_See code: [src/commands/cm/stacks/seed.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-seed/src/commands/cm/stacks/seed.ts)_
 <!-- commandsstop -->
 
 ## Advanced Flags
