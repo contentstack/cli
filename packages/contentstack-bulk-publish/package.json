@@ -14,7 +14,7 @@
     "lodash": "^4.17.15",
     "nock": "^13.0.2",
     "winston": "^3.7.2",
-    "inquirer": "^8.0.0"
+    "inquirer": "^8.2.4"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",

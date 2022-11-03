@@ -49,14 +49,14 @@ OPTIONS
   -n, --stack-name=stack-name                                              Name for the new stack to store the cloned
                                                                            content.
 
+  -y, --yes                                                                [optional] Override marketplace prompts
+
   --destination-management-token-alias=destination-management-token-alias  Source API key of the target stack token
                                                                            alias.
 
   --destination-stack-api-key=destination-stack-api-key                    Destination stack API Key
 
   --import-webhook-status=disable|current                                  [default: disable] Webhook state
-
-  --master-locale=master-locale                                            Master language for stack clone
 
   --source-branch=source-branch                                            Branch of the source stack.
 
@@ -81,7 +81,7 @@ ALIASES
 
 EXAMPLES
   csdx cm:stacks:clone
-  csdx cm:stacks:clone --source-branch <source-branch-name> --target-branch <target-branch-name>
+  csdx cm:stacks:clone --source-branch <source-branch-name> --target-branch <target-branch-name> --yes
   csdx cm:stacks:clone --source-stack-api-key <apiKey> --destination-stack-api-key <apiKey>
   csdx cm:stacks:clone --source-management-token-alias <management token alias> --destination-management-token-alias 
   <management token alias>
