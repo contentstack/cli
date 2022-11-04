@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run"
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@contentstack/cli-command": "^1.0.1",
-    "@contentstack/cli-utilities": "^1.0.2",
+    "@contentstack/cli-utilities": "^1.0.3",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
     "chalk": "^4.0.0",
