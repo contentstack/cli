@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-bootstrap",
   "description": "Bootstrap contentstack apps",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
@@ -17,7 +17,7 @@
     "test:report": "nyc --reporter=lcov mocha \"test/**/*.test.js\""
   },
   "dependencies": {
-    "@contentstack/cli-cm-seed": "^1.1.2",
+    "@contentstack/cli-cm-seed": "^1.1.3",
     "@contentstack/cli-command": "^1.0.1",
     "@contentstack/cli-utilities": "^1.0.3",
     "@contentstack/management": "^1.3.0",
