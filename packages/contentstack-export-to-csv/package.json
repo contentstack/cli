@@ -1,18 +1,18 @@
 {
   "name": "@contentstack/cli-cm-export-to-csv",
   "description": "Export entities to csv",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Abhinav Gupta @abhinav-from-contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "^1.0.1",
-    "@contentstack/cli-utilities": "^1.0.2",
+    "@contentstack/cli-command": "^1.0.2",
+    "@contentstack/cli-utilities": "^1.0.3",
     "@contentstack/management": "^1.3.0",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
     "chalk": "^4.1.0",
     "fast-csv": "^4.3.6",
-    "inquirer": "^7.3.3",
+    "inquirer": "^8.2.4",
     "inquirer-checkbox-plus-prompt": "^1.0.1",
     "mkdirp": "^1.0.4"
   },
@@ -43,23 +43,25 @@
     "cli",
     "plugin"
   ],
+  "scripts": {
+    "pack": "npm pack && mv *.tgz ../../build",
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "csdxConfig": {
+    "expiredCommands": {}
+  },
+  "main": "./src/commands/cm/export-to-csv.js",
   "license": "MIT",
   "oclif": {
     "commands": "./src/commands",
     "bin": "csdx",
     "devPlugins": [
       "@oclif/plugin-help"
-    ]
+    ],
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-export-to-csv/<%- commandPath %>"
   },
-  "csdxConfig": {
-    "expiredCommands": {}
-  },
-  "repository": "contentstack/cli",
-  "scripts": {
-    "postpack": "rm -f oclif.manifest.json",
-    "posttest": "eslint .",
-    "prepack": "oclif-dev manifest && oclif-dev readme",
-    "test": "nyc --reporter=html mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif-dev readme && git add README.md"
-  }
+  "repository": "https://github.com/contentstack/cli"
 }
