@@ -2,10 +2,10 @@ import Conf from 'conf';
 import { v4 as uuid } from 'uuid';
 import { existsSync, unlinkSync, readFileSync } from 'fs';
 
-const ENC_KEY = 'encryptionKey';
-const ENCRYPT_CONF: boolean = true
-const CONFIG_NAME = 'contentstack_cli';
-const ENC_CONFIG_NAME = 'contentstack_cli_obfuscate';
+const ENC_KEY = process.env.ENC_KEY || 'encryptionKey';
+const ENCRYPT_CONF: boolean = process.env.ENCRYPT_CONF === 'true' || false;
+const CONFIG_NAME = process.env.CONFIG_NAME || 'contentstack_cli';
+const ENC_CONFIG_NAME = process.env.ENC_CONFIG_NAME || 'contentstack_cli_obfuscate';
 const OLD_CONFIG_BACKUP_FLAG = 'isOldConfigBackup'
 
 const xdgBasedir = require('xdg-basedir');
@@ -41,8 +41,8 @@ class Config {
         }
       } catch (error) {
         console.log("No data to be imported from Old config file");
-
       }
+
       this.set(OLD_CONFIG_BACKUP_FLAG, true)
     }
   }
@@ -52,10 +52,10 @@ class Config {
     for (const key in data) {
       const value = data[key];
       const setPath = _path ? _path + '.' + key : key
+
       if (typeof (value) == "object") {
         this.setOldConfigStoreData(value, setPath)
-      }
-      else {
+      } else {
         this.set(setPath, value)
       }
     }
@@ -121,7 +121,7 @@ class Config {
           const config = this.fallbackInit()
           const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config)
           this.getEncryptedConfig(oldConfigData, true)
-        } catch (error) {
+        } catch (_error) {
           // console.trace(error.message)
         }
       }
@@ -159,14 +159,14 @@ class Config {
         let config = new Conf({ configName: CONFIG_NAME, encryptionKey })
         const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config)
         this.getDecryptedConfig(oldConfigData) // NOTE NOTE reinitialize the config with old data and new decrypted file
-      } catch (error) {
+      } catch (_error) {
         // console.trace(error.message)
 
         try {
           const config = this.fallbackInit()
-          const configData = this.getConfigDataAndUnlinkConfigFile(config)
-          this.getDecryptedConfig(configData) // NOTE reinitialize the config with old data and new decrypted file
-        } catch (error) {
+          const _configData = this.getConfigDataAndUnlinkConfigFile(config)
+          this.getDecryptedConfig(_configData) // NOTE reinitialize the config with old data and new decrypted file
+        } catch (__error) {
           // console.trace(error.message)
         }
       }
