@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/1.1.0 darwin-arm64 node-v16.17.0
+@contentstack/cli/1.1.0 darwin-x64 node-v16.18.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -1042,7 +1042,6 @@ FLAGS
   --destination-stack-api-key=<value>           Destination stack API Key
   --import-webhook-status=<option>              [default: disable] Webhook state
                                                 <options: disable|current>
-  --master-locale=<value>                       Master language for stack clone
   --source-branch=<value>                       Branch of the source stack.
   --source-management-token-alias=<value>       Source API key of the target stack token alias.
   --source-stack-api-key=<value>                Source stack API Key
