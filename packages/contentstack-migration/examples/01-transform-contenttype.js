@@ -166,28 +166,24 @@ module.exports = async ({migration, stackSDKInstance}) => {
     title: 'Create authors derived from blog author_name',
     successMessage: 'Authors created successfully.',
     task: async params => {
-      try {
-        for (let index = 0; index < entries.length; index++) {
-          let blogEntry = entries[index]
-          if (blogEntry.author_name) {
-            let author_name = blogEntry.author_name.split(' ')
-            let entry   = {
-              title: blogEntry.author_name,
-              url: `/${blogEntry.author_name.replace(' ', '-')}`,
-              firstname: author_name[0],
-              lastname: author_name[1],
-            }
-            const entryI = stackSDKInstance.contentType(authorUID).entry()
-            // Create Author entry
-            let entryObj = await entryI.create({entry})
-            // Add reference to blog entry
-            blogEntry.author = []
-            blogEntry.author.push({uid: entryObj.uid, _content_type_uid: entryObj.content_type_uid})
-            await blogEntry.update()
+      for (let index = 0; index < entries.length; index++) {
+        let blogEntry = entries[index]
+        if (blogEntry.author_name) {
+          let author_name = blogEntry.author_name.split(' ')
+          let entry   = {
+            title: blogEntry.author_name,
+            url: `/${blogEntry.author_name.replace(' ', '-')}`,
+            firstname: author_name[0],
+            lastname: author_name[1],
           }
+          const entryI = stackSDKInstance.contentType(authorUID).entry()
+          // Create Author entry
+          let entryObj = await entryI.create({entry})
+          // Add reference to blog entry
+          blogEntry.author = []
+          blogEntry.author.push({uid: entryObj.uid, _content_type_uid: entryObj.content_type_uid})
+          await blogEntry.update()
         }
-      } catch (error) {
-        throw error
       }
     },
   }
