@@ -4,77 +4,74 @@
  * MIT Licensed
  */
 
-const mkdirp = require('mkdirp');
 const path = require('path');
 const chalk = require('chalk');
+const mkdirp = require('mkdirp');
 
-const stack = require('../util/contentstack-management-sdk');
 const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
-
+const { formatError } = require('../util');
 let config = require('../../config/default');
-const limit = 100;
-const validKeys = config.modules.globalfields.validKeys;
-let globalfieldsFolderPath;
-const globalfieldsConfig = config.modules.globalfields;
-function ExportGlobalFields() {
-  this.global_fields = [];
-  this.requestOptions = {
-    qs: {
-      include_count: true,
-      asc: 'updated_at',
-      limit: limit,
-    },
-  };
-  this.master = {};
-  this.globalfields = {};
-}
+const stack = require('../util/contentstack-management-sdk');
 
-ExportGlobalFields.prototype = {
-  start: function (credentialConfig) {
-    this.master = {};
-    this.globalfields = {};
-    config = { ...config, ...credentialConfig };
-    globalfieldsFolderPath = path.resolve(config.data, config.branchName || '', globalfieldsConfig.dirName);
-    // Create folder for Global Fields
-    mkdirp.sync(globalfieldsFolderPath);
+module.exports = class ExportGlobalFields {
+  limit = 100;
+  config = {};
+  global_fields = [];
+  master = {};
+  globalfields = {};
+  requestOptions = {};
+  globalfieldsFolderPath;
+  globalfieldsConfig = config.modules.globalfields;
+  validKeys = config.modules.globalfields.validKeys;
+
+  constructor(credentialConfig) {
+    this.requestOptions = {
+      qs: {
+        skip: 0,
+        limit: this.limit,
+        asc: 'updated_at',
+        include_count: true,
+      },
+    };
+    this.config = { ...config, ...credentialConfig };
+    this.globalfieldsFolderPath = path.resolve(
+      this.config.data,
+      this.config.branchName || '',
+      this.globalfieldsConfig.dirName,
+    );
+  }
+
+  start() {
     const self = this;
-    addlogs(config, 'Starting Global Fields export', 'success');
+    // Create folder for Global Fields
+    mkdirp.sync(self.globalfieldsFolderPath);
+    addlogs(self.config, 'Starting Global Fields export', 'success');
+
     return new Promise(function (resolve, reject) {
       try {
         return self
-          .getGlobalFields(null, config)
+          .getGlobalFields(0, self.config)
           .then(function (result) {
             if (!result) {
-              return self
-                .writeGlobalFields()
-                .then(() => {
-                  return resolve();
-                })
-                .catch((error) => {
-                  return reject(error);
-                });
+              return self.writeGlobalFields().then(resolve).catch(reject);
             }
             return resolve();
           })
-          .catch((error) => {
-            return reject(error);
-          });
+          .catch(reject);
       } catch (error) {
+        addlogs(self.config, error, 'error');
         return reject(error);
       }
     });
-  },
-  getGlobalFields: function (skip, globalFieldConfig) {
-    const self = this;
-    if (typeof skip !== 'number') {
-      skip = 0;
-      self.requestOptions.qs.skip = skip;
-    } else {
-      self.requestOptions.qs.skip = skip;
-    }
+  }
 
+  getGlobalFields(skip, globalFieldConfig) {
+    const self = this;
     let client = stack.Client(globalFieldConfig);
+
+    self.requestOptions.qs.skip = skip;
+
     return new Promise(function (resolve, reject) {
       client
         .stack({
@@ -92,14 +89,14 @@ ExportGlobalFields.prototype = {
             }
             globalFieldResponse.items.forEach(function (globalField) {
               for (const key in globalField) {
-                if (validKeys.indexOf(key) === -1) {
+                if (self.validKeys.indexOf(key) === -1) {
                   delete globalField[key];
                 }
               }
               self.global_fields.push(globalField);
             });
 
-            skip += limit;
+            skip += self.limit;
 
             if (skip > globalFieldResponse.count) {
               return resolve();
@@ -107,19 +104,25 @@ ExportGlobalFields.prototype = {
 
             return self.getGlobalFields(skip, globalFieldConfig).then(resolve).catch(reject);
           } catch (error) {
-            return reject(error);
+            addlogs(globalFieldConfig, chalk.red(`Failed to export global-fields ${formatError(error)}`), 'error');
+            reject(error);
           }
         });
     });
-  },
-  writeGlobalFields: function () {
-    const self = this;
-    return new Promise(function (resolve) {
-      helper.writeFile(path.join(globalfieldsFolderPath, globalfieldsConfig.fileName), self.global_fields);
-      addlogs(config, chalk.green('Global Fields export completed successfully'), 'success');
-      return resolve();
-    });
-  },
-};
+  }
 
-module.exports = new ExportGlobalFields();
+  writeGlobalFields() {
+    const self = this;
+    return new Promise(function (resolve, reject) {
+      try {
+        helper.writeFileSync(path.join(self.globalfieldsFolderPath, self.globalfieldsConfig.fileName), self.global_fields);
+        addlogs(self.config, chalk.green('Global Fields export completed successfully'), 'success');
+
+        resolve();
+      } catch (error) {
+        addlogs(self.config, error, 'error');
+        reject(error);
+      }
+    });
+  }
+};
