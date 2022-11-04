@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-utilities",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Utilities for contentstack projects",
   "main": "lib/index.js",
   "types": "./types/index.d.ts",
@@ -38,7 +38,8 @@
     "ora": "^5.4.0",
     "unique-string": "^2.0.0",
     "winston": "^3.7.2",
-    "xdg-basedir": "^4.0.0"
+    "xdg-basedir": "^4.0.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@oclif/plugin-help": "^5.1.12",

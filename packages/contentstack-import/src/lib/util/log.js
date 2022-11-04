@@ -9,11 +9,9 @@ var path = require('path');
 var mkdirp = require('mkdirp');
 var slice = Array.prototype.slice;
 
-
-
 const ansiRegexPattern = [
   '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
-'(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))'
+  '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))',
 ].join('|');
 
 function returnString(args) {
@@ -22,14 +20,18 @@ function returnString(args) {
     returnStr = args
       .map(function (item) {
         if (item && typeof item === 'object') {
-          return JSON.stringify(item).replace(/authtoken\":\"blt................/g, 'authtoken":"blt....');
+          try {
+            return JSON.stringify(item).replace(/authtoken\":\"blt................/g, 'authtoken":"blt....');
+          } catch (error) {
+            return item.message;
+          }
         }
         return item;
       })
       .join('  ')
       .trim();
   }
-  returnStr = returnStr.replace(new RegExp(ansiRegexPattern, 'g'), "").trim();
+  returnStr = returnStr.replace(new RegExp(ansiRegexPattern, 'g'), '').trim();
   return returnStr;
 }
 
