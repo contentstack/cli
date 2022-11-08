@@ -500,12 +500,8 @@ class CloneHandler {
       if (config.sourceStackBranch) {
         cmd.push('--branch', config.sourceStackBranch);
       }
-      if (config.exportDeveloperHubUrl) {
-        cmd.push('--developer-hub-url', config.exportDeveloperHubUrl);
-      }
-      if (config.appConfigEncryptionKey) {
-        cmd.push('--app-config-encryption-key', config.appConfigEncryptionKey);
-      }
+
+      if (config.forceStopMarketplaceAppsPrompt) cmd.push('-y');
 
       let exportData = exportCmd.run(cmd);
       exportData.then(() => resolve(true)).catch(reject);
@@ -528,14 +524,8 @@ class CloneHandler {
       if (config.importWebhookStatus) {
         cmd.push('--import-webhook-status', config.importWebhookStatus);
       }
-      if (config.importDeveloperHubUrl) {
-        cmd.push('--developer-hub-url', config.importDeveloperHubUrl);
-      }
-      if (config.appConfigEncryptionKey) {
-        cmd.push('--app-config-encryption-key', config.appConfigEncryptionKey);
-      }
 
-      if (config.forceMarketplaceAppsImport) cmd.push('-y');
+      if (config.forceStopMarketplaceAppsPrompt) cmd.push('-y');
 
       await importCmd.run(cmd);
       return resolve();
