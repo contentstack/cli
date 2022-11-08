@@ -86,8 +86,24 @@ module.exports = class ImportMarketplaceApps {
       organization_uid: self.config.org_uid,
     };
 
-    if (this.config.marketplaceAppEncryptionKey) {
-      cryptoArgs['encryptionKey'] = defaultConfig.marketplaceAppEncryptionKey;
+    if (self.config.marketplaceAppEncryptionKey) {
+      cryptoArgs['encryptionKey'] = self.config.marketplaceAppEncryptionKey;
+    }
+
+    if (self.config.forceStopMarketplaceAppsPrompt) {
+      cryptoArgs['encryptionKey'] = self.config.marketplaceAppEncryptionKey;
+    } else {
+      cryptoArgs['encryptionKey'] = await cliux.inquire({
+        type: 'input',
+        name: 'name',
+        default: self.config.marketplaceAppEncryptionKey,
+        validate: (url) => {
+          if (!url) return "Encryption key can't be empty.";
+
+          return true;
+        },
+        message: 'Enter marketplace app configurations encryption key',
+      });
     }
 
     const httpClient = new HttpClient().headers(headers);
@@ -154,7 +170,7 @@ module.exports = class ImportMarketplaceApps {
       (app) => !_.includes(_.map(installedDeveloperHubApps, 'uid'), app.app_uid),
     );
 
-    if (!_.isEmpty(listOfNotInstalledPrivateApps) && !self.config.forceMarketplaceAppsImport) {
+    if (!_.isEmpty(listOfNotInstalledPrivateApps) && !self.config.forceStopMarketplaceAppsPrompt) {
       const confirmation = await cliux.confirm(
         chalk.yellow(
           `WARNING!!! The listed apps are private apps that are not available in the destination stack: \n\n${_.map(
@@ -227,7 +243,7 @@ module.exports = class ImportMarketplaceApps {
             log(self.config, message, 'error');
 
             if (_.toLower(error) === 'conflict') {
-              const appName = self.config.forceMarketplaceAppsImport
+              const appName = self.config.forceStopMarketplaceAppsPrompt
                 ? self.getAppName(app.manifest.name)
                 : await cliux.inquire({
                     type: 'input',
@@ -240,7 +256,7 @@ module.exports = class ImportMarketplaceApps {
 
               await self.createAllPrivateAppsInDeveloperHub({ app, httpClient }, true).then(resolve).catch(resolve);
             } else {
-              if (self.config.forceMarketplaceAppsImport) return resolve();
+              if (self.config.forceStopMarketplaceAppsPrompt) return resolve();
 
               const confirmation = await cliux.confirm(
                 chalk.yellow(
@@ -337,7 +353,7 @@ module.exports = class ImportMarketplaceApps {
                   { color: 'yellow' },
                 );
 
-                const configOption = self.config.forceMarketplaceAppsImport
+                const configOption = self.config.forceStopMarketplaceAppsPrompt
                   ? 'Update it with the new configuration.'
                   : await cliux.inquire({
                       choices: [
@@ -362,7 +378,7 @@ module.exports = class ImportMarketplaceApps {
                 }
               }
             } else {
-              if (!self.config.forceMarketplaceAppsImport) {
+              if (!self.config.forceStopMarketplaceAppsPrompt) {
                 cliux.print(`WARNING!!! ${message || error_message}`, { color: 'yellow' });
                 const confirmation = await cliux.confirm(
                   chalk.yellow(
