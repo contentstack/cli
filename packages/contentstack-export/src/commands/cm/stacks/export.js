@@ -31,6 +31,14 @@ class ExportCommand extends Command {
     host.cma = cmaHost[1];
     host.cda = cdaHost[1];
 
+    if (exportCommandFlags['developer-hub-url']) {
+      config.developerHubBaseUrl = exportCommandFlags['developer-hub-url'];
+    }
+
+    if (exportCommandFlags['app-config-encryption-key']) {
+      config.marketplaceAppEncryptionKey = exportCommandFlags['app-config-encryption-key'];
+    }
+
     if (alias) {
       let managementTokens = this.getToken(alias);
 
@@ -176,6 +184,16 @@ ExportCommand.flags = {
   }),
   'secured-assets': flags.boolean({
     description: '[optional] use when assets are secured',
+  }),
+  'developer-hub-url': flags.string({
+    required: false,
+    default: 'disable',
+    description: '[Optional] Developer hub base URL If you use a region other than NA, EU, or Azure NA',
+  }),
+  'app-config-encryption-key': flags.string({
+    required: false,
+    default: 'disable',
+    description: '[Optional] Marketplace app configurations encryption key',
   }),
 };
 

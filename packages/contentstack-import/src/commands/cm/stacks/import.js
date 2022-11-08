@@ -34,7 +34,15 @@ class ImportCommand extends Command {
         defaultConfig.data = data;
       }
 
-      defaultConfig.forceMarketplaceAppsImport = importCommandFlags.yes
+      defaultConfig.forceMarketplaceAppsImport = importCommandFlags.yes;
+
+      if (importCommandFlags['developer-hub-url']) {
+        defaultConfig.developerHubBaseUrl = importCommandFlags['developer-hub-url'];
+      }
+
+      if (importCommandFlags['app-config-encryption-key']) {
+        defaultConfig.marketplaceAppEncryptionKey = importCommandFlags['app-config-encryption-key'];
+      }
 
       if (alias) {
         let managementTokens = self.getToken(alias);
@@ -181,8 +189,18 @@ ImportCommand.flags = {
   yes: flags.boolean({
     char: 'y',
     required: false,
-    description: '[optional] Override marketplace prompts'
-  })
+    description: '[optional] Override marketplace prompts',
+  }),
+  'developer-hub-url': flags.string({
+    required: false,
+    default: 'disable',
+    description: '[Optional] Developer hub base URL If you use a region other than NA, EU, or Azure NA',
+  }),
+  'app-config-encryption-key': flags.string({
+    required: false,
+    default: 'disable',
+    description: '[Optional] Marketplace app configurations encryption key',
+  }),
 };
 
 ImportCommand.aliases = ['cm:import'];
