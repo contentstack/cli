@@ -28,8 +28,8 @@ module.exports = class ExportCustomRoles {
   }
 
   async start() {
+    const self = this;
     try {
-      const self = this;
       addlogs(this.config, 'Starting roles export', 'success');
 
       const rolesFolderPath = path.resolve(this.config.data, this.config.branchName || '', this.rolesConfig.dirName);
@@ -47,7 +47,7 @@ module.exports = class ExportCustomRoles {
         return;
       }
 
-      await getCustomRolesLocales(
+      await self.getCustomRolesLocales(
         customRoles,
         path.join(rolesFolderPath, self.rolesConfig.customRolesLocalesFileName),
         this.client,
