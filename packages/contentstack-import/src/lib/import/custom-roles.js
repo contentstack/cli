@@ -109,7 +109,7 @@ module.exports = class ImportCustomRoles {
             addlogs(self.config, chalk.red(`custom-role: ${customRole.name} failed`), 'error');
           }
 
-          addlogs(self.self.config, formatError(error), 'error');
+          addlogs(self.config, formatError(error), 'error');
         }
       }
       addlogs(self.config, chalk.green('Custom-roles have been imported successfully!'), 'success');
