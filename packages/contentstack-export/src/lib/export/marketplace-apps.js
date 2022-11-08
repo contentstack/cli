@@ -70,9 +70,23 @@ module.exports = class ExportMarketplaceApps {
             authtoken: self.config.auth_token,
             organization_uid: self.config.org_uid,
           };
-          if (self.config.marketplaceAppEncryptionKey) {
+
+          if (self.config.forceStopMarketplaceAppsPrompt) {
             cryptoArgs['encryptionKey'] = self.config.marketplaceAppEncryptionKey;
+          } else {
+            cryptoArgs['encryptionKey'] = await cliux.inquire({
+              type: 'input',
+              name: 'name',
+              default: self.config.marketplaceAppEncryptionKey,
+              validate: (url) => {
+                if (!url) return "Encryption key can't be empty.";
+
+                return true;
+              },
+              message: 'Enter marketplace app configurations encryption key',
+            });
           }
+
           const httpClient = new HttpClient().headers(headers);
           const nodeCrypto = new NodeCrypto(cryptoArgs);
           const developerHubApps =
