@@ -24,11 +24,11 @@ module.exports = class ExportMarketplaceApps {
   marketplaceAppConfig = config.modules.marketplace_apps;
 
   constructor(credentialConfig) {
-    this.config = credentialConfig;
+    this.config = _.merge(config, credentialConfig);
   }
 
   async start() {
-    this.developerHubBaseUrl = await getDeveloperHubUrl();
+    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl());
 
     if (!this.config.auth_token) {
       cliux.print(
@@ -65,18 +65,22 @@ module.exports = class ExportMarketplaceApps {
               type,
             }),
           );
+          const cryptoArgs = {};
           const headers = {
             authtoken: self.config.auth_token,
             organization_uid: self.config.org_uid,
           };
+          if (self.config.marketplaceAppEncryptionKey) {
+            cryptoArgs['encryptionKey'] = self.config.marketplaceAppEncryptionKey;
+          }
           const httpClient = new HttpClient().headers(headers);
-          const nodeCrypto = new NodeCrypto();
+          const nodeCrypto = new NodeCrypto(cryptoArgs);
           const developerHubApps =
             (await httpClient
               .get(`${self.developerHubBaseUrl}/apps`)
               .then(({ data: { data } }) => data)
               .catch((err) => {
-                console.log(err);
+                log(self.config, err, 'error');
               })) || [];
 
           eachOf(
@@ -126,7 +130,7 @@ module.exports = class ExportMarketplaceApps {
                   cb();
                 })
                 .catch((err) => {
-                  addlogs(self.config, `Failed to export ${app.title} app config ${formatError(error)}`, 'error');
+                  log(self.config, `Failed to export ${app.title} app config ${formatError(error)}`, 'error');
                   console.log(err);
                   cb();
                 });
@@ -145,7 +149,7 @@ module.exports = class ExportMarketplaceApps {
           );
         })
         .catch((error) => {
-          addlogs(self.config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
+          log(self.config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
           reject(error);
         });
     });

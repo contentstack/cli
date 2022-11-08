@@ -30,7 +30,7 @@ module.exports = class ImportMarketplaceApps {
 
   async start() {
     this.client = sdk.Client(this.config);
-    this.developerHubBaseUrl = await getDeveloperHubUrl();
+    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl());
     this.marketplaceAppFolderPath = path.resolve(this.config.data, this.marketplaceAppConfig.dirName);
     this.marketplaceApps = _.uniqBy(
       readFileSync(path.resolve(this.marketplaceAppFolderPath, this.marketplaceAppConfig.fileName)),
@@ -80,12 +80,18 @@ module.exports = class ImportMarketplaceApps {
    */
   handleInstallationProcess = async () => {
     const self = this;
+    const cryptoArgs = {};
     const headers = {
       authtoken: self.config.auth_token,
       organization_uid: self.config.org_uid,
     };
+
+    if (this.config.marketplaceAppEncryptionKey) {
+      cryptoArgs['encryptionKey'] = defaultConfig.marketplaceAppEncryptionKey;
+    }
+
     const httpClient = new HttpClient().headers(headers);
-    const nodeCrypto = new NodeCrypto();
+    const nodeCrypto = new NodeCrypto(cryptoArgs);
 
     // NOTE install all private apps which is not available for stack.
     await this.handleAllPrivateAppsCreationProcess({ httpClient });
