@@ -24,6 +24,9 @@ class StackCloneCommand extends Command {
         'source-management-token-alias': sourceManagementTokenAlias,
         'destination-management-token-alias': destinationManagementTokenAlias,
         'import-webhook-status': importWebhookStatus,
+        'export-developer-hub-url': exportDeveloperHubUrl,
+        'import-developer-hub-url': importDeveloperHubUrl,
+        'app-config-encryption-key': appConfigEncryptionKey,
       } = cloneCommandFlags;
 
       const handleClone = async () => {
@@ -65,6 +68,15 @@ class StackCloneCommand extends Command {
         }
         if (importWebhookStatus) {
           config.importWebhookStatus = importWebhookStatus;
+        }
+        if (exportDeveloperHubUrl) {
+          config.exportDeveloperHubUrl = exportDeveloperHubUrl;
+        }
+        if (importDeveloperHubUrl) {
+          config.importDeveloperHubUrl = importDeveloperHubUrl;
+        }
+        if (appConfigEncryptionKey) {
+          config.appConfigEncryptionKey = appConfigEncryptionKey;
         }
 
         await this.removeContentDirIfNotEmptyBeforeClone(pathdir); // NOTE remove if folder not empty before clone
@@ -241,6 +253,21 @@ b) Structure with content (all modules including entries & assets)
     char: 'y',
     required: false,
     description: '[optional] Override marketplace prompts',
+  }),
+  'export-developer-hub-url': flags.string({
+    required: false,
+    default: 'disable',
+    description: '[Optional] Export developer hub base URL If you use a region other than NA, EU, or Azure NA',
+  }),
+  'import-developer-hub-url': flags.string({
+    required: false,
+    default: 'disable',
+    description: '[Optional] Import developer hub base URL If you use a region other than NA, EU, or Azure NA',
+  }),
+  'app-config-encryption-key': flags.string({
+    required: false,
+    default: 'disable',
+    description: '[Optional] Marketplace app configurations encryption key',
   }),
 };
 
