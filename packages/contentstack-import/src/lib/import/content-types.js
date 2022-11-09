@@ -176,6 +176,8 @@ class ContentTypesImport {
       } catch (error) {
         addlogs(this.importConfig, `failed to update the global field ${uid} ${formatError(error)}`);
       } 
+    } else {
+      addlogs(this.importConfig, `Global field ${uid} does not exist, and hence failed to update.`);
     }
   }
 
