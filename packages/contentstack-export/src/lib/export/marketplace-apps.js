@@ -14,7 +14,6 @@ const { formatError } = require('../util');
 let config = require('../../config/default');
 const { writeFile } = require('../util/helper');
 const { addlogs: log } = require('../util/log');
-let stack = require('../util/contentstack-management-sdk');
 const { getDeveloperHubUrl, getInstalledExtensions } = require('../util/marketplace-app-helper');
 
 module.exports = class ExportMarketplaceApps {
@@ -126,7 +125,7 @@ module.exports = class ExportMarketplaceApps {
                   cb();
                 })
                 .catch((err) => {
-                  addlogs(self.config, `Failed to export ${app.title} app config ${formatError(error)}`, 'error');
+                  log(self.config, `Failed to export ${app.title} app config ${formatError(error)}`, 'error');
                   console.log(err);
                   cb();
                 });
@@ -145,7 +144,7 @@ module.exports = class ExportMarketplaceApps {
           );
         })
         .catch((error) => {
-          addlogs(self.config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
+          log(self.config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
           reject(error);
         });
     });
