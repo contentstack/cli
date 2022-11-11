@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const defaultConfig = require('../../../config/default');
 const { Command, flags } = require('@contentstack/cli-command');
-const { configHandler } = require('@contentstack/cli-utilities');
+const { configHandler, printFlagDeprecation } = require('@contentstack/cli-utilities');
 const {
   configWithMToken,
   parameterWithMToken,
@@ -10,7 +10,6 @@ const {
   parametersWithAuthToken,
   withoutParametersWithAuthToken,
 } = require('../../../lib/util/import-flags');
-const { printFlagDeprecation } = require('@contentstack/cli-utilities');
 
 class ImportCommand extends Command {
   async run() {
@@ -28,6 +27,7 @@ class ImportCommand extends Command {
     delete importCommandFlags.branch;
     delete importCommandFlags['import-webhook-status'];
     let host = self.cmaHost;
+    importCommandFlags['isAuthenticated'] = this.isAuthenticated();
 
     return new Promise((resolve, reject) => {
       if (data) {
@@ -75,7 +75,7 @@ class ImportCommand extends Command {
         } else {
           console.log('management Token is not present please add managment token first');
         }
-      } else if (_authToken) {
+      } else if (importCommandFlags.isAuthenticated) {
         let result;
 
         if (extConfig) {
