@@ -1,5 +1,5 @@
 import { Command, flags } from '@contentstack/cli-command';
-import { logger, cliux, CLIError } from '@contentstack/cli-utilities';
+import { logger, cliux, CLIError, authHandler as oauthHandler } from '@contentstack/cli-utilities';
 import { User } from '../../interfaces';
 import { authHandler, interactive } from '../../utils';
 
@@ -48,7 +48,7 @@ export default class LoginCommand extends Command {
     try {
       const sso = loginFlags?.sso;
       if (sso === true) {
-        await authHandler.oauth();
+        await oauthHandler.oauth();
       } else {
         const username = loginFlags?.username || (await interactive.askUsername());
         const password = loginFlags?.password || (await interactive.askPassword());
@@ -68,7 +68,7 @@ export default class LoginCommand extends Command {
       if (typeof user !== 'object' || !user.authtoken || !user.email) {
         throw new CLIError('Failed to login - invalid response');
       }
-      await authHandler.setConfigData('basicAuth', user);
+      await oauthHandler.setConfigData('basicAuth', user);
       logger.info('successfully logged in');
       cliux.success('CLI_AUTH_LOGIN_SUCCESS');
     } catch (error) {
