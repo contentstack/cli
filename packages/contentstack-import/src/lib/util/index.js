@@ -13,6 +13,7 @@ const chalk = require('chalk');
 const { addlogs } = require('./log');
 const defaultConfig = require('../../config/default');
 const stack = require('./contentstack-management-sdk');
+const promiseLimit = require('promise-limit');
 let config;
 
 exports.initialization = function (configData) {
@@ -69,7 +70,7 @@ exports.sanitizeStack = function (importConfig) {
           importConfig.modules.stack.fileName,
         );
 
-        const oldStackDetails = fs.readFile(stackFilePath);
+        const oldStackDetails = fs.readFileSync(stackFilePath);
         if (!oldStackDetails || !oldStackDetails.settings || !oldStackDetails.settings.hasOwnProperty('version')) {
           throw new Error(`${JSON.stringify(oldStackDetails)} is invalid!`);
         }
@@ -129,7 +130,7 @@ exports.field_rules_update = function (importConfig, ctPath) {
   return new Promise(function (resolve, reject) {
     let client = stack.Client(importConfig);
 
-    fs.readFile(path.join(ctPath + '/field_rules_uid.json'), async (err, data) => {
+    fs.readFileSync(path.join(ctPath + '/field_rules_uid.json'), async (err, data) => {
       if (err) {
         throw err;
       }
@@ -152,7 +153,7 @@ exports.field_rules_update = function (importConfig, ctPath) {
                   let updatedValue = [];
                   for (let j = 0; j < fieldRulesArray.length; j++) {
                     let splitedFieldRulesValue = fieldRulesArray[j];
-                    let oldUid = helper.readFile(path.join(entryUidMapperPath));
+                    let oldUid = helper.readFileSync(path.join(entryUidMapperPath));
                     if (oldUid.hasOwnProperty(splitedFieldRulesValue)) {
                       updatedValue.push(oldUid[splitedFieldRulesValue]);
                     } else {
@@ -184,4 +185,39 @@ exports.field_rules_update = function (importConfig, ctPath) {
 
 exports.getConfig = function () {
   return config;
+};
+
+exports.formatError = function (error) {
+  try {
+    if (typeof error === 'string') {
+      error = JSON.parse(error);
+    } else {
+      error = JSON.parse(error.message);
+    }
+  } catch (e) {}
+  let message = error.errorMessage || error.error_message || error.message || error;
+  if (error.errors && Object.keys(error.errors).length > 0) {
+    Object.keys(error.errors).forEach((e) => {
+      let entity = e;
+      if (e === 'authorization') entity = 'Management Token';
+      if (e === 'api_key') entity = 'Stack API key';
+      if (e === 'uid') entity = 'Content Type';
+      if (e === 'access_token') entity = 'Delivery Token';
+      message += ' ' + [entity, error.errors[e]].join(' ');
+    });
+  }
+  return message;
+};
+
+exports.executeTask = function (tasks = [], handler, options) {
+  if (typeof handler !== 'function') {
+    throw new Error('Invalid handler');
+  }
+  const { concurrency = 1 } = options;
+  const limit = promiseLimit(concurrency);
+  return Promise.all(
+    tasks.map((task) => {
+      return limit(() => handler(task));
+    }),
+  );
 };
