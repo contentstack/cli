@@ -4,16 +4,16 @@
  * MIT Licensed
  */
 
-const mkdirp = require('mkdirp');
-const path = require('path');
-const helper = require('../util/helper');
-const { addlogs } = require('../util/log');
-const { managementClient } = require('@contentstack/cli-utilities');
-let managementAPIClient;
-let config = require('../../config/default');
+let path = require('path');
+let mkdirp = require('mkdirp');
 
-const stackConfig = config.modules.stack;
+let helper = require('../util/helper');
+let { addlogs } = require('../util/log');
+let config = require('../../config/default');
+const stack = require('../util/contentstack-management-sdk');
+
 let client;
+let stackConfig = config.modules.stack;
 
 function ExportStack() {
   this.requestOption = {
@@ -25,7 +25,7 @@ function ExportStack() {
 
 ExportStack.prototype.start = async function (credentialConfig) {
   config = credentialConfig;
-  managementAPIClient = await managementClient(config);
+  client = stack.Client(config);
   const self = this;
 
   // NOTE get org uid
@@ -102,4 +102,4 @@ ExportStack.prototype.getLocales = function (apiDetails) {
   });
 };
 
-module.exports = new ExportStack();
+module.exports = ExportStack;
