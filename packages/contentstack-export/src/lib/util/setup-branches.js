@@ -8,12 +8,12 @@ const setupBranches = async (config, branch) => {
     throw new Error('Invalid config to setup the branch');
   }
   let branches = [];
-  const headers = { api_key: config.source_stack }
+  const headers = { api_key: config.source_stack };
 
   if (config.auth_token) {
-    headers['authtoken'] = config.auth_token
+    headers['authtoken'] = config.auth_token;
   } else if (config.management_token) {
-    headers['authorization'] = config.management_token
+    headers['authorization'] = config.management_token;
   }
 
   if (typeof branch === 'string') {
@@ -29,14 +29,12 @@ const setupBranches = async (config, branch) => {
     }
   } else {
     try {
-      const result = await HttpClient.create()
-        .headers(headers)
-        .get(`https://${config.host}/v3/stacks/branches`);
+      const result = await HttpClient.create().headers(headers).get(`https://${config.host}/v3/stacks/branches`);
 
       if (result && result.data && Array.isArray(result.data.branches) && result.data.branches.length > 0) {
         branches = result.data.branches;
       } else {
-        branches.push('main');
+        return;
       }
     } catch (error) {
       return;

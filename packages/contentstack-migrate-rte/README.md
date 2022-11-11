@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-cm-migrate-rte
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-migrate-rte/1.1.2 darwin-arm64 node-v16.17.0
+@contentstack/cli-cm-migrate-rte/1.1.3 darwin-x64 node-v18.12.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -77,5 +77,5 @@ EXAMPLES
   --json-path json-path
 ```
 
-_See code: [src/commands/cm/entries/migrate-html-rte.js](https://github.com/contentstack/cli/blob/v1.1.2/src/commands/cm/entries/migrate-html-rte.js)_
+_See code: [src/commands/cm/entries/migrate-html-rte.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-migrate-rte/src/commands/cm/entries/migrate-html-rte.js)_
 <!-- commandsstop -->
