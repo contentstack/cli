@@ -5,19 +5,19 @@
  * MIT Licensed
  */
 
-var _ = require('lodash');
+const _ = require('lodash');
 const { HttpClient } = require('@contentstack/cli-utilities');
-var fs = require('./fs');
-var path = require('path');
-var chalk = require('chalk');
-var { addlogs } = require('./log');
-var defaultConfig = require('../../config/default');
+const fs = require('./fs');
+const path = require('path');
+const chalk = require('chalk');
+const { addlogs } = require('./log');
+const defaultConfig = require('../../config/default');
 const stack = require('./contentstack-management-sdk');
-var config;
+let config;
 
 exports.initialization = function (configData) {
   config = this.buildAppConfig(configData);
-  var res = this.validateConfig(config);
+  const res = this.validateConfig(config);
 
   if ((res && res !== 'error') || res === undefined) {
     return config;
@@ -33,7 +33,7 @@ exports.validateConfig = function (importConfig) {
     !importConfig.password &&
     !importConfig.management_token &&
     importConfig.target_stack &&
-    !importConfig.auth_token
+    !importConfig.isAuthenticated
   ) {
     addlogs(importConfig, chalk.red('Kindly provide management_token or email and password'), 'error');
     return 'error';
@@ -105,14 +105,14 @@ exports.sanitizeStack = function (importConfig) {
 exports.masterLocalDetails = function (credentialConfig) {
   let client = stack.Client(credentialConfig);
   return new Promise((resolve, reject) => {
-    var result = client
+    const result = client
       .stack({ api_key: credentialConfig.target_stack, management_token: credentialConfig.management_token })
       .locale()
       .query();
     result
       .find()
       .then((response) => {
-        var masterLocalObj = response.items.filter((obj) => {
+        const masterLocalObj = response.items.filter((obj) => {
           if (obj.fallback_locale === null) {
             return obj;
           }
@@ -133,7 +133,7 @@ exports.field_rules_update = function (importConfig, ctPath) {
       if (err) {
         throw err;
       }
-      var ct_field_visibility_uid = JSON.parse(data);
+      const ct_field_visibility_uid = JSON.parse(data);
       let ct_files = fs.readdirSync(ctPath);
       if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
         for (let index = 0; index < ct_field_visibility_uid.length; index++) {
