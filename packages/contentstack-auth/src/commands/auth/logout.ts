@@ -1,5 +1,5 @@
 import { Command, flags } from '@contentstack/cli-command';
-import { logger, cliux, configHandler, printFlagDeprecation } from '@contentstack/cli-utilities';
+import { logger, cliux, printFlagDeprecation, authHandler as oauthHandler } from '@contentstack/cli-utilities';
 
 import { authHandler } from '../../utils';
 
@@ -56,7 +56,7 @@ export default class LogoutCommand extends Command {
       cliux.print(error.message, { color: 'red' });
     } finally {
       if (confirm === true) {
-        await authHandler.setConfigData('logout');
+        await oauthHandler.setConfigData('logout');
       }
     }
   }
