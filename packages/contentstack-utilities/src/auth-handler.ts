@@ -327,10 +327,15 @@ class AuthHandler {
           //     return this.getUserDetails(data);
           //   })
           .then(({ data }) => {
-            if (data['access_token'] && data['refresh_token']) {
-              return this.setConfigData('refreshToken', data);
+            if (data.error) {
+              const errorMessage = data.message ? (data.message[0] ? data.message[0] : data.message) : data.error;
+              reject(errorMessage);
             } else {
-              reject('Invalid request');
+              if (data['access_token'] && data['refresh_token']) {
+                return this.setConfigData('refreshToken', data);
+              } else {
+                reject('Invalid request');
+              }
             }
           })
           .then(resolve)

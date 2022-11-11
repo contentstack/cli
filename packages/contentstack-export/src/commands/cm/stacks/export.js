@@ -33,11 +33,8 @@ class ExportCommand extends Command {
 
     if (alias) {
       let managementTokens = this.getToken(alias);
-
-      if (alias) {
-        const listOfTokens = configHandler.get('tokens');
-        config.management_token_data = listOfTokens[alias];
-      }
+      const listOfTokens = configHandler.get('tokens');
+      config.management_token_data = listOfTokens[alias];
 
       if (managementTokens) {
         if (extConfig) {
