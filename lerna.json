@@ -5,6 +5,6 @@
   "pack": {
     "ignore": "contentstack-management"
   },
-  "npmClient": "npm", 
+  "npmClient": "npm",
   "version": "independent"
 }
