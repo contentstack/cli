@@ -8,14 +8,16 @@ The Contentstack CLI’s “Migration” plugin allows developers to automate th
 [![License](https://img.shields.io/npm/l/@contentstack/cli-migration.svg)](https://github.com/ninadhatkar/cli-migration/blob/master/package.json)
 
 <!-- toc -->
-* [@contentstack/cli-migration](#contentstackcli-migration)
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [@contentstack/cli-migration](#contentstackcli-migration)
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @contentstack/cli-migration
 $ csdx COMMAND
@@ -27,12 +29,14 @@ USAGE
   $ csdx COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-* [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
+
+- [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
 
 ## `csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`
 
@@ -40,7 +44,7 @@ Contentstack migration script.
 
 ```
 USAGE
-  $ csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] 
+  $ csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>]
   [--config <value>] [--multiple]
 
 OPTIONS
@@ -63,15 +67,14 @@ EXAMPLES
   $ csdx cm:migration --file-path <migration/script/file/path> -k <api-key> --branch <target branch name>
   $ csdx cm:migration --config <key1>:<value1> <key2>:<value2> ... --file-path <migration/script/file/path>
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
 
-_See code: [src/commands/cm/stacks/migration.js](https://github.com/contentstack/cli-migration/blob/main/packages/contentstack-migration/src/commands/cm/stacks/migration.js)_
 <!-- commandsstop -->
 
 ### Points to remember
 
-- Currently, the Migration plugin does not support Group fields migration. You can pass a custom schema to the createField method to migrate Group fields. [here](packages/contentstack-migration/examples/)
-- Currently, the Migration plugin does not support Global fields migration. You can migrate Global fields by creating an SDK instance and adding it to content types using the createField method.[here](packages/contentstack-migration/examples/)
-- Currently, the Migration plugin does not support migration of Entries. You can migrate entries by creating an SDK instance to create/ update/ delete entries for your content type. [here](packages/contentstack-migration/examples/)
+- Currently, you can pass a custom schema to the createField method to migrate group fields.
+- You can migrate global fields by creating an SDK instance and adding it to content types using the createField method.
+- Currently, you can migrate entries by creating an SDK instance to create/update/delete entries for your content type.
