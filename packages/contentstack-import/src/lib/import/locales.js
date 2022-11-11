@@ -15,7 +15,7 @@ let helper = require('../util/fs');
 let { addlogs } = require('../util/log');
 let stack = require('../util/contentstack-management-sdk');
 let config = require('../../config/default');
-let {isEmpty, cloneDeep} = require('lodash');
+let { isEmpty, cloneDeep } = require('lodash');
 let reqConcurrency = config.concurrency;
 let langConfig = config.modules.locales;
 let langFolderPath;
@@ -23,9 +23,11 @@ let langMapperPath;
 let langUidMapperPath;
 let langSuccessPath;
 let langFailsPath;
-let client;
 
 let masterLanguage = config.master_locale;
+
+const { managementClient } = require('@contentstack/cli-utilities');
+let managementAPIClient;
 
 function importLanguages() {
   this.fails = [];
@@ -34,11 +36,11 @@ function importLanguages() {
 }
 
 importLanguages.prototype = {
-  start: function (credentialConfig) {
-    addlogs(config, 'Migrating languages', 'success');
+  start: async function (credentialConfig) {
+    addlogs(credentialConfig, 'Migrating languages', 'success');
     let self = this;
     config = credentialConfig;
-    client = stack.Client(config);
+    managementAPIClient = await managementClient(config);
     langFolderPath = path.resolve(config.data, langConfig.dirName);
     langMapperPath = path.resolve(config.data, 'mapper', 'languages');
     langUidMapperPath = path.resolve(config.data, 'mapper', 'languages', 'uid-mapper.json');
@@ -46,7 +48,7 @@ importLanguages.prototype = {
     langFailsPath = path.resolve(config.data, 'mapper', 'languages', 'fails.json');
     mkdirp.sync(langMapperPath);
     self.languages = helper.readFile(path.resolve(langFolderPath, langConfig.fileName));
-    
+
     if (fs.existsSync(langUidMapperPath)) {
       self.langUidMapper = helper.readFile(langUidMapperPath);
       self.langUidMapper = self.langUidMapper || {};
@@ -60,7 +62,7 @@ importLanguages.prototype = {
       let langUids = Object.keys(self.languages);
       return Promise.map(
         langUids,
-        function (langUid) {
+        (langUid) => {
           let lang = self.languages[langUid];
           if (!self.langUidMapper.hasOwnProperty(langUid) && lang.code !== masterLanguage) {
             let requestOption = {
@@ -70,7 +72,7 @@ importLanguages.prototype = {
               },
             };
 
-            return client
+            return managementAPIClient
               .stack({ api_key: config.target_stack, management_token: config.management_token })
               .locale()
               .create(requestOption)
@@ -120,6 +122,7 @@ importLanguages.prototype = {
         });
     });
   },
+
   update_locales: function (langUids) {
     let self = this;
     return new Promise(function (resolve, reject) {
@@ -131,7 +134,7 @@ importLanguages.prototype = {
           requireKeys.forEach((e) => {
             lang[e] = _lang[e];
           });
-          let langobj = client
+          let langobj = managementAPIClient
             .stack({ api_key: config.target_stack, management_token: config.management_token })
             .locale(lang.code);
           Object.assign(langobj, cloneDeep(lang));
