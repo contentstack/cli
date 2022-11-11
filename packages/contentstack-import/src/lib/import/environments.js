@@ -4,53 +4,51 @@
  * MIT Licensed
  */
 
-const mkdirp = require('mkdirp');
 const fs = require('fs');
 const path = require('path');
+const chalk = require('chalk');
+const mkdirp = require('mkdirp');
 const Promise = require('bluebird');
 const { isEmpty } = require('lodash');
 
 const helper = require('../util/fs');
 let { addlogs } = require('../util/log');
-const chalk = require('chalk');
-let stack = require('../util/contentstack-management-sdk');
+const { formatError } = require('../util');
+const config = require('../../config/default');
+const stack = require('../util/contentstack-management-sdk');
 
-let config = require('../../config/default');
-let environmentConfig = config.modules.environments;
-let environmentsFolderPath;
-let envMapperPath;
-let envUidMapperPath;
-let envSuccessPath;
-let envFailsPath;
-let client;
+module.exports = class ImportEnvironments {
+  fails = [];
+  success = [];
+  envUidMapper = {};
+  fetchConcurrency = config.modules.environments.concurrency || config.fetchConcurrency || 2;
 
-function importEnvironments() {
-  this.fails = [];
-  this.success = [];
-  this.envUidMapper = {};
-}
+  constructor(credentialConfig) {
+    this.config = credentialConfig;
+  }
 
-importEnvironments.prototype = {
-  start: function (credentialConfig) {
-    let self = this;
-    config = credentialConfig;
-    addlogs(config, 'Migrating environment', 'success');
-    environmentsFolderPath = path.resolve(config.data, environmentConfig.dirName);
-    envMapperPath = path.resolve(config.data, 'mapper', 'environments');
-    envUidMapperPath = path.resolve(config.data, 'mapper', 'environments', 'uid-mapping.json');
-    envSuccessPath = path.resolve(config.data, 'environments', 'success.json');
-    envFailsPath = path.resolve(config.data, 'environments', 'fails.json');
-    self.environments = helper.readFile(path.resolve(environmentsFolderPath, environmentConfig.fileName));
-    client = stack.Client(config);
+  start() {
+    addlogs(this.config, 'Migrating environment', 'success');
+
+    const self = this;
+    const client = stack.Client(this.config);
+    let environmentConfig = config.modules.environments;
+    let environmentsFolderPath = path.resolve(this.config.data, environmentConfig.dirName);
+    let envMapperPath = path.resolve(this.config.data, 'mapper', 'environments');
+    let envUidMapperPath = path.resolve(this.config.data, 'mapper', 'environments', 'uid-mapping.json');
+    let envSuccessPath = path.resolve(this.config.data, 'environments', 'success.json');
+    let envFailsPath = path.resolve(this.config.data, 'environments', 'fails.json');
+    self.environments = helper.readFileSync(path.resolve(environmentsFolderPath, environmentConfig.fileName));
+
     if (fs.existsSync(envUidMapperPath)) {
-      self.envUidMapper = helper.readFile(envUidMapperPath);
+      self.envUidMapper = helper.readFileSync(envUidMapperPath);
       self.envUidMapper = self.envUidMapper || {};
     }
 
     mkdirp.sync(envMapperPath);
     return new Promise(function (resolve, reject) {
       if (self.environments === undefined || isEmpty(self.environments)) {
-        addlogs(config, chalk.yellow('No Environment Found'), 'success');
+        addlogs(self.config, chalk.yellow('No Environment Found'), 'success');
         return resolve({ empty: true });
       }
 
@@ -60,9 +58,7 @@ importEnvironments.prototype = {
         function (envUid) {
           let env = self.environments[envUid];
           if (!self.envUidMapper.hasOwnProperty(envUid)) {
-            let requestOption = {
-              environment: env,
-            };
+            let requestOption = { environment: env };
 
             return client
               .stack({ api_key: config.target_stack, management_token: config.management_token })
@@ -71,12 +67,13 @@ importEnvironments.prototype = {
               .then((environment) => {
                 self.success.push(environment.items);
                 self.envUidMapper[envUid] = environment.uid;
-                helper.writeFile(envUidMapperPath, self.envUidMapper);
+                helper.writeFileSync(envUidMapperPath, self.envUidMapper);
               })
               .catch(function (err) {
                 let error = JSON.parse(err.message);
+
                 if (error.errors.name) {
-                  addlogs(config, chalk.white("Environment: '" + env.name + "' already exists"), 'error');
+                  addlogs(self.config, chalk.white("Environment: '" + env.name + "' already exists"), 'error');
                 } else {
                   addlogs(
                     config,
@@ -95,26 +92,19 @@ importEnvironments.prototype = {
               'success',
             );
           }
-          // import 2 environments at a time
         },
-        {
-          concurrency: 2,
-        },
+        { concurrency: self.fetchConcurrency },
       )
         .then(function () {
-          // environments have imported successfully
-          helper.writeFile(envSuccessPath, self.success);
-          addlogs(config, chalk.green('Environments have been imported successfully!'), 'success');
-          return resolve();
+          helper.writeFileSync(envSuccessPath, self.success);
+          addlogs(self.config, chalk.green('Environments have been imported successfully!'), 'success');
+          resolve();
         })
         .catch(function (error) {
-          // error while importing environments
-          helper.writeFile(envFailsPath, self.fails);
-          addlogs(config, chalk.red('Environment import failed'), 'error');
-          return reject(error);
+          helper.writeFileSync(envFailsPath, self.fails);
+          addlogs(self.config, chalk.red(`Failed to import environment ${formatError(error)}`), 'error');
+          reject(error);
         });
     });
-  },
+  }
 };
-
-module.exports = new importEnvironments();
