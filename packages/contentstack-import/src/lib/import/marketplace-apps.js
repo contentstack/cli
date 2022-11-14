@@ -166,7 +166,7 @@ module.exports = class ImportMarketplaceApps {
         );
 
         if (continueProcess) {
-          return resolve();
+          return Promise.resolve();
         } else {
           process.exit();
         }
