@@ -398,7 +398,7 @@ function getOrgUsers(managementAPIClient, orgUid, ecsv) {
         }
         try {
           const users = await getUsers(organization, { skip: 0, page: 1, limit: 100 });
-          return resolve(users);
+          return resolve({ items: users });
         } catch (error) {
           return reject(error);
         }
