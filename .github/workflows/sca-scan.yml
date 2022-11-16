@@ -7,6 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+      - run: |
+          npx lerna run clean
+          npx lerna clean --y
+          npx lerna bootstrap --force-local --concurrency 1
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
