@@ -166,7 +166,7 @@ module.exports = class ImportMarketplaceApps {
         );
 
         if (continueProcess) {
-          return resolve();
+          return Promise.resolve();
         } else {
           process.exit();
         }
@@ -197,12 +197,20 @@ module.exports = class ImportMarketplaceApps {
     });
   };
 
+  getAppName = (name, appSuffix = 1) => {
+    name += `-${appSuffix}`;
+
+    if (name.length > 20) name = name.slice(18);
+
+    return name;
+  };
+
   /**
    * @method createAllPrivateAppsInDeveloperHub
    * @param {Object} options
    * @returns {Promise<void>}
    */
-  createAllPrivateAppsInDeveloperHub = async (options, uidCleaned = false) => {
+  createAllPrivateAppsInDeveloperHub = async (options, uidCleaned = false, appSuffix = 1) => {
     const self = this;
     const { app, httpClient } = options;
 
@@ -222,7 +230,7 @@ module.exports = class ImportMarketplaceApps {
 
             if (_.toLower(error) === 'conflict') {
               const appName = self.config.forceMarketplaceAppsImport
-                ? self.getAppName(app.manifest.name)
+                ? self.getAppName(app.manifest.name, appSuffix)
                 : await cliux.inquire({
                     type: 'input',
                     name: 'name',
@@ -232,7 +240,10 @@ module.exports = class ImportMarketplaceApps {
                   });
               app.manifest.name = appName;
 
-              await self.createAllPrivateAppsInDeveloperHub({ app, httpClient }, true).then(resolve).catch(resolve);
+              await self
+                .createAllPrivateAppsInDeveloperHub({ app, httpClient }, true, appSuffix + 1)
+                .then(resolve)
+                .catch(resolve);
             } else {
               if (self.config.forceMarketplaceAppsImport) return resolve();
 
