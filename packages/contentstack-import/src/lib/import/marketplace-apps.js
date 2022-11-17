@@ -244,7 +244,7 @@ module.exports = class ImportMarketplaceApps {
         );
       }
 
-      if (self.config.forceMarketplaceAppsImport && app.manifest.name > 20) {
+      if (app.manifest.name > 20) {
         app.manifest.name = app.manifest.name.slice(0, 20);
       }
 
