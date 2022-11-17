@@ -217,7 +217,7 @@ module.exports = class ImportMarketplaceApps {
   };
 
   getAppName = (name, appSuffix = 1) => {
-    if (name.length >= 20) name = name.slice(0, 18);
+    if (name.length >= 19) name = name.slice(0, 18);
 
     name = `${_.first(_.split(name, '◈'))}◈${appSuffix}`;
 
