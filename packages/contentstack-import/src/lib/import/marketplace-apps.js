@@ -244,6 +244,10 @@ module.exports = class ImportMarketplaceApps {
         );
       }
 
+      if (self.config.forceMarketplaceAppsImport && app.manifest.name > 20) {
+        app.manifest.name = app.manifest.name.slice(0, 20);
+      }
+
       httpClient
         .post(`${this.developerHubBaseUrl}/apps`, app.manifest)
         .then(async ({ data: result }) => {
