@@ -154,11 +154,11 @@ class ContentTypesImport {
     addlogs(this.importConfig, contentType.uid + ' updated with references', 'success');
   }
 
-  async updateGlobalFields({ uid }) {
+  async updateGlobalFields(uid) {
     const globalField = find(this.globalFields, { uid });
     if (globalField) {
       supress(globalField.schema, this.importConfig.preserveStackVersion, this.installedExtensions);
-      let globalFieldObj = this.stackAPIClient.globalField(globalField);
+      let globalFieldObj = this.stackAPIClient.globalField(globalField.uid);
       Object.assign(globalFieldObj, cloneDeep(globalField));
       try {
         const globalFieldResponse = await globalFieldObj.update();
