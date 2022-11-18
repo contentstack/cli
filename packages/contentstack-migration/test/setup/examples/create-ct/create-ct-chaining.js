@@ -81,19 +81,15 @@ module.exports = async ({ migration, stackSDKInstance }) => {
     successMessage: 'Blog entries added successfully.',
     failedMessage: 'Failed to add Blog entries.',
     task: async (params) => {
-      try {
-        for (let index = 0; index < 4; index++) {
-          let entry = {
-            title: `Awesome Blog ${index}`,
-            url: `/awesome-blog-${index}`,
-            body: `This is ${index} blog.`,
-            author_name: `Firstname-${index} Lastname-${index}`,
-          };
-          let entryObj = await stackSDKInstance.contentType(blogUID).entry().create({ entry });
-          entries.push(entryObj);
-        }
-      } catch (error) {
-        throw error;
+      for (let index = 0; index < 4; index++) {
+        let entry = {
+          title: `Awesome Blog ${index}`,
+          url: `/awesome-blog-${index}`,
+          body: `This is ${index} blog.`,
+          author_name: `Firstname-${index} Lastname-${index}`,
+        };
+        let entryObj = await stackSDKInstance.contentType(blogUID).entry().create({ entry });
+        entries.push(entryObj);
       }
     },
     paramsToBind: entries,
@@ -129,26 +125,22 @@ module.exports = async ({ migration, stackSDKInstance }) => {
     title: 'Create authors derived from blog author_name',
     successMessage: 'Authors created successfully.',
     task: async (params) => {
-      try {
-        for (let index = 0; index < entries.length; index++) {
-          let blogEntry = entries[index];
-          if (blogEntry.author_name) {
-            let author_name = blogEntry.author_name.split(' ');
-            let entry = {
-              title: blogEntry.author_name,
-              url: `/${blogEntry.author_name.replace(' ', '-')}`,
-              firstname: author_name[0],
-              lastname: author_name[1],
-            };
-            const entryI = stackSDKInstance.contentType(authorUID).entry();
-            let entryObj = await entryI.create({ entry });
-            blogEntry.author = [];
-            blogEntry.author.push({ uid: entryObj.uid, _content_type_uid: entryObj.content_type_uid });
-            await blogEntry.update();
-          }
+      for (let index = 0; index < entries.length; index++) {
+        let blogEntry = entries[index];
+        if (blogEntry.author_name) {
+          let author_name = blogEntry.author_name.split(' ');
+          let entry = {
+            title: blogEntry.author_name,
+            url: `/${blogEntry.author_name.replace(' ', '-')}`,
+            firstname: author_name[0],
+            lastname: author_name[1],
+          };
+          const entryI = stackSDKInstance.contentType(authorUID).entry();
+          let entryObj = await entryI.create({ entry });
+          blogEntry.author = [];
+          blogEntry.author.push({ uid: entryObj.uid, _content_type_uid: entryObj.content_type_uid });
+          await blogEntry.update();
         }
-      } catch (error) {
-        throw error;
       }
     },
   };

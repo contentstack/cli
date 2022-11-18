@@ -113,36 +113,36 @@ class CrossPublishCommand extends Command {
     return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
   }
 
-  flagsAdapter(flags) {
-    if ('content-type' in flags) {
-      flags.contentType = flags['content-type'];
-      delete flags['content-type'];
+  flagsAdapter(_flags) {
+    if ('content-type' in _flags) {
+      _flags.contentType = _flags['content-type'];
+      delete _flags['content-type'];
     }
-    if ('locales' in flags) {
-      flags.locale = flags.locales;
-      delete flags['locales'];
+    if ('locales' in _flags) {
+      _flags.locale = _flags.locales;
+      delete _flags['locales'];
     }
-    if ('retry-failed' in flags) {
-      flags.retryFailed = flags['retry-failed'];
-      delete flags['retry-failed'];
+    if ('retry-failed' in _flags) {
+      _flags.retryFailed = _flags['retry-failed'];
+      delete _flags['retry-failed'];
     }
-    if ('bulk-publish' in flags) {
-      flags.bulkPublish = flags['bulk-publish'];
-      delete flags['bulk-publish'];
+    if ('bulk-publish' in _flags) {
+      _flags.bulkPublish = _flags['bulk-publish'];
+      delete _flags['bulk-publish'];
     }
-    if ('source-env' in flags) {
-      flags.environment = flags['source-env'];
-      delete flags['source-env'];
+    if ('source-env' in _flags) {
+      _flags.environment = _flags['source-env'];
+      delete _flags['source-env'];
     }
-    if ('environments' in flags) {
-      flags.destEnv = flags['environments'];
-      delete flags['environments'];
+    if ('environments' in _flags) {
+      _flags.destEnv = _flags['environments'];
+      delete _flags['environments'];
     }
-    if ('delivery-token' in flags) {
-      flags.deliveryToken = flags['delivery-token'];
-      delete flags['delivery-token'];
+    if ('delivery-token' in _flags) {
+      _flags.deliveryToken = _flags['delivery-token'];
+      delete _flags['delivery-token'];
     }
-    return flags;
+    return _flags;
   }
 }
 

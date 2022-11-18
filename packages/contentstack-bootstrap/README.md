@@ -15,7 +15,7 @@ $ npm install -g @contentstack/cli-cm-bootstrap
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bootstrap/1.1.0 darwin-x64 node-v16.17.0
+@contentstack/cli-cm-bootstrap/1.1.3 darwin-x64 node-v18.12.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -56,8 +56,14 @@ FLAGS
   --project-dir=<value>        Directory to setup the project. If directory name has a space then provide the path as a
                                string or escap the space using back slash eg: "../../test space" or ../../test\ space
 
-DESCRIPTION
-  Bootstrap contentstack apps
+  --app-name=app-name                App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter,
+                                     nuxt-starter, vue-starter, stencil-starter
+
+  --org=org                          Provide organization UID to create a new stack
+
+  --project-dir=project-dir          Directory to setup the project. If directory name has a space then provide the path
+                                     as a string or escap the space using back slash eg: "../../test space" or
+                                     ../../test\ space
 
 EXAMPLES
   $ csdx cm:bootstrap
@@ -71,5 +77,5 @@ EXAMPLES
   $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid" --stack-name "stack-name"
 ```
 
-_See code: [src/commands/cm/bootstrap.ts](https://github.com/contentstack/cli/blob/v1.1.0/src/commands/cm/bootstrap.ts)_
+_See code: [src/commands/cm/bootstrap.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-bootstrap/src/commands/cm/bootstrap.ts)_
 <!-- commandsstop -->

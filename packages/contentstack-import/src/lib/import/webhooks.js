@@ -9,113 +9,107 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
 const chalk = require('chalk');
-const {isEmpty} = require('lodash');
+const { isEmpty, merge } = require('lodash');
 
 const helper = require('../util/fs');
+const { formatError } = require('../util');
 const { addlogs } = require('../util/log');
-let config = require('../../config/default');
-let stack = require('../util/contentstack-management-sdk');
-let reqConcurrency = config.concurrency;
-let webhooksConfig = config.modules.webhooks;
+const config = require('../../config/default');
+const stack = require('../util/contentstack-management-sdk');
 
-let webhooksFolderPath;
-let webMapperPath;
-let webUidMapperPath;
-let webSuccessPath;
-let webFailsPath;
-let client;
+module.exports = class ImportWebhooks {
+  config;
+  fails = [];
+  success = [];
+  webUidMapper = {};
+  webhooksConfig = config.modules.webhooks;
+  reqConcurrency = config.concurrency || config.fetchConcurrency;
 
-function importWebhooks() {
-  this.fails = [];
-  this.success = [];
-  this.webUidMapper = {};
-}
+  constructor(credentialConfig) {
+    this.config = merge(config, credentialConfig);
+  }
 
-importWebhooks.prototype = {
-  start: function (credentialConfig) {
-    let self = this;
-    config = credentialConfig;
-    addlogs(config, chalk.white('Migrating webhooks'), 'success');
-    client = stack.Client(config);
-    webhooksFolderPath = path.resolve(config.data, webhooksConfig.dirName);
-    webMapperPath = path.resolve(config.data, 'mapper', 'webhooks');
-    webUidMapperPath = path.resolve(config.data, 'mapper', 'webhooks', 'uid-mapping.json');
-    webSuccessPath = path.resolve(config.data, 'mapper', 'webhooks', 'success.json');
-    webFailsPath = path.resolve(config.data, 'mapper', 'webhooks', 'fails.json');
-    self.webhooks = helper.readFile(path.resolve(webhooksFolderPath, webhooksConfig.fileName));
+  start() {
+    addlogs(this.config, chalk.white('Migrating webhooks'), 'success');
+
+    const self = this;
+    const client = stack.Client(this.config);
+
+    let webMapperPath = path.resolve(this.config.data, 'mapper', 'webhooks');
+    let webFailsPath = path.resolve(this.config.data, 'mapper', 'webhooks', 'fails.json');
+    let webSuccessPath = path.resolve(this.config.data, 'mapper', 'webhooks', 'success.json');
+    let webUidMapperPath = path.resolve(this.config.data, 'mapper', 'webhooks', 'uid-mapping.json');
+
+    let webhooksFolderPath = path.resolve(this.config.data, this.webhooksConfig.dirName);
+    this.webhooks = helper.readFileSync(path.resolve(webhooksFolderPath, this.webhooksConfig.fileName));
+
     if (fs.existsSync(webUidMapperPath)) {
-      self.webUidMapper = helper.readFile(webUidMapperPath);
+      self.webUidMapper = helper.readFileSync(webUidMapperPath);
       self.webUidMapper = self.webUidMapper || {};
     }
+
     mkdirp.sync(webMapperPath);
 
     return new Promise(function (resolve, reject) {
       if (self.webhooks == undefined || isEmpty(self.webhooks)) {
-        addlogs(config, chalk.white('No Webhooks Found'), 'success');
+        addlogs(self.config, chalk.white('No Webhooks Found'), 'success');
         return resolve({ empty: true });
       }
+
       let webUids = Object.keys(self.webhooks);
       return Promise.map(
         webUids,
         function (webUid) {
           let web = self.webhooks[webUid];
-          if (config.importWebhookStatus !== 'current' || config.importWebhookStatus === 'disable') {
+          if (self.config.importWebhookStatus !== 'current' || self.config.importWebhookStatus === 'disable') {
             web.disabled = true;
           }
 
           if (!self.webUidMapper.hasOwnProperty(webUid)) {
-            let requestOption = {
-              json: {
-                webhook: web,
-              },
-            };
+            let requestOption = { json: { webhook: web } };
 
             return client
-              .stack({ api_key: config.target_stack, management_token: config.management_token })
+              .stack({ api_key: self.config.target_stack, management_token: self.config.management_token })
               .webhook()
               .create(requestOption.json)
               .then(function (response) {
                 self.success.push(response);
                 self.webUidMapper[webUid] = response.uid;
-                helper.writeFile(webUidMapperPath, self.webUidMapper);
+                helper.writeFileSync(webUidMapperPath, self.webUidMapper);
               })
               .catch(function (err) {
                 let error = JSON.parse(err.message);
                 self.fails.push(web);
                 addlogs(
-                  config,
-                  chalk.red("Webhooks: '" + web.name + "' failed to be import\n" + JSON.stringify(error)),
+                  self.config,
+                  chalk.red("Webhooks: '" + web.name + "' failed to be import\n" + formatError(error)),
                   'error',
                 );
               });
           } else {
             // the webhooks has already been created
             addlogs(
-              config,
+              self.config,
               chalk.white("The Webhooks: '" + web.name + "' already exists. Skipping it to avoid duplicates!"),
               'success',
             );
           }
           // import 2 webhooks at a time
         },
-        {
-          concurrency: reqConcurrency,
-        },
+        { concurrency: self.reqConcurrency },
       )
         .then(function () {
           // webhooks have imported successfully
-          helper.writeFile(webSuccessPath, self.success);
-          addlogs(config, chalk.green('Webhooks have been imported successfully!'), 'success');
+          helper.writeFileSync(webSuccessPath, self.success);
+          addlogs(self.config, chalk.green('Webhooks have been imported successfully!'), 'success');
           return resolve();
         })
         .catch(function (error) {
           // error while importing environments
-          helper.writeFile(webFailsPath, self.fails);
-          addlogs(config, chalk.red('Webhooks import failed'), 'error');
+          helper.writeFileSync(webFailsPath, self.fails);
+          addlogs(self.config, chalk.red('Webhooks import failed'), 'error');
           return reject(error);
         });
     });
-  },
+  }
 };
-
-module.exports = new importWebhooks();
