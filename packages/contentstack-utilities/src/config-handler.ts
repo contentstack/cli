@@ -119,9 +119,9 @@ class Config {
         // NOTE reading old code base encrypted file if exist
         try {
           const config = this.fallbackInit()
-          const configData = this.getConfigDataAndUnlinkConfigFile(config)
-          this.getEncryptedConfig(configData, true)
-        } catch (error) {
+          const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config)
+          this.getEncryptedConfig(oldConfigData, true)
+        } catch (_error) {
           // console.trace(error.message)
         }
       }
@@ -130,8 +130,8 @@ class Config {
     try {
       if (skip === false) {
         const config = new Conf({ configName: CONFIG_NAME })
-        const configData = this.getConfigDataAndUnlinkConfigFile(config)
-        this.getEncryptedConfig(configData, true)
+        const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config)
+        this.getEncryptedConfig(oldConfigData, true)
       } else {
         getEncryptedDataElseFallBack()
       }
@@ -157,16 +157,16 @@ class Config {
       try {
         const encryptionKey: any = this.getObfuscationKey()
         let config = new Conf({ configName: CONFIG_NAME, encryptionKey })
-        const configData = this.getConfigDataAndUnlinkConfigFile(config)
-        this.getDecryptedConfig(configData) // NOTE NOTE reinitialize the config with old data and new decrypted file
-      } catch (error) {
+        const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config)
+        this.getDecryptedConfig(oldConfigData) // NOTE NOTE reinitialize the config with old data and new decrypted file
+      } catch (_error) {
         // console.trace(error.message)
 
         try {
           const config = this.fallbackInit()
-          const configData = this.getConfigDataAndUnlinkConfigFile(config)
-          this.getDecryptedConfig(configData) // NOTE reinitialize the config with old data and new decrypted file
-        } catch (error) {
+          const _configData = this.getConfigDataAndUnlinkConfigFile(config)
+          this.getDecryptedConfig(_configData) // NOTE reinitialize the config with old data and new decrypted file
+        } catch (__error) {
           // console.trace(error.message)
         }
       }

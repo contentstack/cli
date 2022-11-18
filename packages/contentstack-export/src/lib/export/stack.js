@@ -4,19 +4,16 @@
  * MIT Licensed
  */
 
-var chalk = require('chalk');
-var mkdirp = require('mkdirp');
-var path = require('path');
+let path = require('path');
+let mkdirp = require('mkdirp');
 
-var app = require('../../app');
-var helper = require('../util/helper');
-var { addlogs } = require('../util/log');
+let helper = require('../util/helper');
+let { addlogs } = require('../util/log');
+let config = require('../../config/default');
 const stack = require('../util/contentstack-management-sdk');
 
-let config = require('../../config/default');
-
-var stackConfig = config.modules.stack;
 let client;
+let stackConfig = config.modules.stack;
 
 function ExportStack() {
   this.requestOption = {
@@ -29,7 +26,7 @@ function ExportStack() {
 ExportStack.prototype.start = async function (credentialConfig) {
   config = credentialConfig;
   client = stack.Client(config);
-  const self = this
+  const self = this;
 
   // NOTE get org uid
   if (config.auth_token) {
@@ -37,11 +34,12 @@ ExportStack.prototype.start = async function (credentialConfig) {
       .stack({ api_key: config.source_stack, authtoken: config.auth_token })
       .fetch()
       .catch((error) => {
-        console.log(error)
-      })
+        console.log(error);
+      });
 
     if (stack && stack.org_uid) {
-      config.org_uid = stack.org_uid
+      config.org_uid = stack.org_uid;
+      config.sourceStackName = stack.name;
     }
   }
 
@@ -50,8 +48,8 @@ ExportStack.prototype.start = async function (credentialConfig) {
       limit: 100,
       skip: 0,
       include_count: true,
-    }
-    return self.getLocales(apiDetails)
+    };
+    return self.getLocales(apiDetails);
   } else if (config.preserveStackVersion) {
     addlogs(config, 'Exporting stack details', 'success');
     let stackFolderPath = path.resolve(config.data, stackConfig.dirName);
@@ -74,12 +72,12 @@ ExportStack.prototype.start = async function (credentialConfig) {
 };
 
 ExportStack.prototype.getLocales = function (apiDetails) {
-  let self = this
+  let self = this;
   return new Promise((resolve, reject) => {
     const result = client
       .stack({ api_key: config.source_stack, management_token: config.management_token })
       .locale()
-      .query(apiDetails)
+      .query(apiDetails);
 
     result
       .find()
@@ -90,11 +88,11 @@ ExportStack.prototype.getLocales = function (apiDetails) {
           }
         });
         apiDetails.skip += apiDetails.limit;
-        if (masterLocalObj) { return resolve(masterLocalObj); }
-        else if (apiDetails.skip <= response.count) {
-          return resolve(self.getLocales(apiDetails))
-        }
-        else {
+        if (masterLocalObj) {
+          return resolve(masterLocalObj);
+        } else if (apiDetails.skip <= response.count) {
+          return resolve(self.getLocales(apiDetails));
+        } else {
           return reject('Master locale not found');
         }
       })
@@ -102,6 +100,6 @@ ExportStack.prototype.getLocales = function (apiDetails) {
         return reject(error);
       });
   });
-}
+};
 
-module.exports = new ExportStack();
+module.exports = ExportStack;
