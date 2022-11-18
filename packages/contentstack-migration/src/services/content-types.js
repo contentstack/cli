@@ -301,15 +301,12 @@ class ContentTypeService {
     // TODO: Need a better way to handle this
     missingField = uids.includes(fieldToMove) ? null : fieldToMove;
 
-    // against && (missingField = !uids.includes(against) ? against : null);
     if (!missingField && against) {
       missingField = uids.includes(against) ? null : against;
     }
 
     // Handling both the scenarios
-    if (found === 0) {
-      isValid = false;
-    } else if (against && found === 1) {
+    if ((found === 0) || (against && (found === 1))) {
       isValid = false;
     }
 
