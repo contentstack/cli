@@ -1,13 +1,13 @@
 @contentstack/cli-cm-export-to-csv
 =============
 
-The cm:export-to-csv command allows you to export the following data into a CSV file: 
+The cm:export-to-csv command allows you to export the following data into a CSV file:
 * Multiple stack’s content and structure (schema)
 * [Organization users’ details](https://www.contentstack.com/docs/owners-and-admins/organization-users/)
- 
-To be able to export the content of a stack, you need to have access to it. Likewise, to export an organization’s user data, you need to be the  “[owner](https://www.contentstack.com/docs/owners-and-admins/organization-roles/#organization-owner)” or an “[admin](https://www.contentstack.com/docs/owners-and-admins/organization-roles/#organization-admin)” user of that organization. 
 
-Refer to the [Export Content to .CSV](https://www.contentstack.com/docs/developers/cli/export-content-to-csv-file/) file guide to learn more. 
+To be able to export the content of a stack, you need to have access to it. Likewise, to export an organization’s user data, you need to be the  “[owner](https://www.contentstack.com/docs/owners-and-admins/organization-roles/#organization-owner)” or an “[admin](https://www.contentstack.com/docs/owners-and-admins/organization-roles/#organization-admin)” user of that organization.
+
+Refer to the [Export Content to .CSV](https://www.contentstack.com/docs/developers/cli/export-content-to-csv-file/) file guide to learn more.
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
@@ -37,4 +37,4 @@ USAGE
   $ csdx cm:export-to-csv
 ```
 
-_See code: [src/commands/cm/export-to-csv.js](https://github.com/contentstack/cli/blob/v0.1.1-beta.1/packages/contentstack-export-to-csv/src/commands/cm/export-to-csv.js)_
+_See code: [src/commands/cm/export-to-csv.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-export-to-csv/src/commands/cm/export-to-csv.js)_

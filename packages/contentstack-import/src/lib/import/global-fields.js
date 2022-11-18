@@ -4,62 +4,52 @@
  * MIT Licensed
  */
 
-let mkdirp = require('mkdirp');
 let fs = require('fs');
 let path = require('path');
-let Promise = require('bluebird');
 let chalk = require('chalk');
+let mkdirp = require('mkdirp');
+let Promise = require('bluebird');
 const { isEmpty } = require('lodash');
 
 let helper = require('../util/fs');
 let { addlogs } = require('../util/log');
+const { formatError } = require('../util');
+let config = require('../../config/default');
+const stack = require('../util/contentstack-management-sdk');
 let extension_supress = require('../util/extensionsUidReplace');
 let removeReferenceFields = require('../util/removeReferenceFields');
-const stack = require('../util/contentstack-management-sdk');
 const { getInstalledExtensions } = require('../util/marketplace-app-helper');
-
-let config = require('../../config/default');
-let reqConcurrency = config.concurrency;
-let globalfieldsConfig = config.modules.globalfields;
-let globalfieldsFolderPath;
-let globalfieldsMapperPath;
-let globalfieldsUidMapperPath;
-let globalfieldsSuccessPath;
-let globalfieldsFailsPath;
-let client;
-let globalFieldsPending;
 
 global._globalField_pending = [];
 
-function importGlobalFields() {
-  this.fails = [];
-  this.success = [];
-  this.snipUidMapper = {};
-  this.requestOptions = {
-    uri: config.host + config.apis.globalfields,
-    headers: config.headers,
-    method: 'POST',
-  };
-  this.installedExtensions = [];
-}
+module.exports = class ImportGlobalFields {
+  fails = [];
+  success = [];
+  snipUidMapper = {};
+  installedExtensions = [];
+  reqConcurrency = config.concurrency || config.fetchConcurrency || 1;
 
-importGlobalFields.prototype = {
-  start: async function (credential) {
-    addlogs(config, chalk.white('Migrating global-fields'), 'success');
+  constructor(credential) {
+    this.config = credential;
+  }
+
+  async start() {
+    addlogs(this.config, chalk.white('Migrating global-fields'), 'success');
+
     let self = this;
-    config = credential;
-    globalfieldsFolderPath = path.resolve(config.data, globalfieldsConfig.dirName);
-    globalfieldsMapperPath = path.resolve(config.data, 'mapper', 'global_fields');
-    globalfieldsUidMapperPath = path.resolve(config.data, 'mapper', 'global_fields', 'uid-mapping.json');
-    globalfieldsSuccessPath = path.resolve(config.data, 'mapper', 'global_fields', 'success.json');
-    globalFieldsPending = path.resolve(config.data, 'mapper', 'global_fields', 'pending_global_fields.js');
-    globalfieldsFailsPath = path.resolve(config.data, 'mapper', 'global_fields', 'fails.json');
-    self.globalfields = helper.readFile(path.resolve(globalfieldsFolderPath, globalfieldsConfig.fileName));
-    const appMapperFolderPath = path.join(config.data, 'mapper', 'marketplace_apps');
+    let globalfieldsConfig = config.modules.globalfields;
+    let globalfieldsFolderPath = path.resolve(this.config.data, globalfieldsConfig.dirName);
+    let appMapperFolderPath = path.join(this.config.data, 'mapper', 'marketplace_apps');
+    let globalfieldsMapperPath = path.resolve(this.config.data, 'mapper', 'global_fields');
+    let globalfieldsUidMapperPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'uid-mapping.json');
+    let globalfieldsSuccessPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'success.json');
+    let globalFieldsPending = path.resolve(this.config.data, 'mapper', 'global_fields', 'pending_global_fields.js');
+    let globalfieldsFailsPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'fails.json');
+    self.globalfields = helper.readFileSync(path.resolve(globalfieldsFolderPath, globalfieldsConfig.fileName));
 
     if (fs.existsSync(globalfieldsUidMapperPath)) {
-      self.snipUidMapper = helper.readFile(globalfieldsUidMapperPath);
-      self.snipUidMapper = this.snipUidMapper || {};
+      self.snipUidMapper = helper.readFileSync(globalfieldsUidMapperPath);
+      self.snipUidMapper = self.snipUidMapper || {};
     }
 
     if (!fs.existsSync(globalfieldsMapperPath)) {
@@ -67,29 +57,27 @@ importGlobalFields.prototype = {
     }
 
     if (fs.existsSync(path.join(appMapperFolderPath, 'marketplace-apps.json'))) {
-      self.installedExtensions = helper.readFile(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
+      self.installedExtensions = helper.readFileSync(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
     }
 
     if (isEmpty(self.installedExtensions)) {
-      self.installedExtensions = await getInstalledExtensions(config);
+      self.installedExtensions = await getInstalledExtensions(self.config);
     }
 
-    client = stack.Client(config);
+    const client = stack.Client(self.config);
     return new Promise(function (resolve, reject) {
       if (self.globalfields === undefined || isEmpty(self.globalfields)) {
-        addlogs(config, chalk.white('No globalfields Found'), 'success');
-        helper.writeFile(globalFieldsPending, _globalField_pending);
+        addlogs(self.config, chalk.white('No globalfields Found'), 'success');
+        helper.writeFileSync(globalFieldsPending, _globalField_pending);
         return resolve({ empty: true });
       }
       let snipUids = Object.keys(self.globalfields);
       return Promise.map(
         snipUids,
         function (snipUid) {
-          let flag = {
-            supressed: false,
-          };
+          let flag = { supressed: false };
           let snip = self.globalfields[snipUid];
-          extension_supress(snip.schema, config.preserveStackVersion, self.installedExtensions);
+          extension_supress(snip.schema, self.config.preserveStackVersion, self.installedExtensions);
           removeReferenceFields(snip.schema, flag);
 
           if (flag.supressed) {
@@ -98,60 +86,60 @@ importGlobalFields.prototype = {
           }
 
           if (!self.snipUidMapper.hasOwnProperty(snipUid)) {
-            let requestOption = {
-              global_field: snip,
-            };
+            let requestOption = { global_field: snip };
             return client
-              .stack({ api_key: config.target_stack, management_token: config.management_token })
+              .stack({ api_key: self.config.target_stack, management_token: self.config.management_token })
               .globalField()
               .create(requestOption)
               .then((globalField) => {
                 self.success.push(globalField.items);
                 let global_field_uid = globalField.uid;
                 self.snipUidMapper[snipUid] = globalField.items;
-                helper.writeFile(globalfieldsUidMapperPath, self.snipUidMapper);
-                addlogs(config, chalk.green('Global field ' + global_field_uid + ' created successfully'), 'success');
+                helper.writeFileSync(globalfieldsUidMapperPath, self.snipUidMapper);
+                addlogs(
+                  self.config,
+                  chalk.green('Global field ' + global_field_uid + ' created successfully'),
+                  'success',
+                );
               })
               .catch(function (err) {
                 let error = JSON.parse(err.message);
                 if (error.errors.title) {
                   // eslint-disable-next-line no-undef
-                  addlogs(config, chalk.white(snip.uid + ' globalfield already exists'), 'error');
+                  addlogs(self.config, chalk.white(snip.uid + ' globalfield already exists'), 'error');
                 } else {
-                  addlogs(config, chalk.red('Globalfield failed to import ' + JSON.stringify(error.errors)), 'error');
+                  addlogs(self.config, chalk.red(`Globalfield failed to import ${formatError(error)}`), 'error');
                 }
+
                 self.fails.push(snip);
               });
           } else {
             // globalfields has already been created
             addlogs(
-              config,
+              self.config,
               chalk.white('The globalfields already exists. Skipping it to avoid duplicates!'),
               'success',
             );
           }
           // import 2 globalfields at a time
         },
-        {
-          concurrency: reqConcurrency,
-        },
+        { concurrency: self.reqConcurrency },
       )
         .then(function () {
           // globalfields have imported successfully
-          helper.writeFile(globalfieldsSuccessPath, self.success);
-          helper.writeFile(globalFieldsPending, _globalField_pending);
-          addlogs(config, chalk.green('globalfields have been imported successfully!'), 'success');
+          helper.writeFileSync(globalfieldsSuccessPath, self.success);
+          helper.writeFileSync(globalFieldsPending, _globalField_pending);
+          addlogs(self.config, chalk.green('globalfields have been imported successfully!'), 'success');
           return resolve();
         })
         .catch(function (err) {
           let error = JSON.parse(err);
           // error while importing globalfields
-          helper.writeFile(globalfieldsFailsPath, self.fails);
-          addlogs(config, chalk.red('globalfields import failed'), 'error');
+          addlogs(self.config, err, 'error');
+          helper.writeFileSync(globalfieldsFailsPath, self.fails);
+          addlogs(self.config, chalk.red('globalfields import failed'), 'error');
           return reject(error);
         });
     });
-  },
+  }
 };
-
-module.exports = new importGlobalFields();
