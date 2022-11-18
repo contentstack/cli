@@ -6,7 +6,7 @@ const chalk = require('chalk');
 
 let exportCmd = require('@contentstack/cli-cm-export');
 let importCmd = require('@contentstack/cli-cm-import');
-const { HttpClient, chooseLocalePrompt } = require('@contentstack/cli-utilities');
+const { HttpClient } = require('@contentstack/cli-utilities');
 let sdkInstance = require('../../lib/util/contentstack-management-sdk');
 const defaultConfig = require('@contentstack/cli-cm-export/src/config/default');
 const { CustomAbortController } = require('./abort-controller');
@@ -88,7 +88,7 @@ class CloneHandler {
         const { org = {}, msg = '', isSource = true, stackAbortController } = options || {}
 
         keyPressHandler = async function (_ch, key) {
-          if (key.name === 'backspace') {
+          if (key.name === 'left' && key.shift) {
             stackAbortController.abort();
             console.clear();
             process.stdin.removeListener('keypress', keyPressHandler);
@@ -101,8 +101,7 @@ class CloneHandler {
 
         if (stackList) {
           const ui = new inquirer.ui.BottomBar();
-          // Use chalk to prettify the text.
-          ui.updateBottomBar(chalk.cyan('\nFor undo operation press backspace\n'));
+          ui.updateBottomBar(chalk.cyan('\nPress shift & left arrow together to undo the operation\n'));
 
           const selectedStack = await inquirer.prompt(stackList);
 
@@ -132,21 +131,33 @@ class CloneHandler {
 
   handleBranchSelection = async (options) => {
     const { api_key, isSource = true, returnBranch = false } = options
-    const spinner = ora('Fetching Branches').start();
-    const headers = { api_key }
-
-    if (config.auth_token) {
-      headers['authtoken'] = config.auth_token
-    } else if (config.management_token) {
-      headers['authorization'] = config.management_token
-    }
-
     const baseUrl = defaultConfig.host.startsWith('http')
       ? defaultConfig.host
       : `https://${defaultConfig.host}/v3`;
 
     return new Promise(async (resolve, reject) => {
       try {
+        const headers = { api_key }
+
+        if (config.auth_token) {
+          headers['authtoken'] = config.auth_token
+        } else if (config.management_token) {
+          headers['authorization'] = config.management_token
+        }
+
+        // NOTE validate if source branch is exist
+        if (isSource && config.sourceStackBranch) {
+          await this.validateIfBranchExist(headers, true)
+          return resolve()
+        }
+
+        // NOTE Validate target branch is exist
+        if (!isSource && config.targetStackBranch) {
+          await this.validateIfBranchExist(headers, false)
+          return resolve()
+        }
+
+        const spinner = ora('Fetching Branches').start();
         const result = await new HttpClient()
           .headers(headers)
           .get(`${baseUrl}/stacks/branches`)
@@ -191,9 +202,31 @@ class CloneHandler {
     })
   }
 
+  async validateIfBranchExist(headers, isSource) {
+    const branch = isSource ? config.sourceStackBranch : config.targetStackBranch
+    const spinner = ora(`Validation if ${isSource ? 'source' : 'target'} branch exist.!`).start();
+    const isBranchExist = await HttpClient.create()
+      .headers(headers)
+      .get(`https://${config.host}/v3/stacks/branches/${branch}`)
+      .then(({ data }) => data);
+
+    const completeSpinner = (msg, method = 'succeed') => {
+      spinner[method](msg)
+      spinner.stop()
+    }
+
+    if (isBranchExist && typeof isBranchExist === 'object' && typeof isBranchExist.branch === 'object') {
+      completeSpinner(`${isSource ? 'Source' : 'Target'} branch verified.!`)
+    } else {
+      completeSpinner(`${isSource ? 'Source' : 'Target'} branch not found.!`, 'fail')
+      process.exit()
+    }
+  }
+
   execute() {
     return new Promise(async (resolve, reject) => {
       let stackAbortController;
+
       try {
         if (!config.source_stack) {
           const orgMsg = 'Choose an organization where your source stack exists:';
@@ -206,15 +239,6 @@ class CloneHandler {
             const sourceStack = await cloneCommand.execute(new HandleStackCommand({ org, isSource: true, msg: stackMsg, stackAbortController }, this));
 
             if (config.source_stack) {
-              if (!(config.master_locale && config.master_locale.code)) {
-
-                const res = await chooseLocalePrompt(client.stack({ api_key: config.source_stack }), 'Choose Master Locale', master_locale)
-                master_locale = res.code
-                config.master_locale = res
-              }
-              else {
-                master_locale = config.master_locale.code
-              }
               await cloneCommand.execute(
                 new HandleBranchCommand({ api_key: config.source_stack }, this)
               );
@@ -273,9 +297,10 @@ class CloneHandler {
             await cloneCommand.execute(new HandleBranchCommand({ isSource: false, api_key: config.target_stack }, this));
           }
         } else {
-          const destinationOrg = await this.handleOrgSelection({ isSource: false, msg: 'Choose an organization where you want to create a stack: ' });
+          const orgMsg = 'Choose an organization where you want to create a stack: ';
+          const destinationOrg = await cloneCommand.execute(new HandleOrgCommand({ msg: orgMsg }, this));
           const orgUid = orgUidList[destinationOrg.Organization];
-          await cloneCommand.execute(new CreateNewStackCommand(orgUid, this));
+          await cloneCommand.execute(new CreateNewStackCommand({ orgUid, stackAbortController }, this));
         }
         await cloneCommand.execute(new CloneTypeSelectionCommand(null, this));
         return resolve();
@@ -363,30 +388,63 @@ class CloneHandler {
     });
   };
 
-  async createNewStack(orgUid) {
+  async createNewStack(options) {
+    let keyPressHandler;
     return new Promise(async (resolve, reject) => {
-      let inputvalue;
+      try {
+        const { orgUid, stackAbortController } = options;
+        let inputvalue;
+        let uiPromise;
 
-      if (!config.stackName) {
-        inputvalue = await inquirer.prompt(stackName);
-      } else {
-        inputvalue = { stack: config.stackName };
+        keyPressHandler = async function (_ch, key) {
+          if (key.name === 'left' && key.shift) {
+            stackAbortController.abort();
+            // We need to close the inquirer promise correctly, otherwise the unclosed question/answer text is displayed in next line.
+            if (uiPromise) {
+              uiPromise.ui.close();
+            }
+            console.clear();
+            process.stdin.removeListener('keypress', keyPressHandler);
+            await cloneCommand.undo();
+          }
+        };
+        process.stdin.addListener('keypress', keyPressHandler);
+
+        const ui = new inquirer.ui.BottomBar();
+        ui.updateBottomBar(chalk.cyan('\nPress shift & left arrow together to undo the operation\n'));
+
+        if (!config.stackName) {
+          uiPromise = inquirer.prompt(stackName);
+          inputvalue = await uiPromise;
+        } else {
+          inputvalue = { stack: config.stackName };
+        }
+
+        if (stackAbortController.signal.aborted) {
+          return reject();
+        }
+
+        let stack = { name: inputvalue.stack, master_locale: master_locale };
+        const spinner = ora('Creating New stack').start();
+        let newStack = client.stack().create({ stack }, { organization_uid: orgUid });
+        newStack
+          .then((result) => {
+            spinner.succeed('New Stack created Successfully name as ' + result.name);
+            config.target_stack = result.api_key;
+            config.destinationStackName = result.name;
+            return resolve(result);
+          })
+          .catch((error) => {
+            spinner.fail();
+            return reject(error.errorMessage + ' Contact the Organization owner for Stack Creation access.');
+          });
+      } catch (error) {
+        return reject(error);
+      } finally {
+        if (keyPressHandler) {
+          process.stdin.removeListener('keypress', keyPressHandler);
+        }
       }
-
-      let stack = { name: inputvalue.stack, master_locale: master_locale };
-      const spinner = ora('Creating New stack').start();
-      let newStack = client.stack().create({ stack }, { organization_uid: orgUid });
-      newStack
-        .then((result) => {
-          spinner.succeed('New Stack created Successfully name as ' + result.name);
-          config.target_stack = result.api_key;
-          config.destinationStackName = result.name;
-          return resolve(result);
-        })
-        .catch((error) => {
-          spinner.fail();
-          return reject(error.errorMessage + ' Contact the Organization owner for Stack Creation access.');
-        });
     });
   }
 
@@ -457,6 +515,8 @@ class CloneHandler {
       if (config.importWebhookStatus) {
         cmd.push('--import-webhook-status', config.importWebhookStatus);
       }
+
+      if (config.forceMarketplaceAppsImport) cmd.push('-y')
 
       await importCmd.run(cmd);
       return resolve();

@@ -10,9 +10,11 @@ let _ = require('lodash');
 let path = require('path');
 const chalk = require('chalk');
 let util = require('./lib/util/index');
+let { formatError } = require('./lib/util');
 let login = require('./lib/util/login');
 let { addlogs } = require('./lib/util/log');
 const { HttpClient } = require('@contentstack/cli-utilities');
+const stack = require('./lib/util/contentstack-management-sdk');
 
 exports.initial = function (configData) {
   return new Promise(async function (resolve, reject) {
@@ -20,10 +22,9 @@ exports.initial = function (configData) {
     config.oldPath = config.data;
 
     if (configData.branchName) {
-      await validateIfBranchExist(configData, configData.branchName)
-        .catch(() => {
-          process.exit()
-        })
+      await validateIfBranchExist(configData, configData.branchName).catch(() => {
+        process.exit();
+      });
     }
 
     const backupAndImportData = async () => {
@@ -33,21 +34,21 @@ exports.initial = function (configData) {
           .then((basePath) => {
             config.data = basePath;
             return util.sanitizeStack(config);
-          }).then(() => {
-            let importRes
-            const types = config.modules.types
+          })
+          .then(() => {
+            let importRes;
+            const types = config.modules.types;
 
             if (config.moduleName) {
-              importRes = singleImport(config.moduleName, types, config)
+              importRes = singleImport(config.moduleName, types, config);
             } else {
-              importRes = allImport(config, types)
+              importRes = allImport(config, types);
             }
 
-            importRes
-              .then(resolve)
-              .catch(reject)
-          }).catch((e) => {
-            console.error(e);
+            importRes.then(resolve).catch(reject);
+          })
+          .catch((error) => {
+            addlogs(config, `Failed to import contents ${formatError(error)}`, 'error');
             reject(e);
             process.exit(1);
           });
@@ -55,25 +56,24 @@ exports.initial = function (configData) {
         let filename = path.basename(config.data);
         addlogs(config, chalk.red(filename + ' Folder does not Exist'), 'error');
       }
-    }
+    };
 
     if (config) {
-      if (
-        (config.email && config.password) ||
-        (config.auth_token)
-      ) {
-        login(config)
-          .then(backupAndImportData)
-          .catch(reject);
+      if ((config.email && config.password) || config.auth_token) {
+        login(config).then(backupAndImportData).catch(reject);
       } else if (config.management_token) {
-        await backupAndImportData()
+        await backupAndImportData();
       }
     }
   });
 };
 
 let singleImport = async (moduleName, types, config) => {
-  return new Promise(async (resolve, reject) => {
+  try {
+    const stackClient = stack
+      .Client(config)
+      .stack({ api_key: config.target_stack, management_token: config.management_token });
+
     if (types.indexOf(moduleName) > -1) {
       if (!config.master_locale) {
         try {
@@ -81,88 +81,75 @@ let singleImport = async (moduleName, types, config) => {
           let master_locale = { code: masterLocalResponse.code };
           config['master_locale'] = master_locale;
         } catch (error) {
-          console.log('Error to fetch the stack details' + error);
+          addlogs(config, `Failed to get master locale detail from the stack ${formatError(error)}`, 'error');
         }
       }
-      let exportedModule = require('./lib/import/' + moduleName);
-      exportedModule
-        .start(config)
-        .then(async function (data) {
-          if (moduleName === 'content-types') {
-            let ctPath = path.resolve(config.data, config.modules.content_types.dirName);
-            let fieldPath = path.join(ctPath + '/field_rules_uid.json');
-            if (fieldPath && fieldPath !== undefined) {
-              await util.field_rules_update(config, ctPath);
-            }
-          }
-          if (!(data && data.empty)) {
-            addlogs(config, moduleName + ' imported successfully!', 'success');
-          }
-          addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
-          return resolve();
-        })
-        .catch(function (error) {
-          addlogs(config, 'Failed to migrate ' + moduleName, 'error');
-          addlogs(config, error, 'error');
-          addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
-          return reject(error);
-        });
+      let ImportModule = require('./lib/import/' + moduleName);
+      const importResponse = await new ImportModule(config, stackClient).start(config);
+      if (moduleName === 'content-types') {
+        let ctPath = path.resolve(config.data, config.modules.content_types.dirName);
+        let fieldPath = path.join(ctPath + '/field_rules_uid.json');
+        if (fieldPath) {
+          await util.field_rules_update(config, ctPath);
+        }
+      }
+      if (!(importResponse && importResponse.empty)) {
+        addlogs(config, moduleName + ' imported successfully!', 'success');
+      }
+      addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
+      return true;
     } else {
       addlogs(config, 'Please provide valid module name.', 'error');
-      return reject();
     }
-  });
+  } catch (error) {
+    addlogs(config, 'Failed to migrate ' + moduleName, 'error');
+    addlogs(config, formatError(error), 'error');
+    addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
+  }
 };
 
 let allImport = async (config, types) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      for (let i = 0; i < types.length; i++) {
-        let type = types[i];
-        let exportedModule = require('./lib/import/' + type);
-        if (i === 0 && !config.master_locale) {
-          let masterLocalResponse = await util.masterLocalDetails(config);
-          let master_locale = { code: masterLocalResponse.code };
-          config['master_locale'] = master_locale;
-        }
-        await exportedModule.start(config).then((_result) => {
-          return
-        }).catch(function (error) {
-          addlogs(config, 'Failed to migrate ' + type, 'error');
-          addlogs(config, error, 'error');
-          addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
-          return reject(error);
-        });
+  try {
+    const stackClient = stack
+      .Client(config)
+      .stack({ api_key: config.target_stack, management_token: config.management_token });
+    for (let i = 0; i < types.length; i++) {
+      let type = types[i];
+      if (i === 0 && !config.master_locale) {
+        let masterLocalResponse = await util.masterLocalDetails(config);
+        let master_locale = { code: masterLocalResponse.code };
+        config['master_locale'] = master_locale;
       }
-      if (config.target_stack && config.source_stack) {
-        addlogs(
-          config,
-          chalk.green(
-            'The data of the ' +
+      let ImportModule = require('./lib/import/' + type);
+      await new ImportModule(config, stackClient).start(config);
+    }
+    if (config.target_stack && config.source_stack) {
+      addlogs(
+        config,
+        chalk.green(
+          'The data of the ' +
             (config.sourceStackName || config.source_stack) +
             ' stack has been imported into ' +
             (config.destinationStackName || config.target_stack) +
             ' stack successfully!',
-          ),
-          'success',
-        );
-        addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'import'), 'success');
-      } else {
-        addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported succesfully!'), 'success');
-        addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
-      }
-      return resolve();
-    } catch (error) {
-      addlogs(
-        config,
-        chalk.red('Failed to migrate stack: ' + config.target_stack + '. Please check error logs for more info'),
-        'error',
+        ),
+        'success',
       );
-      addlogs(config, error, 'error');
-      addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
-      return reject(error);
+      addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'import'), 'success');
+    } else {
+      addlogs(config, chalk.green('Stack: ' + config.target_stack + ' has been imported succesfully!'), 'success');
+      addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
     }
-  });
+    return true;
+  } catch (error) {
+    addlogs(
+      config,
+      chalk.red('Failed to migrate stack: ' + config.target_stack + '. Please check error logs for more info'),
+      'error',
+    );
+    addlogs(config, formatError(error), 'error');
+    addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
+  }
 };
 
 function createBackup(backupDirPath, config) {
@@ -191,32 +178,29 @@ function createBackup(backupDirPath, config) {
 
 const validateIfBranchExist = async (config, branch) => {
   return new Promise(async function (resolve, reject) {
-    const headers = { api_key: config.target_stack, authtoken: config.auth_token }
-    const httpClient = new HttpClient().headers(headers)
+    const headers = { api_key: config.target_stack, authtoken: config.auth_token };
+    const httpClient = new HttpClient().headers(headers);
     const result = await httpClient
       .get(`https://${config.host}/v3/stacks/branches/${branch}`)
       .then(({ data }) => {
         if (data.error_message) {
           addlogs(config, chalk.red(data.error_message), 'error');
           addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
-          reject()
+          reject();
         }
 
-        return data
-      }).catch((err) => {
-        console.log(err)
-        addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
-        reject()
+        return data;
       })
+      .catch((err) => {
+        console.log(err);
+        addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
+        reject();
+      });
 
-    if (
-      result &&
-      typeof result === 'object' &&
-      typeof result.branch === 'object'
-    ) {
-      resolve(result.branch)
+    if (result && typeof result === 'object' && typeof result.branch === 'object') {
+      resolve(result.branch);
     } else {
-      reject({ message: 'No branch found with the name ' + branch })
+      reject({ message: 'No branch found with the name ' + branch });
     }
   });
 };
