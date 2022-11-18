@@ -17,17 +17,8 @@ It is Contentstack’s CLI plugin to perform authentication-related activities. 
 $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
-<<<<<<< HEAD
 $ csdx (--version)
-@contentstack/cli-auth/1.0.0 linux-x64 node-v16.17.0
-=======
-$ csdx (-v|--version|version)
-<<<<<<< HEAD
-@contentstack/cli-auth/1.0.1 darwin-x64 node-v16.17.0
->>>>>>> sprint21
-=======
-@contentstack/cli-auth/1.0.3 darwin-x64 node-v18.12.1
->>>>>>> ***REMOVED***
+@contentstack/cli-auth/1.0.3 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -227,9 +218,7 @@ EXAMPLES
   $ csdx auth:whoami
 ```
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-_See code: [src/commands/auth/whoami.ts](https://github.com/contentstack/cli/blob/v1.0.0/src/commands/auth/whoami.ts)_
+_See code: [src/commands/auth/whoami.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-auth/src/commands/auth/whoami.ts)_
 
 ## `csdx login`
 
@@ -333,10 +322,4 @@ ALIASES
 EXAMPLES
   $ csdx auth:whoami
 ```
-=======
-_See code: [src/commands/auth/whoami.ts](https://github.com/contentstack/cli/blob/v1.0.1/src/commands/auth/whoami.ts)_
->>>>>>> sprint21
-=======
-_See code: [src/commands/auth/whoami.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-auth/src/commands/auth/whoami.ts)_
->>>>>>> ***REMOVED***
 <!-- commandsstop -->
