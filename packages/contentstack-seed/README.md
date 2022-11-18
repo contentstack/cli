@@ -81,7 +81,7 @@ EXAMPLES
   $ csdx cm:stacks:seed --repo "account/repository" --org "your-org-uid" --stack-name "stack-name" //create a new stack in given org uid
 ```
 
-_See code: [src/commands/cm/stacks/seed.ts](https://github.com/contentstack/cli/blob/v1.1.0/src/commands/cm/stacks/seed.ts)_
+_See code: [src/commands/cm/stacks/seed.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-seed/src/commands/cm/stacks/seed.ts)_
 <!-- commandsstop -->
 
 ## Advanced Flags

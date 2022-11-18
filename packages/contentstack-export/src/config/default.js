@@ -6,7 +6,7 @@ module.exports = {
     'https://api.contentstack.io': 'https://developerhub-api.contentstack.com',
     'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
     'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
-    'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com'
+    'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com',
   },
   // use below hosts for eu region
   // host:'https://eu-api.contentstack.com/v3',
@@ -26,7 +26,7 @@ module.exports = {
       'workflows',
       'entries',
       'labels',
-      'marketplace-apps'
+      'marketplace-apps',
     ],
     locales: {
       dirName: 'locales',
@@ -36,6 +36,7 @@ module.exports = {
     customRoles: {
       dirName: 'custom-roles',
       fileName: 'custom-roles.json',
+      customRolesLocalesFileName: 'custom-roles-locales.json',
     },
     environments: {
       dirName: 'environments',
@@ -74,7 +75,7 @@ module.exports = {
       host: 'https://images.contentstack.io',
       invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by', '_metadata', 'published'],
       // no of asset version files (of a single asset) that'll be downloaded parallelly
-      downloadLimit: 5,
+      downloadLimit: 3,
       enableDownloadStatus: false,
     },
     content_types: {
@@ -116,8 +117,8 @@ module.exports = {
     },
     marketplace_apps: {
       dirName: 'marketplace_apps',
-      fileName: 'marketplace_apps.json'
-    }
+      fileName: 'marketplace_apps.json',
+    },
   },
   languagesCode: [
     'af-za',
@@ -343,5 +344,7 @@ module.exports = {
     webhooks: '/webhooks/',
     stacks: '/stacks/',
   },
-  preserveStackVersion: false
+  preserveStackVersion: false,
+  fetchConcurrency: 5,
+  writeConcurrency: 5,
 };
