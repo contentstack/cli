@@ -1,4 +1,4 @@
-import * as inquirer from 'inquirer';
+import { default as inquirer } from 'inquirer';
 import { Organization, Stack } from './contentstack/client';
 
 export interface InquireStackResponse {

@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import inquirer from 'inquirer';
-import { ux as cliux, Table } from '@oclif/core/lib/cli-ux'
+import { default as inquirer, QuestionCollection } from 'inquirer';
+import { ux as cliux, Table } from '@oclif/core/lib/cli-ux';
 
 import messageHandler from './message-handler';
 import { PrintOptions, InquirePayload, CliUXPromptOptions } from './interfaces';
@@ -16,7 +16,7 @@ class CLIInterface {
   }
 
   get uxTable(): typeof Table.table {
-    return cliux.table
+    return cliux.table;
   }
 
   init(context) {}
@@ -50,28 +50,28 @@ class CLIInterface {
   table(
     data: Record<string, unknown>[],
     columns: Table.table.Columns<Record<string, unknown>>,
-    options?: Table.table.Options
+    options?: Table.table.Options,
   ): void {
     cliux.table(data, columns, options);
   }
 
   async inquire<T>(inquirePayload: InquirePayload): Promise<T> {
     inquirePayload.message = messageHandler.parse(inquirePayload.message);
-    const result = await inquirer.prompt(inquirePayload as inquirer.QuestionCollection<T>);
+    const result = await inquirer.prompt(inquirePayload as QuestionCollection<T>);
 
     return result[inquirePayload.name] as T;
   }
 
   prompt(name: string, options?: CliUXPromptOptions): Promise<any> {
-    return cliux.prompt(name, options)
+    return cliux.prompt(name, options);
   }
 
   confirm(message?: string): Promise<boolean> {
-    return cliux.confirm(message)
+    return cliux.confirm(message);
   }
 
   progress(options?: any): any {
-    return cliux.progress(options)
+    return cliux.progress(options);
   }
 }
 
