@@ -72,6 +72,6 @@ _See code: [src/commands/cm/stacks/migration.js](https://github.com/contentstack
 
 ### Points to remember
 
-- Currently, the Migration plugin does not support Group fields migration. You can pass a custom schema to the createField method to migrate Group fields. [here](packages/contentstack-migration/examples/)
-- Currently, the Migration plugin does not support Global fields migration. You can migrate Global fields by creating an SDK instance and adding it to content types using the createField method.[here](packages/contentstack-migration/examples/)
-- Currently, the Migration plugin does not support migration of Entries. You can migrate entries by creating an SDK instance to create/ update/ delete entries for your content type. [here](packages/contentstack-migration/examples/)
+- Currently, you can pass a custom schema to the createField method to migrate group fields.
+- You can migrate global fields by creating an SDK instance and adding it to content types using the createField method.
+- Currently, you can migrate entries by creating an SDK instance to create/update/delete entries for your content type.
