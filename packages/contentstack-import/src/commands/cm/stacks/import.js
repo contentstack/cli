@@ -34,7 +34,7 @@ class ImportCommand extends Command {
         defaultConfig.data = data;
       }
 
-      defaultConfig.forceMarketplaceAppsImport = importCommandFlags.yes
+      defaultConfig.forceMarketplaceAppsImport = importCommandFlags.yes;
 
       if (alias) {
         let managementTokens = self.getToken(alias);
@@ -173,7 +173,7 @@ ImportCommand.flags = {
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
   'import-webhook-status': flags.string({
-    description: 'Webhook state',
+    description: '[optional] Webhook state',
     options: ['disable', 'current'],
     required: false,
     default: 'disable',
@@ -181,8 +181,8 @@ ImportCommand.flags = {
   yes: flags.boolean({
     char: 'y',
     required: false,
-    description: '[optional] Override marketplace prompts'
-  })
+    description: '[optional] Override marketplace prompts',
+  }),
 };
 
 ImportCommand.aliases = ['cm:import'];
