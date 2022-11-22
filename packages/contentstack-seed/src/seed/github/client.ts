@@ -1,8 +1,9 @@
-import { HttpClient } from '@contentstack/cli-utilities';
-import { Stream } from 'stream';
-import * as zlib from 'zlib';
 import * as tar from 'tar';
+import * as zlib from 'zlib';
+import { Stream } from 'stream';
 import * as mkdirp from 'mkdirp';
+import { HttpClient } from '@contentstack/cli-utilities';
+
 import GithubError from './error';
 
 export default class GitHubClient {
@@ -54,9 +55,10 @@ export default class GitHubClient {
 
   async checkIfRepoExists(repo: string) {
     try {
-      const response = await this.httpClient.send('HEAD', `${this.gitHubRepoUrl}/${repo}/contents`);
+      const response: any = await this.httpClient.send('GET', `${this.gitHubRepoUrl}/${repo}/contents`);
       return response.status === 200;
     } catch (error) {
+      console.log(error);
       // do nothing
     }
 
