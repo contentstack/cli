@@ -188,7 +188,7 @@ module.exports = class ImportMarketplaceApps {
         );
 
         if (continueProcess) {
-          return resolve();
+          return Promise.resolve();
         } else {
           process.exit();
         }
@@ -220,17 +220,54 @@ module.exports = class ImportMarketplaceApps {
   };
 
   /**
+   * @method updateNameInManifestUILocations
+   * @param {Array<Object>} locations
+   * @returns {Array<Object>}
+   */
+  updateNameInManifestUILocations = (locations, appSuffix = 1) => {
+    return _.map(locations, (location) => {
+      if (location.meta) {
+        location.meta = _.map(location.meta, (meta) => {
+          meta.name = `${_.first(_.split(meta.name, '◈'))}◈${appSuffix}`;
+
+          return meta;
+        });
+      }
+
+      return location;
+    });
+  };
+
+  getAppName = (name, appSuffix = 1) => {
+    if (name.length >= 19) name = name.slice(0, 18);
+
+    name = `${_.first(_.split(name, '◈'))}◈${appSuffix}`;
+
+    return name;
+  };
+
+  /**
    * @method createAllPrivateAppsInDeveloperHub
    * @param {Object} options
    * @returns {Promise<void>}
    */
-  createAllPrivateAppsInDeveloperHub = async (options, uidCleaned = false) => {
+  createAllPrivateAppsInDeveloperHub = async (options, uidCleaned = false, appSuffix = 1, isRecursive = false) => {
     const self = this;
     const { app, httpClient } = options;
 
     return new Promise((resolve) => {
       if (!uidCleaned && app.manifest.ui_location && !_.isEmpty(app.manifest.ui_location.locations)) {
         app.manifest.ui_location.locations = this.removeUidFromManifestUILocations(app.manifest.ui_location.locations);
+      } else if (isRecursive && app.manifest.ui_location && !_.isEmpty(app.manifest.ui_location.locations)) {
+        app.manifest.ui_location.locations = this.updateNameInManifestUILocations(
+          app.manifest.ui_location.locations,
+          appSuffix - 1 || 1,
+          isRecursive,
+        );
+      }
+
+      if (app.manifest.name > 20) {
+        app.manifest.name = app.manifest.name.slice(0, 20);
       }
 
       httpClient
@@ -244,7 +281,7 @@ module.exports = class ImportMarketplaceApps {
 
             if (_.toLower(error) === 'conflict') {
               const appName = self.config.forceStopMarketplaceAppsPrompt
-                ? self.getAppName(app.manifest.name)
+                ? self.getAppName(app.manifest.name, appSuffix)
                 : await cliux.inquire({
                     type: 'input',
                     name: 'name',
@@ -254,7 +291,10 @@ module.exports = class ImportMarketplaceApps {
                   });
               app.manifest.name = appName;
 
-              await self.createAllPrivateAppsInDeveloperHub({ app, httpClient }, true).then(resolve).catch(resolve);
+              await self
+                .createAllPrivateAppsInDeveloperHub({ app, httpClient }, true, appSuffix + 1, true)
+                .then(resolve)
+                .catch(resolve);
             } else {
               if (self.config.forceStopMarketplaceAppsPrompt) return resolve();
 
@@ -273,7 +313,7 @@ module.exports = class ImportMarketplaceApps {
           } else if (data) {
             // NOTE new app installation
             log(self.config, `${name} app created successfully.!`, 'success');
-            this.updatePrivateAppUid(app, data, app.manifest.name);
+            this.updatePrivateAppUid(app, data, app.manifest);
           }
 
           resolve();
@@ -295,7 +335,7 @@ module.exports = class ImportMarketplaceApps {
    * @param {Object} app
    * @param {Object} data
    */
-  updatePrivateAppUid = (app, data, appName) => {
+  updatePrivateAppUid = (app, data, manifest) => {
     const self = this;
     const allMarketplaceApps = readFileSync(
       path.resolve(self.marketplaceAppFolderPath, self.marketplaceAppConfig.fileName),
@@ -305,6 +345,7 @@ module.exports = class ImportMarketplaceApps {
     if (index > -1) {
       allMarketplaceApps[index] = {
         ...allMarketplaceApps[index],
+        manifest,
         title: data.name,
         app_uid: data.uid,
         old_title: allMarketplaceApps[index].title,
@@ -313,9 +354,6 @@ module.exports = class ImportMarketplaceApps {
           { [`v${(allMarketplaceApps[index].old_data || []).length}`]: allMarketplaceApps[index] },
         ],
       };
-
-      // NOTE Update app name
-      allMarketplaceApps[index].manifest.name = appName;
 
       writeFile(path.join(self.marketplaceAppFolderPath, self.marketplaceAppConfig.fileName), allMarketplaceApps);
     }

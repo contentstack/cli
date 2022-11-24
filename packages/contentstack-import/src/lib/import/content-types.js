@@ -106,7 +106,7 @@ class ContentTypesImport {
       // write field rules
       if (this.fieldRules.length > 0) {
         try {
-          await fileHelper.writeFile(path.join(this.contentTypesFolderPath, 'field_rules_uid.json', this.fieldRules));
+          await fileHelper.writeFile(path.join(this.contentTypesFolderPath, 'field_rules_uid.json'), this.fieldRules);
         } catch (error) {
           addlogs(this.importConfig, `Failed to write field rules ${formatError(error)}`, 'success');
         }
@@ -154,26 +154,30 @@ class ContentTypesImport {
     addlogs(this.importConfig, contentType.uid + ' updated with references', 'success');
   }
 
-  async updateGlobalFields({ uid }) {
+  async updateGlobalFields(uid) {
     const globalField = find(this.globalFields, { uid });
-    supress(globalField.schema, this.importConfig.preserveStackVersion, this.installedExtensions);
-    let globalFieldObj = this.stackAPIClient.globalField(globalField);
-    Object.assign(globalFieldObj, cloneDeep(globalField));
-    try {
-      const globalFieldResponse = await globalFieldObj.update();
-      const existingGlobalField = findIndex(this.existingGlobalFields, (existingGlobalFieldUId) => {
-        return globalFieldResponse.uid === existingGlobalFieldUId;
-      });
+    if (globalField) {
+      supress(globalField.schema, this.importConfig.preserveStackVersion, this.installedExtensions);
+      let globalFieldObj = this.stackAPIClient.globalField(globalField.uid);
+      Object.assign(globalFieldObj, cloneDeep(globalField));
+      try {
+        const globalFieldResponse = await globalFieldObj.update();
+        const existingGlobalField = findIndex(this.existingGlobalFields, (existingGlobalFieldUId) => {
+          return globalFieldResponse.uid === existingGlobalFieldUId;
+        });
 
-      // Improve write the updated global fields once all updates are completed
-      this.existingGlobalFields.splice(existingGlobalField, 1, globalField);
-      await fileHelper.writeFile(this.globalFieldMapperFolderPath, this.existingGlobalFields).catch((error) => {
-        addlogs(this.importConfig, `failed to write updated the global field ${uid} ${formatError(error)}`);
-      });
-      addlogs(this.importConfig, `Updated the global field ${uid} with content type references `);
-      return true;
-    } catch (error) {
-      addlogs(this.importConfig, `failed to update the global field ${uid} ${formatError(error)}`);
+        // Improve write the updated global fields once all updates are completed
+        this.existingGlobalFields.splice(existingGlobalField, 1, globalField);
+        await fileHelper.writeFile(this.globalFieldMapperFolderPath, this.existingGlobalFields).catch((error) => {
+          addlogs(this.importConfig, `failed to write updated the global field ${uid} ${formatError(error)}`);
+        });
+        addlogs(this.importConfig, `Updated the global field ${uid} with content type references `);
+        return true;
+      } catch (error) {
+        addlogs(this.importConfig, `failed to update the global field ${uid} ${formatError(error)}`);
+      } 
+    } else {
+      addlogs(this.importConfig, `Global field ${uid} does not exist, and hence failed to update.`);
     }
   }
 
