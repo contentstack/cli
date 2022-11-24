@@ -33,5 +33,7 @@ export declare class HttpResponse<ResponseType = any> {
      *
      * @returns {Object}
      */
-    get headers(): import("axios").AxiosResponseHeaders;
+    get headers(): import("axios").AxiosResponseHeaders | Partial<Record<string, string> & {
+        "set-cookie"?: string[];
+    }>;
 }
