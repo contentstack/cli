@@ -144,7 +144,7 @@ let allImport = async (config, types) => {
     } catch (error) {
       addlogs(
         config,
-        chalk.red('Failed to migrate stack: ' + config.target_stack + '. Please check error logs for more info'),
+        chalk.red('Failed to migrate stack: ' + (config.destinationStackName || config.target_stack) + '. Please check error logs for more info'),
         'error',
     );
     addlogs(config, formatError(error), 'error');
