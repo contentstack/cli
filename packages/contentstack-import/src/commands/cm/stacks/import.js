@@ -173,7 +173,7 @@ ImportCommand.flags = {
     parse: printFlagDeprecation(['-B'], ['--branch']),
   }),
   'import-webhook-status': flags.string({
-    description: 'Webhook state',
+    description: '[optional] Webhook state',
     options: ['disable', 'current'],
     required: false,
     default: 'disable',
@@ -181,7 +181,7 @@ ImportCommand.flags = {
   yes: flags.boolean({
     char: 'y',
     required: false,
-    description: '[optional] Override marketplace apps related prompts',
+    description: '[optional] Override marketplace prompts',
   }),
 };
 
