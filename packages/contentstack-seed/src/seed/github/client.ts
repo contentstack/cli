@@ -76,7 +76,7 @@ export default class GitHubClient {
        * `const response: any = await this.httpClient.send('HEAD', `${this.gitHubRepoUrl}/${repo}/contents`);`
        *
        * `return response.status === 200;`
-      */
+       */
       const response: Record<string, any> = await this.makeHeadApiCall(repo);
       return response.statusCode === 200;
     } catch (error) {
