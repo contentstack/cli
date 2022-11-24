@@ -14,7 +14,6 @@ const { formatError } = require('../util');
 let config = require('../../config/default');
 const { writeFile } = require('../util/helper');
 const { addlogs: log } = require('../util/log');
-let stack = require('../util/contentstack-management-sdk');
 const { getDeveloperHubUrl, getInstalledExtensions } = require('../util/marketplace-app-helper');
 
 module.exports = class ExportMarketplaceApps {

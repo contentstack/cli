@@ -1,9 +1,8 @@
 import * as path from 'path';
-import * as inquirer from 'inquirer';
+import { default as inquirer } from 'inquirer';
 import { cliux } from '@contentstack/cli-utilities';
 
 import messageHandler from '../messages';
-
 
 /**
  * @description Inquire starter app
@@ -96,7 +95,7 @@ export async function inquireLivePreviewSupport() {
   const { livePreviewEnabled } = await inquirer.prompt({
     type: 'confirm',
     name: 'livePreviewEnabled',
-    message: 'Enable live preview?'
+    message: 'Enable live preview?',
   });
   return livePreviewEnabled;
 }

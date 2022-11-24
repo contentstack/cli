@@ -232,7 +232,7 @@ b) Structure with content (all modules including entries & assets)
     description: 'Destination stack API Key',
   }),
   'import-webhook-status': flags.string({
-    description: 'Webhook state',
+    description: '[Optional] Webhook state',
     options: ['disable', 'current'],
     required: false,
     default: 'disable',
@@ -240,7 +240,7 @@ b) Structure with content (all modules including entries & assets)
   yes: flags.boolean({
     char: 'y',
     required: false,
-    description: '[optional] Override marketplace prompts',
+    description: '[Optional] Override marketplace prompts',
   }),
 };
 
