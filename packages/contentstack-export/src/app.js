@@ -148,7 +148,7 @@ const allExport = async (config, types, branchName) => {
     } catch (error) {
       addlogs(
         config,
-        chalk.red('Failed to migrate stack: ' + config.source_stack + '. Please check error logs for more info'),
+        chalk.red('Failed to migrate stack: ' + (config.sourceStackName || config.source_stack) + '. Please check error logs for more info'),
         'error',
       );
       addlogs(config, chalk.red(error && error.errorMessage), 'error');
