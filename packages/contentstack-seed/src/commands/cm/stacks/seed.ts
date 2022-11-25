@@ -1,6 +1,3 @@
-
-// @ts-ignore
-import { Flags } from '@oclif/core'
 import { Command, flags } from '@contentstack/cli-command';
 import { printFlagDeprecation } from '@contentstack/cli-utilities';
 import ContentModelSeeder, { ContentModelSeederOptions } from '../../../seed';
