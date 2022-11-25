@@ -12,7 +12,6 @@ const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
 const { formatError } = require('../util');
 let config = require('../../config/default');
-const stack = require('../util/contentstack-management-sdk');
 
 module.exports = class ExportExtensions {
   master = {};
@@ -23,8 +22,9 @@ module.exports = class ExportExtensions {
     include_count: true,
   };
 
-  constructor(mergeConfig) {
-    this.config = mergeConfig;
+  constructor(exportConfig, stackAPIClient) {
+    this.config = exportConfig;
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
@@ -38,10 +38,8 @@ module.exports = class ExportExtensions {
     );
     // Create folder for extensions
     mkdirp.sync(extensionsFolderPath);
-    let client = stack.Client(this.config);
     return new Promise(function (resolve, reject) {
-      client
-        .stack({ api_key: config.source_stack, management_token: config.management_token })
+      self.stackAPIClient
         .extension()
         .query(self.queryRequestOptions)
         .find()

@@ -12,7 +12,6 @@ const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
 const { formatError } = require('../util');
 let config = require('../../config/default');
-const stack = require('../util/contentstack-management-sdk');
 
 module.exports = class ExportGlobalFields {
   limit = 100;
@@ -25,7 +24,7 @@ module.exports = class ExportGlobalFields {
   globalfieldsConfig = config.modules.globalfields;
   validKeys = config.modules.globalfields.validKeys;
 
-  constructor(credentialConfig) {
+  constructor(exportConfig, stackAPIClient) {
     this.requestOptions = {
       qs: {
         skip: 0,
@@ -34,7 +33,8 @@ module.exports = class ExportGlobalFields {
         include_count: true,
       },
     };
-    this.config = { ...config, ...credentialConfig };
+    this.config = { ...config, ...exportConfig };
+    this.stackAPIClient = stackAPIClient;
     this.globalfieldsFolderPath = path.resolve(
       this.config.data,
       this.config.branchName || '',
@@ -68,16 +68,9 @@ module.exports = class ExportGlobalFields {
 
   getGlobalFields(skip, globalFieldConfig) {
     const self = this;
-    let client = stack.Client(globalFieldConfig);
-
     self.requestOptions.qs.skip = skip;
-
     return new Promise(function (resolve, reject) {
-      client
-        .stack({
-          api_key: globalFieldConfig.source_stack,
-          management_token: globalFieldConfig.management_token,
-        })
+      self.stackAPIClient
         .globalField()
         .query(self.requestOptions.qs)
         .find()
@@ -95,19 +88,17 @@ module.exports = class ExportGlobalFields {
               }
               self.global_fields.push(globalField);
             });
-
             skip += self.limit;
-
             if (skip > globalFieldResponse.count) {
               return resolve();
             }
-
             return self.getGlobalFields(skip, globalFieldConfig).then(resolve).catch(reject);
           } catch (error) {
             addlogs(globalFieldConfig, chalk.red(`Failed to export global-fields ${formatError(error)}`), 'error');
             reject(error);
           }
-        });
+        })
+        .catch(reject);
     });
   }
 
@@ -115,9 +106,11 @@ module.exports = class ExportGlobalFields {
     const self = this;
     return new Promise(function (resolve, reject) {
       try {
-        helper.writeFileSync(path.join(self.globalfieldsFolderPath, self.globalfieldsConfig.fileName), self.global_fields);
+        helper.writeFileSync(
+          path.join(self.globalfieldsFolderPath, self.globalfieldsConfig.fileName),
+          self.global_fields,
+        );
         addlogs(self.config, chalk.green('Global Fields export completed successfully'), 'success');
-
         resolve();
       } catch (error) {
         addlogs(self.config, error, 'error');

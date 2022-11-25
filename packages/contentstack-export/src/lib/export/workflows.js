@@ -13,30 +13,27 @@ const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
 const { formatError } = require('../util');
 const config = require('../../config/default');
-const stack = require('../util/contentstack-management-sdk');
 
 module.exports = class ExportWorkFlows {
-  client;
   config;
   workflows = {};
   workFlowConfig = config.modules.workflows;
 
-  constructor(credentialConfig) {
-    this.config = merge(config, credentialConfig);
+  constructor(exportConfig, stackAPIClient) {
+    this.config = merge(config, exportConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
     addlogs(this.config, 'Starting workflow export', 'success');
 
     const self = this;
-    this.client = stack.Client(this.config);
     let workflowsFolderPath = path.resolve(this.config.data, this.config.branchName || '', this.workFlowConfig.dirName);
 
     mkdirp.sync(workflowsFolderPath);
 
     return new Promise(function (resolve, reject) {
-      return self.client
-        .stack({ api_key: self.config.source_stack, management_token: self.config.management_token })
+      return self.stackAPIClient
         .workflow()
         .fetchAll()
         .then(async (response) => {
@@ -78,8 +75,7 @@ module.exports = class ExportWorkFlows {
         if (stage.SYS_ACL.roles.uids.length) {
           for (let i = 0; i < stage.SYS_ACL.roles.uids.length; i++) {
             const roleUid = stage.SYS_ACL.roles.uids[i];
-            const roleData = await self.client
-              .stack({ api_key: config.source_stack, management_token: config.management_token })
+            const roleData = await self.stackAPIClient
               .role(roleUid)
               .fetch({ include_rules: true, include_permissions: true });
             stage.SYS_ACL.roles.uids[i] = roleData;
@@ -103,6 +99,8 @@ module.exports = class ExportWorkFlows {
         deleteItems.forEach((e) => delete workflow[e]);
       }
     } catch (error) {
+      console.log('Error getting workflow data', error && error.message);
+      addlogs(self.config, 'Error fetching workflow data in export workflows task.', 'error');
       throw error;
     }
   }
