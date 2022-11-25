@@ -780,19 +780,6 @@ EntriesImport.prototype = {
             }
           }
 
-          if (flag.jsonRte) {
-            self.ctJsonRte.push(uid);
-            if (flag.jsonRteEmbeddedEntries) {
-              self.ctJsonRteWithEntryRefs.push(uid);
-              // pushing ct uid to refSchemas, because
-              // repostEntries uses refSchemas content types for
-              // reposting entries
-              if (self.refSchemas.indexOf(uid) === -1) {
-                self.refSchemas.push(uid);
-              }
-            }
-          }
-
           // Replace extensions with new UID
           extension_suppress(contentTypeSchema.schema, config.preserveStackVersion, self.installedExtensions);
         }
@@ -1356,8 +1343,8 @@ EntriesImport.prototype = {
 
               if (entryRefs.length > 0) {
                 entryRefs.forEach((entryRef) => {
-                  if (!_.isEmpty(entry[entryRef.uid]) && entry[entryRef.uid].children) {
-                    entry[entryRef.uid].children.splice(entryRef.index, 0, entryRef.value);
+                  if (!_.isEmpty(entry[element.uid]) && entry[element.uid].children) {
+                    entry[element.uid].children.splice(entryRef.index, 0, entryRef.value);
                   }
                 });
               }
