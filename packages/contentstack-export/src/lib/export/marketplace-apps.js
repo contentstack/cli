@@ -9,7 +9,6 @@ const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const eachOf = require('async/eachOf');
 const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
-
 const { formatError } = require('../util');
 let config = require('../../config/default');
 const { writeFile } = require('../util/helper');
@@ -22,13 +21,13 @@ module.exports = class ExportMarketplaceApps {
   developerHubBaseUrl = null;
   marketplaceAppConfig = config.modules.marketplace_apps;
 
-  constructor(credentialConfig) {
-    this.config = credentialConfig;
+  constructor(exportConfig, stackAPIClient) {
+    this.config = _.merge(config, exportConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   async start() {
     this.developerHubBaseUrl = await getDeveloperHubUrl();
-
     if (!this.config.auth_token) {
       cliux.print(
         'WARNING!!! To export Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in',
@@ -51,8 +50,8 @@ module.exports = class ExportMarketplaceApps {
   exportInstalledExtensions = () => {
     const self = this;
 
-    return new Promise(async function (resolve, reject) {
-      getInstalledExtensions(self.config)
+    return new Promise(async (resolve, reject) => {
+      getInstalledExtensions(self.config, this.stackAPIClient)
         .then(async (items) => {
           const installedApps = _.map(
             _.filter(items, 'app_uid'),
