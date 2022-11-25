@@ -16,23 +16,23 @@ class ExportCommand extends Command {
   async run() {
     const exportCommandFlags = this.parse(ExportCommand).flags;
     const extConfig = exportCommandFlags.config;
-    let sourceStack = exportCommandFlags['stack-uid'] || exportCommandFlags['stack-api-key'];
+    const sourceStack = exportCommandFlags['stack-uid'] || exportCommandFlags['stack-api-key'];
     const alias = exportCommandFlags['alias'] || exportCommandFlags['management-token-alias'];
     const securedAssets = exportCommandFlags['secured-assets'];
     const data = exportCommandFlags.data || exportCommandFlags['data-dir'];
     const moduleName = exportCommandFlags.module;
     const contentTypes = exportCommandFlags['content-types'];
     const branchName = exportCommandFlags.branch;
-    let _authToken = configHandler.get('authtoken');
-    let host = this.region;
-    let cmaHost = host.cma.split('//');
-    let cdaHost = host.cda.split('//');
+    const _authToken = configHandler.get('authtoken');
+    const host = this.region;
+    const cmaHost = host.cma.split('//');
+    const cdaHost = host.cda.split('//');
     host.cma = cmaHost[1];
     host.cda = cdaHost[1];
     exportCommandFlags['isAuthenticated'] = this.isAuthenticated();
 
     if (alias) {
-      let managementTokens = this.getToken(alias);
+      const managementTokens = this.getToken(alias);
       const listOfTokens = configHandler.get('tokens');
       config.management_token_data = listOfTokens[alias];
 
