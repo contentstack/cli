@@ -124,45 +124,41 @@ const singleExport = async (moduleName, types, config, branchName) => {
 };
 
 const allExport = async (config, types, branchName) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const stackClient = stack
-        .Client(config)
-        .stack({ api_key: config.source_stack, management_token: config.management_token });
+  try {
+    const stackClient = stack
+      .Client(config)
+      .stack({ api_key: config.source_stack, management_token: config.management_token });
 
-      for (let type of types) {
-        const ExportModule = require('./lib/export/' + type);
-        const result = await new ExportModule(config, stackClient).start(config, branchName);
+    for (let type of types) {
+      const ExportModule = require('./lib/export/' + type);
+      const result = await new ExportModule(config, stackClient).start(config, branchName);
 
-        if (result && type === 'stack') {
-          let master_locale = { master_locale: { code: result.code } };
-          config = _.merge(config, master_locale);
-        }
+      if (result && type === 'stack') {
+        let master_locale = { master_locale: { code: result.code } };
+        config = _.merge(config, master_locale);
       }
-      addlogs(
-        config,
-        chalk.green(
-          'The content of stack ' +
-            (config.sourceStackName || config.source_stack) +
-            ' has been exported successfully!',
-        ),
-        'success',
-      );
-      addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success');
-      return resolve();
-    } catch (error) {
-      addlogs(
-        config,
-        chalk.red(
-          'Failed to migrate stack: ' +
-            (config.sourceStackName || config.source_stack) +
-            '. Please check error logs for more info',
-        ),
-        'error',
-      );
-      addlogs(config, chalk.red(error && error.errorMessage), 'error');
-      addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error');
-      return reject(error);
     }
-  });
+    addlogs(
+      config,
+      chalk.green(
+        'The content of stack ' + (config.sourceStackName || config.source_stack) + ' has been exported successfully!',
+      ),
+      'success',
+    );
+    addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success');
+    return true;
+  } catch (error) {
+    addlogs(
+      config,
+      chalk.red(
+        'Failed to migrate stack: ' +
+          (config.sourceStackName || config.source_stack) +
+          '. Please check error logs for more info',
+      ),
+      'error',
+    );
+    addlogs(config, chalk.red(error && error.errorMessage), 'error');
+    addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error');
+    return reject(error);
+  }
 };
