@@ -83,6 +83,7 @@ export default class SeedCommand extends Command {
       }
 
       const options: ContentModelSeederOptions = {
+        parent: this,
         cdaHost: this.cdaHost,
         cmaHost: this.cmaHost,
         authToken: this.authToken,
