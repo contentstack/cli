@@ -15,7 +15,7 @@ $ npm install -g @contentstack/cli-cm-clone
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-clone/1.1.3 darwin-arm64 node-v16.17.0
+@contentstack/cli-cm-clone/1.1.4 darwin-x64 node-v18.12.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -41,8 +41,8 @@ Clone data (structure/content or both) of a stack into another stack
 
 ```
 USAGE
-  $ csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] 
-  [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] 
+  $ csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>]
+  [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>]
   [--destination-stack-api-key <value>] [--import-webhook-status disable|current]
 
 OPTIONS
@@ -83,11 +83,11 @@ EXAMPLES
   csdx cm:stacks:clone
   csdx cm:stacks:clone --source-branch <source-branch-name> --target-branch <target-branch-name> --yes
   csdx cm:stacks:clone --source-stack-api-key <apiKey> --destination-stack-api-key <apiKey>
-  csdx cm:stacks:clone --source-management-token-alias <management token alias> --destination-management-token-alias 
+  csdx cm:stacks:clone --source-management-token-alias <management token alias> --destination-management-token-alias
   <management token alias>
-  csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> 
+  csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias>
   --destination-management-token-alias <management token alias>
-  csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> 
+  csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias>
   --destination-management-token-alias <management token alias> --type <value a or b>
 ```
 
