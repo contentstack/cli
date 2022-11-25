@@ -80,10 +80,27 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
           const oldExt = _.find(marketplaceApps, { uid: schema[i].extension_uid });
 
           if (oldExt) {
-            const ext = _.find(installedExtensions, {
-              type: oldExt.type,
-              title: oldExt.title,
-              app_uid: oldExt.app_uid,
+            let ext = _.find(installedExtensions, (ext) => {
+              const { type, title, app_uid } = ext;
+
+              if (type === 'field' && app_uid === oldExt.app_uid) {
+                const titles = [
+                  ...(oldExt.manifest
+                    ? _.map(
+                        _.map(
+                          oldExt.manifest && oldExt.manifest.ui_location && oldExt.manifest.ui_location.locations,
+                          'meta',
+                        ).flat(),
+                        'name',
+                      )
+                    : []),
+                  oldExt.title,
+                ];
+
+                return _.includes(titles, title);
+              }
+
+              return false;
             });
 
             if (ext) {
@@ -104,10 +121,27 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
             const oldExt = _.find(marketplaceApps, { uid: row.extension_uid });
 
             if (oldExt) {
-              const ext = _.find(installedExtensions, {
-                type: oldExt.type,
-                title: oldExt.title,
-                app_uid: oldExt.app_uid,
+              let ext = _.find(installedExtensions, (ext) => {
+                const { type, title, app_uid } = ext;
+
+                if (type === 'field' && app_uid === oldExt.app_uid) {
+                  const titles = [
+                    ...(oldExt.manifest
+                      ? _.map(
+                          _.map(
+                            oldExt.manifest && oldExt.manifest.ui_location && oldExt.manifest.ui_location.locations,
+                            'meta',
+                          ).flat(),
+                          'name',
+                        )
+                      : []),
+                    oldExt.title,
+                  ];
+
+                  return _.includes(titles, title);
+                }
+
+                return false;
               });
 
               if (ext) {
@@ -121,10 +155,27 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
             const oldExt = _.find(marketplaceApps, { uid: entryObj[row.uid].metadata.extension_uid });
 
             if (oldExt) {
-              const ext = _.find(installedExtensions, {
-                type: oldExt.type,
-                title: oldExt.title,
-                app_uid: oldExt.app_uid,
+              let ext = _.find(installedExtensions, (ext) => {
+                const { type, title, app_uid } = ext;
+
+                if (type === 'field' && app_uid === oldExt.app_uid) {
+                  const titles = [
+                    ...(oldExt.manifest
+                      ? _.map(
+                          _.map(
+                            oldExt.manifest && oldExt.manifest.ui_location && oldExt.manifest.ui_location.locations,
+                            'meta',
+                          ).flat(),
+                          'name',
+                        )
+                      : []),
+                    oldExt.title,
+                  ];
+
+                  return _.includes(titles, title);
+                }
+
+                return false;
               });
 
               if (ext) {
