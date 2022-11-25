@@ -200,15 +200,15 @@ class MigrationCommand extends Command {
         result && results.push(result);
         task.title = successTitle;
         return result;
-      }
-    }
+      };
+    };
 
     for (const element of requests) {
       let reqObj = element;
       const { title } = reqObj;
       const taskObj = {
         title: title,
-        task: taskFn(reqObj)
+        task: taskFn(reqObj),
       };
       _tasks.push(taskObj);
     }
@@ -233,45 +233,16 @@ class MigrationCommand extends Command {
 MigrationCommand.description = 'Contentstack migration script.';
 
 MigrationCommand.flags = {
-  'api-key': flags.string({
-    char: 'k',
-    description: 'With this flag add the API key of your stack.',
-    dependsOn: ['authtoken'],
-    exclusive: ['alias'],
-    parse: printFlagDeprecation(['--api-key'], ['-k', '--stack-api-key']),
-    hidden: true,
-  }),
   'stack-api-key': flags.string({
     char: 'k',
     description: 'With this flag add the API key of your stack.',
     dependsOn: ['authtoken'],
     exclusive: ['alias'],
   }),
-  authtoken: flags.boolean({
-    char: 'A',
-    description:
-      'Use this flag to use the auth token of the current session. After logging in CLI, an auth token is generated for each new session.',
-    dependsOn: ['api-key'],
-    exclusive: ['alias'],
-    parse: printFlagDeprecation(['-A', '--authtoken']),
-    hidden: true,
-  }),
   alias: flags.string({
     char: 'a',
     description: 'Use this flag to add the management token alias.',
     exclusive: ['authtoken'],
-  }),
-  'management-token-alias': flags.string({
-    description: 'alias of the management token',
-    exclusive: ['authtoken'],
-    hidden: true,
-    parse: printFlagDeprecation(['--management-token-alias'], ['-a', '--alias']),
-  }),
-  filePath: flags.string({
-    char: 'n',
-    description: 'Use this flag to provide the path of the file of the migration script provided by the user.',
-    parse: printFlagDeprecation(['-n', '--filePath'], ['--file-path']),
-    hidden: true,
   }),
   'file-path': flags.string({
     description: 'Use this flag to provide the path of the file of the migration script provided by the user.',
@@ -288,18 +259,51 @@ MigrationCommand.flags = {
     description: '[optional] inline configuration, <key1>:<value1>',
     multiple: true,
   }),
+
+  multiple: flags.boolean({
+    description: 'This flag helps you to migrate multiple content files in a single instance.',
+  }),
+
+  //To be  deprecated
+  'api-key': flags.string({
+    char: 'k',
+    description: 'With this flag add the API key of your stack.',
+    dependsOn: ['authtoken'],
+    exclusive: ['alias'],
+    parse: printFlagDeprecation(['--api-key'], ['-k', '--stack-api-key']),
+    hidden: true,
+  }),
+  authtoken: flags.boolean({
+    char: 'A',
+    description:
+      'Use this flag to use the auth token of the current session. After logging in CLI, an auth token is generated for each new session.',
+    dependsOn: ['api-key'],
+    exclusive: ['alias'],
+    parse: printFlagDeprecation(['-A', '--authtoken']),
+    hidden: true,
+  }),
+  'management-token-alias': flags.string({
+    description: 'alias of the management token',
+    exclusive: ['authtoken'],
+    hidden: true,
+    parse: printFlagDeprecation(['--management-token-alias'], ['-a', '--alias']),
+  }),
+  filePath: flags.string({
+    char: 'n',
+    description: 'Use this flag to provide the path of the file of the migration script provided by the user.',
+    parse: printFlagDeprecation(['-n', '--filePath'], ['--file-path']),
+    hidden: true,
+  }),
   multi: flags.boolean({
     description: 'This flag helps you to migrate multiple content files in a single instance.',
     parse: printFlagDeprecation(['--multi'], ['--multiple']),
     hidden: true,
   }),
-  multiple: flags.boolean({
-    description: 'This flag helps you to migrate multiple content files in a single instance.',
-  }),
 };
 
 MigrationCommand.aliases = ['cm:migration'];
 
-MigrationCommand.usage = 'cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]';
+MigrationCommand.usage =
+  'cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]';
 
 module.exports = MigrationCommand;
