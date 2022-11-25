@@ -27,7 +27,7 @@ FLAGS
   -o, --org=<value>            Provide Organization UID to create a new stack
   -r, --repo=<value>           GitHub account or GitHub account/repository
   -s, --stack=<value>          Provide stack UID to seed content to
-  -y, --yes=<value>
+  -y, --yes=<value>            [Optional] Skip stack confirmation
 
 DESCRIPTION
   Create a stack from existing content types, entries, assets, etc
@@ -61,7 +61,7 @@ FLAGS
   -o, --org=<value>            Provide Organization UID to create a new stack
   -r, --repo=<value>           GitHub account or GitHub account/repository
   -s, --stack=<value>          Provide stack UID to seed content to
-  -y, --yes=<value>
+  -y, --yes=<value>            [Optional] Skip stack confirmation
 
 DESCRIPTION
   Create a stack from existing content types, entries, assets, etc
