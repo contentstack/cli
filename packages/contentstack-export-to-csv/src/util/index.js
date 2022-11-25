@@ -33,10 +33,15 @@ function chooseOrganization(managementAPIClient, action) {
           loop: false,
         },
       ];
-      inquirer.prompt(_chooseOrganization).then(({ chosenOrg }) => {
-        if (chosenOrg === config.cancelString) exitProgram();
-        resolve({ name: chosenOrg, uid: organizations[chosenOrg] });
-      });
+      inquirer
+        .prompt(_chooseOrganization)
+        .then(({ chosenOrg }) => {
+          if (chosenOrg === config.cancelString) exitProgram();
+          resolve({ name: chosenOrg, uid: organizations[chosenOrg] });
+        })
+        .catch((error) => {
+          reject(error);
+        });
     } catch (error) {
       reject(error);
     }
@@ -136,7 +141,7 @@ function getStacks(managementAPIClient, orgUid) {
 }
 
 function chooseContentType(stack, skip) {
-  return new Promise(async (resolve) => {
+  return new Promise(async (resolve, reject) => {
     let contentTypes = await getContentTypes(stack, skip);
     let contentTypesList = Object.values(contentTypes);
     // contentTypesList.push(config.cancelString)
@@ -151,9 +156,10 @@ function chooseContentType(stack, skip) {
       },
     ];
 
-    inquirer.prompt(_chooseContentType).then(({ chosenContentTypes }) => {
-      resolve(chosenContentTypes);
-    });
+    inquirer
+      .prompt(_chooseContentType)
+      .then(({ chosenContentTypes }) => resolve(chosenContentTypes))
+      .catch((error) => reject(error));
   });
 }
 
@@ -187,12 +193,15 @@ function chooseInMemContentTypes(contentTypesList) {
         },
       },
     ];
-    inquirer.prompt(_chooseContentType).then(({ chosenContentTypes }) => {
-      if (chosenContentTypes.length === 0) {
-        reject('Please select atleast one content type.');
-      }
-      resolve(chosenContentTypes);
-    });
+    inquirer
+      .prompt(_chooseContentType)
+      .then(({ chosenContentTypes }) => {
+        if (chosenContentTypes.length === 0) {
+          reject('Please select atleast one content type.');
+        }
+        resolve(chosenContentTypes);
+      })
+      .catch((error) => reject(error));
   });
 }
 
@@ -214,7 +223,7 @@ function getContentTypes(stack, skip) {
 }
 
 function chooseLanguage(stack) {
-  return new Promise(async (resolve) => {
+  return new Promise(async (resolve, reject) => {
     let languages = await getLanguages(stack);
     let languagesList = Object.keys(languages);
     languagesList.push(config.cancelString);
@@ -228,10 +237,13 @@ function chooseLanguage(stack) {
       },
     ];
 
-    inquirer.prompt(_chooseLanguage).then(({ chosenLanguage }) => {
-      if (chosenLanguage === config.cancelString) exitProgram();
-      resolve({ name: chosenLanguage, code: languages[chosenLanguage] });
-    });
+    inquirer
+      .prompt(_chooseLanguage)
+      .then(({ chosenLanguage }) => {
+        if (chosenLanguage === config.cancelString) exitProgram();
+        resolve({ name: chosenLanguage, code: languages[chosenLanguage] });
+      })
+      .catch((error) => reject(error));
   });
 }
 
@@ -296,9 +308,7 @@ function getContentTypeCount(stack) {
       .contentType()
       .query()
       .count()
-      .then((contentTypes) => {
-        resolve(contentTypes.content_types);
-      })
+      .then((contentTypes) => resolve(contentTypes.content_types))
       .catch((error) => reject(error));
   });
 }
@@ -368,7 +378,7 @@ function write(command, entries, fileName, message) {
 }
 
 function startupQuestions() {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let actions = [
       {
         type: 'list',
@@ -377,10 +387,13 @@ function startupQuestions() {
         choices: [config.exportEntries, config.exportUsers, 'Exit'],
       },
     ];
-    inquirer.prompt(actions).then((answers) => {
-      if (answers.action === 'Exit') exitProgram();
-      resolve(answers.action);
-    });
+    inquirer
+      .prompt(actions)
+      .then((answers) => {
+        if (answers.action === 'Exit') exitProgram();
+        resolve(answers.action);
+      })
+      .catch((error) => reject(error));
   });
 }
 
@@ -401,7 +414,10 @@ function getOrgUsers(managementAPIClient, orgUid, ecsv) {
         if (!organization.getInvitations) {
           return reject(new Error(config.adminError));
         }
-        organization.getInvitations().then((users) => resolve(users));
+        organization
+          .getInvitations()
+          .then((users) => resolve(users))
+          .catch((error) => reject(error));
       })
       .catch((error) => reject(error));
   });
@@ -440,7 +456,10 @@ function getOrgRoles(managementAPIClient, orgUid, ecsv) {
         if (!organization.roles) {
           return reject(new Error(config.adminError));
         }
-        organization.roles().then((roles) => resolve(roles));
+        organization
+          .roles()
+          .then((roles) => resolve(roles))
+          .catch((error) => reject(error));
       })
       .catch((error) => reject(error));
   });
@@ -523,10 +542,23 @@ function formatError(error) {
   if (error.errors && Object.keys(error.errors).length > 0) {
     Object.keys(error.errors).forEach((e) => {
       let entity = e;
-      if (e === 'authorization') entity = 'Management Token';
-      if (e === 'api_key') entity = 'Stack API key';
-      if (e === 'uid') entity = 'Content Type';
-      if (e === 'access_token') entity = 'Delivery Token';
+      switch (e) {
+        case 'authorization':
+          entity = 'Management Token';
+          break;
+
+        case 'api_key':
+          entity = 'Stack API key';
+          break;
+
+        case 'uid':
+          entity = 'Content Type';
+          break;
+
+        case 'access_token':
+          entity = 'Delivery Token';
+          break;
+      }
       message += ' ' + [entity, error.errors[e]].join(' ');
     });
   }
