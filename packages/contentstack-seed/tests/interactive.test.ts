@@ -1,6 +1,6 @@
 jest.mock('inquirer');
 
-import { default as inquirer } from 'inquirer';
+const inquirer = require('inquirer');
 import { Organization, Stack } from '../src/seed/contentstack/client';
 import * as interactive from '../src/seed/interactive';
 
