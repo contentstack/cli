@@ -10,7 +10,6 @@ const mkdirp = require('mkdirp');
 const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
 const { formatError } = require('../util');
-let stack = require('../util/contentstack-management-sdk');
 
 module.exports = class ExportEnvironments {
   config = {};
@@ -24,13 +23,13 @@ module.exports = class ExportEnvironments {
     },
   };
 
-  constructor(mergeConfig) {
-    this.config = mergeConfig;
+  constructor(exportConfig, stackAPIClient) {
+    this.config = exportConfig;
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
     const self = this;
-    const client = stack.Client(self.config);
     const environmentConfig = self.config.modules.environments;
     const environmentsFolderPath = path.resolve(
       self.config.data,
@@ -42,9 +41,8 @@ module.exports = class ExportEnvironments {
     mkdirp.sync(environmentsFolderPath);
     addlogs(self.config, 'Starting environment export', 'success');
 
-    return new Promise(function (resolve, reject) {
-      client
-        .stack({ api_key: self.config.source_stack, management_token: self.config.management_token })
+    return new Promise((resolve, reject) => {
+      self.stackAPIClient
         .environment()
         .query(self.requestOptions.qs)
         .find()

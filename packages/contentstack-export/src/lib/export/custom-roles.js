@@ -4,16 +4,13 @@ const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const { merge } = require('lodash');
-
 const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
 const { formatError } = require('../util');
 const config = require('../../config/default');
-const stack = require('../util/contentstack-management-sdk');
 
 module.exports = class ExportCustomRoles {
   roles = {};
-  client = null;
   customRoles = {};
   EXISTING_ROLES = {
     Admin: 1,
@@ -22,35 +19,28 @@ module.exports = class ExportCustomRoles {
   };
   rolesConfig = config.modules.customRoles;
 
-  constructor(credentialConfig) {
-    this.config = merge(config, credentialConfig);
-    this.client = stack.Client(this.config);
+  constructor(exportConfig, stackAPIClient) {
+    this.config = merge(config, exportConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   async start() {
     const self = this;
+
     try {
       addlogs(this.config, 'Starting roles export', 'success');
-
       const rolesFolderPath = path.resolve(this.config.data, this.config.branchName || '', this.rolesConfig.dirName);
       mkdirp.sync(rolesFolderPath);
-
-      const roles = await this.client
-        .stack({ api_key: self.config.source_stack, management_token: self.config.management_token })
-        .role()
-        .fetchAll({ include_rules: true, include_permissions: true });
-
+      const roles = await self.stackAPIClient.role().fetchAll({ include_rules: true, include_permissions: true });
       const customRoles = roles.items.filter((role) => !self.EXISTING_ROLES[role.name]);
-
       if (!customRoles.length) {
         addlogs(self.config, 'No custom roles were found in the Stack', 'success');
         return;
       }
-
       await self.getCustomRolesLocales(
         customRoles,
         path.join(rolesFolderPath, self.rolesConfig.customRolesLocalesFileName),
-        this.client,
+        self.stackAPIClient,
         self.config,
       );
       self.customRoles = {};
@@ -75,7 +65,7 @@ module.exports = class ExportCustomRoles {
     }
   }
 
-  async getCustomRolesLocales(customRoles, customRolesLocalesFilepath, client, config) {
+  async getCustomRolesLocales(customRoles, customRolesLocalesFilepath, stackAPIClient, config) {
     const localesMap = {};
     for (const role of customRoles) {
       const rulesLocales = role.rules.find((rule) => rule.module === 'locale');
@@ -85,13 +75,8 @@ module.exports = class ExportCustomRoles {
         });
       }
     }
-
     if (Object.keys(localesMap).length) {
-      const locales = await client
-        .stack({ api_key: config.source_stack, management_token: config.management_token })
-        .locale()
-        .query({})
-        .find();
+      const locales = await stackAPIClient.locale().query({}).find();
       const sourceLocalesMap = {};
       for (const locale of locales.items) {
         sourceLocalesMap[locale.uid] = locale;

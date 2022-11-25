@@ -13,27 +13,25 @@ let helper = require('../util/helper');
 let { addlogs } = require('../util/log');
 const { formatError } = require('../util');
 const config = require('../../config/default');
-const stack = require('../util/contentstack-management-sdk');
 
 module.exports = class ExportLabels {
   labels = {};
   labelConfig = config.modules.labels;
 
-  constructor(credentialConfig) {
-    this.config = merge(config, credentialConfig);
+  constructor(exportConfig, stackAPIClient) {
+    this.config = merge(config, exportConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
     addlogs(this.config, 'Starting labels export', 'success');
 
     const self = this;
-    const client = stack.Client(this.config);
     let labelsFolderPath = path.resolve(config.data, this.config.branchName || '', self.labelConfig.dirName);
     // Create locale folder
     mkdirp.sync(labelsFolderPath);
     return new Promise(function (resolve, reject) {
-      return client
-        .stack({ api_key: self.config.source_stack, management_token: self.config.management_token })
+      return self.stackAPIClient
         .label()
         .query()
         .find()
