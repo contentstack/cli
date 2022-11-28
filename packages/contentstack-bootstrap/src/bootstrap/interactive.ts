@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { default as inquirer } from 'inquirer';
+const inquirer = require('inquirer');
 import { cliux } from '@contentstack/cli-utilities';
 
 import messageHandler from '../messages';
