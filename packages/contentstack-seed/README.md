@@ -26,7 +26,7 @@ OPTIONS
   -o, --org=org                      Provide Organization UID to create a new stack
   -r, --repo=repo                    GitHub account or GitHub account/repository
   -s, --stack=stack                  Provide stack UID to seed content to
-  -y, --yes=yes
+  -y, --yes=yes                      [Optional] Skip stack confirmation
 
 ALIASES
   $ csdx cm:seed
