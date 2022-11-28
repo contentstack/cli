@@ -18,13 +18,13 @@ exports.initial = async (config) => {
       };
 
       const APIClient = await managementClient(config);
-      const stackClient = APIClient.stack({
+      const stackAPIClient = APIClient.stack({
         api_key: config.source_stack,
         management_token: config.management_token,
       });
 
-      const fetchBranchAndExport = async (APIClient, stackClient) => {
-        await setupBranches(config, config.branchName, stackClient);
+      const fetchBranchAndExport = async (APIClient, stackAPIClient) => {
+        await setupBranches(config, config.branchName, stackAPIClient);
         let types = config.modules.types;
 
         if (Array.isArray(config.branches) && config.branches.length > 0) {
@@ -32,9 +32,9 @@ exports.initial = async (config) => {
             config.branchName = branch.uid;
             try {
               if (config.moduleName) {
-                await singleExport(APIClient, stackClient, config.moduleName, types, config, branch.uid);
+                await singleExport(APIClient, stackAPIClient, config.moduleName, types, config, branch.uid);
               } else {
-                await allExport(APIClient, stackClient, config, types, branch.uid);
+                await allExport(APIClient, stackAPIClient, config, types, branch.uid);
               }
             } catch (error) {
               addlogs(config, `failed export contents ${branch.uid} ${util.formatError(error)}`, 'error');
@@ -43,9 +43,9 @@ exports.initial = async (config) => {
         } else {
           try {
             if (config.moduleName) {
-              await singleExport(APIClient, stackClient, config.moduleName, types, config);
+              await singleExport(APIClient, stackAPIClient, config.moduleName, types, config);
             } else {
-              await allExport(APIClient, stackClient, config, types);
+              await allExport(APIClient, stackAPIClient, config, types);
             }
           } catch (error) {
             addlogs(config, `failed export contents ${util.formatError(error)}`, 'error');
@@ -55,7 +55,7 @@ exports.initial = async (config) => {
 
       if (config.management_token || config.isAuthenticated) {
         try {
-          await fetchBranchAndExport(APIClient, stackClient);
+          await fetchBranchAndExport(APIClient, stackAPIClient);
         } catch (error) {
           addlogs(config, `${util.formatError(error)}`, 'error');
         }
@@ -65,11 +65,11 @@ exports.initial = async (config) => {
         (!config.email && !config.password && config.source_stack && config.access_token)
       ) {
         login
-          .login(config, APIClient, stackClient)
+          .login(config, APIClient, stackAPIClient)
           .then(async function () {
             // setup branches
             try {
-              await fetchBranchAndExport(APIClient, stackClient);
+              await fetchBranchAndExport(APIClient, stackAPIClient);
               unlinkFileLogger();
             } catch (error) {
               addlogs(config, `${util.formatError(error)}`, 'error');
@@ -94,7 +94,7 @@ exports.initial = async (config) => {
   });
 };
 
-const singleExport = async (APIClient, stackClient, moduleName, types, config, branchName) => {
+const singleExport = async (APIClient, stackAPIClient, moduleName, types, config, branchName) => {
   try {
     if (types.indexOf(moduleName) > -1) {
       let iterateList;
@@ -107,7 +107,7 @@ const singleExport = async (APIClient, stackClient, moduleName, types, config, b
 
       for (let element of iterateList) {
         const ExportModule = require('./lib/export/' + element);
-        const result = await new ExportModule(config, stackClient, APIClient).start(config, branchName);
+        const result = await new ExportModule(config, stackAPIClient, APIClient).start(config, branchName);
         if (result && element === 'stack') {
           let master_locale = {
             master_locale: { code: result.code },
@@ -128,11 +128,11 @@ const singleExport = async (APIClient, stackClient, moduleName, types, config, b
   }
 };
 
-const allExport = async (APIClient, stackClient, config, types, branchName) => {
+const allExport = async (APIClient, stackAPIClient, config, types, branchName) => {
   try {
     for (let type of types) {
       const ExportModule = require('./lib/export/' + type);
-      const result = await new ExportModule(config, stackClient, APIClient).start(config, branchName);
+      const result = await new ExportModule(config, stackAPIClient, APIClient).start(config, branchName);
 
       if (result && type === 'stack') {
         let master_locale = { master_locale: { code: result.code } };
