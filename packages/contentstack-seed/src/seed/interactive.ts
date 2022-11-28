@@ -1,4 +1,4 @@
-import { default as inquirer } from 'inquirer';
+const inquirer = require('inquirer');
 import { Organization, Stack } from './contentstack/client';
 
 export interface InquireStackResponse {
@@ -102,7 +102,7 @@ export async function inquireStack(stacks: Stack[], stackName?: string): Promise
           type: 'input',
           name: 'name',
           message: 'Enter a stack name',
-          validate: function (input) {
+          validate: function (input: string) {
             if (!input || input.trim() === '') {
               return 'Required';
             }
