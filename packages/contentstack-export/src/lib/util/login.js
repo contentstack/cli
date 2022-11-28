@@ -7,19 +7,15 @@
  * MIT Licensed
  */
 
-var chalk = require('chalk');
-var { addlogs } = require('../util/log');
-let stack = require('../util/contentstack-management-sdk');
-let client;
+const chalk = require('chalk');
+const { addlogs } = require('../util/log');
 
-module.exports.login = (config) => {
-  client = stack.Client(config);
+module.exports.login = (config, APIClient, stackAPIClient) => {
   return new Promise(function (resolve, reject) {
     if (config.email && config.password) {
       // eslint-disable-next-line no-console
       console.log('Logging into Contentstack');
-      client
-        .login({ email: config.email, password: config.password })
+      APIClient.login({ email: config.email, password: config.password })
         .then(function (response) {
           // eslint-disable-next-line no-console
           console.log(chalk.green('Contentstack account authenticated successfully!'));
@@ -55,9 +51,8 @@ module.exports.login = (config) => {
       };
       resolve(config);
       // eslint-disable-next-line no-else-return
-    } else if (config.auth_token && !config.management_token) {
-      client
-        .stack({ api_key: config.source_stack, management_token: config.management_token })
+    } else if (config.isAuthenticated && !config.management_token) {
+      stackAPIClient
         .users()
         .then(function () {
           resolve();
