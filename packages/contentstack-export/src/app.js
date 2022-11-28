@@ -73,7 +73,6 @@ exports.initial = async function (config) {
           } else {
             addlogs(config, `${formatError(error)}`, 'error');
           }
-          // reject(error);
         });
     } else if (config.management_token) {
       try {
@@ -159,6 +158,6 @@ const allExport = async (config, types, branchName) => {
     );
     addlogs(config, chalk.red(error && error.errorMessage), 'error');
     addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error');
-    return reject(error);
+    return error;
   }
 };
