@@ -19,6 +19,7 @@ const DEFAULT_STACK_PATTERN = 'stack-';
 export const ENGLISH_LOCALE = 'en-us';
 
 export interface ContentModelSeederOptions {
+  parent?: any;
   cdaHost: string;
   cmaHost: string;
   authToken: string;
@@ -31,6 +32,7 @@ export interface ContentModelSeederOptions {
 }
 
 export default class ContentModelSeeder {
+  private readonly parent: any = null;
   private readonly csClient: ContentstackClient;
 
   private readonly ghClient: GitHubClient;
@@ -46,6 +48,7 @@ export default class ContentModelSeeder {
   }
 
   constructor(public options: ContentModelSeederOptions) {
+    this.parent = options.parent || null;
     this._options = options;
     const gh = GitHubClient.parsePath(options.gitHubPath);
     this.ghUsername = gh.username || DEFAULT_OWNER;
@@ -88,10 +91,13 @@ export default class ContentModelSeeder {
     return { api_key };
   }
 
-  async getInput(): Promise<{
-    organizationResponse: Organization,
-    stackResponse: InquireStackResponse
-  } | any> {
+  async getInput(): Promise<
+    | {
+        organizationResponse: Organization;
+        stackResponse: InquireStackResponse;
+      }
+    | any
+  > {
     if (!this.ghRepo) {
       await this.inquireGitHubRepo();
     }
@@ -99,6 +105,7 @@ export default class ContentModelSeeder {
 
     if (repoExists === false) {
       cliux.error(`Could not find GitHub repository '${this.ghPath}'.`);
+      if (this.parent) this.parent.exit(1);
     } else {
       let organizationResponse: Organization | undefined;
       let stackResponse: InquireStackResponse;
@@ -133,7 +140,6 @@ export default class ContentModelSeeder {
 
   async createStack(organization: Organization, stackName: string) {
     cliux.loader(`Creating Stack '${stackName}' within Organization '${organization.name}'`);
-    this.options.fetchLimit;
 
     const newStack = await this.csClient.createStack({
       name: stackName,
