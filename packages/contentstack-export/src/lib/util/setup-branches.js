@@ -1,13 +1,14 @@
 const mkdirp = require('mkdirp');
 const path = require('path');
 const helper = require('./helper');
-const { HttpClient } = require('@contentstack/cli-utilities');
 
-const setupBranches = async (config, branch) => {
+const setupBranches = async (config, branch, stackAPIClient) => {
   if (typeof config !== 'object') {
     throw new Error('Invalid config to setup the branch');
   }
+
   let branches = [];
+
   const headers = { api_key: config.source_stack };
 
   if (config.auth_token) {
@@ -18,21 +19,17 @@ const setupBranches = async (config, branch) => {
 
   if (typeof branch === 'string') {
     // check branch exists
-    const result = await HttpClient.create()
-      .headers(headers)
-      .get(`https://${config.host}/v3/stacks/branches/${branch}`);
-
-    if (result && typeof result.data === 'object' && typeof result.data.branch === 'object') {
-      branches.push(result.data.branch);
+    const result = await stackAPIClient.branch(branch).fetch();
+    if (result && typeof result === 'object') {
+      branches.push(result);
     } else {
       throw new Error('No branch found with the name ' + branch);
     }
   } else {
     try {
-      const result = await HttpClient.create().headers(headers).get(`https://${config.host}/v3/stacks/branches`);
-
-      if (result && result.data && Array.isArray(result.data.branches) && result.data.branches.length > 0) {
-        branches = result.data.branches;
+      const result = await stackAPIClient.branch().query().find();
+      if (result && result.items && Array.isArray(result.items) && result.items.length > 0) {
+        branches = result.items;
       } else {
         return;
       }
