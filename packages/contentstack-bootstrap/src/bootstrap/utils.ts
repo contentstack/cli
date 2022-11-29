@@ -166,7 +166,8 @@ const envFileHandler = async (
         case 'stencil-starter':  
             fileName = (production ? '.env.production' : '.env')
             filePath = path.join(clonedDirectory, fileName)
-            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(customHost ? '\nCONTENTSTACK_API_HOST=' + customHost : '')}${(!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : '')}\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`
+            // Note: Stencil app needs all the env variables, even if they are not having values otherwise the rollup does not work properly and throws process in undefined error.
+            content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${(!isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : '')}\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_MANAGEMENT_TOKEN=''\nCONTENTSTACK_API_HOST='${customHost ? customHost : managementAPIHost}'\nCONTENTSTACK_APP_HOST=''\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
             result = await writeEnvFile(content, filePath)
             break
         case 'vue-starter':
