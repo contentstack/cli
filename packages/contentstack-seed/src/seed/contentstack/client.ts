@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from 'axios';
+const axios = require('axios');
+import { AxiosInstance } from 'axios';
 import ContentstackError from './error';
 
 export interface Organization {
