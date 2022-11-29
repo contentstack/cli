@@ -74,6 +74,41 @@ module.exports = class ImportMarketplaceApps {
     }
   };
 
+  async getEncryptionKeyAndValidate(defaultValue, retry = 1) {
+    const appConfig =
+      _.find(this.marketplaceApps, 'configuration') ||
+      _.find(this.marketplaceApps, 'server_configuration.configuration');
+
+    if (appConfig) {
+      const encryptionKey = await cliux.inquire({
+        type: 'input',
+        name: 'name',
+        default: defaultValue,
+        validate: (key) => {
+          if (!key) return "Encryption key can't be empty.";
+
+          return true;
+        },
+        message: 'Enter marketplace app configurations encryption key',
+      });
+
+      try {
+        const nodeCrypto = new NodeCrypto({ encryptionKey });
+        nodeCrypto.decrypt(appConfig.configuration || appConfig.server_configuration);
+      } catch (error) {
+        if (retry <= 3 && error.code === 'ERR_OSSL_EVP_BAD_DECRYPT') {
+          cliux.print('Provided encryption key is not valid or your data might be corrupted.!', { color: 'red' });
+          // NOTE max retry limit is 3
+          return this.getEncryptionKeyAndValidate(encryptionKey, retry + 1);
+        }
+      }
+
+      return encryptionKey;
+    }
+
+    return defaultValue;
+  }
+
   /**
    * @method handleInstallationProcess
    * @returns {Promise<void>}
@@ -93,17 +128,7 @@ module.exports = class ImportMarketplaceApps {
     if (self.config.forceStopMarketplaceAppsPrompt) {
       cryptoArgs['encryptionKey'] = self.config.marketplaceAppEncryptionKey;
     } else {
-      cryptoArgs['encryptionKey'] = await cliux.inquire({
-        type: 'input',
-        name: 'name',
-        default: self.config.marketplaceAppEncryptionKey,
-        validate: (url) => {
-          if (!url) return "Encryption key can't be empty.";
-
-          return true;
-        },
-        message: 'Enter marketplace app configurations encryption key',
-      });
+      cryptoArgs['encryptionKey'] = await self.getEncryptionKeyAndValidate(self.config.marketplaceAppEncryptionKey);
     }
 
     const httpClient = new HttpClient().headers(headers);
