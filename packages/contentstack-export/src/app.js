@@ -141,18 +141,25 @@ const allExport = async (APIClient, stackAPIClient, config, types, branchName) =
     }
     addlogs(
       config,
-      chalk.green('The content of the ' + config.source_stack + ' has been exported successfully!'),
+      chalk.green(
+        'The content of stack ' + (config.sourceStackName || config.source_stack) + ' has been exported successfully!',
+      ),
       'success',
     );
     addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success');
-    return true;
+    return resolve();
   } catch (error) {
-    addlogs(config, `${util.formatError(error)}`, 'error');
     addlogs(
       config,
-      chalk.red('Failed to migrate stack: ' + config.source_stack + '. Please check error logs for more info'),
+      chalk.red(
+        'Failed to migrate stack: ' +
+          (config.sourceStackName || config.source_stack) +
+          '. Please check error logs for more info',
+      ),
       'error',
     );
+    addlogs(config, chalk.red(error && error.errorMessage), 'error');
     addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error');
+    return reject(error);
   }
 };
