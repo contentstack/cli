@@ -310,7 +310,7 @@ module.exports = class ImportMarketplaceApps {
                 : await cliux.inquire({
                     type: 'input',
                     name: 'name',
-                    default: `${app.manifest.name}-1`,
+                    default: `${app.manifest.name}◈${appSuffix}`,
                     validate: this.validateAppName,
                     message: `${message}. Enter a new name to create an app.?`,
                   });
@@ -478,6 +478,27 @@ module.exports = class ImportMarketplaceApps {
     });
   };
 
+  updateConfigData(config) {
+    const configKeyMapper = {};
+    const serverConfigKeyMapper = {
+      cmsApiKey: this.config.target_stack,
+    };
+
+    if (!_.isEmpty(config.configuration) && !_.isEmpty(configKeyMapper)) {
+      _.forEach(_.keys(configKeyMapper), (key) => {
+        config.configuration[key] = configKeyMapper[key];
+      });
+    }
+
+    if (!_.isEmpty(config.server_configuration) && !_.isEmpty(serverConfigKeyMapper)) {
+      _.forEach(_.keys(serverConfigKeyMapper), (key) => {
+        config.server_configuration[key] = serverConfigKeyMapper[key];
+      });
+    }
+
+    return config;
+  }
+
   /**
    * @method updateAppsConfig
    * @param {Object<{ data, app, httpClient, nodeCrypto }>} param
@@ -486,7 +507,7 @@ module.exports = class ImportMarketplaceApps {
   updateAppsConfig = ({ data, app, httpClient, nodeCrypto }) => {
     const self = this;
     return new Promise((resolve, reject) => {
-      const payload = {};
+      let payload = {};
       const { title, configuration, server_configuration } = app;
 
       if (!_.isEmpty(configuration)) {
@@ -495,6 +516,8 @@ module.exports = class ImportMarketplaceApps {
       if (!_.isEmpty(server_configuration)) {
         payload['server_configuration'] = nodeCrypto.decrypt(server_configuration);
       }
+
+      payload = self.updateConfigData(payload);
 
       if (_.isEmpty(data) || _.isEmpty(payload) || !data.installation_uid) {
         resolve();
