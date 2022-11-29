@@ -15,7 +15,7 @@ $ npm install -g @contentstack/cli-cm-clone
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-clone/1.1.4 darwin-x64 node-v18.12.1
+@contentstack/cli-cm-clone/1.1.4 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -49,14 +49,14 @@ OPTIONS
   -n, --stack-name=stack-name                                              Name for the new stack to store the cloned
                                                                            content.
 
-  -y, --yes                                                                [optional] Override marketplace prompts
+  -y, --yes                                                                [Optional] Override marketplace prompts
 
   --destination-management-token-alias=destination-management-token-alias  Source API key of the target stack token
                                                                            alias.
 
   --destination-stack-api-key=destination-stack-api-key                    Destination stack API Key
 
-  --import-webhook-status=disable|current                                  [default: disable] Webhook state
+  --import-webhook-status=disable|current                                  [default: disable] [Optional] Webhook state
 
   --source-branch=source-branch                                            Branch of the source stack.
 

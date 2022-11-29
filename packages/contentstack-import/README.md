@@ -37,7 +37,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-import/1.2.2 darwin-x64 node-v18.12.1
+@contentstack/cli-cm-import/1.2.2 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -68,7 +68,7 @@ OPTIONS
   -k, --stack-api-key=stack-api-key        API key of the target stack
   -m, --module=module                      [optional] specific module name
   -y, --yes                                [optional] Override marketplace prompts
-  --import-webhook-status=disable|current  [default: disable] Webhook state
+  --import-webhook-status=disable|current  [default: disable] [optional] Webhook state
 
 DESCRIPTION
   ...
