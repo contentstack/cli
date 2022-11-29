@@ -78,7 +78,7 @@ exports.initial = async function (config) {
       try {
         await fetchBranchAndExport();
       } catch (error) {
-        addlogs(config, `${formatError(error)}`, 'error');
+        addlogs(config, formatError(error), 'error');
       }
       resolve();
     }
@@ -147,17 +147,12 @@ const allExport = async (config, types, branchName) => {
     addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success');
     return true;
   } catch (error) {
+    addlogs(config, formatError(error), 'error');
     addlogs(
       config,
-      chalk.red(
-        'Failed to migrate stack: ' +
-          (config.sourceStackName || config.source_stack) +
-          '. Please check error logs for more info',
-      ),
+      chalk.red('Failed to migrate stack: ' + config.source_stack + '. Please check error logs for more info'),
       'error',
     );
-    addlogs(config, chalk.red(error && error.errorMessage), 'error');
     addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error');
-    return error;
   }
 };
