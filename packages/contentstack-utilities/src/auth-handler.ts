@@ -1,8 +1,8 @@
-import { cliux, logger, CLIError, HttpClient, configHandler } from '@contentstack/cli-utilities';
+import { cliux, logger, HttpClient, configHandler } from '@contentstack/cli-utilities';
 import * as ContentstackManagementSDK from '@contentstack/management';
 require('dotenv').config();
 
-const http = require('http');
+const https = require('https');
 const url = require('url');
 const open = require('open');
 const crypto = require('crypto');
@@ -117,7 +117,7 @@ class AuthHandler {
   async createHTTPServer(): Promise<object> {
     return new Promise((resolve, reject) => {
       try {
-        const server = http.createServer((req, res) => {
+        const server = https.createServer((req, res) => {
           const reqURL = req.url;
           const queryObject = url.parse(reqURL, true).query;
           if (queryObject.code) {
