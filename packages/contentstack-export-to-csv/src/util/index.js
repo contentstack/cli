@@ -401,7 +401,7 @@ function getOrgUsers(managementAPIClient, orgUid, ecsv) {
   return new Promise((resolve, reject) => {
     managementAPIClient
       .getUser({ include_orgs_roles: true })
-      .then((response) => {
+      .then(async (response) => {
         let organization = response.organizations.filter((org) => org.uid === orgUid).pop();
         if (organization.is_owner === true) {
           let cma = ecsv.region.cma;
@@ -414,13 +414,32 @@ function getOrgUsers(managementAPIClient, orgUid, ecsv) {
         if (!organization.getInvitations) {
           return reject(new Error(config.adminError));
         }
-        organization
-          .getInvitations()
-          .then((users) => resolve(users))
-          .catch((error) => reject(error));
+        try {
+          const users = await getUsers(organization, { skip: 0, page: 1, limit: 100 });
+          return resolve({ items: users });
+        } catch (error) {
+          return reject(error);
+        }
       })
       .catch((error) => reject(error));
   });
+}
+
+async function getUsers(organization, params, result = []) {
+  try {
+    const users = await organization.getInvitations(params);
+    if (!users.items || (users.items && !users.items.length)) {
+      return result;
+    } else {
+      result = result.concat(users.items);
+      params.skip = params.page * params.limit;
+      params.page++;
+      await wait(200);
+      return getUsers(organization, params, result);
+    }
+  } catch (error) {
+    throw error;
+  }
 }
 
 function getMappedUsers(users) {
@@ -563,6 +582,12 @@ function formatError(error) {
     });
   }
   return message;
+}
+
+function wait(time) {
+  return new Promise((res) => {
+    setTimeout(res, time);
+  });
 }
 
 module.exports = {

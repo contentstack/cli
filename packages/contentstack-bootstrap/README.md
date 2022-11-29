@@ -15,7 +15,7 @@ $ npm install -g @contentstack/cli-cm-bootstrap
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-bootstrap/1.1.4 darwin-x64 node-v18.12.1
+@contentstack/cli-cm-bootstrap/1.1.4 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -49,7 +49,7 @@ USAGE
 OPTIONS
   -k, --stack-api-key=stack-api-key  Provide stack API key to seed content
   -n, --stack-name=stack-name        Name of a new stack that will be created.
-  -y, --yes=yes
+  -y, --yes=yes                      [Optional] Skip stack confirmation
 
   --app-name=app-name                App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter,
                                      nuxt-starter, vue-starter, stencil-starter
