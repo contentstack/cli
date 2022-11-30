@@ -6,5 +6,6 @@
     "ignore": "contentstack-management"
   },
   "npmClient": "npm",
-  "version": "independent"
+  "version": "independent",
+  "useWorkspaces": true
 }
