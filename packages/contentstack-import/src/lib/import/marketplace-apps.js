@@ -105,7 +105,7 @@ module.exports = class ImportMarketplaceApps {
           process.exit(1);
         }
       }
-
+   
       return encryptionKey;
     }
 
