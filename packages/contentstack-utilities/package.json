@@ -23,6 +23,11 @@
     "contentstack",
     "utilities"
   ],
+  "files": [
+    "/npm-shrinkwrap.json",
+    "/lib",
+    "/types"
+  ],
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
@@ -32,7 +37,7 @@
     "chalk": "^4.0.0",
     "conf": "^10.1.2",
     "debug": "^4.1.1",
-    "inquirer": "8.2.4",
+    "inquirer": "^8.2.4",
     "inquirer-search-checkbox": "^1.0.0",
     "inquirer-search-list": "^1.2.6",
     "ora": "^5.4.0",
