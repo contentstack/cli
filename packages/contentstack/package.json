@@ -44,7 +44,7 @@
     "chalk": "^4.1.2",
     "debug": "^4.1.1",
     "figlet": "^1.5.2",
-    "inquirer": "8.2.4",
+    "inquirer": "^8.2.4",
     "uuid": "^9.0.0",
     "winston": "^3.7.2"
   },
@@ -115,7 +115,6 @@
       }
     },
     "helpClass": "./lib/help.js",
-    "commands": "./lib/commands",
     "bin": "csdx",
     "plugins": [
       "@oclif/plugin-not-found",
