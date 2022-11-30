@@ -16,7 +16,7 @@
     "async": "^3.2.4",
     "child_process": "^1.0.2",
     "fancy-test": "^1.4.10",
-    "inquirer": "8.2.4",
+    "inquirer": "^8.2.4",
     "ora": "^5.1.0",
     "rimraf": "^3.0.2",
     "winston": "^3.7.2"
