@@ -46,6 +46,7 @@
     "node": ">=8.0.0"
   },
   "files": [
+    "/types",
     "/lib",
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
@@ -63,7 +64,7 @@
     }
   },
   "oclif": {
-    "commands": "./src/commands",
+    "commands": "./lib/commands",
     "bin": "csdx",
     "devPlugins": [
       "@oclif/plugin-help"
