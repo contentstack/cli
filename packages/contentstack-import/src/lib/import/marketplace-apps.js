@@ -96,10 +96,13 @@ module.exports = class ImportMarketplaceApps {
         const nodeCrypto = new NodeCrypto({ encryptionKey });
         nodeCrypto.decrypt(appConfig.configuration || appConfig.server_configuration);
       } catch (error) {
-        if (retry <= 3 && error.code === 'ERR_OSSL_EVP_BAD_DECRYPT') {
+        if (retry < this.config.getEncryptionKeyMaxRetry && error.code === 'ERR_OSSL_EVP_BAD_DECRYPT') {
           cliux.print('Provided encryption key is not valid or your data might be corrupted.!', { color: 'red' });
           // NOTE max retry limit is 3
           return this.getEncryptionKeyAndValidate(encryptionKey, retry + 1);
+        } else {
+          cliux.print('Maximum retry limit exceeded. Closing the process, please try again.!', { color: 'red' });
+          process.exit(1);
         }
       }
 
