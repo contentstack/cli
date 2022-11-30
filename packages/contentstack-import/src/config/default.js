@@ -338,6 +338,7 @@ module.exports = {
   writeConcurrency: 5,
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
+  getEncryptionKeyMaxRetry: 3,
   // useBackedupDir: '',
   // backupConcurrency: 10,
 };
