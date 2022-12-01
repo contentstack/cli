@@ -17,8 +17,5 @@
       "**/node_modules/**",
       "packages/*/lib/**"
     ]
-  },
-  "workspaces": [
-    "./packages/*"
-  ]
+  }
 }
