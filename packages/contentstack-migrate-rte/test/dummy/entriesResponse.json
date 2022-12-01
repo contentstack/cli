@@ -421,5 +421,24 @@
             }
         ],
         "count": 1
+    },
+    "rte_images": {
+        "entries": [
+            {
+                "title": "Entry 2",
+                "rich_text_editor": "<p></p><img asset_uid=\"bltfea8157ddfb8e776\" height=\"auto\" src=\"https://images.contentstack.io/v3/assets/blt858e12437ac2679e/bltfea8157ddfb8e776/6329f1106a7f7364973c028c/landscape-3.jpg\" width=\"194\" max-width=\"194\" style=\"width: 194px; height: auto;\"/> <img height=\"auto\" src=\"https://images.contentstack.io/v3/assets/blt858e12437ac2679e/bltfea8157ddfb8e776/6329f1106a7f7364973c028c/landscape-3.jpg\" width=\"194\" max-width=\"194\" style=\"width: 194px; height: auto;\"/>",
+                "tags": [],
+                "locale": "en-us",
+                "uid": "blt6168b6493a122849",
+                "created_by": "blt3943ff6628403515",
+                "updated_by": "blt3943ff6628403515",
+                "created_at": "2021-06-18T10:10:35.292Z",
+                "updated_at": "2021-06-18T10:10:35.292Z",
+                "ACL": {},
+                "_version": 1,
+                "_in_progress": false
+            }
+        ],
+        "count": 2
     }
 }
