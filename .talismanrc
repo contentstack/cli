@@ -85,4 +85,6 @@ fileignoreconfig:
     ignore_detectors: [filecontent]
   - filename: packages/contentstack-seed/tests/interactive.test.ts
     checksum: 30af7b5e1984b01d7de1fb8b2c3b4dc08fb3e190d0ca6a9818c136d18bbd8b9d
+  - filename: packages/contentstack-migration/src/commands/cm/stacks/migration.js
+    checksum: 24f1824c301260cbfff3fddb50ae335835ab62f146124517ea4b10c4be0f0fb7
     version: ''
