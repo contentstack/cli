@@ -31,6 +31,8 @@ class ExportCommand extends Command {
     host.cma = cmaHost[1];
     host.cda = cdaHost[1];
 
+    config.forceStopMarketplaceAppsPrompt = exportCommandFlags.yes;
+
     if (alias) {
       let managementTokens = this.getToken(alias);
 
@@ -176,6 +178,11 @@ ExportCommand.flags = {
   }),
   'secured-assets': flags.boolean({
     description: '[optional] use when assets are secured',
+  }),
+  yes: flags.boolean({
+    char: 'y',
+    required: false,
+    description: '[optional] Override marketplace apps related prompts',
   }),
 };
 
