@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import merge from 'lodash/merge';
 
 type CryptoConfig = {
   algorithm?: string;
@@ -6,7 +7,7 @@ type CryptoConfig = {
   typeIdentifier?: string;
 };
 
-const defaultValues: CryptoConfig = {
+const defaultValues = {
   typeIdentifier: '◈',
   algorithm: 'aes-192-cbc',
   //   file deepcode ignore HardcodedNonCryptoSecret: <This is a ToDo>
@@ -19,7 +20,7 @@ export default class NodeCrypto {
   private readonly typeIdentifier: string;
 
   constructor(config: CryptoConfig = defaultValues) {
-    const { algorithm, encryptionKey, typeIdentifier } = config;
+    const { algorithm, encryptionKey, typeIdentifier } = merge(defaultValues, config);
     this.algorithm = algorithm;
     this.typeIdentifier = typeIdentifier;
     this.key = crypto.scryptSync(encryptionKey, 'salt', 24);
