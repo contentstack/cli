@@ -55,6 +55,7 @@ export default class SeedCommand extends Command {
     yes: flags.string({
       char: 'y',
       required: false,
+      description: '[Optional] Skip stack confirmation',
     }),
 
     //To be deprecated
