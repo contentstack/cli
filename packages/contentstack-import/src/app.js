@@ -135,17 +135,27 @@ let allImport = async (config, types) => {
         ),
         'success',
       );
-        addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'import'), 'success');
-      } else {
-        addlogs(config, chalk.green('Data has been imported to stack ' + (config.destinationStackName || config.target_stack) + '  succesfully!'), 'success');
-        addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
-      }
-      return resolve();
-    } catch (error) {
+      addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'import'), 'success');
+    } else {
       addlogs(
         config,
-        chalk.red('Failed to migrate stack: ' + (config.destinationStackName || config.target_stack) + '. Please check error logs for more info'),
-        'error',
+        chalk.green(
+          'Data has been imported to stack ' + (config.destinationStackName || config.target_stack) + '  succesfully!',
+        ),
+        'success',
+      );
+      addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
+    }
+    return true;
+  } catch (error) {
+    addlogs(
+      config,
+      chalk.red(
+        'Failed to migrate stack: ' +
+          (config.destinationStackName || config.target_stack) +
+          '. Please check error logs for more info',
+      ),
+      'error',
     );
     addlogs(config, formatError(error), 'error');
     addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
