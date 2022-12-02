@@ -17,7 +17,7 @@ It is Contentstack’s CLI plugin to perform authentication-related activities. 
 $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
-$ csdx (-v|--version|version)
+$ csdx (--version)
 @contentstack/cli-auth/1.0.3 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE

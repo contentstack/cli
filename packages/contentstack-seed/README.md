@@ -21,13 +21,16 @@ Create a stack from existing content types, entries, assets, etc
 USAGE
   $ csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]
 
-OPTIONS
-  -k, --stack-api-key=stack-api-key  Provide stack api key to seed content to
-  -n, --stack-name=stack-name        Name of a new stack that needs to be created.
-  -o, --org=org                      Provide Organization UID to create a new stack
-  -r, --repo=repo                    GitHub account or GitHub account/repository
-  -s, --stack=stack                  Provide stack UID to seed content to
-  -y, --yes=yes                      [Optional] Skip stack confirmation
+FLAGS
+  -k, --stack-api-key=<value>  Provide stack api key to seed content to
+  -n, --stack-name=<value>     Name of a new stack that needs to be created.
+  -o, --org=<value>            Provide Organization UID to create a new stack
+  -r, --repo=<value>           GitHub account or GitHub account/repository
+  -s, --stack=<value>          Provide stack UID to seed content to
+  -y, --yes=<value>            [Optional] Skip stack confirmation
+
+DESCRIPTION
+  Create a stack from existing content types, entries, assets, etc
 
 ALIASES
   $ csdx cm:seed
