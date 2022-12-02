@@ -14,7 +14,7 @@ This means that all the required steps such as stack, environment, and content t
 $ npm install -g @contentstack/cli-cm-bootstrap
 $ csdx COMMAND
 running command...
-$ csdx (--version)
+$ csdx (-v|--version|version)
 @contentstack/cli-cm-bootstrap/1.1.4 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
@@ -47,15 +47,10 @@ USAGE
   $ csdx cm:bootstrap [--app-name <value>] [--project-dir <value>] [-k <value> | --org <value> | -n <value>] [-y
     <value>]
 
-FLAGS
-  -k, --stack-api-key=<value>  Provide stack API key to seed content
-  -n, --stack-name=<value>     Name of a new stack that will be created.
-  -y, --yes=<value>            [Optional] Skip stack confirmation
-  --app-name=<value>           App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter,
-                               vue-starter, stencil-starter
-  --org=<value>                Provide organization UID to create a new stack
-  --project-dir=<value>        Directory to setup the project. If directory name has a space then provide the path as a
-                               string or escap the space using back slash eg: "../../test space" or ../../test\ space
+OPTIONS
+  -k, --stack-api-key=stack-api-key  Provide stack API key to seed content
+  -n, --stack-name=stack-name        Name of a new stack that will be created.
+  -y, --yes=yes                      [Optional] Skip stack confirmation
 
 DESCRIPTION
   Bootstrap contentstack apps
