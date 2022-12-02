@@ -20,7 +20,7 @@ The Contentstack CLI’s “Migration” plugin allows developers to automate th
 $ npm install -g @contentstack/cli-migration
 $ csdx COMMAND
 running command...
-$ csdx (-v|--version|version)
+$ csdx (--version)
 @contentstack/cli-migration/1.0.2 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
@@ -69,7 +69,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -108,7 +108,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
