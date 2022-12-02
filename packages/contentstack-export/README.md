@@ -37,7 +37,7 @@ For switching to AZURE-NA region update the hosts at config/default.js
 $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
-$ csdx (-v|--version|version)
+$ csdx (--version)
 @contentstack/cli-cm-export/1.2.1 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
@@ -69,6 +69,7 @@ FLAGS
   -k, --stack-api-key=<value>     API key of the source stack
   -m, --module=<value>            [optional] specific module name
   -t, --content-types=<value>...  [optional] content type
+  -y, --yes                       [optional] Override marketplace apps related prompts
   --secured-assets                [optional] use when assets are secured
 
 DESCRIPTION
@@ -110,6 +111,7 @@ FLAGS
   -k, --stack-api-key=<value>     API key of the source stack
   -m, --module=<value>            [optional] specific module name
   -t, --content-types=<value>...  [optional] content type
+  -y, --yes                       [optional] Override marketplace apps related prompts
   --secured-assets                [optional] use when assets are secured
 
 DESCRIPTION
