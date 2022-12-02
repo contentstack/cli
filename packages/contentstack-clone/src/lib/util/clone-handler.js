@@ -12,8 +12,15 @@ const defaultConfig = require('@contentstack/cli-cm-export/src/config/default');
 const { CustomAbortController } = require('./abort-controller');
 
 const {
-  HandleOrgCommand, HandleStackCommand, HandleDestinationStackCommand, HandleExportCommand,
-  SetBranchCommand, CreateNewStackCommand, CloneTypeSelectionCommand, Clone, HandleBranchCommand
+  HandleOrgCommand,
+  HandleStackCommand,
+  HandleDestinationStackCommand,
+  HandleExportCommand,
+  SetBranchCommand,
+  CreateNewStackCommand,
+  CloneTypeSelectionCommand,
+  Clone,
+  HandleBranchCommand,
 } = require('../helpers/command-helpers');
 
 let client = {};
@@ -85,7 +92,7 @@ class CloneHandler {
     let keyPressHandler;
     return new Promise(async (resolve, reject) => {
       try {
-        const { org = {}, msg = '', isSource = true, stackAbortController } = options || {}
+        const { org = {}, msg = '', isSource = true, stackAbortController } = options || {};
 
         keyPressHandler = async function (_ch, key) {
           if (key.name === 'left' && key.shift) {
@@ -97,7 +104,7 @@ class CloneHandler {
         };
         process.stdin.addListener('keypress', keyPressHandler);
 
-        const stackList = await this.getStack(org, msg, isSource).catch(reject)
+        const stackList = await this.getStack(org, msg, isSource).catch(reject);
 
         if (stackList) {
           const ui = new inquirer.ui.BottomBar();
@@ -117,7 +124,7 @@ class CloneHandler {
             config.destinationStackName = selectedStack.stack;
           }
 
-          resolve(selectedStack)
+          resolve(selectedStack);
         }
       } catch (error) {
         return reject(error);
@@ -130,48 +137,42 @@ class CloneHandler {
   }
 
   handleBranchSelection = async (options) => {
-    const { api_key, isSource = true, returnBranch = false } = options
-    const baseUrl = defaultConfig.host.startsWith('http')
-      ? defaultConfig.host
-      : `https://${defaultConfig.host}/v3`;
+    const { api_key, isSource = true, returnBranch = false } = options;
+    const baseUrl = defaultConfig.host.startsWith('http') ? defaultConfig.host : `https://${defaultConfig.host}/v3`;
 
     return new Promise(async (resolve, reject) => {
       try {
-        const headers = { api_key }
+        const headers = { api_key };
 
         if (config.auth_token) {
-          headers['authtoken'] = config.auth_token
+          headers['authtoken'] = config.auth_token;
         } else if (config.management_token) {
-          headers['authorization'] = config.management_token
+          headers['authorization'] = config.management_token;
         }
 
         // NOTE validate if source branch is exist
         if (isSource && config.sourceStackBranch) {
-          await this.validateIfBranchExist(headers, true)
-          return resolve()
+          await this.validateIfBranchExist(headers, true);
+          return resolve();
         }
 
         // NOTE Validate target branch is exist
         if (!isSource && config.targetStackBranch) {
-          await this.validateIfBranchExist(headers, false)
-          return resolve()
+          await this.validateIfBranchExist(headers, false);
+          return resolve();
         }
 
         const spinner = ora('Fetching Branches').start();
         const result = await new HttpClient()
           .headers(headers)
           .get(`${baseUrl}/stacks/branches`)
-          .then(({ data: { branches } }) => branches)
+          .then(({ data: { branches } }) => branches);
 
-        const condition = (
-          result &&
-          Array.isArray(result) &&
-          result.length > 0
-        )
+        const condition = result && Array.isArray(result) && result.length > 0;
 
         // NOTE if want to get only list of branches (Pass param -> returnBranch = true )
         if (returnBranch) {
-          resolve(condition ? result : [])
+          resolve(condition ? result : []);
         } else {
           // NOTE list options to use to select branch
           if (condition) {
@@ -180,30 +181,30 @@ class CloneHandler {
               type: 'list',
               name: 'branch',
               message: 'Choose a branch',
-              choices: result.map(row => row.uid),
+              choices: result.map((row) => row.uid),
             });
 
             if (isSource) {
-              config.sourceStackBranch = branch
+              config.sourceStackBranch = branch;
             } else {
-              config.targetStackBranch = branch
+              config.targetStackBranch = branch;
             }
           } else {
             spinner.succeed('No branches found.!');
           }
 
-          resolve()
+          resolve();
         }
       } catch (e) {
         spinner.fail();
-        console.log(e && e.message)
-        resolve()
+        console.log(e && e.message);
+        resolve();
       }
-    })
-  }
+    });
+  };
 
   async validateIfBranchExist(headers, isSource) {
-    const branch = isSource ? config.sourceStackBranch : config.targetStackBranch
+    const branch = isSource ? config.sourceStackBranch : config.targetStackBranch;
     const spinner = ora(`Validation if ${isSource ? 'source' : 'target'} branch exist.!`).start();
     const isBranchExist = await HttpClient.create()
       .headers(headers)
@@ -211,15 +212,15 @@ class CloneHandler {
       .then(({ data }) => data);
 
     const completeSpinner = (msg, method = 'succeed') => {
-      spinner[method](msg)
-      spinner.stop()
-    }
+      spinner[method](msg);
+      spinner.stop();
+    };
 
     if (isBranchExist && typeof isBranchExist === 'object' && typeof isBranchExist.branch === 'object') {
-      completeSpinner(`${isSource ? 'Source' : 'Target'} branch verified.!`)
+      completeSpinner(`${isSource ? 'Source' : 'Target'} branch verified.!`);
     } else {
-      completeSpinner(`${isSource ? 'Source' : 'Target'} branch not found.!`, 'fail')
-      process.exit()
+      completeSpinner(`${isSource ? 'Source' : 'Target'} branch not found.!`, 'fail');
+      process.exit();
     }
   }
 
@@ -236,12 +237,12 @@ class CloneHandler {
 
           const org = await cloneCommand.execute(new HandleOrgCommand({ msg: orgMsg, isSource: true }, this));
           if (org) {
-            const sourceStack = await cloneCommand.execute(new HandleStackCommand({ org, isSource: true, msg: stackMsg, stackAbortController }, this));
+            const sourceStack = await cloneCommand.execute(
+              new HandleStackCommand({ org, isSource: true, msg: stackMsg, stackAbortController }, this),
+            );
 
             if (config.source_stack) {
-              await cloneCommand.execute(
-                new HandleBranchCommand({ api_key: config.source_stack }, this)
-              );
+              await cloneCommand.execute(new HandleBranchCommand({ api_key: config.source_stack }, this));
             }
 
             if (stackAbortController.signal.aborted) {
@@ -256,7 +257,9 @@ class CloneHandler {
         await cloneCommand.execute(new SetBranchCommand(null, this));
 
         if (exportRes) {
-          this.executeDestination().catch(() => { reject(); });
+          this.executeDestination().catch(() => {
+            reject();
+          });
         }
         return resolve();
       } catch (error) {
@@ -288,13 +291,17 @@ class CloneHandler {
 
             if (org) {
               const stackMsg = 'Choose the destination stack:';
-              await cloneCommand.execute(new HandleDestinationStackCommand({ org, msg: stackMsg, stackAbortController, isSource: false }, this));
+              await cloneCommand.execute(
+                new HandleDestinationStackCommand({ org, msg: stackMsg, stackAbortController, isSource: false }, this),
+              );
             }
           }
 
           // NOTE GET list of branches if branches enabled
           if (config.target_stack) {
-            await cloneCommand.execute(new HandleBranchCommand({ isSource: false, api_key: config.target_stack }, this));
+            await cloneCommand.execute(
+              new HandleBranchCommand({ isSource: false, api_key: config.target_stack }, this),
+            );
           }
         } else {
           const orgMsg = 'Choose an organization where you want to create a stack: ';
@@ -316,7 +323,7 @@ class CloneHandler {
           });
         }
       }
-    })
+    });
   }
 
   async setBranch() {
@@ -327,7 +334,7 @@ class CloneHandler {
         if (branches && branches.items && branches.items.length) {
           config.sourceStackBranch = 'main';
         }
-      } catch (_error) { }
+      } catch (_error) {}
     }
   }
 
@@ -353,7 +360,7 @@ class CloneHandler {
         return reject(e);
       }
     });
-  };
+  }
 
   async getStack(answer, stkMessage) {
     return new Promise(async (resolve, reject) => {
@@ -386,7 +393,7 @@ class CloneHandler {
         return reject(e);
       }
     });
-  };
+  }
 
   async createNewStack(options) {
     let keyPressHandler;
@@ -494,6 +501,8 @@ class CloneHandler {
         cmd.push('--branch', config.sourceStackBranch);
       }
 
+      if (config.forceStopMarketplaceAppsPrompt) cmd.push('-y');
+
       let exportData = exportCmd.run(cmd);
       exportData.then(() => resolve(true)).catch(reject);
     });
@@ -516,7 +525,7 @@ class CloneHandler {
         cmd.push('--import-webhook-status', config.importWebhookStatus);
       }
 
-      if (config.forceMarketplaceAppsImport) cmd.push('-y')
+      if (config.forceStopMarketplaceAppsPrompt) cmd.push('-y');
 
       await importCmd.run(cmd);
       return resolve();
