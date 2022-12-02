@@ -36,7 +36,7 @@ For switching to AZURE-NA region update the hosts at config/default.js
 $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
-$ csdx (-v|--version|version)
+$ csdx (--version)
 @contentstack/cli-cm-import/1.2.2 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
@@ -60,16 +60,17 @@ USAGE
   $ csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>]
     [--branch <value>] [--import-webhook-status disable|current]
 
-OPTIONS
-  -B, --branch=branch                      [optional] branch name
-  -a, --alias=alias                        alias of the management token
-  -b, --backup-dir=backup-dir              [optional] backup directory name when using specific module
-  -c, --config=config                      [optional] path of config file
-  -d, --data-dir=data-dir                  path and location where data is stored
-  -k, --stack-api-key=stack-api-key        API key of the target stack
-  -m, --module=module                      [optional] specific module name
-  -y, --yes                                [optional] Override marketplace prompts
-  --import-webhook-status=disable|current  [default: disable] [optional] Webhook state
+FLAGS
+  -B, --branch=<value>              [optional] branch name
+  -a, --alias=<value>               alias of the management token
+  -b, --backup-dir=<value>          [optional] backup directory name when using specific module
+  -c, --config=<value>              [optional] path of config file
+  -d, --data-dir=<value>            path and location where data is stored
+  -k, --stack-api-key=<value>       API key of the target stack
+  -m, --module=<value>              [optional] specific module name
+  -y, --yes                         [optional] Override marketplace prompts
+  --import-webhook-status=<option>  [default: disable] [optional] Webhook state
+                                    <options: disable|current>
 
 DESCRIPTION
   Import script for importing the content into the new stack
