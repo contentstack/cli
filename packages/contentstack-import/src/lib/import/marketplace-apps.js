@@ -105,7 +105,7 @@ module.exports = class ImportMarketplaceApps {
           process.exit(1);
         }
       }
-   
+
       return encryptionKey;
     }
 
@@ -313,7 +313,7 @@ module.exports = class ImportMarketplaceApps {
                 : await cliux.inquire({
                     type: 'input',
                     name: 'name',
-                    default: `${app.manifest.name}◈${appSuffix}`,
+                    default: self.getAppName(app.manifest.name, appSuffix),
                     validate: this.validateAppName,
                     message: `${message}. Enter a new name to create an app.?`,
                   });
