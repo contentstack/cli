@@ -34,7 +34,7 @@ class ImportCommand extends Command {
         defaultConfig.data = data;
       }
 
-      defaultConfig.forceMarketplaceAppsImport = importCommandFlags.yes;
+      defaultConfig.forceStopMarketplaceAppsPrompt = importCommandFlags.yes;
 
       if (alias) {
         let managementTokens = self.getToken(alias);
