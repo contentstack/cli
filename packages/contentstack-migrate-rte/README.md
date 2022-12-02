@@ -15,7 +15,7 @@ It is Contentstack’s CLI plugin to migrate rte. Using this command, you can co
 $ npm install -g @contentstack/cli-cm-migrate-rte
 $ csdx COMMAND
 running command...
-$ csdx (--version)
+$ csdx (-v|--version|version)
 @contentstack/cli-cm-migrate-rte/1.1.3 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
