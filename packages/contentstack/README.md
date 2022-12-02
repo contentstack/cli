@@ -17,7 +17,7 @@ Use Contentstack Command-line Interface to command Contentstack for executing a 
 $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
-$ csdx (-v|--version|version)
+$ csdx (--version|-v)
 @contentstack/cli/1.2.3 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
@@ -1582,6 +1582,7 @@ FLAGS
   -k, --stack-api-key=<value>     API key of the source stack
   -m, --module=<value>            [optional] specific module name
   -t, --content-types=<value>...  [optional] content type
+  -y, --yes                       [optional] Override marketplace apps related prompts
   --secured-assets                [optional] use when assets are secured
 
 DESCRIPTION
@@ -1797,7 +1798,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -1885,6 +1886,55 @@ EXAMPLES
   $ csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias> --type <value a or b>
 ```
 
+## `csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`
+
+Clone data (structure/content or both) of a stack into another stack
+
+```
+USAGE
+  $ csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>]
+    [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>]
+    [--destination-stack-api-key <value>] [--import-webhook-status disable|current]
+
+FLAGS
+  -n, --stack-name=<value>                      Name for the new stack to store the cloned content.
+  -y, --yes                                     [Optional] Override marketplace prompts
+  --destination-management-token-alias=<value>  Source API key of the target stack token alias.
+  --destination-stack-api-key=<value>           Destination stack API Key
+  --import-webhook-status=<option>              [default: disable] [Optional] Webhook state
+                                                <options: disable|current>
+  --source-branch=<value>                       Branch of the source stack.
+  --source-management-token-alias=<value>       Source API key of the target stack token alias.
+  --source-stack-api-key=<value>                Source stack API Key
+  --target-branch=<value>                       Branch of the target stack.
+  --type=<option>                               Type of data to clone
+                                                a) Structure (all modules except entries & assets)
+                                                b) Structure with content (all modules including entries & assets)
+
+                                                <options: a|b>
+
+DESCRIPTION
+  Clone data (structure/content or both) of a stack into another stack
+  Use this plugin to automate the process of cloning a stack in few steps.
+
+
+ALIASES
+  $ csdx cm:stack-clone
+
+EXAMPLES
+  $ csdx cm:stacks:clone
+
+  $ csdx cm:stacks:clone --source-branch <source-branch-name> --target-branch <target-branch-name> --yes
+
+  $ csdx cm:stacks:clone --source-stack-api-key <apiKey> --destination-stack-api-key <apiKey>
+
+  $ csdx cm:stacks:clone --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>
+
+  $ csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias>
+
+  $ csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias> --type <value a or b>
+```
+
 _See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/main/packages/contentstack-clone/src/commands/cm/stacks/clone.js)_
 
 ## `csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`
@@ -1904,6 +1954,7 @@ FLAGS
   -k, --stack-api-key=<value>     API key of the source stack
   -m, --module=<value>            [optional] specific module name
   -t, --content-types=<value>...  [optional] content type
+  -y, --yes                       [optional] Override marketplace apps related prompts
   --secured-assets                [optional] use when assets are secured
 
 DESCRIPTION
@@ -2015,7 +2066,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -2429,6 +2480,44 @@ EXAMPLES
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.7/src/commands/plugins/index.ts)_
 
+## `csdx plugins:install PLUGIN...`
+
+Installs a plugin into the CLI.
+
+```
+USAGE
+  $ csdx plugins:install PLUGIN...
+
+ARGUMENTS
+  PLUGIN  Plugin to install.
+
+FLAGS
+  -f, --force    Run yarn install with force flag.
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  Installs a plugin into the CLI.
+  Can be installed from npm or a git url.
+
+  Installation of a user-installed plugin will override a core plugin.
+
+  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
+  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
+  the CLI without the need to patch and update the whole CLI.
+
+
+ALIASES
+  $ csdx plugins:add
+
+EXAMPLES
+  $ csdx plugins:install myplugin 
+
+  $ csdx plugins:install https://github.com/someuser/someplugin
+
+  $ csdx plugins:install someuser/someplugin
+```
+
 ## `csdx plugins:inspect PLUGIN...`
 
 Displays installation properties of a plugin.
@@ -2484,7 +2573,7 @@ ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:install myplugin
+  $ csdx plugins:install myplugin 
 
   $ csdx plugins:install https://github.com/someuser/someplugin
 
@@ -2545,7 +2634,53 @@ ALIASES
   $ csdx plugins:remove
 ```
 
+## `csdx plugins:uninstall PLUGIN...`
+
+Removes a plugin from the CLI.
+
+```
+USAGE
+  $ csdx plugins:uninstall PLUGIN...
+
+ARGUMENTS
+  PLUGIN  plugin to uninstall
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  Removes a plugin from the CLI.
+
+ALIASES
+  $ csdx plugins:unlink
+  $ csdx plugins:remove
+```
+
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.7/src/commands/plugins/uninstall.ts)_
+
+## `csdx plugins:uninstall PLUGIN...`
+
+Removes a plugin from the CLI.
+
+```
+USAGE
+  $ csdx plugins:uninstall PLUGIN...
+
+ARGUMENTS
+  PLUGIN  plugin to uninstall
+
+FLAGS
+  -h, --help     Show CLI help.
+  -v, --verbose
+
+DESCRIPTION
+  Removes a plugin from the CLI.
+
+ALIASES
+  $ csdx plugins:unlink
+  $ csdx plugins:remove
+```
 
 ## `csdx plugins:update`
 
@@ -2564,6 +2699,74 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.1.7/src/commands/plugins/update.ts)_
+
+## `csdx tokens`
+
+Lists all existing tokens added to the session
+
+```
+USAGE
+  $ csdx tokens [--columns <value> | -x] [--sort <value>] [--filter <value>] [--output csv|json|yaml |  |
+    [--csv | --no-truncate]] [--no-header | ]
+
+FLAGS
+  -x, --extended     show extra columns
+  --columns=<value>  only show provided columns (comma-separated)
+  --csv              output is csv format [alias: --output=csv]
+  --filter=<value>   filter property by partial string matching, ex: name=foo
+  --no-header        hide table header from output
+  --no-truncate      do not truncate output to fit screen
+  --output=<option>  output in a more machine friendly format
+                     <options: csv|json|yaml>
+  --sort=<value>     property to sort by (prepend '-' for descending)
+
+DESCRIPTION
+  Lists all existing tokens added to the session
+
+ALIASES
+  $ csdx tokens
+
+EXAMPLES
+  $ csdx auth:tokens
+```
+
+## `csdx version`
+
+```
+USAGE
+  $ csdx version [--json] [--verbose]
+
+FLAGS
+  --verbose  Show additional information about the CLI.
+
+GLOBAL FLAGS
+  --json  Format output as json.
+
+FLAG DESCRIPTIONS
+  --verbose  Show additional information about the CLI.
+
+    Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.
+```
+
+_See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v1.1.3/src/commands/version.ts)_
+
+## `csdx whoami`
+
+Display current users email address
+
+```
+USAGE
+  $ csdx whoami
+
+DESCRIPTION
+  Display current users email address
+
+ALIASES
+  $ csdx whoami
+
+EXAMPLES
+  $ csdx auth:whoami
+```
 <!-- commandsstop -->
 
 ```
