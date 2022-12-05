@@ -27,7 +27,7 @@
     "@oclif/config": "^1.18.3",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
-    "inquirer": "^8.2.4",
+    "inquirer": "8.2.4",
     "winston": "^3.7.2"
   },
   "devDependencies": {
