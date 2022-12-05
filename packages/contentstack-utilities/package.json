@@ -23,6 +23,11 @@
     "contentstack",
     "utilities"
   ],
+  "files": [
+    "/npm-shrinkwrap.json",
+    "/lib",
+    "/types"
+  ],
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
