@@ -75,7 +75,7 @@ export default class SeedCommand extends Command {
     try {
       const { flags: seedFlags } = this.parse(SeedCommand);
 
-      if (!this.authToken) {
+      if (!this.isAuthenticated()) {
         this.error('You need to login, first. See: auth:login --help', {
           exit: 2,
           suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
@@ -93,6 +93,7 @@ export default class SeedCommand extends Command {
         stackName: seedFlags['stack-name'],
         fetchLimit: seedFlags['fetch-limit'],
         skipStackConfirmation: seedFlags['yes'],
+        isAuthenticated: this.isAuthenticated(),
       };
 
       const seeder = new ContentModelSeeder(options);

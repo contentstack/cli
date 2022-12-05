@@ -2,7 +2,7 @@ import { cliux, logger, HttpClient, configHandler } from '@contentstack/cli-util
 import * as ContentstackManagementSDK from '@contentstack/management';
 require('dotenv').config();
 
-const https = require('https');
+const http = require('http');
 const url = require('url');
 const open = require('open');
 const crypto = require('crypto');
@@ -83,8 +83,7 @@ class AuthHandler {
     };
   }
 
-  /***************************************** OAuth *****************************************
-   *
+  /*
    *
    * Login into Contentstack
    * @returns {Promise} Promise object returns {} on success
@@ -96,8 +95,6 @@ class AuthHandler {
           this.openOAuthURL()
             .then(() => {
               //set timeout for authorization
-              logger.info('successfully logged in');
-              cliux.success('CLI_AUTH_LOGIN_SUCCESS');
               resolve({});
             })
             .catch((error) => {
@@ -117,7 +114,7 @@ class AuthHandler {
   async createHTTPServer(): Promise<object> {
     return new Promise((resolve, reject) => {
       try {
-        const server = https.createServer((req, res) => {
+        const server = http.createServer((req, res) => {
           const reqURL = req.url;
           const queryObject = url.parse(reqURL, true).query;
           if (queryObject.code) {
@@ -125,26 +122,9 @@ class AuthHandler {
             this.getAccessToken(queryObject.code)
               .then(() => {
                 cliux.success('Success fetching Access token using Auth Code');
-                // this.refreshToken()
-                //   .then(() => {
-                // cliux.success('Success fetching Access token using Refresh Token');
-
                 res.writeHead(200, { 'Content-Type': 'text/html' });
                 res.end(`<h1>Thank You!</h1><h2>We know who you are, now you can close this window :)</h2>`);
                 stopServer();
-
-                //   })
-                //   .catch((error) => {
-                //     cliux.error(
-                //       'Error occoured while login with SSO, please login with command - csdx auth:login --sso',
-                //     );
-                //     cliux.error(error);
-                //     res.writeHead(200, { 'Content-Type': 'text/html' });
-                //     res.end(
-                //       `<h1>Sorry!</h1><h2>Something went wrong, please login with command - csdx auth:login --sso(</h2>`,
-                //     );
-                //     stopServer();
-                //   });
               })
               .catch((error) => {
                 cliux.error('Error occoured while login with SSO, please login with command - csdx auth:login --sso');
@@ -323,9 +303,6 @@ class AuthHandler {
         const httpClient = new HttpClient().headers(headers).asFormParams();
         httpClient
           .post(`${this.OAuthBaseURL}/apps-api/apps/token`, payload)
-          //   .then(({ data }) => {
-          //     return this.getUserDetails(data);
-          //   })
           .then(({ data }) => {
             if (data.error) {
               const errorMessage = data.message ? (data.message[0] ? data.message[0] : data.message) : data.error;
