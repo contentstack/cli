@@ -119,9 +119,6 @@ function chooseStack(managementAPIClient, orgUid) {
 }
 
 function getStacks(managementAPIClient, orgUid) {
-  // Adding a query object in query, because it throws an error
-  // the error is coming from query function lib/entity.js, @contentstack/management pacakge
-  // where params.query is being set
   return new Promise((resolve, reject) => {
     let result = {};
     managementAPIClient
