@@ -10,6 +10,7 @@ export interface ImporterOptions {
   tmpPath: string;
   cmaHost: string;
   cdaHost: string;
+  isAuthenticated: boolean;
 }
 
 export async function run(options: ImporterOptions) {
@@ -20,5 +21,7 @@ export async function run(options: ImporterOptions) {
   // moving here to fix jest testing bug
   const { parametersWithAuthToken } = require('@contentstack/cli-cm-import/src/lib/util/import-flags');
 
-  await parametersWithAuthToken(options.authToken, options.api_key, importPath, '', options.cmaHost, '', {});
+  await parametersWithAuthToken(options.authToken, options.api_key, importPath, '', options.cmaHost, '', {
+    isAuthenticated: options.isAuthenticated,
+  });
 }
