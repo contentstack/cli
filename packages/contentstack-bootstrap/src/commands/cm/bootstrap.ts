@@ -1,6 +1,6 @@
 import { Command, flags } from '@contentstack/cli-command';
 import { resolve } from 'path';
-const ContentstackManagementSDK = require('@contentstack/management');
+const { managementClient } = require('@contentstack/cli-utilities');
 import Bootstrap, { BootstrapOptions, SeedParams } from '../../bootstrap';
 import {
   inquireCloneDirectory,
@@ -98,25 +98,19 @@ export default class BootstrapCommand extends Command {
     }),
   };
 
-  get managementAPIClient() {
-    this.bootstrapManagementAPIClient = ContentstackManagementSDK.client({
-      host: this.cmaHost,
-      authtoken: this.authToken,
-    });
-
-    return this.bootstrapManagementAPIClient;
-  }
-
   async run() {
     const bootstrapCommandFlags = this.parse(BootstrapCommand).flags;
 
     try {
-      if (!this.authToken) {
+      if (!this.isAuthenticated()) {
         this.error(messageHandler.parse('CLI_BOOTSTRAP_LOGIN_FAILED'), {
           exit: 2,
           suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
         });
       }
+      this.bootstrapManagementAPIClient = await managementClient({
+        host: this.cmaHost,
+      });
 
       // inquire user inputs
       let appType =
@@ -171,7 +165,7 @@ export default class BootstrapCommand extends Command {
         appConfig,
         seedParams,
         cloneDirectory,
-        managementAPIClient: this.managementAPIClient,
+        managementAPIClient: this.bootstrapManagementAPIClient,
         region: this.region,
         appType,
         livePreviewEnabled,
