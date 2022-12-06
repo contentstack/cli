@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/1.2.3 darwin-arm64 node-v18.11.0
+@contentstack/cli/1.2.3 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -1080,6 +1080,7 @@ FLAGS
   -k, --stack-api-key=<value>  API key of the source stack
   -m, --module=<value>         [optional] specific module name
   -t, --content-types=<value>  [optional] content type
+  -y, --yes                    [optional] Override marketplace apps related prompts
   --secured-assets             [optional] use when assets are secured
 
 DESCRIPTION
