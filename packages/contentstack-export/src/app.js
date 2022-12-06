@@ -147,8 +147,9 @@ const allExport = async (APIClient, stackAPIClient, config, types, branchName) =
       'success',
     );
     addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success');
-    return resolve();
+    return true;
   } catch (error) {
+    addlogs(config, formatError(error), 'error');
     addlogs(
       config,
       chalk.red(
@@ -158,8 +159,6 @@ const allExport = async (APIClient, stackAPIClient, config, types, branchName) =
       ),
       'error',
     );
-    addlogs(config, chalk.red(error && error.errorMessage), 'error');
     addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error');
-    return reject(error);
   }
 };
