@@ -49,7 +49,7 @@ USAGE
 OPTIONS
   -k, --stack-api-key=stack-api-key  Provide stack API key to seed content
   -n, --stack-name=stack-name        Name of a new stack that will be created.
-  -y, --yes=yes
+  -y, --yes=yes                      [Optional] Skip stack confirmation
 
   --app-name=app-name                App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter,
                                      nuxt-starter, vue-starter, stencil-starter

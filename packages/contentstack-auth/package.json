@@ -27,7 +27,7 @@
     "@oclif/config": "^1.18.3",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
-    "inquirer": "^8.2.4",
+    "inquirer": "8.2.4",
     "winston": "^3.7.2"
   },
   "devDependencies": {
@@ -36,7 +36,7 @@
     "@oclif/plugin-help": "^5.1.12",
     "@oclif/test": "^1.2.8",
     "@types/chai": "^4.2.18",
-    "@types/inquirer": "^7.3.1",
+    "@types/inquirer": "^9.0.3",
     "@types/mkdirp": "^1.0.1",
     "@types/mocha": "^8.2.2",
     "@types/node": "^14.14.32",
@@ -48,13 +48,13 @@
     "eslint-config-oclif": "^3.1.0",
     "eslint-config-oclif-typescript": "^0.1.0",
     "globby": "^10.0.2",
-    "mocha": "^9.2.2",
+    "mocha": "10.1.0",
     "nyc": "^15.1.0",
     "rimraf": "^2.7.1",
     "sinon": "^11.1.1",
     "tmp": "^0.2.1",
     "ts-node": "^10.9.1",
-    "typescript": "^4.7.4"
+    "typescript": "^4.9.3"
   },
   "engines": {
     "node": ">=8.0.0"
