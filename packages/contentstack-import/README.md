@@ -68,7 +68,7 @@ OPTIONS
   -k, --stack-api-key=stack-api-key        API key of the target stack
   -m, --module=module                      [optional] specific module name
   -y, --yes                                [optional] Override marketplace prompts
-  --import-webhook-status=disable|current  [default: disable] Webhook state
+  --import-webhook-status=disable|current  [default: disable] [optional] Webhook state
 
 DESCRIPTION
   ...
