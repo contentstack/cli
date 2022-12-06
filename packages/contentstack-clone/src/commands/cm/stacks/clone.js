@@ -29,7 +29,7 @@ class StackCloneCommand extends Command {
       const handleClone = async () => {
         const listOfTokens = configHandler.get('tokens');
 
-        config.forceMarketplaceAppsImport = yes;
+        config.forceStopMarketplaceAppsPrompt = yes;
 
         if (cloneType) {
           config.cloneType = cloneType;
