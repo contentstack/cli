@@ -68,6 +68,7 @@ OPTIONS
   -k, --stack-api-key=stack-api-key  API key of the source stack
   -m, --module=module                [optional] specific module name
   -t, --content-types=content-types  [optional] content type
+  -y, --yes                          [optional] Override marketplace apps related prompts
   --secured-assets                   [optional] use when assets are secured
 
 ALIASES
