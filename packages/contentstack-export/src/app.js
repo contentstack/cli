@@ -3,22 +3,23 @@ const _ = require('lodash');
 const path = require('path');
 const chalk = require('chalk');
 const util = require('./lib/util');
-const { formatError } = require('./lib/util');
 const login = require('./lib/util/login');
 const setupBranches = require('./lib/util/setup-branches');
 const { addlogs, unlinkFileLogger } = require('./lib/util/log');
 const stack = require('./lib/util/contentstack-management-sdk');
 
-exports.initial = async function (config) {
-  return new Promise(async function (resolve, reject) {
+exports.initial = async (config) => {
+  return new Promise(async (resolve, reject) => {
     config = util.buildAppConfig(config);
     util.validateConfig(config);
-    exports.getConfig = function () {
+    exports.getConfig = () => {
       return config;
     };
+    const APIClient = stack.Client(config);
+    const stackAPIClient = APIClient.stack({ api_key: config.source_stack, management_token: config.management_token });
 
-    const fetchBranchAndExport = async () => {
-      await setupBranches(config, config.branchName);
+    const fetchBranchAndExport = async (APIClient, stackAPIClient) => {
+      await setupBranches(config, config.branchName, stackAPIClient);
       let types = config.modules.types;
 
       if (Array.isArray(config.branches) && config.branches.length > 0) {
@@ -26,23 +27,23 @@ exports.initial = async function (config) {
           config.branchName = branch.uid;
           try {
             if (config.moduleName) {
-              await singleExport(config.moduleName, types, config, branch.uid);
+              await singleExport(APIClient, stackAPIClient, config.moduleName, types, config, branch.uid);
             } else {
-              await allExport(config, types, branch.uid);
+              await allExport(APIClient, stackAPIClient, config, types, branch.uid);
             }
           } catch (error) {
-            addlogs(config, `failed export contents ${branch.uid} ${formatError(error)}`, 'error');
+            addlogs(config, `failed export contents ${branch.uid} ${util.formatError(error)}`, 'error');
           }
         }
       } else {
         try {
           if (config.moduleName) {
-            await singleExport(config.moduleName, types, config);
+            await singleExport(APIClient, stackAPIClient, config.moduleName, types, config);
           } else {
-            await allExport(config, types);
+            await allExport(APIClient, stackAPIClient, config, types);
           }
         } catch (error) {
-          addlogs(config, `failed export contents ${formatError(error)}`, 'error');
+          addlogs(config, `failed export contents ${util.formatError(error)}`, 'error');
         }
       }
     };
@@ -55,13 +56,13 @@ exports.initial = async function (config) {
     ) {
       login
         .login(config)
-        .then(async function () {
+        .then(async () => {
           // setup branches
           try {
-            await fetchBranchAndExport();
+            await fetchBranchAndExport(APIClient, stackAPIClient);
             unlinkFileLogger();
           } catch (error) {
-            addlogs(config, `${formatError(error)}`, 'error');
+            addlogs(config, `${util.formatError(error)}`, 'error');
           }
           resolve();
         })
@@ -71,25 +72,22 @@ exports.initial = async function (config) {
             addlogs(config, chalk.red('Stack Api key ' + error.errors.api_key[0], 'Please enter valid Key', 'error'));
             addlogs(config, 'The log for this is stored at ' + config.data + '/export/logs', 'success');
           } else {
-            addlogs(config, `${formatError(error)}`, 'error');
+            addlogs(config, `${util.formatError(error)}`, 'error');
           }
         });
     } else if (config.management_token) {
       try {
-        await fetchBranchAndExport();
+        await fetchBranchAndExport(APIClient, stackAPIClient);
       } catch (error) {
-        addlogs(config, formatError(error), 'error');
+        addlogs(config, util.formatError(error), 'error');
       }
       resolve();
     }
   });
 };
 
-const singleExport = async (moduleName, types, config, branchName) => {
+const singleExport = async (APIClient, stackAPIClient, moduleName, types, config, branchName) => {
   try {
-    const stackClient = stack
-      .Client(config)
-      .stack({ api_key: config.source_stack, management_token: config.management_token });
     if (types.indexOf(moduleName) > -1) {
       let iterateList;
       if (config.modules.dependency && config.modules.dependency[moduleName]) {
@@ -101,7 +99,7 @@ const singleExport = async (moduleName, types, config, branchName) => {
 
       for (let element of iterateList) {
         const ExportModule = require('./lib/export/' + element);
-        const result = await new ExportModule(config, stackClient).start(config, branchName);
+        const result = await new ExportModule(config, stackAPIClient, APIClient).start(config, branchName);
         if (result && element === 'stack') {
           let master_locale = {
             master_locale: { code: result.code },
@@ -116,21 +114,17 @@ const singleExport = async (moduleName, types, config, branchName) => {
     }
     return true;
   } catch (error) {
-    addlogs(config, `${formatError(error)}`, 'error');
+    addlogs(config, `${util.formatError(error)}`, 'error');
     addlogs(config, 'Failed to migrate ' + moduleName, 'error');
     addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error');
   }
 };
 
-const allExport = async (config, types, branchName) => {
+const allExport = async (APIClient, stackAPIClient, config, types, branchName) => {
   try {
-    const stackClient = stack
-      .Client(config)
-      .stack({ api_key: config.source_stack, management_token: config.management_token });
-
     for (let type of types) {
       const ExportModule = require('./lib/export/' + type);
-      const result = await new ExportModule(config, stackClient).start(config, branchName);
+      const result = await new ExportModule(config, stackAPIClient, APIClient).start(config, branchName);
 
       if (result && type === 'stack') {
         let master_locale = { master_locale: { code: result.code } };
@@ -147,7 +141,7 @@ const allExport = async (config, types, branchName) => {
     addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success');
     return true;
   } catch (error) {
-    addlogs(config, formatError(error), 'error');
+    addlogs(config, util.formatError(error), 'error');
     addlogs(
       config,
       chalk.red('Failed to migrate stack: ' + config.source_stack + '. Please check error logs for more info'),
