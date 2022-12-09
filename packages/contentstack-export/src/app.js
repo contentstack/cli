@@ -73,13 +73,12 @@ exports.initial = async function (config) {
           } else {
             addlogs(config, `${formatError(error)}`, 'error');
           }
-          // reject(error);
         });
     } else if (config.management_token) {
       try {
         await fetchBranchAndExport();
       } catch (error) {
-        addlogs(config, `${formatError(error)}`, 'error');
+        addlogs(config, formatError(error), 'error');
       }
       resolve();
     }
@@ -140,13 +139,15 @@ const allExport = async (config, types, branchName) => {
     }
     addlogs(
       config,
-      chalk.green('The content of the ' + config.source_stack + ' has been exported successfully!'),
+      chalk.green(
+        'The content of stack ' + (config.sourceStackName || config.source_stack) + ' has been exported successfully!',
+      ),
       'success',
     );
     addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success');
     return true;
   } catch (error) {
-    addlogs(config, `${formatError(error)}`, 'error');
+    addlogs(config, formatError(error), 'error');
     addlogs(
       config,
       chalk.red('Failed to migrate stack: ' + config.source_stack + '. Please check error logs for more info'),

@@ -1,4 +1,3 @@
-
 import { Command, flags } from '@contentstack/cli-command';
 import ContentModelSeeder, { ContentModelSeederOptions } from '../../../seed';
 import { printFlagDeprecation } from '@contentstack/cli-utilities';
@@ -56,6 +55,7 @@ export default class SeedCommand extends Command {
     yes: flags.string({
       char: 'y',
       required: false,
+      description: '[Optional] Skip stack confirmation',
     }),
 
     //To be deprecated
@@ -83,6 +83,7 @@ export default class SeedCommand extends Command {
       }
 
       const options: ContentModelSeederOptions = {
+        parent: this,
         cdaHost: this.cdaHost,
         cmaHost: this.cmaHost,
         authToken: this.authToken,

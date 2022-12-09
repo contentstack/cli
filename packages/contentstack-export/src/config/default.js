@@ -347,4 +347,6 @@ module.exports = {
   preserveStackVersion: false,
   fetchConcurrency: 5,
   writeConcurrency: 5,
+  developerHubBaseUrl: '',
+  marketplaceAppEncryptionKey: 'nF2ejRQcTv',
 };
