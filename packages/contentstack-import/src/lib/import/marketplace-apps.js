@@ -30,7 +30,7 @@ module.exports = class ImportMarketplaceApps {
 
   async start() {
     this.client = sdk.Client(this.config);
-    this.developerHubBaseUrl = await getDeveloperHubUrl();
+    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl());
     this.marketplaceAppFolderPath = path.resolve(this.config.data, this.marketplaceAppConfig.dirName);
     this.marketplaceApps = _.uniqBy(
       readFileSync(path.resolve(this.marketplaceAppFolderPath, this.marketplaceAppConfig.fileName)),
@@ -74,18 +74,68 @@ module.exports = class ImportMarketplaceApps {
     }
   };
 
+  async getEncryptionKeyAndValidate(defaultValue, retry = 1) {
+    const appConfig =
+      _.find(this.marketplaceApps, 'configuration') ||
+      _.find(this.marketplaceApps, 'server_configuration.configuration');
+
+    if (appConfig) {
+      const encryptionKey = await cliux.inquire({
+        type: 'input',
+        name: 'name',
+        default: defaultValue,
+        validate: (key) => {
+          if (!key) return "Encryption key can't be empty.";
+
+          return true;
+        },
+        message: 'Enter marketplace app configurations encryption key',
+      });
+
+      try {
+        const nodeCrypto = new NodeCrypto({ encryptionKey });
+        nodeCrypto.decrypt(appConfig.configuration || appConfig.server_configuration);
+      } catch (error) {
+        if (retry < this.config.getEncryptionKeyMaxRetry && error.code === 'ERR_OSSL_EVP_BAD_DECRYPT') {
+          cliux.print('Provided encryption key is not valid or your data might be corrupted.!', { color: 'red' });
+          // NOTE max retry limit is 3
+          return this.getEncryptionKeyAndValidate(encryptionKey, retry + 1);
+        } else {
+          cliux.print('Maximum retry limit exceeded. Closing the process, please try again.!', { color: 'red' });
+          process.exit(1);
+        }
+      }
+
+      return encryptionKey;
+    }
+
+    return defaultValue;
+  }
+
   /**
    * @method handleInstallationProcess
    * @returns {Promise<void>}
    */
   handleInstallationProcess = async () => {
     const self = this;
+    const cryptoArgs = {};
     const headers = {
       authtoken: self.config.auth_token,
       organization_uid: self.config.org_uid,
     };
+
+    if (self.config.marketplaceAppEncryptionKey) {
+      cryptoArgs['encryptionKey'] = self.config.marketplaceAppEncryptionKey;
+    }
+
+    if (self.config.forceStopMarketplaceAppsPrompt) {
+      cryptoArgs['encryptionKey'] = self.config.marketplaceAppEncryptionKey;
+    } else {
+      cryptoArgs['encryptionKey'] = await self.getEncryptionKeyAndValidate(self.config.marketplaceAppEncryptionKey);
+    }
+
     const httpClient = new HttpClient().headers(headers);
-    const nodeCrypto = new NodeCrypto();
+    const nodeCrypto = new NodeCrypto(cryptoArgs);
 
     // NOTE install all private apps which is not available for stack.
     await this.handleAllPrivateAppsCreationProcess({ httpClient });
@@ -148,7 +198,7 @@ module.exports = class ImportMarketplaceApps {
       (app) => !_.includes(_.map(installedDeveloperHubApps, 'uid'), app.app_uid),
     );
 
-    if (!_.isEmpty(listOfNotInstalledPrivateApps) && !self.config.forceMarketplaceAppsImport) {
+    if (!_.isEmpty(listOfNotInstalledPrivateApps) && !self.config.forceStopMarketplaceAppsPrompt) {
       const confirmation = await cliux.confirm(
         chalk.yellow(
           `WARNING!!! The listed apps are private apps that are not available in the destination stack: \n\n${_.map(
@@ -258,12 +308,12 @@ module.exports = class ImportMarketplaceApps {
             log(self.config, message, 'error');
 
             if (_.toLower(error) === 'conflict') {
-              const appName = self.config.forceMarketplaceAppsImport
+              const appName = self.config.forceStopMarketplaceAppsPrompt
                 ? self.getAppName(app.manifest.name, appSuffix)
                 : await cliux.inquire({
                     type: 'input',
                     name: 'name',
-                    default: `${app.manifest.name}-1`,
+                    default: self.getAppName(app.manifest.name, appSuffix),
                     validate: this.validateAppName,
                     message: `${message}. Enter a new name to create an app.?`,
                   });
@@ -274,7 +324,7 @@ module.exports = class ImportMarketplaceApps {
                 .then(resolve)
                 .catch(resolve);
             } else {
-              if (self.config.forceMarketplaceAppsImport) return resolve();
+              if (self.config.forceStopMarketplaceAppsPrompt) return resolve();
 
               const confirmation = await cliux.confirm(
                 chalk.yellow(
@@ -369,7 +419,7 @@ module.exports = class ImportMarketplaceApps {
                   { color: 'yellow' },
                 );
 
-                const configOption = self.config.forceMarketplaceAppsImport
+                const configOption = self.config.forceStopMarketplaceAppsPrompt
                   ? 'Update it with the new configuration.'
                   : await cliux.inquire({
                       choices: [
@@ -394,7 +444,7 @@ module.exports = class ImportMarketplaceApps {
                 }
               }
             } else {
-              if (!self.config.forceMarketplaceAppsImport) {
+              if (!self.config.forceStopMarketplaceAppsPrompt) {
                 cliux.print(`WARNING!!! ${message || error_message}`, { color: 'yellow' });
                 const confirmation = await cliux.confirm(
                   chalk.yellow(
@@ -431,6 +481,27 @@ module.exports = class ImportMarketplaceApps {
     });
   };
 
+  updateConfigData(config) {
+    const configKeyMapper = {};
+    const serverConfigKeyMapper = {
+      cmsApiKey: this.config.target_stack,
+    };
+
+    if (!_.isEmpty(config.configuration) && !_.isEmpty(configKeyMapper)) {
+      _.forEach(_.keys(configKeyMapper), (key) => {
+        config.configuration[key] = configKeyMapper[key];
+      });
+    }
+
+    if (!_.isEmpty(config.server_configuration) && !_.isEmpty(serverConfigKeyMapper)) {
+      _.forEach(_.keys(serverConfigKeyMapper), (key) => {
+        config.server_configuration[key] = serverConfigKeyMapper[key];
+      });
+    }
+
+    return config;
+  }
+
   /**
    * @method updateAppsConfig
    * @param {Object<{ data, app, httpClient, nodeCrypto }>} param
@@ -439,7 +510,7 @@ module.exports = class ImportMarketplaceApps {
   updateAppsConfig = ({ data, app, httpClient, nodeCrypto }) => {
     const self = this;
     return new Promise((resolve, reject) => {
-      const payload = {};
+      let payload = {};
       const { title, configuration, server_configuration } = app;
 
       if (!_.isEmpty(configuration)) {
@@ -448,6 +519,8 @@ module.exports = class ImportMarketplaceApps {
       if (!_.isEmpty(server_configuration)) {
         payload['server_configuration'] = nodeCrypto.decrypt(server_configuration);
       }
+
+      payload = self.updateConfigData(payload);
 
       if (_.isEmpty(data) || _.isEmpty(payload) || !data.installation_uid) {
         resolve();

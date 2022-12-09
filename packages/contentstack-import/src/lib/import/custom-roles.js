@@ -103,13 +103,17 @@ module.exports = class ImportCustomRoles {
         } catch (error) {
           self.fails.push(customRole);
 
-          if (error && error.errors && error.errors.name) {
-            addlogs(self.config, chalk.red(`custom-role: ${customRole.name} already exists`), 'error');
+          if (((error && error.errors && error.errors.name) || '').includes('is not a unique.')) {
+            addlogs(self.config, chalk.red(`${customRole.name} role already exists`), 'info');
           } else {
-            addlogs(self.config, chalk.red(`custom-role: ${customRole.name} failed`), 'error');
-          }
+            if (!(error && error.errors && error.errors.name)) {
+              addlogs(self.config, chalk.red(`custom-role: ${customRole.name} already exists`), 'error');
+            } else {
+              addlogs(self.config, chalk.red(`custom-role: ${customRole.name} failed`), 'error');
+            }
 
-          addlogs(self.config, formatError(error), 'error');
+            addlogs(self.config, formatError(error), 'error');
+          }
         }
       }
       addlogs(self.config, chalk.green('Custom-roles have been imported successfully!'), 'success');

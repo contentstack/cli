@@ -1,8 +1,10 @@
-import { HttpClient } from '@contentstack/cli-utilities';
-import { Stream } from 'stream';
-import * as zlib from 'zlib';
 import * as tar from 'tar';
+import * as zlib from 'zlib';
+import * as https from 'https';
+import { Stream } from 'stream';
 import * as mkdirp from 'mkdirp';
+import { HttpClient } from '@contentstack/cli-utilities';
+
 import GithubError from './error';
 
 export default class GitHubClient {
@@ -52,11 +54,33 @@ export default class GitHubClient {
     return this.extract(destination, releaseStream);
   }
 
+  makeHeadApiCall(repo: string) {
+    return new Promise<any>((resolve, reject) => {
+      const { host, pathname } = new URL(this.gitHubRepoUrl);
+      const options = {
+        host,
+        method: 'HEAD',
+        path: `${pathname}/${repo}/contents`,
+        headers: { 'user-agent': 'node.js' },
+      };
+
+      https.request(options, resolve).on('error', reject).end();
+    });
+  }
+
   async checkIfRepoExists(repo: string) {
     try {
-      const response = await this.httpClient.send('HEAD', `${this.gitHubRepoUrl}/${repo}/contents`);
-      return response.status === 200;
+      /**
+       * Old code. Keeping it for reference.
+       *
+       * `const response: any = await this.httpClient.send('HEAD', `${this.gitHubRepoUrl}/${repo}/contents`);`
+       *
+       * `return response.status === 200;`
+       */
+      const response: Record<string, any> = await this.makeHeadApiCall(repo);
+      return response.statusCode === 200;
     } catch (error) {
+      console.log(error);
       // do nothing
     }
 
