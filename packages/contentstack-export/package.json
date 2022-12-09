@@ -1,12 +1,12 @@
 {
   "name": "@contentstack/cli-cm-export",
   "description": "Contentstack CLI plugin to export content from stack",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "^1.0.3",
-    "@contentstack/cli-utilities": "^1.0.4",
+    "@contentstack/cli-command": "^1.0.4",
+    "@contentstack/cli-utilities": "^1.0.5",
     "@contentstack/management": "^1.6.0",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
@@ -24,11 +24,10 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "@contentstack/cli-auth": "^1.0.4",
-    "@contentstack/cli-config": "^1.0.3",
+    "@contentstack/cli-auth": "^1.0.6",
+    "@contentstack/cli-config": "^1.0.4",
     "@contentstack/cli-dev-dependencies": "^1.0.0",
     "@oclif/dev-cli": "^1.22.2",
-    "@oclif/plugin-help": "^5.1.12",
     "@oclif/test": "^1.2.6",
     "assert": "^2.0.0",
     "chai": "^4.2.0",
@@ -68,9 +67,6 @@
   "oclif": {
     "commands": "./src/commands",
     "bin": "csdx",
-    "devPlugins": [
-      "@oclif/plugin-help"
-    ],
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-export/<%- commandPath %>"
   },
   "csdxConfig": {
