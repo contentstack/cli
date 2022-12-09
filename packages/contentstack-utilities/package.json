@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-utilities",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Utilities for contentstack projects",
   "main": "lib/index.js",
   "types": "./types/index.d.ts",
@@ -47,7 +47,6 @@
     "xdg-basedir": "^4.0.0"
   },
   "devDependencies": {
-    "@oclif/plugin-help": "^5.1.12",
     "@oclif/test": "^1.2.8",
     "@types/chai": "^4.2.18",
     "@types/inquirer": "^9.0.3",
