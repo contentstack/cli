@@ -7,7 +7,7 @@
   "dependencies": {
     "@contentstack/cli-cm-import": "^1.2.4",
     "@contentstack/cli-command": "^1.0.4",
-    "@contentstack/cli-utilities": "^1.0.4",
+    "@contentstack/cli-utilities": "^1.0.5",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
     "axios": "1.1.3",
