@@ -38,7 +38,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli-cm-export/1.2.1 darwin-arm64 node-v16.17.0
+@contentstack/cli-cm-export/1.2.2 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -68,6 +68,7 @@ OPTIONS
   -k, --stack-api-key=stack-api-key  API key of the source stack
   -m, --module=module                [optional] specific module name
   -t, --content-types=content-types  [optional] content type
+  -y, --yes                          [optional] Override marketplace apps related prompts
   --secured-assets                   [optional] use when assets are secured
 
 ALIASES
