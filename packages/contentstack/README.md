@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (-v|--version|version)
-@contentstack/cli/1.2.3 darwin-arm64 node-v16.17.0
+@contentstack/cli/1.2.4 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -389,7 +389,7 @@ USAGE
 FLAGS
   -k, --stack-api-key=<value>  Provide stack API key to seed content
   -n, --stack-name=<value>     Name of a new stack that will be created.
-  -y, --yes=<value>
+  -y, --yes=<value>            [Optional] Skip stack confirmation
   --app-name=<value>           App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter,
                                vue-starter, stencil-starter
   --org=<value>                Provide organization UID to create a new stack
@@ -1024,10 +1024,10 @@ USAGE
 
 FLAGS
   -n, --stack-name=<value>                      Name for the new stack to store the cloned content.
-  -y, --yes                                     [optional] Override marketplace prompts
+  -y, --yes                                     [Optional] Override marketplace prompts
   --destination-management-token-alias=<value>  Source API key of the target stack token alias.
   --destination-stack-api-key=<value>           Destination stack API Key
-  --import-webhook-status=<option>              [default: disable] Webhook state
+  --import-webhook-status=<option>              [default: disable] [Optional] Webhook state
                                                 <options: disable|current>
   --source-branch=<value>                       Branch of the source stack.
   --source-management-token-alias=<value>       Source API key of the target stack token alias.
@@ -1080,6 +1080,7 @@ FLAGS
   -k, --stack-api-key=<value>  API key of the source stack
   -m, --module=<value>         [optional] specific module name
   -t, --content-types=<value>  [optional] content type
+  -y, --yes                    [optional] Override marketplace apps related prompts
   --secured-assets             [optional] use when assets are secured
 
 DESCRIPTION
@@ -1124,7 +1125,7 @@ FLAGS
   -k, --stack-api-key=<value>       API key of the target stack
   -m, --module=<value>              [optional] specific module name
   -y, --yes                         [optional] Override marketplace prompts
-  --import-webhook-status=<option>  [default: disable] Webhook state
+  --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                     <options: disable|current>
 
 DESCRIPTION
@@ -1350,7 +1351,7 @@ FLAGS
   -o, --org=<value>            Provide Organization UID to create a new stack
   -r, --repo=<value>           GitHub account or GitHub account/repository
   -s, --stack=<value>          Provide stack UID to seed content to
-  -y, --yes=<value>
+  -y, --yes=<value>            [Optional] Skip stack confirmation
 
 DESCRIPTION
   Create a stack from existing content types, entries, assets, etc
