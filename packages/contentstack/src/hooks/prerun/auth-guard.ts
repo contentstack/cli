@@ -1,4 +1,5 @@
-import { logger, cliux, configHandler, HttpClient } from '@contentstack/cli-utilities';
+import { logger, cliux, configHandler } from '@contentstack/cli-utilities';
+import * as ContentstackManagementSDK from '@contentstack/management';
 
 // TBD: run region command if region is not there
 export default async function (opts): Promise<void> {
@@ -19,19 +20,19 @@ export default async function (opts): Promise<void> {
       cliux.error('Please login to execute the command');
       this.exit();
     }
+    const client = ContentstackManagementSDK.client({ host: region.cma, authtoken: authToken })
     try {
-      const result = await HttpClient.create().headers({ authtoken: authToken }).get(`${region.cma}/v3/user`);
-      if (result.status !== 200) {
+      const result = await client.getUser();
+      if (!result) {
         logger.error('error in auth validation');
         cliux.error('Please login to execute the command');
         this.exit();
       }
-      logger.debug('logged in user', result.data);
+      logger.debug('logged in user', result.data);    
     } catch (error) {
       logger.error('error in auth validation', error);
       cliux.error('Please login to execute the command');
       this.exit();
-      return;
-    }
+    }   
   }
 }
