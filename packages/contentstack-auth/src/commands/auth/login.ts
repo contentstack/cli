@@ -37,8 +37,8 @@ export default class LoginCommand extends Command {
     authHandler.client = this.managementAPIClient;
 
     try {
-      const username = loginFlags?.username || await interactive.askUsername();
-      const password = loginFlags?.password || await interactive.askPassword();
+      const username = loginFlags?.username || (await interactive.askUsername());
+      const password = loginFlags?.password || (await interactive.askPassword());
       logger.debug('username', username);
       await this.login(username, password);
     } catch (error) {
