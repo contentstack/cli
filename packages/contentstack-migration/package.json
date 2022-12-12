@@ -1,10 +1,10 @@
 {
   "name": "@contentstack/cli-migration",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "author": "@contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "^1.0.2",
+    "@contentstack/cli-command": "^1.0.4",
     "@contentstack/management": "^1.6.0",
     "@contentstack/cli-utilities": "^1.0.3",
     "async": "^3.2.4",
@@ -49,9 +49,6 @@
   "oclif": {
     "commands": "./src/commands",
     "bin": "csdx",
-    "devPlugins": [
-      "@oclif/plugin-help"
-    ],
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-migration/<%- commandPath %>"
   },
   "repository": "contentstack/cli-migration",
