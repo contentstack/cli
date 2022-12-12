@@ -10,8 +10,6 @@
     "@contentstack/cli-command": "^1.0.4",
     "@contentstack/cli-utilities": "^1.0.5",
     "@contentstack/management": "^1.6.0",
-    "@oclif/command": "^1.8.16",
-    "@oclif/config": "^1.18.3",
     "chalk": "^4.1.0",
     "async": "^3.2.4",
     "child_process": "^1.0.2",
@@ -22,7 +20,7 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1.22.2",
+    "oclif": "^3.1.2",
     "@oclif/test": "^1.2.7",
     "chai": "^4.2.0",
     "eslint": "^8.18.0",
