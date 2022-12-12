@@ -41,7 +41,7 @@ export default class RegionSetCommand extends Command {
   ];
 
   async run() {
-    const { args, flags: regionSetFlags } = this.parse(RegionSetCommand);
+    const { args, flags: regionSetFlags } = await this.parse(RegionSetCommand);
     let cda = regionSetFlags.cda;
     let cma = regionSetFlags.cma;
     let name = regionSetFlags.name;
