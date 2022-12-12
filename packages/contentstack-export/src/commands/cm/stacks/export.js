@@ -15,7 +15,7 @@ const { configHandler } = require('@contentstack/cli-utilities');
 
 class ExportCommand extends Command {
   async run() {
-    const exportCommandFlags = this.parse(ExportCommand).flags;
+    const { flags: exportCommandFlags } = await this.parse(ExportCommand);
     const extConfig = exportCommandFlags.config;
     let sourceStack = exportCommandFlags['stack-uid'] || exportCommandFlags['stack-api-key'];
     const alias = exportCommandFlags['alias'] || exportCommandFlags['management-token-alias'];
