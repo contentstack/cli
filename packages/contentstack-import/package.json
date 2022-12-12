@@ -7,9 +7,7 @@
   "dependencies": {
     "@contentstack/cli-command": "^1.0.4",
     "@contentstack/management": "^1.6.0",
-    "@contentstack/cli-utilities": "^1.0.5",
-    "@oclif/command": "^1.8.16",
-    "@oclif/config": "^1.18.3",
+    "@contentstack/cli-utilities": "^1.0.3",
     "big-json": "^3.2.0",
     "bluebird": "^3.7.2",
     "debug": "^4.1.0",
@@ -21,7 +19,7 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1.22.2",
+    "oclif": "^3.1.2",
     "@oclif/test": "^1.2.6",
     "chai": "^4.2.0",
     "eslint": "^8.18.0",
@@ -48,9 +46,9 @@
   "scripts": {
     "pack": "npm pack && mv *.tgz ../../build",
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "oclif readme && git add README.md"
   },
   "csdxConfig": {
     "expiredCommands": {

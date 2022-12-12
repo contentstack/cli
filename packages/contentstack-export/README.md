@@ -37,7 +37,7 @@ For switching to AZURE-NA region update the hosts at config/default.js
 $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
-$ csdx (-v|--version|version)
+$ csdx (--version)
 @contentstack/cli-cm-export/1.2.3 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
@@ -50,6 +50,7 @@ USAGE
 
 <!-- commands -->
 * [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets)
+* [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets-1)
 
 ## `csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`
 
@@ -57,31 +58,82 @@ Export content from a stack
 
 ```
 USAGE
-  $ csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types 
-  <value>] [--branch <value>] [--secured-assets]
+  $ csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types
+    <value>] [--branch <value>] [--secured-assets]
 
-OPTIONS
-  -B, --branch=branch                [optional] branch name
-  -a, --alias=alias                  alias of the management token
-  -c, --config=config                [optional] path of the config
-  -d, --data-dir=data-dir            path or location to store the data
-  -k, --stack-api-key=stack-api-key  API key of the source stack
-  -m, --module=module                [optional] specific module name
-  -t, --content-types=content-types  [optional] content type
-  -y, --yes                          [optional] Override marketplace apps related prompts
-  --secured-assets                   [optional] use when assets are secured
+FLAGS
+  -B, --branch=<value>            [optional] branch name
+  -a, --alias=<value>             alias of the management token
+  -c, --config=<value>            [optional] path of the config
+  -d, --data-dir=<value>          path or location to store the data
+  -k, --stack-api-key=<value>     API key of the source stack
+  -m, --module=<value>            [optional] specific module name
+  -t, --content-types=<value>...  [optional] content type
+  -y, --yes                       [optional] Override marketplace apps related prompts
+  --secured-assets                [optional] use when assets are secured
+
+DESCRIPTION
+  Export content from a stack
 
 ALIASES
   $ csdx cm:export
 
 EXAMPLES
-  csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>
-  csdx cm:stacks:export --config <path/to/config/dir>
-  csdx cm:stacks:export --alias <management_token_alias>
-  csdx cm:stacks:export --alias <management_token_alias> --data-dir <path/to/export/destination/dir>
-  csdx cm:stacks:export --alias <management_token_alias> --config <path/to/config/file>
-  csdx cm:stacks:export --module <single module name>
-  csdx cm:stacks:export --branch [optional] branch name
+  $ csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>
+
+  $ csdx cm:stacks:export --config <path/to/config/dir>
+
+  $ csdx cm:stacks:export --alias <management_token_alias>
+
+  $ csdx cm:stacks:export --alias <management_token_alias> --data-dir <path/to/export/destination/dir>
+
+  $ csdx cm:stacks:export --alias <management_token_alias> --config <path/to/config/file>
+
+  $ csdx cm:stacks:export --module <single module name>
+
+  $ csdx cm:stacks:export --branch [optional] branch name
+```
+
+## `csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`
+
+Export content from a stack
+
+```
+USAGE
+  $ csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types
+    <value>] [--branch <value>] [--secured-assets]
+
+FLAGS
+  -B, --branch=<value>            [optional] branch name
+  -a, --alias=<value>             alias of the management token
+  -c, --config=<value>            [optional] path of the config
+  -d, --data-dir=<value>          path or location to store the data
+  -k, --stack-api-key=<value>     API key of the source stack
+  -m, --module=<value>            [optional] specific module name
+  -t, --content-types=<value>...  [optional] content type
+  -y, --yes                       [optional] Override marketplace apps related prompts
+  --secured-assets                [optional] use when assets are secured
+
+DESCRIPTION
+  Export content from a stack
+
+ALIASES
+  $ csdx cm:export
+
+EXAMPLES
+  $ csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>
+
+  $ csdx cm:stacks:export --config <path/to/config/dir>
+
+  $ csdx cm:stacks:export --alias <management_token_alias>
+
+  $ csdx cm:stacks:export --alias <management_token_alias> --data-dir <path/to/export/destination/dir>
+
+  $ csdx cm:stacks:export --alias <management_token_alias> --config <path/to/config/file>
+
+  $ csdx cm:stacks:export --module <single module name>
+
+  $ csdx cm:stacks:export --branch [optional] branch name
 ```
 
 _See code: [src/commands/cm/stacks/export.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/stacks/export.js)_
