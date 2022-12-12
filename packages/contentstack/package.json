@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "1.2.3",
+  "version": "1.2.5",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run"
@@ -21,19 +21,19 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "@contentstack/cli-auth": "^1.0.3",
-    "@contentstack/cli-cm-bootstrap": "^1.1.4",
-    "@contentstack/cli-cm-bulk-publish": "^1.0.2",
-    "@contentstack/cli-cm-clone": "^1.1.4",
-    "@contentstack/cli-cm-export": "^1.2.1",
-    "@contentstack/cli-cm-export-to-csv": "^1.0.2",
-    "@contentstack/cli-cm-import": "^1.2.2",
-    "@contentstack/cli-cm-migrate-rte": "^1.1.3",
-    "@contentstack/cli-cm-seed": "^1.1.4",
-    "@contentstack/cli-command": "^1.0.2",
-    "@contentstack/cli-config": "^1.0.2",
-    "@contentstack/cli-migration": "^1.0.2",
-    "@contentstack/cli-utilities": "^1.0.3",
+    "@contentstack/cli-auth": "^1.0.6",
+    "@contentstack/cli-cm-bootstrap": "^1.1.7",
+    "@contentstack/cli-cm-bulk-publish": "^1.0.4",
+    "@contentstack/cli-cm-clone": "^1.1.6",
+    "@contentstack/cli-cm-export": "^1.2.3",
+    "@contentstack/cli-cm-export-to-csv": "^1.0.4",
+    "@contentstack/cli-cm-import": "^1.2.4",
+    "@contentstack/cli-cm-migrate-rte": "^1.1.5",
+    "@contentstack/cli-cm-seed": "^1.1.6",
+    "@contentstack/cli-command": "^1.0.4",
+    "@contentstack/cli-config": "^1.0.4",
+    "@contentstack/cli-migration": "^1.0.4",
+    "@contentstack/cli-utilities": "^1.0.5",
     "@contentstack/management": "^1.6.0",
     "@oclif/core": "^1.20.4",
     "@oclif/plugin-not-found": "^2.3.9",
@@ -121,7 +121,6 @@
       }
     },
     "helpClass": "./lib/help.js",
-    "commands": "./lib/commands",
     "bin": "csdx",
     "plugins": [
       "@oclif/plugin-help",
