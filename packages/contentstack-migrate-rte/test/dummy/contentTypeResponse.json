@@ -2824,5 +2824,191 @@
             },
             "extension_uids": []
         }
+    },
+    "rte_images": {
+        "content_type": {
+            "created_at": "2021-06-18T08:28:40.550Z",
+            "updated_at": "2021-06-18T08:29:11.162Z",
+            "title": "ContentTypeWithSingleRTE",
+            "uid": "rte_images",
+            "_version": 2,
+            "inbuilt_class": false,
+            "schema": [
+                {
+                    "data_type": "text",
+                    "display_name": "Title",
+                    "field_metadata": {
+                        "_default": true,
+                        "version": 3
+                    },
+                    "mandatory": true,
+                    "uid": "title",
+                    "unique": true,
+                    "non_localizable": false,
+                    "multiple": false
+                },
+                {
+                    "data_type": "text",
+                    "display_name": "Rich Text Editor",
+                    "uid": "rich_text_editor",
+                    "field_metadata": {
+                        "allow_rich_text": true,
+                        "description": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": [],
+                        "version": 3
+                    },
+                    "non_localizable": false,
+                    "multiple": false,
+                    "mandatory": false,
+                    "unique": false
+                },
+                {
+                    "data_type": "json",
+                    "display_name": "Supercharged RTE",
+                    "uid": "supercharged_rte",
+                    "field_metadata": {
+                        "allow_json_rte": true,
+                        "description": "",
+                        "default_value": "",
+                        "multiline": false,
+                        "rich_text_type": "advanced",
+                        "options": []
+                    },
+                    "format": "",
+                    "error_messages": {
+                        "format": ""
+                    },
+                    "mandatory": false,
+                    "non_localizable": false,
+                    "multiple": false,
+                    "unique": false
+                }
+            ],
+            "last_activity": {},
+            "maintain_revisions": true,
+            "description": "",
+            "DEFAULT_ACL": {
+                "others": {
+                    "read": false,
+                    "create": false
+                },
+                "users": [
+                    {
+                        "uid": "bltd17749910d177e04",
+                        "read": true,
+                        "sub_acl": {
+                            "read": true
+                        }
+                    }
+                ]
+            },
+            "SYS_ACL": {
+                "roles": [
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltbfe2abeba30ff382",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    },
+                    {
+                        "uid": "bltfa739fdd274aa467",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        }
+                    },
+                    {
+                        "uid": "blt6cafb115ee0f0a25",
+                        "read": true,
+                        "sub_acl": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true,
+                            "publish": true
+                        },
+                        "update": true,
+                        "delete": true
+                    }
+                ],
+                "others": {
+                    "read": false,
+                    "create": false,
+                    "update": false,
+                    "delete": false,
+                    "sub_acl": {
+                        "read": false,
+                        "create": false,
+                        "update": false,
+                        "delete": false,
+                        "publish": false
+                    }
+                }
+            },
+            "options": {
+                "is_page": false,
+                "singleton": false,
+                "sub_title": [],
+                "title": "title"
+            },
+            "abilities": {
+                "get_one_object": true,
+                "get_all_objects": true,
+                "create_object": true,
+                "update_object": true,
+                "delete_object": true,
+                "delete_all_objects": true
+            }
+        }
     }
 }
