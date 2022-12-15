@@ -32,7 +32,7 @@ export default async function (opts): Promise<void> {
     } catch (error) {
       logger.error('error in auth validation', error);
       cliux.error('Please login to execute the command');
-      this.exit();
+      process.exit();
     }   
   }
 }
