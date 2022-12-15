@@ -32,7 +32,7 @@ class ContentTypesImport {
       ['.DS_Store', 'true'],
     ]);
     this.contentTypes = [];
-    this.existingContentTypesUIds;
+    this.existingContentTypesUIds = [];
     this.titleToUIdMap = new Map();
     this.requestOptions = {
       json: {},
@@ -63,11 +63,10 @@ class ContentTypesImport {
           }
         }
       }
-      // this.mapUidToTitle(this.csontentTypes);
 
       // seed content type
       addlogs(this.importConfig, 'Started to seed content types', 'info');
-      await executeTask(this.contentTypes, this.seedContentType.bind(this), { concurrency: this.importConcurrency });
+      await executeTask(this.seedContentType.bind(this), { concurrency: this.importConcurrency }, this.contentTypes);
       addlogs(this.importConfig, 'Created content types', 'success');
 
       // update content type
@@ -78,7 +77,7 @@ class ContentTypesImport {
       }
 
       addlogs(this.importConfig, 'Started to update content types with references', 'info');
-      await executeTask(this.contentTypes, this.updateContentType.bind(this), { concurrency: this.importConcurrency });
+      await executeTask(this.updateContentType.bind(this), { concurrency: this.importConcurrency }, this.contentTypes);
       addlogs(this.importConfig, 'Updated content types with references', 'success');
 
       // global field update
@@ -90,9 +89,13 @@ class ContentTypesImport {
         this.existingGlobalFields = fileHelper.readFileSync(this.globalFieldMapperFolderPath);
         try {
           addlogs(this.importConfig, 'Started to update pending global field with content type references', 'info');
-          await executeTask(this.pendingGlobalFields, this.updateGlobalFields.bind(this), {
-            concurrency: this.importConcurrency,
-          });
+          await executeTask(
+            this.updateGlobalFields.bind(this),
+            {
+              concurrency: this.importConcurrency,
+            },
+            this.pendingGlobalFields,
+          );
           addlogs(this.importConfig, 'Updated pending global fields with content type with references', 'success');
         } catch (error) {
           addlogs(
@@ -175,7 +178,7 @@ class ContentTypesImport {
         return true;
       } catch (error) {
         addlogs(this.importConfig, `failed to update the global field ${uid} ${formatError(error)}`);
-      } 
+      }
     } else {
       addlogs(this.importConfig, `Global field ${uid} does not exist, and hence failed to update.`);
     }
