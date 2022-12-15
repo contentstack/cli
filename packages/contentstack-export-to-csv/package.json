@@ -43,9 +43,9 @@
   "scripts": {
     "pack": "npm pack && mv *.tgz ../../build",
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "oclif readme && git add README.md"
   },
   "csdxConfig": {
     "expiredCommands": {}
