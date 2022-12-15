@@ -1,4 +1,7 @@
 fileignoreconfig:
-  - filename: packages/contentstack-export/src/app.js
-    checksum: 93359760c005b7fd841056360a1859381548cb98f6770a7110ebed69773b3791
-version: ''
+
+- filename: packages/contentstack-export/src/app.js
+  checksum: 93359760c005b7fd841056360a1859381548cb98f6770a7110ebed69773b3791
+- filename: packages/contentstack-import/src/app.js
+  checksum: c314814a02d20bd367a153fa6c6aca53e304eebad9c1b54ae97fcd65435172b7
+  version: ''
