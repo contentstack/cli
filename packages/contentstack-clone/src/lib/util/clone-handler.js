@@ -6,9 +6,7 @@ const chalk = require('chalk');
 
 let exportCmd = require('@contentstack/cli-cm-export');
 let importCmd = require('@contentstack/cli-cm-import');
-const { HttpClient } = require('@contentstack/cli-utilities');
 let sdkInstance = require('../../lib/util/contentstack-management-sdk');
-const defaultConfig = require('@contentstack/cli-cm-export/src/config/default');
 const { CustomAbortController } = require('./abort-controller');
 
 const {
@@ -138,35 +136,31 @@ class CloneHandler {
 
   handleBranchSelection = async (options) => {
     const { api_key, isSource = true, returnBranch = false } = options;
-    const baseUrl = defaultConfig.host.startsWith('http') ? defaultConfig.host : `https://${defaultConfig.host}/v3`;
-
     return new Promise(async (resolve, reject) => {
+      let spinner;
       try {
-        const headers = { api_key };
-
-        if (config.auth_token) {
-          headers['authtoken'] = config.auth_token;
-        } else if (config.management_token) {
-          headers['authorization'] = config.management_token;
-        }
+        const stackAPIClient = client.stack({
+          api_key: config.source_stack,
+          management_token: config.management_token,
+        });
 
         // NOTE validate if source branch is exist
         if (isSource && config.sourceStackBranch) {
-          await this.validateIfBranchExist(headers, true);
+          await this.validateIfBranchExist(stackAPIClient, true);
           return resolve();
         }
 
         // NOTE Validate target branch is exist
         if (!isSource && config.targetStackBranch) {
-          await this.validateIfBranchExist(headers, false);
+          await this.validateIfBranchExist(stackAPIClient, false);
           return resolve();
         }
-
-        const spinner = ora('Fetching Branches').start();
-        const result = await new HttpClient()
-          .headers(headers)
-          .get(`${baseUrl}/stacks/branches`)
-          .then(({ data: { branches } }) => branches);
+        spinner = ora('Fetching Branches').start();
+        const result = await stackAPIClient
+          .branch()
+          .query()
+          .find()
+          .then(({ items }) => items);
 
         const condition = result && Array.isArray(result) && result.length > 0;
 
@@ -196,31 +190,36 @@ class CloneHandler {
           resolve();
         }
       } catch (e) {
-        spinner.fail();
-        console.log(e && e.message);
-        resolve();
+        if (spinner) spinner.fail();
+        console.error(e && e.message);
+        return reject(e);
       }
     });
   };
 
-  async validateIfBranchExist(headers, isSource) {
-    const branch = isSource ? config.sourceStackBranch : config.targetStackBranch;
-    const spinner = ora(`Validation if ${isSource ? 'source' : 'target'} branch exist.!`).start();
-    const isBranchExist = await HttpClient.create()
-      .headers(headers)
-      .get(`https://${config.host}/v3/stacks/branches/${branch}`)
-      .then(({ data }) => data);
-
+  async validateIfBranchExist(stackAPIClient, isSource) {
+    let spinner;
     const completeSpinner = (msg, method = 'succeed') => {
       spinner[method](msg);
       spinner.stop();
     };
+    try {
+      const branch = isSource ? config.sourceStackBranch : config.targetStackBranch;
+      spinner = ora(`Validation if ${isSource ? 'source' : 'target'} branch exist.!`).start();
+      const isBranchExist = await stackAPIClient
+        .branch(branch)
+        .fetch()
+        .then((data) => data);
 
-    if (isBranchExist && typeof isBranchExist === 'object' && typeof isBranchExist.branch === 'object') {
-      completeSpinner(`${isSource ? 'Source' : 'Target'} branch verified.!`);
-    } else {
+      if (isBranchExist && typeof isBranchExist === 'object') {
+        completeSpinner(`${isSource ? 'Source' : 'Target'} branch verified.!`);
+      } else {
+        completeSpinner(`${isSource ? 'Source' : 'Target'} branch not found.!`, 'fail');
+        process.exit();
+      }
+    } catch (e) {
       completeSpinner(`${isSource ? 'Source' : 'Target'} branch not found.!`, 'fail');
-      process.exit();
+      throw e;
     }
   }
 
