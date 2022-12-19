@@ -149,7 +149,7 @@ const allExport = async (APIClient, stackAPIClient, config, types, branchName) =
     addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success');
     return true;
   } catch (error) {
-    addlogs(config, formatError(error), 'error');
+    addlogs(config, util.formatError(error), 'error');
     addlogs(
       config,
       chalk.red(
