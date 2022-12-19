@@ -16,7 +16,7 @@ const stack = require('./contentstack-management-sdk');
 const promiseLimit = require('promise-limit');
 let config;
 
-exports.initialization = function (configData) {
+exports.initialization = (configData) => {
   config = this.buildAppConfig(configData);
   const res = this.validateConfig(config);
 
@@ -25,7 +25,7 @@ exports.initialization = function (configData) {
   }
 };
 
-exports.validateConfig = function (importConfig) {
+exports.validateConfig = (importConfig) => {
   if (importConfig.email && importConfig.password && !importConfig.target_stack) {
     addlogs(importConfig, chalk.red('Kindly provide api_token'), 'error');
     return 'error';
@@ -47,12 +47,12 @@ exports.validateConfig = function (importConfig) {
   }
 };
 
-exports.buildAppConfig = function (importConfig) {
+exports.buildAppConfig = (importConfig) => {
   importConfig = _.merge(defaultConfig, importConfig);
   return importConfig;
 };
 
-exports.sanitizeStack = function (importConfig) {
+exports.sanitizeStack = (importConfig) => {
   if (typeof importConfig.preserveStackVersion !== 'boolean' || !importConfig.preserveStackVersion) {
     return Promise.resolve();
   }
@@ -103,13 +103,9 @@ exports.sanitizeStack = function (importConfig) {
   }
 };
 
-exports.masterLocalDetails = function (credentialConfig) {
-  let client = stack.Client(credentialConfig);
+exports.masterLocalDetails = (stackAPIClient) => {
   return new Promise((resolve, reject) => {
-    const result = client
-      .stack({ api_key: credentialConfig.target_stack, management_token: credentialConfig.management_token })
-      .locale()
-      .query();
+    const result = stackAPIClient.locale().query();
     result
       .find()
       .then((response) => {
@@ -126,8 +122,8 @@ exports.masterLocalDetails = function (credentialConfig) {
   });
 };
 
-exports.field_rules_update = function (importConfig, ctPath) {
-  return new Promise(function (resolve, reject) {
+exports.field_rules_update = (importConfig, ctPath) => {
+  return new Promise((resolve, reject) => {
     let client = stack.Client(importConfig);
 
     fs.readFileSync(path.join(ctPath + '/field_rules_uid.json'), async (err, data) => {
@@ -137,9 +133,9 @@ exports.field_rules_update = function (importConfig, ctPath) {
       const ct_field_visibility_uid = JSON.parse(data);
       let ct_files = fs.readdirSync(ctPath);
       if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
-        for (let index = 0; index < ct_field_visibility_uid.length; index++) {
-          if (ct_files.indexOf(ct_field_visibility_uid[index] + '.json') > -1) {
-            let schema = require(path.resolve(ctPath, ct_field_visibility_uid[index]));
+        for (const ele of ct_field_visibility_uid) {
+          if (ct_files.indexOf(ele + '.json') > -1) {
+            let schema = require(path.resolve(ctPath, ele));
             // await field_rules_update(schema)
             let fieldRuleLength = schema.field_rules.length;
             for (let k = 0; k < fieldRuleLength; k++) {
@@ -151,13 +147,13 @@ exports.field_rules_update = function (importConfig, ctPath) {
                   let fieldRulesValue = schema.field_rules[k].conditions[i].value;
                   let fieldRulesArray = fieldRulesValue.split('.');
                   let updatedValue = [];
-                  for (let j = 0; j < fieldRulesArray.length; j++) {
-                    let splitedFieldRulesValue = fieldRulesArray[j];
+                  for (const element of fieldRulesArray) {
+                    let splitedFieldRulesValue = element;
                     let oldUid = helper.readFileSync(path.join(entryUidMapperPath));
                     if (oldUid.hasOwnProperty(splitedFieldRulesValue)) {
                       updatedValue.push(oldUid[splitedFieldRulesValue]);
                     } else {
-                      updatedValue.push(fieldRulesArray[j]);
+                      updatedValue.push(element);
                     }
                   }
                   schema.field_rules[k].conditions[i].value = updatedValue.join('.');
@@ -173,7 +169,7 @@ exports.field_rules_update = function (importConfig, ctPath) {
               .then(() => {
                 return resolve();
               })
-              .catch(function (error) {
+              .catch((error) => {
                 return reject(error);
               });
           }
@@ -183,11 +179,11 @@ exports.field_rules_update = function (importConfig, ctPath) {
   });
 };
 
-exports.getConfig = function () {
+exports.getConfig = () => {
   return config;
 };
 
-exports.formatError = function (error) {
+exports.formatError = (error) => {
   try {
     if (typeof error === 'string') {
       error = JSON.parse(error);
@@ -209,7 +205,7 @@ exports.formatError = function (error) {
   return message;
 };
 
-exports.executeTask = function (tasks = [], handler, options) {
+exports.executeTask = (handler, options, tasks = []) => {
   if (typeof handler !== 'function') {
     throw new Error('Invalid handler');
   }
