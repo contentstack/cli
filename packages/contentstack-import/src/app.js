@@ -4,30 +4,30 @@
  * MIT Licensed
  */
 
-let fs = require('fs');
-let ncp = require('ncp');
-let _ = require('lodash');
-let path = require('path');
+const fs = require('fs');
+const ncp = require('ncp');
+const path = require('path');
 const chalk = require('chalk');
-let util = require('./lib/util/index');
-let { formatError } = require('./lib/util');
-let login = require('./lib/util/login');
-let { addlogs } = require('./lib/util/log');
-const { HttpClient } = require('@contentstack/cli-utilities');
+const util = require('./lib/util/index');
+const login = require('./lib/util/login');
+const { addlogs } = require('./lib/util/log');
 const stack = require('./lib/util/contentstack-management-sdk');
 
-exports.initial = function (configData) {
-  return new Promise(async function (resolve, reject) {
-    let config = util.initialization(configData);
+exports.initial = (configData) => {
+  return new Promise(async (resolve, reject) => {
+    const config = util.initialization(configData);
     config.oldPath = config.data;
 
+    const APIClient = stack.Client(config);
+    const stackAPIClient = APIClient.stack({ api_key: config.target_stack, management_token: config.management_token });
+
     if (configData.branchName) {
-      await validateIfBranchExist(configData, configData.branchName).catch(() => {
+      await validateIfBranchExist(stackAPIClient, configData, configData.branchName).catch(() => {
         process.exit();
       });
     }
 
-    const backupAndImportData = async () => {
+    const backupAndImportData = async (APIClient, stackAPIClient) => {
       if (fs.existsSync(config.data)) {
         let migrationBackupDirPath = path.join(process.cwd(), '_backup_' + Math.floor(Math.random() * 1000));
         return createBackup(migrationBackupDirPath, config)
@@ -40,15 +40,15 @@ exports.initial = function (configData) {
             const types = config.modules.types;
 
             if (config.moduleName) {
-              importRes = singleImport(config.moduleName, types, config);
+              importRes = singleImport(APIClient, stackAPIClient, config.moduleName, types, config);
             } else {
-              importRes = allImport(config, types);
+              importRes = allImport(APIClient, stackAPIClient, config, types);
             }
 
             importRes.then(resolve).catch(reject);
           })
           .catch((error) => {
-            addlogs(config, `Failed to import contents ${formatError(error)}`, 'error');
+            addlogs(config, `Failed to import contents ${util.formatError(error)}`, 'error');
             reject(e);
             process.exit(1);
           });
@@ -70,24 +70,20 @@ exports.initial = function (configData) {
   });
 };
 
-let singleImport = async (moduleName, types, config) => {
+let singleImport = async (APIClient, stackAPIClient, moduleName, types, config) => {
   try {
-    const stackClient = stack
-      .Client(config)
-      .stack({ api_key: config.target_stack, management_token: config.management_token });
-
     if (types.indexOf(moduleName) > -1) {
       if (!config.master_locale) {
         try {
-          let masterLocalResponse = await util.masterLocalDetails(config);
+          let masterLocalResponse = await util.masterLocalDetails(stackAPIClient);
           let master_locale = { code: masterLocalResponse.code };
           config['master_locale'] = master_locale;
         } catch (error) {
-          addlogs(config, `Failed to get master locale detail from the stack ${formatError(error)}`, 'error');
+          addlogs(config, `Failed to get master locale detail from the stack ${util.formatError(error)}`, 'error');
         }
       }
       let ImportModule = require('./lib/import/' + moduleName);
-      const importResponse = await new ImportModule(config, stackClient).start(config);
+      const importResponse = await new ImportModule(config, stackAPIClient, APIClient).start(config);
       if (moduleName === 'content-types') {
         let ctPath = path.resolve(config.data, config.modules.content_types.dirName);
         let fieldPath = path.join(ctPath + '/field_rules_uid.json');
@@ -105,25 +101,22 @@ let singleImport = async (moduleName, types, config) => {
     }
   } catch (error) {
     addlogs(config, 'Failed to migrate ' + moduleName, 'error');
-    addlogs(config, formatError(error), 'error');
+    addlogs(config, util.formatError(error), 'error');
     addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
   }
 };
 
-let allImport = async (config, types) => {
+let allImport = async (APIClient, stackAPIClient, config, types) => {
   try {
-    const stackClient = stack
-      .Client(config)
-      .stack({ api_key: config.target_stack, management_token: config.management_token });
     for (let i = 0; i < types.length; i++) {
       let type = types[i];
       if (i === 0 && !config.master_locale) {
-        let masterLocalResponse = await util.masterLocalDetails(config);
+        let masterLocalResponse = await util.masterLocalDetails(stackAPIClient);
         let master_locale = { code: masterLocalResponse.code };
         config['master_locale'] = master_locale;
       }
       let ImportModule = require('./lib/import/' + type);
-      await new ImportModule(config, stackClient).start(config);
+      await new ImportModule(config, stackAPIClient, APIClient).start(config);
     }
     if (config.target_stack && config.source_stack) {
       addlogs(
@@ -159,12 +152,12 @@ let allImport = async (config, types) => {
       ),
       'error',
     );
-    addlogs(config, formatError(error), 'error');
+    addlogs(config, util.formatError(error), 'error');
     addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
   }
 };
 
-function createBackup(backupDirPath, config) {
+const createBackup = (backupDirPath, config) => {
   return new Promise((resolve, reject) => {
     if (config.hasOwnProperty('useBackedupDir') && fs.existsSync(config.useBackedupDir)) {
       return resolve(config.useBackedupDir);
@@ -186,33 +179,26 @@ function createBackup(backupDirPath, config) {
       });
     }
   });
-}
+};
 
-const validateIfBranchExist = async (config, branch) => {
-  return new Promise(async function (resolve, reject) {
-    const headers = { api_key: config.target_stack, authtoken: config.auth_token };
-    const httpClient = new HttpClient().headers(headers);
-    const result = await httpClient
-      .get(`https://${config.host}/v3/stacks/branches/${branch}`)
-      .then(({ data }) => {
+const validateIfBranchExist = async (stackAPIClient, config, branch) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const data = await stackAPIClient.branch(branch).fetch();
+      if (data && typeof data === 'object') {
         if (data.error_message) {
           addlogs(config, chalk.red(data.error_message), 'error');
           addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
-          reject();
+          reject({ message: 'No branch found with the name ' + branch, error: error_message });
+        } else {
+          resolve(data);
         }
-
-        return data;
-      })
-      .catch((err) => {
-        console.log(err);
-        addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
-        reject();
-      });
-
-    if (result && typeof result === 'object' && typeof result.branch === 'object') {
-      resolve(result.branch);
-    } else {
-      reject({ message: 'No branch found with the name ' + branch });
+      } else {
+        reject({ message: 'No branch found with the name ' + branch, error: {} });
+      }
+    } catch (error) {
+      addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
+      reject({ message: 'No branch found with the name ' + branch, error });
     }
   });
 };
