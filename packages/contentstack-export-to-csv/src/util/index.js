@@ -1,5 +1,4 @@
 const inquirer = require('inquirer');
-const { HttpClient } = require('@contentstack/cli-utilities');
 const os = require('os');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 const config = require('./config.js');
@@ -401,12 +400,14 @@ function getOrgUsers(managementAPIClient, orgUid, ecsv) {
       .then(async (response) => {
         let organization = response.organizations.filter((org) => org.uid === orgUid).pop();
         if (organization.is_owner === true) {
-          let cma = ecsv.region.cma;
-          let authtoken = ecsv.authToken;
-          return HttpClient.create()
-            .headers({ authtoken: authtoken })
-            .get(`${cma}/v3/organizations/${organization.uid}/share`)
-            .then((_response) => resolve({ items: _response.data.shares }));
+          return managementAPIClient
+            .organization(organization.uid)
+            .fetch()
+            .then((_response) => {
+              _response.getInvitations().then((_data) => {
+                resolve({ items: _data.items }) 
+              })
+            })
         }
         if (!organization.getInvitations) {
           return reject(new Error(config.adminError));
@@ -463,11 +464,14 @@ function getOrgRoles(managementAPIClient, orgUid, ecsv) {
       .then((response) => {
         let organization = response.organizations.filter((org) => org.uid === orgUid).pop();
         if (organization.is_owner === true) {
-          let cma = ecsv.region.cma;
-          let authtoken = ecsv.authToken;
-          return axios
-            .get(`${cma}/v3/organizations/${organization.uid}/roles`, { headers: { authtoken: authtoken } })
-            .then((_response) => resolve({ items: _response.data.roles }));
+          return managementAPIClient
+            .organization(organization.uid)
+            .fetch()
+            .then((_response) => {
+              _response.roles().then(_data => {
+                resolve({ items: _data.items })
+              })
+            })
         }
         if (!organization.roles) {
           return reject(new Error(config.adminError));
