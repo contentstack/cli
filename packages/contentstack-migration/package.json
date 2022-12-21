@@ -53,7 +53,7 @@
     "bin": "csdx",
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-migration/<%- commandPath %>"
   },
-  "repository": "contentstack/cli-migration",
+  "repository": "contentstack/cli",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint ./src",
