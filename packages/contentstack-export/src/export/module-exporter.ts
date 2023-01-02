@@ -20,7 +20,7 @@ class ModuleExporter {
 
   async start(): Promise<any> {
     // setup the branches
-    await setupBranches(this.context, this.managementAPIClient, this.exportConfig);
+    await setupBranches(this.exportConfig, this.managementAPIClient);
     await setupExportDir(this.exportConfig);
     // if branches available run it export by branches
     if (this.exportConfig.branches) {
@@ -56,13 +56,13 @@ class ModuleExporter {
     // export the modules by name
     // calls the module runner which inturn calls the module itself
     if (this.exportConfig.updatedModules.indexOf(moduleName) !== -1) {
-      return startJSModuleExport({
+      return startModuleExport({
         stackAPIClient: this.stackAPIClient,
         exportConfig: this.exportConfig,
         moduleName,
       });
     }
-    return startModuleExport({
+    return startJSModuleExport({
       stackAPIClient: this.stackAPIClient,
       exportConfig: this.exportConfig,
       moduleName,
@@ -71,11 +71,12 @@ class ModuleExporter {
 
   async exportAllModules(): Promise<any> {
     // use the algorithm to determine the parallel and sequential execution of modules
-    for (let moduleName of this.exportConfig.moduleNames) {
+    for (let moduleName of this.exportConfig.modules.types) {
       try {
         await this.exportByModuleByName(moduleName);
       } catch (error) {
-        log(this.exportConfig, `failed to export the module ${moduleName}`, 'error');
+        console.log(error.stack);
+        // log(this.exportConfig, `failed to export the module ${moduleName}`, 'error');
       }
     }
   }
