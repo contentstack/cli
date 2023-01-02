@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   versioning: false,
   host: 'https://api.contentstack.io/v3',
   developerHubUrls: {
@@ -32,6 +32,7 @@ module.exports = {
       dirName: 'locales',
       fileName: 'locales.json',
       requiredKeys: ['code', 'uid', 'name', 'fallback_locale'],
+      enableNewStructure: true,
     },
     customRoles: {
       dirName: 'custom-roles',
@@ -330,6 +331,7 @@ module.exports = {
     'xh',
     'zu',
   ],
+  updatedModules: ['locales'],
   apis: {
     userSession: '/user-session/',
     globalfields: '/global_fields/',
@@ -349,4 +351,5 @@ module.exports = {
   writeConcurrency: 5,
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
+  useNewModuleStructure: true,
 };

@@ -1,6 +1,6 @@
-const mkdirp = require('mkdirp');
-const path = require('path');
-const helper = require('./helper');
+import * as path from 'path';
+import * as mkdirp from 'mkdirp';
+import { writeFileSync, makeDirectory } from './file-helper';
 
 const setupBranches = async (config, branch, stackAPIClient) => {
   if (typeof config !== 'object') {
@@ -36,11 +36,11 @@ const setupBranches = async (config, branch, stackAPIClient) => {
     }
   }
 
-  mkdirp.sync(config.data);
+  makeDirectory(config.data);
   // create branch info file
-  helper.writeFile(path.join(config.data, 'branches.json'), branches);
+  writeFileSync(path.join(config.data, 'branches.json'), branches);
   // add branches list in the
   config.branches = branches;
 };
 
-module.exports = setupBranches;
+export default setupBranches;
