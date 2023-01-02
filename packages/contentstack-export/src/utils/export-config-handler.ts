@@ -14,6 +14,8 @@ const setupConfig = async (exportCmdFlags): Promise<any> => {
   }
   config.exportDir = exportCmdFlags['data'] || exportCmdFlags['data-dir'] || (await askExportDir());
   config.exportDir = path.resolve(config.exportDir);
+  //Note to support the old key
+  config.data = config.exportDir;
   config.apiKey = exportCmdFlags['stack-uid'] || exportCmdFlags['stack-api-key'] || (await askAPIKey());
   if (!config.apiKey) {
     throw new CLIError('API Key is mandatory');
