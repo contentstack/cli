@@ -2,18 +2,16 @@ import * as path from 'path';
 import { logger } from '@contentstack/cli-utilities';
 import { fileHelper } from '../../utils';
 export default class LocaleExport {
-  private context: any;
   private stackAPIClient: any;
   private exportConfig: any;
   private qs: any;
   private localeConfig: any;
   private localesPath: string;
 
-  constructor({ context, stackAPIClient, exportConfig }) {
-    this.context = context;
+  constructor({ exportConfig, stackAPIClient }) {
     this.stackAPIClient = stackAPIClient;
     this.exportConfig = exportConfig;
-    this.localeConfig = exportConfig.moduleLevelConfig.locales;
+    this.localeConfig = exportConfig.modules.locales;
     this.qs = {
       include_count: true,
       asc: 'updated_at',
