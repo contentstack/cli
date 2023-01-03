@@ -5,6 +5,7 @@
   "pack": {
     "ignore": "contentstack-management"
   },
-  "npmClient": "npm",
-  "version": "independent"
+  "npmClient": "yarn",
+  "version": "independent",
+  "useWorkspaces": true
 }

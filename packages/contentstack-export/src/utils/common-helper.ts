@@ -4,12 +4,9 @@
  * MIT Licensed
  */
 
-var _ = require('lodash');
-var defaultConfig = require('../../config/default');
-const chalk = require('chalk');
-const promiseLimit = require('promise-limit');
+import * as promiseLimit from 'promise-limit';
 
-exports.validateConfig = function (config) {
+export const validateConfig = function (config) {
   if (!config.host || !config.cdn) {
     throw new Error('Host/CDN end point is missing from config');
   }
@@ -39,12 +36,7 @@ exports.validateConfig = function (config) {
   }
 };
 
-exports.buildAppConfig = function (config) {
-  config = _.merge(defaultConfig, config);
-  return config;
-};
-
-exports.formatError = function (error) {
+export const formatError = function (error) {
   try {
     if (typeof error === 'string') {
       error = JSON.parse(error);
@@ -66,7 +58,7 @@ exports.formatError = function (error) {
   return message;
 };
 
-exports.executeTask = function (tasks = [], handler, options) {
+export const executeTask = function (tasks = [], handler, options) {
   if (typeof handler !== 'function') {
     throw new Error('Invalid handler');
   }
