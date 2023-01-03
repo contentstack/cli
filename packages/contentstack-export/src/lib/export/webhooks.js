@@ -13,9 +13,6 @@ const helper = require('../util/helper');
 const { formatError } = require('../util');
 const { addlogs } = require('../util/log');
 const config = require('../../config/default');
-const stack = require('../util/contentstack-management-sdk');
-
-// Create folder for environments
 
 module.exports = class ExportWebhooks {
   config;
@@ -27,15 +24,14 @@ module.exports = class ExportWebhooks {
   };
   webhooksConfig = config.modules.webhooks;
 
-  constructor(credentialConfig) {
-    this.config = merge(config, credentialConfig);
+  constructor(exportConfig, stackAPIClient) {
+    this.stackAPIClient = stackAPIClient;
+    this.config = merge(config, exportConfig);
   }
 
   start() {
     addlogs(this.config, 'Starting webhooks export', 'success');
-
     const self = this;
-    const client = stack.Client(this.config);
     const webhooksFolderPath = path.resolve(
       this.config.data,
       this.config.branchName || '',
@@ -43,8 +39,7 @@ module.exports = class ExportWebhooks {
     );
     mkdirp.sync(webhooksFolderPath);
     return new Promise((resolve, reject) => {
-      client
-        .stack({ api_key: self.config.source_stack, management_token: self.config.management_token })
+      self.stackAPIClient
         .webhook()
         .fetchAll(self.requestOptions)
         .then((webhooks) => {
