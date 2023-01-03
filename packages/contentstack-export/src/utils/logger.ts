@@ -4,10 +4,11 @@
  * MIT Licensed
  */
 
-var winston = require('winston');
-var path = require('path');
-var mkdirp = require('mkdirp');
-var slice = Array.prototype.slice;
+import * as winston from 'winston';
+import * as path from 'path';
+import * as mkdirp from 'mkdirp';
+
+const slice = Array.prototype.slice;
 
 const ansiRegexPattern = [
   '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]+)*|[a-zA-Z\\d]+(?:;[-a-zA-Z\\d\\/#&.:=?%@~_]*)*)?\\u0007)',
@@ -21,7 +22,7 @@ function returnString(args) {
       .map(function (item) {
         if (item && typeof item === 'object') {
           try {
-            return JSON.stringify(item).replace(/authtoken\":\"blt................/g, 'authtoken":"blt....');
+            return JSON.stringify(item).replace(/authtoken\":\d"blt................/g, 'authtoken":"blt....');
           } catch (error) {}
           return item;
         }
@@ -96,7 +97,7 @@ function init(_logPath) {
   }
 
   return {
-    log: function () {
+    log: function (message) {
       let args = slice.call(arguments);
       let logString = returnString(args);
       if (logString) {
@@ -110,7 +111,7 @@ function init(_logPath) {
         logger.log('warn', logString);
       }
     },
-    error: function () {
+    error: function (message) {
       let args = slice.call(arguments);
       let logString = returnString(args);
       if (logString) {
@@ -127,7 +128,7 @@ function init(_logPath) {
   };
 }
 
-exports.addlogs = async (config, message, type) => {
+export const log = async (config, message, type) => {
   // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
     // removed type argument from init method
@@ -137,7 +138,7 @@ exports.addlogs = async (config, message, type) => {
   }
 };
 
-exports.unlinkFileLogger = () => {
+export const unlinkFileLogger = () => {
   if (logger) {
     const transports = logger.transports;
     transports.forEach((transport) => {
