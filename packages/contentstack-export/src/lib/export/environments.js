@@ -6,11 +6,11 @@
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
+const { merge } = require('lodash');
 
 const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
 const { formatError } = require('../util');
-let stack = require('../util/contentstack-management-sdk');
 
 module.exports = class ExportEnvironments {
   config = {};
@@ -24,13 +24,13 @@ module.exports = class ExportEnvironments {
     },
   };
 
-  constructor(mergeConfig) {
-    this.config = mergeConfig;
+  constructor(exportConfig, stackAPIClient) {
+    this.stackAPIClient = stackAPIClient;
+    this.config = merge(this.config, exportConfig);
   }
 
   start() {
     const self = this;
-    const client = stack.Client(self.config);
     const environmentConfig = self.config.modules.environments;
     const environmentsFolderPath = path.resolve(
       self.config.data,
@@ -43,15 +43,14 @@ module.exports = class ExportEnvironments {
     addlogs(self.config, 'Starting environment export', 'success');
 
     return new Promise(function (resolve, reject) {
-      client
-        .stack({ api_key: self.config.source_stack, management_token: self.config.management_token })
+      self.stackAPIClient
         .environment()
         .query(self.requestOptions.qs)
         .find()
         .then((environmentResponse) => {
           if (environmentResponse.items.length !== 0) {
             for (let i = 0, total = environmentResponse.count; i < total; i++) {
-              let envUid = environmentResponse.items[i].uid;
+              const envUid = environmentResponse.items[i].uid;
               self.master[envUid] = '';
               self.environments[envUid] = environmentResponse.items[i];
               delete self.environments[envUid].uid;
