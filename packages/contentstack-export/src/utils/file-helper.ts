@@ -1,16 +1,10 @@
-/*!
- * Contentstack Export
- * Copyright (c) 2019 Contentstack LLC
- * MIT Licensed
- */
+import * as fs from 'fs';
+import * as path from 'path';
+import * as mkdirp from 'mkdirp';
+import bigJSON from 'big-json';
 
-var fs = require('fs');
-var path = require('path');
-var mkdirp = require('mkdirp');
-var bigJSON = require('big-json');
-
-exports.readFileSync = function (filePath, parse) {
-  var data;
+export const readFileSync = function (filePath, parse): any {
+  let data;
   parse = typeof parse === 'undefined' ? true : parse;
   filePath = path.resolve(filePath);
   if (fs.existsSync(filePath)) {
@@ -20,7 +14,7 @@ exports.readFileSync = function (filePath, parse) {
 };
 
 // by default file type is json
-exports.readFile = async (filePath, options = { type: 'json' }) => {
+export const readFile = async (filePath: string, options = { type: 'json' }): Promise<any> => {
   return new Promise((resolve, reject) => {
     filePath = path.resolve(filePath);
     fs.readFile(filePath, 'utf-8', (error, data) => {
@@ -36,14 +30,7 @@ exports.readFile = async (filePath, options = { type: 'json' }) => {
   });
 };
 
-exports.makeDirectory = async function (path) {
-  if (!path) {
-    throw new Error('Invalid path to create directory');
-  }
-  return mkdirp(path);
-};
-
-exports.readLargeFile = function (filePath, opts = {}) {
+export const readLargeFile = function (filePath, options: any = {}): Promise<any> {
   if (typeof filePath !== 'string') {
     return;
   }
@@ -53,7 +40,7 @@ exports.readLargeFile = function (filePath, opts = {}) {
       const readStream = fs.createReadStream(filePath, { encoding: 'utf-8' });
       const parseStream = bigJSON.createParseStream();
       parseStream.on('data', function (data) {
-        if (opts.type === 'array') {
+        if (options.type === 'array') {
           return resolve(Object.values(data));
         }
         resolve(data);
@@ -67,32 +54,12 @@ exports.readLargeFile = function (filePath, opts = {}) {
   }
 };
 
-exports.writeLargeFile = function (filePath, data) {
-  if (typeof filePath !== 'string' || typeof data !== 'object') {
-    return;
-  }
-  filePath = path.resolve(filePath);
-  return new Promise((resolve, reject) => {
-    const stringifyStream = bigJSON.createStringifyStream({
-      body: data,
-    });
-    var writeStream = fs.createWriteStream(filePath, 'utf-8');
-    stringifyStream.pipe(writeStream);
-    writeStream.on('finish', () => {
-      resolve();
-    });
-    writeStream.on('error', (error) => {
-      reject(error);
-    });
-  });
-};
-
-exports.writeFileSync = function (filePath, data) {
+export const writeFileSync = function (filePath, data): void {
   data = typeof data === 'object' ? JSON.stringify(data) : data || '{}';
   fs.writeFileSync(filePath, data);
 };
 
-exports.writeFile = function (filePath, data) {
+export const writeFile = function (filePath, data): Promise<any> {
   return new Promise((resolve, reject) => {
     data = typeof data === 'object' ? JSON.stringify(data) : data || '{}';
     fs.writeFile(filePath, data, (error) => {
@@ -104,17 +71,26 @@ exports.writeFile = function (filePath, data) {
   });
 };
 
-exports.makeDirectory = function () {
-  for (var key in arguments) {
-    var dirname = path.resolve(arguments[key]);
+export const makeDirectory = function (dir): void {
+  for (let key in arguments) {
+    const dirname = path.resolve(arguments[key]);
     if (!fs.existsSync(dirname)) {
       mkdirp.sync(dirname);
     }
   }
 };
 
-exports.readdir = function (dirPath) {
-  if (fs.existsSync(path)) {
+export const writeFileStream = function (filePath, data, writer) {
+  if (!writer) {
+    writer = fs.createWriteStream(filePath);
+  }
+  data = typeof data === 'object' ? JSON.stringify(data) : data || '{}';
+  writer.write(data);
+  return writer;
+};
+
+export const readdir = function (dirPath): any {
+  if (fs.existsSync(dirPath)) {
     return fs.readdirSync(dirPath);
   } else {
     return [];
