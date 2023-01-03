@@ -10,7 +10,7 @@ let config;
 
 class CrossPublishCommand extends Command {
   async run() {
-    const { _flags } = await this.parse(CrossPublishCommand);
+    const { flags: _flags } = await this.parse(CrossPublishCommand);
     const crossPublishFlags = this.flagsAdapter(_flags || {});
     let updatedFlags;
     try {

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   versioning: false,
   host: 'https://api.contentstack.io/v3',
   developerHubUrls: {
@@ -13,25 +13,12 @@ module.exports = {
   // use below hosts for azure-na region
   // host:'https://azure-na-api.contentstack.com/v3',
   modules: {
-    types: [
-      'stack',
-      'assets',
-      'locales',
-      'environments',
-      'extensions',
-      'webhooks',
-      'global-fields',
-      'content-types',
-      'custom-roles',
-      'workflows',
-      'entries',
-      'labels',
-      'marketplace-apps',
-    ],
+    types: ['stack', 'locales', 'environments'],
     locales: {
       dirName: 'locales',
       fileName: 'locales.json',
       requiredKeys: ['code', 'uid', 'name', 'fallback_locale'],
+      enableNewStructure: true,
     },
     customRoles: {
       dirName: 'custom-roles',
@@ -330,6 +317,7 @@ module.exports = {
     'xh',
     'zu',
   ],
+  updatedModules: ['locales'],
   apis: {
     userSession: '/user-session/',
     globalfields: '/global_fields/',
@@ -349,4 +337,5 @@ module.exports = {
   writeConcurrency: 5,
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
+  useNewModuleStructure: true,
 };
