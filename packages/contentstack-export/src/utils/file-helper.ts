@@ -72,7 +72,7 @@ export const writeFile = function (filePath, data): Promise<any> {
 };
 
 export const makeDirectory = function (dir): void {
-  for (let key in arguments) {
+  for (const key in arguments) {
     const dirname = path.resolve(arguments[key]);
     if (!fs.existsSync(dirname)) {
       mkdirp.sync(dirname);

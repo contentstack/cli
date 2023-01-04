@@ -1,5 +1,5 @@
-import * as mkdirp from 'mkdirp';
-import * as path from 'path';
+import path from 'path';
+import mkdirp from 'mkdirp';
 
 export default async function setupExportDir(exportConfig) {
   mkdirp.sync(exportConfig.exportDir);
