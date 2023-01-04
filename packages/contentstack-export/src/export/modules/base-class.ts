@@ -7,7 +7,7 @@ import entries from 'lodash/entries';
 import isEqual from 'lodash/isEqual';
 import { Stack } from '@contentstack/management/types/stack';
 
-import { log } from '@export/utils';
+import { log } from '../../utils';
 
 export type ApiOptions = {
   uid?: string;

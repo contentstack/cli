@@ -1,8 +1,8 @@
-import config from '@export/config';
 import { test, expect } from '@oclif/test';
-import { ExportAssets } from '@export/export/modules';
-import { mockData } from '@export/test/unit/mock/assets';
-import { sdk } from '@export/test/unit/utility/contentstack-management-sdk';
+import config from '../../../../../src/config';
+import { mockData } from '../../../mock/assets';
+import { ExportAssets } from '../../../../../src/export/modules';
+import { sdk } from '../../../utility/contentstack-management-sdk';
 
 const exportConfig: Record<string, any> = config;
 exportConfig.data = './contents';
