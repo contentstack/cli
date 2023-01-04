@@ -1,2 +1,4 @@
 # Build files
-./lib
+/lib
+/test
+/types
