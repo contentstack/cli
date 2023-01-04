@@ -1,11 +1,9 @@
 {
-  "packages": [
-    "packages/*"
-  ],
+  "packages": ["packages/*"],
   "pack": {
     "ignore": "contentstack-management"
   },
-  "npmClient": "yarn",
+  "npmClient": "npm",
   "version": "independent",
   "useWorkspaces": true
 }
