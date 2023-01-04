@@ -1,5 +1,15 @@
 #!/usr/bin/env node
+const path = require('path');
+const tsConfigPaths = require('tsconfig-paths');
+const project = path.join(__dirname, '..', 'tsconfig.json');
+const tsConfig = require(path.join(__dirname, '..', '..', 'tsconfig.json'));
 
-const oclif = require('@oclif/core')
+tsConfigPaths.register({
+  baseUrl: path.join(require.main.filename, '..', '..', '..'), // ./cli/packages or ./node_modules/@contentstack path
+  paths: (tsConfig.compilerOptions && tsConfig.compilerOptions.paths) || {},
+});
+require('ts-node').register({ project });
 
-oclif.run().then(require('@oclif/core/flush')).catch(require('@oclif/core/handle'))
+const oclif = require('@oclif/core');
+
+oclif.run().then(require('@oclif/core/flush')).catch(require('@oclif/core/handle'));

@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@export/*": [
+        "./cli-cm-export/src/*",
+        "./contentstack-export/src/*"
+      ],
+      "@export/test/*": [
+        "./cli-cm-export/test/*",
+        "./contentstack-export/test/*"
+      ],
+      "@export/messages/*": [
+        "./cli-cm-export/messages/*",
+        "./contentstack-export/messages/*"
+      ]
+    }
+  }
+}

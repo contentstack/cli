@@ -1,17 +1,23 @@
 #!/usr/bin/env node
+const path = require('path');
+const tsConfigPaths = require('tsconfig-paths');
+const project = path.join(__dirname, '..', 'tsconfig.json');
+const tsConfig = require(path.join(__dirname, '..', '..', 'tsconfig.json'));
 
-const oclif = require('@oclif/core')
+tsConfigPaths.register({
+  baseUrl: path.join(require.main.filename, '..', '..', '..'), // ./cli/packages or ./node_modules/@contentstack path,
+  paths: (tsConfig.compilerOptions && tsConfig.compilerOptions.paths) || {},
+});
 
-const path = require('path')
-const project = path.join(__dirname, '..', 'tsconfig.json')
+const oclif = require('@oclif/core');
 
 // In dev mode -> use ts-node and dev plugins
-process.env.NODE_ENV = 'development'
+process.env.NODE_ENV = 'development';
 
-require('ts-node').register({project})
+require('ts-node').register({ project });
 
 // In dev mode, always show stack traces
 oclif.settings.debug = true;
 
 // Start the CLI
-oclif.run().then(oclif.flush).catch(oclif.Errors.handle)
+oclif.run().then(oclif.flush).catch(oclif.Errors.handle);
