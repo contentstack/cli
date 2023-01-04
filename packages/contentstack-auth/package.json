@@ -45,7 +45,7 @@
     "dotenv": "^16.0.1",
     "eslint": "^8.18.0",
     "eslint-config-oclif": "^3.1.0",
-    "eslint-config-oclif-typescript": "^0.1.0",
+    "eslint-config-oclif-typescript": "^1.0.3",
     "globby": "^10.0.2",
     "mocha": "10.1.0",
     "nyc": "^15.1.0",
