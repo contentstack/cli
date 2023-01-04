@@ -8,6 +8,8 @@
         "sourceType": "module"
     },
     "extends": [
+        // "oclif",
+        "oclif-typescript",
         "plugin:@typescript-eslint/recommended"
     ],
     "rules": {
@@ -35,6 +37,19 @@
         ],
         "id-match": "error",
         "no-eval": "error",
-        "no-var": "error"
+        "no-var": "error",
+        "quotes": "off",
+        "indent": "off",
+        "camelcase": "off",
+        "comma-dangle": "off",
+        "arrow-parens": "off",
+        "operator-linebreak": "off",
+        "object-curly-spacing": "off",
+        "node/no-missing-import": "off",
+        "padding-line-between-statements": "off",
+        "@typescript-eslint/ban-ts-ignore": "off",
+        "unicorn/no-abusive-eslint-disable": "off",
+        "unicorn/consistent-function-scoping": "off",
+        "@typescript-eslint/no-use-before-define": "off"
     }
 }

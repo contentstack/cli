@@ -4,7 +4,7 @@
  * MIT Licensed
  */
 
-import * as promiseLimit from 'promise-limit';
+import promiseLimit from 'promise-limit';
 
 export const validateConfig = function (config) {
   if (!config.host || !config.cdn) {
