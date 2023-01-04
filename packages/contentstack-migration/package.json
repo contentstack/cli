@@ -20,7 +20,7 @@
     "oclif": "^3.1.2",
     "@oclif/test": "^2.2.10",
     "chai": "^4.3.4",
-    "eslint": "^8.18.0",
+    "eslint": "^7.32.0",
     "eslint-config-oclif": "^3.1.0",
     "eslint-config-oclif-typescript": "^1.0.3",
     "globby": "^10.0.2",
