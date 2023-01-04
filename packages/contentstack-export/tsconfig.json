@@ -12,12 +12,7 @@
     "sourceMap": false,
     "esModuleInterop": true,
     "strictPropertyInitialization": false,
-    "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "@export/*": ["./src/*"],
-      "@export/test/*": ["./test/*"],
-      "@export/messages/*": ["./messages/*"]
-    }
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*"],
   "exclude": [
