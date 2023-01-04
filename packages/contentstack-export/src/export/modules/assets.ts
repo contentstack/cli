@@ -12,8 +12,8 @@ import { createWriteStream } from 'node:fs';
 import { resolve as pResolve } from 'node:path';
 import { FsUtility, getDirectories } from '@contentstack/cli-utilities';
 
-import config from '@export/config';
-import { log } from '@export/utils';
+import config from '../../config';
+import { log } from '../../utils';
 import BaseClass, { CustomPromiseHandler, CustomPromiseHandlerInput } from './base-class';
 
 export default class ExportAssets extends BaseClass {
