@@ -1,20 +1,28 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "declaration": false,
     "importHelpers": true,
     "module": "commonjs",
     "outDir": "lib",
-    "rootDir": "src",
     "strict": false,
-    "target": "es2017",
+    "target": "ES6",
     "allowJs": true,
     "skipLibCheck": true,
     "sourceMap": false,
+    "esModuleInterop": true,
+    "strictPropertyInitialization": false,
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@export/*": ["./src/*"],
+      "@export/test/*": ["./test/*"],
+      "@export/messages/*": ["./messages/*"]
+    }
   },
-  "include": [
-    "src/**/*"
-  ],
+  "include": ["src/**/*"],
   "exclude": [
-    "src/**/*.d.ts"
+    "node_modules",
+    "lib",
+    "typings/**"
   ]
 }
