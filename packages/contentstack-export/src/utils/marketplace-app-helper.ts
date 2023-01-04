@@ -1,4 +1,4 @@
-let config = require('../../config/default');
+const config = require('../../config/default');
 const sdk = require('./contentstack-management-sdk');
 const { cliux, HttpClient, configHandler } = require('@contentstack/cli-utilities');
 

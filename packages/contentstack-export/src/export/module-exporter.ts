@@ -32,7 +32,7 @@ class ModuleExporter {
 
   async exportByBranches(): Promise<any> {
     // loop through the branches and export it parallel
-    for (let branch of this.exportConfig.branches) {
+    for (const branch of this.exportConfig.branches) {
       try {
         this.exportConfig.branchName = branch.uid;
         this.exportConfig.branchDir = path.join(this.exportConfig.exportDir, branch.uid);
@@ -71,7 +71,7 @@ class ModuleExporter {
 
   async exportAllModules(): Promise<any> {
     // use the algorithm to determine the parallel and sequential execution of modules
-    for (let moduleName of this.exportConfig.modules.types) {
+    for (const moduleName of this.exportConfig.modules.types) {
       try {
         await this.exportByModuleByName(moduleName);
       } catch (error) {

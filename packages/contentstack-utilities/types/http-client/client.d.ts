@@ -225,6 +225,6 @@ export declare class HttpClient {
      */
     prepareRequestPayload(): any;
 }
-declare type BodyFormat = 'json' | 'formParams';
-declare type HttpMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS';
+type BodyFormat = 'json' | 'formParams';
+type HttpMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS';
 export {};
