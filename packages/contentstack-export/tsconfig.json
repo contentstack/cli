@@ -11,6 +11,10 @@
     "skipLibCheck": true,
     "sourceMap": false,
     "esModuleInterop": true,
+    "lib": [
+      "ES2019",
+      "es2020.promise"
+    ],
     "strictPropertyInitialization": false,
     "forceConsistentCasingInFileNames": true
   },
