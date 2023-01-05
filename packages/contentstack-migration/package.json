@@ -25,10 +25,10 @@
     "eslint-config-oclif-typescript": "^1.0.3",
     "globby": "^10.0.2",
     "husky": "^4.2.5",
+    "mocha": "10.1.0",
     "jsdoc": "^3.6.7",
     "jsdoc-to-markdown": "^7.0.1",
     "mkdirp": "^1.0.4",
-    "mocha": "^10.0.0",
     "nock": "^13.1.1",
     "nyc": "^15.1.0"
   },
