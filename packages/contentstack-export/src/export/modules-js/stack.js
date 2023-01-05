@@ -6,59 +6,9 @@
 
 const path = require('path');
 const mkdirp = require('mkdirp');
-<<<<<<< HEAD:packages/contentstack-export/src/export/modules-js/stack.js
 const { fileHelper, log } = require('../../utils');
 const { default: config } = require('../../config');
 let stackConfig = config.modules.stack;
-function ExportStack(config, stackAPIClient) {
-  this.requestOption = {
-    uri: config.host + config.apis.stacks,
-    headers: config.headers,
-    json: true,
-  };
-  this.config = config;
-  this.stackAPIClient = stackAPIClient;
-}
-
-ExportStack.prototype.start = async function () {
-  const self = this;
-
-  // NOTE get org uid
-  const stack = await this.stackAPIClient.fetch().catch((error) => {
-    console.log(error);
-  });
-
-  if (stack && stack.org_uid) {
-    this.config.org_uid = stack.org_uid;
-    this.config.sourceStackName = stack.name;
-  }
-
-  if (!this.config.preserveStackVersion && !this.config.hasOwnProperty('master_locale')) {
-    const apiDetails = {
-      limit: 100,
-      skip: 0,
-      include_count: true,
-    };
-    return self.getLocales(apiDetails);
-  } else if (this.config.preserveStackVersion) {
-    log(this.config, 'Exporting stack details', 'success');
-    let stackFolderPath = path.resolve(this.config.data, stackConfig.dirName);
-    let stackContentsFile = path.resolve(stackFolderPath, stackConfig.fileName);
-
-    mkdirp.sync(stackFolderPath);
-
-    return new Promise((resolve, reject) => {
-      return this.stackAPIClient
-        .fetch()
-        .then((response) => {
-          fileHelper.writeFileSync(stackContentsFile, response);
-          log(this.config, 'Exported stack details successfully!', 'success');
-          return resolve(response);
-=======
-const { merge } = require('lodash');
-const helper = require('../util/helper');
-const { addlogs } = require('../util/log');
-const config = require('../../config/default');
 module.exports = class ExportStack {
   stackConfig = config.modules.stack;
 
@@ -136,7 +86,6 @@ module.exports = class ExportStack {
           } else {
             return reject('Master locale not found');
           }
->>>>>>> 0fcdc710a734c31fa3f88b523265f7f15fbf079f:packages/contentstack-export/src/lib/export/stack.js
         })
         .catch((error) => {
           return reject(error);
@@ -144,7 +93,6 @@ module.exports = class ExportStack {
     });
   }
 };
-<<<<<<< HEAD:packages/contentstack-export/src/export/modules-js/stack.js
 
 ExportStack.prototype.getLocales = function (apiDetails) {
   let self = this;
@@ -175,5 +123,3 @@ ExportStack.prototype.getLocales = function (apiDetails) {
 };
 
 module.exports = ExportStack;
-=======
->>>>>>> 0fcdc710a734c31fa3f88b523265f7f15fbf079f:packages/contentstack-export/src/lib/export/stack.js
