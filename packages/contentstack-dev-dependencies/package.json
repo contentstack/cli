@@ -21,7 +21,8 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
-    "@oclif/core": "^1.21.0"
+    "@oclif/core": "^1.21.0",
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
     "@types/node": "^14.14.32",
