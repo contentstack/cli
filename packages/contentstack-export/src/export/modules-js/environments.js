@@ -6,9 +6,8 @@
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
-
+const { merge } = require('lodash');
 const { fileHelper, log, formatError } = require('../../utils');
-
 module.exports = class ExportEnvironments {
   config = {};
   master = {};
@@ -21,9 +20,9 @@ module.exports = class ExportEnvironments {
     },
   };
 
-  constructor(config, stackAPIClient) {
-    this.config = config;
-    this.client = stackAPIClient;
+  constructor(exportConfig, stackAPIClient) {
+    this.stackAPIClient = stackAPIClient;
+    this.config = merge(this.config, exportConfig);
   }
 
   start() {
@@ -38,16 +37,15 @@ module.exports = class ExportEnvironments {
     // Create folder for environments
     fileHelper.makeDirectory(environmentsFolderPath);
     log(this.config, 'Starting environment export', 'success');
-
-    return new Promise((resolve, reject) => {
-      this.client
+    return new Promise(function (resolve, reject) {
+      self.stackAPIClient
         .environment()
         .query(self.requestOptions.qs)
         .find()
         .then((environmentResponse) => {
           if (environmentResponse.items.length !== 0) {
             for (let i = 0, total = environmentResponse.count; i < total; i++) {
-              let envUid = environmentResponse.items[i].uid;
+              const envUid = environmentResponse.items[i].uid;
               self.master[envUid] = '';
               self.environments[envUid] = environmentResponse.items[i];
               delete self.environments[envUid].uid;
