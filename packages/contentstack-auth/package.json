@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-auth",
   "description": "Contentstack CLI plugin for authentication activities",
-  "version": "1.0.3",
+  "version": "1.0.6",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
@@ -21,8 +21,8 @@
     "test:unit": "mocha --forbid-only \"test/unit/*.test.ts\""
   },
   "dependencies": {
-    "@contentstack/cli-command": "^1.0.2",
-    "@contentstack/cli-utilities": "^1.0.3",
+    "@contentstack/cli-command": "^1.0.4",
+    "@contentstack/cli-utilities": "^1.0.5",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
     "chalk": "^4.0.0",
@@ -33,7 +33,6 @@
   "devDependencies": {
     "@fancy-test/nock": "^0.1.1",
     "@oclif/dev-cli": "^1.22.2",
-    "@oclif/plugin-help": "^5.1.12",
     "@oclif/test": "^1.2.8",
     "@types/chai": "^4.2.18",
     "@types/inquirer": "^9.0.3",
@@ -75,9 +74,6 @@
   "oclif": {
     "commands": "./lib/commands",
     "bin": "csdx",
-    "devPlugins": [
-      "@oclif/plugin-help"
-    ],
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-auth/<%- commandPath %>"
   },
   "husky": {
