@@ -1,24 +1,24 @@
 {
-  "name": "root",
+  "name": "csdx",
+  "dependencies": {},
   "devDependencies": {
-    "lerna": "^5.3.0"
+    "@nrwl/nx-cloud": "latest",
+    "lerna": "^6.4.0",
+    "nx": "15.4.4",
+    "pnpm": "^7.22.0",
+    "prettier": "^2.6.2"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=14.0.0"
   },
   "private": true,
   "scripts": {
-    "clean:build": "rm -rf ./build"
+    "graph": "nx graph",
+    "build": "lerna run prepack",
+    "bootstrap": "lerna bootstrap --force-local --concurrency 1"
   },
   "license": "MIT",
-  "standard": {
-    "env": "mocha",
-    "ignore": [
-      "**/node_modules/**",
-      "packages/*/lib/**"
-    ]
-  },
   "workspaces": [
-    "./packages/*"
+    "packages/*"
   ]
 }
