@@ -10,6 +10,7 @@
     "@contentstack/cli-utilities": "^1.0.3",
     "big-json": "^3.2.0",
     "bluebird": "^3.7.2",
+    "chalk": "^4.1.2",
     "debug": "^4.1.0",
     "lodash": "^4.17.20",
     "marked": "^4.0.17",
@@ -44,7 +45,8 @@
     "plugin"
   ],
   "scripts": {
-    "pack": "npm pack && mv *.tgz ../../build",
+    "pack": "oclif manifest && oclif readme",
+    "b-pack": "npm pack && mv *.tgz ../../build",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
