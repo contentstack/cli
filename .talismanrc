@@ -1,23 +1,13 @@
 fileignoreconfig:
 
-- filename: packages/contentstack-export/src/app.js
-  checksum: 93359760c005b7fd841056360a1859381548cb98f6770a7110ebed69773b3791
-- filename: packages/contentstack-import/src/app.js
-  checksum: c314814a02d20bd367a153fa6c6aca53e304eebad9c1b54ae97fcd65435172b7
-- filename: packages/contentstack-clone/src/lib/util/clone-handler.js
-  checksum: 3c306c67c6b6d809f80fc4009911f3b689810aed6b818c114101544f59ddd14b
-- filename: packages/contentstack-utilities/src/contentstack-management-sdk.ts
-  checksum: f75069c60367dc68b3c48a083411c086410fa8547334da5dfa84b0609fde8ff7
-- filename: packages/contentstack-export/src/lib/export/environments.js
-  checksum: cbf7de5dfc8dc60a50d7820f9637417e76aa935d767357fa0fa8066ccb45ddbd
-- filename: packages/contentstack-export/src/lib/util/login.js
-  checksum: 2b992896f5d4cdcc8a750d72ff1c71bc17477d9ac30d2f3b8b804c46af27a862
-- filename: packages/contentstack-export/test/integration/utils/helper.js
-  checksum: f395f445aa5640d925d7eff0f734a3dae5d46f3448559150969eb144af06dfe2
-- filename: packages/contentstack-export/src/lib/util/marketplace-app-helper.js
-  checksum: 838c173b35ee137ec6e2b47eee4b326243b82d49de845749cec33689d3dbd18a
-- filename: packages/contentstack-export/src/lib/export/stack.js
-  checksum: 9c66c3e2c6e2b6d3f02c7d5b851634eee267f6ee74e132c6c7662d1bc30758ee
-- filename: packages/contentstack-export/src/lib/export/assets.js
-  checksum: 3818bd74ae94c29c5405ea388c32745c8630c3bc43b402191ad3c3e5162c1ca2
+- filename: packages/contentstack-import/src/lib/import/environments.js
+  checksum: 3de0342d9d84aab923a536af765c59846e00b9eb607df8667568831aa1c1da5d
+- filename: packages/contentstack-import/src/lib/util/upload.js
+  checksum: bcfa70f2fd7b7c6683940b55aee942c33efeee93d0baf380d9f9078b0b471287
+- filename: packages/contentstack-import/src/lib/util/marketplace-app-helper.js
+  checksum: 861bfd97d477e5cc01dc33a772c23e3da7b793fbece7de637d4c5d144ea1b232
+- filename: packages/contentstack-import/src/lib/util/login.js
+  checksum: 4ad42d989cdf0885b52f87b0871dcdd46f990d7cfd9ae1f12c6203bafde2b034
+- filename: packages/contentstack-import/src/lib/util/index.js
+  checksum: 2fba240d8c6641af34fb354e2aa496ef10b097e32b0ee4f8d68bc3e198dd64dd
   version: ''
