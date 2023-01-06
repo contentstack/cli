@@ -4,6 +4,7 @@
   "version": "1.0.4",
   "author": "Contentstack",
   "scripts": {
+    "pack": "pnpm clean && pnpm compile && oclif manifest && oclif readme",
     "build": "npm run clean && npm run compile",
     "clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
