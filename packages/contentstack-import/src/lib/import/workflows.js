@@ -15,19 +15,17 @@ const helper = require('../util/fs');
 const { formatError } = require('../util');
 const { addlogs } = require('../util/log');
 let config = require('../../config/default');
-let stack = require('../util/contentstack-management-sdk');
 
 module.exports = class importWorkflows {
-  client;
   fails = [];
   success = [];
   workflowUidMapper = {};
   workflowConfig = config.modules.workflows;
   reqConcurrency = config.concurrency || config.fetchConcurrency || 1;
 
-  constructor(credentialConfig) {
-    this.config = merge(config, credentialConfig);
-    this.client = stack.Client(this.config);
+  constructor(importConfig, stackAPIClient) {
+    this.config = merge(config, importConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
@@ -63,10 +61,7 @@ module.exports = class importWorkflows {
           if (!self.workflowUidMapper.hasOwnProperty(workflowUid)) {
             const roleNameMap = {};
             const workflowStages = workflow.workflow_stages;
-            const roles = await self.client
-              .stack({ api_key: self.config.target_stack, management_token: self.config.management_token })
-              .role()
-              .fetchAll();
+            const roles = await self.stackAPIClient.role().fetchAll();
 
             for (const role of roles.items) {
               roleNameMap[role.name] = role.uid;
@@ -92,10 +87,7 @@ module.exports = class importWorkflows {
                         });
                       }
 
-                      const role = await self.client
-                        .stack({ api_key: self.config.target_stack, management_token: self.config.management_token })
-                        .role()
-                        .create({ role: roleData });
+                      const role = await self.stackAPIClient.role().create({ role: roleData });
                       stage.SYS_ACL.roles.uids[i] = role.uid;
                       roleNameMap[roleData.name] = role.uid;
                     } else {
@@ -126,8 +118,7 @@ module.exports = class importWorkflows {
               workflow.branches = ['main'];
             }
 
-            return self.client
-              .stack({ api_key: self.config.target_stack, management_token: self.config.management_token })
+            return self.stackAPIClient
               .workflow()
               .create({ workflow })
               .then(function (response) {

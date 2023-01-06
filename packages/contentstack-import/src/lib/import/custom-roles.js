@@ -10,18 +10,16 @@ const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
 const { formatError } = require('../util');
 let config = require('../../config/default');
-const stack = require('../util/contentstack-management-sdk');
 
 module.exports = class ImportCustomRoles {
   fails = [];
-  client = null;
   labelUids = [];
   customRolesUidMapper = {};
   customRolesConfig = config.modules.customRoles;
 
-  constructor(credentialConfig) {
-    this.config = merge(config, credentialConfig);
-    this.client = stack.Client(this.config);
+  constructor(importConfig, stackAPIClient) {
+    this.config = merge(config, importConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   async start() {
@@ -56,7 +54,7 @@ module.exports = class ImportCustomRoles {
       }
       self.customRolesUids = Object.keys(self.customRoles);
 
-      self.localesUidMap = await getLocalesUidMap(self.client, self.config, self.customRolesLocales);
+      self.localesUidMap = await getLocalesUidMap(self.stackAPIClient, self.config, self.customRolesLocales);
 
       if (fs.existsSync(environmentsUidMapperFolderPath)) {
         self.environmentsUidMap = helper.readFileSync(
@@ -93,11 +91,7 @@ module.exports = class ImportCustomRoles {
               acl: { read: true },
             });
           }
-          const role = await self.client
-            .stack({ api_key: self.config.target_stack, management_token: self.config.management_token })
-            .role()
-            .create({ role: customRole });
-
+          const role = await self.stackAPIClient.role().create({ role: customRole });
           self.customRolesUidMapper[uid] = role;
           helper.writeFileSync(customRolesUidMapperPath, self.customRolesUidMapper);
         } catch (error) {
@@ -158,12 +152,8 @@ const noopTransformer = (rule) => {
   return rule;
 };
 
-const getLocalesUidMap = async (client, config, sourceLocales) => {
-  const { items } = await client
-    .stack({ api_key: config.target_stack, management_token: config.management_token })
-    .locale()
-    .query()
-    .find();
+const getLocalesUidMap = async (stackAPIClient, config, sourceLocales) => {
+  const { items } = await stackAPIClient.locale().query().find();
   const [targetLocalesMap, sourceLocalesMap] = [{}, {}];
 
   items.forEach((locale) => {
