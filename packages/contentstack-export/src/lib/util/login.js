@@ -7,8 +7,8 @@
  * MIT Licensed
  */
 
-var chalk = require('chalk');
-var { addlogs } = require('../util/log');
+const chalk = require('chalk');
+const { addlogs } = require('../util/log');
 const { managementSDKClient } = require('@contentstack/cli-utilities');
 
 module.exports.login = (config) => {
