@@ -41,7 +41,8 @@
     "plugin"
   ],
   "scripts": {
-    "pack": "npm pack && mv *.tgz ../../build",
+    "b-pack": "npm pack && mv *.tgz ../../build",
+    "pack": "oclif manifest && oclif readme",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",

@@ -10,6 +10,7 @@
     "@contentstack/json-rte-serializer": "^2.0.1",
     "@contentstack/management": "^1.6.0",
     "collapse-whitespace": "^1.1.7",
+    "chalk": "^4.1.2",
     "jsdom": "^20.0.3",
     "jsonschema": "^1.4.0",
     "lodash": "^4.17.21",
@@ -26,7 +27,8 @@
     "eslint-config-oclif": "^3.1.0",
     "globby": "^10.0.2",
     "mocha": "^10.0.0",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "tslib": "^1.13.0"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -59,6 +61,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "pack": "oclif manifest && oclif readme"
   }
 }
