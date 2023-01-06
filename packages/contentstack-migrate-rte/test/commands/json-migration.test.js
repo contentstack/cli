@@ -536,6 +536,16 @@ describe('Content Type with Single RTE Field of Single Type', function () {
         `Faced issue while migrating some entrie(s) for "contenttypewithentryupdateerror" Content-type in "en-us" locale,"blta9b16ac2827c54ed, blta9b16ac2827c54e1"`,
       );
     });
+
+    test
+    .stub(cliux, 'confirm', () => 'yes')
+    .stub(command, 'getToken', getTokenCallback)
+    .stdout()
+    .command(['cm:entries:migrate-html-rte', '--config-path', './test/dummy/config/config-for-images-in-rte.json', '--yes'])
+    .it('should have proper json structure for images migrated from HTML RTE', (ctx) => {
+      expect(ctx.stdout).to.contain('Updated 1 Content Type(s) and 1 Entrie(s)');
+    });
+    
 });
 describe('Global Field Migration', () => {
   let token = getToken('test1');
