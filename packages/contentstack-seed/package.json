@@ -5,6 +5,7 @@
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
+    "@oclif/core": "^1.21.0",
     "@contentstack/cli-cm-import": "^1.2.2",
     "@contentstack/cli-command": "^1.0.2",
     "@contentstack/cli-utilities": "^1.0.3",
@@ -29,6 +30,7 @@
     "eslint-config-oclif-typescript": "^0.1.0",
     "globby": "^10.0.2",
     "jest": "^26.6.1",
+    "oclif": "^3.1.2",
     "ts-jest": "^26.4.2",
     "ts-node": "^8.10.2",
     "typescript": "^4.9.3"
@@ -61,10 +63,11 @@
   "repository": "contentstack/cli",
   "scripts": {
     "test": "jest",
-    "pack": "npm pack --dry-run",
+    "b-pack": "npm pack --dry-run",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
     "prepack": "rm -rf lib && tsc -b && oclif manifest && oclif readme",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "pack": "pnpm prepack"
   }
 }

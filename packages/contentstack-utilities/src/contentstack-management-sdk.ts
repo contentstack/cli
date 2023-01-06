@@ -1,6 +1,7 @@
-import * as ContentstackManagementSDK from '@contentstack/management';
 const https = require('https');
-import { default as configStore } from './config-handler';
+import ContentstackManagementSDK from '@contentstack/management';
+
+import configStore from './config-handler';
 
 export default async (config) => {
   try {
