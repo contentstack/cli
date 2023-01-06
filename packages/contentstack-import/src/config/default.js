@@ -24,11 +24,11 @@ module.exports = {
       'marketplace-apps',
       'global-fields',
       'content-types',
+      'custom-roles',
       'workflows',
       'entries',
       'labels',
       'webhooks',
-      'custom-roles',
     ],
     locales: {
       dirName: 'locales',
