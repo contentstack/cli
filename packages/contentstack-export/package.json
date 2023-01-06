@@ -11,6 +11,7 @@
     "async": "^3.2.4",
     "big-json": "^3.2.0",
     "bluebird": "^3.7.2",
+    "chalk": "^4.1.2",
     "fs": "0.0.1-security",
     "is-valid-path": "^0.1.1",
     "lodash": "^4.17.20",
@@ -37,6 +38,7 @@
     "globby": "^10.0.2",
     "mocha": "10.1.0",
     "nyc": "^15.1.0",
+    "oclif": "^3.1.2",
     "sinon": "^9.0.2"
   },
   "engines": {
@@ -56,6 +58,7 @@
   ],
   "license": "MIT",
   "scripts": {
+    "pack": "oclif manifest && oclif readme",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
