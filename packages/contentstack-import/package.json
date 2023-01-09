@@ -30,7 +30,7 @@
     "nyc": "^15.1.0"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "/npm-shrinkwrap.json",
@@ -45,7 +45,7 @@
     "plugin"
   ],
   "scripts": {
-    "pack": "oclif manifest && oclif readme",
+    "pnpm-prepack": "oclif manifest && oclif readme",
     "b-pack": "npm pack && mv *.tgz ../../build",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
