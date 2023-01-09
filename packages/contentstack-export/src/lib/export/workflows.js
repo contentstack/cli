@@ -28,8 +28,11 @@ module.exports = class ExportWorkFlows {
     addlogs(this.config, 'Starting workflow export', 'success');
 
     const self = this;
-    let workflowsFolderPath = path.resolve(this.config.data, this.config.branchName || '', this.workFlowConfig.dirName);
-
+    const workflowsFolderPath = path.resolve(
+      this.config.data,
+      this.config.branchName || '',
+      this.workFlowConfig.dirName,
+    );
     mkdirp.sync(workflowsFolderPath);
 
     return new Promise(function (resolve, reject) {
@@ -95,7 +98,7 @@ module.exports = class ExportWorkFlows {
         addlogs(self.config, workflow.name + ' workflow was exported successfully', 'success');
         await self.getWorkflowRoles(self, workflow);
         self.workflows[workflow.uid] = workflow;
-        let deleteItems = config.modules.workflows.invalidKeys;
+        const deleteItems = config.modules.workflows.invalidKeys;
         deleteItems.forEach((e) => delete workflow[e]);
       }
     } catch (error) {

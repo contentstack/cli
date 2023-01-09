@@ -15,7 +15,6 @@ const { addlogs } = require('../util/log');
 const config = require('../../config/default');
 
 // Create folder for environments
-
 module.exports = class ExportWebhooks {
   config;
   master = {};
@@ -33,7 +32,6 @@ module.exports = class ExportWebhooks {
 
   start() {
     addlogs(this.config, 'Starting webhooks export', 'success');
-
     const self = this;
     const webhooksFolderPath = path.resolve(
       this.config.data,

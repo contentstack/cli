@@ -1,4 +1,4 @@
-import { Command, flags } from '@oclif/command';
+import { Command, Flags } from '@oclif/core';
 import * as ContentstackManagementSDK from '@contentstack/management';
 import * as ContentstackDeliverySDK from 'contentstack';
 import * as url from 'url';
@@ -105,7 +105,7 @@ abstract class ContentstackCommand extends Command {
 
 module.exports = {
   Command: ContentstackCommand,
-  flags,
+  flags: Flags,
 };
 
-export { ContentstackCommand as Command, flags };
+export { ContentstackCommand as Command, Flags as flags };

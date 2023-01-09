@@ -1,7 +1,13 @@
 fileignoreconfig:
 
-- filename: packages/contentstack-export/src/app.js
-  checksum: 93359760c005b7fd841056360a1859381548cb98f6770a7110ebed69773b3791
-- filename: packages/contentstack-clone/src/lib/util/clone-handler.js
-  checksum: 3c306c67c6b6d809f80fc4009911f3b689810aed6b818c114101544f59ddd14b
+- filename: packages/contentstack-import/src/lib/import/environments.js
+  checksum: 3de0342d9d84aab923a536af765c59846e00b9eb607df8667568831aa1c1da5d
+- filename: packages/contentstack-import/src/lib/util/index.js
+  checksum: 2fba240d8c6641af34fb354e2aa496ef10b097e32b0ee4f8d68bc3e198dd64dd
+- filename: packages/contentstack-import/src/lib/util/marketplace-app-helper.js
+  checksum: 861bfd97d477e5cc01dc33a772c23e3da7b793fbece7de637d4c5d144ea1b232
+- filename: packages/contentstack-import/src/lib/util/login.js
+  checksum: 4ad42d989cdf0885b52f87b0871dcdd46f990d7cfd9ae1f12c6203bafde2b034
+- filename: packages/contentstack-import/src/lib/util/upload.js
+  checksum: bcfa70f2fd7b7c6683940b55aee942c33efeee93d0baf380d9f9078b0b471287
   version: ''
