@@ -31,7 +31,7 @@
     "tslib": "^1.13.0"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "/npm-shrinkwrap.json",
@@ -62,6 +62,6 @@
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
     "version": "oclif readme && git add README.md",
-    "pack": "oclif manifest && oclif readme"
+    "pnpm-prepack": "oclif manifest && oclif readme"
   }
 }

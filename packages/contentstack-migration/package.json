@@ -57,7 +57,7 @@
     "prepack": "oclif manifest && oclif readme && npm run generate-api-ref-md-doc",
     "test": "nyc mocha \"test/**/*.test.js\"",
     "version": "oclif readme && git add README.md",
-    "pack": "oclif manifest && oclif readme && pnpm generate-api-ref-md-doc"
+    "pnpm-prepack": "oclif manifest && oclif readme && pnpm generate-api-ref-md-doc"
   },
   "csdxConfig": {
     "expiredCommands": {
