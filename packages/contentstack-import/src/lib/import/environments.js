@@ -9,13 +9,12 @@ const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const Promise = require('bluebird');
-const { isEmpty } = require('lodash');
+const { isEmpty, merge } = require('lodash');
 
 const helper = require('../util/fs');
 let { addlogs } = require('../util/log');
 const { formatError } = require('../util');
 const config = require('../../config/default');
-const stack = require('../util/contentstack-management-sdk');
 
 module.exports = class ImportEnvironments {
   fails = [];
@@ -23,15 +22,15 @@ module.exports = class ImportEnvironments {
   envUidMapper = {};
   fetchConcurrency = config.modules.environments.concurrency || config.fetchConcurrency || 2;
 
-  constructor(credentialConfig) {
-    this.config = credentialConfig;
+  constructor(importConfig, stackAPIClient) {
+    this.config = merge(config, importConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
     addlogs(this.config, 'Migrating environment', 'success');
 
     const self = this;
-    const client = stack.Client(this.config);
     let environmentConfig = config.modules.environments;
     let environmentsFolderPath = path.resolve(this.config.data, environmentConfig.dirName);
     let envMapperPath = path.resolve(this.config.data, 'mapper', 'environments');
@@ -60,8 +59,7 @@ module.exports = class ImportEnvironments {
           if (!self.envUidMapper.hasOwnProperty(envUid)) {
             let requestOption = { environment: env };
 
-            return client
-              .stack({ api_key: config.target_stack, management_token: config.management_token })
+            return self.stackAPIClient
               .environment()
               .create(requestOption)
               .then((environment) => {
