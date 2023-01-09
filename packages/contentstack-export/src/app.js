@@ -6,7 +6,7 @@ const util = require('./lib/util');
 const login = require('./lib/util/login');
 const setupBranches = require('./lib/util/setup-branches');
 const { addlogs, unlinkFileLogger } = require('./lib/util/log');
-const { managementClient } = require('@contentstack/cli-utilities');
+const { managementSDKClient } = require('@contentstack/cli-utilities');
 
 exports.initial = async (config) => {
   return new Promise(async (resolve, reject) => {
@@ -16,8 +16,7 @@ exports.initial = async (config) => {
       exports.getConfig = () => {
         return config;
       };
-
-      const APIClient = await managementClient(config);
+      const APIClient = await managementSDKClient(config);
       const stackAPIClient = APIClient.stack({
         api_key: config.source_stack,
         management_token: config.management_token,

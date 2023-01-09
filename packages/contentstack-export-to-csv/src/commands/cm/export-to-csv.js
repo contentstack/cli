@@ -65,7 +65,7 @@ class ExportToCsvCommand extends Command {
           'content-type': contentTypesFlag,
           alias: managementTokenAlias,
         },
-      } = this.parse(ExportToCsvCommand);
+      } = await this.parse(ExportToCsvCommand);
 
       if (!managementTokenAlias) {
         managementAPIClient = await managementClient({ host: this.cmaHost });
