@@ -2,7 +2,7 @@ const fs = require('fs');
 const _ = require('lodash');
 const config = require('../../../src/config/default');
 const { Command } = require('@contentstack/cli-command');
-const { managementClient } = require('@contentstack/cli-utilities');
+const { managementSDKClient } = require('@contentstack/cli-utilities');
 
 let envData = { NA: {}, EU: {}, 'AZURE-NA': {}, env_pushed: false };
 
@@ -37,22 +37,23 @@ const initEnvData = (regions = ['NA', 'EU', 'AZURE-NA']) => {
 
 const getEnvData = () => envData;
 
-const getStack = () =>
-  new Promise((resolve, reject) => {
-    managementClient(config)
-      .then((APIClient) => {
-        const stackAPIClient = APIClient.stack({
-          api_key: config.source_stack,
-          management_token: config.management_token,
-        });
-        resolve(stackAPIClient);
-      })
-      .catch(reject);
-  });
+const getStack = () => {
+  return managementSDKClient(config)
+    .then((APIClient) => {
+      const stackAPIClient = APIClient.stack({
+        api_key: config.source_stack,
+        management_token: config.management_token,
+      });
+      return stackAPIClient;
+    })
+    .catch((error) => {
+      throw error;
+    });
+};
 
 const getAssetAndFolderCount = () =>
   new Promise(async (resolve, reject) => {
-    const stack = await getStack();
+    const stack = getStack();
     const assetCount = await stack
       .asset()
       .query({ include_count: true, limit: 1 })

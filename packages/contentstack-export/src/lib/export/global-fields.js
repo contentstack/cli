@@ -7,6 +7,7 @@
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
+const { merge } = require('lodash');
 
 const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
@@ -33,7 +34,7 @@ module.exports = class ExportGlobalFields {
         include_count: true,
       },
     };
-    this.config = { ...config, ...exportConfig };
+    this.config = merge(config, exportConfig);
     this.stackAPIClient = stackAPIClient;
     this.globalfieldsFolderPath = path.resolve(
       this.config.data,

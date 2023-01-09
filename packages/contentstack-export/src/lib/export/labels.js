@@ -9,8 +9,8 @@ const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const { merge } = require('lodash');
 
-let helper = require('../util/helper');
-let { addlogs } = require('../util/log');
+const helper = require('../util/helper');
+const { addlogs } = require('../util/log');
 const { formatError } = require('../util');
 const config = require('../../config/default');
 
@@ -25,9 +25,8 @@ module.exports = class ExportLabels {
 
   start() {
     addlogs(this.config, 'Starting labels export', 'success');
-
     const self = this;
-    let labelsFolderPath = path.resolve(config.data, this.config.branchName || '', self.labelConfig.dirName);
+    const labelsFolderPath = path.resolve(config.data, this.config.branchName || '', self.labelConfig.dirName);
     // Create locale folder
     mkdirp.sync(labelsFolderPath);
     return new Promise(function (resolve, reject) {
@@ -40,7 +39,7 @@ module.exports = class ExportLabels {
             response.items.forEach(function (label) {
               addlogs(self.config, label.name + ' labels was exported successfully', 'success');
               self.labels[label.uid] = label;
-              let deleteItems = self.config.modules.labels.invalidKeys;
+              const deleteItems = self.config.modules.labels.invalidKeys;
               deleteItems.forEach((e) => delete label[e]);
             });
             addlogs(self.config, chalk.green('All the labels have been exported successfully'), 'success');

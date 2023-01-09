@@ -32,7 +32,7 @@ module.exports = class ExportAssets {
 
   constructor(exportConfig, stackAPIClient) {
     this.stackAPIClient = stackAPIClient;
-    this.config = exportConfig;
+    this.config = _.merge(config, exportConfig);
     this.folderData = [];
     this.assetContents = {};
     this.assetDownloadRetry = {};
@@ -157,7 +157,7 @@ module.exports = class ExportAssets {
   }
 
   exportFolders() {
-    let self = this;
+    const self = this;
     return new Promise((resolve, reject) => {
       return self
         .getAssetCount(true)
@@ -188,7 +188,7 @@ module.exports = class ExportAssets {
   }
 
   getFolderJSON(skip, fCount) {
-    let self = this;
+    const self = this;
     return new Promise((resolve, reject) => {
       if (typeof skip !== 'number') {
         skip = 0;
@@ -222,7 +222,7 @@ module.exports = class ExportAssets {
     const self = this;
     return new Promise((resolve, reject) => {
       if (folder && typeof folder === 'boolean') {
-        let queryOptions = {
+        const queryOptions = {
           skip: 99999990,
           include_count: true,
           include_folders: true,
@@ -239,7 +239,7 @@ module.exports = class ExportAssets {
             addlogs(self.config, error, 'error');
           });
       } else {
-        let queryOptions = { skip: 99999990, include_count: true };
+        const queryOptions = { skip: 99999990, include_count: true };
         self.stackAPIClient
           .asset()
           .query(queryOptions)
@@ -281,8 +281,8 @@ module.exports = class ExportAssets {
   }
 
   getVersionedAssetJSON(uid, version, bucket) {
-    let self = this;
-    let assetVersionInfo = bucket || [];
+    const self = this;
+    const assetVersionInfo = bucket || [];
 
     return new Promise((resolve, reject) => {
       if (self.assetDownloadRetry[uid + version] > self.assetDownloadRetryLimit) {
@@ -295,7 +295,7 @@ module.exports = class ExportAssets {
         helper.writeFileSync(assetVersionInfoFile, assetVersionInfo);
         return resolve();
       }
-      let queryrequestOption = {
+      const queryrequestOption = {
         version: version,
         include_publish_details: true,
         except: {
@@ -313,10 +313,7 @@ module.exports = class ExportAssets {
               assetVersionInfo.splice(0, 0, versionedAssetJSONResponse);
               // Remove duplicates
               assetVersionInfo = _.uniqWith(assetVersionInfo, _.isEqual);
-              self
-                .getVersionedAssetJSON(uid, --version, assetVersionInfo)
-                .then(resolve)
-                .catch(reject);
+              self.getVersionedAssetJSON(uid, --version, assetVersionInfo).then(resolve).catch(reject);
             })
             .catch(reject);
         })
@@ -338,7 +335,7 @@ module.exports = class ExportAssets {
   }
 
   downloadAsset(asset) {
-    let self = this;
+    const self = this;
     return new Promise(async (resolve, reject) => {
       const assetFolderPath = path.resolve(self.assetsFolderPath, asset.uid);
       const assetFilePath = path.resolve(assetFolderPath, asset.filename);
@@ -393,7 +390,7 @@ module.exports = class ExportAssets {
   }
 
   getFolders() {
-    let self = this;
+    const self = this;
     return new Promise((resolve, reject) => {
       return self
         .getAssetCount(true)
@@ -421,7 +418,7 @@ module.exports = class ExportAssets {
   }
 
   getFolderDetails(skip, tCount) {
-    let self = this;
+    const self = this;
     return new Promise((resolve, reject) => {
       if (typeof skip !== 'number') {
         skip = 0;
@@ -430,7 +427,7 @@ module.exports = class ExportAssets {
         helper.writeFileSync(self.folderJSONPath, self.folderContents);
         return resolve();
       }
-      let queryRequestObj = {
+      const queryRequestObj = {
         skip: skip,
         include_folders: true,
         query: { is_dir: true },
