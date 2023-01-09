@@ -58,7 +58,7 @@ class ContentTypesImport {
         if (!this.ignoredFilesInContentTypesFolder.has(contentTypeName)) {
           const contentTypePath = path.join(this.contentTypesFolderPath, contentTypeName);
           const contentType = await fileHelper.readFile(contentTypePath);
-          if (!this.existingContentTypesUIds?.has(contentType.uid)) {
+          if (!this.existingContentTypesUIds.length || !this.existingContentTypesUIds.has(contentType.uid)) {
             this.contentTypes.push(await fileHelper.readFile(contentTypePath));
           }
         }
