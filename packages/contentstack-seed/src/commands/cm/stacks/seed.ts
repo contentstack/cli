@@ -1,6 +1,8 @@
+// @ts-ignore
+import { Flags } from '@oclif/core';
 import { Command, flags } from '@contentstack/cli-command';
-import ContentModelSeeder, { ContentModelSeederOptions } from '../../../seed';
 import { printFlagDeprecation } from '@contentstack/cli-utilities';
+import ContentModelSeeder, { ContentModelSeederOptions } from '../../../seed';
 
 export default class SeedCommand extends Command {
   static description = 'Create a stack from existing content types, entries, assets, etc';
@@ -73,7 +75,7 @@ export default class SeedCommand extends Command {
 
   async run() {
     try {
-      const { flags: seedFlags } = this.parse(SeedCommand);
+      const { flags: seedFlags } = await this.parse(SeedCommand);
 
       if (!this.isAuthenticated()) {
         this.error('You need to login, first. See: auth:login --help', {

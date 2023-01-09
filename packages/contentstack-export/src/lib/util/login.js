@@ -11,12 +11,12 @@ const chalk = require('chalk');
 const { addlogs } = require('../util/log');
 
 module.exports.login = (config, APIClient, stackAPIClient) => {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     if (config.email && config.password) {
       // eslint-disable-next-line no-console
       console.log('Logging into Contentstack');
       APIClient.login({ email: config.email, password: config.password })
-        .then(function (response) {
+        .then((response) => {
           // eslint-disable-next-line no-console
           console.log(chalk.green('Contentstack account authenticated successfully!'));
           config.authtoken = response.user.authtoken;
@@ -28,7 +28,7 @@ module.exports.login = (config, APIClient, stackAPIClient) => {
           };
           resolve(config);
         })
-        .catch(function (error) {
+        .catch((error) => {
           reject(error);
         });
     } else if (!config.email && !config.password && config.source_stack && config.access_token) {
@@ -54,7 +54,7 @@ module.exports.login = (config, APIClient, stackAPIClient) => {
     } else if (config.isAuthenticated && !config.management_token) {
       stackAPIClient
         .users()
-        .then(function () {
+        .then(() => {
           resolve();
         })
         .catch((error) => {
