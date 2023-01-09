@@ -15,7 +15,6 @@ const helper = require('../util/fs');
 const { formatError } = require('../util');
 const { addlogs } = require('../util/log');
 const config = require('../../config/default');
-const stack = require('../util/contentstack-management-sdk');
 
 module.exports = class ImportWebhooks {
   config;
@@ -25,15 +24,15 @@ module.exports = class ImportWebhooks {
   webhooksConfig = config.modules.webhooks;
   reqConcurrency = config.concurrency || config.fetchConcurrency;
 
-  constructor(credentialConfig) {
-    this.config = merge(config, credentialConfig);
+  constructor(importConfig, stackAPIClient) {
+    this.config = merge(config, importConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
     addlogs(this.config, chalk.white('Migrating webhooks'), 'success');
 
     const self = this;
-    const client = stack.Client(this.config);
 
     let webMapperPath = path.resolve(this.config.data, 'mapper', 'webhooks');
     let webFailsPath = path.resolve(this.config.data, 'mapper', 'webhooks', 'fails.json');
@@ -68,8 +67,7 @@ module.exports = class ImportWebhooks {
           if (!self.webUidMapper.hasOwnProperty(webUid)) {
             let requestOption = { json: { webhook: web } };
 
-            return client
-              .stack({ api_key: self.config.target_stack, management_token: self.config.management_token })
+            return self.stackAPIClient
               .webhook()
               .create(requestOption.json)
               .then(function (response) {
