@@ -26,7 +26,7 @@
     "nyc": "^15.1.0"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "/npm-shrinkwrap.json",
@@ -42,7 +42,7 @@
   ],
   "scripts": {
     "b-pack": "npm pack && mv *.tgz ../../build",
-    "pack": "oclif manifest && oclif readme",
+    "pnpm-prepack": "oclif manifest && oclif readme",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",

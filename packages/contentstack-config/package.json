@@ -4,7 +4,7 @@
   "version": "1.0.4",
   "author": "Contentstack",
   "scripts": {
-    "pack": "pnpm clean && pnpm compile && oclif manifest && oclif readme",
+    "pnpm-prepack": "pnpm clean && pnpm compile && oclif manifest && oclif readme",
     "build": "npm run clean && npm run compile",
     "clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
@@ -52,7 +52,7 @@
     "typescript": "^4.9.3"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "/lib",
