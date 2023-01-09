@@ -7,6 +7,7 @@
 const mkdirp = require('mkdirp');
 const path = require('path');
 const chalk = require('chalk');
+const { merge } = require('lodash');
 
 const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
@@ -23,7 +24,7 @@ module.exports = class ExportExtensions {
   };
 
   constructor(exportConfig, stackAPIClient) {
-    this.config = exportConfig;
+    this.config = merge(config, exportConfig);
     this.stackAPIClient = stackAPIClient;
   }
 
@@ -46,7 +47,7 @@ module.exports = class ExportExtensions {
         .then((extension) => {
           if (extension.items.length !== 0) {
             for (let i = 0, total = extension.count; i < total; i++) {
-              let extUid = extension.items[i].uid;
+              const extUid = extension.items[i].uid;
               self.master[extUid] = '';
               self.extensions[extUid] = extension.items[i];
               delete self.extensions[extUid].uid;
