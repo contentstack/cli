@@ -87,7 +87,6 @@ abstract class ContentstackCommand extends Command {
     if (this._authToken) return this._authToken;
     this._authToken = configHandler.get('authtoken');
     if (this._authToken) return this._authToken;
-    // throw new CLIError('You are not logged in. Please login with command $ csdx auth:login');
   }
 
   getToken(alias) {
@@ -97,6 +96,15 @@ abstract class ContentstackCommand extends Command {
     }
     throw new CLIError('No token found');
   }
+
+  isAuthenticated() {
+    const authtoken = configHandler.get('authtoken');
+    if (authtoken) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 module.exports = {
@@ -104,4 +112,4 @@ module.exports = {
   flags,
 };
 
-export { ContentstackCommand as Command, flags }
+export { ContentstackCommand as Command, flags };
