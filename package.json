@@ -1,12 +1,12 @@
 {
   "name": "csdx",
-  "dependencies": {},
+  "version": "1.2.5",
   "devDependencies": {
-    "@nrwl/nx-cloud": "latest",
+    "@nrwl/nx-cloud": "^15.0.2",
     "lerna": "^6.4.0",
     "nx": "15.4.4",
-    "pnpm": "^7.22.0",
-    "prettier": "^2.6.2"
+    "pnpm": "^7.23.0",
+    "prettier": "^2.8.2"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -14,8 +14,11 @@
   "private": true,
   "scripts": {
     "graph": "nx graph",
-    "build": "lerna run prepack",
-    "bootstrap": "lerna bootstrap --force-local --concurrency 1"
+    "bootstrap": "pnpm install",
+    "cache:clear": "pnpm store prune",
+    "prepack": "lerna run pnpm-prepack",
+    "clean": "pnpm cache:clear && sh cleanup.sh",
+    "package-lock-only": "npm i --package-lock-only --workspaces"
   },
   "license": "MIT",
   "workspaces": [
