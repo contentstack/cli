@@ -17,8 +17,8 @@ It is Contentstack’s CLI plugin to perform authentication-related activities. 
 $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
-$ csdx (-v|--version|version)
-@contentstack/cli-auth/1.0.3 darwin-x64 node-v18.12.1
+$ csdx (--version)
+@contentstack/cli-auth/1.0.6 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -35,6 +35,10 @@ USAGE
 * [`csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`](#csdx-authtokensadd--a-value---delivery---management--e-value--k-value--y---token-value)
 * [`csdx auth:tokens:remove`](#csdx-authtokensremove)
 * [`csdx auth:whoami`](#csdx-authwhoami)
+* [`csdx login`](#csdx-login)
+* [`csdx logout`](#csdx-logout)
+* [`csdx tokens`](#csdx-tokens)
+* [`csdx whoami`](#csdx-whoami)
 
 ## `csdx auth:login`
 
@@ -42,20 +46,27 @@ User sessions login
 
 ```
 USAGE
-  $ csdx auth:login
+  $ csdx auth:login [-u <value>] [-p <value>]
 
-OPTIONS
-  -p, --password=password  Password
-  -u, --username=username  User name
+FLAGS
+  -p, --password=<value>  Password
+  -u, --username=<value>  User name
+
+DESCRIPTION
+  User sessions login
 
 ALIASES
   $ csdx login
 
 EXAMPLES
   $ csdx auth:login
+
   $ csdx auth:login -u <username>
+
   $ csdx auth:login -u <username> -p <password>
+
   $ csdx auth:login --username <username>
+
   $ csdx auth:login --username <username> --password <password>
 ```
 
@@ -67,17 +78,22 @@ User session logout
 
 ```
 USAGE
-  $ csdx auth:logout
+  $ csdx auth:logout [-y]
 
-OPTIONS
+FLAGS
   -y, --yes  Force log out by skipping the confirmation
+
+DESCRIPTION
+  User session logout
 
 ALIASES
   $ csdx logout
 
 EXAMPLES
   $ csdx auth:logout
+
   $ csdx auth:logout -y
+
   $ csdx auth:logout --yes
 ```
 
@@ -89,22 +105,27 @@ Lists all existing tokens added to the session
 
 ```
 USAGE
-  $ csdx auth:tokens
+  $ csdx auth:tokens [--columns <value> | -x] [--sort <value>] [--filter <value>] [--output csv|json|yaml |  |
+    [--csv | --no-truncate]] [--no-header | ]
 
-OPTIONS
-  -x, --extended          show extra columns
-  --columns=columns       only show provided columns (comma-separated)
-  --csv                   output is csv format [alias: --output=csv]
-  --filter=filter         filter property by partial string matching, ex: name=foo
-  --no-header             hide table header from output
-  --no-truncate           do not truncate output to fit screen
-  --output=csv|json|yaml  output in a more machine friendly format
-  --sort=sort             property to sort by (prepend '-' for descending)
+FLAGS
+  -x, --extended     show extra columns
+  --columns=<value>  only show provided columns (comma-separated)
+  --csv              output is csv format [alias: --output=csv]
+  --filter=<value>   filter property by partial string matching, ex: name=foo
+  --no-header        hide table header from output
+  --no-truncate      do not truncate output to fit screen
+  --output=<option>  output in a more machine friendly format
+                     <options: csv|json|yaml>
+  --sort=<value>     property to sort by (prepend '-' for descending)
+
+DESCRIPTION
+  Lists all existing tokens added to the session
 
 ALIASES
   $ csdx tokens
 
-EXAMPLE
+EXAMPLES
   $ csdx auth:tokens
 ```
 
@@ -118,28 +139,40 @@ Adds management/delivery tokens to your session to use it with other CLI command
 USAGE
   $ csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]
 
-OPTIONS
-  -a, --alias=alias                  Name of the token alias
-  -d, --delivery                     Set this flag to save delivery token
-  -e, --environment=environment      Environment name for delivery token
-  -k, --stack-api-key=stack-api-key  Stack API Key
-  -m, --management                   Set this flag to save management token
-  -t, --token=token                  Add the token name
-  -y, --yes                          Use this flag to skip confirmation
+FLAGS
+  -a, --alias=<value>          Name of the token alias
+  -d, --delivery               Set this flag to save delivery token
+  -e, --environment=<value>    Environment name for delivery token
+  -k, --stack-api-key=<value>  Stack API Key
+  -m, --management             Set this flag to save management token
+  -t, --token=<value>          Add the token name
+  -y, --yes                    Use this flag to skip confirmation
+
+DESCRIPTION
+  Adds management/delivery tokens to your session to use it with other CLI commands
 
 EXAMPLES
   $ csdx auth:tokens:add
+
   $ csdx auth:tokens:add -a <alias>
+
   $ csdx auth:tokens:add -k <stack api key>
+
   $ csdx auth:tokens:add --delivery
+
   $ csdx auth:tokens:add --management
+
   $ csdx auth:tokens:add -e <environment>
+
   $ csdx auth:tokens:add --token <token>
+
   $ csdx auth:tokens:add -a <alias> -k <stack api key> --management --token <management token>
+
   $ csdx auth:tokens:add -a <alias> -k <stack api key> --delivery -e <environment> --token <delivery token>
+
   $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --management --token <management token>
-  $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery 
-  token>
+
+  $ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery token>
 ```
 
 _See code: [src/commands/auth/tokens/add.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-auth/src/commands/auth/tokens/add.ts)_
@@ -150,14 +183,18 @@ Removes selected tokens
 
 ```
 USAGE
-  $ csdx auth:tokens:remove
+  $ csdx auth:tokens:remove [-a <value>] [-i]
 
-OPTIONS
-  -a, --alias=alias  Token alias
-  -i, --ignore       Ignore
+FLAGS
+  -a, --alias=<value>  Token alias
+  -i, --ignore         Ignore
+
+DESCRIPTION
+  Removes selected tokens
 
 EXAMPLES
   $ csdx auth:tokens:remove
+
   $ csdx auth:tokens:remove -a <alias>
 ```
 
@@ -171,12 +208,118 @@ Display current users email address
 USAGE
   $ csdx auth:whoami
 
+DESCRIPTION
+  Display current users email address
+
 ALIASES
   $ csdx whoami
 
-EXAMPLE
+EXAMPLES
   $ csdx auth:whoami
 ```
 
 _See code: [src/commands/auth/whoami.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-auth/src/commands/auth/whoami.ts)_
+
+## `csdx login`
+
+User sessions login
+
+```
+USAGE
+  $ csdx login [-u <value>] [-p <value>]
+
+FLAGS
+  -p, --password=<value>  Password
+  -u, --username=<value>  User name
+
+DESCRIPTION
+  User sessions login
+
+ALIASES
+  $ csdx login
+
+EXAMPLES
+  $ csdx auth:login
+
+  $ csdx auth:login -u <username>
+
+  $ csdx auth:login -u <username> -p <password>
+
+  $ csdx auth:login --username <username>
+
+  $ csdx auth:login --username <username> --password <password>
+```
+
+## `csdx logout`
+
+User session logout
+
+```
+USAGE
+  $ csdx logout [-y]
+
+FLAGS
+  -y, --yes  Force log out by skipping the confirmation
+
+DESCRIPTION
+  User session logout
+
+ALIASES
+  $ csdx logout
+
+EXAMPLES
+  $ csdx auth:logout
+
+  $ csdx auth:logout -y
+
+  $ csdx auth:logout --yes
+```
+
+## `csdx tokens`
+
+Lists all existing tokens added to the session
+
+```
+USAGE
+  $ csdx tokens [--columns <value> | -x] [--sort <value>] [--filter <value>] [--output csv|json|yaml |  |
+    [--csv | --no-truncate]] [--no-header | ]
+
+FLAGS
+  -x, --extended     show extra columns
+  --columns=<value>  only show provided columns (comma-separated)
+  --csv              output is csv format [alias: --output=csv]
+  --filter=<value>   filter property by partial string matching, ex: name=foo
+  --no-header        hide table header from output
+  --no-truncate      do not truncate output to fit screen
+  --output=<option>  output in a more machine friendly format
+                     <options: csv|json|yaml>
+  --sort=<value>     property to sort by (prepend '-' for descending)
+
+DESCRIPTION
+  Lists all existing tokens added to the session
+
+ALIASES
+  $ csdx tokens
+
+EXAMPLES
+  $ csdx auth:tokens
+```
+
+## `csdx whoami`
+
+Display current users email address
+
+```
+USAGE
+  $ csdx whoami
+
+DESCRIPTION
+  Display current users email address
+
+ALIASES
+  $ csdx whoami
+
+EXAMPLES
+  $ csdx auth:whoami
+```
 <!-- commandsstop -->

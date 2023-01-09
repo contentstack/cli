@@ -1,5 +1,5 @@
 const { expect, test, it } = require('@oclif/test');
-const { cliux, managementClient } = require('@contentstack/cli-utilities');
+const { cliux, managementSDKClient } = require('@contentstack/cli-utilities');
 let defaultConfig = require('../../../src/config/default');
 let _ = require('lodash');
 var environmentsMock = require('../mock/environment');
@@ -15,84 +15,26 @@ var entriesFetchMock = require('../mock/entryFetch');
 var contentTypeMock = require('../mock/content-types');
 let message = require('../../../messages/index.json');
 
-// test
-// .stub(managementClient(), 'Client', (e) => {
-// 	return {
-// 		stack: function() {
-// 			return {
-// 				environment: function() {
-// 					return {
-// 						query: function() {
-// 							return {
-// 								find: function() {
-// 									return Promise.resolve(environmentsMock)
-// 								}
-// 							}
-// 						}
-// 					}
-// 				}
-// 			}
-// 		}
-// 	}
-// })
-// .stub(cli, 'prompt', (name) => async (name) => {
-// 	if (name === 'Please provide master locale ?') return 'en-us'
-// 	if (name === 'Please provide source Stack') return 'newstackUid'
-// 	if (name === 'Please provide path were you want to store') return '../contents'
-// })
-// .command(['cm:export',  '--auth-token', '-m',  'environments'])
-// .it('runs method of environment', ctx => {
-// })
-
-// //global-fields
-// test
-// .stub(managementClient(), 'Client', (e) => {
-// 	return {
-// 		stack: function() {
-// 			return {
-// 				globalField: function() {
-// 					return {
-// 						query: function() {
-// 							return {
-// 								find: function() {
-// 									return Promise.resolve(globalFieldsMock)
-// 								}
-// 							}
-// 						}
-// 					}
-// 				}
-// 			}
-// 		}
-// 	}
-// })
-// .stub(cli, 'prompt', (name) => async (name) => {
-// 	if (name === 'Please provide master locale ?') return 'en-us'
-// 	if (name === 'Please provide source Stack') return 'newstackUid'
-// 	if (name === 'Please provide path were you want to store') return '../contents'
-// })
-// .command(['cm:export',  '--auth-token', '-m',  'global-fields'])
-// .it('runs method of Global Fields', ctx => {
-// })
-
-managementClient(managementClient(), 'Client', (e) => {
-  return {
-    stack: function () {
-      return {
-        locale: function () {
-          return {
-            query: function () {
-              return {
-                find: function () {
-                  return Promise.resolve(workflowMock);
-                },
-              };
-            },
-          };
-        },
-      };
-    },
-  };
-})
+test
+  .stub(managementSDKClient(), 'Client', (e) => {
+    return {
+      stack: function () {
+        return {
+          locale: function () {
+            return {
+              query: function () {
+                return {
+                  find: function () {
+                    return Promise.resolve(workflowMock);
+                  },
+                };
+              },
+            };
+          },
+        };
+      },
+    };
+  })
   .stub(cliux, 'prompt', (_name) => async (name) => {
     if (name === message.promptMessageList.promptMasterLocale) return 'en-us';
     if (name === message.promptMessageList.promptSourceStack) return 'newstackUid';
@@ -102,7 +44,7 @@ managementClient(managementClient(), 'Client', (e) => {
   .it('runs method of Locales', (ctx) => {});
 
 test
-  .stub(managementClient(), 'Client', (e) => {
+  .stub(managementSDKClient(), 'Client', (e) => {
     return {
       stack: function () {
         return {
@@ -129,126 +71,8 @@ test
   .command(['cm:export', '--auth-token', '-m', 'workflows'])
   .it('runs method of workflows', (ctx) => {});
 
-// test
-// .stub(managementClient(), 'Client', (e) => {
-// 	return {
-// 		stack: function() {
-// 			return {
-// 				extension: function() {
-// 					return {
-// 						query: function() {
-// 							return {
-// 								find: function() {
-// 									return Promise.resolve(extensionsMock)
-// 								}
-// 							}
-// 						}
-// 					}
-// 				}
-// 			}
-// 		}
-// 	}
-// })
-// .stub(cli, 'prompt', (name) => async (name) => {
-// 	if (name === 'Please provide master locale ?') return 'en-us'
-// 	if (name === 'Please provide source Stack') return 'newstackUid'
-// 	if (name === 'Please provide path were you want to store') return '../contents'
-// })
-// .command(['cm:export',  '--auth-token', '-m',  'extensions'])
-// .it('runs method of environment', ctx => {
-// })
-
-// test
-// .stub(managementClient(), 'Client', (e) => {
-// 	return {
-// 		stack: function() {
-// 			return {
-// 				webhook: function() {
-// 							return {
-// 								fetchAll: function() {
-// 									return Promise.resolve(webhooksMock)
-// 								}
-// 							}
-// 					}
-// 				}
-// 			}
-// 		}
-// })
-// .stub(cli, 'prompt', (name) => async (name) => {
-// 	if (name === 'Please provide master locale ?') return 'en-us'
-// 	if (name === 'Please provide source Stack') return 'newstackUid'
-// 	if (name === 'Please provide path were you want to store') return '../contents'
-// })
-// .command(['cm:export',  '--auth-token', '-m',  'webhooks'])
-// .it('runs method of webooks', ctx => {
-// })
-
-// test
-// .stub(managementClient(), 'Client', (e) => {
-// 	return {
-// 		stack: function() {
-// 			return {
-// 				asset: function() {
-// 					return {
-// 						query: function() {
-// 							return {
-// 								find: function() {
-// 									return Promise.resolve(assetsMock)
-// 								}
-// 							}
-// 						},
-// 						fetch: function() {
-// 							return Promise.resolve(assetFetchMock)
-// 						}
-// 					}
-// 				}
-// 			}
-// 		}
-// 	}
-// })
-// .stub(cli, 'prompt', (name) => async (name) => {
-// 	if (name === 'Please provide master locale ?') return 'en-us'
-// 	if (name === 'Please provide source Stack') return 'newstackUid'
-// 	if (name === 'Please provide path were you want to store') return '../contents'
-// })
-// .command(['cm:export',  '--auth-token', '-m',  'assets'])
-// .it('runs method of Assets', ctx => {
-// })
-
-// test
-// .stub(managementClient(), 'Client', (e) => {
-// 	return {
-// 		stack: function() {
-// 			return {
-// 				asset: function() {
-// 					return {
-// 						query: function() {
-// 							return {
-// 								find: function() {
-// 									return Promise.reject()
-// 								}
-// 							}
-// 						},
-// 						fetch: function() {
-// 							return Promise.reject()
-// 						}
-// 					}
-// 				}
-// 			}
-// 		}
-// 	}
-// })
-// .stub(cli, 'prompt', (name) => async (name) => {
-// 	if (name === 'Please provide master locale ?') return 'en-us'
-// 	if (name === 'Please provide source Stack') return 'newstackUid'
-// 	if (name === 'Please provide path were you want to store') return '../contentsTest'
-// })
-// .command(['cm:export',  '--auth-token', '-m',  'assets'])
-// .it('runs method of Assets for rejection', ctx => {
-// })
-
 test
-  .stub(managementClient(), 'Client', (e) => {
+  .stub(managementSDKClient(), 'Client', (e) => {
     return {
       stack: function () {
         return {
@@ -276,7 +100,7 @@ test
   .it('runs method of ContentTypes', (ctx) => {});
 
 test
-  .stub(managementClient(), 'Client', (e) => {
+  .stub(managementSDKClient(), 'Client', (e) => {
     return {
       stack: function () {
         return {
@@ -310,7 +134,7 @@ test
   .it('runs method of environment', (ctx) => {});
 
 test
-  .stub(managementClient(), 'Client', (e) => {
+  .stub(managementSDKClient(), 'Client', (e) => {
     return {
       stack: function () {
         return {
@@ -343,32 +167,3 @@ test
   })
   .command(['cm:export', '--auth-token', '-m', 'entries', '-t', 'author'])
   .it('Export entry of a specific type');
-
-// test
-// .stub(managementClient(), 'Client', (e) => {
-// 	return {
-// 		stack: function() {
-// 			return {
-// 				asset: function() {
-// 					// return {
-// 					// 	query: function() {
-// 							return {
-// 								fetch: function() {
-// 									return Promise.resolve(assetFetchMock)
-// 								}
-// 							}
-// 						//}
-// 					//}
-// 				}
-// 			}
-// 		}
-// 	}
-// })
-// .stub(cli, 'prompt', (name) => async (name) => {
-// 	if (name === 'Please provide master locale ?') return 'en-us'
-// 	if (name === 'Please provide source Stack') return 'newstackUid'
-// 	if (name === 'Please provide path were you want to store') return '../contents'
-// })
-// .command(['cm:export',  '--auth-token', '-m',  'assets'])
-// .it('runs method of webooks', ctx => {
-// })
