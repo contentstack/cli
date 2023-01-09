@@ -13,23 +13,21 @@ const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities')
 let config = require('../../config/default');
 const { addlogs: log } = require('../util/log');
 const { readFileSync, writeFile } = require('../util/fs');
-const sdk = require('../util/contentstack-management-sdk');
 const { getDeveloperHubUrl, getInstalledExtensions } = require('../util/marketplace-app-helper');
 
 module.exports = class ImportMarketplaceApps {
-  client;
   marketplaceApps = [];
   marketplaceAppsUid = [];
   developerHubBaseUrl = null;
   marketplaceAppFolderPath = '';
   marketplaceAppConfig = config.modules.marketplace_apps;
 
-  constructor(credentialConfig) {
-    this.config = _.merge(config, credentialConfig);
+  constructor(importConfig, stackAPIClient) {
+    this.config = _.merge(config, importConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   async start() {
-    this.client = sdk.Client(this.config);
     this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl());
     this.marketplaceAppFolderPath = path.resolve(this.config.data, this.marketplaceAppConfig.dirName);
     this.marketplaceApps = _.uniqBy(
@@ -60,13 +58,10 @@ module.exports = class ImportMarketplaceApps {
     const self = this;
     // NOTE get org uid
     if (self.config.auth_token) {
-      const stack = await this.client
-        .stack({ api_key: self.config.target_stack, authtoken: self.config.auth_token })
-        .fetch()
-        .catch((error) => {
-          console.log(error);
-          log(self.config, 'Starting marketplace app installation', 'success');
-        });
+      const stack = await self.stackAPIClient.fetch().catch((error) => {
+        console.log(error);
+        log(self.config, 'Starting marketplace app installation', 'success');
+      });
 
       if (stack && stack.org_uid) {
         self.config.org_uid = stack.org_uid;
