@@ -9,13 +9,12 @@ let path = require('path');
 let chalk = require('chalk');
 let mkdirp = require('mkdirp');
 let Promise = require('bluebird');
-const { isEmpty } = require('lodash');
+const { isEmpty, merge } = require('lodash');
 
 let helper = require('../util/fs');
 let { addlogs } = require('../util/log');
 const { formatError } = require('../util');
 let config = require('../../config/default');
-const stack = require('../util/contentstack-management-sdk');
 let extension_supress = require('../util/extensionsUidReplace');
 let removeReferenceFields = require('../util/removeReferenceFields');
 const { getInstalledExtensions } = require('../util/marketplace-app-helper');
@@ -29,8 +28,9 @@ module.exports = class ImportGlobalFields {
   installedExtensions = [];
   reqConcurrency = config.concurrency || config.fetchConcurrency || 1;
 
-  constructor(credential) {
-    this.config = credential;
+  constructor(importConfig, stackAPIClient) {
+    this.config = merge(config, importConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   async start() {
@@ -64,7 +64,6 @@ module.exports = class ImportGlobalFields {
       self.installedExtensions = await getInstalledExtensions(self.config);
     }
 
-    const client = stack.Client(self.config);
     return new Promise(function (resolve, reject) {
       if (self.globalfields === undefined || isEmpty(self.globalfields)) {
         addlogs(self.config, chalk.white('No globalfields Found'), 'success');
@@ -87,8 +86,7 @@ module.exports = class ImportGlobalFields {
 
           if (!self.snipUidMapper.hasOwnProperty(snipUid)) {
             let requestOption = { global_field: snip };
-            return client
-              .stack({ api_key: self.config.target_stack, management_token: self.config.management_token })
+            return self.stackAPIClient
               .globalField()
               .create(requestOption)
               .then((globalField) => {
