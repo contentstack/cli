@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-command",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "author": "Contentstack",
   "main": "lib/index.js",
   "types": "./types/index.d.ts",
@@ -17,14 +17,12 @@
     "format": "eslint src/**/*.ts --fix"
   },
   "dependencies": {
-    "@contentstack/cli-utilities": "^1.0.3",
+    "@contentstack/cli-utilities": "^1.0.5",
     "@contentstack/management": "^1.6.0",
-    "@oclif/command": "^1.8.16",
     "contentstack": "^3.10.1"
   },
   "devDependencies": {
-    "@oclif/plugin-help": "^5.1.12",
-    "@oclif/test": "^1.2.8",
+    "@oclif/test": "^2.2.10",
     "@types/chai": "^4.2.18",
     "@types/mkdirp": "^1.0.1",
     "@types/mocha": "^8.2.2",
@@ -66,9 +64,6 @@
   "oclif": {
     "commands": "./lib/commands",
     "bin": "csdx",
-    "devPlugins": [
-      "@oclif/plugin-help"
-    ],
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-command/<%- commandPath %>"
   },
   "repository": "contentstack/cli"

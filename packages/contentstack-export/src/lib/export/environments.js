@@ -6,6 +6,7 @@
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
+const { merge } = require('lodash');
 
 const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
@@ -24,7 +25,7 @@ module.exports = class ExportEnvironments {
   };
 
   constructor(exportConfig, stackAPIClient) {
-    this.config = exportConfig;
+    this.config = merge(this.config, exportConfig);
     this.stackAPIClient = stackAPIClient;
   }
 
@@ -49,7 +50,7 @@ module.exports = class ExportEnvironments {
         .then((environmentResponse) => {
           if (environmentResponse.items.length !== 0) {
             for (let i = 0, total = environmentResponse.count; i < total; i++) {
-              let envUid = environmentResponse.items[i].uid;
+              const envUid = environmentResponse.items[i].uid;
               self.master[envUid] = '';
               self.environments[envUid] = environmentResponse.items[i];
               delete self.environments[envUid].uid;
