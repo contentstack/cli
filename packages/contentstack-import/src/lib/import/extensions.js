@@ -9,15 +9,13 @@ const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
 const chalk = require('chalk');
-const { isEmpty } = require('lodash');
+const { isEmpty, merge } = require('lodash');
 
 const util = require('../util');
 const helper = require('../util/fs');
 const { addlogs } = require('../util/log');
-const { formatError } = require('../util');
 
 let config = util.getConfig();
-const stack = require('../util/contentstack-management-sdk');
 
 module.exports = class ImportExtensions {
   fails = [];
@@ -26,15 +24,15 @@ module.exports = class ImportExtensions {
   extensionsConfig = config.modules.extensions;
   reqConcurrency = config.concurrency || config.fetchConcurrency || 1;
 
-  constructor(credential) {
-    this.config = credential;
+  constructor(importConfig, stackAPIClient) {
+    this.config = merge(config, importConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
     addlogs(this.config, chalk.white('Migrating extensions'), 'success');
 
     const self = this;
-    const client = stack.Client(this.config);
     let extensionsFolderPath = path.resolve(this.config.data, this.extensionsConfig.dirName);
     let extMapperPath = path.resolve(this.config.data, 'mapper', 'extensions');
     let extUidMapperPath = path.resolve(this.config.data, 'mapper/extensions', 'uid-mapping.json');
@@ -59,8 +57,7 @@ module.exports = class ImportExtensions {
         function (extUid) {
           let ext = self.extensions[extUid];
           if (!self.extUidMapper.hasOwnProperty(extUid)) {
-            return client
-              .stack({ api_key: config.target_stack, management_token: config.management_token })
+            return self.stackAPIClient
               .extension()
               .create({ extension: ext })
               .then((response) => {
@@ -103,7 +100,7 @@ module.exports = class ImportExtensions {
         .catch(function (error) {
           // error while importing extensions
           helper.writeFileSync(extFailsPath, self.fails);
-          addlogs(self.config, chalk.red(`Extension import failed ${formatError(error)}`), 'error');
+          addlogs(self.config, chalk.red(`Extension import failed ${util.formatError(error)}`), 'error');
           reject(error);
         });
     });
