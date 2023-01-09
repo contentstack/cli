@@ -11,14 +11,13 @@ const chalk = require('chalk');
 const util = require('./lib/util/index');
 const login = require('./lib/util/login');
 const { addlogs } = require('./lib/util/log');
-const stack = require('./lib/util/contentstack-management-sdk');
+const { managementSDKClient } = require('@contentstack/cli-utilities');
 
 exports.initial = (configData) => {
   return new Promise(async (resolve, reject) => {
     const config = util.initialization(configData);
     config.oldPath = config.data;
-
-    const APIClient = stack.Client(config);
+    const APIClient = await managementSDKClient(config);
     const stackAPIClient = APIClient.stack({ api_key: config.target_stack, management_token: config.management_token });
 
     if (configData.branchName) {
@@ -81,7 +80,7 @@ let singleImport = async (APIClient, stackAPIClient, moduleName, types, config) 
         }
       }
       let ImportModule = require('./lib/import/' + moduleName);
-      const importResponse = await new ImportModule(config, stackAPIClient, APIClient).start(config);
+      const importResponse = await new ImportModule(config, stackAPIClient, APIClient).start();
       if (moduleName === 'content-types') {
         let ctPath = path.resolve(config.data, config.modules.content_types.dirName);
         let fieldPath = path.join(ctPath + '/field_rules_uid.json');
