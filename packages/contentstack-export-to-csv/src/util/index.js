@@ -38,9 +38,7 @@ function chooseOrganization(managementAPIClient, action) {
           if (chosenOrg === config.cancelString) exitProgram();
           resolve({ name: chosenOrg, uid: organizations[chosenOrg] });
         })
-        .catch((error) => {
-          reject(error);
-        });
+        .catch(reject);
     } catch (error) {
       reject(error);
     }
@@ -108,9 +106,7 @@ function chooseStack(managementAPIClient, orgUid) {
           if (chosenStack === config.cancelString) exitProgram();
           resolve({ name: chosenStack, apiKey: stacks[chosenStack] });
         })
-        .catch((error) => {
-          reject(error);
-        });
+        .catch(reject);
     } catch (error) {
       reject(error);
     }
@@ -140,8 +136,6 @@ function chooseContentType(stack, skip) {
   return new Promise(async (resolve, reject) => {
     let contentTypes = await getContentTypes(stack, skip);
     let contentTypesList = Object.values(contentTypes);
-    // contentTypesList.push(config.cancelString)
-
     let _chooseContentType = [
       {
         type: 'checkbox',
@@ -155,7 +149,7 @@ function chooseContentType(stack, skip) {
     inquirer
       .prompt(_chooseContentType)
       .then(({ chosenContentTypes }) => resolve(chosenContentTypes))
-      .catch((error) => reject(error));
+      .catch(reject);
   });
 }
 
@@ -197,7 +191,7 @@ function chooseInMemContentTypes(contentTypesList) {
         }
         resolve(chosenContentTypes);
       })
-      .catch((error) => reject(error));
+      .catch(reject);
   });
 }
 
@@ -239,7 +233,7 @@ function chooseLanguage(stack) {
         if (chosenLanguage === config.cancelString) exitProgram();
         resolve({ name: chosenLanguage, code: languages[chosenLanguage] });
       })
-      .catch((error) => reject(error));
+      .catch(reject);
   });
 }
 
@@ -389,7 +383,7 @@ function startupQuestions() {
         if (answers.action === 'Exit') exitProgram();
         resolve(answers.action);
       })
-      .catch((error) => reject(error));
+      .catch(reject);
   });
 }
 
@@ -404,10 +398,13 @@ function getOrgUsers(managementAPIClient, orgUid, ecsv) {
             .organization(organization.uid)
             .fetch()
             .then((_response) => {
-              _response.getInvitations().then((_data) => {
-                resolve({ items: _data.items }) 
-              })
-            })
+              _response
+                .getInvitations()
+                .then((_data) => {
+                  resolve({ items: _data.items });
+                })
+                .catch(reject);
+            });
         }
         if (!organization.getInvitations) {
           return reject(new Error(config.adminError));
@@ -468,10 +465,13 @@ function getOrgRoles(managementAPIClient, orgUid, ecsv) {
             .organization(organization.uid)
             .fetch()
             .then((_response) => {
-              _response.roles().then(_data => {
-                resolve({ items: _data.items })
-              })
-            })
+              _response
+                .roles()
+                .then((_data) => {
+                  resolve({ items: _data.items });
+                })
+                .catch(reject);
+            });
         }
         if (!organization.roles) {
           return reject(new Error(config.adminError));
@@ -479,7 +479,7 @@ function getOrgRoles(managementAPIClient, orgUid, ecsv) {
         organization
           .roles()
           .then((roles) => resolve(roles))
-          .catch((error) => reject(error));
+          .catch(reject);
       })
       .catch((error) => reject(error));
   });
