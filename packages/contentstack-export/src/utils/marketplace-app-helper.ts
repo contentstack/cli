@@ -9,7 +9,7 @@ export const getInstalledExtensions = (config) => {
           include_marketplace_extensions: true,
         };
         const {
-          management_token_data: { apiKey: api_key, token: management_token } = { apiKey: config.source_stack },
+          management_token_data: { apiKey: api_key, token: management_token = null } = { apiKey: config.source_stack },
           auth_token,
         } = config || { management_token_data: {} };
         if (api_key && management_token) {
