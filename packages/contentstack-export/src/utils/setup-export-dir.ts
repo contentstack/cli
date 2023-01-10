@@ -1,9 +1,11 @@
-import * as mkdirp from 'mkdirp';
 import * as path from 'path';
+import { makeDirectory } from './file-helper';
 
 export default async function setupExportDir(exportConfig) {
-  mkdirp.sync(exportConfig.exportDir);
+  makeDirectory(exportConfig.exportDir);
   if (exportConfig.branches) {
-    return Promise.all(exportConfig.branches.map((branch) => mkdirp(path.join(exportConfig.exportDir, branch.uid))));
+    return Promise.all(
+      exportConfig.branches.map((branch) => makeDirectory(path.join(exportConfig.exportDir, branch.uid))),
+    );
   }
 }
