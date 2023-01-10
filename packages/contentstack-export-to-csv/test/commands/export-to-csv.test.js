@@ -5,25 +5,18 @@ const config = require('../../src/util/config.js');
 // mock data for Export Entries to CSV
 const sampleEnvironments = { envUid1: 'envName1', envUid2: 'envName2' };
 const sampleEntries = require('../mock-data/entries.json');
+// mock data for Export Organization Users
 // eslint-disable-next-line no-undef
 describe('export to csv', () => {
   test
     .stdout()
-    .stub(util, 'startupQuestions', () => new Promise((resolve) => resolve(config.exportEntries)))
-    .stub(
-      util,
-      'chooseOrganization',
-      () => new Promise((resolve) => resolve({ uid: 'sampleOrgUid', name: 'sampleOrg' })),
-    )
-    .stub(util, 'chooseStack', () => new Promise((resolve) => resolve({ name: 'someStack', apiKey: 'sampleApiKey' })))
-    .stub(
-      util,
-      'chooseContentType',
-      () => new Promise((resolve) => resolve({ name: 'someContentType', uid: 'sampleCtUid' })),
-    )
-    .stub(util, 'chooseLanguage', () => new Promise((resolve) => resolve({ name: 'en-us', code: 'en-us' })))
-    .stub(util, 'getEntries', () => new Promise((resolve) => resolve(sampleEntries)))
-    .stub(util, 'getEnvironments', () => new Promise((resolve) => resolve(sampleEnvironments)))
+    .stub(util, 'startupQuestions', () => Promise.resolve(config.exportEntries))
+    .stub(util, 'chooseOrganization', () => Promise.resolve({ uid: 'sampleOrgUid', name: 'sampleOrg' }))
+    .stub(util, 'chooseStack', () => Promise.resolve({ name: 'someStack', apiKey: 'sampleApiKey' }))
+    .stub(util, 'chooseContentType', () => Promise.resolve({ name: 'someContentType', uid: 'sampleCtUid' }))
+    .stub(util, 'chooseLanguage', () => Promise.resolve({ name: 'en-us', code: 'en-us' }))
+    .stub(util, 'getEntries', () => Promise.resolve(sampleEntries))
+    .stub(util, 'getEnvironments', () => Promise.resolve(sampleEnvironments))
     .stub(util, 'write', () => {})
     .command(['cm:export-to-csv'])
     // .it('runs hello', ctx => {
@@ -31,14 +24,10 @@ describe('export to csv', () => {
 
   test
     .stdout()
-    .stub(util, 'startupQuestions', () => new Promise((resolve) => resolve(config.exportUsers)))
-    .stub(
-      util,
-      'chooseOrganization',
-      () => new Promise((resolve) => resolve({ uid: 'sampleOrgUid', name: 'sampleOrg' })),
-    )
-    .stub(util, 'getOrgUsers', () => new Promise((resolve) => resolve({})))
-    .stub(util, 'getOrgRoles', () => new Promise((resolve) => resolve({})))
+    .stub(util, 'startupQuestions', () => Promise.resolve(config.exportUsers))
+    .stub(util, 'chooseOrganization', () => Promise.resolve({ uid: 'sampleOrgUid', name: 'sampleOrg' }))
+    .stub(util, 'getOrgUsers', () => Promise.resolve({}))
+    .stub(util, 'getOrgRoles', () => Promise.resolve({}))
     .stub(util, 'getMappedUsers', () => {
       return {};
     })
@@ -46,7 +35,7 @@ describe('export to csv', () => {
       return {};
     })
 
-    .stub(util, 'cleanOrgUsers', () => new Promise((resolve) => resolve({})))
+    .stub(util, 'cleanOrgUsers', () => Promise.resolve({}))
     .stub(util, 'write', () => {})
     .command(['cm:export-to-csv'])
     // .it('runs hello', ctx => {
