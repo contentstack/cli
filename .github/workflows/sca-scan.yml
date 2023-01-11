@@ -18,7 +18,7 @@ jobs:
       # - name: Install dependencies
       #   run: pnpm install --no-frozen-lockfile
       # - run: npx lerna bootstrap --force-local --concurrency 1
-      - run: npm i --package-lock-only --workspaces
+      - run: npm run bootstrap
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
