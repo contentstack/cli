@@ -14,8 +14,8 @@
   "private": true,
   "scripts": {
     "graph": "nx graph",
-    "prepack": "lerna run pnpm-prepack",
     "cache:clear": "npx pnpm store prune",
+    "prepack": "npx lerna run pnpm-prepack",
     "clean": "npx pnpm cache:clear && sh cleanup.sh",
     "bootstrap": "npx pnpm install --no-frozen-lockfile",
     "package-lock-only": "npm i --package-lock-only --workspaces"
