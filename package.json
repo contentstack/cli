@@ -14,10 +14,10 @@
   "private": true,
   "scripts": {
     "graph": "nx graph",
-    "bootstrap": "pnpm install",
-    "cache:clear": "pnpm store prune",
     "prepack": "lerna run pnpm-prepack",
-    "clean": "pnpm cache:clear && sh cleanup.sh",
+    "cache:clear": "npx pnpm store prune",
+    "clean": "npx pnpm cache:clear && sh cleanup.sh",
+    "bootstrap": "npx pnpm install --no-frozen-lockfile",
     "package-lock-only": "npm i --package-lock-only --workspaces"
   },
   "license": "MIT",
