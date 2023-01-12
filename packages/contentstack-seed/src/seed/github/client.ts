@@ -68,6 +68,31 @@ export default class GitHubClient {
     });
   }
 
+  makeGetApiCall(repo: string) {
+    return new Promise<any>((resolve, reject) => {
+      const { host, pathname } = new URL(this.gitHubRepoUrl);
+      const options = {
+        host,
+        method: 'GET',
+        path: `${pathname}/${repo}/contents`,
+        headers: { 'user-agent': 'node.js' },
+      };
+
+      https.request(options, (response) => {
+        let data = { statusCode: response.statusCode };
+        let responseBody = ''
+        response.on('data', (chunk) => {
+          responseBody += chunk.toString();
+        });
+
+        response.on('end', () => {
+          const body = JSON.parse(responseBody);
+          resolve({ ...data, data: body });
+        });
+      }).on('error', reject).end();
+    });
+  }
+
   async checkIfRepoExists(repo: string) {
     try {
       /**
