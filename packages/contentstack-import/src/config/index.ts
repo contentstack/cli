@@ -54,6 +54,7 @@ export default {
       invalidKeys: ['stackHeaders', 'urlPath', 'created_at', 'updated_at', 'created_by', 'updated_by'],
     },
     assets: {
+      apiConcurrency: 5,
       dirName: 'assets',
       fileName: 'assets.json',
       // This is the total no. of asset objects fetched in each 'get assets' call
