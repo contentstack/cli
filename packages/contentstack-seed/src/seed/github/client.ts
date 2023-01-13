@@ -79,8 +79,14 @@ export default class GitHubClient {
       };
 
       https.request(options, (response) => {
-        let data = { statusCode: response.statusCode };
-        let responseBody = ''
+        let responseBody = '';
+        const data: any = {  statusCode: response.statusCode, };
+        if (data.statusCode === 403) {
+          const xRateLimitReset = response.rawHeaders[response.rawHeaders.indexOf('X-RateLimit-Reset') + 1];
+          const startDate = (new Date()).getTime() / 1000;
+          const diffInSeconds = Number(xRateLimitReset) - startDate;
+          data.statusMessage = `Exceeded requests limit. Please try again after ${(diffInSeconds / 60).toFixed(1)} minutes.`;
+        }
         response.on('data', (chunk) => {
           responseBody += chunk.toString();
         });
