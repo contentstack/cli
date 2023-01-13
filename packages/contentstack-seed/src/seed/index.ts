@@ -107,7 +107,7 @@ export default class ContentModelSeeder {
     try {
       const repoCheckResult = await this.ghClient.makeGetApiCall(this.ghRepo as string);
       repoExists = repoCheckResult.statusCode === 200;
-      repoResponseData = { status: repoCheckResult.statusCode, statusMessage: repoCheckResult?.data?.message };
+      repoResponseData = { status: repoCheckResult.statusCode, statusMessage: repoCheckResult.statusMessage };
     } catch (error) {
       throw error;
     }
