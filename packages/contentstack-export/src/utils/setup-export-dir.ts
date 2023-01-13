@@ -1,4 +1,4 @@
-import * as path from 'path';
+import path from 'path';
 import { makeDirectory } from './file-helper';
 
 export default async function setupExportDir(exportConfig) {
