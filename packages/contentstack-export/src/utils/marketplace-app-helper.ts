@@ -1,5 +1,6 @@
-let config = require('../../config/default');
-const { cliux, HttpClient, configHandler, managementSDKClient } = require('@contentstack/cli-utilities');
+import config from '../config';
+import { InquirePayload } from '@contentstack/cli-utilities/types/interfaces';
+import { cliux, HttpClient, configHandler, managementSDKClient } from '@contentstack/cli-utilities';
 
 export const getInstalledExtensions = (config) => {
   return new Promise((resolve, reject) => {
@@ -53,7 +54,7 @@ export const getDeveloperHubUrl = async () => {
         return true;
       },
       message: `Enter the developer-hub base URL for the ${name} region - `,
-    });
+    } as InquirePayload);
   }
 
   return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
