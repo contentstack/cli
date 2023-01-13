@@ -63,7 +63,7 @@
 		"test:unit": "mocha --forbid-only \"test/unit/*.test.ts\""
 	},
 	"engines": {
-		"node": ">=8.0.0"
+		"node": ">=14.0.0"
 	},
 	"files": [
 		"/lib",
