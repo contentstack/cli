@@ -76,7 +76,7 @@ class ModuleExporter {
         await this.exportByModuleByName(moduleName);
       } catch (error) {
         console.log(error.stack);
-        // log(this.exportConfig, `failed to export the module ${moduleName}`, 'error');
+        log(this.exportConfig, `failed to export the module ${moduleName}`, 'error');
       }
     }
   }
