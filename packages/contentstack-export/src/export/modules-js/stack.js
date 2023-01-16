@@ -9,7 +9,7 @@ const mkdirp = require('mkdirp');
 const { fileHelper, log } = require('../../utils');
 const { default: config } = require('../../config');
 let stackConfig = config.modules.stack;
-module.exports = class ExportStack {
+class ExportStack {
   stackConfig = config.modules.stack;
 
   constructor(exportConfig, stackAPIClient, APIClient) {
@@ -92,7 +92,7 @@ module.exports = class ExportStack {
         });
     });
   }
-};
+}
 
 ExportStack.prototype.getLocales = function (apiDetails) {
   let self = this;
