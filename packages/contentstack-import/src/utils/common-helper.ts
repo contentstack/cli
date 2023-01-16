@@ -156,6 +156,20 @@ export const field_rules_update = (importConfig, ctPath) => {
                     schema.field_rules[k].conditions[i].value = updatedValue.join('.');
                   }
                 }
+                const stackAPIClient = APIClient.stack({
+                  api_key: importConfig.target_stack,
+                  management_token: importConfig.management_token,
+                });
+                let ctObj = stackAPIClient.contentType(schema.uid);
+                Object.assign(ctObj, _.cloneDeep(schema));
+                ctObj
+                  .update()
+                  .then(() => {
+                    return resolve();
+                  })
+                  .catch((error) => {
+                    return reject(error);
+                  });
               }
               let ctObj = client
                 .stack({ api_key: importConfig.target_stack, management_token: importConfig.management_token })
