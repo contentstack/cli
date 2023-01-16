@@ -1,24 +1,26 @@
 export default {
   versioning: false,
+  // use below hosts for eu region
+  // host:'https://eu-api.contentstack.com/v3',
+  // use below hosts for azure-na region
+  // host:'https://azure-na-api.contentstack.com/v3',
+  // pass locale, only to migrate entries from that locale
+  // not passing `locale` will migrate all the locales present
+  // locales: ['fr-fr'],
   host: 'https://api.contentstack.io/v3',
+  extensionHost: 'https://app.contentstack.com',
   developerHubUrls: {
-    // NOTE CDA url used as developer-hub url mapper to avoid conflict if user used any custom name
     'https://api.contentstack.io': 'https://developerhub-api.contentstack.com',
     'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
     'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
     'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com',
   },
-  // use below hosts for eu region
-  // host:'https://eu-api.contentstack.com/v3',
-  // use below hosts for azure-na region
-  // host:'https://azure-na-api.contentstack.com/v3',
   modules: {
-    types: ['stack', 'locales', 'environments', 'assets'],
+    types: ['locales', 'environments'],
     locales: {
       dirName: 'locales',
       fileName: 'locales.json',
       requiredKeys: ['code', 'uid', 'name', 'fallback_locale'],
-      enableNewStructure: true,
     },
     customRoles: {
       dirName: 'custom-roles',
@@ -32,7 +34,10 @@ export default {
     labels: {
       dirName: 'labels',
       fileName: 'labels.json',
-      invalidKeys: ['stackHeaders', 'uid', 'urlPath', 'created_at', 'updated_at', 'created_by', 'updated_by'],
+    },
+    extensions: {
+      dirName: 'extensions',
+      fileName: 'extensions.json',
     },
     webhooks: {
       dirName: 'webhooks',
@@ -41,7 +46,6 @@ export default {
     releases: {
       dirName: 'releases',
       fileName: 'releases.json',
-      releasesList: 'releasesList.json',
       invalidKeys: ['stackHeaders', 'urlPath', 'created_at', 'updated_at', 'created_by', 'updated_by'],
     },
     workflows: {
@@ -49,64 +53,39 @@ export default {
       fileName: 'workflows.json',
       invalidKeys: ['stackHeaders', 'urlPath', 'created_at', 'updated_at', 'created_by', 'updated_by'],
     },
-    globalfields: {
-      dirName: 'global_fields',
-      fileName: 'globalfields.json',
-      validKeys: ['title', 'uid', 'schema', 'options', 'singleton', 'description'],
-    },
     assets: {
       dirName: 'assets',
       fileName: 'assets.json',
       // This is the total no. of asset objects fetched in each 'get assets' call
-      batchLimit: 20,
-      host: 'https://images.contentstack.io',
-      invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by', '_metadata', 'published'],
-      // no of asset version files (of a single asset) that'll be downloaded parallel
-      downloadLimit: 3,
-      chunkFileSize: 1, // measured on Megabits (5mb)
-      fetchConcurrency: 5,
-      securedAssets: false,
-      enableNewStructure: true,
-      displayExecutionTime: false,
-      enableDownloadStatus: false,
-      includeVersionedAssets: false,
+      limit: 100,
+      host: 'https://api.contentstack.io',
+      validKeys: ['uid', 'filename', 'url', 'status'],
+      assetBatchLimit: 1,
+      uploadAssetsConcurrency: 1,
+      importFoldersConcurrency: 1,
     },
     content_types: {
       dirName: 'content_types',
       fileName: 'content_types.json',
-      validKeys: ['title', 'uid', 'field_rules', 'schema', 'options', 'singleton', 'description'],
-      // total no of content types fetched in each 'get content types' call
+      validKeys: ['title', 'uid', 'schema', 'options', 'singleton', 'description'],
       limit: 100,
     },
     entries: {
       dirName: 'entries',
       fileName: 'entries.json',
-      invalidKeys: [
-        'stackHeaders',
-        'content_type_uid',
-        'urlPath',
-        'created_at',
-        'updated_at',
-        'created_by',
-        'updated_by',
-        '_metadata',
-        'published',
-      ],
-      batchLimit: 20,
-      downloadLimit: 5,
-      // total no of entries fetched in each content type in a single call
-      limit: 100,
+      invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by', '_metadata', 'published'],
+      limit: 50,
+      assetBatchLimit: 5,
     },
-    extensions: {
-      dirName: 'extensions',
-      fileName: 'extensions.json',
+    globalfields: {
+      dirName: 'global_fields',
+      fileName: 'globalfields.json',
+      validKeys: ['title', 'uid', 'schema', 'options', 'singleton', 'description'],
+      limit: 100,
     },
     stack: {
       dirName: 'stack',
       fileName: 'stack.json',
-    },
-    dependency: {
-      entries: ['stack', 'locales', 'content-types'],
     },
     marketplace_apps: {
       dirName: 'marketplace_apps',
@@ -323,25 +302,32 @@ export default {
     'xh',
     'zu',
   ],
-  updatedModules: ['locales', 'assets'],
   apis: {
     userSession: '/user-session/',
-    globalfields: '/global_fields/',
     locales: '/locales/',
-    labels: '/labels/',
     environments: '/environments/',
     assets: '/assets/',
     content_types: '/content_types/',
     entries: '/entries/',
-    users: '/stacks',
-    extension: '/extensions',
+    extensions: '/extensions/',
     webhooks: '/webhooks/',
+    globalfields: '/global_fields/',
+    folders: '/folders/',
     stacks: '/stacks/',
+    labels: '/labels/',
   },
+  updatedModules: ['locales'],
+  rateLimit: 5,
   preserveStackVersion: false,
+  entriesPublish: true,
+  concurrency: 1,
+  importConcurrency: 5,
   fetchConcurrency: 5,
   writeConcurrency: 5,
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
+  getEncryptionKeyMaxRetry: 3,
   useNewModuleStructure: true,
+  // useBackedupDir: '',
+  // backupConcurrency: 10,
 };
