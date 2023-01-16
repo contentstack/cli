@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.2.5 darwin-arm64 node-v16.17.0
+@contentstack/cli/1.2.5 darwin-arm64 node-v18.11.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -1661,7 +1661,7 @@ _See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/
 
 ## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
-Import script for importing the content into the new stack
+Import content from a stack
 
 ```
 USAGE
@@ -1681,11 +1681,7 @@ FLAGS
                                     <options: disable|current>
 
 DESCRIPTION
-  Import script for importing the content into the new stack
-  ...
-  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import
-  command.
-
+  Import content from a stack
 
 ALIASES
   $ csdx cm:import
@@ -1983,7 +1979,7 @@ _See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blo
 
 ## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
-Import script for importing the content into the new stack
+Import content from a stack
 
 ```
 USAGE
@@ -2003,11 +1999,7 @@ FLAGS
                                     <options: disable|current>
 
 DESCRIPTION
-  Import script for importing the content into the new stack
-  ...
-  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import
-  command.
-
+  Import content from a stack
 
 ALIASES
   $ csdx cm:import
@@ -2030,7 +2022,7 @@ EXAMPLES
   $ csdx cm:stacks:import --branch <branch name>  --yes
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.ts)_
 
 ## `csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`
 
@@ -2748,7 +2740,7 @@ FLAG DESCRIPTIONS
     Additionally shows the architecture, node version, operating system, and versions of plugins that the CLI is using.
 ```
 
-_See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v1.1.3/src/commands/version.ts)_
+_See code: [@oclif/plugin-version](https://github.com/oclif/plugin-version/blob/v1.1.4/src/commands/version.ts)_
 
 ## `csdx whoami`
 
