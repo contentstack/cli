@@ -1,4 +1,4 @@
-export default async function startModuleExport(modulePayload) {
+export default async function startModuleImport(modulePayload) {
   try {
     const { default: ModuleRunner } = await import(`./${modulePayload.moduleName}`);
     const moduleRunner = new ModuleRunner(modulePayload);

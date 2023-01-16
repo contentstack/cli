@@ -23,8 +23,7 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1.22.2",
-    "@oclif/plugin-help": "^3.2.0",
+    "oclif": "^3.1.2",
     "@oclif/test": "^1.2.8",
     "@types/chai": "^4.2.18",
     "@types/inquirer": "^7.3.1",
@@ -40,7 +39,6 @@
     "eslint-config-oclif-typescript": "^0.1.0",
     "globby": "^10.0.2",
     "mocha": "10.1.0",
-    "oclif": "^3.1.2",
     "nyc": "^15.1.0",
     "rimraf": "^2.7.1",
     "sinon": "^11.1.1",
@@ -69,6 +67,7 @@
   },
   "files": [
     "/lib",
+    "/messages",
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
@@ -83,16 +82,12 @@
   "oclif": {
     "commands": "./lib/commands",
     "bin": "csdx",
-    "plugins": [
-      "@oclif/plugin-help"
-    ],
-    "topicSeparator": ":",
-    "additionalHelpFlags": [
-      "-h"
-    ],
-    "additionalVersionFlags": [
-      "-v"
-    ]
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-export/<%- commandPath %>"
   },
-  "repository": "contentstack/cli"
+  "csdxConfig": {
+    "expiredCommands": {
+      "cm:export": "csdx cm:stacks:export"
+    }
+  },
+  "repository": "https://github.com/contentstack/cli"
 }
