@@ -6,4 +6,5 @@ export { default as configHandler } from './config-handler';
 export { default as managementSDKClient } from './contentstack-management-sdk';
 export { default as printFlagDeprecation } from './flag-deprecation-check';
 export * from './http-client';
+export * from './fs-utility';
 export { default as NodeCrypto } from './encrypter';

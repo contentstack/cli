@@ -61,9 +61,15 @@ export default {
       batchLimit: 20,
       host: 'https://images.contentstack.io',
       invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by', '_metadata', 'published'],
-      // no of asset version files (of a single asset) that'll be downloaded parallelly
+      // no of asset version files (of a single asset) that'll be downloaded parallel
       downloadLimit: 3,
+      chunkFileSize: 1, // measured on Megabits (5mb)
+      fetchConcurrency: 5,
+      securedAssets: false,
+      enableNewStructure: true,
+      displayExecutionTime: false,
       enableDownloadStatus: false,
+      includeVersionedAssets: false,
     },
     content_types: {
       dirName: 'content_types',
@@ -317,7 +323,7 @@ export default {
     'xh',
     'zu',
   ],
-  updatedModules: ['locales'],
+  updatedModules: ['locales', 'assets'],
   apis: {
     userSession: '/user-session/',
     globalfields: '/global_fields/',
