@@ -8,7 +8,7 @@ export const readFileSync = function (filePath, parse): any {
   parse = typeof parse === 'undefined' ? true : parse;
   filePath = path.resolve(filePath);
   if (fs.existsSync(filePath)) {
-    data = parse ? JSON.parse(fs.readFileSync(filePath, 'utf-8')) : data;
+    data = parse ? JSON.parse(fs.readFileSync(filePath, 'utf8')) : data;
   }
   return data;
 };
@@ -45,7 +45,7 @@ export const readLargeFile = function (filePath, options: any = {}): Promise<any
         }
         resolve(data);
       });
-      parseStream.on('error', function (error) {
+      parseStream.on('error', (error) => {
         console.log('error', error);
         reject(error);
       });
