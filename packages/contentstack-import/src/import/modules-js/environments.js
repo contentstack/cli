@@ -9,12 +9,19 @@ const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const Promise = require('bluebird');
-const { isEmpty } = require('lodash');
+const { isEmpty, merge } = require('lodash');
 
+<<<<<<< HEAD:packages/contentstack-import/src/import/modules-js/environments.js
 const { readFileSync, writeFileSync } = require('../../utils/file-helper');
 const { log } = require('../../utils/logger');
 const { formatError } = require('../../utils');
 const config = require('../../config').default;
+=======
+const helper = require('../util/fs');
+let { addlogs } = require('../util/log');
+const { formatError } = require('../util');
+const config = require('../../config/default');
+>>>>>>> 786d38eae912b0309cdbaf4964b3f87ac2cfe821:packages/contentstack-import/src/lib/import/environments.js
 
 module.exports = class ImportEnvironments {
   fails = [];
@@ -22,8 +29,13 @@ module.exports = class ImportEnvironments {
   envUidMapper = {};
   fetchConcurrency = config.modules.environments.concurrency || config.fetchConcurrency || 2;
 
+<<<<<<< HEAD:packages/contentstack-import/src/import/modules-js/environments.js
   constructor(exportConfig, stackAPIClient) {
     this.config = exportConfig;
+=======
+  constructor(importConfig, stackAPIClient) {
+    this.config = merge(config, importConfig);
+>>>>>>> 786d38eae912b0309cdbaf4964b3f87ac2cfe821:packages/contentstack-import/src/lib/import/environments.js
     this.stackAPIClient = stackAPIClient;
   }
 
