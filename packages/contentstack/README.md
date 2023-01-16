@@ -57,7 +57,6 @@ USAGE
 * [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value-1)
 * [`csdx cm:entries:unpublish`](#csdx-cmentriesunpublish)
 * [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value-1)
-* [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets)
 * [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
 * [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
 * [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
@@ -65,7 +64,6 @@ USAGE
 * [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value)
 * [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent)
 * [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent-1)
-* [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets-1)
 * [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent-1)
 * [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple-1)
 * [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
@@ -1565,48 +1563,6 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/entries/update-and-publish.js)_
 
-## `csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`
-
-Export content from a stack
-
-```
-USAGE
-  $ csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types
-    <value>] [--branch <value>] [--secured-assets]
-
-FLAGS
-  -B, --branch=<value>            [optional] branch name
-  -a, --alias=<value>             alias of the management token
-  -c, --config=<value>            [optional] path of the config
-  -d, --data-dir=<value>          path or location to store the data
-  -k, --stack-api-key=<value>     API key of the source stack
-  -m, --module=<value>            [optional] specific module name
-  -t, --content-types=<value>...  [optional] content type
-  -y, --yes                       [optional] Override marketplace apps related prompts
-  --secured-assets                [optional] use when assets are secured
-
-DESCRIPTION
-  Export content from a stack
-
-ALIASES
-  $ csdx cm:export
-
-EXAMPLES
-  $ csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>
-
-  $ csdx cm:stacks:export --config <path/to/config/dir>
-
-  $ csdx cm:stacks:export --alias <management_token_alias>
-
-  $ csdx cm:stacks:export --alias <management_token_alias> --data-dir <path/to/export/destination/dir>
-
-  $ csdx cm:stacks:export --alias <management_token_alias> --config <path/to/config/file>
-
-  $ csdx cm:stacks:export --module <single module name>
-
-  $ csdx cm:stacks:export --branch [optional] branch name
-```
-
 ## `csdx cm:export-to-csv`
 
 Export entries or organization users to csv using this command
@@ -1932,50 +1888,6 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-clone](https://github.com/contentstack/cli/blob/main/packages/contentstack-clone/src/commands/cm/stacks/clone.js)_
-
-## `csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`
-
-Export content from a stack
-
-```
-USAGE
-  $ csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types
-    <value>] [--branch <value>] [--secured-assets]
-
-FLAGS
-  -B, --branch=<value>            [optional] branch name
-  -a, --alias=<value>             alias of the management token
-  -c, --config=<value>            [optional] path of the config
-  -d, --data-dir=<value>          path or location to store the data
-  -k, --stack-api-key=<value>     API key of the source stack
-  -m, --module=<value>            [optional] specific module name
-  -t, --content-types=<value>...  [optional] content type
-  -y, --yes                       [optional] Override marketplace apps related prompts
-  --secured-assets                [optional] use when assets are secured
-
-DESCRIPTION
-  Export content from a stack
-
-ALIASES
-  $ csdx cm:export
-
-EXAMPLES
-  $ csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>
-
-  $ csdx cm:stacks:export --config <path/to/config/dir>
-
-  $ csdx cm:stacks:export --alias <management_token_alias>
-
-  $ csdx cm:stacks:export --alias <management_token_alias> --data-dir <path/to/export/destination/dir>
-
-  $ csdx cm:stacks:export --alias <management_token_alias> --config <path/to/config/file>
-
-  $ csdx cm:stacks:export --module <single module name>
-
-  $ csdx cm:stacks:export --branch [optional] branch name
-```
-
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/v1.2.3/src/commands/cm/stacks/export.ts)_
 
 ## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
@@ -2395,7 +2307,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.22/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.23/src/commands/help.ts)_
 
 ## `csdx login`
 
