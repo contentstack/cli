@@ -13,7 +13,7 @@ export default {
   // use below hosts for azure-na region
   // host:'https://azure-na-api.contentstack.com/v3',
   modules: {
-    types: ['stack', 'locales', 'environments'],
+    types: ['stack', 'locales', 'environments', 'assets'],
     locales: {
       dirName: 'locales',
       fileName: 'locales.json',
