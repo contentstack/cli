@@ -54,7 +54,7 @@ describe('Setting Pre-requests', () => {
   for (const stack of stacksFromEnv) {
     test
       .timeout(DEFAULT_TIMEOUT || 600000)
-      .command(AddTokenCommand, ['-a', stackDetails[stack].ALIAS_NAME, '-k', stackDetails[stack].STACK_API_KEY, '--management', '--token', stackDetails[stack].MANAGEMENT_TOKEN])
+      .command(AddTokenCommand, ['-a', stackDetails[stack].ALIAS_NAME, '-k', stackDetails[stack].STACK_API_KEY, '--management', '--token', stackDetails[stack].MANAGEMENT_TOKEN, '-y'])
       .it(`Adding token for ${stack}`, (_, done) => {
         console.log('done');
         done();

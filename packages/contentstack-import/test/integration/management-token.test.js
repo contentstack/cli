@@ -21,8 +21,8 @@ async function exec() {
     });
 
     const exportBasePath = (stackDetails.isBranch)
-      ? path.join(__dirname, '..', '..', `${EXPORT_PATH}_${stack}`, stackDetails.branch || 'main')
-      : path.join(__dirname, '..', '..', `${EXPORT_PATH}_${stack}`);
+      ? path.join(__dirname, '..', '..', `${IMPORT_PATH}_${stack}`, stackDetails.branch || 'main')
+      : path.join(__dirname, '..', '..', `${IMPORT_PATH}_${stack}`);
     
     const contentTypesBasePath = path.join(exportBasePath, modules.content_types.dirName);
     const messageFilePath = path.join(__dirname, '..', '..', 'messages/index.json');
