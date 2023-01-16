@@ -1,6 +1,4 @@
-import ExportAssets from './assets';
-
-async function startModuleExport(modulePayload) {
+export default async function startModuleExport(modulePayload) {
   try {
     const { default: ModuleRunner } = await import(`./${modulePayload.moduleName}`);
     const moduleRunner = new ModuleRunner(modulePayload);
@@ -9,6 +7,3 @@ async function startModuleExport(modulePayload) {
     console.log('error', error);
   }
 }
-
-export { ExportAssets };
-export default startModuleExport;
