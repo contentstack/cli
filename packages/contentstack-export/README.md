@@ -37,7 +37,7 @@ For switching to AZURE-NA region update the hosts at config/default.js
 $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
-$ csdx (--version)
+$ csdx (--version|-v)
 @contentstack/cli-cm-export/1.2.3 darwin-arm64 node-v16.17.0
 $ csdx --help [COMMAND]
 USAGE
@@ -51,6 +51,7 @@ USAGE
 <!-- commands -->
 * [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets)
 * [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets-1)
+* [`csdx help [COMMAND]`](#csdx-help-command)
 
 ## `csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`
 
@@ -136,5 +137,25 @@ EXAMPLES
   $ csdx cm:stacks:export --branch [optional] branch name
 ```
 
-_See code: [src/commands/cm/stacks/export.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/stacks/export.js)_
+_See code: [src/commands/cm/stacks/export.ts](https://github.com/contentstack/cli/blob/v1.2.3/src/commands/cm/stacks/export.ts)_
+
+## `csdx help [COMMAND]`
+
+display help for csdx
+
+```
+USAGE
+  $ csdx help [COMMAND] [--all]
+
+ARGUMENTS
+  COMMAND  command to show help for
+
+FLAGS
+  --all  see all commands in CLI
+
+DESCRIPTION
+  display help for csdx
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.3.1/src/commands/help.ts)_
 <!-- commandsstop -->
