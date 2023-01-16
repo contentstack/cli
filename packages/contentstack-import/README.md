@@ -37,7 +37,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import/1.2.4 darwin-arm64 node-v16.17.0
+@contentstack/cli-cm-import/1.2.5 darwin-arm64 node-v18.11.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -53,7 +53,7 @@ USAGE
 
 ## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
-Import script for importing the content into the new stack
+Import content from a stack
 
 ```
 USAGE
@@ -73,11 +73,7 @@ FLAGS
                                     <options: disable|current>
 
 DESCRIPTION
-  Import script for importing the content into the new stack
-  ...
-  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import
-  command.
-
+  Import content from a stack
 
 ALIASES
   $ csdx cm:import
@@ -102,7 +98,7 @@ EXAMPLES
 
 ## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
-Import script for importing the content into the new stack
+Import content from a stack
 
 ```
 USAGE
@@ -122,11 +118,7 @@ FLAGS
                                     <options: disable|current>
 
 DESCRIPTION
-  Import script for importing the content into the new stack
-  ...
-  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import
-  command.
-
+  Import content from a stack
 
 ALIASES
   $ csdx cm:import
@@ -149,5 +141,5 @@ EXAMPLES
   $ csdx cm:stacks:import --branch <branch name>  --yes
 ```
 
-_See code: [src/commands/cm/stacks/import.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.js)_
+_See code: [src/commands/cm/stacks/import.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.ts)_
 <!-- commandsstop -->
