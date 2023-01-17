@@ -95,7 +95,6 @@ export default class ExportAssets extends BaseClass {
         new FsUtility({ basePath: this.assetsRootPath }).writeFile(
           pResolve(this.assetsRootPath, 'folders.json'),
           this.assetsFolder,
-          true,
         );
       }
       log(this.exportConfig, 'Assets folder Exported successfully.!', 'info');
