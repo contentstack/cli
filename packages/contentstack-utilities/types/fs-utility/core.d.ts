@@ -29,7 +29,7 @@ export default class FsUtility {
      * @param parse boolean | undefined
      * @returns string | undefined
      */
-    readFile(filePath: string, parse: boolean | undefined): string | undefined;
+    readFile(filePath: string, parse?: boolean | undefined): string | undefined;
     /**
      * @method writeFile
      * @param filePath string
