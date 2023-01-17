@@ -16,7 +16,7 @@ const ansiRegexPattern = [
 ].join('|');
 
 function returnString(args) {
-  var returnStr = '';
+  let returnStr = '';
   if (args && args.length) {
     returnStr = args
       .map(function (item) {
@@ -34,7 +34,7 @@ function returnString(args) {
   returnStr = returnStr.replace(new RegExp(ansiRegexPattern, 'g'), '').trim();
   return returnStr;
 }
-var myCustomLevels = {
+const myCustomLevels = {
   levels: {
     warn: 1,
     info: 2,
@@ -57,7 +57,7 @@ let errorTransport;
 
 function init(_logPath) {
   if (!logger || !errorLogger) {
-    var logsDir = path.resolve(_logPath, 'logs', 'export');
+    const logsDir = path.resolve(_logPath, 'logs', 'export');
     // Create dir if doesn't already exist
     mkdirp.sync(logsDir);
 
@@ -98,29 +98,29 @@ function init(_logPath) {
 
   return {
     log: function (message) {
-      let args = slice.call(arguments);
-      let logString = returnString(args);
+      const args = slice.call(arguments);
+      const logString = returnString(args);
       if (logString) {
         logger.log('info', logString);
       }
     },
     warn: function () {
-      let args = slice.call(arguments);
-      let logString = returnString(args);
+      const args = slice.call(arguments);
+      const logString = returnString(args);
       if (logString) {
         logger.log('warn', logString);
       }
     },
     error: function (message) {
-      let args = slice.call(arguments);
-      let logString = returnString(args);
+      const args = slice.call(arguments);
+      const logString = returnString(args);
       if (logString) {
         errorLogger.log('error', logString);
       }
     },
     debug: function () {
-      let args = slice.call(arguments);
-      let logString = returnString(args);
+      const args = slice.call(arguments);
+      const logString = returnString(args);
       if (logString) {
         logger.log('debug', logString);
       }
