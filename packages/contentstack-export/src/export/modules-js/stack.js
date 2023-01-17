@@ -6,9 +6,10 @@
 
 const path = require('path');
 const mkdirp = require('mkdirp');
-const { fileHelper, log } = require('../../utils');
+const merge = require('lodash/merge');
 const { default: config } = require('../../config');
 let stackConfig = config.modules.stack;
+
 class ExportStack {
   stackConfig = config.modules.stack;
 

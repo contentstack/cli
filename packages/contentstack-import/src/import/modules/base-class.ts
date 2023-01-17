@@ -1,4 +1,5 @@
 import map from 'lodash/map';
+import pick from 'lodash/pick';
 import fill from 'lodash/fill';
 import last from 'lodash/last';
 import chunk from 'lodash/chunk';
@@ -17,13 +18,15 @@ export type ApiOptions = {
   resolve: (value: any) => void;
   reject: (error: any) => void;
   additionalInfo?: Record<any, any>;
+  serialiseData?: (input: any) => any;
+  includeParamOnCompletion?: boolean;
 };
 
 export type EnvType = {
   processName: string;
   totalCount?: number;
-  apiBatches?: number[];
-  concurrencyLimit: number;
+  apiContent: Record<string, any>[];
+  concurrencyLimit?: number;
   apiParams?: ApiOptions;
 };
 
@@ -36,16 +39,7 @@ export type CustomPromiseHandlerInput = {
 
 export type CustomPromiseHandler = (input: CustomPromiseHandlerInput) => Promise<any>;
 
-export type ApiModuleType =
-  | 'stack'
-  | 'asset'
-  | 'assets'
-  | 'entry'
-  | 'entries'
-  | 'content-type'
-  | 'content-types'
-  | 'stacks'
-  | 'create-assets-folder';
+export type ApiModuleType = 'create-assets' | 'create-assets-folder';
 
 export default abstract class BaseClass {
   readonly client: Stack;
@@ -65,23 +59,18 @@ export default abstract class BaseClass {
     return new Promise((resolve) => setTimeout(resolve, ms <= 0 ? 0 : ms));
   }
 
-  makeConcurrentCall(env: EnvType, promisifyHandler?: CustomPromiseHandler): Promise<void> {
-    const { processName, apiBatches, totalCount, apiParams, concurrencyLimit } = env;
+  makeConcurrentCall(
+    env: EnvType,
+    promisifyHandler?: CustomPromiseHandler,
+    logBatchCompletionMsg: boolean = true,
+  ): Promise<void> {
+    const { processName, apiContent, apiParams, concurrencyLimit } = env;
 
     /* eslint-disable no-async-promise-executor */
     return new Promise(async (resolve) => {
       let batchNo = 0;
       let isLastRequest = false;
-      const batch = fill(Array.from({ length: Number.parseInt(String(totalCount / 100), 10) }), 100);
-
-      if (totalCount % 100) batch.push(100);
-
-      const batches: Array<number | any> =
-        apiBatches ||
-        chunk(
-          map(batch, (skip: number, i: number) => skip * i),
-          concurrencyLimit,
-        );
+      const batches: Array<number | any> = chunk(apiContent, concurrencyLimit);
 
       /* eslint-disable no-promise-executor-return */
       if (isEmpty(batches)) return resolve();
@@ -102,8 +91,8 @@ export default abstract class BaseClass {
               index: Number(index),
               batchIndex: Number(batchIndex),
             });
-          } else if (apiParams?.queryParam) {
-            apiParams.queryParam.skip = element;
+          } else if (apiParams) {
+            apiParams.queryParam = element;
             promise = this.makeAPICall(apiParams, isLastRequest);
           }
 
@@ -112,8 +101,11 @@ export default abstract class BaseClass {
 
         /* eslint-disable no-await-in-loop */
         await Promise.allSettled(allPromise);
-        /* eslint-disable no-await-in-loop */
-        await this.logMsgAndWaitIfRequired(processName, start, batchNo);
+
+        if (logBatchCompletionMsg) {
+          /* eslint-disable no-await-in-loop */
+          await this.logMsgAndWaitIfRequired(processName, start, batchNo);
+        }
 
         if (isLastRequest) resolve();
       }
@@ -149,24 +141,33 @@ export default abstract class BaseClass {
    * @param {Record<string, any>} isLastRequest - Boolean
    * @returns Promise<any>
    */
-  makeAPICall(
-    { entity, reject, resolve, url = '', uid = '', additionalInfo, queryParam = {} }: ApiOptions,
-    isLastRequest = false,
-  ): Promise<any> {
+  makeAPICall(apiOptions: ApiOptions, isLastRequest = false): Promise<any> {
+    let { entity, reject, resolve, queryParam, serialiseData, additionalInfo, includeParamOnCompletion } = apiOptions;
+    if (serialiseData instanceof Function) queryParam = serialiseData(queryParam);
+
     switch (entity) {
-      case 'asset':
-        return this.stack
-          .asset(uid)
-          .fetch(queryParam)
-          .then((response) => resolve({ response, isLastRequest, additionalInfo }))
-          .catch((error) => reject({ error, isLastRequest, additionalInfo }));
-      case 'assets':
+      case 'create-assets-folder':
+        const folder: any = { asset: pick(queryParam, ['name', 'parent_uid']) };
         return this.stack
           .asset()
-          .query(queryParam)
-          .find()
-          .then((response) => resolve({ response, isLastRequest, additionalInfo }))
-          .catch((error) => reject({ error, isLastRequest, additionalInfo }));
+          .folder()
+          .create(folder)
+          .then((response) =>
+            resolve({
+              response,
+              isLastRequest,
+              additionalInfo,
+              queryParam: includeParamOnCompletion ? queryParam : undefined,
+            }),
+          )
+          .catch((error) =>
+            reject({
+              error,
+              isLastRequest,
+              additionalInfo,
+              queryParam: includeParamOnCompletion ? queryParam : undefined,
+            }),
+          );
       default:
         return Promise.resolve();
     }
