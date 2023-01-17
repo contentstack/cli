@@ -16,6 +16,8 @@ export default {
     'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com',
   },
   modules: {
+    apiPolling: 1000, // Default is 1000ms
+    apiConcurrency: 5,
     types: ['locales', 'environments'],
     locales: {
       dirName: 'locales',
@@ -317,7 +319,7 @@ export default {
     stacks: '/stacks/',
     labels: '/labels/',
   },
-  updatedModules: ['locales'],
+  updatedModules: ['locales', 'assets'],
   rateLimit: 5,
   preserveStackVersion: false,
   entriesPublish: true,
