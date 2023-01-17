@@ -9,16 +9,17 @@ import isEqual from 'lodash/isEqual';
 import { Stack } from '@contentstack/management/types/stack';
 
 import { log } from '../../utils';
+import { AssetData } from '@contentstack/management/types/stack/asset';
 
 export type ApiOptions = {
   uid?: string;
   url?: string;
   entity: ApiModuleType;
-  queryParam?: Record<any, any>;
+  apiData?: Record<any, any>;
   resolve: (value: any) => void;
   reject: (error: any) => void;
   additionalInfo?: Record<any, any>;
-  serialiseData?: (input: any) => any;
+  serializeData?: (input: any) => any;
   includeParamOnCompletion?: boolean;
 };
 
@@ -44,10 +45,12 @@ export type ApiModuleType = 'create-assets' | 'create-assets-folder';
 export default abstract class BaseClass {
   readonly client: Stack;
   public importConfig: Record<string, any>;
+  public modulesConfig: Record<string, any>;
 
   constructor({ importConfig, stackAPIClient }) {
     this.client = stackAPIClient;
     this.importConfig = importConfig;
+    this.modulesConfig = importConfig.modules;
   }
 
   get stack(): Stack {
@@ -64,7 +67,7 @@ export default abstract class BaseClass {
     promisifyHandler?: CustomPromiseHandler,
     logBatchCompletionMsg: boolean = true,
   ): Promise<void> {
-    const { processName, apiContent, apiParams, concurrencyLimit } = env;
+    const { processName, apiContent, apiParams, concurrencyLimit = this.importConfig.modules.apiConcurrency } = env;
 
     /* eslint-disable no-async-promise-executor */
     return new Promise(async (resolve) => {
@@ -92,7 +95,7 @@ export default abstract class BaseClass {
               batchIndex: Number(batchIndex),
             });
           } else if (apiParams) {
-            apiParams.queryParam = element;
+            apiParams.apiData = element;
             promise = this.makeAPICall(apiParams, isLastRequest);
           }
 
@@ -142,32 +145,38 @@ export default abstract class BaseClass {
    * @returns Promise<any>
    */
   makeAPICall(apiOptions: ApiOptions, isLastRequest = false): Promise<any> {
-    let { entity, reject, resolve, queryParam, serialiseData, additionalInfo, includeParamOnCompletion } = apiOptions;
-    if (serialiseData instanceof Function) queryParam = serialiseData(queryParam);
+    let { entity, reject, resolve, apiData, serializeData, additionalInfo, includeParamOnCompletion } = apiOptions;
+    if (serializeData instanceof Function) apiData = serializeData(apiData);
+
+    const onSuccess = (response) =>
+      resolve({
+        response,
+        isLastRequest,
+        additionalInfo,
+        apiData: includeParamOnCompletion ? apiData : undefined,
+      });
+    const onReject = (error) =>
+      reject({
+        error,
+        isLastRequest,
+        additionalInfo,
+        apiData: includeParamOnCompletion ? apiData : undefined,
+      });
 
     switch (entity) {
       case 'create-assets-folder':
-        const folder: any = { asset: pick(queryParam, ['name', 'parent_uid']) };
         return this.stack
           .asset()
           .folder()
-          .create(folder)
-          .then((response) =>
-            resolve({
-              response,
-              isLastRequest,
-              additionalInfo,
-              queryParam: includeParamOnCompletion ? queryParam : undefined,
-            }),
-          )
-          .catch((error) =>
-            reject({
-              error,
-              isLastRequest,
-              additionalInfo,
-              queryParam: includeParamOnCompletion ? queryParam : undefined,
-            }),
-          );
+          .create({ asset: pick(apiData, this.modulesConfig.assets.folderValidKeys) } as any)
+          .then(onSuccess)
+          .catch(onReject);
+      case 'create-assets':
+        return this.stack
+          .asset()
+          .create(pick(apiData, this.modulesConfig.assets.validKeys) as AssetData)
+          .then(onSuccess)
+          .catch(onReject);
       default:
         return Promise.resolve();
     }
