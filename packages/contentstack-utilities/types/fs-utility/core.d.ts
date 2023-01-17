@@ -24,6 +24,15 @@ export default class FsUtility {
     get currentPageDetails(): PageInfo;
     get indexFileContent(): Record<string, any>;
     /**
+     * @method readChunkFiles
+     * @returns Object
+     */
+    get readChunkFiles(): {
+        next: () => Promise<Record<string, unknown> | Record<string, unknown>[]>;
+        get: (index: number) => Promise<Record<string, unknown> | Record<string, unknown>[]>;
+        previous: () => Promise<Record<string, unknown> | Record<string, unknown>[] | Error>;
+    };
+    /**
      * @method readFile
      * @param filePath string
      * @param parse boolean | undefined
@@ -99,29 +108,23 @@ export default class FsUtility {
     saveMeta(meta: Chunk): void;
     getPlainMeta(basePath?: string): Record<string, unknown>;
     /**
-     * @method readChunkFiles
-     * @returns Object
-     */
-    readChunkFiles(): Record<string, unknown>;
-    /**
      * @method getFileByIndex
      * @param _self FsUtility
      * @param index number
      * @returns Promise<string>
      */
-    protected getFileByIndex(_self?: FsUtility, index?: number): Promise<Record<string, unknown>>;
+    protected getFileByIndex(index?: number): Promise<Record<string, unknown> | Record<string, unknown>[]>;
     /**
      * @method next
-     * @param _self FsUtility
      * @returns Promise<string>
      */
-    next(_self?: FsUtility): Promise<Record<string, unknown>>;
+    next(): Promise<Record<string, unknown> | Record<string, unknown>[]>;
     /**
      * @method previous
      * @param _self FsUtility
      * @returns Promise<string>
      */
-    protected previous(_self?: FsUtility): Promise<Record<string, unknown> | Error>;
+    protected previous(): Promise<Record<string, unknown> | Record<string, unknown>[] | Error>;
     /**
      * @method updatePageInfo
      * @param _self FsUtility
@@ -129,7 +132,7 @@ export default class FsUtility {
      * @param index number
      * @returns void
      */
-    updatePageInfo(_self?: FsUtility, isNext?: boolean | null, index?: number | null): void;
+    updatePageInfo(isNext?: boolean | null, index?: number | null): void;
     removeFile(path: string): void;
 }
 export declare function getDirectories(source: string): string[] | [];
