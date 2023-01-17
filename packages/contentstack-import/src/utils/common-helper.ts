@@ -156,7 +156,7 @@ export const field_rules_update = (importConfig, ctPath) => {
                     schema.field_rules[k].conditions[i].value = updatedValue.join('.');
                   }
                 }
-                const stackAPIClient = APIClient.stack({
+                const stackAPIClient = client.stack({
                   api_key: importConfig.target_stack,
                   management_token: importConfig.management_token,
                 });
@@ -165,7 +165,7 @@ export const field_rules_update = (importConfig, ctPath) => {
                 ctObj
                   .update()
                   .then(() => {
-                    return resolve();
+                    return resolve('');
                   })
                   .catch((error) => {
                     return reject(error);
