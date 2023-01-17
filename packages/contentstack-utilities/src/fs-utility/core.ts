@@ -102,7 +102,7 @@ export default class FsUtility {
    * @param parse boolean | undefined
    * @returns string | undefined
    */
-  readFile(filePath: string, parse: boolean | undefined): string | undefined {
+  readFile(filePath: string, parse: boolean | undefined = undefined): string | undefined {
     let data;
     filePath = pResolve(filePath);
     parse = typeof parse === 'undefined' ? true : parse;
