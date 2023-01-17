@@ -20,15 +20,15 @@
     "oclif": "^3.1.2",
     "@oclif/test": "^2.2.10",
     "chai": "^4.3.4",
-    "eslint": "^8.18.0",
+    "eslint": "^7.32.0",
     "eslint-config-oclif": "^3.1.0",
-    "eslint-config-oclif-typescript": "^0.2.0",
+    "eslint-config-oclif-typescript": "^1.0.3",
     "globby": "^10.0.2",
     "husky": "^4.2.5",
+    "mocha": "10.1.0",
     "jsdoc": "^3.6.7",
     "jsdoc-to-markdown": "^7.0.1",
     "mkdirp": "^1.0.4",
-    "mocha": "^10.0.0",
     "nock": "^13.1.1",
     "nyc": "^15.1.0"
   },
@@ -51,7 +51,7 @@
     "bin": "csdx",
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-migration/<%- commandPath %>"
   },
-  "repository": "contentstack/cli-migration",
+  "repository": "contentstack/cli",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint ./src",
