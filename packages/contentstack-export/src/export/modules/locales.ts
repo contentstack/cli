@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { logger } from '@contentstack/cli-utilities';
 import { fileHelper } from '../../utils';
+
 export default class LocaleExport {
   private stackAPIClient: any;
   private exportConfig: any;
@@ -39,18 +40,18 @@ export default class LocaleExport {
   }
 
   async getLocales() {
-    let locales = await this.stackAPIClient.locale().query(this.qs).find();
+    const locales = await this.stackAPIClient.locale().query(this.qs).find();
     if (Array.isArray(locales.items) && locales.items.length > 0) {
-      let updatedLocales = this.sanitizeAttribs(locales.items);
+      const updatedLocales = this.sanitizeAttribs(locales.items);
       return updatedLocales;
     }
     logger.info('No locales found');
   }
 
   sanitizeAttribs(locales) {
-    let updatedLocales = {};
+    const updatedLocales = {};
     locales.forEach((locale) => {
-      for (let key in locale) {
+      for (const key in locale) {
         if (this.localeConfig.requiredKeys.indexOf(key) === -1) {
           delete locale[key];
         }
