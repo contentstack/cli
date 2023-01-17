@@ -56,16 +56,14 @@ export default {
       invalidKeys: ['stackHeaders', 'urlPath', 'created_at', 'updated_at', 'created_by', 'updated_by'],
     },
     assets: {
-      apiConcurrency: 5,
       dirName: 'assets',
-      fileName: 'assets.json',
-      // This is the total no. of asset objects fetched in each 'get assets' call
-      limit: 100,
-      host: 'https://api.contentstack.io',
-      validKeys: ['uid', 'filename', 'url', 'status'],
       assetBatchLimit: 1,
-      uploadAssetsConcurrency: 1,
-      importFoldersConcurrency: 1,
+      fileName: 'assets.json',
+      uploadAssetsConcurrency: 5,
+      importFoldersConcurrency: 5,
+      host: 'https://api.contentstack.io',
+      folderValidKeys: ['name', 'parent_uid'],
+      validKeys: ['title', 'parent_uid', 'description', 'tags'],
     },
     content_types: {
       dirName: 'content_types',

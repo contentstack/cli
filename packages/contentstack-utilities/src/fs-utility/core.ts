@@ -1,8 +1,8 @@
 import mkdirp from 'mkdirp';
 import keys from 'lodash/keys';
-import { resolve as pResolve } from 'node:path';
 import { v4 as uidV4 } from 'uuid';
 import isEmpty from 'lodash/isEmpty';
+import { resolve as pResolve } from 'node:path';
 import {
   createWriteStream,
   existsSync,
@@ -93,6 +93,22 @@ export default class FsUtility {
     }
 
     return indexData;
+  }
+
+  /**
+   * @method readChunkFiles
+   * @returns Object
+   */
+  get readChunkFiles(): {
+    next: () => Promise<Record<string, unknown> | Record<string, unknown>[]>;
+    get: (index: number) => Promise<Record<string, unknown> | Record<string, unknown>[]>;
+    previous: () => Promise<Record<string, unknown> | Record<string, unknown>[] | Error>;
+  } {
+    return {
+      next: this.next.bind(this),
+      previous: this.previous.bind(this),
+      get: this.getFileByIndex.bind(this),
+    };
   }
 
   // STUB old utility methods
@@ -302,64 +318,51 @@ export default class FsUtility {
   }
 
   /**
-   * @method readChunkFiles
-   * @returns Object
-   */
-  readChunkFiles(): Record<string, unknown> {
-    return {
-      next: this.next,
-      previous: this.previous,
-      get: this.getFileByIndex,
-    };
-  }
-
-  /**
    * @method getFileByIndex
    * @param _self FsUtility
    * @param index number
    * @returns Promise<string>
    */
-  protected getFileByIndex(_self: FsUtility = this, index = 1): Promise<Record<string, unknown>> {
+  protected getFileByIndex(index = 1): Promise<Record<string, unknown> | Record<string, unknown>[]> {
     return new Promise((resolve, reject) => {
       if (index <= 0) {
         reject(new Error('Invalid index'));
         return;
       }
 
-      _self.updatePageInfo(_self, null, index);
+      this.updatePageInfo(null, index);
 
-      if (isEmpty(_self.readIndexer[index])) {
+      if (isEmpty(this.readIndexer[index])) {
         reject(new Error('File not found!'));
         return;
       }
 
-      const fileContent = readFileSync(pResolve(_self.basePath, _self.readIndexer[index]), {
+      const fileContent = readFileSync(pResolve(this.basePath, this.readIndexer[index]), {
         encoding: 'utf-8',
       });
 
-      resolve(_self.fileExt === 'json' ? JSON.parse(fileContent) : fileContent);
+      resolve(this.fileExt === 'json' ? JSON.parse(fileContent) : fileContent);
     });
   }
 
   /**
    * @method next
-   * @param _self FsUtility
    * @returns Promise<string>
    */
-  next(_self: FsUtility = this): Promise<Record<string, unknown>> {
+  next(): Promise<Record<string, unknown> | Record<string, unknown>[]> {
     return new Promise((resolve, reject) => {
-      _self.updatePageInfo(_self, true);
+      this.updatePageInfo(true);
 
-      if (isEmpty(_self.readIndexer[_self.pageInfo.after])) {
+      if (isEmpty(this.readIndexer[this.pageInfo.after])) {
         reject(new Error('File not found!'));
         return;
       }
 
-      const fileContent = readFileSync(_self.readIndexer[_self.pageInfo.after], {
+      const fileContent = readFileSync(pResolve(this.basePath, this.readIndexer[this.pageInfo.after]), {
         encoding: 'utf-8',
       });
 
-      resolve(_self.fileExt === 'json' ? JSON.parse(fileContent) : fileContent);
+      resolve(this.fileExt === 'json' ? JSON.parse(fileContent) : fileContent);
     });
   }
 
@@ -368,20 +371,20 @@ export default class FsUtility {
    * @param _self FsUtility
    * @returns Promise<string>
    */
-  protected previous(_self: FsUtility = this): Promise<Record<string, unknown> | Error> {
+  protected previous(): Promise<Record<string, unknown> | Record<string, unknown>[] | Error> {
     return new Promise((resolve, reject) => {
-      _self.updatePageInfo(_self, false);
+      this.updatePageInfo(false);
 
-      if (isEmpty(_self.readIndexer[_self.pageInfo.before])) {
+      if (isEmpty(this.readIndexer[this.pageInfo.before])) {
         reject(new Error('File not found'));
         return;
       }
 
-      const fileContent = readFileSync(_self.readIndexer[_self.pageInfo.before], {
+      const fileContent = readFileSync(pResolve(this.basePath, this.readIndexer[this.pageInfo.before]), {
         encoding: 'utf-8',
       });
 
-      resolve(_self.fileExt === 'json' ? JSON.parse(fileContent) : fileContent);
+      resolve(this.fileExt === 'json' ? JSON.parse(fileContent) : fileContent);
     });
   }
 
@@ -392,33 +395,33 @@ export default class FsUtility {
    * @param index number
    * @returns void
    */
-  updatePageInfo(_self: FsUtility = this, isNext: boolean | null = true, index: number | null = null): void {
-    if (!_self.pageInfo.pageInfoUpdated) {
-      _self.readIndexer = _self.indexFileContent;
-      _self.pageInfo.pageInfoUpdated = true;
+  updatePageInfo(isNext: boolean | null = true, index: number | null = null): void {
+    if (!this.pageInfo.pageInfoUpdated) {
+      this.readIndexer = this.indexFileContent;
+      this.pageInfo.pageInfoUpdated = true;
     }
 
-    const { after, before } = _self.pageInfo;
+    const { after, before } = this.pageInfo;
 
     if (isNext === true) {
-      _self.pageInfo.before = 1;
-      _self.pageInfo.after = after + 1;
+      this.pageInfo.before = 1;
+      this.pageInfo.after = after + 1;
     } else if (isNext === false) {
-      _self.pageInfo.after = 0;
-      _self.pageInfo.before = before - 1;
+      this.pageInfo.after = 0;
+      this.pageInfo.before = before - 1;
     } else {
-      _self.pageInfo.after = index || 0;
-      _self.pageInfo.before = 1;
+      this.pageInfo.after = index || 0;
+      this.pageInfo.before = 1;
     }
 
     /* eslint-disable unicorn/consistent-destructuring */
-    if (!isEmpty(_self.readIndexer[_self.pageInfo.after + 1])) {
-      _self.pageInfo.hasNextPage = true;
+    if (!isEmpty(this.readIndexer[this.pageInfo.after + 1])) {
+      this.pageInfo.hasNextPage = true;
     }
 
     /* eslint-disable unicorn/consistent-destructuring */
-    if (!isEmpty(_self.readIndexer[_self.pageInfo.after - 1])) {
-      _self.pageInfo.hasPreviousPage = true;
+    if (!isEmpty(this.readIndexer[this.pageInfo.after - 1])) {
+      this.pageInfo.hasPreviousPage = true;
     }
   }
 
