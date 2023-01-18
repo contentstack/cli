@@ -149,7 +149,7 @@ export default abstract class BaseClass {
       apiOptions = apiOptions.serializeData(apiOptions);
     }
 
-    let { entity, reject, resolve, apiData, additionalInfo, includeParamOnCompletion } = apiOptions;
+    let { uid, entity, reject, resolve, apiData, additionalInfo, includeParamOnCompletion } = apiOptions;
 
     const onSuccess = (response) =>
       resolve({
@@ -182,8 +182,8 @@ export default abstract class BaseClass {
           .catch(onReject);
       case 'replace-assets':
         return this.stack
-          .asset(apiData.uid)
-          .replace(pick(apiData, ['upload']) as AssetData)
+          .asset(uid)
+          .replace(pick(apiData, [...this.modulesConfig.assets.validKeys, 'upload']) as AssetData)
           .then(onSuccess)
           .catch(onReject);
 

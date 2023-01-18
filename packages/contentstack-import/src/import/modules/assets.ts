@@ -117,6 +117,7 @@ export default class ExportAssets extends BaseClass {
    * @param isVersion boolean
    */
   async importAssets(isVersion = false) {
+    const processName = isVersion ? 'import versioned assets' : 'import assets';
     const indexFileName = isVersion ? 'versioned-assets.json' : 'assets.json';
     const basePath = isVersion ? join(this.assetsPath, 'versions') : this.assetsPath;
     const fs = new FsUtility({ basePath, indexFileName });
@@ -155,19 +156,42 @@ export default class ExportAssets extends BaseClass {
     };
 
     for (const _index in indexer) {
-      const apiContent = orderBy(values((await fs.readChunkFiles.next()) as Record<string, any>[]), '_version');
-      await this.makeConcurrentCall({
-        apiContent,
-        processName: 'import assets',
-        apiParams: {
-          serializeData,
-          reject: onReject,
-          resolve: onSuccess,
-          entity: 'create-assets',
-          includeParamOnCompletion: true,
+      let apiContent = orderBy(values((await fs.readChunkFiles.next()) as Record<string, any>[]), '_version');
+
+      if (isVersion && this.assetConfig.importSameStructure) {
+        // NOTE to create same structure it must have seed assets/version 1 asset to be created first
+        await this.makeConcurrentCall({
+          processName,
+          apiContent: filter(apiContent, ({ _version }) => _version === 1),
+          apiParams: {
+            serializeData,
+            reject: onReject,
+            resolve: onSuccess,
+            entity: 'create-assets',
+            includeParamOnCompletion: true,
+          },
+          concurrencyLimit: this.assetConfig.uploadAssetsConcurrency,
+        });
+
+        apiContent = filter(apiContent, ({ _version }) => _version > 1);
+      }
+
+      await this.makeConcurrentCall(
+        {
+          apiContent,
+          processName,
+          apiParams: {
+            serializeData,
+            reject: onReject,
+            resolve: onSuccess,
+            entity: 'create-assets',
+            includeParamOnCompletion: true,
+          },
+          concurrencyLimit: this.assetConfig.uploadAssetsConcurrency,
         },
-        concurrencyLimit: this.assetConfig.uploadAssetsConcurrency,
-      });
+        undefined,
+        false,
+      );
     }
 
     if (!isVersion && !isEmpty(this.assetsFolderMap)) {
