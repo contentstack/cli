@@ -60,7 +60,7 @@ export default {
       assetBatchLimit: 1,
       fileName: 'assets.json',
       importSameStructure: false,
-      uploadAssetsConcurrency: 5,
+      uploadAssetsConcurrency: 2,
       importFoldersConcurrency: 5,
       includeVersionedAssets: false,
       host: 'https://api.contentstack.io',
