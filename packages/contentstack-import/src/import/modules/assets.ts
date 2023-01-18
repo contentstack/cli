@@ -15,7 +15,7 @@ import { FsUtility, getDirectories } from '@contentstack/cli-utilities';
 
 import config from '../../config';
 import { log, formatError } from '../../utils';
-import BaseClass, { CustomPromiseHandler, CustomPromiseHandlerInput } from './base-class';
+import BaseClass, { ApiOptions, CustomPromiseHandler, CustomPromiseHandlerInput } from './base-class';
 
 export default class ExportAssets extends BaseClass {
   private envPath: string;
@@ -26,9 +26,9 @@ export default class ExportAssets extends BaseClass {
   private assetUrlMapperPath: string;
   private assetFolderUidMapperPath: string;
   public assetConfig = config.modules.assets;
-  private assetsFolderMap: Record<string, unknown> = {};
   private assetsUidMap: Record<string, unknown> = {};
   private assetsUrlMap: Record<string, unknown> = {};
+  private assetsFolderMap: Record<string, unknown> = {};
   private versionedAssets: Record<string, unknown>[] = [];
 
   constructor({ importConfig, stackAPIClient }) {
@@ -47,7 +47,11 @@ export default class ExportAssets extends BaseClass {
     // const start = +new Date();
     // NOTE Step 1: Import folders and create uid mapping file
     await this.importFolders();
-    // NOTE Step 2: Import Assets and create it mapping files (uid, url)
+
+    // NOTE Step 2: Import versioned assets and create it mapping files (uid, url)
+    if (this.assetConfig.includeVersionedAssets) await this.importAssets(true);
+
+    // NOTE Step 3: Import Assets and create it mapping files (uid, url)
     await this.importAssets();
     // NOTE log function => this.logFn(start);
   }
@@ -73,12 +77,12 @@ export default class ExportAssets extends BaseClass {
       log(this.importConfig, `${name} folder creation failed.!`, 'error');
       log(this.importConfig, formatError(error), 'error');
     };
-    const serializeData = (folder) => {
-      if (folder.parent_uid) {
-        folder.parent_uid = this.assetsFolderMap[folder.parent_uid];
+    const serializeData = (apiOptions: ApiOptions) => {
+      if (apiOptions.apiData.parent_uid) {
+        apiOptions.apiData.parent_uid = this.assetsFolderMap[apiOptions.apiData.parent_uid];
       }
 
-      return folder;
+      return apiOptions;
     };
 
     const batch = map(unionBy(batches, 'parent_uid'), 'parent_uid');
@@ -124,25 +128,34 @@ export default class ExportAssets extends BaseClass {
 
     const onSuccess = ({ response, apiData: { uid, url, title } = undefined }: any) => {
       this.assetsUidMap[uid] = response.uid;
-      this.assetsUrlMap[url] = response.asset.url;
-      log(this.importConfig, `Created folder: '${title}'`, 'success');
+      this.assetsUrlMap[url] = response.url;
+      log(this.importConfig, `Created asset: '${title}'`, 'success');
     };
     const onReject = ({ error, apiData: { title } = undefined }: any) => {
       log(this.importConfig, `${title} asset upload failed.!`, 'error');
       log(this.importConfig, formatError(error), 'error');
     };
-    const serializeData = (asset) => {
+    // NOTE Modify any data before api call
+    const serializeData = (apiOptions: ApiOptions) => {
+      const { apiData: asset } = apiOptions;
       asset.upload = join(this.assetsPath, 'files', asset.uid, asset.filename);
 
       if (asset.parent_uid) {
         asset.parent_uid = this.assetsFolderMap[asset.parent_uid];
       }
 
-      return asset;
+      apiOptions.apiData = asset;
+
+      if (this.assetsUidMap[asset.uid] && this.assetConfig.importSameStructure) {
+        apiOptions.entity = 'replace-assets';
+        apiOptions.uid = this.assetsUidMap[asset.uid] as string;
+      }
+
+      return apiOptions;
     };
 
     for (const _index in indexer) {
-      const apiContent = (await fs.readChunkFiles.next()) as Record<string, any>[];
+      const apiContent = orderBy(values((await fs.readChunkFiles.next()) as Record<string, any>[]), '_version');
       await this.makeConcurrentCall({
         apiContent,
         processName: 'import assets',
@@ -157,7 +170,7 @@ export default class ExportAssets extends BaseClass {
       });
     }
 
-    if (!isEmpty(this.assetsFolderMap)) {
+    if (!isVersion && !isEmpty(this.assetsFolderMap)) {
       const fs = new FsUtility({ basePath: this.mapperDirPath });
       fs.writeFile(this.assetUidMapperPath, this.assetsUidMap);
       fs.writeFile(this.assetUrlMapperPath, this.assetsUrlMap);

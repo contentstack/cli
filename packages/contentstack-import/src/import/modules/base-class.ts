@@ -7,9 +7,9 @@ import isEmpty from 'lodash/isEmpty';
 import entries from 'lodash/entries';
 import isEqual from 'lodash/isEqual';
 import { Stack } from '@contentstack/management/types/stack';
+import { AssetData } from '@contentstack/management/types/stack/asset';
 
 import { log } from '../../utils';
-import { AssetData } from '@contentstack/management/types/stack/asset';
 
 export type ApiOptions = {
   uid?: string;
@@ -19,8 +19,8 @@ export type ApiOptions = {
   resolve: (value: any) => void;
   reject: (error: any) => void;
   additionalInfo?: Record<any, any>;
-  serializeData?: (input: any) => any;
   includeParamOnCompletion?: boolean;
+  serializeData?: (input: ApiOptions) => any;
 };
 
 export type EnvType = {
@@ -40,7 +40,7 @@ export type CustomPromiseHandlerInput = {
 
 export type CustomPromiseHandler = (input: CustomPromiseHandlerInput) => Promise<any>;
 
-export type ApiModuleType = 'create-assets' | 'create-assets-folder';
+export type ApiModuleType = 'create-assets' | 'replace-assets' | 'create-assets-folder';
 
 export default abstract class BaseClass {
   readonly client: Stack;
@@ -145,8 +145,11 @@ export default abstract class BaseClass {
    * @returns Promise<any>
    */
   makeAPICall(apiOptions: ApiOptions, isLastRequest = false): Promise<any> {
-    let { entity, reject, resolve, apiData, serializeData, additionalInfo, includeParamOnCompletion } = apiOptions;
-    if (serializeData instanceof Function) apiData = serializeData(apiData);
+    if (apiOptions.serializeData instanceof Function) {
+      apiOptions = apiOptions.serializeData(apiOptions);
+    }
+
+    let { entity, reject, resolve, apiData, additionalInfo, includeParamOnCompletion } = apiOptions;
 
     const onSuccess = (response) =>
       resolve({
@@ -174,9 +177,16 @@ export default abstract class BaseClass {
       case 'create-assets':
         return this.stack
           .asset()
-          .create(pick(apiData, this.modulesConfig.assets.validKeys) as AssetData)
+          .create(pick(apiData, [...this.modulesConfig.assets.validKeys, 'upload']) as AssetData)
           .then(onSuccess)
           .catch(onReject);
+      case 'replace-assets':
+        return this.stack
+          .asset(apiData.uid)
+          .replace(pick(apiData, ['upload']) as AssetData)
+          .then(onSuccess)
+          .catch(onReject);
+
       default:
         return Promise.resolve();
     }
