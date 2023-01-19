@@ -1,6 +1,4 @@
-import map from 'lodash/map';
 import pick from 'lodash/pick';
-import fill from 'lodash/fill';
 import last from 'lodash/last';
 import chunk from 'lodash/chunk';
 import isEmpty from 'lodash/isEmpty';
@@ -8,6 +6,7 @@ import entries from 'lodash/entries';
 import isEqual from 'lodash/isEqual';
 import { Stack } from '@contentstack/management/types/stack';
 import { AssetData } from '@contentstack/management/types/stack/asset';
+import { PublishConfig } from '@contentstack/management/types/utility/publish';
 
 import { log } from '../../utils';
 
@@ -40,7 +39,7 @@ export type CustomPromiseHandlerInput = {
 
 export type CustomPromiseHandler = (input: CustomPromiseHandlerInput) => Promise<any>;
 
-export type ApiModuleType = 'create-assets' | 'replace-assets' | 'create-assets-folder';
+export type ApiModuleType = 'create-assets' | 'replace-assets' | 'publish-assets' | 'create-assets-folder';
 
 export default abstract class BaseClass {
   readonly client: Stack;
@@ -84,7 +83,7 @@ export default abstract class BaseClass {
         const start = Date.now();
 
         for (const [index, element] of entries(batch)) {
-          let promise;
+          let promise = Promise.resolve();
           isLastRequest = isEqual(last(batch), element) && isEqual(last(batches), batch);
 
           if (promisifyHandler instanceof Function) {
@@ -186,7 +185,12 @@ export default abstract class BaseClass {
           .replace(pick(apiData, [...this.modulesConfig.assets.validKeys, 'upload']) as AssetData)
           .then(onSuccess)
           .catch(onReject);
-
+      case 'publish-assets':
+        return this.stack
+          .asset(uid)
+          .publish(pick(apiData, ['publishDetails']) as PublishConfig)
+          .then(onSuccess)
+          .catch(onReject);
       default:
         return Promise.resolve();
     }

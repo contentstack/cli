@@ -20,7 +20,7 @@ export default class ExportAssets extends BaseClass {
   private assetsRootPath: string;
   public assetConfig = config.modules.assets;
   private assetsFolder: Record<string, unknown>[] = [];
-  private versionedAssets: Record<string, unknown>[] = [];
+  public versionedAssets: Record<string, unknown>[] = [];
 
   constructor({ exportConfig, stackAPIClient }) {
     super({ exportConfig, stackAPIClient });
@@ -73,7 +73,7 @@ export default class ExportAssets extends BaseClass {
     };
 
     const onSuccess = ({ response: { items } }: any) => {
-      this.assetsFolder.push(...items);
+      if (!isEmpty(items)) this.assetsFolder.push(...items);
     };
     const onReject = ({ error }: any) => {
       log(this.exportConfig, 'Export asset folder query failed', 'error');
@@ -147,7 +147,7 @@ export default class ExportAssets extends BaseClass {
           chunkFileSize: this.assetConfig.chunkFileSize,
         });
       }
-      fs?.writeIntoFile(items, { mapKeyVal: true });
+      if (!isEmpty(items)) fs?.writeIntoFile(items, { mapKeyVal: true });
     };
 
     return this.makeConcurrentCall({
@@ -213,10 +213,11 @@ export default class ExportAssets extends BaseClass {
           basePath: pResolve(this.assetsRootPath, 'versions'),
         });
       }
-      fs?.writeIntoFile([response], {
-        mapKeyVal: true,
-        keyName: ['uid', '_version'],
-      });
+      if (!isEmpty(response))
+        fs?.writeIntoFile([response], {
+          mapKeyVal: true,
+          keyName: ['uid', '_version'],
+        });
     };
     const onReject = ({ error }: any) => {
       log(this.exportConfig, 'Export versioned asset query failed', 'error');
@@ -362,16 +363,5 @@ export default class ExportAssets extends BaseClass {
     ).then(() => {
       log(this.exportConfig, 'Assets download completed successfully.!', 'info');
     });
-  }
-
-  logFn(start: number): void {
-    const end = Date.now();
-    const exeTime = end - start;
-
-    console.log(
-      `In Assets: Time taken to execute: ${exeTime} milliseconds; wait time: ${
-        exeTime < 1000 ? 1000 - exeTime : 0
-      } milliseconds`,
-    );
   }
 }

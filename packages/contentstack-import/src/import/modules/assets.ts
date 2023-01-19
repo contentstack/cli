@@ -3,7 +3,7 @@ import chunk from 'lodash/chunk';
 import values from 'lodash/values';
 import filter from 'lodash/filter';
 import uniqBy from 'lodash/uniqBy';
-import isArray from 'lodash/isArray';
+import forEach from 'lodash/forEach';
 import unionBy from 'lodash/unionBy';
 import orderBy from 'lodash/orderBy';
 import isEmpty from 'lodash/isEmpty';
@@ -15,10 +15,10 @@ import { FsUtility, getDirectories } from '@contentstack/cli-utilities';
 
 import config from '../../config';
 import { log, formatError } from '../../utils';
-import BaseClass, { ApiOptions, CustomPromiseHandler, CustomPromiseHandlerInput } from './base-class';
+import BaseClass, { ApiOptions } from './base-class';
 
 export default class ExportAssets extends BaseClass {
-  private envPath: string;
+  private fs: FsUtility;
   private assetsPath: string;
   private mapperDirPath: string;
   private assetsRootPath: string;
@@ -26,10 +26,10 @@ export default class ExportAssets extends BaseClass {
   private assetUrlMapperPath: string;
   private assetFolderUidMapperPath: string;
   public assetConfig = config.modules.assets;
+  private environments: Record<string, any> = {};
   private assetsUidMap: Record<string, unknown> = {};
   private assetsUrlMap: Record<string, unknown> = {};
   private assetsFolderMap: Record<string, unknown> = {};
-  private versionedAssets: Record<string, unknown>[] = [];
 
   constructor({ importConfig, stackAPIClient }) {
     super({ importConfig, stackAPIClient });
@@ -40,11 +40,14 @@ export default class ExportAssets extends BaseClass {
     this.assetUrlMapperPath = join(this.mapperDirPath, 'url-mapping.json');
     this.assetFolderUidMapperPath = join(this.mapperDirPath, 'folder-mapping.json');
     this.assetsRootPath = join(this.importConfig.backupDir, this.assetConfig.dirName);
-    this.envPath = join(this.importConfig.backupDir, 'environments', 'environments.json');
+    this.fs = new FsUtility({ basePath: this.mapperDirPath });
+    this.environments = this.fs.readFile(
+      join(this.importConfig.backupDir, 'environments', 'environments.json'),
+      true,
+    ) as Record<string, unknown>;
   }
 
   async start(): Promise<void> {
-    // const start = +new Date();
     // NOTE Step 1: Import folders and create uid mapping file
     await this.importFolders();
 
@@ -53,7 +56,9 @@ export default class ExportAssets extends BaseClass {
 
     // NOTE Step 3: Import Assets and create it mapping files (uid, url)
     await this.importAssets();
-    // NOTE log function => this.logFn(start);
+
+    // NOTE Step 4: Publish assets
+    if (this.assetConfig.publishAssets) await this.publish();
   }
 
   /**
@@ -61,9 +66,7 @@ export default class ExportAssets extends BaseClass {
    * @returns Promise<any>
    */
   async importFolders(): Promise<any> {
-    const folders = new FsUtility({ basePath: this.assetsRootPath }).readFile(
-      pResolve(this.assetsRootPath, 'folders.json'),
-    );
+    const folders = this.fs.readFile(pResolve(this.assetsRootPath, 'folders.json'));
     if (isEmpty(folders)) {
       log(this.importConfig, 'No folders found to import', 'info');
       return;
@@ -108,7 +111,7 @@ export default class ExportAssets extends BaseClass {
     }
 
     if (!isEmpty(this.assetsFolderMap)) {
-      new FsUtility({ basePath: this.mapperDirPath }).writeFile(this.assetFolderUidMapperPath, this.assetsFolderMap);
+      this.fs.writeFile(this.assetFolderUidMapperPath, this.assetsFolderMap);
     }
   }
 
@@ -123,10 +126,6 @@ export default class ExportAssets extends BaseClass {
     const fs = new FsUtility({ basePath, indexFileName });
     const indexer = fs.indexFileContent;
 
-    if (isEmpty(this.assetsFolderMap)) {
-      this.assetsFolderMap = fs.readFile(this.assetFolderUidMapperPath, true) as any;
-    }
-
     const onSuccess = ({ response, apiData: { uid, url, title } = undefined }: any) => {
       this.assetsUidMap[uid] = response.uid;
       this.assetsUrlMap[url] = response.url;
@@ -135,24 +134,6 @@ export default class ExportAssets extends BaseClass {
     const onReject = ({ error, apiData: { title } = undefined }: any) => {
       log(this.importConfig, `${title} asset upload failed.!`, 'error');
       log(this.importConfig, formatError(error), 'error');
-    };
-    // NOTE Modify any data before api call
-    const serializeData = (apiOptions: ApiOptions) => {
-      const { apiData: asset } = apiOptions;
-      asset.upload = join(this.assetsPath, 'files', asset.uid, asset.filename);
-
-      if (asset.parent_uid) {
-        asset.parent_uid = this.assetsFolderMap[asset.parent_uid];
-      }
-
-      apiOptions.apiData = asset;
-
-      if (this.assetsUidMap[asset.uid] && this.assetConfig.importSameStructure) {
-        apiOptions.entity = 'replace-assets';
-        apiOptions.uid = this.assetsUidMap[asset.uid] as string;
-      }
-
-      return apiOptions;
     };
 
     for (const _index in indexer) {
@@ -164,11 +145,11 @@ export default class ExportAssets extends BaseClass {
           processName,
           apiContent: filter(apiContent, ({ _version }) => _version === 1),
           apiParams: {
-            serializeData,
             reject: onReject,
             resolve: onSuccess,
             entity: 'create-assets',
             includeParamOnCompletion: true,
+            serializeData: this.serializeAssets.bind(this),
           },
           concurrencyLimit: this.assetConfig.uploadAssetsConcurrency,
         });
@@ -181,11 +162,11 @@ export default class ExportAssets extends BaseClass {
           apiContent,
           processName,
           apiParams: {
-            serializeData,
             reject: onReject,
             resolve: onSuccess,
             entity: 'create-assets',
             includeParamOnCompletion: true,
+            serializeData: this.serializeAssets.bind(this),
           },
           concurrencyLimit: this.assetConfig.uploadAssetsConcurrency,
         },
@@ -195,9 +176,82 @@ export default class ExportAssets extends BaseClass {
     }
 
     if (!isVersion && !isEmpty(this.assetsFolderMap)) {
-      const fs = new FsUtility({ basePath: this.mapperDirPath });
-      fs.writeFile(this.assetUidMapperPath, this.assetsUidMap);
-      fs.writeFile(this.assetUrlMapperPath, this.assetsUrlMap);
+      this.fs.writeFile(this.assetUidMapperPath, this.assetsUidMap);
+      this.fs.writeFile(this.assetUrlMapperPath, this.assetsUrlMap);
+    }
+  }
+
+  /**
+   * @method serializeAssets
+   * @param apiOptions ApiOptions
+   * @returns ApiOptions
+   */
+  serializeAssets(apiOptions: ApiOptions) {
+    const { apiData: asset } = apiOptions;
+    asset.upload = join(this.assetsPath, 'files', asset.uid, asset.filename);
+
+    if (asset.parent_uid) {
+      asset.parent_uid = this.assetsFolderMap[asset.parent_uid];
+    }
+
+    apiOptions.apiData = asset;
+
+    if (this.assetsUidMap[asset.uid] && this.assetConfig.importSameStructure) {
+      apiOptions.entity = 'replace-assets';
+      apiOptions.uid = this.assetsUidMap[asset.uid] as string;
+    }
+
+    return apiOptions;
+  }
+
+  /**
+   * @method publish
+   * @returns Promise<void>
+   */
+  async publish() {
+    const fs = new FsUtility({ basePath: this.assetsPath, indexFileName: 'assets.json' });
+    if (isEmpty(this.assetsUidMap)) {
+      this.assetsUidMap = fs.readFile(this.assetUidMapperPath, true) as any;
+    }
+    const indexer = fs.indexFileContent;
+    const onSuccess = ({ apiData: { uid, title } = undefined }: any) => {
+      log(this.importConfig, `Asset '${uid}: ${title}' published successfully`, 'success');
+    };
+    const onReject = ({ error, apiData: { uid, title } = undefined }: any) => {
+      log(this.importConfig, `Asset '${uid}: ${title}' not published`, 'error');
+      log(this.importConfig, formatError(error), 'error');
+    };
+    const serializeData = (apiOptions: ApiOptions) => {
+      const { apiData: asset } = apiOptions;
+      const publishDetails = filter(asset.publish_details, 'environment');
+      const locales = map(publishDetails, 'locale');
+      const environments = map(publishDetails, ({ environment }) => this.environments[environment].name);
+
+      asset.locales = locales;
+      asset.environments = environments;
+      apiOptions.uid = this.assetsUidMap[asset.uid] as string;
+      apiOptions.apiData.publishDetails = { locales, environments };
+
+      return apiOptions;
+    };
+
+    for (const _index in indexer) {
+      const apiContent = filter(
+        values(await fs.readChunkFiles.next()),
+        ({ publish_details }) => !isEmpty(publish_details),
+      );
+      await this.makeConcurrentCall({
+        apiContent,
+        processName: 'assets publish',
+        apiParams: {
+          serializeData,
+          reject: onReject,
+          resolve: onSuccess,
+          entity: 'publish-assets',
+          includeParamOnCompletion: true,
+        },
+        concurrencyLimit: this.assetConfig.uploadAssetsConcurrency,
+      });
     }
   }
 
@@ -225,16 +279,5 @@ export default class ExportAssets extends BaseClass {
     }
 
     return importOrder;
-  }
-
-  logFn(start: number): void {
-    const end = Date.now();
-    const exeTime = end - start;
-
-    console.log(
-      `In Assets: Time taken to execute: ${exeTime} milliseconds; wait time: ${
-        exeTime < 1000 ? 1000 - exeTime : 0
-      } milliseconds`,
-    );
   }
 }
