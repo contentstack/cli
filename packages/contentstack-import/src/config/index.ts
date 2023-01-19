@@ -58,8 +58,9 @@ export default {
     assets: {
       dirName: 'assets',
       assetBatchLimit: 1,
+      publishAssets: true,
       fileName: 'assets.json',
-      importSameStructure: false,
+      importSameStructure: true,
       uploadAssetsConcurrency: 2,
       importFoldersConcurrency: 5,
       includeVersionedAssets: false,
