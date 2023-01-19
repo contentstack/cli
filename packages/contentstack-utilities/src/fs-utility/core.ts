@@ -118,7 +118,10 @@ export default class FsUtility {
    * @param parse boolean | undefined
    * @returns string | undefined
    */
-  readFile(filePath: string, parse: boolean | undefined = undefined): string | undefined {
+  readFile(
+    filePath: string,
+    parse: boolean | undefined = undefined,
+  ): string | Record<string, unknown> | Record<string, unknown>[] | undefined {
     let data;
     filePath = pResolve(filePath);
     parse = typeof parse === 'undefined' ? true : parse;
@@ -194,7 +197,7 @@ export default class FsUtility {
    * @return {void}
    * @description creating new chunk file
    */
-  private createNewFile(): void {
+  protected createNewFile(): void {
     const fileName = `${uidV4()}-${this.moduleName || 'chunk'}.${this.fileExt}`;
     this.currentFileName = fileName;
     this.writeIndexer[keys(this.writeIndexer).length + 1] = fileName;
@@ -211,7 +214,7 @@ export default class FsUtility {
    * @param options WriteFileOptions
    * @returns void
    */
-  private writeIntoExistingFile(chunk: Chunk, options?: WriteFileOptions): void {
+  protected writeIntoExistingFile(chunk: Chunk, options?: WriteFileOptions): void {
     let fileContent: Chunk = chunk;
     let fileSizeReachedLimit = false;
     const { keyName, mapKeyVal } = options || {
@@ -288,7 +291,7 @@ export default class FsUtility {
    * @return {void}
    * @description closing current write stream
    */
-  private closeFile(closeIndexer = true): void {
+  protected closeFile(closeIndexer = true): void {
     if (closeIndexer) {
       // NOTE write file index details into a file
       writeFileSync(`${this.basePath}/${this.indexFileName}`, JSON.stringify(this.writeIndexer));
@@ -349,7 +352,7 @@ export default class FsUtility {
    * @method next
    * @returns Promise<string>
    */
-  next(): Promise<Record<string, unknown> | Record<string, unknown>[]> {
+  protected next(): Promise<Record<string, unknown> | Record<string, unknown>[]> {
     return new Promise((resolve, reject) => {
       this.updatePageInfo(true);
 

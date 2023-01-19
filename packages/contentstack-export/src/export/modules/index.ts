@@ -1,3 +1,5 @@
+import ExportAssets from './assets';
+
 export default async function startModuleExport(modulePayload) {
   try {
     const { default: ModuleRunner } = await import(`./${modulePayload.moduleName}`);
@@ -7,3 +9,5 @@ export default async function startModuleExport(modulePayload) {
     console.log('error', error);
   }
 }
+
+export { ExportAssets };
