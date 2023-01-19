@@ -38,7 +38,7 @@ export default class FsUtility {
      * @param parse boolean | undefined
      * @returns string | undefined
      */
-    readFile(filePath: string, parse?: boolean | undefined): string | undefined;
+    readFile(filePath: string, parse?: boolean | undefined): string | Record<string, unknown> | Record<string, unknown>[] | undefined;
     /**
      * @method writeFile
      * @param filePath string
@@ -76,14 +76,14 @@ export default class FsUtility {
      * @return {void}
      * @description creating new chunk file
      */
-    private createNewFile;
+    protected createNewFile(): void;
     /**
      * @method writeIntoExistingFile
      * @param chunk Record<string, string>[] | object | Array<any> | string;
      * @param options WriteFileOptions
      * @returns void
      */
-    private writeIntoExistingFile;
+    protected writeIntoExistingFile(chunk: Chunk, options?: WriteFileOptions): void;
     /**
      * @method handleKeyValMapAndMetaData
      * @param chunk Chunk
@@ -104,7 +104,7 @@ export default class FsUtility {
      * @return {void}
      * @description closing current write stream
      */
-    private closeFile;
+    protected closeFile(closeIndexer?: boolean): void;
     saveMeta(meta: Chunk): void;
     getPlainMeta(basePath?: string): Record<string, unknown>;
     /**
@@ -118,7 +118,7 @@ export default class FsUtility {
      * @method next
      * @returns Promise<string>
      */
-    next(): Promise<Record<string, unknown> | Record<string, unknown>[]>;
+    protected next(): Promise<Record<string, unknown> | Record<string, unknown>[]>;
     /**
      * @method previous
      * @param _self FsUtility
