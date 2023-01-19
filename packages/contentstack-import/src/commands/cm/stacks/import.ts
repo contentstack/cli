@@ -94,7 +94,24 @@ export default class ImportCommand extends Command {
     // initialize the importer
     // start import
     try {
-      this.managementAPIClient = { host: this.cmaHost, authtoken: this.authToken };
+      this.managementAPIClient = {
+        retryLimit: 3,
+        host: this.cmaHost,
+        authtoken: this.authToken,
+        retryCondition: (error) => {
+          if (error.response && error.response.status) {
+            switch (error.response.status) {
+              case 401:
+              case 429:
+              case 408:
+                return true;
+
+              default:
+                return false;
+            }
+          }
+        },
+      };
       const { flags } = (await this.parse(ImportCommand)) as any;
       const importConfig = await setupImportConfig(flags);
       const moduleImporter = new ModuleImporter(this.managementAPIClient, importConfig);
