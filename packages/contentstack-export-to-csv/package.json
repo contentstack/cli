@@ -7,7 +7,6 @@
   "dependencies": {
     "@contentstack/cli-command": "^1.0.4",
     "@contentstack/cli-utilities": "^1.0.5",
-    "@contentstack/management": "^1.6.0",
     "chalk": "^4.1.0",
     "fast-csv": "^4.3.6",
     "inquirer": "8.2.4",
