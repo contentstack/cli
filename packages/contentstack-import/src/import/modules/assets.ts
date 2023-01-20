@@ -1,23 +1,18 @@
 import map from 'lodash/map';
-import chunk from 'lodash/chunk';
 import values from 'lodash/values';
 import filter from 'lodash/filter';
-import uniqBy from 'lodash/uniqBy';
-import forEach from 'lodash/forEach';
 import unionBy from 'lodash/unionBy';
 import orderBy from 'lodash/orderBy';
 import isEmpty from 'lodash/isEmpty';
 import includes from 'lodash/includes';
-import progress from 'progress-stream';
-import { createWriteStream } from 'node:fs';
 import { resolve as pResolve, join } from 'node:path';
-import { FsUtility, getDirectories } from '@contentstack/cli-utilities';
+import { FsUtility } from '@contentstack/cli-utilities';
 
 import config from '../../config';
 import { log, formatError } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 
-export default class ExportAssets extends BaseClass {
+export default class ImportAssets extends BaseClass {
   private fs: FsUtility;
   private assetsPath: string;
   private mapperDirPath: string;
@@ -126,10 +121,10 @@ export default class ExportAssets extends BaseClass {
     const fs = new FsUtility({ basePath, indexFileName });
     const indexer = fs.indexFileContent;
 
-    const onSuccess = ({ response, apiData: { uid, url, title } = undefined }: any) => {
+    const onSuccess = ({ response = {}, apiData: { uid, url, title } = undefined }: any) => {
       this.assetsUidMap[uid] = response.uid;
       this.assetsUrlMap[url] = response.url;
-      log(this.importConfig, `Created asset: '${title}'`, 'success');
+      log(this.importConfig, `Created asset: '${title}'`, 'info');
     };
     const onReject = ({ error, apiData: { title } = undefined }: any) => {
       log(this.importConfig, `${title} asset upload failed.!`, 'error');
@@ -137,42 +132,48 @@ export default class ExportAssets extends BaseClass {
     };
 
     for (const _index in indexer) {
-      let apiContent = orderBy(values((await fs.readChunkFiles.next()) as Record<string, any>[]), '_version');
+      const chunk = await fs.readChunkFiles.next().catch((error) => {
+        log(this.importConfig, error, 'error');
+      });
 
-      if (isVersion && this.assetConfig.importSameStructure) {
-        // NOTE to create same structure it must have seed assets/version 1 asset to be created first
-        await this.makeConcurrentCall({
-          processName,
-          apiContent: filter(apiContent, ({ _version }) => _version === 1),
-          apiParams: {
-            reject: onReject,
-            resolve: onSuccess,
-            entity: 'create-assets',
-            includeParamOnCompletion: true,
-            serializeData: this.serializeAssets.bind(this),
+      if (chunk) {
+        let apiContent = orderBy(values(chunk as Record<string, any>[]), '_version');
+
+        if (isVersion && this.assetConfig.importSameStructure) {
+          // NOTE to create same structure it must have seed assets/version 1 asset to be created first
+          await this.makeConcurrentCall({
+            processName,
+            apiContent: filter(apiContent, ({ _version }) => _version === 1),
+            apiParams: {
+              reject: onReject,
+              resolve: onSuccess,
+              entity: 'create-assets',
+              includeParamOnCompletion: true,
+              serializeData: this.serializeAssets.bind(this),
+            },
+            concurrencyLimit: this.assetConfig.uploadAssetsConcurrency,
+          });
+
+          apiContent = filter(apiContent, ({ _version }) => _version > 1);
+        }
+
+        await this.makeConcurrentCall(
+          {
+            apiContent,
+            processName,
+            apiParams: {
+              reject: onReject,
+              resolve: onSuccess,
+              entity: 'create-assets',
+              includeParamOnCompletion: true,
+              serializeData: this.serializeAssets.bind(this),
+            },
+            concurrencyLimit: this.assetConfig.uploadAssetsConcurrency,
           },
-          concurrencyLimit: this.assetConfig.uploadAssetsConcurrency,
-        });
-
-        apiContent = filter(apiContent, ({ _version }) => _version > 1);
+          undefined,
+          !isVersion,
+        );
       }
-
-      await this.makeConcurrentCall(
-        {
-          apiContent,
-          processName,
-          apiParams: {
-            reject: onReject,
-            resolve: onSuccess,
-            entity: 'create-assets',
-            includeParamOnCompletion: true,
-            serializeData: this.serializeAssets.bind(this),
-          },
-          concurrencyLimit: this.assetConfig.uploadAssetsConcurrency,
-        },
-        undefined,
-        false,
-      );
     }
 
     if (!isVersion && !isEmpty(this.assetsFolderMap)) {
@@ -188,10 +189,32 @@ export default class ExportAssets extends BaseClass {
    */
   serializeAssets(apiOptions: ApiOptions) {
     const { apiData: asset } = apiOptions;
+
+    if (
+      !this.assetConfig.importSameStructure &&
+      !this.assetConfig.includeVersionedAssets &&
+      this.assetsUidMap.hasOwnProperty(asset.uid)
+    ) {
+      log(
+        this.importConfig.config,
+        `Skipping upload of asset: ${asset.uid}. Its mapped to: ${this.assetsUidMap[asset.uid]}`,
+        'success',
+      );
+      apiOptions.entity = undefined;
+      return apiOptions;
+    }
+
     asset.upload = join(this.assetsPath, 'files', asset.uid, asset.filename);
 
     if (asset.parent_uid) {
       asset.parent_uid = this.assetsFolderMap[asset.parent_uid];
+    } else {
+      asset.parent_uid = null;
+      log(
+        this.importConfig,
+        `${this.assetsFolderMap[asset.parent_uid]} parent_uid was not found! Thus, setting it as 'null'`,
+        'error',
+      );
     }
 
     apiOptions.apiData = asset;
