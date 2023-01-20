@@ -1,6 +1,7 @@
 import map from 'lodash/map';
 import chunk from 'lodash/chunk';
 import first from 'lodash/first';
+import merge from 'lodash/merge';
 import filter from 'lodash/filter';
 import uniqBy from 'lodash/uniqBy';
 import values from 'lodash/values';
@@ -143,8 +144,8 @@ export default class ExportAssets extends BaseClass {
           moduleName: 'assets',
           indexFileName: 'assets.json',
           basePath: this.assetsRootPath,
-          metaPickKeys: ['uid', 'url', 'filename'],
           chunkFileSize: this.assetConfig.chunkFileSize,
+          metaPickKeys: merge(['uid', 'url', 'filename'], this.assetConfig.assetsMetaKeys),
         });
       }
       if (!isEmpty(items)) fs?.writeIntoFile(items, { mapKeyVal: true });
@@ -209,8 +210,8 @@ export default class ExportAssets extends BaseClass {
           moduleName: 'assets',
           indexFileName: 'versioned-assets.json',
           chunkFileSize: this.assetConfig.chunkFileSize,
-          metaPickKeys: ['uid', 'url', 'filename', '_version'],
           basePath: pResolve(this.assetsRootPath, 'versions'),
+          metaPickKeys: merge(['uid', 'url', 'filename', '_version'], this.assetConfig.assetsMetaKeys),
         });
       }
       if (!isEmpty(response))

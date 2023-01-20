@@ -15,69 +15,69 @@ export declare const test: FancyTypes.Base<FancyTypes.Context, {
 } & {
     retries: {
         output: unknown;
-        args: [number];
+        args: [count: number];
     };
 } & {
     catch: {
         output: {
             error: Error;
         };
-        args: [string | RegExp | ((err: Error) => any), {
+        args: [arg: string | RegExp | ((err: Error) => any), opts?: {
             raiseIfNotThrown?: boolean;
-        }?];
+        }];
     };
 } & {
     env: {
         output: unknown;
-        args: [{
+        args: [env: {
             [k: string]: string;
-        }, FancyTypes.EnvOptions?];
+        }, opts?: FancyTypes.EnvOptions];
     };
 } & {
     stub: {
         output: {
             stubs: any[];
         };
-        args: [any, any, () => any];
+        args: [object: any, path: any, value: () => any];
     };
 } & {
     stdin: {
         output: unknown;
-        args: [string, number?];
+        args: [input: string, delay?: number];
     };
 } & {
     stderr: {
         output: {
             readonly stderr: string;
         };
-        args: [{
+        args: [opts?: {
             print?: boolean;
             stripColor?: boolean;
-        }?];
+        }];
     };
 } & {
     stdout: {
         output: {
             readonly stdout: string;
         };
-        args: [{
+        args: [opts?: {
             print?: boolean;
             stripColor?: boolean;
-        }?];
+        }];
     };
 } & {
     nock: {
         output: {
             nock: number;
         };
-        args: [string, FancyTypes.NockOptions | FancyTypes.NockCallback, FancyTypes.NockCallback?];
+        args: [host: string, options: FancyTypes.NockOptions | FancyTypes.NockCallback, cb?: FancyTypes.NockCallback];
     };
 } & {
     timeout: {
         output: {
             timeout: number;
         };
-        args: [number?];
+        args: [timeout?: number];
     };
 } & {
     loadConfig: {
