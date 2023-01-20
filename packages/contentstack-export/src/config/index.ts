@@ -65,6 +65,7 @@ export default {
       downloadLimit: 3,
       chunkFileSize: 1, // measured on Megabits (5mb)
       fetchConcurrency: 5,
+      assetsMetaKeys: [], // Default keys ['uid', 'url', 'filename']
       securedAssets: false,
       enableNewStructure: true,
       displayExecutionTime: false,
