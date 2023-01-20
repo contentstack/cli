@@ -63,5 +63,24 @@ const mockData = {
 };
 
 const versionedAssets = [{ 'ABC-1': 2 }, { 'ABC-2': 3 }, { 'ABC-3': 4 }, { 'ABC-4': 2 }];
+const assetsMetaData = {
+  'file-1': [
+    {
+      uid: 'yhuj3',
+      url: 'https://test.io/assets/efsf/pexels-andy-vu-3244513.jpeg',
+      filename: 'pexels-andy-vu-3244513.jpeg',
+    },
+    {
+      uid: '4234',
+      filename: 'pexels-jonas-kakaroto-736230.jpeg',
+      url: 'https://test.io/assets/efsf/pexels-jonas-kakaroto-736230.jpeg',
+    },
+    {
+      uid: 'fwer',
+      url: 'https://test.io/assets/efsf/pexels-dominika-roseclay-1166869.jpeg',
+      filename: 'pexels-dominika-roseclay-1166869.jpeg',
+    },
+  ],
+};
 
-export { mockData, versionedAssets };
+export { mockData, versionedAssets, assetsMetaData };
