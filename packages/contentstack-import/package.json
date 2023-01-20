@@ -21,6 +21,7 @@
     "merge": "^2.1.1"
   },
   "devDependencies": {
+    "@contentstack/cli-dev-dependencies": "^1.0.0",
     "oclif": "^3.1.2",
     "@oclif/test": "^1.2.6",
     "@types/chai": "^4.2.18",
@@ -56,7 +57,7 @@
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
     "test:integration": "mocha --forbid-only \"test/integration/*.test.ts\"",
-    "test:unit": "mocha --forbid-only \"test/unit/*.test.ts\""
+    "test:unit": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\""
   },
   "engines": {
     "node": ">=14.0.0"
