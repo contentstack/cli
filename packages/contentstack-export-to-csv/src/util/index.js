@@ -132,9 +132,9 @@ function getStacks(managementAPIClient, orgUid) {
   });
 }
 
-function chooseContentType(stack, skip) {
+function chooseContentType(stackAPIClient, skip) {
   return new Promise(async (resolve, reject) => {
-    let contentTypes = await getContentTypes(stack, skip);
+    let contentTypes = await getContentTypes(stackAPIClient, skip);
     let contentTypesList = Object.values(contentTypes);
     let _chooseContentType = [
       {
@@ -148,9 +148,7 @@ function chooseContentType(stack, skip) {
 
     inquirer
       .prompt(_chooseContentType)
-      .then(({ chosenContentTypes }) => {
-        resolve(chosenContentTypes);
-      })
+      .then(({ chosenContentTypes }) => resolve(chosenContentTypes))
       .catch(reject);
   });
 }
@@ -197,10 +195,10 @@ function chooseInMemContentTypes(contentTypesList) {
   });
 }
 
-function getContentTypes(stack, skip) {
+function getContentTypes(stackAPIClient, skip) {
   return new Promise((resolve, reject) => {
     let result = {};
-    stack
+    stackAPIClient
       .contentType()
       .query({ skip: skip * 100 })
       .find()
@@ -214,9 +212,9 @@ function getContentTypes(stack, skip) {
   });
 }
 
-function chooseLanguage(stack) {
-  return new Promise(async (resolve) => {
-    let languages = await getLanguages(stack);
+function chooseLanguage(stackAPIClient) {
+  return new Promise(async (resolve, reject) => {
+    let languages = await getLanguages(stackAPIClient);
     let languagesList = Object.keys(languages);
     languagesList.push(config.cancelString);
 
@@ -239,10 +237,10 @@ function chooseLanguage(stack) {
   });
 }
 
-function getLanguages(stack) {
+function getLanguages(stackAPIClient) {
   return new Promise((resolve, reject) => {
     let result = {};
-    stack
+    stackAPIClient
       .locale()
       .query()
       .find()
@@ -256,9 +254,9 @@ function getLanguages(stack) {
   });
 }
 
-function getEntries(stack, contentType, language, skip) {
+function getEntries(stackAPIClient, contentType, language, skip) {
   return new Promise((resolve, reject) => {
-    stack
+    stackAPIClient
       .contentType(contentType)
       .entry()
       .query({ include_publish_details: true, locale: language, skip: skip * 100 })
@@ -268,9 +266,9 @@ function getEntries(stack, contentType, language, skip) {
   });
 }
 
-function getEntriesCount(stack, contentType, language) {
+function getEntriesCount(stackAPIClient, contentType, language) {
   return new Promise((resolve, reject) => {
-    stack
+    stackAPIClient
       .contentType(contentType)
       .entry()
       .query({ include_publish_details: true, locale: language })
@@ -280,9 +278,9 @@ function getEntriesCount(stack, contentType, language) {
   });
 }
 
-function getEnvironments(stack) {
+function getEnvironments(stackAPIClient) {
   let result = {};
-  return stack
+  return stackAPIClient
     .environment()
     .query()
     .find()
@@ -294,15 +292,13 @@ function getEnvironments(stack) {
     });
 }
 
-function getContentTypeCount(stack) {
+function getContentTypeCount(stackAPIClient) {
   return new Promise((resolve, reject) => {
-    stack
+    stackAPIClient
       .contentType()
       .query()
       .count()
-      .then((contentTypes) => {
-        resolve(contentTypes.content_types);
-      })
+      .then((contentTypes) => resolve(contentTypes.content_types))
       .catch((error) => reject(error));
   });
 }
@@ -437,6 +433,7 @@ async function getUsers(organization, params, result = []) {
       return getUsers(organization, params, result);
     }
   } catch (error) {
+    console.error(error);
     throw error;
   }
 }
@@ -566,10 +563,20 @@ function formatError(error) {
   if (error.errors && Object.keys(error.errors).length > 0) {
     Object.keys(error.errors).forEach((e) => {
       let entity = e;
-      if (e === 'authorization') entity = 'Management Token';
-      if (e === 'api_key') entity = 'Stack API key';
-      if (e === 'uid') entity = 'Content Type';
-      if (e === 'access_token') entity = 'Delivery Token';
+      switch (e) {
+        case 'authorization':
+          entity = 'Management Token';
+          break;
+        case 'api_key':
+          entity = 'Stack API key';
+          break;
+        case 'uid':
+          entity = 'Content Type';
+          break;
+        case 'access_token':
+          entity = 'Delivery Token';
+          break;
+      }
       message += ' ' + [entity, error.errors[e]].join(' ');
     });
   }
