@@ -35,7 +35,7 @@ class ModuleImporter {
   }
 
   async importByModuleByName(moduleName) {
-    const basePath = `${this.importConfig.branchDir}/${moduleName}`;
+    const basePath = `${this.importConfig.backupDir}/${moduleName}`;
     // import the modules by name
     // calls the module runner which inturn calls the module itself
     if (new FsUtility({ basePath }).isNewFsStructure && this.importConfig.updatedModules.indexOf(moduleName) !== -1) {
