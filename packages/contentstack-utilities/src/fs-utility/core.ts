@@ -76,6 +76,10 @@ export default class FsUtility {
     }
   }
 
+  get isNewFsStructure(): boolean {
+    return existsSync(`${this.basePath}/metadata.json`) && existsSync(`${this.basePath}/files`);
+  }
+
   get isIndexFileExist(): boolean {
     return existsSync(`${this.basePath}/${this.indexFileName}`);
   }
