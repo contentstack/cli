@@ -7,8 +7,16 @@ import isEqual from 'lodash/isEqual';
 import { Stack } from '@contentstack/management/types/stack';
 import { AssetData } from '@contentstack/management/types/stack/asset';
 import { PublishConfig } from '@contentstack/management/types/utility/publish';
+import { FolderData } from '@contentstack/management/types/stack/asset/folder';
 
 import { log } from '../../utils';
+import configType from '../../../types/config';
+
+export type AdditionalKeys = {
+  backupDir: string;
+};
+
+export type ApiModuleType = 'create-assets' | 'replace-assets' | 'publish-assets' | 'create-assets-folder';
 
 export type ApiOptions = {
   uid?: string;
@@ -39,12 +47,12 @@ export type CustomPromiseHandlerInput = {
 
 export type CustomPromiseHandler = (input: CustomPromiseHandlerInput) => Promise<any>;
 
-export type ApiModuleType = 'create-assets' | 'replace-assets' | 'publish-assets' | 'create-assets-folder';
-
 export default abstract class BaseClass {
   readonly client: Stack;
-  public importConfig: Record<string, any>;
-  public modulesConfig: Record<string, any>;
+
+  public importConfig: typeof configType & AdditionalKeys;
+
+  public modulesConfig: typeof configType.modules;
 
   constructor({ importConfig, stackAPIClient }) {
     this.client = stackAPIClient;
@@ -56,15 +64,27 @@ export default abstract class BaseClass {
     return this.client;
   }
 
+  /**
+   * @method delay
+   * @param {number} ms number
+   * @returns {Promise} Promise<void>
+   */
   delay(ms: number): Promise<void> {
     /* eslint-disable no-promise-executor-return */
     return new Promise((resolve) => setTimeout(resolve, ms <= 0 ? 0 : ms));
   }
 
+  /**
+   * @method makeConcurrentCall
+   * @param {Record<string, any>} env EnvType
+   * @param {CustomPromiseHandler} promisifyHandler CustomPromiseHandler
+   * @param {boolean} logBatchCompletionMsg boolean
+   * @returns {Promise} Promise<void>
+   */
   makeConcurrentCall(
     env: EnvType,
     promisifyHandler?: CustomPromiseHandler,
-    logBatchCompletionMsg: boolean = true,
+    logBatchCompletionMsg = true,
   ): Promise<void> {
     const { processName, apiContent, apiParams, concurrencyLimit = this.importConfig.modules.apiConcurrency } = env;
 
@@ -72,7 +92,7 @@ export default abstract class BaseClass {
     return new Promise(async (resolve) => {
       let batchNo = 0;
       let isLastRequest = false;
-      const batches: Array<number | any> = chunk(apiContent, concurrencyLimit);
+      const batches: Array<Record<string, any>> = chunk(apiContent, concurrencyLimit);
 
       /* eslint-disable no-promise-executor-return */
       if (isEmpty(batches)) return resolve();
@@ -84,7 +104,7 @@ export default abstract class BaseClass {
 
         for (const [index, element] of entries(batch)) {
           let promise = Promise.resolve();
-          isLastRequest = isEqual(last(batch), element) && isEqual(last(batches), batch);
+          isLastRequest = isEqual(last(batch as ArrayLike<any>), element) && isEqual(last(batches), batch);
 
           if (promisifyHandler instanceof Function) {
             promise = promisifyHandler({
@@ -116,10 +136,10 @@ export default abstract class BaseClass {
 
   /**
    * @method logMsgAndWaitIfRequired
-   * @param module string
-   * @param start number
-   * @param batchNo number
-   * @returns Promise<void>
+   * @param {string} processName string
+   * @param {number} start number
+   * @param {number} batchNo - number
+   * @returns {Promise} Promise<void>
    */
   async logMsgAndWaitIfRequired(processName: string, start: number, batchNo: number): Promise<void> {
     const end = Date.now();
@@ -139,16 +159,16 @@ export default abstract class BaseClass {
 
   /**
    * @method makeAPICall
-   * @param {Record<string, any>} options - Api related params
+   * @param {Record<string, any>} apiOptions - Api related params
    * @param {Record<string, any>} isLastRequest - Boolean
-   * @returns Promise<any>
+   * @return {Promise} Promise<void>
    */
-  makeAPICall(apiOptions: ApiOptions, isLastRequest = false): Promise<any> {
+  makeAPICall(apiOptions: ApiOptions, isLastRequest = false): Promise<void> {
     if (apiOptions.serializeData instanceof Function) {
       apiOptions = apiOptions.serializeData(apiOptions);
     }
 
-    let { uid, entity, reject, resolve, apiData, additionalInfo, includeParamOnCompletion } = apiOptions;
+    const { uid, entity, reject, resolve, apiData, additionalInfo, includeParamOnCompletion } = apiOptions;
 
     const onSuccess = (response) =>
       resolve({
@@ -170,7 +190,7 @@ export default abstract class BaseClass {
         return this.stack
           .asset()
           .folder()
-          .create({ asset: pick(apiData, this.modulesConfig.assets.folderValidKeys) } as any)
+          .create({ asset: pick(apiData, this.modulesConfig.assets.folderValidKeys) as FolderData })
           .then(onSuccess)
           .catch(onReject);
       case 'create-assets':

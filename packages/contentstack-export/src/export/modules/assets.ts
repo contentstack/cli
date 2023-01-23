@@ -42,7 +42,6 @@ export default class ExportAssets extends BaseClass {
       this.assetConfig.dirName,
     );
 
-    // const start = +new Date();
     // NOTE step 1: Get assets and it's folder count in parallel
     const [assetsCount, assetsFolderCount] = await Promise.all([this.getAssetsCount(), this.getAssetsCount(true)]);
 
