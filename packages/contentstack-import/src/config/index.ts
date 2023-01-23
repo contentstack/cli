@@ -62,6 +62,7 @@ export default {
       fileName: 'assets.json',
       importSameStructure: true,
       uploadAssetsConcurrency: 2,
+      displayExecutionTime: false,
       importFoldersConcurrency: 5,
       includeVersionedAssets: false,
       host: 'https://api.contentstack.io',
