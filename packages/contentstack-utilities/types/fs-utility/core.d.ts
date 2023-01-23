@@ -20,6 +20,7 @@ export default class FsUtility {
     private metaHandler;
     pageInfo: PageInfo;
     constructor(options?: FsConstructorOptions);
+    get isNewFsStructure(): boolean;
     get isIndexFileExist(): boolean;
     get currentPageDetails(): PageInfo;
     get indexFileContent(): Record<string, any>;
