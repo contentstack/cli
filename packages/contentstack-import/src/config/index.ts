@@ -61,7 +61,7 @@ export default {
       publishAssets: true,
       fileName: 'assets.json',
       importSameStructure: true,
-      uploadAssetsConcurrency: 2,
+      uploadAssetsConcurrency: 5,
       displayExecutionTime: false,
       importFoldersConcurrency: 5,
       includeVersionedAssets: false,
