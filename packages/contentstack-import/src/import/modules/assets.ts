@@ -205,7 +205,7 @@ export default class ImportAssets extends BaseClass {
       !this.assetConfig.importSameStructure &&
       !this.assetConfig.includeVersionedAssets &&
       /* eslint-disable @typescript-eslint/no-unused-vars, no-prototype-builtins */
-      this.assetsUidMap.prototype.hasOwnProperty(asset.uid)
+      this.assetsUidMap.hasOwnProperty(asset.uid)
     ) {
       log(
         this.importConfig,
@@ -220,15 +220,6 @@ export default class ImportAssets extends BaseClass {
 
     if (asset.parent_uid) {
       asset.parent_uid = this.assetsFolderMap[asset.parent_uid];
-
-      if (!this.assetsFolderMap[asset.parent_uid]) {
-        asset.parent_uid = null;
-        log(
-          this.importConfig,
-          `${this.assetsFolderMap[asset.parent_uid]} parent_uid was not found! Thus, setting it as 'null'`,
-          'error',
-        );
-      }
     }
 
     apiOptions.apiData = asset;
