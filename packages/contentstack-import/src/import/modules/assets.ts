@@ -4,6 +4,7 @@ import filter from 'lodash/filter';
 import unionBy from 'lodash/unionBy';
 import orderBy from 'lodash/orderBy';
 import isEmpty from 'lodash/isEmpty';
+import { existsSync } from 'node:fs';
 import includes from 'lodash/includes';
 import { resolve as pResolve, join } from 'node:path';
 import { FsUtility } from '@contentstack/cli-utilities';
@@ -42,12 +43,19 @@ export default class ImportAssets extends BaseClass {
     ) as Record<string, unknown>;
   }
 
+  /**
+   * @method start
+   * @returns {Promise<void>} Promise<any>
+   */
   async start(): Promise<void> {
     // NOTE Step 1: Import folders and create uid mapping file
     await this.importFolders();
 
     // NOTE Step 2: Import versioned assets and create it mapping files (uid, url)
-    if (this.assetConfig.includeVersionedAssets) await this.importAssets(true);
+    if (this.assetConfig.includeVersionedAssets) {
+      if (existsSync(`${this.assetsPath}/versions`)) await this.importAssets(true);
+      else log(this.importConfig, 'No Versioned assets found to import', 'info');
+    }
 
     // NOTE Step 3: Import Assets and create it mapping files (uid, url)
     await this.importAssets();
@@ -58,7 +66,7 @@ export default class ImportAssets extends BaseClass {
 
   /**
    * @method importFolders
-   * @returns Promise<any>
+   * @returns {Promise<any>} Promise<any>
    */
   async importFolders(): Promise<any> {
     const folders = this.fs.readFile(pResolve(this.assetsRootPath, 'folders.json'));
@@ -87,6 +95,7 @@ export default class ImportAssets extends BaseClass {
 
     for (const parent_uid of batch) {
       // NOTE create parent folders
+      /* eslint-disable no-await-in-loop */
       await this.makeConcurrentCall(
         {
           apiContent: orderBy(filter(batches, { parent_uid }), 'created_at'),
@@ -112,9 +121,10 @@ export default class ImportAssets extends BaseClass {
 
   /**
    * @method importAssets
-   * @param isVersion boolean
+   * @param {boolean} isVersion boolean
+   * @returns {Promise<void>} Promise<void>
    */
-  async importAssets(isVersion = false) {
+  async importAssets(isVersion = false): Promise<void> {
     const processName = isVersion ? 'import versioned assets' : 'import assets';
     const indexFileName = isVersion ? 'versioned-assets.json' : 'assets.json';
     const basePath = isVersion ? join(this.assetsPath, 'versions') : this.assetsPath;
@@ -131,6 +141,7 @@ export default class ImportAssets extends BaseClass {
       log(this.importConfig, formatError(error), 'error');
     };
 
+    /* eslint-disable @typescript-eslint/no-unused-vars, guard-for-in */
     for (const _index in indexer) {
       const chunk = await fs.readChunkFiles.next().catch((error) => {
         log(this.importConfig, error, 'error');
@@ -184,19 +195,20 @@ export default class ImportAssets extends BaseClass {
 
   /**
    * @method serializeAssets
-   * @param apiOptions ApiOptions
-   * @returns ApiOptions
+   * @param {ApiOptions} apiOptions ApiOptions
+   * @returns {ApiOptions} ApiOptions
    */
-  serializeAssets(apiOptions: ApiOptions) {
+  serializeAssets(apiOptions: ApiOptions): ApiOptions {
     const { apiData: asset } = apiOptions;
 
     if (
       !this.assetConfig.importSameStructure &&
       !this.assetConfig.includeVersionedAssets &&
-      this.assetsUidMap.hasOwnProperty(asset.uid)
+      /* eslint-disable @typescript-eslint/no-unused-vars, no-prototype-builtins */
+      this.assetsUidMap.prototype.hasOwnProperty(asset.uid)
     ) {
       log(
-        this.importConfig.config,
+        this.importConfig,
         `Skipping upload of asset: ${asset.uid}. Its mapped to: ${this.assetsUidMap[asset.uid]}`,
         'success',
       );
@@ -208,13 +220,15 @@ export default class ImportAssets extends BaseClass {
 
     if (asset.parent_uid) {
       asset.parent_uid = this.assetsFolderMap[asset.parent_uid];
-    } else {
-      asset.parent_uid = null;
-      log(
-        this.importConfig,
-        `${this.assetsFolderMap[asset.parent_uid]} parent_uid was not found! Thus, setting it as 'null'`,
-        'error',
-      );
+
+      if (!this.assetsFolderMap[asset.parent_uid]) {
+        asset.parent_uid = null;
+        log(
+          this.importConfig,
+          `${this.assetsFolderMap[asset.parent_uid]} parent_uid was not found! Thus, setting it as 'null'`,
+          'error',
+        );
+      }
     }
 
     apiOptions.apiData = asset;
@@ -229,7 +243,7 @@ export default class ImportAssets extends BaseClass {
 
   /**
    * @method publish
-   * @returns Promise<void>
+   * @returns {Promise<void>} Promise<void>
    */
   async publish() {
     const fs = new FsUtility({ basePath: this.assetsPath, indexFileName: 'assets.json' });
@@ -258,6 +272,7 @@ export default class ImportAssets extends BaseClass {
       return apiOptions;
     };
 
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     for (const _index in indexer) {
       const apiContent = filter(
         values(await fs.readChunkFiles.next()),
@@ -280,8 +295,8 @@ export default class ImportAssets extends BaseClass {
 
   /**
    * @method constructFolderImportOrder
-   * @param folders object
-   * @returns Array<Record<string, any>>
+   * @param {Record<string, any>[]} folders object
+   * @returns {Array<Record<string, any>>} Array<Record<string, any>>
    */
   constructFolderImportOrder(folders): Array<Record<string, any>> {
     let parentUid = [];
