@@ -124,10 +124,8 @@ export default abstract class BaseClass {
         /* eslint-disable no-await-in-loop */
         await Promise.allSettled(allPromise);
 
-        if (logBatchCompletionMsg) {
-          /* eslint-disable no-await-in-loop */
-          await this.logMsgAndWaitIfRequired(processName, start, batchNo);
-        }
+        /* eslint-disable no-await-in-loop */
+        await this.logMsgAndWaitIfRequired(processName, start, batchNo, logBatchCompletionMsg);
 
         if (isLastRequest) resolve();
       }
@@ -141,10 +139,18 @@ export default abstract class BaseClass {
    * @param {number} batchNo - number
    * @returns {Promise} Promise<void>
    */
-  async logMsgAndWaitIfRequired(processName: string, start: number, batchNo: number): Promise<void> {
+  async logMsgAndWaitIfRequired(
+    processName: string,
+    start: number,
+    batchNo: number,
+    logBatchCompletionMsg = true,
+  ): Promise<void> {
     const end = Date.now();
     const exeTime = end - start;
-    log(this.importConfig, `Batch No. ${batchNo} of ${processName} is complete.`, 'success');
+
+    if (logBatchCompletionMsg) {
+      log(this.importConfig, `Batch No. ${batchNo} of ${processName} is complete.`, 'success');
+    }
 
     if (this.importConfig.modules.assets.displayExecutionTime) {
       console.log(
