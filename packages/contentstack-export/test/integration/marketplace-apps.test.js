@@ -1,11 +1,12 @@
 let defaultConfig = require('../../src/config/default');
 const fs = require('fs')
 const path = require("path")
+const uniqBy = require('lodash/uniqBy')
 const { expect, test } = require("@oclif/test")
 const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 
 const { modules } = require('../../src/config/default')
-const { getStackDetailsByRegion, getLocalesCount, cleanUp } = require('./utils/helper')
+const { getStackDetailsByRegion, getMarketplaceAppsCount, cleanUp } = require('./utils/helper')
 const { PRINT_LOGS, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
 const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = process.env
 
@@ -24,14 +25,13 @@ module.exports = (region) => {
       "..",
       `${EXPORT_PATH}_${stack}`
     )
-
-    const localeBasePath = path.join(
+    const marketplaceAppsBasePath = path.join(
       exportBasePath,
-      modules.locales.dirName
+      modules.marketplace_apps.dirName
     )
-    const localeJson = path.join(
-      localeBasePath,
-      modules.locales.fileName
+    const marketplaceAppsJson = path.join(
+      marketplaceAppsBasePath,
+      modules.marketplace_apps.fileName
     )
     const messageFilePath = path.join(
       __dirname,
@@ -39,11 +39,12 @@ module.exports = (region) => {
       "..",
       "messages/index.json"
     )
+
     messageHandler.init({ messageFilePath })
     const { promptMessageList } = require(messageFilePath)
 
-    describe("ContentStack-Export plugin test [--module=locales]", () => {
-      describe("Export locales using cm:stacks:export command without any flags", () => {
+    describe("ContentStack-Export plugin test [--module=marketplace_apps]", () => {
+      describe("Export marketplace_apps using cm:stacks:export command without any flags", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stub(cliUX, "prompt", async (name) => {
@@ -55,41 +56,41 @@ module.exports = (region) => {
             }
           })
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails[stack])
+          .command(["cm:stacks:export", "--module", "marketplace-apps"])
+          .it("Check marketplace_apps count", async () => {
+            let exportedMarketplaceAppsCount = 0
+            const marketplaceAppsCount = await getMarketplaceAppsCount(stackDetails[stack])
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(marketplaceAppsJson)) {
+                exportedMarketplaceAppsCount = Object.keys(JSON.parse(fs.readFileSync(marketplaceAppsJson, 'utf-8'))).length
               }
             } catch (error) {
               console.trace(error)
             }
 
-            expect(localeCount).to.be.an('number').eq(exportedLocaleCount)
+            expect(marketplaceAppsCount).to.be.an('number').eq(exportedMarketplaceAppsCount)
           })
       })
 
-      describe("Export locales using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\" and management token", () => {
+      describe("Export marketplaceApps using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\" and management token", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails[stack])
+          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "marketplace-apps"])
+          .it("Check MarketplaceApps counts", async () => {
+            let exportedMarketplaceAppsCount = 0
+            const marketplaceAppsCount = await getMarketplaceAppsCount(stackDetails[stack]);
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(marketplaceAppsJson)) {
+                exportedMarketplaceAppsCount = Object.keys(JSON.parse(fs.readFileSync(marketplaceAppsJson, 'utf-8'))).length
               }
             } catch (error) {
               console.trace(error)
             }
 
-            expect(localeCount).to.be.an('number').eq(exportedLocaleCount)
+            expect(marketplaceAppsCount).to.be.an('number').eq(exportedMarketplaceAppsCount)
           })
       })
     })

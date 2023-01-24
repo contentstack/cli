@@ -1,17 +1,20 @@
 let defaultConfig = require('../../src/config/default');
 const fs = require('fs')
+const {promises: fsPromises} = fs
 const path = require("path")
 const { expect, test } = require("@oclif/test")
 const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 
 const { modules } = require('../../src/config/default')
-const { getStackDetailsByRegion, getLocalesCount, cleanUp } = require('./utils/helper')
+const { getStackDetailsByRegion, getContentTypesCount, cleanUp } = require('./utils/helper')
 const { PRINT_LOGS, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
-const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = process.env
+const { doesNotThrow } = require('assert')
+const { DELIMITER, KEY_VAL_DELIMITER } = process.env
 
 module.exports = (region) => {
   const stackDetails = getStackDetailsByRegion(region, DELIMITER, KEY_VAL_DELIMITER)
   for (let stack of Object.keys(stackDetails)) {
+
     const exportBasePath = (stackDetails[stack].BRANCH) ? path.join(
       __dirname,
       "..",
@@ -24,14 +27,13 @@ module.exports = (region) => {
       "..",
       `${EXPORT_PATH}_${stack}`
     )
-
-    const localeBasePath = path.join(
+    const contentTypesBasePath = path.join(
       exportBasePath,
-      modules.locales.dirName
+      modules.content_types.dirName
     )
-    const localeJson = path.join(
-      localeBasePath,
-      modules.locales.fileName
+    const contentTypesJson = path.join(
+      contentTypesBasePath,
+      modules.content_types.fileName
     )
     const messageFilePath = path.join(
       __dirname,
@@ -39,11 +41,12 @@ module.exports = (region) => {
       "..",
       "messages/index.json"
     )
+
     messageHandler.init({ messageFilePath })
     const { promptMessageList } = require(messageFilePath)
 
-    describe("ContentStack-Export plugin test [--module=locales]", () => {
-      describe("Export locales using cm:stacks:export command without any flags", () => {
+    describe("ContentStack-Export plugin test [--module=content-types]", () => {
+      describe("Export Content types using cm:stacks:export command without any flags", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stub(cliUX, "prompt", async (name) => {
@@ -55,41 +58,45 @@ module.exports = (region) => {
             }
           })
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails[stack])
+          .command(["cm:stacks:export", "--module", "content-types"])
+          .it("Check content_types count", async (_, done) => {
+            let exportedContentTypesCount = 0
+            const contentTypesCount = await getContentTypesCount(stackDetails[stack])
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(contentTypesBasePath)) {
+                let contentTypes = await fsPromises.readdir(contentTypesBasePath)
+                exportedContentTypesCount = contentTypes.filter(ct => !ct.includes('schema.json')).length
               }
             } catch (error) {
               console.trace(error)
             }
 
-            expect(localeCount).to.be.an('number').eq(exportedLocaleCount)
+            expect(contentTypesCount).to.be.an('number').eq(exportedContentTypesCount)
+            done();
           })
       })
 
-      describe("Export locales using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\" and management token", () => {
+      describe("Export Content types using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\" and management token", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails[stack])
+          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "content-types"])
+          .it("Check content_types counts", async (_, done) => {
+            let exportedContentTypesCount = 0
+            const contentTypesCount = await getContentTypesCount(stackDetails[stack]);
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(contentTypesBasePath)) {
+                let contentTypes = await fsPromises.readdir(contentTypesBasePath)
+                exportedContentTypesCount = contentTypes.filter(ct => !ct.includes('schema.json')).length
               }
             } catch (error) {
               console.trace(error)
             }
 
-            expect(localeCount).to.be.an('number').eq(exportedLocaleCount)
+            expect(contentTypesCount).to.be.an('number').eq(exportedContentTypesCount)
+            done();
           })
       })
     })
@@ -106,3 +113,4 @@ module.exports = (region) => {
     })
   }
 }
+
