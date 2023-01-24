@@ -4,19 +4,19 @@ import { v4 as uidV4 } from 'uuid';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
 import {
-  createWriteStream,
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
   statSync,
+  mkdirSync,
+  existsSync,
   unlinkSync,
-  writeFileSync,
+  readdirSync,
   WriteStream,
+  readFileSync,
+  writeFileSync,
+  createWriteStream,
 } from 'node:fs';
 
 import { getMetaData, mapKeyAndVal } from './helper';
-import { Chunk, PageInfo, FileType, WriteFileOptions, FsConstructorOptions } from './types';
+import { Chunk, PageInfo, FileType, WriteFileOptions, FsConstructorOptions, ChunkFilesGetterType } from './types';
 
 export default class FsUtility {
   private prefixKey = '';
@@ -104,9 +104,9 @@ export default class FsUtility {
    * @returns Object
    */
   get readChunkFiles(): {
-    next: () => Promise<Record<string, unknown> | Record<string, unknown>[]>;
-    get: (index: number) => Promise<Record<string, unknown> | Record<string, unknown>[]>;
-    previous: () => Promise<Record<string, unknown> | Record<string, unknown>[] | Error>;
+    next: () => ChunkFilesGetterType;
+    previous: () => ChunkFilesGetterType;
+    get: (index: number) => ChunkFilesGetterType;
   } {
     return {
       next: this.next.bind(this),
