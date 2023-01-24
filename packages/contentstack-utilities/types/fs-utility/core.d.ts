@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { Chunk, PageInfo, WriteFileOptions, FsConstructorOptions } from './types';
+import { Chunk, PageInfo, WriteFileOptions, FsConstructorOptions, ChunkFilesGetterType } from './types';
 export default class FsUtility {
     private prefixKey;
     private basePath;
@@ -29,9 +29,9 @@ export default class FsUtility {
      * @returns Object
      */
     get readChunkFiles(): {
-        next: () => Promise<Record<string, unknown> | Record<string, unknown>[]>;
-        get: (index: number) => Promise<Record<string, unknown> | Record<string, unknown>[]>;
-        previous: () => Promise<Record<string, unknown> | Record<string, unknown>[] | Error>;
+        next: () => ChunkFilesGetterType;
+        previous: () => ChunkFilesGetterType;
+        get: (index: number) => ChunkFilesGetterType;
     };
     /**
      * @method readFile
