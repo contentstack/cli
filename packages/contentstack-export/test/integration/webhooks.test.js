@@ -5,9 +5,9 @@ const { expect, test } = require("@oclif/test")
 const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 
 const { modules } = require('../../src/config/default')
-const { getStackDetailsByRegion, getLocalesCount, cleanUp } = require('./utils/helper')
+const { getStackDetailsByRegion, getWebhooksCount, cleanUp } = require('./utils/helper')
 const { PRINT_LOGS, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
-const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = process.env
+const { DELIMITER, KEY_VAL_DELIMITER } = process.env
 
 module.exports = (region) => {
   const stackDetails = getStackDetailsByRegion(region, DELIMITER, KEY_VAL_DELIMITER)
@@ -17,21 +17,20 @@ module.exports = (region) => {
       "..",
       "..",
       `${EXPORT_PATH}_${stack}`,
-      stackDetails[stack].BRANCH,
+      stackDetails.BRANCH,
     ) : path.join(
       __dirname,
       "..",
       "..",
       `${EXPORT_PATH}_${stack}`
     )
-
-    const localeBasePath = path.join(
+    const webhooksBasePath = path.join(
       exportBasePath,
-      modules.locales.dirName
+      modules.webhooks.dirName
     )
-    const localeJson = path.join(
-      localeBasePath,
-      modules.locales.fileName
+    const webhooksJson = path.join(
+      webhooksBasePath,
+      modules.webhooks.fileName
     )
     const messageFilePath = path.join(
       __dirname,
@@ -39,11 +38,12 @@ module.exports = (region) => {
       "..",
       "messages/index.json"
     )
+
     messageHandler.init({ messageFilePath })
     const { promptMessageList } = require(messageFilePath)
 
-    describe("ContentStack-Export plugin test [--module=locales]", () => {
-      describe("Export locales using cm:stacks:export command without any flags", () => {
+    describe("ContentStack-Export plugin test [--module=webhooks]", () => {
+      describe("Export webhooks using cm:stacks:export command without any flags", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stub(cliUX, "prompt", async (name) => {
@@ -55,41 +55,41 @@ module.exports = (region) => {
             }
           })
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails[stack])
+          .command(["cm:stacks:export", "--module", "webhooks"])
+          .it("Check webhooks count", async () => {
+            let exportedWebhooksCount = 0
+            const webhooksCount = await getWebhooksCount(stackDetails[stack])
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(webhooksJson)) {
+                exportedWebhooksCount = Object.keys(JSON.parse(fs.readFileSync(webhooksJson, 'utf-8'))).length
               }
             } catch (error) {
               console.trace(error)
             }
 
-            expect(localeCount).to.be.an('number').eq(exportedLocaleCount)
+            expect(webhooksCount).to.be.an('number').eq(exportedWebhooksCount)
           })
       })
 
-      describe("Export locales using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\" and management token", () => {
+      describe("Export webhooks using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\" and management token", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails[stack])
+          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "webhooks"])
+          .it("Check Webhooks counts", async () => {
+            let exportedWebhooksCount = 0
+            const webhooksCount = await getWebhooksCount(stackDetails[stack]);
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(webhooksJson)) {
+                exportedWebhooksCount = Object.keys(JSON.parse(fs.readFileSync(webhooksJson, 'utf-8'))).length
               }
             } catch (error) {
               console.trace(error)
             }
 
-            expect(localeCount).to.be.an('number').eq(exportedLocaleCount)
+            expect(webhooksCount).to.be.an('number').eq(exportedWebhooksCount)
           })
       })
     })
@@ -106,3 +106,4 @@ module.exports = (region) => {
     })
   }
 }
+

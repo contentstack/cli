@@ -61,12 +61,15 @@
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
     "version": "oclif readme && git add README.md",
-    "test:integration": "mocha --forbid-only \"test/run.test.js\" --integration-test",
+    "test:integration": "mocha --forbid-only \"test/run.test.js\" --integration-test --timeout 60000",
     "test:unit": "mocha --forbid-only \"test/unit/*.test.js\" --unit-test"
   },
   "oclif": {
     "commands": "./src/commands",
     "bin": "csdx",
+    "devPlugins": [
+      "@oclif/plugin-help"
+    ],
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-export/<%- commandPath %>"
   },
   "csdxConfig": {
