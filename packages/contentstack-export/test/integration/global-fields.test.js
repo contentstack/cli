@@ -5,13 +5,14 @@ const { expect, test } = require("@oclif/test")
 const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 
 const { modules } = require('../../src/config/default')
-const { getStackDetailsByRegion, getLocalesCount, cleanUp } = require('./utils/helper')
+const { getStackDetailsByRegion, getGlobalFieldsCount, cleanUp } = require('./utils/helper')
 const { PRINT_LOGS, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
-const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = process.env
+const { DELIMITER, KEY_VAL_DELIMITER } = process.env
 
 module.exports = (region) => {
   const stackDetails = getStackDetailsByRegion(region, DELIMITER, KEY_VAL_DELIMITER)
   for (let stack of Object.keys(stackDetails)) {
+
     const exportBasePath = (stackDetails[stack].BRANCH) ? path.join(
       __dirname,
       "..",
@@ -24,14 +25,13 @@ module.exports = (region) => {
       "..",
       `${EXPORT_PATH}_${stack}`
     )
-
-    const localeBasePath = path.join(
+    const globalFieldsBasePath = path.join(
       exportBasePath,
-      modules.locales.dirName
+      modules.globalfields.dirName
     )
-    const localeJson = path.join(
-      localeBasePath,
-      modules.locales.fileName
+    const globalFieldsJson = path.join(
+      globalFieldsBasePath,
+      modules.globalfields.fileName
     )
     const messageFilePath = path.join(
       __dirname,
@@ -39,11 +39,12 @@ module.exports = (region) => {
       "..",
       "messages/index.json"
     )
+
     messageHandler.init({ messageFilePath })
     const { promptMessageList } = require(messageFilePath)
 
-    describe("ContentStack-Export plugin test [--module=locales]", () => {
-      describe("Export locales using cm:stacks:export command without any flags", () => {
+    describe("ContentStack-Export plugin test [--module=global-fields]", () => {
+      describe("Export globalfields using cm:stacks:export command without any flags", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stub(cliUX, "prompt", async (name) => {
@@ -55,41 +56,41 @@ module.exports = (region) => {
             }
           })
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails[stack])
+          .command(["cm:stacks:export", "--module", "global-fields"])
+          .it("Check globalfields count", async () => {
+            let exportedGlobalFieldsCount = 0
+            const globalFieldsCount = await getGlobalFieldsCount(stackDetails[stack])
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(globalFieldsJson)) {
+                exportedGlobalFieldsCount = Object.keys(JSON.parse(fs.readFileSync(globalFieldsJson, 'utf-8'))).length
               }
             } catch (error) {
               console.trace(error)
             }
 
-            expect(localeCount).to.be.an('number').eq(exportedLocaleCount)
+            expect(globalFieldsCount).to.be.an('number').eq(exportedGlobalFieldsCount)
           })
       })
 
-      describe("Export locales using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\" and management token", () => {
+      describe("Export globalfields using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\" and management token", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails[stack])
+          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "global-fields"])
+          .it("Check Global fields counts", async () => {
+            let exportedGlobalFieldsCount = 0
+            const globalFieldsCount = await getGlobalFieldsCount(stackDetails[stack]);
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(globalFieldsJson)) {
+                exportedGlobalFieldsCount = Object.keys(JSON.parse(fs.readFileSync(globalFieldsJson, 'utf-8'))).length
               }
             } catch (error) {
               console.trace(error)
             }
 
-            expect(localeCount).to.be.an('number').eq(exportedLocaleCount)
+            expect(globalFieldsCount).to.be.an('number').eq(exportedGlobalFieldsCount)
           })
       })
     })
@@ -106,3 +107,4 @@ module.exports = (region) => {
     })
   }
 }
+
