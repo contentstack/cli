@@ -2,7 +2,7 @@ const fs = require('fs');
 const _ = require('lodash')
 const config = require('../../../src/config/default');
 const { Command } = require('@contentstack/cli-command');
-const managementSdk = require('../../../src/lib/util/contentstack-management-sdk');
+const { managementSDKClient } = require('@contentstack/cli-utilities');
 const pjson = require('../../../package.json')
 const { REGIONS } = require('../../config.json')
 const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = process.env
@@ -71,7 +71,7 @@ const getBranches = async (data) => {
 const getEnvData = () => envData
 
 const getStack = (data={}) => {
-  return managementSdk.Client(config)
+  return managementSDKClient(config)
     .stack({ 
       api_key: data.STACK_API_KEY || config.source_stack, 
       management_token: data.MANAGEMENT_TOKEN || config.management_token 
