@@ -9,7 +9,6 @@ declare const _default: {
         'https://stag-api.csnonprod.com': string;
     };
     modules: {
-        apiPolling: number;
         apiConcurrency: number;
         types: string[];
         locales: {

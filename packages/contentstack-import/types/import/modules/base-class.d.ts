@@ -18,9 +18,11 @@ export type ApiOptions = {
 export type EnvType = {
     processName: string;
     totalCount?: number;
-    apiContent: Record<string, any>[];
-    concurrencyLimit?: number;
+    indexerCount?: number;
+    currentIndexer?: number;
     apiParams?: ApiOptions;
+    concurrencyLimit?: number;
+    apiContent: Record<string, any>[];
 };
 export type CustomPromiseHandlerInput = {
     index: number;
@@ -59,7 +61,7 @@ export default abstract class BaseClass {
      * @param {number} batchNo - number
      * @returns {Promise} Promise<void>
      */
-    logMsgAndWaitIfRequired(processName: string, start: number, batchNo: number): Promise<void>;
+    logMsgAndWaitIfRequired(processName: string, start: number, totelBatches: number, batchNo: number, logBatchCompletionMsg?: boolean, indexerCount?: number, currentIndexer?: number): Promise<void>;
     /**
      * @method makeAPICall
      * @param {Record<string, any>} apiOptions - Api related params
