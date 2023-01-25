@@ -247,6 +247,7 @@ export default class ImportAssets extends BaseClass {
       this.assetsUidMap = fs.readFile(this.assetUidMapperPath, true) as any;
     }
     const indexer = fs.indexFileContent;
+    const indexerCount = values(indexer).length;
     const onSuccess = ({ apiData: { uid, title } = undefined }: any) => {
       log(this.importConfig, `Asset '${uid}: ${title}' published successfully`, 'success');
     };
@@ -265,17 +266,21 @@ export default class ImportAssets extends BaseClass {
       apiOptions.uid = this.assetsUidMap[asset.uid] as string;
       apiOptions.apiData.publishDetails = { locales, environments };
 
+      if (!apiOptions.uid) apiOptions.entity = undefined;
+
       return apiOptions;
     };
 
     /* eslint-disable @typescript-eslint/no-unused-vars */
-    for (const _index in indexer) {
+    for (const index in indexer) {
       const apiContent = filter(
         values(await fs.readChunkFiles.next()),
         ({ publish_details }) => !isEmpty(publish_details),
       );
       await this.makeConcurrentCall({
         apiContent,
+        indexerCount,
+        currentIndexer: +index,
         processName: 'assets publish',
         apiParams: {
           serializeData,
