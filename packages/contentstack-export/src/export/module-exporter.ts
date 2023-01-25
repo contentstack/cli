@@ -20,7 +20,7 @@ class ModuleExporter {
 
   async start(): Promise<any> {
     // setup the branches
-    await setupBranches(this.exportConfig, this.managementAPIClient);
+    await setupBranches(this.exportConfig, this.stackAPIClient);
     await setupExportDir(this.exportConfig);
     // if branches available run it export by branches
     if (this.exportConfig.branches) {
