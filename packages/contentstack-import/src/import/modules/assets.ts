@@ -130,6 +130,7 @@ export default class ImportAssets extends BaseClass {
     const basePath = isVersion ? join(this.assetsPath, 'versions') : this.assetsPath;
     const fs = new FsUtility({ basePath, indexFileName });
     const indexer = fs.indexFileContent;
+    const indexerCount = values(indexer).length;
 
     const onSuccess = ({ response = {}, apiData: { uid, url, title } = undefined }: any) => {
       this.assetsUidMap[uid] = response.uid;
@@ -142,7 +143,7 @@ export default class ImportAssets extends BaseClass {
     };
 
     /* eslint-disable @typescript-eslint/no-unused-vars, guard-for-in */
-    for (const _index in indexer) {
+    for (const index in indexer) {
       const chunk = await fs.readChunkFiles.next().catch((error) => {
         log(this.importConfig, error, 'error');
       });
@@ -154,6 +155,8 @@ export default class ImportAssets extends BaseClass {
           // NOTE to create same structure it must have seed assets/version 1 asset to be created first
           await this.makeConcurrentCall({
             processName,
+            indexerCount,
+            currentIndexer: +index,
             apiContent: filter(apiContent, ({ _version }) => _version === 1),
             apiParams: {
               reject: onReject,
@@ -172,6 +175,8 @@ export default class ImportAssets extends BaseClass {
           {
             apiContent,
             processName,
+            indexerCount,
+            currentIndexer: +index,
             apiParams: {
               reject: onReject,
               resolve: onSuccess,
@@ -187,7 +192,7 @@ export default class ImportAssets extends BaseClass {
       }
     }
 
-    if (!isVersion && !isEmpty(this.assetsFolderMap)) {
+    if (!isVersion && (!isEmpty(this.assetsUidMap) || !isEmpty(this.assetsUrlMap))) {
       this.fs.writeFile(this.assetUidMapperPath, this.assetsUidMap);
       this.fs.writeFile(this.assetUrlMapperPath, this.assetsUrlMap);
     }
