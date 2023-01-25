@@ -10,7 +10,7 @@
     "@contentstack/cli-utilities": "^1.0.5",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
-    "axios": "1.1.3",
+    "axios": "1.2.2",
     "inquirer": "8.2.4",
     "mkdirp": "^1.0.4",
     "tar": "^6.0.5",
