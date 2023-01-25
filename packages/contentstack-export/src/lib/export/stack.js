@@ -24,10 +24,10 @@ module.exports = class ExportStack {
     };
   }
 
-  start() {
+  async start() {
     const self = this;
     if (self.config.auth_token) {
-      const stack = self.APIClient.stack({ api_key: self.config.source_stack, authtoken: self.config.auth_token })
+      const stack = await self.APIClient.stack({ api_key: self.config.source_stack, authtoken: self.config.auth_token })
         .fetch()
         .catch((error) => {
           console.log(error);
