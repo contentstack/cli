@@ -16,7 +16,6 @@ export default {
     'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com',
   },
   modules: {
-    apiPolling: 1000, // Default is 1000ms
     apiConcurrency: 5,
     types: ['locales', 'environments'],
     locales: {
@@ -61,9 +60,9 @@ export default {
       publishAssets: true,
       fileName: 'assets.json',
       importSameStructure: true,
-      uploadAssetsConcurrency: 5,
+      uploadAssetsConcurrency: 10,
       displayExecutionTime: false,
-      importFoldersConcurrency: 5,
+      importFoldersConcurrency: 10,
       includeVersionedAssets: false,
       host: 'https://api.contentstack.io',
       folderValidKeys: ['name', 'parent_uid'],
