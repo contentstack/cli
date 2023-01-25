@@ -33,9 +33,11 @@ export type ApiOptions = {
 export type EnvType = {
   processName: string;
   totalCount?: number;
-  apiContent: Record<string, any>[];
-  concurrencyLimit?: number;
+  indexerCount?: number;
+  currentIndexer?: number;
   apiParams?: ApiOptions;
+  concurrencyLimit?: number;
+  apiContent: Record<string, any>[];
 };
 
 export type CustomPromiseHandlerInput = {
@@ -86,7 +88,14 @@ export default abstract class BaseClass {
     promisifyHandler?: CustomPromiseHandler,
     logBatchCompletionMsg = true,
   ): Promise<void> {
-    const { processName, apiContent, apiParams, concurrencyLimit = this.importConfig.modules.apiConcurrency } = env;
+    const {
+      apiParams,
+      apiContent,
+      processName,
+      indexerCount,
+      currentIndexer,
+      concurrencyLimit = this.importConfig.modules.apiConcurrency,
+    } = env;
 
     /* eslint-disable no-async-promise-executor */
     return new Promise(async (resolve) => {
@@ -125,7 +134,15 @@ export default abstract class BaseClass {
         await Promise.allSettled(allPromise);
 
         /* eslint-disable no-await-in-loop */
-        await this.logMsgAndWaitIfRequired(processName, start, batchNo, logBatchCompletionMsg);
+        await this.logMsgAndWaitIfRequired(
+          processName,
+          start,
+          batches.length,
+          batchNo,
+          logBatchCompletionMsg,
+          indexerCount,
+          currentIndexer,
+        );
 
         if (isLastRequest) resolve();
       }
@@ -142,14 +159,25 @@ export default abstract class BaseClass {
   async logMsgAndWaitIfRequired(
     processName: string,
     start: number,
+    totelBatches: number,
     batchNo: number,
     logBatchCompletionMsg = true,
+    indexerCount?: number,
+    currentIndexer?: number,
   ): Promise<void> {
     const end = Date.now();
     const exeTime = end - start;
 
     if (logBatchCompletionMsg) {
-      log(this.importConfig, `Batch No. ${batchNo} of ${processName} is complete.`, 'success');
+      let batchMsg = '';
+      // info: Batch No. 20 of import assets is complete
+      if (currentIndexer) batchMsg += `Current chunk processing is (${currentIndexer}/${indexerCount})`;
+
+      log(
+        this.importConfig,
+        `Batch No. (${batchNo}/${totelBatches}) of ${processName} is complete. ${batchMsg}`,
+        'success',
+      );
     }
 
     if (this.importConfig.modules.assets.displayExecutionTime) {
