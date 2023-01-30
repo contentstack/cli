@@ -7,21 +7,13 @@ const setupBranches = async (config, stackAPIClient) => {
     throw new Error('Invalid config to setup the branch');
   }
   let branches = [];
-  const headers = { api_key: config.source_stack };
-
-  if (config.auth_token) {
-    headers['authtoken'] = config.auth_token;
-  } else if (config.management_token) {
-    headers['authorization'] = config.management_token;
-  }
-
   if (config.branchName) {
     // check branch exists
     const result = await stackAPIClient.branch(config.branchName).fetch();
     if (result && typeof result === 'object') {
       branches.push(result);
     } else {
-      throw new Error('No branch found with the name ' + config.branchName);
+      throw new Error('No branch found with the given name ' + config.branchName);
     }
   } else {
     try {
@@ -32,13 +24,14 @@ const setupBranches = async (config, stackAPIClient) => {
         return;
       }
     } catch (error) {
+      // Note skips the error
       return;
     }
   }
 
-  makeDirectory(config.data);
+  makeDirectory(config.exportDir);
   // create branch info file
-  writeFileSync(path.join(config.data, 'branches.json'), branches);
+  writeFileSync(path.join(config.exportDir, 'branches.json'), branches);
   // add branches list in the
   config.branches = branches;
 };

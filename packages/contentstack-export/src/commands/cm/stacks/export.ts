@@ -1,7 +1,8 @@
+import * as path from 'path';
 import { Command, flags } from '@contentstack/cli-command';
 import { cliux, messageHandler, printFlagDeprecation, managementSDKClient } from '@contentstack/cli-utilities';
 import { ModuleExporter } from '../../../export';
-import { setupExportConfig } from '../../../utils';
+import { setupExportConfig, log, formatError } from '../../../utils';
 
 export default class ExportCommand extends Command {
   static description = messageHandler.parse('Export content from a stack');
@@ -93,16 +94,24 @@ export default class ExportCommand extends Command {
     // setup export config
     // initialize the exporter
     // start export
+    let exportConfig;
     try {
-      this.managementAPIClient = { host: this.cmaHost, authtoken: this.authToken };
       // todo - fix flag type issues
       const { flags } = (await this.parse(ExportCommand)) as any;
-      const exportConfig = await setupExportConfig(flags);
-      const moduleExpoter = new ModuleExporter(this.managementAPIClient, exportConfig);
+      exportConfig = await setupExportConfig(flags);
+      // Note setting host to create cma client
+      exportConfig.host = this.cmaHost;
+      const managementAPIClient = await managementSDKClient(exportConfig);
+      const moduleExpoter = new ModuleExporter(managementAPIClient, exportConfig);
       await moduleExpoter.start();
-      cliux.success('Completed the content export');
+      log(exportConfig, `The content of the stack ${exportConfig.apiKey} has been exported successfully!`, 'success');
     } catch (error) {
-      cliux.error('Failed to export content', error);
+      log(exportConfig, `Failed to export stack content - ${formatError(error)}`, 'error');
+      log(
+        exportConfig,
+        'The log for this is stored at ' + path.join(exportConfig.exportDir, 'logs', 'export'),
+        'error',
+      );
     }
   }
 }
