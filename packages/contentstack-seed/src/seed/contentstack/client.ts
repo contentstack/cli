@@ -1,5 +1,6 @@
 import ContentstackError from './error';
 import { managementSDKClient } from '@contentstack/cli-utilities';
+import * as ContentstackManagementSDK from '@contentstack/management'
 
 export interface Organization {
   uid: string;
@@ -23,7 +24,7 @@ export interface CreateStackOptions {
 }
 
 export default class ContentstackClient {
-  instance: any;
+  instance: Promise<ContentstackManagementSDK.ContentstackClient>;
 
   limit: number;
 
