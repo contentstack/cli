@@ -18,7 +18,6 @@ const suppress = require('../util/supress-mandatory-fields');
 const extension_suppress = require('../util/extensionsUidReplace');
 const lookupReplaceAssets = require('../util/lookupReplaceAssets');
 const lookupReplaceEntries = require('../util/lookupReplaceEntries');
-const { getInstalledExtensions } = require('../util/marketplace-app-helper');
 
 module.exports = class ImportEntries {
   config = util.getConfig();
@@ -117,15 +116,8 @@ module.exports = class ImportEntries {
     this.masterLanguage = this.config.master_locale;
     addlogs(this.config, 'Migrating entries', 'success');
     let languages = helper.readFileSync(this.lPath);
-    const appMapperFolderPath = path.join(this.config.data, 'mapper', 'marketplace_apps');
-
-    if (fs.existsSync(path.join(appMapperFolderPath, 'marketplace-apps.json'))) {
-      self.installedExtensions = helper.readFileSync(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
-    }
-
-    if (_.isEmpty(self.installedExtensions)) {
-      self.installedExtensions = await getInstalledExtensions(this.config);
-    }
+    const appMapperPath = path.join(this.config.data, 'mapper', 'marketplace_apps', 'uid-mapping.json');
+    this.installedExtensions = ((await helper.readFileSync(appMapperPath)) || { extension_uid: {} }).extension_uid;
 
     return new Promise((resolve, reject) => {
       let langs = [this.masterLanguage.code];
