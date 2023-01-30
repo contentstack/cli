@@ -1,5 +1,5 @@
 const { Command, flags } = require('@contentstack/cli-command');
-const { configHandler, managementClient } = require('@contentstack/cli-utilities');
+const { configHandler, managementSDKClient } = require('@contentstack/cli-utilities');
 const util = require('../../util');
 const config = require('../../util/config');
 
@@ -54,7 +54,6 @@ class ExportToCsvCommand extends Command {
   async run() {
     try {
       let action, managementAPIClient;
-
       const {
         flags: {
           org,
@@ -68,7 +67,7 @@ class ExportToCsvCommand extends Command {
       } = await this.parse(ExportToCsvCommand);
 
       if (!managementTokenAlias) {
-        managementAPIClient = await managementClient({ host: this.cmaHost });
+        managementAPIClient = await managementSDKClient({ host: this.cmaHost });
       }
 
       if (actionFlag) {
@@ -82,13 +81,13 @@ class ExportToCsvCommand extends Command {
         case 'entries': {
           try {
             let stack;
-            let stackClient;
+            let stackAPIClient;
             let language;
             let contentTypes = [];
             const listOfTokens = configHandler.get('tokens');
 
             if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
-              managementAPIClient = await managementClient({
+              managementAPIClient = await managementSDKClient({
                 host: this.cmaHost,
                 management_token: listOfTokens[managementTokenAlias].token,
               });
@@ -118,15 +117,15 @@ class ExportToCsvCommand extends Command {
               stack = await util.chooseStack(managementAPIClient, organization.uid); // prompt for stack
             }
 
-            stackClient = this.getStackClient(managementAPIClient, stack);
-            const contentTypeCount = await util.getContentTypeCount(stackClient);
-            const environments = await util.getEnvironments(stackClient); // fetch environments, because in publish details only env uid are available and we need env names
+            stackAPIClient = this.getStackClient(managementAPIClient, stack);
+            const contentTypeCount = await util.getContentTypeCount(stackAPIClient);
+            const environments = await util.getEnvironments(stackAPIClient); // fetch environments, because in publish details only env uid are available and we need env names
 
             if (contentTypesFlag) {
               contentTypes = contentTypesFlag.split(',').map(this.snakeCase);
             } else {
               for (let index = 0; index <= contentTypeCount / 100; index++) {
-                const contentTypesMap = await util.getContentTypes(stackClient, index);
+                const contentTypesMap = await util.getContentTypes(stackAPIClient, index);
                 contentTypes = contentTypes.concat(Object.values(contentTypesMap)); // prompt for content Type
               }
             }
@@ -143,16 +142,16 @@ class ExportToCsvCommand extends Command {
             if (locale) {
               language = { code: locale };
             } else {
-              language = await util.chooseLanguage(stackClient); // prompt for language
+              language = await util.chooseLanguage(stackAPIClient); // prompt for language
             }
 
             while (contentTypes.length > 0) {
               let contentType = contentTypes.pop();
 
-              const entriesCount = await util.getEntriesCount(stackClient, contentType, language.code);
+              const entriesCount = await util.getEntriesCount(stackAPIClient, contentType, language.code);
               let flatEntries = [];
               for (let index = 0; index < entriesCount / 100; index++) {
-                const entriesResult = await util.getEntries(stackClient, contentType, language.code, index);
+                const entriesResult = await util.getEntries(stackAPIClient, contentType, language.code, index);
                 const flatEntriesResult = util.cleanEntries(
                   entriesResult.items,
                   language.code,
