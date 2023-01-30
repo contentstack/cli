@@ -19,8 +19,8 @@ const { getDeveloperHubUrl, getAllStackSpecificApps } = require('../util/marketp
 
 module.exports = class ImportMarketplaceApps {
   client;
-
   httpClient;
+  appOrginalName;
   appUidMapping = {};
   appNameMapping = {};
   marketplaceApps = [];
@@ -37,7 +37,7 @@ module.exports = class ImportMarketplaceApps {
   async start() {
     this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
     this.client = contentstack.client({ authtoken: this.config.auth_token, endpoint: this.developerHubBaseUrl });
-    this.mapperDirPath = path.resolve(this.config.data, 'mapper', 'marketplace-apps');
+    this.mapperDirPath = path.resolve(this.config.data, 'mapper', 'marketplace_apps');
     this.uidMapperPath = path.join(this.mapperDirPath, 'uid-mapping.json');
     this.marketplaceAppFolderPath = path.resolve(this.config.data, this.marketplaceAppConfig.dirName);
     this.marketplaceApps = readFileSync(
@@ -155,10 +155,10 @@ module.exports = class ImportMarketplaceApps {
       await this.installApps(app, installedApps);
     }
 
-    const uidMapper = (await this.generateUidMapper()) || {};
+    const uidMapper = await this.generateUidMapper();
     await writeFile(this.uidMapperPath, {
-      ...uidMapper,
       app_uid: this.appUidMapping,
+      extension_uid: uidMapper || {},
       installation_uid: this.installationUidMapping,
     });
   }
@@ -170,12 +170,12 @@ module.exports = class ImportMarketplaceApps {
     const allInstalledApps = await getAllStackSpecificApps(this.developerHubBaseUrl, this.httpClient, this.config);
 
     for (const app of this.marketplaceApps) {
-      listOfNewMeta.push(..._.map(app.manifest.ui_location && app.manifest.ui_location.locations, 'meta').flat());
+      listOfOldMeta.push(..._.map(app.ui_location && app.ui_location.locations, 'meta').flat());
     }
     for (const app of allInstalledApps) {
-      listOfOldMeta.push(..._.map(app.manifest.ui_location && app.manifest.ui_location.locations, 'meta').flat());
+      listOfNewMeta.push(..._.map(app.ui_location && app.ui_location.locations, 'meta').flat());
     }
-    for (const { extension_uid, name, path } of listOfOldMeta) {
+    for (const { extension_uid, name, path } of _.filter(listOfOldMeta, 'name')) {
       const meta =
         _.find(listOfNewMeta, { name, path }) || _.find(listOfNewMeta, { name: this.appNameMapping[name], path });
 
@@ -215,8 +215,11 @@ module.exports = class ImportMarketplaceApps {
         'webhook',
         'oauth',
       ]);
+      this.appOrginalName = app.manifest.name;
       await this.createPrivateApps(app.manifest);
     }
+
+    this.appOrginalName = undefined;
   }
 
   async getConfirmationToCreateApps(privateApps) {
@@ -301,7 +304,7 @@ module.exports = class ImportMarketplaceApps {
       // NOTE new app installation
       log(this.config, `${response.name} app created successfully.!`, 'success');
       this.appUidMapping[app.uid] = response.uid;
-      this.appNameMapping[app.name] = response.name;
+      this.appNameMapping[this.appOrginalName] = response.name;
     }
   }
 
@@ -334,7 +337,15 @@ module.exports = class ImportMarketplaceApps {
         return _.map(locations, (location) => {
           if (location.meta) {
             location.meta = _.map(location.meta, (meta) => {
-              meta.name = `${_.first(_.split(meta.name, '◈'))}◈${appSuffix}`;
+              if (meta.name) {
+                const name = `${_.first(_.split(meta.name, '◈'))}◈${appSuffix}`;
+
+                if (!this.appNameMapping[this.appOrginalName]) {
+                  this.appNameMapping[this.appOrginalName] = name;
+                }
+
+                meta.name = name;
+              }
 
               return meta;
             });
@@ -373,6 +384,7 @@ module.exports = class ImportMarketplaceApps {
         .catch((error) => error);
 
       if (installation.installation_uid) {
+        await this.makeRedirectUriCall();
         this.installationUidMapping[app.uid] = installation.installation_uid;
         updateParam = { manifest: app.manifest, ...installation, configuration, server_configuration };
         log(this.config, `${app.manifest.name} app installed successfully.!`, 'success');
@@ -392,6 +404,23 @@ module.exports = class ImportMarketplaceApps {
     // NOTE update configurations
     if (updateParam && (!_.isEmpty(updateParam.configuration) || !_.isEmpty(updateParam.server_configuration))) {
       await this.updateAppsConfig(updateParam);
+    }
+  }
+
+  async makeRedirectUriCall(response) {
+    if (response.redirect_uri) {
+      await this.httpClient
+        .get(response.redirect_uri)
+        .then(({ data }) => {
+          if (data.status === 501) {
+            log(this.config, formatError(data.message), 'success');
+          }
+        })
+        .catch((error) => {
+          if (error.status === 501) {
+            log(this.config, formatError(error), 'error');
+          }
+        });
     }
   }
 
@@ -454,7 +483,7 @@ module.exports = class ImportMarketplaceApps {
    * @returns {Promise<void>}
    */
   updateAppsConfig(app) {
-    let payload = {};
+    const payload = {};
     const { uid, configuration, server_configuration } = app;
 
     if (!_.isEmpty(configuration)) {
@@ -468,8 +497,6 @@ module.exports = class ImportMarketplaceApps {
       return Promise.resolve();
     }
 
-    payload = this.updateConfigData(payload);
-
     return this.httpClient
       .put(`${this.developerHubBaseUrl}/installations/${uid}`, payload)
       .then(({ data }) => {
@@ -480,27 +507,6 @@ module.exports = class ImportMarketplaceApps {
         }
       })
       .catch((error) => log(this.config, formatError(error), 'error'));
-  }
-
-  updateConfigData(config) {
-    const configKeyMapper = {};
-    const serverConfigKeyMapper = {
-      cmsApiKey: this.config.target_stack,
-    };
-
-    if (!_.isEmpty(config.configuration) && !_.isEmpty(configKeyMapper)) {
-      _.forEach(_.keys(configKeyMapper), (key) => {
-        config.configuration[key] = configKeyMapper[key];
-      });
-    }
-
-    if (!_.isEmpty(config.server_configuration) && !_.isEmpty(serverConfigKeyMapper)) {
-      _.forEach(_.keys(serverConfigKeyMapper), (key) => {
-        config.server_configuration[key] = serverConfigKeyMapper[key];
-      });
-    }
-
-    return config;
   }
 
   validateAppName(name) {
