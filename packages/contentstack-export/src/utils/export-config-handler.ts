@@ -1,6 +1,6 @@
 import merge from 'merge';
 import * as path from 'path';
-import { CLIError, configHandler } from '@contentstack/cli-utilities';
+import { configHandler } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile } from './file-helper';
 import { askExportDir, askAPIKey } from './interactive';
@@ -16,21 +16,27 @@ const setupConfig = async (exportCmdFlags): Promise<any> => {
   config.exportDir = path.resolve(config.exportDir);
   //Note to support the old key
   config.data = config.exportDir;
-  config.apiKey = exportCmdFlags['stack-uid'] || exportCmdFlags['stack-api-key'] || (await askAPIKey());
-  if (!config.apiKey) {
-    throw new CLIError('API Key is mandatory');
-  }
 
   if (exportCmdFlags['mtoken-alias']) {
-    config.mToken = configHandler.get(exportCmdFlags['mtoken-alias']);
-    if (!config.mToken) {
-      throw new CLIError('Management token is mandatory');
+    const { token, apiKey } = configHandler.get(exportCmdFlags['mtoken-alias']);
+    config.management_token = token;
+    config.apiKey = apiKey;
+    if (!config.management_token) {
+      throw new Error(`No management token found on given alias ${exportCmdFlags['mtoken-alias']}`);
     }
   }
-  if (!configHandler.get('authtoken') && !exportCmdFlags['mtoken-alias']) {
-    // TBD: ask the auth method and get the either of the token and continue
-    throw new CLIError('Invalid auth method');
+
+  if (!config.management_token) {
+    if (!configHandler.get('authtoken')) {
+      throw new Error('Please login or provide an alias for the management token');
+    } else {
+      config.apiKey = exportCmdFlags['stack-uid'] || exportCmdFlags['stack-api-key'] || (await askAPIKey());
+      if (typeof config.apiKey !== 'string') {
+        throw new Error('Invalid API key received');
+      }
+    }
   }
+
   if (exportCmdFlags['branch']) {
     config.branchName = exportCmdFlags['branch'];
   }
