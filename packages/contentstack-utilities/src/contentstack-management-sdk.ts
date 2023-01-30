@@ -4,7 +4,7 @@ import { default as configStore } from './config-handler';
 
 export default async (config) => {
   try {
-    let managementAPIClient;
+    let managementAPIClient: ContentstackManagementSDK.ContentstackClient;
     const option = {
       host: config.host,
       management_token: config.management_token,
