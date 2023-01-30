@@ -12,7 +12,6 @@
     "async": "^3.2.4",
     "big-json": "^3.2.0",
     "bluebird": "^3.7.2",
-    "fs": "0.0.1-security",
     "is-valid-path": "^0.1.1",
     "lodash": "^4.17.20",
     "mkdirp": "^1.0.4",
@@ -38,7 +37,7 @@
     "globby": "^10.0.2",
     "mocha": "10.1.0",
     "nyc": "^15.1.0",
-    "sinon": "^9.0.2"
+    "sinon": "^15.0.1"
   },
   "engines": {
     "node": ">=8.0.0"
