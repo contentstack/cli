@@ -22,6 +22,7 @@ module.exports = class ImportMarketplaceApps {
 
   httpClient;
   appUidMapping = {};
+  appNameMapping = {};
   marketplaceApps = [];
   installationUidMapping = {};
   developerHubBaseUrl = null;
@@ -154,7 +155,36 @@ module.exports = class ImportMarketplaceApps {
       await this.installApps(app, installedApps);
     }
 
-    await writeFile(this.uidMapperPath, { app_uid: this.appUidMapping, installation_uid: this.installationUidMapping });
+    const uidMapper = (await this.generateUidMapper()) || {};
+    await writeFile(this.uidMapperPath, {
+      ...uidMapper,
+      app_uid: this.appUidMapping,
+      installation_uid: this.installationUidMapping,
+    });
+  }
+
+  async generateUidMapper() {
+    const listOfNewMeta = [];
+    const listOfOldMeta = [];
+    const extensionUidMapp = {};
+    const allInstalledApps = await getAllStackSpecificApps(this.developerHubBaseUrl, this.httpClient, this.config);
+
+    for (const app of this.marketplaceApps) {
+      listOfNewMeta.push(..._.map(app.manifest.ui_location && app.manifest.ui_location.locations, 'meta').flat());
+    }
+    for (const app of allInstalledApps) {
+      listOfOldMeta.push(..._.map(app.manifest.ui_location && app.manifest.ui_location.locations, 'meta').flat());
+    }
+    for (const { extension_uid, name, path } of listOfOldMeta) {
+      const meta =
+        _.find(listOfNewMeta, { name, path }) || _.find(listOfNewMeta, { name: this.appNameMapping[name], path });
+
+      if (meta) {
+        extensionUidMapp[extension_uid] = meta.extension_uid;
+      }
+    }
+
+    return extensionUidMapp;
   }
 
   /**
@@ -271,6 +301,7 @@ module.exports = class ImportMarketplaceApps {
       // NOTE new app installation
       log(this.config, `${response.name} app created successfully.!`, 'success');
       this.appUidMapping[app.uid] = response.uid;
+      this.appNameMapping[app.name] = response.name;
     }
   }
 
@@ -440,8 +471,14 @@ module.exports = class ImportMarketplaceApps {
     payload = this.updateConfigData(payload);
 
     return this.httpClient
-      .put(`${this.developerHubBaseUrl}/installations/${this.installationUidMapping[uid]}`, payload)
-      .then(() => log(this.config, `${app.manifest.name} app config updated successfully.!`, 'success'))
+      .put(`${this.developerHubBaseUrl}/installations/${uid}`, payload)
+      .then(({ data }) => {
+        if (data.message) {
+          log(this.config, formatError(data.message), 'success');
+        } else {
+          log(this.config, `${app.manifest.name} app config updated successfully.!`, 'success');
+        }
+      })
       .catch((error) => log(this.config, formatError(error), 'error'));
   }
 
