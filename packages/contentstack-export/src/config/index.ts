@@ -13,7 +13,21 @@ export default {
   // use below hosts for azure-na region
   // host:'https://azure-na-api.contentstack.com/v3',
   modules: {
-    types: ['stack', 'locales', 'environments', 'assets'],
+    types: [
+      'stack',
+      'assets',
+      'locales',
+      'environments',
+      'extensions',
+      'webhooks',
+      'global-fields',
+      'content-types',
+      'custom-roles',
+      'workflows',
+      'entries',
+      'labels',
+      'marketplace-apps',
+    ],
     locales: {
       dirName: 'locales',
       fileName: 'locales.json',
@@ -323,7 +337,7 @@ export default {
     'xh',
     'zu',
   ],
-  updatedModules: ['locales', 'assets'],
+  updatedModules: [],
   apis: {
     userSession: '/user-session/',
     globalfields: '/global_fields/',
