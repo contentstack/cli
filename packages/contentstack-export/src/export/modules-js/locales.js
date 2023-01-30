@@ -1,7 +1,6 @@
 const path = require('path');
 const chalk = require('chalk');
-const fileHelper = require('../util/helper');
-const { addlogs } = require('../util/log');
+const { formatError, log, fileHelper } = require('../../utils');
 class LocaleExport {
   constructor(exportConfig, stackAPIClient) {
     this.stackAPIClient = stackAPIClient;
@@ -28,13 +27,13 @@ class LocaleExport {
 
   async start() {
     try {
-      addlogs(this.exportConfig, 'Starting locale export', 'success');
-      await fileHelper.makeDirectory(this.localesPath);
+      log(this.exportConfig, 'Starting locale export', 'success');
+      fileHelper.makeDirectory(this.localesPath);
       await this.getLocales();
       await fileHelper.writeFile(path.join(this.localesPath, this.localeConfig.fileName), this.locales);
-      addlogs(this.exportConfig, 'Completed locale export', 'success');
+      log(this.exportConfig, 'Completed locale export', 'success');
     } catch (error) {
-      addlogs(this.exportConfig, chalk.red(`Failed to export locales ${formatError(error)}`), 'error');
+      log(this.exportConfig, chalk.red(`Failed to export locales ${formatError(error)}`), 'error');
       throw new Error('Failed to export locales');
     }
   }
