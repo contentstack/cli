@@ -1,8 +1,6 @@
 const path = require('path');
-const fileHelper = require('../util/helper');
 const chalk = require('chalk');
-const { executeTask, formatError } = require('../util');
-const { addlogs } = require('../util/log');
+const { fileHelper, executeTask, formatError, log } = require('../../utils');
 
 class ContentTypesExport {
   constructor(exportConfig, stackAPIClient) {
@@ -31,13 +29,13 @@ class ContentTypesExport {
 
   async start() {
     try {
-      addlogs(this.exportConfig, 'Starting content type export', 'success');
+      log(this.exportConfig, 'Starting content type export', 'success');
       await fileHelper.makeDirectory(this.contentTypesPath);
       await this.getContentTypes();
       await this.writeContentTypes(this.contentTypes);
-      addlogs(this.exportConfig, chalk.green('Content type(s) exported successfully'), 'success');
+      log(this.exportConfig, chalk.green('Content type(s) exported successfully'), 'success');
     } catch (error) {
-      addlogs(this.exportConfig, chalk.red(`Failed to export content types ${formatError(error)}`), 'error');
+      log(this.exportConfig, chalk.red(`Failed to export content types ${formatError(error)}`), 'error');
       throw new Error('Failed to export content types');
     }
   }
@@ -58,7 +56,7 @@ class ContentTypesExport {
       }
       return await this.getContentTypes(skip);
     } else {
-      console.log('No content types returned for the given query');
+      log(this.exportConfig, 'No content types returned for the given query', 'info');
     }
   }
 
