@@ -6,3 +6,4 @@ export { default as setupExportDir } from './setup-export-dir';
 export { log, unlinkFileLogger } from './logger';
 export { default as login } from './login-handler';
 export * from './common-helper';
+export * from './marketplace-app-helper';
