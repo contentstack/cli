@@ -8,11 +8,8 @@ const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const { merge } = require('lodash');
-
-const helper = require('../util/helper');
-const { formatError } = require('../util');
-const { addlogs } = require('../util/log');
-const config = require('../../config/default');
+const { default: config } = require('../../config');
+const { formatError, log, fileHelper } = require('../../utils');
 
 module.exports = class ExportWebhooks {
   config;
@@ -30,7 +27,7 @@ module.exports = class ExportWebhooks {
   }
 
   start() {
-    addlogs(this.config, 'Starting webhooks export', 'success');
+    log(this.config, 'Starting webhooks export', 'success');
     const self = this;
     const webhooksFolderPath = path.resolve(
       this.config.data,
@@ -51,23 +48,23 @@ module.exports = class ExportWebhooks {
               delete self.webhooks[webUid].uid;
               delete self.webhooks[webUid].SYS_ACL;
             }
-            helper.writeFileSync(path.join(webhooksFolderPath, self.webhooksConfig.fileName), self.webhooks);
-            addlogs(self.config, chalk.green('All the webhooks have been exported successfully'), 'success');
+            fileHelper.writeFileSync(path.join(webhooksFolderPath, self.webhooksConfig.fileName), self.webhooks);
+            log(self.config, chalk.green('All the webhooks have been exported successfully'), 'success');
             return resolve();
           }
-          addlogs(self.config, 'No webhooks found', 'success');
+          log(self.config, 'No webhooks found', 'success');
           resolve();
         })
         .catch(function (error) {
           if (error.statusCode === 401) {
-            addlogs(
+            log(
               self.config,
               chalk.red('You are not allowed to export webhooks, Unless you provide email and password in config'),
               'error',
             );
             return resolve();
           }
-          addlogs(self.config, formatError(error), 'error');
+          log(self.config, formatError(error), 'error');
           reject('Failed export webhooks');
         });
     });
