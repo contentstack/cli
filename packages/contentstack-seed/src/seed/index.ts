@@ -55,7 +55,7 @@ export default class ContentModelSeeder {
     this.ghRepo = gh.repo;
     const limit = Number(this.options.fetchLimit);
 
-    this.csClient = new ContentstackClient(options.cmaHost, options.authToken, limit);
+    this.csClient = new ContentstackClient(options.cmaHost, limit);
     this.ghClient = new GitHubClient(this.ghUsername, DEFAULT_STACK_PATTERN);
   }
 
