@@ -384,10 +384,10 @@ module.exports = class ImportMarketplaceApps {
         .catch((error) => error);
 
       if (installation.installation_uid) {
+        log(this.config, `${app.manifest.name} app installed successfully.!`, 'success');
         await this.makeRedirectUriCall(installation);
         this.installationUidMapping[app.uid] = installation.installation_uid;
         updateParam = { manifest: app.manifest, ...installation, configuration, server_configuration };
-        log(this.config, `${app.manifest.name} app installed successfully.!`, 'success');
       } else if (installation.message) {
         log(this.config, formatError(installation.message), 'success');
         await this.confirmToCloseProcess(installation);
@@ -412,12 +412,12 @@ module.exports = class ImportMarketplaceApps {
       await this.httpClient
         .get(response.redirect_url)
         .then(({ response }) => {
-          if (_.incluses([501, 403], response.status)) {
+          if (_.includes([501, 403], response.status)) {
             log(this.config, `${response.statusText} - OAuth api call failed.!`, 'error');
           }
         })
         .catch((error) => {
-          if (_.incluses([501, 403], error.status)) {
+          if (_.includes([501, 403], error.status)) {
             log(this.config, formatError(error), 'error');
           }
         });
