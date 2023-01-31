@@ -28,8 +28,8 @@ export default class ContentstackClient {
 
   limit: number;
 
-  constructor(cmaHost: string, authToken: string, limit: number) {
-    this.instance = managementSDKClient({host: cmaHost, authtoken: authToken})
+  constructor(cmaHost: string, limit: number) {
+    this.instance = managementSDKClient({host: cmaHost})
     this.limit = limit || 100;
   }
 
