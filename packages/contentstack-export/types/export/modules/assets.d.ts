@@ -1,7 +1,21 @@
 import BaseClass from './base-class';
 export default class ExportAssets extends BaseClass {
     private assetsRootPath;
-    assetConfig: any;
+    assetConfig: {
+        dirName: string;
+        fileName: string;
+        batchLimit: number;
+        host: string;
+        invalidKeys: string[];
+        downloadLimit: number;
+        chunkFileSize: number;
+        fetchConcurrency: number;
+        securedAssets: boolean;
+        enableNewStructure: boolean;
+        displayExecutionTime: boolean;
+        enableDownloadStatus: boolean;
+        includeVersionedAssets: boolean;
+    };
     private assetsFolder;
     private versionedAssets;
     constructor({ exportConfig, stackAPIClient }: {
@@ -38,5 +52,4 @@ export default class ExportAssets extends BaseClass {
      * @returns Promise<any|void>
      */
     downloadAssets(): Promise<any | void>;
-    logFn(start: number): void;
 }
