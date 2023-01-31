@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { Chunk, PageInfo, WriteFileOptions, FsConstructorOptions } from './types';
+import { Chunk, PageInfo, WriteFileOptions, FsConstructorOptions, ChunkFilesGetterType } from './types';
 export default class FsUtility {
     private prefixKey;
     private basePath;
@@ -20,16 +20,26 @@ export default class FsUtility {
     private metaHandler;
     pageInfo: PageInfo;
     constructor(options?: FsConstructorOptions);
+    get isNewFsStructure(): boolean;
     get isIndexFileExist(): boolean;
     get currentPageDetails(): PageInfo;
     get indexFileContent(): Record<string, any>;
+    /**
+     * @method readChunkFiles
+     * @returns Object
+     */
+    get readChunkFiles(): {
+        next: () => ChunkFilesGetterType;
+        previous: () => ChunkFilesGetterType;
+        get: (index: number) => ChunkFilesGetterType;
+    };
     /**
      * @method readFile
      * @param filePath string
      * @param parse boolean | undefined
      * @returns string | undefined
      */
-    readFile(filePath: string, parse: boolean | undefined): string | undefined;
+    readFile(filePath: string, parse?: boolean | undefined): string | Record<string, unknown> | Record<string, unknown>[] | undefined;
     /**
      * @method writeFile
      * @param filePath string
@@ -67,14 +77,14 @@ export default class FsUtility {
      * @return {void}
      * @description creating new chunk file
      */
-    private createNewFile;
+    protected createNewFile(): void;
     /**
      * @method writeIntoExistingFile
      * @param chunk Record<string, string>[] | object | Array<any> | string;
      * @param options WriteFileOptions
      * @returns void
      */
-    private writeIntoExistingFile;
+    protected writeIntoExistingFile(chunk: Chunk, options?: WriteFileOptions): void;
     /**
      * @method handleKeyValMapAndMetaData
      * @param chunk Chunk
@@ -95,33 +105,27 @@ export default class FsUtility {
      * @return {void}
      * @description closing current write stream
      */
-    private closeFile;
+    protected closeFile(closeIndexer?: boolean): void;
     saveMeta(meta: Chunk): void;
     getPlainMeta(basePath?: string): Record<string, unknown>;
-    /**
-     * @method readChunkFiles
-     * @returns Object
-     */
-    readChunkFiles(): Record<string, unknown>;
     /**
      * @method getFileByIndex
      * @param _self FsUtility
      * @param index number
      * @returns Promise<string>
      */
-    protected getFileByIndex(_self?: FsUtility, index?: number): Promise<Record<string, unknown>>;
+    protected getFileByIndex(index?: number): Promise<Record<string, unknown> | Record<string, unknown>[]>;
     /**
      * @method next
-     * @param _self FsUtility
      * @returns Promise<string>
      */
-    next(_self?: FsUtility): Promise<Record<string, unknown>>;
+    protected next(): Promise<Record<string, unknown> | Record<string, unknown>[]>;
     /**
      * @method previous
      * @param _self FsUtility
      * @returns Promise<string>
      */
-    protected previous(_self?: FsUtility): Promise<Record<string, unknown> | Error>;
+    protected previous(): Promise<Record<string, unknown> | Record<string, unknown>[] | Error>;
     /**
      * @method updatePageInfo
      * @param _self FsUtility
@@ -129,7 +133,7 @@ export default class FsUtility {
      * @param index number
      * @returns void
      */
-    updatePageInfo(_self?: FsUtility, isNext?: boolean | null, index?: number | null): void;
+    updatePageInfo(isNext?: boolean | null, index?: number | null): void;
     removeFile(path: string): void;
 }
 export declare function getDirectories(source: string): string[] | [];
