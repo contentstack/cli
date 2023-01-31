@@ -56,7 +56,7 @@ export default class ExportAssets extends BaseClass {
     // NOTE step 4: Download all assets
     await this.downloadAssets();
 
-    // NOTE log function => this.logFn(start);
+    log(this.exportConfig, 'Assets exported successfully.!', 'info');
   }
 
   /**
@@ -162,7 +162,7 @@ export default class ExportAssets extends BaseClass {
       concurrencyLimit: this.assetConfig.fetchConcurrency,
     }).then(() => {
       fs?.completeFile(true);
-      log(this.exportConfig, 'Assets exported successfully.!', 'info');
+      log(this.exportConfig, 'Assets metadata exported successfully.!', 'info');
     });
   }
 
