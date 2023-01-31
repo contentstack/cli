@@ -1,7 +1,8 @@
+import * as path from 'path';
 import { Command, flags } from '@contentstack/cli-command';
 import { logger, cliux, messageHandler, printFlagDeprecation, managementSDKClient } from '@contentstack/cli-utilities';
 import { ModuleImporter } from '../../../import';
-import { setupImportConfig } from '../../../utils';
+import { setupImportConfig, formatError, log } from '../../../utils';
 
 export default class ImportCommand extends Command {
   static description = messageHandler.parse('Import content from a stack');
@@ -93,16 +94,23 @@ export default class ImportCommand extends Command {
     // setup import config
     // initialize the importer
     // start import
+    let importConfig;
     try {
-      this.managementAPIClient = { host: this.cmaHost, authtoken: this.authToken };
       const { flags } = (await this.parse(ImportCommand)) as any;
-      const importConfig = await setupImportConfig(flags);
-      const moduleImporter = new ModuleImporter(this.managementAPIClient, importConfig);
+      importConfig = await setupImportConfig(flags);
+      // Note setting host to create cma client
+      importConfig.host = this.cmaHost;
+      const managementAPIClient = await managementSDKClient(importConfig);
+      const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       await moduleImporter.start();
-      cliux.success('Completed the content import');
+      log(importConfig, `The content has been imported to the stack ${importConfig.apiKey} successfully!`, 'success');
     } catch (error) {
-      logger.error('Failed to import the content', error);
-      cliux.error('Failed to import content', error.message);
+      log(importConfig, `Failed to import content - ${formatError(error)}`, 'error');
+      log(
+        importConfig,
+        'The log for this is stored at ' + path.join(importConfig.contentDir, 'logs', 'export'),
+        'error',
+      );
     }
   }
 }
