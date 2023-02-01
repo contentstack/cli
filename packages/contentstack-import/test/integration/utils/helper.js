@@ -186,7 +186,7 @@ const getContentTypesCount = async (data) => {
 }
 
 const getEntriesCount = async (data) => {
-  let entriesCount;
+  let entriesCount = 0;
   const stack = await getStack(data);
   const queryVariables = {
     include_count: true

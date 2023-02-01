@@ -2,6 +2,6 @@
   "PRINT_LOGS": true,
   "REGION_NAME": "NA",
   "DEFAULT_TIMEOUT": 600000,
-  "IMPORT_PATH": "../fixtures/contents",
+  "IMPORT_PATH": "test/fixtures/contents",
   "ALIAS_NAME": "marketplace_api"
 }

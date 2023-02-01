@@ -5,11 +5,15 @@ const { NodeCrypto, messageHandler } = require('@contentstack/cli-utilities');
 const { getEnvData, getStacksFromEnv } = require('./utils/helper');
 const LoginCommand = require('@contentstack/cli-auth/lib/commands/auth/login').default;
 const AddTokenCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/add').default;
-const RegionGetCommand = require('@contentstack/cli-config/lib/commands/config/set/region').default;
+const RegionSetCommand = require('@contentstack/cli-config/lib/commands/config/set/region').default;
 const { DEFAULT_TIMEOUT, PRINT_LOGS, REGION_NAME } = require('./config.json');
 
 const { ENCRYPTION_KEY, NA_USERNAME: USERNAME, NA_PASSWORD: PASSWORD } = getEnvData();
 const { DELIMITER, KEY_VAL_DELIMITER } = process.env;
+
+// Override import path.
+const config = require('./config.json');
+config.IMPORT_PATH = join(process.cwd(), config.IMPORT_PATH);
 
 const stacksFromEnv = getStacksFromEnv();
 const stackDetails = {};
@@ -36,7 +40,7 @@ describe('Setting Pre-requests', () => {
   test
     .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
     .stdout({ print: PRINT_LOGS || false })
-    .command(RegionGetCommand, [`${REGION_NAME || 'NA'}`])
+    .command(RegionSetCommand, [`${REGION_NAME || 'NA'}`])
     .do(() => {
       messageFilePath = join(__dirname, '..', '..', '..', 'contentstack-utilities', 'messages/auth.json');
       messageHandler.init({ messageFilePath });
@@ -51,13 +55,15 @@ describe('Setting Pre-requests', () => {
       messageHandler.init({ messageFilePath });
     });
 
-  for (const stack of stacksFromEnv) {
-    test
-      .timeout(DEFAULT_TIMEOUT || 600000)
-      .command(AddTokenCommand, ['-a', stackDetails[stack].ALIAS_NAME, '-k', stackDetails[stack].STACK_API_KEY, '--management', '--token', stackDetails[stack].MANAGEMENT_TOKEN, '-y'])
-      .it(`Adding token for ${stack}`, (_, done) => {
-        console.log('done');
-        done();
-      });
-  }
+  const stack = Object.keys(stackDetails).find(el => !el.includes('EU') || !el.includes('AZURE-NA'));
+  test
+    .timeout(DEFAULT_TIMEOUT || 600000)
+    .command(AddTokenCommand, ['-a', stackDetails[stack].ALIAS_NAME, '-k', stackDetails[stack].STACK_API_KEY, '--management', '--token', stackDetails[stack].MANAGEMENT_TOKEN, '-y'])
+    .it(`Adding token for ${stack}`, (_, done) => {
+      done();
+    });
 });
+
+exports.getStackDetails = () => {
+  return stackDetails;
+};

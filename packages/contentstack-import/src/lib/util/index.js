@@ -126,56 +126,55 @@ exports.field_rules_update = (importConfig, ctPath) => {
   return new Promise((resolve, reject) => {
     let client = stack.Client(importConfig);
 
-    fs.readFileSync(path.join(ctPath + '/field_rules_uid.json'), async (err, data) => {
-      if (err) {
-        throw err;
-      }
-      const ct_field_visibility_uid = JSON.parse(data);
-      let ct_files = fs.readdirSync(ctPath);
-      if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
-        for (const ele of ct_field_visibility_uid) {
-          if (ct_files.indexOf(ele + '.json') > -1) {
-            let schema = require(path.resolve(ctPath, ele));
-            // await field_rules_update(schema)
-            let fieldRuleLength = schema.field_rules.length;
-            for (let k = 0; k < fieldRuleLength; k++) {
-              let fieldRuleConditionLength = schema.field_rules[k].conditions.length;
-              for (let i = 0; i < fieldRuleConditionLength; i++) {
-                if (schema.field_rules[k].conditions[i].operand_field === 'reference') {
-                  let entryMapperPath = path.resolve(importConfig.data, 'mapper', 'entries');
-                  let entryUidMapperPath = path.join(entryMapperPath, 'uid-mapping.json');
-                  let fieldRulesValue = schema.field_rules[k].conditions[i].value;
-                  let fieldRulesArray = fieldRulesValue.split('.');
-                  let updatedValue = [];
-                  for (const element of fieldRulesArray) {
-                    let splitedFieldRulesValue = element;
-                    let oldUid = helper.readFileSync(path.join(entryUidMapperPath));
-                    if (oldUid.hasOwnProperty(splitedFieldRulesValue)) {
-                      updatedValue.push(oldUid[splitedFieldRulesValue]);
-                    } else {
-                      updatedValue.push(element);
-                    }
+    let ct_field_visibility_uid = fs.readFileSync(path.join(ctPath + '/field_rules_uid.json'));
+    if (!ct_field_visibility_uid) {
+      return resolve();
+    }
+    ct_field_visibility_uid = JSON.parse(data);
+    let ct_files = fs.readdirSync(ctPath);
+    if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
+      for (const ele of ct_field_visibility_uid) {
+        if (ct_files.indexOf(ele + '.json') > -1) {
+          let schema = require(path.resolve(ctPath, ele));
+          // await field_rules_update(schema)
+          let fieldRuleLength = schema.field_rules.length;
+          for (let k = 0; k < fieldRuleLength; k++) {
+            let fieldRuleConditionLength = schema.field_rules[k].conditions.length;
+            for (let i = 0; i < fieldRuleConditionLength; i++) {
+              if (schema.field_rules[k].conditions[i].operand_field === 'reference') {
+                let entryMapperPath = path.resolve(importConfig.data, 'mapper', 'entries');
+                let entryUidMapperPath = path.join(entryMapperPath, 'uid-mapping.json');
+                let fieldRulesValue = schema.field_rules[k].conditions[i].value;
+                let fieldRulesArray = fieldRulesValue.split('.');
+                let updatedValue = [];
+                for (const element of fieldRulesArray) {
+                  let splitedFieldRulesValue = element;
+                  let oldUid = helper.readFileSync(path.join(entryUidMapperPath));
+                  if (oldUid.hasOwnProperty(splitedFieldRulesValue)) {
+                    updatedValue.push(oldUid[splitedFieldRulesValue]);
+                  } else {
+                    updatedValue.push(element);
                   }
-                  schema.field_rules[k].conditions[i].value = updatedValue.join('.');
                 }
+                schema.field_rules[k].conditions[i].value = updatedValue.join('.');
               }
             }
-            let ctObj = client
-              .stack({ api_key: importConfig.target_stack, management_token: importConfig.management_token })
-              .contentType(schema.uid);
-            Object.assign(ctObj, _.cloneDeep(schema));
-            ctObj
-              .update()
-              .then(() => {
-                return resolve();
-              })
-              .catch((error) => {
-                return reject(error);
-              });
           }
+          let ctObj = client
+            .stack({ api_key: importConfig.target_stack, management_token: importConfig.management_token })
+            .contentType(schema.uid);
+          Object.assign(ctObj, _.cloneDeep(schema));
+          ctObj
+            .update()
+            .then(() => {
+              return resolve();
+            })
+            .catch((error) => {
+              return reject(error);
+            });
         }
       }
-    });
+    }
   });
 };
 
@@ -190,7 +189,7 @@ exports.formatError = (error) => {
     } else {
       error = JSON.parse(error.message);
     }
-  } catch (e) {}
+  } catch (e) { }
   let message = error.errorMessage || error.error_message || error.message || error;
   if (error.errors && Object.keys(error.errors).length > 0) {
     Object.keys(error.errors).forEach((e) => {
