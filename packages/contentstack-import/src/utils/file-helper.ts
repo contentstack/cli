@@ -36,7 +36,7 @@ export const readFile = async (filePath, options = { type: 'json' }): Promise<an
   });
 };
 
-export const readLargeFile = function (filePath, opts: any): Promise<any> {
+export const readLargeFile = function (filePath, opts?: any): Promise<any> {
   if (typeof filePath !== 'string') {
     return;
   }
@@ -46,7 +46,7 @@ export const readLargeFile = function (filePath, opts: any): Promise<any> {
       const readStream = fs.createReadStream(filePath, { encoding: 'utf-8' });
       const parseStream = bigJSON.createParseStream();
       parseStream.on('data', function (data) {
-        if (opts.type === 'array') {
+        if (opts?.type === 'array') {
           return resolve(Object.values(data));
         }
         resolve(data);

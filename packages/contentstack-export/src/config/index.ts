@@ -13,12 +13,25 @@ export default {
   // use below hosts for azure-na region
   // host:'https://azure-na-api.contentstack.com/v3',
   modules: {
-    types: ['stack', 'locales', 'environments', 'assets'],
+    types: [
+      'stack',
+      'assets',
+      'locales',
+      'environments',
+      'extensions',
+      'webhooks',
+      'global-fields',
+      'content-types',
+      'custom-roles',
+      'workflows',
+      'entries',
+      'labels',
+      'marketplace-apps',
+    ],
     locales: {
       dirName: 'locales',
       fileName: 'locales.json',
       requiredKeys: ['code', 'uid', 'name', 'fallback_locale'],
-      enableNewStructure: true,
     },
     customRoles: {
       dirName: 'custom-roles',
@@ -62,11 +75,11 @@ export default {
       host: 'https://images.contentstack.io',
       invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by', '_metadata', 'published'],
       // no of asset version files (of a single asset) that'll be downloaded parallel
-      downloadLimit: 3,
       chunkFileSize: 1, // measured on Megabits (5mb)
-      fetchConcurrency: 5,
+      downloadLimit: 10,
+      fetchConcurrency: 10,
+      assetsMetaKeys: [], // Default keys ['uid', 'url', 'filename']
       securedAssets: false,
-      enableNewStructure: true,
       displayExecutionTime: false,
       enableDownloadStatus: false,
       includeVersionedAssets: false,
@@ -323,7 +336,7 @@ export default {
     'xh',
     'zu',
   ],
-  updatedModules: ['locales', 'assets'],
+  updatedModules: ['assets'],
   apis: {
     userSession: '/user-session/',
     globalfields: '/global_fields/',

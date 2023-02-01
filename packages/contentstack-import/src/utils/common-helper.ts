@@ -102,7 +102,7 @@ export const sanitizeStack = (importConfig) => {
   }
 };
 
-export const masterLocalDetails = (stackAPIClient) => {
+export const masterLocalDetails = (stackAPIClient): Promise<any> => {
   return new Promise((resolve, reject) => {
     const result = stackAPIClient.locale().query();
     result
@@ -228,4 +228,26 @@ export const executeTask = (handler, options, tasks = []) => {
       return limit(() => handler(task));
     }),
   );
+};
+
+export const validateBranch = async (stackAPIClient, config, branch) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const data = await stackAPIClient.branch(branch).fetch();
+      if (data && typeof data === 'object') {
+        if (data.error_message) {
+          log(config, chalk.red(data.error_message), 'error');
+          log(config, chalk.red('No branch found with the name ' + branch), 'error');
+          reject({ message: 'No branch found with the name ' + branch, error: data.error_message });
+        } else {
+          resolve(data);
+        }
+      } else {
+        reject({ message: 'No branch found with the name ' + branch, error: {} });
+      }
+    } catch (error) {
+      log(config, chalk.red('No branch found with the name ' + branch), 'error');
+      reject({ message: 'No branch found with the name ' + branch, error });
+    }
+  });
 };
