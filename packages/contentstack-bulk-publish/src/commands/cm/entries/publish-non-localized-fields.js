@@ -10,7 +10,7 @@ let config;
 
 class NonlocalizedFieldChangesCommand extends Command {
   async run() {
-    const nonlocalizedFieldChangesFlags = this.parse(NonlocalizedFieldChangesCommand).flags;
+    const { flags: nonlocalizedFieldChangesFlags } = await this.parse(NonlocalizedFieldChangesCommand);
     nonlocalizedFieldChangesFlags.retryFailed =
       nonlocalizedFieldChangesFlags['retry-failed'] || nonlocalizedFieldChangesFlags.retryFailed || false;
     nonlocalizedFieldChangesFlags.bulkPublish =
