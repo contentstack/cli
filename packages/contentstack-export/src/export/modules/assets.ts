@@ -1,6 +1,7 @@
 import map from 'lodash/map';
 import chunk from 'lodash/chunk';
 import first from 'lodash/first';
+import merge from 'lodash/merge';
 import filter from 'lodash/filter';
 import uniqBy from 'lodash/uniqBy';
 import values from 'lodash/values';
@@ -20,7 +21,7 @@ export default class ExportAssets extends BaseClass {
   private assetsRootPath: string;
   public assetConfig = config.modules.assets;
   private assetsFolder: Record<string, unknown>[] = [];
-  private versionedAssets: Record<string, unknown>[] = [];
+  public versionedAssets: Record<string, unknown>[] = [];
 
   constructor({ exportConfig, stackAPIClient }) {
     super({ exportConfig, stackAPIClient });
@@ -41,7 +42,6 @@ export default class ExportAssets extends BaseClass {
       this.assetConfig.dirName,
     );
 
-    // const start = +new Date();
     // NOTE step 1: Get assets and it's folder count in parallel
     const [assetsCount, assetsFolderCount] = await Promise.all([this.getAssetsCount(), this.getAssetsCount(true)]);
 
@@ -73,7 +73,7 @@ export default class ExportAssets extends BaseClass {
     };
 
     const onSuccess = ({ response: { items } }: any) => {
-      this.assetsFolder.push(...items);
+      if (!isEmpty(items)) this.assetsFolder.push(...items);
     };
     const onReject = ({ error }: any) => {
       log(this.exportConfig, 'Export asset folder query failed', 'error');
@@ -95,7 +95,6 @@ export default class ExportAssets extends BaseClass {
         new FsUtility({ basePath: this.assetsRootPath }).writeFile(
           pResolve(this.assetsRootPath, 'folders.json'),
           this.assetsFolder,
-          true,
         );
       }
       log(this.exportConfig, 'Assets folder Exported successfully.!', 'info');
@@ -144,11 +143,11 @@ export default class ExportAssets extends BaseClass {
           moduleName: 'assets',
           indexFileName: 'assets.json',
           basePath: this.assetsRootPath,
-          metaPickKeys: ['uid', 'url', 'filename'],
           chunkFileSize: this.assetConfig.chunkFileSize,
+          metaPickKeys: merge(['uid', 'url', 'filename'], this.assetConfig.assetsMetaKeys),
         });
       }
-      fs?.writeIntoFile(items, { mapKeyVal: true });
+      if (!isEmpty(items)) fs?.writeIntoFile(items, { mapKeyVal: true });
     };
 
     return this.makeConcurrentCall({
@@ -210,14 +209,15 @@ export default class ExportAssets extends BaseClass {
           moduleName: 'assets',
           indexFileName: 'versioned-assets.json',
           chunkFileSize: this.assetConfig.chunkFileSize,
-          metaPickKeys: ['uid', 'url', 'filename', '_version'],
           basePath: pResolve(this.assetsRootPath, 'versions'),
+          metaPickKeys: merge(['uid', 'url', 'filename', '_version'], this.assetConfig.assetsMetaKeys),
         });
       }
-      fs?.writeIntoFile([response], {
-        mapKeyVal: true,
-        keyName: ['uid', '_version'],
-      });
+      if (!isEmpty(response))
+        fs?.writeIntoFile([response], {
+          mapKeyVal: true,
+          keyName: ['uid', '_version'],
+        });
     };
     const onReject = ({ error }: any) => {
       log(this.exportConfig, 'Export versioned asset query failed', 'error');
@@ -363,16 +363,5 @@ export default class ExportAssets extends BaseClass {
     ).then(() => {
       log(this.exportConfig, 'Assets download completed successfully.!', 'info');
     });
-  }
-
-  logFn(start: number): void {
-    const end = Date.now();
-    const exeTime = end - start;
-
-    console.log(
-      `In Assets: Time taken to execute: ${exeTime} milliseconds; wait time: ${
-        exeTime < 1000 ? 1000 - exeTime : 0
-      } milliseconds`,
-    );
   }
 }

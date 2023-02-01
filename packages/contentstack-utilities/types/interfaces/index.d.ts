@@ -8,6 +8,7 @@ export interface InquirePayload {
     message: string;
     choices?: Array<any>;
     transformer?: Function;
+    validate?: Function;
 }
 export interface Region {
     name: string;

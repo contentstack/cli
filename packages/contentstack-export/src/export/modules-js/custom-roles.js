@@ -4,11 +4,8 @@ const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const { merge } = require('lodash');
-
-const helper = require('../util/helper');
-const { addlogs } = require('../util/log');
-const { formatError } = require('../util');
-const config = require('../../config/default');
+const { fileHelper, log, formatError } = require('../../utils');
+const { default: config } = require('../../config');
 
 module.exports = class ExportCustomRoles {
   roles = {};
@@ -28,7 +25,7 @@ module.exports = class ExportCustomRoles {
   async start() {
     const self = this;
     try {
-      addlogs(this.config, 'Starting roles export', 'success');
+      log(this.config, 'Starting roles export', 'success');
 
       const rolesFolderPath = path.resolve(this.config.data, this.config.branchName || '', this.rolesConfig.dirName);
       mkdirp.sync(rolesFolderPath);
@@ -38,7 +35,7 @@ module.exports = class ExportCustomRoles {
       const customRoles = roles.items.filter((role) => !self.EXISTING_ROLES[role.name]);
 
       if (!customRoles.length) {
-        addlogs(self.config, 'No custom roles were found in the Stack', 'success');
+        log(self.config, 'No custom roles were found in the Stack', 'success');
         return;
       }
 
@@ -50,22 +47,22 @@ module.exports = class ExportCustomRoles {
       );
       self.customRoles = {};
       customRoles.forEach((role) => {
-        addlogs(self.config, role.name + ' role was exported successfully', 'success');
+        log(self.config, role.name + ' role was exported successfully', 'success');
         self.customRoles[role.uid] = role;
       });
-      helper.writeFileSync(path.join(rolesFolderPath, self.rolesConfig.fileName), self.customRoles);
-      addlogs(self.config, chalk.green('All the custom roles have been exported successfully'), 'success');
+      fileHelper.writeFileSync(path.join(rolesFolderPath, self.rolesConfig.fileName), self.customRoles);
+      log(self.config, chalk.green('All the custom roles have been exported successfully'), 'success');
     } catch (error) {
       if (error.statusCode === 401) {
-        addlogs(
+        log(
           self.config,
           chalk.red('You are not allowed to export roles, Unless you provide email and password in config'),
           'error',
         );
         return;
       }
-      addlogs(self.config, 'Error occurred in exporting roles. ' + error && error.message, 'error');
-      addlogs(self.config, formatError(error), 'error');
+      log(self.config, 'Error occurred in exporting roles. ' + error && error.message, 'error');
+      log(self.config, formatError(error), 'error');
       throw error;
     }
   }
@@ -91,7 +88,7 @@ module.exports = class ExportCustomRoles {
         delete sourceLocalesMap[locale]['stackHeaders'];
         localesMap[locale] = sourceLocalesMap[locale];
       }
-      helper.writeFileSync(customRolesLocalesFilepath, localesMap);
+      fileHelper.writeFileSync(customRolesLocalesFilepath, localesMap);
     }
   }
 };
