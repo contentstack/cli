@@ -65,4 +65,5 @@ type FsConstructorOptions = {
     keepMetadata?: boolean;
     metaHandler?: (array: any) => any;
 };
-export { Chunk, FileType, PageInfo, WriteFileOptions, FsConstructorOptions };
+type ChunkFilesGetterType = Promise<Record<string, unknown> | Record<string, unknown>[] | Error>;
+export { Chunk, FileType, PageInfo, WriteFileOptions, FsConstructorOptions, ChunkFilesGetterType };

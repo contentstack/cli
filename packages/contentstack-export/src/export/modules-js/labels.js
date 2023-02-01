@@ -8,11 +8,8 @@ const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const { merge } = require('lodash');
-
-const helper = require('../util/helper');
-const { addlogs } = require('../util/log');
-const { formatError } = require('../util');
-const config = require('../../config/default');
+const { formatError, log, fileHelper } = require('../../utils');
+const { default: config } = require('../../config');
 
 module.exports = class ExportLabels {
   labels = {};
@@ -24,7 +21,7 @@ module.exports = class ExportLabels {
   }
 
   start() {
-    addlogs(this.config, 'Starting labels export', 'success');
+    log(this.config, 'Starting labels export', 'success');
     const self = this;
     const labelsFolderPath = path.resolve(config.data, this.config.branchName || '', self.labelConfig.dirName);
     // Create locale folder
@@ -37,21 +34,21 @@ module.exports = class ExportLabels {
         .then((response) => {
           if (response.items.length !== 0) {
             response.items.forEach(function (label) {
-              addlogs(self.config, label.name + ' labels was exported successfully', 'success');
+              log(self.config, label.name + ' labels was exported successfully', 'success');
               self.labels[label.uid] = label;
               const deleteItems = self.config.modules.labels.invalidKeys;
               deleteItems.forEach((e) => delete label[e]);
             });
-            addlogs(self.config, chalk.green('All the labels have been exported successfully'), 'success');
+            log(self.config, chalk.green('All the labels have been exported successfully'), 'success');
           } else {
-            addlogs(self.config, 'No labels found', 'success');
+            log(self.config, 'No labels found', 'success');
           }
-          helper.writeFileSync(path.join(labelsFolderPath, self.labelConfig.fileName), self.labels);
+          fileHelper.writeFileSync(path.join(labelsFolderPath, self.labelConfig.fileName), self.labels);
           resolve();
         })
         .catch(function (error) {
           if (error.statusCode === 401) {
-            addlogs(
+            log(
               self.config,
               chalk.red(
                 'You are not allowed to export label, Unless you provide email and password in config',
@@ -61,7 +58,7 @@ module.exports = class ExportLabels {
             return resolve();
           }
 
-          addlogs(self.config, formatError(error), 'error');
+          log(self.config, formatError(error), 'error');
           reject();
         });
     });
