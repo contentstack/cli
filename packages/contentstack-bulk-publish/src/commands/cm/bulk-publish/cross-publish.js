@@ -10,7 +10,8 @@ let config;
 
 class CrossPublishCommand extends Command {
   async run() {
-    const crossPublishFlags = this.flagsAdapter(this.parse(CrossPublishCommand).flags);
+    const { flags: _flags } = await this.parse(CrossPublishCommand);
+    const crossPublishFlags = this.flagsAdapter(_flags || {});
     let updatedFlags;
     try {
       updatedFlags = crossPublishFlags.config ? store.updateMissing(configKey, crossPublishFlags) : crossPublishFlags;
@@ -32,7 +33,10 @@ class CrossPublishCommand extends Command {
         try {
           this.getToken(updatedFlags.alias);
         } catch (error) {
-          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, {exit: 2})
+          this.error(
+            `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
+            { exit: 2 },
+          );
         }
         config = {
           alias: updatedFlags.alias,
@@ -212,7 +216,7 @@ CrossPublishCommand.flags = {
     hidden: true,
     parse: printFlagDeprecation(['--destEnv'], ['--environments']),
   }),
-  'environments': flags.string({
+  environments: flags.string({
     description: 'Destination Environments',
     multiple: true,
   }),
@@ -254,6 +258,6 @@ CrossPublishCommand.examples = [
   'csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]',
 ];
 
-CrossPublishCommand.usage = `cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`
+CrossPublishCommand.usage = `cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`;
 
 module.exports = CrossPublishCommand;
