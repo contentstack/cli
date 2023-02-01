@@ -9,12 +9,9 @@ const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const eachOf = require('async/eachOf');
 const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
-
-const { formatError } = require('../util');
-let config = require('../../config/default');
-const { writeFileSync } = require('../util/helper');
-const { addlogs: log } = require('../util/log');
-const { getDeveloperHubUrl, getInstalledExtensions } = require('../util/marketplace-app-helper');
+const { default: config } = require('../../config');
+const { formatError, log, fileHelper } = require('../../utils');
+const { getDeveloperHubUrl, getInstalledExtensions } = require('../../utils');
 
 module.exports = class ExportMarketplaceApps {
   config;
@@ -155,7 +152,10 @@ module.exports = class ExportMarketplaceApps {
           }
 
           if (!_.isEmpty(installedApps)) {
-            await writeFileSync(path.join(self.marketplaceAppPath, self.marketplaceAppConfig.fileName), installedApps);
+            await fileHelper.writeFileSync(
+              path.join(self.marketplaceAppPath, self.marketplaceAppConfig.fileName),
+              installedApps,
+            );
 
             log(self.config, chalk.green('All the marketplace apps have been exported successfully'), 'success');
           } else {

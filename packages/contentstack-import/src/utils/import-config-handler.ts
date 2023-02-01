@@ -1,7 +1,7 @@
 import merge from 'merge';
 import * as path from 'path';
 import { omit, filter, includes, isArray } from 'lodash';
-import { CLIError, configHandler } from '@contentstack/cli-utilities';
+import { configHandler } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile } from './file-helper';
 import { askContentDir, askAPIKey } from './interactive';
@@ -22,27 +22,33 @@ const setupConfig = async (importCmdFlags): Promise<any> => {
   //Note to support the old key
   config.data = config.contentDir;
 
-  config.apiKey = importCmdFlags['stack-uid'] || importCmdFlags['stack-api-key'] || (await askAPIKey());
-  if (!config.apiKey) {
-    throw new CLIError('API Key is mandatory');
+  if (importCmdFlags['mtoken-alias']) {
+    const { token, apiKey } = configHandler.get(importCmdFlags['mtoken-alias']);
+    config.management_token = token;
+    config.apiKey = apiKey;
+    if (!config.management_token) {
+      throw new Error(`No management token found on given alias ${importCmdFlags['mtoken-alias']}`);
+    }
   }
 
-  if (importCmdFlags['mtoken-alias']) {
-    config.mToken = configHandler.get(importCmdFlags['mtoken-alias']);
-    if (!config.mToken) {
-      throw new CLIError('Management token is mandatory');
+  if (!config.management_token) {
+    if (!configHandler.get('authtoken')) {
+      throw new Error('Please login or provide an alias for the management token');
+    } else {
+      config.apiKey = importCmdFlags['stack-uid'] || importCmdFlags['stack-api-key'] || (await askAPIKey());
+      if (typeof config.apiKey !== 'string') {
+        throw new Error('Invalid API key received');
+      }
+      // Note support the old module
+      config.auth_token = configHandler.get('authtoken');
     }
   }
 
   config.importWebhookStatus = importCmdFlags.importWebhookStatus;
 
-  if (!configHandler.get('authtoken') && !importCmdFlags['mtoken-alias']) {
-    // TBD: ask the auth method and get the either of the token and continue
-    throw new CLIError('Invalid auth method');
-  }
-
   if (importCmdFlags['branch']) {
     config.branchName = importCmdFlags['branch'];
+    config.branchDir = path.join(config.contentDir, config.branchName);
   }
   if (importCmdFlags['module']) {
     config.moduleName = importCmdFlags['module'];
@@ -52,6 +58,9 @@ const setupConfig = async (importCmdFlags): Promise<any> => {
   if (importCmdFlags['backup-dir']) {
     config.useBackedupDir = importCmdFlags['backup-dir'];
   }
+
+  // Note to support old modules
+  config.target_stack = config.apiKey;
 
   return config;
 };
