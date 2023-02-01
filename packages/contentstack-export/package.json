@@ -1,19 +1,17 @@
 {
   "name": "@contentstack/cli-cm-export",
   "description": "Contentstack CLI plugin to export content from stack",
-  "version": "1.2.1",
+  "version": "1.2.3",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "^1.0.2",
-    "@contentstack/cli-utilities": "^1.0.3",
-    "@contentstack/management": "^1.6.0",
+    "@contentstack/cli-command": "^1.0.4",
+    "@contentstack/cli-utilities": "^1.0.5",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
     "async": "^3.2.4",
     "big-json": "^3.2.0",
     "bluebird": "^3.7.2",
-    "fs": "0.0.1-security",
     "is-valid-path": "^0.1.1",
     "lodash": "^4.17.20",
     "mkdirp": "^1.0.4",
@@ -24,11 +22,10 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "@contentstack/cli-auth": "^1.0.3",
-    "@contentstack/cli-config": "^1.0.2",
+    "@contentstack/cli-auth": "^1.0.6",
+    "@contentstack/cli-config": "^1.0.4",
     "@contentstack/cli-dev-dependencies": "^1.0.0",
     "@oclif/dev-cli": "^1.22.2",
-    "@oclif/plugin-help": "^5.1.12",
     "@oclif/test": "^1.2.6",
     "assert": "^2.0.0",
     "chai": "^4.2.0",
@@ -39,7 +36,7 @@
     "globby": "^10.0.2",
     "mocha": "10.1.0",
     "nyc": "^15.1.0",
-    "sinon": "^9.0.2"
+    "sinon": "^15.0.1"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -68,9 +65,6 @@
   "oclif": {
     "commands": "./src/commands",
     "bin": "csdx",
-    "devPlugins": [
-      "@oclif/plugin-help"
-    ],
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-export/<%- commandPath %>"
   },
   "csdxConfig": {
