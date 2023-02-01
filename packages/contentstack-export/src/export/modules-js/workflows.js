@@ -8,12 +8,8 @@ const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const { merge } = require('lodash');
-
-const helper = require('../util/helper');
-const { addlogs } = require('../util/log');
-const { formatError } = require('../util');
-const config = require('../../config/default');
-
+const { formatError, log, fileHelper } = require('../../utils');
+const { default: config } = require('../../config');
 module.exports = class ExportWorkFlows {
   config;
   workflows = {};
@@ -25,7 +21,7 @@ module.exports = class ExportWorkFlows {
   }
 
   start() {
-    addlogs(this.config, 'Starting workflow export', 'success');
+    log(this.config, 'Starting workflow export', 'success');
 
     const self = this;
     const workflowsFolderPath = path.resolve(
@@ -44,21 +40,21 @@ module.exports = class ExportWorkFlows {
           try {
             if (response.items.length) {
               await self.getWorkflowsData(self, response.items);
-              addlogs(self.config, chalk.green('All the workflow have been exported successfully'), 'success');
+              log(self.config, chalk.green('All the workflow have been exported successfully'), 'success');
             }
             if (!response.items.length) {
-              addlogs(self.config, 'No workflow were found in the Stack', 'success');
+              log(self.config, 'No workflow were found in the Stack', 'success');
             }
-            helper.writeFileSync(path.join(workflowsFolderPath, self.workFlowConfig.fileName), self.workflows);
+            fileHelper.writeFileSync(path.join(workflowsFolderPath, self.workFlowConfig.fileName), self.workflows);
             resolve();
           } catch (error) {
-            addlogs(self.config, formatError(error), 'error');
+            log(self.config, formatError(error), 'error');
             reject(error);
           }
         })
         .catch(function (error) {
           if (error.statusCode === 401) {
-            addlogs(
+            log(
               self.config,
               chalk.red(
                 'You are not allowed to export workflow, Unless you provide email and password in config',
@@ -67,7 +63,7 @@ module.exports = class ExportWorkFlows {
             );
             return resolve();
           }
-          addlogs(self.config, formatError(error), 'error');
+          log(self.config, formatError(error), 'error');
           resolve();
         });
     });
@@ -88,7 +84,7 @@ module.exports = class ExportWorkFlows {
       }
     } catch (error) {
       console.log('Error getting roles', error && error.message);
-      addlogs(self.config, 'Error fetching roles in export workflows task.', 'error');
+      log(self.config, 'Error fetching roles in export workflows task.', 'error');
       throw new Error({ message: 'Error fetching roles in export workflows task.' });
     }
   }
@@ -96,7 +92,7 @@ module.exports = class ExportWorkFlows {
   async getWorkflowsData(self, workflows) {
     try {
       for (const workflow of workflows) {
-        addlogs(self.config, workflow.name + ' workflow was exported successfully', 'success');
+        log(self.config, workflow.name + ' workflow was exported successfully', 'success');
         await self.getWorkflowRoles(self, workflow);
         self.workflows[workflow.uid] = workflow;
         const deleteItems = config.modules.workflows.invalidKeys;
