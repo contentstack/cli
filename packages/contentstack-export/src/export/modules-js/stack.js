@@ -6,9 +6,10 @@
 
 const path = require('path');
 const mkdirp = require('mkdirp');
-const { fileHelper, log } = require('../../utils');
+const merge = require('lodash/merge');
 const { default: config } = require('../../config');
 let stackConfig = config.modules.stack;
+
 class ExportStack {
   stackConfig = config.modules.stack;
 
@@ -46,7 +47,7 @@ class ExportStack {
       };
       return self.getLocales(apiDetails);
     } else if (self.config.preserveStackVersion) {
-      addlogs(self.config, 'Exporting stack details', 'success');
+      log(self.config, 'Exporting stack details', 'success');
       let stackFolderPath = path.resolve(self.config.data, stackConfig.dirName);
       let stackContentsFile = path.resolve(stackFolderPath, stackConfig.fileName);
 
@@ -56,8 +57,8 @@ class ExportStack {
         return self.APIClient.stack({ api_key: self.config.source_stack })
           .fetch()
           .then((response) => {
-            helper.writeFile(stackContentsFile, response);
-            addlogs(self.config, 'Exported stack details successfully!', 'success');
+            fileHelper.writeFile(stackContentsFile, response);
+            log(self.config, 'Exported stack details successfully!', 'success');
             return resolve(response);
           })
           .catch(reject);
