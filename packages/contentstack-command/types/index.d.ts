@@ -1,4 +1,4 @@
-import { Command, flags } from '@oclif/command';
+import { Command, Flags } from '@oclif/core';
 import { Region } from './interfaces';
 declare abstract class ContentstackCommand extends Command {
   private _managementAPIClient;
@@ -22,4 +22,4 @@ declare abstract class ContentstackCommand extends Command {
   getToken(alias: any): any;
   isAuthenticated(): any;
 }
-export { ContentstackCommand as Command, flags };
+export { ContentstackCommand as Command, Flags as flags };

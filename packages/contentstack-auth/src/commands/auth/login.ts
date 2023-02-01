@@ -33,7 +33,7 @@ export default class LoginCommand extends Command {
   static aliases = ['login'];
 
   async run(): Promise<any> {
-    const { flags: loginFlags } = this.parse(LoginCommand);
+    const { flags: loginFlags } = await this.parse(LoginCommand)
     authHandler.client = this.managementAPIClient;
 
     try {
