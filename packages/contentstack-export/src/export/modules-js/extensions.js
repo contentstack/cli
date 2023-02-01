@@ -8,11 +8,8 @@ const mkdirp = require('mkdirp');
 const path = require('path');
 const chalk = require('chalk');
 const { merge } = require('lodash');
-
-const helper = require('../util/helper');
-const { addlogs } = require('../util/log');
-const { formatError } = require('../util');
-let config = require('../../config/default');
+const { formatError, log, fileHelper } = require('../../utils');
+const { default: config } = require('../../config');
 
 module.exports = class ExportExtensions {
   master = {};
@@ -29,7 +26,7 @@ module.exports = class ExportExtensions {
   }
 
   start() {
-    addlogs(this.config, 'Starting extension export', 'success');
+    log(this.config, 'Starting extension export', 'success');
 
     const self = this;
     const extensionsFolderPath = path.resolve(
@@ -53,15 +50,15 @@ module.exports = class ExportExtensions {
               delete self.extensions[extUid].uid;
               delete self.extensions[extUid].SYS_ACL;
             }
-            helper.writeFileSync(path.join(extensionsFolderPath, self.extensionConfig.fileName), self.extensions);
-            addlogs(self.config, chalk.green('All the extensions have been exported successfully'), 'success');
+            fileHelper.writeFileSync(path.join(extensionsFolderPath, self.extensionConfig.fileName), self.extensions);
+            log(self.config, chalk.green('All the extensions have been exported successfully'), 'success');
             return resolve();
           }
-          addlogs(self.config, 'No extensions found', 'success');
+          log(self.config, 'No extensions found', 'success');
           resolve();
         })
         .catch((error) => {
-          addlogs(self.config, `Failed to export extensions ${formatError(error)}`, 'error');
+          log(self.config, `Failed to export extensions ${formatError(error)}`, 'error');
           reject();
         });
     });

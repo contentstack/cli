@@ -1,5 +1,6 @@
+import { FsUtility } from '@contentstack/cli-utilities';
 import * as path from 'path';
-import { backupHandler, log } from '../utils';
+import { backupHandler, log, validateBranch, masterLocalDetails, sanitizeStack } from '../utils';
 import startModuleImport from './modules';
 import startJSModuleImport from './modules-js';
 
@@ -12,16 +13,29 @@ class ModuleImporter {
     this.managementAPIClient = managementAPIClient;
     this.stackAPIClient = this.managementAPIClient.stack({
       api_key: importConfig.apiKey,
-      management_token: importConfig.mToken,
+      management_token: importConfig.management_token,
     });
     this.importConfig = importConfig;
   }
 
   async start(): Promise<any> {
+    if (this.importConfig.branchName) {
+      await validateBranch(this.stackAPIClient, this.importConfig, this.importConfig.branchName);
+    }
+    if (!this.importConfig.master_locale) {
+      let masterLocalResponse = await masterLocalDetails(this.stackAPIClient);
+      this.importConfig['master_locale'] = { code: masterLocalResponse.code };
+      this.importConfig.masterLocale = { code: masterLocalResponse.code };
+    }
     const backupDir = await backupHandler(this.importConfig);
     if (backupDir) {
       this.importConfig.backupDir = backupDir;
+      // To support the old config
+      this.importConfig.data = backupDir;
     }
+
+    await sanitizeStack(this.stackAPIClient);
+
     return this.import();
   }
 
@@ -34,10 +48,16 @@ class ModuleImporter {
   }
 
   async importByModuleByName(moduleName) {
-    console.log('module name', moduleName);
+    log(this.importConfig, `Starting export of ${moduleName} module`, 'info');
+
+    const basePath = `${this.importConfig.backupDir}/${moduleName}`;
     // import the modules by name
     // calls the module runner which inturn calls the module itself
-    if (this.importConfig.updatedModules.indexOf(moduleName) !== -1) {
+    if (
+      this.importConfig.useNewModuleStructure &&
+      this.importConfig.updatedModules.indexOf(moduleName) !== -1 &&
+      new FsUtility({ basePath }).isNewFsStructure
+    ) {
       return startModuleImport({
         stackAPIClient: this.stackAPIClient,
         importConfig: this.importConfig,
@@ -54,26 +74,7 @@ class ModuleImporter {
   async importAllModules(): Promise<any> {
     // use the algorithm to determine the parallel and sequential execution of modules
     for (let moduleName of this.importConfig.modules.types) {
-      try {
-        await this.importByModuleByName(moduleName);
-      } catch (error) {
-        console.log(error.stack);
-        log(this.importConfig, `failed to import the module ${moduleName}`, 'error');
-        throw error;
-      }
-    }
-  }
-
-  async importByBranches(): Promise<any> {
-    // loop through the branches and import it parallel
-    for (let branch of this.importConfig.branches) {
-      try {
-        this.importConfig.branchName = branch.uid;
-        this.importConfig.branchDir = path.join(this.importConfig.importDir, branch.uid);
-        await this.import();
-      } catch (error) {
-        log(this.importConfig, `error in importing contents branch ${branch.uid}`, 'error');
-      }
+      await this.importByModuleByName(moduleName);
     }
   }
 }
