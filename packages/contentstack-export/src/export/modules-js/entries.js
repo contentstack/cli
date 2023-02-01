@@ -1,8 +1,6 @@
 const path = require('path');
 const chalk = require('chalk');
-const { addlogs } = require('../util/log');
-const fileHelper = require('../util/helper');
-const { executeTask, formatError } = require('../util');
+const { executeTask, formatError, fileHelper, log } = require('../../utils');
 
 class EntriesExport {
   constructor(exportConfig, stackAPIClient) {
@@ -28,16 +26,16 @@ class EntriesExport {
 
   async start() {
     try {
-      addlogs(this.exportConfig, 'Starting entries export', 'info');
+      log(this.exportConfig, 'Starting entries export', 'info');
       const locales = await fileHelper.readFile(this.localesFilePath);
       const contentTypes = await fileHelper.readFile(this.schemaFilePath);
       if (contentTypes.length === 0) {
-        addlogs(this.exportConfig, 'No content types found to export entries');
+        log(this.exportConfig, 'No content types found to export entries');
         return;
       }
       const entryRequestOptions = this.createRequestObjects(locales, contentTypes);
       for (let requestOption of entryRequestOptions) {
-        addlogs(
+        log(
           this.exportConfig,
           `Starting export of entries of content_type - ${requestOption.content_type} locale - ${requestOption.locale}`,
           'info',
@@ -50,13 +48,13 @@ class EntriesExport {
           requestOption.locale + '.json',
         );
         await fileHelper.writeFile(entriesFilePath, entries);
-        addlogs(
+        log(
           this.exportConfig,
           `Exported entries of type ${requestOption.content_type} locale ${requestOption.locale}`,
           'success',
         );
         if (this.exportConfig.versioning) {
-          addlogs(
+          log(
             this.exportConfig,
             `Started export versioned entries of type ${requestOption.content_type} locale ${requestOption.locale}`,
             'info',
@@ -83,7 +81,7 @@ class EntriesExport {
                   versionedEntry,
                 );
               await executeTask(versionedEntries, write.bind(this), { concurrency: this.writeConcurrency });
-              addlogs(
+              log(
                 this.exportConfig,
                 `Exported versioned entries of type ${requestOption.content_type} locale ${requestOption.locale}`,
                 'success',
@@ -92,9 +90,9 @@ class EntriesExport {
           }
         }
       }
-      addlogs(this.exportConfig, chalk.green('Entries exported successfully'), 'success');
+      log(this.exportConfig, chalk.green('Entries exported successfully'), 'success');
     } catch (error) {
-      addlogs(this.exportConfig, chalk.red(`Failed to export entries ${formatError(error)}`), 'error');
+      log(this.exportConfig, chalk.red(`Failed to export entries ${formatError(error)}`), 'error');
       throw new Error('Failed to export entries');
     }
   }

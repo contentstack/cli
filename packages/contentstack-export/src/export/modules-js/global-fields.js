@@ -8,11 +8,8 @@ const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const { merge } = require('lodash');
-
-const helper = require('../util/helper');
-const { addlogs } = require('../util/log');
-const { formatError } = require('../util');
-let config = require('../../config/default');
+const { formatError, log, fileHelper } = require('../../utils');
+const { default: config } = require('../../config');
 
 module.exports = class ExportGlobalFields {
   limit = 100;
@@ -47,7 +44,7 @@ module.exports = class ExportGlobalFields {
     const self = this;
     // Create folder for Global Fields
     mkdirp.sync(self.globalfieldsFolderPath);
-    addlogs(self.config, 'Starting Global Fields export', 'success');
+    log(self.config, 'Starting Global Fields export', 'success');
 
     return new Promise(function (resolve, reject) {
       try {
@@ -61,7 +58,7 @@ module.exports = class ExportGlobalFields {
           })
           .catch(reject);
       } catch (error) {
-        addlogs(self.config, error, 'error');
+        log(self.config, error, 'error');
         return reject(error);
       }
     });
@@ -78,7 +75,7 @@ module.exports = class ExportGlobalFields {
         .then((globalFieldResponse) => {
           try {
             if (globalFieldResponse.items.length === 0) {
-              addlogs(globalFieldConfig, 'No global fields found', 'success');
+              log(globalFieldConfig, 'No global fields found', 'success');
               return resolve('No Global Fields');
             }
             globalFieldResponse.items.forEach(function (globalField) {
@@ -98,7 +95,7 @@ module.exports = class ExportGlobalFields {
 
             return self.getGlobalFields(skip, globalFieldConfig).then(resolve).catch(reject);
           } catch (error) {
-            addlogs(globalFieldConfig, chalk.red(`Failed to export global-fields ${formatError(error)}`), 'error');
+            log(globalFieldConfig, chalk.red(`Failed to export global-fields ${formatError(error)}`), 'error');
             reject(error);
           }
         })
@@ -112,15 +109,15 @@ module.exports = class ExportGlobalFields {
     const self = this;
     return new Promise(function (resolve, reject) {
       try {
-        helper.writeFileSync(
+        fileHelper.writeFileSync(
           path.join(self.globalfieldsFolderPath, self.globalfieldsConfig.fileName),
           self.global_fields,
         );
-        addlogs(self.config, chalk.green('Global Fields export completed successfully'), 'success');
+        log(self.config, chalk.green('Global Fields export completed successfully'), 'success');
 
         resolve();
       } catch (error) {
-        addlogs(self.config, error, 'error');
+        log(self.config, error, 'error');
         reject(error);
       }
     });
