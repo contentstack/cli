@@ -2,8 +2,8 @@
   "name": "csdx",
   "version": "1.2.5",
   "devDependencies": {
+    "lerna": "^6.4.1",
     "@nrwl/nx-cloud": "^15.0.2",
-    "lerna": "^6.4.0",
     "nx": "15.4.4",
     "pnpm": "^7.23.0",
     "prettier": "^2.8.2"
@@ -17,8 +17,8 @@
     "cache:clear": "npx pnpm store prune",
     "prepack": "npx lerna run pnpm-prepack",
     "clean": "npx pnpm cache:clear && sh cleanup.sh",
-    "bootstrap": "npx pnpm install --no-frozen-lockfile",
-    "package-lock-only": "npm i --package-lock-only --workspaces"
+    "package-lock-only": "npm i --package-lock-only --workspaces",
+    "bootstrap": "npm i && npm run package-lock-only && npx pnpm install --no-frozen-lockfile"
   },
   "license": "MIT",
   "workspaces": [
