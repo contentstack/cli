@@ -7,12 +7,12 @@
   "dependencies": {
     "@contentstack/cli-command": "^1.0.4",
     "@contentstack/cli-utilities": "^1.0.5",
-    "@contentstack/management": "^1.6.0",
+    "@oclif/command": "^1.8.16",
+    "@oclif/config": "^1.18.3",
     "async": "^3.2.4",
     "big-json": "^3.2.0",
     "bluebird": "^3.7.2",
     "chalk": "^4.1.2",
-    "fs": "0.0.1-security",
     "is-valid-path": "^0.1.1",
     "lodash": "^4.17.20",
     "mkdirp": "^1.0.4",
@@ -38,8 +38,8 @@
     "globby": "^10.0.2",
     "mocha": "10.1.0",
     "nyc": "^15.1.0",
-    "oclif": "^3.1.2",
-    "sinon": "^9.0.2"
+    "sinon": "^15.0.1",
+    "oclif": "^3.1.2"
   },
   "engines": {
     "node": ">=14.0.0"
