@@ -7,17 +7,18 @@ const _ = require('lodash');
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
-const eachOf = require('async/eachOf');
 const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
 
 const { formatError } = require('../util');
-let config = require('../../config/default');
-const { writeFileSync } = require('../util/helper');
+const config = require('../../config/default');
 const { addlogs: log } = require('../util/log');
-const { getDeveloperHubUrl, getInstalledExtensions } = require('../util/marketplace-app-helper');
+const { writeFileSync } = require('../util/helper');
+const { getDeveloperHubUrl } = require('../util/marketplace-app-helper');
 
 module.exports = class ExportMarketplaceApps {
+  client;
   config;
+  httpClient;
   nodeCrypto;
   marketplaceAppPath = null;
   developerHubBaseUrl = null;
@@ -25,6 +26,10 @@ module.exports = class ExportMarketplaceApps {
 
   constructor(credentialConfig) {
     this.config = _.merge(config, credentialConfig);
+    this.httpClient = new HttpClient().headers({
+      authtoken: this.config.auth_token,
+      organization_uid: this.config.org_uid,
+    });
   }
 
   async start() {
@@ -71,103 +76,79 @@ module.exports = class ExportMarketplaceApps {
     this.nodeCrypto = new NodeCrypto(cryptoArgs);
   }
 
-  exportInstalledExtensions = () => {
-    const self = this;
-    const headers = {
-      authtoken: self.config.auth_token,
-      organization_uid: self.config.org_uid,
-    };
-    const httpClient = new HttpClient().headers(headers);
+  async exportInstalledExtensions() {
+    const installedApps = (await this.getAllStackSpecificApps()) || [];
 
-    return new Promise(async function (resolve, reject) {
-      getInstalledExtensions(self.config)
-        .then(async (items) => {
-          const installedApps = _.map(
-            _.filter(items, 'app_uid'),
-            ({ uid, title, app_uid, app_installation_uid, type }) => ({
-              title,
-              uid,
-              app_uid,
-              app_installation_uid,
-              type,
-            }),
-          );
-          const uniqApps = _.uniqBy(installedApps, 'app_uid');
+    if (!_.isEmpty(installedApps)) {
+      for (const [index, app] of _.entries(installedApps)) {
+        await this.getAppConfigurations(installedApps, [+index, app]);
+      }
 
-          const developerHubApps =
-            (await httpClient
-              .get(`${self.developerHubBaseUrl}/apps`)
-              .then(({ data: { data } }) => data)
-              .catch((err) => {
-                log(self.config, err, 'error');
-              })) || [];
+      await writeFileSync(path.join(this.marketplaceAppPath, this.marketplaceAppConfig.fileName), installedApps);
 
-          for (const app of uniqApps) {
-            log(self.config, `Exporting ${app.title} app and it's config.`, 'success');
-            const listOfIndexToBeUpdated = _.map(installedApps, ({ app_uid }, index) =>
-              app_uid === app.app_uid ? index : undefined,
-            ).filter((val) => val !== undefined);
+      log(this.config, chalk.green('All the marketplace apps have been exported successfully'), 'success');
+    } else {
+      log(this.config, 'No marketplace apps found', 'success');
+    }
+  }
 
-            await httpClient
-              .get(`${self.developerHubBaseUrl}/installations/${app.app_installation_uid}/installationData`)
-              .then(async ({ data: result }) => {
-                const { data, error } = result;
-                const developerHubApp = _.find(developerHubApps, { uid: app.app_uid });
+  getAllStackSpecificApps(listOfApps = [], skip = 0) {
+    return this.httpClient
+      .get(`${this.developerHubBaseUrl}/installations?target_uids=${this.config.source_stack}&skip=${skip}`)
+      .then(async ({ data }) => {
+        const { data: apps, count } = data;
 
-                if ((_.has(data, 'configuration') || _.has(data, 'server_configuration')) && !self.nodeCrypto) {
-                  await self.createNodeCryptoInstance();
-                }
+        if (!this.nodeCrypto && _.find(apps, (app) => !_.isEmpty(app.configuration))) {
+          await this.createNodeCryptoInstance();
+        }
 
-                _.forEach(listOfIndexToBeUpdated, (index, i) => {
-                  if (developerHubApp) {
-                    installedApps[index]['visibility'] = developerHubApp.visibility;
-                    installedApps[index]['manifest'] = _.pick(
-                      developerHubApp,
-                      ['name', 'description', 'icon', 'target_type', 'ui_location', 'webhook', 'oauth'], // NOTE keys can be passed to install new app in the developer hub
-                    );
-                  }
+        listOfApps.push(
+          ..._.map(apps, (app) => {
+            if (_.has(app, 'configuration')) {
+              app['configuration'] = this.nodeCrypto.encrypt(app.configuration || configuration);
+            }
 
-                  if (_.has(data, 'configuration') || _.has(data, 'server_configuration')) {
-                    const { configuration, server_configuration } = data;
+            return app;
+          }),
+        );
 
-                    if (!_.isEmpty(configuration)) {
-                      installedApps[index]['configuration'] = self.nodeCrypto.encrypt(configuration);
-                    }
-                    if (!_.isEmpty(server_configuration)) {
-                      installedApps[index]['server_configuration'] = self.nodeCrypto.encrypt(server_configuration);
-                    }
+        if (count - (skip + 50) > 0) {
+          return await this.getAllStackSpecificApps(listOfApps, skip + 50);
+        }
 
-                    if (i === 0) {
-                      log(self.config, `Exported ${app.title} app and it's config.`, 'success');
-                    }
-                  } else if (error) {
-                    console.log(error);
-                    if (i === 0) {
-                      log(self.config, `Error on exporting ${app.title} app and it's config.`, 'error');
-                    }
-                  }
-                });
-              })
-              .catch((err) => {
-                log(self.config, `Failed to export ${app.title} app config ${formatError(error)}`, 'error');
-                console.log(err);
-              });
+        return listOfApps;
+      })
+      .catch((error) => {
+        log(self.config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
+      });
+  }
+
+  getAppConfigurations(installedApps, [index, app]) {
+    const appName = app.manifest.name;
+    log(this.config, `Exporting ${appName} app and it's config.`, 'success');
+
+    return this.httpClient
+      .get(`${this.developerHubBaseUrl}/installations/${app.uid}/installationData`)
+      .then(async ({ data: result }) => {
+        const { data, error } = result;
+
+        if (_.has(data, 'server_configuration')) {
+          if (!this.nodeCrypto && _.has(data, 'server_configuration')) {
+            await this.createNodeCryptoInstance();
           }
 
-          if (!_.isEmpty(installedApps)) {
-            await writeFileSync(path.join(self.marketplaceAppPath, self.marketplaceAppConfig.fileName), installedApps);
-
-            log(self.config, chalk.green('All the marketplace apps have been exported successfully'), 'success');
+          if (!_.isEmpty(data.server_configuration)) {
+            installedApps[index]['server_configuration'] = this.nodeCrypto.encrypt(data.server_configuration);
+            log(this.config, `Exported ${appName} app and it's config.`, 'success');
           } else {
-            log(self.config, 'No marketplace apps found', 'success');
+            log(this.config, `Exported ${appName} app`, 'success');
           }
-
-          resolve();
-        })
-        .catch((error) => {
-          log(self.config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
-          reject(error);
-        });
-    });
-  };
+        } else if (error) {
+          log(this.config, `Error on exporting ${appName} app and it's config.`, 'error');
+        }
+      })
+      .catch((err) => {
+        log(this.config, `Failed to export ${appName} app config ${formatError(err)}`, 'error');
+      });
+  }
 };
