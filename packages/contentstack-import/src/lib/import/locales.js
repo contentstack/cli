@@ -16,10 +16,8 @@ let helper = require('../util/fs');
 let { addlogs } = require('../util/log');
 const { formatError } = require('../util');
 let config = require('../../config/default');
-let stack = require('../util/contentstack-management-sdk');
 
 module.exports = class ImportLanguages {
-  client;
   fails = [];
   success = [];
   langUidMapper = {};
@@ -27,9 +25,9 @@ module.exports = class ImportLanguages {
   langConfig = config.modules.locales;
   reqConcurrency = config.concurrency || config.fetchConcurrency || 1;
 
-  constructor(credentialConfig) {
-    this.config = merge(config, credentialConfig);
-    this.client = stack.Client(this.config);
+  constructor(importConfig, stackAPIClient) {
+    this.config = merge(config, importConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
@@ -68,8 +66,7 @@ module.exports = class ImportLanguages {
               },
             };
 
-            return self.client
-              .stack({ api_key: self.config.target_stack, management_token: self.config.management_token })
+            return self.stackAPIClient
               .locale()
               .create(requestOption)
               .then((locale) => {
@@ -131,9 +128,7 @@ module.exports = class ImportLanguages {
           requireKeys.forEach((e) => {
             lang[e] = _lang[e];
           });
-          let langobj = self.client
-            .stack({ api_key: self.config.target_stack, management_token: self.config.management_token })
-            .locale(lang.code);
+          let langobj = self.stackAPIClient.locale(lang.code);
           Object.assign(langobj, cloneDeep(lang));
           langobj.update().then(() => {
             // empty function
