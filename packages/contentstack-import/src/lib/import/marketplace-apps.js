@@ -56,9 +56,13 @@ module.exports = class ImportMarketplaceApps {
 
     await this.getOrgUid();
 
-    this.httpClient = new HttpClient().headers({
-      authtoken: this.config.auth_token,
-      organization_uid: this.config.org_uid,
+    this.httpClient = new HttpClient({
+      maxRedirects: 20,
+      maxBodyLength: Infinity,
+      headers: {
+        authtoken: this.config.auth_token,
+        organization_uid: this.config.org_uid,
+      },
     });
 
     if (!fs.existsSync(this.mapperDirPath)) {
@@ -385,7 +389,7 @@ module.exports = class ImportMarketplaceApps {
 
       if (installation.installation_uid) {
         log(this.config, `${app.manifest.name} app installed successfully.!`, 'success');
-        await this.makeRedirectUriCall(installation);
+        await this.makeRedirectUrlCall(installation);
         this.installationUidMapping[app.uid] = installation.installation_uid;
         updateParam = { manifest: app.manifest, ...installation, configuration, server_configuration };
       } else if (installation.message) {
@@ -407,9 +411,9 @@ module.exports = class ImportMarketplaceApps {
     }
   }
 
-  async makeRedirectUriCall(response) {
+  async makeRedirectUrlCall(response) {
     if (response.redirect_url) {
-      await this.httpClient
+      await new HttpClient({ maxRedirects: 20, maxBodyLength: Infinity })
         .get(response.redirect_url)
         .then(({ response }) => {
           if (_.includes([501, 403], response.status)) {
