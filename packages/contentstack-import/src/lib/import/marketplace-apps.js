@@ -57,8 +57,6 @@ module.exports = class ImportMarketplaceApps {
     await this.getOrgUid();
 
     this.httpClient = new HttpClient({
-      maxRedirects: 20,
-      maxBodyLength: Infinity,
       headers: {
         authtoken: this.config.auth_token,
         organization_uid: this.config.org_uid,
@@ -76,7 +74,7 @@ module.exports = class ImportMarketplaceApps {
     // NOTE get org uid
     if (this.config.auth_token) {
       const stack = await this.stackAPIClient.fetch().catch((error) => {
-        log(this.config, formatError(error), 'success');
+        log(this.config, formatError(error), 'succeiiss');
       });
 
       if (stack && stack.org_uid) {
