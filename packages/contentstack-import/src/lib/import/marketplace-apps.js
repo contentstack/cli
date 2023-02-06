@@ -387,7 +387,7 @@ module.exports = class ImportMarketplaceApps {
 
       if (installation.installation_uid) {
         log(this.config, `${app.manifest.name} app installed successfully.!`, 'success');
-        await this.makeRedirectUrlCall(installation);
+        await this.makeRedirectUrlCall(installation, app.manifest.name);
         this.installationUidMapping[app.uid] = installation.installation_uid;
         updateParam = { manifest: app.manifest, ...installation, configuration, server_configuration };
       } else if (installation.message) {
@@ -409,13 +409,18 @@ module.exports = class ImportMarketplaceApps {
     }
   }
 
-  async makeRedirectUrlCall(response) {
+  async makeRedirectUrlCall(response, appName) {
     if (response.redirect_url) {
+      log(this.config, `${appName} - OAuth api call started.!`, 'info');
       await new HttpClient({ maxRedirects: 20, maxBodyLength: Infinity })
         .get(response.redirect_url)
-        .then(({ response }) => {
+        .then(async ({ response }) => {
           if (_.includes([501, 403], response.status)) {
-            log(this.config, `${response.statusText} - OAuth api call failed.!`, 'error');
+            log(this.config, `${appName} - ${response.statusText}, OAuth api call failed.!`, 'error');
+            log(this.config, formatError(response), 'error');
+            await this.confirmToCloseProcess({ message: response.data });
+          } else {
+            log(this.config, `${appName} - OAuth api call completed.!`, 'success');
           }
         })
         .catch((error) => {
@@ -464,9 +469,9 @@ module.exports = class ImportMarketplaceApps {
   }
 
   async confirmToCloseProcess(installation) {
-    if (!this.config.forceStopMarketplaceAppsPrompt) {
-      cliux.print(`\nWARNING!!! ${formatError(installation.message)}\n`, { color: 'yellow' });
+    cliux.print(`\nWARNING!!! ${formatError(installation.message)}\n`, { color: 'yellow' });
 
+    if (!this.config.forceStopMarketplaceAppsPrompt) {
       if (
         !(await cliux.confirm(
           chalk.yellow(
