@@ -64,11 +64,11 @@
   "repository": "contentstack/cli",
   "scripts": {
     "test": "jest",
-    "b-pack": "npm pack --dry-run",
+    "pack": "npm pack --dry-run",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
     "prepack": "rm -rf lib && tsc -b && oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md",
-    "pnpm-prepack": "pnpm prepack"
+    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   }
 }

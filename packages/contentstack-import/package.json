@@ -46,12 +46,12 @@
     "plugin"
   ],
   "scripts": {
-    "pnpm-prepack": "oclif manifest && oclif readme",
-    "b-pack": "npm pack && mv *.tgz ../../build",
+    "pack": "npm pack && mv *.tgz ../../build",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   },
   "csdxConfig": {
     "expiredCommands": {
