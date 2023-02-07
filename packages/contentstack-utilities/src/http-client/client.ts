@@ -20,8 +20,8 @@ export class HttpClient {
   /**
    * Createa new pending HTTP request instance.
    */
-  constructor() {
-    this.request = {};
+  constructor(request: AxiosRequestConfig = {}) {
+    this.request = request;
     this.axiosInstance = Axios.create();
 
     // Sets payload format as json by default
@@ -33,8 +33,8 @@ export class HttpClient {
    *
    * @returns {HttpClient}
    */
-  static create(): HttpClient {
-    return new this();
+  static create(request: AxiosRequestConfig = {}): HttpClient {
+    return new this(request);
   }
 
   /**
