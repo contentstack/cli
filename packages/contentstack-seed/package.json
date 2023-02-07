@@ -8,6 +8,7 @@
     "@contentstack/cli-cm-import": "^1.2.2",
     "@contentstack/cli-command": "^1.0.2",
     "@contentstack/cli-utilities": "^1.0.3",
+    "@contentstack/management": "^1.6.1",
     "axios": "1.1.3",
     "inquirer": "8.2.4",
     "mkdirp": "^1.0.4",

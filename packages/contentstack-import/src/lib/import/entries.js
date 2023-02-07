@@ -18,10 +18,9 @@ const suppress = require('../util/supress-mandatory-fields');
 const extension_suppress = require('../util/extensionsUidReplace');
 const lookupReplaceAssets = require('../util/lookupReplaceAssets');
 const lookupReplaceEntries = require('../util/lookupReplaceEntries');
-const { getInstalledExtensions } = require('../util/marketplace-app-helper');
+const config = require('../../config/default');
 
 module.exports = class ImportEntries {
-  config = util.getConfig();
   mappedAssetUidPath;
   mappedAssetUrlPath;
   entryMapperPath;
@@ -41,9 +40,8 @@ module.exports = class ImportEntries {
   skipFiles = ['__master.json', '__priority.json', 'schema.json'];
 
   constructor(importConfig, stackAPIClient) {
-    this.config = _.merge(this.config, importConfig);
+    this.config = _.merge(config, importConfig);
     this.stackAPIClient = stackAPIClient;
-    let self = this;
     this.mappedAssetUidPath = path.resolve(this.config.data, 'mapper', 'assets', 'uid-mapping.json');
     this.mappedAssetUrlPath = path.resolve(this.config.data, 'mapper', 'assets', 'url-mapping.json');
 
@@ -101,7 +99,7 @@ module.exports = class ImportEntries {
           if (this.skipFiles.indexOf(files[index]) === -1) {
             if (files[index] != 'field_rules_uid.json') {
               let schema = require(path.resolve(path.join(this.ctPath, files[index])));
-              self.ctSchemas[schema.uid] = schema;
+              this.ctSchemas[schema.uid] = schema;
             }
           }
         } catch (error) {
@@ -117,18 +115,11 @@ module.exports = class ImportEntries {
     this.masterLanguage = this.config.master_locale;
     addlogs(this.config, 'Migrating entries', 'success');
     let languages = helper.readFileSync(this.lPath);
-    const appMapperFolderPath = path.join(this.config.data, 'mapper', 'marketplace_apps');
-
-    if (fs.existsSync(path.join(appMapperFolderPath, 'marketplace-apps.json'))) {
-      self.installedExtensions = helper.readFileSync(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
-    }
-
-    if (_.isEmpty(self.installedExtensions)) {
-      self.installedExtensions = await getInstalledExtensions(this.config);
-    }
+    const appMapperPath = path.join(this.config.data, 'mapper', 'marketplace_apps', 'uid-mapping.json');
+    this.installedExtensions = ((await helper.readFileSync(appMapperPath)) || { extension_uid: {} }).extension_uid;
 
     return new Promise((resolve, reject) => {
-      let langs = [this.masterLanguage.code];
+      let langs = [self.masterLanguage.code];
       for (let i in languages) {
         if (i) {
           langs.push(languages[i].code);
@@ -142,10 +133,10 @@ module.exports = class ImportEntries {
       return self
         .supressFields()
         .then(async () => {
-          addlogs(this.config, 'Completed suppressing content type reference fields', 'success');
+          addlogs(self.config, 'Completed suppressing content type reference fields', 'success');
 
-          let mappedAssetUids = helper.readFileSync(this.mappedAssetUidPath) || {};
-          let mappedAssetUrls = helper.readFileSync(this.mappedAssetUrlPath) || {};
+          let mappedAssetUids = helper.readFileSync(self.mappedAssetUidPath) || {};
+          let mappedAssetUrls = helper.readFileSync(self.mappedAssetUrlPath) || {};
 
           // Step 2: Iterate over available languages to create entries in each.
           let counter = 0;
@@ -154,26 +145,26 @@ module.exports = class ImportEntries {
             async () => {
               let lang = langs[counter];
               if (
-                (this.config.hasOwnProperty('onlylocales') && this.config.onlylocales.indexOf(lang) !== -1) ||
-                !this.config.hasOwnProperty('onlylocales')
+                (self.config.hasOwnProperty('onlylocales') && self.config.onlylocales.indexOf(lang) !== -1) ||
+                !self.config.hasOwnProperty('onlylocales')
               ) {
-                addlogs(this.config, `Starting to create entries ${lang} locale`, 'info');
+                addlogs(self.config, `Starting to create entries ${lang} locale`, 'info');
                 await self.createEntries(lang, mappedAssetUids, mappedAssetUrls);
-                addlogs(this.config, 'Entries created successfully', 'info');
+                addlogs(self.config, 'Entries created successfully', 'info');
                 try {
                   await self.getCreatedEntriesWOUid();
                 } catch (error) {
                   addlogs(
-                    this.config,
+                    self.config,
                     `Failed get the existing entries to update the mapper ${util.formatError(error)}, 'error`,
                   );
                 }
-                addlogs(this.config, 'Starting to update entries with references', 'info');
+                addlogs(self.config, 'Starting to update entries with references', 'info');
                 await self.repostEntries(lang);
-                addlogs(this.config, "Successfully imported '" + lang + "' entries!", 'success');
+                addlogs(self.config, "Successfully imported '" + lang + "' entries!", 'success');
                 counter++;
               } else {
-                addlogs(this.config, lang + ' has not been configured for import, thus skipping it', 'success');
+                addlogs(self.config, lang + ' has not been configured for import, thus skipping it', 'success');
                 counter++;
               }
             },
@@ -181,49 +172,47 @@ module.exports = class ImportEntries {
               concurrency: 1,
             },
           ).then(async () => {
-            return new Promise(async (resolve, reject) => {
-              // Step 3: Revert all the changes done in content type in step 1
-              addlogs(this.config, 'Restoring content type changes', 'info');
-              await self.unSuppressFields();
-              addlogs(this.config, 'Removing entries from master language which got created by default', 'info');
-              await self.removeBuggedEntries();
-              addlogs(this.config, 'Updating the field rules of content type', 'info');
-              let ct_field_visibility_uid = helper.readFileSync(path.join(this.ctPath + '/field_rules_uid.json'));
-              let ct_files = fs.readdirSync(this.ctPath);
-              if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
-                for (const element of ct_field_visibility_uid) {
-                  if (ct_files.indexOf(element + '.json') > -1) {
-                    let schema = require(path.resolve(this.ctPath, element));
-                    try {
-                      await self.field_rules_update(schema);
-                    } catch (error) {
-                      addlogs(
-                        this.config,
-                        `Failed to update the field rules for content type ${schema.uid} ${util.formatError(error)}`,
-                      );
-                    }
+            // Step 3: Revert all the changes done in content type in step 1
+            addlogs(self.config, 'Restoring content type changes', 'info');
+            await self.unSuppressFields();
+            addlogs(self.config, 'Removing entries from master language which got created by default', 'info');
+            await self.removeBuggedEntries();
+            addlogs(self.config, 'Updating the field rules of content type', 'info');
+            let ct_field_visibility_uid = helper.readFileSync(path.join(self.ctPath + '/field_rules_uid.json'));
+            let ct_files = fs.readdirSync(self.ctPath);
+            if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
+              for (const element of ct_field_visibility_uid) {
+                if (ct_files.indexOf(element + '.json') > -1) {
+                  let schema = require(path.resolve(self.ctPath, element));
+                  try {
+                    await self.field_rules_update(schema);
+                  } catch (error) {
+                    addlogs(
+                      self.config,
+                      `Failed to update the field rules for content type ${schema.uid} ${util.formatError(error)}`,
+                    );
                   }
                 }
               }
-              addlogs(this.config, chalk.green('Entries have been imported successfully!'), 'success');
-              if (this.config.entriesPublish) {
-                addlogs(this.config, chalk.green('Publishing entries'), 'success');
-                return self
-                  .publish(langs)
-                  .then(() => {
-                    addlogs(this.config, chalk.green('All the entries have been published successfully'), 'success');
-                    return resolve();
-                  })
-                  .catch((error) => {
-                    addlogs(this.config, `Error in publishing entries ${util.formatError(error)}`, 'error');
-                  });
-              }
-              return resolve();
-            });
+            }
+            addlogs(self.config, chalk.green('Entries have been imported successfully!'), 'success');
+            if (self.config.entriesPublish) {
+              addlogs(self.config, chalk.green('Publishing entries'), 'success');
+              return self
+                .publish(langs)
+                .then(() => {
+                  addlogs(self.config, chalk.green('All the entries have been published successfully'), 'success');
+                  return resolve();
+                })
+                .catch((error) => {
+                  addlogs(self.config, `Error in publishing entries ${util.formatError(error)}`, 'error');
+                });
+            }
+            return resolve();
           });
         })
         .catch((error) => {
-          addlogs.log(this.config, util.formatError(error), 'error');
+          addlogs.log(self.config, util.formatError(error), 'error');
           reject('Failed import entries');
         });
     });
