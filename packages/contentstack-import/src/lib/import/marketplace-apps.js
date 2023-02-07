@@ -74,7 +74,7 @@ module.exports = class ImportMarketplaceApps {
     // NOTE get org uid
     if (this.config.auth_token) {
       const stack = await this.stackAPIClient.fetch().catch((error) => {
-        log(this.config, formatError(error), 'succeiiss');
+        log(this.config, formatError(error), 'success');
       });
 
       if (stack && stack.org_uid) {
