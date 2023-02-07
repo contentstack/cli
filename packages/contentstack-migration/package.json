@@ -5,8 +5,8 @@
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "^1.0.4",
-    "@contentstack/management": "^1.6.0",
     "@contentstack/cli-utilities": "^1.0.3",
+    "@contentstack/management": "^1.6.0",
     "async": "^3.2.4",
     "callsites": "^3.1.0",
     "cardinal": "^2.1.1",
@@ -17,7 +17,6 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "oclif": "^3.1.2",
     "@oclif/test": "^2.2.10",
     "chai": "^4.3.4",
     "eslint": "^8.18.0",
@@ -25,12 +24,13 @@
     "eslint-config-oclif-typescript": "^0.2.0",
     "globby": "^10.0.2",
     "husky": "^4.2.5",
-    "jsdoc": "^3.6.7",
+    "jsdoc": "^4.0.0",
     "jsdoc-to-markdown": "^7.0.1",
     "mkdirp": "^1.0.4",
     "mocha": "^10.0.0",
     "nock": "^13.1.1",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "oclif": "^3.1.2"
   },
   "engines": {
     "node": ">=8.3.0"
