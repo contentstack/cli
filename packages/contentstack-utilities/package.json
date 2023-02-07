@@ -5,9 +5,8 @@
   "main": "lib/index.js",
   "types": "./types/index.d.ts",
   "scripts": {
-    "pnpm-prepack": "pnpm clean && pnpm compile",
-    "prepack": "npm run clean && npm run compile",
-    "clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
+    "prepack": "pnpm clean && pnpm compile",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "pretest": "tsc -p test",
