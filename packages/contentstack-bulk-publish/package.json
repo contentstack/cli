@@ -72,6 +72,6 @@
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
     "posttest": "eslint .",
     "version": "oclif readme && git add README.md",
-    "pnpm-prepack": "oclif manifest && oclif readme"
+    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   }
 }
