@@ -219,7 +219,7 @@ EntriesImport.prototype = {
           });
         })
         .catch(function (error) {
-          addlogs.log(config, util.formatError(error), 'error');
+          addlogs(config, util.formatError(error), 'error');
           reject('Failed import entries');
         });
     });
