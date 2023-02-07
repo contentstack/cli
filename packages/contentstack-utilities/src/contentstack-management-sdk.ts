@@ -5,7 +5,7 @@ import { default as authHandler } from './auth-handler';
 
 export default async (config) => {
   try {
-    let managementAPIClient;
+    let managementAPIClient: ContentstackManagementSDK.ContentstackClient;
     const option = {
       host: config.host,
       management_token: config.management_token,
