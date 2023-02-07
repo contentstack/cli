@@ -5,8 +5,8 @@
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "^1.0.4",
-    "@contentstack/management": "^1.6.0",
     "@contentstack/cli-utilities": "^1.0.5",
+    "@contentstack/management": "^1.6.0",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
     "async": "^3.2.4",
@@ -27,7 +27,7 @@
     "eslint-config-oclif-typescript": "^0.2.0",
     "globby": "^10.0.2",
     "husky": "^4.2.5",
-    "jsdoc": "^3.6.7",
+    "jsdoc": "^4.0.0",
     "jsdoc-to-markdown": "^7.0.1",
     "mkdirp": "^1.0.4",
     "mocha": "^10.0.0",
