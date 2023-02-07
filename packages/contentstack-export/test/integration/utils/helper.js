@@ -70,9 +70,9 @@ const getBranches = async (data) => {
 
 const getEnvData = () => envData
 
-const getStack = (data={}) => {
-  return managementSDKClient(config)
-    .stack({ 
+const getStack = async (data={}) => {
+  const client = await managementSDKClient(config)
+  return client.stack({ 
       api_key: data.STACK_API_KEY || config.source_stack, 
       management_token: data.MANAGEMENT_TOKEN || config.management_token 
     })

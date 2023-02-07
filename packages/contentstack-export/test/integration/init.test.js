@@ -26,7 +26,7 @@ module.exports = (region) => {
   function addTokens(stacks) {
     let stack = stacks.pop()
     test
-    .command(AddTokenCommand, ['-a', stackDetails[stack].ALIAS_NAME, '-k', stackDetails[stack].STACK_API_KEY, '--management', '--token', stackDetails[stack].MANAGEMENT_TOKEN])
+    .command(AddTokenCommand, ['-a', stackDetails[stack].ALIAS_NAME, '-k', stackDetails[stack].STACK_API_KEY, '--management', '--token', stackDetails[stack].MANAGEMENT_TOKEN, '--yes'])
     .it(`Adding token for ${stack}`, (_, done) => {
       console.log('done')
       done()
