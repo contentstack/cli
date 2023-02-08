@@ -46,8 +46,8 @@ class MigrationCommand extends Command {
 
   async run() {
     // TODO: filePath validation required.
-    const migrationCommandFlags = this.parse(MigrationCommand).flags;
-    const { branch } = migrationCommandFlags;
+    const { flags: migrationCommandFlags } = await this.parse(MigrationCommand);
+    const { branch } = migrationCommandFlags || {};
     const filePath = migrationCommandFlags['file-path'] || migrationCommandFlags.filePath;
     const multi = migrationCommandFlags.multiple || migrationCommandFlags.multi;
     const authtoken = configHandler.get('authtoken');
