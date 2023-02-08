@@ -26,7 +26,6 @@
     "@contentstack/cli-auth": "^1.0.6",
     "@contentstack/cli-config": "^1.0.4",
     "@contentstack/cli-dev-dependencies": "^1.0.0",
-    "@oclif/dev-cli": "^1.26.10",
     "@oclif/plugin-help": "^5.1.19",
     "@oclif/test": "^1.2.6",
     "assert": "^2.0.0",
