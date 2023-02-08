@@ -4,102 +4,93 @@
  * MIT Licensed
  */
 
-let path = require('path');
-let mkdirp = require('mkdirp');
+const path = require('path');
+const mkdirp = require('mkdirp');
+const { merge } = require('lodash');
+const helper = require('../util/helper');
+const { addlogs } = require('../util/log');
+const config = require('../../config/default');
+module.exports = class ExportStack {
+  stackConfig = config.modules.stack;
 
-let helper = require('../util/helper');
-let { addlogs } = require('../util/log');
-let config = require('../../config/default');
-const stack = require('../util/contentstack-management-sdk');
+  constructor(exportConfig, stackAPIClient, APIClient) {
+    this.config = merge(config, exportConfig);
+    this.stackAPIClient = stackAPIClient;
+    this.APIClient = APIClient;
+    this.requestOption = {
+      uri: this.config.host + this.config.apis.stacks,
+      headers: this.config.headers,
+      json: true,
+    };
+  }
 
-let client;
-let stackConfig = config.modules.stack;
+  async start() {
+    const self = this;
+    if (self.config.auth_token) {
+      const stack = await self.APIClient.stack({ api_key: self.config.source_stack, authtoken: self.config.auth_token })
+        .fetch()
+        .catch((error) => {
+          console.log(error);
+        });
 
-function ExportStack() {
-  this.requestOption = {
-    uri: config.host + config.apis.stacks,
-    headers: config.headers,
-    json: true,
-  };
-}
+      if (stack && stack.org_uid) {
+        self.config.org_uid = stack.org_uid;
+        self.config.sourceStackName = stack.name;
+      }
+    }
 
-ExportStack.prototype.start = async function (credentialConfig) {
-  config = credentialConfig;
-  client = stack.Client(config);
-  const self = this;
+    if (!self.config.preserveStackVersion && !self.config.hasOwnProperty('master_locale')) {
+      const apiDetails = {
+        limit: 100,
+        skip: 0,
+        include_count: true,
+      };
+      return self.getLocales(apiDetails);
+    } else if (self.config.preserveStackVersion) {
+      addlogs(self.config, 'Exporting stack details', 'success');
+      let stackFolderPath = path.resolve(self.config.data, stackConfig.dirName);
+      let stackContentsFile = path.resolve(stackFolderPath, stackConfig.fileName);
 
-  // NOTE get org uid
-  if (config.auth_token) {
-    const stack = await client
-      .stack({ api_key: config.source_stack, authtoken: config.auth_token })
-      .fetch()
-      .catch((error) => {
-        console.log(error);
+      mkdirp.sync(stackFolderPath);
+
+      return new Promise((resolve, reject) => {
+        return self.APIClient.stack({ api_key: self.config.source_stack })
+          .fetch()
+          .then((response) => {
+            helper.writeFile(stackContentsFile, response);
+            addlogs(self.config, 'Exported stack details successfully!', 'success');
+            return resolve(response);
+          })
+          .catch(reject);
       });
-
-    if (stack && stack.org_uid) {
-      config.org_uid = stack.org_uid;
-      config.sourceStackName = stack.name;
     }
   }
 
-  if (!config.preserveStackVersion && !config.hasOwnProperty('master_locale')) {
-    const apiDetails = {
-      limit: 100,
-      skip: 0,
-      include_count: true,
-    };
-    return self.getLocales(apiDetails);
-  } else if (config.preserveStackVersion) {
-    addlogs(config, 'Exporting stack details', 'success');
-    let stackFolderPath = path.resolve(config.data, stackConfig.dirName);
-    let stackContentsFile = path.resolve(stackFolderPath, stackConfig.fileName);
-
-    mkdirp.sync(stackFolderPath);
-
+  getLocales(apiDetails) {
+    const self = this;
     return new Promise((resolve, reject) => {
-      return client
-        .stack({ api_key: config.source_stack })
-        .fetch()
+      const result = self.stackAPIClient.locale().query(apiDetails);
+
+      result
+        .find()
         .then((response) => {
-          helper.writeFile(stackContentsFile, response);
-          addlogs(config, 'Exported stack details successfully!', 'success');
-          return resolve(response);
+          const masterLocalObj = response.items.find((obj) => {
+            if (obj.fallback_locale === null) {
+              return obj;
+            }
+          });
+          apiDetails.skip += apiDetails.limit;
+          if (masterLocalObj) {
+            return resolve(masterLocalObj);
+          } else if (apiDetails.skip <= response.count) {
+            return resolve(self.getLocales(apiDetails));
+          } else {
+            return reject('Master locale not found');
+          }
         })
-        .catch(reject);
+        .catch((error) => {
+          return reject(error);
+        });
     });
   }
 };
-
-ExportStack.prototype.getLocales = function (apiDetails) {
-  let self = this;
-  return new Promise((resolve, reject) => {
-    const result = client
-      .stack({ api_key: config.source_stack, management_token: config.management_token })
-      .locale()
-      .query(apiDetails);
-
-    result
-      .find()
-      .then((response) => {
-        const masterLocalObj = response.items.find((obj) => {
-          if (obj.fallback_locale === null) {
-            return obj;
-          }
-        });
-        apiDetails.skip += apiDetails.limit;
-        if (masterLocalObj) {
-          return resolve(masterLocalObj);
-        } else if (apiDetails.skip <= response.count) {
-          return resolve(self.getLocales(apiDetails));
-        } else {
-          return reject('Master locale not found');
-        }
-      })
-      .catch((error) => {
-        return reject(error);
-      });
-  });
-};
-
-module.exports = ExportStack;

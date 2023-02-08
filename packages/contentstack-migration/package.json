@@ -1,12 +1,12 @@
 {
   "name": "@contentstack/cli-migration",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "author": "@contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "^1.0.4",
-    "@contentstack/cli-utilities": "^1.0.5",
-    "@contentstack/management": "^1.6.0",
+    "@contentstack/cli-command": "^1.1.0",
+    "@contentstack/cli-utilities": "^1.1.0",
+    "@contentstack/management": "^1.6.1",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
     "async": "^3.2.4",
@@ -19,8 +19,7 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1.26.0",
-    "@oclif/test": "^1.2.8",
+    "@oclif/test": "^2.2.10",
     "chai": "^4.3.4",
     "eslint": "^8.18.0",
     "eslint-config-oclif": "^3.1.0",
@@ -32,7 +31,8 @@
     "mkdirp": "^1.0.4",
     "mocha": "^10.0.0",
     "nock": "^13.1.1",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "oclif": "^3.1.2"
   },
   "engines": {
     "node": ">=8.3.0"
@@ -58,9 +58,9 @@
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint ./src",
     "generate-api-ref-md-doc": "nyc jsdoc2md ./src/modules/* > ./docs/api-reference.md",
-    "prepack": "oclif-dev manifest && oclif-dev readme && npm run generate-api-ref-md-doc",
+    "prepack": "oclif manifest && oclif readme && npm run generate-api-ref-md-doc",
     "test": "nyc mocha \"test/**/*.test.js\"",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "oclif readme && git add README.md"
   },
   "csdxConfig": {
     "expiredCommands": {

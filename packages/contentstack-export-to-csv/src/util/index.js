@@ -1,5 +1,4 @@
 const inquirer = require('inquirer');
-const { HttpClient } = require('@contentstack/cli-utilities');
 const os = require('os');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 const config = require('./config.js');
@@ -33,10 +32,13 @@ function chooseOrganization(managementAPIClient, action) {
           loop: false,
         },
       ];
-      inquirer.prompt(_chooseOrganization).then(({ chosenOrg }) => {
-        if (chosenOrg === config.cancelString) exitProgram();
-        resolve({ name: chosenOrg, uid: organizations[chosenOrg] });
-      });
+      inquirer
+        .prompt(_chooseOrganization)
+        .then(({ chosenOrg }) => {
+          if (chosenOrg === config.cancelString) exitProgram();
+          resolve({ name: chosenOrg, uid: organizations[chosenOrg] });
+        })
+        .catch(reject);
     } catch (error) {
       reject(error);
     }
@@ -98,10 +100,13 @@ function chooseStack(managementAPIClient, orgUid) {
         },
       ];
 
-      inquirer.prompt(_chooseStack).then(({ chosenStack }) => {
-        if (chosenStack === config.cancelString) exitProgram();
-        resolve({ name: chosenStack, apiKey: stacks[chosenStack] });
-      });
+      inquirer
+        .prompt(_chooseStack)
+        .then(({ chosenStack }) => {
+          if (chosenStack === config.cancelString) exitProgram();
+          resolve({ name: chosenStack, apiKey: stacks[chosenStack] });
+        })
+        .catch(reject);
     } catch (error) {
       reject(error);
     }
@@ -109,9 +114,6 @@ function chooseStack(managementAPIClient, orgUid) {
 }
 
 function getStacks(managementAPIClient, orgUid) {
-  // Adding a query object in query, because it throws an error
-  // the error is coming from query function lib/entity.js, @contentstack/management pacakge
-  // where params.query is being set
   return new Promise((resolve, reject) => {
     let result = {};
     managementAPIClient
@@ -130,12 +132,10 @@ function getStacks(managementAPIClient, orgUid) {
   });
 }
 
-function chooseContentType(stack, skip) {
-  return new Promise(async (resolve) => {
-    let contentTypes = await getContentTypes(stack, skip);
+function chooseContentType(stackAPIClient, skip) {
+  return new Promise(async (resolve, reject) => {
+    let contentTypes = await getContentTypes(stackAPIClient, skip);
     let contentTypesList = Object.values(contentTypes);
-    // contentTypesList.push(config.cancelString)
-
     let _chooseContentType = [
       {
         type: 'checkbox',
@@ -146,9 +146,10 @@ function chooseContentType(stack, skip) {
       },
     ];
 
-    inquirer.prompt(_chooseContentType).then(({ chosenContentTypes }) => {
-      resolve(chosenContentTypes);
-    });
+    inquirer
+      .prompt(_chooseContentType)
+      .then(({ chosenContentTypes }) => resolve(chosenContentTypes))
+      .catch(reject);
   });
 }
 
@@ -182,19 +183,22 @@ function chooseInMemContentTypes(contentTypesList) {
         },
       },
     ];
-    inquirer.prompt(_chooseContentType).then(({ chosenContentTypes }) => {
-      if (chosenContentTypes.length === 0) {
-        reject('Please select atleast one content type.');
-      }
-      resolve(chosenContentTypes);
-    });
+    inquirer
+      .prompt(_chooseContentType)
+      .then(({ chosenContentTypes }) => {
+        if (chosenContentTypes.length === 0) {
+          reject('Please select atleast one content type.');
+        }
+        resolve(chosenContentTypes);
+      })
+      .catch(reject);
   });
 }
 
-function getContentTypes(stack, skip) {
+function getContentTypes(stackAPIClient, skip) {
   return new Promise((resolve, reject) => {
     let result = {};
-    stack
+    stackAPIClient
       .contentType()
       .query({ skip: skip * 100 })
       .find()
@@ -208,9 +212,9 @@ function getContentTypes(stack, skip) {
   });
 }
 
-function chooseLanguage(stack) {
-  return new Promise(async (resolve) => {
-    let languages = await getLanguages(stack);
+function chooseLanguage(stackAPIClient) {
+  return new Promise(async (resolve, reject) => {
+    let languages = await getLanguages(stackAPIClient);
     let languagesList = Object.keys(languages);
     languagesList.push(config.cancelString);
 
@@ -223,17 +227,20 @@ function chooseLanguage(stack) {
       },
     ];
 
-    inquirer.prompt(_chooseLanguage).then(({ chosenLanguage }) => {
-      if (chosenLanguage === config.cancelString) exitProgram();
-      resolve({ name: chosenLanguage, code: languages[chosenLanguage] });
-    });
+    inquirer
+      .prompt(_chooseLanguage)
+      .then(({ chosenLanguage }) => {
+        if (chosenLanguage === config.cancelString) exitProgram();
+        resolve({ name: chosenLanguage, code: languages[chosenLanguage] });
+      })
+      .catch(reject);
   });
 }
 
-function getLanguages(stack) {
+function getLanguages(stackAPIClient) {
   return new Promise((resolve, reject) => {
     let result = {};
-    stack
+    stackAPIClient
       .locale()
       .query()
       .find()
@@ -247,9 +254,9 @@ function getLanguages(stack) {
   });
 }
 
-function getEntries(stack, contentType, language, skip) {
+function getEntries(stackAPIClient, contentType, language, skip) {
   return new Promise((resolve, reject) => {
-    stack
+    stackAPIClient
       .contentType(contentType)
       .entry()
       .query({ include_publish_details: true, locale: language, skip: skip * 100 })
@@ -259,9 +266,9 @@ function getEntries(stack, contentType, language, skip) {
   });
 }
 
-function getEntriesCount(stack, contentType, language) {
+function getEntriesCount(stackAPIClient, contentType, language) {
   return new Promise((resolve, reject) => {
-    stack
+    stackAPIClient
       .contentType(contentType)
       .entry()
       .query({ include_publish_details: true, locale: language })
@@ -271,9 +278,9 @@ function getEntriesCount(stack, contentType, language) {
   });
 }
 
-function getEnvironments(stack) {
+function getEnvironments(stackAPIClient) {
   let result = {};
-  return stack
+  return stackAPIClient
     .environment()
     .query()
     .find()
@@ -285,15 +292,13 @@ function getEnvironments(stack) {
     });
 }
 
-function getContentTypeCount(stack) {
+function getContentTypeCount(stackAPIClient) {
   return new Promise((resolve, reject) => {
-    stack
+    stackAPIClient
       .contentType()
       .query()
       .count()
-      .then((contentTypes) => {
-        resolve(contentTypes.content_types);
-      })
+      .then((contentTypes) => resolve(contentTypes.content_types))
       .catch((error) => reject(error));
   });
 }
@@ -363,7 +368,7 @@ function write(command, entries, fileName, message) {
 }
 
 function startupQuestions() {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let actions = [
       {
         type: 'list',
@@ -372,10 +377,13 @@ function startupQuestions() {
         choices: [config.exportEntries, config.exportUsers, 'Exit'],
       },
     ];
-    inquirer.prompt(actions).then((answers) => {
-      if (answers.action === 'Exit') exitProgram();
-      resolve(answers.action);
-    });
+    inquirer
+      .prompt(actions)
+      .then((answers) => {
+        if (answers.action === 'Exit') exitProgram();
+        resolve(answers.action);
+      })
+      .catch(reject);
   });
 }
 
@@ -386,12 +394,17 @@ function getOrgUsers(managementAPIClient, orgUid, ecsv) {
       .then(async (response) => {
         let organization = response.organizations.filter((org) => org.uid === orgUid).pop();
         if (organization.is_owner === true) {
-          let cma = ecsv.region.cma;
-          let authtoken = ecsv.authToken;
-          return HttpClient.create()
-            .headers({ authtoken: authtoken })
-            .get(`${cma}/v3/organizations/${organization.uid}/share`)
-            .then((_response) => resolve({ items: _response.data.shares }));
+          return managementAPIClient
+            .organization(organization.uid)
+            .fetch()
+            .then((_response) => {
+              _response
+                .getInvitations()
+                .then((_data) => {
+                  resolve({ items: _data.items });
+                })
+                .catch(reject);
+            });
         }
         if (!organization.getInvitations) {
           return reject(new Error(config.adminError));
@@ -420,6 +433,7 @@ async function getUsers(organization, params, result = []) {
       return getUsers(organization, params, result);
     }
   } catch (error) {
+    console.error(error);
     throw error;
   }
 }
@@ -448,16 +462,25 @@ function getOrgRoles(managementAPIClient, orgUid, ecsv) {
       .then((response) => {
         let organization = response.organizations.filter((org) => org.uid === orgUid).pop();
         if (organization.is_owner === true) {
-          let cma = ecsv.region.cma;
-          let authtoken = ecsv.authToken;
-          return axios
-            .get(`${cma}/v3/organizations/${organization.uid}/roles`, { headers: { authtoken: authtoken } })
-            .then((_response) => resolve({ items: _response.data.roles }));
+          return managementAPIClient
+            .organization(organization.uid)
+            .fetch()
+            .then((_response) => {
+              _response
+                .roles()
+                .then((_data) => {
+                  resolve({ items: _data.items });
+                })
+                .catch(reject);
+            });
         }
         if (!organization.roles) {
           return reject(new Error(config.adminError));
         }
-        organization.roles().then((roles) => resolve(roles));
+        organization
+          .roles()
+          .then((roles) => resolve(roles))
+          .catch(reject);
       })
       .catch((error) => reject(error));
   });
@@ -540,10 +563,20 @@ function formatError(error) {
   if (error.errors && Object.keys(error.errors).length > 0) {
     Object.keys(error.errors).forEach((e) => {
       let entity = e;
-      if (e === 'authorization') entity = 'Management Token';
-      if (e === 'api_key') entity = 'Stack API key';
-      if (e === 'uid') entity = 'Content Type';
-      if (e === 'access_token') entity = 'Delivery Token';
+      switch (e) {
+        case 'authorization':
+          entity = 'Management Token';
+          break;
+        case 'api_key':
+          entity = 'Stack API key';
+          break;
+        case 'uid':
+          entity = 'Content Type';
+          break;
+        case 'access_token':
+          entity = 'Delivery Token';
+          break;
+      }
       message += ' ' + [entity, error.errors[e]].join(' ');
     });
   }
@@ -551,7 +584,7 @@ function formatError(error) {
 }
 
 function wait(time) {
-  return new Promise(res => {
+  return new Promise((res) => {
     setTimeout(res, time);
   });
 }

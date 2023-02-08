@@ -37,6 +37,11 @@ class EntriesExport {
       }
       const entryRequestOptions = this.createRequestObjects(locales, contentTypes);
       for (let requestOption of entryRequestOptions) {
+        addlogs(
+          this.exportConfig,
+          `Starting export of entries of content_type - ${requestOption.content_type} locale - ${requestOption.locale}`,
+          'info',
+        );
         await fileHelper.makeDirectory(path.join(this.entriesRootPath, requestOption.content_type));
         const entries = await this.getEntries(requestOption);
         let entriesFilePath = path.join(
