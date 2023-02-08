@@ -10,11 +10,6 @@ class LocaleExport {
     this.qs = {
       include_count: true,
       asc: 'updated_at',
-      query: {
-        code: {
-          $nin: [exportConfig.master_locale.code],
-        },
-      },
       only: {
         BASE: this.localeConfig.requiredKeys,
       },
