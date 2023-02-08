@@ -7,7 +7,7 @@ let config = require('../../../config/index.js');
 
 class ConfigureCommand extends Command {
   async run() {
-    const configureFlags = this.parse(ConfigureCommand).flags;
+    const { flags: configureFlags } = await this.parse(ConfigureCommand);
 
     if (!configureFlags.alias) {
       configureFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
