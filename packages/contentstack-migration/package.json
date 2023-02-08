@@ -5,8 +5,10 @@
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "^1.0.4",
-    "@contentstack/cli-utilities": "^1.0.3",
+    "@contentstack/cli-utilities": "^1.0.5",
     "@contentstack/management": "^1.6.0",
+    "@oclif/command": "^1.8.16",
+    "@oclif/config": "^1.18.3",
     "async": "^3.2.4",
     "callsites": "^3.1.0",
     "cardinal": "^2.1.1",
