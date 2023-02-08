@@ -7,12 +7,12 @@
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
+const { merge } = require('lodash');
 
 const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
 const { formatError } = require('../util');
 let config = require('../../config/default');
-const stack = require('../util/contentstack-management-sdk');
 
 module.exports = class ExportGlobalFields {
   limit = 100;
@@ -25,7 +25,7 @@ module.exports = class ExportGlobalFields {
   globalfieldsConfig = config.modules.globalfields;
   validKeys = config.modules.globalfields.validKeys;
 
-  constructor(credentialConfig) {
+  constructor(exportConfig, stackAPIClient) {
     this.requestOptions = {
       qs: {
         skip: 0,
@@ -34,7 +34,8 @@ module.exports = class ExportGlobalFields {
         include_count: true,
       },
     };
-    this.config = { ...config, ...credentialConfig };
+    this.stackAPIClient = stackAPIClient;
+    this.config = merge(config, exportConfig);
     this.globalfieldsFolderPath = path.resolve(
       this.config.data,
       this.config.branchName || '',
@@ -68,16 +69,9 @@ module.exports = class ExportGlobalFields {
 
   getGlobalFields(skip, globalFieldConfig) {
     const self = this;
-    let client = stack.Client(globalFieldConfig);
-
     self.requestOptions.qs.skip = skip;
-
     return new Promise(function (resolve, reject) {
-      client
-        .stack({
-          api_key: globalFieldConfig.source_stack,
-          management_token: globalFieldConfig.management_token,
-        })
+      self.stackAPIClient
         .globalField()
         .query(self.requestOptions.qs)
         .find()
@@ -107,6 +101,9 @@ module.exports = class ExportGlobalFields {
             addlogs(globalFieldConfig, chalk.red(`Failed to export global-fields ${formatError(error)}`), 'error');
             reject(error);
           }
+        })
+        .catch((error) => {
+          reject(error);
         });
     });
   }
@@ -115,7 +112,10 @@ module.exports = class ExportGlobalFields {
     const self = this;
     return new Promise(function (resolve, reject) {
       try {
-        helper.writeFileSync(path.join(self.globalfieldsFolderPath, self.globalfieldsConfig.fileName), self.global_fields);
+        helper.writeFileSync(
+          path.join(self.globalfieldsFolderPath, self.globalfieldsConfig.fileName),
+          self.global_fields,
+        );
         addlogs(self.config, chalk.green('Global Fields export completed successfully'), 'success');
 
         resolve();

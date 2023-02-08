@@ -13,7 +13,7 @@ let {
 
 class JsonMigrationCommand extends Command {
   async run() {
-    const migrateRteFlags = this.parse(JsonMigrationCommand).flags;
+    const { flags: migrateRteFlags } = await this.parse(JsonMigrationCommand);
     try {
       const normalizedFlags = normalizeFlags(migrateRteFlags);
       let config = await getConfig(normalizedFlags);
