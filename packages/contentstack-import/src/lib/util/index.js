@@ -5,27 +5,26 @@
  * MIT Licensed
  */
 
-var _ = require('lodash');
-const { HttpClient } = require('@contentstack/cli-utilities');
-var fs = require('./fs');
-var path = require('path');
-var chalk = require('chalk');
-var { addlogs } = require('./log');
-var defaultConfig = require('../../config/default');
-const stack = require('./contentstack-management-sdk');
+const _ = require('lodash');
+const { HttpClient, managementSDKClient } = require('@contentstack/cli-utilities');
+const fs = require('./fs');
+const path = require('path');
+const chalk = require('chalk');
+const { addlogs } = require('./log');
+const defaultConfig = require('../../config/default');
 const promiseLimit = require('promise-limit');
-var config;
+let config;
 
-exports.initialization = function (configData) {
+exports.initialization = (configData) => {
   config = this.buildAppConfig(configData);
-  var res = this.validateConfig(config);
+  const res = this.validateConfig(config);
 
   if ((res && res !== 'error') || res === undefined) {
     return config;
   }
 };
 
-exports.validateConfig = function (importConfig) {
+exports.validateConfig = (importConfig) => {
   if (importConfig.email && importConfig.password && !importConfig.target_stack) {
     addlogs(importConfig, chalk.red('Kindly provide api_token'), 'error');
     return 'error';
@@ -47,12 +46,12 @@ exports.validateConfig = function (importConfig) {
   }
 };
 
-exports.buildAppConfig = function (importConfig) {
+exports.buildAppConfig = (importConfig) => {
   importConfig = _.merge(defaultConfig, importConfig);
   return importConfig;
 };
 
-exports.sanitizeStack = function (importConfig) {
+exports.sanitizeStack = (importConfig) => {
   if (typeof importConfig.preserveStackVersion !== 'boolean' || !importConfig.preserveStackVersion) {
     return Promise.resolve();
   }
@@ -103,17 +102,13 @@ exports.sanitizeStack = function (importConfig) {
   }
 };
 
-exports.masterLocalDetails = function (credentialConfig) {
-  let client = stack.Client(credentialConfig);
+exports.masterLocalDetails = (stackAPIClient) => {
   return new Promise((resolve, reject) => {
-    var result = client
-      .stack({ api_key: credentialConfig.target_stack, management_token: credentialConfig.management_token })
-      .locale()
-      .query();
+    const result = stackAPIClient.locale().query();
     result
       .find()
       .then((response) => {
-        var masterLocalObj = response.items.filter((obj) => {
+        const masterLocalObj = response.items.filter((obj) => {
           if (obj.fallback_locale === null) {
             return obj;
           }
@@ -126,68 +121,72 @@ exports.masterLocalDetails = function (credentialConfig) {
   });
 };
 
-exports.field_rules_update = function (importConfig, ctPath) {
-  return new Promise(function (resolve, reject) {
-    let client = stack.Client(importConfig);
-
-    fs.readFileSync(path.join(ctPath + '/field_rules_uid.json'), async (err, data) => {
-      if (err) {
-        throw err;
-      }
-      var ct_field_visibility_uid = JSON.parse(data);
-      let ct_files = fs.readdirSync(ctPath);
-      if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
-        for (let index = 0; index < ct_field_visibility_uid.length; index++) {
-          if (ct_files.indexOf(ct_field_visibility_uid[index] + '.json') > -1) {
-            let schema = require(path.resolve(ctPath, ct_field_visibility_uid[index]));
-            // await field_rules_update(schema)
-            let fieldRuleLength = schema.field_rules.length;
-            for (let k = 0; k < fieldRuleLength; k++) {
-              let fieldRuleConditionLength = schema.field_rules[k].conditions.length;
-              for (let i = 0; i < fieldRuleConditionLength; i++) {
-                if (schema.field_rules[k].conditions[i].operand_field === 'reference') {
-                  let entryMapperPath = path.resolve(importConfig.data, 'mapper', 'entries');
-                  let entryUidMapperPath = path.join(entryMapperPath, 'uid-mapping.json');
-                  let fieldRulesValue = schema.field_rules[k].conditions[i].value;
-                  let fieldRulesArray = fieldRulesValue.split('.');
-                  let updatedValue = [];
-                  for (let j = 0; j < fieldRulesArray.length; j++) {
-                    let splitedFieldRulesValue = fieldRulesArray[j];
-                    let oldUid = helper.readFileSync(path.join(entryUidMapperPath));
-                    if (oldUid.hasOwnProperty(splitedFieldRulesValue)) {
-                      updatedValue.push(oldUid[splitedFieldRulesValue]);
-                    } else {
-                      updatedValue.push(fieldRulesArray[j]);
+exports.field_rules_update = (importConfig, ctPath) => {
+  return new Promise((resolve, reject) => {
+    managementSDKClient(config)
+      .then((APIClient) => {
+        fs.readFileSync(path.join(ctPath + '/field_rules_uid.json'), async (err, data) => {
+          if (err) {
+            throw err;
+          }
+          const ct_field_visibility_uid = JSON.parse(data);
+          let ct_files = fs.readdirSync(ctPath);
+          if (ct_field_visibility_uid && ct_field_visibility_uid != 'undefined') {
+            for (const ele of ct_field_visibility_uid) {
+              if (ct_files.indexOf(ele + '.json') > -1) {
+                let schema = require(path.resolve(ctPath, ele));
+                // await field_rules_update(schema)
+                let fieldRuleLength = schema.field_rules.length;
+                for (let k = 0; k < fieldRuleLength; k++) {
+                  let fieldRuleConditionLength = schema.field_rules[k].conditions.length;
+                  for (let i = 0; i < fieldRuleConditionLength; i++) {
+                    if (schema.field_rules[k].conditions[i].operand_field === 'reference') {
+                      let entryMapperPath = path.resolve(importConfig.data, 'mapper', 'entries');
+                      let entryUidMapperPath = path.join(entryMapperPath, 'uid-mapping.json');
+                      let fieldRulesValue = schema.field_rules[k].conditions[i].value;
+                      let fieldRulesArray = fieldRulesValue.split('.');
+                      let updatedValue = [];
+                      for (const element of fieldRulesArray) {
+                        let splitedFieldRulesValue = element;
+                        let oldUid = helper.readFileSync(path.join(entryUidMapperPath));
+                        if (oldUid.hasOwnProperty(splitedFieldRulesValue)) {
+                          updatedValue.push(oldUid[splitedFieldRulesValue]);
+                        } else {
+                          updatedValue.push(element);
+                        }
+                      }
+                      schema.field_rules[k].conditions[i].value = updatedValue.join('.');
                     }
                   }
-                  schema.field_rules[k].conditions[i].value = updatedValue.join('.');
                 }
+                const stackAPIClient = APIClient.stack({
+                  api_key: importConfig.target_stack,
+                  management_token: importConfig.management_token,
+                });
+                let ctObj = stackAPIClient.contentType(schema.uid);
+                Object.assign(ctObj, _.cloneDeep(schema));
+                ctObj
+                  .update()
+                  .then(() => {
+                    return resolve();
+                  })
+                  .catch((error) => {
+                    return reject(error);
+                  });
               }
             }
-            let ctObj = client
-              .stack({ api_key: importConfig.target_stack, management_token: importConfig.management_token })
-              .contentType(schema.uid);
-            Object.assign(ctObj, _.cloneDeep(schema));
-            ctObj
-              .update()
-              .then(() => {
-                return resolve();
-              })
-              .catch(function (error) {
-                return reject(error);
-              });
           }
-        }
-      }
-    });
+        });
+      })
+      .catch(reject);
   });
 };
 
-exports.getConfig = function () {
+exports.getConfig = () => {
   return config;
 };
 
-exports.formatError = function (error) {
+exports.formatError = (error) => {
   try {
     if (typeof error === 'string') {
       error = JSON.parse(error);
@@ -209,7 +208,7 @@ exports.formatError = function (error) {
   return message;
 };
 
-exports.executeTask = function (tasks = [], handler, options) {
+exports.executeTask = (handler, options, tasks = []) => {
   if (typeof handler !== 'function') {
     throw new Error('Invalid handler');
   }

@@ -11,7 +11,7 @@ const configKey = 'addFields';
 
 class UpdateAndPublishCommand extends Command {
   async run() {
-    const addFieldsFlags = this.parse(UpdateAndPublishCommand).flags;
+    const { flags: addFieldsFlags } = await this.parse(UpdateAndPublishCommand);
     addFieldsFlags.retryFailed = addFieldsFlags['retry-failed'] || addFieldsFlags.retryFailed || false;
     addFieldsFlags.contentTypes = addFieldsFlags['content-types'] || addFieldsFlags.contentTypes;
     addFieldsFlags.bulkPublish = addFieldsFlags['bulk-publish'] || addFieldsFlags.bulkPublish;
@@ -114,33 +114,14 @@ UpdateAndPublishCommand.flags = {
   'retry-failed': flags.string({
     description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)',
   }),
-  retryFailed: flags.string({
-    char: 'r',
-    description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)',
-    hidden: true,
-    parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
-  }),
   'bulk-publish': flags.string({
     description:
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
   }),
-  bulkPublish: flags.string({
-    char: 'b',
-    description:
-      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
-    hidden: true,
-    parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
-  }),
   'content-types': flags.string({
     description: 'The Contenttypes from which entries will be published',
     multiple: true,
-  }),
-  contentTypes: flags.string({
-    char: 't',
-    description: 'The Contenttypes from which entries will be published',
-    multiple: true,
-    parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-types']),
   }),
   environments: flags.string({
     char: 'e',
@@ -164,6 +145,27 @@ UpdateAndPublishCommand.flags = {
   force: flags.boolean({
     default: false,
     description: 'Update and publish all entries even if no fields have been added',
+  }),
+
+  // To be deprecated
+  retryFailed: flags.string({
+    char: 'r',
+    description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)',
+    hidden: true,
+    parse: printFlagDeprecation(['-r', '--retryFailed'], ['--retry-failed']),
+  }),
+  bulkPublish: flags.string({
+    char: 'b',
+    description:
+      "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
+    hidden: true,
+    parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
+  }),
+  contentTypes: flags.string({
+    char: 't',
+    description: 'The Contenttypes from which entries will be published',
+    multiple: true,
+    parse: printFlagDeprecation(['-t', '--contentTypes'], ['--content-types']),
   }),
 };
 
