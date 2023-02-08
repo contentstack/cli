@@ -31,7 +31,6 @@
   "devDependencies": {
     "oclif": "^3.1.2",
     "@fancy-test/nock": "^0.1.1",
-    "@oclif/dev-cli": "^1.26.10",
     "@oclif/plugin-help": "^5.1.19",
     "@oclif/test": "^2.2.10",
     "@types/chai": "^4.2.18",
@@ -40,7 +39,6 @@
     "@types/mocha": "^8.2.2",
     "@types/node": "^14.14.32",
     "@types/sinon": "^10.0.2",
-    "@types/tar": "^4.0.3",
     "chai": "^4.3.4",
     "dotenv": "^16.0.1",
     "eslint": "^8.18.0",
