@@ -15,7 +15,8 @@ exports.initial = async (config) => {
     exports.getConfig = () => {
       return config;
     };
-    const APIClient = await managementSDKClient(config);
+
+    const APIClient = await managementSDKClient({ ...config, stack_api_key: config.source_stack });
     const stackAPIClient = APIClient.stack({ api_key: config.source_stack, management_token: config.management_token });
 
     const fetchBranchAndExport = async (APIClient, stackAPIClient) => {
