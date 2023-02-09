@@ -212,7 +212,7 @@ module.exports = class ImportEntries {
           });
         })
         .catch((error) => {
-          addlogs.log(self.config, util.formatError(error), 'error');
+          addlogs(self.config, util.formatError(error), 'error');
           reject('Failed import entries');
         });
     });
