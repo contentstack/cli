@@ -1,12 +1,14 @@
 {
   "name": "@contentstack/cli-migration",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "author": "@contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "^1.0.4",
-    "@contentstack/cli-utilities": "^1.0.3",
-    "@contentstack/management": "^1.6.0",
+    "@contentstack/cli-command": "^1.1.0",
+    "@contentstack/cli-utilities": "^1.1.0",
+    "@contentstack/management": "^1.6.1",
+    "@oclif/command": "^1.8.16",
+    "@oclif/config": "^1.18.3",
     "async": "^3.2.4",
     "callsites": "^3.1.0",
     "cardinal": "^2.1.1",
