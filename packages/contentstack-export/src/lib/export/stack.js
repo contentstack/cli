@@ -26,7 +26,7 @@ module.exports = class ExportStack {
 
   async start() {
     const self = this;
-    if (self.config.auth_token) {
+    if (!self.config.management_token && self.config.auth_token) {
       const stack = await self.APIClient.stack({ api_key: self.config.source_stack, authtoken: self.config.auth_token })
         .fetch()
         .catch((error) => {
