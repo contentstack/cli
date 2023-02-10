@@ -17,7 +17,7 @@ exports.initial = (configData) => {
   return new Promise(async (resolve, reject) => {
     const config = util.initialization(configData);
     config.oldPath = config.data;
-    const APIClient = await managementSDKClient({ ...config, stack_api_key: config.target_stack });
+    const APIClient = await managementSDKClient(config);
     const stackAPIClient = APIClient.stack({ api_key: config.target_stack, management_token: config.management_token });
 
     if (configData.branchName) {
