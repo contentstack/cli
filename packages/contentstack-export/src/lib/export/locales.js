@@ -7,6 +7,7 @@ class LocaleExport {
     this.stackAPIClient = stackAPIClient;
     this.exportConfig = exportConfig;
     this.localeConfig = exportConfig.modules.locales;
+    this.masterLocaleConfig = exportConfig.modules.masterLocale;
     this.qs = {
       include_count: true,
       asc: 'updated_at',
@@ -17,6 +18,7 @@ class LocaleExport {
 
     this.localesPath = path.resolve(exportConfig.data, exportConfig.branchName || '', this.localeConfig.dirName);
     this.locales = {};
+    this.masterLocale = {};
     this.fetchConcurrency = this.localeConfig.fetchConcurrency || this.exportConfig.fetchConcurrency;
     this.writeConcurrency = this.localeConfig.writeConcurrency || this.exportConfig.writeConcurrency;
   }
@@ -27,6 +29,7 @@ class LocaleExport {
       await fileHelper.makeDirectory(this.localesPath);
       await this.getLocales();
       await fileHelper.writeFile(path.join(this.localesPath, this.localeConfig.fileName), this.locales);
+      await fileHelper.writeFile(path.join(this.localesPath, this.masterLocaleConfig.fileName), this.masterLocale);
       addlogs(this.exportConfig, 'Completed locale export', 'success');
     } catch (error) {
       addlogs(this.exportConfig, chalk.red(`Failed to export locales ${formatError(error)}`), 'error');
@@ -56,7 +59,11 @@ class LocaleExport {
           delete locale[key];
         }
       }
-      this.locales[locale.uid] = locale;
+      if(locale.code === this.exportConfig.master_locale.code){
+        this.masterLocale[locale.uid] = locale;
+      }else{
+        this.locales[locale.uid] = locale;
+      }
     });
   }
 }
