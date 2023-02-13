@@ -22,15 +22,14 @@ export default async (config): Promise<ContentstackClient> => {
       }),
       retryDelay: Math.floor(Math.random() * (8000 - 3000 + 1) + 3000),
       logHandler: (level, data) => {},
-      retryCondition: (error: Error & { status?: number }): boolean => {
+      retryCondition: (error: any): boolean => {
         // LINK ***REMOVED***vascript/blob/72fee8ad75ba7d1d5bab8489ebbbbbbaefb1c880/src/core/stack.js#L49
-        if (error && error.status) {
+        if (error.response && error.response.status) {
           switch (error.status) {
             case 401:
             case 429:
             case 408:
               return true;
-
             default:
               return false;
           }
