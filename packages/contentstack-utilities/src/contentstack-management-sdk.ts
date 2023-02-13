@@ -8,7 +8,7 @@ export default async (config) => {
     const option = {
       host: config.host,
       management_token: config.management_token,
-      api_key: config.target_stack,
+      api_key: config.stack_api_key,
       maxContentLength: 100000000,
       maxBodyLength: 1000000000,
       maxRequests: 10,
