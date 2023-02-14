@@ -20,6 +20,7 @@ const {
   getInstalledExtensions,
   lookupEntries,
 } = require('../../utils');
+const config = require('../../config/default');
 
 module.exports = class ImportEntries {
   mappedAssetUidPath;
@@ -41,9 +42,8 @@ module.exports = class ImportEntries {
   skipFiles = ['__master.json', '__priority.json', 'schema.json'];
 
   constructor(importConfig, stackAPIClient) {
-    this.config = importConfig;
+    this.config = _.merge(config, importConfig);
     this.stackAPIClient = stackAPIClient;
-    let self = this;
     this.mappedAssetUidPath = path.resolve(this.config.data, 'mapper', 'assets', 'uid-mapping.json');
     this.mappedAssetUrlPath = path.resolve(this.config.data, 'mapper', 'assets', 'url-mapping.json');
 
@@ -101,7 +101,7 @@ module.exports = class ImportEntries {
           if (this.skipFiles.indexOf(files[index]) === -1) {
             if (files[index] != 'field_rules_uid.json') {
               let schema = require(path.resolve(path.join(this.ctPath, files[index])));
-              self.ctSchemas[schema.uid] = schema;
+              this.ctSchemas[schema.uid] = schema;
             }
           }
         } catch (error) {
@@ -124,11 +124,11 @@ module.exports = class ImportEntries {
     }
 
     if (_.isEmpty(self.installedExtensions)) {
-      self.installedExtensions = await getInstalledExtensions(this.config);
+      self.installedExtensions = await getInstalledExtensions(self.config);
     }
 
     return new Promise((resolve, reject) => {
-      let langs = [this.masterLanguage.code];
+      let langs = [self.masterLanguage.code];
       for (let i in languages) {
         if (i) {
           langs.push(languages[i].code);
@@ -143,7 +143,6 @@ module.exports = class ImportEntries {
         .supressFields()
         .then(async () => {
           log(this.config, 'Completed suppressing content type reference fields', 'success');
-
           let mappedAssetUids = fileHelper.readFileSync(this.mappedAssetUidPath) || {};
           let mappedAssetUrls = fileHelper.readFileSync(this.mappedAssetUrlPath) || {};
 
@@ -154,8 +153,8 @@ module.exports = class ImportEntries {
             async () => {
               let lang = langs[counter];
               if (
-                (this.config.hasOwnProperty('onlylocales') && this.config.onlylocales.indexOf(lang) !== -1) ||
-                !this.config.hasOwnProperty('onlylocales')
+                (self.config.hasOwnProperty('onlylocales') && self.config.onlylocales.indexOf(lang) !== -1) ||
+                !self.config.hasOwnProperty('onlylocales')
               ) {
                 log(this.config, `Starting to create entries ${lang} locale`, 'info');
                 await self.createEntries(lang, mappedAssetUids, mappedAssetUrls);

@@ -47,7 +47,7 @@ class EntriesExport {
           requestOption.content_type,
           requestOption.locale + '.json',
         );
-        await fileHelper.writeFile(entriesFilePath, entries);
+        await fileHelper.writeLargeFile(entriesFilePath, entries);
         log(
           this.exportConfig,
           `Exported entries of type ${requestOption.content_type} locale ${requestOption.locale}`,

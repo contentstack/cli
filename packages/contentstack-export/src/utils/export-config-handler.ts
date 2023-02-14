@@ -17,12 +17,14 @@ const setupConfig = async (exportCmdFlags): Promise<any> => {
   //Note to support the old key
   config.data = config.exportDir;
 
-  if (exportCmdFlags['mtoken-alias']) {
-    const { token, apiKey } = configHandler.get(exportCmdFlags['mtoken-alias']);
+  const managementTokenAlias = exportCmdFlags['management-token-alias'] || exportCmdFlags['alias'];
+
+  if (managementTokenAlias) {
+    const { token, apiKey } = configHandler.get(`tokens.${managementTokenAlias}`);
     config.management_token = token;
     config.apiKey = apiKey;
     if (!config.management_token) {
-      throw new Error(`No management token found on given alias ${exportCmdFlags['mtoken-alias']}`);
+      throw new Error(`No management token found on given alias ${managementTokenAlias}`);
     }
   }
 
@@ -36,6 +38,8 @@ const setupConfig = async (exportCmdFlags): Promise<any> => {
       }
     }
   }
+
+  config.auth_token = configHandler.get('authtoken');
 
   if (exportCmdFlags['branch']) {
     config.branchName = exportCmdFlags['branch'];
