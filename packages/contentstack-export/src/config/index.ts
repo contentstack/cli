@@ -109,6 +109,7 @@ export default {
       downloadLimit: 5,
       // total no of entries fetched in each content type in a single call
       limit: 100,
+      dependencies: ['locales', 'content-types'],
     },
     extensions: {
       dirName: 'extensions',
