@@ -1,0 +1,15 @@
+{
+    "IS_TS": false,
+    "UNIT_EXECUTION_ORDER": [],
+    "INTEGRATION_EXECUTION_ORDER": [
+
+        "webhooks.test.js",
+        "workflows.test.js"
+    ],
+    "ENABLE_PREREQUISITES": true,
+    "REGIONS": [
+        "NA",
+        "EU",
+        "AZURE-NA"
+    ]
+}
