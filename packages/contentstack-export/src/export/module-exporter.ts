@@ -47,7 +47,7 @@ class ModuleExporter {
   async export() {
     // checks for single module or all modules
     if (this.exportConfig.singleModuleExport) {
-      return this.exportByModuleByName(this.exportConfig.moduleName);
+      return this.exportSingleModule(this.exportConfig.moduleName);
     }
     return this.exportAllModules();
   }
@@ -74,6 +74,25 @@ class ModuleExporter {
     // set master locale to config
     if (moduleName === 'stack' && exportedModuleResponse.code) {
       this.exportConfig.master_locale = { code: exportedModuleResponse.code };
+    }
+  }
+
+  async exportSingleModule(moduleName): Promise<any> {
+    // Note stack is always exported
+    let exportModules = ['stack'];
+    const {
+      modules: {
+        [moduleName]: { dependencies = [] },
+      },
+    } = this.exportConfig;
+
+    if (dependencies.length > 0) {
+      exportModules = exportModules.concat(dependencies);
+    }
+    exportModules.push(moduleName);
+
+    for (const moduleName of exportModules) {
+      await this.exportByModuleByName(moduleName);
     }
   }
 
