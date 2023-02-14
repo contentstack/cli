@@ -15,7 +15,7 @@
     "lodash": "^4.17.21",
     "nock": "^13.1.0",
     "omit-deep-lodash": "^1.1.5",
-    "sinon": "^11.1.1",
+    "sinon": "^15.0.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
