@@ -13,10 +13,9 @@ let stackConfig = config.modules.stack;
 class ExportStack {
   stackConfig = config.modules.stack;
 
-  constructor(exportConfig, stackAPIClient, APIClient) {
+  constructor(exportConfig, stackAPIClient) {
     this.config = merge(config, exportConfig);
     this.stackAPIClient = stackAPIClient;
-    this.APIClient = APIClient;
     this.requestOption = {
       uri: this.config.host + this.config.apis.stacks,
       headers: this.config.headers,
@@ -24,14 +23,12 @@ class ExportStack {
     };
   }
 
-  start() {
+  async start() {
     const self = this;
     if (self.config.auth_token) {
-      const stack = self.APIClient.stack({ api_key: self.config.source_stack, authtoken: self.config.auth_token })
-        .fetch()
-        .catch((error) => {
-          console.log(error);
-        });
+      const stack = await self.stackAPIClient.fetch().catch((error) => {
+        console.log(error);
+      });
 
       if (stack && stack.org_uid) {
         self.config.org_uid = stack.org_uid;
@@ -54,7 +51,7 @@ class ExportStack {
       mkdirp.sync(stackFolderPath);
 
       return new Promise((resolve, reject) => {
-        return self.APIClient.stack({ api_key: self.config.source_stack })
+        return self.stackAPIClient
           .fetch()
           .then((response) => {
             fileHelper.writeFile(stackContentsFile, response);

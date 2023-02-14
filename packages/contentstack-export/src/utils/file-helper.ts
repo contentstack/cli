@@ -71,6 +71,26 @@ export const writeFile = function (filePath, data): Promise<any> {
   });
 };
 
+export const writeLargeFile = function (filePath, data): Promise<any> {
+  if (typeof filePath !== 'string' || typeof data !== 'object') {
+    return;
+  }
+  filePath = path.resolve(filePath);
+  return new Promise((resolve, reject) => {
+    const stringifyStream = bigJSON.createStringifyStream({
+      body: data,
+    });
+    var writeStream = fs.createWriteStream(filePath, 'utf-8');
+    stringifyStream.pipe(writeStream);
+    writeStream.on('finish', () => {
+      resolve('');
+    });
+    writeStream.on('error', (error) => {
+      reject(error);
+    });
+  });
+};
+
 export const makeDirectory = function (dir): void {
   for (const key in arguments) {
     const dirname = path.resolve(arguments[key]);
@@ -78,15 +98,6 @@ export const makeDirectory = function (dir): void {
       mkdirp.sync(dirname);
     }
   }
-};
-
-export const writeFileStream = function (filePath, data, writer) {
-  if (!writer) {
-    writer = fs.createWriteStream(filePath);
-  }
-  data = typeof data === 'object' ? JSON.stringify(data) : data || '{}';
-  writer.write(data);
-  return writer;
 };
 
 export const readdir = function (dirPath): any {
