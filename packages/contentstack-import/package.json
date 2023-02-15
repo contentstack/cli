@@ -49,7 +49,8 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "test:integration": "mocha --forbid-only \"test/run.test.js\" --integration-test --timeout 60000"
   },
   "csdxConfig": {
     "expiredCommands": {
