@@ -4,4 +4,6 @@ fileignoreconfig:
   checksum: 334c48fd220f0015d5dbcb308106d1c48725c158ddc9e4f0949a230388c63656
 - filename: packages/contentstack-export-to-csv/src/util/index.js
   checksum: 72f6a2b343949cdf2ab4d567eed471cdb357aee2088d81d05b790f4f7fb49497
-  version: ''
+- filename: packages/contentstack-migration/src/commands/cm/stacks/migration.js
+  checksum: ce65ec01fe790dbc806ba661db7355ac4f07b2b8b0480e399b033a29f09c4669
+version: ''
