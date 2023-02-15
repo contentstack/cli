@@ -1,12 +1,12 @@
 {
   "name": "@contentstack/cli-migration",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "author": "@contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "^1.0.4",
-    "@contentstack/management": "^1.6.0",
-    "@contentstack/cli-utilities": "^1.0.5",
+    "@contentstack/cli-command": "^1.1.0",
+    "@contentstack/cli-utilities": "^1.1.0",
+    "@contentstack/management": "^1.6.1",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.18.3",
     "async": "^3.2.4",
@@ -19,20 +19,20 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1.26.0",
-    "@oclif/test": "^1.2.8",
+    "@oclif/test": "^2.2.10",
     "chai": "^4.3.4",
     "eslint": "^8.18.0",
     "eslint-config-oclif": "^3.1.0",
     "eslint-config-oclif-typescript": "^0.2.0",
     "globby": "^10.0.2",
     "husky": "^4.2.5",
-    "jsdoc": "^3.6.7",
+    "jsdoc": "^4.0.0",
     "jsdoc-to-markdown": "^7.0.1",
     "mkdirp": "^1.0.4",
     "mocha": "^10.0.0",
     "nock": "^13.1.1",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "oclif": "^3.1.2"
   },
   "engines": {
     "node": ">=8.3.0"
@@ -53,14 +53,14 @@
     "bin": "csdx",
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-migration/<%- commandPath %>"
   },
-  "repository": "contentstack/cli-migration",
+  "repository": "contentstack/cli",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint ./src",
     "generate-api-ref-md-doc": "nyc jsdoc2md ./src/modules/* > ./docs/api-reference.md",
-    "prepack": "oclif-dev manifest && oclif-dev readme && npm run generate-api-ref-md-doc",
+    "prepack": "oclif manifest && oclif readme && npm run generate-api-ref-md-doc",
     "test": "nyc mocha \"test/**/*.test.js\"",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "oclif readme && git add README.md"
   },
   "csdxConfig": {
     "expiredCommands": {
