@@ -187,12 +187,9 @@ module.exports = class ImportLanguages {
     let self = this;
     return new Promise(function (resolve, reject) {
       let lang = {};
-      let requireKeys = self.config.modules.masterLocale.requiredKeys
       let _lang = self.sourceMasterLanguages[langUid];
-      requireKeys.forEach((e) => {
-        lang[e] = _lang[e];
-      });
-      let langobj = self.stackAPIClient.locale(lang.code);
+      lang["name"] = _lang["name"];
+      let langobj = self.stackAPIClient.locale(_lang.code);
       Object.assign(langobj, cloneDeep(lang));
       langobj.update().then(resolve).catch((error) => reject(error));
     });
