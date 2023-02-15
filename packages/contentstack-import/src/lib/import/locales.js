@@ -184,14 +184,10 @@ module.exports = class ImportLanguages {
   }
 
   updateMasterLocale(langUid) {
-    let self = this;
-    return new Promise(function (resolve, reject) {
-      let lang = {};
-      let _lang = self.sourceMasterLanguages[langUid];
-      lang["name"] = _lang["name"];
-      let langobj = self.stackAPIClient.locale(_lang.code);
-      Object.assign(langobj, cloneDeep(lang));
-      langobj.update().then(resolve).catch((error) => reject(error));
-    });
+    let lang = this.sourceMasterLanguages[langUid]
+    if (!lang) return Promise.reject('Locale not found.!')
+    const langObj = this.stackAPIClient.locale(lang.code);
+    Object.assign(langObj, { name: lang.name });
+    return langObj.update();
   }
 };
