@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.2.5 darwin-arm64 node-v16.17.0
+@contentstack/cli/1.3.0 darwin-x64 node-v18.12.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
