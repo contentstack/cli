@@ -37,6 +37,11 @@ class EntriesExport {
       }
       const entryRequestOptions = this.createRequestObjects(locales, contentTypes);
       for (let requestOption of entryRequestOptions) {
+        addlogs(
+          this.exportConfig,
+          `Starting export of entries of content_type - ${requestOption.content_type} locale - ${requestOption.locale}`,
+          'info',
+        );
         await fileHelper.makeDirectory(path.join(this.entriesRootPath, requestOption.content_type));
         const entries = await this.getEntries(requestOption);
         let entriesFilePath = path.join(
@@ -44,7 +49,7 @@ class EntriesExport {
           requestOption.content_type,
           requestOption.locale + '.json',
         );
-        await fileHelper.writeFile(entriesFilePath, entries);
+        await fileHelper.writeLargeFile(entriesFilePath, entries);
         addlogs(
           this.exportConfig,
           `Exported entries of type ${requestOption.content_type} locale ${requestOption.locale}`,
