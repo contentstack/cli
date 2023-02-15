@@ -10,7 +10,7 @@ let config;
 
 class AssetsPublishCommand extends Command {
   async run() {
-    const assetsFlags = this.parse(AssetsPublishCommand).flags;
+    const { flags: assetsFlags } = await this.parse(AssetsPublishCommand);
     assetsFlags.retryFailed = assetsFlags['retry-failed'] || assetsFlags.retryFailed || false;
     assetsFlags.folderUid = assetsFlags['folder-uid'] || assetsFlags.folderUid;
     assetsFlags.bulkPublish = assetsFlags['bulk-publish'] || assetsFlags.bulkPublish;
