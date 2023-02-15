@@ -55,7 +55,7 @@ export default class ContentModelSeeder {
     this.ghRepo = gh.repo;
     const limit = Number(this.options.fetchLimit);
 
-    this.csClient = new ContentstackClient(options.cmaHost, options.authToken, limit);
+    this.csClient = new ContentstackClient(options.cmaHost, limit);
     this.ghClient = new GitHubClient(this.ghUsername, DEFAULT_STACK_PATTERN);
   }
 
@@ -101,10 +101,19 @@ export default class ContentModelSeeder {
     if (!this.ghRepo) {
       await this.inquireGitHubRepo();
     }
-    const repoExists = await this.ghClient.checkIfRepoExists(this.ghRepo as string);
+
+    let repoExists = false;
+    let repoResponseData: any = {};
+    try {
+      const repoCheckResult = await this.ghClient.makeGetApiCall(this.ghRepo as string);
+      repoExists = repoCheckResult.statusCode === 200;
+      repoResponseData = { status: repoCheckResult.statusCode, statusMessage: repoCheckResult.statusMessage };
+    } catch (error) {
+      throw error;
+    }
 
     if (repoExists === false) {
-      cliux.error(`Could not find GitHub repository '${this.ghPath}'.`);
+      cliux.error(repoResponseData.status === 403 ? repoResponseData.statusMessage : `Could not find GitHub repository '${this.ghPath}'.`);
       if (this.parent) this.parent.exit(1);
     } else {
       let organizationResponse: Organization | undefined;
