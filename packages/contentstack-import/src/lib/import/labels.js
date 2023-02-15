@@ -15,7 +15,6 @@ const helper = require('../util/fs');
 const { formatError } = require('../util');
 const { addlogs } = require('../util/log');
 const config = require('../../config/default');
-const stack = require('../util/contentstack-management-sdk');
 
 module.exports = class ImportLabels {
   config;
@@ -27,9 +26,9 @@ module.exports = class ImportLabels {
   labelConfig = config.modules.labels;
   reqConcurrency = config.concurrency || config.fetchConcurrency || 1;
 
-  constructor(credentialConfig) {
-    this.config = merge(config, credentialConfig);
-    this.client = stack.Client(config);
+  constructor(importConfig, stackAPIClient) {
+    this.config = merge(config, importConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
@@ -68,8 +67,7 @@ module.exports = class ImportLabels {
           if (!self.labelUidMapper.hasOwnProperty(labelUid)) {
             let requestOption = { label: label };
 
-            return self.client
-              .stack({ api_key: self.config.target_stack, management_token: self.config.management_token })
+            return self.stackAPIClient
               .label()
               .create(requestOption)
               .then(function (response) {
@@ -138,8 +136,7 @@ module.exports = class ImportLabels {
                   label.parent[i] = self.labelUidMapper[parentUids[i]].uid;
                 }
               }
-              return self.client
-                .stack({ api_key: self.config.target_stack, management_token: self.config.management_token })
+              return self.stackAPIClient
                 .label(newLabelUid.uid)
                 .fetch()
                 .then(function (response) {

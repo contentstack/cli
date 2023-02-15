@@ -15,8 +15,8 @@ The config namespace contains all the commands that you will need to configure t
 $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
-$ csdx (-v|--version|version)
-@contentstack/cli-config/1.0.4 darwin-arm64 node-v16.17.0
+$ csdx (--version)
+@contentstack/cli-config/1.1.0 darwin-x64 node-v18.12.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -36,7 +36,10 @@ Get current region set for CLI
 USAGE
   $ csdx config:get:region
 
-EXAMPLE
+DESCRIPTION
+  Get current region set for CLI
+
+EXAMPLES
   $ csdx config:get:region
 ```
 
@@ -48,21 +51,25 @@ Set region for CLI
 
 ```
 USAGE
-  $ csdx config:set:region [REGION]
+  $ csdx config:set:region [REGION] [-d <value> -m <value> -n <value>]
 
-OPTIONS
-  -d, --cda=cda    Custom host to set for content delivery API, if this flag is added then cma and name flags are
-                   required
+FLAGS
+  -d, --cda=<value>   Custom host to set for content delivery API, if this flag is added then cma and name flags are
+                      required
+  -m, --cma=<value>   Custom host to set for content management API, , if this flag is added then cda and name flags are
+                      required
+  -n, --name=<value>  Name for the region, if this flag is added then cda and cma flags are required
 
-  -m, --cma=cma    Custom host to set for content management API, , if this flag is added then cda and name flags are
-                   required
-
-  -n, --name=name  Name for the region, if this flag is added then cda and cma flags are required
+DESCRIPTION
+  Set region for CLI
 
 EXAMPLES
   $ csdx config:set:region
+
   $ csdx config:set:region NA
+
   $ csdx config:set:region NA
+
   $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"
 ```
 

@@ -10,7 +10,7 @@ const configKey = 'revert';
 
 class RevertCommand extends Command {
   async run() {
-    const revertFlags = this.parse(RevertCommand).flags;
+    const { flags: revertFlags } = await this.parse(RevertCommand);
     revertFlags.retryFailed = revertFlags['retry-failed'] || revertFlags.retryFailed;
     revertFlags.logFile = revertFlags['log-file'] || revertFlags.logFile;
     delete revertFlags['retry-failed'];
