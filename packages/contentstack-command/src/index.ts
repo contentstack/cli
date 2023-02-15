@@ -1,4 +1,4 @@
-import { Command, flags } from '@oclif/command';
+import { Command, Flags } from '@oclif/core';
 import * as ContentstackManagementSDK from '@contentstack/management';
 import * as ContentstackDeliverySDK from 'contentstack';
 import * as url from 'url';
@@ -87,7 +87,6 @@ abstract class ContentstackCommand extends Command {
     if (this._authToken) return this._authToken;
     this._authToken = configHandler.get('authtoken');
     if (this._authToken) return this._authToken;
-    // throw new CLIError('You are not logged in. Please login with command $ csdx auth:login');
   }
 
   getToken(alias) {
@@ -97,11 +96,20 @@ abstract class ContentstackCommand extends Command {
     }
     throw new CLIError('No token found');
   }
+
+  isAuthenticated() {
+    const authtoken = configHandler.get('authtoken');
+    if (authtoken) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 module.exports = {
   Command: ContentstackCommand,
-  flags,
+  flags: Flags,
 };
 
-export { ContentstackCommand as Command, flags }
+export { ContentstackCommand as Command, Flags as flags };

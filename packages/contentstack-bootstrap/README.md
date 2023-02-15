@@ -14,8 +14,8 @@ This means that all the required steps such as stack, environment, and content t
 $ npm install -g @contentstack/cli-cm-bootstrap
 $ csdx COMMAND
 running command...
-$ csdx (-v|--version|version)
-@contentstack/cli-cm-bootstrap/1.1.7 darwin-arm64 node-v16.17.0
+$ csdx (--version)
+@contentstack/cli-cm-bootstrap/1.2.0 darwin-x64 node-v18.12.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -44,29 +44,32 @@ Bootstrap contentstack apps
 
 ```
 USAGE
-  $ csdx cm:bootstrap
+  $ csdx cm:bootstrap [--app-name <value>] [--project-dir <value>] [-k <value> | --org <value> | -n <value>] [-y
+    <value>]
 
-OPTIONS
-  -k, --stack-api-key=stack-api-key  Provide stack API key to seed content
-  -n, --stack-name=stack-name        Name of a new stack that will be created.
-  -y, --yes=yes                      [Optional] Skip stack confirmation
+FLAGS
+  -k, --stack-api-key=<value>  Provide stack API key to seed content
+  -n, --stack-name=<value>     Name of a new stack that will be created.
+  -y, --yes=<value>            [Optional] Skip stack confirmation
+  --app-name=<value>           App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter,
+                               vue-starter, stencil-starter
+  --org=<value>                Provide organization UID to create a new stack
+  --project-dir=<value>        Directory to setup the project. If directory name has a space then provide the path as a
+                               string or escap the space using back slash eg: "../../test space" or ../../test\ space
 
-  --app-name=app-name                App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter,
-                                     nuxt-starter, vue-starter, stencil-starter
-
-  --org=org                          Provide organization UID to create a new stack
-
-  --project-dir=project-dir          Directory to setup the project. If directory name has a space then provide the path
-                                     as a string or escap the space using back slash eg: "../../test space" or
-                                     ../../test\ space
+DESCRIPTION
+  Bootstrap contentstack apps
 
 EXAMPLES
   $ csdx cm:bootstrap
+
   $ csdx cm:bootstrap --project-dir <path/to/setup/the/app>
+
   $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app>
+
   $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --stack-api-key "stack-api-key"
-  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid" 
-  --stack-name "stack-name"
+
+  $ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid" --stack-name "stack-name"
 ```
 
 _See code: [src/commands/cm/bootstrap.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-bootstrap/src/commands/cm/bootstrap.ts)_
