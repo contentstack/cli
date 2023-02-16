@@ -28,7 +28,7 @@ module.exports = (region) => {
     }
   }
 
-  describe("Cleaning up", () => {
+  describe("Cleaning up", async () => {
     let config
 
     // NOTE logging out
@@ -60,5 +60,6 @@ module.exports = (region) => {
         }
       })
       removeTokens(Object.keys(stackDetails));
+      await deleteStack({ apiKey: stackDetails[stack].STACK_API_KEY, authToken: configHandler.get('authtoken') });
   })
 };
