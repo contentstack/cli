@@ -161,7 +161,8 @@ module.exports = class ImportLanguages {
         .catch((error) => {
           addlogs(self.config, formatError(error), 'warn');
         })
-      if (masterLangDetails["name"] &&
+      if (masterLangDetails &&
+        masterLangDetails["name"] &&
         sourceMasterLangDetails[0]["name"] &&
         masterLangDetails["name"].toString().toUpperCase() !== sourceMasterLangDetails[0]["name"].toString().toUpperCase()
       ) {
