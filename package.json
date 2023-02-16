@@ -14,7 +14,7 @@
     "clean": "pnpm --filter './packages/*' -w clean",
     "prepack": "pnpm --filter \"./packages/*\" -w prepack",
     "package-lock-only": "npm i --package-lock-only --workspaces",
-    "setup-repo": "npm i && pnpm cache:clear && pnpm package-lock-only && pnpm install --no-frozen-lockfile && pnpm clean && pnpm prepack"
+    "setup-repo": "npm i && pnpm cache:clear && pnpm package-lock-only && pnpm clean && pnpm install --no-frozen-lockfile && pnpm prepack"
   },
   "license": "MIT",
   "workspaces": [
