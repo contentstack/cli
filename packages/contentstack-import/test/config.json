@@ -12,7 +12,18 @@
         "global-fields.test.js",
         "locales.test.js",
         "webhooks.test.js",
-        "workflows.test.js"
+        "workflows.test.js",
+        "auth-token.test.js",
+        "auth-token-modules/assets.test.js",
+        "auth-token-modules/content-types.test.js",
+        "auth-token-modules/custom-roles.test.js",
+        "auth-token-modules/entries.test.js",
+        "auth-token-modules/environments.test.js",
+        "auth-token-modules/extensions.test.js",
+        "auth-token-modules/global-fields.test.js",
+        "auth-token-modules/locales.test.js",
+        "auth-token-modules/webhooks.test.js",
+        "auth-token-modules/workflows.test.js"
     ],
     "ENABLE_PREREQUISITES": true,
     "REGIONS": [
