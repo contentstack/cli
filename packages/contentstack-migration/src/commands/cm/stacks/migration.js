@@ -12,8 +12,7 @@ const { Parser } = require('../../../modules');
 const { ActionList } = require('../../../actions');
 const fs = require('fs');
 const chalk = require('chalk');
-const { configHandler } = require('@contentstack/cli-utilities');
-const { printFlagDeprecation } = require('@contentstack/cli-utilities');
+const { configHandler, printFlagDeprecation, managementSDKClient } = require('@contentstack/cli-utilities');
 
 const { ApiError, SchemaValidator, MigrationError, FieldValidator } = require('../../../validators');
 
@@ -82,6 +81,7 @@ class MigrationCommand extends Command {
       set('config', mapInstance, configObj);
     }
 
+    const APIClient = await managementSDKClient()
     let stackSDKInstance;
     if (branch) {
       set(BRANCH, mapInstance, branch);
@@ -93,13 +93,13 @@ class MigrationCommand extends Command {
         set(MANAGEMENT_TOKEN, mapInstance, managementToken);
         set(API_KEY, mapInstance, managementToken.apiKey);
         if (branch) {
-          stackSDKInstance = this.managementAPIClient.stack({
+          stackSDKInstance = APIClient.stack({
             management_token: managementToken.token,
             api_key: managementToken.apiKey,
             branch_uid: branch,
           });
         } else {
-          stackSDKInstance = this.managementAPIClient.stack({
+          stackSDKInstance = APIClient.stack({
             management_token: managementToken.token,
             api_key: managementToken.apiKey,
           });
@@ -108,19 +108,18 @@ class MigrationCommand extends Command {
     } else if (authtoken) {
       set(AUTH_TOKEN, mapInstance, authtoken);
       set(API_KEY, mapInstance, apiKey);
-      this.managementAPIClient = { authtoken: this.authToken };
       if (branch) {
-        stackSDKInstance = this.managementAPIClient.stack({
+        stackSDKInstance = APIClient.stack({
           api_key: apiKey,
           branch_uid: branch,
         });
       } else {
-        stackSDKInstance = this.managementAPIClient.stack({ api_key: apiKey });
+        stackSDKInstance = APIClient.stack({ api_key: apiKey });
       }
     }
 
     set(MANAGEMENT_SDK, mapInstance, stackSDKInstance);
-    set(MANAGEMENT_CLIENT, mapInstance, this.managementAPIClient);
+    set(MANAGEMENT_CLIENT, mapInstance, APIClient);
 
     if (multi) {
       await this.execMultiFiles(filePath, mapInstance);
