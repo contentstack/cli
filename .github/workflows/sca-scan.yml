@@ -16,7 +16,7 @@ jobs:
           node-version: '16.x'
           cache: 'pnpm'
       - name: Install dependencies
-        run: npx pnpm install --no-frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
