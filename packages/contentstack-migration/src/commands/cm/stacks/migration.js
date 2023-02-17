@@ -50,6 +50,7 @@ class MigrationCommand extends Command {
     const filePath = migrationCommandFlags['file-path'] || migrationCommandFlags.filePath;
     const multi = migrationCommandFlags.multiple || migrationCommandFlags.multi;
     const authtoken = configHandler.get('authtoken');
+    const {cma} = configHandler.get('region');
     const apiKey = migrationCommandFlags['api-key'] || migrationCommandFlags['stack-api-key'];
     const alias = migrationCommandFlags['alias'] || migrationCommandFlags['management-token-alias'];
     const config = migrationCommandFlags['config'];
@@ -81,7 +82,7 @@ class MigrationCommand extends Command {
       set('config', mapInstance, configObj);
     }
 
-    const APIClient = await managementSDKClient()
+    const APIClient = await managementSDKClient({ host:cma })
     let stackSDKInstance;
     if (branch) {
       set(BRANCH, mapInstance, branch);
