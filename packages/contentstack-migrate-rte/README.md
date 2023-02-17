@@ -16,7 +16,11 @@ $ npm install -g @contentstack/cli-cm-migrate-rte
 $ csdx COMMAND
 running command...
 $ csdx (--version)
+<<<<<<< HEAD
 @contentstack/cli-cm-migrate-rte/1.1.5 darwin-arm64 node-v18.11.0
+=======
+@contentstack/cli-cm-migrate-rte/1.2.0 darwin-x64 node-v18.12.1
+>>>>>>> 496da6464b10472302885b01c44374eecdbe4544
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
