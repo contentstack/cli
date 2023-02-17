@@ -18,7 +18,7 @@
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "posttest": "npm run lint",
     "lint": "eslint src/**/*.ts",
-    "prepack": "pnpm clean && pnpm compile && oclif manifest && oclif readme"
+    "prepack": "pnpm compile && oclif manifest && oclif readme"
   },
   "dependencies": {
     "@contentstack/cli-auth": "^1.1.0",

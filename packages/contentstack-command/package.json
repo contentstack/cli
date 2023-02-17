@@ -6,7 +6,7 @@
   "main": "lib/index.js",
   "types": "./types/index.d.ts",
   "scripts": {
-    "prepack": "pnpm clean && pnpm compile",
+    "prepack": "pnpm compile",
     "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
@@ -20,7 +20,6 @@
     "@oclif/core": "^1.21.0",
     "@contentstack/cli-utilities": "^1.1.0",
     "@contentstack/management": "^1.6.1",
-    "@oclif/core": "^1.21.0",
     "contentstack": "^3.10.1"
   },
   "devDependencies": {
