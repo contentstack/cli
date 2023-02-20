@@ -44,6 +44,9 @@ const setupConfig = async (importCmdFlags): Promise<any> => {
     }
   }
 
+  //Note to support the old key
+  config.source_stack = config.apiKey;
+
   config.importWebhookStatus = importCmdFlags.importWebhookStatus;
 
   if (importCmdFlags['branch']) {
