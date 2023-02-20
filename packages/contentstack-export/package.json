@@ -81,7 +81,7 @@
   "license": "MIT",
   "main": "./lib/commands/cm/stacks/export.js",
   "oclif": {
-    "commands": "./lib/commands",
+    "commands": "./src/commands",
     "bin": "csdx",
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-export/<%- commandPath %>"
   },
