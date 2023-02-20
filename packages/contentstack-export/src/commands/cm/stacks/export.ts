@@ -94,7 +94,7 @@ export default class ExportCommand extends Command {
     // setup export config
     // initialize the exporter
     // start export
-    let exportConfig;
+    let exportConfig: any = {};
     try {
       // todo - fix flag type issues
       const { flags } = (await this.parse(ExportCommand)) as any;
@@ -109,8 +109,10 @@ export default class ExportCommand extends Command {
       log(exportConfig, `Failed to export stack content - ${formatError(error)}`, 'error');
       log(
         exportConfig,
-        'The log for this is stored at ' + path.join(exportConfig.exportDir, 'logs', 'export'),
-        'error',
+        `The log has been stored at ${
+          exportConfig.exportDir ? path.join(exportConfig.exportDir, 'logs', 'export') : path.join(__dirname, 'logs')
+        }`,
+        'info',
       );
     }
   }
