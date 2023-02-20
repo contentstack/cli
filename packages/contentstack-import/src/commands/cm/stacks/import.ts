@@ -94,7 +94,7 @@ export default class ImportCommand extends Command {
     // setup import config
     // initialize the importer
     // start import
-    let importConfig;
+    let importConfig: any = {};
     try {
       const { flags } = (await this.parse(ImportCommand)) as any;
       importConfig = await setupImportConfig(flags);
@@ -105,11 +105,13 @@ export default class ImportCommand extends Command {
       await moduleImporter.start();
       log(importConfig, `The content has been imported to the stack ${importConfig.apiKey} successfully!`, 'success');
     } catch (error) {
-      log(importConfig, `Failed to import content - ${formatError(error)}`, 'error');
+      log(importConfig, `Failed to export stack content - ${formatError(error)}`, 'error');
       log(
         importConfig,
-        'The log for this is stored at ' + path.join(importConfig.contentDir, 'logs', 'export'),
-        'error',
+        `The log has been stored at ${
+          importConfig.exportDir ? path.join(importConfig.exportDir, 'logs', 'export') : path.join(__dirname, 'logs')
+        }`,
+        'info',
       );
     }
   }

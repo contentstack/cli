@@ -129,6 +129,7 @@ function init(_logPath) {
 }
 
 export const log = async (config, message, type) => {
+  config.data = config.data || path.join(__dirname, 'logs');
   // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
     // removed type argument from init method
