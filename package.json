@@ -9,7 +9,7 @@
   },
   "private": true,
   "scripts": {
-    "cache:clear": "npx pnpm store prune",
+    "cache:clear": "pnpm store prune",
     "bootstrap": "pnpm install --no-frozen-lockfile",
     "clean": "pnpm --filter './packages/*' -w clean",
     "prepack": "pnpm --filter \"./packages/*\" -w prepack",
