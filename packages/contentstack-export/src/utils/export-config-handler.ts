@@ -39,6 +39,9 @@ const setupConfig = async (exportCmdFlags): Promise<any> => {
     }
   }
 
+  // Note support old config
+  config.source_stack = config.apiKey;
+
   config.auth_token = configHandler.get('authtoken');
 
   if (exportCmdFlags['branch']) {
