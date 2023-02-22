@@ -2,7 +2,7 @@ const { join } = require('path')
 const { existsSync, unlinkSync } = require('fs')
 const { test } = require('@contentstack/cli-dev-dependencies')
 
-const { getEnvData, getStackDetailsByRegion } = require('./utils/helper')
+const { getEnvData, getStackDetailsByRegion, deleteStack } = require('./utils/helper')
 const { DEFAULT_TIMEOUT, PRINT_LOGS } = require("./config.json")
 const LogoutCommand = require('@contentstack/cli-auth/lib/commands/auth/logout').default
 const RemoveTokenCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/remove').default
