@@ -101,6 +101,7 @@ export default class ExportCommand extends Command {
       exportConfig = await setupExportConfig(flags);
       // Note setting host to create cma client
       exportConfig.host = this.cmaHost;
+      exportConfig.analyticsInfo = this.context.analyticsInfo;
       const managementAPIClient = await managementSDKClient(exportConfig);
       const moduleExpoter = new ModuleExporter(managementAPIClient, exportConfig);
       await moduleExpoter.start();
