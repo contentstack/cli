@@ -81,14 +81,15 @@
   "license": "MIT",
   "main": "./lib/commands/cm/stacks/export.js",
   "oclif": {
-    "commands": "./src/commands",
+    "commands": "./lib/commands",
     "bin": "csdx",
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-export/<%- commandPath %>"
   },
   "csdxConfig": {
     "expiredCommands": {
       "cm:export": "csdx cm:stacks:export"
-    }
+    },
+    "shortCommandName": "export"
   },
   "repository": "https://github.com/contentstack/cli"
 }
