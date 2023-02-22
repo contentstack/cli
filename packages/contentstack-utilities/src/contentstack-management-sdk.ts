@@ -2,10 +2,18 @@ import * as ContentstackManagementSDK from '@contentstack/management';
 const https = require('https');
 import { default as configStore } from './config-handler';
 
-export default async (config) => {
-  try {
+class ManagementSDKInitiator {
+  private analyticsInfo: string;
+
+  constructor() {}
+
+  init(context) {
+    this.analyticsInfo = context.analyticsInfo;
+  }
+
+  createAPIClient(config) {
     let managementAPIClient: ContentstackManagementSDK.ContentstackClient;
-    const option = {
+    const option: any = {
       host: config.host,
       management_token: config.management_token,
       api_key: config.stack_api_key,
@@ -14,6 +22,7 @@ export default async (config) => {
       maxRequests: 10,
       retryLimit: 3,
       timeout: 60000,
+      headers: {},
       httpsAgent: new https.Agent({
         maxSockets: 100,
         maxFreeSockets: 10,
@@ -48,10 +57,13 @@ export default async (config) => {
         });
       },
     };
+
     if (typeof config.branchName === 'string') {
-      option['headers'] = {
-        branch: config.branchName,
-      };
+      option.headers.branch = config.branchName;
+    }
+
+    if (this.analyticsInfo) {
+      option.headers['X-CS-CLI-ID'] = config.analyticsInfo;
     }
 
     if (!config.management_token) {
@@ -64,11 +76,11 @@ export default async (config) => {
         option['authorization'] = '';
       }
     }
-
+    console.log('headers', option.headers);
     managementAPIClient = ContentstackManagementSDK.client(option);
     return managementAPIClient;
-  } catch (error) {
-    console.error(error);
-    throw new Error(error);
   }
-};
+}
+
+export const managementSDKInitiator = new ManagementSDKInitiator();
+export default managementAPIClient.createAPIClient;
