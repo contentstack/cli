@@ -10,6 +10,7 @@
     "@oclif/config": "^1.18.3",
     "big-json": "^3.2.0",
     "bluebird": "^3.7.2",
+    "chalk": "^4.1.2",
     "debug": "^4.1.0",
     "lodash": "^4.17.20",
     "marked": "^4.0.17",
@@ -23,13 +24,13 @@
     "@oclif/test": "^1.2.6",
     "chai": "^4.2.0",
     "eslint": "^8.18.0",
-    "eslint-config-oclif": "^3.1.0",
+    "eslint-config-oclif": "^4.0.0",
     "globby": "^10.0.2",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "/npm-shrinkwrap.json",
@@ -48,7 +49,8 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   },
   "csdxConfig": {
     "expiredCommands": {

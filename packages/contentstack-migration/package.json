@@ -22,8 +22,6 @@
     "@oclif/test": "^2.2.10",
     "chai": "^4.3.4",
     "eslint": "^8.18.0",
-    "eslint-config-oclif": "^3.1.0",
-    "eslint-config-oclif-typescript": "^0.2.0",
     "globby": "^10.0.2",
     "husky": "^4.2.5",
     "jsdoc": "^4.0.0",
@@ -58,9 +56,10 @@
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint ./src",
     "generate-api-ref-md-doc": "nyc jsdoc2md ./src/modules/* > ./docs/api-reference.md",
-    "prepack": "oclif manifest && oclif readme && npm run generate-api-ref-md-doc",
+    "prepack": "oclif manifest && oclif readme && pnpm generate-api-ref-md-doc",
     "test": "nyc mocha \"test/**/*.test.js\"",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   },
   "csdxConfig": {
     "expiredCommands": {
