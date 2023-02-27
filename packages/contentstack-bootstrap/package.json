@@ -21,12 +21,12 @@
     "@contentstack/cli-command": "^1.1.0",
     "@contentstack/cli-utilities": "^1.1.0",
     "@contentstack/management": "^1.6.1",
+    "@oclif/core": "^2.3.0",
     "inquirer": "8.2.4",
     "mkdirp": "^1.0.4",
     "tar": "^6.0.5"
   },
   "devDependencies": {
-    "oclif": "^3.1.2",
     "@oclif/test": "^2.2.10",
     "@types/inquirer": "^9.0.3",
     "@types/mkdirp": "^1.0.1",
@@ -39,6 +39,7 @@
     "globby": "^10.0.2",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
+    "oclif": "^3.1.2",
     "rimraf": "^2.7.1",
     "tmp": "^0.2.1",
     "ts-node": "^8.10.2",

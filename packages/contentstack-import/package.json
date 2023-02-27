@@ -8,6 +8,7 @@
     "@contentstack/cli-command": "^1.1.0",
     "@contentstack/cli-utilities": "^1.1.0",
     "@oclif/config": "^1.18.3",
+    "@oclif/core": "^2.3.0",
     "big-json": "^3.2.0",
     "bluebird": "^3.7.2",
     "debug": "^4.1.0",
@@ -19,14 +20,14 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "oclif": "^3.1.2",
     "@oclif/test": "^1.2.6",
     "chai": "^4.2.0",
     "eslint": "^8.18.0",
     "eslint-config-oclif": "^3.1.0",
     "globby": "^10.0.2",
     "mocha": "^10.0.0",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "oclif": "^3.1.2"
   },
   "engines": {
     "node": ">=8.0.0"
