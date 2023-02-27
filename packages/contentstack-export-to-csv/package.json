@@ -26,7 +26,7 @@
     "oclif": "^3.1.2"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "/npm-shrinkwrap.json",
@@ -45,7 +45,8 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   },
   "csdxConfig": {
     "expiredCommands": {}

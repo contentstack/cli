@@ -11,6 +11,7 @@
     "@contentstack/management": "^1.6.1",
     "@oclif/core": "^2.3.0",
     "collapse-whitespace": "^1.1.7",
+    "chalk": "^4.1.2",
     "jsdom": "^20.0.3",
     "jsonschema": "^1.4.0",
     "lodash": "^4.17.21",
@@ -23,14 +24,15 @@
     "@oclif/test": "^2.2.10",
     "chai": "^4.3.4",
     "eslint": "^8.18.0",
-    "eslint-config-oclif": "^3.1.0",
+    "eslint-config-oclif": "^4.0.0",
     "globby": "^10.0.2",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
-    "oclif": "^3.1.2"
+    "oclif": "^3.1.2",
+    "tslib": "^1.13.0"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "/npm-shrinkwrap.json",
@@ -60,6 +62,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   }
 }

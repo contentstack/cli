@@ -5,8 +5,8 @@
   "main": "lib/index.js",
   "types": "./types/index.d.ts",
   "scripts": {
-    "prepack": "npm run clean && npm run compile",
-    "clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
+    "prepack": "pnpm compile",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix"
@@ -21,6 +21,7 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
+    "lodash": "^4.17.21",
     "@oclif/core": "^2.3.0"
   },
   "devDependencies": {
@@ -29,7 +30,7 @@
     "fancy-test": "^2.0.0",
     "mocha": "^10.0.0",
     "ts-node": "^10.9.1",
-    "tslib": "^2.4.1",
+    "tslib": "^2.5.0",
     "typescript": "^4.9.3"
   },
   "files": [
