@@ -7,7 +7,8 @@ const _ = require('lodash');
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
-const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
+const { cliux, HttpClient, NodeCrypto, managementSDKClient } = require('@contentstack/cli-utilities');
+
 const { formatError } = require('../util');
 const config = require('../../config/default');
 const { addlogs: log } = require('../util/log');
@@ -25,15 +26,9 @@ module.exports = class ExportMarketplaceApps {
 
   constructor(credentialConfig) {
     this.config = _.merge(config, credentialConfig);
-    this.httpClient = new HttpClient().headers({
-      authtoken: this.config.auth_token,
-      organization_uid: this.config.org_uid,
-    });
   }
 
   async start() {
-    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl());
-
     if (!this.config.auth_token) {
       cliux.print(
         'WARNING!!! To export Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in',
@@ -41,6 +36,15 @@ module.exports = class ExportMarketplaceApps {
       );
       return Promise.resolve();
     }
+
+    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl());
+
+    await this.getOrgUid();
+
+    this.httpClient = new HttpClient().headers({
+      authtoken: this.config.auth_token,
+      organization_uid: this.config.org_uid,
+    });
 
     log(this.config, 'Starting marketplace app export', 'success');
     this.marketplaceAppPath = path.resolve(
@@ -51,6 +55,22 @@ module.exports = class ExportMarketplaceApps {
     mkdirp.sync(this.marketplaceAppPath);
 
     return this.exportInstalledExtensions();
+  }
+
+  async getOrgUid() {
+    if (this.config.auth_token) {
+      const tempAPIClient = await managementSDKClient({ host: this.config.host });
+      const tempStackData = await tempAPIClient
+        .stack({ api_key: this.config.source_stack })
+        .fetch()
+        .catch((error) => {
+          console.log(error);
+        });
+
+      if (tempStackData && tempStackData.org_uid) {
+        this.config.org_uid = tempStackData.org_uid;
+      }
+    }
   }
 
   async createNodeCryptoInstance() {
