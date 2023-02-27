@@ -1,5 +1,5 @@
-import { Command, flags } from '@contentstack/cli-command';
-import { logger, cliux, configHandler } from '@contentstack/cli-utilities';
+import { Command } from '@contentstack/cli-command';
+import { logger, cliux, configHandler, flags } from '@contentstack/cli-utilities';
 
 export default class TokensRemoveCommand extends Command {
   static description = 'Removes selected tokens';
