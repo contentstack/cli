@@ -183,7 +183,10 @@ const createBackup = (backupDirPath, config) => {
 const validateIfBranchExist = async (stackAPIClient, config, branch) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const data = await stackAPIClient.branch(branch).fetch();
+      const data = await stackAPIClient
+        .branch(branch)
+        .fetch()
+        .catch((_err) => {});
       if (data && typeof data === 'object') {
         if (data.error_message) {
           addlogs(config, chalk.red(data.error_message), 'error');
