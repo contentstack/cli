@@ -35,7 +35,7 @@
     "@contentstack/cli-migration": "^1.1.1",
     "@contentstack/cli-utilities": "^1.1.0",
     "@contentstack/management": "^1.6.1",
-    "@oclif/core": "^1.21.0",
+    "@oclif/core": "^2.3.0",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-not-found": "^2.3.9",
     "@oclif/plugin-plugins": "^2.1.7",
@@ -47,7 +47,6 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "oclif": "^3.1.2",
     "@oclif/dev-cli": "^1.26.10",
     "@oclif/test": "^2.2.10",
     "@types/chai": "^4.2.18",
@@ -65,6 +64,7 @@
     "mocha": "^10.0.0",
     "nock": "^13.1.0",
     "nyc": "^15.1.0",
+    "oclif": "^3.1.2",
     "rimraf": "^2.7.1",
     "shelljs": "^0.8.4",
     "sinon": "^15.0.1",

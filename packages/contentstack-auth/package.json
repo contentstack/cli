@@ -23,13 +23,13 @@
   "dependencies": {
     "@contentstack/cli-command": "^1.1.0",
     "@contentstack/cli-utilities": "^1.1.0",
+    "@oclif/core": "^2.3.0",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
     "inquirer": "8.2.4",
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "oclif": "^3.1.2",
     "@fancy-test/nock": "^0.1.1",
     "@oclif/dev-cli": "^1.26.10",
     "@oclif/plugin-help": "^5.1.19",
@@ -49,6 +49,7 @@
     "globby": "^10.0.2",
     "mocha": "10.1.0",
     "nyc": "^15.1.0",
+    "oclif": "^3.1.2",
     "rimraf": "^2.7.1",
     "sinon": "^15.0.1",
     "tmp": "^0.2.1",
