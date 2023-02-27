@@ -10,85 +10,82 @@ const { managementSDKClient } = require('@contentstack/cli-utilities');
 
 exports.initial = async (config) => {
   return new Promise(async (resolve, reject) => {
-    try {
-      config = util.buildAppConfig(config);
-      util.validateConfig(config);
-      exports.getConfig = () => {
-        return config;
-      };
-      const APIClient = await managementSDKClient(config);
-      const stackAPIClient = APIClient.stack({
-        api_key: config.source_stack,
-        management_token: config.management_token,
-      });
+    config = util.buildAppConfig(config);
+    util.validateConfig(config);
+    exports.getConfig = () => {
+      return config;
+    };
 
-      const fetchBranchAndExport = async (APIClient, stackAPIClient) => {
-        await setupBranches(config, config.branchName, stackAPIClient);
-        let types = config.modules.types;
+    const APIClient = await managementSDKClient(config);
+    const stackAPIClient = APIClient.stack({
+      api_key: config.source_stack,
+      management_token: config.management_token,
+    });
 
-        if (Array.isArray(config.branches) && config.branches.length > 0) {
-          for (let branch of config.branches) {
-            config.branchName = branch.uid;
-            try {
-              if (config.moduleName) {
-                await singleExport(APIClient, stackAPIClient, config.moduleName, types, config, branch.uid);
-              } else {
-                await allExport(APIClient, stackAPIClient, config, types, branch.uid);
-              }
-            } catch (error) {
-              addlogs(config, `failed export contents ${branch.uid} ${util.formatError(error)}`, 'error');
-            }
-          }
-        } else {
+    const fetchBranchAndExport = async (APIClient, stackAPIClient) => {
+      await setupBranches(config, config.branchName, stackAPIClient);
+      let types = config.modules.types;
+
+      if (Array.isArray(config.branches) && config.branches.length > 0) {
+        for (let branch of config.branches) {
+          config.branchName = branch.uid;
           try {
             if (config.moduleName) {
-              await singleExport(APIClient, stackAPIClient, config.moduleName, types, config);
+              await singleExport(APIClient, stackAPIClient, config.moduleName, types, config, branch.uid);
             } else {
-              await allExport(APIClient, stackAPIClient, config, types);
+              await allExport(APIClient, stackAPIClient, config, types, branch.uid);
             }
           } catch (error) {
-            addlogs(config, `failed export contents ${util.formatError(error)}`, 'error');
+            addlogs(config, `failed export contents ${branch.uid} ${util.formatError(error)}`, 'error');
           }
         }
-      };
-
-      if (config.management_token || config.isAuthenticated) {
-        try {
-          await fetchBranchAndExport(APIClient, stackAPIClient);
-        } catch (error) {
-          addlogs(config, `${util.formatError(error)}`, 'error');
-        }
-        resolve();
-      } else if (
-        (config.email && config.password) ||
-        (!config.email && !config.password && config.source_stack && config.access_token)
-      ) {
-        login
-          .login(config, APIClient, stackAPIClient)
-          .then(async function () {
-            // setup branches
-            try {
-              await fetchBranchAndExport(APIClient, stackAPIClient);
-              unlinkFileLogger();
-            } catch (error) {
-              addlogs(config, `${util.formatError(error)}`, 'error');
-            }
-            resolve();
-          })
-          .catch((error) => {
-            console.log('error', error && error.message);
-            if (error && error.errors && error.errors.api_key) {
-              addlogs(config, chalk.red('Stack Api key ' + error.errors.api_key[0], 'Please enter valid Key', 'error'));
-              addlogs(config, 'The log for this is stored at ' + config.data + '/export/logs', 'success');
-            } else {
-              addlogs(config, `${util.formatError(error)}`, 'error');
-            }
-          });
       } else {
-        reject('Kindly login or provide management_token');
+        try {
+          if (config.moduleName) {
+            await singleExport(APIClient, stackAPIClient, config.moduleName, types, config);
+          } else {
+            await allExport(APIClient, stackAPIClient, config, types);
+          }
+        } catch (error) {
+          addlogs(config, `failed export contents ${util.formatError(error)}`, 'error');
+        }
       }
-    } catch (error) {
-      reject(error);
+    };
+
+    if (config.management_token || config.isAuthenticated) {
+      try {
+        await fetchBranchAndExport(APIClient, stackAPIClient);
+      } catch (error) {
+        addlogs(config, `${util.formatError(error)}`, 'error');
+      }
+      resolve();
+    } else if (
+      (config.email && config.password) ||
+      (!config.email && !config.password && config.source_stack && config.access_token)
+    ) {
+      login
+        .login(config, APIClient, stackAPIClient)
+        .then(async function () {
+          // setup branches
+          try {
+            await fetchBranchAndExport(APIClient, stackAPIClient);
+            unlinkFileLogger();
+          } catch (error) {
+            addlogs(config, `${util.formatError(error)}`, 'error');
+          }
+          resolve();
+        })
+        .catch((error) => {
+          console.log('error', error && error.message);
+          if (error && error.errors && error.errors.api_key) {
+            addlogs(config, chalk.red('Stack Api key ' + error.errors.api_key[0], 'Please enter valid Key', 'error'));
+            addlogs(config, 'The log for this is stored at ' + config.data + '/export/logs', 'success');
+          } else {
+            addlogs(config, `${util.formatError(error)}`, 'error');
+          }
+        });
+    } else {
+      reject('Kindly login or provide management_token');
     }
   });
 };

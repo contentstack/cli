@@ -19,7 +19,10 @@ const setupBranches = async (config, branch, stackAPIClient) => {
 
   if (typeof branch === 'string') {
     // check branch exists
-    const result = await stackAPIClient.branch(branch).fetch();
+    const result = await stackAPIClient
+      .branch(branch)
+      .fetch()
+      .catch((_err) => {});
     if (result && typeof result === 'object') {
       branches.push(result);
     } else {
@@ -27,7 +30,11 @@ const setupBranches = async (config, branch, stackAPIClient) => {
     }
   } else {
     try {
-      const result = await stackAPIClient.branch().query().find();
+      const result = await stackAPIClient
+        .branch()
+        .query()
+        .find()
+        .catch((_err) => {});
       if (result && result.items && Array.isArray(result.items) && result.items.length > 0) {
         branches = result.items;
       } else {

@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { default as inquirer, QuestionCollection } from 'inquirer';
+import inquirer, { QuestionCollection } from 'inquirer';
 import { ux as cliux, Table } from '@oclif/core/lib/cli-ux';
 
 import messageHandler from './message-handler';

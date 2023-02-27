@@ -1,37 +1,35 @@
-import * as ContentstackManagementSDK from '@contentstack/management';
-const https = require('https');
-import { default as configStore } from './config-handler';
-import { default as authHandler } from './auth-handler';
+import { Agent } from 'node:https';
+import { client, ContentstackClient, ContentstackConfig } from '@contentstack/management';
+import authHandler from './auth-handler';
+import configStore from './config-handler';
 
-export default async (config) => {
+export default async (config): Promise<ContentstackClient> => {
   try {
-    let managementAPIClient: ContentstackManagementSDK.ContentstackClient;
-    const option = {
+    const option: ContentstackConfig = {
       host: config.host,
-      management_token: config.management_token,
-      api_key: config.target_stack,
       maxContentLength: 100000000,
       maxBodyLength: 1000000000,
       maxRequests: 10,
       retryLimit: 3,
       timeout: 60000,
-      httpsAgent: new https.Agent({
+      httpsAgent: new Agent({
         maxSockets: 100,
         maxFreeSockets: 10,
         keepAlive: true,
         timeout: 60000, // active socket keepalive for 60 seconds
-        freeSocketTimeout: 30000, // free socket keepalive for 30 seconds
+        // NOTE freeSocketTimeout option not exist in https client
+        // freeSocketTimeout: 30000, // free socket keepalive for 30 seconds
       }),
       retryDelay: Math.floor(Math.random() * (8000 - 3000 + 1) + 3000),
       logHandler: (level, data) => {},
-      retryCondition: (error) => {
+      retryCondition: (error: any): boolean => {
+        // LINK https://github.com/contentstack/contentstack-javascript/blob/72fee8ad75ba7d1d5bab8489ebbbbbbaefb1c880/src/core/stack.js#L49
         if (error.response && error.response.status) {
-          switch (error.response.status) {
+          switch (error.status) {
             case 401:
             case 429:
             case 408:
               return true;
-
             default:
               return false;
           }
@@ -67,9 +65,7 @@ export default async (config) => {
       },
     };
     if (typeof config.branchName === 'string') {
-      option['headers'] = {
-        branch: config.branchName,
-      };
+      option.headers = { branch: config.branchName };
     }
 
     if (!config.management_token) {
@@ -80,13 +76,12 @@ export default async (config) => {
         await authHandler.compareOAuthExpiry();
         option['authorization'] = `Bearer ${configStore.get('oauthAccessToken')}`;
       } else {
-        option['authtoken'] = '';
-        option['authorization'] = '';
+        option.authtoken = '';
+        option.authorization = '';
       }
     }
 
-    managementAPIClient = ContentstackManagementSDK.client(option);
-    return managementAPIClient;
+    return client(option);
   } catch (error) {
     console.error(error);
     throw new Error(error);
