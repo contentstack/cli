@@ -22,13 +22,13 @@
   "dependencies": {
     "@contentstack/cli-command": "^1.1.0",
     "@contentstack/cli-utilities": "^1.1.0",
+    "@oclif/core": "^2.3.0",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
     "inquirer": "8.2.4",
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "oclif": "^3.1.2",
     "@oclif/test": "^2.2.10",
     "@types/chai": "^4.2.18",
     "@types/inquirer": "^9.0.3",
@@ -44,6 +44,7 @@
     "globby": "^10.0.2",
     "mocha": "10.1.0",
     "nyc": "^15.1.0",
+    "oclif": "^3.1.2",
     "rimraf": "^2.7.1",
     "sinon": "^15.0.1",
     "tmp": "^0.2.1",

@@ -1,7 +1,6 @@
 // @ts-ignore
-import { Flags } from '@oclif/core';
-import { Command, flags } from '@contentstack/cli-command';
-import { printFlagDeprecation } from '@contentstack/cli-utilities';
+import { Command } from '@contentstack/cli-command';
+import { printFlagDeprecation, flags } from '@contentstack/cli-utilities';
 import ContentModelSeeder, { ContentModelSeederOptions } from '../../../seed';
 
 export default class SeedCommand extends Command {
