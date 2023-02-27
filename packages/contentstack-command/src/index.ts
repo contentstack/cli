@@ -1,8 +1,7 @@
-import { Command, Flags } from '@oclif/core';
 import * as ContentstackManagementSDK from '@contentstack/management';
 import * as ContentstackDeliverySDK from 'contentstack';
 import * as url from 'url';
-import { configHandler, CLIError } from '@contentstack/cli-utilities';
+import { configHandler, CLIError, Command } from '@contentstack/cli-utilities';
 import { Region } from './interfaces';
 
 const defaultRateLimit = 5;
@@ -109,7 +108,6 @@ abstract class ContentstackCommand extends Command {
 
 module.exports = {
   Command: ContentstackCommand,
-  flags: Flags,
 };
 
-export { ContentstackCommand as Command, Flags as flags };
+export { ContentstackCommand as Command};
