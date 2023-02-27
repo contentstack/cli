@@ -1,4 +1,4 @@
-import { Command, flags } from '@contentstack/cli-command';
+import { Command } from '@contentstack/cli-command';
 import { resolve } from 'path';
 const ContentstackManagementSDK = require('@contentstack/management');
 import Bootstrap, { BootstrapOptions, SeedParams } from '../../bootstrap';
@@ -8,7 +8,7 @@ import {
   inquireAppType,
   inquireLivePreviewSupport,
 } from '../../bootstrap/interactive';
-import { printFlagDeprecation } from '@contentstack/cli-utilities';
+import { printFlagDeprecation, flags } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
 
