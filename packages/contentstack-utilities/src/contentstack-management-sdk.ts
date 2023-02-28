@@ -8,7 +8,7 @@ class ManagementSDKInitiator {
   constructor() {}
 
   init(context) {
-    this.analyticsInfo = context.analyticsInfo;
+    this.analyticsInfo = context?.analyticsInfo;
   }
 
   createAPIClient(config) {
@@ -76,11 +76,10 @@ class ManagementSDKInitiator {
         option['authorization'] = '';
       }
     }
-    console.log('headers', option.headers);
     managementAPIClient = ContentstackManagementSDK.client(option);
     return managementAPIClient;
   }
 }
 
 export const managementSDKInitiator = new ManagementSDKInitiator();
-export default managementAPIClient.createAPIClient;
+export default managementSDKInitiator.createAPIClient.bind(managementSDKInitiator);
