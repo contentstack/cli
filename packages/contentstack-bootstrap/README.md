@@ -3,27 +3,24 @@ Contentstack CLI’s “Bootstrap” plugin enables you to automate the process 
 This means that all the required steps such as stack, environment, and content type creation, entry and asset publishing are performed just by using a single command.
 
 <!-- toc -->
-
-- [Usage](#usage)
-- [Commands](#commands)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
-<!-- usage -->\
-
+<!-- usage -->
 ```sh-session
 $ npm install -g @contentstack/cli-cm-bootstrap
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-bootstrap/1.2.0 darwin-arm64 node-v16.17.0
+@contentstack/cli-cm-bootstrap/1.2.0 darwin-arm64 node-v18.11.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 ```sh-session
@@ -39,8 +36,7 @@ USAGE
 # Commands
 
 <!-- commands -->
-
-- [`csdx cm:bootstrap`](#csdx-cmbootstrap)
+* [`csdx cm:bootstrap`](#csdx-cmbootstrap)
 
 ## `csdx cm:bootstrap`
 
@@ -77,5 +73,4 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/bootstrap.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-bootstrap/src/commands/cm/bootstrap.ts)_
-
 <!-- commandsstop -->

@@ -5,36 +5,32 @@ The config namespace contains all the commands that you will need to configure t
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-
-- [@contentstack/cli-config](#contentstackcli-config)
-- [Usage](#usage)
-- [Commands](#commands)
+* [@contentstack/cli-config](#contentstackcli-config)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.1.0 darwin-arm64 node-v16.17.0
+@contentstack/cli-config/1.1.0 darwin-arm64 node-v18.11.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`csdx config:get:region`](#csdx-configgetregion)
-- [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
+* [`csdx config:get:region`](#csdx-configgetregion)
+* [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 
 ## `csdx config:get:region`
 
@@ -82,5 +78,4 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/set/region.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/region.ts)_
-
 <!-- commandsstop -->
