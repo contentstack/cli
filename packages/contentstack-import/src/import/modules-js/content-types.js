@@ -26,7 +26,6 @@ class ContentTypesImport {
     this.globalFieldsFolderPath = path.resolve(this.importConfig.data, this.globalFieldConfig.dirName);
     this.globalFieldMapperFolderPath = path.join(importConfig.data, 'mapper', 'global_fields', 'success.json');
     this.globalFieldPendingPath = path.join(importConfig.data, 'mapper', 'global_fields', 'pending_global_fields.js');
-    this.appMapperFolderPath = path.join(importConfig.data, 'mapper', 'marketplace_apps');
     this.ignoredFilesInContentTypesFolder = new Map([
       ['__master.json', 'true'],
       ['__priority.json', 'true'],
@@ -48,6 +47,10 @@ class ContentTypesImport {
 
   async start() {
     try {
+      const appMapperPath = path.join(this.importConfig.data, 'mapper', 'marketplace_apps', 'uid-mapping.json');
+      this.installedExtensions = (
+        (await fileHelper.readFileSync(appMapperPath)) || { extension_uid: {} }
+      ).extension_uid;
       // read content types
       // remove content types already existing
       if (fs.existsSync(this.existingContentTypesPath)) {
@@ -70,13 +73,6 @@ class ContentTypesImport {
       log(this.importConfig, 'Started to seed content types', 'info');
       await executeTask(this.seedContentType.bind(this), { concurrency: this.importConcurrency }, this.contentTypes);
       log(this.importConfig, 'Created content types', 'success');
-
-      // update content type
-      this.installedExtensions =
-        fileHelper.readFileSync(path.join(this.appMapperFolderPath, 'marketplace-apps.json')) || {};
-      if (isEmpty(this.installedExtensions)) {
-        this.installedExtensions = await getInstalledExtensions(this.importConfig);
-      }
 
       log(this.importConfig, 'Started to update content types with references', 'info');
       await executeTask(this.updateContentType.bind(this), { concurrency: this.importConcurrency }, this.contentTypes);
