@@ -136,5 +136,5 @@ EXAMPLES
   $ csdx cm:stacks:export --branch [optional] branch name
 ```
 
-_See code: [src/commands/cm/stacks/export.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/stacks/export.ts)_
+_See code: [lib/commands/cm/stacks/export.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/lib/commands/cm/stacks/export.js)_
 <!-- commandsstop -->

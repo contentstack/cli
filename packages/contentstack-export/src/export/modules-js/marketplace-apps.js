@@ -27,8 +27,6 @@ module.exports = class ExportMarketplaceApps {
   }
 
   async start() {
-    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl());
-
     if (!this.config.auth_token) {
       cliux.print(
         'WARNING!!! To export Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in',
@@ -36,6 +34,8 @@ module.exports = class ExportMarketplaceApps {
       );
       return Promise.resolve();
     }
+
+    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl());
 
     await this.getOrgUid();
 
