@@ -117,15 +117,8 @@ module.exports = class ImportEntries {
     this.masterLanguage = this.config.master_locale;
     log(this.config, 'Migrating entries', 'success');
     let languages = fileHelper.readFileSync(this.lPath);
-    const appMapperFolderPath = path.join(this.config.data, 'mapper', 'marketplace_apps');
-
-    if (fs.existsSync(path.join(appMapperFolderPath, 'marketplace-apps.json'))) {
-      self.installedExtensions = fileHelper.readFileSync(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
-    }
-
-    if (_.isEmpty(self.installedExtensions)) {
-      self.installedExtensions = await getInstalledExtensions(self.config);
-    }
+    const appMapperPath = path.join(this.config.data, 'mapper', 'marketplace_apps', 'uid-mapping.json');
+    this.installedExtensions = ((await fileHelper.readFileSync(appMapperPath)) || { extension_uid: {} }).extension_uid;
 
     return new Promise((resolve, reject) => {
       let langs = [self.masterLanguage.code];
@@ -220,7 +213,7 @@ module.exports = class ImportEntries {
           });
         })
         .catch((error) => {
-          log(this.config, formatError(error), 'error');
+          log(self.config, formatError(error), 'error');
           reject('Failed import entries');
         });
     });
