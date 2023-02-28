@@ -16,13 +16,13 @@ export declare class HttpClient {
     /**
      * Createa new pending HTTP request instance.
      */
-    constructor();
+    constructor(request?: AxiosRequestConfig);
     /**
      * Create a reusable HttpClient instance.
      *
      * @returns {HttpClient}
      */
-    static create(): HttpClient;
+    static create(request?: AxiosRequestConfig): HttpClient;
     /**
      * Returns the Axios request config.
      *
