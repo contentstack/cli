@@ -1,5 +1,7 @@
 import { cliux, HttpClient, configHandler, managementSDKClient } from '@contentstack/cli-utilities';
 import config from '../config';
+import {log} from './logger'
+const { formatError } = require('.');
 
 export const getInstalledExtensions = (config) => {
   return new Promise((resolve, reject) => {
@@ -37,7 +39,14 @@ export const getInstalledExtensions = (config) => {
   });
 };
 
-export const getDeveloperHubUrl = async () => {
+export const getAllStackSpecificApps = (developerHubBaseUrl, httpClient, config) => {
+  return httpClient
+    .get(`${developerHubBaseUrl}/installations?target_uids=${config.target_stack}`)
+    .then(({ data }) => data.data)
+    .catch((error) => log(config, `Failed to export marketplace-apps ${formatError(error)}`, 'error'));
+};
+
+export const getDeveloperHubUrl = async (config) => {
   const { cma, name } = configHandler.get('region') || {};
   let developerHubBaseUrl = config.developerHubUrls[cma];
 

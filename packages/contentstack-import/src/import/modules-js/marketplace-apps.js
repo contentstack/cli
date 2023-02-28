@@ -8,18 +8,25 @@ const _ = require('lodash');
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
-const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
+const { cliux, HttpClient, NodeCrypto, managementSDKClient } = require('@contentstack/cli-utilities');
 const {
   log,
   getDeveloperHubUrl,
   getInstalledExtensions,
   fileHelper: { readFileSync, writeFile },
+  formatError
 } = require('../../utils');
 let { default: config } = require('../../config');
-
+const contentstack = require('@contentstack/management');
+const { getDeveloperHubUrl, getAllStackSpecificApps } = require('../../utils/marketplace-app-helper');
 module.exports = class ImportMarketplaceApps {
+  client;
+  httpClient;
+  appOrginalName;
+  appUidMapping = {};
+  appNameMapping = {};
   marketplaceApps = [];
-  marketplaceAppsUid = [];
+  installationUidMapping = {};
   developerHubBaseUrl = null;
   marketplaceAppFolderPath = '';
   marketplaceAppConfig = config.modules.marketplace_apps;
@@ -30,522 +37,495 @@ module.exports = class ImportMarketplaceApps {
   }
 
   async start() {
-    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl());
+    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
+    this.client = contentstack.client({ authtoken: this.config.auth_token, endpoint: this.developerHubBaseUrl });
+    this.mapperDirPath = path.resolve(this.config.data, 'mapper', 'marketplace_apps');
+    this.uidMapperPath = path.join(this.mapperDirPath, 'uid-mapping.json');
     this.marketplaceAppFolderPath = path.resolve(this.config.data, this.marketplaceAppConfig.dirName);
-    this.marketplaceApps = _.uniqBy(
-      readFileSync(path.resolve(this.marketplaceAppFolderPath, this.marketplaceAppConfig.fileName)),
-      'app_uid',
+    this.marketplaceApps = readFileSync(
+      path.resolve(this.marketplaceAppFolderPath, this.marketplaceAppConfig.fileName),
     );
-    this.marketplaceAppsUid = _.map(this.marketplaceApps, 'uid');
 
-    if (!this.config.auth_token && !_.isEmpty(this.marketplaceApps)) {
+    if (_.isEmpty(this.marketplaceApps)) {
+      return Promise.resolve();
+    } else if (!this.config.auth_token) {
       cliux.print(
-        'WARNING!!! To import Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in',
+        '\nWARNING!!! To import Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in\n',
         { color: 'yellow' },
       );
-      return Promise.resolve();
-    } else if (_.isEmpty(this.marketplaceApps)) {
       return Promise.resolve();
     }
 
     await this.getOrgUid();
-    return this.handleInstallationProcess();
+
+    this.httpClient = new HttpClient({
+      headers: {
+        authtoken: this.config.auth_token,
+        organization_uid: this.config.org_uid,
+      },
+    });
+
+    if (!fs.existsSync(this.mapperDirPath)) {
+      mkdirp.sync(this.mapperDirPath);
+    }
+
+    return this.startInstallation();
+  }
+
+  async getOrgUid() {
+    if (this.config.auth_token) {
+      const tempAPIClient = await managementSDKClient({ host: this.config.host });
+      const tempStackData = await tempAPIClient
+        .stack({ api_key: this.config.target_stack })
+        .fetch()
+        .catch((error) => {
+          console.log(error);
+        });
+
+      if (tempStackData && tempStackData.org_uid) {
+        this.config.org_uid = tempStackData.org_uid;
+      }
+    }
+  }
+
+  async getAndValidateEncryptionKey(defaultValue, retry = 1) {
+    let appConfig = _.find(
+      this.marketplaceApps,
+      ({ configuration, server_configuration }) => !_.isEmpty(configuration) || !_.isEmpty(server_configuration),
+    );
+
+    if (!appConfig) {
+      return defaultValue;
+    }
+
+    const encryptionKey = await cliux.inquire({
+      type: 'input',
+      name: 'name',
+      default: defaultValue,
+      validate: (key) => {
+        if (!key) return "Encryption key can't be empty.";
+
+        return true;
+      },
+      message: 'Enter marketplace app configurations encryption key',
+    });
+
+    try {
+      appConfig = !_.isEmpty(appConfig.configuration) ? appConfig.configuration : appConfig.server_configuration;
+      this.nodeCrypto = new NodeCrypto({ encryptionKey });
+      this.nodeCrypto.decrypt(appConfig);
+    } catch (error) {
+      if (retry < this.config.getEncryptionKeyMaxRetry && error.code === 'ERR_OSSL_EVP_BAD_DECRYPT') {
+        cliux.print(
+          `Provided encryption key is not valid or your data might be corrupted.! attempt(${retry}/${this.config.getEncryptionKeyMaxRetry})`,
+          { color: 'red' },
+        );
+        // NOTE max retry limit is 3
+        return this.getAndValidateEncryptionKey(encryptionKey, retry + 1);
+      } else {
+        cliux.print(
+          `Maximum retry limit exceeded. Closing the process, please try again.! attempt(${retry}/${this.config.getEncryptionKeyMaxRetry})`,
+          { color: 'red' },
+        );
+        process.exit(1);
+      }
+    }
+
+    return encryptionKey;
   }
 
   /**
-   * @method getOrgUid
-   * @returns {Void}
-   */
-  getOrgUid = async () => {
-    const self = this;
-    // NOTE get org uid
-    if (self.config.auth_token) {
-      const stack = await self.stackAPIClient.fetch().catch((error) => {
-        console.log(error);
-        log(self.config, 'Starting marketplace app installation', 'success');
-      });
-
-      if (stack && stack.org_uid) {
-        self.config.org_uid = stack.org_uid;
-      }
-    }
-  };
-
-  async getEncryptionKeyAndValidate(defaultValue, retry = 1) {
-    const appConfig =
-      _.find(this.marketplaceApps, 'configuration') ||
-      _.find(this.marketplaceApps, 'server_configuration.configuration');
-
-    if (appConfig) {
-      const encryptionKey = await cliux.inquire({
-        type: 'input',
-        name: 'name',
-        default: defaultValue,
-        validate: (key) => {
-          if (!key) return "Encryption key can't be empty.";
-
-          return true;
-        },
-        message: 'Enter marketplace app configurations encryption key',
-      });
-
-      try {
-        const nodeCrypto = new NodeCrypto({ encryptionKey });
-        nodeCrypto.decrypt(appConfig.configuration || appConfig.server_configuration);
-      } catch (error) {
-        if (retry < this.config.getEncryptionKeyMaxRetry && error.code === 'ERR_OSSL_EVP_BAD_DECRYPT') {
-          cliux.print('Provided encryption key is not valid or your data might be corrupted.!', { color: 'red' });
-          // NOTE max retry limit is 3
-          return this.getEncryptionKeyAndValidate(encryptionKey, retry + 1);
-        } else {
-          cliux.print('Maximum retry limit exceeded. Closing the process, please try again.!', { color: 'red' });
-          process.exit(1);
-        }
-      }
-
-      return encryptionKey;
-    }
-
-    return defaultValue;
-  }
-
-  /**
-   * @method handleInstallationProcess
+   * @method startInstallation
    * @returns {Promise<void>}
    */
-  handleInstallationProcess = async () => {
-    const self = this;
+  async startInstallation() {
     const cryptoArgs = {};
-    const headers = {
-      authtoken: self.config.auth_token,
-      organization_uid: self.config.org_uid,
-    };
 
-    if (self.config.marketplaceAppEncryptionKey) {
-      cryptoArgs['encryptionKey'] = self.config.marketplaceAppEncryptionKey;
+    if (this.config.marketplaceAppEncryptionKey) {
+      cryptoArgs['encryptionKey'] = this.config.marketplaceAppEncryptionKey;
     }
 
-    if (self.config.forceStopMarketplaceAppsPrompt) {
-      cryptoArgs['encryptionKey'] = self.config.marketplaceAppEncryptionKey;
+    if (this.config.forceStopMarketplaceAppsPrompt) {
+      cryptoArgs['encryptionKey'] = this.config.marketplaceAppEncryptionKey;
+      this.nodeCrypto = new NodeCrypto(cryptoArgs);
     } else {
-      cryptoArgs['encryptionKey'] = await self.getEncryptionKeyAndValidate(self.config.marketplaceAppEncryptionKey);
+      await this.getAndValidateEncryptionKey(this.config.marketplaceAppEncryptionKey);
     }
-
-    const httpClient = new HttpClient().headers(headers);
-    const nodeCrypto = new NodeCrypto(cryptoArgs);
 
     // NOTE install all private apps which is not available for stack.
-    await this.handleAllPrivateAppsCreationProcess({ httpClient });
-    const installedExtensions = await getInstalledExtensions(self.config);
+    await this.handleAllPrivateAppsCreationProcess();
+    const installedApps = await getAllStackSpecificApps(this.developerHubBaseUrl, this.httpClient, this.config);
 
-    // NOTE after private app installation, refetch marketplace apps from file
-    const marketplaceAppsFromFile = readFileSync(
-      path.resolve(this.marketplaceAppFolderPath, self.marketplaceAppConfig.fileName),
-    );
-    this.marketplaceApps = _.filter(marketplaceAppsFromFile, ({ uid }) => _.includes(this.marketplaceAppsUid, uid));
+    log(this.config, 'Starting marketplace app installation', 'success');
 
-    log(self.config, 'Starting marketplace app installation', 'success');
-
-    for (let app of self.marketplaceApps) {
-      await self.installApps({ app, installedExtensions, httpClient, nodeCrypto });
+    for (let app of this.marketplaceApps) {
+      await this.installApps(app, installedApps);
     }
 
-    // NOTE get all the extension again after all apps installed (To manage uid mapping in content type, entries)
-    const extensions = await getInstalledExtensions(self.config);
-    const mapperFolderPath = path.join(self.config.data, 'mapper', 'marketplace_apps');
+    const uidMapper = await this.generateUidMapper();
+    await writeFile(this.uidMapperPath, {
+      app_uid: this.appUidMapping,
+      extension_uid: uidMapper || {},
+      installation_uid: this.installationUidMapping,
+    });
+  }
 
-    if (!fs.existsSync(mapperFolderPath)) {
-      mkdirp.sync(mapperFolderPath);
+  async generateUidMapper() {
+    const listOfNewMeta = [];
+    const listOfOldMeta = [];
+    const extensionUidMapp = {};
+    const allInstalledApps = await getAllStackSpecificApps(this.developerHubBaseUrl, this.httpClient, this.config);
+
+    for (const app of this.marketplaceApps) {
+      listOfOldMeta.push(..._.map(app.ui_location && app.ui_location.locations, 'meta').flat());
+    }
+    for (const app of allInstalledApps) {
+      listOfNewMeta.push(..._.map(app.ui_location && app.ui_location.locations, 'meta').flat());
+    }
+    for (const { extension_uid, name, path } of _.filter(listOfOldMeta, 'name')) {
+      const meta =
+        _.find(listOfNewMeta, { name, path }) || _.find(listOfNewMeta, { name: this.appNameMapping[name], path });
+
+      if (meta) {
+        extensionUidMapp[extension_uid] = meta.extension_uid;
+      }
     }
 
-    const appUidMapperPath = path.join(mapperFolderPath, 'marketplace-apps.json');
-    const installedExt = _.map(extensions, (row) =>
-      _.pick(row, ['uid', 'title', 'type', 'app_uid', 'app_installation_uid']),
-    );
-
-    writeFile(appUidMapperPath, installedExt);
-
-    return Promise.resolve();
-  };
+    return extensionUidMapp;
+  }
 
   /**
    * @method handleAllPrivateAppsCreationProcess
    * @param {Object} options
    * @returns {Promise<void>}
    */
-  handleAllPrivateAppsCreationProcess = async (options) => {
-    const self = this;
-    const { httpClient } = options;
-    const listOfExportedPrivateApps = _.filter(self.marketplaceApps, { visibility: 'private' });
+  async handleAllPrivateAppsCreationProcess() {
+    const privateApps = _.filter(this.marketplaceApps, { manifest: { visibility: 'private' } });
 
-    if (_.isEmpty(listOfExportedPrivateApps)) {
+    if (_.isEmpty(privateApps)) {
       return Promise.resolve();
     }
 
-    // NOTE get list of developer-hub installed apps (private)
-    const installedDeveloperHubApps =
-      (await httpClient
-        .get(`${this.developerHubBaseUrl}/apps`)
-        .then(({ data: { data } }) => data)
-        .catch((err) => {
-          console.log(err);
-        })) || [];
-    const listOfNotInstalledPrivateApps = _.filter(
-      listOfExportedPrivateApps,
-      (app) => !_.includes(_.map(installedDeveloperHubApps, 'uid'), app.app_uid),
-    );
+    await this.getConfirmationToCreateApps(privateApps);
 
-    if (!_.isEmpty(listOfNotInstalledPrivateApps) && !self.config.forceStopMarketplaceAppsPrompt) {
-      const confirmation = await cliux.confirm(
-        chalk.yellow(
-          `WARNING!!! The listed apps are private apps that are not available in the destination stack: \n\n${_.map(
-            listOfNotInstalledPrivateApps,
-            ({ manifest: { name } }, index) => `${String(index + 1)}) ${name}`,
-          ).join('\n')}\n\nWould you like to re-create the private app and then proceed with the installation? (y/n)`,
-        ),
-      );
+    log(this.config, 'Starting developer hub private apps re-creation', 'success');
 
-      if (!confirmation) {
-        const continueProcess = await cliux.confirm(
+    for (let app of privateApps) {
+      // NOTE keys can be passed to install new app in the developer hub
+      app.manifest = _.pick(app.manifest, [
+        'uid',
+        'name',
+        'description',
+        'icon',
+        'target_type',
+        'ui_location',
+        'webhook',
+        'oauth',
+      ]);
+      this.appOrginalName = app.manifest.name;
+      await this.createPrivateApps(app.manifest);
+    }
+
+    this.appOrginalName = undefined;
+  }
+
+  async getConfirmationToCreateApps(privateApps) {
+    if (!this.config.forceStopMarketplaceAppsPrompt) {
+      if (
+        !(await cliux.confirm(
           chalk.yellow(
-            `WARNING!!! Canceling the app re-creation may break the content type and entry import. Would you like to proceed? (y/n)`,
+            `WARNING!!! The listed apps are private apps that are not available in the destination stack: \n\n${_.map(
+              privateApps,
+              ({ manifest: { name } }, index) => `${String(index + 1)}) ${name}`,
+            ).join('\n')}\n\nWould you like to re-create the private app and then proceed with the installation? (y/n)`,
           ),
-        );
+        ))
+      ) {
+        if (
+          await cliux.confirm(
+            chalk.yellow(
+              `\nWARNING!!! Canceling the app re-creation may break the content type and entry import. Would you like to proceed without re-create the private app? (y/n)`,
+            ),
+          )
+        ) {
+          return Promise.resolve(true);
+        }
 
-        if (continueProcess) {
-          return Promise.resolve();
-        } else {
+        if (
+          !(await cliux.confirm(
+            chalk.yellow('\nWould you like to re-create the private app and then proceed with the installation? (y/n)'),
+          ))
+        ) {
           process.exit();
         }
       }
     }
+  }
 
-    log(self.config, 'Starting developer hub private apps re-creation', 'success');
+  async createPrivateApps(app, uidCleaned = false, appSuffix = 1) {
+    let locations = app.ui_location && app.ui_location.locations;
 
-    for (let app of listOfNotInstalledPrivateApps) {
-      await self.createAllPrivateAppsInDeveloperHub({ app, httpClient });
+    if (!uidCleaned && !_.isEmpty(locations)) {
+      app.ui_location.locations = this.uodateManifestUILocations(locations, 'uid');
+    } else if (uidCleaned && !_.isEmpty(locations)) {
+      app.ui_location.locations = this.uodateManifestUILocations(locations, 'name', appSuffix);
     }
 
-    return Promise.resolve();
-  };
+    if (app.name > 20) {
+      app.name = app.name.slice(0, 20);
+    }
 
-  /**
-   * @method removeUidFromManifestUILocations
-   * @param {Array<Object>} locations
-   * @returns {Array<Object>}
-   */
-  removeUidFromManifestUILocations = (locations) => {
-    return _.map(locations, (location) => {
-      if (location.meta) {
-        location.meta = _.map(location.meta, (meta) => _.omit(meta, ['uid']));
+    const response = await this.client
+      .organization(this.config.org_uid)
+      .app()
+      .create(_.omit(app, ['uid']))
+      .catch((error) => error);
+
+    return this.appCreationCallback(app, response, appSuffix);
+  }
+
+  async appCreationCallback(app, response, appSuffix) {
+    const { statusText, message } = response || {};
+
+    if (message) {
+      if (_.toLower(statusText) === 'conflict') {
+        return this.handleNameConflict(app, appSuffix);
+      } else {
+        log(this.config, formatError(message), 'error');
+
+        if (this.config.forceStopMarketplaceAppsPrompt) return resolve();
+
+        if (
+          await cliux.confirm(
+            chalk.yellow(
+              'WARNING!!! The above error may have an impact if the failed app is referenced in entries/content type. Would you like to proceed? (y/n)',
+            ),
+          )
+        ) {
+          resolve();
+        } else {
+          process.exit();
+        }
       }
+    } else if (response.uid) {
+      // NOTE new app installation
+      log(this.config, `${response.name} app created successfully.!`, 'success');
+      this.appUidMapping[app.uid] = response.uid;
+      this.appNameMapping[this.appOrginalName] = response.name;
+    }
+  }
 
-      return location;
-    });
-  };
-
-  /**
-   * @method updateNameInManifestUILocations
-   * @param {Array<Object>} locations
-   * @returns {Array<Object>}
-   */
-  updateNameInManifestUILocations = (locations, appSuffix = 1) => {
-    return _.map(locations, (location) => {
-      if (location.meta) {
-        location.meta = _.map(location.meta, (meta) => {
-          meta.name = `${_.first(_.split(meta.name, '◈'))}◈${appSuffix}`;
-
-          return meta;
+  async handleNameConflict(app, appSuffix) {
+    const appName = this.config.forceStopMarketplaceAppsPrompt
+      ? this.getAppName(app.name, appSuffix)
+      : await cliux.inquire({
+          type: 'input',
+          name: 'name',
+          validate: this.validateAppName,
+          default: this.getAppName(app.name, appSuffix),
+          message: `${app.name} app already exist. Enter a new name to create an app.?`,
         });
-      }
+    app.name = appName;
 
-      return location;
-    });
-  };
+    return this.createPrivateApps(app, true, appSuffix + 1);
+  }
 
-  getAppName = (name, appSuffix = 1) => {
+  uodateManifestUILocations(locations, type = 'uid', appSuffix = 1) {
+    switch (type) {
+      case 'uid':
+        return _.map(locations, (location) => {
+          if (location.meta) {
+            location.meta = _.map(location.meta, (meta) => _.omit(meta, ['uid']));
+          }
+
+          return location;
+        });
+      case 'name':
+        return _.map(locations, (location) => {
+          if (location.meta) {
+            location.meta = _.map(location.meta, (meta) => {
+              if (meta.name) {
+                const name = `${_.first(_.split(meta.name, '◈'))}◈${appSuffix}`;
+
+                if (!this.appNameMapping[this.appOrginalName]) {
+                  this.appNameMapping[this.appOrginalName] = name;
+                }
+
+                meta.name = name;
+              }
+
+              return meta;
+            });
+          }
+
+          return location;
+        });
+    }
+  }
+
+  getAppName(name, appSuffix = 1) {
     if (name.length >= 19) name = name.slice(0, 18);
 
     name = `${_.first(_.split(name, '◈'))}◈${appSuffix}`;
 
     return name;
-  };
-
-  /**
-   * @method createAllPrivateAppsInDeveloperHub
-   * @param {Object} options
-   * @returns {Promise<void>}
-   */
-  createAllPrivateAppsInDeveloperHub = async (options, uidCleaned = false, appSuffix = 1, isRecursive = false) => {
-    const self = this;
-    const { app, httpClient } = options;
-
-    return new Promise((resolve) => {
-      if (!uidCleaned && app.manifest.ui_location && !_.isEmpty(app.manifest.ui_location.locations)) {
-        app.manifest.ui_location.locations = this.removeUidFromManifestUILocations(app.manifest.ui_location.locations);
-      } else if (isRecursive && app.manifest.ui_location && !_.isEmpty(app.manifest.ui_location.locations)) {
-        app.manifest.ui_location.locations = this.updateNameInManifestUILocations(
-          app.manifest.ui_location.locations,
-          appSuffix - 1 || 1,
-          isRecursive,
-        );
-      }
-
-      if (app.manifest.name > 20) {
-        app.manifest.name = app.manifest.name.slice(0, 20);
-      }
-
-      httpClient
-        .post(`${this.developerHubBaseUrl}/apps`, app.manifest)
-        .then(async ({ data: result }) => {
-          const { name } = app.manifest;
-          const { data, error, message } = result || {};
-
-          if (error) {
-            log(self.config, message, 'error');
-
-            if (_.toLower(error) === 'conflict') {
-              const appName = self.config.forceStopMarketplaceAppsPrompt
-                ? self.getAppName(app.manifest.name, appSuffix)
-                : await cliux.inquire({
-                    type: 'input',
-                    name: 'name',
-                    default: self.getAppName(app.manifest.name, appSuffix),
-                    validate: this.validateAppName,
-                    message: `${message}. Enter a new name to create an app.?`,
-                  });
-              app.manifest.name = appName;
-
-              await self
-                .createAllPrivateAppsInDeveloperHub({ app, httpClient }, true, appSuffix + 1, true)
-                .then(resolve)
-                .catch(resolve);
-            } else {
-              if (self.config.forceStopMarketplaceAppsPrompt) return resolve();
-
-              const confirmation = await cliux.confirm(
-                chalk.yellow(
-                  'WARNING!!! The above error may have an impact if the failed app is referenced in entries/content type. Would you like to proceed? (y/n)',
-                ),
-              );
-
-              if (confirmation) {
-                resolve();
-              } else {
-                process.exit();
-              }
-            }
-          } else if (data) {
-            // NOTE new app installation
-            log(self.config, `${name} app created successfully.!`, 'success');
-            this.updatePrivateAppUid(app, data, app.manifest);
-          }
-
-          resolve();
-        })
-        .catch((error) => {
-          if (error && (error.message || error.error_message)) {
-            log(self.config, error.message || error.error_message, 'error');
-          } else {
-            log(self.config, 'Something went wrong.!', 'error');
-          }
-
-          resolve();
-        });
-    });
-  };
-
-  /**
-   * @method updatePrivateAppUid
-   * @param {Object} app
-   * @param {Object} data
-   */
-  updatePrivateAppUid = (app, data, manifest) => {
-    const self = this;
-    const allMarketplaceApps = readFileSync(
-      path.resolve(self.marketplaceAppFolderPath, self.marketplaceAppConfig.fileName),
-    );
-    const index = _.findIndex(allMarketplaceApps, { uid: app.uid, visibility: 'private' });
-
-    if (index > -1) {
-      allMarketplaceApps[index] = {
-        ...allMarketplaceApps[index],
-        manifest,
-        title: data.name,
-        app_uid: data.uid,
-        old_title: allMarketplaceApps[index].title,
-        previous_data: [
-          ...(allMarketplaceApps[index].old_data || []),
-          { [`v${(allMarketplaceApps[index].old_data || []).length}`]: allMarketplaceApps[index] },
-        ],
-      };
-
-      writeFile(path.join(self.marketplaceAppFolderPath, self.marketplaceAppConfig.fileName), allMarketplaceApps);
-    }
-  };
+  }
 
   /**
    * @method installApps
    * @param {Object} options
    * @returns {Void}
    */
-  installApps = (options) => {
-    const self = this;
-    const { app, installedExtensions, httpClient, nodeCrypto } = options;
+  async installApps(app, installedApps) {
+    let updateParam;
+    let installation;
+    const { configuration, server_configuration } = app;
+    const currentStackApp = _.find(installedApps, { manifest: { uid: app.manifest.uid } });
 
-    return new Promise((resolve, reject) => {
-      httpClient
-        .post(`${self.developerHubBaseUrl}/apps/${app.app_uid}/install`, {
-          target_type: 'stack',
-          target_uid: self.config.target_stack,
-        })
-        .then(async ({ data: result }) => {
-          let updateParam;
-          const { title } = app;
-          const { data, error, message, error_code, error_message } = result;
+    if (!currentStackApp) {
+      // NOTE install new app
+      installation = await this.client
+        .organization(this.config.org_uid)
+        .app(this.appUidMapping[app.manifest.uid] || app.manifest.uid)
+        .install({ targetUid: this.config.target_stack, targetType: 'stack' })
+        .catch((error) => error);
 
-          if (error || error_code) {
-            // NOTE if already installed copy only config data
-            log(self.config, `${message || error_message} - ${title}`, 'success');
-            const ext = _.find(installedExtensions, { app_uid: app.app_uid });
+      if (installation.installation_uid) {
+        log(this.config, `${app.manifest.name} app installed successfully.!`, 'success');
+        await this.makeRedirectUrlCall(installation, app.manifest.name);
+        this.installationUidMapping[app.uid] = installation.installation_uid;
+        updateParam = { manifest: app.manifest, ...installation, configuration, server_configuration };
+      } else if (installation.message) {
+        log(this.config, formatError(installation.message), 'success');
+        await this.confirmToCloseProcess(installation);
+      }
+    } else if (!_.isEmpty(configuration) || !_.isEmpty(server_configuration)) {
+      log(this.config, `${app.manifest.name} is already installed`, 'success');
+      updateParam = await this.ifAppAlreadyExist(app, currentStackApp);
+    }
 
-            if (ext) {
-              if (!_.isEmpty(app.configuration) || !_.isEmpty(app.server_configuration)) {
-                cliux.print(
-                  `WARNING!!! The ${title} app already exists and it may have its own configuration. But the current app you install has its own configuration which is used internally to manage content.`,
-                  { color: 'yellow' },
-                );
+    if (!this.appUidMapping[app.manifest.uid]) {
+      this.appUidMapping[app.manifest.uid] = currentStackApp ? currentStackApp.manifest.uid : app.manifest.uid;
+    }
 
-                const configOption = self.config.forceStopMarketplaceAppsPrompt
-                  ? 'Update it with the new configuration.'
-                  : await cliux.inquire({
-                      choices: [
-                        'Update it with the new configuration.',
-                        'Do not update the configuration (WARNING!!! If you do not update the configuration, there may be some issues with the content which you import).',
-                        'Exit',
-                      ],
-                      type: 'list',
-                      name: 'value',
-                      message: 'Choose the option to proceed',
-                    });
+    // NOTE update configurations
+    if (updateParam && (!_.isEmpty(updateParam.configuration) || !_.isEmpty(updateParam.server_configuration))) {
+      await this.updateAppsConfig(updateParam);
+    }
+  }
 
-                if (configOption === 'Exit') {
-                  process.exit();
-                } else if (configOption === 'Update it with the new configuration.') {
-                  updateParam = {
-                    app,
-                    nodeCrypto,
-                    httpClient,
-                    data: { ...ext, installation_uid: ext.app_installation_uid },
-                  };
-                }
-              }
-            } else {
-              if (!self.config.forceStopMarketplaceAppsPrompt) {
-                cliux.print(`WARNING!!! ${message || error_message}`, { color: 'yellow' });
-                const confirmation = await cliux.confirm(
-                  chalk.yellow(
-                    'WARNING!!! The above error may have an impact if the failed app is referenced in entries/content type. Would you like to proceed? (y/n)',
-                  ),
-                );
-
-                if (!confirmation) {
-                  process.exit();
-                }
-              }
-            }
-          } else if (data) {
-            // NOTE new app installation
-            log(self.config, `${title} app installed successfully.!`, 'success');
-            updateParam = { data, app, nodeCrypto, httpClient };
-          }
-
-          if (updateParam) {
-            self.updateAppsConfig(updateParam).then(resolve).catch(reject);
+  async makeRedirectUrlCall(response, appName) {
+    if (response.redirect_url) {
+      log(this.config, `${appName} - OAuth api call started.!`, 'info');
+      await new HttpClient({ maxRedirects: 20, maxBodyLength: Infinity })
+        .get(response.redirect_url)
+        .then(async ({ response }) => {
+          if (_.includes([501, 403], response.status)) {
+            log(this.config, `${appName} - ${response.statusText}, OAuth api call failed.!`, 'error');
+            log(this.config, formatError(response), 'error');
+            await this.confirmToCloseProcess({ message: response.data });
           } else {
-            resolve();
+            log(this.config, `${appName} - OAuth api call completed.!`, 'success');
           }
         })
         .catch((error) => {
-          if (error && (error.message || error.error_message)) {
-            log(self.config, error.message || error.error_message, 'error');
-          } else {
-            log(self.config, 'Something went wrong.!', 'error');
+          if (_.includes([501, 403], error.status)) {
+            log(this.config, formatError(error), 'error');
           }
-
-          reject();
         });
-    });
-  };
+    }
+  }
 
-  updateConfigData(config) {
-    const configKeyMapper = {};
-    const serverConfigKeyMapper = {
-      cmsApiKey: this.config.target_stack,
-    };
+  async ifAppAlreadyExist(app, currentStackApp) {
+    let updateParam;
+    const {
+      manifest: { name },
+      configuration,
+      server_configuration,
+    } = app;
 
-    if (!_.isEmpty(config.configuration) && !_.isEmpty(configKeyMapper)) {
-      _.forEach(_.keys(configKeyMapper), (key) => {
-        config.configuration[key] = configKeyMapper[key];
-      });
+    if (!_.isEmpty(configuration) || !_.isEmpty(server_configuration)) {
+      cliux.print(
+        `\nWARNING!!! The ${name} app already exists and it may have its own configuration. But the current app you install has its own configuration which is used internally to manage content.\n`,
+        { color: 'yellow' },
+      );
+
+      const configOption = this.config.forceStopMarketplaceAppsPrompt
+        ? 'Update it with the new configuration.'
+        : await cliux.inquire({
+            choices: [
+              'Update it with the new configuration.',
+              'Do not update the configuration (WARNING!!! If you do not update the configuration, there may be some issues with the content which you import).',
+              'Exit',
+            ],
+            type: 'list',
+            name: 'value',
+            message: 'Choose the option to proceed',
+          });
+
+      if (configOption === 'Exit') {
+        process.exit();
+      } else if (configOption === 'Update it with the new configuration.') {
+        updateParam = { manifest: app.manifest, ...currentStackApp, configuration, server_configuration };
+      }
     }
 
-    if (!_.isEmpty(config.server_configuration) && !_.isEmpty(serverConfigKeyMapper)) {
-      _.forEach(_.keys(serverConfigKeyMapper), (key) => {
-        config.server_configuration[key] = serverConfigKeyMapper[key];
-      });
-    }
+    return updateParam;
+  }
 
-    return config;
+  async confirmToCloseProcess(installation) {
+    cliux.print(`\nWARNING!!! ${formatError(installation.message)}\n`, { color: 'yellow' });
+
+    if (!this.config.forceStopMarketplaceAppsPrompt) {
+      if (
+        !(await cliux.confirm(
+          chalk.yellow(
+            'WARNING!!! The above error may have an impact if the failed app is referenced in entries/content type. Would you like to proceed? (y/n)',
+          ),
+        ))
+      ) {
+        process.exit();
+      }
+    }
   }
 
   /**
    * @method updateAppsConfig
-   * @param {Object<{ data, app, httpClient, nodeCrypto }>} param
+   * @param {Object<{ data, app }>} param
    * @returns {Promise<void>}
    */
-  updateAppsConfig = ({ data, app, httpClient, nodeCrypto }) => {
-    const self = this;
-    return new Promise((resolve, reject) => {
-      let payload = {};
-      const { title, configuration, server_configuration } = app;
+  updateAppsConfig(app) {
+    const payload = {};
+    const { uid, configuration, server_configuration } = app;
 
-      if (!_.isEmpty(configuration)) {
-        payload['configuration'] = nodeCrypto.decrypt(configuration);
-      }
-      if (!_.isEmpty(server_configuration)) {
-        payload['server_configuration'] = nodeCrypto.decrypt(server_configuration);
-      }
+    if (!_.isEmpty(configuration)) {
+      payload['configuration'] = this.nodeCrypto.decrypt(configuration);
+    }
+    if (!_.isEmpty(server_configuration)) {
+      payload['server_configuration'] = this.nodeCrypto.decrypt(server_configuration);
+    }
 
-      payload = self.updateConfigData(payload);
+    if (_.isEmpty(app) || _.isEmpty(payload) || !uid) {
+      return Promise.resolve();
+    }
 
-      if (_.isEmpty(data) || _.isEmpty(payload) || !data.installation_uid) {
-        resolve();
-      } else {
-        httpClient
-          .put(`${this.developerHubBaseUrl}/installations/${data.installation_uid}`, payload)
-          .then(() => {
-            log(self.config, `${title} app config updated successfully.!`, 'success');
-          })
-          .then(resolve)
-          .catch((error) => {
-            if (error && (error.message || error.error_message)) {
-              log(self.config, error.message || error.error_message, 'error');
-            } else {
-              log(self.config, 'Something went wrong.!', 'error');
-            }
+    return this.httpClient
+      .put(`${this.developerHubBaseUrl}/installations/${uid}`, payload)
+      .then(({ data }) => {
+        if (data.message) {
+          log(this.config, formatError(data.message), 'success');
+        } else {
+          log(this.config, `${app.manifest.name} app config updated successfully.!`, 'success');
+        }
+      })
+      .catch((error) => log(this.config, formatError(error), 'error'));
+  }
 
-            reject();
-          });
-      }
-    });
-  };
-
-  validateAppName = (name) => {
+  validateAppName(name) {
     if (name.length < 3 || name.length > 20) {
       return 'The app name should be within 3-20 characters long.';
     }
 
     return true;
-  };
+  }
 };
