@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import shortUUID from 'short-uuid';
 import * as path from 'path';
 import { configHandler } from '@contentstack/cli-utilities';
 import { machineIdSync } from 'node-machine-id';
@@ -17,20 +17,21 @@ export default class CsdxContext {
   public flagWarningPrintState: any;
 
   constructor(cliOpts: any, cliConfig: any) {
+    const analyticsInfo = [];
     const command = cliConfig.findCommand(cliOpts.id) || {};
     const config = configHandler;
-    const analyticsInfo = [
-      cliConfig.userAgent.split(' ').splice(0, 1, `v${cliConfig.version}`).join(';'),
-      cliConfig.shell,
-    ];
+    analyticsInfo.push(cliConfig.version || 'none');
+    const platform = cliConfig.platform && cliConfig.arch ? `${cliConfig.platform}-${cliConfig.arch}` : 'none';
+    analyticsInfo.push(platform);
+    const nodeVersion = process.versions.node ? `v${process.versions.node}` : process.version;
+    analyticsInfo.push(nodeVersion);
     this.clientId = configHandler.get('clientId');
     if (!this.clientId) {
       this.clientId = machineIdSync(true);
       configHandler.set('clientId', this.clientId);
     }
     analyticsInfo.push(this.clientId);
-
-    const sessionId = uuidv4();
+    const sessionId = shortUUID.generate();
     configHandler.set('sessionId', sessionId);
     this.sessionId = sessionId;
     analyticsInfo.push(this.sessionId);
@@ -63,6 +64,4 @@ export default class CsdxContext {
       if (token) return token;
     }
   }
-
-  getSystemInfo(cliConfig) {}
 }
