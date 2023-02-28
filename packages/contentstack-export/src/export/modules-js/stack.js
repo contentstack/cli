@@ -9,6 +9,7 @@ const mkdirp = require('mkdirp');
 const merge = require('lodash/merge');
 const { default: config } = require('../../config');
 let stackConfig = config.modules.stack;
+const { managementSDKClient } = require('@contentstack/cli-utilities');
 
 class ExportStack {
   stackConfig = config.modules.stack;
@@ -26,13 +27,17 @@ class ExportStack {
   async start() {
     const self = this;
     if (self.config.auth_token) {
-      const stack = await self.stackAPIClient.fetch().catch((error) => {
-        console.log(error);
-      });
+      const tempAPIClient = await managementSDKClient({ host: config.host });
+      const tempStackData = await tempAPIClient
+        .stack({ api_key: self.config.source_stack })
+        .fetch()
+        .catch((error) => {
+          console.log(error);
+        });
 
-      if (stack && stack.org_uid) {
-        self.config.org_uid = stack.org_uid;
-        self.config.sourceStackName = stack.name;
+      if (tempStackData && tempStackData.org_uid) {
+        self.config.org_uid = tempStackData.org_uid;
+        self.config.sourceStackName = tempStackData.name;
       }
     }
 
