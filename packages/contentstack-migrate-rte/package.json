@@ -5,8 +5,8 @@
   "author": "contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "^1.1.0",
-    "@contentstack/cli-utilities": "^1.1.0",
+    "@contentstack/cli-command": "^1.2.0",
+    "@contentstack/cli-utilities": "^1.2.0",
     "@contentstack/json-rte-serializer": "^2.0.1",
     "@contentstack/management": "^1.6.1",
     "@oclif/core": "^2.3.0",
