@@ -10,6 +10,7 @@
     "@oclif/config": "^1.18.3",
     "big-json": "^3.2.0",
     "bluebird": "^3.7.2",
+    "chalk": "^4.1.2",
     "debug": "^4.1.0",
     "lodash": "^4.17.20",
     "marked": "^4.0.17",
@@ -31,8 +32,7 @@
     "@typescript-eslint/eslint-plugin": "^5.48.2",
     "chai": "^4.2.0",
     "eslint": "^8.18.0",
-    "eslint-config-oclif": "^3.1.0",
-    "eslint-config-oclif-typescript": "^0.1.0",
+    "eslint-config-oclif": "^4.0.0",
     "globby": "^10.0.2",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
@@ -45,10 +45,10 @@
   },
   "scripts": {
     "build": "npm run clean && npm run compile",
-    "clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "npm run build && oclif manifest && oclif readme",
+    "prepack": "pnpm compile && oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md",
     "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "pretest": "tsc -p test",
@@ -57,7 +57,7 @@
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
     "test:integration": "mocha --forbid-only \"test/integration/*.test.ts\"",
-    "test:unit": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\""
+    "test:unit": "mocha --forbid-only \"test/unit/*.test.ts\""
   },
   "engines": {
     "node": ">=14.0.0"
