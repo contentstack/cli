@@ -19,7 +19,10 @@ export default class CsdxContext {
   constructor(cliOpts: any, cliConfig: any) {
     const command = cliConfig.findCommand(cliOpts.id) || {};
     const config = configHandler;
-    const analyticsInfo = [cliConfig.userAgent.split(' ').join(';'), cliConfig.shell];
+    const analyticsInfo = [
+      cliConfig.userAgent.split(' ').splice(0, 1, `v${cliConfig.version}`).join(';'),
+      cliConfig.shell,
+    ];
     this.clientId = configHandler.get('clientId');
     if (!this.clientId) {
       this.clientId = machineIdSync(true);
