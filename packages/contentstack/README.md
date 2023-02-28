@@ -1974,7 +1974,7 @@ EXAMPLES
   $ csdx cm:stacks:export --branch [optional] branch name
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/stacks/export.ts)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/lib/commands/cm/stacks/export.js)_
 
 ## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
