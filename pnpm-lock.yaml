@@ -24,7 +24,6 @@ importers:
       '@contentstack/cli-migration': ^1.2.0
       '@contentstack/cli-utilities': ^1.2.0
       '@contentstack/management': ^1.6.1
-      '@oclif/core': ^2.3.0
       '@oclif/plugin-help': ^5
       '@oclif/plugin-not-found': ^2.3.9
       '@oclif/plugin-plugins': ^2.1.7
@@ -71,7 +70,6 @@ importers:
       '@contentstack/cli-migration': link:../contentstack-migration
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/management': 1.6.1_debug@4.3.4
-      '@oclif/core': 2.3.1
       '@oclif/plugin-help': 5.2.4
       '@oclif/plugin-not-found': 2.3.20
       '@oclif/plugin-plugins': 2.3.2
@@ -110,7 +108,6 @@ importers:
       '@contentstack/cli-command': ^1.2.0
       '@contentstack/cli-utilities': ^1.2.0
       '@fancy-test/nock': ^0.1.1
-      '@oclif/core': ^2.3.0
       '@oclif/plugin-help': ^5.1.19
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.2.18
@@ -140,7 +137,6 @@ importers:
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@oclif/core': 2.3.1
       chalk: 4.1.2
       debug: 4.3.4
       inquirer: 8.2.4
@@ -176,7 +172,6 @@ importers:
       '@contentstack/cli-command': ^1.2.0
       '@contentstack/cli-utilities': ^1.2.0
       '@contentstack/management': ^1.6.1
-      '@oclif/core': ^2.3.0
       '@oclif/test': ^2.2.10
       '@types/inquirer': ^9.0.3
       '@types/mkdirp': ^1.0.1
@@ -202,7 +197,6 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/management': 1.6.1
-      '@oclif/core': 2.3.1
       inquirer: 8.2.4
       mkdirp: 1.0.4
       tar: 6.1.13
@@ -230,7 +224,6 @@ importers:
       '@contentstack/cli-command': ^1.2.0
       '@contentstack/cli-utilities': ^1.2.0
       '@contentstack/management': ^1.6.1
-      '@oclif/core': ^2.3.0
       '@oclif/test': ^1.2.6
       bluebird: ^3.7.2
       chai: ^4.2.0
@@ -250,7 +243,6 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/management': 1.6.1
-      '@oclif/core': 2.3.1
       bluebird: 3.7.2
       chalk: 4.1.2
       inquirer: 8.2.4
@@ -275,7 +267,6 @@ importers:
       '@contentstack/cli-command': ^1.2.0
       '@contentstack/cli-utilities': ^1.2.0
       '@contentstack/management': ^1.6.1
-      '@oclif/core': ^2.3.0
       '@oclif/test': ^1.2.7
       async: ^3.2.4
       chai: ^4.2.0
@@ -300,7 +291,6 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/management': 1.6.1
-      '@oclif/core': 2.3.1
       async: 3.2.4
       chalk: 4.1.2
       child_process: 1.0.2
@@ -325,7 +315,6 @@ importers:
     specifiers:
       '@contentstack/cli-utilities': ^1.2.0
       '@contentstack/management': ^1.6.1
-      '@oclif/core': ^2.3.0
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.2.18
       '@types/mkdirp': ^1.0.1
@@ -346,7 +335,6 @@ importers:
     dependencies:
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/management': 1.6.1
-      '@oclif/core': 2.3.1
       contentstack: 3.16.0
     devDependencies:
       '@oclif/test': 2.3.6
@@ -370,7 +358,6 @@ importers:
     specifiers:
       '@contentstack/cli-command': ^1.2.0
       '@contentstack/cli-utilities': ^1.2.0
-      '@oclif/core': ^2.3.0
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.2.18
       '@types/inquirer': ^9.0.3
@@ -398,7 +385,6 @@ importers:
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@oclif/core': 2.3.1
       chalk: 4.1.2
       debug: 4.3.4
       inquirer: 8.2.4
@@ -427,7 +413,6 @@ importers:
 
   packages/contentstack-dev-dependencies:
     specifiers:
-      '@oclif/core': ^2.3.0
       '@types/node': ^14.14.32
       eslint: ^8.18.0
       fancy-test: ^2.0.0
@@ -437,7 +422,6 @@ importers:
       tslib: ^2.5.0
       typescript: ^4.9.3
     dependencies:
-      '@oclif/core': 2.3.1
       lodash: 4.17.21
     devDependencies:
       '@types/node': 14.18.36
@@ -457,7 +441,6 @@ importers:
       '@contentstack/cli-utilities': ^1.2.0
       '@oclif/command': ^1.8.16
       '@oclif/config': ^1.18.3
-      '@oclif/core': ^2.3.0
       '@oclif/plugin-help': ^5.1.19
       '@oclif/test': ^1.2.6
       assert: ^2.0.0
@@ -488,7 +471,6 @@ importers:
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/command': 1.8.22_@oclif+config@1.18.8
       '@oclif/config': 1.18.8
-      '@oclif/core': 2.3.1
       async: 3.2.4
       big-json: 3.2.0
       bluebird: 3.7.2
@@ -523,7 +505,6 @@ importers:
     specifiers:
       '@contentstack/cli-command': ^1.2.0
       '@contentstack/cli-utilities': ^1.2.0
-      '@oclif/core': ^2.3.0
       '@oclif/test': ^2.2.10
       chai: ^4.2.0
       chalk: ^4.1.0
@@ -541,7 +522,6 @@ importers:
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@oclif/core': 2.3.1
       chalk: 4.1.2
       fast-csv: 4.3.6
       inquirer: 8.2.4
@@ -563,7 +543,6 @@ importers:
       '@contentstack/cli-command': ^1.2.0
       '@contentstack/cli-utilities': ^1.2.0
       '@oclif/config': ^1.18.3
-      '@oclif/core': ^2.3.0
       '@oclif/test': ^1.2.6
       big-json: ^3.2.0
       bluebird: ^3.7.2
@@ -586,7 +565,6 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@oclif/config': 1.18.8
-      '@oclif/core': 2.3.1
       big-json: 3.2.0
       bluebird: 3.7.2
       chalk: 4.1.2
@@ -613,7 +591,6 @@ importers:
       '@contentstack/cli-utilities': ^1.2.0
       '@contentstack/json-rte-serializer': ^2.0.1
       '@contentstack/management': ^1.6.1
-      '@oclif/core': ^2.3.0
       '@oclif/test': ^2.2.10
       chai: ^4.3.4
       chalk: ^4.1.2
@@ -637,7 +614,6 @@ importers:
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/json-rte-serializer': 2.0.1
       '@contentstack/management': 1.6.1
-      '@oclif/core': 2.3.1
       chalk: 4.1.2
       collapse-whitespace: 1.1.7
       jsdom: 20.0.3
@@ -665,7 +641,6 @@ importers:
       '@contentstack/management': ^1.6.1
       '@oclif/command': ^1.8.16
       '@oclif/config': ^1.18.3
-      '@oclif/core': ^2.3.0
       '@oclif/test': ^2.2.10
       async: ^3.2.4
       callsites: ^3.1.0
@@ -692,7 +667,6 @@ importers:
       '@contentstack/management': 1.6.1
       '@oclif/command': 1.8.22_@oclif+config@1.18.8
       '@oclif/config': 1.18.8
-      '@oclif/core': 2.3.1
       async: 3.2.4
       callsites: 3.1.0
       cardinal: 2.1.1
@@ -721,7 +695,6 @@ importers:
       '@contentstack/cli-command': ^1.2.0
       '@contentstack/cli-utilities': ^1.2.0
       '@contentstack/management': ^1.6.1
-      '@oclif/core': ^2.3.0
       '@oclif/plugin-help': ^5.1.19
       '@types/inquirer': ^9.0.3
       '@types/jest': ^26.0.15
@@ -749,7 +722,6 @@ importers:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/management': 1.6.1
-      '@oclif/core': 2.3.1
       axios: 1.1.3
       inquirer: 8.2.4
       mkdirp: 1.0.4
