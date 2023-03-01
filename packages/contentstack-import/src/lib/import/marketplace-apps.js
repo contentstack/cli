@@ -9,7 +9,7 @@ const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const contentstack = require('@contentstack/management');
-const { cliux, HttpClient, NodeCrypto } = require('@contentstack/cli-utilities');
+const { cliux, HttpClient, NodeCrypto, managementSDKClient } = require('@contentstack/cli-utilities');
 
 const { formatError } = require('../util');
 let config = require('../../config/default');
@@ -35,8 +35,6 @@ module.exports = class ImportMarketplaceApps {
   }
 
   async start() {
-    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
-    this.client = contentstack.client({ authtoken: this.config.auth_token, endpoint: this.developerHubBaseUrl });
     this.mapperDirPath = path.resolve(this.config.data, 'mapper', 'marketplace_apps');
     this.uidMapperPath = path.join(this.mapperDirPath, 'uid-mapping.json');
     this.marketplaceAppFolderPath = path.resolve(this.config.data, this.marketplaceAppConfig.dirName);
@@ -53,6 +51,9 @@ module.exports = class ImportMarketplaceApps {
       );
       return Promise.resolve();
     }
+
+    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
+    this.client = contentstack.client({ authtoken: this.config.auth_token, endpoint: this.developerHubBaseUrl });
 
     await this.getOrgUid();
 
@@ -71,14 +72,17 @@ module.exports = class ImportMarketplaceApps {
   }
 
   async getOrgUid() {
-    // NOTE get org uid
     if (this.config.auth_token) {
-      const stack = await this.stackAPIClient.fetch().catch((error) => {
-        log(this.config, formatError(error), 'success');
-      });
+      const tempAPIClient = await managementSDKClient({ host: this.config.host });
+      const tempStackData = await tempAPIClient
+        .stack({ api_key: this.config.target_stack })
+        .fetch()
+        .catch((error) => {
+          console.log(error);
+        });
 
-      if (stack && stack.org_uid) {
-        this.config.org_uid = stack.org_uid;
+      if (tempStackData && tempStackData.org_uid) {
+        this.config.org_uid = tempStackData.org_uid;
       }
     }
   }
