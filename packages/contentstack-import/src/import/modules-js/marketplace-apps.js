@@ -37,8 +37,6 @@ module.exports = class ImportMarketplaceApps {
   }
 
   async start() {
-    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
-    this.client = contentstack.client({ authtoken: this.config.auth_token, endpoint: this.developerHubBaseUrl });
     this.mapperDirPath = path.resolve(this.config.data, 'mapper', 'marketplace_apps');
     this.uidMapperPath = path.join(this.mapperDirPath, 'uid-mapping.json');
     this.marketplaceAppFolderPath = path.resolve(this.config.data, this.marketplaceAppConfig.dirName);
@@ -55,6 +53,9 @@ module.exports = class ImportMarketplaceApps {
       );
       return Promise.resolve();
     }
+
+    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
+    this.client = contentstack.client({ authtoken: this.config.auth_token, endpoint: this.developerHubBaseUrl });
 
     await this.getOrgUid();
 
