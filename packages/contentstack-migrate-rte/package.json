@@ -9,7 +9,6 @@
     "@contentstack/cli-utilities": "^1.2.0",
     "@contentstack/json-rte-serializer": "^2.0.1",
     "@contentstack/management": "^1.6.1",
-    "@oclif/core": "^2.3.0",
     "collapse-whitespace": "^1.1.7",
     "chalk": "^4.1.2",
     "jsdom": "^20.0.3",
