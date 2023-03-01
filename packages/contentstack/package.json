@@ -35,7 +35,6 @@
     "@contentstack/cli-migration": "^1.2.0",
     "@contentstack/cli-utilities": "^1.2.0",
     "@contentstack/management": "^1.6.1",
-    "@oclif/core": "^2.3.0",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-not-found": "^2.3.9",
     "@oclif/plugin-plugins": "^2.1.7",
@@ -47,7 +46,6 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "oclif": "^3.1.2",
     "@oclif/test": "^2.2.10",
     "@types/chai": "^4.2.18",
     "@types/inquirer": "^9.0.3",
