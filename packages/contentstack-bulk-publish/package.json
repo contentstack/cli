@@ -9,6 +9,7 @@
     "@contentstack/cli-utilities": "^1.1.0",
     "@contentstack/management": "^1.6.1",
     "bluebird": "^3.7.2",
+    "chalk": "^4.1.2",
     "lodash": "^4.17.15",
     "nock": "^13.0.2",
     "winston": "^3.7.2",
@@ -19,13 +20,14 @@
     "@oclif/test": "^1.2.6",
     "chai": "^4.2.0",
     "eslint": "^8.18.0",
-    "eslint-config-oclif": "^3.1.0",
+    "eslint-config-oclif": "^4.0.0",
     "globby": "^10.0.2",
     "mocha": "^10.0.0",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "tslib": "^1.13.0"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "/npm-shrinkwrap.json",
@@ -69,6 +71,7 @@
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
     "posttest": "eslint .",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   }
 }
