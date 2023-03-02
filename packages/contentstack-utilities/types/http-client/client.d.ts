@@ -16,13 +16,13 @@ export declare class HttpClient {
     /**
      * Createa new pending HTTP request instance.
      */
-    constructor();
+    constructor(request?: AxiosRequestConfig);
     /**
      * Create a reusable HttpClient instance.
      *
      * @returns {HttpClient}
      */
-    static create(): HttpClient;
+    static create(request?: AxiosRequestConfig): HttpClient;
     /**
      * Returns the Axios request config.
      *
@@ -225,6 +225,6 @@ export declare class HttpClient {
      */
     prepareRequestPayload(): any;
 }
-declare type BodyFormat = 'json' | 'formParams';
-declare type HttpMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS';
+type BodyFormat = 'json' | 'formParams';
+type HttpMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS';
 export {};
