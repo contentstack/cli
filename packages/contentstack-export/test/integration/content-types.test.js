@@ -8,7 +8,6 @@ const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 const { modules } = require('../../src/config/default')
 const { getStackDetailsByRegion, getContentTypesCount, cleanUp } = require('./utils/helper')
 const { PRINT_LOGS, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
-const { doesNotThrow } = require('assert')
 const { DELIMITER, KEY_VAL_DELIMITER } = process.env
 
 module.exports = (region) => {
@@ -45,8 +44,8 @@ module.exports = (region) => {
     messageHandler.init({ messageFilePath })
     const { promptMessageList } = require(messageFilePath)
 
-    describe("ContentStack-Export plugin test [--module=content-types]", () => {
-      describe("Export Content types using cm:stacks:export command without any flags", () => {
+    describe("ContentStack-Export content-types", () => {
+      describe("cm:stacks:export content-types [auth-token]", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stub(cliUX, "prompt", async (name) => {
@@ -59,7 +58,7 @@ module.exports = (region) => {
           })
           .stdout({ print: PRINT_LOGS || false })
           .command(["cm:stacks:export", "--module", "content-types"])
-          .it("Check content_types count", async (_, done) => {
+          .it("Check content-types count", async (_, done) => {
             let exportedContentTypesCount = 0
             const contentTypesCount = await getContentTypesCount(stackDetails[stack])
 
@@ -77,12 +76,12 @@ module.exports = (region) => {
           })
       })
 
-      describe("Export Content types using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\" and management token", () => {
+      describe("cm:stacks:export content-types [management-token]", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
           .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "content-types"])
-          .it("Check content_types counts", async (_, done) => {
+          .it("Check content-types counts", async (_, done) => {
             let exportedContentTypesCount = 0
             const contentTypesCount = await getContentTypesCount(stackDetails[stack]);
 
