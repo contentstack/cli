@@ -47,8 +47,8 @@ module.exports = (region) => {
     messageHandler.init({ messageFilePath })
     const { promptMessageList } = require(messageFilePath)
 
-    describe("ContentStack-Export plugin test [--module=assets]", () => {
-      describe("Export assets using cm:stacks:export command without any flags", () => {
+    describe("ContentStack-Export assets", () => {
+      describe("cm:stacks:export assets [auth-token]", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stub(cliUX, "prompt", async (name) => {
@@ -61,7 +61,7 @@ module.exports = (region) => {
           })
           .stdout({ print: PRINT_LOGS || false })
           .command(["cm:stacks:export", "--module", "assets"])
-          .it("Check folder count done", async () => {
+          .it("Check assets and folders counts", async () => {
             let exportedAssetsCount = 0
             let exportedAssetsFolderCount = 0
             const { assetCount, folderCount } = await getAssetAndFolderCount(stackDetails[stack])
@@ -82,12 +82,12 @@ module.exports = (region) => {
           })
       })
 
-      describe("Export assets using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\" and management token", () => {
+      describe("cm:stacks:export assets [management-token]", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
           .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "assets"])
-          .it("Check folder counts done", async () => {
+          .it("Check assets and folder counts", async () => {
             let exportedAssetsCount = 0
             let exportedAssetsFolderCount = 0
             const { assetCount, folderCount } = await getAssetAndFolderCount(stackDetails[stack]);

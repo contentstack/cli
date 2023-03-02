@@ -77,7 +77,7 @@ module.exports = (region) => {
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
           .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "labels"])
-          .it("Check labels count", async () => {
+          .it("Check label counts", async () => {
             let exportedLabelsCount = 0
             const labelCount = await getLabelsCount(stackDetails[stack])
 
