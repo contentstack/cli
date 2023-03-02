@@ -26,7 +26,7 @@ module.exports = (region) => {
   function addTokens(stacks) {
     let stack = stacks.pop()
     test
-    .command(AddTokenCommand, ['-a', stackDetails[stack].ALIAS_NAME, '-k', stackDetails[stack].STACK_API_KEY, '--management', '--token', stackDetails[stack].MANAGEMENT_TOKEN, '--yes'])
+    .command(AddTokenCommand, ['--alias', stackDetails[stack].ALIAS_NAME, '--stack-api-key', stackDetails[stack].STACK_API_KEY, '--management', '--token', stackDetails[stack].MANAGEMENT_TOKEN, '--yes'])
     .it(`Adding token for ${stack}`, (_, done) => {
       console.log('done')
       done()
@@ -47,7 +47,7 @@ module.exports = (region) => {
         messageFilePath = join(__dirname, '..', '..', '..', 'contentstack-utilities', 'messages/auth.json');
         messageHandler.init({ messageFilePath });
       })
-      .command(LoginCommand, [`-u=${username}`, `-p=${password}`])
+      .command(LoginCommand, [`--username=${username}`, `--password=${password}`])
       .do(() => {
         messageFilePath = join(__dirname, '..', '..', '..', 'contentstack-utilities', 'messages/auth.json');
         messageHandler.init({ messageFilePath });
