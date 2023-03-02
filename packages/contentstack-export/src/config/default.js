@@ -33,6 +33,11 @@ module.exports = {
       fileName: 'locales.json',
       requiredKeys: ['code', 'uid', 'name', 'fallback_locale'],
     },
+    masterLocale: {
+      dirName: 'locales',
+      fileName: 'master-locale.json',
+      requiredKeys: ['code', 'uid', 'name'],
+    },
     customRoles: {
       dirName: 'custom-roles',
       fileName: 'custom-roles.json',
