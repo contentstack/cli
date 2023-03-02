@@ -10,9 +10,6 @@ let _ = require('lodash');
 let { marked } = require('marked');
 
 let helper = require('./fs');
-const { getConfig } = require('./');
-let config = getConfig();
-const marketplaceAppPath = path.resolve(config.data, 'marketplace_apps', 'marketplace_apps.json');
 
 // get assets object
 module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMapperPath, installedExtensions) {
@@ -75,38 +72,8 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
       ) {
         findAssetIdsFromJsonCustomFields(data.entry, data.content_type.schema);
       } else if (schema[i].data_type === 'json' && schema[i].field_metadata.extension) {
-        if (installedExtensions) {
-          const marketplaceApps = helper.readFileSync(marketplaceAppPath);
-          const oldExt = _.find(marketplaceApps, { uid: schema[i].extension_uid });
-
-          if (oldExt) {
-            let ext = _.find(installedExtensions, (ext) => {
-              const { type, title, app_uid } = ext;
-
-              if (type === 'field' && app_uid === oldExt.app_uid) {
-                const titles = [
-                  ...(oldExt.manifest
-                    ? _.map(
-                        _.map(
-                          oldExt.manifest && oldExt.manifest.ui_location && oldExt.manifest.ui_location.locations,
-                          'meta',
-                        ).flat(),
-                        'name',
-                      )
-                    : []),
-                  oldExt.title,
-                ];
-
-                return _.includes(titles, title);
-              }
-
-              return false;
-            });
-
-            if (ext) {
-              schema[i].extension_uid = ext.uid;
-            }
-          }
+        if (installedExtensions && installedExtensions[schema[i].extension_uid]) {
+          schema[i].extension_uid = installedExtensions[schema[i].extension_uid];
         }
       }
     }
@@ -116,71 +83,13 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
     ctSchema.map((row) => {
       if (row.data_type === 'json') {
         if (entryObj[row.uid] && row.field_metadata.extension && row.field_metadata.is_asset) {
-          if (installedExtensions) {
-            const marketplaceApps = helper.readFileSync(marketplaceAppPath);
-            const oldExt = _.find(marketplaceApps, { uid: row.extension_uid });
-
-            if (oldExt) {
-              let ext = _.find(installedExtensions, (ext) => {
-                const { type, title, app_uid } = ext;
-
-                if (type === 'field' && app_uid === oldExt.app_uid) {
-                  const titles = [
-                    ...(oldExt.manifest
-                      ? _.map(
-                          _.map(
-                            oldExt.manifest && oldExt.manifest.ui_location && oldExt.manifest.ui_location.locations,
-                            'meta',
-                          ).flat(),
-                          'name',
-                        )
-                      : []),
-                    oldExt.title,
-                  ];
-
-                  return _.includes(titles, title);
-                }
-
-                return false;
-              });
-
-              if (ext) {
-                row.extension_uid = ext.uid;
-              }
-            }
+          if (installedExtensions && installedExtensions[row.extension_uid]) {
+            row.extension_uid = installedExtensions[row.extension_uid];
           }
 
           if (entryObj[row.uid].metadata && entryObj[row.uid].metadata.extension_uid) {
-            const marketplaceApps = helper.readFileSync(marketplaceAppPath);
-            const oldExt = _.find(marketplaceApps, { uid: entryObj[row.uid].metadata.extension_uid });
-
-            if (oldExt) {
-              let ext = _.find(installedExtensions, (ext) => {
-                const { type, title, app_uid } = ext;
-
-                if (type === 'field' && app_uid === oldExt.app_uid) {
-                  const titles = [
-                    ...(oldExt.manifest
-                      ? _.map(
-                          _.map(
-                            oldExt.manifest && oldExt.manifest.ui_location && oldExt.manifest.ui_location.locations,
-                            'meta',
-                          ).flat(),
-                          'name',
-                        )
-                      : []),
-                    oldExt.title,
-                  ];
-
-                  return _.includes(titles, title);
-                }
-
-                return false;
-              });
-
-              if (ext) {
-                entryObj[row.uid].metadata.extension_uid = ext.uid;
-              }
+            if (installedExtensions && installedExtensions[entryObj[row.uid].metadata.extension_uid]) {
+              entryObj[row.uid].metadata.extension_uid = installedExtensions[entryObj[row.uid].metadata.extension_uid];
             }
           }
         }

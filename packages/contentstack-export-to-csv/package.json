@@ -1,12 +1,12 @@
 {
   "name": "@contentstack/cli-cm-export-to-csv",
   "description": "Export entities to csv",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "author": "Abhinav Gupta @abhinav-from-contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "^1.0.4",
-    "@contentstack/cli-utilities": "^1.0.5",
+    "@contentstack/cli-command": "^1.1.0",
+    "@contentstack/cli-utilities": "^1.1.0",
     "chalk": "^4.1.0",
     "fast-csv": "^4.3.6",
     "inquirer": "8.2.4",
@@ -25,7 +25,7 @@
     "nyc": "^15.1.0"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "/npm-shrinkwrap.json",
@@ -44,7 +44,8 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   },
   "csdxConfig": {
     "expiredCommands": {}

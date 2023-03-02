@@ -12,7 +12,6 @@ let util = require('../util');
 let config = util.getConfig();
 let extensionPath = path.resolve(config.data, 'mapper/extensions', 'uid-mapping.json');
 let globalfieldsPath = path.resolve(config.data, 'mapper/globalfields', 'uid-mapping.json');
-const marketplaceAppPath = path.resolve(config.data, 'marketplace_apps', 'marketplace_apps.json');
 
 // eslint-disable-next-line camelcase
 let extension_uid_Replace = (module.exports = function (schema, preserveStackVersion, installedExtensions) {
@@ -50,38 +49,8 @@ let extension_uid_Replace = (module.exports = function (schema, preserveStackVer
         // eslint-disable-next-line camelcase
         schema[i].extension_uid = data[extension_key_value];
       } else if (schema[i].field_metadata && schema[i].field_metadata.extension) {
-        if (installedExtensions) {
-          const marketplaceApps = helper.readFileSync(marketplaceAppPath);
-          const oldExt = _.find(marketplaceApps, { uid: schema[i].extension_uid });
-
-          if (oldExt) {
-            let ext = _.find(installedExtensions, (ext) => {
-              const { type, title, app_uid } = ext;
-
-              if (type === 'field' && app_uid === oldExt.app_uid) {
-                const titles = [
-                  ...(oldExt.manifest
-                    ? _.map(
-                        _.map(
-                          oldExt.manifest && oldExt.manifest.ui_location && oldExt.manifest.ui_location.locations,
-                          'meta',
-                        ).flat(),
-                        'name',
-                      )
-                    : []),
-                  oldExt.title,
-                ];
-
-                return _.includes(titles, title);
-              }
-
-              return false;
-            });
-
-            if (ext) {
-              schema[i].extension_uid = ext.uid;
-            }
-          }
+        if (installedExtensions && installedExtensions[schema[i].extension_uid]) {
+          schema[i].extension_uid = installedExtensions[schema[i].extension_uid];
         }
       }
     } else if (schema[i].data_type === 'json' && schema[i].hasOwnProperty('plugins') && schema[i].plugins.length > 0) {

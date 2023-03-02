@@ -1,24 +1,23 @@
 {
-  "name": "root",
+  "name": "csdx",
+  "version": "1.2.5",
   "devDependencies": {
-    "lerna": "^5.3.0"
+    "pnpm": "^7.23.0"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=14.0.0"
   },
   "private": true,
   "scripts": {
-    "clean:build": "rm -rf ./build"
+    "cache:clear": "pnpm store prune",
+    "bootstrap": "pnpm install --no-frozen-lockfile",
+    "clean": "pnpm --filter './packages/*' -w clean",
+    "prepack": "pnpm --filter \"./packages/*\" -w prepack",
+    "package-lock-only": "npm i --package-lock-only --workspaces",
+    "setup-repo": "npm i && pnpm cache:clear && pnpm package-lock-only && pnpm clean && pnpm install --no-frozen-lockfile && pnpm prepack"
   },
   "license": "MIT",
-  "standard": {
-    "env": "mocha",
-    "ignore": [
-      "**/node_modules/**",
-      "packages/*/lib/**"
-    ]
-  },
   "workspaces": [
-    "./packages/*"
+    "packages/*"
   ]
 }

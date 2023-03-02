@@ -12,7 +12,7 @@ const configKey = 'publish_unpublished_env';
 async function publishOnlyUnpublishedService(UnpublishedEntriesCommand) {
   let config;
   const _flags = await this.parse(UnpublishedEntriesCommand)
-  const unpublishedEntriesFlags = flagsAdapter(_flags);
+  const unpublishedEntriesFlags = flagsAdapter(_flags.flags);
   let updatedFlags;
   try {
     updatedFlags = unpublishedEntriesFlags.config

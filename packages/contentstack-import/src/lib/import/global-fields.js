@@ -17,7 +17,6 @@ const { formatError } = require('../util');
 let config = require('../../config/default');
 let extension_supress = require('../util/extensionsUidReplace');
 let removeReferenceFields = require('../util/removeReferenceFields');
-const { getInstalledExtensions } = require('../util/marketplace-app-helper');
 
 global._globalField_pending = [];
 
@@ -39,13 +38,14 @@ module.exports = class ImportGlobalFields {
     let self = this;
     let globalfieldsConfig = config.modules.globalfields;
     let globalfieldsFolderPath = path.resolve(this.config.data, globalfieldsConfig.dirName);
-    let appMapperFolderPath = path.join(this.config.data, 'mapper', 'marketplace_apps');
     let globalfieldsMapperPath = path.resolve(this.config.data, 'mapper', 'global_fields');
     let globalfieldsUidMapperPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'uid-mapping.json');
     let globalfieldsSuccessPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'success.json');
     let globalFieldsPending = path.resolve(this.config.data, 'mapper', 'global_fields', 'pending_global_fields.js');
     let globalfieldsFailsPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'fails.json');
     self.globalfields = helper.readFileSync(path.resolve(globalfieldsFolderPath, globalfieldsConfig.fileName));
+    const appMapperPath = path.join(this.config.data, 'mapper', 'marketplace_apps', 'uid-mapping.json');
+    this.installedExtensions = ((await helper.readFileSync(appMapperPath)) || { extension_uid: {} }).extension_uid;
 
     if (fs.existsSync(globalfieldsUidMapperPath)) {
       self.snipUidMapper = helper.readFileSync(globalfieldsUidMapperPath);
@@ -54,14 +54,6 @@ module.exports = class ImportGlobalFields {
 
     if (!fs.existsSync(globalfieldsMapperPath)) {
       mkdirp.sync(globalfieldsMapperPath);
-    }
-
-    if (fs.existsSync(path.join(appMapperFolderPath, 'marketplace-apps.json'))) {
-      self.installedExtensions = helper.readFileSync(path.join(appMapperFolderPath, 'marketplace-apps.json')) || {};
-    }
-
-    if (isEmpty(self.installedExtensions)) {
-      self.installedExtensions = await getInstalledExtensions(self.config);
     }
 
     return new Promise(function (resolve, reject) {
