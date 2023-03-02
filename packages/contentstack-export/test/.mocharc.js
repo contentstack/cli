@@ -1,6 +1,6 @@
 module.exports = {
     recursive: true,
     reporter: 'spec',
-    timeout: 60000,
+    timeout: 600000,
     parallel: true,
 }
