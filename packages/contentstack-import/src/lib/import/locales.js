@@ -11,6 +11,7 @@ let chalk = require('chalk');
 let mkdirp = require('mkdirp');
 let Promise = require('bluebird');
 let { isEmpty, merge, cloneDeep } = require('lodash');
+const { cliux } = require('@contentstack/cli-utilities');
 
 let helper = require('../util/fs');
 let { addlogs } = require('../util/log');
@@ -23,6 +24,7 @@ module.exports = class ImportLanguages {
   langUidMapper = {};
   masterLanguage = config.master_locale;
   langConfig = config.modules.locales;
+  sourceMasterLangConfig = config.modules.masterLocale;
   reqConcurrency = config.concurrency || config.fetchConcurrency || 1;
 
   constructor(importConfig, stackAPIClient) {
@@ -37,9 +39,10 @@ module.exports = class ImportLanguages {
     let langMapperPath = path.resolve(this.config.data, 'mapper', 'languages');
     let langFolderPath = path.resolve(this.config.data, this.langConfig.dirName);
     let langFailsPath = path.resolve(this.config.data, 'mapper', 'languages', 'fails.json');
-    let langSuccessPath = path.resolve(this.config.data, 'mapper', 'languages', 'success.json');
     let langUidMapperPath = path.resolve(this.config.data, 'mapper', 'languages', 'uid-mapper.json');
+    self.langSuccessPath = path.resolve(this.config.data, 'mapper', 'languages', 'success.json');
     self.languages = helper.readFileSync(path.resolve(langFolderPath, this.langConfig.fileName));
+    self.sourceMasterLanguages = helper.readFileSync(path.resolve(langFolderPath, this.sourceMasterLangConfig.fileName));
 
     mkdirp.sync(langMapperPath);
 
@@ -48,11 +51,19 @@ module.exports = class ImportLanguages {
       self.langUidMapper = self.langUidMapper || {};
     }
 
-    return new Promise(function (resolve, reject) {
+    return new Promise(async function (resolve, reject) {
       if (self.languages === undefined || isEmpty(self.languages)) {
         addlogs(self.config, chalk.white('No Languages Found'), 'success');
         return resolve({ empty: true });
       }
+
+      let sourceMasterLangDetails = Object.values(self.sourceMasterLanguages);
+      if (self.masterLanguage["code"] === sourceMasterLangDetails[0]["code"]) {
+        await self.checkAndUpdateMasterLocaleName(sourceMasterLangDetails).catch((error) => {
+          addlogs(self.config, formatError(error), 'warn');
+        })
+      }
+
       let langUids = Object.keys(self.languages);
       return Promise.map(
         langUids,
@@ -98,7 +109,7 @@ module.exports = class ImportLanguages {
           self
             .updateLocales(langUids)
             .then(() => {
-              helper.writeFileSync(langSuccessPath, self.success);
+              helper.writeFileSync(self.langSuccessPath, self.success);
               addlogs(self.config, chalk.green('Languages have been imported successfully!'), 'success');
               resolve();
             })
@@ -140,6 +151,60 @@ module.exports = class ImportLanguages {
           addlogs(self.config, formatError(error), 'error');
           reject(error);
         });
+    });
+  }
+
+  checkAndUpdateMasterLocaleName(sourceMasterLangDetails) {
+    let self = this;
+    return new Promise(async function (resolve, reject) {
+      let masterLangDetails = await self.stackAPIClient.locale(self.masterLanguage["code"]).fetch()
+        .catch((error) => {
+          addlogs(self.config, formatError(error), 'warn');
+        })
+      if (masterLangDetails &&
+        masterLangDetails["name"] &&
+        sourceMasterLangDetails[0]["name"] &&
+        masterLangDetails["name"].toString().toUpperCase() !== sourceMasterLangDetails[0]["name"].toString().toUpperCase()
+      ) {
+        cliux.print(
+          'WARNING!!! The master language name for the source and destination is different.',
+          { color: 'yellow' },
+        );
+        cliux.print(
+          `Old Master language name: ${masterLangDetails["name"]}`,
+          { color: 'red' },
+        );
+        cliux.print(
+          `New Master language name: ${sourceMasterLangDetails[0]["name"]}`,
+          { color: 'green' },
+        );
+        let confirm = await cliux.inquire({
+          type: 'confirm',
+          message: 'Are you sure you want to update name of master language?',
+          name: 'confirmation',
+        })
+
+        if (confirm) {
+          let languid = sourceMasterLangDetails[0] && sourceMasterLangDetails[0]["uid"];
+          let lang = self.sourceMasterLanguages[languid];
+          if (!lang) return reject('Locale not found.!');
+          const langObj = self.stackAPIClient.locale(lang.code);
+          Object.assign(langObj, { name: lang.name });
+          langObj.update()
+            .then(() => {
+              helper.writeFileSync(self.langSuccessPath, self.success);
+              addlogs(self.config, chalk.green('Master Languages name have been updated successfully!'), 'success');
+              resolve();
+            })
+            .catch(function (error) {
+              reject(error);
+            });
+        } else {
+          resolve();
+        }
+      } else {
+        resolve();
+      }
     });
   }
 };
