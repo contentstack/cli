@@ -171,11 +171,11 @@ module.exports = class ImportLanguages {
           { color: 'yellow' },
         );
         cliux.print(
-          `Old Master language name: ${sourceMasterLangDetails[0]["name"]}`,
+          `Old Master language name: ${masterLangDetails["name"]}`,
           { color: 'red' },
         );
         cliux.print(
-          `New Master language name: ${masterLangDetails["name"]}`,
+          `New Master language name: ${sourceMasterLangDetails[0]["name"]}`,
           { color: 'green' },
         );
         let confirm = await cliux.inquire({
