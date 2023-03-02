@@ -409,4 +409,5 @@ module.exports = {
   getLoginCredentials,
   cleanUp,
   getLabelsCount,
+  checkCounts,
 }
