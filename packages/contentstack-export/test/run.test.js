@@ -6,12 +6,14 @@ const isArray = require("lodash/isArray");
 const includes = require("lodash/includes");
 const { existsSync, readdirSync } = require("fs");
 
-const { initEnvData, getStacksFromEnv, getLoginCredentials } = require('./integration/utils/helper')
+const { initEnvData, getLoginCredentials } = require('./integration/utils/helper')
 const { INTEGRATION_EXECUTION_ORDER, IS_TS, ENABLE_PREREQUISITES } = require("./config.json");
 
 // NOTE init env variables
 require('dotenv-expand').expand(require('dotenv').config())
 // require('dotenv').config({ path: resolve(process.cwd(), '.env.test') })
+
+const { INTEGRATION_TEST } = process.env;
 
 initEnvData() // NOTE Prepare env data
 
@@ -118,7 +120,7 @@ const run = (
   }
 };
 
-if (includes(args, "--integration-test")) {
+if (INTEGRATION_TEST === 'true') {
   run(INTEGRATION_EXECUTION_ORDER);
 } else if (includes(args, "--unit-test")) {
   // NOTE unit test case will be handled here
