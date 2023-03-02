@@ -1,14 +1,13 @@
 let defaultConfig = require('../../src/config/default');
 const fs = require('fs')
 const path = require("path")
-const uniqBy = require('lodash/uniqBy')
-const { expect, test } = require("@oclif/test")
+const { test } = require("@oclif/test")
 const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 
 const { modules } = require('../../src/config/default')
-const { getStackDetailsByRegion, getMarketplaceAppsCount, cleanUp } = require('./utils/helper')
-const { PRINT_LOGS, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
-const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = process.env
+const { getStackDetailsByRegion, getMarketplaceAppsCount, cleanUp, checkCounts } = require('./utils/helper')
+const { EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
+const { PRINT_LOGS, DELIMITER, KEY_VAL_DELIMITER } = process.env
 
 module.exports = (region) => {
   const stackDetails = getStackDetailsByRegion(region, DELIMITER, KEY_VAL_DELIMITER)
@@ -68,8 +67,7 @@ module.exports = (region) => {
             } catch (error) {
               console.trace(error)
             }
-
-            expect(marketplaceAppsCount).to.be.an('number').eq(exportedMarketplaceAppsCount)
+            checkCounts(marketplaceAppsCount, exportedMarketplaceAppsCount)
           })
       })
 
@@ -89,8 +87,7 @@ module.exports = (region) => {
             } catch (error) {
               console.trace(error)
             }
-
-            expect(marketplaceAppsCount).to.be.an('number').eq(exportedMarketplaceAppsCount)
+            checkCounts(marketplaceAppsCount, exportedMarketplaceAppsCount)
           })
       })
     })
