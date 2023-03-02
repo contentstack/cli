@@ -7,7 +7,7 @@ const { DEFAULT_TIMEOUT, PRINT_LOGS, ALIAS_NAME } = require("./config.json")
 const LogoutCommand = require('@contentstack/cli-auth/lib/commands/auth/logout').default
 const RemoveTokenCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/remove').default
 const { cliux: CliUx, messageHandler, configHandler } = require("@contentstack/cli-utilities")
-const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = process.env
+const { DELIMITER, KEY_VAL_DELIMITER } = process.env
 
 const { ENC_CONFIG_NAME } = getEnvData()
 
@@ -17,7 +17,7 @@ module.exports = (region) => {
   function removeTokens(stacks) {
     let stack = stacks.pop()
     test
-    .command(RemoveTokenCommand, ['-a', stackDetails[stack].ALIAS_NAME])
+    .command(RemoveTokenCommand, ['--alias', stackDetails[stack].ALIAS_NAME])
     .it('Cleaning up is done', () => {
       config = ''
       messageHandler.init({ messageFilePath: '' });

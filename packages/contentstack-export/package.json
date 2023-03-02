@@ -62,7 +62,7 @@
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
     "version": "oclif readme && git add README.md",
     "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo",
-    "test:integration": "mocha --forbid-only \"test/run.test.js\" --integration-test",
+    "test:integration": "mocha --config ./test/.mocharc.js --forbid-only \"test/run.test.js\" --integration-test",
     "test:unit": "mocha --forbid-only \"test/unit/*.test.js\" --unit-test"
   },
   "oclif": {
