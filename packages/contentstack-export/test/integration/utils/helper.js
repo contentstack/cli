@@ -2,9 +2,11 @@ const fs = require('fs');
 const _ = require('lodash')
 const config = require('../../../src/config/default');
 const { Command } = require('@contentstack/cli-command');
-const { managementSDKClient } = require('@contentstack/cli-utilities');
+const { managementSDKClient, HttpClient } = require('@contentstack/cli-utilities');
+const { getDeveloperHubUrl } = require('../../../src/lib/util/marketplace-app-helper')
 const pjson = require('../../../package.json')
 const { REGIONS } = require('../../config.json')
+const {expect} = require('@oclif/test')
 const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = process.env
 
 let envData = { NA: {}, EU: {}, 'AZURE-NA': {}, env_pushed: false }
@@ -80,7 +82,7 @@ const getStack = async (data={}) => {
 
 const getAssetAndFolderCount = (data) => {
   return new Promise(async (resolve) => {
-    const stack = getStack(data)
+    const stack = await getStack(data)
     const assetCount = await stack.asset()
       .query({ include_count: true, limit: 1 })
       .find()
@@ -104,6 +106,7 @@ const getLocalesCount = (data, localeFlag=false) => {
     try {
       let localeCount;
       let localeData;
+      const stack = await getStack(data)
       const localeConfig = config.modules.locales;
       const masterLocale = config.master_locale || {"code": "en-us"};
       const requiredKeys = localeConfig.requiredKeys;
@@ -119,7 +122,7 @@ const getLocalesCount = (data, localeFlag=false) => {
           BASE: [requiredKeys]
         }
       }
-      await getStack(data)
+      await stack
         .locale()
         .query(queryVariables)
         .find()
@@ -143,8 +146,8 @@ const getEnvironmentsCount = async (data) => {
   const queryVariables = {
     include_count: true
   }
-
-  const environmentCount = await getStack(data)
+  const stack = await getStack(data)
+  const environmentCount = stack
     .environment()
     .query(queryVariables)
     .find()
@@ -157,8 +160,8 @@ const getExtensionsCount = async (data) => {
   const queryVariables = {
     include_count: true
   }
-
-  const extensionCount = await getStack(data)
+  const stack = await getStack(data)
+  const extensionCount = await stack
     .extension()
     .query(queryVariables)
     .find()
@@ -166,27 +169,39 @@ const getExtensionsCount = async (data) => {
 
   return extensionCount;
 }
-const getMarketplaceAppsCount = async (data) => { 
-  const queryVariables = {
-    include_count: true,
-    include_marketplace_extensions: true
-  }
+const getMarketplaceAppsCount = async () => { 
+  const count = await getAllStackSpecificApps()
+  return count;
+}
 
-  const marketplaceExtensionsCount = await getStack(data)
-    .extension()
-    .query(queryVariables)
-    .find()
-    .then(({ count }) => count)
+const getAllStackSpecificApps = async (skip = 0) => {
+  const developerHubBaseUrl = await getDeveloperHubUrl()
+  const httpClient = new HttpClient().headers({
+    authtoken: config.auth_token,
+    organization_uid: config.org_uid    
+  })
+  return httpClient
+    .get(`${developerHubBaseUrl}/installations?target_uids=${config.source_stack}&skip=${skip}`)
+    .then(async ({ data }) => {
+      const { count } = data;
 
-  return marketplaceExtensionsCount;
+      if (count - (skip + 50) > 0) {
+        return await this.getAllStackSpecificApps(skip + 50);
+      }
+
+      return count;
+    })
+    .catch((error) => {
+      console.log(error)
+    });
 }
 
 const getGlobalFieldsCount = async (data) => {
   const queryVariables = {
     include_count: true
   }
-
-  const globalFieldCount = await getStack(data)
+  const stack = await getStack(data)
+  const globalFieldCount = await stack
     .globalField()
     .query(queryVariables)
     .find()
@@ -199,8 +214,8 @@ const getContentTypesCount = async (data) => {
   const queryVariables = {
     include_count: true
   }
-
-  const contentTypeCount = await getStack(data)
+  const stack = await getStack(data)
+  const contentTypeCount = await stack
     .contentType()
     .query(queryVariables)
     .find()
@@ -211,7 +226,7 @@ const getContentTypesCount = async (data) => {
 
 const getEntriesCount = async (data) => {
   let entriesCount = 0;
-  const stack = getStack(data);
+  const stack = await getStack(data);
   const queryVariables =  {
     include_count: true
   }
@@ -251,12 +266,12 @@ const getCustomRolesCount = async (data) => {
     Developer: 1,
     'Content Manager': 1,
   };
-
+  const stack = await getStack(data)
   const queryVariables = {
     include_count: true
   }
 
-  const customRoles = await getStack(data)
+  const customRoles = await stack
     .role()
     .fetchAll(queryVariables)
     .then(({ items }) => {
@@ -270,8 +285,8 @@ const getWebhooksCount = async (data) => {
   const queryVariables = {
     include_count: true
   }
-
-  const webhooksCount = await getStack(data)
+  const stack = await getStack(data)
+  const webhooksCount = await stack
     .webhook()
     .fetchAll(queryVariables)
     .then(({ count }) => count);
@@ -283,13 +298,26 @@ const getWorkflowsCount = async (data) => {
   const queryVariables = {
     include_count: true
   }
-
-  const workflowCount = await getStack(data)
+  const stack = await getStack(data)
+  const workflowCount = await stack
     .workflow()
     .fetchAll(queryVariables)
     .then(({ count }) => count);
 
   return workflowCount;
+}
+
+const getLabelsCount = async (data) => {
+  const queryVariables = {
+    include_count: true
+  }
+  const stack = await getStack(data)
+  const labelsCount = stack
+    .label()
+    .query(queryVariables)
+    .find()
+    .then(({count}) => count);
+  return labelsCount;
 }
 
 const getLoginCredentials = () => {
@@ -354,6 +382,10 @@ const cleanUp = async (path) => {
   fs.rmSync(path, {recursive: true, force: true})
 }
 
+const checkCounts = (value1, value2) => {
+  expect(value1).to.be.a('number').eq(value2)
+}
+
 module.exports = {
   Helper,
   getStack,
@@ -376,4 +408,5 @@ module.exports = {
   getStackDetailsByRegion,
   getLoginCredentials,
   cleanUp,
+  getLabelsCount,
 }

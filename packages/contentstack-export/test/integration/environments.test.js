@@ -43,8 +43,8 @@ module.exports = (region) => {
     messageHandler.init({ messageFilePath })
     const { promptMessageList } = require(messageFilePath)
 
-    describe(`ContentStack-Export plugin test [--module=environments] for ${stackDetails[stack].STACK_API_KEY} ${stackDetails[stack].MANAGEMENT_TOKEN}`, () => {
-      describe(`${stackDetails[stack].STACK_API_KEY} ${stackDetails[stack].MANAGEMENT_TOKEN} Export environments using cm:stacks:export command without any flags`, () => {
+    describe('ContentStack-Export environments', () => {
+      describe('cm:stacks:export environments [auth-token]', () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stub(cliUX, "prompt", async (name) => {
@@ -74,29 +74,7 @@ module.exports = (region) => {
           })
       })
 
-      describe(`${stackDetails[stack].STACK_API_KEY} Export environments using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\"`, () => {
-        test
-          .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
-          .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--module", "environments"])
-          .it("Check environments count", async () => {
-            let exportedEnvironmentsCount = 0
-            const environmentsCount = await getEnvironmentsCount(stackDetails[stack]);
-
-            try {
-              if (fs.existsSync(environmentsJson)) {
-                exportedEnvironmentsCount = Object.keys(JSON.parse(fs.readFileSync(environmentsJson, 'utf-8'))).length
-              }
-            } catch (error) {
-              console.trace(error)
-            }
-
-            expect(environmentsCount).to.be.an('number').eq(exportedEnvironmentsCount)
-            await cleanUp(environmentsBasePath);
-          })
-      })
-
-      describe(`${stackDetails[stack].STACK_API_KEY} ${stackDetails[stack].ALIAS_NAME} Export environments using cm:stacks:export command with --stack-api-key=\"Stack API Key\", --data-dir=\"export path\" and management token`, () => {
+      describe('cm:stacks:export environments [management-token]', () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })

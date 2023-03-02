@@ -43,8 +43,8 @@ module.exports = (region) => {
     messageHandler.init({ messageFilePath })
     const { promptMessageList } = require(messageFilePath)
 
-    describe("ContentStack-Export plugin test [--module=marketplace_apps]", () => {
-      describe("Export marketplace_apps using cm:stacks:export command without any flags", () => {
+    describe("ContentStack-Export marketplace-apps", () => {
+      describe("cm:stacks:export marketplace-apps [auth-token]", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stub(cliUX, "prompt", async (name) => {
@@ -56,8 +56,8 @@ module.exports = (region) => {
             }
           })
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--module", "marketplace-apps"])
-          .it("Check marketplace_apps count", async () => {
+          .command(["cm:stacks:export", "--module", "marketplace-apps", "--yes"])
+          .it("Check marketplace-apps count", async () => {
             let exportedMarketplaceAppsCount = 0
             const marketplaceAppsCount = await getMarketplaceAppsCount(stackDetails[stack])
 
@@ -73,11 +73,11 @@ module.exports = (region) => {
           })
       })
 
-      describe("Export marketplaceApps using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\" and management token", () => {
+      describe("cm:stacks:export marketplace-apps [management-token]", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "marketplace-apps"])
+          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "marketplace-apps", "--yes"])
           .it("Check MarketplaceApps counts", async () => {
             let exportedMarketplaceAppsCount = 0
             const marketplaceAppsCount = await getMarketplaceAppsCount(stackDetails[stack]);
