@@ -43,8 +43,8 @@ module.exports = (region) => {
     messageHandler.init({ messageFilePath })
     const { promptMessageList } = require(messageFilePath)
 
-    describe("ContentStack-Export plugin test [--module=custom-roles]", () => {
-      describe("Export customRoles using cm:stacks:export command without any flags", () => {
+    describe("ContentStack-Export custom-roles", () => {
+      describe("cm:stacks:export custom-roles [auth-token]", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stub(cliUX, "prompt", async (name) => {
@@ -57,7 +57,7 @@ module.exports = (region) => {
           })
           .stdout({ print: PRINT_LOGS || false })
           .command(["cm:stacks:export", "--module", "custom-roles"])
-          .it("Check customRoles count", async () => {
+          .it("Check custom-roles count", async () => {
             let exportedCustomRolesCount = 0
             const customRolesCount = await getCustomRolesCount(stackDetails[stack])
 
@@ -73,12 +73,12 @@ module.exports = (region) => {
           })
       })
 
-      describe("Export customRoles using cm:stacks:export command with --stack-api-key=\"Stack API Key\" and --data-dir=\"export path\" and management token", () => {
+      describe("cm:stacks:export custom-roles [management-token]", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
           .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "custom-roles"])
-          .it("Check customRoles counts", async () => {
+          .it("Check custom-roles counts", async () => {
             let exportedCustomRolesCount = 0
             const customRolesCount = await getCustomRolesCount(stackDetails[stack]);
 
