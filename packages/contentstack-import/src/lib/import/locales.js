@@ -170,6 +170,14 @@ module.exports = class ImportLanguages {
           'WARNING!!! The master language name for the source and destination is different.',
           { color: 'yellow' },
         );
+        cliux.print(
+          `Old Master language name: ${sourceMasterLangDetails[0]["name"]}`,
+          { color: 'red' },
+        );
+        cliux.print(
+          `New Master language name: ${masterLangDetails["name"]}`,
+          { color: 'green' },
+        );
         let confirm = await cliux.inquire({
           type: 'confirm',
           message: 'Are you sure you want to update name of master language?',
