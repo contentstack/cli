@@ -2,13 +2,13 @@ let defaultConfig = require('../../src/config/default');
 const fs = require('fs')
 const { promises: fsPromises } = fs
 const path = require("path")
-const { expect, test } = require("@oclif/test")
+const { test } = require("@oclif/test")
 const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 
 const { modules } = require('../../src/config/default')
-const { getStackDetailsByRegion, getEntriesCount, cleanUp } = require('./utils/helper')
-const { PRINT_LOGS, EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
-const { DELIMITER, KEY_VAL_DELIMITER } = process.env
+const { getStackDetailsByRegion, getEntriesCount, cleanUp, checkCounts } = require('./utils/helper')
+const { EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
+const { PRINT_LOGS, DELIMITER, KEY_VAL_DELIMITER } = process.env
 
 module.exports = (region) => {
   const stackDetails = getStackDetailsByRegion(region, DELIMITER, KEY_VAL_DELIMITER)
@@ -78,8 +78,7 @@ module.exports = (region) => {
             } catch (error) {
               console.trace(error)
             }
-
-            expect(entriesCount).to.be.an('number').eq(exportedEntriesCount)
+            checkCounts(entriesCount, exportedEntriesCount)
           })
       })
 
@@ -108,7 +107,7 @@ module.exports = (region) => {
               console.trace(error)
             }
 
-            expect(entriesCount).to.be.an('number').eq(exportedEntriesCount)
+            checkCounts(entriesCount, exportedEntriesCount)
           })
       })
     })
