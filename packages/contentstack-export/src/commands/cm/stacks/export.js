@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
-const { Command, flags } = require('@contentstack/cli-command');
-const { printFlagDeprecation, configHandler } = require('@contentstack/cli-utilities');
+const { Command } = require('@contentstack/cli-command');
+const { printFlagDeprecation, configHandler, flags } = require('@contentstack/cli-utilities');
 
 const {
   configWithMToken,
