@@ -1,4 +1,5 @@
-const { Command, flags } = require('@contentstack/cli-command');
+const { Command } = require('@contentstack/cli-command');
+const { printFlagDeprecation, flags } = require('@contentstack/cli-utilities');
 const { start } = require('../../../producer/publish-edits');
 const store = require('../../../util/store.js');
 // eslint-disable-next-line node/no-extraneous-require
@@ -6,7 +7,6 @@ const { cliux } = require('@contentstack/cli-utilities');
 const configKey = 'publish_edits_on_env';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
-const { printFlagDeprecation } = require('@contentstack/cli-utilities');
 let config;
 
 class PublishModifiedCommand extends Command {
