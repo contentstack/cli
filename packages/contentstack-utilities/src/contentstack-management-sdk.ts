@@ -1,4 +1,4 @@
-import { Agent } from 'node:https';
+import { Agent } from 'https';
 import { client, ContentstackClient, ContentstackConfig } from '@contentstack/management';
 import authHandler from './auth-handler';
 import configStore from './config-handler';

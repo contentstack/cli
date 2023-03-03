@@ -1,3 +1,3 @@
-import * as ContentstackManagementSDK from '@contentstack/management';
-declare const _default: (config: any) => Promise<ContentstackManagementSDK.ContentstackClient>;
+import { ContentstackClient } from '@contentstack/management';
+declare const _default: (config: any) => Promise<ContentstackClient>;
 export default _default;

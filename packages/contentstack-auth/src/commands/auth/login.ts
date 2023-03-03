@@ -1,5 +1,6 @@
-import { Command, flags } from '@contentstack/cli-command';
-import { logger, cliux, CLIError, authHandler as oauthHandler } from '@contentstack/cli-utilities';
+import { Command } from '@contentstack/cli-command';
+import { logger, cliux, CLIError, authHandler as oauthHandler, flags } from '@contentstack/cli-utilities';
+
 import { User } from '../../interfaces';
 import { authHandler, interactive } from '../../utils';
 
@@ -42,7 +43,7 @@ export default class LoginCommand extends Command {
   static aliases = ['login'];
 
   async run(): Promise<any> {
-    const { flags: loginFlags } = await this.parse(LoginCommand)
+    const { flags: loginFlags } = await this.parse(LoginCommand);
     authHandler.client = this.managementAPIClient;
     authHandler.host = this.cmaHost;
     try {

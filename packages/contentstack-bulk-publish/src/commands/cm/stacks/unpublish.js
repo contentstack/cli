@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
 /* eslint-disable node/no-extraneous-require */
-const { Command, flags } = require('@contentstack/cli-command');
+const { Command } = require('@contentstack/cli-command');
+const { printFlagDeprecation, cliux , flags } = require('@contentstack/cli-utilities');
 const { start } = require('../../../producer/unpublish');
 const store = require('../../../util/store.js');
 const configKey = 'Unpublish';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
-const { printFlagDeprecation, cliux } = require('@contentstack/cli-utilities');
 let config;
 
 class UnpublishCommand extends Command {

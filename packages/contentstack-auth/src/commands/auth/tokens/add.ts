@@ -1,10 +1,11 @@
-import { Command, flags } from '@contentstack/cli-command';
+import { Command } from '@contentstack/cli-command';
 import {
   logger,
   cliux,
   CLIError,
   configHandler,
   printFlagDeprecation,
+  flags
 } from '@contentstack/cli-utilities';
 import { askTokenType } from '../../../utils/interactive';
 import { tokenValidation } from '../../../utils';

@@ -1,5 +1,5 @@
-import { Command, flags } from '@contentstack/cli-command';
-import { logger, cliux, printFlagDeprecation, authHandler as oauthHandler } from '@contentstack/cli-utilities';
+import { Command } from '@contentstack/cli-command';
+import { logger, cliux, printFlagDeprecation, flags, authHandler as oauthHandler } from '@contentstack/cli-utilities';
 
 import { authHandler } from '../../utils';
 
