@@ -211,18 +211,14 @@ module.exports = class ImportMarketplaceApps {
 
     for (let app of privateApps) {
       // NOTE keys can be passed to install new app in the developer hub
-      app.manifest = _.pick(app.manifest, [
-        'uid',
-        'name',
-        'description',
-        'icon',
-        'target_type',
-        'ui_location',
-        'webhook',
-        'oauth',
-      ]);
+      app.manifest = _.pick(app.manifest, ['uid', 'name', 'description', 'icon', 'target_type', 'webhook', 'oauth']);
       this.appOrginalName = app.manifest.name;
-      await this.createPrivateApps(app.manifest);
+      await this.createPrivateApps({
+        oauth: app.oauth,
+        webhook: app.webhook,
+        ui_location: app.ui_location,
+        ...app.manifest,
+      });
     }
 
     this.appOrginalName = undefined;
