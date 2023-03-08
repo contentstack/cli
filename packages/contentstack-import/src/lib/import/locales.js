@@ -57,8 +57,11 @@ module.exports = class ImportLanguages {
         return resolve({ empty: true });
       }
 
-      let sourceMasterLangDetails = Object.values(self.sourceMasterLanguages);
-      if (self.masterLanguage["code"] === sourceMasterLangDetails[0]["code"]) {
+      let sourceMasterLangDetails = self.sourceMasterLanguages && Object.values(self.sourceMasterLanguages);
+      if (sourceMasterLangDetails &&
+        sourceMasterLangDetails[0] &&
+        sourceMasterLangDetails[0]["code"] &&
+        self.masterLanguage["code"] === sourceMasterLangDetails[0]["code"]) {
         await self.checkAndUpdateMasterLocaleName(sourceMasterLangDetails).catch((error) => {
           addlogs(self.config, formatError(error), 'warn');
         })
