@@ -32,12 +32,8 @@ USAGE
 # Commands
 
 <!-- commands -->
-- [@contentstack/cli-migration](#contentstackcli-migration)
-- [Usage](#usage)
-- [Commands](#commands)
-  - [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
-  - [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple-1)
-    - [Points to remember](#points-to-remember)
+* [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
+* [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple-1)
 
 ## `csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`
 
@@ -73,7 +69,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -112,7 +108,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
