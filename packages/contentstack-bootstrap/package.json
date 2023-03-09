@@ -20,7 +20,6 @@
     "@contentstack/cli-cm-seed": "^1.2.1",
     "@contentstack/cli-command": "^1.1.1",
     "@contentstack/cli-utilities": "^1.1.0",
-    "@contentstack/management": "^1.6.1",
     "inquirer": "8.2.4",
     "mkdirp": "^1.0.4",
     "tar": "^6.1.13"
