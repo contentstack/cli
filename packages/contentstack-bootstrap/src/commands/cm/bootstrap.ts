@@ -169,7 +169,7 @@ export default class BootstrapCommand extends Command {
         appConfig,
         seedParams,
         cloneDirectory,
-        managementAPIClient: this.managementAPIClient,
+        managementAPIClient: await this.managementAPIClient,
         region: this.region,
         appType,
         livePreviewEnabled,
