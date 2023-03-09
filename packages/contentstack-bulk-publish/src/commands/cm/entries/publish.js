@@ -50,7 +50,7 @@ class PublishEntriesCommand extends Command {
           cda: this.region.cda,
           branch: entriesFlags.branch,
         };
-        stack = getStack(config);
+        stack = await getStack(config);
       }
       if (await this.confirmFlags(updatedFlags)) {
         try {
