@@ -10,7 +10,7 @@ importers:
 
   packages/contentstack:
     specifiers:
-      '@contentstack/cli-auth': ^1.1.0
+      '@contentstack/cli-auth': ^1.1.1
       '@contentstack/cli-cm-bootstrap': ^1.2.0
       '@contentstack/cli-cm-bulk-publish': ^1.1.0
       '@contentstack/cli-cm-clone': ^1.2.0
@@ -225,7 +225,6 @@ importers:
     specifiers:
       '@contentstack/cli-command': ^1.1.0
       '@contentstack/cli-utilities': ^1.1.0
-      '@contentstack/management': ^1.6.1
       '@oclif/test': ^1.2.6
       bluebird: ^3.7.2
       chai: ^4.2.0
@@ -244,7 +243,6 @@ importers:
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/management': 1.6.1
       bluebird: 3.7.2
       chalk: 4.1.2
       inquirer: 8.2.4
@@ -2981,7 +2979,7 @@ packages:
   /axios/0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
@@ -2990,7 +2988,7 @@ packages:
   /axios/0.27.2_debug@4.3.4:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
