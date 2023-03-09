@@ -21,7 +21,7 @@
     "prepack": "pnpm compile && oclif manifest && oclif readme"
   },
   "dependencies": {
-    "@contentstack/cli-auth": "^1.1.0",
+    "@contentstack/cli-auth": "^1.1.1",
     "@contentstack/cli-cm-bootstrap": "^1.2.0",
     "@contentstack/cli-cm-bulk-publish": "^1.1.0",
     "@contentstack/cli-cm-clone": "^1.2.0",
