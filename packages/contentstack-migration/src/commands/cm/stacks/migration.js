@@ -82,7 +82,7 @@ class MigrationCommand extends Command {
       set('config', mapInstance, configObj);
     }
 
-    const APIClient = await managementSDKClient({ host:cma })
+    const APIClient = await managementSDKClient({ host: this.formatHostname(cma) })
     let stackSDKInstance;
     if (branch) {
       set(BRANCH, mapInstance, branch);
@@ -227,6 +227,10 @@ class MigrationCommand extends Command {
 
     const errors = actionList.validate();
     errorHelper(errors);
+  }
+
+  formatHostname(hostname) {
+    return hostname.split('//').pop();
   }
 }
 
