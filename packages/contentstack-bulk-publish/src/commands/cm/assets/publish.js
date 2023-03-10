@@ -51,7 +51,7 @@ class AssetsPublishCommand extends Command {
           cda: this.region.cda,
           branch: assetsFlags.branch,
         };
-        stack = getStack(config);
+        stack = await getStack(config);
       }
       if (await this.confirmFlags(updatedFlags)) {
         try {
