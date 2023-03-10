@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import chalk, { Chalk } from 'chalk';
 import { default as inquirer, QuestionCollection } from 'inquirer';
 import { Table } from '@oclif/core/lib/cli-ux';
 import { ux as cliux, Args, Flags, Command } from '@oclif/core';
@@ -23,8 +23,13 @@ class CLIInterface {
   init(context) {}
 
   print(message: string, opts?: PrintOptions): void {
-    if (opts && opts.color) {
-      cliux.log(chalk[opts.color](messageHandler.parse(message)));
+    if (opts) {
+      let chalkFn: Chalk = chalk;
+
+      if (opts.color) chalkFn = chalkFn[opts.color] as Chalk;
+      if (opts.bold) chalkFn = chalkFn.bold as Chalk;
+
+      cliux.log(chalkFn(messageHandler.parse(message)));
       return;
     }
 
@@ -56,11 +61,15 @@ class CLIInterface {
     cliux.table(data, columns, options);
   }
 
-  async inquire<T>(inquirePayload: InquirePayload): Promise<T> {
-    inquirePayload.message = messageHandler.parse(inquirePayload.message);
-    const result = await inquirer.prompt(inquirePayload as QuestionCollection<T>);
+  async inquire<T>(inquirePayload: InquirePayload | Array<InquirePayload>): Promise<T> {
+    if (Array.isArray(inquirePayload)) {
+      return inquirer.prompt(inquirePayload);
+    } else {
+      inquirePayload.message = messageHandler.parse(inquirePayload.message);
+      const result = await inquirer.prompt(inquirePayload as QuestionCollection<T>);
 
-    return result[inquirePayload.name] as T;
+      return result[inquirePayload.name] as T;
+    }
   }
 
   prompt(name: string, options?: CliUXPromptOptions): Promise<any> {
