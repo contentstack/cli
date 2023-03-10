@@ -49,6 +49,8 @@ export default class LoginCommand extends Command {
     try {
       const sso = loginFlags?.sso;
       if (sso === true) {
+        oauthHandler.client = this.managementAPIClient;
+        oauthHandler.host = this.cmaHost;
         await oauthHandler.oauth();
       } else {
         const username = loginFlags?.username || (await interactive.askUsername());
