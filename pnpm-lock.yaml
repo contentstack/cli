@@ -10,7 +10,7 @@ importers:
 
   packages/contentstack:
     specifiers:
-      '@contentstack/cli-auth': ^1.1.0
+      '@contentstack/cli-auth': ^1.1.1
       '@contentstack/cli-cm-bootstrap': ^1.2.0
       '@contentstack/cli-cm-bulk-publish': ^1.1.0
       '@contentstack/cli-cm-clone': ^1.2.0
@@ -21,7 +21,7 @@ importers:
       '@contentstack/cli-cm-seed': ^1.2.0
       '@contentstack/cli-command': ^1.1.0
       '@contentstack/cli-config': ^1.1.0
-      '@contentstack/cli-migration': ^1.1.1
+      '@contentstack/cli-migration': ^1.1.2
       '@contentstack/cli-utilities': ^1.1.0
       '@contentstack/management': ^1.6.1
       '@oclif/core': ^1.21.0
