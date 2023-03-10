@@ -44,7 +44,7 @@ class CrossPublishCommand extends Command {
           cda: this.region.cda,
           branch: crossPublishFlags.branch,
         };
-        stack = getStack(config);
+        stack = await getStack(config);
       }
 
       if (!updatedFlags.deliveryToken && updatedFlags.deliveryToken.length === 0) {
