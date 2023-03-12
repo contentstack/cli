@@ -57,7 +57,7 @@ class UnpublishCommand extends Command {
           cda: this.region.cda,
           branch: unpublishFlags.branch,
         };
-        stack = getStack(config);
+        stack = await getStack(config);
       }
       if (!updatedFlags.deliveryToken && updatedFlags.deliveryToken.length === 0) {
         this.error('Delivery Token is required for executing this command', { exit: 2 });
