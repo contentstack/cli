@@ -45,7 +45,7 @@ class PublishModifiedCommand extends Command {
           host: this.region.cma,
           branch: entryEditsFlags.branch,
         };
-        stack = getStack(config);
+        stack = await getStack(config);
       }
       if (await this.confirmFlags(updatedFlags)) {
         try {
