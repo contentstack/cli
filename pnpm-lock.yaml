@@ -242,7 +242,6 @@ importers:
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/management': 1.6.1
       bluebird: 3.7.2
       chalk: 4.1.2
       inquirer: 8.2.4

@@ -48,7 +48,7 @@ exports.initial = (configData) => {
           })
           .catch((error) => {
             addlogs(config, `Failed to import contents ${util.formatError(error)}`, 'error');
-            reject(e);
+            reject(error);
             process.exit(1);
           });
       } else {
