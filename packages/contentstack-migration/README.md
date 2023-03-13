@@ -21,7 +21,7 @@ $ npm install -g @contentstack/cli-migration
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-migration/1.1.2 darwin-arm64 node-v16.19.1
+@contentstack/cli-migration/1.1.1 darwin-arm64 node-v16.19.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND

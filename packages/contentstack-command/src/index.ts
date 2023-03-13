@@ -1,5 +1,4 @@
 import { Command, Flags } from '@oclif/core';
-import * as ContentstackManagementSDK from '@contentstack/management';
 import * as ContentstackDeliverySDK from 'contentstack';
 import * as url from 'url';
 import { configHandler, CLIError } from '@contentstack/cli-utilities';
@@ -8,7 +7,6 @@ import { Region } from './interfaces';
 const defaultRateLimit = 5;
 
 abstract class ContentstackCommand extends Command {
-  private _managementAPIClient: object;
   private _email: string;
   private _region: Region;
   private _rateLimit: string;
@@ -18,16 +16,6 @@ abstract class ContentstackCommand extends Command {
   get context() {
     // @ts-ignore
     return this.config.context;
-  }
-
-  get managementAPIClient() {
-    if (this._managementAPIClient) return this._managementAPIClient;
-    this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost });
-    return this._managementAPIClient;
-  }
-
-  set managementAPIClient(params) {
-    this._managementAPIClient = ContentstackManagementSDK.client(params);
   }
 
   get email() {
