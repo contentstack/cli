@@ -98,13 +98,13 @@ class AuthHandler {
               resolve({});
             })
             .catch((error) => {
-              logger.error('SSO login failed', error.message);
+              logger.error('OAuth login failed', error.message);
               cliux.error('CLI_AUTH_LOGIN_FAILED', { color: 'red' });
               reject(error);
             });
         })
         .catch((error) => {
-          logger.error('SSO login failed', error.message);
+          logger.error('OAuth login failed', error.message);
           cliux.error('CLI_AUTH_LOGIN_FAILED', { color: 'red' });
           reject(error);
         });
@@ -127,18 +127,22 @@ class AuthHandler {
                 stopServer();
               })
               .catch((error) => {
-                cliux.error('Error occoured while login with SSO, please login with command - csdx auth:login --sso');
+                cliux.error(
+                  'Error occoured while login with OAuth, please login with command - csdx auth:login --oauth',
+                );
                 cliux.error(error);
                 res.writeHead(200, { 'Content-Type': 'text/html' });
                 res.end(
-                  `<h1>Sorry!</h1><h2>Something went wrong, please login with command - csdx auth:login --sso(</h2>`,
+                  `<h1>Sorry!</h1><h2>Something went wrong, please login with command - csdx auth:login --oauth(</h2>`,
                 );
                 stopServer();
               });
           } else {
-            cliux.error('Error occoured while login with SSO, please login with command - csdx auth:login --sso');
+            cliux.error('Error occoured while login with OAuth, please login with command - csdx auth:login --oauth');
             res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end(`<h1>Sorry!</h1><h2>Something went wrong, please login with command - csdx auth:login --sso(</h2>`);
+            res.end(
+              `<h1>Sorry!</h1><h2>Something went wrong, please login with command - csdx auth:login --oauth(</h2>`,
+            );
             stopServer();
           }
         });
@@ -204,7 +208,7 @@ class AuthHandler {
         })
         .then(resolve)
         .catch((error) => {
-          cliux.error('Error occoured while fetching access token, run command - csdx auth:login --sso');
+          cliux.error('Error occoured while fetching access token, run command - csdx auth:login --oauth');
           cliux.error(error);
           reject(error);
         });
@@ -322,7 +326,7 @@ class AuthHandler {
             reject(error);
           });
       } else {
-        cliux.error('Invalid/Empty Refresh token, run command - csdx auth:login --sso');
+        cliux.error('Invalid/Empty Refresh token, run command - csdx auth:login --oauth');
         reject('Invalid/Empty Refresh token');
       }
     });
@@ -348,7 +352,7 @@ class AuthHandler {
             reject(error);
           });
       } else {
-        cliux.error('Invalid/Empty Access token, run command - csdx auth:login --sso');
+        cliux.error('Invalid/Empty Access token, run command - csdx auth:login --oauth');
         reject('Invalid/Empty Access token');
       }
     });
