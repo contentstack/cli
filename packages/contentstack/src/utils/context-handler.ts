@@ -1,3 +1,4 @@
+import { Parser } from '@oclif/core';
 import shortUUID from 'short-uuid';
 import * as path from 'path';
 import { configHandler } from '@contentstack/cli-utilities';
@@ -15,16 +16,18 @@ export default class CsdxContext {
   readonly messageFilePath: string;
   readonly analyticsInfo: string;
   public flagWarningPrintState: any;
+  public flags: any;
 
   constructor(cliOpts: any, cliConfig: any) {
     const analyticsInfo = [];
     const command = cliConfig.findCommand(cliOpts.id) || {};
+    // this.getCommandFlags(cliOpts, command);
     const config = configHandler;
-    analyticsInfo.push(cliConfig.version || 'none');
     const platform = cliConfig.platform && cliConfig.arch ? `${cliConfig.platform}-${cliConfig.arch}` : 'none';
     analyticsInfo.push(platform);
     const nodeVersion = process.versions.node ? `v${process.versions.node}` : process.version;
-    analyticsInfo.push(nodeVersion);
+    analyticsInfo.push(nodeVersion || 'none');
+    analyticsInfo.push(cliConfig.version || 'none');
     this.clientId = configHandler.get('clientId');
     if (!this.clientId) {
       this.clientId = machineIdSync(true);
@@ -64,4 +67,29 @@ export default class CsdxContext {
       if (token) return token;
     }
   }
+
+  // async getCommandFlags(cliOpts, command) {
+  //   while (this.argv.length > 0) {
+  //     const input = this.argv.shift();
+  //     if (parsingFlags && input.startsWith('-') && input !== '-') {
+  //       // attempt to parse as arg
+  //       if (this.input['--'] !== false && input === '--') {
+  //         parsingFlags = false;
+  //         continue;
+  //       }
+  //       if (parseFlag(input)) {
+  //         continue;
+  //       }
+  //       // not actually a flag if it reaches here so parse as an arg
+  //     }
+  //     if (parsingFlags && this.currentFlag && this.currentFlag.multiple) {
+  //       this.raw.push({ type: 'flag', flag: this.currentFlag.name, input });
+  //       continue;
+  //     }
+  //     // not a flag, parse as arg
+  //     const arg = this.input.args[this._argTokens.length];
+  //     if (arg) arg.input = input;
+  //     this.raw.push({ type: 'arg', input });
+  //   }
+  // }
 }
