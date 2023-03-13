@@ -12,6 +12,7 @@ export interface InquirePayload {
   message: string;
   choices?: Array<any>;
   transformer?: Function;
+  validate?(input: any, answers?: any): boolean | string | Promise<boolean | string>;
 }
 
 export interface Region {
