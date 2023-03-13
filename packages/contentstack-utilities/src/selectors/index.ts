@@ -12,6 +12,7 @@ import {
 	Locale
 } from './interfaces'
 import { shouldNotBeEmpty } from './validations';
+import { managementSDKClient } from '..';
 import ContentstackManagementSDK from '@contentstack/management';
 
 const inquirer = require('inquirer')
@@ -45,11 +46,11 @@ const cmaHost = () => {
 	return cma;
 }
 
-const managementAPIClient = (params) => {
+const getManagementAPIClient = async (params) => {
 	if (params) {
-		_managementAPIClient = ContentstackManagementSDK.client(params)
+		_managementAPIClient = await managementSDKClient(params)
 	} else if (!_managementAPIClient) {
-		_managementAPIClient = ContentstackManagementSDK.client({ host: cmaHost() });
+		_managementAPIClient = await managementSDKClient({ host: cmaHost() });
 	}
 
 	return _managementAPIClient;
@@ -134,7 +135,7 @@ export function chooseStack(client: any, organizationId: string, displayMessage?
 
 export function chooseContentType(stackApiKey: string, displayMessage?: string, region?: string): Promise<ContentType> {
 	return new Promise(async (resolve, reject) => {
-		const client = managementAPIClient({ host: cmaHost(), authtoken: authToken() })
+		const client = await getManagementAPIClient({ host: cmaHost(), authtoken: authToken() })
 
 		try {
 			const spinner = ora('Loading Content Types').start()
@@ -164,7 +165,7 @@ export function chooseContentType(stackApiKey: string, displayMessage?: string, 
 
 export function chooseEntry(contentTypeUid: string, stackApiKey: string, displayMessage?: string, region?: string): Promise<Entry> {
 	return new Promise(async (resolve, reject) => {
-		const client = managementAPIClient({ host: cmaHost(), authtoken: authToken() })
+		const client = await getManagementAPIClient({ host: cmaHost(), authtoken: authToken() })
 
 		try {
 			const spinner = ora('Loading Entries').start()
