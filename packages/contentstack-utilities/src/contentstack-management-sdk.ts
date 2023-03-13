@@ -60,7 +60,7 @@ class ManagementSDKInitiator {
     }
 
     if (this.analyticsInfo) {
-      option.headers['X-CS-CLI-ID'] = config.analyticsInfo;
+      option.headers['X-CS-CLI'] = config.analyticsInfo;
     }
 
     if (!config.management_token) {
