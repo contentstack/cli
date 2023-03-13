@@ -29,17 +29,17 @@ export default class LoginCommand extends Command {
       description: 'User name',
       multiple: false,
       required: false,
-      exclusive: ['sso'],
+      exclusive: ['oauth'],
     }),
     password: flags.string({
       char: 'p',
       description: 'Password',
       multiple: false,
       required: false,
-      exclusive: ['sso'],
+      exclusive: ['oauth'],
     }),
-    sso: flags.boolean({
-      description: 'Boolean flag for SSO login to contentstack',
+    oauth: flags.boolean({
+      description: 'Boolean flag for OAuth login to contentstack',
       required: false,
       default: false,
       exclusive: ['username', 'password'],
@@ -55,8 +55,8 @@ export default class LoginCommand extends Command {
     authHandler.client = managementAPIClient;
 
     try {
-      const sso = loginFlags?.sso;
-      if (sso === true) {
+      const oauth = loginFlags?.oauth;
+      if (oauth === true) {
         oauthHandler.client = this.managementAPIClient;
         oauthHandler.host = this.cmaHost;
         await oauthHandler.oauth();
