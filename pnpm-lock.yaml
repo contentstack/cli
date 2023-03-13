@@ -196,7 +196,6 @@ importers:
       '@contentstack/cli-cm-seed': link:../contentstack-seed
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/management': 1.6.1
       inquirer: 8.2.4
       mkdirp: 1.0.4
       tar: 6.1.13
