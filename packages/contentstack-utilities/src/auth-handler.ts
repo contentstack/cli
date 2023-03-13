@@ -48,10 +48,10 @@ class AuthHandler {
     this.OAuthAppId = process.env.OAUTH_APP_ID || '';
     this.OAuthClientId = process.env.OAUTH_CLIENT_ID || '';
     this.OAuthRedirectURL = process.env.OAUTH_APP_REDIRECT_URL || '';
-    this.OAuthScope =
-      process.env.OAUTH_APP_SCOPE_WITH_ALL_PERMISSIONS ||
-      process.env.OAUTH_APP_SCOPE_PERMISSIONS ||
-      'user:read cm.stacks.management:read organization:read';
+    this.OAuthScope = '';
+    //   process.env.OAUTH_APP_SCOPE_WITH_ALL_PERMISSIONS ||
+    //   process.env.OAUTH_APP_SCOPE_PERMISSIONS ||
+    //   'user:read cm.stacks.management:read organization:read';
     this.OAuthResponseType = 'code';
     this.authTokenKeyName = 'authtoken';
     this.authEmailKeyName = 'email';
