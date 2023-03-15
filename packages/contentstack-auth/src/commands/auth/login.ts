@@ -1,5 +1,5 @@
-import { Command, flags } from '@contentstack/cli-command';
-import { logger, cliux, CLIError, configHandler, managementSDKClient } from '@contentstack/cli-utilities';
+import { Command } from '@contentstack/cli-command';
+import { logger, cliux, CLIError, configHandler, flags, managementSDKClient } from '@contentstack/cli-utilities';
 
 import { User } from '../../interfaces';
 import { authHandler, interactive } from '../../utils';
