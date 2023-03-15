@@ -1,4 +1,4 @@
-import { Command, Flags } from '@oclif/core';
+import { Command } from '@contentstack/cli-utilities';
 import { Region } from './interfaces';
 declare abstract class ContentstackCommand extends Command {
   private _email;
@@ -19,4 +19,4 @@ declare abstract class ContentstackCommand extends Command {
   getToken(alias: any): any;
   isAuthenticated(): any;
 }
-export { ContentstackCommand as Command, Flags as flags };
+export { ContentstackCommand as Command };
