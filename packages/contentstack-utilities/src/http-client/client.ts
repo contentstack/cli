@@ -365,6 +365,8 @@ export class HttpClient implements IHttpClient {
   }
 }
 
+export interface HttpRequestConfig extends AxiosRequestConfig {}
+
 type BodyFormat = 'json' | 'formParams';
 
 type HttpMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS';
