@@ -1,4 +1,4 @@
-import { Command, flags } from '@contentstack/cli-command';
+import { Command } from '@contentstack/cli-command';
 import { resolve } from 'path';
 import Bootstrap, { BootstrapOptions, SeedParams } from '../../bootstrap';
 import {
@@ -7,7 +7,7 @@ import {
   inquireAppType,
   inquireLivePreviewSupport,
 } from '../../bootstrap/interactive';
-import { printFlagDeprecation, managementSDKClient } from '@contentstack/cli-utilities';
+import { printFlagDeprecation, managementSDKClient, flags } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
 
