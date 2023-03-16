@@ -119,7 +119,7 @@ importers:
       chai: ^4.3.4
       chalk: ^4.0.0
       debug: ^4.1.1
-      dotenv: ^16.0.1
+      dotenv: ^16.0.3
       eslint: ^8.18.0
       eslint-config-oclif: ^4.0.0
       eslint-config-oclif-typescript: ^0.1.0
@@ -196,6 +196,7 @@ importers:
       '@contentstack/cli-cm-seed': link:../contentstack-seed
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/management': 1.6.1
       inquirer: 8.2.4
       mkdirp: 1.0.4
       tar: 6.1.13
@@ -241,6 +242,7 @@ importers:
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@contentstack/management': 1.6.1
       bluebird: 3.7.2
       chalk: 4.1.2
       inquirer: 8.2.4
@@ -648,7 +650,7 @@ importers:
       chai: ^4.3.4
       chalk: ^4.1.0
       dot-object: ^2.1.4
-      dotenv: ^8.2.0
+      dotenv: ^16.0.3
       eslint: ^8.18.0
       globby: ^10.0.2
       husky: ^4.2.5
@@ -672,7 +674,7 @@ importers:
       cardinal: 2.1.1
       chalk: 4.1.2
       dot-object: 2.1.4
-      dotenv: 8.6.0
+      dotenv: 16.0.3
       listr: 0.14.3
       winston: 3.8.2
     devDependencies:
@@ -703,7 +705,7 @@ importers:
       '@types/node': ^14.14.32
       '@types/tar': ^6.1.3
       '@types/tmp': ^0.2.0
-      axios: 1.1.3
+      axios: 1.3.4
       eslint: ^8.18.0
       eslint-config-oclif: ^4.0.0
       eslint-config-oclif-typescript: ^0.1.0
@@ -724,7 +726,7 @@ importers:
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/management': 1.6.1
       '@oclif/core': 2.3.1
-      axios: 1.1.3
+      axios: 1.3.4
       inquirer: 8.2.4
       mkdirp: 1.0.4
       tar: 6.1.13
@@ -759,7 +761,7 @@ importers:
       '@types/mocha': ^8.2.2
       '@types/node': ^14.14.32
       '@types/sinon': ^10.0.2
-      axios: 1.1.3
+      axios: 1.3.4
       chai: ^4.3.4
       chalk: ^4.0.0
       conf: ^10.1.2
@@ -790,7 +792,7 @@ importers:
     dependencies:
       '@contentstack/management': 1.6.1_debug@4.3.4
       '@oclif/core': 2.3.1
-      axios: 1.1.3_debug@4.3.4
+      axios: 1.3.4_debug@4.3.4
       chalk: 4.1.2
       conf: 10.2.0
       debug: 4.3.4
@@ -2944,14 +2946,14 @@ packages:
   /axios/0.27.2_debug@4.3.4:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
     dev: false
 
-  /axios/1.1.3:
-    resolution: {integrity: sha512-00tXVRwKx/FZr/IDVFt4C+f9FYairX517WoGCL6dpOntqLkZofjhu43F/Xl44UOpqa+9sLFDrG/XAnFsUYgkDA==}
+  /axios/1.3.4:
+    resolution: {integrity: sha512-toYm+Bsyl6VC5wSkfkbbNB6ROv7KY93PEBBL6xyDczaIHasAiv4wPqQ/c4RjoQzipxRD2W5g21cOqQulZ7rHwQ==}
     dependencies:
       follow-redirects: 1.15.2
       form-data: 4.0.0
@@ -2960,8 +2962,8 @@ packages:
       - debug
     dev: false
 
-  /axios/1.1.3_debug@4.3.4:
-    resolution: {integrity: sha512-00tXVRwKx/FZr/IDVFt4C+f9FYairX517WoGCL6dpOntqLkZofjhu43F/Xl44UOpqa+9sLFDrG/XAnFsUYgkDA==}
+  /axios/1.3.4_debug@4.3.4:
+    resolution: {integrity: sha512-toYm+Bsyl6VC5wSkfkbbNB6ROv7KY93PEBBL6xyDczaIHasAiv4wPqQ/c4RjoQzipxRD2W5g21cOqQulZ7rHwQ==}
     dependencies:
       follow-redirects: 1.15.2_debug@4.3.4
       form-data: 4.0.0
@@ -4137,12 +4139,6 @@ packages:
   /dotenv/16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
     engines: {node: '>=12'}
-    dev: true
-
-  /dotenv/8.6.0:
-    resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
-    engines: {node: '>=10'}
-    dev: false
 
   /ejs/3.1.8:
     resolution: {integrity: sha512-/sXZeMlhS0ArkfX2Aw780gJzXSMPnKjtspYZv+f3NiKLlubezAHDU5+9xz6gd3/NhG3txQCo6xlglmTS+oTGEQ==}
