@@ -153,7 +153,7 @@ export default class BootstrapCommand extends Command {
       }
       cloneDirectory = resolve(cloneDirectory);
 
-      const livePreviewEnabled = await inquireLivePreviewSupport();
+      const livePreviewEnabled = (bootstrapCommandFlags.yes) ? true : await inquireLivePreviewSupport();
 
       const seedParams: SeedParams = {};
       const stackAPIKey = bootstrapCommandFlags['stack-api-key'];
