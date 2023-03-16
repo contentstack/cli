@@ -261,9 +261,9 @@ module.exports = class ImportMarketplaceApps {
     let locations = app.ui_location && app.ui_location.locations;
 
     if (!uidCleaned && !_.isEmpty(locations)) {
-      app.ui_location.locations = this.uodateManifestUILocations(locations, 'uid');
+      app.ui_location.locations = this.updateManifestUILocations(locations, 'uid');
     } else if (uidCleaned && !_.isEmpty(locations)) {
-      app.ui_location.locations = this.uodateManifestUILocations(locations, 'name', appSuffix);
+      app.ui_location.locations = this.updateManifestUILocations(locations, 'name', appSuffix);
     }
 
     if (app.name > 20) {
@@ -325,7 +325,7 @@ module.exports = class ImportMarketplaceApps {
     return this.createPrivateApps(app, true, appSuffix + 1);
   }
 
-  uodateManifestUILocations(locations, type = 'uid', appSuffix = 1) {
+  updateManifestUILocations(locations, type = 'uid', appSuffix = 1) {
     switch (type) {
       case 'uid':
         return _.map(locations, (location) => {
@@ -386,7 +386,10 @@ module.exports = class ImportMarketplaceApps {
         .catch((error) => error);
 
       if (installation.installation_uid) {
-        log(this.config, `${app.manifest.name} app installed successfully.!`, 'success');
+        let appName = (this.appNameMapping[app.manifest.name]) ? 
+          this.appNameMapping[app.manifest.name] : 
+        app.manifest.name ;
+        log(this.config, `${appName} app installed successfully.!`, 'success');
         await this.makeRedirectUrlCall(installation, app.manifest.name);
         this.installationUidMapping[app.uid] = installation.installation_uid;
         updateParam = { manifest: app.manifest, ...installation, configuration, server_configuration };
