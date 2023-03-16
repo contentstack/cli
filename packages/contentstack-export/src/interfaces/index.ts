@@ -23,3 +23,6 @@ export interface User {
   email: string;
   authtoken: string;
 }
+
+export { default as DefaultConfig } from './default-config';
+export { default as ExportConfig } from './export-config';
