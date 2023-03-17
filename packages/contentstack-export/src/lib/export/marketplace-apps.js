@@ -50,10 +50,6 @@ module.exports = class ExportMarketplaceApps {
       this.httpClient = new HttpClientDecorator(httpClient);
       this.httpClient.headers(this.config);
     }
-    // this.httpClient = new HttpClient().headers({
-    //   authtoken: this.config.auth_token,
-    //   organization_uid: this.config.org_uid,
-    // });
 
     log(this.config, 'Starting marketplace app export', 'success');
     this.marketplaceAppPath = path.resolve(
@@ -145,7 +141,7 @@ module.exports = class ExportMarketplaceApps {
         return listOfApps;
       })
       .catch((error) => {
-        log(self.config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
+        log(this.config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
       });
   }
 
