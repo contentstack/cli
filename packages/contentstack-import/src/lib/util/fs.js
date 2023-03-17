@@ -118,3 +118,7 @@ exports.readdirSync = function (dirPath) {
     return [];
   }
 };
+
+exports.fileExistsSync = function (path) {
+  return fs.existsSync(path);
+};
