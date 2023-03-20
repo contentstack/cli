@@ -1,6 +1,5 @@
-import { Command, flags } from '@contentstack/cli-command';
+import { Command } from '@contentstack/cli-command';
 import { resolve } from 'path';
-const ContentstackManagementSDK = require('@contentstack/management');
 import Bootstrap, { BootstrapOptions, SeedParams } from '../../bootstrap';
 import {
   inquireCloneDirectory,
@@ -8,7 +7,7 @@ import {
   inquireAppType,
   inquireLivePreviewSupport,
 } from '../../bootstrap/interactive';
-import { printFlagDeprecation } from '@contentstack/cli-utilities';
+import { printFlagDeprecation, managementSDKClient, flags } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
 
@@ -99,12 +98,11 @@ export default class BootstrapCommand extends Command {
   };
 
   get managementAPIClient() {
-    this.bootstrapManagementAPIClient = ContentstackManagementSDK.client({
-      host: this.cmaHost,
-      authtoken: this.authToken,
-    });
-
-    return this.bootstrapManagementAPIClient;
+    return (async () => {
+      const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
+      this.bootstrapManagementAPIClient = managementAPIClient;
+      return this.bootstrapManagementAPIClient;
+    })();
   }
 
   async run() {
@@ -155,7 +153,7 @@ export default class BootstrapCommand extends Command {
       }
       cloneDirectory = resolve(cloneDirectory);
 
-      const livePreviewEnabled = await inquireLivePreviewSupport();
+      const livePreviewEnabled = (bootstrapCommandFlags.yes) ? true : await inquireLivePreviewSupport();
 
       const seedParams: SeedParams = {};
       const stackAPIKey = bootstrapCommandFlags['stack-api-key'];
@@ -171,7 +169,7 @@ export default class BootstrapCommand extends Command {
         appConfig,
         seedParams,
         cloneDirectory,
-        managementAPIClient: this.managementAPIClient,
+        managementAPIClient: await this.managementAPIClient,
         region: this.region,
         appType,
         livePreviewEnabled,
