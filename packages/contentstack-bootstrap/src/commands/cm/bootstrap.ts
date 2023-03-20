@@ -8,7 +8,7 @@ import {
   inquireAppType,
   inquireLivePreviewSupport,
 } from '../../bootstrap/interactive';
-import { printFlagDeprecation, flags } from '@contentstack/cli-utilities';
+import { printFlagDeprecation, managementSDKClient, flags } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
 

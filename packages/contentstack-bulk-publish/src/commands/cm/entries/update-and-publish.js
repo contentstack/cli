@@ -46,7 +46,7 @@ class UpdateAndPublishCommand extends Command {
           host: this.region.cma,
           branch: addFieldsFlags.branch,
         };
-        stack = getStack(config);
+        stack = await getStack(config);
       }
       if (await this.confirmFlags(updatedFlags)) {
         try {
