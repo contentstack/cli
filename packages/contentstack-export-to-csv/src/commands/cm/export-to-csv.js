@@ -43,14 +43,6 @@ class ExportToCsvCommand extends Command {
     }),
   };
 
-  get getAuthToken() {
-    try {
-      return this.authToken;
-    } catch (error) {
-      return undefined;
-    }
-  }
-
   async run() {
     try {
       let action, managementAPIClient;
