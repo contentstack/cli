@@ -1,5 +1,5 @@
-const { Command, flags } = require('@contentstack/cli-command');
-const { configHandler, managementSDKClient } = require('@contentstack/cli-utilities');
+const { Command } = require('@contentstack/cli-command');
+const { configHandler, managementSDKClient, flags } = require('@contentstack/cli-utilities');
 const util = require('../../util');
 const config = require('../../util/config');
 
@@ -42,14 +42,6 @@ class ExportToCsvCommand extends Command {
       multiple: false,
     }),
   };
-
-  get getAuthToken() {
-    try {
-      return this.authToken;
-    } catch (error) {
-      return undefined;
-    }
-  }
 
   async run() {
     try {

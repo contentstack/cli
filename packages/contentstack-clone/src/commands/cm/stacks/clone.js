@@ -1,5 +1,5 @@
-const { Command, flags } = require('@contentstack/cli-command');
-const { configHandler } = require('@contentstack/cli-utilities');
+const { Command } = require('@contentstack/cli-command');
+const { configHandler, flags } = require('@contentstack/cli-utilities');
 const { CloneHandler } = require('../../../lib/util/clone-handler');
 let config = require('../../../lib/util/dummyConfig.json');
 const path = require('path');

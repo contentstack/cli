@@ -6,13 +6,13 @@
 // Dependencies
 const Listr = require('listr');
 const { resolve, extname } = require('path');
-const { Command, flags } = require('@contentstack/cli-command');
+const { Command } = require('@contentstack/cli-command');
 const { waterfall } = require('async');
 const { Parser } = require('../../../modules');
 const { ActionList } = require('../../../actions');
 const fs = require('fs');
 const chalk = require('chalk');
-const { configHandler, printFlagDeprecation, managementSDKClient } = require('@contentstack/cli-utilities');
+const { configHandler, printFlagDeprecation, managementSDKClient, flags } = require('@contentstack/cli-utilities');
 
 const { ApiError, SchemaValidator, MigrationError, FieldValidator } = require('../../../validators');
 
@@ -50,7 +50,6 @@ class MigrationCommand extends Command {
     const filePath = migrationCommandFlags['file-path'] || migrationCommandFlags.filePath;
     const multi = migrationCommandFlags.multiple || migrationCommandFlags.multi;
     const authtoken = configHandler.get('authtoken');
-    const {cma} = configHandler.get('region');
     const apiKey = migrationCommandFlags['api-key'] || migrationCommandFlags['stack-api-key'];
     const alias = migrationCommandFlags['alias'] || migrationCommandFlags['management-token-alias'];
     const config = migrationCommandFlags['config'];
@@ -82,7 +81,7 @@ class MigrationCommand extends Command {
       set('config', mapInstance, configObj);
     }
 
-    const APIClient = await managementSDKClient({ host:cma })
+    const APIClient = await managementSDKClient({ host: this.cmaHost })
     let stackSDKInstance;
     if (branch) {
       set(BRANCH, mapInstance, branch);
