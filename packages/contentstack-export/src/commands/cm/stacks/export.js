@@ -1,7 +1,5 @@
 /* eslint-disable complexity */
-const { Command, flags } = require('@contentstack/cli-command');
-const { printFlagDeprecation } = require('@contentstack/cli-utilities');
-
+const { Command } = require('@contentstack/cli-command');
 const {
   configWithMToken,
   parameterWithMToken,
@@ -11,7 +9,7 @@ const {
   withoutParametersWithAuthToken,
 } = require('../../../lib/util/export-flags');
 const config = require('../../../config/default');
-const { configHandler } = require('@contentstack/cli-utilities');
+const { configHandler, printFlagDeprecation, flags } = require('@contentstack/cli-utilities');
 
 class ExportCommand extends Command {
   async run() {
