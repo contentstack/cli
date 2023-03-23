@@ -74,6 +74,7 @@
   ],
   "license": "MIT",
   "main": "./lib/commands/cm/stacks/export.js",
+  "types": "./types/index.d.ts",
   "oclif": {
     "commands": "./lib/commands",
     "bin": "csdx",
