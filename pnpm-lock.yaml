@@ -51,6 +51,7 @@ importers:
       oclif: ^3.1.2
       rimraf: ^2.7.1
       shelljs: ^0.8.4
+      short-uuid: ^4.2.2
       sinon: ^15.0.1
       tmp: ^0.2.1
       ts-node: ^10.9.1
@@ -82,6 +83,7 @@ importers:
       figlet: 1.5.2
       inquirer: 8.2.4
       node-machine-id: 1.1.12
+      short-uuid: 4.2.2
       uuid: 9.0.0
       winston: 3.8.2
     devDependencies:
@@ -3044,6 +3046,10 @@ packages:
 
   /ansicolors/0.3.2:
     resolution: {integrity: sha512-QXu7BPrP29VllRxH8GwB7x5iX5qWKAAMLqKQGWTeLWVlNHNOpVMJ91dsxQAIWXpjuW5wqvxu3Jd/nRjrJ+0pqg==}
+
+  /any-base/1.1.0:
+    resolution: {integrity: sha512-uMgjozySS8adZZYePpaWs8cxB9/kdzmpX6SgJZ+wbz1K5eYk5QMYDVJaZKhxyIHUdnnJkfR7SVgStgH7LkGUyg==}
+    dev: false
 
   /any-observable/0.3.0_rxjs@6.6.7:
     resolution: {integrity: sha512-/FQM1EDkTsf63Ub2C6O7GuYFDsSXUwsaZDurV0np41ocwq0jthUAYCmhBX9f+KwlaCgIuWyr/4WlUQUBfKfZog==}
@@ -9341,6 +9347,14 @@ packages:
       interpret: 1.4.0
       rechoir: 0.6.2
     dev: true
+
+  /short-uuid/4.2.2:
+    resolution: {integrity: sha512-IE7hDSGV2U/VZoCsjctKX6l5t5ak2jE0+aeGJi3KtvjIUNuZVmHVYUjNBhmo369FIWGDtaieRaO8A83Lvwfpqw==}
+    engines: {node: '>=8'}
+    dependencies:
+      any-base: 1.1.0
+      uuid: 8.3.2
+    dev: false
 
   /side-channel/1.0.4:
     resolution: {integrity: sha512-q5XPytqFEIKHkGdiMIrY10mvLRvnQh42/+GoBlFW3b2LXLE2xxJpZFdm94we0BaoV3RwJyGqg5wS7epxTv0Zvw==}
