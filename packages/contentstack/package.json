@@ -44,11 +44,11 @@
     "figlet": "^1.5.2",
     "inquirer": "8.2.4",
     "node-machine-id": "^1.1.12",
+    "short-uuid": "^4.2.2",
     "uuid": "^9.0.0",
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "oclif": "^3.1.2",
     "@oclif/test": "^2.2.10",
     "@types/chai": "^4.2.18",
     "@types/inquirer": "^9.0.3",
@@ -64,6 +64,7 @@
     "mocha": "10.1.0",
     "nock": "^13.1.0",
     "nyc": "^15.1.0",
+    "oclif": "^3.1.2",
     "rimraf": "^2.7.1",
     "shelljs": "^0.8.4",
     "sinon": "^15.0.1",
