@@ -178,7 +178,7 @@ async function revertUsingLogs(logFileName) {
 
     if (response.file.length > 0) {
       initializeLogger(revertLogFileName);
-      const stack = getStack({
+      const stack = await getStack({
         apikey: response.file[0].message.api_key,
         alias: response.file[0].message.alias,
         host: response.file[0].message.host,

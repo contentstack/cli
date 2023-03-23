@@ -8,7 +8,6 @@ export { default as managementSDKClient, ContentstackClient, ContentstackConfig 
 export { default as printFlagDeprecation } from './flag-deprecation-check';
 export * from './http-client';
 export { default as NodeCrypto } from './encrypter';
-export { chooseLocale as chooseLocalePrompt } from './selectors';
 export { Args as args, Flags as flags, Command } from './cli-ux';
 
 // NOTE Exporting all @oclif/core modules: So that all the module can be acessed through cli-utility

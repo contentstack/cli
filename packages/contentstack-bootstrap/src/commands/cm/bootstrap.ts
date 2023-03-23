@@ -1,6 +1,5 @@
 import { Command } from '@contentstack/cli-command';
 import { resolve } from 'path';
-const { managementClient } = require('@contentstack/cli-utilities');
 import Bootstrap, { BootstrapOptions, SeedParams } from '../../bootstrap';
 import {
   inquireCloneDirectory,
@@ -8,7 +7,7 @@ import {
   inquireAppType,
   inquireLivePreviewSupport,
 } from '../../bootstrap/interactive';
-import { printFlagDeprecation, flags } from '@contentstack/cli-utilities';
+import { printFlagDeprecation, managementSDKClient, flags } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
 
@@ -108,7 +107,7 @@ export default class BootstrapCommand extends Command {
           suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
         });
       }
-      this.bootstrapManagementAPIClient = await managementClient({
+      this.bootstrapManagementAPIClient = await managementSDKClient({
         host: this.cmaHost,
       });
 
@@ -149,7 +148,7 @@ export default class BootstrapCommand extends Command {
       }
       cloneDirectory = resolve(cloneDirectory);
 
-      const livePreviewEnabled = await inquireLivePreviewSupport();
+      const livePreviewEnabled = bootstrapCommandFlags.yes ? true : await inquireLivePreviewSupport();
 
       const seedParams: SeedParams = {};
       const stackAPIKey = bootstrapCommandFlags['stack-api-key'];

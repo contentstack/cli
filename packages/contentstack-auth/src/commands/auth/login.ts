@@ -57,7 +57,7 @@ export default class LoginCommand extends Command {
     try {
       const oauth = loginFlags?.oauth;
       if (oauth === true) {
-        oauthHandler.client = this.managementAPIClient;
+        oauthHandler.client = managementAPIClient;
         oauthHandler.host = this.cmaHost;
         await oauthHandler.oauth();
       } else {

@@ -7,7 +7,7 @@ const _ = require('lodash');
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
-const { cliux, HttpClient, NodeCrypto, managementSDKClient } = require('@contentstack/cli-utilities');
+const { cliux, HttpClient, NodeCrypto, managementSDKClient, HttpClientDecorator, OauthDecorator } = require('@contentstack/cli-utilities');
 
 const { formatError } = require('../util');
 const config = require('../../config/default');
@@ -29,7 +29,7 @@ module.exports = class ExportMarketplaceApps {
   }
 
   async start() {
-    if (!this.config.auth_token) {
+    if (!this.config.isAuthenticated) {
       cliux.print(
         'WARNING!!! To export Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in',
         { color: 'yellow' },
@@ -41,10 +41,15 @@ module.exports = class ExportMarketplaceApps {
 
     await this.getOrgUid();
 
-    this.httpClient = new HttpClient().headers({
-      authtoken: this.config.auth_token,
-      organization_uid: this.config.org_uid,
-    });
+    const httpClient = new HttpClient();
+    if (!this.config.auth_token) {
+      this.httpClient = new OauthDecorator(httpClient);
+      const headers = await this.httpClient.preHeadersCheck(this.config);
+      this.httpClient = this.httpClient.headers(headers);
+    } else {
+      this.httpClient = new HttpClientDecorator(httpClient);
+      this.httpClient.headers(this.config);
+    }
 
     log(this.config, 'Starting marketplace app export', 'success');
     this.marketplaceAppPath = path.resolve(
@@ -58,18 +63,16 @@ module.exports = class ExportMarketplaceApps {
   }
 
   async getOrgUid() {
-    if (this.config.auth_token) {
-      const tempAPIClient = await managementSDKClient({ host: this.config.host });
-      const tempStackData = await tempAPIClient
-        .stack({ api_key: this.config.source_stack })
-        .fetch()
-        .catch((error) => {
-          console.log(error);
-        });
+    const tempAPIClient = await managementSDKClient(this.config);
+    const tempStackData = await tempAPIClient
+      .stack({ api_key: this.config.source_stack })
+      .fetch()
+      .catch((error) => {
+        console.log(error);
+      });
 
-      if (tempStackData && tempStackData.org_uid) {
-        this.config.org_uid = tempStackData.org_uid;
-      }
+    if (tempStackData && tempStackData.org_uid) {
+      this.config.org_uid = tempStackData.org_uid;
     }
   }
 
@@ -138,7 +141,7 @@ module.exports = class ExportMarketplaceApps {
         return listOfApps;
       })
       .catch((error) => {
-        log(self.config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
+        log(this.config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
       });
   }
 
