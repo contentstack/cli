@@ -9,6 +9,7 @@ declare class CLIInterface {
     constructor();
     get uxTable(): typeof Table.table;
     init(context: any): void;
+    registerSearchPlugin(): void;
     print(message: string, opts?: PrintOptions): void;
     success(message: string): void;
     error(message: string, ...params: any): void;
