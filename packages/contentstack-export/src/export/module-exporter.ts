@@ -81,9 +81,7 @@ class ModuleExporter {
     // Note stack is always exported
     let exportModules = ['stack'];
     const {
-      modules: {
-        [moduleName]: { dependencies = [] },
-      },
+      modules: { [moduleName]: { dependencies = [] } = {} },
     } = this.exportConfig;
 
     if (dependencies.length > 0) {
