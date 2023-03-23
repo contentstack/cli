@@ -76,6 +76,7 @@
     "plugin"
   ],
   "main": "./lib/commands/cm/stacks/import.js",
+  "types": "./types/index.d.ts",
   "license": "MIT",
   "oclif": {
     "commands": "./lib/commands",
