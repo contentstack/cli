@@ -11,10 +11,8 @@ const mkdirp = require('mkdirp');
 const { cliux, HttpClient, NodeCrypto, managementSDKClient } = require('@contentstack/cli-utilities');
 const {
   log,
-  getDeveloperHubUrl,
-  getInstalledExtensions,
   fileHelper: { readFileSync, writeFile },
-  formatError
+  formatError,
 } = require('../../utils');
 let { default: config } = require('../../config');
 const contentstack = require('@contentstack/management');

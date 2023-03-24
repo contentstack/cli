@@ -1,13 +1,15 @@
 import * as path from 'path';
 import { Command, flags } from '@contentstack/cli-command';
+import { Flags } from '@oclif/core';
 import { cliux, messageHandler, printFlagDeprecation, managementSDKClient } from '@contentstack/cli-utilities';
 import { ModuleExporter } from '../../../export';
 import { setupExportConfig, log, formatError } from '../../../utils';
+import { ExportConfig } from '../../../interfaces';
 
 export default class ExportCommand extends Command {
-  static description = messageHandler.parse('Export content from a stack');
+  static description: string = messageHandler.parse('Export content from a stack');
 
-  static examples = [
+  static examples: string[] = [
     'csdx cm:stacks:export --stack-api-key <stack_api_key> --data-dir <path/of/export/destination/dir>',
     'csdx cm:stacks:export --config <path/to/config/dir>',
     'csdx cm:stacks:export --alias <management_token_alias>',
@@ -17,7 +19,7 @@ export default class ExportCommand extends Command {
     'csdx cm:stacks:export --branch [optional] branch name',
   ];
 
-  static usage =
+  static usage: string =
     'cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]';
 
   static flags = {
@@ -88,7 +90,7 @@ export default class ExportCommand extends Command {
     }),
   };
 
-  static aliases = ['cm:export'];
+  static aliases: string[] = ['cm:export'];
 
   async run(): Promise<any> {
     // setup export config
@@ -97,7 +99,7 @@ export default class ExportCommand extends Command {
     let exportConfig: any = {};
     try {
       // todo - fix flag type issues
-      const { flags } = (await this.parse(ExportCommand)) as any;
+      const { flags } = await this.parse(ExportCommand);
       exportConfig = await setupExportConfig(flags);
       // Note setting host to create cma client
       exportConfig.host = this.cmaHost;

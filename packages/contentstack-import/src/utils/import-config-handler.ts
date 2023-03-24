@@ -22,12 +22,14 @@ const setupConfig = async (importCmdFlags): Promise<any> => {
   //Note to support the old key
   config.data = config.contentDir;
 
-  if (importCmdFlags['mtoken-alias']) {
-    const { token, apiKey } = configHandler.get(importCmdFlags['mtoken-alias']);
+  const managementTokenAlias = importCmdFlags['management-token-alias'] || importCmdFlags['alias'];
+
+  if (managementTokenAlias) {
+    const { token, apiKey } = configHandler.get(`tokens.${managementTokenAlias}`);
     config.management_token = token;
     config.apiKey = apiKey;
     if (!config.management_token) {
-      throw new Error(`No management token found on given alias ${importCmdFlags['mtoken-alias']}`);
+      throw new Error(`No management token found on given alias ${managementTokenAlias}`);
     }
   }
 
@@ -48,6 +50,7 @@ const setupConfig = async (importCmdFlags): Promise<any> => {
   config.source_stack = config.apiKey;
 
   config.importWebhookStatus = importCmdFlags.importWebhookStatus;
+  config.forceStopMarketplaceAppsPrompt = importCmdFlags.yes;
 
   if (importCmdFlags['branch']) {
     config.branchName = importCmdFlags['branch'];
