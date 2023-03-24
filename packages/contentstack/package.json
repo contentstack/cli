@@ -140,7 +140,6 @@
     ],
     "hooks": {
       "prerun": [
-        "./lib/hooks/prerun/auth-guard",
         "./lib/hooks/prerun/command-deprecation-check"
       ],
       "init": [
