@@ -59,9 +59,9 @@ exports.initial = (configData) => {
 
     if (config) {
       if (config.management_token || config.isAuthenticated) {
-        await backupAndImportData();
+        await backupAndImportData(APIClient, stackAPIClient);
       } else if ((config.email && config.password) || config.auth_token) {
-        login(config).then(backupAndImportData).catch(reject);
+        login(config).then(backupAndImportData.apply(null, [APIClient, stackAPIClient])).catch(reject);
       } else {
         reject('Kindly login or provide management_token');
       }
