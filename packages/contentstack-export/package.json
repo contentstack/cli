@@ -85,7 +85,8 @@
       "cm:export": "csdx cm:stacks:export"
     },
     "shortCommandName": {
-      "cm:stacks:export": "export"
+      "cm:stacks:export": "EXPRT",
+      "cm:export": "EXPRT"
     }
   },
   "repository": "https://github.com/contentstack/cli"
