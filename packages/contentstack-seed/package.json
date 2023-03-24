@@ -58,6 +58,10 @@
   "csdxConfig": {
     "expiredCommands": {
       "cm:seed": "csdx cm:stacks:seed"
+    },
+    "shortCommandName": {
+      "cm:stacks:seed": "SEED",
+      "cm:seed": "SEED"
     }
   },
   "repository": "contentstack/cli",

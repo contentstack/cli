@@ -86,6 +86,10 @@
   "csdxConfig": {
     "expiredCommands": {
       "cm:import": "csdx cm:stacks:import"
+    },
+    "shortCommandName": {
+      "cm:stacks:import": "IMPRT",
+      "cm:import": "IMPRT"
     }
   },
   "repository": "https://github.com/contentstack/cli"

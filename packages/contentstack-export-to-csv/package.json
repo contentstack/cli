@@ -48,7 +48,10 @@
     "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   },
   "csdxConfig": {
-    "expiredCommands": {}
+    "expiredCommands": {},
+    "shortCommandName": {
+      "cm:export-to-csv": "EXPRTCSV"
+    }
   },
   "main": "./src/commands/cm/export-to-csv.js",
   "license": "MIT",

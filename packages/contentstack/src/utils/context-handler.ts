@@ -52,9 +52,8 @@ export default class CsdxContext {
         this.plugin.root,
         this.plugin.config.messageFilePath || './messages/index.json',
       );
-
-      this.info.shortCommandName = this.plugin?.config?.shortCommandName;
-      analyticsInfo.push(this.plugin?.config?.shortCommandName || cliOpts.id);
+      this.info.shortCommandName = this.plugin?.config?.shortCommandName[cliOpts.id];
+      analyticsInfo.push(this.info.shortCommandName || cliOpts.id);
     }
     this.flagWarningPrintState = {};
     this.analyticsInfo = analyticsInfo.join(';');
