@@ -83,15 +83,6 @@ abstract class ContentstackCommand extends Command {
     }
     throw new CLIError('No token found');
   }
-
-  isAuthenticated() {
-    const authtoken = configHandler.get('authtoken');
-    if (authtoken) {
-      return true;
-    } else {
-      return false;
-    }
-  }
 }
 
 module.exports = {
