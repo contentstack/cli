@@ -64,6 +64,9 @@ export default async (config): Promise<ContentstackClient> => {
         });
       },
     };
+    if (config.endpoint) {
+      option.endpoint = config.endpoint;
+    }
     if (typeof config.branchName === 'string') {
       option.headers = { branch: config.branchName };
     }

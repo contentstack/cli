@@ -9,7 +9,7 @@ const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const contentstack = require('@contentstack/management');
-const { cliux, HttpClient, NodeCrypto, managementSDKClient } = require('@contentstack/cli-utilities');
+const { cliux, HttpClient, NodeCrypto, managementSDKClient, HttpClientDecorator, OauthDecorator } = require('@contentstack/cli-utilities');
 
 const { formatError } = require('../util');
 let config = require('../../config/default');
@@ -44,7 +44,7 @@ module.exports = class ImportMarketplaceApps {
 
     if (_.isEmpty(this.marketplaceApps)) {
       return Promise.resolve();
-    } else if (!this.config.auth_token) {
+    } else if (!this.config.isAuthenticated) {
       cliux.print(
         '\nWARNING!!! To import Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in\n',
         { color: 'yellow' },
@@ -53,16 +53,19 @@ module.exports = class ImportMarketplaceApps {
     }
 
     this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
-    this.client = contentstack.client({ authtoken: this.config.auth_token, endpoint: this.developerHubBaseUrl });
+    this.client = await managementSDKClient({ ...this.config, endpoint: this.developerHubBaseUrl });
 
     await this.getOrgUid();
 
-    this.httpClient = new HttpClient({
-      headers: {
-        authtoken: this.config.auth_token,
-        organization_uid: this.config.org_uid,
-      },
-    });
+    const httpClient = new HttpClient();
+    if (!this.config.auth_token) {
+      this.httpClient = new OauthDecorator(httpClient);
+      const headers = await this.httpClient.preHeadersCheck(this.config);
+      this.httpClient = this.httpClient.headers(headers);
+    } else {
+      this.httpClient = new HttpClientDecorator(httpClient);
+      this.httpClient.headers(this.config);
+    }
 
     if (!fs.existsSync(this.mapperDirPath)) {
       mkdirp.sync(this.mapperDirPath);
@@ -72,18 +75,16 @@ module.exports = class ImportMarketplaceApps {
   }
 
   async getOrgUid() {
-    if (this.config.auth_token) {
-      const tempAPIClient = await managementSDKClient({ host: this.config.host });
-      const tempStackData = await tempAPIClient
-        .stack({ api_key: this.config.target_stack })
-        .fetch()
-        .catch((error) => {
-          console.log(error);
-        });
+    const tempAPIClient = await managementSDKClient({ host: this.config.host });
+    const tempStackData = await tempAPIClient
+      .stack({ api_key: this.config.target_stack })
+      .fetch()
+      .catch((error) => {
+        console.log(error);
+      });
 
-      if (tempStackData && tempStackData.org_uid) {
-        this.config.org_uid = tempStackData.org_uid;
-      }
+    if (tempStackData && tempStackData.org_uid) {
+      this.config.org_uid = tempStackData.org_uid;
     }
   }
 
@@ -288,7 +289,7 @@ module.exports = class ImportMarketplaceApps {
       } else {
         log(this.config, formatError(message), 'error');
 
-        if (this.config.forceStopMarketplaceAppsPrompt) return resolve();
+        if (this.config.forceStopMarketplaceAppsPrompt) return Promise.resolve();
 
         if (
           await cliux.confirm(
@@ -297,7 +298,7 @@ module.exports = class ImportMarketplaceApps {
             ),
           )
         ) {
-          resolve();
+          Promise.resolve();
         } else {
           process.exit();
         }
