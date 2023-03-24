@@ -84,7 +84,9 @@
     "expiredCommands": {
       "cm:export": "csdx cm:stacks:export"
     },
-    "shortCommandName": "export"
+    "shortCommandName": {
+      "cm:stacks:export": "export"
+    }
   },
   "repository": "https://github.com/contentstack/cli"
 }
