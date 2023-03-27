@@ -10,4 +10,6 @@ fileignoreconfig:
   checksum: bc2a509a86174aecbaf0bfc44d6ad3afabe57ef871ec91b796d498e00177e3f0
 - filename: packages/contentstack-migrate-rte/test/commands/json-migration.test.js
   checksum: 003d9da2bc6b281f67cd5e35234f35c7c39735de240c92105f53b8c5fa9fa840
+- filename: package-lock.json
+  checksum: b6c58957eedaefe388ccb90e50c7a6779a7ada4e518bc4812d146f8b0c677744
 version: ''
