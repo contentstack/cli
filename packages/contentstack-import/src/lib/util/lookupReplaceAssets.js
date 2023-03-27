@@ -219,7 +219,9 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         [data.entry.uid]: matchedUids,
       };
     }
-    helper.writeFile(path.join(assetUidMapperPath, 'matched-asset-uids.json'));
+    if (!helper.fileExistsSync(path.join(assetUidMapperPath, 'matched-asset-uids.json'))) {
+      helper.writeFile(path.join(assetUidMapperPath, 'matched-asset-uids.json'));
+    }
   }
 
   if (unmatchedUids.length) {
