@@ -1,4 +1,5 @@
 import { Table } from '@oclif/core/lib/cli-ux';
+import { Args, Flags, Command } from '@oclif/core';
 import { PrintOptions, InquirePayload, CliUXPromptOptions } from './interfaces';
 /**
  * CLI Interface
@@ -20,3 +21,4 @@ declare class CLIInterface {
 }
 declare const _default: CLIInterface;
 export default _default;
+export { Flags, Args, Command };
