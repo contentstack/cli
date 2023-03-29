@@ -54,6 +54,10 @@
   "csdxConfig": {
     "expiredCommands": {
       "cm:migrate-rte": "csdx cm:entries:migrate-html-rte"
+    },
+    "shortCommandName": {
+      "cm:migrate-rte": "MGRTRTE",
+      "cm:entries:migrate-html-rte": "MGRTRTE"
     }
   },
   "repository": "contentstack/cli",
