@@ -1,3 +1,3 @@
-import { Command } from '@oclif/core';
-declare abstract class ImportCommand extends Command {}
+import { Command } from '@contentstack/cli-utilities';
+declare class ImportCommand extends Command {}
 export default ImportCommand;
