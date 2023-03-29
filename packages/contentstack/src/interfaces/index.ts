@@ -1,4 +1,4 @@
-import { Config, Plugin } from '@oclif/core';
+import { Config, Plugin } from '@contentstack/cli-utilities';
 
 export interface PrintOptions {
   color?: string;
