@@ -1,7 +1,6 @@
-import * as path from 'path';
-import { Command, flags } from '@contentstack/cli-command';
-import { Flags } from '@oclif/core';
-import { cliux, messageHandler, printFlagDeprecation, managementSDKClient } from '@contentstack/cli-utilities';
+import path from 'path';
+import { Command } from '@contentstack/cli-command';
+import { cliux, messageHandler, printFlagDeprecation, managementSDKClient, flags } from '@contentstack/cli-utilities';
 import { ModuleExporter } from '../../../export';
 import { setupExportConfig, log, formatError } from '../../../utils';
 import { ExportConfig } from '../../../interfaces';
