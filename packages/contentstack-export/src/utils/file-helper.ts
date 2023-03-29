@@ -107,3 +107,7 @@ export const readdir = function (dirPath): any {
     return [];
   }
 };
+
+exports.fileExistsSync = function (path) {
+  return fs.existsSync(path);
+};

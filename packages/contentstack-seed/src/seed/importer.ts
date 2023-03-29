@@ -1,6 +1,6 @@
 import * as process from 'process';
 import * as path from 'path';
-import importCmd from '@contentstack/cli-cm-import';
+import ImportCommand from '@contentstack/cli-cm-import';
 
 const STACK_FOLDER = 'stack';
 
@@ -18,5 +18,5 @@ export async function run(options: ImporterOptions) {
 
   process.chdir(options.tmpPath);
 
-  await importCmd.run(['-k', options.api_key, '-d', importPath]);
+  await ImportCommand.run(['-k', options.api_key, '-d', importPath]);
 }
