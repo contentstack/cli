@@ -93,7 +93,7 @@ export default class Bootstrap {
         cmd.push('-y', this.options.seedParams.yes);
       }
       const result = await ContentStackSeed.run(cmd);
-      if (result.api_key) {
+      if ( result && result.api_key) {
         await setupEnvironments(
           this.managementAPIClient,
           result.api_key,
