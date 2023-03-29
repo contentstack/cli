@@ -42,7 +42,7 @@ async function publishOnlyUnpublishedService(UnpublishedEntriesCommand) {
         host: this.region.cma,
         branch: unpublishedEntriesFlags.branch,
       };
-      stack = getStack(config);
+      stack = await getStack(config);
     }
     if (await confirmFlags(updatedFlags)) {
       try {
