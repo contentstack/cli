@@ -23,7 +23,7 @@ importers:
       '@contentstack/cli-config': ^1.2.0
       '@contentstack/cli-migration': ^1.2.0
       '@contentstack/cli-utilities': ^1.2.0
-      '@contentstack/management': ^1.6.1
+      '@contentstack/management': ^1.7.0
       '@oclif/core': ^2.3.0
       '@oclif/plugin-help': ^5
       '@oclif/plugin-not-found': ^2.3.9
@@ -73,7 +73,7 @@ importers:
       '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-migration': link:../contentstack-migration
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/management': 1.6.1_debug@4.3.4
+      '@contentstack/management': 1.7.0_debug@4.3.4
       '@oclif/core': 2.7.1_7iyetdgfmqiorh7qupktbe7tm4
       '@oclif/plugin-help': 5.2.4_7iyetdgfmqiorh7qupktbe7tm4
       '@oclif/plugin-not-found': 2.3.20_7iyetdgfmqiorh7qupktbe7tm4
@@ -462,6 +462,7 @@ importers:
       '@contentstack/management': ^1.6.1
       '@oclif/command': ^1.8.16
       '@oclif/config': ^1.18.3
+      '@oclif/core': ^2.3.0
       '@oclif/plugin-help': ^5.1.19
       '@oclif/test': ^1.2.6
       assert: ^2.0.0
@@ -497,6 +498,7 @@ importers:
       '@contentstack/management': 1.6.1
       '@oclif/command': 1.8.22_@oclif+config@1.18.8
       '@oclif/config': 1.18.8
+      '@oclif/core': 2.7.1_typescript@4.9.5
       async: 3.2.4
       big-json: 3.2.0
       bluebird: 3.7.2
@@ -574,6 +576,7 @@ importers:
       '@contentstack/cli-utilities': ^1.2.0
       '@contentstack/management': ^1.6.1
       '@oclif/config': ^1.18.3
+      '@oclif/core': ^2.3.0
       '@oclif/test': ^1.2.6
       '@types/chai': ^4.2.18
       '@types/mkdirp': ^1.0.2
@@ -611,6 +614,7 @@ importers:
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/management': 1.6.1_debug@4.3.4
       '@oclif/config': 1.18.8
+      '@oclif/core': 2.7.1_7iyetdgfmqiorh7qupktbe7tm4
       big-json: 3.2.0
       bluebird: 3.7.2
       chalk: 4.1.2
@@ -1293,6 +1297,18 @@ packages:
 
   /@contentstack/management/1.6.1_debug@4.3.4:
     resolution: {integrity: sha512-Ztz7QqxpW2znnu+uzuluZlRENQDEUdru10t4ZauYja7iUIJvJuVNulqTJkNj1Ge1IHx59EbPW7Bw5nVX6DI2uw==}
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      axios: 0.27.2_debug@4.3.4
+      form-data: 3.0.1
+      lodash: 4.17.21
+      qs: 6.11.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /@contentstack/management/1.7.0_debug@4.3.4:
+    resolution: {integrity: sha512-qXBptJ4Fb0iPuHT/P+y14U3ElCHtgxWhJK6yX/BbFYlXzoQVC8cENtLoLD9aOPbI3zrVD2piOWzux7VX5NxtIg==}
     engines: {node: '>=8.0.0'}
     dependencies:
       axios: 0.27.2_debug@4.3.4
@@ -2186,7 +2202,6 @@ packages:
       - '@swc/wasm'
       - '@types/node'
       - typescript
-    dev: true
 
   /@oclif/errors/1.3.6:
     resolution: {integrity: sha512-fYaU4aDceETd89KXP+3cLyg9EHZsLD3RxF2IU9yxahhBpspWjkWi3Dy3bTgcwZ3V47BgxQaGapzJWDM33XIVDQ==}
@@ -3426,7 +3441,7 @@ packages:
   /axios/0.27.2_debug@4.3.4:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
@@ -10313,7 +10328,6 @@ packages:
       typescript: 4.9.5
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
-    dev: true
 
   /ts-node/8.10.2_typescript@4.9.5:
     resolution: {integrity: sha512-ISJJGgkIpDdBhWVu3jufsWpK3Rzo7bdiIXJjQc0ynKxVOVcg2oIrf2H2cejminGrptVc6q6/uynAHNCuWGbpVA==}
