@@ -43,6 +43,8 @@
     "debug": "^4.1.1",
     "figlet": "^1.5.2",
     "inquirer": "8.2.4",
+    "node-machine-id": "^1.1.12",
+    "short-uuid": "^4.2.2",
     "uuid": "^9.0.0",
     "winston": "^3.7.2"
   },
@@ -138,7 +140,6 @@
     ],
     "hooks": {
       "prerun": [
-        "./lib/hooks/prerun/auth-guard",
         "./lib/hooks/prerun/command-deprecation-check"
       ],
       "init": [
