@@ -1,5 +1,5 @@
-const { Command, flags } = require('@contentstack/cli-command');
-const { cliux, printFlagDeprecation } = require('@contentstack/cli-utilities');
+const { Command } = require('@contentstack/cli-command');
+const { cliux, printFlagDeprecation, flags } = require('@contentstack/cli-utilities');
 
 const store = require('../../../util/store.js');
 const { start } = require('../../../producer/revert');

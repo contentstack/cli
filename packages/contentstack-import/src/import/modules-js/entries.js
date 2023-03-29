@@ -20,7 +20,7 @@ const {
   getInstalledExtensions,
   lookupEntries,
 } = require('../../utils');
-const config = require('../../config/default');
+const { default: config } = require('../../config');
 
 module.exports = class ImportEntries {
   mappedAssetUidPath;
@@ -1127,7 +1127,7 @@ module.exports = class ImportEntries {
               )
                 .then(() => {
                   // log(this.config, 'Entries published successfully in ' + ctUid + ' content type', 'success')
-                  log('Entries published successfully in ' + ctUid + ' content type');
+                  log(this.config, 'Entries published successfully in ' + ctUid + ' content type');
                 })
                 .catch((error) => {
                   log(this.config, `failed to publish entry in content type ${ctUid} ${formatError(error)}`);

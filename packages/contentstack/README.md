@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.3.0 darwin-arm64 node-v18.11.0
+@contentstack/cli/1.4.0 darwin-arm64 node-v18.11.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -1974,7 +1974,7 @@ EXAMPLES
   $ csdx cm:stacks:export --branch [optional] branch name
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/lib/commands/cm/stacks/export.js)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/stacks/export.ts)_
 
 ## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
@@ -2353,6 +2353,9 @@ Set region for CLI
 ```
 USAGE
   $ csdx config:set:region [REGION] [-d <value> -m <value> -n <value>]
+
+ARGUMENTS
+  REGION  Name for the region
 
 FLAGS
   -d, --cda=<value>   Custom host to set for content delivery API, if this flag is added then cma and name flags are

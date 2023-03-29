@@ -219,3 +219,13 @@ jobs:
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'Released version'
+      - name: Create Release
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.publish-core.outputs.version }}
+          release_name: Release ${{ steps.publish-core.outputs.version }}
+          draft: false # Default value, but nice to set explicitly
+          prerelease: false # Default value, but nice to set explicitly
