@@ -1,6 +1,13 @@
-import * as path from 'path';
-import { Command, flags } from '@contentstack/cli-command';
-import { logger, cliux, messageHandler, printFlagDeprecation, managementSDKClient } from '@contentstack/cli-utilities';
+import path from 'node:path';
+import { Command } from '@contentstack/cli-command';
+import {
+  logger,
+  cliux,
+  messageHandler,
+  printFlagDeprecation,
+  managementSDKClient,
+  flags,
+} from '@contentstack/cli-utilities';
 import { ModuleImporter } from '../../../import';
 import { setupImportConfig, formatError, log } from '../../../utils';
 
