@@ -125,3 +125,7 @@ export const isFolderExist = async (folderPath: string): Promise<any> => {
     });
   });
 };
+
+export const fileExistsSync = function (path) {
+  return fs.existsSync(path);
+};
