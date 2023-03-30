@@ -514,8 +514,8 @@ function cleanOrgUsers(orgUsers, mappedUsers, mappedRoles) {
     formattedUser['Organization Role'] = determineUserOrgRole(user, mappedRoles);
     formattedUser['Status'] = user['status'];
     formattedUser['Invited By'] = invitedBy;
-    formattedUser['Created Time'] = user['created_at'];
-    formattedUser['Updated Time'] = user['updated_at'];
+    formattedUser['Created Time'] = getFormattedDate(user['created_at']);
+    formattedUser['Updated Time'] = getFormattedDate(user['updated_at']);
     userList.push(formattedUser);
   });
   return userList;
@@ -526,6 +526,16 @@ function kebabize(str) {
     .split(' ')
     .map((word) => word.toLowerCase())
     .join('-');
+}
+
+function getFormattedDate(date) {
+  if (!(date instanceof Date)) {
+    date = new Date(date);
+  }
+  const year = date.getFullYear();
+  const month = (1 + date.getMonth()).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return month + '/' + day + '/' + year;
 }
 
 // https://stackoverflow.com/questions/19098797/fastest-way-to-flatten-un-flatten-nested-json-objects
