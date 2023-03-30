@@ -22,11 +22,10 @@ module.exports.login = (config) => {
             .then((response) => {
               // eslint-disable-next-line no-console
               console.log(chalk.green('Contentstack account authenticated successfully!'));
-              config.authtoken = response.user.authtoken;
               config.headers = {
                 api_key: config.source_stack,
                 access_token: config.access_token,
-                authtoken: config.authtoken,
+                authtoken: response.user.authtoken,
                 'X-User-Agent': 'contentstack-export/v',
               };
               resolve(config);
