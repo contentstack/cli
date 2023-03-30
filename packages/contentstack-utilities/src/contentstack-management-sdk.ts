@@ -19,7 +19,6 @@ class ManagementSDKInitiator {
       maxRequests: 10,
       retryLimit: 3,
       timeout: 60000,
-      headers: {},
       httpsAgent: new Agent({
         maxSockets: 100,
         maxFreeSockets: 10,
@@ -56,11 +55,13 @@ class ManagementSDKInitiator {
     };
 
     if (typeof config.branchName === 'string') {
+      if (!option.headers) option.headers = {};
       option.headers.branch = config.branchName;
     }
 
     if (this.analyticsInfo) {
-      option.headers['X-CS-CLI'] = config.analyticsInfo;
+      if (!option.headers) option.headers = {};
+      option.headers['X-CS-CLI'] = this.analyticsInfo;
     }
 
     if (!config.management_token) {
