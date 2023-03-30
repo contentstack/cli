@@ -27,7 +27,7 @@ class ExportStack {
   async start() {
     const self = this;
     if (self.config.auth_token) {
-      const tempAPIClient = await managementSDKClient(config);
+      const tempAPIClient = await managementSDKClient({ host: config.host });
       const tempStackData = await tempAPIClient
         .stack({ api_key: self.config.source_stack })
         .fetch()
