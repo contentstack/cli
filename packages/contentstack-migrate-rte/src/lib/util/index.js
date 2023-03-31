@@ -40,7 +40,8 @@ async function getStack(data) {
 
   stack.host = data.host;
   return stack;
-}
+};
+
 const deprecatedFields = {
   configPath: 'config-path',
   content_type: 'content-type',
@@ -59,7 +60,7 @@ function normalizeFlags(config) {
   return normalizedConfig;
 }
 
-var customBar = cliux.progress({
+const customBar = cliux.progress({
   format: '{title} ' + '| {bar} | {value}/{total} Entries',
   barCompleteChar: '\u2588',
   barIncompleteChar: '\u2591',
@@ -653,7 +654,7 @@ function uploadPaths(schema) {
 Generic function to get schema paths
 */
 function getPaths(schema, type) {
-  var paths = {};
+  const paths = {};
 
   function genPath(prefix, path) {
     return isBlank(prefix) ? path : [prefix, path].join('.');
@@ -662,8 +663,8 @@ function getPaths(schema, type) {
   function traverse(fields, path) {
     path = path || '';
     for (const element of fields) {
-      var field = element;
-      var currPath = genPath(path, field.uid);
+      const field = element;
+      const currPath = genPath(path, field.uid);
 
       if (field.data_type === type) paths[currPath] = true;
 
