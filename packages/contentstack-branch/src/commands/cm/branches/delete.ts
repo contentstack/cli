@@ -25,27 +25,28 @@ export default class BranchDeleteCommand extends Command {
   static aliases: string[] = []; // Note: alternative usage if any
 
   async run(): Promise<any> {
-    try {
-      const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
-      const { flags: branchDeleteFlags } = await this.parse(BranchDeleteCommand);
-      let apiKey = branchDeleteFlags['stack-api-key'];
-      if (!apiKey) {
-        apiKey = await cliux.inquire({ type: 'input', message: 'ENTER_API_KEY', name: 'stack-api-key' });
-      }
-      if (!branchDeleteFlags.uid) {
-        branchDeleteFlags.uid = await cliux.inquire({
-          type: 'input',
-          message: 'ENTER_BRANCH_UID',
-          name: 'uid',
-        });
-      }
-      const deleteBranchResponse = await managementAPIClient
-        .stack({ api_key: apiKey })
-        .branch(branchDeleteFlags.uid)
-        .delete();
-      cliux.print(JSON.stringify(deleteBranchResponse));
-    } catch (error) {
-      console.log(error);
+    const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
+    const { flags: branchDeleteFlags } = await this.parse(BranchDeleteCommand);
+    let apiKey = branchDeleteFlags['stack-api-key'];
+    if (!apiKey) {
+      apiKey = await cliux.inquire({ type: 'input', message: 'ENTER_API_KEY', name: 'stack-api-key' });
     }
+    if (!branchDeleteFlags.uid) {
+      branchDeleteFlags.uid = await cliux.inquire({
+        type: 'input',
+        message: 'ENTER_BRANCH_UID',
+        name: 'uid',
+      });
+    }
+    managementAPIClient
+      .stack({ api_key: apiKey })
+      .branch(branchDeleteFlags.uid)
+      .delete()
+      .then(() => cliux.success('Branch has been deleted'))
+      .catch((err) => {
+        err.errorCode === 905
+          ? cliux.error(`Branch with UID ${branchDeleteFlags.uid} does not exist`)
+          : cliux.error(err.errorMessage);
+      });
   }
 }
