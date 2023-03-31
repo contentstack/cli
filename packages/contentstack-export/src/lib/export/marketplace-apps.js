@@ -7,7 +7,14 @@ const _ = require('lodash');
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
-const { cliux, HttpClient, NodeCrypto, managementSDKClient } = require('@contentstack/cli-utilities');
+const { 
+  cliux, 
+  HttpClient, 
+  NodeCrypto, 
+  managementSDKClient, 
+  isAuthenticated, 
+  configHandler 
+} = require('@contentstack/cli-utilities');
 
 const { formatError } = require('../util');
 const config = require('../../config/default');
@@ -29,7 +36,7 @@ module.exports = class ExportMarketplaceApps {
   }
 
   async start() {
-    if (!this.config.auth_token) {
+    if (!isAuthenticated()) {
       cliux.print(
         'WARNING!!! To export Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in',
         { color: 'yellow' },
@@ -42,7 +49,7 @@ module.exports = class ExportMarketplaceApps {
     await this.getOrgUid();
 
     this.httpClient = new HttpClient().headers({
-      authtoken: this.config.auth_token,
+      authtoken: configHandler.get('authtoken'),
       organization_uid: this.config.org_uid,
     });
 
@@ -58,7 +65,7 @@ module.exports = class ExportMarketplaceApps {
   }
 
   async getOrgUid() {
-    if (this.config.auth_token) {
+    if (isAuthenticated()) {
       const tempAPIClient = await managementSDKClient({ host: this.config.host });
       const tempStackData = await tempAPIClient
         .stack({ api_key: this.config.source_stack })
