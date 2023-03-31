@@ -38,7 +38,7 @@ $ npm install -g @contentstack/cli-cm-branches
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-branches/1.0.0 darwin-arm64 node-v18.11.0
+@contentstack/cli-cm-branches/1.0.0 darwin-arm64 node-v16.19.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -51,7 +51,7 @@ USAGE
 <!-- commands -->
 * [`csdx cm:branches [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranches---base-branch-value---stack-api-key-value)
 * [`csdx cm:branches:config [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesconfig---base-branch-value---stack-api-key-value)
-* [`csdx cm:branches:create [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchescreate---base-branch-value---stack-api-key-value)
+* [`csdx cm:branches:create`](#csdx-cmbranchescreate)
 * [`csdx cm:branches:delete [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesdelete---base-branch-value---stack-api-key-value)
 * [`csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesdiff---base-branch-value---stack-api-key-value)
 * [`csdx cm:branches:merge [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesmerge---base-branch-value---stack-api-key-value)
@@ -90,19 +90,32 @@ EXAMPLES
 
 _See code: [src/commands/cm/branches/config.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/config.ts)_
 
-## `csdx cm:branches:create [--base-branch <value>] [--stack-api-key <value>]`
+## `csdx cm:branches:create`
 
 Create a new branch
 
 ```
 USAGE
-  $ csdx cm:branches:create [--base-branch <value>] [--stack-api-key <value>]
+  $ csdx cm:branches:create
+  $ csdx cm:branches:create [-s <value>] [-u <value>] [-k <value>]
+  $ csdx cm:branches:create [--source <value>] [--uid <value>] [--stack-api-key <value>]
+
+FLAGS
+  -k, --stack-api-key=<value>  Stack API key
+  -s, --source=<value>         Source branch from which new branch to be created
+  -u, --uid=<value>            Branch Uid to be created
 
 DESCRIPTION
   Create a new branch
 
 EXAMPLES
-  $ csdx cm:branches:create --base-branch main --stack-api-key bltxxxxxxxx
+  $ csdx cm:branches
+
+  $ csdx cm:branches:create
+
+  $ csdx cm:branches:create -s main -u new_branch -k bltxxxxxxxx
+
+  $ csdx cm:branches:create --source main --uid new_branch --stack-api-key bltxxxxxxxx
 ```
 
 _See code: [src/commands/cm/branches/create.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/create.ts)_
@@ -115,11 +128,20 @@ Delete a branch
 USAGE
   $ csdx cm:branches:delete [--base-branch <value>] [--stack-api-key <value>]
 
+FLAGS
+  -f, --force
+  -k, --stack-api-key=<value>  Stack API key
+  -u, --uid=<value>            UID of the branch to be deleted
+
 DESCRIPTION
   Delete a branch
 
 EXAMPLES
-  $ csdx cm:branches:delete --base-branch main --stack-api-key bltxxxxxxxx
+  $ csdx cm:branches:delete
+
+  $ csdx cm:branches:delete -u main -k bltxxxxxxxx
+
+  $ csdx cm:branches:delete --uid main --stack-api-key bltxxxxxxxx
 ```
 
 _See code: [src/commands/cm/branches/delete.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/delete.ts)_
