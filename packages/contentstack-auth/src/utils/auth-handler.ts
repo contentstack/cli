@@ -1,5 +1,4 @@
 import { cliux, logger, CLIError } from '@contentstack/cli-utilities';
-require('dotenv').config();
 import { User } from '../interfaces';
 import { askOTPChannel, askOTP } from './interactive';
 
