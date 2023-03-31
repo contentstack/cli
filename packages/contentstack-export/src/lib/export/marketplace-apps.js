@@ -7,7 +7,16 @@ const _ = require('lodash');
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
-const { cliux, HttpClient, NodeCrypto, managementSDKClient, HttpClientDecorator, OauthDecorator } = require('@contentstack/cli-utilities');
+const {
+  cliux,
+  HttpClient,
+  NodeCrypto,
+  managementSDKClient,
+  HttpClientDecorator,
+  OauthDecorator,
+  isAuthenticated,
+  configHandler,
+} = require('@contentstack/cli-utilities');
 
 const { formatError } = require('../util');
 const config = require('../../config/default');
@@ -29,7 +38,7 @@ module.exports = class ExportMarketplaceApps {
   }
 
   async start() {
-    if (!this.config.isAuthenticated) {
+    if (!isAuthenticated()) {
       cliux.print(
         'WARNING!!! To export Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in',
         { color: 'yellow' },
