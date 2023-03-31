@@ -21,7 +21,7 @@ const { JSDOM } = require('jsdom');
 const collapseWithSpace = require('collapse-whitespace');
 const { htmlToJson } = require('@contentstack/json-rte-serializer');
 const nodePath = require('path');
-const { cliux } = require('@contentstack/cli-utilities');
+const { cliux, managementSDKClient } = require('@contentstack/cli-utilities');
 const packageValue = require('../../../package.json');
 const isBlank = (variable) => {
   return isNil(variable) || isEmpty(variable);
@@ -29,9 +29,9 @@ const isBlank = (variable) => {
 function formatHostname(hostname) {
   return hostname.split('//').pop();
 }
-function getStack(data) {
+async function getStack(data) {
   const tokenDetails = data.token;
-  const client = contentstacksdk.client({
+  const client = await managementSDKClient({
     host: formatHostname(data.host),
     application: `json-rte-migration/${packageValue.version}`,
     timeout: 120000,
