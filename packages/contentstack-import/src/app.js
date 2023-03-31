@@ -11,7 +11,7 @@ const chalk = require('chalk');
 const util = require('./lib/util/index');
 const login = require('./lib/util/login');
 const { addlogs } = require('./lib/util/log');
-const { managementSDKClient } = require('@contentstack/cli-utilities');
+const { managementSDKClient, isAuthenticated } = require('@contentstack/cli-utilities');
 
 exports.initial = (configData) => {
   return new Promise(async (resolve, reject) => {
@@ -60,8 +60,12 @@ exports.initial = (configData) => {
     if (config) {
       if (config.management_token || config.isAuthenticated) {
         await backupAndImportData(APIClient, stackAPIClient);
-      } else if ((config.email && config.password) || config.auth_token) {
-        login(config).then(backupAndImportData.apply(null, [APIClient, stackAPIClient])).catch(reject);
+      } else if ((config.email && config.password) || isAuthenticated()) {
+        login(config).then(backupAndImportData(APIClient, stackAPIClient)).catch(reject);
+      } else if (config.email && config.password) {
+        login(config)
+          .then(backupAndImportData.apply(null, [APIClient, stackAPIClient]))
+          .catch(reject);
       } else {
         reject('Kindly login or provide management_token');
       }

@@ -45,14 +45,12 @@ exports.parameterWithMToken = async (
   data,
   moduleName,
   host,
-  _authToken,
   contentTypes,
   branchName,
   securedAssets,
   exportCommandFlags,
 ) => {
   defaultConfig.management_token = managementTokens.token;
-  defaultConfig.auth_token = _authToken;
   defaultConfig.host = host.cma;
   defaultConfig.cdn = host.cda;
   defaultConfig.branchName = branchName;
@@ -77,7 +75,6 @@ exports.withoutParameterMToken = async (
   managementTokens,
   moduleName,
   host,
-  _authToken,
   contentTypes,
   branchName,
   securedAssets,
@@ -89,7 +86,6 @@ exports.withoutParameterMToken = async (
   defaultConfig.host = host.cma;
   defaultConfig.cdn = host.cda;
   defaultConfig.branchName = branchName;
-  defaultConfig.auth_token = _authToken;
   defaultConfig.securedAssets = securedAssets;
   defaultConfig.isAuthenticated = exportCommandFlags.isAuthenticated;
   if (moduleName) {
@@ -104,18 +100,16 @@ exports.withoutParameterMToken = async (
   await initial(defaultConfig);
 };
 
-exports.configWithAuthToken = async (
+exports.configWithAuthToken = async function (
   config,
-  _authToken,
   moduleName,
   host,
   contentTypes,
   branchName,
   securedAssets,
   exportCommandFlags,
-) => {
+) {
   let externalConfig = helper.readFile(path.resolve(config));
-  defaultConfig.auth_token = _authToken;
   defaultConfig.host = host.cma;
   defaultConfig.cdn = host.cda;
   defaultConfig.branchName = branchName;
@@ -133,7 +127,6 @@ exports.configWithAuthToken = async (
 };
 
 exports.parametersWithAuthToken = async (
-  _authToken,
   sourceStack,
   data,
   moduleName,
@@ -143,7 +136,6 @@ exports.parametersWithAuthToken = async (
   securedAssets,
   exportCommandFlags,
 ) => {
-  defaultConfig.auth_token = _authToken;
   defaultConfig.source_stack = sourceStack;
   defaultConfig.isAuthenticated = exportCommandFlags.isAuthenticated;
   if (moduleName) {
@@ -162,7 +154,6 @@ exports.parametersWithAuthToken = async (
 };
 
 exports.withoutParametersWithAuthToken = async (
-  _authToken,
   moduleName,
   host,
   contentTypes,
@@ -172,7 +163,6 @@ exports.withoutParametersWithAuthToken = async (
 ) => {
   const stackUid = await cliux.prompt(message.promptMessageList.promptSourceStack);
   const pathOfExport = await cliux.prompt(message.promptMessageList.promptPathStoredData);
-  defaultConfig.auth_token = _authToken;
   defaultConfig.source_stack = stackUid;
   defaultConfig.securedAssets = securedAssets;
   defaultConfig.isAuthenticated = exportCommandFlags.isAuthenticated;

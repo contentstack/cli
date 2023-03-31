@@ -6,7 +6,7 @@ const util = require('./lib/util');
 const login = require('./lib/util/login');
 const setupBranches = require('./lib/util/setup-branches');
 const { addlogs, unlinkFileLogger } = require('./lib/util/log');
-const { managementSDKClient } = require('@contentstack/cli-utilities');
+const { managementSDKClient, isAuthenticated } = require('@contentstack/cli-utilities');
 
 exports.initial = async (config) => {
   return new Promise(async (resolve, reject) => {
@@ -61,7 +61,8 @@ exports.initial = async (config) => {
       resolve();
     } else if (
       (config.email && config.password) ||
-      (!config.email && !config.password && config.source_stack && config.access_token)
+      (!config.email && !config.password && config.source_stack && config.access_token) ||
+      (isAuthenticated() && !config.management_token)
     ) {
       login
         .login(config, APIClient, stackAPIClient)

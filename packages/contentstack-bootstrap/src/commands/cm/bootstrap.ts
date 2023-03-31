@@ -7,7 +7,7 @@ import {
   inquireAppType,
   inquireLivePreviewSupport,
 } from '../../bootstrap/interactive';
-import { printFlagDeprecation, managementSDKClient, flags } from '@contentstack/cli-utilities';
+import { printFlagDeprecation, managementSDKClient, flags, isAuthenticated } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
 
@@ -101,7 +101,7 @@ export default class BootstrapCommand extends Command {
     const { flags: bootstrapCommandFlags } = await this.parse(BootstrapCommand);
 
     try {
-      if (!this.isAuthenticated()) {
+      if (!isAuthenticated()) {
         this.error(messageHandler.parse('CLI_BOOTSTRAP_LOGIN_FAILED'), {
           exit: 2,
           suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],

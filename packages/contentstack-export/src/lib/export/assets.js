@@ -11,7 +11,7 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const chalk = require('chalk');
 const progress = require('progress-stream');
-const { HttpClient } = require('@contentstack/cli-utilities');
+const { HttpClient, configHandler } = require('@contentstack/cli-utilities');
 
 const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
@@ -350,7 +350,7 @@ module.exports = class ExportAssets {
       }
       self.assetStream = {
         url: self.config.securedAssets
-          ? `${asset.url}?authtoken=${self.config.authtoken || self.config.auth_token}`
+          ? `${asset.url}?authtoken=${configHandler.get('authtoken')}`
           : asset.url,
       };
 

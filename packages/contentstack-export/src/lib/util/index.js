@@ -7,6 +7,7 @@
 const _ = require('lodash');
 const defaultConfig = require('../../config/default');
 const promiseLimit = require('promise-limit');
+const { isAuthenticated } = require('@contentstack/cli-utilities');
 
 exports.validateConfig = (config) => {
   if (!config.host || !config.cdn) {
@@ -21,7 +22,7 @@ exports.validateConfig = (config) => {
     !config.management_token &&
     config.source_stack &&
     !config.access_token &&
-    !config.isAuthenticated
+    !isAuthenticated()
   ) {
     throw new Error('Kindly provide management_token or email and password');
   } else if (
@@ -30,7 +31,7 @@ exports.validateConfig = (config) => {
     !config.access_token &&
     config.source_stack &&
     !config.management_token &&
-    !config.isAuthenticated
+    !isAuthenticated()
   ) {
     throw new Error('Kindly provide access_token or management_token');
   } else if (!config.email && !config.password && config.preserveStackVersion) {

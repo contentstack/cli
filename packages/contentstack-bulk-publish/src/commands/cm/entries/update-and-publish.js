@@ -43,7 +43,8 @@ class UpdateAndPublishCommand extends Command {
         }
         config = {
           alias: updatedFlags.alias,
-          host: this.region.cma,
+          host: this.cmaHost,
+          cda: this.cdaHost,
           branch: addFieldsFlags.branch,
         };
         stack = await getStack(config);
