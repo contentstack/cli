@@ -9,9 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
       - uses: actions/setup-node@v1
         with:
           node-version: '16.x'
+          cache: 'pnpm'
       - name: Reading Configuration
         id: release_config
         uses: rgarcia-phi/json-to-variables@v1.1.0
