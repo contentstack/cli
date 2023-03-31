@@ -1,5 +1,5 @@
 const { Command } = require('@contentstack/cli-command');
-const { configHandler, managementSDKClient, flags } = require('@contentstack/cli-utilities');
+const { configHandler, managementSDKClient, flags, isAuthenticated } = require('@contentstack/cli-utilities');
 const util = require('../../util');
 const config = require('../../util/config');
 
@@ -93,7 +93,7 @@ class ExportToCsvCommand extends Command {
             } else {
               let organization;
 
-              if (!this.isAuthenticated()) {
+              if (!isAuthenticated()) {
                 this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
                   exit: 2,
                   suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
@@ -164,7 +164,7 @@ class ExportToCsvCommand extends Command {
         case config.exportUsers:
         case 'users': {
           try {
-            if (!this.isAuthenticated()) {
+            if (!isAuthenticated()) {
               this.error(config.CLI_EXPORT_CSV_LOGIN_FAILED, {
                 exit: 2,
                 suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
