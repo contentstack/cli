@@ -11,7 +11,7 @@ class ManagementSDKInitiator {
     this.analyticsInfo = context?.analyticsInfo;
   }
 
-  createAPIClient(config) {
+  async createAPIClient(config): Promise<ContentstackClient> {
     const option: ContentstackConfig = {
       host: config.host,
       maxContentLength: 100000000,
