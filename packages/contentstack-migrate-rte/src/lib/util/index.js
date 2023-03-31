@@ -26,13 +26,11 @@ const packageValue = require('../../../package.json');
 const isBlank = (variable) => {
   return isNil(variable) || isEmpty(variable);
 };
-function formatHostname(hostname) {
-  return hostname.split('//').pop();
-}
+
 async function getStack(data) {
   const tokenDetails = data.token;
   const client = await managementSDKClient({
-    host: formatHostname(data.host),
+    host: data.host,
     application: `json-rte-migration/${packageValue.version}`,
     timeout: 120000,
   });
