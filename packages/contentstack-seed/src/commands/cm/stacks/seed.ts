@@ -1,7 +1,7 @@
 // @ts-ignore
 import { Flags } from '@oclif/core';
 import { Command } from '@contentstack/cli-command';
-import { printFlagDeprecation, flags } from '@contentstack/cli-utilities';
+import { printFlagDeprecation, flags, isAuthenticated } from '@contentstack/cli-utilities';
 import ContentModelSeeder, { ContentModelSeederOptions } from '../../../seed';
 
 export default class SeedCommand extends Command {
@@ -77,7 +77,7 @@ export default class SeedCommand extends Command {
     try {
       const { flags: seedFlags } = await this.parse(SeedCommand);
 
-      if (!this.isAuthenticated()) {
+      if (!isAuthenticated()) {
         this.error('You need to login, first. See: auth:login --help', {
           exit: 2,
           suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
@@ -95,7 +95,7 @@ export default class SeedCommand extends Command {
         stackName: seedFlags['stack-name'],
         fetchLimit: seedFlags['fetch-limit'],
         skipStackConfirmation: seedFlags['yes'],
-        isAuthenticated: this.isAuthenticated(),
+        isAuthenticated: isAuthenticated(),
       };
 
       const seeder = new ContentModelSeeder(options);
