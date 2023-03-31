@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const defaultConfig = require('../../../config/default');
 const { Command } = require('@contentstack/cli-command');
-const { configHandler, flags, printFlagDeprecation } = require('@contentstack/cli-utilities');
+const { flags, printFlagDeprecation, isAuthenticated } = require('@contentstack/cli-utilities');
 const {
   configWithMToken,
   parameterWithMToken,
@@ -21,7 +21,6 @@ class ImportCommand extends Command {
     const moduleName = importCommandFlags.module;
     const backupdir = importCommandFlags['backup-dir'];
     const alias = importCommandFlags['alias'] || importCommandFlags['management-token-alias'];
-    let _authToken = configHandler.get('authtoken');
     importCommandFlags.branchName = importCommandFlags.branch;
     importCommandFlags.importWebhookStatus = importCommandFlags['import-webhook-status'];
     delete importCommandFlags.branch;
@@ -42,58 +41,27 @@ class ImportCommand extends Command {
         if (managementTokens) {
           let result;
 
-          if ((extConfig && _authToken) || alias) {
-            result = configWithMToken(
-              extConfig,
-              managementTokens,
-              moduleName,
-              host,
-              _authToken,
-              backupdir,
-              importCommandFlags,
-            );
+          if ((extConfig && isAuthenticated()) || alias) {
+            result = configWithMToken(extConfig, managementTokens, moduleName, host, backupdir, importCommandFlags);
           } else if (data) {
-            result = parameterWithMToken(
-              managementTokens,
-              data,
-              moduleName,
-              host,
-              _authToken,
-              backupdir,
-              importCommandFlags,
-            );
+            result = parameterWithMToken(managementTokens, data, moduleName, host, backupdir, importCommandFlags);
           } else {
-            result = withoutParameterMToken(
-              managementTokens,
-              moduleName,
-              host,
-              _authToken,
-              backupdir,
-              importCommandFlags,
-            );
+            result = withoutParameterMToken(managementTokens, moduleName, host, backupdir, importCommandFlags);
           }
 
           result.then(resolve).catch(reject);
         } else {
           console.log('management Token is not present please add managment token first');
         }
-      } else if (importCommandFlags.isAuthenticated) {
+      } else if (isAuthenticated()) {
         let result;
 
         if (extConfig) {
-          result = configWithAuthToken(extConfig, _authToken, moduleName, host, backupdir, importCommandFlags);
+          result = configWithAuthToken(extConfig, moduleName, host, backupdir, importCommandFlags);
         } else if (targetStack && data) {
-          result = parametersWithAuthToken(
-            _authToken,
-            targetStack,
-            data,
-            moduleName,
-            host,
-            backupdir,
-            importCommandFlags,
-          );
+          result = parametersWithAuthToken(targetStack, data, moduleName, host, backupdir, importCommandFlags);
         } else {
-          result = withoutParametersWithAuthToken(_authToken, moduleName, host, backupdir, importCommandFlags);
+          result = withoutParametersWithAuthToken(moduleName, host, backupdir, importCommandFlags);
         }
 
         result.then(resolve).catch(reject);
