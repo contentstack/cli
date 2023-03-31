@@ -49,7 +49,8 @@ class NonlocalizedFieldChangesCommand extends Command {
         }
         config = {
           alias: updatedFlags.alias,
-          host: this.region.cma,
+          host: this.cmaHost,
+          cda: this.cdaHost,
           branch: nonlocalizedFieldChangesFlags.branch,
         };
         stack = await getStack(config);
@@ -105,7 +106,6 @@ class NonlocalizedFieldChangesCommand extends Command {
       return true;
     }
     return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
-
   }
 }
 
@@ -203,6 +203,7 @@ NonlocalizedFieldChangesCommand.examples = [
 
 NonlocalizedFieldChangesCommand.aliases = ['cm:bulk-publish:nonlocalized-field-changes'];
 
-NonlocalizedFieldChangesCommand.usage = 'cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]'
+NonlocalizedFieldChangesCommand.usage =
+  'cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]';
 
 module.exports = NonlocalizedFieldChangesCommand;
