@@ -49,8 +49,8 @@ class UnpublishCommand extends Command {
         }
         config = {
           alias: updatedFlags.alias,
-          host: this.region.cma,
-          cda: this.region.cda,
+          host: this.cmaHost,
+          cda: this.cdaHost,
           branch: unpublishFlags.branch,
         };
         stack = await getStack(config);
