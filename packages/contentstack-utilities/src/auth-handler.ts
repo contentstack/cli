@@ -1,7 +1,5 @@
 import { cliux, logger, HttpClient, configHandler } from '@contentstack/cli-utilities';
 import * as ContentstackManagementSDK from '@contentstack/management';
-require('dotenv').config();
-
 const http = require('http');
 const url = require('url');
 const open = require('open');
@@ -12,7 +10,6 @@ const crypto = require('crypto');
  * Auth handler
  */
 class AuthHandler {
-  private _client;
   private _host;
 
   private codeVerifier: string;
@@ -33,10 +30,6 @@ class AuthHandler {
   private authorisationTypeOAUTHValue: string;
   private authorisationTypeAUTHValue: string;
   private allAuthConfigItems: any;
-
-  set client(contentStackClient) {
-    this._client = contentStackClient;
-  }
 
   set host(contentStackHost) {
     this._host = contentStackHost;
