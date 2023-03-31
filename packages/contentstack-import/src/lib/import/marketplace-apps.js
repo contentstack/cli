@@ -9,7 +9,16 @@ const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const contentstack = require('@contentstack/management');
-const { cliux, HttpClient, NodeCrypto, managementSDKClient, HttpClientDecorator, OauthDecorator } = require('@contentstack/cli-utilities');
+const {
+  cliux,
+  HttpClient,
+  NodeCrypto,
+  managementSDKClient,
+  configHandler,
+  isAuthenticated,
+  HttpClientDecorator,
+  OauthDecorator,
+} = require('@contentstack/cli-utilities');
 
 const { formatError } = require('../util');
 let config = require('../../config/default');
@@ -44,7 +53,7 @@ module.exports = class ImportMarketplaceApps {
 
     if (_.isEmpty(this.marketplaceApps)) {
       return Promise.resolve();
-    } else if (!this.config.isAuthenticated) {
+    } else if (!isAuthenticated()) {
       cliux.print(
         '\nWARNING!!! To import Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in\n',
         { color: 'yellow' },
@@ -387,9 +396,9 @@ module.exports = class ImportMarketplaceApps {
         .catch((error) => error);
 
       if (installation.installation_uid) {
-        let appName = (this.appNameMapping[app.manifest.name]) ? 
-          this.appNameMapping[app.manifest.name] : 
-        app.manifest.name ;
+        let appName = this.appNameMapping[app.manifest.name]
+          ? this.appNameMapping[app.manifest.name]
+          : app.manifest.name;
         log(this.config, `${appName} app installed successfully.!`, 'success');
         await this.makeRedirectUrlCall(installation, app.manifest.name);
         this.installationUidMapping[app.uid] = installation.installation_uid;
