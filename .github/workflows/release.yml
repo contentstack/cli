@@ -9,9 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
       - uses: actions/setup-node@v1
         with:
           node-version: '16.x'
+          cache: 'pnpm'
       - name: Reading Configuration
         id: release_config
         uses: rgarcia-phi/json-to-variables@v1.1.0
@@ -219,3 +223,13 @@ jobs:
       - uses: EndBug/add-and-commit@v9
         with:
           message: 'Released version'
+      - name: Create Release
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.publish-core.outputs.version }}
+          release_name: Release ${{ steps.publish-core.outputs.version }}
+          draft: false # Default value, but nice to set explicitly
+          prerelease: false # Default value, but nice to set explicitly
