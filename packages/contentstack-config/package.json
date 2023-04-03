@@ -72,9 +72,10 @@
     ],
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-config/<%- commandPath %>"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint"
+  "csdxConfig": {
+    "shortCommandName": {
+      "cm:stack-clone": "CNFG",
+      "cm:stacks:clone": "CNFG"
     }
   },
   "repository": "contentstack/cli"
