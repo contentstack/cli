@@ -11,7 +11,7 @@ const chalk = require('chalk');
 const util = require('./lib/util/index');
 const login = require('./lib/util/login');
 const { addlogs } = require('./lib/util/log');
-const { managementSDKClient } = require('@contentstack/cli-utilities');
+const { managementSDKClient, isAuthenticated } = require('@contentstack/cli-utilities');
 
 exports.initial = (configData) => {
   return new Promise(async (resolve, reject) => {
@@ -48,7 +48,7 @@ exports.initial = (configData) => {
           })
           .catch((error) => {
             addlogs(config, `Failed to import contents ${util.formatError(error)}`, 'error');
-            reject(e);
+            reject(error);
             process.exit(1);
           });
       } else {
@@ -58,7 +58,7 @@ exports.initial = (configData) => {
     };
 
     if (config) {
-      if ((config.email && config.password) || config.auth_token) {
+      if ((config.email && config.password) || isAuthenticated()) {
         login(config).then(backupAndImportData(APIClient, stackAPIClient)).catch(reject);
       } else if (config.management_token) {
         await backupAndImportData(APIClient, stackAPIClient);
@@ -181,7 +181,10 @@ const createBackup = (backupDirPath, config) => {
 const validateIfBranchExist = async (stackAPIClient, config, branch) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const data = await stackAPIClient.branch(branch).fetch();
+      const data = await stackAPIClient
+        .branch(branch)
+        .fetch()
+        .catch((_err) => {});
       if (data && typeof data === 'object') {
         if (data.error_message) {
           addlogs(config, chalk.red(data.error_message), 'error');
