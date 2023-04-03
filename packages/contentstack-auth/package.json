@@ -74,9 +74,14 @@
     "bin": "csdx",
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-auth/<%- commandPath %>"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint"
+  "csdxConfig": {
+    "shortCommandName": {
+      "auth:login": "LOGIN",
+      "auth:logout": "LOGOUT",
+      "auth:whoami": "WHOMAI",
+      "auth:tokens": "LSTTKN",
+      "auth:tokens:add": "ADDTKN",
+      "auth:tokens:remove": "RMVTKN"
     }
   },
   "repository": "contentstack/cli"

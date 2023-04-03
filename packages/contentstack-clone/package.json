@@ -63,6 +63,10 @@
   "csdxConfig": {
     "expiredCommands": {
       "cm:stack-clone": "csdx cm:stacks:clone"
+    },
+    "shortCommandName": {
+      "cm:stack-clone": "CLN",
+      "cm:stacks:clone": "CLN"
     }
   }
 }

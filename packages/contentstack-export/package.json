@@ -73,6 +73,10 @@
   "csdxConfig": {
     "expiredCommands": {
       "cm:export": "csdx cm:stacks:export"
+    },
+    "shortCommandName": {
+      "cm:stacks:export": "EXPRT",
+      "cm:export": "EXPRT"
     }
   },
   "main": "./src/commands/cm/stacks/export.js",
