@@ -10,6 +10,7 @@ const { merge } = require('lodash');
 const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
 const config = require('../../config/default');
+const { managementSDKClient, isAuthenticated } = require('@contentstack/cli-utilities');
 module.exports = class ExportStack {
   stackConfig = config.modules.stack;
 
@@ -26,16 +27,18 @@ module.exports = class ExportStack {
 
   async start() {
     const self = this;
-    if (self.config.auth_token) {
-      const stack = await self.APIClient.stack({ api_key: self.config.source_stack, authtoken: self.config.auth_token })
+    if (isAuthenticated()) {
+      const tempAPIClient = await managementSDKClient({ host: config.host });
+      const tempStackData = await tempAPIClient
+        .stack({ api_key: self.config.source_stack })
         .fetch()
         .catch((error) => {
           console.log(error);
         });
 
-      if (stack && stack.org_uid) {
-        self.config.org_uid = stack.org_uid;
-        self.config.sourceStackName = stack.name;
+      if (tempStackData && tempStackData.org_uid) {
+        self.config.org_uid = tempStackData.org_uid;
+        self.config.sourceStackName = tempStackData.name;
       }
     }
 
