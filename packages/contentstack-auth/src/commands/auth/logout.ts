@@ -1,5 +1,5 @@
-import { Command, flags } from '@contentstack/cli-command';
-import { logger, cliux, configHandler, printFlagDeprecation } from '@contentstack/cli-utilities';
+import { Command } from '@contentstack/cli-command';
+import { logger, cliux, configHandler, printFlagDeprecation, flags, managementSDKClient } from '@contentstack/cli-utilities';
 
 import { authHandler } from '../../utils';
 
@@ -29,7 +29,8 @@ export default class LogoutCommand extends Command {
 
   async run(): Promise<any> {
     const { flags: logoutFlags } = await this.parse(LogoutCommand);
-    authHandler.client = this.managementAPIClient;
+    const managementAPIClient = await managementSDKClient({host: this.cmaHost})
+    authHandler.client = managementAPIClient;
     let confirm = logoutFlags.force === true || logoutFlags.yes === true;
     if (!confirm) {
       confirm = await cliux.inquire({

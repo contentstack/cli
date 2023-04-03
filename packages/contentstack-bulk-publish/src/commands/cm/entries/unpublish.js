@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable node/no-extraneous-require */
-const { Command, flags } = require('@contentstack/cli-command');
-const { cliux } = require('@contentstack/cli-utilities');
+const { Command } = require('@contentstack/cli-command');
+const { cliux, flags } = require('@contentstack/cli-utilities');
 const { start } = require('../../../producer/unpublish');
 const store = require('../../../util/store.js');
 const configKey = 'Unpublish';
@@ -51,11 +51,11 @@ class UnpublishCommand extends Command {
         }
         config = {
           alias: updatedFlags.alias,
-          host: this.region.cma,
-          cda: this.region.cda,
+          host: this.cmaHost,
+          cda: this.cdaHost,
           branch: unpublishFlags.branch,
         };
-        stack = getStack(config);
+        stack = await getStack(config);
       }
       if (!updatedFlags.deliveryToken && updatedFlags.deliveryToken.length === 0) {
         this.error('Delivery Token is required for executing this command', { exit: 2 });
