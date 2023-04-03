@@ -52,17 +52,21 @@
     "version": "oclif readme && git add README.md",
     "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   },
-  "csdxConfig": {
-    "expiredCommands": {
-      "cm:import": "csdx cm:stacks:import"
-    }
-  },
   "main": "./src/commands/cm/stacks/import.js",
   "license": "MIT",
   "oclif": {
     "commands": "./src/commands",
     "bin": "csdx",
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-import/<%- commandPath %>"
+  },
+  "csdxConfig": {
+    "expiredCommands": {
+      "cm:import": "csdx cm:stacks:import"
+    },
+    "shortCommandName": {
+      "cm:stacks:import": "IMPRT",
+      "cm:import": "IMPRT"
+    }
   },
   "repository": "https://github.com/contentstack/cli"
 }
