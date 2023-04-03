@@ -28,8 +28,13 @@ class CLIInterface {
   }
 
   print(message: string, opts?: PrintOptions): void {
-    if (opts && opts.color) {
-      cliux.log(chalk[opts.color](messageHandler.parse(message)));
+    if (opts) {
+      let chalkFn: Chalk = chalk;
+
+      if (opts.color) chalkFn = chalkFn[opts.color] as Chalk;
+      if (opts.bold) chalkFn = chalkFn.bold as Chalk;
+
+      cliux.log(chalkFn(messageHandler.parse(message)));
       return;
     }
 

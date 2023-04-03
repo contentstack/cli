@@ -66,3 +66,5 @@ export default async (config): Promise<ContentstackClient> => {
     throw new Error(error);
   }
 };
+
+export { ContentstackConfig, ContentstackClient };

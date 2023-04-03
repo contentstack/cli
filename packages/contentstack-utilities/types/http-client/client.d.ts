@@ -1,7 +1,6 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { IHttpClient } from './client-interface';
 import { HttpResponse } from './http-response';
-export declare class HttpClient implements IHttpClient {
+export declare class HttpClient {
     /**
      * The request configuration.
      */
@@ -225,6 +224,8 @@ export declare class HttpClient implements IHttpClient {
      * Returns the request payload depending on the selected request payload format.
      */
     prepareRequestPayload(): any;
+}
+export interface HttpRequestConfig extends AxiosRequestConfig {
 }
 type BodyFormat = 'json' | 'formParams';
 type HttpMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS';
