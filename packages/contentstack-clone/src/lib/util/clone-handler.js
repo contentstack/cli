@@ -160,7 +160,8 @@ class CloneHandler {
           .branch()
           .query()
           .find()
-          .then(({ items }) => items);
+          .then(({ items }) => items)
+          .catch((_err) => {});
 
         const condition = result && Array.isArray(result) && result.length > 0;
 
@@ -328,7 +329,12 @@ class CloneHandler {
   async setBranch() {
     if (!config.sourceStackBranch) {
       try {
-        const branches = await client.stack({ api_key: config.source_stack }).branch().query().find();
+        const branches = await client
+          .stack({ api_key: config.source_stack })
+          .branch()
+          .query()
+          .find()
+          .catch((_err) => {});
 
         if (branches && branches.items && branches.items.length) {
           config.sourceStackBranch = 'main';

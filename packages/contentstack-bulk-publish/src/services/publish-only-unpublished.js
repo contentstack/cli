@@ -11,8 +11,8 @@ const configKey = 'publish_unpublished_env';
 
 async function publishOnlyUnpublishedService(UnpublishedEntriesCommand) {
   let config;
-  const _flags = await this.parse(UnpublishedEntriesCommand)
-  const unpublishedEntriesFlags = flagsAdapter(_flags);
+  const _flags = await this.parse(UnpublishedEntriesCommand);
+  const unpublishedEntriesFlags = flagsAdapter(_flags.flags);
   let updatedFlags;
   try {
     updatedFlags = unpublishedEntriesFlags.config
@@ -39,10 +39,11 @@ async function publishOnlyUnpublishedService(UnpublishedEntriesCommand) {
       }
       config = {
         alias: updatedFlags.alias,
-        host: this.region.cma,
+        host: this.cmaHost,
+        cda: this.cdaHost,
         branch: unpublishedEntriesFlags.branch,
       };
-      stack = getStack(config);
+      stack = await getStack(config);
     }
     if (await confirmFlags(updatedFlags)) {
       try {

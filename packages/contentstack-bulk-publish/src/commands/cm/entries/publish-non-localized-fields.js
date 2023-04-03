@@ -1,11 +1,11 @@
-const { Command, flags } = require('@contentstack/cli-command');
+const { Command } = require('@contentstack/cli-command');
 const { start } = require('../../../producer/nonlocalized-field-changes');
 const store = require('../../../util/store.js');
 const { cliux } = require('@contentstack/cli-utilities');
 const configKey = 'nonlocalized_field_changes';
 const { prettyPrint, formatError } = require('../../../util');
 const { getStack } = require('../../../util/client.js');
-const { printFlagDeprecation } = require('@contentstack/cli-utilities');
+const { printFlagDeprecation, flags } = require('@contentstack/cli-utilities');
 let config;
 
 class NonlocalizedFieldChangesCommand extends Command {
@@ -49,10 +49,11 @@ class NonlocalizedFieldChangesCommand extends Command {
         }
         config = {
           alias: updatedFlags.alias,
-          host: this.region.cma,
+          host: this.cmaHost,
+          cda: this.cdaHost,
           branch: nonlocalizedFieldChangesFlags.branch,
         };
-        stack = getStack(config);
+        stack = await getStack(config);
       }
       if (await this.confirmFlags(updatedFlags)) {
         try {
@@ -105,7 +106,6 @@ class NonlocalizedFieldChangesCommand extends Command {
       return true;
     }
     return cliux.confirm('Do you want to continue with this configuration ? [yes or no]');
-
   }
 }
 
@@ -203,6 +203,7 @@ NonlocalizedFieldChangesCommand.examples = [
 
 NonlocalizedFieldChangesCommand.aliases = ['cm:bulk-publish:nonlocalized-field-changes'];
 
-NonlocalizedFieldChangesCommand.usage = 'cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]'
+NonlocalizedFieldChangesCommand.usage =
+  'cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]';
 
 module.exports = NonlocalizedFieldChangesCommand;

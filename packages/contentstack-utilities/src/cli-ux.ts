@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { default as inquirer, QuestionCollection } from 'inquirer';
-import { ux as cliux, Table } from '@oclif/core/lib/cli-ux';
+import { Table } from '@oclif/core/lib/cli-ux';
+import { ux as cliux, Args, Flags, Command } from '@oclif/core';
 
 import messageHandler from './message-handler';
 import { PrintOptions, InquirePayload, CliUXPromptOptions } from './interfaces';
@@ -76,3 +77,5 @@ class CLIInterface {
 }
 
 export default new CLIInterface();
+
+export {Flags, Args, Command};
