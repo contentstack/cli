@@ -37,7 +37,7 @@ cli = {
 };
 
 const mockParsePath = jest.fn().mockReturnValue({
-  username: 'contentstack-solutions',
+  username: 'fakeUserName55',
   repo: repo,
 });
 
