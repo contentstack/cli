@@ -38,11 +38,15 @@ class PublishModifiedCommand extends Command {
         try {
           this.getToken(updatedFlags.alias);
         } catch (error) {
-          this.error(`The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`, { exit: 2 })
+          this.error(
+            `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
+            { exit: 2 },
+          );
         }
         config = {
           alias: updatedFlags.alias,
-          host: this.region.cma,
+          host: this.cmaHost,
+          cda: this.cdaHost,
           branch: entryEditsFlags.branch,
         };
         stack = await getStack(config);
@@ -143,7 +147,7 @@ PublishModifiedCommand.flags = {
     parse: printFlagDeprecation(['-s', '--sourceEnv'], ['--source-env']),
   }),
   'source-env': flags.string({
-    description: 'Environment from which edited entries will be published'
+    description: 'Environment from which edited entries will be published',
   }),
   contentTypes: flags.string({
     char: 't',
@@ -190,8 +194,9 @@ PublishModifiedCommand.examples = [
   'csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]',
 ];
 
-PublishModifiedCommand.aliases = ['cm:bulk-publish:entry-edits']
+PublishModifiedCommand.aliases = ['cm:bulk-publish:entry-edits'];
 
-PublishModifiedCommand.usage = 'cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]'
+PublishModifiedCommand.usage =
+  'cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]';
 
 module.exports = PublishModifiedCommand;
