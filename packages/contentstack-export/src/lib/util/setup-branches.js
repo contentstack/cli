@@ -1,6 +1,7 @@
 const mkdirp = require('mkdirp');
 const path = require('path');
 const helper = require('./helper');
+const {isAuthenticated, configHandler} = require('@contentstack/cli-utilities')
 
 const setupBranches = async (config, branch, stackAPIClient) => {
   if (typeof config !== 'object') {
@@ -9,15 +10,18 @@ const setupBranches = async (config, branch, stackAPIClient) => {
   let branches = [];
   const headers = { api_key: config.source_stack };
 
-  if (config.auth_token) {
-    headers['authtoken'] = config.auth_token;
+  if (isAuthenticated()) {
+    headers['authtoken'] = configHandler.get('authtoken');
   } else if (config.management_token) {
     headers['authorization'] = config.management_token;
   }
 
   if (typeof branch === 'string') {
     // check branch exists
-    const result = await stackAPIClient.branch(branch).fetch();
+    const result = await stackAPIClient
+      .branch(branch)
+      .fetch()
+      .catch((_err) => {});
     if (result && typeof result === 'object') {
       branches.push(result);
     } else {
@@ -25,7 +29,11 @@ const setupBranches = async (config, branch, stackAPIClient) => {
     }
   } else {
     try {
-      const result = await stackAPIClient.branch().query().find();
+      const result = await stackAPIClient
+        .branch()
+        .query()
+        .find()
+        .catch((_err) => {});
       if (result && result.items && Array.isArray(result.items) && result.items.length > 0) {
         branches = result.items;
       } else {
