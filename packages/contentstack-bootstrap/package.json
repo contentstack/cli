@@ -68,5 +68,10 @@
     ],
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-bootstrap/<%- commandPath %>"
   },
+  "csdxConfig": {
+    "shortCommandName": {
+      "cm:bootstrap": "BTSTRP"
+    }
+  },
   "repository": "contentstack/cli"
 }
