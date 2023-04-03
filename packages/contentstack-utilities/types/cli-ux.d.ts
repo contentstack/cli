@@ -9,12 +9,13 @@ declare class CLIInterface {
     constructor();
     get uxTable(): typeof Table.table;
     init(context: any): void;
+    registerSearchPlugin(): void;
     print(message: string, opts?: PrintOptions): void;
     success(message: string): void;
     error(message: string, ...params: any): void;
     loader(message?: string): void;
     table(data: Record<string, unknown>[], columns: Table.table.Columns<Record<string, unknown>>, options?: Table.table.Options): void;
-    inquire<T>(inquirePayload: InquirePayload): Promise<T>;
+    inquire<T>(inquirePayload: InquirePayload | Array<InquirePayload>): Promise<T>;
     prompt(name: string, options?: CliUXPromptOptions): Promise<any>;
     confirm(message?: string): Promise<boolean>;
     progress(options?: any): any;

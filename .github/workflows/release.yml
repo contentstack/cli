@@ -231,5 +231,5 @@ jobs:
         with:
           tag_name: v${{ steps.publish-core.outputs.version }}
           release_name: Release ${{ steps.publish-core.outputs.version }}
-          draft: false
-          prerelease: false
+          draft: false # Default value, but nice to set explicitly
+          prerelease: false # Default value, but nice to set explicitly

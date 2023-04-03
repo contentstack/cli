@@ -17,6 +17,5 @@ declare abstract class ContentstackCommand extends Command {
   get cmaAPIUrl(): string;
   get authToken(): string;
   getToken(alias: any): any;
-  isAuthenticated(): any;
 }
 export { ContentstackCommand as Command };
