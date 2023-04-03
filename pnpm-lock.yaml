@@ -591,7 +591,7 @@ importers:
     specifiers:
       '@contentstack/cli-command': ^1.2.1
       '@contentstack/cli-utilities': ^1.2.1
-      '@contentstack/json-rte-serializer': ^2.0.1
+      '@contentstack/json-rte-serializer': ^2.0.2
       '@contentstack/management': ^1.6.1
       '@oclif/test': ^2.2.10
       chai: ^4.3.4
@@ -614,7 +614,7 @@ importers:
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/json-rte-serializer': 2.0.1
+      '@contentstack/json-rte-serializer': 2.0.2
       '@contentstack/management': 1.6.1
       chalk: 4.1.2
       collapse-whitespace: 1.1.7
@@ -1190,8 +1190,8 @@ packages:
     engines: {node: '>=0.1.90'}
     dev: false
 
-  /@contentstack/json-rte-serializer/2.0.1:
-    resolution: {integrity: sha512-n7Q30dzpwiJEwetCnfedoAPUQSmkYl6uirmvB6jjiSHdgHNNDZ31Bv3pw1awIsgqaCKe/toPjw04H9+J/BgXwQ==}
+  /@contentstack/json-rte-serializer/2.0.2:
+    resolution: {integrity: sha512-mGRuXXYY4Ao0MTWUV/1aNwk5DCcNtbJA2uOA1v7t/IzSqSF4jKuz+RFZLYtSPz8vqBtPT2AgKwfs5mVB4cnYRA==}
     dependencies:
       array-flat-polyfill: 1.0.1
       lodash: 4.17.21
@@ -2946,7 +2946,7 @@ packages:
   /axios/0.27.2_debug@4.3.4:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
