@@ -66,8 +66,8 @@
       "cm:migration": "csdx cm:stacks:migration"
     },
     "shortCommandName": {
-      "cm:migration": "MGRTN",
-      "cm:stacks:migration": "MGRTN"
+      "cm:stacks:migration": "MGRTN",
+      "cm:migration": "MGRTN"
     }
   }
 }
