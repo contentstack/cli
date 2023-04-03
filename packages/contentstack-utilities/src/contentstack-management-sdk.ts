@@ -1,5 +1,6 @@
 import { Agent } from 'https';
 import { client, ContentstackClient, ContentstackConfig } from '@contentstack/management';
+import { isAuthenticated } from './helpers';
 
 import configStore from './config-handler';
 
@@ -50,8 +51,7 @@ export default async (config): Promise<ContentstackClient> => {
     }
 
     if (!config.management_token) {
-      const authtoken = configStore.get('authtoken');
-      if (authtoken) {
+      if (isAuthenticated()) {
         option.authtoken = configStore.get('authtoken');
         option.authorization = '';
       } else {
