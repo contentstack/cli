@@ -1,8 +1,7 @@
 import first from 'lodash/first';
 import split from 'lodash/split';
 import replace from 'lodash/replace';
-import { Command } from '@oclif/core/lib/interfaces';
-import { Interfaces, toStandardizedId } from '@oclif/core';
+import { Command,Interfaces, toStandardizedId } from '@oclif/core';
 
 import { loadConfig } from './load-config';
 
