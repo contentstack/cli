@@ -1,14 +1,11 @@
-import { Command, Flags } from '@oclif/core';
-import * as ContentstackManagementSDK from '@contentstack/management';
 import * as ContentstackDeliverySDK from 'contentstack';
-import * as url from 'url';
-import { configHandler, CLIError } from '@contentstack/cli-utilities';
+import { URL } from 'url';
+import { configHandler, CLIError, Command } from '@contentstack/cli-utilities';
 import { Region } from './interfaces';
 
 const defaultRateLimit = 5;
 
 abstract class ContentstackCommand extends Command {
-  private _managementAPIClient: object;
   private _email: string;
   private _region: Region;
   private _rateLimit: string;
@@ -18,16 +15,6 @@ abstract class ContentstackCommand extends Command {
   get context() {
     // @ts-ignore
     return this.config.context;
-  }
-
-  get managementAPIClient() {
-    if (this._managementAPIClient) return this._managementAPIClient;
-    this._managementAPIClient = ContentstackManagementSDK.client({ host: this.cmaHost });
-    return this._managementAPIClient;
-  }
-
-  set managementAPIClient(params) {
-    this._managementAPIClient = ContentstackManagementSDK.client(params);
   }
 
   get email() {
@@ -58,7 +45,7 @@ abstract class ContentstackCommand extends Command {
   get cmaHost() {
     let cma = this.region.cma;
     if (cma.startsWith('http')) {
-      const u = url.parse(cma);
+      const u = new URL(cma);
       if (u.host) return u.host;
     }
     return cma;
@@ -67,7 +54,7 @@ abstract class ContentstackCommand extends Command {
   get cdaHost() {
     let cda = this.region.cda;
     if (cda.startsWith('http')) {
-      const u = url.parse(cda);
+      const u = new URL(cda);
       if (u.host) return u.host;
     }
     return cda;
@@ -96,20 +83,10 @@ abstract class ContentstackCommand extends Command {
     }
     throw new CLIError('No token found');
   }
-
-  isAuthenticated() {
-    const authtoken = configHandler.get('authtoken');
-    if (authtoken) {
-      return true;
-    } else {
-      return false;
-    }
-  }
 }
 
 module.exports = {
   Command: ContentstackCommand,
-  flags: Flags,
 };
 
-export { ContentstackCommand as Command, Flags as flags };
+export { ContentstackCommand as Command };
