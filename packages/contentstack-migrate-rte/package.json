@@ -64,8 +64,8 @@
       "cm:migrate-rte": "csdx cm:entries:migrate-html-rte"
     },
     "shortCommandName": {
-      "cm:migrate-rte": "MGRTRTE",
-      "cm:entries:migrate-html-rte": "MGRTRTE"
+      "cm:entries:migrate-html-rte": "MGRTRTE",
+      "cm:migrate-rte": "MGRTRTE"
     }
   }
 }
