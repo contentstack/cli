@@ -1,10 +1,18 @@
-import { Agent } from 'https';
 import { client, ContentstackClient, ContentstackConfig } from '@contentstack/management';
 import authHandler from './auth-handler';
-import configStore from './config-handler';
+import { Agent } from 'node:https';
+import { default as configStore } from './config-handler';
 
-export default async (config): Promise<ContentstackClient> => {
-  try {
+class ManagementSDKInitiator {
+  private analyticsInfo: string;
+
+  constructor() {}
+
+  init(context) {
+    this.analyticsInfo = context?.analyticsInfo;
+  }
+
+  async createAPIClient(config): Promise<ContentstackClient> {
     const option: ContentstackConfig = {
       host: config.host,
       maxContentLength: 100000000,
@@ -68,16 +76,23 @@ export default async (config): Promise<ContentstackClient> => {
       option.endpoint = config.endpoint;
     }
     if (typeof config.branchName === 'string') {
-      option.headers = { branch: config.branchName };
+      if (!option.headers) option.headers = {};
+      option.headers.branch = config.branchName;
+    }
+
+    if (this.analyticsInfo) {
+      if (!option.headers) option.headers = {};
+      option.headers['X-CS-CLI'] = this.analyticsInfo;
     }
 
     if (!config.management_token) {
       const authorisationType = configStore.get('authorisationType');
       if (authorisationType === 'BASIC') {
-        option['authtoken'] = configStore.get('authtoken');
+        option.authtoken = configStore.get('authtoken');
+        option.authorization = '';
       } else if (authorisationType === 'OAUTH') {
         await authHandler.compareOAuthExpiry();
-        option['authorization'] = `Bearer ${configStore.get('oauthAccessToken')}`;
+        option.authorization = `Bearer ${configStore.get('oauthAccessToken')}`;
       } else {
         option.authtoken = '';
         option.authorization = '';
@@ -85,10 +100,9 @@ export default async (config): Promise<ContentstackClient> => {
     }
 
     return client(option);
-  } catch (error) {
-    console.error(error);
-    throw new Error(error);
   }
-};
+}
 
+export const managementSDKInitiator = new ManagementSDKInitiator();
+export default managementSDKInitiator.createAPIClient.bind(managementSDKInitiator);
 export { ContentstackConfig, ContentstackClient };
