@@ -1,7 +1,3 @@
-const mockData = {
-  findOneData: {},
-  findData: { items: [] },
-  countData: { assets: 10 },
-};
+const mockData = {};
 
 export { mockData };
