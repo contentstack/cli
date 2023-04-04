@@ -65,8 +65,8 @@
       "cm:stack-clone": "csdx cm:stacks:clone"
     },
     "shortCommandName": {
-      "cm:stack-clone": "CLN",
-      "cm:stacks:clone": "CLN"
+      "cm:stacks:clone": "CLN",
+      "cm:stack-clone": "CLN"
     }
   }
 }

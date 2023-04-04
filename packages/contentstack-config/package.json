@@ -74,8 +74,8 @@
   },
   "csdxConfig": {
     "shortCommandName": {
-      "cm:stack-clone": "CNFG",
-      "cm:stacks:clone": "CNFG"
+      "config:get:region": "CNF-GT-R",
+      "config:set:region": "CNF-ST-R"
     }
   },
   "repository": "contentstack/cli"
