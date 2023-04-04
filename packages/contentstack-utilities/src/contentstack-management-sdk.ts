@@ -80,3 +80,4 @@ class ManagementSDKInitiator {
 
 export const managementSDKInitiator = new ManagementSDKInitiator();
 export default managementSDKInitiator.createAPIClient.bind(managementSDKInitiator);
+export { ContentstackConfig, ContentstackClient };
