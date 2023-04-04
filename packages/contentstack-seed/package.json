@@ -61,7 +61,7 @@
     },
     "shortCommandName": {
       "cm:stacks:seed": "SEED",
-      "cm:seed": "SEED"
+      "cm:seed": "O-SEED"
     }
   },
   "repository": "contentstack/cli",

@@ -65,7 +65,7 @@
     },
     "shortCommandName": {
       "cm:entries:migrate-html-rte": "MGRTRTE",
-      "cm:migrate-rte": "MGRTRTE"
+      "cm:migrate-rte": "O-MGRTRTE"
     }
   }
 }
