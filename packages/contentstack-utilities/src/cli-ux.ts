@@ -72,7 +72,6 @@ class CLIInterface {
     } else {
       inquirePayload.message = messageHandler.parse(inquirePayload.message);
       const result = await inquirer.prompt(inquirePayload as QuestionCollection<Answers>);
-
       return result[inquirePayload.name] as T;
     }
   }
@@ -92,4 +91,4 @@ class CLIInterface {
 
 export default new CLIInterface();
 
-export {Flags, Args, Command};
+export { Flags, Args, Command };
