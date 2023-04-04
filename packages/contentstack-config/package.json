@@ -74,8 +74,8 @@
   },
   "csdxConfig": {
     "shortCommandName": {
-      "config:get:region": "CNF-GT-R",
-      "config:set:region": "CNF-ST-R"
+      "config:get:region": "RGT",
+      "config:set:region": "RST"
     }
   },
   "repository": "contentstack/cli"

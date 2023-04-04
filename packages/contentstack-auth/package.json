@@ -76,12 +76,12 @@
   },
   "csdxConfig": {
     "shortCommandName": {
-      "auth:login": "LOGIN",
-      "auth:logout": "LOGOUT",
-      "auth:whoami": "WHOMAI",
-      "auth:tokens": "LSTTKN",
-      "auth:tokens:add": "ADDTKN",
-      "auth:tokens:remove": "RMVTKN"
+      "auth:login": "LIN",
+      "auth:logout": "LOT",
+      "auth:whoami": "WHO",
+      "auth:tokens": "LSTKN",
+      "auth:tokens:add": "ADTKN",
+      "auth:tokens:remove": "RMTKN"
     }
   },
   "repository": "contentstack/cli"

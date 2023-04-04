@@ -66,7 +66,7 @@
     },
     "shortCommandName": {
       "cm:stacks:clone": "CLN",
-      "cm:stack-clone": "CLN"
+      "cm:stack-clone": "O-CLN"
     }
   }
 }
