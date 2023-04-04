@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 const { Command } = require('@contentstack/cli-command');
-const { printFlagDeprecation, configHandler, flags } = require('@contentstack/cli-utilities');
+const { printFlagDeprecation, configHandler, flags, isAuthenticated } = require('@contentstack/cli-utilities');
 const {
   configWithMToken,
   parameterWithMToken,
@@ -27,7 +27,7 @@ class ExportCommand extends Command {
     let cdaHost = host.cda.split('//');
     host.cma = cmaHost[1];
     host.cda = cdaHost[1];
-    exportCommandFlags['isAuthenticated'] = this.isAuthenticated();
+    exportCommandFlags['isAuthenticated'] = isAuthenticated();
 
     config.forceStopMarketplaceAppsPrompt = exportCommandFlags.yes;
 

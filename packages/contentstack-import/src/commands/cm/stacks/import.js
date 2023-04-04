@@ -26,7 +26,7 @@ class ImportCommand extends Command {
     delete importCommandFlags.branch;
     delete importCommandFlags['import-webhook-status'];
     let host = self.cmaHost;
-    importCommandFlags['isAuthenticated'] = this.isAuthenticated();
+    importCommandFlags['isAuthenticated'] = isAuthenticated();
 
     return new Promise((resolve, reject) => {
       if (data) {
