@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-seed",
   "description": "create a Stack from existing content types, entries, assets, etc.",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
@@ -58,6 +58,10 @@
   "csdxConfig": {
     "expiredCommands": {
       "cm:seed": "csdx cm:stacks:seed"
+    },
+    "shortCommandName": {
+      "cm:stacks:seed": "SEED",
+      "cm:seed": "O-SEED"
     }
   },
   "repository": "contentstack/cli",
