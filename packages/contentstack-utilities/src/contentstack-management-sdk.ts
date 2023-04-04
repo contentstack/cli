@@ -8,7 +8,6 @@ class ManagementSDKInitiator {
   constructor() {}
 
   init(context) {
-    console.log('init sdk', this.analyticsInfo);
     this.analyticsInfo = context?.analyticsInfo;
   }
 
@@ -59,7 +58,6 @@ class ManagementSDKInitiator {
       option.headers.branch = config.branchName;
     }
 
-    console.log('analytics info', this.analyticsInfo);
     if (this.analyticsInfo) {
       if (!option.headers) option.headers = {};
       option.headers['X-CS-CLI'] = this.analyticsInfo;
@@ -76,7 +74,6 @@ class ManagementSDKInitiator {
       }
     }
 
-    console.log('header', option.headers);
     return client(option);
   }
 }
