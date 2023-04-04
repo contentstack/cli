@@ -36,6 +36,7 @@
     "@contentstack/cli-utilities": "^1.2.1",
     "@contentstack/cli-cm-branches": "^1.0.0",
     "@contentstack/management": "^1.6.1",
+    "@oclif/core": "^2.3.0",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-not-found": "^2.3.9",
     "@oclif/plugin-plugins": "^2.1.7",
