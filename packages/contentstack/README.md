@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.4.1 darwin-arm64 node-v16.19.1
+@contentstack/cli/1.4.1 darwin-arm64 node-v18.11.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -38,6 +38,12 @@ USAGE
 * [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value)
 * [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
 * [`csdx cm:bootstrap`](#csdx-cmbootstrap)
+* [`csdx cm:branches [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranches---base-branch-value---stack-api-key-value)
+* [`csdx cm:branches:config [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesconfig---base-branch-value---stack-api-key-value)
+* [`csdx cm:branches:create [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchescreate---base-branch-value---stack-api-key-value)
+* [`csdx cm:branches:delete [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesdelete---base-branch-value---stack-api-key-value)
+* [`csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesdiff---base-branch-value---stack-api-key-value)
+* [`csdx cm:branches:merge [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesmerge---base-branch-value---stack-api-key-value)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
 * [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value-1)
@@ -437,6 +443,108 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/main/packages/contentstack-bootstrap/src/commands/cm/bootstrap.ts)_
+
+## `csdx cm:branches [--base-branch <value>] [--stack-api-key <value>]`
+
+List the branches to select
+
+```
+USAGE
+  $ csdx cm:branches [--base-branch <value>] [--stack-api-key <value>]
+
+DESCRIPTION
+  List the branches to select
+
+EXAMPLES
+  $ csdx cm:branches --base-branch main --stack-api-key bltxxxxxxxx
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/index.ts)_
+
+## `csdx cm:branches:config [--base-branch <value>] [--stack-api-key <value>]`
+
+Set the branch
+
+```
+USAGE
+  $ csdx cm:branches:config [--base-branch <value>] [--stack-api-key <value>]
+
+DESCRIPTION
+  Set the branch
+
+EXAMPLES
+  $ csdx cm:branches:config --base-branch main --stack-api-key bltxxxxxxxx
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/config.ts)_
+
+## `csdx cm:branches:create [--base-branch <value>] [--stack-api-key <value>]`
+
+Create a new branch
+
+```
+USAGE
+  $ csdx cm:branches:create [--base-branch <value>] [--stack-api-key <value>]
+
+DESCRIPTION
+  Create a new branch
+
+EXAMPLES
+  $ csdx cm:branches:create --base-branch main --stack-api-key bltxxxxxxxx
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/create.ts)_
+
+## `csdx cm:branches:delete [--base-branch <value>] [--stack-api-key <value>]`
+
+Delete a branch
+
+```
+USAGE
+  $ csdx cm:branches:delete [--base-branch <value>] [--stack-api-key <value>]
+
+DESCRIPTION
+  Delete a branch
+
+EXAMPLES
+  $ csdx cm:branches:delete --base-branch main --stack-api-key bltxxxxxxxx
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/delete.ts)_
+
+## `csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]`
+
+Check the difference between the branches
+
+```
+USAGE
+  $ csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]
+
+DESCRIPTION
+  Check the difference between the branches
+
+EXAMPLES
+  $ csdx cm:branches:diff --base-branch main --stack-api-key bltxxxxxxxx
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/diff.ts)_
+
+## `csdx cm:branches:merge [--base-branch <value>] [--stack-api-key <value>]`
+
+Merge a branch
+
+```
+USAGE
+  $ csdx cm:branches:merge [--base-branch <value>] [--stack-api-key <value>]
+
+DESCRIPTION
+  Merge a branch
+
+EXAMPLES
+  $ csdx cm:branches:merge --base-branch main --stack-api-key bltxxxxxxxx
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/merge.ts)_
 
 ## `csdx cm:bulk-publish`
 
