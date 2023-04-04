@@ -1,22 +1,22 @@
-const { join } = require("path");
-const filter = require("lodash/filter");
-const forEach = require("lodash/forEach");
-const isEmpty = require("lodash/isEmpty");
-const isArray = require("lodash/isArray");
-const includes = require("lodash/includes");
-const { existsSync, readdirSync } = require("fs");
+const { join } = require('path');
+const filter = require('lodash/filter');
+const forEach = require('lodash/forEach');
+const isEmpty = require('lodash/isEmpty');
+const isArray = require('lodash/isArray');
+const includes = require('lodash/includes');
+const { existsSync, readdirSync } = require('fs');
 
-const { initEnvData } = require('./integration/utils/helper')
-const { INTEGRATION_EXECUTION_ORDER, IS_TS } = require("./config.json");
+const { initEnvData } = require('./integration/utils/helper');
+const { INTEGRATION_EXECUTION_ORDER, IS_TS } = require('./config.json');
 
 // NOTE init env variables
-require('dotenv-expand').expand(require('dotenv').config())
+require('dotenv-expand').expand(require('dotenv').config());
 // require('dotenv').config({ path: resolve(process.cwd(), '.env.test') })
 
-initEnvData() // NOTE Prepare env data
+initEnvData(); // NOTE Prepare env data
 
 const args = process.argv.slice(2);
-const testFileExtension = IS_TS ? '.ts' : '.js'
+const testFileExtension = IS_TS ? '.ts' : '.js';
 
 /**
  * @method getFileName
@@ -24,15 +24,15 @@ const testFileExtension = IS_TS ? '.ts' : '.js'
  * @returns {string}
  */
 const getFileName = (file) => {
-  if (includes(file, ".test") && includes(file, testFileExtension)) return file;
-  else if (includes(file, ".test")) return `${file}${testFileExtension}`;
-  else if (!includes(file, ".test")) return `${file}.test${testFileExtension}`;
+  if (includes(file, '.test') && includes(file, testFileExtension)) return file;
+  else if (includes(file, '.test')) return `${file}${testFileExtension}`;
+  else if (!includes(file, '.test')) return `${file}.test${testFileExtension}`;
   else return `${file}.test${testFileExtension}`;
 };
 
 /**
  * @method includeInitFileIfExist
- * @param {String} basePath 
+ * @param {String} basePath
  */
 const includeInitFileIfExist = (basePath) => {
   const filePath = join(__dirname, basePath, `init.test${testFileExtension}`);
@@ -41,12 +41,12 @@ const includeInitFileIfExist = (basePath) => {
     if (existsSync(filePath)) {
       require(filePath);
     }
-  } catch (err) { }
-}
+  } catch (err) {}
+};
 
 /**
  * @method includeCleanUpFileIfExist
- * @param {String} basePath 
+ * @param {String} basePath
  */
 const includeCleanUpFileIfExist = (basePath) => {
   const filePath = join(__dirname, basePath, `clean-up.test${testFileExtension}`);
@@ -55,21 +55,21 @@ const includeCleanUpFileIfExist = (basePath) => {
     if (existsSync(filePath)) {
       require(filePath);
     }
-  } catch (err) { }
-}
+  } catch (err) {}
+};
 
 /**
  * @method includeTestFiles
  * @param {Array<string>} files
  * @param {string} basePath
  */
-const includeTestFiles = (files, basePath = "integration") => {
-  includeInitFileIfExist(basePath) // NOTE Run all the pre configurations
+const includeTestFiles = (files, basePath = 'integration') => {
+  includeInitFileIfExist(basePath); // NOTE Run all the pre configurations
 
-  files = filter(files, (name) => (
-    !includes(`init.test${testFileExtension}`, name) &&
-    !includes(`clean-up.test${testFileExtension}`, name)
-  )) // NOTE remove init, clean-up files
+  files = filter(
+    files,
+    (name) => !includes(`init.test${testFileExtension}`, name) && !includes(`clean-up.test${testFileExtension}`, name),
+  ); // NOTE remove init, clean-up files
 
   forEach(files, (file) => {
     const filename = getFileName(file);
@@ -80,10 +80,10 @@ const includeTestFiles = (files, basePath = "integration") => {
       } else {
         console.error(`File not found - ${filename}`);
       }
-    } catch (err) { }
+    } catch (err) {}
   });
 
-  includeCleanUpFileIfExist(basePath) // NOTE run all cleanup code/commands
+  includeCleanUpFileIfExist(basePath); // NOTE run all cleanup code/commands
 };
 
 /**
@@ -91,27 +91,24 @@ const includeTestFiles = (files, basePath = "integration") => {
  * @param {Array<string> | undefined | null | unknown} executionOrder
  * @param {boolean} isIntegrationTest
  */
-const run = (
-  executionOrder,
-  isIntegrationTest = true
-) => {
-  const testFolder = isIntegrationTest ? "integration" : "unit";
+const run = (executionOrder, isIntegrationTest = true) => {
+  const testFolder = isIntegrationTest ? 'integration' : 'unit';
 
   if (isArray(executionOrder) && !isEmpty(executionOrder)) {
     includeTestFiles(executionOrder, testFolder);
   } else {
     const basePath = join(__dirname, testFolder);
     const allIntegrationTestFiles = filter(readdirSync(basePath), (file) =>
-      includes(file, `.test${testFileExtension}`)
+      includes(file, `.test${testFileExtension}`),
     );
 
     includeTestFiles(allIntegrationTestFiles);
   }
 };
 
-if (includes(args, "--integration-test")) {
+if (includes(args, '--integration-test')) {
   run(INTEGRATION_EXECUTION_ORDER);
-} else if (includes(args, "--unit-test")) {
+} else if (includes(args, '--unit-test')) {
   // NOTE unit test case will be handled here
-  // run(UNIT_EXECUTION_ORDER, false);
+  run(UNIT_EXECUTION_ORDER, false);
 }
