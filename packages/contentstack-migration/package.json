@@ -67,7 +67,7 @@
     },
     "shortCommandName": {
       "cm:stacks:migration": "MGRTN",
-      "cm:migration": "MGRTN"
+      "cm:migration": "O-MGRTN"
     }
   }
 }
