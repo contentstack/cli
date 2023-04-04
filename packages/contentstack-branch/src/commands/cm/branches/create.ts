@@ -1,6 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, messageHandler, printFlagDeprecation, managementSDKClient, flags } from '@contentstack/cli-utilities';
-import { omit } from 'lodash';
+import { cliux, messageHandler, managementSDKClient, flags } from '@contentstack/cli-utilities';
 
 export default class BranchCreateCommand extends Command {
   static description: string = messageHandler.parse('Create a new branch'); // Note: Update the description
@@ -54,7 +53,7 @@ export default class BranchCreateCommand extends Command {
           'Branch creation in progress. Once ready, it will show in the results of the branch list command `csdx cm:branches`',
         ),
       )
-      .catch((err) =>
+      .catch((err: { errorCode: number; errorMessage: string }) =>
         err.errorCode === 910
           ? cliux.error(
               `Error : Branch with uid ${branchCreateFlags.uid} already exists, please enter unique branch uid`,
