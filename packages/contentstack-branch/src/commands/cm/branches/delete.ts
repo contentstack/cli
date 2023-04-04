@@ -1,7 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, messageHandler, printFlagDeprecation, managementSDKClient, flags } from '@contentstack/cli-utilities';
-import { omit } from 'lodash';
-
+import { cliux, messageHandler, managementSDKClient, flags } from '@contentstack/cli-utilities';
 export default class BranchDeleteCommand extends Command {
   static description: string = messageHandler.parse('Delete a branch'); // Note: Update the description
 
@@ -43,7 +41,7 @@ export default class BranchDeleteCommand extends Command {
       .branch(branchDeleteFlags.uid)
       .delete()
       .then(() => cliux.success('Branch has been deleted'))
-      .catch((err) => {
+      .catch((err: { errorCode: number; errorMessage: string }) => {
         err.errorCode === 905
           ? cliux.error(`Branch with UID ${branchDeleteFlags.uid} does not exist`)
           : cliux.error(err.errorMessage);
