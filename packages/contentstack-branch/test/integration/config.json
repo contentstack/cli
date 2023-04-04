@@ -1,7 +1,0 @@
-{
-  "PRINT_LOGS": false,
-  "REGION_NAME": "NA",
-  "DEFAULT_TIMEOUT": 600000,
-  "EXPORT_PATH": "./contents",
-  "ALIAS_NAME": "marketplace_api"
-}
