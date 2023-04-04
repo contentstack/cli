@@ -1,5 +1,5 @@
-import { AnyProperty } from "@contentstack/management/types/utility/fields";
-import { Pagination } from "@contentstack/management/types/utility/pagination";
+import { AnyProperty } from '@contentstack/management/types/utility/fields';
+import { Pagination } from '@contentstack/management/types/utility/pagination';
 
 type QueryType = {
   find: () => Promise<void> | Promise<never>;
@@ -26,13 +26,13 @@ export function sdk(mocData: any = {}, resolve = true): SdkType {
   const query = (param?: Pagination & AnyProperty): QueryType => {
     return {
       find: () => {
-        return Promise[resolve ? "resolve" : "reject"](findData);
+        return Promise[resolve ? 'resolve' : 'reject'](findData);
       },
       count: () => {
-        return Promise[resolve ? "resolve" : "reject"](countData);
+        return Promise[resolve ? 'resolve' : 'reject'](countData);
       },
       findOne: () => {
-        return Promise[resolve ? "resolve" : "reject"](findOneData);
+        return Promise[resolve ? 'resolve' : 'reject'](findOneData);
       },
     };
   };
@@ -40,7 +40,7 @@ export function sdk(mocData: any = {}, resolve = true): SdkType {
   const asset = (uid?: string): AssetType => {
     return {
       query,
-      download: () => Promise[resolve ? "resolve" : "reject"](downloadData),
+      download: () => Promise[resolve ? 'resolve' : 'reject'](downloadData),
     };
   };
 
@@ -49,7 +49,7 @@ export function sdk(mocData: any = {}, resolve = true): SdkType {
       query,
       asset,
       fetch: (param?: AnyProperty) => {
-        return Promise[resolve ? "resolve" : "reject"](fetchData);
+        return Promise[resolve ? 'resolve' : 'reject'](fetchData);
       },
     };
   };
