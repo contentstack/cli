@@ -34,6 +34,7 @@
     "@contentstack/cli-config": "^1.2.1",
     "@contentstack/cli-migration": "^1.2.1",
     "@contentstack/cli-utilities": "^1.2.1",
+    "@contentstack/cli-cm-branches": "^1.0.0",
     "@contentstack/management": "^1.6.1",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-not-found": "^2.3.9",
@@ -132,11 +133,11 @@
       "@contentstack/cli-cm-clone",
       "@contentstack/cli-cm-migrate-rte",
       "@contentstack/cli-migration",
-      "@contentstack/cli-cm-bulk-publish"
+      "@contentstack/cli-cm-bulk-publish",
+      "@contentstack/cli-cm-branches"
     ],
     "hooks": {
       "prerun": [
-        "./lib/hooks/prerun/auth-guard",
         "./lib/hooks/prerun/command-deprecation-check"
       ],
       "init": [
