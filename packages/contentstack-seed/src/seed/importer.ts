@@ -18,5 +18,8 @@ export async function run(options: ImporterOptions) {
 
   process.chdir(options.tmpPath);
 
-  await ImportCommand.run(['-k', options.api_key, '-d', importPath]);
+  // moving here to fix jest testing bug
+  const { parametersWithAuthToken } = require('@contentstack/cli-cm-import/src/lib/util/import-flags');
+
+  await parametersWithAuthToken(options.api_key, importPath, '', options.cmaHost, '', {});
 }

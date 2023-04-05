@@ -8,4 +8,5 @@ export { default as printFlagDeprecation } from './flag-deprecation-check';
 export * from './http-client';
 export * from './fs-utility';
 export { default as NodeCrypto } from './encrypter';
-export { Args as args, Flags as flags, Command, Help, Plugin, Config } from './cli-ux';
+export { Args as args, Flags as flags, Command } from './cli-ux';
+export * from './helpers';

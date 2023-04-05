@@ -1,0 +1,3 @@
+const mockData = {};
+
+export { mockData };

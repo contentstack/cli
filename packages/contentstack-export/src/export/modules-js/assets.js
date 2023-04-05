@@ -11,9 +11,12 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const chalk = require('chalk');
 const progress = require('progress-stream');
-const { HttpClient } = require('@contentstack/cli-utilities');
-const { fileHelper, log } = require('../../utils');
-let { default: config } = require('../../config');
+const { HttpClient, configHandler } = require('@contentstack/cli-utilities');
+
+const helper = require('../util/helper');
+const { addlogs } = require('../util/log');
+
+let config = require('../../config/default');
 
 module.exports = class ExportAssets {
   config;
@@ -347,7 +350,7 @@ module.exports = class ExportAssets {
       }
       self.assetStream = {
         url: self.config.securedAssets
-          ? `${asset.url}?authtoken=${self.config.authtoken || self.config.auth_token}`
+          ? `${asset.url}?authtoken=${configHandler.get('authtoken')}`
           : asset.url,
       };
 

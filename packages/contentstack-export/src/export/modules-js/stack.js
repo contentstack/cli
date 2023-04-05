@@ -6,12 +6,12 @@
 
 const path = require('path');
 const mkdirp = require('mkdirp');
-const merge = require('lodash/merge');
-const { default: config } = require('../../config');
-let stackConfig = config.modules.stack;
-const { managementSDKClient } = require('@contentstack/cli-utilities');
-
-class ExportStack {
+const { merge } = require('lodash');
+const helper = require('../util/helper');
+const { addlogs } = require('../util/log');
+const config = require('../../config/default');
+const { managementSDKClient, isAuthenticated } = require('@contentstack/cli-utilities');
+module.exports = class ExportStack {
   stackConfig = config.modules.stack;
 
   constructor(exportConfig, stackAPIClient) {
@@ -26,8 +26,8 @@ class ExportStack {
 
   async start() {
     const self = this;
-    if (self.config.auth_token) {
-      const tempAPIClient = await managementSDKClient(config);
+    if (isAuthenticated()) {
+      const tempAPIClient = await managementSDKClient({ host: config.host });
       const tempStackData = await tempAPIClient
         .stack({ api_key: self.config.source_stack })
         .fetch()
