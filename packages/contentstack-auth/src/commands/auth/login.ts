@@ -33,8 +33,8 @@ export default class LoginCommand extends Command {
   static aliases = ['login'];
 
   async run(): Promise<any> {
-    const managementAPIClient = await managementSDKClient({host: this.cmaHost})
-    const { flags: loginFlags } = await this.parse(LoginCommand)
+    const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
+    const { flags: loginFlags } = await this.parse(LoginCommand);
     authHandler.client = managementAPIClient;
 
     try {
