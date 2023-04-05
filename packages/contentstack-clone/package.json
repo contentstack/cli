@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-clone",
   "description": "Contentstack stack clone plugin",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "author": "Contentstack",
   "bugs": "https://github.com/rohitmishra209/cli-cm-clone/issues",
   "dependencies": {
@@ -63,6 +63,10 @@
   "csdxConfig": {
     "expiredCommands": {
       "cm:stack-clone": "csdx cm:stacks:clone"
+    },
+    "shortCommandName": {
+      "cm:stacks:clone": "CLN",
+      "cm:stack-clone": "O-CLN"
     }
   }
 }
