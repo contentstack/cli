@@ -1,9 +1,14 @@
-import fs from 'fs';
+import chalk from "chalk";
 import forEach from "lodash/forEach";
 import startCase from "lodash/startCase";
 import camelCase from "lodash/camelCase";
 import { cliux } from "@contentstack/cli-utilities";
-import { BranchOptions, BranchDiffRes, } from "../interfaces/index";
+import {
+  BranchOptions,
+  BranchDiffRes,
+  BranchDiffSummary,
+  BranchCompactTextRes,
+} from "../interfaces/index";
 import BranchDiffUtility from '../utils/diff';
 import {
   askCompareBranch,
@@ -17,16 +22,26 @@ export default class BranchDiff {
   private options: BranchOptions;
   public branchUtilityInstance: BranchDiffUtility;
   public branchesDiffData: BranchDiffRes[];
+  public branchSummary: BranchDiffSummary;
+  public branchCompactTextRes: BranchCompactTextRes;
 
   constructor(params: BranchOptions) {
     this.options = params;
   }
 
   async run(): Promise<any> {
-    await this.preCheckAndUtility();
+    await this.validateMandatoryFlags();
+    await this.utilityInstance();
+    this.displaySummary();
+    this.displayBranchDiffTextAndVerbose();
   }
 
-  async preCheckAndUtility(): Promise<void> {
+  /**
+   * @methods validateMandatoryFlags - validate flags and prompt to select required flags
+   * @returns {*} {Promise<void>}
+   * @memberof BranchDiff
+   */
+  async validateMandatoryFlags(): Promise<void> {
     if (!this.options.baseBranch) {
       this.options.baseBranch = await askBaseBranch();
     }
@@ -39,55 +54,110 @@ export default class BranchDiff {
     if (!this.options.stackAPIKey) {
       this.options.stackAPIKey = await askStackAPIKey();
     }
+  }
+
+  /**
+   * @methods utilityInstance - create instance of utility and call method
+   * @returns {*} {Promise<void>}
+   * @memberof BranchDiff
+   */
+  async utilityInstance(): Promise<void> {
     this.branchUtilityInstance = new BranchDiffUtility(this.options);
-    cliux.loader("Loading branch differences...");
+    //cliux.loader("Loading branch differences...");
     await this.branchUtilityInstance.fetchBranchesDiff();
-    this.displayBranchSummary();
-    if (this.options.format === "text") {
-      this.displayCompactView();
+  }
+
+  /**
+   * @methods displaySummary - show branches summary on CLI
+   * @returns {*} {void}
+   * @memberof BranchDiff
+   */
+  displaySummary(): void {
+    this.parseSummary();
+    this.printSummary();
+  }
+
+  /**
+   * @methods parseSummary - parse branch summary json response
+   * @returns {*} {void}
+   * @memberof BranchDiff
+   */
+  parseSummary(): void {
+    const { baseCount, compareCount, modifiedCount } = this.branchUtilityInstance.getBranchesSummary();
+    this.branchSummary = {
+      base: this.options.baseBranch,
+      compare: this.options.compareBranch,
+      base_only: baseCount,
+      compare_only: compareCount,
+      modified: modifiedCount
     }
   }
 
-  displayBranchSummary(): void {
-    const diffSummary = this.branchUtilityInstance.branchSummary();
+  /**
+   * @methods printSummary - print branches summary
+   * @returns {*} {void}
+   * @memberof BranchDiff
+   */
+  printSummary(): void {
     cliux.print("Summary:", { "color": "yellow" });
-
-    forEach(diffSummary, (value, key) => {
+    forEach(this.branchSummary, (value, key) => {
       cliux.print(`${startCase(camelCase(key))}:  ${value}`)
     })
   }
 
-  displayCompactView(): void {
-    const resp = this.branchUtilityInstance.branchesCompactTextView();
+  /**
+   * @methods displayBranchDiffTextAndVerbose - show branch differences in compact text or verbose format
+   * @returns {*} {void}
+   * @memberof BranchDiff
+   */
+  displayBranchDiffTextAndVerbose(): void {
+    if (this.options.format === "text") {
+      this.parseCompactText();
+      this.printCompactTextView();
+    } else if (this.options.format === "verbose") {
+      //call verbose method
+    }
+  }
 
-    if (!this.options?.ignoreDisplay) {
-      cliux.print(" ");
-      cliux.print(`Differences in '${this.options.compareBranch}' compared to '${this.options.baseBranch}'`);
+  /**
+   * @methods parseSummary - parse compact text json response
+   * @returns {*} {void}
+   * @memberof BranchDiff
+   */
+  parseCompactText(): void {
+    const { listOfAdded, listOfDeleted, listOfModified } = this.branchUtilityInstance.getBranchesCompactText();
+    this.branchCompactTextRes = {
+      modified: listOfModified,
+      added: listOfAdded,
+      deleted: listOfDeleted
+    }
+  }
 
-      if (resp.modified?.length) {
-        forEach(resp.modified, (title) => {
-          cliux.print(`± Modified:  ${title} ${startCase(camelCase(this.options.module))}`, { "color": "blue" })
-        });
-      }
+  /**
+   * @methods printCompactTextView - print diff in compact text format
+   * @returns {*} {void}
+   * @memberof BranchDiff
+   */
+  printCompactTextView(): void {
+    cliux.print(" ");
+    cliux.print(`Differences in '${this.options.compareBranch}' compared to '${this.options.baseBranch}'`);
 
-      if (resp.added?.length) {
-        forEach(resp.added, (title) => {
-          cliux.print(`+ Added:  ${title} ${startCase(camelCase(this.options.module))}`, { "color": "green" })
-        });
-      }
+    if (this.branchCompactTextRes.modified?.length) {
+      forEach(this.branchCompactTextRes.modified, (diff: BranchDiffRes) => {
+        cliux.print(`${chalk.blue("± Modified:")}  '${diff.title}' ${startCase(camelCase(this.options.module))}`)
+      });
+    }
 
-      if (resp.deleted?.length) {
-        forEach(resp.deleted, (title) => {
-          cliux.print(`- Deleted:  ${title} ${startCase(camelCase(this.options.module))}`, { "color": "red" })
-        });
-      }
-    } else {
-      const directoryExists = fs.existsSync(this.options.sourcePath);
-      if (!directoryExists) {
-        cliux.error("Directory not exists!.", "error");
-        process.exit(1);
-      }
-      fs.writeFileSync(this.options.sourcePath, JSON.stringify(resp), 'utf-8');
+    if (this.branchCompactTextRes.added?.length) {
+      forEach(this.branchCompactTextRes.added, (diff: BranchDiffRes) => {
+        cliux.print(`${chalk.green("+ Added:")}  '${diff.title}' ${startCase(camelCase(this.options.module))}`)
+      });
+    }
+
+    if (this.branchCompactTextRes.deleted?.length) {
+      forEach(this.branchCompactTextRes.deleted, (diff: BranchDiffRes) => {
+        cliux.print(`${chalk.red("- Deleted:")}  '${diff.title}' ${startCase(camelCase(this.options.module))}`)
+      });
     }
   }
 }

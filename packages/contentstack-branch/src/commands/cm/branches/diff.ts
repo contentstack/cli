@@ -42,15 +42,7 @@ export default class BranchDiffCommand extends Command {
       multiple: false,
       options: ["text", "verbose"],
       description: '[Optional] Type of flags to show branches difference view',
-    }),
-    'ignore-display': flags.boolean({
-      description: 'Ignore flag to not display branches differences',
-      hidden: true,
-    }),
-    'source-path': flags.string({
-      description: 'Path to store branches difference summary',
-      hidden: true,
-    }),
+    })
   };
 
   static aliases: string[] = []; // Note: alternative usage if any
@@ -61,7 +53,6 @@ export default class BranchDiffCommand extends Command {
       const { flags: branchDiffFlags } = await this.parse(BranchDiffCommand);
       //TODO: Need to handle default stack api key & base branch
       let options: BranchOptions = {
-        baseUrl: `http://dev16-branches.csnonprod.com/api/compare`,
         authToken: this.authToken,
         stackAPIKey: branchDiffFlags['stack-api-key'],
         baseBranch: branchDiffFlags['base-branch'],
@@ -69,8 +60,6 @@ export default class BranchDiffCommand extends Command {
         module: branchDiffFlags.module,
         format: branchDiffFlags.format,
         filter: branchDiffFlags.filter,
-        ignoreDisplay: branchDiffFlags?.['ignore-display'],
-        sourcePath: branchDiffFlags?.['source-path']
       }
       const branchDiff = new BranchDiff(options);
       await branchDiff.run();

@@ -3,8 +3,6 @@ import { cliux, messageHandler, HttpClient } from "@contentstack/cli-utilities";
 import {
   BranchOptions,
   BranchDiffRes,
-  BranchDiffSummary,
-  BranchCompactTextRes
 } from "../interfaces/index";
 
 
@@ -15,76 +13,86 @@ export default class BranchDiffUtility {
   private authToken: string;
   private baseUrl: string;
   private module: string;
-  private format: string;
+  private filter: string;
   public branchesDiffData: BranchDiffRes[];
+  public filteredUid: string[];
 
   constructor(params: BranchOptions) {
     this.stackAPIKey = params.stackAPIKey;
     this.baseBranch = params.baseBranch;
     this.compareBranch = params.compareBranch;
     this.authToken = params.authToken;
-    this.baseUrl = params.baseUrl;
+    this.baseUrl = 'http://dev16-branches.csnonprod.com/api/compare';
     this.module = params.module;
-    this.format = params.format;
+    this.filter = params.filter;
   }
 
-  async run(): Promise<any> {
-    await this.fetchBranchesDiff();
-  }
-
-  async fetchBranchesDiff() {
+   /**
+   * @methods fetchBranchesDiff - fetch branches diff list
+   * @returns {*} {Promise<void>}
+   * @memberof BranchDiffUtility
+   */
+  async fetchBranchesDiff():Promise<void> {
     let url = `${this.baseUrl}/${this.module}`;
     let branchDiffData = await this.apiRequest(url);
     this.branchesDiffData = branchDiffData?.diff;
-    this.branchesCompactTextView();
+    if (this.filter) {
+      //handle filter
+    }
   }
 
-  branchSummary(): BranchDiffSummary {
+  /**
+   * @methods getBranchesSummary - branches summary response
+   * @memberof BranchDiffUtility
+   */
+  getBranchesSummary() {
     let baseCount: number = 0,
       compareCount: number = 0,
       modifiedCount: number = 0;
 
     if (this.branchesDiffData?.length) {
+      console.log(this.filteredUid)
       forEach(this.branchesDiffData, (diff: BranchDiffRes) => {
-        if (diff.status === "compare_only") compareCount++;
-        else if (diff.status === "base_only") baseCount++;
-        else if (diff.status === "modified") modifiedCount++;
+        if (this.filteredUid && !this.filteredUid.includes(diff.uid)) {
+          return;
+        }else{
+          if (diff.status === "compare_only") compareCount++;
+          else if (diff.status === "base_only") baseCount++;
+          else if (diff.status === "modified") modifiedCount++;
+        }
       })
     }
-
-    const diffSummary: BranchDiffSummary = {
-      base: this.baseBranch,
-      compare: this.compareBranch,
-      base_only: baseCount,
-      compare_only: compareCount,
-      modified: modifiedCount
-    }
-    return diffSummary;
+    return { baseCount, compareCount, modifiedCount };
   }
 
-  branchesCompactTextView(): BranchCompactTextRes {
-    let listOfModified: string[] = [],
-      listOfAdded: string[] = [],
-      listOfDeleted: string[] = [];
+  /**
+   * @methods getBranchesCompactText - branches summary compact text response
+   * @memberof BranchDiffUtility
+   */
+  getBranchesCompactText() {
+    let listOfModified: BranchDiffRes[] = [],
+      listOfAdded: BranchDiffRes[] = [],
+      listOfDeleted: BranchDiffRes[] = [];
 
     if (this.branchesDiffData?.length) {
       forEach(this.branchesDiffData, (diff: BranchDiffRes) => {
-        if (diff.status === "compare_only") listOfAdded.push(diff.uid);
-        else if (diff.status === "base_only")
-          listOfDeleted.push(diff.uid);
-        else if (diff.status === "modified")
-          listOfModified.push(diff.uid);
+        if (this.filteredUid && !this.filteredUid.includes(diff.uid)){
+          return;
+        }else{
+          if (diff.status === "compare_only") listOfAdded.push(diff);
+          else if (diff.status === "base_only") listOfDeleted.push(diff);
+          else if (diff.status === "modified") listOfModified.push(diff);
+        }
       });
     }
-
-    const resp: BranchCompactTextRes = {
-      modified: listOfModified,
-      added: listOfAdded,
-      deleted: listOfDeleted
-    }
-    return resp;
+    return {listOfAdded, listOfModified, listOfDeleted};
   }
 
+  /**
+   * @methods apiRequest - branch compare api request
+   * @memberof BranchDiffUtility
+   * @param {string} url string
+   */
   async apiRequest(url: string) {
     const headers = {
       authToken: this.authToken,
