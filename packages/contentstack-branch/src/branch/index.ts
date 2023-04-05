@@ -3,6 +3,6 @@
  */
 
 import BranchDiff from './diff';
-import {askCompareBranch, askBaseBranch, askStackAPIKey, selectModule} from './interactive';
 
-export { BranchDiff, askCompareBranch, askBaseBranch, askStackAPIKey, selectModule };
+export * as interactive from './interactive';
+export { BranchDiff };
