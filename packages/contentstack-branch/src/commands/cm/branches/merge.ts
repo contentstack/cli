@@ -16,6 +16,8 @@ export default class BranchMergeCommand extends Command {
     try {
       const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
       const { flags: branchMergeFlags } = await this.parse(BranchMergeCommand);
+      await cliux.inquire({ type: 'input', message: 'ENTER_API_KEY', name: 'stack-api-key' });
+      cliux.print('Running merge command');
       /**
        * Implementation
        */
