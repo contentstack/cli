@@ -5,13 +5,9 @@ export interface BranchOptions {
   compareBranch: string;
   stackAPIKey: string;
   authToken: string;
-  baseUrl: string;
   module: string;
   format: string;
   filter?: string;
-  managementAPIClient?: ContentstackClient;
-  ignoreDisplay?: boolean;
-  sourcePath?: string;
 }
 
 export interface BranchDiffRes {
@@ -30,7 +26,7 @@ export interface BranchDiffSummary {
 }
 
 export interface BranchCompactTextRes {
-  modified: string[];
-  added: string[];
-  deleted: string[];
+  modified: BranchDiffRes[];
+  added: BranchDiffRes[];
+  deleted: BranchDiffRes[];
 }
