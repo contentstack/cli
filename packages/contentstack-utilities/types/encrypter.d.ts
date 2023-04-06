@@ -1,4 +1,4 @@
-declare type CryptoConfig = {
+type CryptoConfig = {
     algorithm?: string;
     encryptionKey?: string;
     typeIdentifier?: string;
