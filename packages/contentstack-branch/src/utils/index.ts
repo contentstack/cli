@@ -1,11 +1,9 @@
 /**
  * Command specific utilities can be written here
  */
-import { cliux, configHandler } from '@contentstack/cli-utilities';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
-import path from 'path';
+import { configHandler } from '@contentstack/cli-utilities';
 
-export const getbranchesList = (branchResult) => {
+export const getbranchesList = (branchResult, baseBranch) => {
   const branches: Record<string, unknown>[] = [];
 
   branchResult.items.map((item) => {
@@ -18,34 +16,16 @@ export const getbranchesList = (branchResult) => {
     });
   });
 
-  return branches;
+  const currentBranch = branches.filter((branch) => branch.Branch === baseBranch);
+  const otherBranches = branches.filter((branch) => branch.Branch !== baseBranch);
+
+  return { currentBranch, otherBranches, branches };
 };
 
-export const getbranchConfig = () => {
-  const localConfigPath = path.join(process.cwd(), '/branch-config.json');
-  let config;
+export const getbranchConfig = (stackApiKey) => {
+  let baseBranch = configHandler.get(`baseBranch.${stackApiKey}`);
 
-  if (existsSync(localConfigPath)) {
-    let data = JSON.parse(readFileSync(localConfigPath, 'utf-8'));
-    config = data['base-branch'];
-  } else if (Boolean(configHandler.get(`base-branch`))) {
-    config = configHandler.get(`base-branch`);
-  } else {
-    cliux.print('Please set the config using branch:config command', { color: 'yellow' });
-  }
-
-  return config;
+  return baseBranch ? baseBranch : 'main';
 };
 
-export const refreshbranchConfig = (branchName) => {
-  const localConfigPath = path.join(process.cwd(), '/branch-config.json');
-
-  let config = getbranchConfig();
-
-  if (config.baseBranch === branchName) {
-    let data = JSON.parse(readFileSync(localConfigPath, 'utf-8'));
-    data['base-branch'].baseBranch = 'main';
-
-    writeFileSync(localConfigPath, JSON.stringify(data));
-  }
-};
+export const refreshbranchConfig = (branchName) => {};
