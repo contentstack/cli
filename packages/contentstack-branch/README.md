@@ -54,7 +54,7 @@ USAGE
 * [`csdx cm:branches:create`](#csdx-cmbranchescreate)
 * [`csdx cm:branches:delete [-u <value>] [-k <value>]`](#csdx-cmbranchesdelete--u-value--k-value)
 * [`csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesdiff---base-branch-value---stack-api-key-value)
-* [`csdx cm:branches:merge [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesmerge---base-branch-value---stack-api-key-value)
+* [`csdx cm:branches:merge [--compare-branch <value>] [--module <value>]`](#csdx-cmbranchesmerge---compare-branch-value---module-value)
 
 ## `csdx cm:branches [--base-branch <value>] [--stack-api-key <value>]`
 
@@ -164,19 +164,27 @@ EXAMPLES
 
 _See code: [src/commands/cm/branches/diff.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/diff.ts)_
 
-## `csdx cm:branches:merge [--base-branch <value>] [--stack-api-key <value>]`
+## `csdx cm:branches:merge [--compare-branch <value>] [--module <value>]`
 
-Merge a branch
+Merge changes from a branch
 
 ```
 USAGE
-  $ csdx cm:branches:merge [--base-branch <value>] [--stack-api-key <value>]
+  $ csdx cm:branches:merge [--compare-branch <value>] [--module <value>]
+
+FLAGS
+  --compare-branch=<value>  (required) Compare branch name
+  --module=<value>          [optional] specific module name
 
 DESCRIPTION
-  Merge a branch
+  Merge changes from a branch
 
 EXAMPLES
-  $ csdx cm:branches:merge --base-branch main --stack-api-key bltxxxxxxxx
+  $ csdx cm:branches:merge --compare-branch feature-branch --module=content-types
+
+  $ csdx cm:branches:merge --compare-branch feature-branch --module=global-fields
+
+  $ csdx cm:branches:merge --compare-branch feature-branch
 ```
 
 _See code: [src/commands/cm/branches/merge.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/merge.ts)_
