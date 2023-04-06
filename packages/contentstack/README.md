@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.4.1 darwin-arm64 node-v18.11.0
+@contentstack/cli/1.5.0 darwin-arm64 node-v16.17.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -38,8 +38,8 @@ USAGE
 * [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value)
 * [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
 * [`csdx cm:bootstrap`](#csdx-cmbootstrap)
-* [`csdx cm:branches [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranches---base-branch-value---stack-api-key-value)
-* [`csdx cm:branches:config [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesconfig---base-branch-value---stack-api-key-value)
+* [`csdx cm:branches`](#csdx-cmbranches)
+* [`csdx cm:branches:config [-a <value>] [--base-branch <value>] [--stack-api-key <value>] [-y]`](#csdx-cmbranchesconfig--a-value---base-branch-value---stack-api-key-value--y)
 * [`csdx cm:branches:create`](#csdx-cmbranchescreate)
 * [`csdx cm:branches:delete [-u <value>] [-k <value>]`](#csdx-cmbranchesdelete--u-value--k-value)
 * [`csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesdiff---base-branch-value---stack-api-key-value)
@@ -444,36 +444,52 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/main/packages/contentstack-bootstrap/src/commands/cm/bootstrap.ts)_
 
-## `csdx cm:branches [--base-branch <value>] [--stack-api-key <value>]`
+## `csdx cm:branches`
 
 List the branches to select
 
 ```
 USAGE
-  $ csdx cm:branches [--base-branch <value>] [--stack-api-key <value>]
+  $ csdx cm:branches
+
+FLAGS
+  -v, --verbose  Verbose
 
 DESCRIPTION
   List the branches to select
 
 EXAMPLES
-  $ csdx cm:branches --base-branch main --stack-api-key bltxxxxxxxx
+  $ csdx cm:branches
+
+  $ csdx cm:branches --verbose
 ```
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/index.ts)_
 
-## `csdx cm:branches:config [--base-branch <value>] [--stack-api-key <value>]`
+## `csdx cm:branches:config [-a <value>] [--base-branch <value>] [--stack-api-key <value>] [-y]`
 
 Set the branch
 
 ```
 USAGE
-  $ csdx cm:branches:config [--base-branch <value>] [--stack-api-key <value>]
+  $ csdx cm:branches:config [-a <value>] [--base-branch <value>] [--stack-api-key <value>] [-y]
+
+FLAGS
+  -b, --base-branch=<value>    Base Branch
+  -g, --global                 global configuration
+  -k, --stack-api-key=<value>  Stack API Key
 
 DESCRIPTION
   Set the branch
 
 EXAMPLES
-  $ csdx cm:branches:config --base-branch main --stack-api-key bltxxxxxxxx
+  $ csdx cm:branches:config
+
+  $ csdx cm:branches:config -k <stack api key> --base-branch <base branch>
+
+  $ csdx cm:branches:config --global -k <stack api key> --base-branch <base branch>
+
+  $ csdx cm:branches:config --base-branch <base branch>
 ```
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/config.ts)_
@@ -2536,7 +2552,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.4/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.8/src/commands/help.ts)_
 
 ## `csdx login`
 
@@ -2611,7 +2627,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.3.2/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.3/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -2676,7 +2692,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.3.2/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.3/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -2716,7 +2732,7 @@ EXAMPLES
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.3.2/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.3/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
@@ -2745,7 +2761,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.3.2/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.3/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -2793,7 +2809,7 @@ ALIASES
   $ csdx plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.3.2/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.3/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -2834,7 +2850,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.3.2/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.3/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
