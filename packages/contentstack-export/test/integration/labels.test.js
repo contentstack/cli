@@ -5,7 +5,7 @@ const { test } = require("@oclif/test")
 const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 
 const { modules } = require('../../src/config/default')
-const { getStackDetailsByRegion, getLocalesCount, cleanUp, checkCounts } = require('./utils/helper')
+const { getStackDetailsByRegion, getLabelsCount, cleanUp, checkCounts } = require('./utils/helper')
 const { EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
 const { PRINT_LOGS, DELIMITER, KEY_VAL_DELIMITER } = process.env
 
@@ -25,13 +25,13 @@ module.exports = (region) => {
       `${EXPORT_PATH}_${stack}`
     )
 
-    const localeBasePath = path.join(
+    const labelBasePath = path.join(
       exportBasePath,
-      modules.locales.dirName
+      modules.labels.dirName
     )
-    const localeJson = path.join(
-      localeBasePath,
-      modules.locales.fileName
+    const labelJson = path.join(
+      labelBasePath,
+      modules.labels.fileName
     )
     const messageFilePath = path.join(
       __dirname,
@@ -42,8 +42,8 @@ module.exports = (region) => {
     messageHandler.init({ messageFilePath })
     const { promptMessageList } = require(messageFilePath)
 
-    describe("ContentStack-Export locales", () => {
-      describe("cm:stacks:export locales [auth-token]", () => {
+    describe("ContentStack-Export labels", () => {
+      describe("cm:stacks:export labels [auth-token]", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stub(cliUX, "prompt", async (name) => {
@@ -55,41 +55,39 @@ module.exports = (region) => {
             }
           })
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails[stack])
+          .command(["cm:stacks:export", "--module", "labels"])
+          .it("Check label counts", async () => {
+            let exportedLabelsCount = 0
+            const labelsCount = await getLabelsCount(stackDetails[stack])
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(labelJson)) {
+                exportedLabelsCount = Object.keys(JSON.parse(fs.readFileSync(labelJson, 'utf-8'))).length
               }
             } catch (error) {
               console.trace(error)
             }
-
-            checkCounts(localeCount, exportedLocaleCount)
+            checkCounts(labelsCount, exportedLabelsCount)
           })
       })
 
-      describe("cm:stacks:export locales [management-token]", () => {
+      describe("cm:stacks:export labels [management-token]", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails[stack])
+          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "labels"])
+          .it("Check label counts", async () => {
+            let exportedLabelsCount = 0
+            const labelsCount = await getLabelsCount(stackDetails[stack])
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(labelJson)) {
+                exportedLabelsCount = Object.keys(JSON.parse(fs.readFileSync(labelJson, 'utf-8'))).length
               }
             } catch (error) {
               console.trace(error)
             }
-
-            checkCounts(localeCount, exportedLocaleCount)
+            checkCounts(labelsCount, exportedLabelsCount)
           })
       })
     })

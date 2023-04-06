@@ -6,12 +6,14 @@ const isArray = require("lodash/isArray");
 const includes = require("lodash/includes");
 const { existsSync, readdirSync } = require("fs");
 
-const { initEnvData } = require('./integration/utils/helper')
-const { INTEGRATION_EXECUTION_ORDER, IS_TS } = require("./config.json");
+const { initEnvData, getLoginCredentials } = require('./integration/utils/helper')
+const { INTEGRATION_EXECUTION_ORDER, IS_TS, ENABLE_PREREQUISITES } = require("./config.json");
 
 // NOTE init env variables
 require('dotenv-expand').expand(require('dotenv').config())
 // require('dotenv').config({ path: resolve(process.cwd(), '.env.test') })
+
+const { INTEGRATION_TEST } = process.env;
 
 initEnvData() // NOTE Prepare env data
 
@@ -34,26 +36,28 @@ const getFileName = (file) => {
  * @method includeInitFileIfExist
  * @param {String} basePath 
  */
-const includeInitFileIfExist = (basePath) => {
+const includeInitFileIfExist = (basePath, region) => {
   const filePath = join(__dirname, basePath, `init.test${testFileExtension}`);
 
   try {
     if (existsSync(filePath)) {
-      require(filePath);
+      require(filePath)(region);
     }
-  } catch (err) { }
+  } catch (err) { 
+    debugger
+  }
 }
 
 /**
  * @method includeCleanUpFileIfExist
  * @param {String} basePath 
  */
-const includeCleanUpFileIfExist = (basePath) => {
+const includeCleanUpFileIfExist = async (basePath, region) => {
   const filePath = join(__dirname, basePath, `clean-up.test${testFileExtension}`);
 
   try {
     if (existsSync(filePath)) {
-      require(filePath);
+      require(filePath)(region);
     }
   } catch (err) { }
 }
@@ -63,27 +67,34 @@ const includeCleanUpFileIfExist = (basePath) => {
  * @param {Array<string>} files
  * @param {string} basePath
  */
-const includeTestFiles = (files, basePath = "integration") => {
-  includeInitFileIfExist(basePath) // NOTE Run all the pre configurations
+const includeTestFiles = async (files, basePath = "integration") => {
+  let regions = getLoginCredentials();
+  for (let region of Object.keys(regions)) {
+    if (ENABLE_PREREQUISITES) {
+      includeInitFileIfExist(basePath, regions[region]) // NOTE Run all the pre configurations
+    }
 
-  files = filter(files, (name) => (
-    !includes(`init.test${testFileExtension}`, name) &&
-    !includes(`clean-up.test${testFileExtension}`, name)
-  )) // NOTE remove init, clean-up files
+    files = filter(files, (name) => (
+      !includes(`init.test${testFileExtension}`, name) &&
+      !includes(`clean-up.test${testFileExtension}`, name)
+    )) // NOTE remove init, clean-up files
 
-  forEach(files, (file) => {
-    const filename = getFileName(file);
-    const filePath = join(__dirname, basePath, filename);
-    try {
-      if (existsSync(filePath)) {
-        require(filePath);
-      } else {
-        console.error(`File not found - ${filename}`);
+    forEach(files, (file) => {
+      const filename = getFileName(file);
+      const filePath = join(__dirname, basePath, filename);
+      try {
+        if (existsSync(filePath)) {
+          require(filePath)(region);
+        } else {
+          console.error(`File not found - ${filename}`);
+        }
+      } catch (err) {
+        console.err(err.message)
       }
-    } catch (err) { }
-  });
+    });
 
-  includeCleanUpFileIfExist(basePath) // NOTE run all cleanup code/commands
+    await includeCleanUpFileIfExist(basePath, regions[region]) // NOTE run all cleanup code/commands
+  }
 };
 
 /**
@@ -109,7 +120,7 @@ const run = (
   }
 };
 
-if (includes(args, "--integration-test")) {
+if (INTEGRATION_TEST === 'true') {
   run(INTEGRATION_EXECUTION_ORDER);
 } else if (includes(args, "--unit-test")) {
   // NOTE unit test case will be handled here

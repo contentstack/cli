@@ -5,13 +5,14 @@ const { test } = require("@oclif/test")
 const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 
 const { modules } = require('../../src/config/default')
-const { getStackDetailsByRegion, getLocalesCount, cleanUp, checkCounts } = require('./utils/helper')
+const { getStackDetailsByRegion, getCustomRolesCount, cleanUp, checkCounts } = require('./utils/helper')
 const { EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
 const { PRINT_LOGS, DELIMITER, KEY_VAL_DELIMITER } = process.env
 
 module.exports = (region) => {
   const stackDetails = getStackDetailsByRegion(region, DELIMITER, KEY_VAL_DELIMITER)
   for (let stack of Object.keys(stackDetails)) {
+
     const exportBasePath = (stackDetails[stack].BRANCH) ? path.join(
       __dirname,
       "..",
@@ -24,14 +25,13 @@ module.exports = (region) => {
       "..",
       `${EXPORT_PATH}_${stack}`
     )
-
-    const localeBasePath = path.join(
+    const customRolesBasePath = path.join(
       exportBasePath,
-      modules.locales.dirName
+      modules.customRoles.dirName
     )
-    const localeJson = path.join(
-      localeBasePath,
-      modules.locales.fileName
+    const customRolesJson = path.join(
+      customRolesBasePath,
+      modules.customRoles.fileName
     )
     const messageFilePath = path.join(
       __dirname,
@@ -39,11 +39,12 @@ module.exports = (region) => {
       "..",
       "messages/index.json"
     )
+
     messageHandler.init({ messageFilePath })
     const { promptMessageList } = require(messageFilePath)
 
-    describe("ContentStack-Export locales", () => {
-      describe("cm:stacks:export locales [auth-token]", () => {
+    describe("ContentStack-Export custom-roles", () => {
+      describe("cm:stacks:export custom-roles [auth-token]", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stub(cliUX, "prompt", async (name) => {
@@ -55,41 +56,40 @@ module.exports = (region) => {
             }
           })
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails[stack])
+          .command(["cm:stacks:export", "--module", "custom-roles"])
+          .it("Check custom-roles count", async () => {
+            let exportedCustomRolesCount = 0
+            const customRolesCount = await getCustomRolesCount(stackDetails[stack])
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(customRolesJson)) {
+                exportedCustomRolesCount = Object.keys(JSON.parse(fs.readFileSync(customRolesJson, 'utf-8'))).length
               }
             } catch (error) {
               console.trace(error)
             }
-
-            checkCounts(localeCount, exportedLocaleCount)
+            checkCounts(customRolesCount, exportedCustomRolesCount)
           })
       })
 
-      describe("cm:stacks:export locales [management-token]", () => {
+      describe("cm:stacks:export custom-roles [management-token]", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails[stack])
+          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "custom-roles"])
+          .it("Check custom-roles counts", async () => {
+            let exportedCustomRolesCount = 0
+            const customRolesCount = await getCustomRolesCount(stackDetails[stack]);
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(customRolesJson)) {
+                exportedCustomRolesCount = Object.keys(JSON.parse(fs.readFileSync(customRolesJson, 'utf-8'))).length
               }
             } catch (error) {
               console.trace(error)
             }
 
-            checkCounts(localeCount, exportedLocaleCount)
+            checkCounts(customRolesCount, exportedCustomRolesCount)
           })
       })
     })
@@ -106,3 +106,4 @@ module.exports = (region) => {
     })
   }
 }
+

@@ -5,7 +5,7 @@ const { test } = require("@oclif/test")
 const { cliux: cliUX, messageHandler } = require("@contentstack/cli-utilities")
 
 const { modules } = require('../../src/config/default')
-const { getStackDetailsByRegion, getLocalesCount, cleanUp, checkCounts } = require('./utils/helper')
+const { getStackDetailsByRegion, getMarketplaceAppsCount, cleanUp, checkCounts } = require('./utils/helper')
 const { EXPORT_PATH, DEFAULT_TIMEOUT } = require("./config.json")
 const { PRINT_LOGS, DELIMITER, KEY_VAL_DELIMITER } = process.env
 
@@ -24,14 +24,13 @@ module.exports = (region) => {
       "..",
       `${EXPORT_PATH}_${stack}`
     )
-
-    const localeBasePath = path.join(
+    const marketplaceAppsBasePath = path.join(
       exportBasePath,
-      modules.locales.dirName
+      modules.marketplace_apps.dirName
     )
-    const localeJson = path.join(
-      localeBasePath,
-      modules.locales.fileName
+    const marketplaceAppsJson = path.join(
+      marketplaceAppsBasePath,
+      modules.marketplace_apps.fileName
     )
     const messageFilePath = path.join(
       __dirname,
@@ -39,11 +38,12 @@ module.exports = (region) => {
       "..",
       "messages/index.json"
     )
+
     messageHandler.init({ messageFilePath })
     const { promptMessageList } = require(messageFilePath)
 
-    describe("ContentStack-Export locales", () => {
-      describe("cm:stacks:export locales [auth-token]", () => {
+    describe("ContentStack-Export marketplace-apps", () => {
+      describe("cm:stacks:export marketplace-apps [auth-token]", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stub(cliUX, "prompt", async (name) => {
@@ -55,41 +55,39 @@ module.exports = (region) => {
             }
           })
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails[stack])
+          .command(["cm:stacks:export", "--module", "marketplace-apps", "--yes"])
+          .it("Check marketplace-apps count", async () => {
+            let exportedMarketplaceAppsCount = 0
+            const marketplaceAppsCount = await getMarketplaceAppsCount(stackDetails[stack])
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(marketplaceAppsJson)) {
+                exportedMarketplaceAppsCount = Object.keys(JSON.parse(fs.readFileSync(marketplaceAppsJson, 'utf-8'))).length
               }
             } catch (error) {
               console.trace(error)
             }
-
-            checkCounts(localeCount, exportedLocaleCount)
+            checkCounts(marketplaceAppsCount, exportedMarketplaceAppsCount)
           })
       })
 
-      describe("cm:stacks:export locales [management-token]", () => {
+      describe("cm:stacks:export marketplace-apps [management-token]", () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
           .stdout({ print: PRINT_LOGS || false })
-          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "locales"])
-          .it("Check locale count is done", async () => {
-            let exportedLocaleCount = 0
-            const localeCount = await getLocalesCount(stackDetails[stack])
+          .command(["cm:stacks:export", "--stack-api-key", stackDetails[stack].STACK_API_KEY, "--data-dir", `${EXPORT_PATH}_${stack}`, "--alias", stackDetails[stack].ALIAS_NAME, "--module", "marketplace-apps", "--yes"])
+          .it("Check MarketplaceApps counts", async () => {
+            let exportedMarketplaceAppsCount = 0
+            const marketplaceAppsCount = await getMarketplaceAppsCount(stackDetails[stack]);
 
             try {
-              if (fs.existsSync(localeJson)) {
-                exportedLocaleCount = Object.keys(JSON.parse(fs.readFileSync(localeJson, 'utf-8'))).length
+              if (fs.existsSync(marketplaceAppsJson)) {
+                exportedMarketplaceAppsCount = Object.keys(JSON.parse(fs.readFileSync(marketplaceAppsJson, 'utf-8'))).length
               }
             } catch (error) {
               console.trace(error)
             }
-
-            checkCounts(localeCount, exportedLocaleCount)
+            checkCounts(marketplaceAppsCount, exportedMarketplaceAppsCount)
           })
       })
     })
