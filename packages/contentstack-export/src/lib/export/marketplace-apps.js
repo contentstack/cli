@@ -15,7 +15,6 @@ const {
   HttpClientDecorator,
   OauthDecorator,
   isAuthenticated,
-  configHandler,
 } = require('@contentstack/cli-utilities');
 
 const { formatError } = require('../util');
@@ -72,7 +71,7 @@ module.exports = class ExportMarketplaceApps {
   }
 
   async getOrgUid() {
-    const tempAPIClient = await managementSDKClient(this.config);
+    const tempAPIClient = await managementSDKClient({ host: this.config.host });
     const tempStackData = await tempAPIClient
       .stack({ api_key: this.config.source_stack })
       .fetch()
