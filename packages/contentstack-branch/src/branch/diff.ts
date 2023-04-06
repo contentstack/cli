@@ -9,7 +9,7 @@ import {
   BranchDiffSummary,
   BranchCompactTextRes,
 } from "../interfaces/index";
-import BranchDiffUtility from '../utils/diff';
+import BranchDiffUtility from '../utils/branch-diff-utility';
 import {
   askCompareBranch,
   askBaseBranch,
@@ -141,23 +141,26 @@ export default class BranchDiff {
   printCompactTextView(): void {
     cliux.print(" ");
     cliux.print(`Differences in '${this.options.compareBranch}' compared to '${this.options.baseBranch}'`);
-
-    if (this.branchCompactTextRes.modified?.length) {
-      forEach(this.branchCompactTextRes.modified, (diff: BranchDiffRes) => {
-        cliux.print(`${chalk.blue("± Modified:")}  '${diff.title}' ${startCase(camelCase(this.options.module))}`)
-      });
-    }
-
-    if (this.branchCompactTextRes.added?.length) {
-      forEach(this.branchCompactTextRes.added, (diff: BranchDiffRes) => {
-        cliux.print(`${chalk.green("+ Added:")}  '${diff.title}' ${startCase(camelCase(this.options.module))}`)
-      });
-    }
-
-    if (this.branchCompactTextRes.deleted?.length) {
-      forEach(this.branchCompactTextRes.deleted, (diff: BranchDiffRes) => {
-        cliux.print(`${chalk.red("- Deleted:")}  '${diff.title}' ${startCase(camelCase(this.options.module))}`)
-      });
+    if(this.branchSummary.base_only || this.branchSummary.modified || this.branchSummary.compare_only){
+      if (this.branchCompactTextRes.modified?.length) {
+        forEach(this.branchCompactTextRes.modified, (diff: BranchDiffRes) => {
+          cliux.print(`${chalk.blue("± Modified:")}  '${diff.title}' ${startCase(camelCase(this.options.module))}`)
+        });
+      }
+  
+      if (this.branchCompactTextRes.added?.length) {
+        forEach(this.branchCompactTextRes.added, (diff: BranchDiffRes) => {
+          cliux.print(`${chalk.green("+ Added:")}  '${diff.title}' ${startCase(camelCase(this.options.module))}`)
+        });
+      }
+  
+      if (this.branchCompactTextRes.deleted?.length) {
+        forEach(this.branchCompactTextRes.deleted, (diff: BranchDiffRes) => {
+          cliux.print(`${chalk.red("- Deleted:")}  '${diff.title}' ${startCase(camelCase(this.options.module))}`)
+        });
+      }
+    }else{
+      cliux.print("No differences discovered.", {"color": "red"});
     }
   }
 }
