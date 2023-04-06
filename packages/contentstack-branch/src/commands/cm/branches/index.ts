@@ -1,6 +1,7 @@
 import { Command } from '@contentstack/cli-command';
 import { cliux, messageHandler, managementSDKClient, flags } from '@contentstack/cli-utilities';
 import { getbranchesList, getbranchConfig } from '../../../utils/index';
+import chalk from 'chalk';
 
 export default class BranchListCommand extends Command {
   static description: string = messageHandler.parse('List the branches'); // Note: Update the description
@@ -22,54 +23,53 @@ export default class BranchListCommand extends Command {
       const { flags: branchListFlags } = await this.parse(BranchListCommand);
       let stackApiKey = branchListFlags['stack-api-key'];
       let verbose = branchListFlags['verbose'];
-      let apiKey;
 
       if (!stackApiKey) {
-        apiKey = getbranchConfig()?.apiKey;
-      } else {
-        apiKey = stackApiKey;
+        stackApiKey = await cliux.inquire({ type: 'input', message: 'ENTER_API_KEY', name: 'stack-api-key' });
       }
 
-      if (apiKey) {
-        const branchResult = await managementAPIClient.stack({ api_key: apiKey }).branch().query().find();
+      let baseBranch = getbranchConfig(stackApiKey);
 
-        if (branchResult && branchResult.items.length > 0) {
-          let branches = getbranchesList(branchResult);
+      const branchResult = await managementAPIClient.stack({ api_key: stackApiKey }).branch().query().find();
 
-          if (!verbose) {
-            branches.map(({ Branch, Source }: { Branch: string; Source: string }) => {
-              Source
-                ? cliux.print(`${Branch} (source: ${Source})`, { color: 'blue' })
-                : cliux.print(Branch, { color: 'blue' });
-            });
-          } else {
-            cliux.table(
-              branches,
-              {
-                Branch: {
-                  minWidth: 8,
-                },
-                Source: {
-                  minWidth: 8,
-                },
-                Aliases: {
-                  minWidth: 8,
-                },
-                Created: {
-                  minWidth: 8,
-                },
-                Updated: {
-                  minWidth: 8,
-                },
-              },
-              {
-                printLine: cliux.print,
-              },
-            );
-          }
+      if (branchResult && branchResult.items.length > 0) {
+        let { currentBranch, otherBranches, branches }: any = getbranchesList(branchResult, baseBranch);
+
+        if (!verbose) {
+          cliux.print(`* ${chalk.blue.bold(currentBranch[0].Branch)}`);
+
+          otherBranches.map(({ Branch, Source }: { Branch: string; Source: string }) => {
+            Source
+              ? cliux.print(`${Branch} (source: ${Source})`, { color: 'blue' })
+              : cliux.print(Branch, { color: 'blue' });
+          });
         } else {
-          cliux.print('Branches not present');
+          cliux.table(
+            branches,
+            {
+              Branch: {
+                minWidth: 8,
+              },
+              Source: {
+                minWidth: 8,
+              },
+              Aliases: {
+                minWidth: 8,
+              },
+              Created: {
+                minWidth: 8,
+              },
+              Updated: {
+                minWidth: 8,
+              },
+            },
+            {
+              printLine: cliux.print,
+            },
+          );
         }
+      } else {
+        cliux.print('Branches not present');
       }
     } catch (error) {
       cliux.error('error', error);
