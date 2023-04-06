@@ -3,8 +3,9 @@
  */
 import { cliux, configHandler } from '@contentstack/cli-utilities';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
+import path from 'path';
 
-export const getbranchesList = (branchResult, baseBranch) => {
+export const getbranchesList = (branchResult) => {
   const branches: Record<string, unknown>[] = [];
 
   branchResult.items.map((item) => {
@@ -17,13 +18,11 @@ export const getbranchesList = (branchResult, baseBranch) => {
     });
   });
 
-  const currentBranch = branches.filter((branch) => branch.Branch === baseBranch);
-  const otherBranches = branches.filter((branch) => branch.Branch !== baseBranch);
-
-  return { currentBranch, otherBranches, branches };
+  return branches;
 };
 
-export const getbranchConfig = (localConfigPath) => {
+export const getbranchConfig = () => {
+  const localConfigPath = path.join(process.cwd(), '/branch-config.json');
   let config;
 
   if (existsSync(localConfigPath)) {
@@ -32,14 +31,16 @@ export const getbranchConfig = (localConfigPath) => {
   } else if (Boolean(configHandler.get(`base-branch`))) {
     config = configHandler.get(`base-branch`);
   } else {
-    cliux.print('Please set the config using branch:config command');
+    cliux.print('Please set the config using branch:config command', { color: 'yellow' });
   }
 
   return config;
 };
 
-export const deletebranchConfig = (localConfigPath, branchName) => {
-  let config = getbranchConfig(localConfigPath);
+export const refreshbranchConfig = (branchName) => {
+  const localConfigPath = path.join(process.cwd(), '/branch-config.json');
+
+  let config = getbranchConfig();
 
   if (config.baseBranch === branchName) {
     let data = JSON.parse(readFileSync(localConfigPath, 'utf-8'));
