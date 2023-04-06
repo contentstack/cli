@@ -38,7 +38,7 @@ $ npm install -g @contentstack/cli-cm-branches
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-branches/1.0.0 darwin-arm64 node-v18.11.0
+@contentstack/cli-cm-branches/1.0.0 darwin-arm64 node-v16.17.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -49,43 +49,57 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`csdx cm:branches [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranches---base-branch-value---stack-api-key-value)
-* [`csdx cm:branches:config [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesconfig---base-branch-value---stack-api-key-value)
+* [`csdx cm:branches`](#csdx-cmbranches)
+* [`csdx cm:branches:config --global [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesconfig---global---base-branch-value---stack-api-key-value)
 * [`csdx cm:branches:create`](#csdx-cmbranchescreate)
 * [`csdx cm:branches:delete [-u <value>] [-k <value>]`](#csdx-cmbranchesdelete--u-value--k-value)
 * [`csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesdiff---base-branch-value---stack-api-key-value)
 * [`csdx cm:branches:merge [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesmerge---base-branch-value---stack-api-key-value)
 
-## `csdx cm:branches [--base-branch <value>] [--stack-api-key <value>]`
+## `csdx cm:branches`
 
 List the branches to select
 
 ```
 USAGE
-  $ csdx cm:branches [--base-branch <value>] [--stack-api-key <value>]
+  $ csdx cm:branches
+
+FLAGS
+  -v, --verbose  Verbose
 
 DESCRIPTION
   List the branches to select
 
 EXAMPLES
-  $ csdx cm:branches --base-branch main --stack-api-key bltxxxxxxxx
+  $ csdx cm:branches
+
+  $ csdx cm:branches --verbose
 ```
 
 _See code: [src/commands/cm/branches/index.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/index.ts)_
 
-## `csdx cm:branches:config [--base-branch <value>] [--stack-api-key <value>]`
+## `csdx cm:branches:config --global [--base-branch <value>] [--stack-api-key <value>]`
 
 Set the branch
 
 ```
 USAGE
-  $ csdx cm:branches:config [--base-branch <value>] [--stack-api-key <value>]
+  $ csdx cm:branches:config --global [--base-branch <value>] [--stack-api-key <value>]
+
+FLAGS
+  -b, --base-branch=<value>    [default: main] Base Branch
+  -g, --global                 global configuration
+  -k, --stack-api-key=<value>  (required) Stack API Key
 
 DESCRIPTION
   Set the branch
 
 EXAMPLES
-  $ csdx cm:branches:config --base-branch main --stack-api-key bltxxxxxxxx
+  $ csdx cm:branches:config -k <stack api key> --base-branch <base branch>
+
+  $ csdx cm:branches:config --global -k <stack api key> --base-branch <base branch>
+
+  $ csdx cm:branches:config --global -k <stack api key>
 ```
 
 _See code: [src/commands/cm/branches/config.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/config.ts)_
