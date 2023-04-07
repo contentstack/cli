@@ -3,5 +3,6 @@
   "CLI_BRANCH_BASE_BRANCH": "Enter base branch name",
   "CLI_BRANCH_COMPARE_BRANCH": "Enter compare branch name",
   "CLI_BRANCH_STACK_API_KEY": "Enter stack api key",
-  "CLI_BRANCH_REQUIRED_FIELD": "This field can't be empty!."
+  "CLI_BRANCH_REQUIRED_FIELD": "This field can't be empty!.",
+  "CLI_BRANCH_CONFIG_ERROR": "Please set the config using 'cm:config:set:branch' command"
 }
