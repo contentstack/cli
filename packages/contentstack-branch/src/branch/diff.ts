@@ -22,7 +22,6 @@ export default class BranchDiff {
   private options: BranchOptions;
   public branchUtilityInstance: BranchDiffUtility;
   public branchesDiffData: BranchDiffRes[];
-  public branchSummary: BranchDiffSummary;
 
   constructor(params: BranchOptions) {
     this.options = params;
@@ -76,24 +75,25 @@ export default class BranchDiff {
    * @memberof BranchDiff
    */
   displaySummary(): void {
-    this.parseSummary();
-    this.printSummary();
+    const diffSummary= this.parseSummary();
+    this.printSummary(diffSummary);
   }
 
   /**
    * @methods parseSummary - parse branch summary json response
-   * @returns {*} {void}
+   * @returns {*} {BranchDiffSummary}
    * @memberof BranchDiff
    */
-  parseSummary(): void {
+  parseSummary(): BranchDiffSummary {
     const { baseCount, compareCount, modifiedCount } = this.branchUtilityInstance.getBranchesSummary();
-    this.branchSummary = {
+    const branchSummary: BranchDiffSummary = {
       base: this.options.baseBranch,
       compare: this.options.compareBranch,
       base_only: baseCount,
       compare_only: compareCount,
       modified: modifiedCount
     }
+    return branchSummary;
   }
 
   /**
@@ -101,9 +101,9 @@ export default class BranchDiff {
    * @returns {*} {void}
    * @memberof BranchDiff
    */
-  printSummary(): void {
+  printSummary(diffSummary: BranchDiffSummary): void {
     cliux.print("Summary:", { "color": "yellow" });
-    forEach(this.branchSummary, (value, key) => {
+    forEach(diffSummary, (value, key) => {
       cliux.print(`${startCase(camelCase(key))}:  ${value}`)
     })
   }
@@ -148,7 +148,7 @@ export default class BranchDiff {
     cliux.print(" ");
     cliux.print(`Differences in '${this.options.compareBranch}' compared to '${this.options.baseBranch}'`);
 
-    if (this.branchSummary.base_only || this.branchSummary.modified || this.branchSummary.compare_only) {
+    if (branchTextRes.modified?.length || branchTextRes.added?.length || branchTextRes.deleted?.length) {
       forEach(branchTextRes.modified, (diff: BranchDiffRes) => {
         cliux.print(`${chalk.blue("± Modified:")}  '${diff.title}' ${startCase(camelCase(this.options.module))}`)
       });
