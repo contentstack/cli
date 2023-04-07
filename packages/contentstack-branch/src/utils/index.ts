@@ -28,6 +28,11 @@ export const getbranchConfig = (stackApiKey: string) => {
   return baseBranch ? baseBranch : 'main';
 };
 
-export const refreshbranchConfig = (branchName) => {};
+export const refreshbranchConfig = async (apiKey, branchUid) => {
+  const branchConfig = configHandler.get(`baseBranch.${apiKey}`);
+  if (branchConfig === branchUid) {
+    await configHandler.set(`baseBranch.${apiKey}`, 'main');
+  }
+};
 
-export * as interactive from "./interactive";
+export * as interactive from './interactive';
