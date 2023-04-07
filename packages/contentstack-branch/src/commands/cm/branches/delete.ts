@@ -46,6 +46,6 @@ export default class BranchDeleteCommand extends Command {
     if (!branchDeleteFlags.confirm) {
       return;
     }
-    deleteBranch(this.cmaHost, apiKey, branchDeleteFlags.uid);
+    await deleteBranch(this.cmaHost, apiKey, branchDeleteFlags.uid);
   }
 }
