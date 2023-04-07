@@ -7,20 +7,23 @@ export default class BranchDiffCommand extends Command {
   static description: string = messageHandler.parse('Differences between two branches');
 
   static examples: string[] = [
-    'csdx cm:branches:diff --base-branch "main" --compare-branch "develop" --stack-api-key "bltxxxxxxxx" --module "content-types"',
-    'csdx cm:branches:diff --compare-branch "develop" --stack-api-key "bltxxxxxxxx" --module "content-types"',
+    'csdx cm:branches:diff',
+    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx"',
+    'csdx cm:branches:diff --compare-branch "develop"',
+    'csdx cm:branches:diff --compare-branch "develop" --stack-api-key "bltxxxxxxxx"',
     'csdx cm:branches:diff --compare-branch "develop" --module "content-types"',
-    'csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose"',
+    'csdx cm:branches:diff --module "content-types" --format "verbose"',
+    'csdx cm:branches:diff --compare-branch "develop" --format "verbose"',
     'csdx cm:branches:diff --compare-branch "develop" --module "content-types" --filter "{content_type: "uid"}"',
     'csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose" --filter "{content_type: "uid"}"'
   ];
 
-  static usage: string = 'cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]';
+  static usage: string = 'cm:branches:diff [-c <value>] [-k <value>][-m <value>]';
 
   static flags = {
     "base-branch": flags.string({
       char: 'b',
-      description: "[Optional] Base branch",
+      description: "Base branch",
     }),
     "compare-branch": flags.string({
       char: 'c',
@@ -51,11 +54,9 @@ export default class BranchDiffCommand extends Command {
     try {
       const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
       const { flags: branchDiffFlags } = await this.parse(BranchDiffCommand);
-      //TODO: Need to handle default stack api key & base branch
       let options: BranchOptions = {
-        authToken: this.authToken,
-        stackAPIKey: branchDiffFlags['stack-api-key'],
         baseBranch: branchDiffFlags['base-branch'],
+        stackAPIKey: branchDiffFlags['stack-api-key'],
         compareBranch: branchDiffFlags['compare-branch'],
         module: branchDiffFlags.module,
         format: branchDiffFlags.format,
