@@ -28,12 +28,19 @@ export default class BranchListCommand extends Command {
         stackApiKey = await interactive.askStackAPIKey();
       }
 
-      let baseBranch = getbranchConfig(stackApiKey);
+      const baseBranch: string = getbranchConfig(stackApiKey) || 'main';
+      const listOfBranch = await managementAPIClient
+        .stack({ api_key: stackApiKey })
+        .branch()
+        .query()
+        .find()
+        .then(({ items }) => items)
+        .catch((err: { errorCode: number; errorMessage: string }) => {
+          cliux.error('error', err.errorMessage);
+        });
 
-      const branchResult = await managementAPIClient.stack({ api_key: stackApiKey }).branch().query().find();
-
-      if (branchResult && branchResult.items.length > 0) {
-        let { currentBranch, otherBranches, branches }: any = getbranchesList(branchResult, baseBranch);
+      if (listOfBranch?.length>0) {
+        let { currentBranch, otherBranches, branches }: any = getbranchesList(listOfBranch, baseBranch);
 
         if (!verbose) {
           cliux.print(`* ${chalk.blue.bold(currentBranch[0].Branch)}`);
@@ -68,9 +75,7 @@ export default class BranchListCommand extends Command {
             },
           );
         }
-      } else {
-        cliux.print('Branches not present');
-      }
+      } 
     } catch (error) {
       cliux.error('error', error);
     }
