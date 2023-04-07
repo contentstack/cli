@@ -1,6 +1,6 @@
 import { Command } from '@contentstack/cli-command';
 import { cliux, messageHandler, managementSDKClient, flags } from '@contentstack/cli-utilities';
-import { getbranchesList, getbranchConfig } from '../../../utils/index';
+import { getbranchesList, getbranchConfig, interactive } from '../../../utils/index';
 import chalk from 'chalk';
 
 export default class BranchListCommand extends Command {
@@ -25,7 +25,7 @@ export default class BranchListCommand extends Command {
       let verbose = branchListFlags['verbose'];
 
       if (!stackApiKey) {
-        stackApiKey = await cliux.inquire({ type: 'input', message: 'ENTER_API_KEY', name: 'stack-api-key' });
+        stackApiKey = await interactive.askStackAPIKey();
       }
 
       let baseBranch = getbranchConfig(stackApiKey);
