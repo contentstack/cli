@@ -1,6 +1,6 @@
 import { Command } from '@contentstack/cli-command';
 import { cliux, flags, configHandler, messageHandler } from '@contentstack/cli-utilities';
-import {interactive} from "../../../utils";
+import { interactive } from '../../../utils';
 
 export default class BranchSetCommand extends Command {
   static description = 'Set branch for CLI';
