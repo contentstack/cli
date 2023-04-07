@@ -58,22 +58,25 @@ USAGE
 
 ## `csdx cm:branches`
 
-List the branches to select
+List the branches
 
 ```
 USAGE
   $ csdx cm:branches
 
 FLAGS
-  -v, --verbose  Verbose
+  -k, --stack-api-key=<value>  Stack API Key
+  -v, --verbose                Verbose
 
 DESCRIPTION
-  List the branches to select
+  List the branches
 
 EXAMPLES
   $ csdx cm:branches
 
   $ csdx cm:branches --verbose
+
+  $ csdx cm:branches -k <stack api key>
 ```
 
 _See code: [src/commands/cm/branches/index.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/index.ts)_

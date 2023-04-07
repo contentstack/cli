@@ -1,6 +1,7 @@
 import { Command } from '@contentstack/cli-command';
 import { cliux, messageHandler, flags, configHandler } from '@contentstack/cli-utilities';
 import { writeFileSync } from 'fs';
+import path from 'path';
 
 export default class BranchConfigCommand extends Command {
   static description: string = messageHandler.parse('Set the branch'); // Note: improve the description
@@ -28,14 +29,6 @@ export default class BranchConfigCommand extends Command {
       let baseBranch = branchConfigFlags['base-branch'];
       let global = branchConfigFlags['global'];
 
-      if (!apiKey) {
-        apiKey = await cliux.inquire({ type: 'input', message: 'ENTER_API_KEY', name: 'stack-api-key' });
-      }
-
-      if (!baseBranch) {
-        baseBranch = await cliux.inquire({ type: 'input', message: 'ENTER_BASE_BRANCH', name: 'base-branch' });
-      }
-
       if (global) {
         configHandler.set(`base-branch`, { baseBranch, apiKey });
       } else {
@@ -46,8 +39,8 @@ export default class BranchConfigCommand extends Command {
           },
         });
 
-        writeFileSync(__dirname + '/branch-config.json', branchJson);
-        cliux.print(`Config file: ${__dirname + '/branch-config.json'}`);
+        writeFileSync(path.join(process.cwd(), '/branch-config.json'), branchJson);
+        cliux.print(`Config file: ${path.join(process.cwd(), '/branch-config.json')}`);
       }
 
       cliux.print('Base Branch: ' + baseBranch, { color: 'blue' });
