@@ -11,6 +11,7 @@ import {
 } from "../interfaces/index";
 import BranchDiffUtility from '../utils/branch-diff-utility';
 import {
+  askBaseBranch,
   askCompareBranch,
   askStackAPIKey,
   selectModule
@@ -44,9 +45,13 @@ export default class BranchDiff {
       this.options.stackAPIKey = await askStackAPIKey();
     }
 
-    if (this.options.stackAPIKey) {
+    if (!this.options.baseBranch) {
       const baseBranch = getbranchConfig(this.options.stackAPIKey);
-      this.options.baseBranch = baseBranch;
+      if(baseBranch){
+        this.options.baseBranch = baseBranch;
+      }else{
+        this.options.baseBranch = await askBaseBranch();
+      }
     }
 
     if (!this.options.compareBranch) {
