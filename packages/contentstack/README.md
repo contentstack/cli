@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.4.1 darwin-arm64 node-v18.11.0
+@contentstack/cli/1.5.0 darwin-arm64 node-v16.17.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -38,8 +38,8 @@ USAGE
 * [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value)
 * [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
 * [`csdx cm:bootstrap`](#csdx-cmbootstrap)
-* [`csdx cm:branches [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranches---base-branch-value---stack-api-key-value)
-* [`csdx cm:branches:config [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesconfig---base-branch-value---stack-api-key-value)
+* [`csdx cm:branches`](#csdx-cmbranches)
+* [`csdx cm:branches:config --global [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesconfig---global---base-branch-value---stack-api-key-value)
 * [`csdx cm:branches:create`](#csdx-cmbranchescreate)
 * [`csdx cm:branches:delete [-u <value>] [-k <value>]`](#csdx-cmbranchesdelete--u-value--k-value)
 * [`csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesdiff---base-branch-value---stack-api-key-value)
@@ -80,7 +80,9 @@ USAGE
 * [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
 * [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value-1)
 * [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries-1)
+* [`csdx config:get:branch`](#csdx-configgetbranch)
 * [`csdx config:get:region`](#csdx-configgetregion)
+* [`csdx config:set:branch [REGION]`](#csdx-configsetbranch-region)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMANDS]`](#csdx-help-commands)
 * [`csdx login`](#csdx-login)
@@ -444,36 +446,53 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/main/packages/contentstack-bootstrap/src/commands/cm/bootstrap.ts)_
 
-## `csdx cm:branches [--base-branch <value>] [--stack-api-key <value>]`
+## `csdx cm:branches`
 
-List the branches to select
+List the branches
 
 ```
 USAGE
-  $ csdx cm:branches [--base-branch <value>] [--stack-api-key <value>]
+  $ csdx cm:branches
+
+FLAGS
+  -k, --stack-api-key=<value>  (required) Stack API Key
+  -v, --verbose                Verbose
 
 DESCRIPTION
-  List the branches to select
+  List the branches
 
 EXAMPLES
-  $ csdx cm:branches --base-branch main --stack-api-key bltxxxxxxxx
+  $ csdx cm:branches
+
+  $ csdx cm:branches --verbose
+
+  $ csdx cm:branches -k <stack api key>
 ```
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/index.ts)_
 
-## `csdx cm:branches:config [--base-branch <value>] [--stack-api-key <value>]`
+## `csdx cm:branches:config --global [--base-branch <value>] [--stack-api-key <value>]`
 
 Set the branch
 
 ```
 USAGE
-  $ csdx cm:branches:config [--base-branch <value>] [--stack-api-key <value>]
+  $ csdx cm:branches:config --global [--base-branch <value>] [--stack-api-key <value>]
+
+FLAGS
+  -b, --base-branch=<value>    [default: main] Base Branch
+  -g, --global                 global configuration
+  -k, --stack-api-key=<value>  (required) Stack API Key
 
 DESCRIPTION
   Set the branch
 
 EXAMPLES
-  $ csdx cm:branches:config --base-branch main --stack-api-key bltxxxxxxxx
+  $ csdx cm:branches:config -k <stack api key> --base-branch <base branch>
+
+  $ csdx cm:branches:config --global -k <stack api key> --base-branch <base branch>
+
+  $ csdx cm:branches:config --global -k <stack api key>
 ```
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/config.ts)_
@@ -2468,6 +2487,23 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/stacks/unpublish.js)_
 
+## `csdx config:get:branch`
+
+Get current branch set for CLI
+
+```
+USAGE
+  $ csdx config:get:branch
+
+DESCRIPTION
+  Get current branch set for CLI
+
+EXAMPLES
+  $ csdx config:get:branch
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/branch.ts)_
+
 ## `csdx config:get:region`
 
 Get current region set for CLI
@@ -2484,6 +2520,34 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/region.ts)_
+
+## `csdx config:set:branch [REGION]`
+
+Set branch for CLI
+
+```
+USAGE
+  $ csdx config:set:branch [REGION] -k <value> [-b <value>]
+
+ARGUMENTS
+  REGION  Name for the region
+
+FLAGS
+  -b, --base-branch=<value>    [default: main] Base Branch
+  -k, --stack-api-key=<value>  (required) Stack API Key
+
+DESCRIPTION
+  Set branch for CLI
+
+EXAMPLES
+  $ csdx config:set:branch --stack-api-key <value> --base-branch <value>
+
+  $ csdx config:set:region NA
+
+  $ csdx config:set:region NA
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/branch.ts)_
 
 ## `csdx config:set:region [REGION]`
 
