@@ -36,3 +36,20 @@ export const askCustomRegion = async (): Promise<any> => {
 
   return { name, cma, cda };
 };
+
+
+export async function askStackAPIKey() : Promise<string> {
+  return await cliux.inquire<string>({
+    type: 'input',
+    message: 'CLI_CONFIG_INQUIRE_API_KEY',
+    name: 'stack-api-key',
+  });
+};
+
+export async function askBaseBranch() : Promise<string> {
+  return await cliux.inquire<string>({
+    type: 'input',
+    message: 'CLI_CONFIG_INQUIRE_BASE_BRANCH',
+    name: 'base-branch',
+  });
+};

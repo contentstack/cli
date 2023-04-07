@@ -22,10 +22,12 @@ export const getbranchesList = (branchResult, baseBranch) => {
   return { currentBranch, otherBranches, branches };
 };
 
-export const getbranchConfig = (stackApiKey) => {
+export const getbranchConfig = (stackApiKey: string) => {
   let baseBranch = configHandler.get(`baseBranch.${stackApiKey}`);
 
   return baseBranch ? baseBranch : 'main';
 };
 
 export const refreshbranchConfig = (branchName) => {};
+
+export * as interactive from "./interactive";

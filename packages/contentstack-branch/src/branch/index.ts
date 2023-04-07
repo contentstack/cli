@@ -4,5 +4,4 @@
 
 import BranchDiff from './diff';
 
-export * as interactive from './interactive';
 export { BranchDiff };

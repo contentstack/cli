@@ -10,15 +10,8 @@ export async function selectModule(): Promise<string>{
     choices: ['content_types', 'global_fields'],
     message: "Choose a module",
   })
-  .then(
-    (name) => name as string
-  )
-  .catch(err => {
-    cliux.error(messageHandler.parse('CLI_BRANCH_API_FAILED'))
-    process.exit(1);
-  });
 
-  return module;
+  return module as string;
 }
 
 export async function askCompareBranch() : Promise<string> {
@@ -27,16 +20,6 @@ export async function askCompareBranch() : Promise<string> {
     message: 'CLI_BRANCH_COMPARE_BRANCH',
     name: 'compare_branch',
   })
-  inquireRequireFieldValidation(resp);
-  return resp;
-};
-
-export async function askBaseBranch() : Promise<string> {
-  const resp= await cliux.inquire<string>({
-    type: 'input',
-    message: 'CLI_BRANCH_BASE_BRANCH',
-    name: 'branch_branch',
-  });
   inquireRequireFieldValidation(resp);
   return resp;
 };
@@ -51,7 +34,7 @@ export async function askStackAPIKey() : Promise<string> {
   return resp;
 };
 
-function inquireRequireFieldValidation(input: any): string | boolean {
+export function inquireRequireFieldValidation(input: any): string | boolean {
   if (isEmpty(input)) {
     cliux.error(messageHandler.parse("CLI_BRANCH_REQUIRED_FIELD"));
     process.exit(1);
