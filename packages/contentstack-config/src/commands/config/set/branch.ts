@@ -26,7 +26,7 @@ export default class BranchSetCommand extends Command {
         baseBranch = await cliux.inquire({ type: 'input', message: 'ENTER_BASE_BRANCH', name: 'base-branch' });
       }
 
-      configHandler.set(`baseBranch.${apiKey}`, baseBranch);
+      await configHandler.set(`baseBranch.${apiKey}`, baseBranch);
 
       cliux.success('Config is set');
     } catch (error) {

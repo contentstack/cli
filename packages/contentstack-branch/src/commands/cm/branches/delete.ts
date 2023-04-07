@@ -1,5 +1,9 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, messageHandler, managementSDKClient, flags } from '@contentstack/cli-utilities';
+import { messageHandler, flags } from '@contentstack/cli-utilities';
+import { deleteBranch } from '../../../utils/delete-branch';
+import { refreshbranchConfig } from '../../../utils';
+import { interactive } from '../../../branch';
+
 export default class BranchDeleteCommand extends Command {
   static description: string = messageHandler.parse('Delete a branch'); // Note: Update the description
 
@@ -18,33 +22,30 @@ export default class BranchDeleteCommand extends Command {
     force: flags.boolean({ char: 'f' }),
     uid: flags.string({ char: 'u', description: 'UID of the branch to be deleted' }),
     'stack-api-key': flags.string({ char: 'k', description: 'Stack API key' }),
+    confirm: flags.boolean({ char: 'y', description: 'Are you sure you want to delete', required: false }),
   };
 
   static aliases: string[] = []; // Note: alternative usage if any
 
   async run(): Promise<any> {
-    const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
     const { flags: branchDeleteFlags } = await this.parse(BranchDeleteCommand);
     let apiKey = branchDeleteFlags['stack-api-key'];
+
     if (!apiKey) {
-      apiKey = await cliux.inquire({ type: 'input', message: 'ENTER_API_KEY', name: 'stack-api-key' });
+      apiKey = await interactive.askStackAPIKey();
     }
+
     if (!branchDeleteFlags.uid) {
-      branchDeleteFlags.uid = await cliux.inquire({
-        type: 'input',
-        message: 'ENTER_BRANCH_UID',
-        name: 'uid',
-      });
+      branchDeleteFlags.uid = await interactive.askBranchUid();
     }
-    managementAPIClient
-      .stack({ api_key: apiKey })
-      .branch(branchDeleteFlags.uid)
-      .delete()
-      .then(() => cliux.success('Branch has been deleted'))
-      .catch((err: { errorCode: number; errorMessage: string }) => {
-        err.errorCode === 905
-          ? cliux.error(`Branch with UID ${branchDeleteFlags.uid} does not exist`)
-          : cliux.error(err.errorMessage);
-      });
+
+    if (!branchDeleteFlags.confirm) {
+      branchDeleteFlags.confirm = await interactive.askConfirmation();
+    }
+
+    if (!branchDeleteFlags.confirm) {
+      return;
+    }
+    deleteBranch(this.cmaHost, apiKey, branchDeleteFlags.uid);
   }
 }
