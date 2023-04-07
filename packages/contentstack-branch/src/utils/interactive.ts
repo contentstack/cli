@@ -34,6 +34,16 @@ export async function askStackAPIKey() : Promise<string> {
   return resp;
 };
 
+export async function askBaseBranch() : Promise<string> {
+  const resp= await cliux.inquire<string>({
+    type: 'input',
+    message: 'CLI_BRANCH_BASE_BRANCH',
+    name: 'branch_branch',
+  });
+  inquireRequireFieldValidation(resp);
+  return resp;
+};
+
 export function inquireRequireFieldValidation(input: any): string | boolean {
   if (isEmpty(input)) {
     cliux.error(messageHandler.parse("CLI_BRANCH_REQUIRED_FIELD"));
