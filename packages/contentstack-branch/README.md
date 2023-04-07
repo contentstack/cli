@@ -53,7 +53,7 @@ USAGE
 * [`csdx cm:branches:config [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesconfig---base-branch-value---stack-api-key-value)
 * [`csdx cm:branches:create`](#csdx-cmbranchescreate)
 * [`csdx cm:branches:delete [-u <value>] [-k <value>]`](#csdx-cmbranchesdelete--u-value--k-value)
-* [`csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesdiff---base-branch-value---stack-api-key-value)
+* [`csdx cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]`](#csdx-cmbranchesdiff--b-value--c-value--k-value-m-value)
 * [`csdx cm:branches:merge [--compare-branch <value>] [--module <value>]`](#csdx-cmbranchesmerge---compare-branch-value---module-value)
 
 ## `csdx cm:branches [--base-branch <value>] [--stack-api-key <value>]`
@@ -147,19 +147,38 @@ EXAMPLES
 
 _See code: [src/commands/cm/branches/delete.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/delete.ts)_
 
-## `csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]`
+## `csdx cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]`
 
-Check the difference between the branches
+Differences between two branches
 
 ```
 USAGE
-  $ csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]
+  $ csdx cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]
+
+FLAGS
+  -b, --base-branch=<value>     [Optional] Base branch
+  -c, --compare-branch=<value>  Compare branch
+  -k, --stack-api-key=<value>   Provide stack api key to show diff between branches
+  -m, --module=<value>          Module
+  --filter=<value>              [Optional] Provide filter to show particular uid like conntent_type uid etc.
+  --format=<option>             [default: text] [Optional] Type of flags to show branches difference view
+                                <options: text|verbose>
 
 DESCRIPTION
-  Check the difference between the branches
+  Differences between two branches
 
 EXAMPLES
-  $ csdx cm:branches:diff --base-branch main --stack-api-key bltxxxxxxxx
+  $ csdx cm:branches:diff --base-branch "main" --compare-branch "develop" --stack-api-key "bltxxxxxxxx" --module "content-types"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --stack-api-key "bltxxxxxxxx" --module "content-types"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types" --filter "{content_type: "uid"}"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose" --filter "{content_type: "uid"}"
 ```
 
 _See code: [src/commands/cm/branches/diff.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/diff.ts)_

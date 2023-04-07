@@ -13,12 +13,42 @@ export default class BranchMergeCommand extends Command {
   static usage: string = 'cm:branches:merge [--compare-branch <value>] [--module <value>]'; // Note: Add and modify the usage
 
   static flags = {
-    module: flags.string({
-      description: '[optional] specific module name',
-    }),
     'compare-branch': flags.string({
       description: 'Compare branch name',
       required: true,
+    }),
+    'merge-comment': flags.string({
+      description: 'Merge comment',
+    }),
+    strategy: flags.string({
+      description: 'Merge strategy',
+      options: ['merge_prefer_base', 'merge_prefer_compare', 'overwrite_with_compare', 'custom_preferences'],
+      hidden: true,
+    }),
+    'export-summary-path': flags.string({
+      description: 'Export file path',
+      hidden: true,
+    }),
+    'use-merge-summary': flags.string({
+      description: 'Path of merge summary file',
+      hidden: true,
+    }),
+    'execute-merge': flags.boolean({
+      description: 'Path of merge summary file',
+      hidden: true,
+    }),
+    'export-summary': flags.boolean({
+      description: 'Path of merge summary file',
+      hidden: true,
+    }),
+    'export-and-execute': flags.boolean({
+      description: 'Path of merge summary file',
+      hidden: true,
+    }),
+    'strategy-sub-options': flags.string({
+      description: 'Merge strategy sub options',
+      options: ['merge_new_only', 'merge_modified_only_prefer_base', 'both'],
+      hidden: true,
     }),
   };
 
@@ -26,11 +56,12 @@ export default class BranchMergeCommand extends Command {
 
   async run(): Promise<any> {
     try {
-      // get config
+      //  get config
+      //  validate config
+      // if summary path is given execute it directly
       //  Display summary - displaySummary
-      //  Collect the mergeSettings
-      //  Show Merge summary
-      //  Execute/export summary ( request payload )
+      //  validate and get compare branch
+      //  initiate merge handler
     } catch (error) {}
   }
 }
