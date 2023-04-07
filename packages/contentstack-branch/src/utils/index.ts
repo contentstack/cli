@@ -22,7 +22,7 @@ export const getbranchesList = (branchResult, baseBranch) => {
   return { currentBranch, otherBranches, branches };
 };
 
-export const getbranchConfig = (stackApiKey) => {
+export const getbranchConfig = (stackApiKey: string) => {
   let baseBranch = configHandler.get(`baseBranch.${stackApiKey}`);
 
   return baseBranch ? baseBranch : 'main';
@@ -34,3 +34,5 @@ export const refreshbranchConfig = async (apiKey, branchUid) => {
     await configHandler.set(`baseBranch.${apiKey}`, 'main');
   }
 };
+
+export * as interactive from './interactive';
