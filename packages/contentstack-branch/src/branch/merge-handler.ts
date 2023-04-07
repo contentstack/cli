@@ -1,6 +1,5 @@
-import {} from '@contentstack/cli-utilities';
 import { MergeInputOptions, branchConfig } from '../interfaces';
-import { selectMergeStrategy, selectMergeStrategySubOptions } from './interactive';
+import { selectMergeStrategy, selectMergeStrategySubOptions } from '../utils/interactive';
 
 export default class MergeHandler {
   private compareBranch: string;
@@ -33,7 +32,7 @@ export default class MergeHandler {
     await this.collectMergeSettings();
     await this.displayMergeSummary();
     this.prepareRequestPayload();
-    if(this.)
+    // if(this.)
   }
 
   async collectMergeSettings() {
