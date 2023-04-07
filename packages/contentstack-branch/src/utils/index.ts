@@ -3,10 +3,10 @@
  */
 import { configHandler } from '@contentstack/cli-utilities';
 
-export const getbranchesList = (branchResult, baseBranch) => {
+export const getbranchesList = (branchResult, baseBranch:string) => {
   const branches: Record<string, unknown>[] = [];
 
-  branchResult.items.map((item) => {
+  branchResult.map((item) => {
     branches.push({
       Branch: item.uid,
       Source: item.source,
@@ -25,7 +25,7 @@ export const getbranchesList = (branchResult, baseBranch) => {
 export const getbranchConfig = (stackApiKey: string) => {
   let baseBranch = configHandler.get(`baseBranch.${stackApiKey}`);
 
-  return baseBranch ? baseBranch : 'main';
+  return baseBranch ;
 };
 
 export const refreshbranchConfig = async (apiKey, branchUid) => {
