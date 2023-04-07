@@ -8,7 +8,7 @@ export default class BranchGetCommand extends Command {
 
   async run() {
     try {
-      let config = configHandler.get(`baseBranch`);
+      let config = configHandler.get(`baseBranch`) || {};
       let configList = Object.keys(config).map((key) => ({ ['ApiKey']: key, ['Branch']: config[key] }));
 
       cliux.table(
