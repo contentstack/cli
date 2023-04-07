@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.5.0 darwin-arm64 node-v16.17.1
+@contentstack/cli/1.5.0 darwin-arm64 node-v18.11.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -42,8 +42,8 @@ USAGE
 * [`csdx cm:branches:config --global [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesconfig---global---base-branch-value---stack-api-key-value)
 * [`csdx cm:branches:create`](#csdx-cmbranchescreate)
 * [`csdx cm:branches:delete [-u <value>] [-k <value>]`](#csdx-cmbranchesdelete--u-value--k-value)
-* [`csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesdiff---base-branch-value---stack-api-key-value)
-* [`csdx cm:branches:merge [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesmerge---base-branch-value---stack-api-key-value)
+* [`csdx cm:branches:diff [-c <value>] [-k <value>][-m <value>]`](#csdx-cmbranchesdiff--c-value--k-value-m-value)
+* [`csdx cm:branches:merge [--compare-branch <value>] [--module <value>]`](#csdx-cmbranchesmerge---compare-branch-value---module-value)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
 * [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value-1)
@@ -82,7 +82,7 @@ USAGE
 * [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries-1)
 * [`csdx config:get:branch`](#csdx-configgetbranch)
 * [`csdx config:get:region`](#csdx-configgetregion)
-* [`csdx config:set:branch [REGION]`](#csdx-configsetbranch-region)
+* [`csdx config:set:branch`](#csdx-configsetbranch)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMANDS]`](#csdx-help-commands)
 * [`csdx login`](#csdx-login)
@@ -455,7 +455,7 @@ USAGE
   $ csdx cm:branches
 
 FLAGS
-  -k, --stack-api-key=<value>  (required) Stack API Key
+  -k, --stack-api-key=<value>  Stack API Key
   -v, --verbose                Verbose
 
 DESCRIPTION
@@ -554,36 +554,69 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/delete.ts)_
 
-## `csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]`
+## `csdx cm:branches:diff [-c <value>] [-k <value>][-m <value>]`
 
-Check the difference between the branches
+Differences between two branches
 
 ```
 USAGE
-  $ csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]
+  $ csdx cm:branches:diff [-c <value>] [-k <value>][-m <value>]
+
+FLAGS
+  -b, --base-branch=<value>     Base branch
+  -c, --compare-branch=<value>  Compare branch
+  -k, --stack-api-key=<value>   Provide stack api key to show diff between branches
+  -m, --module=<value>          Module
+  --filter=<value>              [Optional] Provide filter to show particular uid like conntent_type uid etc.
+  --format=<option>             [default: text] [Optional] Type of flags to show branches difference view
+                                <options: text|verbose>
 
 DESCRIPTION
-  Check the difference between the branches
+  Differences between two branches
 
 EXAMPLES
-  $ csdx cm:branches:diff --base-branch main --stack-api-key bltxxxxxxxx
+  $ csdx cm:branches:diff
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx"
+
+  $ csdx cm:branches:diff --compare-branch "develop"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --stack-api-key "bltxxxxxxxx"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types"
+
+  $ csdx cm:branches:diff --module "content-types" --format "verbose"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --format "verbose"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types" --filter "{content_type: "uid"}"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose" --filter "{content_type: "uid"}"
 ```
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/diff.ts)_
 
-## `csdx cm:branches:merge [--base-branch <value>] [--stack-api-key <value>]`
+## `csdx cm:branches:merge [--compare-branch <value>] [--module <value>]`
 
-Merge a branch
+Merge changes from a branch
 
 ```
 USAGE
-  $ csdx cm:branches:merge [--base-branch <value>] [--stack-api-key <value>]
+  $ csdx cm:branches:merge [--compare-branch <value>] [--module <value>]
+
+FLAGS
+  --compare-branch=<value>  (required) Compare branch name
+  --merge-comment=<value>   Merge comment
 
 DESCRIPTION
-  Merge a branch
+  Merge changes from a branch
 
 EXAMPLES
-  $ csdx cm:branches:merge --base-branch main --stack-api-key bltxxxxxxxx
+  $ csdx cm:branches:merge --compare-branch feature-branch --module=content-types
+
+  $ csdx cm:branches:merge --compare-branch feature-branch --module=global-fields
+
+  $ csdx cm:branches:merge --compare-branch feature-branch
 ```
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/merge.ts)_
@@ -2521,30 +2554,25 @@ EXAMPLES
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/region.ts)_
 
-## `csdx config:set:branch [REGION]`
+## `csdx config:set:branch`
 
 Set branch for CLI
 
 ```
 USAGE
-  $ csdx config:set:branch [REGION] -k <value> [-b <value>]
-
-ARGUMENTS
-  REGION  Name for the region
+  $ csdx config:set:branch [-k <value>] [-b <value>]
 
 FLAGS
-  -b, --base-branch=<value>    [default: main] Base Branch
-  -k, --stack-api-key=<value>  (required) Stack API Key
+  -b, --base-branch=<value>    Base Branch
+  -k, --stack-api-key=<value>  Stack API Key
 
 DESCRIPTION
   Set branch for CLI
 
 EXAMPLES
+  $ csdx config:set:branch
+
   $ csdx config:set:branch --stack-api-key <value> --base-branch <value>
-
-  $ csdx config:set:region NA
-
-  $ csdx config:set:region NA
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/branch.ts)_
