@@ -1,7 +1,7 @@
 import { Command } from '@contentstack/cli-command';
 import { messageHandler, flags } from '@contentstack/cli-utilities';
 import { createBranch } from '../../../utils/create-branch';
-import { interactive } from '../../../branch';
+import { interactive } from '../../../utils';
 
 export default class BranchCreateCommand extends Command {
   static description: string = messageHandler.parse('Create a new branch'); // Note: Update the description
@@ -45,6 +45,6 @@ export default class BranchCreateCommand extends Command {
     if (!branchCreateFlags.uid) {
       branch.uid = await interactive.askBranchUid();
     }
-    createBranch(this.cmaHost, apiKey, branch);
+    await createBranch(this.cmaHost, apiKey, branch);
   }
 }

@@ -2,7 +2,7 @@ import { Command } from '@contentstack/cli-command';
 import { messageHandler, flags } from '@contentstack/cli-utilities';
 import { deleteBranch } from '../../../utils/delete-branch';
 import { refreshbranchConfig } from '../../../utils';
-import { interactive } from '../../../branch';
+import { interactive } from '../../../utils';
 
 export default class BranchDeleteCommand extends Command {
   static description: string = messageHandler.parse('Delete a branch'); // Note: Update the description
@@ -46,6 +46,6 @@ export default class BranchDeleteCommand extends Command {
     if (!branchDeleteFlags.confirm) {
       return;
     }
-    deleteBranch(this.cmaHost, apiKey, branchDeleteFlags.uid);
+    await deleteBranch(this.cmaHost, apiKey, branchDeleteFlags.uid);
   }
 }
