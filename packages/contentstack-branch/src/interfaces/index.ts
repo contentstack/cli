@@ -1,11 +1,11 @@
 export interface BranchOptions {
-  baseBranch: string;
   compareBranch: string;
   stackAPIKey: string;
-  authToken: string;
   module: string;
   format: string;
   filter?: string;
+  baseBranch?: string;
+  authToken?: string;
 }
 
 export interface BranchDiffRes {
@@ -24,9 +24,9 @@ export interface BranchDiffSummary {
 }
 
 export interface BranchCompactTextRes {
-  modified: BranchDiffRes[];
-  added: BranchDiffRes[];
-  deleted: BranchDiffRes[];
+  modified?: BranchDiffRes[];
+  added?: BranchDiffRes[];
+  deleted?: BranchDiffRes[];
 }
 
 export interface MergeInputOptions {

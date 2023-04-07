@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.2.1 darwin-arm64 node-v18.11.0
+@contentstack/cli-config/1.3.0 darwin-arm64 node-v16.17.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -25,8 +25,27 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`csdx config:get:branch`](#csdx-configgetbranch)
 * [`csdx config:get:region`](#csdx-configgetregion)
+* [`csdx config:set:branch`](#csdx-configsetbranch)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
+
+## `csdx config:get:branch`
+
+Get current branch set for CLI
+
+```
+USAGE
+  $ csdx config:get:branch
+
+DESCRIPTION
+  Get current branch set for CLI
+
+EXAMPLES
+  $ csdx config:get:branch
+```
+
+_See code: [src/commands/config/get/branch.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/branch.ts)_
 
 ## `csdx config:get:region`
 
@@ -44,6 +63,29 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/get/region.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/region.ts)_
+
+## `csdx config:set:branch`
+
+Set branch for CLI
+
+```
+USAGE
+  $ csdx config:set:branch [-k <value>] [-b <value>]
+
+FLAGS
+  -b, --base-branch=<value>    Base Branch
+  -k, --stack-api-key=<value>  Stack API Key
+
+DESCRIPTION
+  Set branch for CLI
+
+EXAMPLES
+  $ csdx config:set:branch
+
+  $ csdx config:set:branch --stack-api-key <value> --base-branch <value>
+```
+
+_See code: [src/commands/config/set/branch.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/branch.ts)_
 
 ## `csdx config:set:region [REGION]`
 
