@@ -1,5 +1,6 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, flags, configHandler } from '@contentstack/cli-utilities';
+import { cliux, flags, configHandler, messageHandler } from '@contentstack/cli-utilities';
+import { interactive } from '../../../utils';
 
 export default class BranchSetCommand extends Command {
   static description = 'Set branch for CLI';
@@ -19,15 +20,14 @@ export default class BranchSetCommand extends Command {
       let baseBranch = branchSetFlags['base-branch'];
 
       if (!apiKey) {
-        apiKey = await cliux.inquire({ type: 'input', message: 'ENTER_API_KEY', name: 'stack-api-key' });
+        apiKey = await interactive.askStackAPIKey();
       }
 
       if (!baseBranch) {
-        baseBranch = await cliux.inquire({ type: 'input', message: 'ENTER_BASE_BRANCH', name: 'base-branch' });
+        baseBranch = await interactive.askBaseBranch();
       }
 
-      await configHandler.set(`baseBranch.${apiKey}`, baseBranch);
-
+      configHandler.set(`baseBranch.${apiKey}`, baseBranch);
       cliux.success('Config is set');
     } catch (error) {
       cliux.error('error', error);
