@@ -21,6 +21,10 @@ export default class BranchDiffCommand extends Command {
   static usage: string = 'cm:branches:diff [-c <value>] [-k <value>][-m <value>]';
 
   static flags = {
+    "base-branch": flags.string({
+      char: 'b',
+      description: "Base branch",
+    }),
     "compare-branch": flags.string({
       char: 'c',
       description: "Compare branch",
@@ -51,6 +55,7 @@ export default class BranchDiffCommand extends Command {
       const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
       const { flags: branchDiffFlags } = await this.parse(BranchDiffCommand);
       let options: BranchOptions = {
+        baseBranch: branchDiffFlags['base-branch'],
         stackAPIKey: branchDiffFlags['stack-api-key'],
         compareBranch: branchDiffFlags['compare-branch'],
         module: branchDiffFlags.module,
