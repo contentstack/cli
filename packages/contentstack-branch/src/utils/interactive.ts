@@ -41,6 +41,32 @@ export async function askBaseBranch(): Promise<string> {
   inquireRequireFieldValidation(resp);
   return resp;
 }
+export async function askSourceBranch(): Promise<string> {
+  const resp = await cliux.inquire<string>({
+    type: 'input',
+    message: 'CLI_BRANCH_SOURCE_BRANCH',
+    name: 'source_branch',
+  });
+  inquireRequireFieldValidation(resp);
+  return resp;
+}
+export async function askBranchUid(): Promise<string> {
+  const resp = await cliux.inquire<string>({
+    type: 'input',
+    message: 'CLI_BRANCH_BRANCH_UID',
+    name: 'branch_uid',
+  });
+  inquireRequireFieldValidation(resp);
+  return resp;
+}
+export async function askConfirmation(): Promise<boolean> {
+  const resp = await cliux.inquire<boolean>({
+    type: 'confirm',
+    message: 'Are you sure you want to delete this branch ?',
+    name: 'confirm',
+  });
+  return resp;
+}
 
 export function inquireRequireFieldValidation(input: any): string | boolean {
   if (isEmpty(input)) {
