@@ -45,6 +45,6 @@ export default class BranchCreateCommand extends Command {
     if (!branchCreateFlags.uid) {
       branch.uid = await interactive.askBranchUid();
     }
-    createBranch(this.cmaHost, apiKey, branch);
+    await createBranch(this.cmaHost, apiKey, branch);
   }
 }

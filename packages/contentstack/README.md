@@ -540,6 +540,7 @@ FLAGS
   -f, --force
   -k, --stack-api-key=<value>  Stack API key
   -u, --uid=<value>            UID of the branch to be deleted
+  -y, --confirm                Are you sure you want to delete
 
 DESCRIPTION
   Delete a branch
