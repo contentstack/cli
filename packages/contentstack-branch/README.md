@@ -38,7 +38,7 @@ $ npm install -g @contentstack/cli-cm-branches
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-branches/1.0.0 darwin-arm64 node-v16.17.1
+@contentstack/cli-cm-branches/1.0.0 darwin-arm64 node-v16.19.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -53,7 +53,7 @@ USAGE
 * [`csdx cm:branches:config --global [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesconfig---global---base-branch-value---stack-api-key-value)
 * [`csdx cm:branches:create`](#csdx-cmbranchescreate)
 * [`csdx cm:branches:delete [-u <value>] [-k <value>]`](#csdx-cmbranchesdelete--u-value--k-value)
-* [`csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesdiff---base-branch-value---stack-api-key-value)
+* [`csdx cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]`](#csdx-cmbranchesdiff--b-value--c-value--k-value-m-value)
 * [`csdx cm:branches:merge [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesmerge---base-branch-value---stack-api-key-value)
 
 ## `csdx cm:branches`
@@ -150,6 +150,7 @@ FLAGS
   -f, --force
   -k, --stack-api-key=<value>  Stack API key
   -u, --uid=<value>            UID of the branch to be deleted
+  -y, --confirm                Are you sure you want to delete
 
 DESCRIPTION
   Delete a branch
@@ -164,19 +165,38 @@ EXAMPLES
 
 _See code: [src/commands/cm/branches/delete.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/delete.ts)_
 
-## `csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]`
+## `csdx cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]`
 
-Check the difference between the branches
+Differences between two branches
 
 ```
 USAGE
-  $ csdx cm:branches:diff [--base-branch <value>] [--stack-api-key <value>]
+  $ csdx cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]
+
+FLAGS
+  -b, --base-branch=<value>     [Optional] Base branch
+  -c, --compare-branch=<value>  Compare branch
+  -k, --stack-api-key=<value>   Provide stack api key to show diff between branches
+  -m, --module=<value>          Module
+  --filter=<value>              [Optional] Provide filter to show particular uid like conntent_type uid etc.
+  --format=<option>             [default: text] [Optional] Type of flags to show branches difference view
+                                <options: text|verbose>
 
 DESCRIPTION
-  Check the difference between the branches
+  Differences between two branches
 
 EXAMPLES
-  $ csdx cm:branches:diff --base-branch main --stack-api-key bltxxxxxxxx
+  $ csdx cm:branches:diff --base-branch "main" --compare-branch "develop" --stack-api-key "bltxxxxxxxx" --module "content-types"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --stack-api-key "bltxxxxxxxx" --module "content-types"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types" --filter "{content_type: "uid"}"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose" --filter "{content_type: "uid"}"
 ```
 
 _See code: [src/commands/cm/branches/diff.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/diff.ts)_
