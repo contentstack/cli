@@ -51,7 +51,6 @@ export default class BranchDiffUtility {
       modifiedCount: number = 0;
 
     if (this.branchesDiffData?.length) {
-      console.log(this.filteredUid)
       forEach(this.branchesDiffData, (diff: BranchDiffRes) => {
         if (this.filteredUid && !this.filteredUid.includes(diff.uid)) {
           return;
@@ -92,8 +91,9 @@ export default class BranchDiffUtility {
    * @methods apiRequest - branch compare api request
    * @memberof BranchDiffUtility
    * @param {string} url string
+   * @returns {*} {Promise<any>}
    */
-  async apiRequest(url: string) {
+  async apiRequest(url: string):Promise<any> {
     const headers = {
       authToken: this.authToken,
       "api_key": this.stackAPIKey,
