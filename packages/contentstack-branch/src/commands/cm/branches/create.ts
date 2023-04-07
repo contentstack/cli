@@ -1,5 +1,7 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, messageHandler, managementSDKClient, flags } from '@contentstack/cli-utilities';
+import { messageHandler, flags } from '@contentstack/cli-utilities';
+import { createBranch } from '../../../utils/create-branch';
+import { interactive } from '../../../utils';
 
 export default class BranchCreateCommand extends Command {
   static description: string = messageHandler.parse('Create a new branch'); // Note: Update the description
@@ -26,7 +28,6 @@ export default class BranchCreateCommand extends Command {
   static aliases: string[] = []; // Note: alternative usage if any
 
   async run(): Promise<any> {
-    const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
     const { flags: branchCreateFlags } = await this.parse(BranchCreateCommand);
     let apiKey = branchCreateFlags['stack-api-key'];
     let branch = {
@@ -35,30 +36,15 @@ export default class BranchCreateCommand extends Command {
     };
 
     if (!apiKey) {
-      apiKey = await cliux.inquire({ type: 'input', message: 'ENTER_API_KEY', name: 'stack-api-key' });
-    }
-    if (!branchCreateFlags.source) {
-      branch.source = await cliux.inquire({ type: 'input', message: 'ENTER_SOURCE_BRANCH', name: 'source' });
-    }
-    if (!branchCreateFlags.uid) {
-      branch.uid = await cliux.inquire({ type: 'input', message: 'ENTER_BRANCH_UID', name: 'uid' });
+      apiKey = await interactive.askStackAPIKey();
     }
 
-    managementAPIClient
-      .stack({ api_key: apiKey })
-      .branch()
-      .create({ branch })
-      .then(() =>
-        cliux.success(
-          'Branch creation in progress. Once ready, it will show in the results of the branch list command `csdx cm:branches`',
-        ),
-      )
-      .catch((err: { errorCode: number; errorMessage: string }) =>
-        err.errorCode === 910
-          ? cliux.error(
-              `Error : Branch with uid ${branchCreateFlags.uid} already exists, please enter unique branch uid`,
-            )
-          : cliux.error(err.errorMessage),
-      );
+    if (!branchCreateFlags.source) {
+      branch.source = await interactive.askSourceBranch();
+    }
+    if (!branchCreateFlags.uid) {
+      branch.uid = await interactive.askBranchUid();
+    }
+    createBranch(this.cmaHost, apiKey, branch);
   }
 }
