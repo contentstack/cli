@@ -2,14 +2,16 @@ import isEmpty from 'lodash/isEmpty';
 import { cliux, messageHandler } from '@contentstack/cli-utilities';
 
 export async function selectModule(): Promise<string> {
-  const module = await cliux.inquire({
+  return cliux.inquire<string>({
     type: 'list',
     name: 'module',
-    choices: ['content_types', 'global_fields'],
-    message: 'Choose a module',
+    message: 'CLI_SELECT_TOKEN_TYPE',
+    choices: [
+      { name: 'Content Types', value: 'content_types'},
+      { name: 'Global Fields', value: 'global_fields'},
+      { name: 'Both', value: 'both'},
+    ]
   });
-
-  return module as string;
 }
 
 export async function askCompareBranch(): Promise<string> {
