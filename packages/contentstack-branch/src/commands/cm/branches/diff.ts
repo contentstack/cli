@@ -32,6 +32,7 @@ export default class BranchDiffCommand extends Command {
     module: flags.string({
       char: "m",
       description: "Module",
+      options: ["content_types", "global_fields", "both"]
     }),
     filter: flags.string({
       description: "[Optional] Provide filter to show particular uid like conntent_type uid etc."
