@@ -1,5 +1,3 @@
-import { ContentstackClient } from "@contentstack/management";
-
 export interface BranchOptions {
   compareBranch: string;
   stackAPIKey: string;
@@ -27,6 +25,30 @@ export interface BranchDiffSummary {
 
 export interface BranchCompactTextRes {
   modified?: BranchDiffRes[];
+  added?: BranchDiffRes[];
+  deleted?: BranchDiffRes[];
+}
+
+export interface ModifiedFieldsType{
+  uid: string;
+  displayName: string;
+  path: string;
+  fieldType: string;
+}
+
+export interface ModifiedFieldsInput{
+  modified?: ModifiedFieldsType[];
+  added?: ModifiedFieldsType[];
+  deleted?: ModifiedFieldsType[];
+}
+
+export interface BranchModifiedDetails{
+  moduleDetails: BranchDiffRes;
+  modifiedFields: ModifiedFieldsInput;
+}
+
+export interface BranchDiffVerboseRes {
+  modified?: BranchModifiedDetails[];
   added?: BranchDiffRes[];
   deleted?: BranchDiffRes[];
 }
