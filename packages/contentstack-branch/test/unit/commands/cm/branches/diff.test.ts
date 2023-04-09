@@ -1,29 +1,13 @@
-import { describe, it, beforeEach, afterEach } from 'mocha';
+import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import { stub, assert } from 'sinon';
 import DiffCommand from '../../../../../src/commands/cm/branches/diff';
-import { cliux , configHandler} from '@contentstack/cli-utilities';
 import { BranchDiff } from '../../../../../src/branch/index';
 import { interactive } from '../../../../../src/utils/index';
 import { mockData } from '../../../mock/data';
 import * as util from '../../../../../src/utils/index';
 
 describe('Diff Command', () => {
-  // //configHandler.get(`baseBranch.${stackApiKey}`);
-  // let baseBranchStub;
-  // let configHandlerStub;
-  // beforeEach(function () {
-  //   configHandlerStub = stub(configHandler, 'get').callsFake(function(stackApiKey){
-
-  //   })
-  //   baseBranchStub = stub(util, 'getbranchConfig').callsFake(function () {
-  //     return 'main';
-  //   });
-  // });
-  // afterEach(function () {
-  //   baseBranchStub.restore();
-  // });
-
   it('Branch diff with all flags, should be successful', async function () {
     const stub1 = stub(BranchDiff.prototype, 'run').resolves(mockData.data);
     await DiffCommand.run([
@@ -31,7 +15,7 @@ describe('Diff Command', () => {
       mockData.flags.compareBranch,
       '-m',
       mockData.flags.module,
-      '-s',
+      '-k',
       mockData.flags.stackAPIKey,
       '-b',
       mockData.flags.baseBranch,
@@ -96,6 +80,34 @@ describe('Diff Command', () => {
     askBaseBranch.restore();
   });
 
+  it('Branch diff when format type is verbose, should display verbose view', async function () {
+    await DiffCommand.run([
+      '-c',
+      mockData.flags.compareBranch,
+      '-b',
+      mockData.flags.baseBranch,
+      '-m',
+      mockData.flags.module,
+      '-k',
+      mockData.flags.stackAPIKey,
+      '--format',
+      'verbose'
+    ]);
+  });
+
+  it('Branch summary when module is of both type(content_types & global fields)', async function () {
+    await DiffCommand.run([
+      '-c',
+      mockData.flags.compareBranch,
+      '-b',
+      mockData.flags.baseBranch,
+      '-m',
+      'both',
+      '-k',
+      mockData.flags.stackAPIKey
+    ]);
+  });
+
   it('Branch diff with global config, should take the base branch from config', async function () {
     const stubBranchConfig = stub(util, 'getbranchConfig').resolves(mockData.flags.baseBranch);
     await DiffCommand.run([
@@ -125,4 +137,6 @@ describe('Diff Command', () => {
     askCompareBranch.restore();
     askBaseBranch.restore();
   });
+
+  //testcases for error -> 1 pending
 });
