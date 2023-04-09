@@ -43,6 +43,7 @@ export async function askBaseBranch(): Promise<string> {
   inquireRequireFieldValidation(resp);
   return resp;
 }
+
 export async function askSourceBranch(): Promise<string> {
   const resp = await cliux.inquire<string>({
     type: 'input',
@@ -52,6 +53,7 @@ export async function askSourceBranch(): Promise<string> {
   inquireRequireFieldValidation(resp);
   return resp;
 }
+
 export async function askBranchUid(): Promise<string> {
   const resp = await cliux.inquire<string>({
     type: 'input',
@@ -61,6 +63,7 @@ export async function askBranchUid(): Promise<string> {
   inquireRequireFieldValidation(resp);
   return resp;
 }
+
 export async function askConfirmation(): Promise<boolean> {
   const resp = await cliux.inquire<boolean>({
     type: 'confirm',
