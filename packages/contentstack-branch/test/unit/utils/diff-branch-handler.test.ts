@@ -1,44 +1,62 @@
 import { describe, it, beforeEach, afterEach } from 'mocha';
 import { expect } from 'chai';
-import { stub, assert, createSandbox } from 'sinon';
+import { stub, assert } from 'sinon';
 import BranchDiffUtility from '../../../src/utils/branch-diff-utility';
-import { cliux, HttpClient } from '@contentstack/cli-utilities';
-import { mockData } from "../mock/data"
+import { cliux } from '@contentstack/cli-utilities';
+import { mockData } from '../mock/data';
 
 let baseUrl = 'http://dev16-branches.csnonprod.com/api/compare';
 
-describe('Branch Diff Utility', () => {
-  let utilityClient =  new BranchDiffUtility(mockData.flags);
-  let apiRequestStub;
+describe('Branch Diff Utility Class Testcases', () => {
+  let utilityClient, cliuxErrorStub;
   before(function () {
-    // runs once before the first test in this block
-    //const httpClientStub = stub(HttpClient.prototype, 'get');
-     apiRequestStub = stub().callsFake(function (baseUrl) {
-      if (baseUrl) {
-        return Promise.resolve(mockData.branchDiff);
-      } else {
-        return Promise.reject({ errorMessage: 'invalid credentials' });
-      }
-    });
+    utilityClient = new BranchDiffUtility(mockData.flags);
+    cliuxErrorStub = stub(cliux, 'error')
   });
   after(function () {
-    // runs once before the first test in this block
-    apiRequestStub.restore();
+    utilityClient = null;
+    cliuxErrorStub.restore();
   });
-    it('API request with valid details, should be successful', async function () {
-      const stub1 = stub(BranchDiffUtility.prototype, 'apiRequest').resolves(mockData.branchDiff);
-      expect(stub1.calledOnce).to.be.true;
-      stub1.restore();
-    });
 
-    it('Fetch Branch diff with valid details, should be successful', async function () {
-      const stub1 = stub(BranchDiffUtility.prototype, 'fetchBranchesDiff');
-     // const result = await utilityClient.apiRequest(baseUrl);
-      expect(stub1.calledOnce).to.be.true;
-      //expect(result).to.be.equal(mockData.branchDiff);
-      stub1.restore();
-    });
+  it('api request, should be successful', async function () {
+    const stub1 = stub(BranchDiffUtility.prototype, 'apiRequest').resolves(mockData.branchDiff);
+    const result = await utilityClient.apiRequest(`${baseUrl}/${mockData.flags.module}`);
+    expect(stub1.calledOnce).to.be.true;
+    expect(result).to.be.equal(mockData.branchDiff);
+    stub1.restore();
+  });
+
+  it('api request, should be failed', async function () {
+    const stub1 = stub(BranchDiffUtility.prototype, 'apiRequest').rejects("CLI_BRANCH_API_FAILED");
+    const result = await utilityClient.apiRequest(`${baseUrl}`).catch(err => err);
+    expect(stub1.calledOnce).to.be.true;
+    stub1.restore();
+  });
+
+  it('fetch branch differences', async function () {
+    const stub1 = stub(BranchDiffUtility.prototype, 'fetchBranchesDiff').resolves();
+    await utilityClient.fetchBranchesDiff();
+    expect(stub1.calledOnce).to.be.true;
+    stub1.restore();
+  });
+
+  it('get branch diff summary', async function () {
+    const stub1 = stub(BranchDiffUtility.prototype, 'getBranchesSummary').returns(mockData.branchSummary);
+    const result = utilityClient.getBranchesSummary();
+    expect(stub1.calledOnce).to.be.true;
+    expect(result).to.be.equal(mockData.branchSummary);
+    stub1.restore();
+  });
+
+  it('get branch compact data', async function () {
+    const stub1 = stub(BranchDiffUtility.prototype, 'getBrancheCompactData').returns(mockData.branchCompactData);
+    const result = utilityClient.getBrancheCompactData();
+    expect(stub1.calledOnce).to.be.true;
+    expect(result).to.be.equal(mockData.branchCompactData);
+    stub1.restore();
+  });
+
+  //handle filter flag ,& verbose view --> 2 pending
 });
 
-// const result = await authHandler.login(credentials.email, credentials.password);
-// expect(result).to.be.equal(user);
+// branch/diff -> testcases

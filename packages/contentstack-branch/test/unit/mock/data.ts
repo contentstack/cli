@@ -33,6 +33,31 @@ const mockData = {
        "status": "modified" 
      }
    ]
+ },
+ branchSummary:{
+  baseCount: 0,
+  compareCount:1,
+  modifiedCount:1,
+ },
+ branchCompactData:{
+  listOfModified:[{
+    uid: "content_type1",
+    title: "Content Type1",
+    type: "content_type",
+    status: "modified",
+  }],
+  listOfAdded:[{
+    uid: "content_type2",
+    title: "Content Type 2",
+    type: "content_type",
+    status: "compare_only",
+  }],
+  listOfDeleted:[{
+    uid: "content_type3",
+    title: "Content Type 3",
+    type: "content_type",
+    status: "base_only",
+  }]
  }
 };
 

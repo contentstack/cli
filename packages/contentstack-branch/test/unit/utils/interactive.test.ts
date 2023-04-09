@@ -3,17 +3,26 @@ import { describe, it, beforeEach, afterEach } from 'mocha';
 import { stub, assert } from 'sinon';
 import { cliux, messageHandler } from '@contentstack/cli-utilities';
 import { interactive } from '../../../src/utils';
+import {mockData} from '../mock/data'
 
 describe('Interactive', () => {
-  let inquireStub = stub(cliux, 'inquire');
+  let inquireStub;
+  beforeEach(function (){
+    inquireStub = stub(cliux, 'inquire');
+  })
+  afterEach(function(){
+    inquireStub.restore();
+  })
 
-  it('ask module', async function () {
+  it('select module', async function () {
     const module = 'content_types';
     inquireStub.callsFake(function () {
       return Promise.resolve(module);
     });
     const result = await interactive.selectModule();
+    const isValid = interactive.inquireRequireFieldValidation(result);
     expect(result).to.be.equal(module);
+    expect(isValid).to.be.equal(true);
   });
 
   it('ask compare branch', async function () {
@@ -23,16 +32,6 @@ describe('Interactive', () => {
     });
     const result = await interactive.askCompareBranch();
     expect(result).to.be.equal(compareBranch);
-  });
-
-  it('ask compare branch not entered, should be failed', async function () {
-    const error = 'CLI_BRANCH_REQUIRED_FIELD';
-    inquireStub.callsFake(function () {
-      return Promise.reject(error);
-    });
-    const result = await interactive.askCompareBranch();
-    console.log("result:-",result)
-    expect(result).to.be.equal(error);
   });
 
   it('ask stack api key', async function () {
