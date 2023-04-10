@@ -52,3 +52,12 @@ export interface BranchDiffVerboseRes {
   added?: BranchDiffRes[];
   deleted?: BranchDiffRes[];
 }
+
+export interface BranchDiffPayload{
+  module: string;
+  apiKey: string;
+  baseBranch: string;
+  compareBranch:string;
+  filter?:string;
+  url?:string;
+}
