@@ -1,20 +1,17 @@
 import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
 import { cliux } from '@contentstack/cli-utilities';
-import {
-  BranchOptions,
-  BranchDiffRes,
-} from '../interfaces/index';
+import { BranchOptions, BranchDiffRes, BranchDiffPayload } from '../interfaces/index';
 import { askBaseBranch, askCompareBranch, askStackAPIKey, selectModule } from '../utils/interactive';
-import { getbranchConfig } from '../utils';
-import {  
+import {
   fetchBranchesDiff,
   parseSummary,
   printSummary,
   parseCompactText,
   printCompactTextView,
   parseVerbose,
-  printVerboseTextView} from '../utils/branch-diff-utility';
+  printVerboseTextView,
+} from '../utils/branch-diff-utility';
 
 export default class BranchDiff {
   private options: BranchOptions;
@@ -40,12 +37,7 @@ export default class BranchDiff {
     }
 
     if (!this.options.baseBranch) {
-      const baseBranch = getbranchConfig(this.options.stackAPIKey);
-      if (baseBranch) {
-        this.options.baseBranch = baseBranch;
-      } else {
-        this.options.baseBranch = await askBaseBranch();
-      }
+      this.options.baseBranch = await askBaseBranch();
     }
 
     if (!this.options.compareBranch) {
@@ -57,31 +49,31 @@ export default class BranchDiff {
   }
 
   /**
-   * @methods initBranchDiffUtility - call utility function to load data. Display it
+   * @methods initBranchDiffUtility - call utility function to load data and display it
    * @returns {*} {Promise<void>}
    * @memberof BranchDiff
    */
   async initBranchDiffUtility(): Promise<void> {
     cliux.loader('Loading branch differences...');
-    let payload={
-      module: "",
+    let payload: BranchDiffPayload = {
+      module: '',
       apiKey: this.options.stackAPIKey,
       baseBranch: this.options.baseBranch,
-      compareBranch:this.options.compareBranch,
-      filter:this.options.filter
-    }
+      compareBranch: this.options.compareBranch,
+      filter: this.options.filter,
+    };
     if (['content_types', 'both'].includes(this.options.module)) {
-      payload.module = "content_types";
+      payload.module = 'content_types';
       const branchDiffData = await fetchBranchesDiff(payload);
       this.displaySummary(branchDiffData, payload.module);
-      await this.displayBranchDiffTextAndVerbose(branchDiffData, payload.module, payload);
+      await this.displayBranchDiffTextAndVerbose(branchDiffData, payload);
     }
 
     if (['global_fields', 'both'].includes(this.options.module)) {
       payload.module = 'global_fields';
       const branchDiffData = await fetchBranchesDiff(payload);
       this.displaySummary(branchDiffData, payload.module);
-      await this.displayBranchDiffTextAndVerbose(branchDiffData, payload.module, payload);
+      await this.displayBranchDiffTextAndVerbose(branchDiffData, payload);
     }
   }
 
@@ -90,7 +82,7 @@ export default class BranchDiff {
    * @returns {*} {void}
    * @memberof BranchDiff
    */
-  displaySummary(branchDiffData: any[], module:string): void {
+  displaySummary(branchDiffData: any[], module: string): void {
     cliux.print(' ');
     cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
     const diffSummary = parseSummary(branchDiffData, this.options.baseBranch, this.options.compareBranch);
@@ -102,15 +94,15 @@ export default class BranchDiff {
    * @returns {*} {void}
    * @memberof BranchDiff
    */
-  async displayBranchDiffTextAndVerbose(branchDiffData: any[], module:string, payload): Promise<void> {
+  async displayBranchDiffTextAndVerbose(branchDiffData: any[], payload: BranchDiffPayload): Promise<void> {
     cliux.print(' ');
     cliux.print(`Differences in '${this.options.compareBranch}' compared to '${this.options.baseBranch}':`);
     if (this.options.format === 'text') {
       const branchTextRes = parseCompactText(branchDiffData);
-      printCompactTextView(branchTextRes, module);
+      printCompactTextView(branchTextRes, payload.module);
     } else if (this.options.format === 'verbose') {
-      const verboseRes = await parseVerbose(branchDiffData, module, payload);
-      printVerboseTextView(verboseRes, this.options.module);
+      const verboseRes = await parseVerbose(branchDiffData, payload);
+      printVerboseTextView(verboseRes, payload.module);
     }
   }
 }
