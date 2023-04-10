@@ -9,8 +9,8 @@ export default class BranchSetCommand extends Command {
     'base-branch': flags.string({ char: 'b', description: 'Base Branch' }),
   };
   static examples = [
-    '$ csdx config:set:branch',
-    '$ csdx config:set:branch --stack-api-key <value> --base-branch <value>',
+    '$ csdx config:set:base-branch',
+    '$ csdx config:set:base-branch --stack-api-key <value> --base-branch <value>',
   ];
 
   async run() {
