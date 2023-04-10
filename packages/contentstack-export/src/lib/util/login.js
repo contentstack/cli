@@ -9,7 +9,7 @@
 
 const chalk = require('chalk');
 const { addlogs } = require('../util/log');
-const { managementSDKClient } = require('@contentstack/cli-utilities');
+const { managementSDKClient, isAuthenticated } = require('@contentstack/cli-utilities');
 
 module.exports.login = (config) => {
   return new Promise((resolve, reject) => {
@@ -22,11 +22,10 @@ module.exports.login = (config) => {
             .then((response) => {
               // eslint-disable-next-line no-console
               console.log(chalk.green('Contentstack account authenticated successfully!'));
-              config.authtoken = response.user.authtoken;
               config.headers = {
                 api_key: config.source_stack,
                 access_token: config.access_token,
-                authtoken: config.authtoken,
+                authtoken: response.user.authtoken,
                 'X-User-Agent': 'contentstack-export/v',
               };
               resolve(config);
@@ -34,7 +33,7 @@ module.exports.login = (config) => {
             .catch((error) => {
               reject(error);
             });
-        } else if (config.auth_token && !config.management_token) {
+        } else if (isAuthenticated() && !config.management_token) {
           const stackAPIClient = APIClient.stack({
             api_key: config.source_stack,
             management_token: config.management_token,

@@ -1,10 +1,17 @@
-import { Agent } from 'https';
 import { client, ContentstackClient, ContentstackConfig } from '@contentstack/management';
+import { Agent } from 'node:https';
+import { default as configStore } from './config-handler';
 
-import configStore from './config-handler';
+class ManagementSDKInitiator {
+  private analyticsInfo: string;
 
-export default async (config): Promise<ContentstackClient> => {
-  try {
+  constructor() {}
+
+  init(context) {
+    this.analyticsInfo = context?.analyticsInfo;
+  }
+
+  async createAPIClient(config): Promise<ContentstackClient> {
     const option: ContentstackConfig = {
       host: config.host,
       maxContentLength: 100000000,
@@ -45,14 +52,21 @@ export default async (config): Promise<ContentstackClient> => {
         return Promise.reject('You do not have permissions to perform this action, please login to proceed');
       },
     };
+
     if (typeof config.branchName === 'string') {
-      option.headers = { branch: config.branchName };
+      if (!option.headers) option.headers = {};
+      option.headers.branch = config.branchName;
+    }
+
+    if (this.analyticsInfo) {
+      if (!option.headers) option.headers = {};
+      option.headers['X-CS-CLI'] = this.analyticsInfo;
     }
 
     if (!config.management_token) {
       const authtoken = configStore.get('authtoken');
       if (authtoken) {
-        option.authtoken = configStore.get('authtoken');
+        option.authtoken = authtoken;
         option.authorization = '';
       } else {
         option.authtoken = '';
@@ -61,8 +75,9 @@ export default async (config): Promise<ContentstackClient> => {
     }
 
     return client(option);
-  } catch (error) {
-    console.error(error);
-    throw new Error(error);
   }
-};
+}
+
+export const managementSDKInitiator = new ManagementSDKInitiator();
+export default managementSDKInitiator.createAPIClient.bind(managementSDKInitiator);
+export { ContentstackConfig, ContentstackClient };

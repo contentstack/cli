@@ -1,5 +1,6 @@
 node_modules
 .todo
+.env
 logs
 contents
 lerna-debug.log

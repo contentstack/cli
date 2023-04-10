@@ -14,7 +14,6 @@ exports.configWithMToken = function (
   managementTokens,
   moduleName,
   host,
-  _authToken,
   backupdir,
   importCommandFlags,
 ) {
@@ -40,7 +39,6 @@ exports.configWithMToken = function (
       defaultConfig.useBackedupDir = backupdir;
     }
 
-    defaultConfig.auth_token = _authToken;
     defaultConfig = _.merge(defaultConfig, externalConfig);
 
     if(!defaultConfig.data) {
@@ -61,14 +59,12 @@ exports.parameterWithMToken = function (
   data,
   moduleName,
   host,
-  _authToken,
   backupdir,
   importCommandFlags,
 ) {
   return new Promise(async function (resolve, reject) {
     defaultConfig.management_token = managementTokens.token;
     defaultConfig.target_stack = managementTokens.apiKey;
-    defaultConfig.auth_token = _authToken;
     defaultConfig.branchName = importCommandFlags.branchName;
     defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
     if (moduleName && moduleName !== undefined) {
@@ -88,7 +84,6 @@ exports.withoutParameterMToken = async (
   managementTokens,
   moduleName,
   host,
-  _authToken,
   backupdir,
   importCommandFlags,
 ) => {
@@ -96,7 +91,6 @@ exports.withoutParameterMToken = async (
     const exporteddata = await cliux.prompt(message.promptMessageList.promptPathStoredData);
     defaultConfig.management_token = managementTokens.token;
     defaultConfig.target_stack = managementTokens.apiKey;
-    defaultConfig.auth_token = _authToken;
     defaultConfig.branchName = importCommandFlags.branchName;
     defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
     if (moduleName && moduleName !== undefined) {
@@ -111,10 +105,9 @@ exports.withoutParameterMToken = async (
   });
 };
 
-exports.configWithAuthToken = function (config, _authToken, moduleName, host, backupdir, importCommandFlags) {
+exports.configWithAuthToken = function (config, moduleName, host, backupdir, importCommandFlags) {
   return new Promise(async function (resolve, reject) {
     let externalConfig = require(config);
-    defaultConfig.auth_token = _authToken;
     defaultConfig.branchName = importCommandFlags.branchName;
     defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
     if (moduleName && moduleName !== undefined) {
@@ -140,7 +133,6 @@ exports.configWithAuthToken = function (config, _authToken, moduleName, host, ba
 };
 
 exports.parametersWithAuthToken = function (
-  _authToken,
   targetStack,
   data,
   moduleName,
@@ -149,7 +141,6 @@ exports.parametersWithAuthToken = function (
   importCommandFlags,
 ) {
   return new Promise(async function (resolve, reject) {
-    defaultConfig.auth_token = _authToken;
     defaultConfig.target_stack = targetStack;
     defaultConfig.branchName = importCommandFlags.branchName;
     defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
@@ -168,11 +159,10 @@ exports.parametersWithAuthToken = function (
   });
 };
 
-exports.withoutParametersWithAuthToken = async (_authToken, moduleName, host, backupdir, importCommandFlags) => {
+exports.withoutParametersWithAuthToken = async (moduleName, host, backupdir, importCommandFlags) => {
   return new Promise(async function (resolve, reject) {
     const stackUid = await cliux.prompt(message.promptMessageList.promptTargetStack);
     const exporteddata = await cliux.prompt(message.promptMessageList.promptPathStoredData);
-    defaultConfig.auth_token = _authToken;
     defaultConfig.target_stack = stackUid;
     defaultConfig.data = exporteddata;
     defaultConfig.branchName = importCommandFlags.branchName;
