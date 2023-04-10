@@ -37,19 +37,26 @@ export const askCustomRegion = async (): Promise<any> => {
   return { name, cma, cda };
 };
 
-
-export async function askStackAPIKey() : Promise<string> {
+export async function askStackAPIKey(): Promise<string> {
   return await cliux.inquire<string>({
     type: 'input',
     message: 'CLI_CONFIG_INQUIRE_API_KEY',
     name: 'stack-api-key',
   });
-};
+}
 
-export async function askBaseBranch() : Promise<string> {
+export async function askBaseBranch(): Promise<string> {
   return await cliux.inquire<string>({
     type: 'input',
     message: 'CLI_CONFIG_INQUIRE_BASE_BRANCH',
     name: 'base-branch',
   });
-};
+}
+
+export async function askConfirmation(): Promise<boolean> {
+  return await cliux.inquire<boolean>({
+    type: 'confirm',
+    message: 'Are you sure you want to remove this configuration ?',
+    name: 'config_remove_confirmation',
+  });
+}
