@@ -1,62 +1,87 @@
 import { describe, it, beforeEach, afterEach } from 'mocha';
 import { expect } from 'chai';
 import { stub, assert } from 'sinon';
-import BranchDiffUtility from '../../../src/utils/branch-diff-utility';
+import { branchDiffUtility } from '../../../src/utils';
 import { cliux } from '@contentstack/cli-utilities';
 import { mockData } from '../mock/data';
 
-let baseUrl = 'http://dev16-branches.csnonprod.com/api/compare';
 
 describe('Branch Diff Utility Class Testcases', () => {
-  let utilityClient, cliuxErrorStub;
+  let cliuxErrorStub, cliuxPrintStub;
   before(function () {
-    utilityClient = new BranchDiffUtility(mockData.flags);
-    cliuxErrorStub = stub(cliux, 'error')
+    cliuxErrorStub = stub(cliux, 'error');
+    cliuxPrintStub = stub(cliux, 'print');
   });
   after(function () {
-    utilityClient = null;
     cliuxErrorStub.restore();
-  });
-
-  it('api request, should be successful', async function () {
-    const stub1 = stub(BranchDiffUtility.prototype, 'apiRequest').resolves(mockData.branchDiff);
-    const result = await utilityClient.apiRequest(`${baseUrl}/${mockData.flags.module}`);
-    expect(stub1.calledOnce).to.be.true;
-    expect(result).to.be.equal(mockData.branchDiff);
-    stub1.restore();
-  });
-
-  it('api request, should be failed', async function () {
-    const stub1 = stub(BranchDiffUtility.prototype, 'apiRequest').rejects("CLI_BRANCH_API_FAILED");
-    const result = await utilityClient.apiRequest(`${baseUrl}`).catch(err => err);
-    expect(stub1.calledOnce).to.be.true;
-    stub1.restore();
+    cliuxPrintStub.restore();
   });
 
   it('fetch branch differences', async function () {
-    const stub1 = stub(BranchDiffUtility.prototype, 'fetchBranchesDiff').resolves();
-    await utilityClient.fetchBranchesDiff();
+    const stub1 = stub(branchDiffUtility, 'fetchBranchesDiff');
+    stub1.withArgs(mockData.branchDiffPayload).resolves(mockData.branchDiffData);
+    const result = await branchDiffUtility.fetchBranchesDiff(mockData.branchDiffPayload);
     expect(stub1.calledOnce).to.be.true;
+    expect(result).to.be.equal(mockData.branchDiffData);
     stub1.restore();
   });
 
-  it('get branch diff summary', async function () {
-    const stub1 = stub(BranchDiffUtility.prototype, 'getBranchesSummary').returns(mockData.branchSummary);
-    const result = utilityClient.getBranchesSummary();
+  it('parse branch summary', async function () {
+    const stub1 = stub(branchDiffUtility, 'parseSummary');
+    stub1.withArgs(mockData.branchDiffData, 'main', 'dev').returns(mockData.branchSummary);
+    const result = branchDiffUtility.parseSummary(mockData.branchDiffData, 'main', 'dev');
     expect(stub1.calledOnce).to.be.true;
     expect(result).to.be.equal(mockData.branchSummary);
     stub1.restore();
   });
 
-  it('get branch compact data', async function () {
-    const stub1 = stub(BranchDiffUtility.prototype, 'getBrancheCompactData').returns(mockData.branchCompactData);
-    const result = utilityClient.getBrancheCompactData();
+  it('print branch summary', async function () {
+    const stub1 = stub(branchDiffUtility, 'printSummary')
+    stub1.withArgs(mockData.branchSummary).returns();
+    branchDiffUtility.printSummary(mockData.branchSummary);
+    expect(stub1.calledOnce).to.be.true;
+    stub1.restore();
+  });
+
+  it('parse compact text', async function () {
+    const stub1 = stub(branchDiffUtility, 'parseCompactText');
+    stub1.withArgs(mockData.branchDiffData).returns(mockData.branchCompactData);
+    const result = branchDiffUtility.parseCompactText(mockData.branchDiffData);
     expect(stub1.calledOnce).to.be.true;
     expect(result).to.be.equal(mockData.branchCompactData);
     stub1.restore();
   });
 
-  //handle filter flag ,& verbose view --> 2 pending
-});
+  it('print compact text', async function () {
+    const stub1 = stub(branchDiffUtility, 'printCompactTextView')
+    stub1.withArgs(mockData.branchCompactData, "content_types").returns();
+    branchDiffUtility.printCompactTextView(mockData.branchCompactData, "content_types");
+    expect(stub1.calledOnce).to.be.true;
+    stub1.restore();
+  });
+  
+  it('parse verbose', async function () {
+    const stub1 = stub(branchDiffUtility, 'parseVerbose');
+    stub1.withArgs(mockData.branchDiffData, mockData.branchDiffPayload).resolves(mockData.verboseRes);
+    const result = await branchDiffUtility.parseVerbose(mockData.branchDiffData, mockData.branchDiffPayload);
+    expect(stub1.calledOnce).to.be.true;
+    expect(result).to.be.equal(mockData.verboseRes);
+    stub1.restore();
+  });
 
-// branch/diff -> testcases
+  it('print verbose text view', async function () {
+    const stub1 = stub(branchDiffUtility, 'printVerboseTextView')
+    stub1.withArgs(mockData.verboseRes, "content_types").returns();
+    branchDiffUtility.printVerboseTextView(mockData.verboseRes, "content_types");
+    expect(stub1.calledOnce).to.be.true;
+    stub1.restore();
+  });
+
+  it('print message verbose view, when nothing modified, deleted & added', async function () {
+    const stub1 = stub(branchDiffUtility, 'printVerboseTextView')
+    stub1.withArgs(mockData.emptyVerboseRes, "content_types").returns();
+    branchDiffUtility.printVerboseTextView(mockData.emptyVerboseRes, "content_types");
+    expect(stub1.calledOnce).to.be.true;
+    stub1.restore();
+  });
+});
