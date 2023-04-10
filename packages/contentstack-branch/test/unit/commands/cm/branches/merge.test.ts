@@ -13,6 +13,7 @@ describe('Merge Command', () => {
   });
   afterEach(function () {
     successMessageStub.restore();
+    successMessageStub2.restore();
   });
   it('Without flags, should display running message', async function () {
     await MergeCommand.run([]);
