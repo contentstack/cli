@@ -44,26 +44,7 @@ export default class BranchDiffUtility {
   async fetchBranchesDiff(): Promise<void> {
     let url = `${this.baseUrl}/${this.module}`;
     let branchDiffData = await this.apiRequest(url);
-    this.branchesDiffData = [ 
-      {
-        "uid": "content_type_uid_1", 
-        "title": "Content Type 1 Title", 
-        "type": "content_type", 
-        "status": "compare_only" 
-      },
-      {
-        "uid": "content_type_uid_2", 
-        "title": "Content Type 2 Title", 
-        "type": "content_type", 
-        "status": "modified" 
-      },
-      {
-        "uid": "content_type_uid_3", 
-        "title": "Content Type 3 Title", 
-        "type": "content_type", 
-        "status": "base_only" 
-      }
-    ]
+    this.branchesDiffData = branchDiffData?.diff;
     if (this.filter) {
       //handle filter
     }
