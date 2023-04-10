@@ -1,7 +1,8 @@
 import { Command } from '@contentstack/cli-command';
-import { messageHandler, managementSDKClient, flags } from '@contentstack/cli-utilities';
+import { messageHandler, managementSDKClient, flags, cliux } from '@contentstack/cli-utilities';
 import { BranchOptions } from "../../../interfaces/index";
 import { BranchDiff } from '../../../branch';
+import { getbranchConfig } from '../../../utils';
 
 export default class BranchDiffCommand extends Command {
   static description: string = messageHandler.parse('Differences between two branches');
@@ -55,8 +56,18 @@ export default class BranchDiffCommand extends Command {
     try {
       const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
       const { flags: branchDiffFlags } = await this.parse(BranchDiffCommand);
+      const baseBranch = getbranchConfig(branchDiffFlags['stack-api-key']);
+
+      if(branchDiffFlags['stack-api-key']){
+        cliux.print(`Stack API Key: ${branchDiffFlags['stack-api-key']}`);
+      }
+
+      if(baseBranch){
+        cliux.print(`Base branch: ${baseBranch}`);
+      }
+
       let options: BranchOptions = {
-        baseBranch: branchDiffFlags['base-branch'],
+        baseBranch: branchDiffFlags['base-branch'] || baseBranch,
         stackAPIKey: branchDiffFlags['stack-api-key'],
         compareBranch: branchDiffFlags['compare-branch'],
         module: branchDiffFlags.module,
