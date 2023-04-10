@@ -21,7 +21,7 @@ class JsonMigrationCommand extends Command {
         throw new Error('No value provided for the "paths" property in config.');
       }
       const token = getToken(config.alias);
-      let stack = getStack({ token: token, host: this.cmaHost });
+      let stack = await getStack({ token: token, host: this.cmaHost });
       config.entriesCount = 0;
       config.contentTypeCount = 0;
       config.errorEntriesUid = {};
