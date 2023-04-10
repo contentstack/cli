@@ -1,7 +1,6 @@
 import { Command } from '@contentstack/cli-command';
 import { cliux, flags, configHandler } from '@contentstack/cli-utilities';
 import { interactive } from '../../../utils';
-import { removeConfig } from '../../../config/remove-config';
 
 export default class RemoveBranchConfigCommand extends Command {
   static description = 'Remove branch config for CLI';
@@ -17,14 +16,27 @@ export default class RemoveBranchConfigCommand extends Command {
       if (!configRemoveFlags['stack-api-key']) {
         configRemoveFlags['stack-api-key'] = await interactive.askStackAPIKey();
       }
-      if (configRemoveFlags.yes) {
-        removeConfig(configRemoveFlags['stack-api-key']);
+      if (configHandler.get(`baseBranch.${configRemoveFlags['stack-api-key']}`) === undefined) {
+        cliux.error(`No config set for stack-api-key : ${configRemoveFlags['stack-api-key']}`);
+        return;
       } else {
-        const confirmation = await interactive.askConfirmation();
-        if (!confirmation) {
-          return;
+        function deleteConfig() {
+          configHandler.delete(`baseBranch.${configRemoveFlags['stack-api-key']}`);
+          cliux.success(
+            `Base branch configuration for stack-api-key: ${configRemoveFlags['stack-api-key']} has been removed successfully`,
+          );
+        }
+        cliux.success(`base branch : ${await configHandler.get(`baseBranch.${configRemoveFlags['stack-api-key']}`)}`);
+        cliux.success(`stack-api-key: ${configRemoveFlags['stack-api-key']}`);
+        if (configRemoveFlags.yes) {
+          deleteConfig();
         } else {
-          removeConfig(configRemoveFlags['stack-api-key']);
+          const confirmation = await interactive.askConfirmation();
+          if (!confirmation) {
+            return;
+          } else {
+            deleteConfig();
+          }
         }
       }
     } catch (error) {
