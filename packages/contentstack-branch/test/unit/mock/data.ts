@@ -34,31 +34,86 @@ const mockData = {
      }
    ]
  },
+ branchDiffData:[ 
+  {
+    "uid": "content_type_uid_1", 
+    "title": "Content Type 1 Title", 
+    "type": "content_type", 
+    "status": "compare_only" 
+  },
+  {
+    "uid": "content_type_uid_2", 
+    "title": "Content Type 2 Title", 
+    "type": "content_type", 
+    "status": "modified" 
+  }
+],
  branchSummary:{
-  baseCount: 0,
-  compareCount:1,
-  modifiedCount:1,
+  base: "main",
+  compare: "dev",
+  base_only: 0,
+  compare_only:1,
+  modified:1,
  },
  branchCompactData:{
-  listOfModified:[{
+  modified:[{
     uid: "content_type1",
     title: "Content Type1",
     type: "content_type",
     status: "modified",
   }],
-  listOfAdded:[{
+  added:[{
     uid: "content_type2",
     title: "Content Type 2",
     type: "content_type",
     status: "compare_only",
   }],
-  listOfDeleted:[{
-    uid: "content_type3",
-    title: "Content Type 3",
-    type: "content_type",
-    status: "base_only",
-  }]
- }
+  deleted:[
+    {
+      uid: "content_type3",
+      title: "Content Type 3",
+      type: "content_type",
+      status: "base_only",
+    }
+  ]
+ },
+ branchDiffPayload:{
+  module: "content_types",
+  apiKey: "afdgaffsdg",
+  baseBranch: "main",
+  compareBranch:"dev"
+ },
+ verboseRes : {
+  modified: [
+    {
+      moduleDetails: {
+        uid: "content_type1",
+        title: "Content Type1",
+        type: "content_type",
+        status: "modified",
+      },
+      modifiedFields: {
+        modified: [],
+        deleted: [],
+        added: [],
+      },
+    }
+  ],
+  added: [
+    {
+      uid: "content_type2",
+      title: "Content Type 2",
+      type: "content_type",
+      status: "compare_only",
+    }
+  ],
+  deleted: [],
+},
+emptyVerboseRes : {
+  modified: [],
+  added: [],
+  deleted: [],
+}
 };
 
 export { mockData };
