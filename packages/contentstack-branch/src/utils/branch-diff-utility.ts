@@ -130,7 +130,7 @@ export default class BranchDiffUtility {
 
     for (let i = 0; i < listOfModified?.length; i++) {
       let diff: BranchDiffRes = listOfModified[i];
-      let url = `${this.baseUrl}/${this.module}/${diff.title}`;
+      let url = `${this.baseUrl}/${this.module}/${diff.uid}`;
       let branchDiff = await this.apiRequest(url);
       if (branchDiff) {
         (this.listOfModifiedFields = []), (this.listOfAddedFields = []), (this.listOfDeletedFields = []);
@@ -157,7 +157,7 @@ export default class BranchDiffUtility {
     if (baseBranchDiff && compareBranchDiff) {
       unionOfBaseAndCompareBranch = unionWith(baseBranchDiff, compareBranchDiff, this.customComparator);
     }
-
+    
     if (branchDiff?.diff?.status === 'modified') {
       forEach(unionOfBaseAndCompareBranch, (diff)=>{
         const baseBranchFieldExists = find(baseBranchDiff, (item) => item.uid === diff.uid || item.path === diff.path);
