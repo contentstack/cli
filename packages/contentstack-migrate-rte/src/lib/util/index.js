@@ -21,18 +21,16 @@ const { JSDOM } = require('jsdom');
 const collapseWithSpace = require('collapse-whitespace');
 const { htmlToJson } = require('@contentstack/json-rte-serializer');
 const nodePath = require('path');
-const { cliux } = require('@contentstack/cli-utilities');
+const { cliux, managementSDKClient } = require('@contentstack/cli-utilities');
 const packageValue = require('../../../package.json');
 const isBlank = (variable) => {
   return isNil(variable) || isEmpty(variable);
 };
-function formatHostname(hostname) {
-  return hostname.split('//').pop();
-}
-function getStack(data) {
+
+async function getStack(data) {
   const tokenDetails = data.token;
-  const client = contentstacksdk.client({
-    host: formatHostname(data.host),
+  const client = await managementSDKClient({
+    host: data.host,
     application: `json-rte-migration/${packageValue.version}`,
     timeout: 120000,
   });
@@ -40,7 +38,8 @@ function getStack(data) {
 
   stack.host = data.host;
   return stack;
-}
+};
+
 const deprecatedFields = {
   configPath: 'config-path',
   content_type: 'content-type',
@@ -59,7 +58,7 @@ function normalizeFlags(config) {
   return normalizedConfig;
 }
 
-var customBar = cliux.progress({
+const customBar = cliux.progress({
   format: '{title} ' + '| {bar} | {value}/{total} Entries',
   barCompleteChar: '\u2588',
   barIncompleteChar: '\u2591',
@@ -653,7 +652,7 @@ function uploadPaths(schema) {
 Generic function to get schema paths
 */
 function getPaths(schema, type) {
-  var paths = {};
+  const paths = {};
 
   function genPath(prefix, path) {
     return isBlank(prefix) ? path : [prefix, path].join('.');
@@ -662,8 +661,8 @@ function getPaths(schema, type) {
   function traverse(fields, path) {
     path = path || '';
     for (const element of fields) {
-      var field = element;
-      var currPath = genPath(path, field.uid);
+      const field = element;
+      const currPath = genPath(path, field.uid);
 
       if (field.data_type === type) paths[currPath] = true;
 
