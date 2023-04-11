@@ -243,15 +243,15 @@ function baseAndCompareBranchDiff(params: {
   }
 }
 
-function customComparator(a: any, b: any):boolean {
+function customComparator(a: any, b: any): boolean {
   return a.uid === b.uid || a.path === b.path;
 }
 
-function getFieldType(compareBranchFieldExists: any, baseBranchFieldExists: any, diff: any):string {
+function getFieldType(compareBranchFieldExists: any, baseBranchFieldExists: any, diff: any): string {
   let fieldType: string = 'Metadata Field';
   if (diff?.field_metadata?.allow_json_rte) {
     fieldType = 'JSON RTE Field';
-  }else{
+  } else {
     let displayName = compareBranchFieldExists?.display_name || baseBranchFieldExists?.display_name;
     if (displayName) {
       fieldType = `${displayName} Field`;
@@ -296,6 +296,42 @@ function printModifiedFields(modfiedFields: ModifiedFieldsInput): void {
     });
   }
 }
+
+const displayCompareBranchStatus = async (options) => {
+  // let payload: BranchDiffPayload = {
+  //   module: '',
+  //   apiKey: options.stackAPIKey,
+  //   baseBranch: options.baseBranch,
+  //   compareBranch: options.compareBranch,
+  //   filter: options.filter,
+  // };
+  //   payload.module = 'content_types';
+  //   const branchDiffDataContentTypes = await fetchBranchesDiff(payload);
+  //   displaySummary(branchDiffDataContentTypes, payload.module);
+  //   await this.displayBranchDiffTextAndVerbose(branchDiffDataContentTypes, payload);
+  //   payload.module = 'global_fields';
+  //   const branchDiffDataGlobalFields = await fetchBranchesDiff(payload);
+  //   this.displaySummary(branchDiffDataGlobalFields, payload.module);
+  //   await this.displayBranchDiffTextAndVerbose(branchDiffDataGlobalFields, payload);
+};
+
+const displayMergeSummary = async (options) => {
+  // let payload: BranchDiffPayload = {
+  //   module: '',
+  //   apiKey: options.stackAPIKey,
+  //   baseBranch: options.baseBranch,
+  //   compareBranch: options.compareBranch,
+  //   filter: options.filter,
+  // };
+  //   payload.module = 'content_types';
+  //   const branchDiffDataContentTypes = await fetchBranchesDiff(payload);
+  //   displaySummary(branchDiffDataContentTypes, payload.module);
+  //   await displayBranchDiffTextAndVerbose(branchDiffDataContentTypes, payload);
+  //   payload.module = 'global_fields';
+  //   const branchDiffDataGlobalFields = await fetchBranchesDiff(payload);
+  //   this.displaySummary(branchDiffDataGlobalFields, payload.module);
+  //   await this.displayBranchDiffTextAndVerbose(branchDiffDataGlobalFields, payload);
+};
 
 export {
   fetchBranchesDiff,
