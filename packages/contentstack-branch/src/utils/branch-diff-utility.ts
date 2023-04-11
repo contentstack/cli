@@ -1,10 +1,6 @@
-import forEach from "lodash/forEach";
-import { cliux, messageHandler, HttpClient } from "@contentstack/cli-utilities";
-import {
-  BranchOptions,
-  BranchDiffRes,
-} from "../interfaces/index";
-
+import forEach from 'lodash/forEach';
+import { cliux, messageHandler, HttpClient } from '@contentstack/cli-utilities';
+import { BranchOptions, BranchDiffRes } from '../interfaces/index';
 
 export default class BranchDiffUtility {
   private stackAPIKey: string;
@@ -27,15 +23,35 @@ export default class BranchDiffUtility {
     this.filter = params.filter;
   }
 
-   /**
+  /**
    * @methods fetchBranchesDiff - fetch branches diff list
    * @returns {*} {Promise<void>}
    * @memberof BranchDiffUtility
    */
-  async fetchBranchesDiff():Promise<void> {
+  async fetchBranchesDiff(): Promise<void> {
     let url = `${this.baseUrl}/${this.module}`;
     let branchDiffData = await this.apiRequest(url);
-    this.branchesDiffData = branchDiffData?.diff;
+    // this.branchesDiffData = branchDiffData?.diff;
+    this.branchesDiffData = [
+      {
+        uid: 'content_type_uid_1',
+        title: 'Content Type 1 Title',
+        type: 'content_type',
+        status: 'compare_only',
+      },
+      {
+        uid: 'content_type_uid_2',
+        title: 'Content Type 2 Title',
+        type: 'content_type',
+        status: 'modified',
+      },
+      {
+        uid: 'content_type_uid_3',
+        title: 'Content Type 3 Title',
+        type: 'content_type',
+        status: 'base_only',
+      },
+    ];
     if (this.filter) {
       //handle filter
     }
@@ -54,12 +70,12 @@ export default class BranchDiffUtility {
       forEach(this.branchesDiffData, (diff: BranchDiffRes) => {
         if (this.filteredUid && !this.filteredUid.includes(diff.uid)) {
           return;
-        }else{
-          if (diff.status === "compare_only") compareCount++;
-          else if (diff.status === "base_only") baseCount++;
-          else if (diff.status === "modified") modifiedCount++;
+        } else {
+          if (diff.status === 'compare_only') compareCount++;
+          else if (diff.status === 'base_only') baseCount++;
+          else if (diff.status === 'modified') modifiedCount++;
         }
-      })
+      });
     }
     return { baseCount, compareCount, modifiedCount };
   }
@@ -75,16 +91,16 @@ export default class BranchDiffUtility {
 
     if (this.branchesDiffData?.length) {
       forEach(this.branchesDiffData, (diff: BranchDiffRes) => {
-        if (this.filteredUid && !this.filteredUid.includes(diff.uid)){
+        if (this.filteredUid && !this.filteredUid.includes(diff.uid)) {
           return;
-        }else{
-          if (diff.status === "compare_only") listOfAdded.push(diff);
-          else if (diff.status === "base_only") listOfDeleted.push(diff);
-          else if (diff.status === "modified") listOfModified.push(diff);
+        } else {
+          if (diff.status === 'compare_only') listOfAdded.push(diff);
+          else if (diff.status === 'base_only') listOfDeleted.push(diff);
+          else if (diff.status === 'modified') listOfModified.push(diff);
         }
       });
     }
-    return {listOfAdded, listOfModified, listOfDeleted};
+    return { listOfAdded, listOfModified, listOfDeleted };
   }
 
   /**
@@ -93,27 +109,25 @@ export default class BranchDiffUtility {
    * @param {string} url string
    * @returns {*} {Promise<any>}
    */
-  async apiRequest(url: string):Promise<any> {
+  async apiRequest(url: string): Promise<any> {
     const headers = {
       authToken: this.authToken,
-      "api_key": this.stackAPIKey,
-      "Content-Type": "application/json"
+      api_key: this.stackAPIKey,
+      'Content-Type': 'application/json',
     };
     const params = {
-      "base_branch": this.baseBranch,
-      "compare_branch": this.compareBranch
+      base_branch: this.baseBranch,
+      compare_branch: this.compareBranch,
     };
     const result = await new HttpClient()
       .headers(headers)
       .queryParams(params)
       .get(url)
       .then(({ data }) => data)
-      .catch(err => {
-        cliux.error(messageHandler.parse('CLI_BRANCH_API_FAILED'))
+      .catch((err) => {
+        cliux.error(messageHandler.parse('CLI_BRANCH_API_FAILED'));
         process.exit(1);
       });
     return result;
   }
 }
-
-
