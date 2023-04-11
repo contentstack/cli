@@ -26,16 +26,18 @@ async function fetchBranchesDiff(
   skip = 0,
   limit = 100,
 ): Promise<any[]> {
-  const url = `${config.baseUrl}${payload.module}`;
+  const url: string = payload?.module ? `${config.baseUrl}/${payload.module}` : config.baseUrl;
   payload.url = url;
   const branchDiffData = await apiRequestHandler(payload, skip, limit);
   const diffData = branchDiffData?.diff;
+  const nextUrl = branchDiffData?.next_url || '';
+
   if (branchesDiffData?.length) {
     branchesDiffData = [...branchesDiffData, ...diffData];
   } else {
     branchesDiffData = diffData;
   }
-  const nextUrl = branchDiffData?.next_url || '';
+
   if (nextUrl) {
     skip = skip + limit;
     await fetchBranchesDiff(payload, branchesDiffData, skip, limit);
@@ -137,20 +139,20 @@ function printCompactTextView(branchTextRes: BranchCompactTextRes, module: strin
   }
 }
 
-async function parseVerbose(branchesDiffData: any[], payload: BranchDiffPayload) {
+async function parseVerbose(branchesDiffData: any[], payload: BranchDiffPayload): Promise<BranchDiffVerboseRes> {
   const { added, modified, deleted } = parseCompactText(branchesDiffData);
-  let detailListOfModified: BranchModifiedDetails[] = [];
+  let modifiedDetailList: BranchModifiedDetails[] = [];
 
   for (let i = 0; i < modified?.length; i++) {
     const diff: BranchDiffRes = modified[i];
-    const url = `${config.baseUrl}${payload.module}/${diff.uid}`;
+    const url = `${config.baseUrl}/${payload.module}/${diff?.uid}`;
     payload.url = url;
     const branchDiff = await apiRequestHandler(payload);
     if (branchDiff) {
       const { listOfModifiedFields, listOfAddedFields, listOfDeletedFields } = await prepareBranchVerboseRes(
         branchDiff,
       );
-      detailListOfModified.push({
+      modifiedDetailList.push({
         moduleDetails: diff,
         modifiedFields: {
           modified: listOfModifiedFields,
@@ -162,7 +164,7 @@ async function parseVerbose(branchesDiffData: any[], payload: BranchDiffPayload)
   }
 
   const verboseRes: BranchDiffVerboseRes = {
-    modified: detailListOfModified,
+    modified: modifiedDetailList,
     added: added,
     deleted: deleted,
   };
@@ -177,9 +179,11 @@ async function prepareBranchVerboseRes(branchDiff: any) {
   if (baseBranchDiff && compareBranchDiff) {
     unionOfBaseAndCompareBranch = unionWith(baseBranchDiff, compareBranchDiff, customComparator);
   }
+
   let listOfModifiedFields = [],
     listOfDeletedFields = [],
     listOfAddedFields = [];
+
   if (branchDiff?.diff?.status === 'modified') {
     forEach(unionOfBaseAndCompareBranch, (diff) => {
       const baseBranchFieldExists = find(baseBranchDiff, (item) => item.uid === diff.uid || item.path === diff.path);
@@ -243,15 +247,15 @@ function baseAndCompareBranchDiff(params: {
   }
 }
 
-function customComparator(a: any, b: any):boolean {
+function customComparator(a: any, b: any): boolean {
   return a.uid === b.uid || a.path === b.path;
 }
 
-function getFieldType(compareBranchFieldExists: any, baseBranchFieldExists: any, diff: any):string {
+function getFieldType(compareBranchFieldExists: any, baseBranchFieldExists: any, diff: any): string {
   let fieldType: string = 'Metadata Field';
   if (diff?.field_metadata?.allow_json_rte) {
     fieldType = 'JSON RTE Field';
-  }else{
+  } else {
     let displayName = compareBranchFieldExists?.display_name || baseBranchFieldExists?.display_name;
     if (displayName) {
       fieldType = `${displayName} Field`;
@@ -297,6 +301,16 @@ function printModifiedFields(modfiedFields: ModifiedFieldsInput): void {
   }
 }
 
+function filterBranchDiffDataByModule(branchDiffData: any[]) {
+  let moduleRes = {};
+
+  forEach(branchDiffData, (item) => {
+    if (!moduleRes[item.type]) moduleRes[item.type] = [item];
+    else moduleRes[item.type].push(item);
+  });
+  return moduleRes;
+}
+
 export {
   fetchBranchesDiff,
   parseSummary,
@@ -305,4 +319,5 @@ export {
   printCompactTextView,
   parseVerbose,
   printVerboseTextView,
+  filterBranchDiffDataByModule,
 };

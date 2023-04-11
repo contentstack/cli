@@ -3,7 +3,6 @@ export interface BranchOptions {
   stackAPIKey: string;
   module: string;
   format: string;
-  filter?: string;
   baseBranch?: string;
   authToken?: string;
 }
