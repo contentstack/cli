@@ -22,7 +22,6 @@ export interface ContentModelSeederOptions {
   parent?: any;
   cdaHost: string;
   cmaHost: string;
-  authToken: string;
   gitHubPath: string | undefined;
   orgUid: string | undefined;
   stackUid: string | undefined;
@@ -82,7 +81,6 @@ export default class ContentModelSeeder {
 
     await importer.run({
       api_key: api_key,
-      authToken: this.options.authToken,
       cdaHost: this.options.cdaHost,
       cmaHost: this.options.cmaHost,
       master_locale: ENGLISH_LOCALE,
