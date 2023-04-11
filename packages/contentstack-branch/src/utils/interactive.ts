@@ -62,7 +62,7 @@ export async function askBranchUid(): Promise<string> {
 export async function askConfirmation(): Promise<boolean> {
   const resp = await cliux.inquire<boolean>({
     type: 'confirm',
-    message: 'Are you sure you want to delete this branch ?',
+    message: 'Are you sure you want to delete this branch?',
     name: 'confirm',
   });
   return resp;
@@ -87,7 +87,7 @@ export async function selectMergeStrategy(): Promise<string> {
         { name: 'Overwrite with Compare', value: 'overwrite_with_compare' },
         { name: 'Merge, Ask for Preference', value: 'custom_preferences' },
       ],
-      message: 'What merge strategy would you like to choose',
+      message: 'What merge strategy would you like to choose?',
     })
     .then((name) => name as string)
     .catch((err) => {
@@ -115,6 +115,30 @@ export async function selectMergeStrategySubOptions(): Promise<string> {
     .then((name) => name as string)
     .catch((err) => {
       cliux.error('Failed to collect the merge strategy');
+      process.exit(1);
+    });
+
+  return strategy;
+}
+
+export async function selectMergeExecution(): Promise<string> {
+  const strategy = await cliux
+    .inquire({
+      type: 'list',
+      name: 'module',
+      choices: [
+        { name: 'Export merge summary', value: 'export' },
+        { name: 'Execute only', value: 'execute' },
+        { name: 'Both', value: 'both' },
+        { name: 'Export summary & Execute immediately', value: 'both' },
+        { name: 'Go Back', value: 'previous' },
+        { name: 'Start Over', value: 'restart' },
+      ],
+      message: 'What do you want to merge?',
+    })
+    .then((name) => name as string)
+    .catch((err) => {
+      cliux.error('Exiting the merge process');
       process.exit(1);
     });
 
