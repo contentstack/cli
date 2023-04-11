@@ -36,6 +36,8 @@ export interface MergeInputOptions {
   branchConfig: branchConfig;
   branchCompareData: any;
   mergeComment?: string;
+  executeOption?: string;
+  noRevert?: boolean;
 }
 
 export type branchConfig = {

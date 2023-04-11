@@ -3,7 +3,7 @@
  */
 import { configHandler } from '@contentstack/cli-utilities';
 
-export const getbranchesList = (branchResult, baseBranch:string) => {
+export const getbranchesList = (branchResult, baseBranch: string) => {
   const branches: Record<string, unknown>[] = [];
 
   branchResult.map((item) => {
@@ -25,7 +25,7 @@ export const getbranchesList = (branchResult, baseBranch:string) => {
 export const getbranchConfig = (stackApiKey: string) => {
   let baseBranch = configHandler.get(`baseBranch.${stackApiKey}`);
 
-  return baseBranch ;
+  return baseBranch;
 };
 
 export const refreshbranchConfig = async (apiKey, branchUid) => {
@@ -35,4 +35,6 @@ export const refreshbranchConfig = async (apiKey, branchUid) => {
   }
 };
 
-export * as interactive from './interactive';
+export * as interactive from './interactive'; // tbd remove this line use line no. 39 instead
+export * from './interactive';
+export { prepareMergeRequestPayload } from './merge-helper';
