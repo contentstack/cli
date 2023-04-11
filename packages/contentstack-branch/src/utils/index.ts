@@ -36,3 +36,4 @@ export const refreshbranchConfig = async (apiKey, branchUid) => {
 };
 
 export * as interactive from './interactive';
+export * as branchDiffUtility from './branch-diff-utility';
