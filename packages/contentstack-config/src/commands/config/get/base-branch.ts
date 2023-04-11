@@ -4,17 +4,16 @@ import { cliux, configHandler } from '@contentstack/cli-utilities';
 export default class BranchGetCommand extends Command {
   static description = 'Get current branch set for CLI';
 
-  static examples = ['$ csdx config:get:branch'];
+  static examples = ['$ csdx config:get:base-branch'];
 
   async run() {
     try {
-      let config = configHandler.get(`baseBranch`) || {};
-      let configList = Object.keys(config).map((key) => ({ ['ApiKey']: key, ['Branch']: config[key] }));
-
+      let config = configHandler.get(`baseBranch`);
+      let configList = Object.keys(config).map((key) => ({ ['Stack API Key']: key, ['Branch']: config[key] }));
       cliux.table(
         configList,
         {
-          ApiKey: {
+          'Stack API Key': {
             minWidth: 8,
           },
           Branch: {

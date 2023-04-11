@@ -240,16 +240,19 @@ importers:
       '@oclif/core': ^2.3.0
       '@oclif/plugin-help': ^5.1.19
       '@oclif/test': ^1.2.6
+      '@types/flat': ^5.0.2
       assert: ^2.0.0
       async: ^3.2.4
       big-json: ^3.2.0
       bluebird: ^3.7.2
       chai: ^4.2.0
       chalk: ^4.1.2
+      deep-object-diff: ^1.1.9
       dotenv: ^16.0.1
       dotenv-expand: ^9.0.0
       eslint: ^8.18.0
       eslint-config-oclif: ^4.0.0
+      flat: ^5.0.2
       globby: ^10.0.2
       is-valid-path: ^0.1.1
       lodash: ^4.17.20
@@ -278,6 +281,8 @@ importers:
       big-json: 3.2.0
       bluebird: 3.7.2
       chalk: 4.1.2
+      deep-object-diff: 1.1.9
+      flat: 5.0.2
       is-valid-path: 0.1.1
       lodash: 4.17.21
       merge: 2.1.1
@@ -294,6 +299,7 @@ importers:
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
       '@oclif/plugin-help': 5.2.4
       '@oclif/test': 1.2.9
+      '@types/flat': 5.0.2
       assert: 2.0.0
       chai: 4.3.7
       dotenv: 16.0.3
@@ -2439,6 +2445,10 @@ packages:
     resolution: {integrity: sha512-Q5Vn3yjTDyCMV50TB6VRIbQNxSE4OmZR86VSbGaNpfUolm0iePBB4KdEEHmxoY5sT2+2DIvXW0rvMDP2nHZ4Mg==}
     dev: true
 
+  /@types/flat/5.0.2:
+    resolution: {integrity: sha512-3zsplnP2djeps5P9OyarTxwRpMLoe5Ash8aL9iprw0JxB+FAHjY+ifn4yZUuW4/9hqtnmor6uvjSRzJhiVbrEQ==}
+    dev: true
+
   /@types/glob/7.2.0:
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
     dependencies:
@@ -4060,6 +4070,10 @@ packages:
   /deep-is/0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
 
+  /deep-object-diff/1.1.9:
+    resolution: {integrity: sha512-Rn+RuwkmkDwCi2/oXOFS9Gsr5lJZu/yTGpK7wAaAIE75CC+LCGEZHpY6VQJa/RoJcrmaA/docWJZvYohlNkWPA==}
+    dev: false
+
   /deepmerge/4.3.0:
     resolution: {integrity: sha512-z2wJZXrmeHdvYJp/Ux55wIjqo81G5Bp4c+oELTW+7ar6SogWHajt5a9gO3s3IDaGSAXjDk0vlQKN3rms8ab3og==}
     engines: {node: '>=0.10.0'}
@@ -5002,7 +5016,6 @@ packages:
   /flat/5.0.2:
     resolution: {integrity: sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==}
     hasBin: true
-    dev: true
 
   /flatted/3.2.7:
     resolution: {integrity: sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==}

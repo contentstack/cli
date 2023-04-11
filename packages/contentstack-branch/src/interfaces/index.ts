@@ -44,3 +44,35 @@ export type branchConfig = {
   branchName: string;
   apiKey: string;
 };
+export interface ModifiedFieldsType {
+  uid: string;
+  displayName: string;
+  path: string;
+  fieldType: string;
+}
+
+export interface ModifiedFieldsInput {
+  modified?: ModifiedFieldsType[];
+  added?: ModifiedFieldsType[];
+  deleted?: ModifiedFieldsType[];
+}
+
+export interface BranchModifiedDetails {
+  moduleDetails: BranchDiffRes;
+  modifiedFields: ModifiedFieldsInput;
+}
+
+export interface BranchDiffVerboseRes {
+  modified?: BranchModifiedDetails[];
+  added?: BranchDiffRes[];
+  deleted?: BranchDiffRes[];
+}
+
+export interface BranchDiffPayload {
+  module: string;
+  apiKey: string;
+  baseBranch: string;
+  compareBranch: string;
+  filter?: string;
+  url?: string;
+}

@@ -29,27 +29,28 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`csdx config:get:branch`](#csdx-configgetbranch)
+* [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
 * [`csdx config:get:region`](#csdx-configgetregion)
-* [`csdx config:set:branch`](#csdx-configsetbranch)
+* [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
+* [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 
-## `csdx config:get:branch`
+## `csdx config:get:base-branch`
 
 Get current branch set for CLI
 
 ```
 USAGE
-  $ csdx config:get:branch
+  $ csdx config:get:base-branch
 
 DESCRIPTION
   Get current branch set for CLI
 
 EXAMPLES
-  $ csdx config:get:branch
+  $ csdx config:get:base-branch
 ```
 
-_See code: [src/commands/config/get/branch.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/branch.ts)_
+_See code: [src/commands/config/get/base-branch.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/base-branch.ts)_
 
 ## `csdx config:get:region`
 
@@ -68,13 +69,36 @@ EXAMPLES
 
 _See code: [src/commands/config/get/region.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/region.ts)_
 
-## `csdx config:set:branch`
+## `csdx config:remove:base-branch`
+
+Remove branch config for CLI
+
+```
+USAGE
+  $ csdx config:remove:base-branch [-k <value>] [-y]
+
+FLAGS
+  -k, --stack-api-key=<value>  Stack API Key
+  -y, --yes                    Force Remove
+
+DESCRIPTION
+  Remove branch config for CLI
+
+EXAMPLES
+  $ csdx config:remove:base-branch
+
+  $ csdx config:remove:base-branch --stack-api-key <value>
+```
+
+_See code: [src/commands/config/remove/base-branch.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/base-branch.ts)_
+
+## `csdx config:set:base-branch`
 
 Set branch for CLI
 
 ```
 USAGE
-  $ csdx config:set:branch [-k <value>] [-b <value>]
+  $ csdx config:set:base-branch [-k <value>] [-b <value>]
 
 FLAGS
   -b, --base-branch=<value>    Base Branch
@@ -84,12 +108,12 @@ DESCRIPTION
   Set branch for CLI
 
 EXAMPLES
-  $ csdx config:set:branch
+  $ csdx config:set:base-branch
 
-  $ csdx config:set:branch --stack-api-key <value> --base-branch <value>
+  $ csdx config:set:base-branch --stack-api-key <value> --base-branch <value>
 ```
 
-_See code: [src/commands/config/set/branch.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/branch.ts)_
+_See code: [src/commands/config/set/base-branch.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/base-branch.ts)_
 
 ## `csdx config:set:region [REGION]`
 

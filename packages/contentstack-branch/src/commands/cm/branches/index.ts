@@ -39,11 +39,17 @@ export default class BranchListCommand extends Command {
           cliux.error('error', err.errorMessage);
         });
 
-      if (listOfBranch?.length>0) {
+      if (listOfBranch?.length > 0) {
         let { currentBranch, otherBranches, branches }: any = getbranchesList(listOfBranch, baseBranch);
 
         if (!verbose) {
-          cliux.print(`* ${chalk.blue.bold(currentBranch[0].Branch)}`);
+          currentBranch[0]?.Source
+            ? cliux.print(`* ${chalk.bold(currentBranch[0].Branch)} (source: ${currentBranch[0].Source})`, {
+                color: 'blue',
+              })
+            : cliux.print(`* ${chalk.bold(currentBranch[0].Branch)}`, {
+                color: 'blue',
+              });
 
           otherBranches.map(({ Branch, Source }: { Branch: string; Source: string }) => {
             Source
@@ -75,7 +81,7 @@ export default class BranchListCommand extends Command {
             },
           );
         }
-      } 
+      }
     } catch (error) {
       cliux.error('error', error);
     }
