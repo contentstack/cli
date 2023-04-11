@@ -1,4 +1,5 @@
-import { cliux } from '@contentstack/cli-utilities';
+import { isEmpty } from 'lodash';
+import { cliux, messageHandler } from '@contentstack/cli-utilities';
 
 export const askRegions = async (): Promise<string> => {
   return cliux.inquire<string>({
@@ -42,6 +43,7 @@ export async function askStackAPIKey(): Promise<string> {
     type: 'input',
     message: 'CLI_CONFIG_INQUIRE_API_KEY',
     name: 'stack-api-key',
+    validate: inquireRequireFieldValidation,
   });
 }
 
@@ -50,6 +52,7 @@ export async function askBaseBranch(): Promise<string> {
     type: 'input',
     message: 'CLI_CONFIG_INQUIRE_BASE_BRANCH',
     name: 'base-branch',
+    validate: inquireRequireFieldValidation,
   });
 }
 
@@ -59,4 +62,11 @@ export async function askConfirmation(): Promise<boolean> {
     message: 'Are you sure you want to remove this configuration ?',
     name: 'config_remove_confirmation',
   });
+}
+
+export function inquireRequireFieldValidation(input: any): string | boolean {
+  if (isEmpty(input)) {
+    return messageHandler.parse('CLI_BRANCH_REQUIRED_FIELD');
+  }
+  return true;
 }

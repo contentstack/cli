@@ -1,5 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, flags, configHandler, messageHandler } from '@contentstack/cli-utilities';
+import { cliux, flags, configHandler } from '@contentstack/cli-utilities';
 import { interactive } from '../../../utils';
 
 export default class BranchSetCommand extends Command {
@@ -28,7 +28,12 @@ export default class BranchSetCommand extends Command {
       }
 
       configHandler.set(`baseBranch.${apiKey}`, baseBranch);
-      cliux.success('Config is set');
+
+      cliux.success(`base branch : ${baseBranch}`);
+      cliux.success(`stack-api-key: ${apiKey}`);
+      cliux.success(
+        `Base branch configuration for stack-api-key: ${apiKey} and branch: ${baseBranch} has been set successfully`,
+      );
     } catch (error) {
       cliux.error('error', error);
     }

@@ -3,7 +3,7 @@
  */
 import { configHandler } from '@contentstack/cli-utilities';
 
-export const getbranchesList = (branchResult, baseBranch:string) => {
+export const getbranchesList = (branchResult, baseBranch: string) => {
   const branches: Record<string, unknown>[] = [];
 
   branchResult.map((item) => {
@@ -25,7 +25,7 @@ export const getbranchesList = (branchResult, baseBranch:string) => {
 export const getbranchConfig = (stackApiKey: string) => {
   let baseBranch = configHandler.get(`baseBranch.${stackApiKey}`);
 
-  return baseBranch ;
+  return baseBranch;
 };
 
 export const refreshbranchConfig = async (apiKey, branchUid) => {
