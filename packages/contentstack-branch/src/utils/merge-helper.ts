@@ -1,4 +1,8 @@
-import { askCompareBranch, askStackAPIKey, askBaseBranch, getbranchConfig } from './';
+import startCase from 'lodash/startCase';
+import camelCase from 'lodash/camelCase';
+import { cliux } from '@contentstack/cli-utilities';
+import { BranchDiffPayload } from '../interfaces/index';
+import { askCompareBranch, askStackAPIKey, askBaseBranch, getbranchConfig, branchDiffUtility as branchDiff } from './';
 
 export const prepareMergeRequestPayload = (options) => {
   return {
@@ -26,4 +30,51 @@ export const setupMergeInputs = async (mergeFlags) => {
   }
 
   return mergeFlags;
+};
+
+export const displayBranchStatus = async (options) => {
+  let payload: BranchDiffPayload = {
+    module: '',
+    apiKey: options.stackAPIKey,
+    baseBranch: options.baseBranch,
+    compareBranch: options.compareBranch,
+  };
+
+  const branchDiffData = await branchDiff.fetchBranchesDiff(payload);
+  const diffData = branchDiff.filterBranchDiffDataByModule(branchDiffData);
+
+  let parsedResponse = {};
+  for (let module in diffData) {
+    const branchDiff = diffData[module];
+    payload.module = module;
+    cliux.print(' ');
+    cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
+    const diffSummary = branchDiff.parseSummary(branchDiffData, options.baseBranch, options.compareBranch);
+    branchDiff.printSummary(diffSummary);
+    cliux.print(' ');
+    cliux.print(`Differences in '${options.compareBranch}' compared to '${options.baseBranch}':`);
+    if (options.format === 'text') {
+      const branchTextRes = branchDiff.parseCompactText(branchDiffData);
+      branchDiff.printCompactTextView(branchTextRes, payload.module);
+      parsedResponse[module] = branchTextRes;
+    } else if (options.format === 'verbose') {
+      const verboseRes = await branchDiff.parseVerbose(branchDiffData, payload);
+      branchDiff.printVerboseTextView(verboseRes, payload.module);
+      parsedResponse[module] = verboseRes;
+    }
+  }
+  return parsedResponse;
+};
+
+export const displayMergeSummary = (options) => {
+  cliux.print(' ');
+  cliux.print(`Merge Summary:`, { color: 'yellow' });
+  cliux.print(' ');
+  for (let module in options.compareData) {
+    if (options.format === 'text') {
+      branchDiff.printCompactTextView(options.compareData[module], module);
+    } else if (options.format === 'verbose') {
+      branchDiff.printVerboseTextView(options.compareData[module], module);
+    }
+  }
 };

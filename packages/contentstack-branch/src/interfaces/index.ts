@@ -3,7 +3,6 @@ export interface BranchOptions {
   stackAPIKey: string;
   module: string;
   format: string;
-  filter?: string;
   baseBranch?: string;
   authToken?: string;
 }
@@ -38,12 +37,11 @@ export interface MergeInputOptions {
   executeOption?: string;
   noRevert?: boolean;
   baseBranch: string;
+  format?: string;
+  exportSummaryPath?: string;
+  useMergeSummary?: string;
 }
 
-export type branchConfig = {
-  branchName: string;
-  apiKey: string;
-};
 export interface ModifiedFieldsType {
   uid: string;
   displayName: string;

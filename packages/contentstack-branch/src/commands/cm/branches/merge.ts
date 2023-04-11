@@ -1,6 +1,6 @@
 import { Command } from '@contentstack/cli-command';
 import { cliux, flags } from '@contentstack/cli-utilities';
-import { setupMergeInputs } from '../../../utils';
+import { setupMergeInputs, displayBranchStatus } from '../../../utils';
 import { MergeHandler } from '../../../branch';
 export default class BranchMergeCommand extends Command {
   static description: string = 'Merge changes from a branch'; //TBD update the description
@@ -69,24 +69,27 @@ export default class BranchMergeCommand extends Command {
 
   async run(): Promise<any> {
     try {
-      const { flags: branchMergeFlags } = await this.parse(BranchMergeCommand);
-      const mergeInputs = await setupMergeInputs(branchMergeFlags);
-      // display summary
-      // const mergeHandler = new MergeHandler({
-      //   compareBranch: mergeInputs['compare-branch'],
-      //   strategy: mergeInputs.strategy,
-      //   strategySubOption: mergeInputs['strategy-sub-options'],
-      //   baseBranch: mergeInputs['base-branch'],
-      //   branchCompareData: any;
-      //   mergeComment?: string;
-      //   executeOption?: string;
-      //   noRevert?: boolean;
-      //  });
-      //  get config
-      //  validate config
-      //  Display summary - displaySummary
-      //  validate and get compare branch
-      //  initiate merge handler
+      let { flags: branchMergeFlags } = await this.parse(BranchMergeCommand);
+      branchMergeFlags = await setupMergeInputs(branchMergeFlags);
+      // display branch status
+      const branchCompareData = await displayBranchStatus({
+        stackAPIKey: branchMergeFlags['stack-api-key'],
+        baseBranch: branchMergeFlags['base-branch'],
+        compareBranch: branchMergeFlags['compare-branch'],
+        format: branchMergeFlags.format,
+      });
+      await new MergeHandler({
+        compareBranch: branchMergeFlags['compare-branch'],
+        strategy: branchMergeFlags.strategy,
+        strategySubOption: branchMergeFlags['strategy-sub-options'],
+        baseBranch: branchMergeFlags['base-branch'],
+        branchCompareData: branchCompareData,
+        mergeComment: branchMergeFlags.comment,
+        executeOption: branchMergeFlags['merge-action'],
+        noRevert: branchMergeFlags['no-revert'],
+        exportSummaryPath: branchMergeFlags['export-summary-path'],
+        useMergeSummary: branchMergeFlags['use-merge-summary'],
+      }).start();
     } catch (error) {
       console.log('Error in Merge operations', error);
     }
