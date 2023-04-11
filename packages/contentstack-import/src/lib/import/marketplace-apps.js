@@ -8,13 +8,11 @@ const _ = require('lodash');
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
-const contentstack = require('@contentstack/management');
 const {
   cliux,
   HttpClient,
   NodeCrypto,
   managementSDKClient,
-  configHandler,
   isAuthenticated,
   HttpClientDecorator,
   OauthDecorator,
@@ -62,7 +60,7 @@ module.exports = class ImportMarketplaceApps {
     }
 
     this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
-    this.client = await managementSDKClient({ ...this.config, endpoint: this.developerHubBaseUrl });
+    this.client = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
 
     await this.getOrgUid();
 
