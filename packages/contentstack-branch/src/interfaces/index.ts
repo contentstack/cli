@@ -33,11 +33,11 @@ export interface MergeInputOptions {
   compareBranch: string;
   strategy: string;
   strategySubOption: string;
-  branchConfig: branchConfig;
   branchCompareData: any;
   mergeComment?: string;
   executeOption?: string;
   noRevert?: boolean;
+  baseBranch: string;
 }
 
 export type branchConfig = {
