@@ -18,6 +18,7 @@ import {
   BranchCompactTextRes,
   BranchDiffVerboseRes,
 } from '../interfaces/index';
+import config from '../config';
 
 async function fetchBranchesDiff(
   payload: BranchDiffPayload,
@@ -25,9 +26,9 @@ async function fetchBranchesDiff(
   skip = 0,
   limit = 100,
 ): Promise<any[]> {
-  const url = `http://dev16-branches.csnonprod.com/api/compare/${payload.module}`;
+  const url = `${config.baseUrl}${payload.module}`;
   payload.url = url;
-  const branchDiffData = await apiRequest(payload, skip, limit);
+  const branchDiffData = await apiRequestHandler(payload, skip, limit);
   const diffData = branchDiffData?.diff;
   if (branchesDiffData?.length) {
     branchesDiffData = [...branchesDiffData, ...diffData];
@@ -42,7 +43,7 @@ async function fetchBranchesDiff(
   return branchesDiffData;
 }
 
-async function apiRequest(payload: BranchDiffPayload, skip?: number, limit?: number): Promise<any> {
+async function apiRequestHandler(payload: BranchDiffPayload, skip?: number, limit?: number): Promise<any> {
   const authToken = configHandler.get('authtoken');
   const headers = {
     authToken: '***REMOVED***',
@@ -109,6 +110,7 @@ function parseCompactText(branchesDiffData: any[]): BranchCompactTextRes {
       else if (diff.status === 'modified') listOfModified.push(diff);
     });
   }
+
   const branchTextRes: BranchCompactTextRes = {
     modified: listOfModified,
     added: listOfAdded,
@@ -117,46 +119,43 @@ function parseCompactText(branchesDiffData: any[]): BranchCompactTextRes {
   return branchTextRes;
 }
 
-function printCompactTextView(branchTextRes: BranchCompactTextRes, module:string): void {
+function printCompactTextView(branchTextRes: BranchCompactTextRes, module: string): void {
   if (branchTextRes.modified?.length || branchTextRes.added?.length || branchTextRes.deleted?.length) {
     forEach(branchTextRes.added, (diff: BranchDiffRes) => {
-      cliux.print(
-        `${chalk.green('+ Added:')}     '${diff.title}' ${startCase(camelCase(module))}`,
-      );
+      cliux.print(`${chalk.green('+ Added:')}     '${diff.title}' ${startCase(camelCase(module))}`);
     });
 
     forEach(branchTextRes.modified, (diff: BranchDiffRes) => {
-      cliux.print(
-        `${chalk.blue('± Modified:')}  '${diff.title}' ${startCase(camelCase(module))}`,
-      );
+      cliux.print(`${chalk.blue('± Modified:')}  '${diff.title}' ${startCase(camelCase(module))}`);
     });
 
     forEach(branchTextRes.deleted, (diff: BranchDiffRes) => {
-      cliux.print(
-        `${chalk.red('- Deleted:')}   '${diff.title}' ${startCase(camelCase(module))}`,
-      );
+      cliux.print(`${chalk.red('- Deleted:')}   '${diff.title}' ${startCase(camelCase(module))}`);
     });
   } else {
     cliux.print('No differences discovered.', { color: 'red' });
   }
 }
 
-async function parseVerbose(branchesDiffData: any[], module:string, payload:BranchDiffPayload) {
+async function parseVerbose(branchesDiffData: any[], payload: BranchDiffPayload) {
   const { added, modified, deleted } = parseCompactText(branchesDiffData);
   let detailListOfModified: BranchModifiedDetails[] = [];
 
   for (let i = 0; i < modified?.length; i++) {
-    let diff: BranchDiffRes = modified[i];
-    let url = `http://dev16-branches.csnonprod.com/api/compare/${module}/${diff.uid}`;
-    let branchDiff = await apiRequest(payload);
+    const diff: BranchDiffRes = modified[i];
+    const url = `${config.baseUrl}${payload.module}/${diff.uid}`;
+    payload.url = url;
+    const branchDiff = await apiRequestHandler(payload);
     if (branchDiff) {
-      const {listOfModifiedFields, listOfAddedFields, listOfDeletedFields} = await prepareBranchVerboseRes(branchDiff);
+      const { listOfModifiedFields, listOfAddedFields, listOfDeletedFields } = await prepareBranchVerboseRes(
+        branchDiff,
+      );
       detailListOfModified.push({
         moduleDetails: diff,
         modifiedFields: {
           modified: listOfModifiedFields,
-          deleted: listOfAddedFields,
-          added: listOfDeletedFields,
+          deleted: listOfDeletedFields,
+          added: listOfAddedFields,
         },
       });
     }
@@ -199,7 +198,7 @@ async function prepareBranchVerboseRes(branchDiff: any) {
     });
   }
 
-  return {listOfAddedFields, listOfDeletedFields, listOfModifiedFields}
+  return { listOfAddedFields, listOfDeletedFields, listOfModifiedFields };
 }
 
 function baseAndCompareBranchDiff(params: {
@@ -211,11 +210,7 @@ function baseAndCompareBranchDiff(params: {
   listOfAddedFields: any[];
 }) {
   const { baseBranchFieldExists, compareBranchFieldExists, diff } = params;
-  let fieldType: string = 'Metadata Field';
-  let displayName = compareBranchFieldExists?.display_name || baseBranchFieldExists?.display_name;
-  if (displayName) {
-    fieldType = `${displayName} Field`;
-  }
+  const fieldType: string = getFieldType(compareBranchFieldExists, baseBranchFieldExists, diff);
 
   if (baseBranchFieldExists && compareBranchFieldExists) {
     const updated = updatedDiff(baseBranchFieldExists, compareBranchFieldExists);
@@ -248,37 +243,41 @@ function baseAndCompareBranchDiff(params: {
   }
 }
 
-function customComparator(a: any, b: any) {
+function customComparator(a: any, b: any):boolean {
   return a.uid === b.uid || a.path === b.path;
+}
+
+function getFieldType(compareBranchFieldExists: any, baseBranchFieldExists: any, diff: any):string {
+  let fieldType: string = 'Metadata Field';
+  if (diff?.field_metadata?.allow_json_rte) {
+    fieldType = 'JSON RTE Field';
+  }else{
+    let displayName = compareBranchFieldExists?.display_name || baseBranchFieldExists?.display_name;
+    if (displayName) {
+      fieldType = `${displayName} Field`;
+    }
+  }
+  return fieldType;
 }
 
 function printVerboseTextView(branchTextRes: BranchDiffVerboseRes, module: string): void {
   if (branchTextRes.modified?.length || branchTextRes.added?.length || branchTextRes.deleted?.length) {
     forEach(branchTextRes.added, (diff: BranchDiffRes) => {
-      cliux.print(
-        `${chalk.green('+ Added:')}    '${diff.title}' ${startCase(camelCase(module))}`,
-      );
+      cliux.print(`${chalk.green('+ Added:')}    '${diff.title}' ${startCase(camelCase(module))}`);
     });
 
     forEach(branchTextRes.modified, (diff: BranchModifiedDetails) => {
-      cliux.print(
-        `${chalk.blue('± Modified:')} '${diff.moduleDetails.title}' ${startCase(
-          camelCase(module),
-        )}`,
-      );
+      cliux.print(`${chalk.blue('± Modified:')} '${diff.moduleDetails.title}' ${startCase(camelCase(module))}`);
       printModifiedFields(diff.modifiedFields);
     });
 
     forEach(branchTextRes.deleted, (diff: BranchDiffRes) => {
-      cliux.print(
-        `${chalk.red('- Deleted:')}  '${diff.title}' ${startCase(camelCase(module))}`,
-      );
+      cliux.print(`${chalk.red('- Deleted:')}  '${diff.title}' ${startCase(camelCase(module))}`);
     });
   } else {
     cliux.print('No differences discovered.', { color: 'red' });
   }
 }
-
 
 function printModifiedFields(modfiedFields: ModifiedFieldsInput): void {
   if (modfiedFields.modified?.length || modfiedFields.added?.length || modfiedFields.deleted?.length) {
@@ -305,5 +304,5 @@ export {
   parseCompactText,
   printCompactTextView,
   parseVerbose,
-  printVerboseTextView
-}
+  printVerboseTextView,
+};
