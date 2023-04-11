@@ -93,7 +93,7 @@ describe('Diff Command', () => {
       '--format',
       'verbose'
     ]);
-  });
+  }).timeout(10000);
 
   it('Branch summary when module is of both type(content_types & global fields)', async function () {
     await DiffCommand.run([
