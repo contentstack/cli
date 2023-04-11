@@ -1,7 +1,8 @@
 import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
 import { cliux } from '@contentstack/cli-utilities';
-import { BranchOptions, BranchDiffRes, BranchDiffPayload } from '../interfaces/index';
+import { getbranchConfig } from '../utils';
+import { BranchOptions, BranchDiffRes, BranchDiffPayload } from '../interfaces';
 import { askBaseBranch, askCompareBranch, askStackAPIKey, selectModule } from '../utils/interactive';
 import {
   fetchBranchesDiff,
@@ -11,6 +12,7 @@ import {
   printCompactTextView,
   parseVerbose,
   printVerboseTextView,
+  filterBranchDiffDataByModule,
 } from '../utils/branch-diff-utility';
 
 export default class BranchDiff {
@@ -34,10 +36,17 @@ export default class BranchDiff {
   async validateMandatoryFlags(): Promise<void> {
     if (!this.options.stackAPIKey) {
       this.options.stackAPIKey = await askStackAPIKey();
+    } else {
+      cliux.print(`Stack API Key: '${this.options.stackAPIKey}'`);
     }
 
     if (!this.options.baseBranch) {
-      this.options.baseBranch = await askBaseBranch();
+      const baseBranch = getbranchConfig(this.options.baseBranch);
+      if (!baseBranch) {
+        this.options.baseBranch = await askBaseBranch();
+      } else {
+        cliux.print(`Base branch: '${baseBranch}'`);
+      }
     }
 
     if (!this.options.compareBranch) {
@@ -60,20 +69,22 @@ export default class BranchDiff {
       apiKey: this.options.stackAPIKey,
       baseBranch: this.options.baseBranch,
       compareBranch: this.options.compareBranch,
-      filter: this.options.filter,
     };
-    if (['content_types', 'both'].includes(this.options.module)) {
+
+    if (this.options.module === 'content_types') {
       payload.module = 'content_types';
-      const branchDiffData = await fetchBranchesDiff(payload);
-      this.displaySummary(branchDiffData, payload.module);
-      await this.displayBranchDiffTextAndVerbose(branchDiffData, payload);
+    } else if (this.options.module === 'global_fields') {
+      payload.module = 'global_fields';
     }
 
-    if (['global_fields', 'both'].includes(this.options.module)) {
-      payload.module = 'global_fields';
-      const branchDiffData = await fetchBranchesDiff(payload);
-      this.displaySummary(branchDiffData, payload.module);
-      await this.displayBranchDiffTextAndVerbose(branchDiffData, payload);
+    const branchDiffData = await fetchBranchesDiff(payload);
+    const diffData = filterBranchDiffDataByModule(branchDiffData);
+   
+    for (let module in diffData) {
+      const branchDiff = diffData[module];
+      payload.module = module;
+      this.displaySummary(branchDiff, module);
+      await this.displayBranchDiffTextAndVerbose(branchDiff, payload);
     }
   }
 
