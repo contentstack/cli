@@ -35,6 +35,7 @@ export const refreshbranchConfig = async (apiKey, branchUid) => {
   }
 };
 
-export * as interactive from './interactive'; // tbd remove this line use line no. 39 instead
 export * from './interactive';
 export { prepareMergeRequestPayload } from './merge-helper';
+export * as interactive from './interactive';
+export * as branchDiffUtility from './branch-diff-utility';
