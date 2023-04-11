@@ -17,7 +17,7 @@ export default class BranchMergeCommand extends Command {
       description: 'Compare branch name',
       required: true,
     }),
-    'merge-comment': flags.string({
+    comment: flags.string({
       description: 'Merge comment',
     }),
     strategy: flags.string({
