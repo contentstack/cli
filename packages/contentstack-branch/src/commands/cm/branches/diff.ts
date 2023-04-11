@@ -35,9 +35,6 @@ export default class BranchDiffCommand extends Command {
       description: "Module",
       options: ["content_types", "global_fields", "both"]
     }),
-    filter: flags.string({
-      description: "[Optional] Provide filter to show particular uid like conntent_type uid etc."
-    }),
     'stack-api-key': flags.string({
       char: 'k',
       description: 'Provide stack api key to show diff between branches',
@@ -54,25 +51,13 @@ export default class BranchDiffCommand extends Command {
 
   async run(): Promise<any> {
     try {
-      const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
       const { flags: branchDiffFlags } = await this.parse(BranchDiffCommand);
-      const baseBranch = getbranchConfig(branchDiffFlags['stack-api-key']);
-
-      if(branchDiffFlags['stack-api-key']){
-        cliux.print(`Stack API Key: ${branchDiffFlags['stack-api-key']}`);
-      }
-
-      if(baseBranch){
-        cliux.print(`Base branch: ${baseBranch}`);
-      }
-
       let options: BranchOptions = {
-        baseBranch: branchDiffFlags['base-branch'] || baseBranch,
+        baseBranch: branchDiffFlags['base-branch'],
         stackAPIKey: branchDiffFlags['stack-api-key'],
         compareBranch: branchDiffFlags['compare-branch'],
         module: branchDiffFlags.module,
-        format: branchDiffFlags.format,
-        filter: branchDiffFlags.filter,
+        format: branchDiffFlags.format
       }
       const branchDiff = new BranchDiff(options);
       await branchDiff.run();

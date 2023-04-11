@@ -1,6 +1,8 @@
 /**
  * Command specific utilities can be written here
  */
+import fs from 'fs';
+import path from 'path';
 import { configHandler } from '@contentstack/cli-utilities';
 
 export const getbranchesList = (branchResult, baseBranch: string) => {
@@ -31,6 +33,18 @@ export const refreshbranchConfig = async (apiKey, branchUid) => {
   if (branchConfig === branchUid) {
     await configHandler.set(`baseBranch.${apiKey}`, 'main');
   }
+};
+
+export const writeFile = (filePath, data) => {
+  return new Promise((resolve, reject) => {
+    data = typeof data === 'object' ? JSON.stringify(data, null, 2) : data || '{}';
+    fs.writeFile(path.resolve(filePath), data, (error) => {
+      if (error) {
+        return reject(error);
+      }
+      resolve('done');
+    });
+  });
 };
 
 export * from './interactive';
