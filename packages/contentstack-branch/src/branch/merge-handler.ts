@@ -18,11 +18,10 @@ export default class MergeHandler {
   constructor(options: MergeInputOptions) {
     this.strategy = options.strategy;
     this.strategySubOption = options.strategySubOption;
-    this.branchConfig = options.branchConfig;
     this.executeOption = options.executeOption;
     this.branchCompareData = options.branchCompareData;
     this.mergeSettings = {
-      baseBranch: options.branchConfig.branchName, // UID of the base branch, where the changes will be merged into
+      baseBranch: options.baseBranch, // UID of the base branch, where the changes will be merged into
       compareBranch: options.compareBranch, // UID of the branch to merge
       mergeComment: options.mergeComment,
       mergeContent: {},
@@ -32,6 +31,7 @@ export default class MergeHandler {
 
   async start() {
     /**
+     * if summary path is given execute it directly
      * collectMergeSettings
      * displayMergeSummary()
      * execute / export summary
@@ -44,16 +44,17 @@ export default class MergeHandler {
       this.executeOption = await selectMergeExecution();
     }
 
-    prepareMergeRequestPayload(this.mergeSettings);
+    // Merge final process
+    const mergePayload = prepareMergeRequestPayload(this.mergeSettings);
     if (this.executeOption === 'execute') {
-      await this.executeMerge();
+      await this.executeMerge(mergePayload);
       // TBD implement the export queue strategy
     } else if (this.executeOption === 'export') {
-      await this.exportSummary();
+      await this.exportSummary(mergePayload);
       // TBD success message
     } else {
-      await this.exportSummary();
-      await this.executeMerge();
+      await this.exportSummary(mergePayload);
+      await this.executeMerge(mergePayload);
       // TBD success message
     }
   }
@@ -74,6 +75,7 @@ export default class MergeHandler {
     }
     if (this.strategy === 'custom_preferences') {
       this.mergeSettings.itemMergeStrategies = [];
+      // TBD implement the table for choosing the custom merge preferences
     } else if (this.strategy === 'merge_prefer_base') {
       if (this.strategySubOption === 'new') {
         this.mergeSettings.strategy = 'merge_new_only';
@@ -139,11 +141,15 @@ export default class MergeHandler {
     return mergeContent;
   }
 
-  exportSummary() {
+  exportSummary(mergePayload) {
     /**
      * export the summary with request payload
      */
   }
 
-  executeMerge() {}
+  executeMerge(mergePayload) {
+    /**
+     * Invoke APIs
+     */
+  }
 }
