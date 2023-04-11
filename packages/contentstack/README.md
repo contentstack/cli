@@ -80,9 +80,10 @@ USAGE
 * [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
 * [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value-1)
 * [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries-1)
-* [`csdx config:get:branch`](#csdx-configgetbranch)
+* [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
 * [`csdx config:get:region`](#csdx-configgetregion)
-* [`csdx config:set:branch`](#csdx-configsetbranch)
+* [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
+* [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMANDS]`](#csdx-help-commands)
 * [`csdx login`](#csdx-login)
@@ -567,7 +568,8 @@ FLAGS
   -b, --base-branch=<value>     Base branch
   -c, --compare-branch=<value>  Compare branch
   -k, --stack-api-key=<value>   Provide stack api key to show diff between branches
-  -m, --module=<value>          Module
+  -m, --module=<option>         Module
+                                <options: content_types|global_fields|both>
   --filter=<value>              [Optional] Provide filter to show particular uid like conntent_type uid etc.
   --format=<option>             [default: text] [Optional] Type of flags to show branches difference view
                                 <options: text|verbose>
@@ -606,8 +608,8 @@ USAGE
   $ csdx cm:branches:merge [--compare-branch <value>] [--module <value>]
 
 FLAGS
+  --comment=<value>         Merge comment
   --compare-branch=<value>  (required) Compare branch name
-  --merge-comment=<value>   Merge comment
 
 DESCRIPTION
   Merge changes from a branch
@@ -2521,22 +2523,22 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/stacks/unpublish.js)_
 
-## `csdx config:get:branch`
+## `csdx config:get:base-branch`
 
 Get current branch set for CLI
 
 ```
 USAGE
-  $ csdx config:get:branch
+  $ csdx config:get:base-branch
 
 DESCRIPTION
   Get current branch set for CLI
 
 EXAMPLES
-  $ csdx config:get:branch
+  $ csdx config:get:base-branch
 ```
 
-_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/branch.ts)_
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/base-branch.ts)_
 
 ## `csdx config:get:region`
 
@@ -2555,13 +2557,36 @@ EXAMPLES
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/region.ts)_
 
-## `csdx config:set:branch`
+## `csdx config:remove:base-branch`
+
+Remove branch config for CLI
+
+```
+USAGE
+  $ csdx config:remove:base-branch [-k <value>] [-y]
+
+FLAGS
+  -k, --stack-api-key=<value>  Stack API Key
+  -y, --yes                    Force Remove
+
+DESCRIPTION
+  Remove branch config for CLI
+
+EXAMPLES
+  $ csdx config:remove:base-branch
+
+  $ csdx config:remove:base-branch --stack-api-key <value>
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/base-branch.ts)_
+
+## `csdx config:set:base-branch`
 
 Set branch for CLI
 
 ```
 USAGE
-  $ csdx config:set:branch [-k <value>] [-b <value>]
+  $ csdx config:set:base-branch [-k <value>] [-b <value>]
 
 FLAGS
   -b, --base-branch=<value>    Base Branch
@@ -2571,12 +2596,12 @@ DESCRIPTION
   Set branch for CLI
 
 EXAMPLES
-  $ csdx config:set:branch
+  $ csdx config:set:base-branch
 
-  $ csdx config:set:branch --stack-api-key <value> --base-branch <value>
+  $ csdx config:set:base-branch --stack-api-key <value> --base-branch <value>
 ```
 
-_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/branch.ts)_
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/base-branch.ts)_
 
 ## `csdx config:set:region [REGION]`
 
