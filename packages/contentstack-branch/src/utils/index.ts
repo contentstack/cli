@@ -23,9 +23,7 @@ export const getbranchesList = (branchResult, baseBranch: string) => {
 };
 
 export const getbranchConfig = (stackApiKey: string) => {
-  let baseBranch = configHandler.get(`baseBranch.${stackApiKey}`);
-
-  return baseBranch;
+  return configHandler.get(`baseBranch.${stackApiKey}`);
 };
 
 export const refreshbranchConfig = async (apiKey, branchUid) => {
@@ -36,6 +34,6 @@ export const refreshbranchConfig = async (apiKey, branchUid) => {
 };
 
 export * from './interactive';
-export { prepareMergeRequestPayload } from './merge-helper';
+export * from './merge-helper';
 export * as interactive from './interactive';
 export * as branchDiffUtility from './branch-diff-utility';

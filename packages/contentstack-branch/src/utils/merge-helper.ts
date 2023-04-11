@@ -1,3 +1,5 @@
+import { askCompareBranch, askStackAPIKey, askBaseBranch, getbranchConfig } from './';
+
 export const prepareMergeRequestPayload = (options) => {
   return {
     base_branch: options.baseBranch, // UID of the base branch, where the changes will be merged into
@@ -7,4 +9,21 @@ export const prepareMergeRequestPayload = (options) => {
     merge_comment: options.mergeComment,
     no_revert: options.noRevert,
   };
+};
+
+export const setupMergeInputs = async (mergeFlags) => {
+  if (!mergeFlags['stack-api-key']) {
+    mergeFlags['stack-api-key'] = await askStackAPIKey();
+  }
+  if (!mergeFlags['compare-branch']) {
+    mergeFlags['compare-branch'] = await askCompareBranch();
+  }
+  if (!mergeFlags['base-branch']) {
+    mergeFlags['base-branch'] = getbranchConfig(mergeFlags['stack-api-key']);
+    if (!mergeFlags['base-branch']) {
+      mergeFlags['base-branch'] = await askBaseBranch();
+    }
+  }
+
+  return mergeFlags;
 };
