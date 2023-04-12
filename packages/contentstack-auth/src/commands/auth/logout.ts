@@ -36,8 +36,6 @@ export default class LogoutCommand extends Command {
 
   async run(): Promise<any> {
     const { flags: logoutFlags } = await this.parse(LogoutCommand);
-    const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
-    authHandler.client = managementAPIClient;
     let confirm = logoutFlags.force === true || logoutFlags.yes === true;
     if (!confirm) {
       confirm = await cliux.inquire({
@@ -48,6 +46,8 @@ export default class LogoutCommand extends Command {
     }
 
     try {
+      const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
+      authHandler.client = managementAPIClient;
       if (this.authToken) {
         if (confirm === true) {
           cliux.loader('CLI_AUTH_LOGOUT_LOADER_START');
