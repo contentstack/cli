@@ -4,17 +4,29 @@ import { stub, assert } from 'sinon';
 import { branchDiffUtility } from '../../../src/utils';
 import { cliux } from '@contentstack/cli-utilities';
 import { mockData } from '../mock/data';
+import {BranchDiffHandler} from '../../../src/branch';
 
 
 describe('Branch Diff Utility Class Testcases', () => {
-  let cliuxErrorStub, cliuxPrintStub;
-  before(function () {
+  let cliuxErrorStub, cliuxPrintStub, branchDiffHandler;
+  beforeEach(function () {
     cliuxErrorStub = stub(cliux, 'error');
     cliuxPrintStub = stub(cliux, 'print');
+    branchDiffHandler = new BranchDiffHandler(mockData.flags);
   });
-  after(function () {
+  afterEach(function () {
     cliuxErrorStub.restore();
     cliuxPrintStub.restore();
+    branchDiffHandler = null;
+  });
+
+  it('fetch branch differences, should be failed', async function () {
+    const stub1 = stub(branchDiffUtility, 'fetchBranchesDiff');
+    stub1.withArgs(mockData.branchDiffPayload).resolves("CLI_BRANCH_API_FAILED");
+    const result = await branchDiffUtility.fetchBranchesDiff(mockData.branchDiffPayload);
+    expect(stub1.calledOnce).to.be.true;
+    expect(result).to.be.equal(result);
+    stub1.restore();
   });
 
   it('fetch branch differences', async function () {
@@ -81,6 +93,22 @@ describe('Branch Diff Utility Class Testcases', () => {
     const stub1 = stub(branchDiffUtility, 'printVerboseTextView')
     stub1.withArgs(mockData.emptyVerboseRes, "content_types").returns();
     branchDiffUtility.printVerboseTextView(mockData.emptyVerboseRes, "content_types");
+    expect(stub1.calledOnce).to.be.true;
+    stub1.restore();
+  });
+
+  it('display branch summary', async function () {
+    const stub1 = stub(BranchDiffHandler.prototype, 'displaySummary')
+    stub1.withArgs(mockData.branchDiffData, mockData.flags.module).returns();
+    branchDiffHandler.displaySummary(mockData.branchDiffData, mockData.flags.module);
+    expect(stub1.calledOnce).to.be.true;
+    stub1.restore();
+  });
+
+  it('display branch difference text verbose', async function () {
+    const stub1 = stub(BranchDiffHandler.prototype, 'displayBranchDiffTextAndVerbose')
+    stub1.withArgs(mockData.branchDiffData,mockData.branchDiffPayload);
+    branchDiffHandler.displayBranchDiffTextAndVerbose(mockData.branchDiffData, mockData.branchDiffPayload);
     expect(stub1.calledOnce).to.be.true;
     stub1.restore();
   });
