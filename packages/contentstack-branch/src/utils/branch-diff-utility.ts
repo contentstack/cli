@@ -404,4 +404,6 @@ export {
   parseVerbose,
   printVerboseTextView,
   filterBranchDiffDataByModule,
+  apiRequestHandler,
+  prepareBranchVerboseRes
 };
