@@ -5,10 +5,9 @@ It is Contentstack’s CLI plugin to export content from the stack. To learn how
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-
-- [@contentstack/cli-cm-export](#contentstackcli-cm-export)
-- [Usage](#usage)
-- [Commands](#commands)
+* [@contentstack/cli-cm-export](#contentstackcli-cm-export)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 For switching to EU region update the hosts at config/default.js
@@ -34,31 +33,27 @@ For switching to AZURE-NA region update the hosts at config/default.js
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli-cm-branches
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-branches/1.0.0 darwin-arm64 node-v16.17.1
+@contentstack/cli-cm-branches/1.0.0 darwin-arm64 node-v18.11.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`csdx cm:branches`](#csdx-cmbranches)
-- [`csdx cm:branches:config --global [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesconfig---global---base-branch-value---stack-api-key-value)
-- [`csdx cm:branches:create`](#csdx-cmbranchescreate)
-- [`csdx cm:branches:delete [-u <value>] [-k <value>]`](#csdx-cmbranchesdelete--u-value--k-value)
-- [`csdx cm:branches:diff [-c <value>] [-k <value>][-m <value>]`](#csdx-cmbranchesdiff--c-value--k-value-m-value)
-- [`csdx cm:branches:merge [--compare-branch <value>] [--module <value>]`](#csdx-cmbranchesmerge---compare-branch-value---module-value)
+* [`csdx cm:branches`](#csdx-cmbranches)
+* [`csdx cm:branches:create`](#csdx-cmbranchescreate)
+* [`csdx cm:branches:delete [-u <value>] [-k <value>]`](#csdx-cmbranchesdelete--u-value--k-value)
+* [`csdx cm:branches:diff [-c <value>] [-k <value>][-m <value>]`](#csdx-cmbranchesdiff--c-value--k-value-m-value)
+* [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
 
 ## `csdx cm:branches`
 
@@ -84,32 +79,6 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/branches/index.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/index.ts)_
-
-## `csdx cm:branches:config --global [--base-branch <value>] [--stack-api-key <value>]`
-
-Set the branch
-
-```
-USAGE
-  $ csdx cm:branches:config --global [--base-branch <value>] [--stack-api-key <value>]
-
-FLAGS
-  -b, --base-branch=<value>    [default: main] Base Branch
-  -g, --global                 global configuration
-  -k, --stack-api-key=<value>  (required) Stack API Key
-
-DESCRIPTION
-  Set the branch
-
-EXAMPLES
-  $ csdx cm:branches:config -k <stack api key> --base-branch <base branch>
-
-  $ csdx cm:branches:config --global -k <stack api key> --base-branch <base branch>
-
-  $ csdx cm:branches:config --global -k <stack api key>
-```
-
-_See code: [src/commands/cm/branches/config.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/config.ts)_
 
 ## `csdx cm:branches:create`
 
@@ -183,7 +152,6 @@ FLAGS
   -k, --stack-api-key=<value>   Provide stack api key to show diff between branches
   -m, --module=<option>         Module
                                 <options: content_types|global_fields|both>
-  --filter=<value>              [Optional] Provide filter to show particular uid like conntent_type uid etc.
   --format=<option>             [default: text] [Optional] Type of flags to show branches difference view
                                 <options: text|verbose>
 
@@ -212,29 +180,44 @@ EXAMPLES
 
 _See code: [src/commands/cm/branches/diff.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/diff.ts)_
 
-## `csdx cm:branches:merge [--compare-branch <value>] [--module <value>]`
+## `csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`
 
 Merge changes from a branch
 
 ```
 USAGE
-  $ csdx cm:branches:merge [--compare-branch <value>] [--module <value>]
+  $ csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>]
+    [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]
 
 FLAGS
-  --compare-branch=<value>  (required) Compare branch name
-  --merge-comment=<value>   Merge comment
+  -k, --stack-api-key=<value>    Provide stack api key to show diff between branches
+  --base-branch=<value>          Base branch
+  --comment=<value>              Merge comment
+  --compare-branch=<value>       Compare branch name
+  --export-summary-path=<value>  Export summary file path
+  --format=<option>              [default: text] [Optional] Type of flags to show branches status view
+                                 <options: text|verbose>
+  --no-revert                    If passed, will not create the new revert branch
+  --use-merge-summary=<value>    Path of merge summary file
 
 DESCRIPTION
   Merge changes from a branch
 
 EXAMPLES
-  $ csdx cm:branches:merge --compare-branch feature-branch --module=content-types
+  $ csdx cm:branches:merge --stack-api-key bltxxxxxxxx --compare-branch feature-branch
 
-  $ csdx cm:branches:merge --compare-branch feature-branch --module=global-fields
+  $ csdx cm:branches:merge --stack-api-key bltxxxxxxxx --comment "merge comment"
 
-  $ csdx cm:branches:merge --compare-branch feature-branch
+  $ csdx cm:branches:merge -k bltxxxxxxxx --base-branch base-branch
+
+  $ csdx cm:branches:merge --export-summary-path file/path
+
+  $ csdx cm:branches:merge --use-merge-summary file-path
+
+  $ csdx cm:branches:merge -k bltxxxxxxxx --no-revert
+
+  $ csdx cm:branches:merge -k bltxxxxxxxx --compare-branch feature-branch --no-revert
 ```
 
 _See code: [src/commands/cm/branches/merge.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/merge.ts)_
-
 <!-- commandsstop -->

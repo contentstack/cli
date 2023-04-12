@@ -3,7 +3,7 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { configHandler } from '@contentstack/cli-utilities';
+import { configHandler, HttpClient } from '@contentstack/cli-utilities';
 
 export const getbranchesList = (branchResult, baseBranch: string) => {
   const branches: Record<string, unknown>[] = [];
@@ -45,6 +45,36 @@ export const writeFile = (filePath, data) => {
       resolve('done');
     });
   });
+};
+
+export const apiGetRequest = async (payload): Promise<any> => {
+  const authToken = configHandler.get('authtoken');
+  const headers = {
+    authtoken: authToken,
+    api_key: payload.apiKey,
+    'Content-Type': 'application/json',
+  };
+  const response = await new HttpClient()
+    .headers(headers)
+    .queryParams(payload.params)
+    .get(payload.url)
+    .then(({ data }) => data);
+  return response;
+};
+
+export const apiPostRequest = async (payload): Promise<any> => {
+  const authToken = configHandler.get('authtoken');
+  const headers = {
+    authtoken: authToken,
+    api_key: payload.apiKey,
+    'Content-Type': 'application/json',
+  };
+  const response = await new HttpClient()
+    .headers(headers)
+    .queryParams(payload.params)
+    .post(payload.url, {})
+    .then(({ data }) => data);
+  return response;
 };
 
 export * from './interactive';
