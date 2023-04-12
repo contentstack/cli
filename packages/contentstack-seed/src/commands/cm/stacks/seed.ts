@@ -88,7 +88,6 @@ export default class SeedCommand extends Command {
         parent: this,
         cdaHost: this.cdaHost,
         cmaHost: this.cmaHost,
-        authToken: this.authToken,
         gitHubPath: seedFlags.repo,
         orgUid: seedFlags.org,
         stackUid: seedFlags['stack-api-key'] || seedFlags.stack,
