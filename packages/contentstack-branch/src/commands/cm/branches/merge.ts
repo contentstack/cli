@@ -79,14 +79,16 @@ export default class BranchMergeCommand extends Command {
         format: branchMergeFlags.format,
       });
       await new MergeHandler({
+        stackAPIKey: branchMergeFlags['stack-api-key'],
         compareBranch: branchMergeFlags['compare-branch'],
         strategy: branchMergeFlags.strategy,
         strategySubOption: branchMergeFlags['strategy-sub-options'],
         baseBranch: branchMergeFlags['base-branch'],
         branchCompareData: branchCompareData,
-        mergeComment: branchMergeFlags.comment,
+        mergeComment: branchMergeFlags.comment || 'test comment',
         executeOption: branchMergeFlags['merge-action'],
         noRevert: branchMergeFlags['no-revert'],
+        format: branchMergeFlags.format,
         exportSummaryPath: branchMergeFlags['export-summary-path'],
         useMergeSummary: branchMergeFlags['use-merge-summary'],
       }).start();
