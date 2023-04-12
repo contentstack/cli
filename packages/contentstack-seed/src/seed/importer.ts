@@ -5,7 +5,6 @@ const STACK_FOLDER = 'stack';
 
 export interface ImporterOptions {
   master_locale: string;
-  authToken: string;
   api_key: string;
   tmpPath: string;
   cmaHost: string;
