@@ -1,5 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import { logger, cliux, configHandler, printFlagDeprecation, flags, managementSDKClient } from '@contentstack/cli-utilities';
+import { logger, cliux, configHandler, printFlagDeprecation, flags, managementSDKClient, isAuthenticated } from '@contentstack/cli-utilities';
 
 import { authHandler } from '../../utils';
 
@@ -41,11 +41,10 @@ export default class LogoutCommand extends Command {
     }
 
     try {
-      if (this.authToken) {
+      if (isAuthenticated()) {
         if (confirm === true) {
           cliux.loader('CLI_AUTH_LOGOUT_LOADER_START');
-          const authtoken = this.authToken;
-          await authHandler.logout(authtoken);
+          await authHandler.logout(configHandler.get('authtoken'));
           cliux.loader('');
           logger.info('successfully logged out');
           cliux.success('CLI_AUTH_LOGOUT_SUCCESS');
