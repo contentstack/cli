@@ -2,14 +2,24 @@ import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
 import { cliux } from '@contentstack/cli-utilities';
 import { BranchDiffPayload } from '../interfaces/index';
-import { askCompareBranch, askStackAPIKey, askBaseBranch, getbranchConfig, branchDiffUtility as branchDiff } from './';
+import {
+  askCompareBranch,
+  askStackAPIKey,
+  askBaseBranch,
+  getbranchConfig,
+  branchDiffUtility as branchDiff,
+  apiPostRequest,
+  apiGetRequest,
+} from './';
+
+import config from '../config';
 
 export const prepareMergeRequestPayload = (options) => {
   return {
     base_branch: options.baseBranch, // UID of the base branch, where the changes will be merged into
     compare_branch: options.compareBranch, // UID of the branch to merge
-    default_merge_strategy: options.mergeContent.strategy,
-    item_merge_strategies: options.mergeContent.itemMergeStrategies,
+    default_merge_strategy: options.strategy,
+    item_merge_strategies: options.itemMergeStrategies,
     merge_comment: options.mergeComment,
     no_revert: options.noRevert,
   };
@@ -45,20 +55,20 @@ export const displayBranchStatus = async (options) => {
 
   let parsedResponse = {};
   for (let module in diffData) {
-    const branchDiff = diffData[module];
+    const branchModuleData = diffData[module];
     payload.module = module;
     cliux.print(' ');
     cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
-    const diffSummary = branchDiff.parseSummary(branchDiffData, options.baseBranch, options.compareBranch);
+    const diffSummary = branchDiff.parseSummary(branchModuleData, options.baseBranch, options.compareBranch);
     branchDiff.printSummary(diffSummary);
     cliux.print(' ');
     cliux.print(`Differences in '${options.compareBranch}' compared to '${options.baseBranch}':`);
     if (options.format === 'text') {
-      const branchTextRes = branchDiff.parseCompactText(branchDiffData);
+      const branchTextRes = branchDiff.parseCompactText(branchModuleData);
       branchDiff.printCompactTextView(branchTextRes, payload.module);
       parsedResponse[module] = branchTextRes;
     } else if (options.format === 'verbose') {
-      const verboseRes = await branchDiff.parseVerbose(branchDiffData, payload);
+      const verboseRes = await branchDiff.parseVerbose(branchModuleData, payload);
       branchDiff.printVerboseTextView(verboseRes, payload.module);
       parsedResponse[module] = verboseRes;
     }
@@ -77,4 +87,39 @@ export const displayMergeSummary = (options) => {
       branchDiff.printVerboseTextView(options.compareData[module], module);
     }
   }
+};
+
+export const executeMerge = async (apiKey, mergePayload): Promise<any> => {
+  const mergeResponse = await apiPostRequest({
+    apiKey: apiKey,
+    url: config.mergeUrl,
+    params: mergePayload,
+  });
+
+  if (mergeResponse.errors) {
+    console.log(mergeResponse.errors);
+    return Promise.reject(new Error('Failed to merge the changes'));
+  }
+  if (mergeResponse.merge_details?.status === 'in_progress') {
+    // TBD call the queue with the id
+    const interval = setInterval(async () => {
+      const { merge_details } = await fetchMergeStatus({ apiKey: apiKey, uid: mergeResponse.uid });
+      if (merge_details?.status === 'done') {
+        clearInterval(interval);
+        Promise.resolve(mergeResponse);
+      }
+    }, 1000);
+  } else {
+    // return the merge id success
+    return mergeResponse;
+  }
+};
+
+const fetchMergeStatus = async (mergePayload): Promise<any> => {
+  const { queue } = await apiGetRequest({
+    apiKey: mergePayload.apiKey,
+    url: `${config.mergeQueueUrl}/${mergePayload.uid}`,
+    params: {},
+  });
+  return queue[1];
 };

@@ -40,6 +40,7 @@ export interface MergeInputOptions {
   format?: string;
   exportSummaryPath?: string;
   useMergeSummary?: string;
+  stackAPIKey: string;
 }
 
 export interface ModifiedFieldsType {

@@ -1,3 +1,4 @@
+import path from 'path';
 import { cliux } from '@contentstack/cli-utilities';
 import { MergeInputOptions } from '../interfaces';
 import {
@@ -8,6 +9,7 @@ import {
   displayMergeSummary,
   askExportMergeSummaryPath,
   writeFile,
+  executeMerge,
 } from '../utils';
 
 export default class MergeHandler {
@@ -19,8 +21,10 @@ export default class MergeHandler {
   private displayFormat: string;
   private exportSummaryPath: string;
   private useMergeSummary: string;
+  private stackAPIKey: string;
 
   constructor(options: MergeInputOptions) {
+    this.stackAPIKey = options.stackAPIKey;
     this.strategy = options.strategy;
     this.strategySubOption = options.strategySubOption;
     this.executeOption = options.executeOption;
@@ -91,36 +95,38 @@ export default class MergeHandler {
   }
 
   displayMergeSummary() {
-    const mergeContent = this.filterBranchCompareData();
+    for (let module in this.branchCompareData) {
+      this.mergeSettings.mergeContent[module] = {};
+      this.filterBranchCompareData(module, this.branchCompareData[module]);
+    }
     displayMergeSummary({
       format: this.displayFormat,
-      compareData: this.branchCompareData,
+      compareData: this.mergeSettings.mergeContent,
     });
   }
 
-  filterBranchCompareData() {
+  filterBranchCompareData(module, moduleBranchCompareData) {
     const { strategy, mergeContent } = this.mergeSettings;
     switch (strategy) {
       case 'merge_prefer_base' || 'merge_prefer_compare':
-        mergeContent.added = this.branchCompareData.added;
-        mergeContent.modified = this.branchCompareData.modified;
-        mergeContent.deleted = this.branchCompareData.deleted;
+        mergeContent[module].added = moduleBranchCompareData.added;
+        mergeContent[module].modified = moduleBranchCompareData.modified;
+        mergeContent[module].deleted = moduleBranchCompareData.deleted;
         break;
       case 'merge_new_only':
-        mergeContent.added = this.branchCompareData.added;
+        mergeContent[module].added = moduleBranchCompareData.added;
         break;
       case 'merge_modified_only_prefer_base' || 'merge_modified_only_prefer_compare':
-        mergeContent.modified = this.branchCompareData.modified;
+        mergeContent[module].modified = moduleBranchCompareData.modified;
         break;
       case 'overwrite_with_compare':
-        mergeContent.added = this.branchCompareData.added;
-        mergeContent.modified = this.branchCompareData.modified;
-        mergeContent.deleted = this.branchCompareData.deleted;
+        mergeContent[module].added = moduleBranchCompareData.added;
+        mergeContent[module].modified = moduleBranchCompareData.modified;
+        mergeContent[module].deleted = moduleBranchCompareData.deleted;
         break;
       default:
         console.log('Invalid strategy', strategy);
     }
-    return mergeContent;
   }
 
   async exportSummary(mergePayload) {
@@ -130,11 +136,15 @@ export default class MergeHandler {
     const summary = {
       requestPayload: mergePayload,
     };
-    await writeFile(this.exportSummaryPath, summary);
+    await writeFile(path.join(this.exportSummaryPath, 'merge-summary.json'), summary);
     cliux.success('Exported the summary successfully');
   }
 
-  executeMerge(mergePayload) {
-    throw new Error('Not implemented');
+  async executeMerge(mergePayload) {
+    throw new Error('Implementation is in progress');
+    cliux.loader('Merging the changes');
+    await executeMerge(this.stackAPIKey, mergePayload);
+    cliux.loader('');
+    cliux.success('Merged the changes successfully');
   }
 }
