@@ -15,9 +15,8 @@ import {
   filterBranchDiffDataByModule,
 } from '../utils/branch-diff-utility';
 
-export default class BranchDiff {
+export default class BranchDiffHandler {
   private options: BranchOptions;
-  public branchesDiffData: BranchDiffRes[];
 
   constructor(params: BranchOptions) {
     this.options = params;
@@ -41,10 +40,11 @@ export default class BranchDiff {
     }
 
     if (!this.options.baseBranch) {
-      const baseBranch = getbranchConfig(this.options.baseBranch);
+      const baseBranch = getbranchConfig(this.options.stackAPIKey);
       if (!baseBranch) {
         this.options.baseBranch = await askBaseBranch();
       } else {
+        this.options.baseBranch = baseBranch;
         cliux.print(`Base branch: '${baseBranch}'`);
       }
     }
@@ -64,7 +64,7 @@ export default class BranchDiff {
    */
   async initBranchDiffUtility(): Promise<void> {
     cliux.loader('Loading branch differences...');
-    let payload: BranchDiffPayload = {
+    const payload: BranchDiffPayload = {
       module: '',
       apiKey: this.options.stackAPIKey,
       baseBranch: this.options.baseBranch,
