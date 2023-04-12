@@ -1,4 +1,5 @@
 import { client, ContentstackClient, ContentstackConfig } from '@contentstack/management';
+import { isAuthenticated } from './helpers';
 import { Agent } from 'node:https';
 import { default as configStore } from './config-handler';
 
@@ -64,9 +65,8 @@ class ManagementSDKInitiator {
     }
 
     if (!config.management_token) {
-      const authtoken = configStore.get('authtoken');
-      if (authtoken) {
-        option.authtoken = authtoken;
+      if (isAuthenticated()) {
+        option.authtoken = configStore.get('authtoken');
         option.authorization = '';
       } else {
         option.authtoken = '';
