@@ -1,7 +1,8 @@
 import { Command } from '@contentstack/cli-command';
-import { messageHandler, managementSDKClient, flags } from '@contentstack/cli-utilities';
+import { messageHandler, managementSDKClient, flags, cliux } from '@contentstack/cli-utilities';
 import { BranchOptions } from "../../../interfaces/index";
 import { BranchDiff } from '../../../branch';
+import { getbranchConfig } from '../../../utils';
 
 export default class BranchDiffCommand extends Command {
   static description: string = messageHandler.parse('Differences between two branches');
@@ -32,9 +33,7 @@ export default class BranchDiffCommand extends Command {
     module: flags.string({
       char: "m",
       description: "Module",
-    }),
-    filter: flags.string({
-      description: "[Optional] Provide filter to show particular uid like conntent_type uid etc."
+      options: ["content_types", "global_fields", "both"]
     }),
     'stack-api-key': flags.string({
       char: 'k',
@@ -52,15 +51,13 @@ export default class BranchDiffCommand extends Command {
 
   async run(): Promise<any> {
     try {
-      const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
       const { flags: branchDiffFlags } = await this.parse(BranchDiffCommand);
       let options: BranchOptions = {
         baseBranch: branchDiffFlags['base-branch'],
         stackAPIKey: branchDiffFlags['stack-api-key'],
         compareBranch: branchDiffFlags['compare-branch'],
         module: branchDiffFlags.module,
-        format: branchDiffFlags.format,
-        filter: branchDiffFlags.filter,
+        format: branchDiffFlags.format
       }
       const branchDiff = new BranchDiff(options);
       await branchDiff.run();
