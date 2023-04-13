@@ -123,6 +123,7 @@ const fetchMergeStatus = async (mergePayload): Promise<any> => {
           await fetchMergeStatus(mergePayload).then(resolve).catch(reject);
         }, 5000);
       } else if (mergeStatus === 'failed') {
+        console.log('errors', mergeRequestStatusResponse.errors);
         return reject(`merge uid: ${mergePayload.uid}`);
       } else {
         return reject(`Invalid merge status found with merge id ${mergePayload.uid}`);
