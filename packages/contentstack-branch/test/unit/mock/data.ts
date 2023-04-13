@@ -305,4 +305,89 @@ const deleteBranchMockData = {
     confirm: false,
   },
 };
-export { mockData, createBranchMockData, deleteBranchMockData };
+const branchMockData = {
+  flags: {
+    apiKey: 'abcd',
+    verbose: true,
+  },
+  data: {
+    items: [
+      {
+        stackHeaders: {
+          api_key: 'bltxxxxxxxxxxxx',
+        },
+        urlPath: '/stacks/branches/new_branch',
+        uid: 'new_branch',
+        source: 'main',
+        created_by: 'bltxxxxxxxxxxxxxxx',
+        updated_by: 'bltxxxxxxxxxxxxxxx',
+        created_at: '2023-03-02T12:53:18.809Z',
+        updated_at: '2023-03-02T12:53:19.208Z',
+        deleted_at: false,
+        alias: [],
+      },
+      {
+        stackHeaders: {
+          api_key: 'bltxxxxxxxxxxxxxxx',
+        },
+        urlPath: '/stacks/branches/test_branch',
+        uid: 'test_branch',
+        source: 'main',
+        created_by: 'bltxxxxxxxxxxxxxxx',
+        updated_by: 'bltxxxxxxxxxxxxxxx',
+        created_at: '2023-03-01T09:36:18.174Z',
+        updated_at: '2023-03-01T09:36:18.538Z',
+        deleted_at: false,
+        alias: [],
+      },
+      {
+        stackHeaders: {
+          api_key: 'bltxxxxxxxxxxxxxxx',
+        },
+        urlPath: '/stacks/branches/new',
+        uid: 'new',
+        source: 'main',
+        created_by: 'bltxxxxxxxxxxxxxxx',
+        updated_by: 'bltxxxxxxxxxxxxxxx',
+        created_at: '2023-01-11T08:55:51.556Z',
+        updated_at: '2023-01-11T08:55:51.869Z',
+        deleted_at: false,
+        alias: [],
+      },
+      {
+        stackHeaders: {
+          api_key: 'bltxxxxxxxxxxxxxxx',
+        },
+        urlPath: '/stacks/branches/main',
+        uid: 'main',
+        source: '',
+        created_by: 'bltxxxxxxxxxxxxxxx',
+        updated_by: 'bltxxxxxxxxxxxxxxx',
+        created_at: '2022-09-27T06:11:29.016Z',
+        updated_at: '2022-11-18T09:54:41.671Z',
+        deleted_at: false,
+        alias: [],
+      },
+      {
+        stackHeaders: {
+          api_key: 'bltxxxxxxxxxxxxxxx',
+        },
+        urlPath: '/stacks/branches/release',
+        uid: 'release',
+        source: 'develop',
+        created_by: 'bltxxxxxxxxxxxxxxx',
+        updated_by: 'bltxxxxxxxxxxxxxxx',
+        created_at: '2022-10-30T18:37:05.875Z',
+        updated_at: '2022-11-18T09:42:22.266Z',
+        deleted_at: false,
+        alias: [
+          {
+            uid: 'alias1',
+          },
+        ],
+      },
+    ],
+  },
+};
+
+export { mockData, createBranchMockData, deleteBranchMockData, branchMockData };
