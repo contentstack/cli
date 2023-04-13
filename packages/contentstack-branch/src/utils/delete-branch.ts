@@ -7,7 +7,7 @@ export async function deleteBranch(host: string, apiKey: string, uid: string) {
     .stack({ api_key: apiKey })
     .branch(uid)
     .delete()
-    .then(() => cliux.success('Branch has been deleted'))
+    .then(() => cliux.success(`${uid} Branch has been deleted`))
     .then(() => refreshbranchConfig(apiKey, uid))
     .catch((err) => {
       if (err.errorCode === 905) {
