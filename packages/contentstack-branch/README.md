@@ -173,9 +173,7 @@ EXAMPLES
 
   $ csdx cm:branches:diff --compare-branch "develop" --format "verbose"
 
-  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types" --filter "{content_type: "uid"}"
-
-  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose" --filter "{content_type: "uid"}"
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose"
 ```
 
 _See code: [src/commands/cm/branches/diff.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/diff.ts)_
