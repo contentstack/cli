@@ -150,3 +150,12 @@ export async function askExportMergeSummaryPath(): Promise<string> {
     validate: inquireRequireFieldValidation,
   });
 }
+
+export async function askMergeComment(): Promise<string> {
+  return await cliux.inquire<string>({
+    type: 'input',
+    message: 'Enter a comment for merge',
+    name: 'comment',
+    validate: inquireRequireFieldValidation,
+  });
+}

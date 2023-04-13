@@ -3,7 +3,7 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { configHandler, HttpClient } from '@contentstack/cli-utilities';
+import { configHandler, HttpClient, cliux } from '@contentstack/cli-utilities';
 
 export const getbranchesList = (branchResult, baseBranch: string) => {
   const branches: Record<string, unknown>[] = [];
@@ -54,12 +54,28 @@ export const apiGetRequest = async (payload): Promise<any> => {
     api_key: payload.apiKey,
     'Content-Type': 'application/json',
   };
-  const response = await new HttpClient()
+  return await new HttpClient()
     .headers(headers)
     .queryParams(payload.params)
     .get(payload.url)
-    .then(({ data }) => data);
-  return response;
+    .then(({ data, status }) => {
+      if (status === 200 || status === 201 || status === 202) {
+        return data;
+      } else {
+        let errorMsg: string;
+        if (status === 500) {
+          errorMsg = data.message;
+        } else {
+          errorMsg = data.error_message;
+        }
+        cliux.error(errorMsg);
+        process.exit(1);
+      }
+    })
+    .catch((err) => {
+      cliux.error('Failed to merge the ');
+      process.exit(1);
+    });
 };
 
 export const apiPostRequest = async (payload): Promise<any> => {
@@ -69,12 +85,24 @@ export const apiPostRequest = async (payload): Promise<any> => {
     api_key: payload.apiKey,
     'Content-Type': 'application/json',
   };
-  const response = await new HttpClient()
+  return await new HttpClient()
     .headers(headers)
     .queryParams(payload.params)
     .post(payload.url, {})
-    .then(({ data }) => data);
-  return response;
+    .then(({ data, status }) => {
+      if (status === 200 || status === 201 || status === 202) return data;
+      else {
+        let errorMsg: string;
+        if (status === 500) errorMsg = data.message;
+        else errorMsg = data.error_message;
+        cliux.error(errorMsg);
+        process.exit(1);
+      }
+    })
+    .catch((err) => {
+      cliux.error('Failed to merge the ');
+      process.exit(1);
+    });
 };
 
 export * from './interactive';
