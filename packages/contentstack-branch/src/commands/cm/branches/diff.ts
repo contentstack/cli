@@ -14,8 +14,7 @@ export default class BranchDiffCommand extends Command {
     'csdx cm:branches:diff --compare-branch "develop" --module "content-types"',
     'csdx cm:branches:diff --module "content-types" --format "verbose"',
     'csdx cm:branches:diff --compare-branch "develop" --format "verbose"',
-    'csdx cm:branches:diff --compare-branch "develop" --module "content-types" --filter "{content_type: "uid"}"',
-    'csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose" --filter "{content_type: "uid"}"'
+    'csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose"'
   ];
 
   static usage: string = 'cm:branches:diff [-c <value>] [-k <value>][-m <value>]';
