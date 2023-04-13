@@ -7,7 +7,9 @@ const setupBranches = async (config, branch, stackAPIClient) => {
   if (typeof config !== 'object') {
     throw new Error('Invalid config to setup the branch');
   }
+
   let branches = [];
+
   const headers = { api_key: config.source_stack };
 
   if (isAuthenticated()) {
