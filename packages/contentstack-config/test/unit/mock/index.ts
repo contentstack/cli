@@ -4,3 +4,9 @@ export const setConfigMockData = {
     baseBranch: 'test',
   },
 };
+
+export const removeConfigMockData = {
+  flags: {
+    apiKey: 'abcd',
+  },
+};
