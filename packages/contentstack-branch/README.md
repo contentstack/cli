@@ -179,7 +179,6 @@ FLAGS
   -k, --stack-api-key=<value>   Provide stack api key to show diff between branches
   -m, --module=<option>         Module
                                 <options: content_types|global_fields|both>
-  --filter=<value>              [Optional] Provide filter to show particular uid like conntent_type uid etc.
   --format=<option>             [default: text] [Optional] Type of flags to show branches difference view
                                 <options: text|verbose>
 
@@ -201,9 +200,7 @@ EXAMPLES
 
   $ csdx cm:branches:diff --compare-branch "develop" --format "verbose"
 
-  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types" --filter "{content_type: "uid"}"
-
-  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose" --filter "{content_type: "uid"}"
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose"
 ```
 
 _See code: [src/commands/cm/branches/diff.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/diff.ts)_
