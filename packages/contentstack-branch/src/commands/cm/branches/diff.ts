@@ -1,8 +1,7 @@
 import { Command } from '@contentstack/cli-command';
-import { messageHandler, managementSDKClient, flags, cliux } from '@contentstack/cli-utilities';
+import { messageHandler, flags } from '@contentstack/cli-utilities';
 import { BranchOptions } from "../../../interfaces/index";
-import { BranchDiff } from '../../../branch';
-import { getbranchConfig } from '../../../utils';
+import { BranchDiffHandler } from '../../../branch';
 
 export default class BranchDiffCommand extends Command {
   static description: string = messageHandler.parse('Differences between two branches');
@@ -15,8 +14,7 @@ export default class BranchDiffCommand extends Command {
     'csdx cm:branches:diff --compare-branch "develop" --module "content-types"',
     'csdx cm:branches:diff --module "content-types" --format "verbose"',
     'csdx cm:branches:diff --compare-branch "develop" --format "verbose"',
-    'csdx cm:branches:diff --compare-branch "develop" --module "content-types" --filter "{content_type: "uid"}"',
-    'csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose" --filter "{content_type: "uid"}"'
+    'csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose"'
   ];
 
   static usage: string = 'cm:branches:diff [-c <value>] [-k <value>][-m <value>]';
@@ -59,8 +57,8 @@ export default class BranchDiffCommand extends Command {
         module: branchDiffFlags.module,
         format: branchDiffFlags.format
       }
-      const branchDiff = new BranchDiff(options);
-      await branchDiff.run();
+      const diffHandler = new BranchDiffHandler(options);
+      await diffHandler.run();
     } catch (error: any) {
       this.error(error, { exit: 1, suggestions: error.suggestions });
     }
