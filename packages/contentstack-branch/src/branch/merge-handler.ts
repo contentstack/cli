@@ -141,10 +141,16 @@ export default class MergeHandler {
   }
 
   async executeMerge(mergePayload) {
-    throw new Error('Implementation is in progress');
-    cliux.loader('Merging the changes');
-    await executeMerge(this.stackAPIKey, mergePayload);
-    cliux.loader('');
-    cliux.success('Merged the changes successfully');
+    try {
+      cliux.loader('Merging the changes');
+      if (!this.mergeSettings.mergeComment) {
+        this.mergeSettings.mergeComment = await askExportMergeSummaryPath();
+      }
+      const mergeResponse = await executeMerge(this.stackAPIKey, mergePayload);
+      cliux.loader('');
+      cliux.success(`Merged the changes successfully, merge uid: ${mergeResponse.uid}`);
+    } catch (error) {
+      cliux.error('Failed to merge the changes', error);
+    }
   }
 }

@@ -96,30 +96,39 @@ export const executeMerge = async (apiKey, mergePayload): Promise<any> => {
     params: mergePayload,
   });
 
-  if (mergeResponse.errors) {
-    console.log(mergeResponse.errors);
-    return Promise.reject(new Error('Failed to merge the changes'));
-  }
   if (mergeResponse.merge_details?.status === 'in_progress') {
     // TBD call the queue with the id
-    const interval = setInterval(async () => {
-      const { merge_details } = await fetchMergeStatus({ apiKey: apiKey, uid: mergeResponse.uid });
-      if (merge_details?.status === 'done') {
-        clearInterval(interval);
-        Promise.resolve(mergeResponse);
-      }
-    }, 1000);
-  } else {
+    return await fetchMergeStatus({ apiKey, uid: mergeResponse.uid });
+  } else if (mergeResponse.merge_details?.status === 'complete') {
     // return the merge id success
     return mergeResponse;
   }
 };
 
 const fetchMergeStatus = async (mergePayload): Promise<any> => {
-  const { queue } = await apiGetRequest({
-    apiKey: mergePayload.apiKey,
-    url: `${config.mergeQueueUrl}/${mergePayload.uid}`,
-    params: {},
+  return new Promise(async (resolve, reject) => {
+    const mergeStatusResponse = await apiGetRequest({
+      apiKey: mergePayload.apiKey,
+      url: `${config.mergeQueueUrl}/${mergePayload.uid}`,
+      params: {},
+    });
+
+    if (mergeStatusResponse?.queue?.length >= 1) {
+      const mergeRequestStatusResponse = mergeStatusResponse.queue[0];
+      const mergeStatus = mergeRequestStatusResponse.merge_details?.status;
+      if (mergeStatus === 'complete') {
+        resolve(mergeRequestStatusResponse);
+      } else if (mergeStatus === 'in-progress') {
+        setTimeout(async () => {
+          await fetchMergeStatus(mergePayload).then(resolve).catch(reject);
+        }, 5000);
+      } else if (mergeStatus === 'failed') {
+        return reject(`merge uid: ${mergePayload.uid}`);
+      } else {
+        return reject(`Invalid merge status found with merge id ${mergePayload.uid}`);
+      }
+    } else {
+      return reject(`No queue found with merge id ${mergePayload.uid}`);
+    }
   });
-  return queue[1];
 };
