@@ -263,31 +263,46 @@ const mockData = {
       },
     },
   },
-  verboseRes:{
+  verboseRes: {
     listOfAddedFields: [
-    {
-      path: 'url1',
-      displayName: undefined,
-      uid: undefined,
-      fieldType: 'Metadata Field'
-    }],
+      {
+        path: 'url1',
+        displayName: undefined,
+        uid: undefined,
+        fieldType: 'Metadata Field',
+      },
+    ],
     listOfDeletedFields: [
       {
         path: 'schema[3]',
         displayName: 'Single Line Textbox33',
         uid: 'single_line_textbox33',
-        fieldType: 'Single Line Textbox33 Field'
-      }
+        fieldType: 'Single Line Textbox33 Field',
+      },
     ],
     listOfModifiedFields: [
       {
         path: 'title',
         displayName: undefined,
         uid: undefined,
-        fieldType: 'Metadata Field'
-      }
-    ]
-  }
+        fieldType: 'Metadata Field',
+      },
+    ],
+  },
 };
-
-export { mockData };
+const createBranchMockData = {
+  flags: {
+    source: 'main',
+    uid: 'new_branch',
+    apiKey: 'abcd',
+  },
+};
+const deleteBranchMockData = {
+  flags: {
+    uid: 'new_branch',
+    apiKey: 'abcd',
+    force: false,
+    confirm: false,
+  },
+};
+export { mockData, createBranchMockData, deleteBranchMockData };
