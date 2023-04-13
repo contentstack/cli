@@ -28,6 +28,7 @@ export interface ContentModelSeederOptions {
   stackName: string | undefined;
   fetchLimit: string | undefined;
   skipStackConfirmation: string | undefined;
+  isAuthenticated: boolean | false;
 }
 
 export default class ContentModelSeeder {
@@ -85,6 +86,7 @@ export default class ContentModelSeeder {
       cmaHost: this.options.cmaHost,
       master_locale: ENGLISH_LOCALE,
       tmpPath: tmpPath,
+      isAuthenticated: this.options.isAuthenticated,
     });
     return { api_key };
   }

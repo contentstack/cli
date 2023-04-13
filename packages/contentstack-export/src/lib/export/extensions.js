@@ -24,8 +24,8 @@ module.exports = class ExportExtensions {
   };
 
   constructor(exportConfig, stackAPIClient) {
-    this.stackAPIClient = stackAPIClient;
     this.config = merge(config, exportConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
