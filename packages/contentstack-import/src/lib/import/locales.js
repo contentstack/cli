@@ -70,7 +70,7 @@ module.exports = class ImportLanguages {
       let langUids = Object.keys(self.languages);
       return Promise.map(
         langUids,
-        function (langUid) {
+        (langUid) => {
           let lang = self.languages[langUid];
           if (!self.langUidMapper.hasOwnProperty(langUid) && lang.code !== self.masterLanguage) {
             let requestOption = {
