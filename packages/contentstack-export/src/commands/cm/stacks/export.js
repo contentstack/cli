@@ -48,6 +48,7 @@ class ExportCommand extends Command {
             branchName,
             securedAssets,
             moduleName,
+            data,
           );
         } else if (data) {
           await parameterWithMToken(

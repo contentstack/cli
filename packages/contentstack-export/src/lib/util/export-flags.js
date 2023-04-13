@@ -11,8 +11,10 @@ const helper = require('../util/helper');
 let _ = require('lodash');
 const { cliux } = require('@contentstack/cli-utilities');
 
-exports.configWithMToken = async function (config, managementTokens, host, contentTypes, branchName, securedAssets, moduleName) {
+exports.configWithMToken = async function (config, managementTokens, host, contentTypes, branchName, securedAssets, moduleName, data) {
   let externalConfig = require(config);
+  const modules = externalConfig.filteredModules;
+
   defaultConfig.securedAssets = securedAssets;
   defaultConfig.management_token = managementTokens.token;
   defaultConfig.host = host.cma;
@@ -27,6 +29,15 @@ exports.configWithMToken = async function (config, managementTokens, host, conte
     }
   }
   defaultConfig = _.merge(defaultConfig, externalConfig);
+
+  if(!defaultConfig.data) {
+    defaultConfig.data = data
+  }
+
+  if (_.isArray(modules)) {
+    defaultConfig.modules.types = _.filter(defaultConfig.modules.types, (module) => _.includes(modules, module));
+  }
+
   await initial(defaultConfig);
 };
 
