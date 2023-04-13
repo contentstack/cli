@@ -1,7 +1,7 @@
 import { Command } from '@contentstack/cli-command';
-import { messageHandler, managementSDKClient, flags } from '@contentstack/cli-utilities';
+import { messageHandler, flags } from '@contentstack/cli-utilities';
 import { BranchOptions } from "../../../interfaces/index";
-import { BranchDiff } from '../../../branch';
+import { BranchDiffHandler } from '../../../branch';
 
 export default class BranchDiffCommand extends Command {
   static description: string = messageHandler.parse('Differences between two branches');
@@ -14,8 +14,7 @@ export default class BranchDiffCommand extends Command {
     'csdx cm:branches:diff --compare-branch "develop" --module "content-types"',
     'csdx cm:branches:diff --module "content-types" --format "verbose"',
     'csdx cm:branches:diff --compare-branch "develop" --format "verbose"',
-    'csdx cm:branches:diff --compare-branch "develop" --module "content-types" --filter "{content_type: "uid"}"',
-    'csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose" --filter "{content_type: "uid"}"'
+    'csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose"'
   ];
 
   static usage: string = 'cm:branches:diff [-c <value>] [-k <value>][-m <value>]';
@@ -34,9 +33,6 @@ export default class BranchDiffCommand extends Command {
       description: "Module",
       options: ["content_types", "global_fields", "both"]
     }),
-    filter: flags.string({
-      description: "[Optional] Provide filter to show particular uid like conntent_type uid etc."
-    }),
     'stack-api-key': flags.string({
       char: 'k',
       description: 'Provide stack api key to show diff between branches',
@@ -53,18 +49,16 @@ export default class BranchDiffCommand extends Command {
 
   async run(): Promise<any> {
     try {
-      const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
       const { flags: branchDiffFlags } = await this.parse(BranchDiffCommand);
       let options: BranchOptions = {
         baseBranch: branchDiffFlags['base-branch'],
         stackAPIKey: branchDiffFlags['stack-api-key'],
         compareBranch: branchDiffFlags['compare-branch'],
         module: branchDiffFlags.module,
-        format: branchDiffFlags.format,
-        filter: branchDiffFlags.filter,
+        format: branchDiffFlags.format
       }
-      const branchDiff = new BranchDiff(options);
-      await branchDiff.run();
+      const diffHandler = new BranchDiffHandler(options);
+      await diffHandler.run();
     } catch (error: any) {
       this.error(error, { exit: 1, suggestions: error.suggestions });
     }
