@@ -83,20 +83,23 @@ async function apiRequestHandler(payload: BranchDiffPayload, skip?: number, limi
     .headers(headers)
     .queryParams(params)
     .get(payload.url)
-    .then(({ data }) => {
-      const { error_message } = data;
-      if (error_message) {
-        cliux.error('error', error_message);
+    .then(({ data, status }) => {
+      if ([200, 201, 202].includes(status)) return data;
+      else {
+        let errorMsg: string;
+        if (status === 500) errorMsg = data.message;
+        else errorMsg = data.error_message;
+        cliux.print(`error: ${errorMsg}`, { color: 'red' });
+        cliux.loader(' ');
         process.exit(1);
-      } else {
-        return data;
       }
     })
     .catch((err) => {
-      cliux.error('error', messageHandler.parse('CLI_BRANCH_API_FAILED'));
+      cliux.print(`error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
+      cliux.loader(' ');
       process.exit(1);
     });
-    return result;
+  return result;
 }
 
 /**
@@ -386,7 +389,10 @@ function printModifiedFields(modfiedFields: ModifiedFieldsInput): void {
  * @returns
  */
 function filterBranchDiffDataByModule(branchDiffData: any[]) {
-  let moduleRes = {};
+  let moduleRes = {
+    content_types: [],
+    global_fields: [],
+  };
 
   forEach(branchDiffData, (item) => {
     if (!moduleRes[item.type]) moduleRes[item.type] = [item];
@@ -405,5 +411,5 @@ export {
   printVerboseTextView,
   filterBranchDiffDataByModule,
   apiRequestHandler,
-  prepareBranchVerboseRes
+  prepareBranchVerboseRes,
 };
