@@ -5,5 +5,7 @@
   "CLI_BRANCH_STACK_API_KEY": "Enter stack api key",
   "CLI_BRANCH_MODULE": "Choose a module",
   "CLI_BRANCH_REQUIRED_FIELD": "This field can't be empty!.",
-  "CLI_BRANCH_CONFIG_ERROR": "Please set the config using 'cm:config:set:branch' command"
+  "CLI_BRANCH_CONFIG_ERROR": "Please set the config using 'cm:config:set:branch' command",
+  "CLI_BRANCH_BRANCH_UID": "Enter branch uid",
+  "CLI_BRANCH_SOURCE_BRANCH": "Enter source branch"
 }
