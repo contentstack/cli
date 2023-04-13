@@ -20,12 +20,22 @@ import {
 } from '../interfaces/index';
 import config from '../config';
 
+/**
+ * Fetch differences between two branches
+ * @async
+ * @method
+ * @param payload
+ * @param branchesDiffData
+ * @param skip
+ * @param limit
+ * @returns {*} Promise<any>
+ */
 async function fetchBranchesDiff(
   payload: BranchDiffPayload,
   branchesDiffData = [],
-  skip = 0,
-  limit = 100,
-): Promise<any[]> {
+  skip = config.skip,
+  limit = config.limit,
+): Promise<any> {
   const url: string = payload?.module ? `${config.baseUrl}/${payload.module}` : config.baseUrl;
   payload.url = url;
   const branchDiffData = await apiRequestHandler(payload, skip, limit);
@@ -40,23 +50,32 @@ async function fetchBranchesDiff(
 
   if (nextUrl) {
     skip = skip + limit;
-    await fetchBranchesDiff(payload, branchesDiffData, skip, limit);
+    return await fetchBranchesDiff(payload, branchesDiffData, skip, limit);
   }
   return branchesDiffData;
 }
 
+/**
+ * api request handler
+ * @async
+ * @method
+ * @param payload
+ * @param skip
+ * @param limit
+ * @returns  {*} Promise<any>
+ */
 async function apiRequestHandler(payload: BranchDiffPayload, skip?: number, limit?: number): Promise<any> {
   const authToken = configHandler.get('authtoken');
   const headers = {
-    authToken: '***REMOVED***',
-    api_key: 'blt880ba1dc5c2c3a67',
+    authToken: authToken,
+    api_key: payload.apiKey,
     'Content-Type': 'application/json',
   };
-  const params = {
-    base_branch: 'main',
-    compare_branch: 'manali',
-  };
 
+  const params = {
+    base_branch: payload.baseBranch,
+    compare_branch: payload.compareBranch,
+  };
   if (skip >= 0) params['skip'] = skip;
   if (limit >= 0) params['limit'] = limit;
 
@@ -64,15 +83,31 @@ async function apiRequestHandler(payload: BranchDiffPayload, skip?: number, limi
     .headers(headers)
     .queryParams(params)
     .get(payload.url)
-    .then(({ data }) => data)
+    .then(({ data }) => {
+      const { error_message } = data;
+      if (error_message) {
+        cliux.error('error', error_message);
+        process.exit(1);
+      } else {
+        return data;
+      }
+    })
     .catch((err) => {
-      cliux.error(messageHandler.parse('CLI_BRANCH_API_FAILED'));
+      cliux.error('error', messageHandler.parse('CLI_BRANCH_API_FAILED'));
       process.exit(1);
     });
-  return result;
+    return result;
 }
 
-function parseSummary(branchesDiffData: any[], baseBranch: string, compareBranch: string) {
+/**
+ * filter out differences of two branches on basis of their status and return overall summary
+ * @method
+ * @param branchesDiffData - differences of two branches
+ * @param {string} baseBranch
+ * @param {string} compareBranch
+ * @returns {*} BranchDiffSummary
+ */
+function parseSummary(branchesDiffData: any[], baseBranch: string, compareBranch: string): BranchDiffSummary {
   let baseCount: number = 0,
     compareCount: number = 0,
     modifiedCount: number = 0;
@@ -84,6 +119,7 @@ function parseSummary(branchesDiffData: any[], baseBranch: string, compareBranch
       else if (diff.status === 'modified') modifiedCount++;
     });
   }
+
   const branchSummary: BranchDiffSummary = {
     base: baseBranch,
     compare: compareBranch,
@@ -94,12 +130,23 @@ function parseSummary(branchesDiffData: any[], baseBranch: string, compareBranch
   return branchSummary;
 }
 
+/**
+ * print summary of two branches differences
+ * @method
+ * @param {BranchDiffSummary} diffSummary - summary of branches diff
+ */
 function printSummary(diffSummary: BranchDiffSummary): void {
   forEach(diffSummary, (value, key) => {
     cliux.print(`${startCase(camelCase(key))}:  ${value}`);
   });
 }
 
+/**
+ * filter out differences of two branches on basis of their status and return compact text details
+ * @method
+ * @param branchesDiffData
+ * @returns {*} BranchCompactTextRes
+ */
 function parseCompactText(branchesDiffData: any[]): BranchCompactTextRes {
   let listOfModified: BranchDiffRes[] = [],
     listOfAdded: BranchDiffRes[] = [],
@@ -121,6 +168,12 @@ function parseCompactText(branchesDiffData: any[]): BranchCompactTextRes {
   return branchTextRes;
 }
 
+/**
+ * print compact text details of two branches differences
+ * @method
+ * @param {BranchCompactTextRes} branchTextRes
+ * @param {string} module
+ */
 function printCompactTextView(branchTextRes: BranchCompactTextRes, module: string): void {
   if (branchTextRes.modified?.length || branchTextRes.added?.length || branchTextRes.deleted?.length) {
     forEach(branchTextRes.added, (diff: BranchDiffRes) => {
@@ -139,6 +192,14 @@ function printCompactTextView(branchTextRes: BranchCompactTextRes, module: strin
   }
 }
 
+/**
+ * filter out text verbose details - deleted, added, modified details
+ * @async
+ * @method
+ * @param branchesDiffData
+ * @param {BranchDiffPayload} payload
+ * @returns {*} Promise<BranchDiffVerboseRes>
+ */
 async function parseVerbose(branchesDiffData: any[], payload: BranchDiffPayload): Promise<BranchDiffVerboseRes> {
   const { added, modified, deleted } = parseCompactText(branchesDiffData);
   let modifiedDetailList: BranchModifiedDetails[] = [];
@@ -171,25 +232,32 @@ async function parseVerbose(branchesDiffData: any[], payload: BranchDiffPayload)
   return verboseRes;
 }
 
+/**
+ * check whether fields exists in either base or compare branches.
+ * @method
+ * @param branchDiff
+ * @returns
+ */
 async function prepareBranchVerboseRes(branchDiff: any) {
-  let unionOfBaseAndCompareBranch: any[] = [];
-  const baseBranchDiff = branchDiff?.diff?.base_branch?.differences;
-  const compareBranchDiff = branchDiff?.diff?.compare_branch?.differences;
-
-  if (baseBranchDiff && compareBranchDiff) {
-    unionOfBaseAndCompareBranch = unionWith(baseBranchDiff, compareBranchDiff, customComparator);
-  }
-
   let listOfModifiedFields = [],
     listOfDeletedFields = [],
     listOfAddedFields = [];
 
   if (branchDiff?.diff?.status === 'modified') {
+    let unionOfBaseAndCompareBranch: any[] = [];
+    const baseBranchDiff = branchDiff.diff?.base_branch?.differences;
+    const compareBranchDiff = branchDiff.diff?.compare_branch?.differences;
+
+    if (baseBranchDiff && compareBranchDiff) {
+      unionOfBaseAndCompareBranch = unionWith(baseBranchDiff, compareBranchDiff, customComparator);
+    }
+
     forEach(unionOfBaseAndCompareBranch, (diff) => {
-      const baseBranchFieldExists = find(baseBranchDiff, (item) => item.uid === diff.uid || item.path === diff.path);
-      const compareBranchFieldExists = find(
-        compareBranchDiff,
-        (item) => item.uid === diff.uid || item.path === diff.path,
+      const baseBranchFieldExists = find(baseBranchDiff, (item) =>
+        item?.uid && diff.uid ? item.uid === diff.uid : item.path === diff.path,
+      );
+      const compareBranchFieldExists = find(compareBranchDiff, (item) =>
+        item?.uid && diff.uid ? item.uid === diff.uid : item.path === diff.path,
       );
       baseAndCompareBranchDiff({
         baseBranchFieldExists,
@@ -205,6 +273,11 @@ async function prepareBranchVerboseRes(branchDiff: any) {
   return { listOfAddedFields, listOfDeletedFields, listOfModifiedFields };
 }
 
+/**
+ * filter out the fields from the module that are deleted, added, or modified. Modules having a modified status.
+ * @method
+ * @param params
+ */
 function baseAndCompareBranchDiff(params: {
   baseBranchFieldExists: any;
   compareBranchFieldExists: any;
@@ -248,22 +321,23 @@ function baseAndCompareBranchDiff(params: {
 }
 
 function customComparator(a: any, b: any): boolean {
-  return a.uid === b.uid || a.path === b.path;
+  return a?.uid && b?.uid ? a.uid === b.uid : a.path === b.path;
 }
 
 function getFieldType(compareBranchFieldExists: any, baseBranchFieldExists: any, diff: any): string {
   let fieldType: string = 'Metadata Field';
-  if (diff?.field_metadata?.allow_json_rte) {
-    fieldType = 'JSON RTE Field';
-  } else {
-    let displayName = compareBranchFieldExists?.display_name || baseBranchFieldExists?.display_name;
-    if (displayName) {
-      fieldType = `${displayName} Field`;
-    }
+  const displayName = compareBranchFieldExists?.display_name || baseBranchFieldExists?.display_name;
+  if (displayName) {
+    fieldType = `${displayName} Field`;
   }
   return fieldType;
 }
 
+/**
+ * print detail text view of two branches differences - deleted, added and modified fields
+ * @param {BranchDiffVerboseRes} branchTextRes
+ * @param {string} module
+ */
 function printVerboseTextView(branchTextRes: BranchDiffVerboseRes, module: string): void {
   if (branchTextRes.modified?.length || branchTextRes.added?.length || branchTextRes.deleted?.length) {
     forEach(branchTextRes.added, (diff: BranchDiffRes) => {
@@ -283,6 +357,11 @@ function printVerboseTextView(branchTextRes: BranchDiffVerboseRes, module: strin
   }
 }
 
+/**
+ * print detail text view of modified fields
+ * @method
+ * @param {ModifiedFieldsInput} modfiedFields
+ */
 function printModifiedFields(modfiedFields: ModifiedFieldsInput): void {
   if (modfiedFields.modified?.length || modfiedFields.added?.length || modfiedFields.deleted?.length) {
     forEach(modfiedFields.added, (diff: ModifiedFieldsType) => {
@@ -301,6 +380,11 @@ function printModifiedFields(modfiedFields: ModifiedFieldsInput): void {
   }
 }
 
+/**
+ * filter out branch differences on basis of module like content_types, global_fields
+ * @param branchDiffData
+ * @returns
+ */
 function filterBranchDiffDataByModule(branchDiffData: any[]) {
   let moduleRes = {};
 
@@ -320,4 +404,6 @@ export {
   parseVerbose,
   printVerboseTextView,
   filterBranchDiffDataByModule,
+  apiRequestHandler,
+  prepareBranchVerboseRes
 };
