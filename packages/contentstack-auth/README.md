@@ -46,7 +46,7 @@ User sessions login
 
 ```
 USAGE
-  $ csdx auth:login [-u <value>] [-p <value>]
+  $ csdx auth:login [-u <value> | ] [-p <value> | ]
 
 FLAGS
   -p, --password=<value>  Password
@@ -226,7 +226,7 @@ User sessions login
 
 ```
 USAGE
-  $ csdx login [-u <value>] [-p <value>]
+  $ csdx login [-u <value> | ] [-p <value> | ]
 
 FLAGS
   -p, --password=<value>  Password
