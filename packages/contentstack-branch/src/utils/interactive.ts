@@ -126,7 +126,6 @@ export async function selectMergeExecution(): Promise<string> {
       choices: [
         { name: 'Export merge summary', value: 'export' },
         { name: 'Execute only', value: 'execute' },
-        { name: 'Both', value: 'both' },
         { name: 'Export summary & Execute immediately', value: 'both' },
         { name: 'Go Back', value: 'previous' },
         { name: 'Start Over', value: 'restart' },

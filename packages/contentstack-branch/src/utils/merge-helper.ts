@@ -36,6 +36,8 @@ export const setupMergeInputs = async (mergeFlags) => {
     mergeFlags['base-branch'] = getbranchConfig(mergeFlags['stack-api-key']);
     if (!mergeFlags['base-branch']) {
       mergeFlags['base-branch'] = await askBaseBranch();
+    } else {
+      cliux.print(`\nBase branch: ${mergeFlags['base-branch']}\n`, { color: 'grey' });
     }
   }
 
@@ -62,7 +64,7 @@ export const displayBranchStatus = async (options) => {
     const diffSummary = branchDiff.parseSummary(branchModuleData, options.baseBranch, options.compareBranch);
     branchDiff.printSummary(diffSummary);
     cliux.print(' ');
-    cliux.print(`Differences in '${options.compareBranch}' compared to '${options.baseBranch}':`);
+    // cliux.print(`Differences in '${options.compareBranch}' compared to '${options.baseBranch}':`);
     if (options.format === 'text') {
       const branchTextRes = branchDiff.parseCompactText(branchModuleData);
       branchDiff.printCompactTextView(branchTextRes, payload.module);
@@ -73,13 +75,13 @@ export const displayBranchStatus = async (options) => {
       parsedResponse[module] = verboseRes;
     }
   }
+  cliux.print(' ');
   return parsedResponse;
 };
 
 export const displayMergeSummary = (options) => {
   cliux.print(' ');
   cliux.print(`Merge Summary:`, { color: 'yellow' });
-  cliux.print(' ');
   for (let module in options.compareData) {
     if (options.format === 'text') {
       branchDiff.printCompactTextView(options.compareData[module], module);
@@ -87,6 +89,7 @@ export const displayMergeSummary = (options) => {
       branchDiff.printVerboseTextView(options.compareData[module], module);
     }
   }
+  cliux.print(' ');
 };
 
 export const executeMerge = async (apiKey, mergePayload): Promise<any> => {

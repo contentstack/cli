@@ -8,6 +8,7 @@ import {
   prepareMergeRequestPayload,
   displayMergeSummary,
   askExportMergeSummaryPath,
+  askMergeComment,
   writeFile,
   executeMerge,
 } from '../utils';
@@ -142,15 +143,16 @@ export default class MergeHandler {
 
   async executeMerge(mergePayload) {
     try {
-      cliux.loader('Merging the changes');
       if (!this.mergeSettings.mergeComment) {
-        this.mergeSettings.mergeComment = await askExportMergeSummaryPath();
+        this.mergeSettings.mergeComment = await askMergeComment();
+        mergePayload.merge_comment = this.mergeSettings.mergeComment;
       }
+      cliux.loader('Merging the changes');
       const mergeResponse = await executeMerge(this.stackAPIKey, mergePayload);
       cliux.loader('');
       cliux.success(`Merged the changes successfully, merge uid: ${mergeResponse.uid}`);
     } catch (error) {
-      cliux.error('Failed to merge the changes', error);
+      cliux.error('Failed to merge the changes', error.message);
     }
   }
 }
