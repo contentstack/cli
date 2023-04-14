@@ -85,7 +85,7 @@ export default class BranchMergeCommand extends Command {
         strategySubOption: branchMergeFlags['strategy-sub-options'],
         baseBranch: branchMergeFlags['base-branch'],
         branchCompareData: branchCompareData,
-        mergeComment: branchMergeFlags.comment || 'test comment',
+        mergeComment: branchMergeFlags.comment,
         executeOption: branchMergeFlags['merge-action'],
         noRevert: branchMergeFlags['no-revert'],
         format: branchMergeFlags.format,
