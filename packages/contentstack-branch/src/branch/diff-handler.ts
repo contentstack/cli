@@ -33,27 +33,30 @@ export default class BranchDiffHandler {
    * @memberof BranchDiff
    */
   async validateMandatoryFlags(): Promise<void> {
+    let baseBranch: string;
     if (!this.options.stackAPIKey) {
       this.options.stackAPIKey = await askStackAPIKey();
-    } else {
-      cliux.print(`Stack API Key: '${this.options.stackAPIKey}'`);
     }
 
     if (!this.options.baseBranch) {
-      const baseBranch = getbranchConfig(this.options.stackAPIKey);
+       baseBranch = getbranchConfig(this.options.stackAPIKey);
       if (!baseBranch) {
         this.options.baseBranch = await askBaseBranch();
       } else {
         this.options.baseBranch = baseBranch;
-        cliux.print(`Base branch: '${baseBranch}'`);
       }
     }
 
     if (!this.options.compareBranch) {
       this.options.compareBranch = await askCompareBranch();
     }
+
     if (!this.options.module) {
       this.options.module = await selectModule();
+    }
+
+    if(baseBranch){
+      cliux.print(`\nBase branch: ${baseBranch}\n`, { color: 'grey' });
     }
   }
 
@@ -82,10 +85,13 @@ export default class BranchDiffHandler {
    
     for (let module in diffData) {
       const branchDiff = diffData[module];
-      payload.module = module;
-      this.displaySummary(branchDiff, module);
-      await this.displayBranchDiffTextAndVerbose(branchDiff, payload);
+      if(branchDiff.length){
+        payload.module = module;
+        this.displaySummary(branchDiff, module);
+        await this.displayBranchDiffTextAndVerbose(branchDiff, payload);
+      }
     }
+    cliux.loader(' ');
   }
 
   /**
@@ -94,8 +100,7 @@ export default class BranchDiffHandler {
    * @memberof BranchDiff
    */
   displaySummary(branchDiffData: any[], module: string): void {
-    cliux.print(' ');
-    cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
+    cliux.print(`\n${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
     const diffSummary = parseSummary(branchDiffData, this.options.baseBranch, this.options.compareBranch);
     printSummary(diffSummary);
   }
@@ -106,8 +111,7 @@ export default class BranchDiffHandler {
    * @memberof BranchDiff
    */
   async displayBranchDiffTextAndVerbose(branchDiffData: any[], payload: BranchDiffPayload): Promise<void> {
-    cliux.print(' ');
-    cliux.print(`Differences in '${this.options.compareBranch}' compared to '${this.options.baseBranch}':`);
+    cliux.print('\n');
     if (this.options.format === 'text') {
       const branchTextRes = parseCompactText(branchDiffData);
       printCompactTextView(branchTextRes, payload.module);
