@@ -91,8 +91,13 @@ class ManagementSDKInitiator {
         option.authtoken = configStore.get('authtoken');
         option.authorization = '';
       } else if (authorisationType === 'OAUTH') {
-        await authHandler.compareOAuthExpiry();
-        option.authorization = `Bearer ${configStore.get('oauthAccessToken')}`;
+        if (!config.skipTokenValidity) {
+          await authHandler.compareOAuthExpiry();
+          option.authorization = `Bearer ${configStore.get('oauthAccessToken')}`;
+        } else {
+          option.authtoken = '';
+          option.authorization = '';
+        }
       } else {
         option.authtoken = '';
         option.authorization = '';
