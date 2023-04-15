@@ -11,7 +11,6 @@ const crypto = require('crypto');
  */
 class AuthHandler {
   private _host;
-
   private codeVerifier: string;
   private OAuthBaseURL: string;
   private OAuthAppId: string;
@@ -37,14 +36,10 @@ class AuthHandler {
 
   constructor() {
     this.codeVerifier = crypto.pseudoRandomBytes(32).toString('hex');
-    this.OAuthBaseURL = process.env.OAUTH_APP_BASE_URL || '';
-    this.OAuthAppId = process.env.OAUTH_APP_ID || '';
-    this.OAuthClientId = process.env.OAUTH_CLIENT_ID || '';
-    this.OAuthRedirectURL = process.env.OAUTH_APP_REDIRECT_URL || '';
+    this.OAuthAppId = process.env.OAUTH_APP_ID || '634e45cb3dba0a00192b74d0';
+    this.OAuthClientId = process.env.OAUTH_CLIENT_ID || 'vZ3XWS1WBKTb4Eck';
+    this.OAuthRedirectURL = process.env.OAUTH_APP_REDIRECT_URL || 'http://localhost:8080';
     this.OAuthScope = '';
-    //   process.env.OAUTH_APP_SCOPE_WITH_ALL_PERMISSIONS ||
-    //   process.env.OAUTH_APP_SCOPE_PERMISSIONS ||
-    //   'user:read cm.stacks.management:read organization:read';
     this.OAuthResponseType = 'code';
     this.authTokenKeyName = 'authtoken';
     this.authEmailKeyName = 'email';
@@ -74,6 +69,10 @@ class AuthHandler {
         this.authorisationTypeKeyName,
       ],
     };
+  }
+
+  async setOAuthBaseURL() {
+    this.OAuthBaseURL = process.env.OAUTH_APP_BASE_URL || configHandler.get('region')['uiHost'] || '';
   }
 
   /*
@@ -161,7 +160,7 @@ class AuthHandler {
     return new Promise((resolve) => {
       const digest = crypto.createHash('sha256').update(this.codeVerifier).digest();
       const codeChallenge = digest.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-
+      this.setOAuthBaseURL();
       let url = `${this.OAuthBaseURL}/#!/apps/${this.OAuthAppId}/authorize?response_type=${this.OAuthResponseType}&client_id=${this.OAuthClientId}&redirect_uri=${this.OAuthRedirectURL}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
 
       if (this.OAuthScope) {
@@ -186,6 +185,7 @@ class AuthHandler {
         redirect_uri: this.OAuthRedirectURL,
         code: code,
       };
+      this.setOAuthBaseURL();
       const httpClient = new HttpClient().headers(headers).asFormParams();
       httpClient
         .post(`${this.OAuthBaseURL}/apps-api/apps/token`, payload)
@@ -297,12 +297,22 @@ class AuthHandler {
           redirect_uri: this.OAuthRedirectURL,
           refresh_token: configOauthRefreshToken,
         };
+        this.setOAuthBaseURL();
         const httpClient = new HttpClient().headers(headers).asFormParams();
         httpClient
           .post(`${this.OAuthBaseURL}/apps-api/apps/token`, payload)
           .then(({ data }) => {
-            if (data.error) {
-              const errorMessage = data.message ? (data.message[0] ? data.message[0] : data.message) : data.error;
+            if (data.error || (data.statusCode != 200 && data.message)) {
+              let errorMessage = '';
+              if (data.message) {
+                if (data.message[0]) {
+                  errorMessage = data.message[0];
+                } else {
+                  errorMessage = data.message;
+                }
+              } else {
+                errorMessage = data.error;
+              }
               reject(errorMessage);
             } else {
               if (data['access_token'] && data['refresh_token']) {
