@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-auth/1.2.1 darwin-arm64 node-v18.11.0
+@contentstack/cli-auth/1.3.1 darwin-arm64 node-v18.15.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -46,7 +46,7 @@ User sessions login
 
 ```
 USAGE
-  $ csdx auth:login [-u <value>] [-p <value>]
+  $ csdx auth:login [-u <value> | ] [-p <value> | ]
 
 FLAGS
   -p, --password=<value>  Password
@@ -226,7 +226,7 @@ User sessions login
 
 ```
 USAGE
-  $ csdx login [-u <value>] [-p <value>]
+  $ csdx login [-u <value> | ] [-p <value> | ]
 
 FLAGS
   -p, --password=<value>  Password
