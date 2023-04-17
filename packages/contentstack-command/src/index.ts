@@ -70,12 +70,6 @@ abstract class ContentstackCommand extends Command {
     return cma.startsWith('http') ? cma : `https://${cma}`;
   }
 
-  get authToken() {
-    if (this._authToken) return this._authToken;
-    this._authToken = configHandler.get('authtoken');
-    if (this._authToken) return this._authToken;
-  }
-
   getToken(alias) {
     if (alias) {
       const token = configHandler.get(`tokens.${alias}`);
