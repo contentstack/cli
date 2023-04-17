@@ -7,7 +7,6 @@ export default class BranchCreateCommand extends Command {
   static description: string = messageHandler.parse('Create a new branch'); // Note: Update the description
 
   static examples: string[] = [
-    'csdx cm:branches',
     'csdx cm:branches:create',
     'csdx cm:branches:create -s main -u new_branch -k bltxxxxxxxx',
     'csdx cm:branches:create --source main --uid new_branch --stack-api-key bltxxxxxxxx',
