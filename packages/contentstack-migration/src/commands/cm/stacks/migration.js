@@ -12,7 +12,7 @@ const { Parser } = require('../../../modules');
 const { ActionList } = require('../../../actions');
 const fs = require('fs');
 const chalk = require('chalk');
-const { configHandler, printFlagDeprecation, managementSDKClient, flags } = require('@contentstack/cli-utilities');
+const { printFlagDeprecation, managementSDKClient, flags, isAuthenticated } = require('@contentstack/cli-utilities');
 
 const { ApiError, SchemaValidator, MigrationError, FieldValidator } = require('../../../validators');
 
@@ -49,7 +49,7 @@ class MigrationCommand extends Command {
     const { branch } = migrationCommandFlags || {};
     const filePath = migrationCommandFlags['file-path'] || migrationCommandFlags.filePath;
     const multi = migrationCommandFlags.multiple || migrationCommandFlags.multi;
-    const authtoken = configHandler.get('authtoken');
+    const authtoken = isAuthenticated();
     const apiKey = migrationCommandFlags['api-key'] || migrationCommandFlags['stack-api-key'];
     const alias = migrationCommandFlags['alias'] || migrationCommandFlags['management-token-alias'];
     const config = migrationCommandFlags['config'];

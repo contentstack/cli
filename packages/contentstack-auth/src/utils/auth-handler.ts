@@ -1,5 +1,4 @@
 import { cliux, logger, CLIError } from '@contentstack/cli-utilities';
-
 import { User } from '../interfaces';
 import { askOTPChannel, askOTP } from './interactive';
 
@@ -9,9 +8,12 @@ import { askOTPChannel, askOTP } from './interactive';
  */
 class AuthHandler {
   private _client;
-
+  private _host;
   set client(contentStackClient) {
     this._client = contentStackClient;
+  }
+  set host(contentStackHost) {
+    this._host = contentStackHost;
   }
 
   /**
