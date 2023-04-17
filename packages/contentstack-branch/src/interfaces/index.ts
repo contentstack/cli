@@ -5,6 +5,7 @@ export interface BranchOptions {
   format: string;
   baseBranch?: string;
   authToken?: string;
+  host?: string;
 }
 
 export interface BranchDiffRes {
@@ -43,7 +44,7 @@ export interface MergeInputOptions {
   stackAPIKey: string;
 }
 
-export interface ModifiedFieldsType {
+export interface ModifiedFieldsType  {
   uid: string;
   displayName: string;
   path: string;
@@ -71,7 +72,10 @@ export interface BranchDiffPayload {
   module: string;
   apiKey: string;
   baseBranch: string;
-  compareBranch: string;
-  filter?: string;
+  compareBranch:  string;
+  filter?:  string;
+  host?: string;
+  uid?: string;
   url?: string;
+  spinner?:any;
 }
