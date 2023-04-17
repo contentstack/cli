@@ -79,7 +79,7 @@ class AuthHandler {
       this.OAuthBaseURL = configHandler.get('region')['uiHost'] || '';
     } else {
       throw new Error(
-        'Invalid ui-host URL while authenticating, Please set your region correctly with command - csdx config:set:region',
+        'Invalid ui-host URL while authenticating. Please set your region correctly using the command - csdx config:set:region',
       );
     }
   }
@@ -117,12 +117,12 @@ class AuthHandler {
           const reqURL = req.url;
           const queryObject = url.parse(reqURL, true).query;
           if (queryObject.code) {
-            cliux.print('Success fetching auth code');
+            cliux.print('Auth code successfully fetched.');
             this.getAccessToken(queryObject.code)
               .then(() => {
-                cliux.success('Success fetching Access token using Auth Code');
+                cliux.print('Access token fetched using auth code successfully.');
                 res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.end(`<h1>Thank You!</h1><h2>We know who you are, now you can close this window :)</h2>`);
+                res.end(`<h1>Successfully authorized!</h1><h2>You can close this window now.</h2>`);
                 stopServer();
               })
               .catch((error) => {
@@ -153,7 +153,7 @@ class AuthHandler {
         };
 
         server.listen(8080, () => {
-          cliux.print('Waiting for the authorization server to respond');
+          cliux.print('Waiting for the authorization server to respond...');
           resolve({ true: true });
         });
       } catch (error) {
@@ -175,7 +175,7 @@ class AuthHandler {
           url += `&scope=${encodeURIComponent(this.OAuthScope)}`;
         }
         cliux.print(
-          'This will automatically start the browser and open below URL, if this does not, you can copy and paste the below URL in browser without terminating this command.',
+          'This will automatically start the browser and open the below URL, if it does not, you can copy and paste the below URL in the browser without terminating this command.',
           { color: 'yellow' },
         );
         cliux.print(url, { color: 'green' });
@@ -212,7 +212,7 @@ class AuthHandler {
         })
         .then(resolve)
         .catch((error) => {
-          cliux.error('Error occoured while fetching access token, run command - csdx auth:login --oauth');
+          cliux.error('An error occoured while fetching the access token, run the command - csdx auth:login --oauth');
           cliux.error(error);
           reject(error);
         });
@@ -335,13 +335,13 @@ class AuthHandler {
           })
           .then(resolve)
           .catch((error) => {
-            cliux.error('Error occoured while refreshing token');
+            cliux.error('An error occoured while refreshing the token');
             cliux.error(error);
             reject(error);
           });
       } else {
-        cliux.error('Invalid/Empty Refresh token, run command - csdx auth:login --oauth');
-        reject('Invalid/Empty Refresh token');
+        cliux.error('Invalid/Empty refresh token, run the command- csdx auth:login --oauth');
+        reject('Invalid/Empty refresh token');
       }
     });
   }
@@ -366,8 +366,8 @@ class AuthHandler {
             reject(error);
           });
       } else {
-        cliux.error('Invalid/Empty Access token, run command - csdx auth:login --oauth');
-        reject('Invalid/Empty Access token');
+        cliux.error('Invalid/Empty access token, run the command - csdx auth:login --oauth');
+        reject('Invalid/Empty access token');
       }
     });
   }
@@ -386,25 +386,23 @@ class AuthHandler {
     const authorisationType = configHandler.get(this.authorisationTypeKeyName);
     if (oauthDateTime && authorisationType === this.authorisationTypeOAUTHValue) {
       const now = new Date();
-      //   const now = new Date(configHandler.get('oauthDateTime2'));
-
       const oauthDate = new Date(oauthDateTime);
       const oauthValidUpto = new Date();
-      oauthValidUpto.setTime(oauthDate.getTime() + 50 * 60 * 1000);
+      oauthValidUpto.setTime(oauthDate.getTime() + 59 * 60 * 1000);
       if (force) {
-        console.log('Force refreshing token');
+        cliux.print('Force refreshing the token');
         return this.refreshToken();
       } else {
         if (oauthValidUpto > now) {
-          console.log('Valid/unexpired Token');
+          cliux.print('Valid/unexpired token');
           return Promise.resolve();
         } else {
-          console.log('Token is expired, refreshing token');
+          cliux.print('Token expired, refreshing the token');
           return this.refreshToken();
         }
       }
     } else {
-      console.log('no oauth set');
+      cliux.print('No OAuth set');
       return this.unsetConfigData();
     }
   }
