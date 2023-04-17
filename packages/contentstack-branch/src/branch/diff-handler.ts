@@ -66,12 +66,13 @@ export default class BranchDiffHandler {
    * @memberof BranchDiff
    */
   async initBranchDiffUtility(): Promise<void> {
-    cliux.loader('Loading branch differences...');
+    const spinner = cliux.loaderV2('Loading branch differences...');
     const payload: BranchDiffPayload = {
       module: '',
       apiKey: this.options.stackAPIKey,
       baseBranch: this.options.baseBranch,
       compareBranch: this.options.compareBranch,
+      host: this.options.host
     };
 
     if (this.options.module === 'content_types') {
@@ -79,7 +80,7 @@ export default class BranchDiffHandler {
     } else if (this.options.module === 'global_fields') {
       payload.module = 'global_fields';
     }
-
+    payload.spinner = spinner;
     const branchDiffData = await fetchBranchesDiff(payload);
     const diffData = filterBranchDiffDataByModule(branchDiffData);
    
@@ -91,7 +92,7 @@ export default class BranchDiffHandler {
         await this.displayBranchDiffTextAndVerbose(branchDiff, payload);
       }
     }
-    cliux.loader(' ');
+    cliux.loaderV2('', spinner);
   }
 
   /**
