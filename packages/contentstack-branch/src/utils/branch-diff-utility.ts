@@ -88,9 +88,10 @@ async function apiRequestHandler(payload: BranchDiffPayload, skip?: number, limi
       if ([200, 201, 202].includes(status)) return data;
       else {
         let errorMsg: string;
-        if (status === 500) errorMsg = data.message;
-        else errorMsg = data.error_message;
-        cliux.loader(' ');
+        if (status === 500 && data?.message) errorMsg = data.message;
+        else if (data.error_message) errorMsg = data.error_message;
+        else errorMsg = messageHandler.parse('CLI_BRANCH_API_FAILED');
+        cliux.loaderV2(' ', payload.spinner);
         cliux.print(`error: ${errorMsg}`, { color: 'red' });
         process.exit(1);
       }
@@ -140,9 +141,9 @@ function parseSummary(branchesDiffData: any[], baseBranch: string, compareBranch
  * @param {BranchDiffSummary} diffSummary - summary of branches diff
  */
 function printSummary(diffSummary: BranchDiffSummary): void {
-  const totalTextLen=12;
+  const totalTextLen = 12;
   forEach(diffSummary, (value, key) => {
-    const str= startCase(camelCase(key));
+    const str = startCase(camelCase(key));
     cliux.print(`${padStart(str, totalTextLen)}:  ${value}`);
   });
 }
@@ -214,6 +215,7 @@ async function parseVerbose(branchesDiffData: any[], payload: BranchDiffPayload)
     const diff: BranchDiffRes = modified[i];
     const url = `${config.baseUrl}/${payload.module}/${diff?.uid}`;
     payload.url = url;
+    payload.uid = diff?.uid;
     const branchDiff = await apiRequestHandler(payload);
     if (branchDiff) {
       const { listOfModifiedFields, listOfAddedFields, listOfDeletedFields } = await prepareBranchVerboseRes(

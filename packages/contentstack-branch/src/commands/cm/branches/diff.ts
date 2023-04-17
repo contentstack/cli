@@ -60,6 +60,7 @@ export default class BranchDiffCommand extends Command {
         compareBranch: branchDiffFlags['compare-branch'],
         module: branchDiffFlags.module,
         format: branchDiffFlags.format,
+        host: this.cmaHost
       };
       const diffHandler = new BranchDiffHandler(options);
       await diffHandler.run();
