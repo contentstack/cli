@@ -1,5 +1,5 @@
 {
-  "CLI_BRANCH_API_FAILED": "Something went wrong. Unable to fetch the details!.",
+  "CLI_BRANCH_API_FAILED": "Something went wrong. Unable to fetch the details.",
   "CLI_BRANCH_BASE_BRANCH": "Enter base branch name:",
   "CLI_BRANCH_COMPARE_BRANCH": "Enter compare branch name:",
   "CLI_BRANCH_STACK_API_KEY": "Enter stack api key:",

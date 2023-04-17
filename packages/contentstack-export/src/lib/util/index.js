@@ -4,13 +4,12 @@
  * MIT Licensed
  */
 
-var _ = require('lodash');
-var defaultConfig = require('../../config/default');
-const chalk = require('chalk');
+const _ = require('lodash');
+const defaultConfig = require('../../config/default');
 const promiseLimit = require('promise-limit');
-const { isAuthenticated } = require('@contentstack/cli-utilities')
+const { isAuthenticated } = require('@contentstack/cli-utilities');
 
-exports.validateConfig = function (config) {
+exports.validateConfig = (config) => {
   if (!config.host || !config.cdn) {
     throw new Error('Host/CDN end point is missing from config');
   }

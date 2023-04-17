@@ -20,8 +20,8 @@ module.exports = class ExportWorkFlows {
   workFlowConfig = config.modules.workflows;
 
   constructor(exportConfig, stackAPIClient) {
-    this.stackAPIClient = stackAPIClient;
     this.config = merge(config, exportConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
@@ -33,7 +33,6 @@ module.exports = class ExportWorkFlows {
       this.config.branchName || '',
       this.workFlowConfig.dirName,
     );
-
     mkdirp.sync(workflowsFolderPath);
 
     return new Promise(function (resolve, reject) {
@@ -103,6 +102,8 @@ module.exports = class ExportWorkFlows {
         deleteItems.forEach((e) => delete workflow[e]);
       }
     } catch (error) {
+      console.log('Error getting workflow data', error && error.message);
+      addlogs(self.config, 'Error fetching workflow data in export workflows task.', 'error');
       throw error;
     }
   }

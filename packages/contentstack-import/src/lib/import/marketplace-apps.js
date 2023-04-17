@@ -8,8 +8,15 @@ const _ = require('lodash');
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
-const contentstack = require('@contentstack/management');
-const { cliux, HttpClient, NodeCrypto, managementSDKClient, configHandler, isAuthenticated } = require('@contentstack/cli-utilities');
+const {
+  cliux,
+  HttpClient,
+  NodeCrypto,
+  managementSDKClient,
+  isAuthenticated,
+  HttpClientDecorator,
+  OauthDecorator,
+} = require('@contentstack/cli-utilities');
 
 const { formatError } = require('../util');
 let config = require('../../config/default');
@@ -53,16 +60,19 @@ module.exports = class ImportMarketplaceApps {
     }
 
     this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
-    this.client = contentstack.client({ authtoken: configHandler.get('authtoken'), endpoint: this.developerHubBaseUrl });
+    this.client = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
 
     await this.getOrgUid();
 
-    this.httpClient = new HttpClient({
-      headers: {
-        authtoken: configHandler.get('authtoken'),
-        organization_uid: this.config.org_uid,
-      },
-    });
+    const httpClient = new HttpClient();
+    if (!this.config.auth_token) {
+      this.httpClient = new OauthDecorator(httpClient);
+      const headers = await this.httpClient.preHeadersCheck(this.config);
+      this.httpClient = this.httpClient.headers(headers);
+    } else {
+      this.httpClient = new HttpClientDecorator(httpClient);
+      this.httpClient.headers(this.config);
+    }
 
     if (!fs.existsSync(this.mapperDirPath)) {
       mkdirp.sync(this.mapperDirPath);
@@ -72,18 +82,16 @@ module.exports = class ImportMarketplaceApps {
   }
 
   async getOrgUid() {
-    if (isAuthenticated()) {
-      const tempAPIClient = await managementSDKClient({ host: this.config.host });
-      const tempStackData = await tempAPIClient
-        .stack({ api_key: this.config.target_stack })
-        .fetch()
-        .catch((error) => {
-          console.log(error);
-        });
+    const tempAPIClient = await managementSDKClient({ host: this.config.host });
+    const tempStackData = await tempAPIClient
+      .stack({ api_key: this.config.target_stack })
+      .fetch()
+      .catch((error) => {
+        console.log(error);
+      });
 
-      if (tempStackData && tempStackData.org_uid) {
-        this.config.org_uid = tempStackData.org_uid;
-      }
+    if (tempStackData && tempStackData.org_uid) {
+      this.config.org_uid = tempStackData.org_uid;
     }
   }
 
@@ -288,7 +296,7 @@ module.exports = class ImportMarketplaceApps {
       } else {
         log(this.config, formatError(message), 'error');
 
-        if (this.config.forceStopMarketplaceAppsPrompt) return resolve();
+        if (this.config.forceStopMarketplaceAppsPrompt) return Promise.resolve();
 
         if (
           await cliux.confirm(
@@ -297,7 +305,7 @@ module.exports = class ImportMarketplaceApps {
             ),
           )
         ) {
-          resolve();
+          Promise.resolve();
         } else {
           process.exit();
         }
@@ -386,9 +394,9 @@ module.exports = class ImportMarketplaceApps {
         .catch((error) => error);
 
       if (installation.installation_uid) {
-        let appName = (this.appNameMapping[app.manifest.name]) ? 
-          this.appNameMapping[app.manifest.name] : 
-        app.manifest.name ;
+        let appName = this.appNameMapping[app.manifest.name]
+          ? this.appNameMapping[app.manifest.name]
+          : app.manifest.name;
         log(this.config, `${appName} app installed successfully.!`, 'success');
         await this.makeRedirectUrlCall(installation, app.manifest.name);
         this.installationUidMapping[app.uid] = installation.installation_uid;
