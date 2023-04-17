@@ -9,3 +9,5 @@ logs
 coverage
 .vscode/
 /lib
+
+.env
