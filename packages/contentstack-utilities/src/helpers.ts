@@ -1,7 +1,6 @@
 import configHandler from "./config-handler";
 export function isAuthenticated() {
-    const authtoken = configHandler.get('authtoken');
-    if (authtoken) {
+    if (configHandler.get('authtoken')) {
         return true;
     } else {
         return false;
