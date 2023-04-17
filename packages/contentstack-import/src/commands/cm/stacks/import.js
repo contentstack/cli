@@ -26,6 +26,7 @@ class ImportCommand extends Command {
     delete importCommandFlags.branch;
     delete importCommandFlags['import-webhook-status'];
     let host = self.cmaHost;
+    importCommandFlags['isAuthenticated'] = isAuthenticated();
 
     return new Promise((resolve, reject) => {
       if (data) {
@@ -41,31 +42,11 @@ class ImportCommand extends Command {
           let result;
 
           if ((extConfig && isAuthenticated()) || alias) {
-            result = configWithMToken(
-              extConfig,
-              managementTokens,
-              moduleName,
-              host,
-              backupdir,
-              importCommandFlags,
-            );
+            result = configWithMToken(extConfig, managementTokens, moduleName, host, backupdir, importCommandFlags);
           } else if (data) {
-            result = parameterWithMToken(
-              managementTokens,
-              data,
-              moduleName,
-              host,
-              backupdir,
-              importCommandFlags,
-            );
+            result = parameterWithMToken(managementTokens, data, moduleName, host, backupdir, importCommandFlags);
           } else {
-            result = withoutParameterMToken(
-              managementTokens,
-              moduleName,
-              host,
-              backupdir,
-              importCommandFlags,
-            );
+            result = withoutParameterMToken(managementTokens, moduleName, host, backupdir, importCommandFlags);
           }
 
           result.then(resolve).catch(reject);
@@ -78,14 +59,7 @@ class ImportCommand extends Command {
         if (extConfig) {
           result = configWithAuthToken(extConfig, moduleName, host, backupdir, importCommandFlags);
         } else if (targetStack && data) {
-          result = parametersWithAuthToken(
-            targetStack,
-            data,
-            moduleName,
-            host,
-            backupdir,
-            importCommandFlags,
-          );
+          result = parametersWithAuthToken(targetStack, data, moduleName, host, backupdir, importCommandFlags);
         } else {
           result = withoutParametersWithAuthToken(moduleName, host, backupdir, importCommandFlags);
         }

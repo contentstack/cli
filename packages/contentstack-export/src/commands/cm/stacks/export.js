@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
 const { Command } = require('@contentstack/cli-command');
+const { printFlagDeprecation, configHandler, flags, isAuthenticated } = require('@contentstack/cli-utilities');
 const {
   configWithMToken,
   parameterWithMToken,
@@ -9,13 +10,12 @@ const {
   withoutParametersWithAuthToken,
 } = require('../../../lib/util/export-flags');
 const config = require('../../../config/default');
-const { configHandler, printFlagDeprecation, flags, isAuthenticated } = require('@contentstack/cli-utilities');
 
 class ExportCommand extends Command {
   async run() {
     const { flags: exportCommandFlags } = await this.parse(ExportCommand);
     const extConfig = exportCommandFlags.config;
-    let sourceStack = exportCommandFlags['stack-uid'] || exportCommandFlags['stack-api-key'];
+    const sourceStack = exportCommandFlags['stack-uid'] || exportCommandFlags['stack-api-key'];
     const alias = exportCommandFlags['alias'] || exportCommandFlags['management-token-alias'];
     const securedAssets = exportCommandFlags['secured-assets'];
     const data = exportCommandFlags.data || exportCommandFlags['data-dir'];
@@ -27,16 +27,14 @@ class ExportCommand extends Command {
     let cdaHost = host.cda.split('//');
     host.cma = cmaHost[1];
     host.cda = cdaHost[1];
+    exportCommandFlags['isAuthenticated'] = isAuthenticated();
 
     config.forceStopMarketplaceAppsPrompt = exportCommandFlags.yes;
 
     if (alias) {
-      let managementTokens = this.getToken(alias);
-
-      if (alias) {
-        const listOfTokens = configHandler.get('tokens');
-        config.management_token_data = listOfTokens[alias];
-      }
+      const managementTokens = this.getToken(alias);
+      const listOfTokens = configHandler.get('tokens');
+      config.management_token_data = listOfTokens[alias];
 
       if (managementTokens) {
         if (extConfig) {
@@ -49,6 +47,7 @@ class ExportCommand extends Command {
             securedAssets,
             moduleName,
             data,
+            exportCommandFlags,
           );
         } else if (data) {
           await parameterWithMToken(
@@ -59,6 +58,7 @@ class ExportCommand extends Command {
             contentTypes,
             branchName,
             securedAssets,
+            exportCommandFlags,
           );
         } else if (data === undefined && sourceStack === undefined) {
           await withoutParameterMToken(
@@ -68,6 +68,7 @@ class ExportCommand extends Command {
             contentTypes,
             branchName,
             securedAssets,
+            exportCommandFlags,
           );
         } else {
           this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage');
@@ -77,7 +78,15 @@ class ExportCommand extends Command {
       }
     } else if (isAuthenticated()) {
       if (extConfig) {
-        await configWithAuthToken(extConfig, moduleName, host, contentTypes, branchName, securedAssets);
+        await configWithAuthToken(
+          extConfig,
+          moduleName,
+          host,
+          contentTypes,
+          branchName,
+          securedAssets,
+          exportCommandFlags,
+        );
       } else if (sourceStack && data) {
         return await parametersWithAuthToken(
           sourceStack,
@@ -87,16 +96,23 @@ class ExportCommand extends Command {
           contentTypes,
           branchName,
           securedAssets,
+          exportCommandFlags,
         );
       } else if (data === undefined && sourceStack === undefined) {
-        await withoutParametersWithAuthToken(moduleName, host, contentTypes, branchName, securedAssets);
+        await withoutParametersWithAuthToken(
+          moduleName,
+          host,
+          contentTypes,
+          branchName,
+          securedAssets,
+          exportCommandFlags,
+        );
       } else {
         this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage');
       }
     } else {
       this.log('Login or provide the alias for management token');
     }
-    // return
   }
 }
 

@@ -58,10 +58,16 @@ exports.initial = (configData) => {
     };
 
     if (config) {
-      if ((config.email && config.password) || isAuthenticated()) {
-        login(config).then(backupAndImportData(APIClient, stackAPIClient)).catch(reject);
-      } else if (config.management_token) {
+      if (config.management_token || config.isAuthenticated) {
         await backupAndImportData(APIClient, stackAPIClient);
+      } else if ((config.email && config.password) || isAuthenticated()) {
+        login(config).then(backupAndImportData(APIClient, stackAPIClient)).catch(reject);
+      } else if (config.email && config.password) {
+        login(config)
+          .then(backupAndImportData.apply(null, [APIClient, stackAPIClient]))
+          .catch(reject);
+      } else {
+        reject('Kindly login or provide management_token');
       }
     }
   });

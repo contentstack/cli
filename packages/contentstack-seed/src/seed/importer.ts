@@ -9,6 +9,7 @@ export interface ImporterOptions {
   tmpPath: string;
   cmaHost: string;
   cdaHost: string;
+  isAuthenticated: boolean;
 }
 
 export async function run(options: ImporterOptions) {
