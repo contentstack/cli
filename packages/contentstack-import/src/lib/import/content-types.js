@@ -127,11 +127,12 @@ class ContentTypesImport {
     try {
       await this.stackAPIClient.contentType().create(requestObject.json);
     } catch (error) {
-      if (error.error_code === 115 && (error.errors.uid || error.errors.title)) {
-        // content type uid already exists
-        // _.remove(self.contentTypes, { uid: uid });
-        return true;
-      }
+       if (error.errorCode === 115 && (error.errors.uid || error.errors.title)) {
+         // content type uid already exists
+         // console.log("Hello ",error)
+         // _.remove(self.contentTypes, { uid: uid });
+         return true;
+       }
       throw error;
     }
   }
