@@ -147,7 +147,6 @@ class AuthHandler {
         });
 
         const stopServer = () => {
-          cliux.print('Exiting NodeJS server');
           server.close();
           process.exit();
         };
