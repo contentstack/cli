@@ -121,7 +121,7 @@ const fetchMergeStatus = async (mergePayload): Promise<any> => {
       const mergeStatus = mergeRequestStatusResponse.merge_details?.status;
       if (mergeStatus === 'complete') {
         resolve(mergeRequestStatusResponse);
-      } else if (mergeStatus === 'in-progress') {
+      } else if (mergeStatus === 'in-progress' || mergeStatus === 'in_progress') {
         setTimeout(async () => {
           await fetchMergeStatus(mergePayload).then(resolve).catch(reject);
         }, 5000);
