@@ -7,7 +7,7 @@ import unionWith from 'lodash/unionWith';
 import find from 'lodash/find';
 import { updatedDiff } from 'deep-object-diff';
 import { flatten } from 'flat';
-import { cliux, messageHandler, HttpClient, configHandler } from '@contentstack/cli-utilities';
+import { cliux, messageHandler, managementSDKClient } from '@contentstack/cli-utilities';
 import {
   BranchOptions,
   BranchDiffRes,
@@ -37,9 +37,7 @@ async function fetchBranchesDiff(
   skip = config.skip,
   limit = config.limit,
 ): Promise<any> {
-  const url: string = payload?.module ? `${config.baseUrl}/${payload.module}` : config.baseUrl;
-  payload.url = url;
-  const branchDiffData = await apiRequestHandler(payload, skip, limit);
+  const branchDiffData = await requestHandler(payload, skip, limit);
   const diffData = branchDiffData?.diff;
   const nextUrl = branchDiffData?.next_url || '';
 
@@ -65,43 +63,55 @@ async function fetchBranchesDiff(
  * @param limit
  * @returns  {*} Promise<any>
  */
-async function apiRequestHandler(payload: BranchDiffPayload, skip?: number, limit?: number): Promise<any> {
-  const authToken = configHandler.get('authtoken');
-  const headers = {
-    authToken: authToken,
-    api_key: payload.apiKey,
-    'Content-Type': 'application/json',
-  };
+async function requestHandler(payload: BranchDiffPayload, skip?: number, limit?: number): Promise<any> {
+  const { host } = payload;
+  //const host = 'dev16-branches.csnonprod.com'
+  const managementAPIClient = await managementSDKClient({ host });
+  //console.log('Before updating host:-', managementAPIClient.axiosInstance.defaults.baseURL);
+  //managementAPIClient.axiosInstance.defaults.baseURL = 'https://dev16-branches.csnonprod.com:443/api';
+  // console.log('after updating host:-', managementAPIClient.axiosInstance.defaults.baseURL);
+  const branchQuery = await managementAPIClient
+    .stack({ api_key: payload.apiKey })
+    .branch(payload.baseBranch)
+    .compare(payload.compareBranch);
+  
+  const queryParams = {};
+  if (skip >= 0) queryParams['skip'] = skip;
+  if (limit >= 0) queryParams['limit'] = limit;
+  if (payload?.uid) queryParams['uid'] = payload.uid;
+  const module = payload.module || 'all';
+  let result;
 
-  const params = {
-    base_branch: payload.baseBranch,
-    compare_branch: payload.compareBranch,
-  };
-  if (skip >= 0) params['skip'] = skip;
-  if (limit >= 0) params['limit'] = limit;
+  switch (module) {
+    case 'content_types':
+      result = await branchQuery
+        .contentTypes(queryParams)
+        .then((data) => data)
+        .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner));
+      break;
+    case 'global_fields':
+      result = await branchQuery
+        .globalFields(queryParams)
+        .then((data) => data)
+        .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner));
+      break;
+    case 'all':
+      result = await branchQuery
+        .all(queryParams)
+        .then((data) => data)
+        .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner));
+      break;
+  }
+}
 
-  const result = await new HttpClient()
-    .headers(headers)
-    .queryParams(params)
-    .get(payload.url)
-    .then(({ data, status }) => {
-      if ([200, 201, 202].includes(status)) return data;
-      else {
-        let errorMsg: string;
-        if (status === 500 && data?.message) errorMsg = data.message;
-        else if (data.error_message) errorMsg = data.error_message;
-        else errorMsg = messageHandler.parse('CLI_BRANCH_API_FAILED');
-        cliux.loaderV2(' ', payload.spinner);
-        cliux.print(`error: ${errorMsg}`, { color: 'red' });
-        process.exit(1);
-      }
-    })
-    .catch((err) => {
-      cliux.loader(' ');
-      cliux.print(`error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
-      process.exit(1);
-    });
-  return result;
+function handleErrorMsg(err: { errorCode: number; errorMessage: string }, spinner) {
+  if (err.errorMessage) {
+    cliux.loaderV2('', spinner);
+    cliux.print(`error: ${err.errorMessage}`, { color: 'red' });
+  } else {
+    cliux.print(`error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
+  }
+  process.exit(1);
 }
 
 /**
@@ -213,10 +223,8 @@ async function parseVerbose(branchesDiffData: any[], payload: BranchDiffPayload)
 
   for (let i = 0; i < modified?.length; i++) {
     const diff: BranchDiffRes = modified[i];
-    const url = `${config.baseUrl}/${payload.module}/${diff?.uid}`;
-    payload.url = url;
     payload.uid = diff?.uid;
-    const branchDiff = await apiRequestHandler(payload);
+    const branchDiff = await requestHandler(payload);
     if (branchDiff) {
       const { listOfModifiedFields, listOfAddedFields, listOfDeletedFields } = await prepareBranchVerboseRes(
         branchDiff,
@@ -415,6 +423,6 @@ export {
   parseVerbose,
   printVerboseTextView,
   filterBranchDiffDataByModule,
-  apiRequestHandler,
+  requestHandler,
   prepareBranchVerboseRes,
 };
