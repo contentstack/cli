@@ -98,7 +98,7 @@ exports.withoutParameterMToken = async (
 };
 
 exports.configWithAuthToken = async function (config, moduleName, host, contentTypes, branchName, securedAssets) {
-  let externalConfig = helper.readFile(path.resolve(config));
+  let externalConfig = helper.readFileSync(path.resolve(config));
   defaultConfig.host = host.cma;
   defaultConfig.cdn = host.cda;
   defaultConfig.branchName = branchName;
