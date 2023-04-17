@@ -1,7 +1,7 @@
 // @ts-ignore
 import { Flags } from '@oclif/core';
 import { Command } from '@contentstack/cli-command';
-import { printFlagDeprecation, flags, isAuthenticated, configHandler } from '@contentstack/cli-utilities';
+import { printFlagDeprecation, flags, isAuthenticated } from '@contentstack/cli-utilities';
 import ContentModelSeeder, { ContentModelSeederOptions } from '../../../seed';
 
 export default class SeedCommand extends Command {
@@ -94,6 +94,7 @@ export default class SeedCommand extends Command {
         stackName: seedFlags['stack-name'],
         fetchLimit: seedFlags['fetch-limit'],
         skipStackConfirmation: seedFlags['yes'],
+        isAuthenticated: isAuthenticated(),
       };
 
       const seeder = new ContentModelSeeder(options);
