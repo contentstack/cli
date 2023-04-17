@@ -56,7 +56,7 @@ export default class BranchDiffHandler {
     }
 
     if(baseBranch){
-      cliux.print(`\nBase branch: ${baseBranch}\n`, { color: 'grey' });
+      cliux.print(`\nBase branch: ${baseBranch}`, { color: 'grey' });
     }
   }
 
@@ -106,16 +106,15 @@ export default class BranchDiffHandler {
   }
 
   /**
-   * @methods displayBranchDiffTextAndVerbose - show branch differences in compact text or verbose format
+   * @methods displayBranchDiffTextAndVerbose - to show branch differences in compactText or detailText format
    * @returns {*} {void}
    * @memberof BranchDiff
    */
   async displayBranchDiffTextAndVerbose(branchDiffData: any[], payload: BranchDiffPayload): Promise<void> {
-    cliux.print('\n');
-    if (this.options.format === 'text') {
+    if (this.options.format === 'compactText') {
       const branchTextRes = parseCompactText(branchDiffData);
       printCompactTextView(branchTextRes, payload.module);
-    } else if (this.options.format === 'verbose') {
+    } else if (this.options.format === 'detailedText') {
       const verboseRes = await parseVerbose(branchDiffData, payload);
       printVerboseTextView(verboseRes, payload.module);
     }

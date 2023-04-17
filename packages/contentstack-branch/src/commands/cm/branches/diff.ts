@@ -11,13 +11,17 @@ export default class BranchDiffCommand extends Command {
     'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx"',
     'csdx cm:branches:diff --compare-branch "develop"',
     'csdx cm:branches:diff --compare-branch "develop" --stack-api-key "bltxxxxxxxx"',
-    'csdx cm:branches:diff --compare-branch "develop" --module "content-types"',
-    'csdx cm:branches:diff --module "content-types" --format "verbose"',
-    'csdx cm:branches:diff --compare-branch "develop" --format "verbose"',
-    'csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose"'
+    'csdx cm:branches:diff --compare-branch "develop" --module "content_types"',
+    'csdx cm:branches:diff --module "content_types" --format "detailedText"',
+    'csdx cm:branches:diff --compare-branch "develop" --format "detailedText"',
+    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main"',
+    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop"',
+    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --module "content_types"',
+    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content_types"',
+    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content_types" --format "detailedText"'
   ];
 
-  static usage: string = 'cm:branches:diff [-c <value>] [-k <value>][-m <value>]';
+  static usage: string = 'cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]';
 
   static flags = {
     "base-branch": flags.string({
@@ -38,10 +42,10 @@ export default class BranchDiffCommand extends Command {
       description: 'Provide stack api key to show diff between branches',
     }),
     format: flags.string({
-      default: "text",
+      default: "compactText",
       multiple: false,
-      options: ["text", "verbose"],
-      description: '[Optional] Type of flags to show branches difference view',
+      options: ["compactText", "detailedText"],
+      description: '[Optional] Type of flags to show branches differences',
     })
   };
 
