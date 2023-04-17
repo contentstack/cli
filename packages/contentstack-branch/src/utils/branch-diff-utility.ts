@@ -195,8 +195,6 @@ function printCompactTextView(branchTextRes: BranchCompactTextRes, module: strin
     forEach(branchTextRes.deleted, (diff: BranchDiffRes) => {
       cliux.print(chalk.red(`- '${diff.title}' ${startCase(camelCase(module))}`));
     });
-  } else {
-    cliux.print('No differences discovered.', { color: 'red' });
   }
 }
 
@@ -362,8 +360,6 @@ function printVerboseTextView(branchTextRes: BranchDiffVerboseRes, module: strin
     forEach(branchTextRes.deleted, (diff: BranchDiffRes) => {
       cliux.print(chalk.red(`- '${diff.title}' ${startCase(camelCase(module))}`));
     });
-  } else {
-    cliux.print('No differences discovered.', { color: 'red' });
   }
 }
 

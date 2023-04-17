@@ -1,6 +1,6 @@
 import { Command } from '@contentstack/cli-command';
 import { messageHandler, flags } from '@contentstack/cli-utilities';
-import { BranchOptions } from "../../../interfaces/index";
+import { BranchOptions } from '../../../interfaces/index';
 import { BranchDiffHandler } from '../../../branch';
 
 export default class BranchDiffCommand extends Command {
@@ -18,35 +18,35 @@ export default class BranchDiffCommand extends Command {
     'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop"',
     'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --module "content_types"',
     'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content_types"',
-    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content_types" --format "detailedText"'
+    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content_types" --format "detailedText"',
   ];
 
   static usage: string = 'cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]';
 
   static flags = {
-    "base-branch": flags.string({
+    'base-branch': flags.string({
       char: 'b',
-      description: "Base branch",
+      description: 'Base branch',
     }),
-    "compare-branch": flags.string({
+    'compare-branch': flags.string({
       char: 'c',
-      description: "Compare branch",
+      description: 'Compare branch',
     }),
     module: flags.string({
-      char: "m",
-      description: "Module",
-      options: ["content_types", "global_fields", "both"]
+      char: 'm',
+      description: 'Module',
+      options: ['content_types', 'global_fields', 'both'],
     }),
     'stack-api-key': flags.string({
       char: 'k',
       description: 'Provide stack api key to show diff between branches',
     }),
     format: flags.string({
-      default: "compactText",
+      default: 'compactText',
       multiple: false,
-      options: ["compactText", "detailedText"],
+      options: ['compactText', 'detailedText'],
       description: '[Optional] Type of flags to show branches differences',
-    })
+    }),
   };
 
   static aliases: string[] = []; // Note: alternative usage if any
@@ -59,8 +59,8 @@ export default class BranchDiffCommand extends Command {
         stackAPIKey: branchDiffFlags['stack-api-key'],
         compareBranch: branchDiffFlags['compare-branch'],
         module: branchDiffFlags.module,
-        format: branchDiffFlags.format
-      }
+        format: branchDiffFlags.format,
+      };
       const diffHandler = new BranchDiffHandler(options);
       await diffHandler.run();
     } catch (error: any) {
@@ -68,4 +68,3 @@ export default class BranchDiffCommand extends Command {
     }
   }
 }
-
