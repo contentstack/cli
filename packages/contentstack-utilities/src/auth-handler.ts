@@ -1,4 +1,7 @@
-import { cliux, logger, HttpClient, configHandler } from '@contentstack/cli-utilities';
+import cliux from './cli-ux';
+import logger from './logger';
+import HttpClient from './http-client';
+import configHandler from './config-handler';
 import * as ContentstackManagementSDK from '@contentstack/management';
 const http = require('http');
 const url = require('url');
@@ -72,7 +75,13 @@ class AuthHandler {
   }
 
   async setOAuthBaseURL() {
-    this.OAuthBaseURL = process.env.OAUTH_APP_BASE_URL || configHandler.get('region')['uiHost'] || '';
+    if (configHandler.get('region')['uiHost']) {
+      this.OAuthBaseURL = configHandler.get('region')['uiHost'] || '';
+    } else {
+      throw new Error(
+        'Invalid ui-host URL while authenticating, Please set your region correctly with command - csdx config:set:region',
+      );
+    }
   }
 
   /*
@@ -91,13 +100,11 @@ class AuthHandler {
             })
             .catch((error) => {
               logger.error('OAuth login failed', error.message);
-              cliux.error('CLI_AUTH_LOGIN_FAILED', { color: 'red' });
               reject(error);
             });
         })
         .catch((error) => {
           logger.error('OAuth login failed', error.message);
-          cliux.error('CLI_AUTH_LOGIN_FAILED', { color: 'red' });
           reject(error);
         });
     });
@@ -157,21 +164,25 @@ class AuthHandler {
   }
 
   async openOAuthURL(): Promise<object> {
-    return new Promise((resolve) => {
-      const digest = crypto.createHash('sha256').update(this.codeVerifier).digest();
-      const codeChallenge = digest.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-      this.setOAuthBaseURL();
-      let url = `${this.OAuthBaseURL}/#!/apps/${this.OAuthAppId}/authorize?response_type=${this.OAuthResponseType}&client_id=${this.OAuthClientId}&redirect_uri=${this.OAuthRedirectURL}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
+    return new Promise(async (resolve, reject) => {
+      try {
+        const digest = crypto.createHash('sha256').update(this.codeVerifier).digest();
+        const codeChallenge = digest.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        await this.setOAuthBaseURL();
+        let url = `${this.OAuthBaseURL}/#!/apps/${this.OAuthAppId}/authorize?response_type=${this.OAuthResponseType}&client_id=${this.OAuthClientId}&redirect_uri=${this.OAuthRedirectURL}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
 
-      if (this.OAuthScope) {
-        url += `&scope=${encodeURIComponent(this.OAuthScope)}`;
+        if (this.OAuthScope) {
+          url += `&scope=${encodeURIComponent(this.OAuthScope)}`;
+        }
+        cliux.print(
+          'This will automatically start the browser and open below URL, if this does not, you can copy and paste the below URL in browser without terminating this command.',
+          { color: 'yellow' },
+        );
+        cliux.print(url, { color: 'green' });
+        resolve(open(url));
+      } catch (error) {
+        reject(error);
       }
-      cliux.print(
-        'This will automatically start the browser and open below URL, if this does not, you can copy and paste the below URL in browser without terminating this command.',
-        { color: 'yellow' },
-      );
-      cliux.print(url, { color: 'green' });
-      resolve(open(url));
     });
   }
 
