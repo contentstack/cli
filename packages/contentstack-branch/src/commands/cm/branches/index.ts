@@ -39,7 +39,7 @@ export default class BranchListCommand extends Command {
           cliux.error('error', err.errorMessage);
         });
 
-      if (listOfBranch?.length > 0) {
+      if (listOfBranch && listOfBranch.length > 0) {
         let { currentBranch, otherBranches, branches }: any = getbranchesList(listOfBranch, baseBranch);
 
         if (!verbose) {
