@@ -78,10 +78,9 @@ export default class LoginCommand extends Command {
         }
       }
       logger.error('login failed', errorMessage);
-      cliux.print('CLI_AUTH_LOGIN_FAILED', { color: 'yellow' });
-      cliux.print(errorMessage, {
-        color: 'red',
-      });
+      cliux.error('CLI_AUTH_LOGIN_FAILED');
+      cliux.error(errorMessage);
+      process.exit();
     }
   }
 
@@ -95,7 +94,6 @@ export default class LoginCommand extends Command {
       logger.info('successfully logged in');
       cliux.success('CLI_AUTH_LOGIN_SUCCESS');
     } catch (error) {
-      console.error(error);
       throw error;
     }
   }
