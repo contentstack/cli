@@ -28,20 +28,35 @@ export interface BranchCompactTextRes {
   deleted?: BranchDiffRes[];
 }
 
-export interface ModifiedFieldsType{
+export interface MergeInputOptions {
+  compareBranch: string;
+  strategy: string;
+  strategySubOption: string;
+  branchCompareData: any;
+  mergeComment?: string;
+  executeOption?: string;
+  noRevert?: boolean;
+  baseBranch: string;
+  format?: string;
+  exportSummaryPath?: string;
+  useMergeSummary?: string;
+  stackAPIKey: string;
+}
+
+export interface ModifiedFieldsType {
   uid: string;
   displayName: string;
   path: string;
   fieldType: string;
 }
 
-export interface ModifiedFieldsInput{
+export interface ModifiedFieldsInput {
   modified?: ModifiedFieldsType[];
   added?: ModifiedFieldsType[];
   deleted?: ModifiedFieldsType[];
 }
 
-export interface BranchModifiedDetails{
+export interface BranchModifiedDetails {
   moduleDetails: BranchDiffRes;
   modifiedFields: ModifiedFieldsInput;
 }
@@ -52,11 +67,11 @@ export interface BranchDiffVerboseRes {
   deleted?: BranchDiffRes[];
 }
 
-export interface BranchDiffPayload{
+export interface BranchDiffPayload {
   module: string;
   apiKey: string;
   baseBranch: string;
-  compareBranch:string;
-  filter?:string;
-  url?:string;
+  compareBranch: string;
+  filter?: string;
+  url?: string;
 }
