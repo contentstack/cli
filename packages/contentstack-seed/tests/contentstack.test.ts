@@ -7,7 +7,6 @@ import axios from 'axios';
 import ContentstackClient, { CreateStackOptions } from '../src/seed/contentstack/client';
 
 const CMA_HOST = 'cs.api.com';
-const CMA_AUTH_TOKEN = '***REMOVED***';
 const BASE_URL = `https://${CMA_HOST}/v3/`;
 const API_KEY = '***REMOVED***';
 const ORG_UID = 'org_12345';
