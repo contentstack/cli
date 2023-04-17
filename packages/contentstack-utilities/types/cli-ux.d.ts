@@ -1,5 +1,6 @@
 import { Table } from '@oclif/core/lib/cli-ux';
 import { Args, Flags, Command } from '@oclif/core';
+import { Ora } from 'ora';
 import { PrintOptions, InquirePayload, CliUXPromptOptions } from './interfaces';
 /**
  * CLI Interface
@@ -19,6 +20,7 @@ declare class CLIInterface {
     prompt(name: string, options?: CliUXPromptOptions): Promise<any>;
     confirm(message?: string): Promise<boolean>;
     progress(options?: any): any;
+    loaderV2(message?: string, spinner?: any): Ora | void;
 }
 declare const _default: CLIInterface;
 export default _default;
