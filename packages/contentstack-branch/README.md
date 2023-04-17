@@ -5,9 +5,10 @@ It is Contentstack’s CLI plugin to export content from the stack. To learn how
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-* [@contentstack/cli-cm-export](#contentstackcli-cm-export)
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [@contentstack/cli-cm-export](#contentstackcli-cm-export)
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 For switching to EU region update the hosts at config/default.js
@@ -33,6 +34,7 @@ For switching to AZURE-NA region update the hosts at config/default.js
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @contentstack/cli-cm-branches
 $ csdx COMMAND
@@ -44,16 +46,18 @@ USAGE
   $ csdx COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-* [`csdx cm:branches`](#csdx-cmbranches)
-* [`csdx cm:branches:create`](#csdx-cmbranchescreate)
-* [`csdx cm:branches:delete [-u <value>] [-k <value>]`](#csdx-cmbranchesdelete--u-value--k-value)
-* [`csdx cm:branches:diff [-c <value>] [-k <value>][-m <value>]`](#csdx-cmbranchesdiff--c-value--k-value-m-value)
-* [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
+
+- [`csdx cm:branches`](#csdx-cmbranches)
+- [`csdx cm:branches:create`](#csdx-cmbranchescreate)
+- [`csdx cm:branches:delete [-u <value>] [-k <value>]`](#csdx-cmbranchesdelete--u-value--k-value)
+- [`csdx cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]`](#csdx-cmbranchesdiff--b-value--c-value--k-value-m-value)
+- [`csdx cm:branches:merge [--base-branch <value>] [--stack-api-key <value>]`](#csdx-cmbranchesmerge---base-branch-value---stack-api-key-value)
 
 ## `csdx cm:branches`
 
@@ -138,13 +142,13 @@ EXAMPLES
 
 _See code: [src/commands/cm/branches/delete.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/delete.ts)_
 
-## `csdx cm:branches:diff [-c <value>] [-k <value>][-m <value>]`
+## `csdx cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]`
 
 Differences between two branches
 
 ```
 USAGE
-  $ csdx cm:branches:diff [-c <value>] [-k <value>][-m <value>]
+  $ csdx cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]
 
 FLAGS
   -b, --base-branch=<value>     Base branch
@@ -152,8 +156,8 @@ FLAGS
   -k, --stack-api-key=<value>   Provide stack api key to show diff between branches
   -m, --module=<option>         Module
                                 <options: content_types|global_fields|both>
-  --format=<option>             [default: text] [Optional] Type of flags to show branches difference view
-                                <options: text|verbose>
+  --format=<option>             [default: compactText] [Optional] Type of flags to show branches differences
+                                <options: compactText|detailedText>
 
 DESCRIPTION
   Differences between two branches
@@ -167,13 +171,21 @@ EXAMPLES
 
   $ csdx cm:branches:diff --compare-branch "develop" --stack-api-key "bltxxxxxxxx"
 
-  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types"
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content_types"
 
-  $ csdx cm:branches:diff --module "content-types" --format "verbose"
+  $ csdx cm:branches:diff --module "content_types" --format "detailedText"
 
-  $ csdx cm:branches:diff --compare-branch "develop" --format "verbose"
+  $ csdx cm:branches:diff --compare-branch "develop" --format "detailedText"
 
-  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types" --format "verbose"
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main"
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop"
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --module "content_types"
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content_types"
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content_types" --format "detailedText"
 ```
 
 _See code: [src/commands/cm/branches/diff.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/diff.ts)_
@@ -218,4 +230,5 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/branches/merge.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/merge.ts)_
+
 <!-- commandsstop -->
