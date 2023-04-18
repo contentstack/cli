@@ -11,7 +11,9 @@ import {
   askMergeComment,
   writeFile,
   executeMerge,
+  selectCustomPreferences,
 } from '../utils';
+import forEach from 'lodash/forEach';
 
 export default class MergeHandler {
   private strategy: string;
@@ -77,6 +79,19 @@ export default class MergeHandler {
     }
     if (this.strategy === 'custom_preferences') {
       this.mergeSettings.itemMergeStrategies = [];
+      for (let module in this.branchCompareData) {
+        this.mergeSettings.mergeContent[module] = {
+          added: [],
+          modified: [],
+          deleted: [],
+        };
+        const selectedItems = await selectCustomPreferences(module, this.branchCompareData[module]);
+        forEach(selectedItems, (item) => {
+          this.mergeSettings.mergeContent[module][item.status].push(item.value);
+          this.mergeSettings.itemMergeStrategies.push(item.value);
+        });
+        this.mergeSettings.strategy = 'ignore';
+      }
       /**
        * call inquire table with row payload
        */
@@ -103,9 +118,11 @@ export default class MergeHandler {
   }
 
   displayMergeSummary() {
-    for (let module in this.branchCompareData) {
-      this.mergeSettings.mergeContent[module] = {};
-      this.filterBranchCompareData(module, this.branchCompareData[module]);
+    if (this.mergeSettings.strategy !== 'ignore') {
+      for (let module in this.branchCompareData) {
+        this.mergeSettings.mergeContent[module] = {};
+        this.filterBranchCompareData(module, this.branchCompareData[module]);
+      }
     }
     displayMergeSummary({
       format: this.displayFormat,
