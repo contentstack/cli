@@ -75,7 +75,6 @@ export const displayBranchStatus = async (options) => {
       parsedResponse[module] = verboseRes;
     }
   }
-  cliux.print(' ');
   return parsedResponse;
 };
 
@@ -89,7 +88,6 @@ export const displayMergeSummary = (options) => {
       branchDiff.printVerboseTextView(options.compareData[module], module);
     }
   }
-  cliux.print(' ');
 };
 
 export const executeMerge = async (apiKey, mergePayload): Promise<any> => {
