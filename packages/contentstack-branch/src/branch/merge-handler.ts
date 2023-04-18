@@ -68,11 +68,18 @@ export default class MergeHandler {
     if (!this.strategy) {
       this.strategy = await selectMergeStrategy();
     }
-    if (!this.strategySubOption && this.strategy !== 'custom_preferences') {
+    if (
+      !this.strategySubOption &&
+      this.strategy !== 'custom_preferences' &&
+      this.strategy !== 'overwrite_with_compare'
+    ) {
       this.strategySubOption = await selectMergeStrategySubOptions();
     }
     if (this.strategy === 'custom_preferences') {
       this.mergeSettings.itemMergeStrategies = [];
+      /**
+       * call inquire table with row payload
+       */
       // TBD implement the table for choosing the custom merge preferences
     } else if (this.strategy === 'merge_prefer_base') {
       if (this.strategySubOption === 'new') {
@@ -114,10 +121,18 @@ export default class MergeHandler {
         mergeContent[module].modified = moduleBranchCompareData.modified;
         mergeContent[module].deleted = moduleBranchCompareData.deleted;
         break;
+      case 'merge_prefer_compare':
+        mergeContent[module].added = moduleBranchCompareData.added;
+        mergeContent[module].modified = moduleBranchCompareData.modified;
+        mergeContent[module].deleted = moduleBranchCompareData.deleted;
+        break;
       case 'merge_new_only':
         mergeContent[module].added = moduleBranchCompareData.added;
         break;
       case 'merge_modified_only_prefer_base' || 'merge_modified_only_prefer_compare':
+        mergeContent[module].modified = moduleBranchCompareData.modified;
+        break;
+      case 'merge_modified_only_prefer_compare':
         mergeContent[module].modified = moduleBranchCompareData.modified;
         break;
       case 'overwrite_with_compare':
@@ -126,7 +141,8 @@ export default class MergeHandler {
         mergeContent[module].deleted = moduleBranchCompareData.deleted;
         break;
       default:
-        console.log('Invalid strategy', strategy);
+        cliux.error(`Error: Invalid strategy ${strategy}`);
+        process.exit(1);
     }
   }
 
@@ -147,6 +163,7 @@ export default class MergeHandler {
         this.mergeSettings.mergeComment = await askMergeComment();
         mergePayload.merge_comment = this.mergeSettings.mergeComment;
       }
+
       cliux.loader('Merging the changes');
       const mergeResponse = await executeMerge(this.stackAPIKey, mergePayload);
       cliux.loader('');
