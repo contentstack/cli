@@ -12,7 +12,7 @@ export interface InquirePayload {
   transformer?: Function;
   validate?(input: any, answers?: any): boolean | string | Promise<boolean | string>;
   columns?: Array<any>;
-  row?: Array<any>;
+  rows?: Array<any>;
   selectAll?: boolean;
 }
 export interface Region {

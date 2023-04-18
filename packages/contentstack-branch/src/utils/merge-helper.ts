@@ -63,7 +63,6 @@ export const displayBranchStatus = async (options) => {
     cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
     const diffSummary = branchDiff.parseSummary(branchModuleData, options.baseBranch, options.compareBranch);
     branchDiff.printSummary(diffSummary);
-    cliux.print(' ');
     // cliux.print(`Differences in '${options.compareBranch}' compared to '${options.baseBranch}':`);
     if (options.format === 'text') {
       const branchTextRes = branchDiff.parseCompactText(branchModuleData);
@@ -94,7 +93,17 @@ export const executeMerge = async (apiKey, mergePayload): Promise<any> => {
   const mergeResponse = await apiPostRequest({
     apiKey: apiKey,
     url: config.mergeUrl,
-    params: mergePayload,
+    params: {
+      base_branch: mergePayload.base_branch,
+      compare_branch: mergePayload.compare_branch,
+      default_merge_strategy: mergePayload.default_merge_strategy,
+      merge_comment: mergePayload.merge_comment,
+      no_revert: mergePayload.no_revert,
+    },
+    body:
+      mergePayload.default_merge_strategy === 'ignore'
+        ? { item_merge_strategies: mergePayload.item_merge_strategies }
+        : {},
   });
 
   if (mergeResponse.merge_details?.status === 'in_progress') {
