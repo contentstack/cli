@@ -158,3 +158,14 @@ export async function askMergeComment(): Promise<string> {
     validate: inquireRequireFieldValidation,
   });
 }
+
+// export async function selectCustomPreferences(payload) {
+//   const result = await cliux.inquire<string>({
+//     type: 'table',
+//     message: 'Select the changes for merge',
+//     name: 'mergePreferences',
+//     selectAll: true,
+//     columns: ,
+//     rows: options.rows,
+//   });
+// }
