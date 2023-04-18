@@ -1,5 +1,9 @@
 import isEmpty from 'lodash/isEmpty';
+import startCase from 'lodash/startCase';
+import camelCase from 'lodash/camelCase';
+import forEach from 'lodash/forEach';
 import { cliux, messageHandler } from '@contentstack/cli-utilities';
+import { BranchDiffRes, BranchCompactTextRes } from '../interfaces';
 
 export async function selectModule(): Promise<string> {
   return await cliux.inquire({
@@ -159,13 +163,77 @@ export async function askMergeComment(): Promise<string> {
   });
 }
 
-// export async function selectCustomPreferences(payload) {
-//   const result = await cliux.inquire<string>({
-//     type: 'table',
-//     message: 'Select the changes for merge',
-//     name: 'mergePreferences',
-//     selectAll: true,
-//     columns: ,
-//     rows: options.rows,
-//   });
-// }
+export async function selectCustomPreferences(module, payload) {
+  // cliux.print(`\n Select from ${startCase(camelCase(module))}`, { color: 'yellow' });
+
+  // parse rows
+  const tableRows = [];
+  if (payload.modified?.length || payload.added?.length || payload.deleted?.length) {
+    forEach(payload.added, (item: BranchDiffRes) => {
+      const row: any = {};
+      row.name = `+${item.title}`;
+      row.status = 'added';
+      row.value = item;
+      tableRows.push(row);
+    });
+
+    forEach(payload.modified, (item: BranchDiffRes) => {
+      const row: any = {};
+      row.name = `±${item.title}`;
+      row.status = 'modified';
+      row.value = item;
+      tableRows.push(row);
+    });
+
+    forEach(payload.deleted, (item: BranchDiffRes) => {
+      const row: any = {};
+      row.name = `±${item.title}`;
+      row.status = 'deleted';
+      row.value = item;
+      tableRows.push(row);
+    });
+  } else {
+    return;
+  }
+
+  const selectedStrategies = await cliux.inquire<any>({
+    type: 'table',
+    message: `Select the ${startCase(camelCase(module))} changes for merge`,
+    name: 'mergeContentTypePreferences',
+    selectAll: true,
+    columns: [
+      {
+        name: 'Merge Prefer Base',
+        value: 'merge_prefer_base',
+      },
+      {
+        name: 'Merge Prefer Compare',
+        value: 'merge_prefer_compare',
+      },
+      {
+        name: 'Overwrite(Use Compare)',
+        value: 'overwrite_with_compare',
+      },
+      {
+        name: 'Ignore(Use Base)',
+        value: 'ignore',
+      },
+    ],
+    rows: tableRows,
+  });
+
+  forEach(selectedStrategies, (strategy: string, index) => {
+    const selectedItem = tableRows[index];
+    if (strategy && selectedItem) {
+      if (selectedItem.value.type === 'content_types') {
+        selectedItem.value.type = 'content_type';
+      } else if (selectedItem.value.type === 'global_fields') {
+        selectedItem.value.type = 'global_field';
+      }
+      delete selectedItem.value.status;
+      selectedItem.value.merge_strategy = strategy;
+    }
+  });
+
+  return tableRows; // selected items
+}
