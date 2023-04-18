@@ -11,6 +11,7 @@ import {
   askMergeComment,
   writeFile,
   executeMerge,
+  askConfirmationForMigrationScripts,
 } from '../utils';
 
 export default class MergeHandler {
@@ -39,6 +40,7 @@ export default class MergeHandler {
       mergeComment: options.mergeComment,
       mergeContent: {},
       noRevert: options.noRevert,
+      generateMigrationScripts: options.generateMigrationScripts,
     };
   }
 
@@ -144,9 +146,17 @@ export default class MergeHandler {
   async executeMerge(mergePayload) {
     try {
       if (!this.mergeSettings.mergeComment) {
+        this.mergeSettings.generateMigrationScripts = await askConfirmationForMigrationScripts();
         this.mergeSettings.mergeComment = await askMergeComment();
         mergePayload.merge_comment = this.mergeSettings.mergeComment;
       }
+
+      console.log(this.mergeSettings.mergeContent, this.mergeSettings.generateMigrationScripts);
+
+      if (this.mergeSettings.generateMigrationScripts) {
+        //call utitlity
+      }
+
       cliux.loader('Merging the changes');
       const mergeResponse = await executeMerge(this.stackAPIKey, mergePayload);
       cliux.loader('');
