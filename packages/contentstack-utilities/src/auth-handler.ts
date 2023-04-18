@@ -39,9 +39,9 @@ class AuthHandler {
 
   constructor() {
     this.codeVerifier = crypto.pseudoRandomBytes(32).toString('hex');
-    this.OAuthAppId = process.env.OAUTH_APP_ID || '634e45cb3dba0a00192b74d0';
-    this.OAuthClientId = process.env.OAUTH_CLIENT_ID || 'vZ3XWS1WBKTb4Eck';
-    this.OAuthRedirectURL = process.env.OAUTH_APP_REDIRECT_URL || 'http://localhost:8080';
+    this.OAuthAppId = process.env.OAUTH_APP_ID || '6400aa06db64de001a31c8a9';
+    this.OAuthClientId = process.env.OAUTH_CLIENT_ID || 'Ie0FEfTzlfAHL4xM';
+    this.OAuthRedirectURL = process.env.OAUTH_APP_REDIRECT_URL || 'http://localhost:8184';
     this.OAuthScope = '';
     this.OAuthResponseType = 'code';
     this.authTokenKeyName = 'authtoken';
@@ -151,7 +151,7 @@ class AuthHandler {
           process.exit();
         };
 
-        server.listen(8080, () => {
+        server.listen(8184, () => {
           cliux.print('Waiting for the authorization server to respond...');
           resolve({ true: true });
         });

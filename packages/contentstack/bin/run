@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-require('dotenv').config();
+require('dotenv').config({ path: '../../.env', encoding: 'utf8', debug: true, override: false });
 (async () => {
   const oclif = require('@oclif/core');
   await oclif.execute({ type: 'cjs', dir: __dirname });
