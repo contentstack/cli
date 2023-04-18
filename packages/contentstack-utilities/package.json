@@ -40,6 +40,7 @@
     "inquirer": "8.2.4",
     "inquirer-search-checkbox": "^1.0.0",
     "inquirer-search-list": "^1.2.6",
+    "inquirer-table-prompt": "git@github.com:kego1992/inquirer-table-prompt.git",
     "lodash": "^4.17.15",
     "ora": "^5.4.0",
     "unique-string": "^2.0.0",
