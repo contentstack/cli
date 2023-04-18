@@ -43,7 +43,6 @@ export default class LoginCommand extends Command {
       required: false,
       default: false,
       exclusive: ['username', 'password'],
-      hidden: true,
     }),
   };
 
