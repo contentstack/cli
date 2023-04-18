@@ -11,3 +11,4 @@ coverage
 .talismanrc
 .vscode
 branch-config.json
+/merge_scripts
