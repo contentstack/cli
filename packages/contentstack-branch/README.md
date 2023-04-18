@@ -99,8 +99,6 @@ DESCRIPTION
   Create a new branch
 
 EXAMPLES
-  $ csdx cm:branches
-
   $ csdx cm:branches:create
 
   $ csdx cm:branches:create -s main -u new_branch -k bltxxxxxxxx
