@@ -45,6 +45,7 @@ export async function askBaseBranch(): Promise<string> {
     validate: inquireRequireFieldValidation,
   });
 }
+
 export async function askSourceBranch(): Promise<string> {
   return await cliux.inquire<string>({
     type: 'input',
@@ -53,6 +54,7 @@ export async function askSourceBranch(): Promise<string> {
     validate: inquireRequireFieldValidation,
   });
 }
+
 export async function askBranchUid(): Promise<string> {
   return await cliux.inquire<string>({
     type: 'input',
@@ -61,6 +63,7 @@ export async function askBranchUid(): Promise<string> {
     validate: inquireRequireFieldValidation,
   });
 }
+
 export async function askConfirmation(): Promise<boolean> {
   const resp = await cliux.inquire<boolean>({
     type: 'confirm',
@@ -236,4 +239,13 @@ export async function selectCustomPreferences(module, payload) {
   });
 
   return tableRows; // selected items
+}
+
+export async function askBranchNameConfirmation(): Promise<string> {
+  return await cliux.inquire<string>({
+    type: 'input',
+    message: 'CLI_BRANCH_NAME_CONFIRMATION',
+    name: 'branch_name',
+    validate: inquireRequireFieldValidation,
+  });
 }
