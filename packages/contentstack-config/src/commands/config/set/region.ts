@@ -69,7 +69,7 @@ export default class RegionSetCommand extends Command {
         logger.error('failed to set the region', error);
         cliux.error(`Failed to set region due to: ${error.message}`);
       }
-    } else if (['NA', 'EU', 'AZURE-NA'].includes(selectedRegion)) {
+    } else if (['NA', 'EU', 'AZURE-NA', 'AZURE-EU'].includes(selectedRegion)) {
       const regionDetails: Region = regionHandler.setRegion(selectedRegion);
       cliux.success(`Region has been set to ${regionDetails.name}`);
       cliux.success(`CDA HOST: ${regionDetails.cda}`);
