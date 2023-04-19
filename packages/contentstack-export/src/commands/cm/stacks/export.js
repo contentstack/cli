@@ -46,6 +46,7 @@ class ExportCommand extends Command {
             branchName,
             securedAssets,
             moduleName,
+            data,
             exportCommandFlags,
           );
         } else if (data) {

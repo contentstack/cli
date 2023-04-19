@@ -498,6 +498,11 @@ class CloneHandler {
   async cmdExport() {
     return new Promise((resolve, reject) => {
       const cmd = ['-k', config.source_stack, '-d', __dirname.split('src')[0] + 'contents'];
+      if (config.cloneType === 'a') {
+        config.filteredModules = ['stack'].concat(structureList);
+        cmd.push('-c');
+        cmd.push(path.join(__dirname, 'dummyConfig.json'));
+      }
 
       if (config.source_alias) {
         cmd.push('-a', config.source_alias);
