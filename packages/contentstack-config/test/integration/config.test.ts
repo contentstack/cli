@@ -38,6 +38,21 @@ describe("ContentStack-Config plugin test", () => {
       });
   });
 
+  describe('Running config:set:region command without any flags and set AZURE-EU as Region', () => {
+    test
+      .stub(cliux, 'inquire', async () => 'AZURE-EU')
+      .stdout({ print: PRINT_LOGS || false })
+      .command(['config:set:region'])
+      .it('Check config:set:region command output [It should set AZURE-EU as region]', (ctx) => {
+        expect(ctx.stdout)
+          .to.be.a('string')
+          .that.have.includes(
+            'Region has been set to AZURE-EU\nCDA HOST: https://azure-eu-cdn.contentstack.com\nCMA HOST: https://azure-eu-api.contentstack.com\n',
+            'AZURE-EU region is not setup.!',
+          );
+      });
+  });
+
   describe("Running config:set:region command with arg as NA region", () => {
     test
       .stdout({ print: PRINT_LOGS || false })
