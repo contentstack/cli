@@ -12,6 +12,7 @@ import {
   writeFile,
   executeMerge,
   askConfirmationForMigrationScripts,
+  generateMergeScripts,
 } from '../utils';
 
 export default class MergeHandler {
@@ -151,10 +152,8 @@ export default class MergeHandler {
         mergePayload.merge_comment = this.mergeSettings.mergeComment;
       }
 
-      console.log(this.mergeSettings.mergeContent, this.mergeSettings.generateMigrationScripts);
-
       if (this.mergeSettings.generateMigrationScripts) {
-        //call utitlity
+        generateMergeScripts(this.mergeSettings.mergeContent);
       }
 
       cliux.loader('Merging the changes');
