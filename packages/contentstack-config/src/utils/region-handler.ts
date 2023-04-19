@@ -22,6 +22,11 @@ const regions = {
     cda: 'https://azure-na-cdn.contentstack.com',
     name: 'AZURE-NA',
   },
+  'AZURE-EU': {
+    cma: 'https://azure-eu-api.contentstack.com',
+    cda: 'https://azure-eu-cdn.contentstack.com',
+    name: 'AZURE-EU',
+  },
 };
 
 class UserConfig {
