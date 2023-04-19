@@ -393,7 +393,6 @@ class AuthHandler {
         return this.refreshToken();
       } else {
         if (oauthValidUpto > now) {
-          cliux.print('Valid/unexpired token');
           return Promise.resolve();
         } else {
           cliux.print('Token expired, refreshing the token');
