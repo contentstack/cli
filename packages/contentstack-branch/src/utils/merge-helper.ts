@@ -136,10 +136,10 @@ export const fetchMergeStatus = async (mergePayload): Promise<any> => {
         //console.log('errors', mergeRequestStatusResponse.errors);
         return reject(`merge uid: ${mergePayload.uid}`);
       } else {
-        return reject(`Invalid merge status found with merge id ${mergePayload.uid}`);
+        return reject(`Invalid merge status found with merge ID ${mergePayload.uid}`);
       }
     } else {
-      return reject(`No queue found with merge id ${mergePayload.uid}`);
+      return reject(`No queue found with merge ID ${mergePayload.uid}`);
     }
   });
 };
