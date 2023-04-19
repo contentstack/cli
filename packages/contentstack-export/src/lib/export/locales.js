@@ -2,6 +2,7 @@ const path = require('path');
 const chalk = require('chalk');
 const fileHelper = require('../util/helper');
 const { addlogs } = require('../util/log');
+const { formatError } = require('../util');
 class LocaleExport {
   constructor(exportConfig, stackAPIClient) {
     this.stackAPIClient = stackAPIClient;
