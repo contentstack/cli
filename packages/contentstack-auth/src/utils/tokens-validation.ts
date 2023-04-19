@@ -23,6 +23,7 @@ export const validateDeliveryToken = async (
       EU: 'eu',
       NA: 'us',
       AZURE_NA: 'azure-na',
+      AZURE_EU: 'azure-eu',
     };
     
     const stack = contentStackClient
