@@ -127,7 +127,7 @@ export default class MergeHandler {
       } else if (executionResponse === 'restart') {
         return await this.restartMergeProcess();
       } else {
-        this.strategySubOption = executionResponse;
+        this.executeOption = executionResponse;
       }
     }
   }
@@ -181,7 +181,7 @@ export default class MergeHandler {
         mergeContent[module].deleted = moduleBranchCompareData.deleted;
         break;
       default:
-        cliux.error(`Error: Invalid strategy ${strategy}`);
+        cliux.error(`error: Invalid strategy ${strategy}`);
         process.exit(1);
     }
   }
@@ -198,18 +198,19 @@ export default class MergeHandler {
   }
 
   async executeMerge(mergePayload) {
+    let spinner;
     try {
       if (!this.mergeSettings.mergeComment) {
         this.mergeSettings.mergeComment = await askMergeComment();
         mergePayload.merge_comment = this.mergeSettings.mergeComment;
       }
-
-      cliux.loader('Merging the changes');
+      spinner = cliux.loaderV2('Merging the changes...');
       const mergeResponse = await executeMerge(this.stackAPIKey, mergePayload);
-      cliux.loader('');
+      cliux.loaderV2('', spinner);
       cliux.success(`Merged the changes successfully. Merge UID: ${mergeResponse.uid}`);
     } catch (error) {
-      cliux.error('Failed to merge the changes!', error.message);
+      cliux.loaderV2('', spinner);
+      cliux.error('Failed to merge the changes', error.message || error);
     }
   }
 
@@ -234,39 +235,5 @@ export default class MergeHandler {
     this.mergeSettings.itemMergeStrategies = [];
 
     await this.start();
-  }
-
-  async handlePromptInput(promptInput: string, action: string) {
-    if (promptInput === 'restart') {
-      await this.restartMergeProcess();
-    } else if (promptInput === 'previous') {
-      if (action === 'merge-execution') {
-        if (this.strategy !== 'custom_preferences' && this.strategy !== 'overwrite_with_compare') {
-          this.strategySubOption = null;
-          await this.handlePromptInput(await selectMergeStrategySubOptions(), 'merge-sub-options');
-        } else {
-          await this.restartMergeProcess();
-        }
-      } else if (action === 'merge-sub-options') {
-        this.strategy = await selectMergeStrategy();
-        if (this.strategy !== 'custom_preferences' && this.strategy !== 'overwrite_with_compare') {
-          this.strategySubOption = null;
-          await this.handlePromptInput(await selectMergeStrategySubOptions(), 'merge-sub-options');
-        }
-      } else {
-        cliux.error('Error: Invalid prompt selection');
-        process.exit(1); // TBD improve the flow
-      }
-    } else if (promptInput) {
-      if (action === 'merge-execution') {
-        this.executeOption = promptInput;
-      } else if (action === 'merge-sub-options') {
-        this.strategySubOption = promptInput;
-        await this.displayMergeSummary();
-      }
-    } else {
-      cliux.error('Error: Invalid prompt selection');
-      process.exit(1); // TBD improve the flow
-    }
   }
 }
