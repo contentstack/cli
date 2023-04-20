@@ -88,8 +88,8 @@ export async function selectMergeStrategy(): Promise<string> {
       choices: [
         { name: 'Merge, Prefer Base', value: 'merge_prefer_base' },
         { name: 'Merge, Prefer Compare', value: 'merge_prefer_compare' },
-        { name: 'Overwrite with Compare', value: 'overwrite_with_compare' },
         { name: 'Merge, Ask for Preference', value: 'custom_preferences' },
+        { name: 'Overwrite with Compare', value: 'overwrite_with_compare' },
       ],
       message: 'What merge strategy would you like to choose?',
     })
@@ -225,16 +225,13 @@ export async function selectCustomPreferences(module, payload) {
     rows: tableRows,
   });
 
-  forEach(selectedStrategies, (strategy: string, index) => {
+  forEach(selectedStrategies, (strategy: string, index: number) => {
     const selectedItem = tableRows[index];
     if (strategy && selectedItem) {
-      if (selectedItem.value.type === 'content_types') {
-        selectedItem.value.type = 'content_type';
-      } else if (selectedItem.value.type === 'global_fields') {
-        selectedItem.value.type = 'global_field';
-      }
       delete selectedItem.value.status;
       selectedItem.value.merge_strategy = strategy;
+    } else {
+      tableRows.splice(index, 1);
     }
   });
 
