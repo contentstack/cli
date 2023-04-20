@@ -22,13 +22,13 @@ export interface ContentModelSeederOptions {
   parent?: any;
   cdaHost: string;
   cmaHost: string;
-  authToken: string;
   gitHubPath: string | undefined;
   orgUid: string | undefined;
   stackUid: string | undefined;
   stackName: string | undefined;
   fetchLimit: string | undefined;
   skipStackConfirmation: string | undefined;
+  isAuthenticated: boolean | false;
 }
 
 export default class ContentModelSeeder {
@@ -82,11 +82,11 @@ export default class ContentModelSeeder {
 
     await importer.run({
       api_key: api_key,
-      authToken: this.options.authToken,
       cdaHost: this.options.cdaHost,
       cmaHost: this.options.cmaHost,
       master_locale: ENGLISH_LOCALE,
       tmpPath: tmpPath,
+      isAuthenticated: this.options.isAuthenticated,
     });
     return { api_key };
   }
