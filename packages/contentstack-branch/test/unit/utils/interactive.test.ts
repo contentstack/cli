@@ -88,4 +88,49 @@ describe('Interactive', () => {
     const result = interactive.inquireRequireFieldValidation('main');
     expect(result).to.be.equal(true);
   });
+
+  it('select merge strategy, should be successful', async function () {
+    const strategy = 'merge_prefer_base';
+    inquireStub.callsFake(function () {
+      return Promise.resolve(strategy);
+    });
+    const result = await interactive.selectMergeStrategy();
+    expect(result).to.be.equal(strategy);
+  });
+
+  it('select merge strategy sub options, should be successful', async function () {
+    const strategy = 'new';
+    inquireStub.callsFake(function () {
+      return Promise.resolve(strategy);
+    });
+    const result = await interactive.selectMergeStrategySubOptions();
+    expect(result).to.be.equal(strategy);
+  });
+
+  it('select merge executions, should be successful', async function () {
+    const strategy = 'export';
+    inquireStub.callsFake(function () {
+      return Promise.resolve(strategy);
+    });
+    const result = await interactive.selectMergeExecution();
+    expect(result).to.be.equal(strategy);
+  });
+
+  it('ask export merge summary path', async function () {
+    const filePath = 'sfgfdsg223';
+    inquireStub.callsFake(function () {
+      return Promise.resolve(filePath);
+    });
+    const result = await interactive.askExportMergeSummaryPath();
+    expect(result).to.be.equal(filePath);
+  });
+
+  it('ask merge comment', async function () {
+    const comment = 'changes';
+    inquireStub.callsFake(function () {
+      return Promise.resolve(comment);
+    });
+    const result = await interactive.askMergeComment();
+    expect(result).to.be.equal(comment);
+  });
 });
