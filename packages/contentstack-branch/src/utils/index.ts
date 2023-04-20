@@ -68,7 +68,7 @@ export const apiGetRequest = async (payload): Promise<any> => {
       }
     })
     .catch((error) => {
-      cliux.error('Failed to merge the changes', error.message);
+      cliux.error('Failed to merge the changes', error.message || error);
       process.exit(1);
     });
 };
@@ -93,7 +93,7 @@ export const apiPostRequest = async (payload): Promise<any> => {
       }
     })
     .catch((error) => {
-      cliux.error('Failed to merge the changes', error.message);
+      cliux.error('Failed to merge the changes', error.message || error);
       process.exit(1);
     });
 };
