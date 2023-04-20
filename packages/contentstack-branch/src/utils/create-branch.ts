@@ -16,7 +16,7 @@ export async function createBranch(host: string, apiKey: string, branch: { uid: 
         cliux.error(`error : Branch with UID '${branch.uid}' already exists, please enter a unique branch UID`);
       else if (err.errorCode === 903){
         if(err.errors?.uid){
-          cliux.error(`error : Branch UID should have a maximum length of 15 character(s), please enter valid branch uid`)
+          cliux.error(`error : Branch UID must be 15 character(s) or less, please enter a valid branch UID`)
         }else{
           cliux.error(
             `error : Source Branch with UID '${branch.source}' does not exist, please enter correct source branch UID`,
