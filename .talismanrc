@@ -6,9 +6,9 @@ fileignoreconfig:
 - filename: packages/contentstack-import/.env.sample
   checksum: 0d6b520e59241f40e3999047dbf308905b0ce0c933865cac8f3453f464d6ddc1
 - filename: packages/contentstack-import/test/integration/auth-token-modules/environments.test.js
-  checksum: 0f80ae9e754d8398afe33fff8d717e7dc2ecba42f064005ae55d498c4d82976a
+  checksum: f2f4e81e754a37d597bf7d432c397f19c10204dd253f427f9b633147ef8b4fa0
 - filename: packages/contentstack-import/test/integration/environments.test.js
-  checksum: c93c83d15ea3468000935f7ab0e02c7676462768aa7662f49b77186e4fc8b85c
+  checksum: 0f66f696dbb0bd328532398a559df0e4eb1b4e395e5457cd1d55761f55fa9d4b
 - filename: packages/contentstack-export/test/integration/clean-up.test.js
   checksum: 51d9127d98972ba890d77a3ce25e2e3afc5963e9547bcd96648af0daf42e5d91
 - filename: packages/contentstack-export/test/integration/assets.test.js
