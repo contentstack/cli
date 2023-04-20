@@ -1,5 +1,6 @@
 import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
+import path from 'path';
 import { cliux } from '@contentstack/cli-utilities';
 import { BranchDiffPayload } from '../interfaces/index';
 import {
@@ -10,6 +11,7 @@ import {
   branchDiffUtility as branchDiff,
   apiPostRequest,
   apiGetRequest,
+  writeFile,
 } from './';
 
 import config from '../config';
@@ -133,7 +135,11 @@ export const fetchMergeStatus = async (mergePayload): Promise<any> => {
           await fetchMergeStatus(mergePayload).then(resolve).catch(reject);
         }, 5000);
       } else if (mergeStatus === 'failed') {
-        //console.log('errors', mergeRequestStatusResponse.errors);
+        if (mergeRequestStatusResponse?.errors?.length > 0) {
+          const errorPath = path.join(process.cwd(), 'merge-error.log');
+          await writeFile(errorPath, mergeRequestStatusResponse.errors);
+          cliux.print(`\nComplete error log can be found in ${path.resolve(errorPath)}`, { color: 'grey' });
+        }
         return reject(`merge uid: ${mergePayload.uid}`);
       } else {
         return reject(`Invalid merge status found with merge ID ${mergePayload.uid}`);
