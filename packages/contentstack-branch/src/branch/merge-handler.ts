@@ -17,14 +17,15 @@ import forEach from 'lodash/forEach';
 
 export default class MergeHandler {
   private strategy: string;
-  private strategySubOption: string;
+  private strategySubOption?: string;
   private branchCompareData: any;
   private mergeSettings: any;
-  private executeOption: string;
+  private executeOption?: string;
   private displayFormat: string;
   private exportSummaryPath: string;
   private useMergeSummary: string;
   private stackAPIKey: string;
+  private userInputs: MergeInputOptions;
 
   constructor(options: MergeInputOptions) {
     this.stackAPIKey = options.stackAPIKey;
@@ -35,6 +36,7 @@ export default class MergeHandler {
     this.displayFormat = options.format;
     this.exportSummaryPath = options.exportSummaryPath;
     this.useMergeSummary = options.useMergeSummary;
+    this.userInputs = options;
     this.mergeSettings = {
       baseBranch: options.baseBranch, // UID of the base branch, where the changes will be merged into
       compareBranch: options.compareBranch, // UID of the branch to merge
@@ -48,7 +50,7 @@ export default class MergeHandler {
     await this.collectMergeSettings();
     await this.displayMergeSummary();
     if (!this.executeOption) {
-      this.executeOption = await selectMergeExecution();
+      await this.handlePromptInput(await selectMergeExecution(), 'merge-execution');
     }
 
     // Merge final process
@@ -75,7 +77,7 @@ export default class MergeHandler {
       this.strategy !== 'custom_preferences' &&
       this.strategy !== 'overwrite_with_compare'
     ) {
-      this.strategySubOption = await selectMergeStrategySubOptions();
+      await this.handlePromptInput(await selectMergeStrategySubOptions(), 'merge-sub-options');
     }
     if (this.strategy === 'custom_preferences') {
       this.mergeSettings.itemMergeStrategies = [];
@@ -92,10 +94,6 @@ export default class MergeHandler {
         });
         this.mergeSettings.strategy = 'ignore';
       }
-      /**
-       * call inquire table with row payload
-       */
-      // TBD implement the table for choosing the custom merge preferences
     } else if (this.strategy === 'merge_prefer_base') {
       if (this.strategySubOption === 'new') {
         this.mergeSettings.strategy = 'merge_new_only';
@@ -187,6 +185,63 @@ export default class MergeHandler {
       cliux.success(`Merged the changes successfully, merge uid: ${mergeResponse.uid}`);
     } catch (error) {
       cliux.error('Failed to merge the changes', error.message);
+    }
+  }
+
+  async restartMergeProcess() {
+    /**
+     * clean up the user inputs
+     * start the process
+     */
+    if (!this.userInputs.strategy) {
+      this.strategy = null;
+    }
+    if (!this.userInputs.strategySubOption) {
+      this.strategySubOption = null;
+    }
+    if (!this.userInputs.executeOption) {
+      this.executeOption = null;
+    }
+    if (!this.userInputs.executeOption) {
+      this.executeOption = null;
+    }
+    this.mergeSettings.strategy = null;
+    this.mergeSettings.itemMergeStrategies = [];
+
+    await this.start();
+  }
+
+  async handlePromptInput(promptInput: string, action: string) {
+    if (promptInput === 'restart') {
+      await this.restartMergeProcess();
+    } else if (promptInput === 'previous') {
+      if (action === 'merge-execution') {
+        if (this.strategy !== 'custom_preferences' && this.strategy !== 'overwrite_with_compare') {
+          this.strategySubOption = null;
+          await this.handlePromptInput(await selectMergeStrategySubOptions(), 'merge-sub-options');
+        } else {
+          await this.restartMergeProcess();
+        }
+      } else if (action === 'merge-sub-options') {
+        this.strategy = await selectMergeStrategy();
+        if (this.strategy !== 'custom_preferences' && this.strategy !== 'overwrite_with_compare') {
+          this.strategySubOption = null;
+          await this.handlePromptInput(await selectMergeStrategySubOptions(), 'merge-sub-options');
+        }
+      } else {
+        cliux.error('Error: Invalid prompt selection');
+        process.exit(1); // TBD improve the flow
+      }
+    } else if (promptInput) {
+      if (action === 'merge-execution') {
+        this.executeOption = promptInput;
+      } else if (action === 'merge-sub-options') {
+        this.strategySubOption = promptInput;
+        await this.displayMergeSummary();
+      }
+    } else {
+      cliux.error('Error: Invalid prompt selection');
+      process.exit(1); // TBD improve the flow
     }
   }
 }
