@@ -114,7 +114,7 @@ export async function selectMergeStrategySubOptions(): Promise<string> {
         { name: 'Go Back', value: 'previous' },
         { name: 'Start Over', value: 'restart' },
       ],
-      message: 'What do you want to merge',
+      message: 'What do you want to merge?',
     })
     .then((name) => name as string)
     .catch((err) => {
@@ -141,7 +141,7 @@ export async function selectMergeExecution(): Promise<string> {
     })
     .then((name) => name as string)
     .catch((err) => {
-      cliux.error('Exiting the merge process');
+      cliux.error('Exiting the merge process...');
       process.exit(1);
     });
 

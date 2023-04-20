@@ -66,11 +66,11 @@ export const displayBranchStatus = async (options) => {
     // cliux.print(`Differences in '${options.compareBranch}' compared to '${options.baseBranch}':`);
     if (options.format === 'text') {
       const branchTextRes = branchDiff.parseCompactText(branchModuleData);
-      branchDiff.printCompactTextView(branchTextRes, payload.module);
+      branchDiff.printCompactTextView(branchTextRes);
       parsedResponse[module] = branchTextRes;
     } else if (options.format === 'verbose') {
       const verboseRes = await branchDiff.parseVerbose(branchModuleData, payload);
-      branchDiff.printVerboseTextView(verboseRes, payload.module);
+      branchDiff.printVerboseTextView(verboseRes);
       parsedResponse[module] = verboseRes;
     }
   }
@@ -82,9 +82,9 @@ export const displayMergeSummary = (options) => {
   cliux.print(`Merge Summary:`, { color: 'yellow' });
   for (let module in options.compareData) {
     if (options.format === 'text') {
-      branchDiff.printCompactTextView(options.compareData[module], module);
+      branchDiff.printCompactTextView(options.compareData[module]);
     } else if (options.format === 'verbose') {
-      branchDiff.printVerboseTextView(options.compareData[module], module);
+      branchDiff.printVerboseTextView(options.compareData[module]);
     }
   }
 };
