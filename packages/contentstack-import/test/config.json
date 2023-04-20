@@ -29,6 +29,7 @@
     "REGIONS": [
         "NA",
         "EU",
-        "AZURE-NA"
+        "AZURE-NA",
+        "AZURE-EU"
     ]
 }
