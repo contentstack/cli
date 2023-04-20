@@ -36,6 +36,7 @@ const regions = {
   'AZURE-EU': {
     cma: 'https://azure-eu-api.contentstack.com',
     cda: 'https://azure-eu-cdn.contentstack.com',
+    uiHost: 'https://azure-eu-app.contentstack.com',
     name: 'AZURE-EU',
   },
 };
