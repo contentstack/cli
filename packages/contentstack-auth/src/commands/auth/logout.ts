@@ -48,7 +48,7 @@ export default class LogoutCommand extends Command {
     }
 
     try {
-      const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
+      const managementAPIClient = await managementSDKClient({ host: this.cmaHost, skipTokenValidity: true });
       authHandler.client = managementAPIClient;
       if (isAuthenticated()) {
         if (confirm === true) {
@@ -60,9 +60,22 @@ export default class LogoutCommand extends Command {
         }
       }
     } catch (error) {
-      logger.error('Logout failed', error.message);
+      let errorMessage = '';
+      if (error) {
+        if (error.message) {
+          if (error.message.message) {
+            errorMessage = error.message.message;
+          } else {
+            errorMessage = error.message;
+          }
+        } else {
+          errorMessage = error;
+        }
+      }
+
+      logger.error('Logout failed', errorMessage);
       cliux.print('CLI_AUTH_LOGOUT_FAILED', { color: 'yellow' });
-      cliux.print(error.message, { color: 'red' });
+      cliux.print(errorMessage, { color: 'red' });
     } finally {
       if (confirm === true) {
         await oauthHandler.setConfigData('logout');
