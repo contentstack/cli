@@ -115,7 +115,7 @@ export const executeMerge = async (apiKey, mergePayload): Promise<any> => {
   }
 };
 
-const fetchMergeStatus = async (mergePayload): Promise<any> => {
+export const fetchMergeStatus = async (mergePayload): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     const mergeStatusResponse = await apiGetRequest({
       apiKey: mergePayload.apiKey,
@@ -133,13 +133,13 @@ const fetchMergeStatus = async (mergePayload): Promise<any> => {
           await fetchMergeStatus(mergePayload).then(resolve).catch(reject);
         }, 5000);
       } else if (mergeStatus === 'failed') {
-        console.log('errors', mergeRequestStatusResponse.errors);
+        //console.log('errors', mergeRequestStatusResponse.errors);
         return reject(`merge uid: ${mergePayload.uid}`);
       } else {
-        return reject(`Invalid merge status found with merge id ${mergePayload.uid}`);
+        return reject(`Invalid merge status found with merge ID ${mergePayload.uid}`);
       }
     } else {
-      return reject(`No queue found with merge id ${mergePayload.uid}`);
+      return reject(`No queue found with merge ID ${mergePayload.uid}`);
     }
   });
 };

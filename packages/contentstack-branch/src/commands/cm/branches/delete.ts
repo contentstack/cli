@@ -1,17 +1,17 @@
 import { Command } from '@contentstack/cli-command';
-import { messageHandler, flags } from '@contentstack/cli-utilities';
+import { messageHandler, flags, cliux } from '@contentstack/cli-utilities';
 import { deleteBranch } from '../../../utils/delete-branch';
-import { refreshbranchConfig } from '../../../utils';
 import { interactive } from '../../../utils';
 
 export default class BranchDeleteCommand extends Command {
-  static description: string = messageHandler.parse('Delete a branch'); // Note: Update the description
+  static description: string = messageHandler.parse('Delete a branch');
 
   static examples: string[] = [
     'csdx cm:branches:delete',
     'csdx cm:branches:delete -u main -k bltxxxxxxxx',
     'csdx cm:branches:delete --uid main --stack-api-key bltxxxxxxxx',
-  ]; // Note: Add and modify the examples
+    'csdx cm:branches:delete --uid main --stack-api-key bltxxxxxxxx --yes',
+  ];
 
   static usage: string[] = [
     'cm:branches:delete [-u <value>] [-k <value>]',
@@ -19,10 +19,12 @@ export default class BranchDeleteCommand extends Command {
   ]; // Note: Add and modify the usage
 
   static flags = {
-    force: flags.boolean({ char: 'f' }),
-    uid: flags.string({ char: 'u', description: 'UID of the branch to be deleted' }),
+    uid: flags.string({ char: 'u', description: 'Branch UID to be deleted' }),
     'stack-api-key': flags.string({ char: 'k', description: 'Stack API key' }),
-    confirm: flags.boolean({ char: 'y', description: 'Are you sure you want to delete', required: false }),
+    yes: flags.boolean({
+      char: 'y',
+      description: 'Force the deletion of the branch by skipping the confirmation',
+    }),
   };
 
   static aliases: string[] = []; // Note: alternative usage if any
@@ -39,13 +41,14 @@ export default class BranchDeleteCommand extends Command {
       branchDeleteFlags.uid = await interactive.askBranchUid();
     }
 
-    if (!branchDeleteFlags.confirm) {
-      branchDeleteFlags.confirm = await interactive.askConfirmation();
+    if (!branchDeleteFlags.yes) {
+      const confirmBranch = await interactive.askBranchNameConfirmation();
+      if (confirmBranch !== branchDeleteFlags.uid) {
+        cliux.error(`error: To delete the branch, enter the valid branch name '${branchDeleteFlags.uid}'`);
+        process.exit(1);
+      }
     }
 
-    if (!branchDeleteFlags.confirm) {
-      return;
-    }
     await deleteBranch(this.cmaHost, apiKey, branchDeleteFlags.uid);
   }
 }
