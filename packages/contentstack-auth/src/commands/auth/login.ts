@@ -39,22 +39,20 @@ export default class LoginCommand extends Command {
       exclusive: ['oauth'],
     }),
     oauth: flags.boolean({
-      description: 'Boolean flag for OAuth login to contentstack',
+      description: 'Enables single sign-on (SSO) in Contentstack CLI',
       required: false,
       default: false,
       exclusive: ['username', 'password'],
-      hidden: true,
     }),
   };
 
   static aliases = ['login'];
 
   async run(): Promise<any> {
-    const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
-    const { flags: loginFlags } = await this.parse(LoginCommand);
-    authHandler.client = managementAPIClient;
-
     try {
+      const managementAPIClient = await managementSDKClient({ host: this.cmaHost, skipTokenValidity: true });
+      const { flags: loginFlags } = await this.parse(LoginCommand);
+      authHandler.client = managementAPIClient;
       const oauth = loginFlags?.oauth;
       if (oauth === true) {
         oauthHandler.host = this.cmaHost;
@@ -66,9 +64,22 @@ export default class LoginCommand extends Command {
         await this.login(username, password);
       }
     } catch (error) {
-      logger.error('login failed', error.message);
-      cliux.print('CLI_AUTH_LOGIN_FAILED', { color: 'yellow' });
-      cliux.print(error.message.message ? error.message.message : error.message, { color: 'red' });
+      let errorMessage = '';
+      if (error) {
+        if (error.message) {
+          if (error.message.message) {
+            errorMessage = error.message.message;
+          } else {
+            errorMessage = error.message;
+          }
+        } else {
+          errorMessage = error;
+        }
+      }
+      logger.error('login failed', errorMessage);
+      cliux.error('CLI_AUTH_LOGIN_FAILED');
+      cliux.error(errorMessage);
+      process.exit();
     }
   }
 
@@ -82,7 +93,6 @@ export default class LoginCommand extends Command {
       logger.info('successfully logged in');
       cliux.success('CLI_AUTH_LOGIN_SUCCESS');
     } catch (error) {
-      console.error(error);
       throw error;
     }
   }
