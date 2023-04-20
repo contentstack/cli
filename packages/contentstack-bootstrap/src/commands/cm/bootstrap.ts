@@ -7,7 +7,7 @@ import {
   inquireAppType,
   inquireLivePreviewSupport,
 } from '../../bootstrap/interactive';
-import { printFlagDeprecation, managementSDKClient, flags } from '@contentstack/cli-utilities';
+import { printFlagDeprecation, managementSDKClient, flags, isAuthenticated } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
 
@@ -97,24 +97,19 @@ export default class BootstrapCommand extends Command {
     }),
   };
 
-  get managementAPIClient() {
-    return (async () => {
-      const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
-      this.bootstrapManagementAPIClient = managementAPIClient;
-      return this.bootstrapManagementAPIClient;
-    })();
-  }
-
   async run() {
     const { flags: bootstrapCommandFlags } = await this.parse(BootstrapCommand);
 
     try {
-      if (!this.authToken) {
+      if (!isAuthenticated()) {
         this.error(messageHandler.parse('CLI_BOOTSTRAP_LOGIN_FAILED'), {
           exit: 2,
           suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
         });
       }
+      this.bootstrapManagementAPIClient = await managementSDKClient({
+        host: this.cmaHost,
+      });
 
       // inquire user inputs
       let appType =
@@ -153,7 +148,7 @@ export default class BootstrapCommand extends Command {
       }
       cloneDirectory = resolve(cloneDirectory);
 
-      const livePreviewEnabled = (bootstrapCommandFlags.yes) ? true : await inquireLivePreviewSupport();
+      const livePreviewEnabled = bootstrapCommandFlags.yes ? true : await inquireLivePreviewSupport();
 
       const seedParams: SeedParams = {};
       const stackAPIKey = bootstrapCommandFlags['stack-api-key'];
@@ -169,7 +164,7 @@ export default class BootstrapCommand extends Command {
         appConfig,
         seedParams,
         cloneDirectory,
-        managementAPIClient: await this.managementAPIClient,
+        managementAPIClient: this.bootstrapManagementAPIClient,
         region: this.region,
         appType,
         livePreviewEnabled,
