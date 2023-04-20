@@ -77,4 +77,5 @@ export interface BranchDiffPayload {
   host?: string;
   uid?: string;
   spinner?:any;
+  url?:string;
 }
