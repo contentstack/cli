@@ -13,6 +13,7 @@ declare abstract class ContentstackCommand extends Command {
   get rateLimit(): string | 5;
   get cmaHost(): string;
   get cdaHost(): string;
+  get uiHost(): string;
   get cdaAPIUrl(): string;
   get cmaAPIUrl(): string;
   get authToken(): string;
