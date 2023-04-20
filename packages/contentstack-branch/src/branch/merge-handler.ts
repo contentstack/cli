@@ -48,23 +48,16 @@ export default class MergeHandler {
 
   async start() {
     await this.collectMergeSettings();
-    await this.displayMergeSummary();
-    if (!this.executeOption) {
-      await this.handlePromptInput(await selectMergeExecution(), 'merge-execution');
-    }
 
     // Merge final process
     const mergePayload = prepareMergeRequestPayload(this.mergeSettings);
     if (this.executeOption === 'execute') {
       await this.executeMerge(mergePayload);
-      // TBD implement the export queue strategy
     } else if (this.executeOption === 'export') {
       await this.exportSummary(mergePayload);
-      // TBD success message
     } else {
       await this.exportSummary(mergePayload);
       await this.executeMerge(mergePayload);
-      // TBD success message
     }
   }
 
@@ -77,7 +70,15 @@ export default class MergeHandler {
       this.strategy !== 'custom_preferences' &&
       this.strategy !== 'overwrite_with_compare'
     ) {
-      await this.handlePromptInput(await selectMergeStrategySubOptions(), 'merge-sub-options');
+      const strategyResponse = await selectMergeStrategySubOptions();
+      if (strategyResponse === 'previous') {
+        this.strategy = null;
+        return await this.collectMergeSettings();
+      } else if (strategyResponse === 'restart') {
+        return await this.restartMergeProcess();
+      } else {
+        this.strategySubOption = strategyResponse;
+      }
     }
     if (this.strategy === 'custom_preferences') {
       this.mergeSettings.itemMergeStrategies = [];
@@ -113,6 +114,22 @@ export default class MergeHandler {
     } else if (this.strategy === 'overwrite_with_compare') {
       this.mergeSettings.strategy = 'overwrite_with_compare';
     }
+
+    await this.displayMergeSummary();
+
+    if (!this.executeOption) {
+      const executionResponse = await selectMergeExecution();
+      if (executionResponse === 'previous') {
+        if (this.strategy !== 'custom_preferences' && this.strategy !== 'overwrite_with_compare') {
+          this.strategySubOption = null;
+          return await this.collectMergeSettings();
+        }
+      } else if (executionResponse === 'restart') {
+        return await this.restartMergeProcess();
+      } else {
+        this.strategySubOption = executionResponse;
+      }
+    }
   }
 
   displayMergeSummary() {
@@ -131,7 +148,12 @@ export default class MergeHandler {
   filterBranchCompareData(module, moduleBranchCompareData) {
     const { strategy, mergeContent } = this.mergeSettings;
     switch (strategy) {
-      case 'merge_prefer_base' || 'merge_prefer_compare':
+      case 'merge_prefer_base':
+        mergeContent[module].added = moduleBranchCompareData.added;
+        mergeContent[module].modified = moduleBranchCompareData.modified;
+        mergeContent[module].deleted = moduleBranchCompareData.deleted;
+        break;
+      case 'merge_prefer_compare':
         mergeContent[module].added = moduleBranchCompareData.added;
         mergeContent[module].modified = moduleBranchCompareData.modified;
         mergeContent[module].deleted = moduleBranchCompareData.deleted;
@@ -144,7 +166,10 @@ export default class MergeHandler {
       case 'merge_new_only':
         mergeContent[module].added = moduleBranchCompareData.added;
         break;
-      case 'merge_modified_only_prefer_base' || 'merge_modified_only_prefer_compare':
+      case 'merge_modified_only_prefer_base':
+        mergeContent[module].modified = moduleBranchCompareData.modified;
+        break;
+      case 'merge_modified_only_prefer_compare':
         mergeContent[module].modified = moduleBranchCompareData.modified;
         break;
       case 'merge_modified_only_prefer_compare':
