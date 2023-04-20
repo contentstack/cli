@@ -182,9 +182,9 @@ export default class MergeHandler {
       cliux.loader('Merging the changes');
       const mergeResponse = await executeMerge(this.stackAPIKey, mergePayload);
       cliux.loader('');
-      cliux.success(`Merged the changes successfully, merge uid: ${mergeResponse.uid}`);
+      cliux.success(`Merged the changes successfully. Merge UID: ${mergeResponse.uid}`);
     } catch (error) {
-      cliux.error('Failed to merge the changes', error.message);
+      cliux.error('Failed to merge the changes!', error.message);
     }
   }
 
