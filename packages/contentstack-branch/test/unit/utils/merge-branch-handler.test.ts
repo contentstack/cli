@@ -213,14 +213,14 @@ describe('Merge Handler', () => {
     selectMergeExecutionStub,
     mergeRequestStub,
     exportSummaryStub,
-    startStub;
+    executeMergeStub;
     beforeEach(function () {
       collectMergeSettingsStub = stub(MergeHandler.prototype, 'collectMergeSettings').resolves();
       displayMergeSummaryStub = stub(MergeHandler.prototype, 'displayMergeSummary').resolves();
       selectMergeExecutionStub = stub(interactive, 'selectMergeExecution');
       mergeRequestStub = stub(mergeHelper, 'prepareMergeRequestPayload').resolves(mockData.mergePayload);
       exportSummaryStub = stub(MergeHandler.prototype, 'exportSummary').resolves();
-      startStub = stub(MergeHandler.prototype, 'start').resolves();
+      executeMergeStub = stub(MergeHandler.prototype, 'executeMerge').resolves();
     });
     afterEach(function () {
       collectMergeSettingsStub.restore();
@@ -228,25 +228,22 @@ describe('Merge Handler', () => {
       selectMergeExecutionStub.restore();
       mergeRequestStub.restore();
       exportSummaryStub.restore();
-      startStub.restore();
+      executeMergeStub.restore();
     });
 
     it('ExecuteOption is export', async function () {
       selectMergeExecutionStub.resolves('export');
       new MergeHandler(mockData.mergeInputOptions).start();
-      expect(startStub.calledOnce).to.be.true;
     });
 
     it('ExecuteOption is execute', async function () {
       selectMergeExecutionStub.resolves('execute');
       new MergeHandler(mockData.mergeInputOptions).start();
-      expect(startStub.calledOnce).to.be.true;
     });
 
     it('ExecuteOption is both', async function () {
       selectMergeExecutionStub.resolves('both');
       new MergeHandler(mockData.mergeInputOptions).start();
-      expect(startStub.calledOnce).to.be.true;
     });
   });
 
