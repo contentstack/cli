@@ -484,7 +484,7 @@ USAGE
 FLAGS
   -k, --stack-api-key=<value>  Stack API key
   -s, --source=<value>         Source branch from which new branch to be created
-  -u, --uid=<value>            Branch Uid to be created
+  -u, --uid=<value>            Branch UID to be created
 
 DESCRIPTION
   Create a new branch
@@ -509,10 +509,9 @@ USAGE
   $ csdx cm:branches:delete [--uid <value>] [--stack-api-key <value>]
 
 FLAGS
-  -f, --force
   -k, --stack-api-key=<value>  Stack API key
-  -u, --uid=<value>            UID of the branch to be deleted
-  -y, --confirm                Are you sure you want to delete
+  -u, --uid=<value>            Branch UID to be deleted
+  -y, --yes                    Force the deletion of the branch by skipping the confirmation
 
 DESCRIPTION
   Delete a branch
@@ -523,6 +522,8 @@ EXAMPLES
   $ csdx cm:branches:delete -u main -k bltxxxxxxxx
 
   $ csdx cm:branches:delete --uid main --stack-api-key bltxxxxxxxx
+
+  $ csdx cm:branches:delete --uid main --stack-api-key bltxxxxxxxx --yes
 ```
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/delete.ts)_
@@ -538,7 +539,7 @@ USAGE
 FLAGS
   -b, --base-branch=<value>     Base branch
   -c, --compare-branch=<value>  Compare branch
-  -k, --stack-api-key=<value>   Provide stack api key to show diff between branches
+  -k, --stack-api-key=<value>   Provide Stack API key to show difference between branches
   -m, --module=<option>         Module
                                 <options: content_types|global_fields|both>
   --format=<option>             [default: compactText] [Optional] Type of flags to show branches differences
@@ -585,7 +586,7 @@ USAGE
     [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]
 
 FLAGS
-  -k, --stack-api-key=<value>    Provide stack api key to show diff between branches
+  -k, --stack-api-key=<value>    Provide Stack API key to show difference between branches
   --base-branch=<value>          Base branch
   --comment=<value>              Merge comment
   --compare-branch=<value>       Compare branch name
