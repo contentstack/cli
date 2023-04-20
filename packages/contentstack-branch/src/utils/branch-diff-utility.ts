@@ -7,7 +7,7 @@ import unionWith from 'lodash/unionWith';
 import find from 'lodash/find';
 import { updatedDiff } from 'deep-object-diff';
 import { flatten } from 'flat';
-import { cliux, messageHandler, managementSDKClient } from '@contentstack/cli-utilities';
+import { cliux, messageHandler, managementSDKClient, configHandler, HttpClient } from '@contentstack/cli-utilities';
 import {
   BranchOptions,
   BranchDiffRes,
@@ -63,33 +63,82 @@ async function fetchBranchesDiff(
  * @param limit
  * @returns  {*} Promise<any>
  */
+async function apiRequestHandler(payload: BranchDiffPayload, skip?: number, limit?: number): Promise<any> {
+  const authToken = configHandler.get('authtoken');
+  const headers = {
+    authToken: authToken,
+    api_key: payload.apiKey,
+    'Content-Type': 'application/json',
+  };
+
+  const params = {
+    base_branch: payload.baseBranch,
+    compare_branch: payload.compareBranch,
+  };
+  if (skip >= 0) params['skip'] = skip;
+  if (limit >= 0) params['limit'] = limit;
+
+  const result = await new HttpClient()
+    .headers(headers)
+    .queryParams(params)
+    .get(payload.url)
+    .then(({ data, status }) => {
+      if ([200, 201, 202].includes(status)) return data;
+      else {
+        let errorMsg: string;
+        if (status === 500 && data?.message) errorMsg = data.message;
+        else if (data.error_message) errorMsg = data.error_message;
+        else errorMsg = messageHandler.parse('CLI_BRANCH_API_FAILED');
+        cliux.loaderV2(' ', payload.spinner);
+        cliux.print(`error: ${errorMsg}`, { color: 'red' });
+        process.exit(1);
+      }
+    })
+    .catch((err) => {
+      cliux.loader(' ');
+      cliux.print(`error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
+      process.exit(1);
+    });
+  return result;
+}
+
+/**
+ *request handler
+ * @async
+ * @method
+ * @param payload
+ * @param skip
+ * @param limit
+ * @returns  {*} Promise<any>
+ */
 async function requestHandler(payload: BranchDiffPayload, skip?: number, limit?: number): Promise<any> {
   const { host } = payload;
-  //const host = 'dev16-branches.csnonprod.com'
   const managementAPIClient = await managementSDKClient({ host });
-  //console.log('Before updating host:-', managementAPIClient.axiosInstance.defaults.baseURL);
-  //managementAPIClient.axiosInstance.defaults.baseURL = 'https://dev16-branches.csnonprod.com:443/api';
-  // console.log('after updating host:-', managementAPIClient.axiosInstance.defaults.baseURL);
-  const branchQuery = await managementAPIClient
+  const branchQuery = managementAPIClient
     .stack({ api_key: payload.apiKey })
     .branch(payload.baseBranch)
     .compare(payload.compareBranch);
+  //console.log("branches:-",branchQuery)
   
   const queryParams = {};
   if (skip >= 0) queryParams['skip'] = skip;
   if (limit >= 0) queryParams['limit'] = limit;
   if (payload?.uid) queryParams['uid'] = payload.uid;
   const module = payload.module || 'all';
+  console.log("module:-",payload)
   let result;
 
   switch (module) {
-    case 'content_types':
+    case 'content_types' || 'content_type':
       result = await branchQuery
         .contentTypes(queryParams)
         .then((data) => data)
-        .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner));
+        .catch((err) => {
+          console.log("err:-",err)
+          handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner)
+        });
       break;
-    case 'global_fields':
+    case 'global_fields' || 'global_field':
       result = await branchQuery
         .globalFields(queryParams)
         .then((data) => data)
@@ -99,12 +148,18 @@ async function requestHandler(payload: BranchDiffPayload, skip?: number, limit?:
       result = await branchQuery
         .all(queryParams)
         .then((data) => data)
-        .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner));
+        .catch((err) => {
+          console.log("error:-",err);
+          handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner)
+        });
       break;
+      default:
+        handleErrorMsg({ errorMessage: 'Invalid module!' }, payload.spinner);
   }
+  return result;
 }
 
-function handleErrorMsg(err: { errorCode: number; errorMessage: string }, spinner) {
+function handleErrorMsg(err: { errorCode?: number; errorMessage: string }, spinner) {
   if (err.errorMessage) {
     cliux.loaderV2('', spinner);
     cliux.print(`error: ${err.errorMessage}`, { color: 'red' });
@@ -408,8 +463,12 @@ function filterBranchDiffDataByModule(branchDiffData: any[]) {
   };
 
   forEach(branchDiffData, (item) => {
-    if (!moduleRes[item.type]) moduleRes[item.type] = [item];
-    else moduleRes[item.type].push(item);
+    let type:string;
+    if(item.type === 'content_type') type = 'content_types';
+    else if(item.type === 'global_field') type = 'global_fields';
+
+    if (!moduleRes[type]) moduleRes[type] = [item];
+    else moduleRes[type].push(item);
   });
   return moduleRes;
 }
