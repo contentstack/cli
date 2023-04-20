@@ -29,6 +29,16 @@ For switching to AZURE-NA region update the hosts at config/default.js
 }
 ```
 
+For switching to AZURE-EU region update the hosts at config/default.js
+
+```js
+{
+  host:'https://azure-eu-api.contentstack.com/v3',
+  cdn: 'https://azure-eu-cdn.contentstack.com/v3'
+ ...
+}
+```
+
 # Usage
 
 <!-- usage -->
