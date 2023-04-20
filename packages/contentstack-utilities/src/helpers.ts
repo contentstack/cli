@@ -1,8 +1,2 @@
-import configHandler from "./config-handler";
-export function isAuthenticated() {
-    if (configHandler.get('authtoken')) {
-        return true;
-    } else {
-        return false;
-    }
-}
+import authHandler from './auth-handler';
+export const isAuthenticated = () => authHandler.isAuthenticated();
