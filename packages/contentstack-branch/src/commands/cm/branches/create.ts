@@ -19,7 +19,7 @@ export default class BranchCreateCommand extends Command {
   ]; // Note: Add and modify the usage
 
   static flags = {
-    uid: flags.string({ char: 'u', description: 'Branch Uid to be created' }),
+    uid: flags.string({ char: 'u', description: 'Branch UID to be created' }),
     source: flags.string({ char: 's', description: 'Source branch from which new branch to be created' }),
     'stack-api-key': flags.string({ char: 'k', description: 'Stack API key' }),
   };
