@@ -92,16 +92,17 @@ export const displayMergeSummary = (options) => {
   cliux.print(' ');
 };
 
-export const executeMerge = async (apiKey, mergePayload): Promise<any> => {
+export const executeMerge = async (apiKey, mergePayload, host): Promise<any> => {
   const mergeResponse = await apiPostRequest({
     apiKey: apiKey,
     url: config.mergeUrl,
     params: mergePayload,
+    //host
   });
-
+console.log("host:-",host)
   if (mergeResponse.merge_details?.status === 'in_progress') {
     // TBD call the queue with the id
-    return await fetchMergeStatus({ apiKey, uid: mergeResponse.uid });
+    return await fetchMergeStatus({ apiKey, uid: mergeResponse.uid, host });
   } else if (mergeResponse.merge_details?.status === 'complete') {
     // return the merge id success
     return mergeResponse;
@@ -113,7 +114,8 @@ const fetchMergeStatus = async (mergePayload): Promise<any> => {
     const mergeStatusResponse = await apiGetRequest({
       apiKey: mergePayload.apiKey,
       url: `${config.mergeQueueUrl}/${mergePayload.uid}`,
-      params: {},
+      params: mergePayload.uid,
+      //host: mergePayload.host
     });
 
     if (mergeStatusResponse?.queue?.length >= 1) {

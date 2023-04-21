@@ -91,6 +91,7 @@ export default class BranchMergeCommand extends Command {
         format: branchMergeFlags.format,
         exportSummaryPath: branchMergeFlags['export-summary-path'],
         useMergeSummary: branchMergeFlags['use-merge-summary'],
+        host: this.cmaHost
       }).start();
     } catch (error) {
       console.log('Error in Merge operations', error);
