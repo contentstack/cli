@@ -37,7 +37,7 @@ async function fetchBranchesDiff(
   skip = config.skip,
   limit = config.limit,
 ): Promise<any> {
-  const branchDiffData = await requestHandler(payload, skip, limit);
+  const branchDiffData = await compareSDK(payload, skip, limit);
   const diffData = branchDiffData?.diff;
   const nextUrl = branchDiffData?.next_url || '';
 
@@ -111,22 +111,20 @@ async function apiRequestHandler(payload: BranchDiffPayload, skip?: number, limi
  * @param limit
  * @returns  {*} Promise<any>
  */
-async function requestHandler(payload: BranchDiffPayload, skip?: number, limit?: number): Promise<any> {
+async function compareSDK(payload: BranchDiffPayload, skip?: number, limit?: number): Promise<any> {
   const { host } = payload;
   const managementAPIClient = await managementSDKClient({ host });
   const branchQuery = managementAPIClient
     .stack({ api_key: payload.apiKey })
     .branch(payload.baseBranch)
     .compare(payload.compareBranch);
-  //console.log("branches:-",branchQuery)
-  
+
   const queryParams = {};
   if (skip >= 0) queryParams['skip'] = skip;
   if (limit >= 0) queryParams['limit'] = limit;
   if (payload?.uid) queryParams['uid'] = payload.uid;
   const module = payload.module || 'all';
-  console.log("module:-",payload)
-  let result;
+  let result: any;
 
   switch (module) {
     case 'content_types' || 'content_type':
@@ -134,9 +132,9 @@ async function requestHandler(payload: BranchDiffPayload, skip?: number, limit?:
         .contentTypes(queryParams)
         .then((data) => data)
         .catch((err) => {
-          console.log("err:-",err)
-          handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner)
-        });
+          console.log(err)
+        handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner)
+  });
       break;
     case 'global_fields' || 'global_field':
       result = await branchQuery
@@ -148,18 +146,16 @@ async function requestHandler(payload: BranchDiffPayload, skip?: number, limit?:
       result = await branchQuery
         .all(queryParams)
         .then((data) => data)
-        .catch((err) => {
-          console.log("error:-",err);
-          handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner)
-        });
+        .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner));
       break;
-      default:
-        handleErrorMsg({ errorMessage: 'Invalid module!' }, payload.spinner);
+    default:
+      handleErrorMsg({ errorMessage: 'Invalid module!' }, payload.spinner);
   }
   return result;
 }
 
 function handleErrorMsg(err: { errorCode?: number; errorMessage: string }, spinner) {
+ //console.log(err) 
   if (err.errorMessage) {
     cliux.loaderV2('', spinner);
     cliux.print(`error: ${err.errorMessage}`, { color: 'red' });
@@ -279,7 +275,7 @@ async function parseVerbose(branchesDiffData: any[], payload: BranchDiffPayload)
   for (let i = 0; i < modified?.length; i++) {
     const diff: BranchDiffRes = modified[i];
     payload.uid = diff?.uid;
-    const branchDiff = await requestHandler(payload);
+    const branchDiff = await compareSDK(payload);
     if (branchDiff) {
       const { listOfModifiedFields, listOfAddedFields, listOfDeletedFields } = await prepareBranchVerboseRes(
         branchDiff,
@@ -463,9 +459,9 @@ function filterBranchDiffDataByModule(branchDiffData: any[]) {
   };
 
   forEach(branchDiffData, (item) => {
-    let type:string;
-    if(item.type === 'content_type') type = 'content_types';
-    else if(item.type === 'global_field') type = 'global_fields';
+    let type: string;
+    if (item.type === 'content_type') type = 'content_types';
+    else if (item.type === 'global_field') type = 'global_fields';
 
     if (!moduleRes[type]) moduleRes[type] = [item];
     else moduleRes[type].push(item);
@@ -482,6 +478,6 @@ export {
   parseVerbose,
   printVerboseTextView,
   filterBranchDiffDataByModule,
-  requestHandler,
+  compareSDK,
   prepareBranchVerboseRes,
 };
