@@ -67,7 +67,6 @@ class AuthHandler {
             }
           })
           .catch((error: any) => {
-            console.log(error)
             logger.error('Failed to login', error);
             reject(new CLIError({ message: error.errorMessage }));
           });
