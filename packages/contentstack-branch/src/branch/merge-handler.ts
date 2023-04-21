@@ -13,18 +13,21 @@ import {
   executeMerge,
   askConfirmationForMigrationScripts,
   generateMergeScripts,
+  selectCustomPreferences,
 } from '../utils';
+import forEach from 'lodash/forEach';
 
 export default class MergeHandler {
   private strategy: string;
-  private strategySubOption: string;
+  private strategySubOption?: string;
   private branchCompareData: any;
   private mergeSettings: any;
-  private executeOption: string;
+  private executeOption?: string;
   private displayFormat: string;
   private exportSummaryPath: string;
   private useMergeSummary: string;
   private stackAPIKey: string;
+  private userInputs: MergeInputOptions;
 
   constructor(options: MergeInputOptions) {
     this.stackAPIKey = options.stackAPIKey;
@@ -35,6 +38,7 @@ export default class MergeHandler {
     this.displayFormat = options.format;
     this.exportSummaryPath = options.exportSummaryPath;
     this.useMergeSummary = options.useMergeSummary;
+    this.userInputs = options;
     this.mergeSettings = {
       baseBranch: options.baseBranch, // UID of the base branch, where the changes will be merged into
       compareBranch: options.compareBranch, // UID of the branch to merge
@@ -47,23 +51,16 @@ export default class MergeHandler {
 
   async start() {
     await this.collectMergeSettings();
-    await this.displayMergeSummary();
-    if (!this.executeOption) {
-      this.executeOption = await selectMergeExecution();
-    }
 
     // Merge final process
     const mergePayload = prepareMergeRequestPayload(this.mergeSettings);
     if (this.executeOption === 'execute') {
       await this.executeMerge(mergePayload);
-      // TBD implement the export queue strategy
     } else if (this.executeOption === 'export') {
       await this.exportSummary(mergePayload);
-      // TBD success message
     } else {
       await this.exportSummary(mergePayload);
       await this.executeMerge(mergePayload);
-      // TBD success message
     }
   }
 
@@ -71,12 +68,36 @@ export default class MergeHandler {
     if (!this.strategy) {
       this.strategy = await selectMergeStrategy();
     }
-    if (!this.strategySubOption && this.strategy !== 'custom_preferences') {
-      this.strategySubOption = await selectMergeStrategySubOptions();
+    if (
+      !this.strategySubOption &&
+      this.strategy !== 'custom_preferences' &&
+      this.strategy !== 'overwrite_with_compare'
+    ) {
+      const strategyResponse = await selectMergeStrategySubOptions();
+      if (strategyResponse === 'previous') {
+        this.strategy = null;
+        return await this.collectMergeSettings();
+      } else if (strategyResponse === 'restart') {
+        return await this.restartMergeProcess();
+      } else {
+        this.strategySubOption = strategyResponse;
+      }
     }
     if (this.strategy === 'custom_preferences') {
       this.mergeSettings.itemMergeStrategies = [];
-      // TBD implement the table for choosing the custom merge preferences
+      for (let module in this.branchCompareData) {
+        this.mergeSettings.mergeContent[module] = {
+          added: [],
+          modified: [],
+          deleted: [],
+        };
+        const selectedItems = await selectCustomPreferences(module, this.branchCompareData[module]);
+        forEach(selectedItems, (item) => {
+          this.mergeSettings.mergeContent[module][item.status].push(item.value);
+          this.mergeSettings.itemMergeStrategies.push(item.value);
+        });
+        this.mergeSettings.strategy = 'ignore';
+      }
     } else if (this.strategy === 'merge_prefer_base') {
       if (this.strategySubOption === 'new') {
         this.mergeSettings.strategy = 'merge_new_only';
@@ -96,12 +117,30 @@ export default class MergeHandler {
     } else if (this.strategy === 'overwrite_with_compare') {
       this.mergeSettings.strategy = 'overwrite_with_compare';
     }
+
+    await this.displayMergeSummary();
+
+    if (!this.executeOption) {
+      const executionResponse = await selectMergeExecution();
+      if (executionResponse === 'previous') {
+        if (this.strategy !== 'custom_preferences' && this.strategy !== 'overwrite_with_compare') {
+          this.strategySubOption = null;
+          return await this.collectMergeSettings();
+        }
+      } else if (executionResponse === 'restart') {
+        return await this.restartMergeProcess();
+      } else {
+        this.executeOption = executionResponse;
+      }
+    }
   }
 
   displayMergeSummary() {
-    for (let module in this.branchCompareData) {
-      this.mergeSettings.mergeContent[module] = {};
-      this.filterBranchCompareData(module, this.branchCompareData[module]);
+    if (this.mergeSettings.strategy !== 'ignore') {
+      for (let module in this.branchCompareData) {
+        this.mergeSettings.mergeContent[module] = {};
+        this.filterBranchCompareData(module, this.branchCompareData[module]);
+      }
     }
     displayMergeSummary({
       format: this.displayFormat,
@@ -112,7 +151,17 @@ export default class MergeHandler {
   filterBranchCompareData(module, moduleBranchCompareData) {
     const { strategy, mergeContent } = this.mergeSettings;
     switch (strategy) {
-      case 'merge_prefer_base' || 'merge_prefer_compare':
+      case 'merge_prefer_base':
+        mergeContent[module].added = moduleBranchCompareData.added;
+        mergeContent[module].modified = moduleBranchCompareData.modified;
+        mergeContent[module].deleted = moduleBranchCompareData.deleted;
+        break;
+      case 'merge_prefer_compare':
+        mergeContent[module].added = moduleBranchCompareData.added;
+        mergeContent[module].modified = moduleBranchCompareData.modified;
+        mergeContent[module].deleted = moduleBranchCompareData.deleted;
+        break;
+      case 'merge_prefer_compare':
         mergeContent[module].added = moduleBranchCompareData.added;
         mergeContent[module].modified = moduleBranchCompareData.modified;
         mergeContent[module].deleted = moduleBranchCompareData.deleted;
@@ -120,7 +169,13 @@ export default class MergeHandler {
       case 'merge_new_only':
         mergeContent[module].added = moduleBranchCompareData.added;
         break;
-      case 'merge_modified_only_prefer_base' || 'merge_modified_only_prefer_compare':
+      case 'merge_modified_only_prefer_base':
+        mergeContent[module].modified = moduleBranchCompareData.modified;
+        break;
+      case 'merge_modified_only_prefer_compare':
+        mergeContent[module].modified = moduleBranchCompareData.modified;
+        break;
+      case 'merge_modified_only_prefer_compare':
         mergeContent[module].modified = moduleBranchCompareData.modified;
         break;
       case 'overwrite_with_compare':
@@ -129,7 +184,8 @@ export default class MergeHandler {
         mergeContent[module].deleted = moduleBranchCompareData.deleted;
         break;
       default:
-        console.log('Invalid strategy', strategy);
+        cliux.error(`error: Invalid strategy ${strategy}`);
+        process.exit(1);
     }
   }
 
@@ -145,6 +201,7 @@ export default class MergeHandler {
   }
 
   async executeMerge(mergePayload) {
+    let spinner;
     try {
       if (!this.mergeSettings.mergeComment) {
         this.mergeSettings.generateMigrationScripts = await askConfirmationForMigrationScripts();
@@ -157,11 +214,36 @@ export default class MergeHandler {
       }
 
       cliux.loader('Merging the changes');
+      spinner = cliux.loaderV2('Merging the changes...');
       const mergeResponse = await executeMerge(this.stackAPIKey, mergePayload);
-      cliux.loader('');
-      cliux.success(`Merged the changes successfully, merge uid: ${mergeResponse.uid}`);
+      cliux.loaderV2('', spinner);
+      cliux.success(`Merged the changes successfully. Merge UID: ${mergeResponse.uid}`);
     } catch (error) {
-      cliux.error('Failed to merge the changes', error.message);
+      cliux.loaderV2('', spinner);
+      cliux.error('Failed to merge the changes', error.message || error);
     }
+  }
+
+  async restartMergeProcess() {
+    /**
+     * clean up the user inputs
+     * start the process
+     */
+    if (!this.userInputs.strategy) {
+      this.strategy = null;
+    }
+    if (!this.userInputs.strategySubOption) {
+      this.strategySubOption = null;
+    }
+    if (!this.userInputs.executeOption) {
+      this.executeOption = null;
+    }
+    if (!this.userInputs.executeOption) {
+      this.executeOption = null;
+    }
+    this.mergeSettings.strategy = null;
+    this.mergeSettings.itemMergeStrategies = [];
+
+    await this.start();
   }
 }
