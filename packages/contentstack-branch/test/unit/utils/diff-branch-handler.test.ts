@@ -63,7 +63,7 @@ describe('Branch Diff Utility Testcases', () => {
     branchDiffUtility.printCompactTextView(mockData.noModifiedData, 'content_types');
   });
 
-  it('parse verbose', async function () {
+  it('parse detailedText', async function () {
     const parseCompactStub = stub(branchDiffUtility, 'parseCompactText');
     parseCompactStub.withArgs(mockData.contentTypesDiff)
     const parseVerboseStub = stub(branchDiffUtility, 'parseVerbose');
@@ -75,16 +75,16 @@ describe('Branch Diff Utility Testcases', () => {
     parseVerboseStub.restore();
   });
 
-  it('prepare branch verbose response', async function () {
+  it('prepare branch detailedText response', async function () {
     const result = await branchDiffUtility.prepareBranchVerboseRes(mockData.globalFieldDetailDiff);
     expect(result).deep.be.equal(mockData.verboseRes);
   });
 
-  it('print verbose text view', async function () {
+  it('print detailedText text view', async function () {
     branchDiffUtility.printVerboseTextView(mockData.verboseContentTypeRes, 'content_types');
   });
 
-  it('print verbose text view, nothing to display', async function () {
+  it('print detailedText text view, nothing to display', async function () {
     branchDiffUtility.printVerboseTextView(mockData.noModifiedData, 'content_types');
   });
 
@@ -180,12 +180,12 @@ describe('Branch Diff handler Testcases', () => {
     printCompactTextViewStub.restore();
   });
 
-  it('display branch diff, verbose view', async function () {
+  it('display branch diff, detailedText view', async function () {
     const parseVerboseStub = stub(branchDiffUtility, 'parseVerbose');
     parseVerboseStub.withArgs(mockData.contentTypesDiff, mockData.branchDiffPayload).resolves(mockData.verboseContentTypeRes);
     const printVerboseTextViewStub = stub(branchDiffUtility, 'printVerboseTextView');
     printVerboseTextViewStub.withArgs(mockData.verboseContentTypeRes, mockData.flags.module).returns();
-    mockData.flags.format = "verbose";
+    mockData.flags.format = "detailedText";
     new BranchDiffHandler(mockData.flags).displayBranchDiffTextAndVerbose(mockData.contentTypesDiff, mockData.branchDiffPayload);
     parseVerboseStub.restore();
     printVerboseTextViewStub.restore();
