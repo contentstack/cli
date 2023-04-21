@@ -23,6 +23,7 @@ export default class MergeHandler {
   private exportSummaryPath: string;
   private useMergeSummary: string;
   private stackAPIKey: string;
+  private host: string;
 
   constructor(options: MergeInputOptions) {
     this.stackAPIKey = options.stackAPIKey;
@@ -40,6 +41,7 @@ export default class MergeHandler {
       mergeContent: {},
       noRevert: options.noRevert,
     };
+    this.host = options.host
   }
 
   async start() {
@@ -148,7 +150,7 @@ export default class MergeHandler {
         mergePayload.merge_comment = this.mergeSettings.mergeComment;
       }
       cliux.loader('Merging the changes');
-      const mergeResponse = await executeMerge(this.stackAPIKey, mergePayload);
+      const mergeResponse = await executeMerge(this.stackAPIKey, mergePayload, this.host);
       cliux.loader('');
       cliux.success(`Merged the changes successfully, merge uid: ${mergeResponse.uid}`);
     } catch (error) {
