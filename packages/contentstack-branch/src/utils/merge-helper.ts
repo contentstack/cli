@@ -136,7 +136,3 @@ const fetchMergeStatus = async (mergePayload): Promise<any> => {
     }
   });
 };
-
-const generateMigrationScripts = () => {
-  //merge summary-> content types and globalFields
-};
