@@ -59,6 +59,5 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
       },
     };
   };
-  // console.log(comparebranch);
   migration.addTask(createEntryTask());
 };
