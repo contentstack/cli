@@ -54,7 +54,7 @@ export const displayBranchStatus = async (options) => {
     apiKey: options.stackAPIKey,
     baseBranch: options.baseBranch,
     compareBranch: options.compareBranch,
-    host: options.host
+    host: options.host,
   };
 
   const branchDiffData = await branchDiff.fetchBranchesDiff(payload);
@@ -63,20 +63,22 @@ export const displayBranchStatus = async (options) => {
   let parsedResponse = {};
   for (let module in diffData) {
     const branchModuleData = diffData[module];
-    payload.module = module;
-    cliux.print(' ');
-    cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
-    const diffSummary = branchDiff.parseSummary(branchModuleData, options.baseBranch, options.compareBranch);
-    branchDiff.printSummary(diffSummary);
-    // cliux.print(`Differences in '${options.compareBranch}' compared to '${options.baseBranch}':`);
-    if (options.format === 'text') {
-      const branchTextRes = branchDiff.parseCompactText(branchModuleData);
-      branchDiff.printCompactTextView(branchTextRes);
-      parsedResponse[module] = branchTextRes;
-    } else if (options.format === 'verbose') {
-      const verboseRes = await branchDiff.parseVerbose(branchModuleData, payload);
-      branchDiff.printVerboseTextView(verboseRes);
-      parsedResponse[module] = verboseRes;
+    if (branchModuleData.length) {
+      payload.module = module;
+      cliux.print(' ');
+      cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
+      const diffSummary = branchDiff.parseSummary(branchModuleData, options.baseBranch, options.compareBranch);
+      branchDiff.printSummary(diffSummary);
+      // cliux.print(`Differences in '${options.compareBranch}' compared to '${options.baseBranch}':`);
+      if (options.format === 'text') {
+        const branchTextRes = branchDiff.parseCompactText(branchModuleData);
+        branchDiff.printCompactTextView(branchTextRes);
+        parsedResponse[module] = branchTextRes;
+      } else if (options.format === 'verbose') {
+        const verboseRes = await branchDiff.parseVerbose(branchModuleData, payload);
+        branchDiff.printVerboseTextView(verboseRes);
+        parsedResponse[module] = verboseRes;
+      }
     }
   }
   return parsedResponse;
@@ -98,9 +100,9 @@ export const executeMerge = async (apiKey, mergePayload, host): Promise<any> => 
   const mergeResponse = await executeMergeRequest({
     apiKey: apiKey,
     params: mergePayload,
-    host
-  })
-  
+    host,
+  });
+
   if (mergeResponse.merge_details?.status === 'in_progress') {
     // TBD call the queue with the id
     return await fetchMergeStatus({ apiKey, uid: mergeResponse.uid, host });
@@ -116,7 +118,7 @@ export const fetchMergeStatus = async (mergePayload): Promise<any> => {
       apiKey: mergePayload.apiKey,
       uid: mergePayload.uid,
       host: mergePayload.host,
-    })
+    });
 
     if (mergeStatusResponse?.queue?.length >= 1) {
       const mergeRequestStatusResponse = mergeStatusResponse.queue[0];
