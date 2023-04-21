@@ -125,11 +125,13 @@ export async function executeMergeRequest(payload): Promise<any> {
     merge_comment,
     no_revert,
   };
+
+  const itemMergeStrategies = default_merge_strategy === 'ignore' ? item_merge_strategies : {};
   const managementAPIClient = await managementSDKClient({ host });
   return await managementAPIClient
     .stack({ api_key: apiKey })
     .branch()
-    .merge(item_merge_strategies, mergeObj)
+    .merge(itemMergeStrategies, mergeObj)
     .then((data) => data)
     .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }));
 }
