@@ -116,7 +116,6 @@ export default class BranchDiffHandler {
       const branchTextRes = parseCompactText(branchDiffData);
       printCompactTextView(branchTextRes, payload.module);
     } else if (this.options.format === 'detailedText') {
-      console.log("heere---")
       const verboseRes = await parseVerbose(branchDiffData, payload);
       printVerboseTextView(verboseRes, payload.module);
     }
