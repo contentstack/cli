@@ -23,7 +23,7 @@ export default class RemoveBranchConfigCommand extends Command {
         function deleteConfig() {
           configHandler.delete(`baseBranch.${configRemoveFlags['stack-api-key']}`);
           cliux.success(
-            `Base branch configuration for stack-api-key: ${configRemoveFlags['stack-api-key']} has been removed successfully`,
+            `Base branch configuration for stack-api-key: ${configRemoveFlags['stack-api-key']} removed successfully`,
           );
         }
         cliux.success(`base branch : ${await configHandler.get(`baseBranch.${configRemoveFlags['stack-api-key']}`)}`);

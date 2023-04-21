@@ -234,22 +234,20 @@ function parseCompactText(branchesDiffData: any[]): BranchCompactTextRes {
  * print compact text details of two branches differences
  * @method
  * @param {BranchCompactTextRes} branchTextRes
- * @param {string} module
  */
-function printCompactTextView(branchTextRes: BranchCompactTextRes, module: string): void {
+function printCompactTextView(branchTextRes: BranchCompactTextRes): void {
   cliux.print('\n');
   if (branchTextRes.modified?.length || branchTextRes.added?.length || branchTextRes.deleted?.length) {
-    module = module.slice(0, -1);
     forEach(branchTextRes.added, (diff: BranchDiffRes) => {
-      cliux.print(chalk.green(`+ '${diff.title}' ${startCase(camelCase(module))}`));
+      cliux.print(chalk.green(`+ '${diff.title}' ${startCase(camelCase(diff.type))}`));
     });
 
     forEach(branchTextRes.modified, (diff: BranchDiffRes) => {
-      cliux.print(chalk.blue(`± '${diff.title}' ${startCase(camelCase(module))}`));
+      cliux.print(chalk.blue(`± '${diff.title}' ${startCase(camelCase(diff.type))}`));
     });
 
     forEach(branchTextRes.deleted, (diff: BranchDiffRes) => {
-      cliux.print(chalk.red(`- '${diff.title}' ${startCase(camelCase(module))}`));
+      cliux.print(chalk.red(`- '${diff.title}' ${startCase(camelCase(diff.type))}`));
     });
   }
 }
@@ -397,23 +395,21 @@ function getFieldType(compareBranchFieldExists: any, baseBranchFieldExists: any,
 /**
  * print detail text view of two branches differences - deleted, added and modified fields
  * @param {BranchDiffVerboseRes} branchTextRes
- * @param {string} module
  */
-function printVerboseTextView(branchTextRes: BranchDiffVerboseRes, module: string): void {
+function printVerboseTextView(branchTextRes: BranchDiffVerboseRes): void {
   cliux.print('\n');
   if (branchTextRes.modified?.length || branchTextRes.added?.length || branchTextRes.deleted?.length) {
-    module = module.slice(0, -1);
     forEach(branchTextRes.added, (diff: BranchDiffRes) => {
-      cliux.print(chalk.green(`+ '${diff.title}' ${startCase(camelCase(module))}`));
+      cliux.print(chalk.green(`+ '${diff.title}' ${startCase(camelCase(diff.type))}`));
     });
 
     forEach(branchTextRes.modified, (diff: BranchModifiedDetails) => {
-      cliux.print(chalk.blue(`± '${diff.moduleDetails.title}' ${startCase(camelCase(module))}`));
+      cliux.print(chalk.blue(`± '${diff.moduleDetails.title}' ${startCase(camelCase(diff.moduleDetails.type))}`));
       printModifiedFields(diff.modifiedFields);
     });
 
     forEach(branchTextRes.deleted, (diff: BranchDiffRes) => {
-      cliux.print(chalk.red(`- '${diff.title}' ${startCase(camelCase(module))}`));
+      cliux.print(chalk.red(`- '${diff.title}' ${startCase(camelCase(diff.type))}`));
     });
   }
 }
@@ -453,8 +449,8 @@ function filterBranchDiffDataByModule(branchDiffData: any[]) {
   };
 
   forEach(branchDiffData, (item) => {
-    if (!moduleRes[item.type]) moduleRes[item.type] = [item];
-    else moduleRes[item.type].push(item);
+    if (item.type === 'content_type' || item.type === 'content_types') moduleRes.content_types.push(item);
+    else if (item.type === 'global_field' || item.type === 'global_fields') moduleRes.global_fields.push(item);
   });
   return moduleRes;
 }

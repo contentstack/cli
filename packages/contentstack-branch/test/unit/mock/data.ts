@@ -4,7 +4,31 @@ const mockData = {
     compareBranch: 'dev',
     stackAPIKey: 'sfgfdsg223',
     module: 'content_types',
-    format: 'text',
+    format: 'compactText',
+  },
+  withoutBaseFlag: {
+    compareBranch: 'dev',
+    stackAPIKey: 'sfgfdsg223',
+    module: 'content_types',
+    format: 'compactText',
+  },
+  withoutCompareFlag: {
+    baseBranch: 'main',
+    stackAPIKey: 'sfgfdsg223',
+    module: 'content_types',
+    format: 'compactText',
+  },
+  withoutAPIKeyFlag: {
+    baseBranch: 'main',
+    compareBranch: 'dev',
+    module: 'content_types',
+    format: 'compactText',
+  },
+  withoutModuleFlag: {
+    baseBranch: 'main',
+    compareBranch: 'dev',
+    stackAPIKey: 'sfgfdsg223',
+    format: 'compactText',
   },
   data: {
     base: 'main',
@@ -22,13 +46,13 @@ const mockData = {
       {
         uid: 'content_type_uid_1',
         title: 'Content Type 1 Title',
-        type: 'content_type',
+        type: 'content_types',
         status: 'compare_only',
       },
       {
         uid: 'content_type_uid_2',
         title: 'Content Type 2 Title',
-        type: 'content_type',
+        type: 'content_types',
         status: 'modified',
       },
     ],
@@ -37,13 +61,13 @@ const mockData = {
     {
       uid: 'content_type_uid_1',
       title: 'Content Type 1 Title',
-      type: 'content_type',
+      type: 'content_types',
       status: 'compare_only',
     },
     {
       uid: 'content_type_uid_2',
       title: 'Content Type 2 Title',
-      type: 'content_type',
+      type: 'content_types',
       status: 'modified',
     },
   ],
@@ -52,7 +76,7 @@ const mockData = {
       {
         uid: 'content_type_uid_2',
         title: 'Content Type 2 Title',
-        type: 'content_type',
+        type: 'content_types',
         status: 'modified',
       },
     ],
@@ -61,7 +85,7 @@ const mockData = {
       {
         uid: 'content_type_uid_1',
         title: 'Content Type 1 Title',
-        type: 'content_type',
+        type: 'content_types',
         status: 'compare_only',
       },
     ],
@@ -70,13 +94,13 @@ const mockData = {
     {
       uid: 'global_field_uid_1',
       title: 'Global Field 1 Title',
-      type: 'global_field',
+      type: 'global_fields',
       status: 'compare_only',
     },
     {
       uid: 'global_field_uid_2',
       title: 'Global Field 2 Title',
-      type: 'global_field',
+      type: 'global_fields',
       status: 'modified',
     },
   ],
@@ -92,7 +116,7 @@ const mockData = {
       {
         uid: 'content_type1',
         title: 'Content Type1',
-        type: 'content_type',
+        type: 'content_types',
         status: 'modified',
       },
     ],
@@ -100,7 +124,7 @@ const mockData = {
       {
         uid: 'content_type2',
         title: 'Content Type 2',
-        type: 'content_type',
+        type: 'content_types',
         status: 'compare_only',
       },
     ],
@@ -108,7 +132,7 @@ const mockData = {
       {
         uid: 'content_type3',
         title: 'Content Type 3',
-        type: 'content_type',
+        type: 'content_types',
         status: 'base_only',
       },
     ],
@@ -125,7 +149,7 @@ const mockData = {
         moduleDetails: {
           uid: 'content_type_uid_2',
           title: 'Content Type 2 Title',
-          type: 'content_type',
+          type: 'content_types',
           status: 'modified',
         },
         modifiedFields: {
@@ -160,7 +184,7 @@ const mockData = {
       {
         uid: 'content_type_uid_1',
         title: 'Content Type 1 Title',
-        type: 'content_type',
+        type: 'content_types',
         status: 'compare_only',
       },
     ],
@@ -168,7 +192,7 @@ const mockData = {
       {
         uid: 'content_type_uid_3',
         title: 'Content Type 3 Title',
-        type: 'content_type',
+        type: 'content_types',
         status: 'base_only',
       },
     ],
@@ -179,34 +203,91 @@ const mockData = {
     deleted: [],
   },
   contentTypesDiffData: {
-    content_type: [
+    content_types: [
       {
         uid: 'content_type_uid_1',
         title: 'Content Type 1 Title',
-        type: 'content_type',
+        type: 'content_types',
         status: 'compare_only',
       },
       {
         uid: 'content_type_uid_2',
         title: 'Content Type 2 Title',
-        type: 'content_type',
+        type: 'content_types',
         status: 'modified',
       },
     ],
+    global_fields:[]
   },
   globalFieldsDiffData: {
-    global_fields: [],
-    content_types: [
+    content_types: [],
+    global_fields: [
       {
         uid: 'global_field_uid_1',
         title: 'Global Field 1 Title',
-        type: 'global_field',
+        type: 'global_fields',
         status: 'compare_only',
       },
       {
         uid: 'global_field_uid_2',
         title: 'Global Field 2 Title',
-        type: 'global_field',
+        type: 'global_fields',
+        status: 'modified',
+      },
+    ],
+  },
+  allDiffData: [
+    {
+      uid: 'global_field_uid_1',
+      title: 'Global Field 1 Title',
+      type: 'global_fields',
+      status: 'compare_only',
+    },
+    {
+      uid: 'global_field_uid_2',
+      title: 'Global Field 2 Title',
+      type: 'global_fields',
+      status: 'modified',
+    },
+    {
+      uid: 'content_type_uid_1',
+      title: 'Content Type 1 Title',
+      type: 'content_types',
+      status: 'compare_only',
+    },
+    {
+      uid: 'content_type_uid_2',
+      title: 'Content Type 2 Title',
+      type: 'content_types',
+      status: 'modified',
+    },
+  ],
+  moduleWiseData: {
+    content_types: [
+      {
+        uid: 'content_type_uid_1',
+        title: 'Content Type 1 Title',
+        type: 'content_types',
+        status: 'compare_only',
+      },
+      {
+        uid: 'content_type_uid_2',
+        title: 'Content Type 2 Title',
+        type: 'content_types',
+        status: 'modified',
+      },
+    ],
+    global_fields: [
+      {
+        uid: 'global_field_uid_1',
+        title: 'Global Field 1 Title',
+        type: 'global_fields',
+        status: 'compare_only',
+      },
+      {
+        uid: 'global_field_uid_2',
+        title: 'Global Field 2 Title',
+        type: 'global_fields',
         status: 'modified',
       },
     ],
@@ -227,7 +308,7 @@ const mockData = {
             path: 'title',
           },
           {
-            data_type: 'text',
+            data_type: 'compactText',
             display_name: 'Single Line Textbox33',
             uid: 'single_line_textbox33',
             field_metadata: {
@@ -288,6 +369,137 @@ const mockData = {
         fieldType: 'Metadata Field',
       },
     ],
+  },
+  mergeSettings: {
+    baseBranch: 'main', // UID of the base branch, where the changes will be merged into
+    compareBranch: 'dev', // UID of the branch to merge
+    mergeComment: 'changes',
+    mergeContent: {},
+    noRevert: false,
+  },
+  mergePayload: {
+    base_branch: 'main', // UID of the base branch, where the changes will be merged into
+    compare_branch: 'dev', // UID of the branch to merge
+    default_merge_strategy: '',
+    item_merge_strategies: '',
+    merge_comment: 'changes',
+    no_revert: false,
+    uid: 'abc'
+  },
+  mergeCompleteStatusRes: {
+    merge_details: { status: 'complete', uid: 'abc' },
+  },
+  mergeProgressStatusRes: {
+    merge_details: { status: 'in_progress', uid: 'abc' },
+  },
+  mergeFailedStatusRes: {
+    merge_details: { status: 'failed', uid: 'abc' },
+  },
+  mergeNoStatusRes: {
+    merge_details: { status: '', uid: 'abc' },
+  },
+  mergeInputOptions:{
+    compareBranch: 'dev',
+    strategy: 'merge_prefer_base',
+    strategySubOption: 'merge_new_only',
+    branchCompareData: '',
+    stackAPIKey: 'abcdscdxx',
+    baseBranch: 'main'
+  },
+  mergeInputOptionsWithoutStartegy:{
+    compareBranch: 'dev',
+    strategy:'',
+    strategySubOption: '',
+    branchCompareData: {},
+    stackAPIKey: 'abcdscdxx',
+    baseBranch: 'main'
+  },
+  mergeData: {
+    flags: {
+      'base-branch': 'main',
+      'compare-branch': 'dev',
+      'stack-api-key': 'sfgfdsg223',
+      module: 'content_types',
+      format: 'compactText',
+    },
+    withoutBaseFlag: {
+      'compare-branch': 'dev',
+      'stack-api-key': 'sfgfdsg223',
+      module: 'content_types',
+      format: 'compactText',
+    },
+    withoutCompareFlag: {
+      'base-branch': 'main',
+      'stack-api-key': 'sfgfdsg223',
+      module: 'content_types',
+      format: 'compactText',
+    },
+    withoutAPIKeyFlag: {
+      'base-branch': 'main',
+      'compare-branch': 'dev',
+      module: 'content_types',
+      format: 'compactText',
+    },
+    withoutModuleFlag: {
+      'base-branch': 'main',
+      'compare-branch': 'dev',
+      'stack-api-key': 'sfgfdsg223',
+      format: 'compactText',
+    },
+    branchCompareData: {
+      content_types: {
+        modified: [
+          {
+            uid: 'content_type1',
+            title: 'Content Type1',
+            type: 'content_types',
+            status: 'modified',
+          },
+        ],
+        added: [
+          {
+            uid: 'content_type2',
+            title: 'Content Type 2',
+            type: 'content_types',
+            status: 'compare_only',
+          },
+        ],
+        deleted: [
+          {
+            uid: 'content_type3',
+            title: 'Content Type 3',
+            type: 'content_types',
+            status: 'base_only',
+          },
+        ],
+      },
+      global_fields: {
+        modified: [
+          {
+            uid: 'global_fields1',
+            title: 'Global Fields1',
+            type: 'global_fields',
+            status: 'modified',
+          },
+        ],
+        added: [
+          {
+            uid: 'global_fields2',
+            title: 'Global Fields 2',
+            type: 'global_fields',
+            status: 'compare_only',
+          },
+        ],
+        deleted: [
+          {
+            uid: 'global_fields3',
+            title: 'Global Fields 3',
+            type: 'global_fields',
+            status: 'base_only',
+          },
+        ],
+      },
+    },
   },
 };
 const createBranchMockData = {

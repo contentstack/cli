@@ -32,7 +32,7 @@ export default class BranchSetCommand extends Command {
       cliux.success(`base branch : ${baseBranch}`);
       cliux.success(`stack-api-key: ${apiKey}`);
       cliux.success(
-        `Base branch configuration for stack-api-key: ${apiKey} and branch: ${baseBranch} has been set successfully`,
+        `Base branch configuration for stack-api-key: ${apiKey} and branch: ${baseBranch} set successfully`,
       );
     } catch (error) {
       cliux.error('error', error);

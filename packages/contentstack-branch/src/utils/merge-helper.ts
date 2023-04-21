@@ -1,5 +1,6 @@
 import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
+import path from 'path';
 import { cliux } from '@contentstack/cli-utilities';
 import { BranchDiffPayload } from '../interfaces/index';
 import {
@@ -10,6 +11,7 @@ import {
   branchDiffUtility as branchDiff,
   apiPostRequest,
   apiGetRequest,
+  writeFile,
   executeMergeRequest,
   getMergeQueueStatus,
 } from './';
@@ -61,26 +63,22 @@ export const displayBranchStatus = async (options) => {
   let parsedResponse = {};
   for (let module in diffData) {
     const branchModuleData = diffData[module];
-    if(branchModuleData.length){
-      payload.module = module;
-      cliux.print(' ');
-      cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
-      const diffSummary = branchDiff.parseSummary(branchModuleData, options.baseBranch, options.compareBranch);
-      branchDiff.printSummary(diffSummary);
-      cliux.print(' ');
-      // cliux.print(`Differences in '${options.compareBranch}' compared to '${options.baseBranch}':`);
-      if (options.format === 'text') {
-        const branchTextRes = branchDiff.parseCompactText(branchModuleData);
-        branchDiff.printCompactTextView(branchTextRes, payload.module);
-        parsedResponse[module] = branchTextRes;
-      } else if (options.format === 'verbose') {
-        const verboseRes = await branchDiff.parseVerbose(branchModuleData, payload);
-        branchDiff.printVerboseTextView(verboseRes, payload.module);
-        parsedResponse[module] = verboseRes;
-      }
+    payload.module = module;
+    cliux.print(' ');
+    cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
+    const diffSummary = branchDiff.parseSummary(branchModuleData, options.baseBranch, options.compareBranch);
+    branchDiff.printSummary(diffSummary);
+    // cliux.print(`Differences in '${options.compareBranch}' compared to '${options.baseBranch}':`);
+    if (options.format === 'text') {
+      const branchTextRes = branchDiff.parseCompactText(branchModuleData);
+      branchDiff.printCompactTextView(branchTextRes);
+      parsedResponse[module] = branchTextRes;
+    } else if (options.format === 'verbose') {
+      const verboseRes = await branchDiff.parseVerbose(branchModuleData, payload);
+      branchDiff.printVerboseTextView(verboseRes);
+      parsedResponse[module] = verboseRes;
     }
   }
-  cliux.print(' ');
   return parsedResponse;
 };
 
@@ -89,12 +87,11 @@ export const displayMergeSummary = (options) => {
   cliux.print(`Merge Summary:`, { color: 'yellow' });
   for (let module in options.compareData) {
     if (options.format === 'text') {
-      branchDiff.printCompactTextView(options.compareData[module], module);
+      branchDiff.printCompactTextView(options.compareData[module]);
     } else if (options.format === 'verbose') {
-      branchDiff.printVerboseTextView(options.compareData[module], module);
+      branchDiff.printVerboseTextView(options.compareData[module]);
     }
   }
-  cliux.print(' ');
 };
 
 export const executeMerge = async (apiKey, mergePayload, host): Promise<any> => {
@@ -113,7 +110,7 @@ export const executeMerge = async (apiKey, mergePayload, host): Promise<any> => 
   }
 };
 
-const fetchMergeStatus = async (mergePayload): Promise<any> => {
+export const fetchMergeStatus = async (mergePayload): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     const mergeStatusResponse = await getMergeQueueStatus({
       apiKey: mergePayload.apiKey,
@@ -131,13 +128,17 @@ const fetchMergeStatus = async (mergePayload): Promise<any> => {
           await fetchMergeStatus(mergePayload).then(resolve).catch(reject);
         }, 5000);
       } else if (mergeStatus === 'failed') {
-        console.log('errors', mergeRequestStatusResponse.errors);
+        if (mergeRequestStatusResponse?.errors?.length > 0) {
+          const errorPath = path.join(process.cwd(), 'merge-error.log');
+          await writeFile(errorPath, mergeRequestStatusResponse.errors);
+          cliux.print(`\nComplete error log can be found in ${path.resolve(errorPath)}`, { color: 'grey' });
+        }
         return reject(`merge uid: ${mergePayload.uid}`);
       } else {
-        return reject(`Invalid merge status found with merge id ${mergePayload.uid}`);
+        return reject(`Invalid merge status found with merge ID ${mergePayload.uid}`);
       }
     } else {
-      return reject(`No queue found with merge id ${mergePayload.uid}`);
+      return reject(`No queue found with merge ID ${mergePayload.uid}`);
     }
   });
 };
