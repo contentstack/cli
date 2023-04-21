@@ -42,6 +42,7 @@ export interface MergeInputOptions {
   exportSummaryPath?: string;
   useMergeSummary?: string;
   stackAPIKey: string;
+  host: string;
 }
 
 export interface ModifiedFieldsType  {
@@ -78,4 +79,14 @@ export interface BranchDiffPayload {
   uid?: string;
   spinner?:any;
   url?:string;
+}
+
+export type MergeStrategy = "merge_prefer_base" | "merge_prefer_compare" | "overwrite_with_compare" | "merge_new_only" | "merge_modified_only_prefer_base" | "merge_modified_only_prefer_compare" | "ignore";
+
+export interface MergeParams {
+  base_branch: string
+  compare_branch: string
+  default_merge_strategy: MergeStrategy
+  merge_comment: string
+  no_revert?: boolean
 }
