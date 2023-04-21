@@ -114,10 +114,10 @@ export default class BranchDiffHandler {
   async displayBranchDiffTextAndVerbose(branchDiffData: any[], payload: BranchDiffPayload): Promise<void> {
     if (this.options.format === 'compactText') {
       const branchTextRes = parseCompactText(branchDiffData);
-      printCompactTextView(branchTextRes, payload.module);
+      printCompactTextView(branchTextRes);
     } else if (this.options.format === 'detailedText') {
       const verboseRes = await parseVerbose(branchDiffData, payload);
-      printVerboseTextView(verboseRes, payload.module);
+      printVerboseTextView(verboseRes);
     }
   }
 }
