@@ -31,7 +31,7 @@ export default class BranchMergeCommand extends Command {
     }),
     'stack-api-key': flags.string({
       char: 'k',
-      description: 'Provide stack api key to show diff between branches',
+      description: 'Provide Stack API key to show difference between branches',
     }),
     'export-summary-path': flags.string({
       description: 'Export summary file path',
