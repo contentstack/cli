@@ -10,6 +10,8 @@ import {
   branchDiffUtility as branchDiff,
   apiPostRequest,
   apiGetRequest,
+  executeMergeRequest,
+  getMergeQueueStatus,
 } from './';
 
 import config from '../config';
@@ -50,6 +52,7 @@ export const displayBranchStatus = async (options) => {
     apiKey: options.stackAPIKey,
     baseBranch: options.baseBranch,
     compareBranch: options.compareBranch,
+    host: options.host
   };
 
   const branchDiffData = await branchDiff.fetchBranchesDiff(payload);
@@ -58,21 +61,23 @@ export const displayBranchStatus = async (options) => {
   let parsedResponse = {};
   for (let module in diffData) {
     const branchModuleData = diffData[module];
-    payload.module = module;
-    cliux.print(' ');
-    cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
-    const diffSummary = branchDiff.parseSummary(branchModuleData, options.baseBranch, options.compareBranch);
-    branchDiff.printSummary(diffSummary);
-    cliux.print(' ');
-    // cliux.print(`Differences in '${options.compareBranch}' compared to '${options.baseBranch}':`);
-    if (options.format === 'text') {
-      const branchTextRes = branchDiff.parseCompactText(branchModuleData);
-      branchDiff.printCompactTextView(branchTextRes, payload.module);
-      parsedResponse[module] = branchTextRes;
-    } else if (options.format === 'verbose') {
-      const verboseRes = await branchDiff.parseVerbose(branchModuleData, payload);
-      branchDiff.printVerboseTextView(verboseRes, payload.module);
-      parsedResponse[module] = verboseRes;
+    if(branchModuleData.length){
+      payload.module = module;
+      cliux.print(' ');
+      cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
+      const diffSummary = branchDiff.parseSummary(branchModuleData, options.baseBranch, options.compareBranch);
+      branchDiff.printSummary(diffSummary);
+      cliux.print(' ');
+      // cliux.print(`Differences in '${options.compareBranch}' compared to '${options.baseBranch}':`);
+      if (options.format === 'text') {
+        const branchTextRes = branchDiff.parseCompactText(branchModuleData);
+        branchDiff.printCompactTextView(branchTextRes, payload.module);
+        parsedResponse[module] = branchTextRes;
+      } else if (options.format === 'verbose') {
+        const verboseRes = await branchDiff.parseVerbose(branchModuleData, payload);
+        branchDiff.printVerboseTextView(verboseRes, payload.module);
+        parsedResponse[module] = verboseRes;
+      }
     }
   }
   cliux.print(' ');
@@ -93,13 +98,12 @@ export const displayMergeSummary = (options) => {
 };
 
 export const executeMerge = async (apiKey, mergePayload, host): Promise<any> => {
-  const mergeResponse = await apiPostRequest({
+  const mergeResponse = await executeMergeRequest({
     apiKey: apiKey,
-    url: config.mergeUrl,
     params: mergePayload,
-    //host
-  });
-console.log("host:-",host)
+    host
+  })
+  
   if (mergeResponse.merge_details?.status === 'in_progress') {
     // TBD call the queue with the id
     return await fetchMergeStatus({ apiKey, uid: mergeResponse.uid, host });
@@ -111,12 +115,11 @@ console.log("host:-",host)
 
 const fetchMergeStatus = async (mergePayload): Promise<any> => {
   return new Promise(async (resolve, reject) => {
-    const mergeStatusResponse = await apiGetRequest({
+    const mergeStatusResponse = await getMergeQueueStatus({
       apiKey: mergePayload.apiKey,
-      url: `${config.mergeQueueUrl}/${mergePayload.uid}`,
-      params: mergePayload.uid,
-      //host: mergePayload.host
-    });
+      uid: mergePayload.uid,
+      host: mergePayload.host,
+    })
 
     if (mergeStatusResponse?.queue?.length >= 1) {
       const mergeRequestStatusResponse = mergeStatusResponse.queue[0];
