@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { entryCreateScript } from './entry-create-script';
 
 type CreateMergeScriptsProps = {
   mergeJobID?: string;
@@ -33,7 +34,6 @@ export function generateMergeScripts(mergeSummary) {
 
 export function createMergeScripts({ status, uid }: CreateMergeScriptsProps) {
   const mergeJobID = 'unique';
-  const content = `const data = 'Hello';`;
   const date = new Date();
   const rootFolder = 'merge_scripts';
   const fileCreatedAt = `${date.getFullYear()}${
@@ -49,7 +49,7 @@ export function createMergeScripts({ status, uid }: CreateMergeScriptsProps) {
     if (!fs.existsSync(fullPath)) {
       fs.mkdirSync(fullPath);
     }
-    fs.writeFileSync(`${fullPath}/${fileCreatedAt}_${status}_${uid}.js`, content, 'utf-8');
+    fs.writeFileSync(`${fullPath}/${fileCreatedAt}_${status}_${uid}.js`, entryCreateScript(uid), 'utf-8');
   } catch (error) {
     console.log(error);
   }
