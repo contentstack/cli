@@ -62,18 +62,13 @@ export const apiGetRequest = async (payload): Promise<any> => {
       if (status === 200 || status === 201 || status === 202) {
         return data;
       } else {
-        let errorMsg: string;
-        if (status === 500) {
-          errorMsg = data.message;
-        } else {
-          errorMsg = data.error_message;
-        }
+        let errorMsg: string = data.error_message || data.message;
         cliux.error(errorMsg);
         process.exit(1);
       }
     })
     .catch((error) => {
-      cliux.error('Failed to merge the changes', error.message);
+      cliux.error('Failed to merge the changes', error.message || error);
       process.exit(1);
     });
 };
@@ -88,19 +83,17 @@ export const apiPostRequest = async (payload): Promise<any> => {
   return await new HttpClient()
     .headers(headers)
     .queryParams(payload.params)
-    .post(payload.url, {})
+    .post(payload.url, payload.body || {})
     .then(({ data, status }) => {
       if (status === 200 || status === 201 || status === 202) return data;
       else {
-        let errorMsg: string;
-        if (status === 500) errorMsg = data.message;
-        else errorMsg = data.error_message;
+        let errorMsg: string = data.error_message || data.message;
         cliux.error('Failed to merge the changes', errorMsg);
         process.exit(1);
       }
     })
     .catch((error) => {
-      cliux.error('Failed to merge the changes', error.message);
+      cliux.error('Failed to merge the changes', error.message || error);
       process.exit(1);
     });
 };
