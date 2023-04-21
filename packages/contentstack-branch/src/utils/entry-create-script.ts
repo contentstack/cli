@@ -1,4 +1,4 @@
-import { configHandler, managementSDKClient } from '@contentstack/cli-utilities';
+import { managementSDKClient } from '@contentstack/cli-utilities';
 import { omit } from 'lodash';
 
 export async function createEntries() {
