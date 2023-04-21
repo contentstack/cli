@@ -47,11 +47,8 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
       task: async (params) => {
         try {
           compareFilteredProperties.length !== 0 &&
-            compareFilteredProperties.forEach(async (entry) => {
-              await stackSDKInstance
-                .contentType('banner')
-                .entry()
-                .create({ entry: { title: entry.title, url: entry.urlPath } });
+            compareFilteredProperties.forEach(async (entryDetails) => {
+              await stackSDKInstance.contentType('banner').entry().create({ entry: entryDetails });
             });
         } catch (error) {
           throw error;

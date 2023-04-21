@@ -48,11 +48,11 @@ export function entryCreateScript(contentType) {
       task: async (params) => {
         try {
           compareFilteredProperties.length !== 0 &&
-            compareFilteredProperties.forEach(async (entry) => {
+            compareFilteredProperties.forEach(async (entryDetails) => {
               await stackSDKInstance
-                .contentType('banner')
+                .contentType('${contentType}')
                 .entry()
-                .create({ entry: { title: entry.title, url: entry.urlPath } });
+                .create({ entry: entryDetails });
             });
         } catch (error) {
           throw error;
