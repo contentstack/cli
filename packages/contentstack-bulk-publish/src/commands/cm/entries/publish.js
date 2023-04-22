@@ -186,8 +186,7 @@ PublishEntriesCommand.flags = {
     default: 'true',
   }),
   apiVersion: flags.string({
-    description : "API Version to be used",
-    default: '3.2',
+    description : "API Version to be used (Recommended value is 3.2)",
   }),
   'publish-all-content-types': flags.boolean({
     description: '(optional) Publish all contenttypes (cannot be set when contentTypes flag is set)',
