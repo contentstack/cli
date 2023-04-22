@@ -199,6 +199,7 @@ async function getEntries(
   bulkPublish,
   environments,
   forceUpdate,
+  apiVersion,
   skip = 0,
 ) {
   let queryParams = {
@@ -237,6 +238,7 @@ async function getEntries(
                   Type: 'entry',
                   environments: environments,
                   stack: stack,
+                  apiVersion
                 });
                 bulkPublishSet = [];
               }
@@ -265,6 +267,7 @@ async function getEntries(
             Type: 'entry',
             environments: environments,
             stack: stack,
+            apiVersion
           });
           bulkPublishSet = [];
         }
@@ -274,7 +277,7 @@ async function getEntries(
       }
       return setTimeout(
         async () =>
-          getEntries(stack, config, schema, contentType, locale, bulkPublish, environments, forceUpdate, skip),
+          getEntries(stack, config, schema, contentType, locale, bulkPublish, environments, forceUpdate, apiVersion, skip),
         2000,
       );
     })
@@ -286,7 +289,7 @@ async function getEntries(
 /* eslint-disable no-loop-func */
 
 async function start(
-  { contentTypes, locales, environments, retryFailed, bulkPublish, force: forceUpdate },
+  { contentTypes, locales, environments, retryFailed, bulkPublish, force: forceUpdate, apiVersion },
   stack,
   config,
 ) {
@@ -332,6 +335,7 @@ async function start(
                 bulkPublish,
                 environments,
                 forceUpdate,
+                apiVersion
               );
             } catch (err) {
               console.log(`Failed to get Entries with contentType ${contentTypes[i]} and locale ${locales[j]}`);

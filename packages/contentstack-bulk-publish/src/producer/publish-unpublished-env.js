@@ -42,7 +42,7 @@ async function getEnvironment(stack, environmentName) {
   });
 }
 
-async function getEntries(stack, contentType, environmentUid, locale, bulkPublish, environments, skip = 0) {
+async function getEntries(stack, contentType, environmentUid, locale, bulkPublish, environments, apiVersion, skip = 0) {
   return new Promise((resolve, reject) => {
     skipCount = skip;
 
@@ -96,6 +96,7 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
                   Type: 'entry',
                   environments: environments,
                   stack: stack,
+                  apiVersion
                 });
                 bulkPublishSet = [];
               }
@@ -110,6 +111,7 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
                   Type: 'entry',
                   environments: environments,
                   stack: stack,
+                  apiVersion
                 });
                 bulkPublishSet = [];
               }
@@ -121,7 +123,7 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
           bulkPublishSet = [];
           return resolve();
         }
-        await getEntries(stack, contentType, environmentUid, locale, bulkPublish, environments, skipCount);
+        await getEntries(stack, contentType, environmentUid, locale, bulkPublish, environments, apiVersion, skipCount);
         return resolve();
       })
       .catch((error) => {
@@ -130,7 +132,7 @@ async function getEntries(stack, contentType, environmentUid, locale, bulkPublis
   });
 }
 
-async function start({ sourceEnv, environments, locale, contentTypes, bulkPublish, retryFailed }, stack, config) {
+async function start({ sourceEnv, environments, locale, contentTypes, bulkPublish, retryFailed, apiVersion }, stack, config) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`);
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`);
@@ -163,7 +165,7 @@ async function start({ sourceEnv, environments, locale, contentTypes, bulkPublis
       const environmentDetails = await getEnvironment(stack, sourceEnv);
       for (let i = 0; i < contentTypes.length; i += 1) {
         /* eslint-disable no-await-in-loop */
-        await getEntries(stack, contentTypes[i], environmentDetails.uid, locale, bulkPublish, environments);
+        await getEntries(stack, contentTypes[i], environmentDetails.uid, locale, bulkPublish, environments, apiVersion);
         /* eslint-enable no-await-in-loop */
         changedFlag = false;
       }
