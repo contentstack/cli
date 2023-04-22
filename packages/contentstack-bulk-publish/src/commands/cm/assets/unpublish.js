@@ -155,6 +155,10 @@ UnpublishCommand.flags = {
       "By default this flag is set as true. It indicates that contentstack's bulkpublish API will be used to unpublish the assets",
     default: 'true',
   }),
+  apiVersion: flags.string({
+    description : "API Version to be used",
+    default: '3.2',
+  }),
   'delivery-token': flags.string({
     description: 'Delivery Token for source environment',
   }),
