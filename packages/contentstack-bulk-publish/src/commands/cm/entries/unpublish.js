@@ -156,6 +156,10 @@ UnpublishCommand.flags = {
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to unpublish the entries",
     default: 'true',
   }),
+  apiVersion: flags.string({
+    description : "API Version to be used",
+    default: '3.2',
+  }),
   'content-type': flags.string({
     description: 'Content type filter',
   }),
