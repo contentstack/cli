@@ -4,7 +4,7 @@ const command = new Command();
 
 async function getStack(data) {
   const tokenDetails = command.getToken(data.alias);
-  const managementClient = await managementSDKClient({ host: data.host, branchName: data.branch });
+  const managementClient = await managementSDKClient({ host: data.host, branchName: data.branch, bulkPublish: true });
   const stack = managementClient.stack({ api_key: tokenDetails.apiKey, management_token: tokenDetails.token });
   stack.alias = data.alias;
   stack.host = data.host;
