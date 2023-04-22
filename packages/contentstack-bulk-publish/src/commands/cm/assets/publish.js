@@ -211,6 +211,10 @@ AssetsPublishCommand.flags = {
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
+  apiVersion: flags.string({
+    description : "API Version to be used",
+    default: '3.2',
+  }),
   'delivery-token': flags.string({ description: 'Delivery token for source environment' }),
   'source-env': flags.string({ description: 'Source environment' }),
   'content-types': flags.string({ description: 'Content types', hidden: true, multiple: true }), // this is a work around, as this command is to be run with entries:publish command and should not break flags check.

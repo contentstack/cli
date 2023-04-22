@@ -180,6 +180,10 @@ CrossPublishCommand.flags = {
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
   }),
+  apiVersion: flags.string({
+    description : "API Version to be used",
+    default: '3.2',
+  }),
   contentType: flags.string({
     char: 't',
     description: 'The Content-Types from which entries need to be published',
