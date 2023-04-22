@@ -1,7 +1,7 @@
 import { client, ContentstackClient, ContentstackConfig } from '@contentstack/management';
 import authHandler from './auth-handler';
 import { Agent } from 'node:https';
-import { default as configStore } from './config-handler';
+import configHandler, { default as configStore } from './config-handler';
 
 class ManagementSDKInitiator {
   private analyticsInfo: string;
@@ -101,6 +101,14 @@ class ManagementSDKInitiator {
       } else {
         option.authtoken = '';
         option.authorization = '';
+      }
+    }
+
+    if (config.bulkPublish) {
+      let userUid = configHandler.get('userUid')
+      if (userUid) {
+        if (!option.headers) option.headers = {};
+        option.headers['x-user-uid'] = userUid;
       }
     }
 
