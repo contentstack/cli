@@ -21,6 +21,7 @@ class AuthHandler {
   private OAuthRedirectURL: string;
   private OAuthScope: string;
   private OAuthResponseType: string;
+  private authUserUidKeyName: string;
   private authTokenKeyName: string;
   private authEmailKeyName: string;
   private oauthAccessTokenKeyName: string;
@@ -44,6 +45,7 @@ class AuthHandler {
     this.OAuthRedirectURL = process.env.OAUTH_APP_REDIRECT_URL || 'http://localhost:8184';
     this.OAuthScope = '';
     this.OAuthResponseType = 'code';
+    this.authUserUidKeyName = 'userUid';
     this.authTokenKeyName = 'authtoken';
     this.authEmailKeyName = 'email';
     this.oauthAccessTokenKeyName = 'oauthAccessToken';
@@ -223,6 +225,7 @@ class AuthHandler {
       //Delete the old configstore auth data
       this.unsetConfigData(type)
         .then(() => {
+          configHandler.set(this.authUserUidKeyName, userData.uid)
           switch (type) {
             case 'oauth':
               if (userData.access_token && userData.refresh_token) {
