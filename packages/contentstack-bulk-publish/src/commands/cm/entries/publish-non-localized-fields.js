@@ -170,6 +170,10 @@ NonlocalizedFieldChangesCommand.flags = {
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
+  apiVersion: flags.string({
+    description : "API Version to be used",
+    default: '3.2',
+  }),
   sourceEnv: flags.string({
     char: 's',
     description: 'Source Environment',
