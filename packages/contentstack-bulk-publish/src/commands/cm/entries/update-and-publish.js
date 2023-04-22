@@ -121,8 +121,7 @@ UpdateAndPublishCommand.flags = {
     default: 'true',
   }),
   apiVersion: flags.string({
-    description : "API Version to be used",
-    default: '3.2',
+    description : "API Version to be used (Recommended value is 3.2)",
   }),
   'content-types': flags.string({
     description: 'The Contenttypes from which entries will be published',
