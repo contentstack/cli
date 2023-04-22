@@ -5,6 +5,7 @@
 const chalk = require('chalk');
 const path = require('path');
 const { formatError } = require('../util');
+const { configHandler } = require('@contentstack/cli-utilities')
 
 const { getLoggerInstance, addLogs, getLogsDirPath } = require('../util/logger');
 const logsDir = getLogsDirPath();
@@ -211,9 +212,13 @@ async function UnpublishAsset(data, _config, queue) {
 }
 
 async function performBulkPublish(data, _config, queue) {
+  // add validation for user uid
+  // if user not logged in, then user uid won't be available and NRP too won't work
   let conf;
   const bulkPublishObj = data.obj;
   const stack = bulkPublishObj.stack;
+  let userUid = configHandler.get('userUid');
+  let payload = {}
   switch (bulkPublishObj.Type) {
     case 'entry':
       conf = {
@@ -221,9 +226,28 @@ async function performBulkPublish(data, _config, queue) {
         locales: [bulkPublishObj.locale],
         environments: bulkPublishObj.environments,
       };
+      payload['details'] = conf;
+      if (bulkPublishObj.apiVersion) {
+        if (!userUid) {
+          console.log(
+            chalk.yellow(
+              `You need to login to use Nested-Reference Publish feature. Continuing with regular bulk-publish for now.`,
+            ),
+          );
+        }
+        if (!isNaN(bulkPublishObj.apiVersion)) {
+          payload['api_version'] = bulkPublishObj.apiVersion
+        } else {
+          console.log(
+            chalk.yellow(
+              `Provided apiVersion is invalid. Continuing with regular bulk-publish for now.`,
+            ),
+          );
+        }
+      }
       stack
         .bulkOperation()
-        .publish({ details: conf })
+        .publish(payload)
         .then((bulkPublishEntriesResponse) => {
           if (!bulkPublishEntriesResponse.error_message) {
             console.log(
@@ -268,9 +292,28 @@ async function performBulkPublish(data, _config, queue) {
         locales: [bulkPublishObj.locale],
         environments: bulkPublishObj.environments,
       };
+      payload['details'] = conf;
+      if (bulkPublishObj.apiVersion) {
+        if (!userUid) {
+          console.log(
+            chalk.yellow(
+              `You need to login to use Nested-Reference Publish feature. Continuing with regular bulk-publish for now.`,
+            ),
+          );
+        }
+        if (!isNaN(bulkPublishObj.apiVersion)) {
+          payload['api_version'] = bulkPublishObj.apiVersion
+        } else {
+          console.log(
+            chalk.yellow(
+              `Provided apiVersion is invalid. Continuing with regular bulk-publish for now.`,
+            ),
+          );
+        }
+      }
       stack
         .bulkOperation()
-        .publish({ details: conf })
+        .publish(payload)
         .then((bulkPublishAssetsResponse) => {
           if (!bulkPublishAssetsResponse.error_message) {
             console.log(
@@ -318,6 +361,8 @@ async function performBulkUnPublish(data, _config, queue) {
   let conf;
   const bulkUnPublishObj = data.obj;
   const stack = bulkUnPublishObj.stack;
+  let userUid = configHandler.get('userUid')
+  let payload = {}
   switch (bulkUnPublishObj.Type) {
     case 'entry':
       conf = {
@@ -325,9 +370,28 @@ async function performBulkUnPublish(data, _config, queue) {
         locales: [bulkUnPublishObj.locale],
         environments: bulkUnPublishObj.environments,
       };
+      payload['details'] = conf;
+      if (bulkPublishObj.apiVersion) {
+        if (!userUid) {
+          console.log(
+            chalk.yellow(
+              `You need to login to use Nested-Reference Publish feature. Continuing with regular bulk-publish for now.`,
+            ),
+          );
+        }
+        if (!isNaN(bulkPublishObj.apiVersion)) {
+          payload['api_version'] = bulkPublishObj.apiVersion
+        } else {
+          console.log(
+            chalk.yellow(
+              `Provided apiVersion is invalid. Continuing with regular bulk-publish for now.`,
+            ),
+          );
+        }
+      }
       stack
         .bulkOperation()
-        .unpublish({ details: conf })
+        .unpublish(payload)
         .then((bulkUnPublishEntriesResponse) => {
           if (!bulkUnPublishEntriesResponse.error_message) {
             delete bulkUnPublishObj.stack;
@@ -372,9 +436,28 @@ async function performBulkUnPublish(data, _config, queue) {
         locales: [bulkUnPublishObj.locale || 'en-us'],
         environments: bulkUnPublishObj.environments,
       };
+      payload['details'] = conf;
+      if (bulkPublishObj.apiVersion) {
+        if (!userUid) {
+          console.log(
+            chalk.yellow(
+              `You need to login to use Nested-Reference Publish feature. Continuing with regular bulk-publish for now.`,
+            ),
+          );
+        }
+        if (!isNaN(bulkPublishObj.apiVersion)) {
+          payload['api_version'] = bulkPublishObj.apiVersion
+        } else {
+          console.log(
+            chalk.yellow(
+              `Provided apiVersion is invalid. Continuing with regular bulk-publish for now.`,
+            ),
+          );
+        }
+      }
       stack
         .bulkOperation()
-        .unpublish({ details: conf })
+        .unpublish(payload)
         .then((bulkUnPublishAssetsResponse) => {
           if (!bulkUnPublishAssetsResponse.error_message) {
             delete bulkUnPublishObj.stack;
