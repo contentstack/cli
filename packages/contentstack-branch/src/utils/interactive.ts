@@ -190,7 +190,7 @@ export async function selectCustomPreferences(module, payload) {
 
     forEach(payload.deleted, (item: BranchDiffRes) => {
       const row: any = {};
-      row.name = `±${item.title}`;
+      row.name = `-${item.title}`;
       row.status = 'deleted';
       row.value = item;
       tableRows.push(row);
