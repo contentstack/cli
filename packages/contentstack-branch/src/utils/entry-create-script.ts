@@ -2,7 +2,6 @@ export function entryCreateScript(contentType) {
   return `module.exports = async ({ migration, stackSDKInstance, managementAPIClient, config }) => {
   const keysToRemove = [
     'stackHeaders',
-    'single_line',
     'tags',
     'created_by',
     'updated_by',
