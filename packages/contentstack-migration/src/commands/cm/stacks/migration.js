@@ -235,7 +235,7 @@ MigrationCommand.flags = {
   'stack-api-key': flags.string({
     char: 'k',
     description: 'With this flag add the API key of your stack.',
-    dependsOn: ['authtoken'],
+    // dependsOn: ['authtoken'],
     exclusive: ['alias'],
   }),
   alias: flags.string({
@@ -267,7 +267,7 @@ MigrationCommand.flags = {
   'api-key': flags.string({
     char: 'k',
     description: 'With this flag add the API key of your stack.',
-    dependsOn: ['authtoken'],
+    // dependsOn: ['authtoken'],
     exclusive: ['alias'],
     parse: printFlagDeprecation(['--api-key'], ['-k', '--stack-api-key']),
     hidden: true,
