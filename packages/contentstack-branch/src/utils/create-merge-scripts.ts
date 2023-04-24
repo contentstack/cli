@@ -1,38 +1,33 @@
 import fs from 'fs';
 import { entryCreateScript } from './entry-create-script';
+import { entryUpdateScript } from './entry-update-script';
 
 type CreateMergeScriptsProps = {
-  mergeJobID?: string;
-  operationType?: string;
-  contentTypeUid?: string;
-  content?: string;
-
   uid: string;
   status: string;
 };
 
 export function generateMergeScripts(mergeSummary) {
   try {
-    let { added, modified } = mergeSummary.content_type;
-    console.log('mergeSummary', added, modified);
+    let { added, modified } = mergeSummary.content_types;
 
     modified.length !== 0 &&
       modified.map((contentType) => {
-        console.log(contentType);
-        createMergeScripts(contentType);
+        let data = entryUpdateScript(contentType.uid);
+        createMergeScripts(contentType, data);
       });
 
     added.length !== 0 &&
       added.map((contentType) => {
-        console.log(contentType);
-        createMergeScripts(contentType);
+        let data = entryCreateScript(contentType.uid);
+        createMergeScripts(contentType, data);
       });
   } catch (error) {
     console.log(error);
   }
 }
 
-export function createMergeScripts({ status, uid }: CreateMergeScriptsProps) {
+export function createMergeScripts(contentType: CreateMergeScriptsProps, content) {
   const mergeJobID = 'unique';
   const date = new Date();
   const rootFolder = 'merge_scripts';
@@ -49,7 +44,7 @@ export function createMergeScripts({ status, uid }: CreateMergeScriptsProps) {
     if (!fs.existsSync(fullPath)) {
       fs.mkdirSync(fullPath);
     }
-    fs.writeFileSync(`${fullPath}/${fileCreatedAt}_${status}_${uid}.js`, entryCreateScript(uid), 'utf-8');
+    fs.writeFileSync(`${fullPath}/${fileCreatedAt}_${contentType.status}_${contentType.uid}.js`, content, 'utf-8');
   } catch (error) {
     console.log(error);
   }
