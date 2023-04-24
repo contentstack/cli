@@ -39,11 +39,13 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
     return entry;
   });
 
+  console.log(compareFilteredProperties, 'gfgfgffgf');
+
   const createEntryTask = (params) => {
     return {
       title: 'Create Entries',
-      successMessage: 'Entries Created Successfully',
-      failedMessage: 'Failed to create entries',
+      successTitle: 'Entries Created Successfully',
+      failedTitle: 'Failed to create entries',
       task: async (params) => {
         try {
           compareFilteredProperties.length !== 0 &&
