@@ -384,6 +384,18 @@ class AuthHandler {
     );
   }
 
+  async getAuthorisationType(): Promise<any> {
+    return configHandler.get(this.authorisationTypeKeyName) ? configHandler.get(this.authorisationTypeKeyName) : false;
+  }
+
+  async isAuthorisationTypeBasic(): Promise<boolean> {
+    return configHandler.get(this.authorisationTypeKeyName) === this.authorisationTypeAUTHValue ? true : false;
+  }
+
+  async isAuthorisationTypeOAuth(): Promise<boolean> {
+    return configHandler.get(this.authorisationTypeKeyName) === this.authorisationTypeOAUTHValue ? true : false;
+  }
+
   checkExpiryAndRefresh = (force: boolean = false) => this.compareOAuthExpiry(force);
 
   async compareOAuthExpiry(force: boolean = false) {
