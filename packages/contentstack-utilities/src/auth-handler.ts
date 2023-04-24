@@ -121,8 +121,13 @@ class AuthHandler {
             this.getAccessToken(queryObject.code)
               .then(() => {
                 cliux.print('Access token fetched using auth code successfully.');
+                cliux.print(
+                  'You can review the access permissions on the page - https://app.contentstack.com/#!/marketplace/authorized-apps',
+                );
                 res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.end(`<h1>Successfully authorized!</h1><h2>You can close this window now.</h2>`);
+                res.end(
+                  `<h1>Successfully authorized!</h1><h2>You can close this window now.</h2><p>You can review the access permissions on - <a href="https://app.contentstack.com/#!/marketplace/authorized-apps" target="_blank">Authorized Apps page</a></p>`,
+                );
                 stopServer();
               })
               .catch((error) => {
