@@ -1,126 +1,114 @@
-import { managementSDKClient } from '@contentstack/cli-utilities';
-import * as contentstack from '@contentstack/management';
-import { uniq, concat, omit } from 'lodash';
+export function entryUpdateScript(contentType) {
+  return `
+  module.exports = async ({ migration, stackSDKInstance, managementAPIClient, config }) => {
+    const keysToRemove = [
+      'content_type_uid',
+      'uid',
+      'created_at',
+      'updated_at',
+      'created_by',
+      'updated_by',
+      'ACL',
+      'stackHeaders',
+      'urlPath',
+      '_version',
+      '_in_progress',
+      'update',
+      'delete',
+      'fetch',
+      'publish',
+      'unpublish',
+      'publishRequest',
+      'setWorkflowStage',
+      'import',
+    ];
 
-function converter(data) {
-  let arr = [];
-  for (const elm of data.entries()) {
-    // @ts-ignore
-    arr.push([elm[1].uid, elm[1]]);
-  }
-  return arr;
-}
+    function converter(data) {
+      let arr = [];
+      for (const elm of data.entries()) {
+        // @ts-ignore
+        arr.push([elm[1].uid, elm[1]]);
+      }
+      return arr;
+    }
 
-export const keysToRemove = [
-  'content_type_uid',
-  'uid',
-  'created_at',
-  'updated_at',
-  'created_by',
-  'updated_by',
-  'ACL',
-  'stackHeaders',
-  'urlPath',
-  '_version',
-  '_in_progress',
-  'update',
-  'delete',
-  'fetch',
-  'publish',
-  'unpublish',
-  'publishRequest',
-  'setWorkflowStage',
-  'import',
-];
+    function deleteUnwantedKeysFromObject(obj, keysToRemove) {
+      keysToRemove.map((key) => delete obj[key]);
+      return obj;
+    }
 
-export function deleteUnwantedKeysFromObject(obj: any, keysToRemove: string[]) {
-  const modifiedObj = omit(obj, keysToRemove);
-  return modifiedObj;
-}
+    function uniquelyConcatenateArrays(compareArr, baseArr) {
+      let uniqueArray = compareArr.concat(baseArr.filter((item) => compareArr.indexOf(item) < 0));
+      return uniqueArray;
+    }
 
-export const updateEntriesTest = async () => {
-  const stackAPIKey = 'bltafe5d06b229df996';
-  const stackSDKInstance = contentstack.client({
-    host: 'dev16-api.csnonprod.com',
-    authtoken: 'blt155f76e5d72621cb',
-  });
-  const contentTypeUID = 'page';
-  const baseBranch = 'shrutika_base';
-  const compareBranch = 'shrutika_test';
+    let compareBranch = '';
 
-  try {
-    let compareBranchEntries = await stackSDKInstance
-      .stack({ api_key: stackAPIKey, branch_uid: compareBranch })
-      .contentType(contentTypeUID)
+    if (config.compare_branch) {
+      compareBranch = config.compare_branch;
+    }
+
+    let compareBranchEntries = await managementAPIClient
+      .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
+      .contentType('${contentType}')
       .entry()
       .query()
       .find();
 
-    let baseBranchEntries = await stackSDKInstance
-      .stack({ api_key: stackAPIKey, branch_uid: baseBranch })
-      .contentType(contentTypeUID)
-      .entry()
-      .query()
-      .find();
+    let baseBranchEntries = await stackSDKInstance.contentType('${contentType}').entry().query().find();
 
-    let contentType = await stackSDKInstance
-      .stack({ api_key: stackAPIKey, branch_uid: compareBranch })
-      .contentType(contentTypeUID)
+    let contentType = await managementAPIClient
+      .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
+      .contentType('${contentType}')
       .fetch();
 
-    if (contentType.options.singleton) {
-      compareBranchEntries.items.map(async (el) => {
-        let entryDetails: any = deleteUnwantedKeysFromObject(el, keysToRemove);
-        console.log(entryDetails, baseBranchEntries.items[0].uid);
+    const updateEntryTask = () => {
+      return {
+        title: 'Update Entries',
+        successMessage: 'Entries Updated Successfully',
+        failedMessage: 'Failed to update entries',
+        task: async (params) => {
+          try {
+            if (contentType.options.singleton) {
+              compareBranchEntries.items.map(async (el) => {
+                let entryDetails = deleteUnwantedKeysFromObject(el, keysToRemove);
 
-        if (baseBranchEntries.items.length) {
-          let baseEntryUid = baseBranchEntries.items[0].uid;
-          let entry = await stackSDKInstance
-            .stack({ api_key: stackAPIKey, branch_uid: baseBranch })
-            .contentType(contentTypeUID)
-            .entry(baseEntryUid);
-          Object.assign(entry, { ...entryDetails });
-          entry.update();
-        } else {
-          let baseEntry = await stackSDKInstance
-            .stack({ api_key: stackAPIKey, branch_uid: baseBranch })
-            .contentType(contentTypeUID)
-            .entry()
-            .create({ entry: entryDetails });
+                if (baseBranchEntries.items.length) {
+                  let baseEntryUid = baseBranchEntries.items[0].uid;
+                  let entry = await stackSDKInstance.contentType('${contentType}').entry(baseEntryUid);
+                  Object.assign(entry, { ...entryDetails });
+                  entry.update();
+                } else {
+                  await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails });
+                }
+              });
+            } else {
+              let compareMap = new Map(converter(compareBranchEntries.items));
+              let baseMap = new Map(converter(baseBranchEntries.items));
 
-          console.log('new entry', baseEntry);
-        }
-      });
-    } else {
-      let compareMap = new Map(converter(compareBranchEntries.items));
-      let baseMap = new Map(converter(baseBranchEntries.items));
+              let arr = uniquelyConcatenateArrays(Array.from(compareMap.keys()), Array.from(baseMap.keys()));
 
-      let arr = uniq(concat(Array.from(compareMap.keys()), Array.from(baseMap.keys())));
+              arr.map(async (el) => {
+                let entryDetails = deleteUnwantedKeysFromObject(compareMap.get(el), keysToRemove);
 
-      arr.map(async (el) => {
-        let entryDetails: any = deleteUnwantedKeysFromObject(compareMap.get(el), keysToRemove);
-        console.log(entryDetails);
-        if (compareMap.get(el) && !baseMap.get(el)) {
-          let baseEntry = await stackSDKInstance
-            .stack({ api_key: stackAPIKey, branch_uid: baseBranch })
-            .contentType(contentTypeUID)
-            .entry()
-            .create({ entry: entryDetails });
+                if (compareMap.get(el) && !baseMap.get(el)) {
+                  await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails });
+                } else if (compareMap.get(el) && baseMap.get(el)) {
+                  let baseEntry = compareMap.get(el);
 
-          console.log('new entry', baseEntry);
-        } else if (compareMap.get(el) && baseMap.get(el)) {
-          let baseEntry: any = compareMap.get(el);
+                  let entry = await stackSDKInstance.contentType('${contentType}').entry(baseEntry.uid);
+                  Object.assign(entry, { ...entryDetails });
+                  entry.update();
+                }
+              });
+            }
+          } catch (error) {
+            throw error;
+          }
+        },
+      };
+    };
 
-          let entry = await stackSDKInstance
-            .stack({ api_key: stackAPIKey, branch_uid: baseBranch })
-            .contentType(contentTypeUID)
-            .entry(baseEntry.uid);
-          Object.assign(entry, { ...entryDetails });
-          entry.update();
-        }
-      });
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
+    migration.addTask(updateEntryTask());
+  };`;
+}

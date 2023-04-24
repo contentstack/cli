@@ -1,19 +1,9 @@
-// const config = {
-//   baseUrl: 'http://dev16-branches.csnonprod.com/api/compare',
-//   skip: 0,
-//   limit: 100,
-//   mergeUrl: 'https://dev16-branches.csnonprod.com/api/merge',
-//   mergeQueueUrl: 'https://dev16-branches.csnonprod.com/api/merge-queue',
-// };
-
-// export default config;
-
 const config = {
-  baseUrl: 'https://dev16-branches.csnonprod.com/v3/stacks/branches/compare',
+  baseUrl: 'https://dev16-branches.csnonprod.com/v3/stacks/branches_compare',
   skip: 0,
   limit: 100,
-  mergeUrl: 'https://dev16-branches.csnonprod.com/v3/stacks/branches/merge',
-  mergeQueueUrl: 'https://dev16-branches.csnonprod.com/v3/stacks/branches/merge-queue',
+  mergeUrl: 'https://dev16-branches.csnonprod.com/v3/stacks/branches_merge',
+  mergeQueueUrl: 'https://dev16-branches.csnonprod.com/v3/stacks/branches_queue',
 };
 
 export default config;
