@@ -226,7 +226,6 @@ class AuthHandler {
       //Delete the old configstore auth data
       this.unsetConfigData(type)
         .then(() => {
-          configHandler.set(this.authUserUidKeyName, userData.uid)
           switch (type) {
             case 'oauth':
               if (userData.access_token && userData.refresh_token) {
