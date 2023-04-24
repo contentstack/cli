@@ -17,6 +17,8 @@ import {
 } from '../utils';
 import forEach from 'lodash/forEach';
 
+const enableEntryExp = true;
+
 export default class MergeHandler {
   private strategy: string;
   private strategySubOption?: string;
@@ -204,12 +206,14 @@ export default class MergeHandler {
     let spinner;
     try {
       if (!this.mergeSettings.mergeComment) {
-        this.mergeSettings.generateMigrationScripts = await askConfirmationForMigrationScripts();
+        if (enableEntryExp) {
+          this.mergeSettings.generateMigrationScripts = await askConfirmationForMigrationScripts();
+        }
         this.mergeSettings.mergeComment = await askMergeComment();
         mergePayload.merge_comment = this.mergeSettings.mergeComment;
       }
 
-      if (this.mergeSettings.generateMigrationScripts) {
+      if (enableEntryExp && this.mergeSettings.generateMigrationScripts) {
         generateMergeScripts(this.mergeSettings.mergeContent);
       }
 
