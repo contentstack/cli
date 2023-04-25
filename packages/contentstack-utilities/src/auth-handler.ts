@@ -5,7 +5,7 @@ import configHandler from './config-handler';
 import * as ContentstackManagementSDK from '@contentstack/management';
 const http = require('http');
 const url = require('url');
-const open = require('open');
+import open from 'open';
 const crypto = require('crypto');
 
 /**
