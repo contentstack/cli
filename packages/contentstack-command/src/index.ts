@@ -60,6 +60,10 @@ abstract class ContentstackCommand extends Command {
     return cda;
   }
 
+  get uiHost() {
+    return this.region.uiHost;
+  }
+
   get cdaAPIUrl() {
     let cda = this.region.cda;
     return cda.startsWith('http') ? cda : `https://${cda}`;
@@ -68,12 +72,6 @@ abstract class ContentstackCommand extends Command {
   get cmaAPIUrl() {
     let cma = this.region.cma;
     return cma.startsWith('http') ? cma : `https://${cma}`;
-  }
-
-  get authToken() {
-    if (this._authToken) return this._authToken;
-    this._authToken = configHandler.get('authtoken');
-    if (this._authToken) return this._authToken;
   }
 
   getToken(alias) {
