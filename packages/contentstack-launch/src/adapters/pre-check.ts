@@ -7,7 +7,7 @@ import { cliux as ux } from "@contentstack/cli-utilities";
 
 import BaseClass from "./base-class";
 import { getRemoteUrls } from "../util";
-import { AdapterConstructorInputs, Providers } from "../types";
+import { AdapterConstructorInputs } from "../types";
 
 export default class PreCheck extends BaseClass {
   public projectBasePath: string = process.cwd();
