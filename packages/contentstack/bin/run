@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-
 (async () => {
-    const oclif = require('@oclif/core')
-    await oclif.execute({type: 'cjs', dir: __dirname})
-  })()
+  const oclif = require('@oclif/core');
+  await oclif.execute({ type: 'cjs', dir: __dirname });
+})();
