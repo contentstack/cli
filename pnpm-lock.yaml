@@ -136,7 +136,6 @@ importers:
       mocha: 10.1.0
       nyc: ^15.1.0
       oclif: ^3.1.2
-      open: ^8.4.0
       rimraf: ^2.7.1
       sinon: ^15.0.1
       tmp: ^0.2.1
@@ -149,7 +148,6 @@ importers:
       chalk: 4.1.2
       debug: 4.3.4
       inquirer: 8.2.4
-      open: 8.4.2
       winston: 3.8.2
     devDependencies:
       '@fancy-test/nock': 0.1.1
@@ -876,6 +874,7 @@ importers:
       mocha: 10.1.0
       nock: ^13.1.0
       nyc: ^15.1.0
+      open: ^8.4.2
       ora: ^5.4.0
       rimraf: ^2.7.1
       sinon: ^15.0.1
@@ -899,6 +898,7 @@ importers:
       inquirer-search-list: 1.2.6
       inquirer-table-prompt: github.com/kego1992/inquirer-table-prompt/127e093a2e992edca1178d6e18740cc343f442d9
       lodash: 4.17.21
+      open: 8.4.2
       ora: 5.4.1
       unique-string: 2.0.0
       uuid: 9.0.0

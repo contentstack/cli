@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.5.1 darwin-arm64 node-v18.11.0
+@contentstack/cli/1.5.1 darwin-x64 node-v18.12.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -105,11 +105,12 @@ User sessions login
 
 ```
 USAGE
-  $ csdx auth:login [-u <value> | ] [-p <value> | ]
+  $ csdx auth:login [-u <value> | --oauth] [-p <value> | ]
 
 FLAGS
   -p, --password=<value>  Password
   -u, --username=<value>  User name
+  --oauth                 Enables single sign-on (SSO) in Contentstack CLI
 
 DESCRIPTION
   User sessions login
@@ -1976,7 +1977,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -2244,7 +2245,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -2602,17 +2603,18 @@ Set region for CLI
 
 ```
 USAGE
-  $ csdx config:set:region [REGION] [-d <value> -m <value> -n <value>]
+  $ csdx config:set:region [REGION] [-d <value> -m <value> --ui-host <value> -n <value>]
 
 ARGUMENTS
   REGION  Name for the region
 
 FLAGS
-  -d, --cda=<value>   Custom host to set for content delivery API, if this flag is added then cma and name flags are
-                      required
-  -m, --cma=<value>   Custom host to set for content management API, , if this flag is added then cda and name flags are
-                      required
-  -n, --name=<value>  Name for the region, if this flag is added then cda and cma flags are required
+  -d, --cda=<value>   Custom host to set for content delivery API, if this flag is added then cma, ui-host and name
+                      flags are required
+  -m, --cma=<value>   Custom host to set for content management API, , if this flag is added then cda, ui-host and name
+                      flags are required
+  -n, --name=<value>  Name for the region, if this flag is added then cda, cma and ui-host flags are required
+  --ui-host=<value>   Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are required
 
 DESCRIPTION
   Set region for CLI
@@ -2622,9 +2624,9 @@ EXAMPLES
 
   $ csdx config:set:region NA
 
-  $ csdx config:set:region NA
+  $ csdx config:set:region EU
 
-  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"
+  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India"
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/region.ts)_
@@ -2655,11 +2657,12 @@ User sessions login
 
 ```
 USAGE
-  $ csdx login [-u <value> | ] [-p <value> | ]
+  $ csdx login [-u <value> | --oauth] [-p <value> | ]
 
 FLAGS
   -p, --password=<value>  Password
   -u, --username=<value>  User name
+  --oauth                 Enables single sign-on (SSO) in Contentstack CLI
 
 DESCRIPTION
   User sessions login
@@ -2755,7 +2758,7 @@ ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:install myplugin 
+  $ csdx plugins:install myplugin
 
   $ csdx plugins:install https://github.com/someuser/someplugin
 
@@ -2820,7 +2823,7 @@ ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:install myplugin 
+  $ csdx plugins:install myplugin
 
   $ csdx plugins:install https://github.com/someuser/someplugin
 
