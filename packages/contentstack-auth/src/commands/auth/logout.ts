@@ -1,5 +1,13 @@
 import { Command } from '@contentstack/cli-command';
-import { logger, cliux, configHandler, printFlagDeprecation, flags, managementSDKClient } from '@contentstack/cli-utilities';
+import {
+  logger,
+  cliux,
+  configHandler,
+  printFlagDeprecation,
+  flags,
+  authHandler as oauthHandler,
+  managementSDKClient,
+} from '@contentstack/cli-utilities';
 
 import { authHandler } from '../../utils';
 
@@ -29,8 +37,6 @@ export default class LogoutCommand extends Command {
 
   async run(): Promise<any> {
     const { flags: logoutFlags } = await this.parse(LogoutCommand);
-    const managementAPIClient = await managementSDKClient({host: this.cmaHost})
-    authHandler.client = managementAPIClient;
     let confirm = logoutFlags.force === true || logoutFlags.yes === true;
     if (!confirm) {
       confirm = await cliux.inquire({
@@ -41,24 +47,42 @@ export default class LogoutCommand extends Command {
     }
 
     try {
-      if (this.authToken) {
+      const managementAPIClient = await managementSDKClient({ host: this.cmaHost, skipTokenValidity: true });
+      authHandler.client = managementAPIClient;
+      if ((await oauthHandler.isAuthenticated()) && (await oauthHandler.isAuthorisationTypeBasic())) {
         if (confirm === true) {
           cliux.loader('CLI_AUTH_LOGOUT_LOADER_START');
-          const authtoken = this.authToken;
-          await authHandler.logout(authtoken);
+          await authHandler.logout(configHandler.get('authtoken'));
           cliux.loader('');
           logger.info('successfully logged out');
           cliux.success('CLI_AUTH_LOGOUT_SUCCESS');
         }
+      } else {
+        cliux.loader('CLI_AUTH_LOGOUT_LOADER_START');
+        cliux.loader('');
+        logger.info('successfully logged out');
+        cliux.success('CLI_AUTH_LOGOUT_SUCCESS');
       }
     } catch (error) {
-      logger.error('Logout failed', error.message);
+      let errorMessage = '';
+      if (error) {
+        if (error.message) {
+          if (error.message.message) {
+            errorMessage = error.message.message;
+          } else {
+            errorMessage = error.message;
+          }
+        } else {
+          errorMessage = error;
+        }
+      }
+
+      logger.error('Logout failed', errorMessage);
       cliux.print('CLI_AUTH_LOGOUT_FAILED', { color: 'yellow' });
-      cliux.print(error.message, { color: 'red' });
+      cliux.print(errorMessage, { color: 'red' });
     } finally {
       if (confirm === true) {
-        configHandler.delete('authtoken');
-        configHandler.delete('email');
+        await oauthHandler.setConfigData('logout');
       }
     }
   }
