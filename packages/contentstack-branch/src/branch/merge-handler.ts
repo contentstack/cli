@@ -11,8 +11,8 @@ import {
   askMergeComment,
   writeFile,
   executeMerge,
-  askConfirmationForMigrationScripts,
   generateMergeScripts,
+  renameScriptFolder,
   selectCustomPreferences,
 } from '../utils';
 import forEach from 'lodash/forEach';
@@ -47,7 +47,6 @@ export default class MergeHandler {
       mergeComment: options.mergeComment,
       mergeContent: {},
       noRevert: options.noRevert,
-      generateMigrationScripts: options.generateMigrationScripts,
     };
   }
 
@@ -204,17 +203,15 @@ export default class MergeHandler {
 
   async executeMerge(mergePayload) {
     let spinner;
+    let scriptFolderPath;
     try {
       if (!this.mergeSettings.mergeComment) {
-        if (enableEntryExp) {
-          this.mergeSettings.generateMigrationScripts = await askConfirmationForMigrationScripts();
-        }
         this.mergeSettings.mergeComment = await askMergeComment();
         mergePayload.merge_comment = this.mergeSettings.mergeComment;
       }
 
-      if (enableEntryExp && this.mergeSettings.generateMigrationScripts) {
-        generateMergeScripts(this.mergeSettings.mergeContent);
+      if (enableEntryExp) {
+        scriptFolderPath = generateMergeScripts(this.mergeSettings.mergeContent);
       }
 
       cliux.loader('Merging the changes');
@@ -222,6 +219,20 @@ export default class MergeHandler {
       const mergeResponse = await executeMerge(this.stackAPIKey, mergePayload);
       cliux.loaderV2('', spinner);
       cliux.success(`Merged the changes successfully. Merge UID: ${mergeResponse.uid}`);
+
+      if (enableEntryExp) {
+        let newScriptFolderPath = renameScriptFolder(mergeResponse.uid, scriptFolderPath);
+
+        cliux.success(`Success! Merge has been completed and we have generated entry migration files in folder
+        ${newScriptFolderPath}`);
+
+        cliux.print(
+          `Kindly follow the steps in the following guide https://www.contentstack.com/docs/developers/cli/migrate-branch-
+        entries to undate the migration scripts and then run the following command
+        csdx cm:stacks:migration --multiple --file-path ./${newScriptFolderPath} --config compare-branch:<value> --branch <value> --stack-api-key <value>`,
+          { color: 'blue' },
+        );
+      }
     } catch (error) {
       cliux.loaderV2('', spinner);
       cliux.error('Failed to merge the changes', error.message || error);

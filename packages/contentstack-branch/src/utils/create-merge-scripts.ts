@@ -10,25 +10,50 @@ type CreateMergeScriptsProps = {
 export function generateMergeScripts(mergeSummary) {
   try {
     let { added, modified } = mergeSummary.content_types;
+    let scriptFolderPath;
 
     modified.length !== 0 &&
       modified.map((contentType) => {
         let data = entryUpdateScript(contentType.uid);
-        createMergeScripts(contentType, data);
+        scriptFolderPath = createMergeScripts(contentType, data);
       });
 
     added.length !== 0 &&
       added.map((contentType) => {
         let data = entryCreateScript(contentType.uid);
-        createMergeScripts(contentType, data);
+        scriptFolderPath = createMergeScripts(contentType, data);
       });
+
+    return scriptFolderPath;
   } catch (error) {
     console.log(error);
   }
 }
 
+export function getContentypeMergeStatus(status) {
+  if (status === 'modified') {
+    return 'updated';
+  } else if (status === 'compare_only') {
+    return 'created';
+  }
+}
+
+export function renameScriptFolder(mergeUID, scriptFolderPath) {
+  const currPath = scriptFolderPath;
+  const regex = /mergeJobID/i;
+  const newPath = scriptFolderPath.replace(regex, mergeUID);
+
+  try {
+    fs.renameSync(currPath, newPath);
+    console.log('Successfully renamed the directory.');
+    return newPath;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export function createMergeScripts(contentType: CreateMergeScriptsProps, content) {
-  const mergeJobID = 'unique';
+  const mergeJobID = 'mergeJobID';
   const date = new Date();
   const rootFolder = 'merge_scripts';
   const fileCreatedAt = `${date.getFullYear()}${
@@ -45,6 +70,7 @@ export function createMergeScripts(contentType: CreateMergeScriptsProps, content
       fs.mkdirSync(fullPath);
     }
     fs.writeFileSync(`${fullPath}/${fileCreatedAt}_${contentType.status}_${contentType.uid}.js`, content, 'utf-8');
+    return fullPath;
   } catch (error) {
     console.log(error);
   }
