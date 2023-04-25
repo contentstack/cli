@@ -42,7 +42,6 @@ export interface MergeInputOptions {
   exportSummaryPath?: string;
   useMergeSummary?: string;
   stackAPIKey: string;
-  generateMigrationScripts?: boolean;
 }
 
 export interface ModifiedFieldsType {
