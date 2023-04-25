@@ -134,7 +134,7 @@ importers:
       mocha: 10.1.0
       nyc: ^15.1.0
       oclif: ^3.1.2
-      open: ^8.4.0
+      open: ^8.4.2
       rimraf: ^2.7.1
       sinon: ^15.0.1
       tmp: ^0.2.1
@@ -786,6 +786,7 @@ importers:
       mocha: 10.1.0
       nock: ^13.1.0
       nyc: ^15.1.0
+      open: ^8.4.2
       ora: ^5.4.0
       rimraf: ^2.7.1
       sinon: ^15.0.1
@@ -808,6 +809,7 @@ importers:
       inquirer-search-checkbox: 1.0.0
       inquirer-search-list: 1.2.6
       lodash: 4.17.21
+      open: 8.4.2
       ora: 5.4.1
       unique-string: 2.0.0
       uuid: 9.0.0
