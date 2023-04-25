@@ -681,7 +681,7 @@ export default class BaseClass {
           ? this.envVariables
           : this.envVariables.map(({ key, value }) => ({
               key,
-              value: replace(value, /[A-z0-9.\/:-]/g, '*'),
+              value: replace(value, /./g, '*'),
             }))),
         { key: '', value: '' },
       ],
