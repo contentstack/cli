@@ -2,7 +2,7 @@ import { join } from "path";
 import find from "lodash/find";
 import { existsSync } from "fs";
 import isEmpty from "lodash/isEmpty";
-import startsWith from 'lodash/startsWith';
+import includes from "lodash/includes";
 import { cliux as ux } from "@contentstack/cli-utilities";
 
 import BaseClass from "./base-class";
@@ -144,7 +144,7 @@ export default class PreCheck extends BaseClass {
         ?.origin || "";
 
     switch (true) {
-      case startsWith(localRemoteUrl, 'https://github.com'):
+      case includes(localRemoteUrl, 'github.'):
         this.config.provider = 'GitHub';
         this.log('Git project identified', 'info');
         break;
