@@ -204,6 +204,17 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-bulk-publish/package.json
+      - name: Installing dependencies of launch
+        id: launch-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_launch == 'true'}}
+        working-directory: ./packages/contentstack-launch
+        run: npm install
+      - name: Publishing launch
+        uses: JS-DevTools/npm-publish@v1
+        if: ${{ steps.launch-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-launch/package.json
       - name: Installing dependencies of core
         id: core-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
