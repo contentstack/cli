@@ -14,6 +14,7 @@ const { formatError } = require('../util');
 const { addlogs } = require('../util/log');
 const config = require('../../config/default');
 
+// Create folder for environments
 module.exports = class ExportWebhooks {
   config;
   master = {};
@@ -25,8 +26,8 @@ module.exports = class ExportWebhooks {
   webhooksConfig = config.modules.webhooks;
 
   constructor(exportConfig, stackAPIClient) {
-    this.stackAPIClient = stackAPIClient;
     this.config = merge(config, exportConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
