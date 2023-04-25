@@ -1,5 +1,12 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, logger, printFlagDeprecation, args as _args, flags as _flags } from '@contentstack/cli-utilities';
+import {
+  cliux,
+  logger,
+  printFlagDeprecation,
+  args as _args,
+  flags as _flags,
+  authHandler,
+} from '@contentstack/cli-utilities';
 import { Region } from '../../../interfaces';
 import { regionHandler, interactive } from '../../../utils';
 
@@ -68,6 +75,7 @@ export default class RegionSetCommand extends Command {
       try {
         let customRegion: Region = { cda, cma, uiHost, name };
         customRegion = regionHandler.setCustomRegion(customRegion);
+        await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
         cliux.success(`Custom region has been set to ${customRegion.name}`);
         cliux.success(`CMA HOST: ${customRegion.cma}`);
         cliux.success(`CDA HOST: ${customRegion.cda}`);
@@ -78,6 +86,7 @@ export default class RegionSetCommand extends Command {
       }
     } else if (['NA', 'EU', 'AZURE-NA', 'AZURE-EU'].includes(selectedRegion)) {
       const regionDetails: Region = regionHandler.setRegion(selectedRegion);
+      await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
       cliux.success(`Region has been set to ${regionDetails.name}`);
       cliux.success(`CDA HOST: ${regionDetails.cda}`);
       cliux.success(`CMA HOST: ${regionDetails.cma}`);
