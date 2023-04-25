@@ -187,6 +187,14 @@ exports.getConfig = () => {
 };
 
 exports.formatError = (error) => {
+  let message_content_type = "";
+  if(error.request!==undefined) {
+    if(JSON.parse(error.request.data).content_type.uid) {
+      console.log("thor ",JSON.parse(error.request.data).content_type.uid);
+      message_content_type = " Due to content type "+JSON.parse(error.request.data).content_type.uid;
+    }
+  }
+
   try {
     if (typeof error === 'string') {
       error = JSON.parse(error);
@@ -205,7 +213,7 @@ exports.formatError = (error) => {
       message += ' ' + [entity, error.errors[e]].join(' ');
     });
   }
-  return message;
+  return message+message_content_type;
 };
 
 exports.executeTask = (handler, options, tasks = []) => {
