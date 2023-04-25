@@ -2,7 +2,7 @@ import { join } from "path";
 import find from "lodash/find";
 import { existsSync } from "fs";
 import isEmpty from "lodash/isEmpty";
-import includes from "lodash/includes";
+import startsWith from 'lodash/startsWith';
 import { cliux as ux } from "@contentstack/cli-utilities";
 
 import BaseClass from "./base-class";
@@ -144,16 +144,14 @@ export default class PreCheck extends BaseClass {
         ?.origin || "";
 
     switch (true) {
-      case includes(localRemoteUrl, "github.com"):
-        this.config.provider = "GitHub";
-        this.log("Git project identified", "info");
-        break;
-      case includes(localRemoteUrl, "bitbucket.org"):
+      case startsWith(localRemoteUrl, 'https://github.com'):
+        this.config.provider = 'GitHub';
+        this.log('Git project identified', 'info');
         break;
       default:
-        if (existsSync(join(this.config.projectBasePath, ".git"))) {
-          this.log("Git config found but remote URL not found in the config!", {
-            color: "yellow",
+        if (existsSync(join(this.config.projectBasePath, '.git'))) {
+          this.log('Git config found but remote URL not found in the config!', {
+            color: 'yellow',
             bold: true,
           });
         }
