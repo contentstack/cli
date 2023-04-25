@@ -677,13 +677,13 @@ export default class BaseClass {
   printAllVariables(): void {
     ux.table(
       [
-        ...(this.config.flags["show-variables"]
+        ...(this.config.flags['show-variables']
           ? this.envVariables
           : this.envVariables.map(({ key, value }) => ({
               key,
-              value: replace(value, /[A-z0-9./:-]/g, "*"),
+              value: replace(value, /[A-z0-9.\/:-]/g, '*'),
             }))),
-        { key: "", value: "" },
+        { key: '', value: '' },
       ],
       {
         key: {
@@ -692,7 +692,7 @@ export default class BaseClass {
         value: {
           minWidth: 7,
         },
-      }
+      },
     );
   }
 
