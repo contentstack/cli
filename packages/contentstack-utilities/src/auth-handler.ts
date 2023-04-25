@@ -119,10 +119,16 @@ class AuthHandler {
           if (queryObject.code) {
             cliux.print('Auth code successfully fetched.');
             this.getAccessToken(queryObject.code)
-              .then(() => {
+              .then(async () => {
+                await this.setOAuthBaseURL();
                 cliux.print('Access token fetched using auth code successfully.');
+                cliux.print(
+                  `You can review the access permissions on the page - ${this.OAuthBaseURL}/#!/marketplace/authorized-apps`,
+                );
                 res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.end(`<h1>Successfully authorized!</h1><h2>You can close this window now.</h2>`);
+                res.end(
+                  `<h1>Successfully authorized!</h1><h2>You can close this window now.</h2><p>You can review the access permissions on - <a href="${this.OAuthBaseURL}/#!/marketplace/authorized-apps" target="_blank">Authorized Apps page</a></p>`,
+                );
                 stopServer();
               })
               .catch((error) => {
@@ -376,6 +382,18 @@ class AuthHandler {
     return (
       authorizationType === this.authorisationTypeOAUTHValue || authorizationType === this.authorisationTypeAUTHValue
     );
+  }
+
+  async getAuthorisationType(): Promise<any> {
+    return configHandler.get(this.authorisationTypeKeyName) ? configHandler.get(this.authorisationTypeKeyName) : false;
+  }
+
+  async isAuthorisationTypeBasic(): Promise<boolean> {
+    return configHandler.get(this.authorisationTypeKeyName) === this.authorisationTypeAUTHValue ? true : false;
+  }
+
+  async isAuthorisationTypeOAuth(): Promise<boolean> {
+    return configHandler.get(this.authorisationTypeKeyName) === this.authorisationTypeOAUTHValue ? true : false;
   }
 
   checkExpiryAndRefresh = (force: boolean = false) => this.compareOAuthExpiry(force);
