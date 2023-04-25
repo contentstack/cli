@@ -9,3 +9,4 @@ logs
 coverage
 ./contents
 .vscode/
+.env

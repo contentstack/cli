@@ -19,8 +19,8 @@ module.exports = class ExportLabels {
   labelConfig = config.modules.labels;
 
   constructor(exportConfig, stackAPIClient) {
-    this.stackAPIClient = stackAPIClient;
     this.config = merge(config, exportConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
