@@ -63,7 +63,6 @@ export const displayBranchStatus = async (options) => {
   let parsedResponse = {};
   for (let module in diffData) {
     const branchModuleData = diffData[module];
-    if (branchModuleData.length) {
       payload.module = module;
       cliux.print(' ');
       cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
@@ -79,7 +78,6 @@ export const displayBranchStatus = async (options) => {
         branchDiff.printVerboseTextView(verboseRes);
         parsedResponse[module] = verboseRes;
       }
-    }
   }
   return parsedResponse;
 };
