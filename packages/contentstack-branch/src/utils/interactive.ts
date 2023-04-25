@@ -166,18 +166,6 @@ export async function askMergeComment(): Promise<string> {
   });
 }
 
-export async function askConfirmationForMigrationScripts(): Promise<string> {
-  return await cliux.inquire({
-    type: 'list',
-    name: 'module',
-    message: 'Do you want to create entry migration scripts files based on the migrations?',
-    choices: [
-      { name: 'Yes', value: true },
-      { name: 'No', value: false },
-    ],
-  });
-}
-
 export async function selectCustomPreferences(module, payload) {
   // cliux.print(`\n Select from ${startCase(camelCase(module))}`, { color: 'yellow' });
 
