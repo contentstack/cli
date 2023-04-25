@@ -48,7 +48,7 @@ export class CloudFunctionsValidator {
   }
 
   private hasInvalidFilepathNaming(filepath: string): boolean {
-    const validFilePathRegex = /^(\[[\w-]+\]|[\w-]+|\/)+$/;
+    const validFilePathRegex = new RegExp(/^(\[[\w-]+\]|[\w-]+|\/)+$/);
 
     const matchResult = filepath.match(validFilePathRegex);
     return matchResult === null;
