@@ -30,6 +30,7 @@ exports.configWithMToken = function (
     defaultConfig.target_stack = managementTokens.apiKey;
     defaultConfig.management_token = managementTokens.token;
     defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
+    defaultConfig.isAuthenticated = importCommandFlags.isAuthenticated;
 
     if (moduleName && moduleName !== undefined) {
       defaultConfig.moduleName = moduleName;
@@ -41,9 +42,9 @@ exports.configWithMToken = function (
 
     defaultConfig = _.merge(defaultConfig, externalConfig);
 
-    if(!defaultConfig.data) {
+    if (!defaultConfig.data) {
       const exporteddata = await cliux.prompt(message.promptMessageList.promptPathStoredData);
-      defaultConfig.data = exporteddata
+      defaultConfig.data = exporteddata;
     }
 
     if (_.isArray(modules)) {
@@ -67,6 +68,7 @@ exports.parameterWithMToken = function (
     defaultConfig.target_stack = managementTokens.apiKey;
     defaultConfig.branchName = importCommandFlags.branchName;
     defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
+    defaultConfig.isAuthenticated = importCommandFlags.isAuthenticated;
     if (moduleName && moduleName !== undefined) {
       defaultConfig.moduleName = moduleName;
     }
@@ -93,6 +95,7 @@ exports.withoutParameterMToken = async (
     defaultConfig.target_stack = managementTokens.apiKey;
     defaultConfig.branchName = importCommandFlags.branchName;
     defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
+    defaultConfig.isAuthenticated = importCommandFlags.isAuthenticated;
     if (moduleName && moduleName !== undefined) {
       defaultConfig.moduleName = moduleName;
     }
@@ -110,6 +113,7 @@ exports.configWithAuthToken = function (config, moduleName, host, backupdir, imp
     let externalConfig = require(config);
     defaultConfig.branchName = importCommandFlags.branchName;
     defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
+    defaultConfig.isAuthenticated = importCommandFlags.isAuthenticated;
     if (moduleName && moduleName !== undefined) {
       defaultConfig.moduleName = moduleName;
     }
@@ -126,7 +130,7 @@ exports.configWithAuthToken = function (config, moduleName, host, backupdir, imp
     defaultConfig = _.merge(defaultConfig, externalConfig);
     if (!defaultConfig.data) {
       const exporteddata = await cliux.prompt(message.promptMessageList.promptPathStoredData);
-      defaultConfig.data = exporteddata
+      defaultConfig.data = exporteddata;
     }
     initial(defaultConfig).then(resolve).catch(reject);
   });
@@ -144,6 +148,7 @@ exports.parametersWithAuthToken = function (
     defaultConfig.target_stack = targetStack;
     defaultConfig.branchName = importCommandFlags.branchName;
     defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
+    defaultConfig.isAuthenticated = importCommandFlags.isAuthenticated;
     if (moduleName && moduleName !== undefined && backupdir === undefined) {
       defaultConfig.moduleName = moduleName;
     } else if (moduleName && moduleName !== undefined && backupdir !== undefined) {
@@ -167,6 +172,7 @@ exports.withoutParametersWithAuthToken = async (moduleName, host, backupdir, imp
     defaultConfig.data = exporteddata;
     defaultConfig.branchName = importCommandFlags.branchName;
     defaultConfig.importWebhookStatus = importCommandFlags.importWebhookStatus;
+    defaultConfig.isAuthenticated = importCommandFlags.isAuthenticated;
     if (moduleName && moduleName !== undefined && backupdir === undefined) {
       defaultConfig.moduleName = moduleName;
     } else if (moduleName && moduleName !== undefined && backupdir !== undefined) {
