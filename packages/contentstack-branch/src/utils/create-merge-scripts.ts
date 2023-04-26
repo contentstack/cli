@@ -56,21 +56,30 @@ export function createMergeScripts(contentType: CreateMergeScriptsProps, content
   const mergeJobID = 'mergeJobID';
   const date = new Date();
   const rootFolder = 'merge_scripts';
+
   const fileCreatedAt = `${date.getFullYear()}${
     date.getMonth().toString.length === 1 ? `0${date.getMonth() + 1}` : date.getMonth() + 1
   }${date.getUTCDate()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+
   const mergeScriptsSlug = `merge_scripts_${mergeJobID}_${fileCreatedAt}`;
 
   const fullPath = `${rootFolder}/${mergeScriptsSlug}`;
+
+  const { W_OK: writePermission } = fs.constants;
+
+  const checkPermissions = fs.accessSync('./', writePermission);
+
   try {
-    if (!fs.existsSync(rootFolder)) {
-      fs.mkdirSync(rootFolder);
+    if (checkPermissions === undefined) {
+      if (!fs.existsSync(rootFolder)) {
+        fs.mkdirSync(rootFolder);
+      }
+      if (!fs.existsSync(fullPath)) {
+        fs.mkdirSync(fullPath);
+      }
+      fs.writeFileSync(`${fullPath}/${fileCreatedAt}_${contentType.status}_${contentType.uid}.js`, content, 'utf-8');
+      return fullPath;
     }
-    if (!fs.existsSync(fullPath)) {
-      fs.mkdirSync(fullPath);
-    }
-    fs.writeFileSync(`${fullPath}/${fileCreatedAt}_${contentType.status}_${contentType.uid}.js`, content, 'utf-8');
-    return fullPath;
   } catch (error) {
     console.log(error);
   }
