@@ -75,22 +75,26 @@ export default class BranchDiffHandler {
       host: this.options.host
     };
 
-    if (this.options.module === 'content_types') {
+    if (this.options.module === 'content-types') {
       payload.module = 'content_types';
-    } else if (this.options.module === 'global_fields') {
+    } else if (this.options.module === 'global-fields') {
       payload.module = 'global_fields';
     }
     payload.spinner = spinner;
     const branchDiffData = await fetchBranchesDiff(payload);
     const diffData = filterBranchDiffDataByModule(branchDiffData);
    
-    for (let module in diffData) {
-      const branchDiff = diffData[module];
-      if(branchDiff.length){
-        payload.module = module;
-        this.displaySummary(branchDiff, module);
-        await this.displayBranchDiffTextAndVerbose(branchDiff, payload);
+    if(this.options.module === 'all'){
+      for (let module in diffData) {
+        const branchDiff = diffData[module];
+          payload.module = module;
+          this.displaySummary(branchDiff, module);
+          await this.displayBranchDiffTextAndVerbose(branchDiff, payload);
       }
+    }else{
+      const branchDiff = diffData[payload.module];
+      this.displaySummary(branchDiff, this.options.module);
+      await this.displayBranchDiffTextAndVerbose(branchDiff, payload);
     }
     cliux.loaderV2('', spinner);
   }
@@ -101,7 +105,8 @@ export default class BranchDiffHandler {
    * @memberof BranchDiff
    */
   displaySummary(branchDiffData: any[], module: string): void {
-    cliux.print(`\n${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
+    cliux.print('\n');
+    cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
     const diffSummary = parseSummary(branchDiffData, this.options.baseBranch, this.options.compareBranch);
     printSummary(diffSummary);
   }
@@ -112,10 +117,11 @@ export default class BranchDiffHandler {
    * @memberof BranchDiff
    */
   async displayBranchDiffTextAndVerbose(branchDiffData: any[], payload: BranchDiffPayload): Promise<void> {
-    if (this.options.format === 'compactText') {
+    cliux.print('\n');
+    if (this.options.format === 'compact-text') {
       const branchTextRes = parseCompactText(branchDiffData);
       printCompactTextView(branchTextRes);
-    } else if (this.options.format === 'detailedText') {
+    } else if (this.options.format === 'detailed-text') {
       const verboseRes = await parseVerbose(branchDiffData, payload);
       printVerboseTextView(verboseRes);
     }
