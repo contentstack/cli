@@ -48,7 +48,6 @@ export interface ModifiedFieldsType  {
   uid: string;
   displayName: string;
   path: string;
-  fieldType: string;
 }
 
 export interface ModifiedFieldsInput {
