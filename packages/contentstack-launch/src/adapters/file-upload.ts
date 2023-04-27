@@ -1,22 +1,19 @@
-import AdmZip from "adm-zip";
-import map from "lodash/map";
-import omit from "lodash/omit";
-import find from "lodash/find";
-import FormData from "form-data";
-import filter from "lodash/filter";
-import { basename, join } from "path";
-import includes from "lodash/includes";
-import { cliux, ux } from "@contentstack/cli-utilities";
-import { createReadStream, existsSync, PathLike, statSync } from "fs";
+import AdmZip from 'adm-zip';
+import map from 'lodash/map';
+import omit from 'lodash/omit';
+import find from 'lodash/find';
+import FormData from 'form-data';
+import filter from 'lodash/filter';
+import { basename, join } from 'path';
+import includes from 'lodash/includes';
+import { cliux, ux } from '@contentstack/cli-utilities';
+import { createReadStream, existsSync, PathLike, statSync } from 'fs';
 
-import { print } from "../util";
-import BaseClass from "./base-class";
-import { getFileList } from "../util/fs";
-import { AdapterConstructorInputs } from "../types";
-import {
-  createSignedUploadUrlMutation,
-  importProjectMutation,
-} from "../graphql";
+import { print } from '../util';
+import BaseClass from './base-class';
+import { getFileList } from '../util/fs';
+import { AdapterConstructorInputs } from '../types';
+import { createSignedUploadUrlMutation, importProjectMutation } from '../graphql';
 
 export default class FileUpload extends BaseClass {
   private signedUploadUrlData!: Record<string, any>;
@@ -36,10 +33,10 @@ export default class FileUpload extends BaseClass {
       await this.initApolloClient();
       if (
         !(await cliux.inquire({
-          type: "confirm",
+          type: 'confirm',
           default: false,
-          name: "uploadLastFile",
-          message: "Redeploy with last file upload?",
+          name: 'uploadLastFile',
+          message: 'Redeploy with last file upload?',
         }))
       ) {
         await this.createSignedUploadUrl();
@@ -69,49 +66,33 @@ export default class FileUpload extends BaseClass {
    * @memberof FileUpload
    */
   async createNewProject(): Promise<void> {
-    const {
-      framework,
-      projectName,
-      buildCommand,
-      selectedStack,
-      outputDirectory,
-      environmentName,
-    } = this.config;
+    const { framework, projectName, buildCommand, selectedStack, outputDirectory, environmentName } = this.config;
     await this.apolloClient
       .mutate({
         mutation: importProjectMutation,
         variables: {
           project: {
-            projectType: "FILEUPLOAD",
+            projectType: 'FILEUPLOAD',
             name: projectName,
             cmsStackApiKey: selectedStack?.api_key,
             fileUpload: { uploadUid: this.signedUploadUrlData.uploadUid },
             environment: {
               frameworkPreset: framework,
               outputDirectory: outputDirectory,
-              name: environmentName || "Default",
-              buildCommand: buildCommand || "npm run build",
-              environmentVariables: map(
-                this.envVariables,
-                ({ key, value }) => ({ key, value })
-              ),
+              name: environmentName || 'Default',
+              buildCommand: buildCommand || 'npm run build',
+              environmentVariables: map(this.envVariables, ({ key, value }) => ({ key, value })),
             },
           },
           skipGitData: true,
         },
       })
       .then(({ data: { project } }) => {
-        this.log("New project created successfully", "info");
+        this.log('New project created successfully', 'info');
         const [firstEnvironment] = project.environments;
         this.config.currentConfig = project;
-        this.config.currentConfig.deployments = map(
-          firstEnvironment.deployments.edges,
-          "node"
-        );
-        this.config.currentConfig.environments[0] = omit(
-          this.config.currentConfig.environments[0],
-          ["deployments"]
-        );
+        this.config.currentConfig.deployments = map(firstEnvironment.deployments.edges, 'node');
+        this.config.currentConfig.environments[0] = omit(this.config.currentConfig.environments[0], ['deployments']);
       })
       .catch(async (error) => {
         const canRetry = await this.handleNewProjectCreationError(error);
@@ -133,11 +114,11 @@ export default class FileUpload extends BaseClass {
       name,
       framework,
       environment,
-      "build-command": buildCommand,
-      "output-directory": outputDirectory,
+      'build-command': buildCommand,
+      'output-directory': outputDirectory,
     } = this.config.flags;
 
-    this.fileValidation();
+    // this.fileValidation();
     await this.selectOrg();
     await this.createSignedUploadUrl();
     const { zipName, zipPath, projectName } = await this.archive();
@@ -145,19 +126,19 @@ export default class FileUpload extends BaseClass {
     this.config.projectName =
       name ||
       (await cliux.inquire({
-        type: "input",
-        name: "projectName",
-        message: "Project Name",
+        type: 'input',
+        name: 'projectName',
+        message: 'Project Name',
         default: projectName,
         validate: this.inquireRequireValidation,
       }));
     this.config.environmentName =
       environment ||
       (await cliux.inquire({
-        type: "input",
-        default: "Default",
-        name: "environmentName",
-        message: "Environment Name",
+        type: 'input',
+        default: 'Default',
+        name: 'environmentName',
+        message: 'Environment Name',
         validate: this.inquireRequireValidation,
       }));
     if (framework) {
@@ -167,9 +148,9 @@ export default class FileUpload extends BaseClass {
         }) as Record<string, any>
       ).value as string;
       print([
-        { message: "?", color: "green" },
-        { message: "Framework Preset", bold: true },
-        { message: this.config.framework, color: "cyan" },
+        { message: '?', color: 'green' },
+        { message: 'Framework Preset', bold: true },
+        { message: this.config.framework, color: 'cyan' },
       ]);
     } else {
       await this.detectFramework();
@@ -177,21 +158,19 @@ export default class FileUpload extends BaseClass {
     this.config.buildCommand =
       buildCommand ||
       (await cliux.inquire({
-        type: "input",
-        default: "npm run build",
-        name: "buildCommand",
-        message: "Build Command",
+        type: 'input',
+        default: 'npm run build',
+        name: 'buildCommand',
+        message: 'Build Command',
         validate: this.inquireRequireValidation,
       }));
     this.config.outputDirectory =
       outputDirectory ||
       (await cliux.inquire({
-        type: "input",
-        name: "outputDirectory",
-        message: "Output Directory",
-        default: (this.config.outputDirectories as Record<string, string>)[
-          this.config?.framework || "OTHER"
-        ],
+        type: 'input',
+        name: 'outputDirectory',
+        message: 'Output Directory',
+        default: (this.config.outputDirectories as Record<string, string>)[this.config?.framework || 'OTHER'],
       }));
     await this.handleEnvImportFlow();
   }
@@ -203,10 +182,10 @@ export default class FileUpload extends BaseClass {
    */
   fileValidation() {
     const basePath = this.config.projectBasePath;
-    const packageJsonPath = join(basePath, "package.json");
+    const packageJsonPath = join(basePath, 'package.json');
 
     if (!existsSync(packageJsonPath)) {
-      this.log("Package.json file not found.", "info");
+      this.log('Package.json file not found.', 'info');
       this.exit(1);
     }
   }
@@ -218,16 +197,14 @@ export default class FileUpload extends BaseClass {
    * @memberof FileUpload
    */
   async archive() {
-    ux.action.start("Preparing zip file");
+    ux.action.start('Preparing zip file');
     const projectName = basename(this.config.projectBasePath);
     const zipName = `${Date.now()}_${projectName}.zip`;
     const zipPath = join(this.config.projectBasePath, zipName);
     const zip = new AdmZip();
     const zipEntries = filter(
       await getFileList(this.config.projectBasePath, true, true),
-      (entry) =>
-        !includes(this.config.fileUploadConfig.exclude, entry) &&
-        !includes(entry, ".zip")
+      (entry) => !includes(this.config.fileUploadConfig.exclude, entry) && !includes(entry, '.zip'),
     );
 
     for (const entry of zipEntries) {
@@ -245,12 +222,12 @@ export default class FileUpload extends BaseClass {
     }
 
     const status = await zip.writeZipPromise(zipPath).catch(() => {
-      this.log("Zipping project process failed! Please try again.");
+      this.log('Zipping project process failed! Please try again.');
       this.exit(1);
     });
 
     if (!status) {
-      this.log("Zipping project process failed! Please try again.");
+      this.log('Zipping project process failed! Please try again.');
       this.exit(1);
     }
 
@@ -269,8 +246,8 @@ export default class FileUpload extends BaseClass {
       .mutate({ mutation: createSignedUploadUrlMutation })
       .then(({ data: { signedUploadUrl } }) => signedUploadUrl)
       .catch((error) => {
-        this.log("Something went wrong. Please try again.", "warn");
-        this.log(error, "error");
+        this.log('Something went wrong. Please try again.', 'warn');
+        this.log(error, 'error');
         this.exit(1);
       });
     this.config.uploadUid = this.signedUploadUrlData.uploadUid;
@@ -292,15 +269,15 @@ export default class FileUpload extends BaseClass {
       formData.append(formFieldKey, formFieldValue);
     }
 
-    formData.append("file", createReadStream(filePath) as any, fileName);
+    formData.append('file', createReadStream(filePath) as any, fileName);
 
     await new Promise<void>((resolve) => {
-      ux.action.start("Starting file upload...");
+      ux.action.start('Starting file upload...');
       formData.submit(uploadUrl, (error, res) => {
         if (error) {
-          ux.action.stop("File upload failed!");
-          this.log("File upload failed. Please try again.", "error");
-          this.log(error, "error");
+          ux.action.stop('File upload failed!');
+          this.log('File upload failed. Please try again.', 'error');
+          this.log(error, 'error');
           this.exit(1);
         }
 

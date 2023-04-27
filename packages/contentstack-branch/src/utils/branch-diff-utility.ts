@@ -5,8 +5,8 @@ import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
 import unionWith from 'lodash/unionWith';
 import find from 'lodash/find';
-import { updatedDiff } from 'deep-object-diff';
-import { flatten } from 'flat';
+import isArray from 'lodash/isArray';
+import { diff } from 'just-diff';
 import { cliux, messageHandler, HttpClient, configHandler } from '@contentstack/cli-utilities';
 import {
   BranchOptions,
@@ -181,8 +181,8 @@ function parseCompactText(branchesDiffData: any[]): BranchCompactTextRes {
  * @param {BranchCompactTextRes} branchTextRes
  */
 function printCompactTextView(branchTextRes: BranchCompactTextRes): void {
-  cliux.print('\n');
   if (branchTextRes.modified?.length || branchTextRes.added?.length || branchTextRes.deleted?.length) {
+    cliux.print(' ');
     forEach(branchTextRes.added, (diff: BranchDiffRes) => {
       cliux.print(chalk.green(`+ '${diff.title}' ${startCase(camelCase(diff.type))}`));
     });
@@ -258,17 +258,17 @@ async function prepareBranchVerboseRes(branchDiff: any) {
       unionOfBaseAndCompareBranch = unionWith(baseBranchDiff, compareBranchDiff, customComparator);
     }
 
-    forEach(unionOfBaseAndCompareBranch, (diff) => {
+    forEach(unionOfBaseAndCompareBranch, (diffData) => {
       const baseBranchFieldExists = find(baseBranchDiff, (item) =>
-        item?.uid && diff.uid ? item.uid === diff.uid : item.path === diff.path,
+        item?.uid && diffData.uid ? item.uid === diffData.uid : item.path === diffData.path,
       );
       const compareBranchFieldExists = find(compareBranchDiff, (item) =>
-        item?.uid && diff.uid ? item.uid === diff.uid : item.path === diff.path,
+        item?.uid && diffData.uid ? item.uid === diffData.uid : item.path === diffData.path,
       );
       baseAndCompareBranchDiff({
         baseBranchFieldExists,
         compareBranchFieldExists,
-        diff,
+        diffData,
         listOfModifiedFields,
         listOfDeletedFields,
         listOfAddedFields,
@@ -284,44 +284,80 @@ async function prepareBranchVerboseRes(branchDiff: any) {
  * @method
  * @param params
  */
-function baseAndCompareBranchDiff(params: {
+async function baseAndCompareBranchDiff(params: {
   baseBranchFieldExists: any;
   compareBranchFieldExists: any;
-  diff: any;
+  diffData: any;
   listOfModifiedFields: any[];
   listOfDeletedFields: any[];
   listOfAddedFields: any[];
 }) {
-  const { baseBranchFieldExists, compareBranchFieldExists, diff } = params;
-  const fieldType: string = getFieldType(compareBranchFieldExists, baseBranchFieldExists, diff);
-
+  const { baseBranchFieldExists, compareBranchFieldExists, diffData } = params;
   if (baseBranchFieldExists && compareBranchFieldExists) {
-    const updated = updatedDiff(baseBranchFieldExists, compareBranchFieldExists);
-    let flattenUpdatedObj: object = flatten(updated);
-    forEach(flattenUpdatedObj, (value, key) => {
-      if (key === 'value') {
-        key = diff.path;
+    //System fields
+    if (
+      baseBranchFieldExists.path === 'description' ||
+      baseBranchFieldExists.path === 'title' ||
+      baseBranchFieldExists.path === 'options.singleton'
+    ) {
+      let displayName: string;
+      if (baseBranchFieldExists.path === 'options.singleton') {
+        displayName = 'Single/Multiple';
+      } else if (baseBranchFieldExists.path === 'description') {
+        displayName = 'Description';
+      } else if (baseBranchFieldExists.path === 'title') {
+        displayName = 'Name';
       }
       params.listOfModifiedFields.push({
-        path: key,
-        displayName: diff?.display_name,
-        uid: diff?.uid,
-        fieldType,
+        path: baseBranchFieldExists.path,
+        displayName: displayName,
+        uid: baseBranchFieldExists.path,
+        text: 'metadata',
       });
-    });
+    } else {
+      if(baseBranchFieldExists?.display_name && compareBranchFieldExists?.display_name){
+        const { modified, deleted, added } = await deepDiff(baseBranchFieldExists, compareBranchFieldExists);
+        for (let field of Object.values(added)) {
+          params.listOfAddedFields.push({
+            path: field['path'],
+            displayName: field['displayName'] || 'Metadata',
+            uid: field['uid'],
+            text: field['text'],
+          });
+        }
+  
+        for (let field of Object.values(deleted)) {
+          params.listOfDeletedFields.push({
+            path: field['path'],
+            displayName: field['displayName'] || 'Metadata',
+            uid: field['uid'],
+            text: field['text'],
+          });
+        }
+  
+        for (let field of Object.values(modified)) {
+          params.listOfModifiedFields.push({
+            path: field['path'],
+            displayName: field['displayName'] || 'Metadata',
+            uid: field['uid'],
+            text: field['text'],
+          });
+        }
+      }
+    }
   } else if (baseBranchFieldExists && !compareBranchFieldExists) {
     params.listOfDeletedFields.push({
-      path: baseBranchFieldExists?.path,
-      displayName: diff?.display_name,
+      path: baseBranchFieldExists?.uid,
+      displayName: diffData?.display_name,
       uid: baseBranchFieldExists?.uid,
-      fieldType,
+      text: baseBranchFieldExists?.data_type,
     });
   } else if (!baseBranchFieldExists && compareBranchFieldExists) {
     params.listOfAddedFields.push({
-      path: compareBranchFieldExists?.path,
-      displayName: diff?.display_name,
+      path: compareBranchFieldExists?.uid,
+      displayName: diffData?.display_name,
       uid: compareBranchFieldExists?.uid,
-      fieldType,
+      text: baseBranchFieldExists?.data_type,
     });
   }
 }
@@ -330,22 +366,13 @@ function customComparator(a: any, b: any): boolean {
   return a?.uid && b?.uid ? a.uid === b.uid : a.path === b.path;
 }
 
-function getFieldType(compareBranchFieldExists: any, baseBranchFieldExists: any, diff: any): string {
-  let fieldType: string = 'Metadata Field';
-  const displayName = compareBranchFieldExists?.display_name || baseBranchFieldExists?.display_name;
-  if (displayName) {
-    fieldType = `${displayName} Field`;
-  }
-  return fieldType;
-}
-
 /**
  * print detail text view of two branches differences - deleted, added and modified fields
  * @param {BranchDiffVerboseRes} branchTextRes
  */
 function printVerboseTextView(branchTextRes: BranchDiffVerboseRes): void {
-  cliux.print('\n');
   if (branchTextRes.modified?.length || branchTextRes.added?.length || branchTextRes.deleted?.length) {
+    cliux.print(' ');
     forEach(branchTextRes.added, (diff: BranchDiffRes) => {
       cliux.print(chalk.green(`+ '${diff.title}' ${startCase(camelCase(diff.type))}`));
     });
@@ -369,17 +396,18 @@ function printVerboseTextView(branchTextRes: BranchDiffVerboseRes): void {
 function printModifiedFields(modfiedFields: ModifiedFieldsInput): void {
   if (modfiedFields.modified?.length || modfiedFields.added?.length || modfiedFields.deleted?.length) {
     forEach(modfiedFields.added, (diff: ModifiedFieldsType) => {
-      const title: string = diff.displayName ? diff.displayName : diff.path;
-      cliux.print(`   ${chalk.green(`+ '${title}' ${startCase(camelCase(diff.fieldType))}`)}`);
+      const title: string = diff.path ? diff.path : diff.uid;
+      cliux.print(`   ${chalk.green(`+ "${diff.displayName}" (${diff.path}) ${diff.text} field`)}`);
     });
 
     forEach(modfiedFields.modified, (diff: ModifiedFieldsType) => {
-      cliux.print(`   ${chalk.blue(`± '${diff.path}' ${startCase(camelCase(diff.fieldType))}`)}`);
+      const title: string = diff.path ? diff.path : diff.uid;
+      cliux.print(`   ${chalk.blue(`± "${diff.displayName}" (${diff.path}) ${diff.text} field`)}`);
     });
 
     forEach(modfiedFields.deleted, (diff: ModifiedFieldsType) => {
-      const title: string = diff.displayName ? diff.displayName : diff.path;
-      cliux.print(`   ${chalk.red(`- '${title}' ${startCase(camelCase(diff.fieldType))}`)}`);
+      const title: string = diff.path ? diff.path : diff.uid;
+      cliux.print(`   ${chalk.red(`- "${diff.displayName}" (${diff.path}) ${diff.text} field`)}`);
     });
   }
 }
@@ -400,6 +428,96 @@ function filterBranchDiffDataByModule(branchDiffData: any[]) {
     else if (item.type === 'global_field' || item.type === 'global_fields') moduleRes.global_fields.push(item);
   });
   return moduleRes;
+}
+
+const buildPath = (path, key) => (path === '' ? key : `${path}.${key}`);
+
+async function deepDiff(baseObj, compareObj) {
+  const changes = {
+    modified: {},
+    added: {},
+    deleted: {},
+  };
+  function barseAndCompareBranchDiff(baseObj, compareObj, path = '') {
+    const { schema: baseSchema, path: basePath, ...restBaseObj } = baseObj;
+    const { schema: compareSchema, path: comparePath, ...restCompareObj } = compareObj;
+    const currentPath = buildPath(path, baseObj['uid']);
+    if (restBaseObj['uid'] === restCompareObj['uid']) {
+      const differences = diff(restBaseObj, restCompareObj);
+      const obj = {
+        path: currentPath,
+        uid: restCompareObj['uid'],
+        displayName: restCompareObj['display_name'],
+        text: restCompareObj['data_type'],
+      };
+      if (differences.length) {
+        if (!changes.modified[currentPath]) changes.modified[currentPath] = obj;
+      }
+    }
+
+    //case1:- base & compare schema both exists
+    if (baseSchema?.length && compareSchema?.length && isArray(baseSchema) && isArray(compareSchema)) {
+      const unionOfBaseAndCompareBranch = unionWith(baseSchema, compareSchema, (a, b) => a.uid === b.uid);
+      forEach(unionOfBaseAndCompareBranch, (diffData, key) => {
+        const baseBranchField = find(baseSchema, (item) => item.uid === diffData.uid);
+        const compareBranchField = find(compareSchema, (item) => item.uid === diffData.uid);
+        let newPath: string;
+        if (baseBranchField && !compareBranchField) {
+          newPath = `${currentPath}.${baseBranchField['uid']}`;
+          if (!changes.deleted[newPath]){
+            const obj = {
+              path: newPath,
+              uid: baseBranchField['uid'],
+              displayName: baseBranchField['display_name'],
+              text: baseBranchField['data_type'],
+            };
+            changes.deleted[newPath] = obj;
+          } 
+        } else if (compareBranchField && !baseBranchField) {
+          newPath = `${currentPath}.${compareBranchField['uid']}`;
+          if (!changes.added[newPath]){
+            const obj = {
+              path: newPath,
+              uid: compareBranchField['uid'],
+              displayName: compareBranchField['display_name'],
+              text: compareBranchField['data_type'],
+            };
+            changes.added[newPath] = obj;
+          } 
+        } else if (compareBranchField && baseBranchField) {
+          barseAndCompareBranchDiff(baseBranchField, compareBranchField, currentPath);
+        }
+      });
+    }
+
+    //case2:- base schema  exists only
+    if (baseSchema?.length && !compareSchema?.length && isArray(baseSchema)) {
+      forEach(baseSchema, (base, key) => {
+        const newPath = `${currentPath}.${base['uid']}`;
+        if (!changes.deleted[newPath]) {
+          const obj = { path: newPath, uid: base['uid'], displayName: base['display_name'], text: base['data_type'] };
+          changes.deleted[newPath] = obj;
+        }
+      });
+    }
+    //case3:- compare schema  exists only
+    if (!baseSchema?.length && compareSchema?.length && isArray(compareSchema)) {
+      forEach(compareSchema, (compare, key) => {
+        const newPath = `${currentPath}.${compare['uid']}`;
+        if (!changes.added[newPath]) {
+          const obj = {
+            path: newPath,
+            uid: compare['uid'],
+            displayName: compare['display_name'],
+            text: compare['data_type'],
+          };
+          changes.added[newPath] = obj;
+        }
+      });
+    }
+  }
+  barseAndCompareBranchDiff(baseObj, compareObj);
+  return changes;
 }
 
 export {
