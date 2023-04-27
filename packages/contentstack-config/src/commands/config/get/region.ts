@@ -17,5 +17,6 @@ export default class RegionGetCommand extends Command {
     cliux.print(`Currently using ${currentRegion.name} region`);
     cliux.print(`CDA HOST: ${currentRegion.cda}`);
     cliux.print(`CMA HOST: ${currentRegion.cma}`);
+    cliux.print(`UI HOST: ${currentRegion.uiHost}`);
   }
 }

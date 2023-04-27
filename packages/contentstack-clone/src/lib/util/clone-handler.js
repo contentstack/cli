@@ -6,7 +6,6 @@ const chalk = require('chalk');
 
 let exportCmd = require('@contentstack/cli-cm-export');
 let importCmd = require('@contentstack/cli-cm-import');
-let sdkInstance = require('../../lib/util/contentstack-management-sdk');
 const { CustomAbortController } = require('./abort-controller');
 
 const {
@@ -61,10 +60,12 @@ let master_locale;
 class CloneHandler {
   constructor(opt) {
     config = opt;
-    client = sdkInstance.Client(config);
     cloneCommand = new Clone();
     this.pathDir = opt.pathDir;
     process.stdin.setMaxListeners(50);
+  }
+  setClient(managementSDKClient) {
+    client = managementSDKClient;
   }
 
   handleOrgSelection(options = {}) {
@@ -498,6 +499,11 @@ class CloneHandler {
   async cmdExport() {
     return new Promise((resolve, reject) => {
       const cmd = ['-k', config.source_stack, '-d', __dirname.split('src')[0] + 'contents'];
+      if (config.cloneType === 'a') {
+        config.filteredModules = ['stack'].concat(structureList);
+        cmd.push('-c');
+        cmd.push(path.join(__dirname, 'dummyConfig.json'));
+      }
 
       if (config.source_alias) {
         cmd.push('-a', config.source_alias);
