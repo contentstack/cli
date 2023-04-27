@@ -5,9 +5,10 @@ import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
 import unionWith from 'lodash/unionWith';
 import find from 'lodash/find';
+import { cliux, messageHandler, managementSDKClient, configHandler, HttpClient } from '@contentstack/cli-utilities';
 import isArray from 'lodash/isArray';
 import { diff } from 'just-diff';
-import { cliux, messageHandler, HttpClient, configHandler } from '@contentstack/cli-utilities';
+
 import {
   BranchOptions,
   BranchDiffRes,
@@ -37,9 +38,7 @@ async function fetchBranchesDiff(
   skip = config.skip,
   limit = config.limit,
 ): Promise<any> {
-  const url: string = payload?.module ? `${config.baseUrl}/${payload.module}` : config.baseUrl;
-  payload.url = url;
-  const branchDiffData = await apiRequestHandler(payload, skip, limit);
+  const branchDiffData = await branchCompareSDK(payload, skip, limit);
   const diffData = branchDiffData?.diff;
   const nextUrl = branchDiffData?.next_url || '';
 
@@ -102,6 +101,63 @@ async function apiRequestHandler(payload: BranchDiffPayload, skip?: number, limi
       process.exit(1);
     });
   return result;
+}
+
+/**
+ * branch compare sdk integration
+ * @async
+ * @method
+ * @param payload
+ * @param skip
+ * @param limit
+ * @returns  {*} Promise<any>
+ */
+async function branchCompareSDK(payload: BranchDiffPayload, skip?: number, limit?: number): Promise<any> {
+  const { host } = payload;
+  const managementAPIClient = await managementSDKClient({ host });
+  const branchQuery = managementAPIClient
+    .stack({ api_key: payload.apiKey })
+    .branch(payload.baseBranch)
+    .compare(payload.compareBranch);
+
+  const queryParams = {};
+  if (skip >= 0) queryParams['skip'] = skip;
+  if (limit >= 0) queryParams['limit'] = limit;
+  if (payload?.uid) queryParams['uid'] = payload.uid;
+  const module = payload.module || 'all';
+
+  switch (module) {
+    case 'content_types' || 'content_type':
+      return await branchQuery
+        .contentTypes(queryParams)
+        .then((data) => data)
+        .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner));
+      break;
+    case 'global_fields' || 'global_field':
+      return await branchQuery
+        .globalFields(queryParams)
+        .then((data) => data)
+        .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner));
+      break;
+    case 'all':
+      return await branchQuery
+        .all(queryParams)
+        .then((data) => data)
+        .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner));
+      break;
+    default:
+      handleErrorMsg({ errorMessage: 'Invalid module!' }, payload.spinner);
+  }
+}
+
+function handleErrorMsg(err: { errorCode?: number; errorMessage: string }, spinner) {
+  if (err.errorMessage) {
+    cliux.loaderV2('', spinner);
+    cliux.print(`error: ${err.errorMessage}`, { color: 'red' });
+  } else {
+    cliux.print(`error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
+  }
+  process.exit(1);
 }
 
 /**
@@ -211,10 +267,8 @@ async function parseVerbose(branchesDiffData: any[], payload: BranchDiffPayload)
 
   for (let i = 0; i < modified?.length; i++) {
     const diff: BranchDiffRes = modified[i];
-    const url = `${config.baseUrl}/${payload.module}/${diff?.uid}`;
-    payload.url = url;
     payload.uid = diff?.uid;
-    const branchDiff = await apiRequestHandler(payload);
+    const branchDiff = await branchCompareSDK(payload);
     if (branchDiff) {
       const { listOfModifiedFields, listOfAddedFields, listOfDeletedFields } = await prepareBranchVerboseRes(
         branchDiff,
@@ -315,7 +369,7 @@ async function baseAndCompareBranchDiff(params: {
         text: 'metadata',
       });
     } else {
-      if(baseBranchFieldExists?.display_name && compareBranchFieldExists?.display_name){
+      if (baseBranchFieldExists?.display_name && compareBranchFieldExists?.display_name) {
         const { modified, deleted, added } = await deepDiff(baseBranchFieldExists, compareBranchFieldExists);
         for (let field of Object.values(added)) {
           params.listOfAddedFields.push({
@@ -325,7 +379,7 @@ async function baseAndCompareBranchDiff(params: {
             text: field['text'],
           });
         }
-  
+
         for (let field of Object.values(deleted)) {
           params.listOfDeletedFields.push({
             path: field['path'],
@@ -334,7 +388,7 @@ async function baseAndCompareBranchDiff(params: {
             text: field['text'],
           });
         }
-  
+
         for (let field of Object.values(modified)) {
           params.listOfModifiedFields.push({
             path: field['path'],
@@ -464,7 +518,7 @@ async function deepDiff(baseObj, compareObj) {
         let newPath: string;
         if (baseBranchField && !compareBranchField) {
           newPath = `${currentPath}.${baseBranchField['uid']}`;
-          if (!changes.deleted[newPath]){
+          if (!changes.deleted[newPath]) {
             const obj = {
               path: newPath,
               uid: baseBranchField['uid'],
@@ -472,10 +526,10 @@ async function deepDiff(baseObj, compareObj) {
               text: baseBranchField['data_type'],
             };
             changes.deleted[newPath] = obj;
-          } 
+          }
         } else if (compareBranchField && !baseBranchField) {
           newPath = `${currentPath}.${compareBranchField['uid']}`;
-          if (!changes.added[newPath]){
+          if (!changes.added[newPath]) {
             const obj = {
               path: newPath,
               uid: compareBranchField['uid'],
@@ -483,7 +537,7 @@ async function deepDiff(baseObj, compareObj) {
               text: compareBranchField['data_type'],
             };
             changes.added[newPath] = obj;
-          } 
+          }
         } else if (compareBranchField && baseBranchField) {
           barseAndCompareBranchDiff(baseBranchField, compareBranchField, currentPath);
         }
@@ -529,6 +583,6 @@ export {
   parseVerbose,
   printVerboseTextView,
   filterBranchDiffDataByModule,
-  apiRequestHandler,
+  branchCompareSDK,
   prepareBranchVerboseRes,
 };

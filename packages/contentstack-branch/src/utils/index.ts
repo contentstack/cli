@@ -3,7 +3,8 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { configHandler, HttpClient, cliux } from '@contentstack/cli-utilities';
+import { configHandler, HttpClient, cliux, managementSDKClient, messageHandler } from '@contentstack/cli-utilities';
+import { MergeParams } from 'src/interfaces';
 
 export const getbranchesList = (branchResult, baseBranch: string) => {
   const branches: Record<string, unknown>[] = [];
@@ -97,6 +98,47 @@ export const apiPostRequest = async (payload): Promise<any> => {
       process.exit(1);
     });
 };
+
+export async function getMergeQueueStatus(stackAPIClient, payload): Promise<any> {
+  const mergeJobUID: string = payload.uid;
+  return await stackAPIClient
+    .branch()
+    .mergeQueue(mergeJobUID)
+    .fetch()
+    .then((data) => data)
+    .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }));
+}
+
+export async function executeMergeRequest(stackAPIClient, payload): Promise<any> {
+  const {
+    host,
+    apiKey,
+    params: { base_branch, compare_branch, default_merge_strategy, item_merge_strategies, merge_comment, no_revert },
+  } = payload;
+  const mergeObj: MergeParams = {
+    base_branch,
+    compare_branch,
+    default_merge_strategy,
+    merge_comment,
+    no_revert,
+  };
+
+  const itemMergeStrategies = default_merge_strategy === 'ignore' ? item_merge_strategies : {};
+  return await stackAPIClient
+    .branch()
+    .merge(itemMergeStrategies, mergeObj)
+    .then((data) => data)
+    .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }));
+}
+
+function handleErrorMsg(err: { errorCode?: number; errorMessage: string }) {
+  if (err.errorMessage) {
+    cliux.print(`error: ${err.errorMessage}`, { color: 'red' });
+  } else {
+    cliux.print(`error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
+  }
+  process.exit(1);
+}
 
 export * from './interactive';
 export * from './merge-helper';
