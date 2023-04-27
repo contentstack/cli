@@ -14,7 +14,6 @@ export interface InquirePayload {
   columns?: Array<any>;
   rows?: Array<any>;
   selectAll?: boolean;
-  pageSize?: number;
 }
 export interface Region {
   name: string;

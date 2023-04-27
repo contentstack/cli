@@ -1,0 +1,14 @@
+import { DocumentNode } from "@apollo/client/core";
+declare const userConnectionsQuery: DocumentNode;
+declare const repositoriesQuery: DocumentNode;
+declare const frameworkQuery: DocumentNode;
+declare const fileFrameworkQuery: DocumentNode;
+declare const cmsEnvironmentVariablesQuery: DocumentNode;
+declare const branchesQuery: DocumentNode;
+declare const projectsQuery: DocumentNode;
+declare const deploymentQuery: DocumentNode;
+declare const deploymentLogsQuery: DocumentNode;
+declare const serverlessLogsQuery: DocumentNode;
+declare const latestLiveDeploymentQuery: DocumentNode;
+declare const environmentsQuery: DocumentNode;
+export { projectsQuery, branchesQuery, frameworkQuery, repositoriesQuery, fileFrameworkQuery, userConnectionsQuery, cmsEnvironmentVariablesQuery, deploymentQuery, deploymentLogsQuery, serverlessLogsQuery, latestLiveDeploymentQuery, environmentsQuery, };

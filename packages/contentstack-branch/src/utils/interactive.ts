@@ -91,7 +91,7 @@ export async function selectMergeStrategy(): Promise<string> {
         { name: 'Merge, Ask for Preference', value: 'custom_preferences' },
         { name: 'Overwrite with Compare', value: 'overwrite_with_compare' },
       ],
-      message: 'What merge strategy would you like to choose? <doc link>',
+      message: 'What merge strategy would you like to choose?',
     })
     .then((name) => name as string)
     .catch((err) => {
@@ -131,12 +131,13 @@ export async function selectMergeExecution(): Promise<string> {
       type: 'list',
       name: 'module',
       choices: [
-        { name: 'Execute Merge', value: 'both' },
-        { name: 'Export Merge Summary', value: 'export' },
+        { name: 'Export merge summary', value: 'export' },
+        { name: 'Execute only', value: 'execute' },
+        { name: 'Export summary & Execute immediately', value: 'both' },
         { name: 'Go Back', value: 'previous' },
         { name: 'Start Over', value: 'restart' },
       ],
-      message: 'What would you like to do?',
+      message: 'What do you want to merge?',
     })
     .then((name) => name as string)
     .catch((err) => {
@@ -173,7 +174,7 @@ export async function selectCustomPreferences(module, payload) {
   if (payload.modified?.length || payload.added?.length || payload.deleted?.length) {
     forEach(payload.added, (item: BranchDiffRes) => {
       const row: any = {};
-      row.name = `+ ${item.title}`;
+      row.name = `+${item.title}`;
       row.status = 'added';
       row.value = item;
       tableRows.push(row);
@@ -181,7 +182,7 @@ export async function selectCustomPreferences(module, payload) {
 
     forEach(payload.modified, (item: BranchDiffRes) => {
       const row: any = {};
-      row.name = `± ${item.title}`;
+      row.name = `±${item.title}`;
       row.status = 'modified';
       row.value = item;
       tableRows.push(row);
@@ -189,7 +190,7 @@ export async function selectCustomPreferences(module, payload) {
 
     forEach(payload.deleted, (item: BranchDiffRes) => {
       const row: any = {};
-      row.name = `- ${item.title}`;
+      row.name = `±${item.title}`;
       row.status = 'deleted';
       row.value = item;
       tableRows.push(row);
@@ -203,7 +204,6 @@ export async function selectCustomPreferences(module, payload) {
     message: `Select the ${startCase(camelCase(module))} changes for merge`,
     name: 'mergeContentTypePreferences',
     selectAll: true,
-    pageSize: 10,
     columns: [
       {
         name: 'Merge Prefer Base',
@@ -225,17 +225,17 @@ export async function selectCustomPreferences(module, payload) {
     rows: tableRows,
   });
 
-  let updatedArray = [];
   forEach(selectedStrategies, (strategy: string, index: number) => {
     const selectedItem = tableRows[index];
     if (strategy && selectedItem) {
       delete selectedItem.value.status;
       selectedItem.value.merge_strategy = strategy;
-      updatedArray.push(selectedItem);
+    } else {
+      tableRows.splice(index, 1);
     }
   });
 
-  return updatedArray; // selected items
+  return tableRows; // selected items
 }
 
 export async function askBranchNameConfirmation(): Promise<string> {
