@@ -99,12 +99,9 @@ export const apiPostRequest = async (payload): Promise<any> => {
     });
 };
 
-export async function getMergeQueueStatus(payload): Promise<any> {
-  const { host, apiKey } = payload;
+export async function getMergeQueueStatus(stackAPIClient, payload): Promise<any> {
   const mergeJobUID: string = payload.uid;
-  const managementAPIClient = await managementSDKClient({ host });
-  return await managementAPIClient
-    .stack({ api_key: apiKey })
+  return await stackAPIClient
     .branch()
     .mergeQueue(mergeJobUID)
     .fetch()
@@ -112,7 +109,7 @@ export async function getMergeQueueStatus(payload): Promise<any> {
     .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }));
 }
 
-export async function executeMergeRequest(payload): Promise<any> {
+export async function executeMergeRequest(stackAPIClient, payload): Promise<any> {
   const {
     host,
     apiKey,
@@ -127,9 +124,7 @@ export async function executeMergeRequest(payload): Promise<any> {
   };
 
   const itemMergeStrategies = default_merge_strategy === 'ignore' ? item_merge_strategies : {};
-  const managementAPIClient = await managementSDKClient({ host });
-  return await managementAPIClient
-    .stack({ api_key: apiKey })
+  return await stackAPIClient
     .branch()
     .merge(itemMergeStrategies, mergeObj)
     .then((data) => data)
