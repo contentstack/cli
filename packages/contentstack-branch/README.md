@@ -38,7 +38,7 @@ $ npm install -g @contentstack/cli-cm-branches
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-branches/1.0.0 darwin-arm64 node-v18.11.0
+@contentstack/cli-cm-branches/1.0.0 darwin-arm64 node-v16.17.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -200,8 +200,6 @@ FLAGS
   --comment=<value>              Merge comment
   --compare-branch=<value>       Compare branch name
   --export-summary-path=<value>  Export summary file path
-  --format=<option>              [default: text] [Optional] Type of flags to show branches status view
-                                 <options: text|verbose>
   --no-revert                    If passed, will not create the new revert branch
   --use-merge-summary=<value>    Path of merge summary file
 
