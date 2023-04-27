@@ -137,7 +137,7 @@ export default class FileUpload extends BaseClass {
       "output-directory": outputDirectory,
     } = this.config.flags;
 
-    this.fileValidation();
+    // this.fileValidation();
     await this.selectOrg();
     await this.createSignedUploadUrl();
     const { zipName, zipPath, projectName } = await this.archive();
