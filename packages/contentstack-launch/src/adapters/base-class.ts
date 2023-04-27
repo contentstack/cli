@@ -80,7 +80,7 @@ export default class BaseClass {
   async initApolloClient(): Promise<void> {
     this.apolloClient = await new GraphqlApiClient({
       headers: {
-        "x-cs-cli": this.analyticsInfo,
+        "X-CS-CLI": this.analyticsInfo,
         "x-project-uid": this.config.currentConfig.uid,
         organization_uid: this.config.currentConfig.organizationUid,
       },
@@ -705,7 +705,7 @@ export default class BaseClass {
   async showLogs(): Promise<boolean> {
     this.apolloLogsClient = await new GraphqlApiClient({
       headers: {
-        "x-cs-cli": this.analyticsInfo,
+        "X-CS-CLI": this.analyticsInfo,
         "x-project-uid": this.config.currentConfig.uid,
         organization_uid: this.config.currentConfig.organizationUid,
       },
@@ -713,7 +713,7 @@ export default class BaseClass {
     }).apolloClient;
     this.apolloClient = await new GraphqlApiClient({
       headers: {
-        "x-cs-cli": this.analyticsInfo,
+        "X-CS-CLI": this.analyticsInfo,
         "x-project-uid": this.config.currentConfig.uid,
         organization_uid: this.config.currentConfig.organizationUid,
       },
