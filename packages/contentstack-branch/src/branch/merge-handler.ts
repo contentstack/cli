@@ -38,7 +38,7 @@ export default class MergeHandler {
     this.strategySubOption = options.strategySubOption;
     this.executeOption = options.executeOption;
     this.branchCompareData = options.branchCompareData;
-    this.displayFormat = options.format || 'compact-text';
+    this.displayFormat = options.format;
     this.exportSummaryPath = options.exportSummaryPath;
     this.useMergeSummary = options.useMergeSummary;
     this.userInputs = options;
