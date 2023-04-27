@@ -19,9 +19,12 @@ exports.configWithMToken = async (
   branchName,
   securedAssets,
   moduleName,
+  data,
   exportCommandFlags,
 ) => {
   let externalConfig = require(config);
+  const modules = externalConfig.filteredModules;
+
   defaultConfig.securedAssets = securedAssets;
   defaultConfig.management_token = managementTokens.token;
   defaultConfig.host = host.cma;
@@ -37,6 +40,15 @@ exports.configWithMToken = async (
     }
   }
   defaultConfig = _.merge(defaultConfig, externalConfig);
+
+  if(!defaultConfig.data) {
+    defaultConfig.data = data
+  }
+
+  if (_.isArray(modules)) {
+    defaultConfig.modules.types = _.filter(defaultConfig.modules.types, (module) => _.includes(modules, module));
+  }
+
   await initial(defaultConfig);
 };
 
@@ -109,7 +121,7 @@ exports.configWithAuthToken = async function (
   securedAssets,
   exportCommandFlags,
 ) {
-  let externalConfig = helper.readFile(path.resolve(config));
+  let externalConfig = helper.readFileSync(path.resolve(config));
   defaultConfig.host = host.cma;
   defaultConfig.cdn = host.cda;
   defaultConfig.branchName = branchName;
