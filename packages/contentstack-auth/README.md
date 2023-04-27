@@ -46,11 +46,12 @@ User sessions login
 
 ```
 USAGE
-  $ csdx auth:login [-u <value> | ] [-p <value> | ]
+  $ csdx auth:login [-u <value> | --oauth] [-p <value> | ]
 
 FLAGS
   -p, --password=<value>  Password
   -u, --username=<value>  User name
+  --oauth                 Enables single sign-on (SSO) in Contentstack CLI
 
 DESCRIPTION
   User sessions login
@@ -226,11 +227,12 @@ User sessions login
 
 ```
 USAGE
-  $ csdx login [-u <value> | ] [-p <value> | ]
+  $ csdx login [-u <value> | --oauth] [-p <value> | ]
 
 FLAGS
   -p, --password=<value>  Password
   -u, --username=<value>  User name
+  --oauth                 Enables single sign-on (SSO) in Contentstack CLI
 
 DESCRIPTION
   User sessions login

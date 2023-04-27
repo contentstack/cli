@@ -1,8 +1,11 @@
-import { cliux, logger, HttpClient, configHandler } from '@contentstack/cli-utilities';
+import cliux from './cli-ux';
+import logger from './logger';
+import HttpClient from './http-client';
+import configHandler from './config-handler';
 import * as ContentstackManagementSDK from '@contentstack/management';
 const http = require('http');
 const url = require('url');
-const open = require('open');
+import open from 'open';
 const crypto = require('crypto');
 
 /**
@@ -11,7 +14,6 @@ const crypto = require('crypto');
  */
 class AuthHandler {
   private _host;
-
   private codeVerifier: string;
   private OAuthBaseURL: string;
   private OAuthAppId: string;
@@ -37,14 +39,10 @@ class AuthHandler {
 
   constructor() {
     this.codeVerifier = crypto.pseudoRandomBytes(32).toString('hex');
-    this.OAuthBaseURL = process.env.OAUTH_APP_BASE_URL || '';
-    this.OAuthAppId = process.env.OAUTH_APP_ID || '';
-    this.OAuthClientId = process.env.OAUTH_CLIENT_ID || '';
-    this.OAuthRedirectURL = process.env.OAUTH_APP_REDIRECT_URL || '';
+    this.OAuthAppId = process.env.OAUTH_APP_ID || '6400aa06db64de001a31c8a9';
+    this.OAuthClientId = process.env.OAUTH_CLIENT_ID || 'Ie0FEfTzlfAHL4xM';
+    this.OAuthRedirectURL = process.env.OAUTH_APP_REDIRECT_URL || 'http://localhost:8184';
     this.OAuthScope = '';
-    //   process.env.OAUTH_APP_SCOPE_WITH_ALL_PERMISSIONS ||
-    //   process.env.OAUTH_APP_SCOPE_PERMISSIONS ||
-    //   'user:read cm.stacks.management:read organization:read';
     this.OAuthResponseType = 'code';
     this.authTokenKeyName = 'authtoken';
     this.authEmailKeyName = 'email';
@@ -76,6 +74,16 @@ class AuthHandler {
     };
   }
 
+  async setOAuthBaseURL() {
+    if (configHandler.get('region')['uiHost']) {
+      this.OAuthBaseURL = configHandler.get('region')['uiHost'] || '';
+    } else {
+      throw new Error(
+        'Invalid ui-host URL while authenticating. Please set your region correctly using the command - csdx config:set:region',
+      );
+    }
+  }
+
   /*
    *
    * Login into Contentstack
@@ -92,13 +100,11 @@ class AuthHandler {
             })
             .catch((error) => {
               logger.error('OAuth login failed', error.message);
-              cliux.error('CLI_AUTH_LOGIN_FAILED', { color: 'red' });
               reject(error);
             });
         })
         .catch((error) => {
           logger.error('OAuth login failed', error.message);
-          cliux.error('CLI_AUTH_LOGIN_FAILED', { color: 'red' });
           reject(error);
         });
     });
@@ -111,12 +117,18 @@ class AuthHandler {
           const reqURL = req.url;
           const queryObject = url.parse(reqURL, true).query;
           if (queryObject.code) {
-            cliux.print('Success fetching auth code');
+            cliux.print('Auth code successfully fetched.');
             this.getAccessToken(queryObject.code)
-              .then(() => {
-                cliux.success('Success fetching Access token using Auth Code');
+              .then(async () => {
+                await this.setOAuthBaseURL();
+                cliux.print('Access token fetched using auth code successfully.');
+                cliux.print(
+                  `You can review the access permissions on the page - ${this.OAuthBaseURL}/#!/marketplace/authorized-apps`,
+                );
                 res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.end(`<h1>Thank You!</h1><h2>We know who you are, now you can close this window :)</h2>`);
+                res.end(
+                  `<h1>Successfully authorized!</h1><h2>You can close this window now.</h2><p>You can review the access permissions on - <a href="${this.OAuthBaseURL}/#!/marketplace/authorized-apps" target="_blank">Authorized Apps page</a></p>`,
+                );
                 stopServer();
               })
               .catch((error) => {
@@ -141,13 +153,12 @@ class AuthHandler {
         });
 
         const stopServer = () => {
-          cliux.print('Exiting NodeJS server');
           server.close();
           process.exit();
         };
 
-        server.listen(8080, () => {
-          cliux.print('Waiting for the authorization server to respond');
+        server.listen(8184, () => {
+          cliux.print('Waiting for the authorization server to respond...');
           resolve({ true: true });
         });
       } catch (error) {
@@ -158,21 +169,25 @@ class AuthHandler {
   }
 
   async openOAuthURL(): Promise<object> {
-    return new Promise((resolve) => {
-      const digest = crypto.createHash('sha256').update(this.codeVerifier).digest();
-      const codeChallenge = digest.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    return new Promise(async (resolve, reject) => {
+      try {
+        const digest = crypto.createHash('sha256').update(this.codeVerifier).digest();
+        const codeChallenge = digest.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        await this.setOAuthBaseURL();
+        let url = `${this.OAuthBaseURL}/#!/apps/${this.OAuthAppId}/authorize?response_type=${this.OAuthResponseType}&client_id=${this.OAuthClientId}&redirect_uri=${this.OAuthRedirectURL}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
 
-      let url = `${this.OAuthBaseURL}/#!/apps/${this.OAuthAppId}/authorize?response_type=${this.OAuthResponseType}&client_id=${this.OAuthClientId}&redirect_uri=${this.OAuthRedirectURL}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
-
-      if (this.OAuthScope) {
-        url += `&scope=${encodeURIComponent(this.OAuthScope)}`;
+        if (this.OAuthScope) {
+          url += `&scope=${encodeURIComponent(this.OAuthScope)}`;
+        }
+        cliux.print(
+          'This will automatically start the browser and open the below URL, if it does not, you can copy and paste the below URL in the browser without terminating this command.',
+          { color: 'yellow' },
+        );
+        cliux.print(url, { color: 'green' });
+        resolve(open(url));
+      } catch (error) {
+        reject(error);
       }
-      cliux.print(
-        'This will automatically start the browser and open below URL, if this does not, you can copy and paste the below URL in browser without terminating this command.',
-        { color: 'yellow' },
-      );
-      cliux.print(url, { color: 'green' });
-      resolve(open(url));
     });
   }
 
@@ -186,6 +201,7 @@ class AuthHandler {
         redirect_uri: this.OAuthRedirectURL,
         code: code,
       };
+      this.setOAuthBaseURL();
       const httpClient = new HttpClient().headers(headers).asFormParams();
       httpClient
         .post(`${this.OAuthBaseURL}/apps-api/apps/token`, payload)
@@ -201,7 +217,7 @@ class AuthHandler {
         })
         .then(resolve)
         .catch((error) => {
-          cliux.error('Error occoured while fetching access token, run command - csdx auth:login --oauth');
+          cliux.error('An error occoured while fetching the access token, run the command - csdx auth:login --oauth');
           cliux.error(error);
           reject(error);
         });
@@ -297,12 +313,22 @@ class AuthHandler {
           redirect_uri: this.OAuthRedirectURL,
           refresh_token: configOauthRefreshToken,
         };
+        this.setOAuthBaseURL();
         const httpClient = new HttpClient().headers(headers).asFormParams();
         httpClient
           .post(`${this.OAuthBaseURL}/apps-api/apps/token`, payload)
           .then(({ data }) => {
-            if (data.error) {
-              const errorMessage = data.message ? (data.message[0] ? data.message[0] : data.message) : data.error;
+            if (data.error || (data.statusCode != 200 && data.message)) {
+              let errorMessage = '';
+              if (data.message) {
+                if (data.message[0]) {
+                  errorMessage = data.message[0];
+                } else {
+                  errorMessage = data.message;
+                }
+              } else {
+                errorMessage = data.error;
+              }
               reject(errorMessage);
             } else {
               if (data['access_token'] && data['refresh_token']) {
@@ -314,13 +340,13 @@ class AuthHandler {
           })
           .then(resolve)
           .catch((error) => {
-            cliux.error('Error occoured while refreshing token');
+            cliux.error('An error occoured while refreshing the token');
             cliux.error(error);
             reject(error);
           });
       } else {
-        cliux.error('Invalid/Empty Refresh token, run command - csdx auth:login --oauth');
-        reject('Invalid/Empty Refresh token');
+        cliux.error('Invalid/Empty refresh token, run the command- csdx auth:login --oauth');
+        reject('Invalid/Empty refresh token');
       }
     });
   }
@@ -345,8 +371,8 @@ class AuthHandler {
             reject(error);
           });
       } else {
-        cliux.error('Invalid/Empty Access token, run command - csdx auth:login --oauth');
-        reject('Invalid/Empty Access token');
+        cliux.error('Invalid/Empty access token, run the command - csdx auth:login --oauth');
+        reject('Invalid/Empty access token');
       }
     });
   }
@@ -358,6 +384,18 @@ class AuthHandler {
     );
   }
 
+  async getAuthorisationType(): Promise<any> {
+    return configHandler.get(this.authorisationTypeKeyName) ? configHandler.get(this.authorisationTypeKeyName) : false;
+  }
+
+  async isAuthorisationTypeBasic(): Promise<boolean> {
+    return configHandler.get(this.authorisationTypeKeyName) === this.authorisationTypeAUTHValue ? true : false;
+  }
+
+  async isAuthorisationTypeOAuth(): Promise<boolean> {
+    return configHandler.get(this.authorisationTypeKeyName) === this.authorisationTypeOAUTHValue ? true : false;
+  }
+
   checkExpiryAndRefresh = (force: boolean = false) => this.compareOAuthExpiry(force);
 
   async compareOAuthExpiry(force: boolean = false) {
@@ -365,25 +403,22 @@ class AuthHandler {
     const authorisationType = configHandler.get(this.authorisationTypeKeyName);
     if (oauthDateTime && authorisationType === this.authorisationTypeOAUTHValue) {
       const now = new Date();
-      //   const now = new Date(configHandler.get('oauthDateTime2'));
-
       const oauthDate = new Date(oauthDateTime);
       const oauthValidUpto = new Date();
-      oauthValidUpto.setTime(oauthDate.getTime() + 50 * 60 * 1000);
+      oauthValidUpto.setTime(oauthDate.getTime() + 59 * 60 * 1000);
       if (force) {
-        console.log('Force refreshing token');
+        cliux.print('Force refreshing the token');
         return this.refreshToken();
       } else {
         if (oauthValidUpto > now) {
-          console.log('Valid/unexpired Token');
           return Promise.resolve();
         } else {
-          console.log('Token is expired, refreshing token');
+          cliux.print('Token expired, refreshing the token');
           return this.refreshToken();
         }
       }
     } else {
-      console.log('no oauth set');
+      cliux.print('No OAuth set');
       return this.unsetConfigData();
     }
   }

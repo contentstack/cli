@@ -9,17 +9,28 @@ function validURL(str) {
       '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
       '(\\#[-a-z\\d_]*)?$',
     'i',
-  )
+  );
   return Boolean(pattern.test(str));
 }
 
 // Available region list
 const regions = {
-  NA: { cma: 'https://api.contentstack.io', cda: 'https://cdn.contentstack.io', name: 'NA' },
-  EU: { cma: 'https://eu-api.contentstack.com', cda: 'https://eu-cdn.contentstack.com', name: 'EU' },
+  NA: {
+    cma: 'https://api.contentstack.io',
+    cda: 'https://cdn.contentstack.io',
+    uiHost: 'https://app.contentstack.com',
+    name: 'NA',
+  },
+  EU: {
+    cma: 'https://eu-api.contentstack.com',
+    cda: 'https://eu-cdn.contentstack.com',
+    uiHost: 'https://eu-app.contentstack.com',
+    name: 'EU',
+  },
   'AZURE-NA': {
     cma: 'https://azure-na-api.contentstack.com',
     cda: 'https://azure-na-cdn.contentstack.com',
+    uiHost: 'https://azure-na-app.contentstack.com',
     name: 'AZURE-NA',
   },
 };
@@ -90,7 +101,7 @@ class UserConfig {
    * @returns {boolean} True if contains cma, cda and region property otherwise false
    */
   validateRegion(regionObject) {
-    if (regionObject.cma && regionObject.cda && regionObject.name) {
+    if (regionObject.cma && regionObject.cda && regionObject.uiHost && regionObject.name) {
       if (validURL(regionObject.cma) && validURL(regionObject.cda)) return true;
     }
     return false;
@@ -106,6 +117,7 @@ class UserConfig {
     sanitizedRegion = {
       cma: regionObject.cma,
       cda: regionObject.cda,
+      uiHost: regionObject.uiHost,
       name: regionObject.name,
     };
 
