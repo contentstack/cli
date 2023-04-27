@@ -54,7 +54,7 @@ type ConfigType = {
   Record<string, any>;
 
 type GraphqlHeaders = {
-  "x-cs-cli": string;
+  "X-CS-CLI": string;
   authtoken?: string;
   "x-cs-cli-id"?: any;
   authorization?: string;
