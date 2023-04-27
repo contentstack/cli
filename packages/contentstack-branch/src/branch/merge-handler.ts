@@ -17,7 +17,7 @@ import {
 } from '../utils';
 import forEach from 'lodash/forEach';
 
-const enableEntryExp = true;
+const enableEntryExp = false;
 
 export default class MergeHandler {
   private strategy: string;
@@ -39,7 +39,7 @@ export default class MergeHandler {
     this.executeOption = options.executeOption;
     this.branchCompareData = options.branchCompareData;
     this.displayFormat = options.format;
-    this.exportSummaryPath = options.exportSummaryPath;
+    this.exportSummaryPath = options.exportSummaryPath || path.resolve(process.cwd());
     this.useMergeSummary = options.useMergeSummary;
     this.userInputs = options;
     this.mergeSettings = {
@@ -129,6 +129,8 @@ export default class MergeHandler {
         if (this.strategy !== 'custom_preferences' && this.strategy !== 'overwrite_with_compare') {
           this.strategySubOption = null;
           return await this.collectMergeSettings();
+        } else {
+          return await this.restartMergeProcess();
         }
       } else if (executionResponse === 'restart') {
         return await this.restartMergeProcess();
@@ -238,10 +240,6 @@ export default class MergeHandler {
   }
 
   async restartMergeProcess() {
-    /**
-     * clean up the user inputs
-     * start the process
-     */
     if (!this.userInputs.strategy) {
       this.strategy = null;
     }
