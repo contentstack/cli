@@ -209,6 +209,10 @@ jobs:
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_launch == 'true'}}
         working-directory: ./packages/contentstack-launch
         run: npm install
+      - name: Compiling launch
+        if: ${{ steps.launch-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-launch
+        run: npm run prepack
       - name: Publishing launch
         uses: JS-DevTools/npm-publish@v1
         if: ${{ steps.launch-installation.conclusion == 'success'  }}
