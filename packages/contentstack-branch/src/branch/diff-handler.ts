@@ -83,6 +83,7 @@ export default class BranchDiffHandler {
     payload.spinner = spinner;
     const branchDiffData = await fetchBranchesDiff(payload);
     const diffData = filterBranchDiffDataByModule(branchDiffData);
+    cliux.loaderV2('', spinner);
    
     if(this.options.module === 'all'){
       for (let module in diffData) {
@@ -96,7 +97,6 @@ export default class BranchDiffHandler {
       this.displaySummary(branchDiff, this.options.module);
       await this.displayBranchDiffTextAndVerbose(branchDiff, payload);
     }
-    cliux.loaderV2('', spinner);
   }
 
   /**
@@ -105,7 +105,7 @@ export default class BranchDiffHandler {
    * @memberof BranchDiff
    */
   displaySummary(branchDiffData: any[], module: string): void {
-    cliux.print('\n');
+    cliux.print(' ');
     cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
     const diffSummary = parseSummary(branchDiffData, this.options.baseBranch, this.options.compareBranch);
     printSummary(diffSummary);
@@ -117,12 +117,14 @@ export default class BranchDiffHandler {
    * @memberof BranchDiff
    */
   async displayBranchDiffTextAndVerbose(branchDiffData: any[], payload: BranchDiffPayload): Promise<void> {
-    cliux.print('\n');
+    const spinner = cliux.loaderV2('Loading branch differences...');
     if (this.options.format === 'compact-text') {
       const branchTextRes = parseCompactText(branchDiffData);
+      cliux.loaderV2('', spinner);
       printCompactTextView(branchTextRes);
     } else if (this.options.format === 'detailed-text') {
       const verboseRes = await parseVerbose(branchDiffData, payload);
+      cliux.loaderV2('', spinner);
       printVerboseTextView(verboseRes);
     }
   }
