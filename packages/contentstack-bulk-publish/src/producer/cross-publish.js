@@ -157,6 +157,7 @@ async function getSyncEntries(
         environment: queryParamsObj.environment,
         branch: config.branch,
       });
+      Stack.setHost(config.cda)
 
       const syncData = {};
 
