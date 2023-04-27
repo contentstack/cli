@@ -70,6 +70,7 @@ export default class BranchMergeCommand extends Command {
         stackAPIKey: branchMergeFlags['stack-api-key'],
         baseBranch: branchMergeFlags['base-branch'],
         compareBranch: branchMergeFlags['compare-branch'],
+        host: this.cmaHost,
         format: 'compact-text',
       });
       await new MergeHandler({
@@ -85,6 +86,7 @@ export default class BranchMergeCommand extends Command {
         format: 'compact-text',
         exportSummaryPath: branchMergeFlags['export-summary-path'],
         useMergeSummary: branchMergeFlags['use-merge-summary'],
+        host: this.cmaHost,
       }).start();
     } catch (error) {
       console.log('Error in Merge operations', error);
