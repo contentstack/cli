@@ -37,7 +37,7 @@ export default class MergeHandler {
     this.strategySubOption = options.strategySubOption;
     this.executeOption = options.executeOption;
     this.branchCompareData = options.branchCompareData;
-    this.displayFormat = options.format;
+    this.displayFormat = options.format || 'compactText';
     this.exportSummaryPath = options.exportSummaryPath;
     this.useMergeSummary = options.useMergeSummary;
     this.userInputs = options;
@@ -214,7 +214,6 @@ export default class MergeHandler {
         scriptFolderPath = generateMergeScripts(this.mergeSettings.mergeContent);
       }
 
-      cliux.loader('Merging the changes');
       spinner = cliux.loaderV2('Merging the changes...');
       const mergeResponse = await executeMerge(this.stackAPIKey, mergePayload);
       cliux.loaderV2('', spinner);
@@ -223,13 +222,10 @@ export default class MergeHandler {
       if (enableEntryExp) {
         let newScriptFolderPath = renameScriptFolder(mergeResponse.uid, scriptFolderPath);
 
-        cliux.success(`Success! Merge has been completed and we have generated entry migration files in folder
-        ${newScriptFolderPath}`);
+        cliux.success(`Success! We have generated entry migration files in folder ${newScriptFolderPath}`);
 
         cliux.print(
-          `Kindly follow the steps in the following guide https://www.contentstack.com/docs/developers/cli/migrate-branch-
-        entries to undate the migration scripts and then run the following command
-        csdx cm:stacks:migration --multiple --file-path ./${newScriptFolderPath} --config compare-branch:<value> --branch <value> --stack-api-key <value>`,
+          `Kindly follow the steps in the following guide https://www.contentstack.com/docs/developers/cli/migrate-branch-entries to update the migration scripts and then run the following command csdx cm:stacks:migration --multiple --file-path ./${newScriptFolderPath} --config compare-branch:<value> --branch <value> --stack-api-key <value>`,
           { color: 'blue' },
         );
       }
