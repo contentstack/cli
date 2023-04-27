@@ -1,7 +1,7 @@
 import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
 import path from 'path';
-import { cliux } from '@contentstack/cli-utilities';
+import { cliux, managementSDKClient } from '@contentstack/cli-utilities';
 import { BranchDiffPayload } from '../interfaces/index';
 import {
   askCompareBranch,
@@ -12,6 +12,8 @@ import {
   apiPostRequest,
   apiGetRequest,
   writeFile,
+  executeMergeRequest,
+  getMergeQueueStatus,
 } from './';
 
 import config from '../config';
@@ -52,6 +54,7 @@ export const displayBranchStatus = async (options) => {
     apiKey: options.stackAPIKey,
     baseBranch: options.baseBranch,
     compareBranch: options.compareBranch,
+    host: options.host,
   };
 
   const branchDiffData = await branchDiff.fetchBranchesDiff(payload);
@@ -89,41 +92,24 @@ export const displayMergeSummary = (options) => {
       branchDiff.printVerboseTextView(options.compareData[module]);
     }
   }
+  cliux.print(' ');
 };
 
-export const executeMerge = async (apiKey, mergePayload): Promise<any> => {
-  const mergeResponse = await apiPostRequest({
-    apiKey: apiKey,
-    url: config.mergeUrl,
-    params: {
-      base_branch: mergePayload.base_branch,
-      compare_branch: mergePayload.compare_branch,
-      default_merge_strategy: mergePayload.default_merge_strategy,
-      merge_comment: mergePayload.merge_comment,
-      no_revert: mergePayload.no_revert,
-    },
-    body:
-      mergePayload.default_merge_strategy === 'ignore'
-        ? { item_merge_strategies: mergePayload.item_merge_strategies }
-        : {},
-  });
-
+export const executeMerge = async (apiKey, mergePayload, host): Promise<any> => {
+  const stackAPIClient = await (await managementSDKClient({ host })).stack({ api_key: apiKey });
+  const mergeResponse = await executeMergeRequest(stackAPIClient, { params: mergePayload });
   if (mergeResponse.merge_details?.status === 'in_progress') {
     // TBD call the queue with the id
-    return await fetchMergeStatus({ apiKey, uid: mergeResponse.uid });
+    return await fetchMergeStatus(stackAPIClient, { uid: mergeResponse.uid });
   } else if (mergeResponse.merge_details?.status === 'complete') {
     // return the merge id success
     return mergeResponse;
   }
 };
 
-export const fetchMergeStatus = async (mergePayload): Promise<any> => {
+export const fetchMergeStatus = async (stackAPIClient, mergePayload): Promise<any> => {
   return new Promise(async (resolve, reject) => {
-    const mergeStatusResponse = await apiGetRequest({
-      apiKey: mergePayload.apiKey,
-      url: `${config.mergeQueueUrl}/${mergePayload.uid}`,
-      params: {},
-    });
+    const mergeStatusResponse = await getMergeQueueStatus(stackAPIClient, { uid: mergePayload.uid });
 
     if (mergeStatusResponse?.queue?.length >= 1) {
       const mergeRequestStatusResponse = mergeStatusResponse.queue[0];
@@ -132,7 +118,7 @@ export const fetchMergeStatus = async (mergePayload): Promise<any> => {
         resolve(mergeRequestStatusResponse);
       } else if (mergeStatus === 'in-progress' || mergeStatus === 'in_progress') {
         setTimeout(async () => {
-          await fetchMergeStatus(mergePayload).then(resolve).catch(reject);
+          await fetchMergeStatus(stackAPIClient, mergePayload).then(resolve).catch(reject);
         }, 5000);
       } else if (mergeStatus === 'failed') {
         if (mergeRequestStatusResponse?.errors?.length > 0) {

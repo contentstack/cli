@@ -31,7 +31,7 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
-    "@contentstack/management": "^1.6.1",
+    "@contentstack/management": "file:file/path",
     "@oclif/core": "^2.3.0",
     "axios": "1.3.4",
     "chalk": "^4.0.0",
