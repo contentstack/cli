@@ -200,8 +200,6 @@ FLAGS
   --comment=<value>              Merge comment
   --compare-branch=<value>       Compare branch name
   --export-summary-path=<value>  Export summary file path
-  --format=<option>              [default: text] [Optional] Type of flags to show branches status view
-                                 <options: text|verbose>
   --no-revert                    If passed, will not create the new revert branch
   --use-merge-summary=<value>    Path of merge summary file
 
