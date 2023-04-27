@@ -1,5 +1,5 @@
 const { Command } = require('@contentstack/cli-command');
-const { configHandler, flags, isAuthenticated } = require('@contentstack/cli-utilities');
+const { configHandler, flags, isAuthenticated, managementSDKClient } = require('@contentstack/cli-utilities');
 const { CloneHandler } = require('../../../lib/util/clone-handler');
 let config = require('../../../lib/util/dummyConfig.json');
 const path = require('path');
@@ -74,6 +74,8 @@ class StackCloneCommand extends Command {
         config.cdn = this.cdaHost;
         config.pathDir = pathdir;
         const cloneHandler = new CloneHandler(config);
+        const managementAPIClient = await managementSDKClient(config);
+        cloneHandler.setClient(managementAPIClient);
         cloneHandler.execute().catch();
       };
 
