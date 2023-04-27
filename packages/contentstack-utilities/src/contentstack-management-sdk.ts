@@ -104,14 +104,6 @@ class ManagementSDKInitiator {
       }
     }
 
-    if (config.bulkPublish) {
-      let userUid = configHandler.get('userUid')
-      if (userUid) {
-        if (!option.headers) option.headers = {};
-        option.headers['x-user-uid'] = userUid;
-      }
-    }
-
     return client(option);
   }
 }
