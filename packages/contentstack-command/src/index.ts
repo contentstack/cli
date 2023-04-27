@@ -60,6 +60,10 @@ abstract class ContentstackCommand extends Command {
     return cda;
   }
 
+  get uiHost() {
+    return this.region.uiHost;
+  }
+
   get cdaAPIUrl() {
     let cda = this.region.cda;
     return cda.startsWith('http') ? cda : `https://${cda}`;
