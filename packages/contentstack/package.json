@@ -141,7 +141,7 @@
       "@contentstack/cli-cm-migrate-rte",
       "@contentstack/cli-migration",
       "@contentstack/cli-cm-bulk-publish",
-      "@contentstack/launch-cli"
+      "@contentstack/cli-launch"
     ],
     "hooks": {
       "prerun": [
