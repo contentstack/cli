@@ -20,6 +20,8 @@ class PublishEntriesCommand extends Command {
     entriesFlags.bulkPublish = entriesFlags['bulk-publish'] || entriesFlags.bulkPublish;
     entriesFlags.publishAllContentTypes =
       entriesFlags['publish-all-content-types'] || entriesFlags.publishAllContentTypes || false;
+    entriesFlags.apiVersion = entriesFlags['api-version']
+    delete entriesFlags['api-version'];
     delete entriesFlags['retry-failed'];
     delete entriesFlags['content-types'];
     delete entriesFlags['bulk-publish'];
