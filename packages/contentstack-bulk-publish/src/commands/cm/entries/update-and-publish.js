@@ -120,8 +120,9 @@ UpdateAndPublishCommand.flags = {
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
   }),
-  apiVersion: flags.string({
-    description : "API Version to be used (Recommended value is 3.2)",
+  'api-version': flags.string({
+    description : "API Version to be used",
+    default: '3'
   }),
   'content-types': flags.string({
     description: 'The Contenttypes from which entries will be published',
