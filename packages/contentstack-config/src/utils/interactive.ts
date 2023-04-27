@@ -35,7 +35,13 @@ export const askCustomRegion = async (): Promise<any> => {
     message: 'CLI_CONFIG_INQUIRE_REGION_CDA',
   });
 
-  return { name, cma, cda };
+  const uiHost = await cliux.inquire<string>({
+    type: 'input',
+    name: 'ui-host',
+    message: 'CLI_CONFIG_INQUIRE_REGION_UI_HOST',
+  });
+
+  return { name, cma, cda, uiHost };
 };
 
 export async function askStackAPIKey(): Promise<string> {
