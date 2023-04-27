@@ -1,7 +1,7 @@
 import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
 import path from 'path';
-import { cliux } from '@contentstack/cli-utilities';
+import { cliux, managementSDKClient } from '@contentstack/cli-utilities';
 import { BranchDiffPayload } from '../interfaces/index';
 import {
   askCompareBranch,
@@ -63,21 +63,21 @@ export const displayBranchStatus = async (options) => {
   let parsedResponse = {};
   for (let module in diffData) {
     const branchModuleData = diffData[module];
-      payload.module = module;
-      cliux.print(' ');
-      cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
-      const diffSummary = branchDiff.parseSummary(branchModuleData, options.baseBranch, options.compareBranch);
-      branchDiff.printSummary(diffSummary);
-      // cliux.print(`Differences in '${options.compareBranch}' compared to '${options.baseBranch}':`);
-      if (options.format === 'text') {
-        const branchTextRes = branchDiff.parseCompactText(branchModuleData);
-        branchDiff.printCompactTextView(branchTextRes);
-        parsedResponse[module] = branchTextRes;
-      } else if (options.format === 'verbose') {
-        const verboseRes = await branchDiff.parseVerbose(branchModuleData, payload);
-        branchDiff.printVerboseTextView(verboseRes);
-        parsedResponse[module] = verboseRes;
-      }
+    payload.module = module;
+    cliux.print(' ');
+    cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
+    const diffSummary = branchDiff.parseSummary(branchModuleData, options.baseBranch, options.compareBranch);
+    branchDiff.printSummary(diffSummary);
+    // cliux.print(`Differences in '${options.compareBranch}' compared to '${options.baseBranch}':`);
+    if (options.format === 'text') {
+      const branchTextRes = branchDiff.parseCompactText(branchModuleData);
+      branchDiff.printCompactTextView(branchTextRes);
+      parsedResponse[module] = branchTextRes;
+    } else if (options.format === 'verbose') {
+      const verboseRes = await branchDiff.parseVerbose(branchModuleData, payload);
+      branchDiff.printVerboseTextView(verboseRes);
+      parsedResponse[module] = verboseRes;
+    }
   }
   return parsedResponse;
 };
@@ -95,28 +95,20 @@ export const displayMergeSummary = (options) => {
 };
 
 export const executeMerge = async (apiKey, mergePayload, host): Promise<any> => {
-  const mergeResponse = await executeMergeRequest({
-    apiKey: apiKey,
-    params: mergePayload,
-    host,
-  });
-
+  const stackAPIClient = await (await managementSDKClient({ host })).stack({ api_key: apiKey });
+  const mergeResponse = await executeMergeRequest(stackAPIClient, { params: mergePayload });
   if (mergeResponse.merge_details?.status === 'in_progress') {
     // TBD call the queue with the id
-    return await fetchMergeStatus({ apiKey, uid: mergeResponse.uid, host });
+    return await fetchMergeStatus(stackAPIClient, { uid: mergeResponse.uid });
   } else if (mergeResponse.merge_details?.status === 'complete') {
     // return the merge id success
     return mergeResponse;
   }
 };
 
-export const fetchMergeStatus = async (mergePayload): Promise<any> => {
+export const fetchMergeStatus = async (stackAPIClient, mergePayload): Promise<any> => {
   return new Promise(async (resolve, reject) => {
-    const mergeStatusResponse = await getMergeQueueStatus({
-      apiKey: mergePayload.apiKey,
-      uid: mergePayload.uid,
-      host: mergePayload.host,
-    });
+    const mergeStatusResponse = await getMergeQueueStatus(stackAPIClient, { uid: mergePayload.uid });
 
     if (mergeStatusResponse?.queue?.length >= 1) {
       const mergeRequestStatusResponse = mergeStatusResponse.queue[0];
@@ -125,7 +117,7 @@ export const fetchMergeStatus = async (mergePayload): Promise<any> => {
         resolve(mergeRequestStatusResponse);
       } else if (mergeStatus === 'in-progress' || mergeStatus === 'in_progress') {
         setTimeout(async () => {
-          await fetchMergeStatus(mergePayload).then(resolve).catch(reject);
+          await fetchMergeStatus(stackAPIClient, mergePayload).then(resolve).catch(reject);
         }, 5000);
       } else if (mergeStatus === 'failed') {
         if (mergeRequestStatusResponse?.errors?.length > 0) {
