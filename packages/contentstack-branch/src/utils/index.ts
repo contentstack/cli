@@ -115,7 +115,7 @@ export async function executeMergeRequest(stackAPIClient, payload): Promise<any>
     apiKey,
     params: { base_branch, compare_branch, default_merge_strategy, item_merge_strategies, merge_comment, no_revert },
   } = payload;
-  const mergeObj: MergeParams = {
+  const queryParams: MergeParams = {
     base_branch,
     compare_branch,
     default_merge_strategy,
@@ -123,19 +123,19 @@ export async function executeMergeRequest(stackAPIClient, payload): Promise<any>
     no_revert,
   };
 
-  const itemMergeStrategies = default_merge_strategy === 'ignore' ? item_merge_strategies : {};
+  const itemMergeStrategies = default_merge_strategy === 'ignore' ? { item_merge_strategies } : {};
   return await stackAPIClient
     .branch()
-    .merge(itemMergeStrategies, mergeObj)
+    .merge(itemMergeStrategies, queryParams)
     .then((data) => data)
     .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }));
 }
 
 function handleErrorMsg(err: { errorCode?: number; errorMessage: string }) {
   if (err.errorMessage) {
-    cliux.print(`error: ${err.errorMessage}`, { color: 'red' });
+    cliux.print(`\n error: ${err.errorMessage}`, { color: 'red' });
   } else {
-    cliux.print(`error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
+    cliux.print(`\n error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
   }
   process.exit(1);
 }
