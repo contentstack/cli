@@ -15,6 +15,8 @@ class UpdateAndPublishCommand extends Command {
     addFieldsFlags.retryFailed = addFieldsFlags['retry-failed'] || addFieldsFlags.retryFailed || false;
     addFieldsFlags.contentTypes = addFieldsFlags['content-types'] || addFieldsFlags.contentTypes;
     addFieldsFlags.bulkPublish = addFieldsFlags['bulk-publish'] || addFieldsFlags.bulkPublish;
+    addFieldsFlags.apiVersion = addFieldsFlags['api-version'];
+    delete addFieldsFlags['api-version'];
     delete addFieldsFlags['retry-failed'];
     delete addFieldsFlags['content-types'];
     delete addFieldsFlags['bulk-publish'];

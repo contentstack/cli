@@ -16,6 +16,8 @@ class PublishModifiedCommand extends Command {
     entryEditsFlags.contentTypes = entryEditsFlags['content-types'] || entryEditsFlags.contentTypes;
     entryEditsFlags.bulkPublish = entryEditsFlags['bulk-publish'] || entryEditsFlags.bulkPublish;
     entryEditsFlags.sourceEnv = entryEditsFlags['source-env'] || entryEditsFlags.sourceEnv;
+    entryEditsFlags.apiVersion = entryEditsFlags['api-version']
+    delete entryEditsFlags['api-version']
     delete entryEditsFlags['retry-failed'];
     delete entryEditsFlags['content-types'];
     delete entryEditsFlags['bulk-publish'];
