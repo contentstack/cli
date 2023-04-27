@@ -217,7 +217,6 @@ async function performBulkPublish(data, _config, queue) {
   let conf;
   const bulkPublishObj = data.obj;
   const stack = bulkPublishObj.stack;
-  let userUid = configHandler.get('userUid');
   let payload = {}
   switch (bulkPublishObj.Type) {
     case 'entry':
@@ -227,16 +226,9 @@ async function performBulkPublish(data, _config, queue) {
         environments: bulkPublishObj.environments,
       };
       payload['details'] = conf;
-      if (bulkPublishObj.apiVersion) {
-        if (!userUid) {
-          console.log(
-            chalk.yellow(
-              `You need to login to use Nested-Reference Publish feature. Continuing with regular bulk-publish for now.`,
-            ),
-          );
-        }
-        if (!isNaN(bulkPublishObj.apiVersion)) {
-          payload['api_version'] = bulkPublishObj.apiVersion
+      if (bulkPublishObj['api-version']) {
+        if (!isNaN(bulkPublishObj['api-version'])) {
+          payload['api_version'] = bulkPublishObj['api-version']
         } else {
           console.log(
             chalk.yellow(
@@ -293,16 +285,9 @@ async function performBulkPublish(data, _config, queue) {
         environments: bulkPublishObj.environments,
       };
       payload['details'] = conf;
-      if (bulkPublishObj.apiVersion) {
-        if (!userUid) {
-          console.log(
-            chalk.yellow(
-              `You need to login to use Nested-Reference Publish feature. Continuing with regular bulk-publish for now.`,
-            ),
-          );
-        }
-        if (!isNaN(bulkPublishObj.apiVersion)) {
-          payload['api_version'] = bulkPublishObj.apiVersion
+      if (bulkPublishObj['api-version']) {
+        if (!isNaN(bulkPublishObj['api-version'])) {
+          payload['api_version'] = bulkPublishObj['api-version']
         } else {
           console.log(
             chalk.yellow(
@@ -361,7 +346,6 @@ async function performBulkUnPublish(data, _config, queue) {
   let conf;
   const bulkUnPublishObj = data.obj;
   const stack = bulkUnPublishObj.stack;
-  let userUid = configHandler.get('userUid')
   let payload = {}
   switch (bulkUnPublishObj.Type) {
     case 'entry':
@@ -371,16 +355,9 @@ async function performBulkUnPublish(data, _config, queue) {
         environments: bulkUnPublishObj.environments,
       };
       payload['details'] = conf;
-      if (bulkPublishObj.apiVersion) {
-        if (!userUid) {
-          console.log(
-            chalk.yellow(
-              `You need to login to use Nested-Reference Publish feature. Continuing with regular bulk-publish for now.`,
-            ),
-          );
-        }
-        if (!isNaN(bulkPublishObj.apiVersion)) {
-          payload['api_version'] = bulkPublishObj.apiVersion
+      if (bulkUnPublishObj['api-version']) {
+        if (!isNaN(bulkUnPublishObj['api-version'])) {
+          payload['api_version'] = bulkUnPublishObj['api-version']
         } else {
           console.log(
             chalk.yellow(
@@ -437,16 +414,9 @@ async function performBulkUnPublish(data, _config, queue) {
         environments: bulkUnPublishObj.environments,
       };
       payload['details'] = conf;
-      if (bulkPublishObj.apiVersion) {
-        if (!userUid) {
-          console.log(
-            chalk.yellow(
-              `You need to login to use Nested-Reference Publish feature. Continuing with regular bulk-publish for now.`,
-            ),
-          );
-        }
-        if (!isNaN(bulkPublishObj.apiVersion)) {
-          payload['api_version'] = bulkPublishObj.apiVersion
+      if (bulkUnPublishObj['api-version']) {
+        if (!isNaN(bulkUnPublishObj['api-version'])) {
+          payload['api_version'] = bulkUnPublishObj['api-version']
         } else {
           console.log(
             chalk.yellow(
