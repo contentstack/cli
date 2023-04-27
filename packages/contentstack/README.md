@@ -1,6 +1,6 @@
 # @contentstack/cli
 
-Use Contentstack Command-line Interface to command Contentstack for executing a set of operations from the terminal. To get started with CLI, refer to the [CLI’s documentation](https://www.contentstack.com/docs/developers/cli)
+Use Contentstack Command-line Interface to command Contentstack for executing a set of operations from the terminal. To get started with CLI, refer to the  [CLI’s documentation](https://www.contentstack.com/docs/developers/cli)
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.6.0 darwin-arm64 node-v18.11.0
+@contentstack/cli/1.5.1 darwin-x64 node-v18.12.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -592,6 +592,8 @@ FLAGS
   --comment=<value>              Merge comment
   --compare-branch=<value>       Compare branch name
   --export-summary-path=<value>  Export summary file path
+  --format=<option>              [default: text] [Optional] Type of flags to show branches status view
+                                 <options: text|verbose>
   --no-revert                    If passed, will not create the new revert branch
   --use-merge-summary=<value>    Path of merge summary file
 

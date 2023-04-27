@@ -1,1 +1,1 @@
-export declare const isAuthenticated: () => Promise<boolean>;
+export declare function isAuthenticated(): boolean;
