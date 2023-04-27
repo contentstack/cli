@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli",
   "description": "Command-line tool (CLI) to interact with Contentstack",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "author": "Contentstack",
   "bin": {
     "csdx": "./bin/run"
@@ -32,8 +32,9 @@
     "@contentstack/cli-cm-seed": "^1.4.1",
     "@contentstack/cli-command": "^1.2.2",
     "@contentstack/cli-config": "^1.3.1",
+    "@contentstack/cli-launch": "^1.0.0",
     "@contentstack/cli-migration": "^1.3.1",
-    "@contentstack/cli-utilities": "^1.3.1",
+    "@contentstack/cli-utilities": "^1.4.0",
     "@contentstack/management": "^1.6.1",
     "@contentstack/cli-cm-branches": "^1.0.0",
     "@oclif/core": "^2.3.0",
@@ -44,10 +45,11 @@
     "debug": "^4.1.1",
     "figlet": "^1.5.2",
     "inquirer": "8.2.4",
-    "uuid": "^9.0.0",
-    "winston": "^3.7.2",
     "node-machine-id": "^1.1.12",
-    "short-uuid": "^4.2.2"
+    "open": "^8.4.2",
+    "short-uuid": "^4.2.2",
+    "uuid": "^9.0.0",
+    "winston": "^3.7.2"
   },
   "devDependencies": {
     "@oclif/test": "^2.2.10",
@@ -116,6 +118,9 @@
       "cm:stacks": {
         "description": "Stacks related operations"
       },
+      "launch": {
+        "description": "Launch related operations"
+      },
       "plugins": {
         "description": "List installed plugins"
       }
@@ -137,7 +142,8 @@
       "@contentstack/cli-cm-migrate-rte",
       "@contentstack/cli-migration",
       "@contentstack/cli-cm-bulk-publish",
-      "@contentstack/cli-cm-branches"
+      "@contentstack/cli-cm-branches",
+      "@contentstack/launch-cli"
     ],
     "hooks": {
       "prerun": [
