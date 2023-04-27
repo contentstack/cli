@@ -1,7 +1,0 @@
-{
-  "requestPayload": {
-    "base_branch": "cli_base",
-    "compare_branch": "cli_feature3",
-    "default_merge_strategy": "overwrite_with_compare"
-  }
-}
