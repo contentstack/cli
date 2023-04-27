@@ -11,9 +11,9 @@ export async function selectModule(): Promise<string> {
     name: 'module',
     message: 'CLI_BRANCH_MODULE',
     choices: [
-      { name: 'Content Types', value: 'content_types' },
-      { name: 'Global Fields', value: 'global_fields' },
-      { name: 'Both', value: 'both' },
+      { name: 'Content Types', value: 'content-types' },
+      { name: 'Global Fields', value: 'global-fields' },
+      { name: 'All', value: 'all' },
     ],
     validate: inquireRequireFieldValidation,
   });
