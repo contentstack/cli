@@ -142,5 +142,7 @@ function handleErrorMsg(err: { errorCode?: number; errorMessage: string }) {
 
 export * from './interactive';
 export * from './merge-helper';
+export * from './create-merge-scripts';
+export * from './entry-update-script';
 export * as interactive from './interactive';
 export * as branchDiffUtility from './branch-diff-utility';
