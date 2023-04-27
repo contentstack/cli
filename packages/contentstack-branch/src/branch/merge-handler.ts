@@ -11,9 +11,13 @@ import {
   askMergeComment,
   writeFile,
   executeMerge,
+  generateMergeScripts,
+  renameScriptFolder,
   selectCustomPreferences,
 } from '../utils';
 import forEach from 'lodash/forEach';
+
+const enableEntryExp = true;
 
 export default class MergeHandler {
   private strategy: string;
@@ -45,7 +49,7 @@ export default class MergeHandler {
       mergeContent: {},
       noRevert: options.noRevert,
     };
-    this.host = options.host
+    this.host = options.host;
   }
 
   async start() {
@@ -201,15 +205,32 @@ export default class MergeHandler {
 
   async executeMerge(mergePayload) {
     let spinner;
+    let scriptFolderPath;
     try {
       if (!this.mergeSettings.mergeComment) {
         this.mergeSettings.mergeComment = await askMergeComment();
         mergePayload.merge_comment = this.mergeSettings.mergeComment;
       }
+
+      if (enableEntryExp) {
+        scriptFolderPath = generateMergeScripts(this.mergeSettings.mergeContent);
+      }
+
       spinner = cliux.loaderV2('Merging the changes...');
       const mergeResponse = await executeMerge(this.stackAPIKey, mergePayload, this.host);
       cliux.loaderV2('', spinner);
       cliux.success(`Merged the changes successfully. Merge UID: ${mergeResponse.uid}`);
+
+      if (enableEntryExp) {
+        let newScriptFolderPath = renameScriptFolder(mergeResponse.uid, scriptFolderPath);
+
+        cliux.success(`Success! We have generated entry migration files in folder ${newScriptFolderPath}`);
+
+        cliux.print(
+          `Kindly follow the steps in the following guide https://www.contentstack.com/docs/developers/cli/migrate-branch-entries to update the migration scripts and then run the following command csdx cm:stacks:migration --multiple --file-path ./${newScriptFolderPath} --config compare-branch:<value> --branch <value> --stack-api-key <value>`,
+          { color: 'blue' },
+        );
+      }
     } catch (error) {
       cliux.loaderV2('', spinner);
       cliux.error('Failed to merge the changes', error.message || error);
