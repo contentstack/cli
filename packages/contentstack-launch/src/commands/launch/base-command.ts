@@ -162,16 +162,16 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   async prepareApiClients(): Promise<void> {
     this.apolloClient = await new GraphqlApiClient({
       headers: {
-        "x-cs-cli": this.context.analyticsInfo,
-        "x-project-uid": this.sharedConfig.currentConfig.uid,
+        'X-CS-CLI': this.context.analyticsInfo,
+        'x-project-uid': this.sharedConfig.currentConfig.uid,
         organization_uid: this.sharedConfig.currentConfig.organizationUid,
       },
       baseUrl: this.sharedConfig.manageApiBaseUrl,
     }).apolloClient;
     this.apolloLogsClient = await new GraphqlApiClient({
       headers: {
-        "x-cs-cli": this.context.analyticsInfo,
-        "x-project-uid": this.sharedConfig.currentConfig.uid,
+        'X-CS-CLI': this.context.analyticsInfo,
+        'x-project-uid': this.sharedConfig.currentConfig.uid,
         organization_uid: this.sharedConfig.currentConfig.organizationUid,
       },
       baseUrl: this.sharedConfig.logsApiBaseUrl,
