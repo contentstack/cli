@@ -42,12 +42,6 @@ export default class BranchMergeCommand extends Command {
     'no-revert': flags.boolean({
       description: 'If passed, will not create the new revert branch',
     }),
-    format: flags.string({
-      default: 'text',
-      multiple: false,
-      options: ['text', 'verbose'],
-      description: '[Optional] Type of flags to show branches status view',
-    }),
     strategy: flags.string({
       description: 'Merge strategy',
       options: ['merge_prefer_base', 'merge_prefer_compare', 'overwrite_with_compare', 'custom_preferences'],
@@ -76,8 +70,7 @@ export default class BranchMergeCommand extends Command {
         stackAPIKey: branchMergeFlags['stack-api-key'],
         baseBranch: branchMergeFlags['base-branch'],
         compareBranch: branchMergeFlags['compare-branch'],
-        format: branchMergeFlags.format,
-        host: this.cmaHost
+        host: this.cmaHost,
       });
       await new MergeHandler({
         stackAPIKey: branchMergeFlags['stack-api-key'],
@@ -92,7 +85,7 @@ export default class BranchMergeCommand extends Command {
         format: branchMergeFlags.format,
         exportSummaryPath: branchMergeFlags['export-summary-path'],
         useMergeSummary: branchMergeFlags['use-merge-summary'],
-        host: this.cmaHost
+        host: this.cmaHost,
       }).start();
     } catch (error) {
       console.log('Error in Merge operations', error);
