@@ -15,8 +15,10 @@ class UnpublishCommand extends Command {
     unpublishFlags.retryFailed = unpublishFlags['retry-failed'] || unpublishFlags.retryFailed || false;
     unpublishFlags.bulkUnpublish = unpublishFlags['bulk-unpublish'] || unpublishFlags.bulkUnpublish;
     unpublishFlags.deliveryToken = unpublishFlags['delivery-token'] || unpublishFlags.deliveryToken;
+    unpublishFlags.apiVersion = unpublishFlags['api-version']
     unpublishFlags.onlyAssets = true;
     unpublishFlags.onlyEntries = false;
+    delete unpublishFlags['api-version']
     delete unpublishFlags['retry-failed'];
     delete unpublishFlags['bulk-unpublish'];
     delete unpublishFlags['delivery-token'];
