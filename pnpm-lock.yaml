@@ -21,9 +21,9 @@ importers:
       '@contentstack/cli-cm-seed': ^1.4.1
       '@contentstack/cli-command': ^1.2.2
       '@contentstack/cli-config': ^1.3.1
+      '@contentstack/cli-launch': ^1.0.0
       '@contentstack/cli-migration': ^1.3.1
       '@contentstack/cli-utilities': ^1.3.2
-      '@contentstack/launch-cli': ^1.0.0-alpha-1
       '@contentstack/management': ^1.6.1
       '@oclif/core': ^2.3.0
       '@oclif/plugin-help': ^5
@@ -72,9 +72,9 @@ importers:
       '@contentstack/cli-cm-seed': link:../contentstack-seed
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-config': link:../contentstack-config
+      '@contentstack/cli-launch': link:../contentstack-launch
       '@contentstack/cli-migration': link:../contentstack-migration
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/launch-cli': link:../contentstack-launch
       '@contentstack/management': 1.6.1_debug@4.3.4
       '@oclif/core': 2.6.2_6cnmuszcetnto3gtv64ajxyacy
       '@oclif/plugin-help': 5.2.7_6cnmuszcetnto3gtv64ajxyacy

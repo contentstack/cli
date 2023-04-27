@@ -1,6 +1,6 @@
 {
-  "name": "@contentstack/launch-cli",
-  "version": "1.0.0-alpha-1",
+  "name": "@contentstack/cli-launch",
+  "version": "1.0.0",
   "description": "Launch related operations",
   "author": "Contentstack CLI",
   "bin": {
