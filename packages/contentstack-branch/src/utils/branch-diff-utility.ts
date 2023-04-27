@@ -182,6 +182,7 @@ function parseCompactText(branchesDiffData: any[]): BranchCompactTextRes {
  */
 function printCompactTextView(branchTextRes: BranchCompactTextRes): void {
   if (branchTextRes.modified?.length || branchTextRes.added?.length || branchTextRes.deleted?.length) {
+    cliux.print(' ');
     forEach(branchTextRes.added, (diff: BranchDiffRes) => {
       cliux.print(chalk.green(`+ '${diff.title}' ${startCase(camelCase(diff.type))}`));
     });
@@ -300,12 +301,12 @@ async function baseAndCompareBranchDiff(params: {
       baseBranchFieldExists.path === 'options.singleton'
     ) {
       let displayName: string;
-      if(baseBranchFieldExists.path === 'options.singleton'){
-        displayName = "Single/Multiple";
-      }else if(baseBranchFieldExists.path === 'description'){
-        displayName = "Description";
-      }else if(baseBranchFieldExists.path === 'title'){
-        displayName = "Name";
+      if (baseBranchFieldExists.path === 'options.singleton') {
+        displayName = 'Single/Multiple';
+      } else if (baseBranchFieldExists.path === 'description') {
+        displayName = 'Description';
+      } else if (baseBranchFieldExists.path === 'title') {
+        displayName = 'Name';
       }
       params.listOfModifiedFields.push({
         path: baseBranchFieldExists.path,
@@ -314,32 +315,34 @@ async function baseAndCompareBranchDiff(params: {
         text: 'metadata',
       });
     } else {
-      const { modified, deleted, added } = await deepDiff(baseBranchFieldExists, compareBranchFieldExists);
-      for (let field of Object.values(added)) {
-        params.listOfAddedFields.push({
-          path: field['path'],
-          displayName: field['displayName'] || 'Metadata',
-          uid: field['uid'],
-          text: field['text'],
-        });
-      }
-
-      for (let field of Object.values(deleted)) {
-        params.listOfDeletedFields.push({
-          path: field['path'],
-          displayName: field['displayName'] || 'Metadata',
-          uid: field['uid'],
-          text: field['text'],
-        });
-      }
-
-      for (let field of Object.values(modified)) {
-        params.listOfModifiedFields.push({
-          path: field['path'],
-          displayName: field['displayName'] || 'Metadata',
-          uid: field['uid'],
-          text: field['text'],
-        });
+      if(baseBranchFieldExists?.display_name && compareBranchFieldExists?.display_name){
+        const { modified, deleted, added } = await deepDiff(baseBranchFieldExists, compareBranchFieldExists);
+        for (let field of Object.values(added)) {
+          params.listOfAddedFields.push({
+            path: field['path'],
+            displayName: field['displayName'] || 'Metadata',
+            uid: field['uid'],
+            text: field['text'],
+          });
+        }
+  
+        for (let field of Object.values(deleted)) {
+          params.listOfDeletedFields.push({
+            path: field['path'],
+            displayName: field['displayName'] || 'Metadata',
+            uid: field['uid'],
+            text: field['text'],
+          });
+        }
+  
+        for (let field of Object.values(modified)) {
+          params.listOfModifiedFields.push({
+            path: field['path'],
+            displayName: field['displayName'] || 'Metadata',
+            uid: field['uid'],
+            text: field['text'],
+          });
+        }
       }
     }
   } else if (baseBranchFieldExists && !compareBranchFieldExists) {
@@ -369,7 +372,7 @@ function customComparator(a: any, b: any): boolean {
  */
 function printVerboseTextView(branchTextRes: BranchDiffVerboseRes): void {
   if (branchTextRes.modified?.length || branchTextRes.added?.length || branchTextRes.deleted?.length) {
-    cliux.print('\n');
+    cliux.print(' ');
     forEach(branchTextRes.added, (diff: BranchDiffRes) => {
       cliux.print(chalk.green(`+ '${diff.title}' ${startCase(camelCase(diff.type))}`));
     });
@@ -435,7 +438,7 @@ async function deepDiff(baseObj, compareObj) {
     added: {},
     deleted: {},
   };
-  function realDiff(baseObj, compareObj, path = '') {
+  function barseAndCompareBranchDiff(baseObj, compareObj, path = '') {
     const { schema: baseSchema, path: basePath, ...restBaseObj } = baseObj;
     const { schema: compareSchema, path: comparePath, ...restCompareObj } = compareObj;
     const currentPath = buildPath(path, baseObj['uid']);
@@ -461,53 +464,59 @@ async function deepDiff(baseObj, compareObj) {
         let newPath: string;
         if (baseBranchField && !compareBranchField) {
           newPath = `${currentPath}.${baseBranchField['uid']}`;
-          const obj = {
-            path: newPath,
-            uid: baseBranchField['uid'],
-            displayName: baseBranchField['display_name'],
-            text: baseBranchField['data_type'],
-          };
-          if (!changes.deleted[newPath]) changes.deleted[newPath] = obj;
+          if (!changes.deleted[newPath]){
+            const obj = {
+              path: newPath,
+              uid: baseBranchField['uid'],
+              displayName: baseBranchField['display_name'],
+              text: baseBranchField['data_type'],
+            };
+            changes.deleted[newPath] = obj;
+          } 
         } else if (compareBranchField && !baseBranchField) {
           newPath = `${currentPath}.${compareBranchField['uid']}`;
-          const obj = {
-            path: newPath,
-            uid: compareBranchField['uid'],
-            displayName: compareBranchField['display_name'],
-            text: compareBranchField['data_type'],
-          };
-          if (!changes.added[newPath]) changes.added[newPath] = obj;
+          if (!changes.added[newPath]){
+            const obj = {
+              path: newPath,
+              uid: compareBranchField['uid'],
+              displayName: compareBranchField['display_name'],
+              text: compareBranchField['data_type'],
+            };
+            changes.added[newPath] = obj;
+          } 
         } else if (compareBranchField && baseBranchField) {
-          realDiff(baseBranchField, compareBranchField, currentPath);
+          barseAndCompareBranchDiff(baseBranchField, compareBranchField, currentPath);
         }
       });
     }
 
     //case2:- base schema  exists only
     if (baseSchema?.length && !compareSchema?.length && isArray(baseSchema)) {
-      for (let i = 0; i < baseSchema.length; i++) {
-        const base = baseSchema[i];
+      forEach(baseSchema, (base, key) => {
         const newPath = `${currentPath}.${base['uid']}`;
-        const obj = { path: newPath, uid: base['uid'], displayName: base['display_name'], text: base['data_type'] };
-        if (!changes.deleted[newPath]) changes.deleted[newPath] = obj;
-      }
+        if (!changes.deleted[newPath]) {
+          const obj = { path: newPath, uid: base['uid'], displayName: base['display_name'], text: base['data_type'] };
+          changes.deleted[newPath] = obj;
+        }
+      });
     }
     //case3:- compare schema  exists only
     if (!baseSchema?.length && compareSchema?.length && isArray(compareSchema)) {
-      for (let i = 0; i < compareSchema.length; i++) {
-        const compare = compareSchema[i];
+      forEach(compareSchema, (compare, key) => {
         const newPath = `${currentPath}.${compare['uid']}`;
-        const obj = {
-          path: newPath,
-          uid: compare['uid'],
-          displayName: compare['display_name'],
-          text: compare['data_type'],
-        };
-        if (!changes.added[newPath]) changes.added[newPath] = obj;
-      }
+        if (!changes.added[newPath]) {
+          const obj = {
+            path: newPath,
+            uid: compare['uid'],
+            displayName: compare['display_name'],
+            text: compare['data_type'],
+          };
+          changes.added[newPath] = obj;
+        }
+      });
     }
   }
-  realDiff(baseObj, compareObj);
+  barseAndCompareBranchDiff(baseObj, compareObj);
   return changes;
 }
 
