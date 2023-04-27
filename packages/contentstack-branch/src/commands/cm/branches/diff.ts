@@ -35,16 +35,16 @@ export default class BranchDiffCommand extends Command {
     module: flags.string({
       char: 'm',
       description: 'Module',
-      options: ['content_types', 'global_fields', 'both'],
+      options: ['content-types', 'global-fields', 'all'],
     }),
     'stack-api-key': flags.string({
       char: 'k',
       description: 'Provide Stack API key to show difference between branches',
     }),
     format: flags.string({
-      default: 'compactText',
+      default: 'compact-text',
       multiple: false,
-      options: ['compactText', 'detailedText'],
+      options: ['compact-text', 'detailed-text'],
       description: '[Optional] Type of flags to show branches differences',
     }),
   };
