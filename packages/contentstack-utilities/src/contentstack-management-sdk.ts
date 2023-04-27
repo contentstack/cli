@@ -54,7 +54,7 @@ class ManagementSDKInitiator {
           const authorisationType = configStore.get('authorisationType');
           if (authorisationType === 'BASIC') {
             // Handle basic auth 401 here
-            reject('Your session is timed out, please login to proceed');
+            reject('Session timed out, please login to proceed');
           } else if (authorisationType === 'OAUTH') {
             return authHandler
               .compareOAuthExpiry(true)
@@ -91,8 +91,13 @@ class ManagementSDKInitiator {
         option.authtoken = configStore.get('authtoken');
         option.authorization = '';
       } else if (authorisationType === 'OAUTH') {
-        await authHandler.compareOAuthExpiry();
-        option.authorization = `Bearer ${configStore.get('oauthAccessToken')}`;
+        if (!config.skipTokenValidity) {
+          await authHandler.compareOAuthExpiry();
+          option.authorization = `Bearer ${configStore.get('oauthAccessToken')}`;
+        } else {
+          option.authtoken = '';
+          option.authorization = '';
+        }
       } else {
         option.authtoken = '';
         option.authorization = '';
