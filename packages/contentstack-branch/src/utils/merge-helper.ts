@@ -92,6 +92,7 @@ export const displayMergeSummary = (options) => {
       branchDiff.printVerboseTextView(options.compareData[module]);
     }
   }
+  cliux.print(' ');
 };
 
 export const executeMerge = async (apiKey, mergePayload, host): Promise<any> => {
