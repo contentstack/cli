@@ -250,14 +250,13 @@ importers:
       bluebird: ^3.7.2
       chai: ^4.2.0
       chalk: ^4.1.2
-      deep-object-diff: ^1.1.9
       dotenv: ^16.0.1
       dotenv-expand: ^9.0.0
       eslint: ^8.18.0
       eslint-config-oclif: ^4.0.0
-      flat: ^5.0.2
       globby: ^10.0.2
       is-valid-path: ^0.1.1
+      just-diff: ^6.0.2
       lodash: ^4.17.20
       merge: ^2.1.1
       mkdirp: ^1.0.4
@@ -283,9 +282,8 @@ importers:
       big-json: 3.2.0
       bluebird: 3.7.2
       chalk: 4.1.2
-      deep-object-diff: 1.1.9
-      flat: 5.0.2
       is-valid-path: 0.1.1
+      just-diff: 6.0.2
       lodash: 4.17.21
       merge: 2.1.1
       mkdirp: 1.0.4
@@ -922,7 +920,7 @@ importers:
 
   packages/contentstack-utilities:
     specifiers:
-      '@contentstack/management': file:/Users/shafeeq.pp/WORKSPACE/contentstack-management-javascript/dist
+      '@contentstack/management': file:/Users/shafeeq.pp/WORKSPACE/contentstack-management-javascript
       '@oclif/core': ^2.3.0
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.2.18
@@ -962,7 +960,7 @@ importers:
       winston: ^3.7.2
       xdg-basedir: ^4.0.0
     dependencies:
-      '@contentstack/management': file:../../../contentstack-management-javascript/dist
+      '@contentstack/management': file:../../../contentstack-management-javascript_debug@4.3.4
       '@oclif/core': 2.6.2_6cnmuszcetnto3gtv64ajxyacy
       axios: 1.3.4_debug@4.3.4
       chalk: 4.1.2
@@ -4856,10 +4854,6 @@ packages:
   /deep-is/0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
 
-  /deep-object-diff/1.1.9:
-    resolution: {integrity: sha512-Rn+RuwkmkDwCi2/oXOFS9Gsr5lJZu/yTGpK7wAaAIE75CC+LCGEZHpY6VQJa/RoJcrmaA/docWJZvYohlNkWPA==}
-    dev: false
-
   /deepmerge/4.3.0:
     resolution: {integrity: sha512-z2wJZXrmeHdvYJp/Ux55wIjqo81G5Bp4c+oELTW+7ar6SogWHajt5a9gO3s3IDaGSAXjDk0vlQKN3rms8ab3og==}
     engines: {node: '>=0.10.0'}
@@ -6075,6 +6069,7 @@ packages:
   /flat/5.0.2:
     resolution: {integrity: sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==}
     hasBin: true
+    dev: true
 
   /flatted/3.2.7:
     resolution: {integrity: sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==}
@@ -7983,6 +7978,10 @@ packages:
   /just-diff/5.2.0:
     resolution: {integrity: sha512-6ufhP9SHjb7jibNFrNxyFZ6od3g+An6Ai9mhGRvcYe8UJlH0prseN64M+6ZBBUoKYHZsitDP42gAJ8+eVWr3lw==}
     dev: true
+
+  /just-diff/6.0.2:
+    resolution: {integrity: sha512-S59eriX5u3/QhMNq3v/gm8Kd0w8OS6Tz2FS1NG4blv+z0MuQcBRJyFWjdovM0Rad4/P4aUPFtnkNjMjyMlMSYA==}
+    dev: false
 
   /just-extend/4.2.1:
     resolution: {integrity: sha512-g3UB796vUFIY90VIv/WX3L2c8CS2MdWUww3CNrYmqza1Fg0DURc2K/O4YrnklBdQarSJ/y8JnJYDGc+1iumQjg==}
@@ -11975,10 +11974,19 @@ packages:
     resolution: {integrity: sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==}
     dev: false
 
-  file:../../../contentstack-management-javascript/dist:
-    resolution: {directory: ../../../contentstack-management-javascript/dist, type: directory}
-    name: dist
-    version: 0.0.0
+  file:../../../contentstack-management-javascript_debug@4.3.4:
+    resolution: {directory: ../../../contentstack-management-javascript, type: directory}
+    id: file:../../../contentstack-management-javascript
+    name: '@contentstack/management'
+    version: 1.8.0
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      axios: 0.27.2_debug@4.3.4
+      form-data: 3.0.1
+      lodash: 4.17.21
+      qs: 6.11.1
+    transitivePeerDependencies:
+      - debug
     dev: false
 
   github.com/kego1992/inquirer-table-prompt/127e093a2e992edca1178d6e18740cc343f442d9:
