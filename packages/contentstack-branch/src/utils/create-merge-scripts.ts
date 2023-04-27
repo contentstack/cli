@@ -45,7 +45,6 @@ export function renameScriptFolder(mergeUID, scriptFolderPath) {
 
   try {
     fs.renameSync(currPath, newPath);
-    console.log('Successfully renamed the directory.');
     return newPath;
   } catch (err) {
     console.log(err);
