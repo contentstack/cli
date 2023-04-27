@@ -19,7 +19,9 @@ class NonlocalizedFieldChangesCommand extends Command {
       nonlocalizedFieldChangesFlags['source-env'] || nonlocalizedFieldChangesFlags.sourceEnv;
     nonlocalizedFieldChangesFlags.contentTypes =
       nonlocalizedFieldChangesFlags['content-types'] || nonlocalizedFieldChangesFlags.contentTypes;
-
+      nonlocalizedFieldChangesFlags.apiVersion = nonlocalizedFieldChangesFlags['api-version']
+      
+    delete nonlocalizedFieldChangesFlags['api-version']
     delete nonlocalizedFieldChangesFlags['retry-failed'];
     delete nonlocalizedFieldChangesFlags['bulk-publish'];
     delete nonlocalizedFieldChangesFlags['source-env'];

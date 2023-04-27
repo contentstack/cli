@@ -133,6 +133,10 @@ class CrossPublishCommand extends Command {
       _flags.bulkPublish = _flags['bulk-publish'];
       delete _flags['bulk-publish'];
     }
+    if ('api-version' in _flags) {
+      _flags.apiVersion = _flags['api-version'];
+      delete _flags['api-version'];
+    }
     if ('source-env' in _flags) {
       _flags.environment = _flags['source-env'];
       delete _flags['source-env'];
