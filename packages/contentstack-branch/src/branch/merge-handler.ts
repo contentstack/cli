@@ -38,7 +38,7 @@ export default class MergeHandler {
     this.strategySubOption = options.strategySubOption;
     this.executeOption = options.executeOption;
     this.branchCompareData = options.branchCompareData;
-    this.displayFormat = options.format || 'compactText';
+    this.displayFormat = options.format || 'compact-text';
     this.exportSummaryPath = options.exportSummaryPath;
     this.useMergeSummary = options.useMergeSummary;
     this.userInputs = options;
@@ -49,7 +49,7 @@ export default class MergeHandler {
       mergeContent: {},
       noRevert: options.noRevert,
     };
-    this.host = options.host
+    this.host = options.host;
   }
 
   async start() {
