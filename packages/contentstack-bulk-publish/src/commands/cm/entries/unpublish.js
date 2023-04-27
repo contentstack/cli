@@ -18,6 +18,8 @@ class UnpublishCommand extends Command {
     unpublishFlags.deliveryToken = unpublishFlags['delivery-token'] || unpublishFlags.deliveryToken;
     unpublishFlags.onlyAssets = false;
     unpublishFlags.onlyEntries = true;
+    unpublishFlags.apiVersion = unpublishFlags['api-version'];
+    delete unpublishFlags['api-version'];
     delete unpublishFlags['retry-failed'];
     delete unpublishFlags['bulk-unpublish'];
     delete unpublishFlags['content-type'];

@@ -226,9 +226,9 @@ async function performBulkPublish(data, _config, queue) {
         environments: bulkPublishObj.environments,
       };
       payload['details'] = conf;
-      if (bulkPublishObj['api-version']) {
-        if (!isNaN(bulkPublishObj['api-version'])) {
-          payload['api_version'] = bulkPublishObj['api-version']
+      if (bulkPublishObj.apiVersion) {
+        if (!isNaN(bulkPublishObj.apiVersion)) {
+          payload['api_version'] = bulkPublishObj.apiVersion
         } else {
           console.log(
             chalk.yellow(
@@ -285,9 +285,9 @@ async function performBulkPublish(data, _config, queue) {
         environments: bulkPublishObj.environments,
       };
       payload['details'] = conf;
-      if (bulkPublishObj['api-version']) {
-        if (!isNaN(bulkPublishObj['api-version'])) {
-          payload['api_version'] = bulkPublishObj['api-version']
+      if (bulkPublishObj.apiVersion) {
+        if (!isNaN(bulkPublishObj.apiVersion)) {
+          payload['api_version'] = bulkPublishObj.apiVersion
         } else {
           console.log(
             chalk.yellow(
@@ -355,9 +355,9 @@ async function performBulkUnPublish(data, _config, queue) {
         environments: bulkUnPublishObj.environments,
       };
       payload['details'] = conf;
-      if (bulkUnPublishObj['api-version']) {
-        if (!isNaN(bulkUnPublishObj['api-version'])) {
-          payload['api_version'] = bulkUnPublishObj['api-version']
+      if (bulkUnPublishObj.apiVersion) {
+        if (!isNaN(bulkUnPublishObj.apiVersion)) {
+          payload['api_version'] = bulkUnPublishObj.apiVersion
         } else {
           console.log(
             chalk.yellow(
@@ -414,9 +414,9 @@ async function performBulkUnPublish(data, _config, queue) {
         environments: bulkUnPublishObj.environments,
       };
       payload['details'] = conf;
-      if (bulkUnPublishObj['api-version']) {
-        if (!isNaN(bulkUnPublishObj['api-version'])) {
-          payload['api_version'] = bulkUnPublishObj['api-version']
+      if (bulkUnPublishObj.apiVersion) {
+        if (!isNaN(bulkUnPublishObj.apiVersion)) {
+          payload['api_version'] = bulkUnPublishObj.apiVersion
         } else {
           console.log(
             chalk.yellow(
