@@ -69,49 +69,33 @@ export default class FileUpload extends BaseClass {
    * @memberof FileUpload
    */
   async createNewProject(): Promise<void> {
-    const {
-      framework,
-      projectName,
-      buildCommand,
-      selectedStack,
-      outputDirectory,
-      environmentName,
-    } = this.config;
+    const { framework, projectName, buildCommand, outputDirectory, environmentName } = this.config;
+
     await this.apolloClient
       .mutate({
         mutation: importProjectMutation,
         variables: {
           project: {
-            projectType: "FILEUPLOAD",
+            projectType: 'FILEUPLOAD',
             name: projectName,
-            cmsStackApiKey: selectedStack?.api_key,
             fileUpload: { uploadUid: this.signedUploadUrlData.uploadUid },
             environment: {
               frameworkPreset: framework,
               outputDirectory: outputDirectory,
-              name: environmentName || "Default",
-              buildCommand: buildCommand || "npm run build",
-              environmentVariables: map(
-                this.envVariables,
-                ({ key, value }) => ({ key, value })
-              ),
+              name: environmentName || 'Default',
+              environmentVariables: map(this.envVariables, ({ key, value }) => ({ key, value })),
+              buildCommand: buildCommand === undefined || buildCommand === null ? 'npm run build' : buildCommand,
             },
           },
           skipGitData: true,
         },
       })
       .then(({ data: { project } }) => {
-        this.log("New project created successfully", "info");
+        this.log('New project created successfully', 'info');
         const [firstEnvironment] = project.environments;
         this.config.currentConfig = project;
-        this.config.currentConfig.deployments = map(
-          firstEnvironment.deployments.edges,
-          "node"
-        );
-        this.config.currentConfig.environments[0] = omit(
-          this.config.currentConfig.environments[0],
-          ["deployments"]
-        );
+        this.config.currentConfig.deployments = map(firstEnvironment.deployments.edges, 'node');
+        this.config.currentConfig.environments[0] = omit(this.config.currentConfig.environments[0], ['deployments']);
       })
       .catch(async (error) => {
         const canRetry = await this.handleNewProjectCreationError(error);
@@ -137,7 +121,7 @@ export default class FileUpload extends BaseClass {
       "output-directory": outputDirectory,
     } = this.config.flags;
 
-    this.fileValidation();
+    // this.fileValidation();
     await this.selectOrg();
     await this.createSignedUploadUrl();
     const { zipName, zipPath, projectName } = await this.archive();
@@ -161,15 +145,15 @@ export default class FileUpload extends BaseClass {
         validate: this.inquireRequireValidation,
       }));
     if (framework) {
-      this.config.framework = (
+      this.config.framework = ((
         find(this.config.listOfFrameWorks, {
           name: framework,
         }) as Record<string, any>
-      ).value as string;
+      ).value || '') as string;
       print([
-        { message: "?", color: "green" },
-        { message: "Framework Preset", bold: true },
-        { message: this.config.framework, color: "cyan" },
+        { message: '?', color: 'green' },
+        { message: 'Framework Preset', bold: true },
+        { message: this.config.framework, color: 'cyan' },
       ]);
     } else {
       await this.detectFramework();
@@ -177,11 +161,10 @@ export default class FileUpload extends BaseClass {
     this.config.buildCommand =
       buildCommand ||
       (await cliux.inquire({
-        type: "input",
-        default: "npm run build",
-        name: "buildCommand",
-        message: "Build Command",
-        validate: this.inquireRequireValidation,
+        type: 'input',
+        name: 'buildCommand',
+        message: 'Build Command',
+        default: this.config.framework === 'OTHER' ? null : 'npm run build',
       }));
     this.config.outputDirectory =
       outputDirectory ||
