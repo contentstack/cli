@@ -9,7 +9,7 @@ import { environmentsQuery, projectsQuery } from '../../graphql';
 
 export default class Environments extends BaseCommand<typeof Environments> {
   static hidden = false;
-  static description = 'Show deployment or server logs';
+  static description = 'Show list of environments for a project';
 
   static examples = [
     '$ <%= config.bin %> <%= command.id %>',

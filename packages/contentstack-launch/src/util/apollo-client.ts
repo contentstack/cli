@@ -14,22 +14,10 @@ import {
   ApolloClient,
   InMemoryCache,
 } from "@apollo/client/core";
-import {
-  cliux as ux,
-  // authHandler,
-  configHandler,
-  managementSDKClient,
-} from "@contentstack/cli-utilities";
+import { cliux as ux, authHandler, configHandler } from '@contentstack/cli-utilities';
 
-import config from "../config";
-import { GraphqlApiClientInput } from "../types";
-
-// FIXME This is a OAuth handler placeholder. It'll be imported from cli-utility
-const authHandler = new (class AuthHandler {
-  set host(_val: any) {}
-  set client(_val: any) {}
-  async compareOAuthExpiry(force: boolean = false) {}
-})();
+import config from '../config';
+import { GraphqlApiClientInput } from '../types';
 
 export default class GraphqlApiClient {
   private authType: string;
@@ -74,8 +62,6 @@ export default class GraphqlApiClient {
         process.exit();
       } else if (this.authType === "OAUTH") {
         authHandler.host = this.cmaHost;
-        authHandler.client = managementSDKClient({ host: this.cmaHost });
-
         // NOTE Handle OAuth refresh token
         authHandler
           .compareOAuthExpiry(true)
@@ -84,9 +70,7 @@ export default class GraphqlApiClient {
             operation.setContext({
               headers: {
                 ...oldHeaders,
-                authorization: `Bearer ${configHandler.get(
-                  "oauthAccessToken"
-                )}`,
+                authorization: `Bearer ${configHandler.get('oauthAccessToken')}`,
               },
             });
             resolve(true);
