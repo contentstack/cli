@@ -150,9 +150,9 @@ FLAGS
   -c, --compare-branch=<value>  Compare branch
   -k, --stack-api-key=<value>   Provide Stack API key to show difference between branches
   -m, --module=<option>         Module
-                                <options: content_types|global_fields|both>
-  --format=<option>             [default: compactText] [Optional] Type of flags to show branches differences
-                                <options: compactText|detailedText>
+                                <options: content-types|global-fields|all>
+  --format=<option>             [default: compact-text] [Optional] Type of flags to show branches differences
+                                <options: compact-text|detailed-text>
 
 DESCRIPTION
   Differences between two branches
