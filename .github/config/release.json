@@ -15,6 +15,7 @@
         "bootstrap": false,
         "bulk-publish": false,
         "dev-dependencies": false,
+        "launch": false,
         "core": false
     }
 }
