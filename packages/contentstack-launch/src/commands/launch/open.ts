@@ -10,7 +10,7 @@ import { projectsQuery, environmentsQuery } from '../../graphql';
 
 export default class Open extends BaseCommand<typeof Open> {
   static hidden = false;
-  static description = 'Open website for an environment';
+  static description = 'Open a website for an environment';
 
   static examples = [
     '$ <%= config.bin %> <%= command.id %>',
@@ -118,9 +118,12 @@ export default class Open extends BaseCommand<typeof Open> {
         find(organizations, {
           uid: this.sharedConfig.currentConfig.organizationUid,
         })?.uid;
+
+      if (!this.sharedConfig.currentConfig.organizationUid) {
+        this.log('Organization UID not found!', 'warn');
+      }
     }
     if (!this.sharedConfig.currentConfig.organizationUid) {
-      this.log('Organization UID not found!', 'warn');
       this.sharedConfig.currentConfig.organizationUid = await ux
         .inquire({
           type: 'search-list',
