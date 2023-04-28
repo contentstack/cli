@@ -82,7 +82,9 @@ module.exports = class ExportCustomRoles {
         sourceLocalesMap[locale.uid] = locale;
       }
       for (const locale in localesMap) {
-        delete sourceLocalesMap[locale]['stackHeaders'];
+        if(sourceLocalesMap[locale]!==undefined) {
+          delete sourceLocalesMap[locale]['stackHeaders'];
+        }
         localesMap[locale] = sourceLocalesMap[locale];
       }
       helper.writeFileSync(customRolesLocalesFilepath, localesMap);
