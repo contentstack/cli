@@ -7,22 +7,23 @@ type CreateMergeScriptsProps = {
   status: string;
 };
 
-export function generateMergeScripts(mergeSummary) {
+export function generateMergeScripts(mergeSummary, mergeJobUID) {
   try {
-    let { added, modified } = mergeSummary.content_types;
     let scriptFolderPath;
 
-    modified.length !== 0 &&
-      modified.map((contentType) => {
+    if (mergeSummary.content_types.modified && mergeSummary.content_types.modified?.length !== 0) {
+      mergeSummary.content_types.modified.map((contentType) => {
         let data = entryUpdateScript(contentType.uid);
-        scriptFolderPath = createMergeScripts(contentType, data);
+        scriptFolderPath = createMergeScripts(contentType, data, mergeJobUID);
       });
+    }
 
-    added.length !== 0 &&
-      added.map((contentType) => {
+    if (mergeSummary.content_types.added && mergeSummary.content_types.added?.length !== 0) {
+      mergeSummary.content_types.added?.map((contentType) => {
         let data = entryCreateScript(contentType.uid);
-        scriptFolderPath = createMergeScripts(contentType, data);
+        scriptFolderPath = createMergeScripts(contentType, data, mergeJobUID);
       });
+    }
 
     return scriptFolderPath;
   } catch (error) {
@@ -38,27 +39,13 @@ export function getContentypeMergeStatus(status) {
   }
 }
 
-export function renameScriptFolder(mergeUID, scriptFolderPath) {
-  const currPath = scriptFolderPath;
-  const regex = /mergeJobID/i;
-  const newPath = scriptFolderPath.replace(regex, mergeUID);
-
-  try {
-    fs.renameSync(currPath, newPath);
-    return newPath;
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-export function createMergeScripts(contentType: CreateMergeScriptsProps, content) {
-  const mergeJobID = 'mergeJobID';
+export function createMergeScripts(contentType: CreateMergeScriptsProps, content, mergeJobUID) {
   const date = new Date();
   const rootFolder = 'merge_scripts';
   const fileCreatedAt = `${date.getFullYear()}${
     date.getMonth().toString.length === 1 ? `0${date.getMonth() + 1}` : date.getMonth() + 1
   }${date.getUTCDate()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
-  const mergeScriptsSlug = `merge_scripts_${mergeJobID}_${fileCreatedAt}`;
+  const mergeScriptsSlug = `merge_scripts_${mergeJobUID}_${fileCreatedAt}`;
 
   const fullPath = `${rootFolder}/${mergeScriptsSlug}`;
   try {
@@ -68,7 +55,11 @@ export function createMergeScripts(contentType: CreateMergeScriptsProps, content
     if (!fs.existsSync(fullPath)) {
       fs.mkdirSync(fullPath);
     }
-    fs.writeFileSync(`${fullPath}/${fileCreatedAt}_${contentType.status}_${contentType.uid}.js`, content, 'utf-8');
+    fs.writeFileSync(
+      `${fullPath}/${fileCreatedAt}_${getContentypeMergeStatus(contentType.status)}_${contentType.uid}.js`,
+      content,
+      'utf-8',
+    );
     return fullPath;
   } catch (error) {
     console.log(error);
