@@ -1,5 +1,5 @@
 import { describe, it } from 'mocha';
-import { createMergeScripts } from '../../../src/utils';
+import { createMergeScripts, getContentypeMergeStatus } from '../../../src/utils';
 import fs from 'fs';
 import { expect } from 'chai';
 
@@ -28,5 +28,16 @@ describe('File system operations', () => {
       const contentFromFile = fs.readFileSync(`${folderName}/${filesInFolder[0]}`, { encoding: 'utf-8', flag: 'r' });
       expect(contentFromFile).to.equal(content);
     }
+  });
+});
+
+describe('Check for operation status', () => {
+  it('Should return updated when modified is passed', () => {
+    const operation = getContentypeMergeStatus('modified');
+    expect(operation).to.equal('updated');
+  });
+  it('Should return created when modified is compare_only', () => {
+    const operation = getContentypeMergeStatus('compare_only');
+    expect(operation).to.equal('created');
   });
 });
