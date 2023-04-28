@@ -10,7 +10,7 @@ import { environmentsQuery, projectsQuery } from '../../graphql';
 
 export default class Deployments extends BaseCommand<typeof Deployments> {
   static hidden = false;
-  static description = 'Show list of deployments for a environment';
+  static description = 'Show list of deployments for an environment';
 
   static examples = [
     '$ <%= config.bin %> <%= command.id %>',
@@ -106,7 +106,7 @@ export default class Deployments extends BaseCommand<typeof Deployments> {
           uid: this.sharedConfig.currentConfig.organizationUid,
         })?.uid;
 
-      if (this.sharedConfig.currentConfig.organizationUid) {
+      if (!this.sharedConfig.currentConfig.organizationUid) {
         this.log('Organization UID not found!', 'warn');
       }
     }
