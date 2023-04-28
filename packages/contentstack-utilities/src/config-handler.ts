@@ -1,9 +1,10 @@
 import Conf from 'conf';
+import has from 'lodash/has';
 import { v4 as uuid } from 'uuid';
 import { existsSync, unlinkSync, readFileSync } from 'fs';
 
 const ENC_KEY = process.env.ENC_KEY || 'encryptionKey';
-const ENCRYPT_CONF: boolean = process.env.ENCRYPT_CONF === 'true' || true;
+const ENCRYPT_CONF: boolean = has(process.env, 'ENCRYPT_CONF') ? process.env.ENCRYPT_CONF === 'true' : true;
 const CONFIG_NAME = process.env.CONFIG_NAME || 'contentstack_cli';
 const ENC_CONFIG_NAME = process.env.ENC_CONFIG_NAME || 'contentstack_cli_obfuscate';
 const OLD_CONFIG_BACKUP_FLAG = 'isOldConfigBackup';
