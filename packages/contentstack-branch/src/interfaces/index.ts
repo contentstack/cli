@@ -43,6 +43,7 @@ export interface MergeInputOptions {
   useMergeSummary?: string;
   stackAPIKey: string;
   host: string;
+  enableEntryExp: boolean;
 }
 
 export interface ModifiedFieldsType {
