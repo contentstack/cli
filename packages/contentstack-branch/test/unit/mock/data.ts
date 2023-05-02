@@ -3,32 +3,35 @@ const mockData = {
     baseBranch: 'main',
     compareBranch: 'dev',
     stackAPIKey: 'sfgfdsg223',
-    module: 'content_types',
-    format: 'compactText',
+    module: 'content-types',
+    format: 'compactfield',
   },
   withoutBaseFlag: {
     compareBranch: 'dev',
     stackAPIKey: 'sfgfdsg223',
-    module: 'content_types',
-    format: 'compactText',
+    module: 'content-types',
+    format: 'compactfield',
   },
   withoutCompareFlag: {
     baseBranch: 'main',
     stackAPIKey: 'sfgfdsg223',
-    module: 'content_types',
-    format: 'compactText',
+    module: 'content-types',
+    format: 'compactfield',
+    compareBranch:''
   },
   withoutAPIKeyFlag: {
     baseBranch: 'main',
     compareBranch: 'dev',
-    module: 'content_types',
-    format: 'compactText',
+    module: 'content-types',
+    format: 'compactfield',
+    stackAPIKey: '',
   },
   withoutModuleFlag: {
     baseBranch: 'main',
     compareBranch: 'dev',
     stackAPIKey: 'sfgfdsg223',
-    format: 'compactText',
+    format: 'compactfield',
+    module:''
   },
   data: {
     base: 'main',
@@ -46,13 +49,13 @@ const mockData = {
       {
         uid: 'content_type_uid_1',
         title: 'Content Type 1 Title',
-        type: 'content_types',
+        type: 'content_type',
         status: 'compare_only',
       },
       {
         uid: 'content_type_uid_2',
         title: 'Content Type 2 Title',
-        type: 'content_types',
+        type: 'content_type',
         status: 'modified',
       },
     ],
@@ -61,13 +64,13 @@ const mockData = {
     {
       uid: 'content_type_uid_1',
       title: 'Content Type 1 Title',
-      type: 'content_types',
+      type: 'content_type',
       status: 'compare_only',
     },
     {
       uid: 'content_type_uid_2',
       title: 'Content Type 2 Title',
-      type: 'content_types',
+      type: 'content_type',
       status: 'modified',
     },
   ],
@@ -76,7 +79,7 @@ const mockData = {
       {
         uid: 'content_type_uid_2',
         title: 'Content Type 2 Title',
-        type: 'content_types',
+        type: 'content_type',
         status: 'modified',
       },
     ],
@@ -85,7 +88,7 @@ const mockData = {
       {
         uid: 'content_type_uid_1',
         title: 'Content Type 1 Title',
-        type: 'content_types',
+        type: 'content_type',
         status: 'compare_only',
       },
     ],
@@ -94,13 +97,13 @@ const mockData = {
     {
       uid: 'global_field_uid_1',
       title: 'Global Field 1 Title',
-      type: 'global_fields',
+      type: 'global_field',
       status: 'compare_only',
     },
     {
       uid: 'global_field_uid_2',
       title: 'Global Field 2 Title',
-      type: 'global_fields',
+      type: 'global_field',
       status: 'modified',
     },
   ],
@@ -116,7 +119,7 @@ const mockData = {
       {
         uid: 'content_type1',
         title: 'Content Type1',
-        type: 'content_types',
+        type: 'content_type',
         status: 'modified',
       },
     ],
@@ -124,7 +127,7 @@ const mockData = {
       {
         uid: 'content_type2',
         title: 'Content Type 2',
-        type: 'content_types',
+        type: 'content_type',
         status: 'compare_only',
       },
     ],
@@ -132,13 +135,13 @@ const mockData = {
       {
         uid: 'content_type3',
         title: 'Content Type 3',
-        type: 'content_types',
+        type: 'content_type',
         status: 'base_only',
       },
     ],
   },
   branchDiffPayload: {
-    module: 'content_types',
+    module: 'content_type',
     apiKey: 'afdgaffsdg',
     baseBranch: 'main',
     compareBranch: 'dev',
@@ -149,32 +152,32 @@ const mockData = {
         moduleDetails: {
           uid: 'content_type_uid_2',
           title: 'Content Type 2 Title',
-          type: 'content_types',
+          type: 'content_type',
           status: 'modified',
         },
         modifiedFields: {
           modified: [
             {
               uid: 'url',
-              displayName: 'text1',
+              displayName: 'field1',
               path: 'url',
-              fieldType: 'URL field',
+              field: 'URL field',
             },
           ],
           deleted: [
             {
               uid: 'url1',
-              displayName: 'text2',
+              displayName: 'field2',
               path: 'url1',
-              fieldType: 'URL field',
+              field: 'URL field',
             },
           ],
           added: [
             {
               uid: 'url2',
-              displayName: 'text3',
+              displayName: 'field3',
               path: 'url2',
-              fieldType: 'URL field',
+              field: 'URL field',
             },
           ],
         },
@@ -184,7 +187,7 @@ const mockData = {
       {
         uid: 'content_type_uid_1',
         title: 'Content Type 1 Title',
-        type: 'content_types',
+        type: 'content_type',
         status: 'compare_only',
       },
     ],
@@ -192,7 +195,7 @@ const mockData = {
       {
         uid: 'content_type_uid_3',
         title: 'Content Type 3 Title',
-        type: 'content_types',
+        type: 'content_type',
         status: 'base_only',
       },
     ],
@@ -207,17 +210,17 @@ const mockData = {
       {
         uid: 'content_type_uid_1',
         title: 'Content Type 1 Title',
-        type: 'content_types',
+        type: 'content_type',
         status: 'compare_only',
       },
       {
         uid: 'content_type_uid_2',
         title: 'Content Type 2 Title',
-        type: 'content_types',
+        type: 'content_type',
         status: 'modified',
       },
     ],
-    global_fields:[]
+    global_fields: [],
   },
   globalFieldsDiffData: {
     content_types: [],
@@ -225,13 +228,13 @@ const mockData = {
       {
         uid: 'global_field_uid_1',
         title: 'Global Field 1 Title',
-        type: 'global_fields',
+        type: 'global_field',
         status: 'compare_only',
       },
       {
         uid: 'global_field_uid_2',
         title: 'Global Field 2 Title',
-        type: 'global_fields',
+        type: 'global_field',
         status: 'modified',
       },
     ],
@@ -240,25 +243,25 @@ const mockData = {
     {
       uid: 'global_field_uid_1',
       title: 'Global Field 1 Title',
-      type: 'global_fields',
+      type: 'global_field',
       status: 'compare_only',
     },
     {
       uid: 'global_field_uid_2',
       title: 'Global Field 2 Title',
-      type: 'global_fields',
+      type: 'global_field',
       status: 'modified',
     },
     {
       uid: 'content_type_uid_1',
       title: 'Content Type 1 Title',
-      type: 'content_types',
+      type: 'content_type',
       status: 'compare_only',
     },
     {
       uid: 'content_type_uid_2',
       title: 'Content Type 2 Title',
-      type: 'content_types',
+      type: 'content_type',
       status: 'modified',
     },
   ],
@@ -267,13 +270,13 @@ const mockData = {
       {
         uid: 'content_type_uid_1',
         title: 'Content Type 1 Title',
-        type: 'content_types',
+        type: 'content_type',
         status: 'compare_only',
       },
       {
         uid: 'content_type_uid_2',
         title: 'Content Type 2 Title',
-        type: 'content_types',
+        type: 'content_type',
         status: 'modified',
       },
     ],
@@ -281,13 +284,13 @@ const mockData = {
       {
         uid: 'global_field_uid_1',
         title: 'Global Field 1 Title',
-        type: 'global_fields',
+        type: 'global_field',
         status: 'compare_only',
       },
       {
         uid: 'global_field_uid_2',
         title: 'Global Field 2 Title',
-        type: 'global_fields',
+        type: 'global_field',
         status: 'modified',
       },
     ],
@@ -299,7 +302,7 @@ const mockData = {
     },
     diff: {
       uid: 'gf1',
-      type: 'global_fields',
+      type: 'global_field',
       status: 'modified',
       base_branch: {
         differences: [
@@ -308,9 +311,9 @@ const mockData = {
             path: 'title',
           },
           {
-            data_type: 'compactText',
-            display_name: 'Single Line Textbox33',
-            uid: 'single_line_textbox33',
+            data_type: 'compactfield',
+            display_name: 'Single Line fieldbox33',
+            uid: 'single_line_fieldbox33',
             field_metadata: {
               description: '',
               default_value: '',
@@ -347,26 +350,26 @@ const mockData = {
   verboseRes: {
     listOfAddedFields: [
       {
-        path: 'url1',
+        path: undefined,
         displayName: undefined,
         uid: undefined,
-        fieldType: 'Metadata Field',
+        field: undefined,
       },
     ],
     listOfDeletedFields: [
       {
-        path: 'schema[3]',
-        displayName: 'Single Line Textbox33',
-        uid: 'single_line_textbox33',
-        fieldType: 'Single Line Textbox33 Field',
+        path: 'single_line_fieldbox33',
+        displayName: 'Single Line fieldbox33',
+        uid: 'single_line_fieldbox33',
+        field: 'compactfield',
       },
     ],
     listOfModifiedFields: [
       {
         path: 'title',
-        displayName: undefined,
-        uid: undefined,
-        fieldType: 'Metadata Field',
+        displayName: 'Name',
+        uid: 'title',
+        field: 'metadata',
       },
     ],
   },
@@ -384,7 +387,7 @@ const mockData = {
     item_merge_strategies: '',
     merge_comment: 'changes',
     no_revert: false,
-    uid: 'abc'
+    uid: 'abc',
   },
   mergeCompleteStatusRes: {
     merge_details: { status: 'complete', uid: 'abc' },
@@ -398,53 +401,55 @@ const mockData = {
   mergeNoStatusRes: {
     merge_details: { status: '', uid: 'abc' },
   },
-  mergeInputOptions:{
+  mergeInputOptions: {
     compareBranch: 'dev',
     strategy: 'merge_prefer_base',
     strategySubOption: 'merge_new_only',
     branchCompareData: '',
     stackAPIKey: 'abcdscdxx',
-    baseBranch: 'main'
+    baseBranch: 'main',
+    host: '',
   },
-  mergeInputOptionsWithoutStartegy:{
+  mergeInputOptionsWithoutStartegy: {
     compareBranch: 'dev',
-    strategy:'',
+    strategy: '',
     strategySubOption: '',
     branchCompareData: {},
     stackAPIKey: 'abcdscdxx',
-    baseBranch: 'main'
+    baseBranch: 'main',
+    host: '',
   },
   mergeData: {
     flags: {
       'base-branch': 'main',
       'compare-branch': 'dev',
       'stack-api-key': 'sfgfdsg223',
-      module: 'content_types',
-      format: 'compactText',
+      module: 'content_type',
+      format: 'compactfield',
     },
     withoutBaseFlag: {
       'compare-branch': 'dev',
       'stack-api-key': 'sfgfdsg223',
-      module: 'content_types',
-      format: 'compactText',
+      module: 'content_type',
+      format: 'compactfield',
     },
     withoutCompareFlag: {
       'base-branch': 'main',
       'stack-api-key': 'sfgfdsg223',
-      module: 'content_types',
-      format: 'compactText',
+      module: 'content_type',
+      format: 'compactfield',
     },
     withoutAPIKeyFlag: {
       'base-branch': 'main',
       'compare-branch': 'dev',
-      module: 'content_types',
-      format: 'compactText',
+      module: 'content_type',
+      format: 'compactfield',
     },
     withoutModuleFlag: {
       'base-branch': 'main',
       'compare-branch': 'dev',
       'stack-api-key': 'sfgfdsg223',
-      format: 'compactText',
+      format: 'compactfield',
     },
     branchCompareData: {
       content_types: {
@@ -452,7 +457,7 @@ const mockData = {
           {
             uid: 'content_type1',
             title: 'Content Type1',
-            type: 'content_types',
+            type: 'content_type',
             status: 'modified',
           },
         ],
@@ -460,7 +465,7 @@ const mockData = {
           {
             uid: 'content_type2',
             title: 'Content Type 2',
-            type: 'content_types',
+            type: 'content_type',
             status: 'compare_only',
           },
         ],
@@ -468,7 +473,7 @@ const mockData = {
           {
             uid: 'content_type3',
             title: 'Content Type 3',
-            type: 'content_types',
+            type: 'content_type',
             status: 'base_only',
           },
         ],
@@ -476,25 +481,25 @@ const mockData = {
       global_fields: {
         modified: [
           {
-            uid: 'global_fields1',
+            uid: 'global-fields1',
             title: 'Global Fields1',
-            type: 'global_fields',
+            type: 'global_field',
             status: 'modified',
           },
         ],
         added: [
           {
-            uid: 'global_fields2',
+            uid: 'global-fields2',
             title: 'Global Fields 2',
-            type: 'global_fields',
+            type: 'global_field',
             status: 'compare_only',
           },
         ],
         deleted: [
           {
-            uid: 'global_fields3',
+            uid: 'global-fields3',
             title: 'Global Fields 3',
-            type: 'global_fields',
+            type: 'global_field',
             status: 'base_only',
           },
         ],
@@ -602,4 +607,270 @@ const branchMockData = {
   },
 };
 
-export { mockData, createBranchMockData, deleteBranchMockData, branchMockData };
+const baseBranchDiff = {
+  data_type: 'group',
+  display_name: 'Social',
+  field_metadata: {},
+  schema: [
+    {
+      data_type: 'group',
+      display_name: 'Social Share',
+      field_metadata: {},
+      schema: [
+        {
+          data_type: 'link',
+          display_name: 'Link',
+          uid: 'link',
+          field_metadata: {
+            description: '',
+            default_value: '',
+            isTitle: true,
+          },
+          multiple: false,
+          mandatory: false,
+          unique: false,
+          non_localizable: false,
+          indexed: false,
+          inbuilt_model: false,
+        },
+        {
+          data_type: 'file',
+          display_name: 'Icon',
+          uid: 'icon',
+          field_metadata: {
+            description: '',
+            rich_text_type: 'standard',
+            image: true,
+          },
+          non_localizable: false,
+          dimension: {
+            width: {
+              min: null,
+              max: null,
+            },
+            height: {
+              min: null,
+              max: null,
+            },
+          },
+          multiple: false,
+          mandatory: true,
+          unique: false,
+          indexed: false,
+          inbuilt_model: false,
+        },
+      ],
+      uid: 'social_share',
+      multiple: true,
+      mandatory: false,
+      unique: false,
+      non_localizable: false,
+      indexed: false,
+      inbuilt_model: false,
+    },
+  ],
+  uid: 'social',
+  multiple: false,
+  mandatory: false,
+  unique: false,
+  non_localizable: false,
+  indexed: true,
+  inbuilt_model: false,
+  path: 'schema[3]',
+};
+const baseBranchNoSchema = {
+  data_type: 'group',
+  display_name: 'Social',
+  field_metadata: {},
+  uid: 'social',
+  multiple: false,
+  mandatory: false,
+  unique: false,
+  non_localizable: false,
+  indexed: true,
+  inbuilt_model: false,
+  path: 'schema[3]',
+};
+const compareBranchDiff = {
+  data_type: 'group',
+  display_name: 'Social',
+  field_metadata: {},
+  schema: [
+    {
+      data_type: 'group',
+      display_name: 'Social Share',
+      field_metadata: {},
+      schema: [
+        {
+          data_type: 'link',
+          display_name: 'Link',
+          uid: 'link',
+          field_metadata: {
+            description: '',
+            default_value: '',
+            isTitle: true,
+          },
+          multiple: false,
+          mandatory: false,
+          unique: true,
+          non_localizable: false,
+          indexed: false,
+          inbuilt_model: false,
+        },
+        {
+          data_type: 'link',
+          display_name: 'Link1',
+          uid: 'link1',
+          field_metadata: {
+            description: '',
+            default_value: '',
+            isTitle: true,
+          },
+          multiple: false,
+          mandatory: false,
+          unique: false,
+          non_localizable: false,
+          indexed: false,
+          inbuilt_model: false,
+        },
+      ],
+      uid: 'social_share',
+      multiple: true,
+      mandatory: false,
+      unique: false,
+      non_localizable: false,
+      indexed: false,
+      inbuilt_model: false,
+    },
+  ],
+  uid: 'social',
+  multiple: false,
+  mandatory: false,
+  unique: false,
+  non_localizable: false,
+  inbuilt_model: false,
+  path: 'schema[3]',
+};
+const compareBranchNoSchema = {
+  data_type: 'group',
+  display_name: 'Social',
+  field_metadata: {},
+  uid: 'social',
+  multiple: false,
+  mandatory: false,
+  unique: false,
+  non_localizable: false,
+  inbuilt_model: false,
+  path: 'schema[3]',
+};
+
+const baseAndCompareChanges = {
+  baseAndCompareHavingSchema: {
+    modified: {
+      social: {
+        path: 'social',
+        uid: 'social',
+        displayName: 'Social',
+        fieldType: 'group',
+      },
+      'social.social_share.link': {
+        path: 'social.social_share.link',
+        uid: 'link',
+        displayName: 'Link',
+        fieldType: 'link',
+      },
+    },
+    added: {
+      'social.social_share.link1': {
+        path: 'social.social_share.link1',
+        uid: 'link1',
+        displayName: 'Link1',
+        fieldType: 'link',
+      },
+    },
+    deleted: {
+      'social.social_share.icon': {
+        path: 'social.social_share.icon',
+        uid: 'icon',
+        displayName: 'Icon',
+        fieldType: 'file',
+      },
+    },
+  },
+  baseHavingSchema: {
+    modified: {
+      social: {
+        path: 'social',
+        uid: 'social',
+        displayName: 'Social',
+        fieldType: 'group'
+      }
+    },
+    added: {},
+    deleted: {
+      'social.social_share': {
+        path: 'social.social_share',
+        uid: 'social_share',
+        displayName: 'Social Share',
+        fieldType: 'group'
+      }
+    }
+  },
+  compareHavingSchema: {
+    modified: {
+      social: {
+        path: 'social',
+        uid: 'social',
+        displayName: 'Social',
+        fieldType: 'group'
+      }
+    },
+    added: {
+      'social.social_share': {
+        path: 'social.social_share',
+        uid: 'social_share',
+        displayName: 'Social Share',
+        fieldType: 'group'
+      }
+    },
+    deleted: {}
+  },
+  modifiedFieldRes:{
+    listOfAddedFields: [
+      {
+        path: undefined,
+        displayName: undefined,
+        uid: undefined,
+        field: undefined
+      }
+    ],
+    listOfDeletedFields: [
+      {
+        path: 'single_line_fieldbox33',
+        displayName: 'Single Line fieldbox33',
+        uid: 'single_line_fieldbox33',
+        field: 'compactfield'
+      }
+    ],
+    listOfModifiedFields: [
+      {
+        path: 'title',
+        displayName: 'Name',
+        uid: 'title',
+        field: 'metadata'
+      }
+    ]
+  }
+};
+
+export {
+  mockData,
+  createBranchMockData,
+  deleteBranchMockData,
+  branchMockData,
+  baseBranchDiff,
+  compareBranchDiff,
+  compareBranchNoSchema,
+  baseBranchNoSchema,
+  baseAndCompareChanges
+};

@@ -35,7 +35,7 @@ describe('Interactive', () => {
   });
 
   it('ask stack api key', async function () {
-    const stackAPIKey = 'sfgfdsg223';
+    const stackAPIKey = 'abcd';
     inquireStub.callsFake(function () {
       return Promise.resolve(stackAPIKey);
     });
@@ -62,7 +62,7 @@ describe('Interactive', () => {
   });
 
   it('ask branch uid', async function () {
-    const branchUid = 'dev';
+    const branchUid = 'new_branch';
     inquireStub.callsFake(function () {
       return Promise.resolve(branchUid);
     });
