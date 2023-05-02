@@ -6,7 +6,7 @@ export default class BranchSetCommand extends Command {
   static description = 'Set branch for CLI';
   static flags = {
     'stack-api-key': flags.string({ char: 'k', description: 'Stack API Key' }),
-    'base-branch': flags.string({ char: 'b', description: 'Base Branch' }),
+    'base-branch': flags.string({ description: 'Base Branch' }),
   };
   static examples = [
     '$ csdx config:set:base-branch',
