@@ -6,6 +6,12 @@ import { expect } from 'chai';
 describe('File system operations', () => {
   const content = `const API = 'hello world'`;
   const folderName = createMergeScripts({ status: 'modified', uid: 'blog' }, content, '1234-1234');
+
+  it('Should proceed to generate or throw error when permission not provided', () => {
+    const { W_OK: writePermission } = fs.constants;
+    const checkPermissions = fs.accessSync('./', writePermission);
+    expect(checkPermissions).to.equal(undefined);
+  });
   it('Should create a root folder for scripts', () => {
     const doesFolderExist = fs.existsSync(folderName);
     expect(doesFolderExist).to.equal(true);
@@ -36,7 +42,7 @@ describe('Check for operation status', () => {
     const operation = getContentypeMergeStatus('modified');
     expect(operation).to.equal('updated');
   });
-  it('Should return created when modified is compare_only', () => {
+  it('Should return created when compare_only is passed', () => {
     const operation = getContentypeMergeStatus('compare_only');
     expect(operation).to.equal('created');
   });
