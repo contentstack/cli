@@ -8,7 +8,7 @@ export default class BranchCreateCommand extends Command {
 
   static examples: string[] = [
     'csdx cm:branches:create',
-    'csdx cm:branches:create --uid main -u new_branch -k bltxxxxxxxx',
+    'csdx cm:branches:create --source main -uid new_branch -k bltxxxxxxxx',
     'csdx cm:branches:create --source main --uid new_branch --stack-api-key bltxxxxxxxx',
   ]; // Note: Add and modify the examples
 
