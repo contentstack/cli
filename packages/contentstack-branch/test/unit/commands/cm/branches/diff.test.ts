@@ -10,13 +10,13 @@ describe('Diff Command', () => {
   it('Branch diff with all flags, should be successful', async function () {
     const stub1 = stub(BranchDiffHandler.prototype, 'run').resolves(mockData.data);
     await DiffCommand.run([
-      '-c',
+      '--compare-branch',
       mockData.flags.compareBranch,
-      '-m',
+      '--module',
       mockData.flags.module,
       '-k',
       mockData.flags.stackAPIKey,
-      '-b',
+      '--base-branch',
       mockData.flags.baseBranch,
     ]);
     expect(stub1.calledOnce).to.be.true;
@@ -26,11 +26,11 @@ describe('Diff Command', () => {
   it('Branch diff when format type is verbose, should display verbose view', async function () {
     const stub1 = stub(DiffCommand.prototype, 'run').resolves(mockData.verboseContentTypeRes);
     await DiffCommand.run([
-      '-c',
+      '--compare-branch',
       mockData.flags.compareBranch,
-      '-b',
+      '--base-branch',
       mockData.flags.baseBranch,
-      '-m',
+      '--module',
       mockData.flags.module,
       '-k',
       mockData.flags.stackAPIKey,
@@ -43,12 +43,12 @@ describe('Diff Command', () => {
   it('Branch summary when module is of both type(content_types & global fields)', async function () {
     const stub1 = stub(DiffCommand.prototype, 'run').resolves(mockData.data);
     await DiffCommand.run([
-      '-c',
+      '--compare-branch',
       mockData.flags.compareBranch,
-      '-b',
+      '--base-branch',
       mockData.flags.baseBranch,
-      '-m',
-      'both',
+      '--module',
+      'all',
       '-k',
       mockData.flags.stackAPIKey
     ]);

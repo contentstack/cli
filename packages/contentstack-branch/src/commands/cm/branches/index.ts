@@ -12,7 +12,7 @@ export default class BranchListCommand extends Command {
 
   static flags = {
     'stack-api-key': flags.string({ char: 'k', description: 'Stack API Key' }),
-    verbose: flags.boolean({ char: 'v', description: 'Verbose' }),
+    verbose: flags.boolean({description: 'Verbose' }),
   };
 
   static aliases: string[] = []; // Note: alternative usage if any

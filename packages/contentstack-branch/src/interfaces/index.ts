@@ -50,7 +50,7 @@ export interface ModifiedFieldsType {
   uid: string;
   displayName: string;
   path: string;
-  text: string;
+  field: string;
 }
 
 export interface ModifiedFieldsInput {

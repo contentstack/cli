@@ -4,7 +4,7 @@
 import fs from 'fs';
 import path from 'path';
 import { configHandler, HttpClient, cliux, managementSDKClient, messageHandler } from '@contentstack/cli-utilities';
-import { MergeParams } from 'src/interfaces';
+import { MergeParams } from '../interfaces';
 
 export const getbranchesList = (branchResult, baseBranch: string) => {
   const branches: Record<string, unknown>[] = [];
@@ -146,3 +146,4 @@ export * from './create-merge-scripts';
 export * from './entry-update-script';
 export * as interactive from './interactive';
 export * as branchDiffUtility from './branch-diff-utility';
+export * as deleteBranchUtility from './delete-branch';

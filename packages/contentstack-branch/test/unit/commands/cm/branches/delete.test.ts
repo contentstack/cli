@@ -19,34 +19,30 @@ describe('Delete branch', () => {
 
     stub1.restore();
   });
-  it('Should prompt when api key is not passed and also ask confirmation wihtout -y flag', async () => {
+
+  it('Should prompt when api key is not passed', async () => {
     const askStackAPIKey = stub(interactive, 'askStackAPIKey').resolves(deleteBranchMockData.flags.apiKey);
-    const askConfirmation = stub(interactive, 'askConfirmation');
-    await BranchDeleteCommand.run(['--uid', deleteBranchMockData.flags.uid]);
+    await BranchDeleteCommand.run(['--uid', deleteBranchMockData.flags.uid, "--yes"]);
     expect(askStackAPIKey.calledOnce).to.be.true;
-    expect(askConfirmation.called).to.be.true;
-    askConfirmation.restore();
     askStackAPIKey.restore();
   });
+
   it('Should prompt when branch is not passed and also ask confirmation wihtout -y flag', async () => {
     const askSourceBranch = stub(interactive, 'askBranchUid').resolves(deleteBranchMockData.flags.uid);
-    const askConfirmation = stub(interactive, 'askConfirmation');
-    await BranchDeleteCommand.run(['--stack-api-key', deleteBranchMockData.flags.apiKey]);
+    await BranchDeleteCommand.run(['--stack-api-key', deleteBranchMockData.flags.apiKey, "--yes"]);
     expect(askSourceBranch.calledOnce).to.be.true;
-    expect(askConfirmation.called).to.be.true;
-    askConfirmation.restore();
     askSourceBranch.restore();
   });
-  it('Should not ask confirmation when -y flag is passed', async () => {
-    const askConfirmation = stub(interactive, 'askConfirmation');
+
+  it('Should ask branch name confirmation if yes not provided, success if same branch uid provided', async () => {
+    const askConfirmation = stub(interactive, 'askBranchNameConfirmation').resolves(deleteBranchMockData.flags.uid);
     await BranchDeleteCommand.run([
       '--stack-api-key',
       deleteBranchMockData.flags.apiKey,
       '--uid',
-      deleteBranchMockData.flags.uid,
-      '-y',
+      deleteBranchMockData.flags.uid
     ]);
-    expect(askConfirmation.called).to.be.false;
+    expect(askConfirmation.called).to.be.true;
     askConfirmation.restore();
   });
 });

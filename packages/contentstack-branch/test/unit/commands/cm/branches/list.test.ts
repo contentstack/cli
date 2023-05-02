@@ -14,12 +14,14 @@ describe('List branches', () => {
     expect(stub1.calledOnce).to.be.true;
     stub1.restore();
   });
+
   it('Should prompt when api key is not passed', async () => {
     const askStackAPIKey = stub(interactive, 'askStackAPIKey').resolves(branchMockData.flags.apiKey);
     await BranchListCommand.run([]);
     expect(askStackAPIKey.calledOnce).to.be.true;
     askStackAPIKey.restore();
   });
+  
   it('branches with verbose flag, should list branches in table', async () => {
     const branchStub = stub(cliux, 'table').callsFake((branches) => {
       expect(branches).to.have.length.greaterThan(0);
@@ -27,7 +29,8 @@ describe('List branches', () => {
     await BranchListCommand.run(['-k', branchMockData.flags.apiKey, '--verbose']);
     branchStub.restore();
   });
+  
   it('Branch diff when format type is verbose, should display verbose view', async function () {
-    await BranchListCommand.run(['-k', branchMockData.flags.apiKey, '-v']);
+    await BranchListCommand.run(['-k', branchMockData.flags.apiKey, '--verbose']);
   });
 });
