@@ -33,7 +33,7 @@ $ npm run build
 $ csdx plugins:link <plugin path>
 
 NPM installation steps:
-$ csdx plugins:install @contentstack/launch-cli
+$ csdx plugins:install @contentstack/cli-launch
 $ csdx launch
 ```
 
