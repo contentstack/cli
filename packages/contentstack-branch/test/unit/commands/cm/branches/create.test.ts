@@ -20,6 +20,7 @@ describe('Create branch', () => {
     expect(stub1.calledOnce).to.be.true;
     stub1.restore();
   });
+
   it('Should prompt when api key is not passed', async () => {
     const askStackAPIKey = stub(interactive, 'askStackAPIKey').resolves(createBranchMockData.flags.apiKey);
     await BranchCreateCommand.run([
@@ -31,6 +32,7 @@ describe('Create branch', () => {
     expect(askStackAPIKey.calledOnce).to.be.true;
     askStackAPIKey.restore();
   });
+
   it('Should prompt when source branch is not passed', async () => {
     const askSourceBranch = stub(interactive, 'askSourceBranch').resolves(createBranchMockData.flags.source);
     await BranchCreateCommand.run([
@@ -42,6 +44,7 @@ describe('Create branch', () => {
     expect(askSourceBranch.calledOnce).to.be.true;
     askSourceBranch.restore();
   });
+
   it('Should prompt when new branch uid is not passed', async () => {
     const askBranchUid = stub(interactive, 'askBranchUid').resolves(createBranchMockData.flags.uid);
     await BranchCreateCommand.run([
