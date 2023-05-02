@@ -11,29 +11,26 @@ export default class BranchDiffCommand extends Command {
     'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx"',
     'csdx cm:branches:diff --compare-branch "develop"',
     'csdx cm:branches:diff --compare-branch "develop" --stack-api-key "bltxxxxxxxx"',
-    'csdx cm:branches:diff --compare-branch "develop" --module "content_types"',
-    'csdx cm:branches:diff --module "content_types" --format "detailedText"',
-    'csdx cm:branches:diff --compare-branch "develop" --format "detailedText"',
+    'csdx cm:branches:diff --compare-branch "develop" --module "content-types"',
+    'csdx cm:branches:diff --module "content-types" --format "detailed-text"',
+    'csdx cm:branches:diff --compare-branch "develop" --format "detailed-text"',
     'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main"',
     'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop"',
-    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --module "content_types"',
-    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content_types"',
-    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content_types" --format "detailedText"',
-  ];
+    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --module "content-types"',
+    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types"',
+    'csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types" --format "detailed-text"',
+  ]
 
-  static usage: string = 'cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]';
+  static usage: string = 'cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]';
 
   static flags = {
     'base-branch': flags.string({
-      char: 'b',
       description: 'Base branch',
     }),
     'compare-branch': flags.string({
-      char: 'c',
       description: 'Compare branch',
     }),
     module: flags.string({
-      char: 'm',
       description: 'Module',
       options: ['content-types', 'global-fields', 'all'],
     }),
