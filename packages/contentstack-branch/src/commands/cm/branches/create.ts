@@ -8,19 +8,19 @@ export default class BranchCreateCommand extends Command {
 
   static examples: string[] = [
     'csdx cm:branches:create',
-    'csdx cm:branches:create -s main -u new_branch -k bltxxxxxxxx',
+    'csdx cm:branches:create --source main -uid new_branch -k bltxxxxxxxx',
     'csdx cm:branches:create --source main --uid new_branch --stack-api-key bltxxxxxxxx',
   ]; // Note: Add and modify the examples
 
   static usage: string[] = [
     'cm:branches:create',
-    'cm:branches:create [-s <value>] [-u <value>] [-k <value>]',
+    'cm:branches:create [--source <value>] [--uid <value>] [-k <value>]',
     'cm:branches:create [--source <value>] [--uid <value>] [--stack-api-key <value>]',
   ]; // Note: Add and modify the usage
 
   static flags = {
-    uid: flags.string({ char: 'u', description: 'Branch UID to be created' }),
-    source: flags.string({ char: 's', description: 'Source branch from which new branch to be created' }),
+    uid: flags.string({ description: 'Branch UID to be created' }),
+    source: flags.string({ description: 'Source branch from which new branch to be created' }),
     'stack-api-key': flags.string({ char: 'k', description: 'Stack API key' }),
   };
 
