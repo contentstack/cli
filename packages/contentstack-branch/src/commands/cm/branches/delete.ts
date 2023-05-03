@@ -8,18 +8,18 @@ export default class BranchDeleteCommand extends Command {
 
   static examples: string[] = [
     'csdx cm:branches:delete',
-    'csdx cm:branches:delete -u main -k bltxxxxxxxx',
+    'csdx cm:branches:delete --uid main -k bltxxxxxxxx',
     'csdx cm:branches:delete --uid main --stack-api-key bltxxxxxxxx',
     'csdx cm:branches:delete --uid main --stack-api-key bltxxxxxxxx --yes',
   ];
 
   static usage: string[] = [
-    'cm:branches:delete [-u <value>] [-k <value>]',
+    'cm:branches:delete [-uid <value>] [-k <value>]',
     'cm:branches:delete [--uid <value>] [--stack-api-key <value>]',
   ]; // Note: Add and modify the usage
 
   static flags = {
-    uid: flags.string({ char: 'u', description: 'Branch UID to be deleted' }),
+    uid: flags.string({ description: 'Branch UID to be deleted' }),
     'stack-api-key': flags.string({ char: 'k', description: 'Stack API key' }),
     yes: flags.boolean({
       char: 'y',
