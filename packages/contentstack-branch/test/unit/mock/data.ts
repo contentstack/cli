@@ -409,6 +409,7 @@ const mockData = {
     stackAPIKey: 'abcdscdxx',
     baseBranch: 'main',
     host: '',
+    enableEntryExp: false,
   },
   mergeInputOptionsWithoutStartegy: {
     compareBranch: 'dev',
@@ -418,6 +419,7 @@ const mockData = {
     stackAPIKey: 'abcdscdxx',
     baseBranch: 'main',
     host: '',
+    enableEntryExp: false,
   },
   mergeData: {
     flags: {

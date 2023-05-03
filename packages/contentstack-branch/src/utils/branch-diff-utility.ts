@@ -153,9 +153,9 @@ async function branchCompareSDK(payload: BranchDiffPayload, skip?: number, limit
 function handleErrorMsg(err: { errorCode?: number; errorMessage: string }, spinner) {
   if (err.errorMessage) {
     cliux.loaderV2('', spinner);
-    cliux.print(`error: ${err.errorMessage}`, { color: 'red' });
+    cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
   } else {
-    cliux.print(`error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
+    cliux.print(`Error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
   }
   process.exit(1);
 }
