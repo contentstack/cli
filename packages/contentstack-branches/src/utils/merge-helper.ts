@@ -9,14 +9,11 @@ import {
   askBaseBranch,
   getbranchConfig,
   branchDiffUtility as branchDiff,
-  apiPostRequest,
-  apiGetRequest,
   writeFile,
   executeMergeRequest,
   getMergeQueueStatus,
 } from './';
 
-import config from '../config';
 
 export const prepareMergeRequestPayload = (options) => {
   return {
