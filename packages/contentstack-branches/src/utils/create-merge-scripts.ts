@@ -48,18 +48,25 @@ export function createMergeScripts(contentType: CreateMergeScriptsProps, content
   const mergeScriptsSlug = `merge_scripts_${mergeJobUID}_${fileCreatedAt}`;
 
   const fullPath = `${rootFolder}/${mergeScriptsSlug}`;
+
+  const { W_OK: writePermission } = fs.constants;
+
+  const checkPermissions = fs.accessSync('./', writePermission);
+
   try {
-    if (!fs.existsSync(rootFolder)) {
-      fs.mkdirSync(rootFolder);
+    if (checkPermissions === undefined) {
+      if (!fs.existsSync(rootFolder)) {
+        fs.mkdirSync(rootFolder);
+      }
+      if (!fs.existsSync(fullPath)) {
+        fs.mkdirSync(fullPath);
+      }
+      fs.writeFileSync(
+        `${fullPath}/${fileCreatedAt}_${getContentypeMergeStatus(contentType.status)}_${contentType.uid}.js`,
+        content,
+        'utf-8',
+      );
     }
-    if (!fs.existsSync(fullPath)) {
-      fs.mkdirSync(fullPath);
-    }
-    fs.writeFileSync(
-      `${fullPath}/${fileCreatedAt}_${getContentypeMergeStatus(contentType.status)}_${contentType.uid}.js`,
-      content,
-      'utf-8',
-    );
     return fullPath;
   } catch (error) {
     console.log(error);
