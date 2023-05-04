@@ -71,7 +71,7 @@ export default class Environments extends BaseCommand<typeof Environments> {
           uid: this.sharedConfig.currentConfig.organizationUid,
         })?.uid;
 
-      if (this.sharedConfig.currentConfig.organizationUid) {
+      if (!this.sharedConfig.currentConfig.organizationUid) {
         this.log('Organization UID not found!', 'warn');
       }
     }
