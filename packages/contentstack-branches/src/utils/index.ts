@@ -144,6 +144,7 @@ export * from './interactive';
 export * from './merge-helper';
 export * from './create-merge-scripts';
 export * from './entry-update-script';
+export * from './entry-create-script';
 export * as interactive from './interactive';
 export * as branchDiffUtility from './branch-diff-utility';
 export * as deleteBranchUtility from './delete-branch';
