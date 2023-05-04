@@ -5,7 +5,7 @@ import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
 import unionWith from 'lodash/unionWith';
 import find from 'lodash/find';
-import { cliux, messageHandler, managementSDKClient, configHandler, HttpClient } from '@contentstack/cli-utilities';
+import { cliux, messageHandler, managementSDKClient } from '@contentstack/cli-utilities';
 import isArray from 'lodash/isArray';
 import { diff } from 'just-diff';
 
@@ -53,54 +53,6 @@ async function fetchBranchesDiff(
     return await fetchBranchesDiff(payload, branchesDiffData, skip, limit);
   }
   return branchesDiffData;
-}
-
-/**
- * api request handler
- * @async
- * @method
- * @param payload
- * @param skip
- * @param limit
- * @returns  {*} Promise<any>
- */
-async function apiRequestHandler(payload: BranchDiffPayload, skip?: number, limit?: number): Promise<any> {
-  const authToken = configHandler.get('authtoken');
-  const headers = {
-    authToken: authToken,
-    api_key: payload.apiKey,
-    'Content-Type': 'application/json',
-  };
-
-  const params = {
-    base_branch: payload.baseBranch,
-    compare_branch: payload.compareBranch,
-  };
-  if (skip >= 0) params['skip'] = skip;
-  if (limit >= 0) params['limit'] = limit;
-
-  const result = await new HttpClient()
-    .headers(headers)
-    .queryParams(params)
-    .get(payload.url)
-    .then(({ data, status }) => {
-      if ([200, 201, 202].includes(status)) return data;
-      else {
-        let errorMsg: string;
-        if (status === 500 && data?.message) errorMsg = data.message;
-        else if (data.error_message) errorMsg = data.error_message;
-        else errorMsg = messageHandler.parse('CLI_BRANCH_API_FAILED');
-        cliux.loaderV2(' ', payload.spinner);
-        cliux.print(`error: ${errorMsg}`, { color: 'red' });
-        process.exit(1);
-      }
-    })
-    .catch((err) => {
-      cliux.loader(' ');
-      cliux.print(`error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
-      process.exit(1);
-    });
-  return result;
 }
 
 /**
@@ -373,7 +325,7 @@ async function prepareModifiedDiff(params: {
   listOfModifiedFields: any[];
   listOfDeletedFields: any[];
   listOfAddedFields: any[];
-}){
+}) {
   const { baseBranchFieldExists, compareBranchFieldExists } = params;
   if (
     baseBranchFieldExists.path === 'description' ||
@@ -398,7 +350,7 @@ async function prepareModifiedDiff(params: {
     if (baseBranchFieldExists?.display_name && compareBranchFieldExists?.display_name) {
       const { modified, deleted, added } = await deepDiff(baseBranchFieldExists, compareBranchFieldExists);
       for (let field of Object.values(added)) {
-        if(field){
+        if (field) {
           params.listOfAddedFields.push({
             path: field['path'],
             displayName: field['displayName'],
@@ -409,7 +361,7 @@ async function prepareModifiedDiff(params: {
       }
 
       for (let field of Object.values(deleted)) {
-        if(field){
+        if (field) {
           params.listOfDeletedFields.push({
             path: field['path'],
             displayName: field['displayName'],
@@ -420,7 +372,7 @@ async function prepareModifiedDiff(params: {
       }
 
       for (let field of Object.values(modified)) {
-        if(field){
+        if (field) {
           params.listOfModifiedFields.push({
             path: field['path'],
             displayName: field['displayName'],
@@ -514,7 +466,7 @@ async function deepDiff(baseObj, compareObj) {
     const { schema: compareSchema, path: comparePath, ...restCompareObj } = compareObj;
     const currentPath = buildPath(path, baseObj['uid']);
     if (restBaseObj['uid'] === restCompareObj['uid']) {
-      prepareModifiedField({restBaseObj, restCompareObj, currentPath, changes})
+      prepareModifiedField({ restBaseObj, restCompareObj, currentPath, changes });
     }
 
     //case1:- base & compare schema both exists
@@ -526,10 +478,10 @@ async function deepDiff(baseObj, compareObj) {
         let newPath: string;
         if (baseBranchField && !compareBranchField) {
           newPath = `${currentPath}.${baseBranchField['uid']}`;
-          prepareDeletedField({path: newPath, changes, baseField: baseBranchField});
+          prepareDeletedField({ path: newPath, changes, baseField: baseBranchField });
         } else if (compareBranchField && !baseBranchField) {
           newPath = `${currentPath}.${compareBranchField['uid']}`;
-          prepareAddedField({path: newPath, changes, compareField: compareBranchField});
+          prepareAddedField({ path: newPath, changes, compareField: compareBranchField });
         } else if (compareBranchField && baseBranchField) {
           baseAndCompareSchemaDiff(baseBranchField, compareBranchField, currentPath);
         }
@@ -540,14 +492,14 @@ async function deepDiff(baseObj, compareObj) {
     if (baseSchema?.length && !compareSchema?.length && isArray(baseSchema)) {
       forEach(baseSchema, (base, key) => {
         const newPath = `${currentPath}.${base['uid']}`;
-        prepareDeletedField({path: newPath, changes, baseField: base})
+        prepareDeletedField({ path: newPath, changes, baseField: base });
       });
     }
     //case3:- compare schema  exists only
     if (!baseSchema?.length && compareSchema?.length && isArray(compareSchema)) {
       forEach(compareSchema, (compare, key) => {
         const newPath = `${currentPath}.${compare['uid']}`;
-        prepareAddedField({path: newPath,changes, compareField: compare})
+        prepareAddedField({ path: newPath, changes, compareField: compare });
       });
     }
   }
@@ -555,12 +507,8 @@ async function deepDiff(baseObj, compareObj) {
   return changes;
 }
 
-function prepareAddedField(params:{
-  path: string;
-  changes: any;
-  compareField: any
-}){
-  const {path, changes, compareField} = params;
+function prepareAddedField(params: { path: string; changes: any; compareField: any }) {
+  const { path, changes, compareField } = params;
   if (!changes.added[path]) {
     const obj = {
       path: path,
@@ -572,12 +520,8 @@ function prepareAddedField(params:{
   }
 }
 
-function prepareDeletedField(params:{
-  path: string;
-  changes: any;
-  baseField: any
-}){
-  const {path, changes, baseField} = params;
+function prepareDeletedField(params: { path: string; changes: any; baseField: any }) {
+  const { path, changes, baseField } = params;
   if (!changes.added[path]) {
     const obj = {
       path: path,
@@ -589,13 +533,8 @@ function prepareDeletedField(params:{
   }
 }
 
-function prepareModifiedField(params:{
-  restBaseObj: any;
-  restCompareObj: any;
-  currentPath: string;
-  changes: any;
-}){
-  const {restBaseObj, restCompareObj, currentPath,changes} = params;
+function prepareModifiedField(params: { restBaseObj: any; restCompareObj: any; currentPath: string; changes: any }) {
+  const { restBaseObj, restCompareObj, currentPath, changes } = params;
   const differences = diff(restBaseObj, restCompareObj);
   if (differences.length) {
     const modifiedField = {
@@ -620,5 +559,5 @@ export {
   branchCompareSDK,
   prepareBranchVerboseRes,
   deepDiff,
-  prepareModifiedDiff
+  prepareModifiedDiff,
 };

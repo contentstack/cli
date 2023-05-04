@@ -3,7 +3,7 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { configHandler, HttpClient, cliux, managementSDKClient, messageHandler } from '@contentstack/cli-utilities';
+import { configHandler, cliux, messageHandler } from '@contentstack/cli-utilities';
 import { MergeParams } from '../interfaces';
 
 export const getbranchesList = (branchResult, baseBranch: string) => {
@@ -46,57 +46,6 @@ export const writeFile = (filePath, data) => {
       resolve('done');
     });
   });
-};
-
-export const apiGetRequest = async (payload): Promise<any> => {
-  const authToken = configHandler.get('authtoken');
-  const headers = {
-    authtoken: authToken,
-    api_key: payload.apiKey,
-    'Content-Type': 'application/json',
-  };
-  return await new HttpClient()
-    .headers(headers)
-    .queryParams(payload.params)
-    .get(payload.url)
-    .then(({ data, status }) => {
-      if (status === 200 || status === 201 || status === 202) {
-        return data;
-      } else {
-        let errorMsg: string = data.error_message || data.message;
-        cliux.error(errorMsg);
-        process.exit(1);
-      }
-    })
-    .catch((error) => {
-      cliux.error('Failed to merge the changes', error.message || error);
-      process.exit(1);
-    });
-};
-
-export const apiPostRequest = async (payload): Promise<any> => {
-  const authToken = configHandler.get('authtoken');
-  const headers = {
-    authtoken: authToken,
-    api_key: payload.apiKey,
-    'Content-Type': 'application/json',
-  };
-  return await new HttpClient()
-    .headers(headers)
-    .queryParams(payload.params)
-    .post(payload.url, payload.body || {})
-    .then(({ data, status }) => {
-      if (status === 200 || status === 201 || status === 202) return data;
-      else {
-        let errorMsg: string = data.error_message || data.message;
-        cliux.error('Failed to merge the changes', errorMsg);
-        process.exit(1);
-      }
-    })
-    .catch((error) => {
-      cliux.error('Failed to merge the changes', error.message || error);
-      process.exit(1);
-    });
 };
 
 export async function getMergeQueueStatus(stackAPIClient, payload): Promise<any> {
