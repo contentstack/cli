@@ -1,8 +1,5 @@
 const config = {
-  baseUrl: 'https://dev16-api.csnonprod.com/v3/stacks/branches_compare',
   skip: 0,
-  limit: 30,
-  mergeUrl: 'https://dev16-api.csnonprod.com/v3/stacks/branches_merge',
-  mergeQueueUrl: 'https://dev16-api.csnonprod.com/v3/stacks/branches_queue',
+  limit: 30
 };
 export default config;

@@ -1,4 +1,5 @@
 import path from 'path';
+import forEach from 'lodash/forEach';
 import { cliux } from '@contentstack/cli-utilities';
 import { MergeInputOptions } from '../interfaces';
 import {
@@ -14,7 +15,6 @@ import {
   generateMergeScripts,
   selectCustomPreferences,
 } from '../utils';
-import forEach from 'lodash/forEach';
 
 const enableEntryExp = false;
 
