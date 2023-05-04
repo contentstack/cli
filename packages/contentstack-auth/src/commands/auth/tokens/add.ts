@@ -130,6 +130,9 @@ export default class TokensAddCommand extends Command {
       }
 
       let tokenValidationResult;
+      if(this.region===undefined) {
+        throw "CDA and CMA hosts not defined. Please set the region to add the tokens."
+      }
       if (type === 'delivery') {
         tokenValidationResult = await tokenValidation.validateDeliveryToken(
           this.deliveryAPIClient,
@@ -161,6 +164,10 @@ export default class TokensAddCommand extends Command {
     } catch (error) {
       logger.error('token add error', error.message);
       cliux.print('CLI_AUTH_TOKENS_ADD_FAILED', { color: 'yellow' });
+      if(error.message===undefined) {
+        cliux.print(error, { color: 'red' });
+        return;
+      }
       cliux.print(error.message.message ? error.message.message : error.message, { color: 'red' });
     }
   }
