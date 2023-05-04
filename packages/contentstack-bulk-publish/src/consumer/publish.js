@@ -246,6 +246,7 @@ async function performBulkPublish(data, _config, queue) {
               chalk.green(
                 `Bulk entries sent for publish ${JSON.stringify(removePublishDetails(bulkPublishObj.entries))}`,
               ),
+              (bulkPublishEntriesResponse.job_id) ? chalk.yellow(`job_id: ${bulkPublishEntriesResponse.job_id}`) : ''
             );
             delete bulkPublishObj.stack;
             addLogs(
@@ -304,6 +305,7 @@ async function performBulkPublish(data, _config, queue) {
             console.log(
               chalk.green(
                 `Bulk assets sent for publish ${JSON.stringify(removePublishDetails(bulkPublishObj.assets))}`,
+                (bulkPublishAssetsResponse.job_id) ? chalk.yellow(`job_id: ${bulkPublishAssetsResponse.job_id}`) : ''
               ),
             );
             delete bulkPublishObj.stack;
@@ -375,6 +377,7 @@ async function performBulkUnPublish(data, _config, queue) {
             console.log(
               chalk.green(
                 `Bulk entries sent for Unpublish  ${JSON.stringify(removePublishDetails(bulkUnPublishObj.entries))}`,
+                (bulkUnPublishEntriesResponse.job_id) ? chalk.yellow(`job_id: ${bulkUnPublishEntriesResponse.job_id}`) : ''
               ),
             );
             addLogs(
@@ -434,6 +437,7 @@ async function performBulkUnPublish(data, _config, queue) {
             console.log(
               chalk.green(
                 `Bulk assets sent for Unpublish ${JSON.stringify(removePublishDetails(bulkUnPublishObj.assets))}`,
+                (bulkUnPublishAssetsResponse.job_id) ? chalk.yellow(`job_id: ${bulkUnPublishAssetsResponse.job_id}`) : ''
               ),
             );
             addLogs(
