@@ -82,7 +82,7 @@ export default class GitHub extends BaseClass {
         variables: {
           project: {
             name: projectName,
-            cmsStackApiKey: selectedStack?.api_key,
+            cmsStackApiKey: selectedStack?.api_key || '',
             repository: {
               username,
               gitProvider: provider,
@@ -93,28 +93,19 @@ export default class GitHub extends BaseClass {
               gitBranch: branch,
               frameworkPreset: framework,
               outputDirectory: outputDirectory,
-              name: environmentName || "Default",
-              buildCommand: buildCommand || "npm run build",
-              environmentVariables: map(
-                this.envVariables,
-                ({ key, value }) => ({ key, value })
-              ),
+              name: environmentName || 'Default',
+              environmentVariables: map(this.envVariables, ({ key, value }) => ({ key, value })),
+              buildCommand: buildCommand === undefined || buildCommand === null ? 'npm run build' : buildCommand,
             },
           },
         },
       })
       .then(({ data: { project } }) => {
-        this.log("New project created successfully", "info");
+        this.log('New project created successfully', 'info');
         const [firstEnvironment] = project.environments;
         this.config.currentConfig = project;
-        this.config.currentConfig.deployments = map(
-          firstEnvironment.deployments.edges,
-          "node"
-        );
-        this.config.currentConfig.environments[0] = omit(
-          this.config.currentConfig.environments[0],
-          ["deployments"]
-        );
+        this.config.currentConfig.deployments = map(firstEnvironment.deployments.edges, 'node');
+        this.config.currentConfig.environments[0] = omit(this.config.currentConfig.environments[0], ['deployments']);
       })
       .catch(async (error) => {
         const canRetry = await this.handleNewProjectCreationError(error);
@@ -181,11 +172,10 @@ export default class GitHub extends BaseClass {
     this.config.buildCommand =
       buildCommand ||
       (await ux.inquire({
-        type: "input",
-        default: "npm run build",
-        name: "buildCommand",
-        message: "Build Command",
-        validate: this.inquireRequireValidation,
+        type: 'input',
+        name: 'buildCommand',
+        message: 'Build Command',
+        default: this.config.framework === 'OTHER' ? '' : 'npm run build',
       }));
     this.config.outputDirectory =
       outputDirectory ||
