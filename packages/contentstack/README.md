@@ -40,8 +40,8 @@ USAGE
 * [`csdx cm:bootstrap`](#csdx-cmbootstrap)
 * [`csdx cm:branches`](#csdx-cmbranches)
 * [`csdx cm:branches:create`](#csdx-cmbranchescreate)
-* [`csdx cm:branches:delete [-u <value>] [-k <value>]`](#csdx-cmbranchesdelete--u-value--k-value)
-* [`csdx cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]`](#csdx-cmbranchesdiff--b-value--c-value--k-value-m-value)
+* [`csdx cm:branches:delete [-uid <value>] [-k <value>]`](#csdx-cmbranchesdelete--uid-value--k-value)
+* [`csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]`](#csdx-cmbranchesdiff---base-branch-value---compare-branch-value--k-value--module-value)
 * [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
@@ -463,7 +463,7 @@ USAGE
 
 FLAGS
   -k, --stack-api-key=<value>  Stack API Key
-  -v, --verbose                Verbose
+  --verbose                    Verbose
 
 DESCRIPTION
   List the branches
@@ -485,13 +485,13 @@ Create a new branch
 ```
 USAGE
   $ csdx cm:branches:create
-  $ csdx cm:branches:create [-s <value>] [-u <value>] [-k <value>]
+  $ csdx cm:branches:create [--source <value>] [--uid <value>] [-k <value>]
   $ csdx cm:branches:create [--source <value>] [--uid <value>] [--stack-api-key <value>]
 
 FLAGS
   -k, --stack-api-key=<value>  Stack API key
-  -s, --source=<value>         Source branch from which new branch to be created
-  -u, --uid=<value>            Branch UID to be created
+  --source=<value>             Source branch from which new branch to be created
+  --uid=<value>                Branch UID to be created
 
 DESCRIPTION
   Create a new branch
@@ -499,26 +499,26 @@ DESCRIPTION
 EXAMPLES
   $ csdx cm:branches:create
 
-  $ csdx cm:branches:create -s main -u new_branch -k bltxxxxxxxx
+  $ csdx cm:branches:create --source main -uid new_branch -k bltxxxxxxxx
 
   $ csdx cm:branches:create --source main --uid new_branch --stack-api-key bltxxxxxxxx
 ```
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/create.ts)_
 
-## `csdx cm:branches:delete [-u <value>] [-k <value>]`
+## `csdx cm:branches:delete [-uid <value>] [-k <value>]`
 
 Delete a branch
 
 ```
 USAGE
-  $ csdx cm:branches:delete [-u <value>] [-k <value>]
+  $ csdx cm:branches:delete [-uid <value>] [-k <value>]
   $ csdx cm:branches:delete [--uid <value>] [--stack-api-key <value>]
 
 FLAGS
   -k, --stack-api-key=<value>  Stack API key
-  -u, --uid=<value>            Branch UID to be deleted
   -y, --yes                    Force the deletion of the branch by skipping the confirmation
+  --uid=<value>                Branch UID to be deleted
 
 DESCRIPTION
   Delete a branch
@@ -526,7 +526,7 @@ DESCRIPTION
 EXAMPLES
   $ csdx cm:branches:delete
 
-  $ csdx cm:branches:delete -u main -k bltxxxxxxxx
+  $ csdx cm:branches:delete --uid main -k bltxxxxxxxx
 
   $ csdx cm:branches:delete --uid main --stack-api-key bltxxxxxxxx
 
@@ -535,22 +535,22 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/delete.ts)_
 
-## `csdx cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]`
+## `csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]`
 
 Differences between two branches
 
 ```
 USAGE
-  $ csdx cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]
+  $ csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]
 
 FLAGS
-  -b, --base-branch=<value>     Base branch
-  -c, --compare-branch=<value>  Compare branch
-  -k, --stack-api-key=<value>   Provide Stack API key to show difference between branches
-  -m, --module=<option>         Module
-                                <options: content-types|global-fields|all>
-  --format=<option>             [default: compact-text] [Optional] Type of flags to show branches differences
-                                <options: compact-text|detailed-text>
+  -k, --stack-api-key=<value>  Provide Stack API key to show difference between branches
+  --base-branch=<value>        Base branch
+  --compare-branch=<value>     Compare branch
+  --format=<option>            [default: compact-text] [Optional] Type of flags to show branches differences
+                               <options: compact-text|detailed-text>
+  --module=<option>            Module
+                               <options: content-types|global-fields|all>
 
 DESCRIPTION
   Differences between two branches
@@ -564,21 +564,21 @@ EXAMPLES
 
   $ csdx cm:branches:diff --compare-branch "develop" --stack-api-key "bltxxxxxxxx"
 
-  $ csdx cm:branches:diff --compare-branch "develop" --module "content_types"
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types"
 
-  $ csdx cm:branches:diff --module "content_types" --format "detailedText"
+  $ csdx cm:branches:diff --module "content-types" --format "detailed-text"
 
-  $ csdx cm:branches:diff --compare-branch "develop" --format "detailedText"
+  $ csdx cm:branches:diff --compare-branch "develop" --format "detailed-text"
 
   $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main"
 
   $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop"
 
-  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --module "content_types"
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --module "content-types"
 
-  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content_types"
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types"
 
-  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content_types" --format "detailedText"
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types" --format "detailed-text"
 ```
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/diff.ts)_
@@ -1981,7 +1981,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -2249,7 +2249,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -2584,11 +2584,11 @@ Set branch for CLI
 
 ```
 USAGE
-  $ csdx config:set:base-branch [-k <value>] [-b <value>]
+  $ csdx config:set:base-branch [-k <value>] [--base-branch <value>]
 
 FLAGS
-  -b, --base-branch=<value>    Base Branch
   -k, --stack-api-key=<value>  Stack API Key
+  --base-branch=<value>        Base Branch
 
 DESCRIPTION
   Set branch for CLI
@@ -2654,222 +2654,6 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.9/src/commands/help.ts)_
-
-## `csdx launch`
-
-Launch related operations
-
-```
-USAGE
-  $ csdx launch [-d <value>] [-c <value>] [--type GitHub|FileUpload] [--framework Gatsby|NextJs|Other]
-    [--org <value>] [-n <value>] [-e <value>] [--branch <value>] [--build-command <value>] [--out-dir <value>] [--init]
-
-FLAGS
-  -c, --config=<value>       Path to the local '.cs-launch.json' file
-  -d, --data-dir=<value>     Current working directory
-  -e, --environment=<value>  [Optional] Environment name for the Launch project
-  -n, --name=<value>         [Optional] Name of the project
-  --branch=<value>           [Optional] GitHub branch name
-  --build-command=<value>    [Optional] Build Command
-  --framework=<option>       [Optional] Type of framework
-                             <options: Gatsby|NextJs|Other>
-  --init                     [Optional, Hidden] Reinitialize the project if it is an existing launch project.
-  --org=<value>              [Optional] Provide the organization UID to create a new project or deployment
-  --out-dir=<value>          [Optional] Output Directory
-  --type=<option>            [Optional] Choose the type of adapters
-                             <options: GitHub|FileUpload>
-
-DESCRIPTION
-  Launch related operations
-
-EXAMPLES
-  $ csdx launch
-
-  $ csdx launch --data-dir <path/of/current/working/dir>
-
-  $ csdx launch --config <path/to/launch/config/file>
-
-  $ csdx launch --type <options: GitHub|FileUpload>
-
-  $ csdx launch --data-dir <path/of/current/working/dir> --type <options: GitHub|FileUpload>
-
-  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload>
-
-  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value>
-```
-
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/index.ts)_
-
-## `csdx launch:deployments`
-
-Show list of deployments for a environment
-
-```
-USAGE
-  $ csdx launch:deployments [-d <value>] [-c <value>] [--org <value>] [--project <value>] [-e <value>]
-
-FLAGS
-  -c, --config=<value>       Path to the local '.cs-launch.json' file
-  -d, --data-dir=<value>     Current working directory
-  -e, --environment=<value>  Environment name or UID
-  --org=<value>              [Optional] Provide the organization UID
-  --project=<value>          [Optional] Provide the project UID
-
-DESCRIPTION
-  Show list of deployments for a environment
-
-EXAMPLES
-  $ csdx launch:deployments
-
-  $ csdx launch:deployments -d "current working directory"
-
-  $ csdx launch:deployments -c "path to the local config file"
-
-  $ csdx launch:deployments -e "environment number or uid" --org=<org UID> --project=<Project UID>
-```
-
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/deployments.ts)_
-
-## `csdx launch:environments`
-
-Show list of environments for a project
-
-```
-USAGE
-  $ csdx launch:environments [-d <value>] [-c <value>] [--org <value>] [--project <value>]
-
-FLAGS
-  -c, --config=<value>    Path to the local '.cs-launch.json' file
-  -d, --data-dir=<value>  Current working directory
-  --org=<value>           [Optional] Provide the organization UID
-  --project=<value>       [Optional] Provide the project UID
-
-DESCRIPTION
-  Show list of environments for a project
-
-EXAMPLES
-  $ csdx launch:environments
-
-  $ csdx launch:environments -d "current working directory"
-
-  $ csdx launch:environments -c "path to the local config file"
-
-  $ csdx launch:environments --org=<org UID> --project=<Project UID>
-```
-
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/environments.ts)_
-
-## `csdx launch:functions`
-
-Serve cloud functions
-
-```
-USAGE
-  $ csdx launch:functions [-d <value>] [-c <value>] [-p <value>]
-
-FLAGS
-  -c, --config=<value>    Path to the local '.cs-launch.json' file
-  -d, --data-dir=<value>  Current working directory
-  -p, --port=<value>      [default: 3000] Port number
-
-DESCRIPTION
-  Serve cloud functions
-
-EXAMPLES
-  $ csdx launch:functions
-
-  $ csdx launch:functions --port=port
-
-  $ csdx launch:logs --data-dir <path/of/current/working/dir>
-
-  $ csdx launch:logs --config <path/to/launch/config/file>
-
-  $ csdx launch:logs --data-dir <path/of/current/working/dir> -p "port number"
-
-  $ csdx launch:logs --config <path/to/launch/config/file> --port=port
-```
-
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/functions.ts)_
-
-## `csdx launch:logs`
-
-Show deployment or server logs
-
-```
-USAGE
-  $ csdx launch:logs [-d <value>] [-c <value>] [-e <value>] [--deployment <value>] [--type d|s]
-
-FLAGS
-  -c, --config=<value>       Path to the local '.cs-launch.json' file
-  -d, --data-dir=<value>     Current working directory
-  -e, --environment=<value>  Environment name or UID
-  --deployment=<value>       Deployment number or UID
-  --type=<option>            [default: s] Choose type of flags to show logs
-                             d) Deployment logs
-                             s) Server logs
-
-                             <options: d|s>
-
-DESCRIPTION
-  Show deployment or server logs
-
-EXAMPLES
-  $ csdx launch:logs
-
-  $ csdx launch:logs --data-dir <path/of/current/working/dir>
-
-  $ csdx launch:logs --data-dir <path/of/current/working/dir> --type <options: d|s>
-
-  $ csdx launch:logs --config <path/to/launch/config/file> --type <options: d|s>
-
-  $ csdx launch:logs --deployment=deployment
-
-  $ csdx launch:logs --environment=environment
-
-  $ csdx launch:logs --environment=environment --deployment=deployment
-
-  $ csdx launch:logs --environment=environment --type <options: d|s>
-
-  $ csdx launch:logs --environment=environment --data-dir <path/of/current/working/dir> --deployment=deployment
-
-  $ csdx launch:logs --environment=environment --config <path/to/launch/config/file> --deployment=deployment
-```
-
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/logs.ts)_
-
-## `csdx launch:open`
-
-Open website for an environment
-
-```
-USAGE
-  $ csdx launch:open [-d <value>] [-c <value>] [--org <value>] [--project <value>] [-e <value>]
-
-FLAGS
-  -c, --config=<value>       Path to the local '.cs-launch.json' file
-  -d, --data-dir=<value>     Current working directory
-  -e, --environment=<value>  Environment name or UID
-  --org=<value>              [Optional] Provide the organization UID
-  --project=<value>          [Optional] Provide the project UID
-
-DESCRIPTION
-  Open website for an environment
-
-EXAMPLES
-  $ csdx launch:open
-
-  $ csdx launch:open --config <path/to/launch/config/file>
-
-  $ csdx launch:open --data-dir <path/of/current/working/dir>
-
-  $ csdx launch:open --environment=environment
-
-  $ csdx launch:open --environment=environment --config <path/to/launch/config/file>
-
-  $ csdx launch:open --environment=environment --data-dir <path/of/current/working/dir>
-```
-
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/open.ts)_
 
 ## `csdx launch`
 
@@ -3194,7 +2978,7 @@ ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:install myplugin
+  $ csdx plugins:install myplugin 
 
   $ csdx plugins:install https://github.com/someuser/someplugin
 
@@ -3259,7 +3043,7 @@ ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:install myplugin
+  $ csdx plugins:install myplugin 
 
   $ csdx plugins:install https://github.com/someuser/someplugin
 
