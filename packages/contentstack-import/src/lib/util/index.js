@@ -190,7 +190,6 @@ exports.formatError = (error) => {
   let message_content_type = "";
   if(error.request!==undefined) {
     if(JSON.parse(error.request.data).content_type.uid) {
-      console.log("thor ",JSON.parse(error.request.data).content_type.uid);
       message_content_type = " Due to content type UID - "+JSON.parse(error.request.data).content_type.uid;
     }
   }
