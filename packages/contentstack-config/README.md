@@ -98,11 +98,11 @@ Set branch for CLI
 
 ```
 USAGE
-  $ csdx config:set:base-branch [-k <value>] [-b <value>]
+  $ csdx config:set:base-branch [-k <value>] [--base-branch <value>]
 
 FLAGS
-  -b, --base-branch=<value>    Base Branch
   -k, --stack-api-key=<value>  Stack API Key
+  --base-branch=<value>        Base Branch
 
 DESCRIPTION
   Set branch for CLI
