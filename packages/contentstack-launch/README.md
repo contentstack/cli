@@ -17,7 +17,7 @@ $ npm install -g @contentstack/cli-launch
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli-launch/1.0.0 darwin-arm64 node-v16.17.1
+@contentstack/cli-launch/1.0.0 darwin-arm64 node-v18.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -33,7 +33,7 @@ $ npm run build
 $ csdx plugins:link <plugin path>
 
 NPM installation steps:
-$ csdx plugins:install @contentstack/launch-cli
+$ csdx plugins:install @contentstack/cli-launch
 $ csdx launch
 ```
 

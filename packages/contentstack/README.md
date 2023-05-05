@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.6.0 darwin-arm64 node-v16.17.1
+@contentstack/cli/1.6.0 darwin-arm64 node-v18.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -1981,7 +1981,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -2249,7 +2249,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -2653,7 +2653,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.7/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.9/src/commands/help.ts)_
 
 ## `csdx launch`
 
@@ -2871,6 +2871,222 @@ EXAMPLES
 
 _See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/open.ts)_
 
+## `csdx launch`
+
+Launch related operations
+
+```
+USAGE
+  $ csdx launch [-d <value>] [-c <value>] [--type GitHub|FileUpload] [--framework Gatsby|NextJs|Other]
+    [--org <value>] [-n <value>] [-e <value>] [--branch <value>] [--build-command <value>] [--out-dir <value>] [--init]
+
+FLAGS
+  -c, --config=<value>       Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>     Current working directory
+  -e, --environment=<value>  [Optional] Environment name for the Launch project
+  -n, --name=<value>         [Optional] Name of the project
+  --branch=<value>           [Optional] GitHub branch name
+  --build-command=<value>    [Optional] Build Command
+  --framework=<option>       [Optional] Type of framework
+                             <options: Gatsby|NextJs|Other>
+  --init                     [Optional, Hidden] Reinitialize the project if it is an existing launch project.
+  --org=<value>              [Optional] Provide the organization UID to create a new project or deployment
+  --out-dir=<value>          [Optional] Output Directory
+  --type=<option>            [Optional] Choose the type of adapters
+                             <options: GitHub|FileUpload>
+
+DESCRIPTION
+  Launch related operations
+
+EXAMPLES
+  $ csdx launch
+
+  $ csdx launch --data-dir <path/of/current/working/dir>
+
+  $ csdx launch --config <path/to/launch/config/file>
+
+  $ csdx launch --type <options: GitHub|FileUpload>
+
+  $ csdx launch --data-dir <path/of/current/working/dir> --type <options: GitHub|FileUpload>
+
+  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload>
+
+  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value>
+```
+
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/index.ts)_
+
+## `csdx launch:deployments`
+
+Show list of deployments for an environment
+
+```
+USAGE
+  $ csdx launch:deployments [-d <value>] [-c <value>] [--org <value>] [--project <value>] [-e <value>]
+
+FLAGS
+  -c, --config=<value>       Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>     Current working directory
+  -e, --environment=<value>  Environment name or UID
+  --org=<value>              [Optional] Provide the organization UID
+  --project=<value>          [Optional] Provide the project UID
+
+DESCRIPTION
+  Show list of deployments for an environment
+
+EXAMPLES
+  $ csdx launch:deployments
+
+  $ csdx launch:deployments -d "current working directory"
+
+  $ csdx launch:deployments -c "path to the local config file"
+
+  $ csdx launch:deployments -e "environment number or uid" --org=<org UID> --project=<Project UID>
+```
+
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/deployments.ts)_
+
+## `csdx launch:environments`
+
+Show list of environments for a project
+
+```
+USAGE
+  $ csdx launch:environments [-d <value>] [-c <value>] [--org <value>] [--project <value>]
+
+FLAGS
+  -c, --config=<value>    Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>  Current working directory
+  --org=<value>           [Optional] Provide the organization UID
+  --project=<value>       [Optional] Provide the project UID
+
+DESCRIPTION
+  Show list of environments for a project
+
+EXAMPLES
+  $ csdx launch:environments
+
+  $ csdx launch:environments -d "current working directory"
+
+  $ csdx launch:environments -c "path to the local config file"
+
+  $ csdx launch:environments --org=<org UID> --project=<Project UID>
+```
+
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/environments.ts)_
+
+## `csdx launch:functions`
+
+Serve cloud functions
+
+```
+USAGE
+  $ csdx launch:functions [-d <value>] [-c <value>] [-p <value>]
+
+FLAGS
+  -c, --config=<value>    Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>  Current working directory
+  -p, --port=<value>      [default: 3000] Port number
+
+DESCRIPTION
+  Serve cloud functions
+
+EXAMPLES
+  $ csdx launch:functions
+
+  $ csdx launch:functions --port=port
+
+  $ csdx launch:logs --data-dir <path/of/current/working/dir>
+
+  $ csdx launch:logs --config <path/to/launch/config/file>
+
+  $ csdx launch:logs --data-dir <path/of/current/working/dir> -p "port number"
+
+  $ csdx launch:logs --config <path/to/launch/config/file> --port=port
+```
+
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/functions.ts)_
+
+## `csdx launch:logs`
+
+Show deployment or server logs
+
+```
+USAGE
+  $ csdx launch:logs [-d <value>] [-c <value>] [-e <value>] [--deployment <value>] [--type d|s]
+
+FLAGS
+  -c, --config=<value>       Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>     Current working directory
+  -e, --environment=<value>  Environment name or UID
+  --deployment=<value>       Deployment number or UID
+  --type=<option>            [default: s] Choose type of flags to show logs
+                             d) Deployment logs
+                             s) Server logs
+
+                             <options: d|s>
+
+DESCRIPTION
+  Show deployment or server logs
+
+EXAMPLES
+  $ csdx launch:logs
+
+  $ csdx launch:logs --data-dir <path/of/current/working/dir>
+
+  $ csdx launch:logs --data-dir <path/of/current/working/dir> --type <options: d|s>
+
+  $ csdx launch:logs --config <path/to/launch/config/file> --type <options: d|s>
+
+  $ csdx launch:logs --deployment=deployment
+
+  $ csdx launch:logs --environment=environment
+
+  $ csdx launch:logs --environment=environment --deployment=deployment
+
+  $ csdx launch:logs --environment=environment --type <options: d|s>
+
+  $ csdx launch:logs --environment=environment --data-dir <path/of/current/working/dir> --deployment=deployment
+
+  $ csdx launch:logs --environment=environment --config <path/to/launch/config/file> --deployment=deployment
+```
+
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/logs.ts)_
+
+## `csdx launch:open`
+
+Open a website for an environment
+
+```
+USAGE
+  $ csdx launch:open [-d <value>] [-c <value>] [--org <value>] [--project <value>] [-e <value>]
+
+FLAGS
+  -c, --config=<value>       Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>     Current working directory
+  -e, --environment=<value>  Environment name or UID
+  --org=<value>              [Optional] Provide the organization UID
+  --project=<value>          [Optional] Provide the project UID
+
+DESCRIPTION
+  Open a website for an environment
+
+EXAMPLES
+  $ csdx launch:open
+
+  $ csdx launch:open --config <path/to/launch/config/file>
+
+  $ csdx launch:open --data-dir <path/of/current/working/dir>
+
+  $ csdx launch:open --environment=environment
+
+  $ csdx launch:open --environment=environment --config <path/to/launch/config/file>
+
+  $ csdx launch:open --environment=environment --data-dir <path/of/current/working/dir>
+```
+
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/open.ts)_
+
 ## `csdx login`
 
 User sessions login
@@ -2945,7 +3161,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.0/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -2978,7 +3194,7 @@ ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:install myplugin 
+  $ csdx plugins:install myplugin
 
   $ csdx plugins:install https://github.com/someuser/someplugin
 
@@ -3010,7 +3226,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.0/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -3043,14 +3259,14 @@ ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:install myplugin 
+  $ csdx plugins:install myplugin
 
   $ csdx plugins:install https://github.com/someuser/someplugin
 
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.0/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
@@ -3079,7 +3295,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.0/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -3127,7 +3343,7 @@ ALIASES
   $ csdx plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.0/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -3168,7 +3384,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.0/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
