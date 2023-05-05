@@ -66,7 +66,8 @@ export default class FileUpload extends BaseClass {
    * @memberof FileUpload
    */
   async createNewProject(): Promise<void> {
-    const { framework, projectName, buildCommand, selectedStack, outputDirectory, environmentName } = this.config;
+    const { framework, projectName, buildCommand, outputDirectory, environmentName } = this.config;
+
     await this.apolloClient
       .mutate({
         mutation: importProjectMutation,
@@ -74,14 +75,13 @@ export default class FileUpload extends BaseClass {
           project: {
             projectType: 'FILEUPLOAD',
             name: projectName,
-            cmsStackApiKey: selectedStack?.api_key,
             fileUpload: { uploadUid: this.signedUploadUrlData.uploadUid },
             environment: {
               frameworkPreset: framework,
               outputDirectory: outputDirectory,
               name: environmentName || 'Default',
-              buildCommand: buildCommand || 'npm run build',
               environmentVariables: map(this.envVariables, ({ key, value }) => ({ key, value })),
+              buildCommand: buildCommand === undefined || buildCommand === null ? 'npm run build' : buildCommand,
             },
           },
           skipGitData: true,
@@ -142,11 +142,11 @@ export default class FileUpload extends BaseClass {
         validate: this.inquireRequireValidation,
       }));
     if (framework) {
-      this.config.framework = (
+      this.config.framework = ((
         find(this.config.listOfFrameWorks, {
           name: framework,
         }) as Record<string, any>
-      ).value as string;
+      ).value || '') as string;
       print([
         { message: '?', color: 'green' },
         { message: 'Framework Preset', bold: true },
@@ -159,10 +159,9 @@ export default class FileUpload extends BaseClass {
       buildCommand ||
       (await cliux.inquire({
         type: 'input',
-        default: 'npm run build',
         name: 'buildCommand',
         message: 'Build Command',
-        validate: this.inquireRequireValidation,
+        default: this.config.framework === 'OTHER' ? null : 'npm run build',
       }));
     this.config.outputDirectory =
       outputDirectory ||
