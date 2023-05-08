@@ -6,6 +6,8 @@ const chalk = require('chalk');
 const path = require('path');
 const { formatError } = require('../util');
 const { configHandler } = require('@contentstack/cli-utilities')
+const apiVersionForNRP = '3.2'
+const nrpApiVersionWarning = `Provided apiVersion is invalid. ${apiVersionForNRP} is only supported value. Continuing with regular bulk-publish for now.`
 
 const { getLoggerInstance, addLogs, getLogsDirPath } = require('../util/logger');
 const logsDir = getLogsDirPath();
@@ -227,14 +229,14 @@ async function performBulkPublish(data, _config, queue) {
       };
       payload['details'] = conf;
       if (bulkPublishObj.apiVersion) {
-        if (!isNaN(bulkPublishObj.apiVersion)) {
+        if (!isNaN(bulkPublishObj.apiVersion) && bulkPublishObj.apiVersion === apiVersionForNRP) {
           payload['api_version'] = bulkPublishObj.apiVersion
         } else {
-          console.log(
-            chalk.yellow(
-              `Provided apiVersion is invalid. Continuing with regular bulk-publish for now.`,
-            ),
-          );
+          if (bulkPublishObj.apiVersion !== 3) { // because 3 is the default value for api-version, and it exists for the purpose of display only
+            console.log(
+              chalk.yellow(nrpApiVersionWarning),
+            );
+          }
         }
       }
       stack
@@ -287,14 +289,14 @@ async function performBulkPublish(data, _config, queue) {
       };
       payload['details'] = conf;
       if (bulkPublishObj.apiVersion) {
-        if (!isNaN(bulkPublishObj.apiVersion)) {
+        if (!isNaN(bulkPublishObj.apiVersion) && bulkPublishObj.apiVersion === apiVersionForNRP) {
           payload['api_version'] = bulkPublishObj.apiVersion
         } else {
-          console.log(
-            chalk.yellow(
-              `Provided apiVersion is invalid. Continuing with regular bulk-publish for now.`,
-            ),
-          );
+          if (bulkPublishObj.apiVersion !== 3) { // because 3 is the default value for api-version, and it exists for the purpose of display only
+            console.log(
+              chalk.yellow(nrpApiVersionWarning),
+            );
+          }
         }
       }
       stack
@@ -358,14 +360,14 @@ async function performBulkUnPublish(data, _config, queue) {
       };
       payload['details'] = conf;
       if (bulkUnPublishObj.apiVersion) {
-        if (!isNaN(bulkUnPublishObj.apiVersion)) {
+        if (!isNaN(bulkUnPublishObj.apiVersion) && bulkUnPublishObj.apiVersion === apiVersionForNRP) {
           payload['api_version'] = bulkUnPublishObj.apiVersion
         } else {
-          console.log(
-            chalk.yellow(
-              `Provided apiVersion is invalid. Continuing with regular bulk-publish for now.`,
-            ),
-          );
+          if (bulkUnPublishObj.apiVersion !== 3) { // because 3 is the default value for api-version, and it exists for the purpose of display only
+            console.log(
+              chalk.yellow(nrpApiVersionWarning),
+            );
+          }
         }
       }
       stack
@@ -418,14 +420,14 @@ async function performBulkUnPublish(data, _config, queue) {
       };
       payload['details'] = conf;
       if (bulkUnPublishObj.apiVersion) {
-        if (!isNaN(bulkUnPublishObj.apiVersion)) {
+        if (!isNaN(bulkUnPublishObj.apiVersion) && bulkUnPublishObj.apiVersion === apiVersionForNRP) {
           payload['api_version'] = bulkUnPublishObj.apiVersion
         } else {
-          console.log(
-            chalk.yellow(
-              `Provided apiVersion is invalid. Continuing with regular bulk-publish for now.`,
-            ),
-          );
+          if (bulkUnPublishObj.apiVersion !== 3) { // because 3 is the default value for api-version, and it exists for the purpose of display only
+            console.log(
+              chalk.yellow(nrpApiVersionWarning),
+            );
+          }
         }
       }
       stack
