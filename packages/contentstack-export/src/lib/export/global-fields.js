@@ -90,7 +90,7 @@ module.exports = class ExportGlobalFields {
               self.global_fields.push(globalField);
             });
             skip += self.limit;
-            if (skip > globalFieldResponse.count) {
+            if (skip >= globalFieldResponse.count) {
               return resolve();
             }
             return self.getGlobalFields(skip, globalFieldConfig).then(resolve).catch(reject);
