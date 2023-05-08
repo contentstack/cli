@@ -167,11 +167,6 @@ export default class MergeHandler {
         mergeContent[module].modified = moduleBranchCompareData.modified;
         mergeContent[module].deleted = moduleBranchCompareData.deleted;
         break;
-      case 'merge_prefer_compare':
-        mergeContent[module].added = moduleBranchCompareData.added;
-        mergeContent[module].modified = moduleBranchCompareData.modified;
-        mergeContent[module].deleted = moduleBranchCompareData.deleted;
-        break;
       case 'merge_new_only':
         mergeContent[module].added = moduleBranchCompareData.added;
         break;
