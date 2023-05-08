@@ -40,8 +40,8 @@ USAGE
 * [`csdx cm:bootstrap`](#csdx-cmbootstrap)
 * [`csdx cm:branches`](#csdx-cmbranches)
 * [`csdx cm:branches:create`](#csdx-cmbranchescreate)
-* [`csdx cm:branches:delete [-u <value>] [-k <value>]`](#csdx-cmbranchesdelete--u-value--k-value)
-* [`csdx cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]`](#csdx-cmbranchesdiff--b-value--c-value--k-value-m-value)
+* [`csdx cm:branches:delete [-uid <value>] [-k <value>]`](#csdx-cmbranchesdelete--uid-value--k-value)
+* [`csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]`](#csdx-cmbranchesdiff---base-branch-value---compare-branch-value--k-value--module-value)
 * [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
@@ -463,7 +463,7 @@ USAGE
 
 FLAGS
   -k, --stack-api-key=<value>  Stack API Key
-  -v, --verbose                Verbose
+  --verbose                    Verbose
 
 DESCRIPTION
   List the branches
@@ -485,13 +485,13 @@ Create a new branch
 ```
 USAGE
   $ csdx cm:branches:create
-  $ csdx cm:branches:create [-s <value>] [-u <value>] [-k <value>]
+  $ csdx cm:branches:create [--source <value>] [--uid <value>] [-k <value>]
   $ csdx cm:branches:create [--source <value>] [--uid <value>] [--stack-api-key <value>]
 
 FLAGS
   -k, --stack-api-key=<value>  Stack API key
-  -s, --source=<value>         Source branch from which new branch to be created
-  -u, --uid=<value>            Branch UID to be created
+  --source=<value>             Source branch from which new branch to be created
+  --uid=<value>                Branch UID to be created
 
 DESCRIPTION
   Create a new branch
@@ -499,26 +499,26 @@ DESCRIPTION
 EXAMPLES
   $ csdx cm:branches:create
 
-  $ csdx cm:branches:create -s main -u new_branch -k bltxxxxxxxx
+  $ csdx cm:branches:create --source main -uid new_branch -k bltxxxxxxxx
 
   $ csdx cm:branches:create --source main --uid new_branch --stack-api-key bltxxxxxxxx
 ```
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/create.ts)_
 
-## `csdx cm:branches:delete [-u <value>] [-k <value>]`
+## `csdx cm:branches:delete [-uid <value>] [-k <value>]`
 
 Delete a branch
 
 ```
 USAGE
-  $ csdx cm:branches:delete [-u <value>] [-k <value>]
+  $ csdx cm:branches:delete [-uid <value>] [-k <value>]
   $ csdx cm:branches:delete [--uid <value>] [--stack-api-key <value>]
 
 FLAGS
   -k, --stack-api-key=<value>  Stack API key
-  -u, --uid=<value>            Branch UID to be deleted
   -y, --yes                    Force the deletion of the branch by skipping the confirmation
+  --uid=<value>                Branch UID to be deleted
 
 DESCRIPTION
   Delete a branch
@@ -526,7 +526,7 @@ DESCRIPTION
 EXAMPLES
   $ csdx cm:branches:delete
 
-  $ csdx cm:branches:delete -u main -k bltxxxxxxxx
+  $ csdx cm:branches:delete --uid main -k bltxxxxxxxx
 
   $ csdx cm:branches:delete --uid main --stack-api-key bltxxxxxxxx
 
@@ -535,22 +535,22 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/delete.ts)_
 
-## `csdx cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]`
+## `csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]`
 
 Differences between two branches
 
 ```
 USAGE
-  $ csdx cm:branches:diff [-b <value>] [-c <value>] [-k <value>][-m <value>]
+  $ csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]
 
 FLAGS
-  -b, --base-branch=<value>     Base branch
-  -c, --compare-branch=<value>  Compare branch
-  -k, --stack-api-key=<value>   Provide Stack API key to show difference between branches
-  -m, --module=<option>         Module
-                                <options: content-types|global-fields|all>
-  --format=<option>             [default: compact-text] [Optional] Type of flags to show branches differences
-                                <options: compact-text|detailed-text>
+  -k, --stack-api-key=<value>  Provide Stack API key to show difference between branches
+  --base-branch=<value>        Base branch
+  --compare-branch=<value>     Compare branch
+  --format=<option>            [default: compact-text] [Optional] Type of flags to show branches differences
+                               <options: compact-text|detailed-text>
+  --module=<option>            Module
+                               <options: content-types|global-fields|all>
 
 DESCRIPTION
   Differences between two branches
@@ -564,21 +564,21 @@ EXAMPLES
 
   $ csdx cm:branches:diff --compare-branch "develop" --stack-api-key "bltxxxxxxxx"
 
-  $ csdx cm:branches:diff --compare-branch "develop" --module "content_types"
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types"
 
-  $ csdx cm:branches:diff --module "content_types" --format "detailedText"
+  $ csdx cm:branches:diff --module "content-types" --format "detailed-text"
 
-  $ csdx cm:branches:diff --compare-branch "develop" --format "detailedText"
+  $ csdx cm:branches:diff --compare-branch "develop" --format "detailed-text"
 
   $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main"
 
   $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop"
 
-  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --module "content_types"
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --module "content-types"
 
-  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content_types"
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types"
 
-  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content_types" --format "detailedText"
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types" --format "detailed-text"
 ```
 
 _See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/diff.ts)_
@@ -2584,11 +2584,11 @@ Set branch for CLI
 
 ```
 USAGE
-  $ csdx config:set:base-branch [-k <value>] [-b <value>]
+  $ csdx config:set:base-branch [-k <value>] [--base-branch <value>]
 
 FLAGS
-  -b, --base-branch=<value>    Base Branch
   -k, --stack-api-key=<value>  Stack API Key
+  --base-branch=<value>        Base Branch
 
 DESCRIPTION
   Set branch for CLI

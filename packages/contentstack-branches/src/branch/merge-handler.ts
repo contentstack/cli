@@ -220,7 +220,7 @@ export default class MergeHandler {
       cliux.success(`Merged the changes successfully. Merge UID: ${mergeResponse.uid}`);
 
       if (this.enableEntryExp) {
-        this.executeEntryExpFlow(mergeResponse.uid);
+        this.executeEntryExpFlow(mergeResponse.uid, mergePayload);
       }
     } catch (error) {
       cliux.loaderV2('', spinner);
@@ -228,14 +228,14 @@ export default class MergeHandler {
     }
   }
 
-  executeEntryExpFlow(mergeJobUID: string) {
+  executeEntryExpFlow(mergeJobUID: string, mergePayload) {
     let scriptFolderPath = generateMergeScripts(this.mergeSettings.mergeContent, mergeJobUID);
 
     if (scriptFolderPath !== undefined) {
-      cliux.success(`Success! We have generated entry migration files in folder ${scriptFolderPath}`);
+      cliux.success(`\nSuccess! We have generated entry migration files in the folder ${scriptFolderPath}`);
 
       cliux.print(
-        `Kindly follow the steps in the following guide https://www.contentstack.com/docs/developers/cli/migrate-branch-entries to update the migration scripts and then run the following command csdx cm:stacks:migration --multiple --file-path ./${scriptFolderPath} --config compare-branch:<value> --branch <value> --stack-api-key <value>`,
+        `\nKindly follow the steps in the guide "https://www.contentstack.com/docs/developers/cli/migrate-branch-entries" to update the migration scripts, and then run the command \n\ncsdx cm:stacks:migration --multiple --file-path ./${scriptFolderPath} --config compare-branch:${mergePayload.compare_branch} --branch ${mergePayload.base_branch} --stack-api-key ${this.stackAPIKey}`,
         { color: 'blue' },
       );
     }
