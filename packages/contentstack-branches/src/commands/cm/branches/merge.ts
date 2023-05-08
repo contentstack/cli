@@ -49,7 +49,7 @@ export default class BranchMergeCommand extends Command {
     }),
     'strategy-sub-options': flags.string({
       description: 'Merge strategy sub options',
-      options: ['merge_new_only', 'merge_modified_only_prefer_base', 'both'],
+      options: ['new', 'modified', 'both'],
       hidden: true,
     }),
     'merge-action': flags.string({
