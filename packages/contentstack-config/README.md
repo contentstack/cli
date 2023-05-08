@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.3.1 darwin-arm64 node-v18.11.0
+@contentstack/cli-config/1.4.0 darwin-arm64 node-v18.14.2
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -98,11 +98,11 @@ Set branch for CLI
 
 ```
 USAGE
-  $ csdx config:set:base-branch [-k <value>] [-b <value>]
+  $ csdx config:set:base-branch [-k <value>] [--base-branch <value>]
 
 FLAGS
-  -b, --base-branch=<value>    Base Branch
   -k, --stack-api-key=<value>  Stack API Key
+  --base-branch=<value>        Base Branch
 
 DESCRIPTION
   Set branch for CLI
