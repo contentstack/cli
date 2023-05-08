@@ -232,7 +232,7 @@ async function performBulkPublish(data, _config, queue) {
         if (!isNaN(bulkPublishObj.apiVersion) && bulkPublishObj.apiVersion === apiVersionForNRP) {
           payload['api_version'] = bulkPublishObj.apiVersion
         } else {
-          if (bulkPublishObj.apiVersion !== 3) { // because 3 is the default value for api-version, and it exists for the purpose of display only
+          if (bulkPublishObj.apiVersion !== '3') { // because 3 is the default value for api-version, and it exists for the purpose of display only
             console.log(
               chalk.yellow(nrpApiVersionWarning),
             );
@@ -292,7 +292,7 @@ async function performBulkPublish(data, _config, queue) {
         if (!isNaN(bulkPublishObj.apiVersion) && bulkPublishObj.apiVersion === apiVersionForNRP) {
           payload['api_version'] = bulkPublishObj.apiVersion
         } else {
-          if (bulkPublishObj.apiVersion !== 3) { // because 3 is the default value for api-version, and it exists for the purpose of display only
+          if (bulkPublishObj.apiVersion !== '3') { // because 3 is the default value for api-version, and it exists for the purpose of display only
             console.log(
               chalk.yellow(nrpApiVersionWarning),
             );
@@ -363,7 +363,7 @@ async function performBulkUnPublish(data, _config, queue) {
         if (!isNaN(bulkUnPublishObj.apiVersion) && bulkUnPublishObj.apiVersion === apiVersionForNRP) {
           payload['api_version'] = bulkUnPublishObj.apiVersion
         } else {
-          if (bulkUnPublishObj.apiVersion !== 3) { // because 3 is the default value for api-version, and it exists for the purpose of display only
+          if (bulkUnPublishObj.apiVersion !== '3') { // because 3 is the default value for api-version, and it exists for the purpose of display only
             console.log(
               chalk.yellow(nrpApiVersionWarning),
             );
@@ -423,7 +423,7 @@ async function performBulkUnPublish(data, _config, queue) {
         if (!isNaN(bulkUnPublishObj.apiVersion) && bulkUnPublishObj.apiVersion === apiVersionForNRP) {
           payload['api_version'] = bulkUnPublishObj.apiVersion
         } else {
-          if (bulkUnPublishObj.apiVersion !== 3) { // because 3 is the default value for api-version, and it exists for the purpose of display only
+          if (bulkUnPublishObj.apiVersion !== '3') { // because 3 is the default value for api-version, and it exists for the purpose of display only
             console.log(
               chalk.yellow(nrpApiVersionWarning),
             );
