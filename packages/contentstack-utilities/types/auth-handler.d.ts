@@ -37,6 +37,9 @@ declare class AuthHandler {
   isAuthenticated(): Promise<boolean>;
   checkExpiryAndRefresh: (force?: boolean) => Promise<void | object>;
   compareOAuthExpiry(force?: boolean): Promise<void | object>;
+  getAuthorisationType(): Promise<boolean>;
+  isAuthorisationTypeBasic(): Promise<boolean>;
+  isAuthorisationTypeOAuth(): Promise<boolean>;
 }
 declare const _default: AuthHandler;
 export default _default;
