@@ -83,30 +83,34 @@ async function branchCompareSDK(payload: BranchDiffPayload, skip?: number, limit
       return await branchQuery
         .contentTypes(queryParams)
         .then((data) => data)
-        .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner));
+        .catch((err) => handleErrorMsg(err, payload.spinner));
       break;
     case 'global_fields' || 'global_field':
       return await branchQuery
         .globalFields(queryParams)
         .then((data) => data)
-        .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner));
+        .catch((err) => handleErrorMsg(err, payload.spinner));
       break;
     case 'all':
       return await branchQuery
         .all(queryParams)
         .then((data) => data)
-        .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }, payload.spinner));
+        .catch((err) => handleErrorMsg(err, payload.spinner));
       break;
     default:
       handleErrorMsg({ errorMessage: 'Invalid module!' }, payload.spinner);
   }
 }
 
-function handleErrorMsg(err: { errorCode?: number; errorMessage: string }, spinner) {
-  if (err.errorMessage) {
-    cliux.loaderV2('', spinner);
+function handleErrorMsg(err, spinner) {
+  cliux.loaderV2('', spinner);
+
+  if (err?.errorMessage) {
     cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
+  }else if(err?.message){
+    cliux.print(`Error: ${err.message}`, { color: 'red' });
   } else {
+    console.log(err)
     cliux.print(`Error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
   }
   process.exit(1);
