@@ -204,26 +204,32 @@ export default class BaseClass {
           },
         }) => framework,
       )
-      .catch((error) => {
-        this.log('Something went wrong. Please try again.', 'warn');
-        this.log(error, 'error');
-        this.exit(1);
+      .catch((_error) => {
+        // this.log("Something went wrong. Please try again.", "warn");
+        // this.log(error, "error");
+        // this.exit(1);
       })) || {
-      envVariables: undefined,
+      envVariables: '',
     };
 
+    const choices = [];
+    const framework = find(this.config.listOfFrameWorks, ({ value }) => value === this.config.framework)?.name;
+
+    if (framework) {
+      choices.push({
+        name: framework,
+        value: this.config.framework,
+      });
+    }
+
+    choices.push(...filter(this.config.listOfFrameWorks, ({ value }) => value !== this.config.framework));
+
     this.config.framework = await ux.inquire({
+      choices,
       type: 'search-list',
       name: 'frameworkPreset',
       message: 'Framework Preset',
       default: this.config.framework,
-      choices: [
-        {
-          name: find(this.config.listOfFrameWorks, ({ value }) => value === this.config.framework)?.name,
-          value: this.config.framework,
-        },
-        ...filter(this.config.listOfFrameWorks, ({ value }) => value !== this.config.framework),
-      ],
     });
   }
 
@@ -501,7 +507,7 @@ export default class BaseClass {
       default: this.config.framework,
       choices: variablePreparationTypeOptions,
       message: 'Import variables from a stack and/or manually add custom variables to the list',
-      validate: this.inquireRequireValidation,
+      // validate: this.inquireRequireValidation,
     });
 
     if (includes(variablePreparationType, 'Import variables from a stack')) {
@@ -518,7 +524,7 @@ export default class BaseClass {
       this.printAllVariables();
     } else {
       this.log('Import variables from a stack and/or manually add custom variables to the list', 'warn');
-      this.exit(1);
+      // this.exit(1);
     }
   }
 

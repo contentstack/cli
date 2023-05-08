@@ -219,6 +219,7 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-launch/package.json
+          access: public
       - name: Installing dependencies of branches
         id: branches-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_branches == 'true'}}
@@ -234,6 +235,7 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-branches/package.json
+          access: public
       - name: Installing dependencies of core
         id: core-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
