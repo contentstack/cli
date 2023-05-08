@@ -86,7 +86,27 @@ fileignoreconfig:
 - filename: packages/contentstack-import/test/integration/auth-token-modules/webhooks.test.js
   checksum: f41c4c354482293e4d6e52923d451266b150ba675e61681e21ba83ebf5dd8382
 - filename: pnpm-lock.yaml
-  checksum: 70072f3ee3b2b6f9d029c899e6c5ce970b5ed1631d3db827e076bb17d149e62b
+  checksum: 8bc914084e311432154f0e3bd05e2bbb60516460e09b9f8a6356c69d335b38b2
 - filename: package-lock.json
-  checksum: 1d6bd82d5641a3fd8b4fc67a4b77e2d641ddb4e5820da282c89544cbcdb4d324
+  checksum: 64cca4648257efc253c34babd3d857eadc2e4a42c8e84959f2005ec4dae0ed8a
+- filename: packages/contentstack-launch/src/commands/launch/environments.ts
+  checksum: a9f5fc3fad1915ca8812f1159c4019b957db59f7b4c8e2da0d214e45b8835ef7
+- filename: packages/contentstack-launch/tsconfig.tsbuildinfo
+  checksum: 0c363e5b14b8e5c3b696d81aeeac4b8ae3cf98bbe255d90600c4c1f4757f33a2
+- filename: packages/contentstack-launch/src/adapters/file-upload.ts
+  checksum: e17a1112b724b51ce3e3c4a1eed19c4f84b5c2f9cb70a9a49c075ed08f2fef97
+- filename: packages/contentstack-launch/src/adapters/github.ts
+  checksum: b82c72f8d1dc52dc099075905b038cea23e3547edcc2938eefcac7129c0656a4
+- filename: packages/contentstack-launch/src/commands/launch/base-command.ts
+  checksum: b3cafb6f98c27abf4024639a3ca029861de8f80789dc98754dd694500782d968
+- filename: packages/contentstack-launch/src/adapters/base-class.ts
+  checksum: d95e179bf489e552faa4d6cebb05473a2f92ceaccb9284a429ebf5ab61ec5ca0
+- filename: packages/contentstack-launch/src/util/cloud-function/errors/cloud-function.errors.ts
+  checksum: e2da74b8b0f25ff58639aab329da77b3408838136f5bcd16c671bc113057a036
+- filename: packages/contentstack-utilities/src/auth-handler.ts
+  checksum: b1f05a05bd25543ba3bbd9941b0d498e3291bf320574d9676f154716530fc552
+- filename: packages/contentstack-utilities/src/config-handler.ts
+  checksum: e345a745f027c76081df71e4fe9872c1f4adac076689b036e195b84041807b59
+- filename: packages/contentstack-launch/src/util/create-git-meta.ts
+  checksum: 8cbd32dbbd2989c7c082f8a0b7615916125d211bce25531e9a882b8ebd5674af
 version: ""
