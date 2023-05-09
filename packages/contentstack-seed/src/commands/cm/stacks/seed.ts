@@ -92,7 +92,7 @@ export default class SeedCommand extends Command {
         stackName: seedFlags['stack-name'],
         fetchLimit: seedFlags['fetch-limit'],
         skipStackConfirmation: seedFlags['yes'],
-        isAuthenticated: isAuthenticated(),
+        isAuthenticated: await isAuthenticated(),
       };
 
       const seeder = new ContentModelSeeder(options);
