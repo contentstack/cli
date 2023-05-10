@@ -3,7 +3,6 @@ export function entryUpdateScript(contentType) {
 module.exports = async ({ migration, stackSDKInstance, managementAPIClient, config, branch, apiKey }) => {
   const keysToRemove = [
     'content_type_uid',
-    'uid',
     'created_at',
     'updated_at',
     'created_by',
@@ -29,14 +28,16 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
     let arr = [];
     for (const elm of data.entries()) {
       // @ts-ignore
-      arr.push([elm[1].uid, elm[1]]);
+      arr.push([elm[1].title, elm[1]]);
     }
     return arr;
   }
 
   function deleteUnwantedKeysFromObject(obj, keysToRemove) {
-    keysToRemove.map((key) => delete obj[key]);
-    return obj;
+    if(obj){
+      keysToRemove.map((key) => delete obj[key]);
+      return obj;
+    }
   }
 
   function uniquelyConcatenateArrays(compareArr, baseArr) {
@@ -89,7 +90,7 @@ module.exports = async ({ migration, stackSDKInstance, managementAPIClient, conf
               if (compareMap.get(el) && !baseMap.get(el)) {
                 await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails });
               } else if (compareMap.get(el) && baseMap.get(el)) {
-                let baseEntry = compareMap.get(el);
+                let baseEntry = baseMap.get(el);
 
                 let entry = await stackSDKInstance.contentType('${contentType}').entry(baseEntry.uid);
                 Object.assign(entry, { ...entryDetails });
