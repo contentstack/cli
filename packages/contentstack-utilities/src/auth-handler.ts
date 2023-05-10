@@ -377,7 +377,7 @@ class AuthHandler {
     });
   }
 
-  async isAuthenticated(): Promise<boolean> {
+  isAuthenticated(): boolean {
     const authorizationType = configHandler.get(this.authorisationTypeKeyName);
     return (
       authorizationType === this.authorisationTypeOAUTHValue || authorizationType === this.authorisationTypeAUTHValue
