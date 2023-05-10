@@ -55,7 +55,7 @@ export async function getMergeQueueStatus(stackAPIClient, payload): Promise<any>
     .mergeQueue(mergeJobUID)
     .fetch()
     .then((data) => data)
-    .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }));
+    .catch((err) => handleErrorMsg(err));
 }
 
 export async function executeMergeRequest(stackAPIClient, payload): Promise<any> {
@@ -77,14 +77,18 @@ export async function executeMergeRequest(stackAPIClient, payload): Promise<any>
     .branch()
     .merge(itemMergeStrategies, queryParams)
     .then((data) => data)
-    .catch((err) => handleErrorMsg({ errorCode: err.errorCode, errorMessage: err.errorMessage }));
+    .catch((err) => handleErrorMsg(err));
 }
 
-function handleErrorMsg(err: { errorCode?: number; errorMessage: string }) {
-  if (err.errorMessage) {
-    cliux.print(`\n error: ${err.errorMessage}`, { color: 'red' });
+function handleErrorMsg(err) {
+  
+  if (err?.errorMessage) {
+    cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
+  }else if(err?.message){
+    cliux.print(`Error: ${err.message}`, { color: 'red' });
   } else {
-    cliux.print(`\n error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
+    console.log(err);
+    cliux.print(`Error: ${messageHandler.parse('CLI_BRANCH_API_FAILED')}`, { color: 'red' });
   }
   process.exit(1);
 }

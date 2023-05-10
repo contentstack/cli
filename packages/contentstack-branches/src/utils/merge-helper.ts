@@ -46,6 +46,7 @@ export const setupMergeInputs = async (mergeFlags) => {
 };
 
 export const displayBranchStatus = async (options) => {
+  const spinner = cliux.loaderV2('Loading branch differences...');
   let payload: BranchDiffPayload = {
     module: '',
     apiKey: options.stackAPIKey,
@@ -54,8 +55,10 @@ export const displayBranchStatus = async (options) => {
     host: options.host,
   };
 
+  payload.spinner = spinner;
   const branchDiffData = await branchDiff.fetchBranchesDiff(payload);
   const diffData = branchDiff.filterBranchDiffDataByModule(branchDiffData);
+  cliux.loaderV2('', spinner);
 
   let parsedResponse = {};
   for (let module in diffData) {
@@ -65,13 +68,15 @@ export const displayBranchStatus = async (options) => {
     cliux.print(`${startCase(camelCase(module))} Summary:`, { color: 'yellow' });
     const diffSummary = branchDiff.parseSummary(branchModuleData, options.baseBranch, options.compareBranch);
     branchDiff.printSummary(diffSummary);
-    // cliux.print(`Differences in '${options.compareBranch}' compared to '${options.baseBranch}':`);
+    const spinner1 = cliux.loaderV2('Loading branch differences...');
     if (options.format === 'compact-text') {
       const branchTextRes = branchDiff.parseCompactText(branchModuleData);
+      cliux.loaderV2('', spinner1);
       branchDiff.printCompactTextView(branchTextRes);
       parsedResponse[module] = branchTextRes;
     } else if (options.format === 'detailed-text') {
       const verboseRes = await branchDiff.parseVerbose(branchModuleData, payload);
+      cliux.loaderV2('', spinner1);
       branchDiff.printVerboseTextView(verboseRes);
       parsedResponse[module] = verboseRes;
     }
