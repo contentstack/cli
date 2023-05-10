@@ -3,7 +3,6 @@ export function entryCreateScript(contentType) {
 module.exports = async ({ migration, stackSDKInstance, managementAPIClient, config, branch, apiKey }) => {
   const keysToRemove = [
     'content_type_uid',
-    'uid',
     'created_at',
     'updated_at',
     'created_by',
