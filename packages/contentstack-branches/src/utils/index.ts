@@ -80,11 +80,10 @@ export async function executeMergeRequest(stackAPIClient, payload): Promise<any>
     .catch((err) => handleErrorMsg(err));
 }
 
-function handleErrorMsg(err) {
-  
+export function handleErrorMsg(err) {
   if (err?.errorMessage) {
     cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
-  }else if(err?.message){
+  } else if (err?.message) {
     cliux.print(`Error: ${err.message}`, { color: 'red' });
   } else {
     console.log(err);

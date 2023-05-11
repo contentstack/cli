@@ -1,6 +1,6 @@
 import { Command } from '@contentstack/cli-command';
 import { cliux, messageHandler, managementSDKClient, flags } from '@contentstack/cli-utilities';
-import { getbranchesList, getbranchConfig, interactive } from '../../../utils/index';
+import { getbranchesList, getbranchConfig, interactive, handleErrorMsg } from '../../../utils/index';
 import chalk from 'chalk';
 
 export default class BranchListCommand extends Command {
@@ -12,7 +12,7 @@ export default class BranchListCommand extends Command {
 
   static flags = {
     'stack-api-key': flags.string({ char: 'k', description: 'Stack API Key' }),
-    verbose: flags.boolean({description: 'Verbose' }),
+    verbose: flags.boolean({ description: 'Verbose' }),
   };
 
   static aliases: string[] = []; // Note: alternative usage if any
@@ -36,7 +36,7 @@ export default class BranchListCommand extends Command {
         .find()
         .then(({ items }) => items)
         .catch((err: { errorCode: number; errorMessage: string }) => {
-          cliux.error('error', err.errorMessage);
+          handleErrorMsg(err);
         });
 
       if (listOfBranch && listOfBranch.length > 0) {
