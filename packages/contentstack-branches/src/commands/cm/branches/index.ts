@@ -35,7 +35,7 @@ export default class BranchListCommand extends Command {
         .query()
         .find()
         .then(({ items }) => items)
-        .catch((err: { errorCode: number; errorMessage: string }) => {
+        .catch((err) => {
           handleErrorMsg(err);
         });
 
