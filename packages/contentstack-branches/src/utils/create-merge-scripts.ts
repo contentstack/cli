@@ -36,6 +36,8 @@ export function getContentypeMergeStatus(status) {
     return 'updated';
   } else if (status === 'compare_only') {
     return 'created';
+  } else {
+    return '';
   }
 }
 
