@@ -8,4 +8,6 @@ node_modules
 logs
 coverage
 .vscode/
+/lib
+
 .env
