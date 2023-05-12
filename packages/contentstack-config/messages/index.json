@@ -9,6 +9,8 @@
   "CLI_CONFIG_INQUIRE_REGION_NAME": "Enter custom region name",
   "CLI_CONFIG_INQUIRE_REGION_CMA": "Enter content management url",
   "CLI_CONFIG_INQUIRE_REGION_CDA": "Enter content delivery url",
-  "CLI_CONFIG_INQUIRE_REGION_UI_HOST": "Enter UI Host url",
-  "CLI_CONFIG_SELECT_REGION": "Please select a region"
+  "CLI_CONFIG_SELECT_REGION": "Please select a region",
+  "CLI_CONFIG_INQUIRE_API_KEY": "Enter stack api key",
+  "CLI_CONFIG_INQUIRE_BASE_BRANCH": "Enter base branch",
+  "CLI_CONFIG_BRANCH_LIST_NO_BRANCHES": "No branches are added. Use config:set:base-branch command to add base branch."
 }
