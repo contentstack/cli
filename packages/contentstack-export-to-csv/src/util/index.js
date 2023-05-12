@@ -45,21 +45,31 @@ function chooseOrganization(managementAPIClient, action) {
   });
 }
 
-function getOrganizations(managementAPIClient) {
-  return new Promise((resolve, reject) => {
-    let result = {};
+async function getOrganizations(managementAPIClient) {
+  try {
+    return await getOrganizationList(managementAPIClient, { skip: 0, page: 1, limit: 100 }, []);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 
-    managementAPIClient
-      .organization()
-      .fetchAll()
-      .then((organizations) => {
-        organizations.items.forEach((org) => {
-          result[org.name] = org.uid;
-        });
-        resolve(result);
-      })
-      .catch((error) => reject(error));
-  });
+async function getOrganizationList(managementAPIClient, params, result = []) {
+  const organizations = await managementAPIClient.organization().fetchAll(params);
+  result = result.concat(organizations.items);
+
+  if (!organizations.items || (organizations.items && organizations.items.length < params.limit)) {
+    const orgMap = {};
+    for (const org of result) {
+      orgMap[org.name] = org.uid;
+    }
+    return orgMap;
+  } else {
+    params.skip = params.page * params.limit;
+    params.page++;
+    await wait(200);
+    return getOrganizationList(managementAPIClient, params, result);
+  }
 }
 
 function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
