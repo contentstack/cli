@@ -7,6 +7,7 @@ import {
   flags,
   authHandler as oauthHandler,
   managementSDKClient,
+  FlagInput,
 } from '@contentstack/cli-utilities';
 
 import { authHandler } from '../../utils';
@@ -16,7 +17,7 @@ export default class LogoutCommand extends Command {
   static description = 'User session logout';
   static examples = ['$ csdx auth:logout', '$ csdx auth:logout -y', '$ csdx auth:logout --yes'];
 
-  static flags = {
+  static flags: FlagInput = {
     yes: flags.boolean({
       char: 'y',
       description: 'Force log out by skipping the confirmation',
