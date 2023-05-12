@@ -46,4 +46,4 @@ export {
   stderr,
   stdout,
 } from '@oclif/core';
-export { FlagInput } from '@oclif/core/lib/interfaces/parser';
+export { FlagInput, ArgInput } from '@oclif/core/lib/interfaces/parser';

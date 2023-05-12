@@ -1,10 +1,10 @@
 import { Command } from '@contentstack/cli-command';
-import { logger, cliux, configHandler, flags } from '@contentstack/cli-utilities';
+import { logger, cliux, configHandler, flags, FlagInput } from '@contentstack/cli-utilities';
 
 export default class TokensRemoveCommand extends Command {
   static description = 'Removes selected tokens';
   static examples = ['$ csdx auth:tokens:remove', '$ csdx auth:tokens:remove -a <alias>'];
-  static flags = {
+  static flags: FlagInput = {
     alias: flags.string({ char: 'a', description: 'Token alias' }),
     ignore: flags.boolean({ char: 'i', description: 'Ignore' }),
   };
@@ -26,7 +26,8 @@ export default class TokensRemoveCommand extends Command {
       if (tokens && Object.keys(tokens).length > 0) {
         Object.keys(tokens).forEach(function (item) {
           tokenOptions.push(
-            `${item}: ${tokens[item].token} : ${tokens[item].apiKey}${tokens[item].environment ? ' : ' + tokens[item].environment + ' ' : ''
+            `${item}: ${tokens[item].token} : ${tokens[item].apiKey}${
+              tokens[item].environment ? ' : ' + tokens[item].environment + ' ' : ''
             }: ${tokens[item].type}`,
           );
         });

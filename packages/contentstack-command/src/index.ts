@@ -1,6 +1,7 @@
-import * as ContentstackDeliverySDK from 'contentstack';
 import { URL } from 'url';
+import * as ContentstackDeliverySDK from 'contentstack';
 import { configHandler, CLIError, Command } from '@contentstack/cli-utilities';
+
 import { Region } from './interfaces';
 
 const defaultRateLimit = 5;
@@ -9,7 +10,6 @@ abstract class ContentstackCommand extends Command {
   private _email: string;
   private _region: Region;
   private _rateLimit: string;
-  private _authToken: string;
   private _deliveryAPIClient: any;
 
   get context() {
@@ -31,9 +31,9 @@ abstract class ContentstackCommand extends Command {
   }
 
   get region() {
-    if (this._region) return this._region;
-    this._region = configHandler.get('region');
-    if (this._region) return this._region;
+    if (!this._region) this._region = configHandler.get('region');
+
+    return this._region;
   }
 
   get rateLimit() {

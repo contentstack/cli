@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "declaration": true,
     "importHelpers": true,
     "module": "commonjs",
     "outDir": "lib",
@@ -11,6 +12,5 @@
   },
   "include": [
     "src/**/*",
-    "src/typings/@contentstack/cli-utilities.ts",
   ]
 }

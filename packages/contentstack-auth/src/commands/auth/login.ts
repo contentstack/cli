@@ -6,6 +6,7 @@ import {
   authHandler as oauthHandler,
   flags,
   managementSDKClient,
+  FlagInput
 } from '@contentstack/cli-utilities';
 
 import { User } from '../../interfaces';
@@ -23,7 +24,7 @@ export default class LoginCommand extends Command {
     '$ csdx auth:login --username <username> --password <password>',
   ];
 
-  static flags = {
+  static flags: FlagInput = {
     username: flags.string({
       char: 'u',
       description: 'User name',
