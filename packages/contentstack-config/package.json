@@ -17,7 +17,8 @@
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
     "test:integration": "mocha --forbid-only \"test/run.test.ts\" --integration-test",
-    "test:unit": "mocha --forbid-only \"test/unit/*.test.ts\" --unit-test"
+    "test:unit": "mocha --forbid-only \"test/unit/**/*.test.ts\" --unit-test",
+    "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
   },
   "dependencies": {
     "@contentstack/cli-command": "^1.2.4",
@@ -25,7 +26,8 @@
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
     "inquirer": "8.2.4",
-    "winston": "^3.7.2"
+    "winston": "^3.7.2",
+    "lodash": "^4.17.20"
   },
   "devDependencies": {
     "@oclif/test": "^2.2.10",
