@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": false,
+    "importHelpers": true,
+    "module": "commonjs",
+    "outDir": "lib",
+    "strict": false,
+    "rootDir": "src",
+    "target": "es2017",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "sourceMap": false,
+    "esModuleInterop": true,
+    "lib": [
+      "ES2019",
+      "es2020.promise"
+    ],
+    "strictPropertyInitialization": false,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "lib",
+    "typings/**"
+  ]
+}
