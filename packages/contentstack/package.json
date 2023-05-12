@@ -7,6 +7,7 @@
     "csdx": "./bin/run"
   },
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "npm run clean && npm run compile",
     "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
