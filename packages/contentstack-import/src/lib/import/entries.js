@@ -1007,7 +1007,7 @@ module.exports = class ImportEntries {
         addlogs(this.config, 'field_rules is not available', 'error');
       }
 
-      self.stackAPIClient
+      this.stackAPIClient
         .contentType(schema.uid)
         .fetch()
         .then((contentTypeResponse) => {
