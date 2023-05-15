@@ -1,32 +1,56 @@
-@contentstack/cli-config
-===
+# @contentstack/cli-config
 
 The config namespace contains all the commands that you will need to configure the CLI as per your requirements. Contentstack currently supports three regions: North America, Europe and Azure North America. [Configure the CLI documentation](https://www.contentstack.com/docs/developers/cli/configure-the-cli)
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
+* [@contentstack/cli-config](#contentstackcli-config)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
 ```sh-session
 $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.3.1 darwin-x64 node-v18.12.1
+@contentstack/cli-config/1.4.1 darwin-arm64 node-v18.15.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
+* [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
 * [`csdx config:get:region`](#csdx-configgetregion)
+* [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
+* [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
+
+## `csdx config:get:base-branch`
+
+Get current branch set for CLI
+
+```
+USAGE
+  $ csdx config:get:base-branch
+
+DESCRIPTION
+  Get current branch set for CLI
+
+EXAMPLES
+  $ csdx config:get:base-branch
+```
+
+_See code: [src/commands/config/get/base-branch.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/base-branch.ts)_
 
 ## `csdx config:get:region`
 
@@ -44,6 +68,52 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/get/region.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/region.ts)_
+
+## `csdx config:remove:base-branch`
+
+Remove branch config for CLI
+
+```
+USAGE
+  $ csdx config:remove:base-branch [-k <value>] [-y]
+
+FLAGS
+  -k, --stack-api-key=<value>  Stack API Key
+  -y, --yes                    Force Remove
+
+DESCRIPTION
+  Remove branch config for CLI
+
+EXAMPLES
+  $ csdx config:remove:base-branch
+
+  $ csdx config:remove:base-branch --stack-api-key <value>
+```
+
+_See code: [src/commands/config/remove/base-branch.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/base-branch.ts)_
+
+## `csdx config:set:base-branch`
+
+Set branch for CLI
+
+```
+USAGE
+  $ csdx config:set:base-branch [-k <value>] [--base-branch <value>]
+
+FLAGS
+  -k, --stack-api-key=<value>  Stack API Key
+  --base-branch=<value>        Base Branch
+
+DESCRIPTION
+  Set branch for CLI
+
+EXAMPLES
+  $ csdx config:set:base-branch
+
+  $ csdx config:set:base-branch --stack-api-key <value> --base-branch <value>
+```
+
+_See code: [src/commands/config/set/base-branch.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/base-branch.ts)_
 
 ## `csdx config:set:region [REGION]`
 
