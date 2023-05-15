@@ -1,6 +1,6 @@
 # @contentstack/cli
 
-Use Contentstack Command-line Interface to command Contentstack for executing a set of operations from the terminal. To get started with CLI, refer to the  [CLI’s documentation](https://www.contentstack.com/docs/developers/cli)
+Use Contentstack Command-line Interface to command Contentstack for executing a set of operations from the terminal. To get started with CLI, refer to the [CLI’s documentation](https://www.contentstack.com/docs/developers/cli)
 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
@@ -38,6 +38,11 @@ USAGE
 * [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value)
 * [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
 * [`csdx cm:bootstrap`](#csdx-cmbootstrap)
+* [`csdx cm:branches`](#csdx-cmbranches)
+* [`csdx cm:branches:create`](#csdx-cmbranchescreate)
+* [`csdx cm:branches:delete [-uid <value>] [-k <value>]`](#csdx-cmbranchesdelete--uid-value--k-value)
+* [`csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]`](#csdx-cmbranchesdiff---base-branch-value---compare-branch-value--k-value--module-value)
+* [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
 * [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value-1)
@@ -74,7 +79,10 @@ USAGE
 * [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
 * [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value-1)
 * [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries-1)
+* [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
 * [`csdx config:get:region`](#csdx-configgetregion)
+* [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
+* [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMANDS]`](#csdx-help-commands)
 * [`csdx launch`](#csdx-launch)
@@ -444,6 +452,175 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/main/packages/contentstack-bootstrap/src/commands/cm/bootstrap.ts)_
+
+## `csdx cm:branches`
+
+List the branches
+
+```
+USAGE
+  $ csdx cm:branches
+
+FLAGS
+  -k, --stack-api-key=<value>  Stack API Key
+  --verbose                    Verbose
+
+DESCRIPTION
+  List the branches
+
+EXAMPLES
+  $ csdx cm:branches
+
+  $ csdx cm:branches --verbose
+
+  $ csdx cm:branches -k <stack api key>
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/index.ts)_
+
+## `csdx cm:branches:create`
+
+Create a new branch
+
+```
+USAGE
+  $ csdx cm:branches:create
+  $ csdx cm:branches:create [--source <value>] [--uid <value>] [-k <value>]
+  $ csdx cm:branches:create [--source <value>] [--uid <value>] [--stack-api-key <value>]
+
+FLAGS
+  -k, --stack-api-key=<value>  Stack API key
+  --source=<value>             Source branch from which new branch to be created
+  --uid=<value>                Branch UID to be created
+
+DESCRIPTION
+  Create a new branch
+
+EXAMPLES
+  $ csdx cm:branches:create
+
+  $ csdx cm:branches:create --source main -uid new_branch -k bltxxxxxxxx
+
+  $ csdx cm:branches:create --source main --uid new_branch --stack-api-key bltxxxxxxxx
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/create.ts)_
+
+## `csdx cm:branches:delete [-uid <value>] [-k <value>]`
+
+Delete a branch
+
+```
+USAGE
+  $ csdx cm:branches:delete [-uid <value>] [-k <value>]
+  $ csdx cm:branches:delete [--uid <value>] [--stack-api-key <value>]
+
+FLAGS
+  -k, --stack-api-key=<value>  Stack API key
+  -y, --yes                    Force the deletion of the branch by skipping the confirmation
+  --uid=<value>                Branch UID to be deleted
+
+DESCRIPTION
+  Delete a branch
+
+EXAMPLES
+  $ csdx cm:branches:delete
+
+  $ csdx cm:branches:delete --uid main -k bltxxxxxxxx
+
+  $ csdx cm:branches:delete --uid main --stack-api-key bltxxxxxxxx
+
+  $ csdx cm:branches:delete --uid main --stack-api-key bltxxxxxxxx --yes
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/delete.ts)_
+
+## `csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]`
+
+Differences between two branches
+
+```
+USAGE
+  $ csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]
+
+FLAGS
+  -k, --stack-api-key=<value>  Provide Stack API key to show difference between branches
+  --base-branch=<value>        Base branch
+  --compare-branch=<value>     Compare branch
+  --format=<option>            [default: compact-text] [Optional] Type of flags to show branches differences
+                               <options: compact-text|detailed-text>
+  --module=<option>            Module
+                               <options: content-types|global-fields|all>
+
+DESCRIPTION
+  Differences between two branches
+
+EXAMPLES
+  $ csdx cm:branches:diff
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx"
+
+  $ csdx cm:branches:diff --compare-branch "develop"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --stack-api-key "bltxxxxxxxx"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types"
+
+  $ csdx cm:branches:diff --module "content-types" --format "detailed-text"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --format "detailed-text"
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main"
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop"
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --module "content-types"
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types"
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types" --format "detailed-text"
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/diff.ts)_
+
+## `csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`
+
+Merge changes from a branch
+
+```
+USAGE
+  $ csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>]
+    [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]
+
+FLAGS
+  -k, --stack-api-key=<value>    Provide Stack API key to show difference between branches
+  --base-branch=<value>          Base branch
+  --comment=<value>              Merge comment
+  --compare-branch=<value>       Compare branch name
+  --export-summary-path=<value>  Export summary file path
+  --no-revert                    If passed, will not create the new revert branch
+  --use-merge-summary=<value>    Path of merge summary file
+
+DESCRIPTION
+  Merge changes from a branch
+
+EXAMPLES
+  $ csdx cm:branches:merge --stack-api-key bltxxxxxxxx --compare-branch feature-branch
+
+  $ csdx cm:branches:merge --stack-api-key bltxxxxxxxx --comment "merge comment"
+
+  $ csdx cm:branches:merge -k bltxxxxxxxx --base-branch base-branch
+
+  $ csdx cm:branches:merge --export-summary-path file/path
+
+  $ csdx cm:branches:merge --use-merge-summary file-path
+
+  $ csdx cm:branches:merge -k bltxxxxxxxx --no-revert
+
+  $ csdx cm:branches:merge -k bltxxxxxxxx --compare-branch feature-branch --no-revert
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/merge.ts)_
 
 ## `csdx cm:bulk-publish`
 
@@ -2344,6 +2521,23 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/stacks/unpublish.js)_
 
+## `csdx config:get:base-branch`
+
+Get current branch set for CLI
+
+```
+USAGE
+  $ csdx config:get:base-branch
+
+DESCRIPTION
+  Get current branch set for CLI
+
+EXAMPLES
+  $ csdx config:get:base-branch
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/base-branch.ts)_
+
 ## `csdx config:get:region`
 
 Get current region set for CLI
@@ -2360,6 +2554,52 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/region.ts)_
+
+## `csdx config:remove:base-branch`
+
+Remove branch config for CLI
+
+```
+USAGE
+  $ csdx config:remove:base-branch [-k <value>] [-y]
+
+FLAGS
+  -k, --stack-api-key=<value>  Stack API Key
+  -y, --yes                    Force Remove
+
+DESCRIPTION
+  Remove branch config for CLI
+
+EXAMPLES
+  $ csdx config:remove:base-branch
+
+  $ csdx config:remove:base-branch --stack-api-key <value>
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/base-branch.ts)_
+
+## `csdx config:set:base-branch`
+
+Set branch for CLI
+
+```
+USAGE
+  $ csdx config:set:base-branch [-k <value>] [--base-branch <value>]
+
+FLAGS
+  -k, --stack-api-key=<value>  Stack API Key
+  --base-branch=<value>        Base Branch
+
+DESCRIPTION
+  Set branch for CLI
+
+EXAMPLES
+  $ csdx config:set:base-branch
+
+  $ csdx config:set:base-branch --stack-api-key <value> --base-branch <value>
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/base-branch.ts)_
 
 ## `csdx config:set:region [REGION]`
 
