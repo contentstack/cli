@@ -1,0 +1,12 @@
+{
+  "CLI_BRANCH_API_FAILED": "Something went wrong. Unable to fetch the details.",
+  "CLI_BRANCH_BASE_BRANCH": "Enter base branch name:",
+  "CLI_BRANCH_COMPARE_BRANCH": "Enter compare branch name:",
+  "CLI_BRANCH_STACK_API_KEY": "Enter Stack API key:",
+  "CLI_BRANCH_MODULE": "Choose a module:",
+  "CLI_BRANCH_REQUIRED_FIELD": "This field can't be empty.",
+  "CLI_BRANCH_CONFIG_ERROR": "Please set the config using 'cm:config:set:branch' command",
+  "CLI_BRANCH_BRANCH_UID": "Enter branch UID:",
+  "CLI_BRANCH_SOURCE_BRANCH": "Enter source branch:",
+  "CLI_BRANCH_NAME_CONFIRMATION": "To delete the branch, type the branch name to confirm:"
+}

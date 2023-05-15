@@ -12,8 +12,8 @@ const HandleStackCommand = function (params, parentContext) {
   return new CloneCommand(parentContext.handleStackSelection, parentContext.execute, params, parentContext);
 };
 
-const HandleBranchCommand = function (params, parentContext) {
-  return new CloneCommand(parentContext.handleBranchSelection, parentContext.execute, params, parentContext);
+const HandleBranchCommand = function (params, parentContext, backStepHandler) {
+  return new CloneCommand(parentContext.handleBranchSelection, backStepHandler, params, parentContext);
 };
 
 const HandleDestinationStackCommand = function (params, parentContext) {
