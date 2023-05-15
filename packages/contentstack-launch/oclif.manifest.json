@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "commands": {
     "launch:base-command": {
       "id": "launch:base-command",
@@ -29,7 +29,7 @@
     },
     "launch:deployments": {
       "id": "launch:deployments",
-      "description": "Show list of deployments for a environment",
+      "description": "Show list of deployments for an environment",
       "strict": true,
       "pluginName": "@contentstack/cli-launch",
       "pluginAlias": "@contentstack/cli-launch",
@@ -355,7 +355,7 @@
     },
     "launch:open": {
       "id": "launch:open",
-      "description": "Open website for an environment",
+      "description": "Open a website for an environment",
       "strict": true,
       "pluginName": "@contentstack/cli-launch",
       "pluginAlias": "@contentstack/cli-launch",
