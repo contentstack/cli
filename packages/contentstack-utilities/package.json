@@ -30,7 +30,7 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
-    "@contentstack/management": "^1.6.1",
+    "@contentstack/management": "^1.8.0",
     "@oclif/core": "^2.8.2",
     "axios": "1.3.4",
     "chalk": "^4.0.0",
@@ -39,6 +39,7 @@
     "inquirer": "8.2.4",
     "inquirer-search-checkbox": "^1.0.0",
     "inquirer-search-list": "^1.2.6",
+    "inquirer-table-prompt": "git@github.com:***REMOVED***/inquirer-table-prompt.git",
     "lodash": "^4.17.15",
     "open": "^8.4.2",
     "ora": "^5.4.0",
