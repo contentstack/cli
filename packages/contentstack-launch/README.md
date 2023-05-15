@@ -1,30 +1,34 @@
-Launch CLI plugin
-=================
+# Launch CLI plugin
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 
 With Launch CLI, you can interact with the Contentstack Launch platform using the terminal to create, manage and deploy Launch projects.
 
 <!-- toc -->
+* [Launch CLI plugin](#launch-cli-plugin)
 * [Usage](#usage)
 * [Installation steps](#installation-steps)
 * [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
 ```sh-session
-$ npm install -g @contentstack/launch-cli
+$ npm install -g @contentstack/cli-launch
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/launch-cli/1.0.0-alpha-1 darwin-arm64 node-v16.17.0
+@contentstack/cli-launch/1.0.1 darwin-arm64 node-v18.15.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
 <!-- usagestop -->
+
 # Installation steps
+
 ```sh-session
 GitHub installation steps:
 $ git clone clone <repo url>
@@ -33,11 +37,12 @@ $ npm run build
 $ csdx plugins:link <plugin path>
 
 NPM installation steps:
-$ csdx plugins:install @contentstack/launch-cli
+$ csdx plugins:install @contentstack/cli-launch
 $ csdx launch
 ```
 
 # Commands
+
 ```sh-session
 $ csdx launch
 start with launch flow <GitHub|FileUpload>
@@ -48,4 +53,5 @@ To see deployment logs
 $ csdx launch:functions
 Run cloud functions locally
 ```
+
 <!-- commandsstop -->
