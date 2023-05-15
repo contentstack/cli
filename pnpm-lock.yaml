@@ -12,6 +12,7 @@ importers:
     specifiers:
       '@contentstack/cli-auth': ^1.3.3
       '@contentstack/cli-cm-bootstrap': ^1.4.3
+      '@contentstack/cli-cm-branches': ^1.0.0
       '@contentstack/cli-cm-bulk-publish': ^1.3.3
       '@contentstack/cli-cm-clone': ^1.4.3
       '@contentstack/cli-cm-export': ^1.5.3
@@ -21,10 +22,10 @@ importers:
       '@contentstack/cli-cm-seed': ^1.4.3
       '@contentstack/cli-command': ^1.2.4
       '@contentstack/cli-config': ^1.4.1
-      '@contentstack/cli-launch': ^1.0.0
+      '@contentstack/cli-launch': ^1.0.1
       '@contentstack/cli-migration': ^1.3.3
       '@contentstack/cli-utilities': ^1.4.1
-      '@contentstack/management': ^1.6.1
+      '@contentstack/management': ^1.8.0
       '@oclif/plugin-help': ^5
       '@oclif/plugin-not-found': ^2.3.9
       '@oclif/plugin-plugins': ^2.1.7
@@ -62,6 +63,7 @@ importers:
     dependencies:
       '@contentstack/cli-auth': link:../contentstack-auth
       '@contentstack/cli-cm-bootstrap': link:../contentstack-bootstrap
+      '@contentstack/cli-cm-branches': link:../contentstack-branches
       '@contentstack/cli-cm-bulk-publish': link:../contentstack-bulk-publish
       '@contentstack/cli-cm-clone': link:../contentstack-clone
       '@contentstack/cli-cm-export': link:../contentstack-export
@@ -225,6 +227,89 @@ importers:
       ts-node: 8.10.2_typescript@4.9.5
       typescript: 4.9.5
 
+  packages/contentstack-branches:
+    specifiers:
+      '@contentstack/cli-auth': ^1.2.0
+      '@contentstack/cli-command': ^1.2.3
+      '@contentstack/cli-config': ^1.2.0
+      '@contentstack/cli-dev-dependencies': ^1.2.0
+      '@contentstack/cli-utilities': ^1.4.0
+      '@oclif/command': ^1.8.16
+      '@oclif/config': ^1.18.3
+      '@oclif/core': ^2.3.0
+      '@oclif/plugin-help': ^5.1.19
+      '@oclif/test': ^1.2.6
+      '@types/flat': ^5.0.2
+      assert: ^2.0.0
+      async: ^3.2.4
+      big-json: ^3.2.0
+      bluebird: ^3.7.2
+      chai: ^4.2.0
+      chalk: ^4.1.2
+      dotenv: ^16.0.1
+      dotenv-expand: ^9.0.0
+      eslint: ^8.18.0
+      eslint-config-oclif: ^4.0.0
+      globby: ^10.0.2
+      is-valid-path: ^0.1.1
+      just-diff: ^6.0.2
+      lodash: ^4.17.20
+      merge: ^2.1.1
+      mkdirp: ^1.0.4
+      mocha: 10.1.0
+      nyc: ^15.1.0
+      oclif: ^3.1.2
+      path: ^0.12.7
+      progress-stream: ^2.0.0
+      promise-limit: ^2.7.0
+      proxyquire: ^2.1.3
+      sinon: ^15.0.1
+      ts-node: ^10.9.1
+      tslib: ^2.4.1
+      typescript: ^4.9.3
+      winston: ^3.7.2
+    dependencies:
+      '@contentstack/cli-command': link:../contentstack-command
+      '@contentstack/cli-utilities': link:../contentstack-utilities
+      '@oclif/command': 1.8.24_@oclif+config@1.18.8
+      '@oclif/config': 1.18.8
+      '@oclif/core': 2.8.5_typescript@4.9.5
+      async: 3.2.4
+      big-json: 3.2.0
+      bluebird: 3.7.2
+      chalk: 4.1.2
+      is-valid-path: 0.1.1
+      just-diff: 6.0.2
+      lodash: 4.17.21
+      merge: 2.1.1
+      mkdirp: 1.0.4
+      path: 0.12.7
+      progress-stream: 2.0.0
+      promise-limit: 2.7.0
+      proxyquire: 2.1.3
+      tslib: 2.5.0
+      winston: 3.8.2
+    devDependencies:
+      '@contentstack/cli-auth': link:../contentstack-auth
+      '@contentstack/cli-config': link:../contentstack-config
+      '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
+      '@oclif/plugin-help': 5.2.9_typescript@4.9.5
+      '@oclif/test': 1.2.9
+      '@types/flat': 5.0.2
+      assert: 2.0.0
+      chai: 4.3.7
+      dotenv: 16.0.3
+      dotenv-expand: 9.0.0
+      eslint: 8.40.0
+      eslint-config-oclif: 4.0.0_eslint@8.40.0
+      globby: 10.0.2
+      mocha: 10.1.0
+      nyc: 15.1.0
+      oclif: 3.9.0_fxnscsehfcewpnie2ltbcrhxa4
+      sinon: 15.0.4
+      ts-node: 10.9.1_typescript@4.9.5
+      typescript: 4.9.5
+
   packages/contentstack-bulk-publish:
     specifiers:
       '@contentstack/cli-command': ^1.2.4
@@ -373,6 +458,7 @@ importers:
       eslint-config-oclif-typescript: ^0.1.0
       globby: ^10.0.2
       inquirer: 8.2.4
+      lodash: ^4.17.20
       mocha: 10.1.0
       nyc: ^15.1.0
       oclif: ^3.8.1
@@ -388,6 +474,7 @@ importers:
       chalk: 4.1.2
       debug: 4.3.4
       inquirer: 8.2.4
+      lodash: 4.17.21
       winston: 3.8.2
     devDependencies:
       '@oclif/test': 2.3.19_o6f6hwbtpmug3pt323fraf577m
@@ -763,7 +850,6 @@ importers:
       '@contentstack/cli-cm-import': ^1.5.3
       '@contentstack/cli-command': ^1.2.4
       '@contentstack/cli-utilities': ^1.4.1
-      '@oclif/core': ^2.3.0
       '@oclif/plugin-help': ^5.1.19
       '@types/inquirer': ^9.0.3
       '@types/jest': ^26.0.15
@@ -790,7 +876,6 @@ importers:
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@oclif/core': 2.8.5_o6f6hwbtpmug3pt323fraf577m
       axios: 1.3.4
       inquirer: 8.2.4
       mkdirp: 1.0.4
@@ -817,7 +902,7 @@ importers:
 
   packages/contentstack-utilities:
     specifiers:
-      '@contentstack/management': ^1.6.1
+      '@contentstack/management': ^1.8.0
       '@oclif/core': ^2.8.2
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.2.18
@@ -839,6 +924,7 @@ importers:
       inquirer: 8.2.4
       inquirer-search-checkbox: ^1.0.0
       inquirer-search-list: ^1.2.6
+      inquirer-table-prompt: git@github.com:kego1992/inquirer-table-prompt.git
       lodash: ^4.17.15
       mocha: 10.1.0
       nock: ^13.1.0
@@ -865,6 +951,7 @@ importers:
       inquirer: 8.2.4
       inquirer-search-checkbox: 1.0.0
       inquirer-search-list: 1.2.6
+      inquirer-table-prompt: github.com/kego1992/inquirer-table-prompt/127e093a2e992edca1178d6e18740cc343f442d9
       lodash: 4.17.21
       open: 8.4.2
       ora: 5.4.1
@@ -2333,6 +2420,45 @@ packages:
       - '@types/node'
       - typescript
 
+  /@oclif/core/2.8.5_typescript@4.9.5:
+    resolution: {integrity: sha512-316DLfrHQDYmWDriI4Woxk9y1wVUrPN1sZdbQLHdOdlTA9v/twe7TdHpWOriEypfl6C85NWEJKc1870yuLtjrQ==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@types/cli-progress': 3.11.0
+      ansi-escapes: 4.3.2
+      ansi-styles: 4.3.0
+      cardinal: 2.1.1
+      chalk: 4.1.2
+      clean-stack: 3.0.1
+      cli-progress: 3.12.0
+      debug: 4.3.4_supports-color@8.1.1
+      ejs: 3.1.9
+      fs-extra: 9.1.0
+      get-package-type: 0.1.0
+      globby: 11.1.0
+      hyperlinker: 1.0.0
+      indent-string: 4.0.0
+      is-wsl: 2.2.0
+      js-yaml: 3.14.1
+      natural-orderby: 2.0.3
+      object-treeify: 1.1.33
+      password-prompt: 1.1.2
+      semver: 7.5.0
+      string-width: 4.2.3
+      strip-ansi: 6.0.1
+      supports-color: 8.1.1
+      supports-hyperlinks: 2.3.0
+      ts-node: 10.9.1_typescript@4.9.5
+      tslib: 2.5.0
+      widest-line: 3.1.0
+      wordwrap: 1.0.0
+      wrap-ansi: 7.0.0
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - typescript
+
   /@oclif/errors/1.3.6:
     resolution: {integrity: sha512-fYaU4aDceETd89KXP+3cLyg9EHZsLD3RxF2IU9yxahhBpspWjkWi3Dy3bTgcwZ3V47BgxQaGapzJWDM33XIVDQ==}
     engines: {node: '>=8.0.0'}
@@ -2409,6 +2535,18 @@ packages:
       - '@types/node'
       - typescript
 
+  /@oclif/plugin-help/5.2.9_typescript@4.9.5:
+    resolution: {integrity: sha512-0J3oowPURZJ4Dn1p1WpQ46E4+CoV20KTn1cvsNiDl6Hmbw+qoljKQnArJJzNFeZQxWo4R7/S42PrzKJTVYh68Q==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@oclif/core': 2.8.5_typescript@4.9.5
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - typescript
+    dev: true
+
   /@oclif/plugin-not-found/2.3.23:
     resolution: {integrity: sha512-UZM8aolxXvqwH8WcmJxRNASDWgMoSQm/pgCdkc1AGCRevYc8+LBSO+U6nLWq+Dx8H/dn9RyIv5oiUIOGkKDlZA==}
     engines: {node: '>=12.0.0'}
@@ -2452,6 +2590,21 @@ packages:
       - '@swc/wasm'
       - '@types/node'
       - typescript
+
+  /@oclif/plugin-not-found/2.3.23_typescript@4.9.5:
+    resolution: {integrity: sha512-UZM8aolxXvqwH8WcmJxRNASDWgMoSQm/pgCdkc1AGCRevYc8+LBSO+U6nLWq+Dx8H/dn9RyIv5oiUIOGkKDlZA==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@oclif/color': 1.0.4
+      '@oclif/core': 2.8.5_typescript@4.9.5
+      fast-levenshtein: 3.0.0
+      lodash: 4.17.21
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - typescript
+    dev: true
 
   /@oclif/plugin-plugins/2.4.7_l7sgjqg5mbczlbukt55kx7hsyi:
     resolution: {integrity: sha512-6fzUDLWrSK7n6+EBrEekEEYrYTCneRoOF9TzojkjuFn1+ailvUlr98G90bblxKOyy8fqMe7QjvqwTgIDQ9ZIzg==}
@@ -2542,6 +2695,25 @@ packages:
     engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.8.5_o6f6hwbtpmug3pt323fraf577m
+      chalk: 4.1.2
+      debug: 4.3.4
+      fs-extra: 9.1.0
+      http-call: 5.3.0
+      lodash: 4.17.21
+      semver: 7.5.0
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - supports-color
+      - typescript
+    dev: true
+
+  /@oclif/plugin-warn-if-update-available/2.0.36_typescript@4.9.5:
+    resolution: {integrity: sha512-mHWoEWFICw1Amqn8C7oURxOsR6sT2Hx+xNi30Jbsui5MrCIYYo369dhjl27VfaWlcLjVqpjMVzVFMn5zXjgzBw==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@oclif/core': 2.8.5_typescript@4.9.5
       chalk: 4.1.2
       debug: 4.3.4
       fs-extra: 9.1.0
@@ -2890,6 +3062,10 @@ packages:
       '@types/qs': 6.9.7
       '@types/serve-static': 1.15.1
     dev: false
+
+  /@types/flat/5.0.2:
+    resolution: {integrity: sha512-3zsplnP2djeps5P9OyarTxwRpMLoe5Ash8aL9iprw0JxB+FAHjY+ifn4yZUuW4/9hqtnmor6uvjSRzJhiVbrEQ==}
+    dev: true
 
   /@types/glob/7.2.0:
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
@@ -7880,6 +8056,10 @@ packages:
     resolution: {integrity: sha512-6ufhP9SHjb7jibNFrNxyFZ6od3g+An6Ai9mhGRvcYe8UJlH0prseN64M+6ZBBUoKYHZsitDP42gAJ8+eVWr3lw==}
     dev: true
 
+  /just-diff/6.0.2:
+    resolution: {integrity: sha512-S59eriX5u3/QhMNq3v/gm8Kd0w8OS6Tz2FS1NG4blv+z0MuQcBRJyFWjdovM0Rad4/P4aUPFtnkNjMjyMlMSYA==}
+    dev: false
+
   /just-extend/4.2.1:
     resolution: {integrity: sha512-g3UB796vUFIY90VIv/WX3L2c8CS2MdWUww3CNrYmqza1Fg0DURc2K/O4YrnklBdQarSJ/y8JnJYDGc+1iumQjg==}
 
@@ -8399,6 +8579,10 @@ packages:
   /merge-stream/2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
     dev: true
+
+  /merge/2.1.1:
+    resolution: {integrity: sha512-jz+Cfrg9GWOZbQAnDQ4hlVnQky+341Yk5ru8bZSe6sIDTCIg8n9i/u7hSQGSVOF3C7lH6mGtqjkiT9G4wFLL0w==}
+    dev: false
 
   /merge2/1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
@@ -9047,6 +9231,41 @@ packages:
       '@oclif/plugin-help': 5.2.9
       '@oclif/plugin-not-found': 2.3.23
       '@oclif/plugin-warn-if-update-available': 2.0.36
+      aws-sdk: 2.1377.0
+      concurrently: 7.6.0
+      debug: 4.3.4
+      find-yarn-workspace-root: 2.0.0
+      fs-extra: 8.1.0
+      github-slugger: 1.5.0
+      got: 11.8.6
+      lodash: 4.17.21
+      normalize-package-data: 3.0.3
+      semver: 7.5.0
+      shelljs: 0.8.5
+      tslib: 2.5.0
+      yeoman-environment: 3.16.2_bluebird@3.7.2
+      yeoman-generator: 5.8.0_yeoman-environment@3.16.2
+      yosay: 2.0.2
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - bluebird
+      - encoding
+      - mem-fs
+      - supports-color
+      - typescript
+    dev: true
+
+  /oclif/3.9.0_fxnscsehfcewpnie2ltbcrhxa4:
+    resolution: {integrity: sha512-fsFyHVQYJdE50EcKrBjwzl2WT5sZUtTiRY1vqMwykgLFUDYrQS0lj7yqy2IgcPSmAWaLQryODdfBujCWOU98Ww==}
+    engines: {node: '>=12.0.0'}
+    hasBin: true
+    dependencies:
+      '@oclif/core': 2.8.5_typescript@4.9.5
+      '@oclif/plugin-help': 5.2.9_typescript@4.9.5
+      '@oclif/plugin-not-found': 2.3.23_typescript@4.9.5
+      '@oclif/plugin-warn-if-update-available': 2.0.36_typescript@4.9.5
       aws-sdk: 2.1377.0
       concurrently: 7.6.0
       debug: 4.3.4
@@ -10959,6 +11178,35 @@ packages:
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
       '@types/node': 14.18.46
+      acorn: 8.8.2
+      acorn-walk: 8.2.0
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      typescript: 4.9.5
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+
+  /ts-node/10.9.1_typescript@4.9.5:
+    resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
+    hasBin: true
+    peerDependencies:
+      '@swc/core': '>=1.2.50'
+      '@swc/wasm': '>=1.2.50'
+      '@types/node': '*'
+      typescript: '>=2.7'
+    peerDependenciesMeta:
+      '@swc/core':
+        optional: true
+      '@swc/wasm':
+        optional: true
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.9
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.4
       acorn: 8.8.2
       acorn-walk: 8.2.0
       arg: 4.1.3
