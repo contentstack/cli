@@ -1,10 +1,10 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, flags, configHandler } from '@contentstack/cli-utilities';
+import { cliux, flags, configHandler, FlagInput } from '@contentstack/cli-utilities';
 import { interactive } from '../../../utils';
 
 export default class RemoveBranchConfigCommand extends Command {
   static description = 'Remove branch config for CLI';
-  static flags = {
+  static flags: FlagInput = {
     'stack-api-key': flags.string({ char: 'k', description: 'Stack API Key' }),
     yes: flags.boolean({ char: 'y', description: 'Force Remove' }),
   };

@@ -3,7 +3,8 @@ import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
 import forEach from 'lodash/forEach';
 import { cliux, messageHandler } from '@contentstack/cli-utilities';
-import { BranchDiffRes, BranchCompactTextRes } from '../interfaces';
+
+import { BranchDiffRes } from '../interfaces';
 
 export async function selectModule(): Promise<string> {
   return await cliux.inquire({
