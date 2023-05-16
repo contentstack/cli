@@ -1,11 +1,14 @@
-const inquirer = require('inquirer');
 const os = require('os');
-const checkboxPlus = require('inquirer-checkbox-plus-prompt');
-const config = require('./config.js');
-const fastcsv = require('fast-csv');
-const mkdirp = require('mkdirp');
 const fs = require('fs');
+const mkdirp = require('mkdirp');
+const find = require('lodash/find');
+const fastcsv = require('fast-csv');
+const inquirer = require('inquirer');
 const debug = require('debug')('export-to-csv');
+const checkboxPlus = require('inquirer-checkbox-plus-prompt');
+
+const config = require('./config.js');
+
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
 
@@ -403,24 +406,21 @@ function getOrgUsers(managementAPIClient, orgUid, ecsv) {
       .getUser({ include_orgs_roles: true })
       .then(async (response) => {
         let organization = response.organizations.filter((org) => org.uid === orgUid).pop();
+        if (!organization) return reject(new Error('Org UID not found.'));
         if (organization.is_owner === true) {
           return managementAPIClient
             .organization(organization.uid)
-            .fetch()
-            .then((_response) => {
-              _response
-                .getInvitations()
-                .then((_data) => {
-                  resolve({ items: _data.items });
-                })
-                .catch(reject);
-            });
+            .getInvitations()
+            .then((data) => {
+              resolve({ items: data.items });
+            })
+            .catch(reject);
         }
-        if (!organization.getInvitations) {
+        if (!organization.getInvitations && !find(organization.org_roles, 'admin')) {
           return reject(new Error(config.adminError));
         }
         try {
-          const users = await getUsers(organization, { skip: 0, page: 1, limit: 100 });
+          const users = await getUsers(managementAPIClient, organization, { skip: 0, page: 1, limit: 100 });
           return resolve({ items: users });
         } catch (error) {
           return reject(error);
@@ -430,9 +430,9 @@ function getOrgUsers(managementAPIClient, orgUid, ecsv) {
   });
 }
 
-async function getUsers(organization, params, result = []) {
+async function getUsers(managementAPIClient, organization, params, result = []) {
   try {
-    const users = await organization.getInvitations(params);
+    const users = await managementAPIClient.organization(organization.uid).getInvitations(params);
     if (!users.items || (users.items && !users.items.length)) {
       return result;
     } else {
@@ -440,7 +440,7 @@ async function getUsers(organization, params, result = []) {
       params.skip = params.page * params.limit;
       params.page++;
       await wait(200);
-      return getUsers(organization, params, result);
+      return getUsers(managementAPIClient, organization, params, result);
     }
   } catch (error) {
     console.error(error);
@@ -474,22 +474,22 @@ function getOrgRoles(managementAPIClient, orgUid, ecsv) {
         if (organization.is_owner === true) {
           return managementAPIClient
             .organization(organization.uid)
-            .fetch()
-            .then((_response) => {
-              _response
-                .roles()
-                .then((_data) => {
-                  resolve({ items: _data.items });
-                })
-                .catch(reject);
-            });
+            .roles()
+            .then((roles) => {
+              resolve({ items: roles.items });
+            })
+            .catch(reject);
         }
-        if (!organization.roles) {
+        if (!organization.roles && !find(organization.org_roles, 'admin')) {
           return reject(new Error(config.adminError));
         }
-        organization
+
+        managementAPIClient
+          .organization(organization.uid)
           .roles()
-          .then((roles) => resolve(roles))
+          .then((roles) => {
+            resolve({ items: roles.items });
+          })
           .catch(reject);
       })
       .catch((error) => reject(error));
