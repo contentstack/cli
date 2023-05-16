@@ -266,14 +266,15 @@ class CloneHandler {
           } else {
             return reject('Org not found.');
           }
-        }
-        const exportRes = await cloneCommand.execute(new HandleExportCommand(null, this));
-        await cloneCommand.execute(new SetBranchCommand(null, this));
+        } else {
+          const exportRes = await cloneCommand.execute(new HandleExportCommand(null, this));
+          await cloneCommand.execute(new SetBranchCommand(null, this));
 
-        if (exportRes) {
-          this.executeDestination().catch(() => {
-            reject();
-          });
+          if (exportRes) {
+            this.executeDestination().catch(() => {
+              reject();
+            });
+          }
         }
         return resolve();
       } catch (error) {
