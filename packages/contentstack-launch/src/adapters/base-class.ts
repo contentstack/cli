@@ -1,32 +1,32 @@
-import open from "open";
-import dotEnv from "dotenv";
-import map from "lodash/map";
-import keys from "lodash/keys";
-import find from "lodash/find";
-import last from "lodash/last";
-import merge from "lodash/merge";
-import first from "lodash/first";
-import split from "lodash/split";
-import EventEmitter from "events";
-import filter from "lodash/filter";
-import replace from "lodash/replace";
-import forEach from "lodash/forEach";
-import isEmpty from "lodash/isEmpty";
-import includes from "lodash/includes";
-import cloneDeep from "lodash/cloneDeep";
-import { ApolloClient } from "@apollo/client/core";
-import { writeFileSync, existsSync, readFileSync } from "fs";
-import { cliux as ux, ContentstackClient } from "@contentstack/cli-utilities";
+import open from 'open';
+import dotEnv from 'dotenv';
+import map from 'lodash/map';
+import keys from 'lodash/keys';
+import find from 'lodash/find';
+import last from 'lodash/last';
+import merge from 'lodash/merge';
+import first from 'lodash/first';
+import split from 'lodash/split';
+import EventEmitter from 'events';
+import filter from 'lodash/filter';
+import replace from 'lodash/replace';
+import forEach from 'lodash/forEach';
+import isEmpty from 'lodash/isEmpty';
+import includes from 'lodash/includes';
+import cloneDeep from 'lodash/cloneDeep';
+import { ApolloClient } from '@apollo/client/core';
+import { writeFileSync, existsSync, readFileSync } from 'fs';
+import { cliux as ux, ContentstackClient } from '@contentstack/cli-utilities';
 
-import config from "../config";
-import { print, GraphqlApiClient, LogPolling } from "../util";
+import config from '../config';
+import { print, GraphqlApiClient, LogPolling } from '../util';
 import {
   branchesQuery,
   frameworkQuery,
   fileFrameworkQuery,
   createDeploymentMutation,
   cmsEnvironmentVariablesQuery,
-} from "../graphql";
+} from '../graphql';
 import {
   LogFn,
   ExitFn,
@@ -36,7 +36,7 @@ import {
   EmitMessage,
   DeploymentLogResp,
   ServerLogResp,
-} from "../types";
+} from '../types';
 
 export default class BaseClass {
   public log: LogFn;
@@ -52,16 +52,7 @@ export default class BaseClass {
   public managementSdk: ContentstackClient | undefined;
 
   constructor(options: AdapterConstructorInputs) {
-    const {
-      log,
-      exit,
-      config,
-      $event,
-      apolloClient,
-      managementSdk,
-      analyticsInfo,
-      apolloLogsClient,
-    } = options;
+    const { log, exit, config, $event, apolloClient, managementSdk, analyticsInfo, apolloLogsClient } = options;
     this.config = config;
     this.$event = $event;
     this.log = log || console.log;
@@ -80,8 +71,8 @@ export default class BaseClass {
   async initApolloClient(): Promise<void> {
     this.apolloClient = await new GraphqlApiClient({
       headers: {
-        "X-CS-CLI": this.analyticsInfo,
-        "x-project-uid": this.config.currentConfig.uid,
+        'X-CS-CLI': this.analyticsInfo,
+        'x-project-uid': this.config.currentConfig.uid,
         organization_uid: this.config.currentConfig.organizationUid,
       },
       baseUrl: this.config.manageApiBaseUrl,
@@ -94,14 +85,9 @@ export default class BaseClass {
    * @return {*}  {Promise<void>}
    * @memberof GitHub
    */
-  async createNewDeployment(
-    skipGitData = false,
-    uploadUid?: string
-  ): Promise<void> {
+  async createNewDeployment(skipGitData = false, uploadUid?: string): Promise<void> {
     const deployment: Record<string, any> = {
-      environment: (
-        first(this.config.currentConfig.environments) as Record<string, any>
-      )?.uid,
+      environment: (first(this.config.currentConfig.environments) as Record<string, any>)?.uid,
     };
 
     if (uploadUid) {
@@ -114,12 +100,12 @@ export default class BaseClass {
         variables: { deployment, skipGitData },
       })
       .then(({ data: { deployment } }) => {
-        this.log("Deployment process started.!", "info");
+        this.log('Deployment process started.!', 'info');
         this.config.currentConfig.deployments.push(deployment);
       })
       .catch((error) => {
-        this.log("Deployment process failed.!", "error");
-        this.log(error, "error");
+        this.log('Deployment process failed.!', 'error');
+        this.log(error, 'error');
         this.exit(1);
       });
   }
@@ -135,35 +121,28 @@ export default class BaseClass {
       (await this.managementSdk
         ?.organization()
         .fetchAll()
-        .then(({ items }) =>
-          map(items, ({ uid, name }) => ({ name, value: name, uid }))
-        )
+        .then(({ items }) => map(items, ({ uid, name }) => ({ name, value: name, uid })))
         .catch((error) => {
-          this.log("Unable to fetch organizations.", "warn");
-          this.log(error, "error");
+          this.log('Unable to fetch organizations.', 'warn');
+          this.log(error, 'error');
           this.exit(1);
         })) || [];
 
-    if (
-      this.config.flags.org &&
-      find(organizations, { uid: this.config.flags.org })
-    ) {
+    if (this.config.flags.org && find(organizations, { uid: this.config.flags.org })) {
       this.config.currentConfig.organizationUid = this.config.flags.org;
     } else {
       if (this.config.flags.org) {
-        this.log("Organization UID not found!", "error");
+        this.log('Organization UID not found!', 'error');
       }
 
       this.config.currentConfig.organizationUid = await ux
         .inquire({
-          type: "search-list",
-          name: "Organization",
+          type: 'search-list',
+          name: 'Organization',
           choices: organizations,
-          message: "Choose an organization",
+          message: 'Choose an organization',
         })
-        .then(
-          (name) => (find(organizations, { name }) as Record<string, any>)?.uid
-        );
+        .then((name) => (find(organizations, { name }) as Record<string, any>)?.uid);
     }
 
     // NOTE re initialize apollo client once org selected
@@ -182,14 +161,14 @@ export default class BaseClass {
         value: provider,
         name: `Continue with ${provider}`,
       })),
-      { value: "FileUpload", name: "Continue with FileUpload" },
+      { value: 'FileUpload', name: 'Continue with FileUpload' },
     ];
 
     const selectedProvider: Providers = await ux.inquire({
       choices: choices,
-      type: "search-list",
-      name: "projectType",
-      message: "Choose a project type to proceed",
+      type: 'search-list',
+      name: 'projectType',
+      message: 'Choose a project type to proceed',
     });
 
     this.config.provider = selectedProvider;
@@ -203,12 +182,9 @@ export default class BaseClass {
    */
   async detectFramework(): Promise<void> {
     const { fullName, defaultBranch } = this.config.repository || {};
-    const query =
-      this.config.provider === "FileUpload"
-        ? fileFrameworkQuery
-        : frameworkQuery;
+    const query = this.config.provider === 'FileUpload' ? fileFrameworkQuery : frameworkQuery;
     const variables =
-      this.config.provider === "FileUpload"
+      this.config.provider === 'FileUpload'
         ? {
             query: { uploadUid: this.config.uploadUid },
           }
@@ -267,7 +243,7 @@ export default class BaseClass {
     this.envVariables = (await this.apolloClient
       .query({ query: cmsEnvironmentVariablesQuery })
       .then(({ data: { envVariables } }) => envVariables)
-      .catch((error) => this.log(error, "error"))) || {
+      .catch((error) => this.log(error, 'error'))) || {
       envVariables: undefined,
     };
   }
@@ -284,20 +260,18 @@ export default class BaseClass {
         ?.stack()
         .query({ organization_uid: this.config.currentConfig.organizationUid })
         .find()
-        .then(({ items }) =>
-          map(items, ({ name, api_key }) => ({ name, value: name, api_key }))
-        )
+        .then(({ items }) => map(items, ({ name, api_key }) => ({ name, value: name, api_key })))
         .catch((error) => {
-          this.log("Unable to fetch stacks.!", { color: "yellow" });
-          this.log(error, "error");
+          this.log('Unable to fetch stacks.!', { color: 'yellow' });
+          this.log(error, 'error');
           this.exit(1);
         })) || [];
     this.config.selectedStack = await ux
       .inquire({
-        name: "stack",
-        type: "search-list",
+        name: 'stack',
+        type: 'search-list',
         choices: listOfStacks,
-        message: "Stack",
+        message: 'Stack',
       })
       .then((name) => find(listOfStacks, { name }));
   }
@@ -321,27 +295,24 @@ export default class BaseClass {
             token,
             scope,
             value: name,
-          }))
+          })),
         )
         .catch((error) => {
-          this.log("Unable to fetch the delivery token!", "warn");
-          this.log(error, "error");
+          this.log('Unable to fetch the delivery token!', 'warn');
+          this.log(error, 'error');
           this.exit(1);
         })) || [];
 
     this.config.deliveryToken = await ux
       .inquire({
-        type: "search-list",
-        name: "deliveryToken",
+        type: 'search-list',
+        name: 'deliveryToken',
         choices: listOfDeliveryTokens,
-        message: "Delivery token",
+        message: 'Delivery token',
       })
-      .then(
-        (name) => find(listOfDeliveryTokens, { name }) as Record<string, any>
-      );
+      .then((name) => find(listOfDeliveryTokens, { name }) as Record<string, any>);
 
-    this.config.environment =
-      this.config.deliveryToken.scope[0]?.environments[0]?.name;
+    this.config.environment = this.config.deliveryToken.scope[0]?.environments[0]?.name;
   }
 
   /**
@@ -357,16 +328,16 @@ export default class BaseClass {
     do {
       const variable = await ux
         .inquire({
-          type: "input",
-          name: "variable",
+          type: 'input',
+          name: 'variable',
           message:
-            "Enter key and value with a colon between them, and use a comma(,) for the key-value pair. Format: <key1>:<value1>, <key2>:<value2> Ex: APP_ENV:prod, TEST_ENV:testVal",
+            'Enter key and value with a colon between them, and use a comma(,) for the key-value pair. Format: <key1>:<value1>, <key2>:<value2> Ex: APP_ENV:prod, TEST_ENV:testVal',
         })
         .then((variable) => {
-          return map(split(variable as string, ","), (variable) => {
-            let [key, value] = split(variable as string, ":");
-            value = (value || "").trim();
-            key = (key || "").trim();
+          return map(split(variable as string, ','), (variable) => {
+            let [key, value] = split(variable as string, ':');
+            value = (value || '').trim();
+            key = (key || '').trim();
 
             return { key, value };
           }).filter(({ key }) => key);
@@ -376,9 +347,9 @@ export default class BaseClass {
 
       if (
         !(await ux.inquire({
-          type: "confirm",
-          name: "canImportFromStack",
-          message: "Would you like to add more variables?",
+          type: 'confirm',
+          name: 'canImportFromStack',
+          message: 'Would you like to add more variables?',
         }))
       ) {
         addNew = false;
@@ -406,11 +377,10 @@ export default class BaseClass {
       data.project = this.config.currentConfig;
     }
 
-    writeFileSync(
-      `${this.config.projectBasePath}/${this.config.configName}`,
-      JSON.stringify(data),
-      { encoding: "utf8", flag: "w" }
-    );
+    writeFileSync(`${this.config.projectBasePath}/${this.config.configName}`, JSON.stringify(data), {
+      encoding: 'utf8',
+      flag: 'w',
+    });
   }
 
   /**
@@ -424,22 +394,15 @@ export default class BaseClass {
     await this.selectProjectType();
 
     if (includes(this.config.supportedAdapters, this.config.provider)) {
-      const baseUrl = this.config.host.startsWith("http")
-        ? this.config.host
-        : `https://${this.config.host}`;
+      const baseUrl = this.config.host.startsWith('http') ? this.config.host : `https://${this.config.host}`;
 
-      const gitHubConnectUrl = `${baseUrl
-        .replace("api", "app")
-        .replace("io", "com")}/#!/launch`;
-      this.log(
-        `You can connect your ${this.config.provider} account to the UI using the following URL:`,
-        "info"
-      );
-      this.log(gitHubConnectUrl, { color: "green" });
+      const gitHubConnectUrl = `${baseUrl.replace('api', 'app').replace('io', 'com')}/#!/launch`;
+      this.log(`You can connect your ${this.config.provider} account to the UI using the following URL:`, 'info');
+      this.log(gitHubConnectUrl, { color: 'green' });
       open(gitHubConnectUrl);
       this.exit(1);
     } else if (emit) {
-      this.$event.emit("provider-changed");
+      this.$event.emit('provider-changed');
     }
   }
 
@@ -451,10 +414,7 @@ export default class BaseClass {
    * @return {*}  {Promise<any[]>}
    * @memberof BaseClass
    */
-  async queryBranches(
-    variables: Record<string, any>,
-    branchesRes: any[] = []
-  ): Promise<any[]> {
+  async queryBranches(variables: Record<string, any>, branchesRes: any[] = []): Promise<any[]> {
     const branches = await this.apolloClient
       .query({
         query: branchesQuery,
@@ -462,13 +422,13 @@ export default class BaseClass {
       })
       .then(({ data: { branches } }) => branches)
       .catch((error) => {
-        this.log("Something went wrong. Please try again.", "warn");
-        this.log(error, "error");
+        this.log('Something went wrong. Please try again.', 'warn');
+        this.log(error, 'error');
         this.exit(1);
       });
 
     if (branches) {
-      branchesRes.push(...map(branches.edges, "node"));
+      branchesRes.push(...map(branches.edges, 'node'));
 
       if (branches.pageInfo.hasNextPage) {
         variables.page = branches.pageData.page + 1;
@@ -497,22 +457,18 @@ export default class BaseClass {
 
     const branches: Record<string, any>[] = await this.queryBranches(variables);
 
-    if (
-      branches &&
-      this.config.flags.branch &&
-      find(branches, { name: this.config.flags.branch })
-    ) {
+    if (branches && this.config.flags.branch && find(branches, { name: this.config.flags.branch })) {
       this.config.branch = this.config.flags.branch as any;
     } else {
       if (this.config.flags.branch) {
-        this.log("Branch name not found!", "warn");
+        this.log('Branch name not found!', 'warn');
       }
 
       this.config.branch = await ux.inquire({
-        name: "branch",
-        message: "Branch",
-        type: "search-list",
-        choices: map(branches, "name"),
+        name: 'branch',
+        message: 'Branch',
+        type: 'search-list',
+        choices: map(branches, 'name'),
         default: this.config.repository?.defaultBranch,
       });
     }
@@ -541,9 +497,9 @@ export default class BaseClass {
    */
   async handleEnvImportFlow(): Promise<void> {
     const variablePreparationTypeOptions = [
-      "Import variables from a stack",
-      "Manually add custom variables to the list",
-      "Import variables from the local env file",
+      'Import variables from a stack',
+      'Manually add custom variables to the list',
+      'Import variables from the local env file',
     ];
     const variablePreparationType: Array<string> = await ux.inquire({
       type: 'checkbox',
@@ -554,23 +510,13 @@ export default class BaseClass {
       // validate: this.inquireRequireValidation,
     });
 
-    if (includes(variablePreparationType, "Import variables from a stack")) {
+    if (includes(variablePreparationType, 'Import variables from a stack')) {
       await this.importEnvFromStack();
     }
-    if (
-      includes(
-        variablePreparationType,
-        "Manually add custom variables to the list"
-      )
-    ) {
+    if (includes(variablePreparationType, 'Manually add custom variables to the list')) {
       await this.promptForEnvValues();
     }
-    if (
-      includes(
-        variablePreparationType,
-        "Import variables from the local env file"
-      )
-    ) {
+    if (includes(variablePreparationType, 'Import variables from the local env file')) {
       await this.importVariableFromLocalConfig();
     }
 
@@ -599,20 +545,20 @@ export default class BaseClass {
 
     if (!isEmpty(localEnv)) {
       let envKeys: Record<string, any> = keys(localEnv);
-      const existingEnvKeys = map(this.envVariables, "key");
+      const existingEnvKeys = map(this.envVariables, 'key');
       const localEnvData = map(envKeys, (key) => ({
         key,
         value: localEnv[key],
       }));
 
       if (find(existingEnvKeys, (key) => includes(envKeys, key))) {
-        this.log("Duplicate environment variable keys found.", "warn");
+        this.log('Duplicate environment variable keys found.', 'warn');
         if (
           await ux.inquire({
             default: false,
-            type: "confirm",
-            name: "deployLatestSource",
-            message: "Would you like to keep the local environment variables?",
+            type: 'confirm',
+            name: 'deployLatestSource',
+            message: 'Would you like to keep the local environment variables?',
           })
         ) {
           this.envVariables = merge(this.envVariables, localEnvData);
@@ -635,28 +581,28 @@ export default class BaseClass {
     await this.selectStack();
     await this.selectDeliveryToken();
     print([
-      { message: "?", color: "green" },
-      { message: "Stack Environment", bold: true },
-      { message: this.config.environment || "", color: "cyan" },
+      { message: '?', color: 'green' },
+      { message: 'Stack Environment', bold: true },
+      { message: this.config.environment || '', color: 'cyan' },
     ]);
     await this.getCmsEnvironmentVariables();
 
     this.envVariables = map(cloneDeep(this.envVariables), (variable) => {
       switch (variable.key) {
-        case "CONTENTSTACK_API_HOST":
-        case "CONTENTSTACK_CDN":
-          if (variable.value.startsWith("http")) {
+        case 'CONTENTSTACK_API_HOST':
+        case 'CONTENTSTACK_CDN':
+          if (variable.value.startsWith('http')) {
             const url = new URL(variable.value);
             variable.value = url?.host || this.config.host;
           }
           break;
-        case "CONTENTSTACK_ENVIRONMENT":
+        case 'CONTENTSTACK_ENVIRONMENT':
           variable.value = this.config.environment;
           break;
-        case "CONTENTSTACK_API_KEY":
+        case 'CONTENTSTACK_API_KEY':
           variable.value = this.config.selectedStack.api_key;
           break;
-        case "CONTENTSTACK_DELIVERY_TOKEN":
+        case 'CONTENTSTACK_DELIVERY_TOKEN':
           variable.value = this.config.deliveryToken?.token;
           break;
       }
@@ -701,26 +647,22 @@ export default class BaseClass {
   async showLogs(): Promise<boolean> {
     this.apolloLogsClient = await new GraphqlApiClient({
       headers: {
-        "X-CS-CLI": this.analyticsInfo,
-        "x-project-uid": this.config.currentConfig.uid,
+        'X-CS-CLI': this.analyticsInfo,
+        'x-project-uid': this.config.currentConfig.uid,
         organization_uid: this.config.currentConfig.organizationUid,
       },
       baseUrl: this.config.logsApiBaseUrl,
     }).apolloClient;
     this.apolloClient = await new GraphqlApiClient({
       headers: {
-        "X-CS-CLI": this.analyticsInfo,
-        "x-project-uid": this.config.currentConfig.uid,
+        'X-CS-CLI': this.analyticsInfo,
+        'x-project-uid': this.config.currentConfig.uid,
         organization_uid: this.config.currentConfig.organizationUid,
       },
       baseUrl: this.config.manageApiBaseUrl,
     }).apolloClient;
-    this.config.environment = (
-      last(this.config.currentConfig.environments) as Record<string, any>
-    )?.uid;
-    this.config.deployment = (
-      last(this.config.currentConfig.deployments) as Record<string, any>
-    )?.uid;
+    this.config.environment = (last(this.config.currentConfig.environments) as Record<string, any>)?.uid;
+    this.config.deployment = (last(this.config.currentConfig.deployments) as Record<string, any>)?.uid;
     const logs = new LogPolling({
       config: this.config,
       $event: this.$event,
@@ -729,19 +671,16 @@ export default class BaseClass {
     });
     logs.deploymentLogs();
     return new Promise<boolean>((resolve) => {
-      this.$event.on("deployment-logs", (event: EmitMessage) => {
+      this.$event.on('deployment-logs', (event: EmitMessage) => {
         const { message, msgType } = event;
-        if (message === "DONE") return resolve(true);
+        if (message === 'DONE') return resolve(true);
 
-        if (msgType === "info") {
+        if (msgType === 'info') {
           forEach(message, (log: DeploymentLogResp | ServerLogResp) => {
-            let formattedLogTimestamp = new Date(log.timestamp)
-              .toISOString()
-              ?.slice(0, 23)
-              ?.replace("T", " ");
+            let formattedLogTimestamp = new Date(log.timestamp).toISOString()?.slice(0, 23)?.replace('T', ' ');
             this.log(`${formattedLogTimestamp}:  ${log.message}`, msgType);
           });
-        } else if (msgType === "error") {
+        } else if (msgType === 'error') {
           this.log(message, msgType);
           resolve(true);
         }
@@ -757,32 +696,24 @@ export default class BaseClass {
    * @memberof BaseClass
    */
   async handleNewProjectCreationError(error: any): Promise<boolean | void> {
-    this.log("New project creation failed!", "error");
+    this.log('New project creation failed!', 'error');
 
-    if (
-      includes(
-        error?.graphQLErrors?.[0]?.extensions?.exception?.messages,
-        "launch.PROJECTS.DUPLICATE_NAME"
-      )
-    ) {
-      this.log("Duplicate project name identified", "error");
+    if (includes(error?.graphQLErrors?.[0]?.extensions?.exception?.messages, 'launch.PROJECTS.DUPLICATE_NAME')) {
+      this.log('Duplicate project name identified', 'error');
 
-      if (
-        this.projectCreationRetryCount >=
-        this.config.projectCreationRetryMaxCount
-      ) {
-        this.log("Reached max project creation retry limit", "warn");
+      if (this.projectCreationRetryCount >= this.config.projectCreationRetryMaxCount) {
+        this.log('Reached max project creation retry limit', 'warn');
       } else if (
         await ux.inquire({
-          type: "confirm",
-          name: "deployLatestSource",
+          type: 'confirm',
+          name: 'deployLatestSource',
           message: "Would you like to change the project's name and try again?",
         })
       ) {
         this.config.projectName = await ux.inquire({
-          type: "input",
-          name: "projectName",
-          message: "Project Name",
+          type: 'input',
+          name: 'projectName',
+          message: 'Project Name',
           default: this.config.repository?.name,
           validate: this.inquireRequireValidation,
         });
@@ -791,15 +722,10 @@ export default class BaseClass {
 
         return true;
       }
-    } else if (
-      includes(
-        error?.graphQLErrors?.[0]?.extensions?.exception?.messages,
-        "launch.PROJECTS.LIMIT_REACHED"
-      )
-    ) {
-      this.log("Launch project limit reached!", "error");
+    } else if (includes(error?.graphQLErrors?.[0]?.extensions?.exception?.messages, 'launch.PROJECTS.LIMIT_REACHED')) {
+      this.log('Launch project limit reached!', 'error');
     } else {
-      this.log(error, "error");
+      this.log(error, 'error');
     }
     this.exit(1);
   }
@@ -811,18 +737,15 @@ export default class BaseClass {
    * @memberof BaseClass
    */
   showDeploymentUrl(openOnUi = true): void {
-    const deployment = last(this.config.currentConfig.deployments) as Record<
-      string,
-      any
-    >;
+    const deployment = last(this.config.currentConfig.deployments) as Record<string, any>;
 
     if (deployment) {
-      const deploymentUrl = deployment.deploymentUrl.startsWith("https")
+      const deploymentUrl = deployment.deploymentUrl.startsWith('https')
         ? deployment.deploymentUrl
         : `https://${deployment.deploymentUrl}`;
       print([
-        { message: "Deployment URL", bold: true },
-        { message: deploymentUrl, color: "cyan" },
+        { message: 'Deployment URL', bold: true },
+        { message: deploymentUrl, color: 'cyan' },
       ]);
 
       if (openOnUi) {
@@ -844,20 +767,14 @@ export default class BaseClass {
     const gitIgnoreFilePath = `${this.config.projectBasePath}/.gitignore`;
 
     if (existsSync(gitIgnoreFilePath)) {
-      const gitIgnoreFile = readFileSync(
-        `${this.config.projectBasePath}/.gitignore`,
-        "utf-8"
-      );
+      const gitIgnoreFile = readFileSync(`${this.config.projectBasePath}/.gitignore`, 'utf-8');
 
       if (includes(gitIgnoreFile, this.config.configName)) return;
 
-      this.log(
-        `You can add the ${this.config.configName} config file to the .gitignore file`,
-        {
-          color: "yellow",
-          bold: true,
-        }
-      );
+      this.log(`You can add the ${this.config.configName} config file to the .gitignore file`, {
+        color: 'yellow',
+        bold: true,
+      });
     }
   }
 }
