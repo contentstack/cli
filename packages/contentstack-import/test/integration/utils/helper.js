@@ -7,7 +7,7 @@ const { managementSDKClient } = require('@contentstack/cli-utilities');
 const pjson = require('../../../package.json');
 const { REGIONS } = require('../../config.json');
 
-let envData = { NA: {}, EU: {}, 'AZURE-NA': {}, env_pushed: false };
+let envData = { NA: {}, EU: {}, 'AZURE-NA': {}, 'AZURE-EU': {}, env_pushed: false };
 
 class Helper extends Command {
   async run() {
@@ -15,7 +15,7 @@ class Helper extends Command {
   }
 }
 
-const initEnvData = (regions = ['NA', 'EU', 'AZURE-NA']) => {
+const initEnvData = (regions = ['NA', 'EU', 'AZURE-NA', 'AZURE-EU']) => {
   if (!envData.env_pushed) envData = { ...envData, ...process.env, env_pushed: true };
 
   const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = envData;
