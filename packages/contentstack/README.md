@@ -2630,6 +2630,10 @@ EXAMPLES
 
   $ csdx config:set:region EU
 
+  $ csdx config:set:region AZURE-NA
+
+  $ csdx config:set:region AZURE-EU
+
   $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India"
 ```
 
