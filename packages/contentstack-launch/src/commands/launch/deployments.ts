@@ -146,15 +146,10 @@ export default class Deployments extends BaseCommand<typeof Deployments> {
       uid,
     }));
 
-    if (isEmpty(listOfProjects)) {
-      this.log('Project not found', 'info');
-      this.exit(1);
-    }
-
     if (this.flags.project || this.sharedConfig.currentConfig.uid) {
       this.sharedConfig.currentConfig.uid =
         find(listOfProjects, {
-          name: this.flags.project,
+          uid: this.flags.project,
         })?.uid ||
         find(listOfProjects, {
           uid: this.sharedConfig.currentConfig.uid,
