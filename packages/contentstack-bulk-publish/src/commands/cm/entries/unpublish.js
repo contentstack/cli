@@ -18,6 +18,8 @@ class UnpublishCommand extends Command {
     unpublishFlags.deliveryToken = unpublishFlags['delivery-token'] || unpublishFlags.deliveryToken;
     unpublishFlags.onlyAssets = false;
     unpublishFlags.onlyEntries = true;
+    unpublishFlags.apiVersion = unpublishFlags['api-version'];
+    delete unpublishFlags['api-version'];
     delete unpublishFlags['retry-failed'];
     delete unpublishFlags['bulk-unpublish'];
     delete unpublishFlags['content-type'];
@@ -155,6 +157,10 @@ UnpublishCommand.flags = {
     description:
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to unpublish the entries",
     default: 'true',
+  }),
+  'api-version': flags.string({
+    description : "API Version to be used",
+    default: '3'
   }),
   'content-type': flags.string({
     description: 'Content type filter',
