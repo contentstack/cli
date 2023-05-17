@@ -22,7 +22,7 @@
     "chai": "^4.3.4",
     "eslint": "^8.18.0",
     "globby": "^10.0.2",
-    "husky": "^4.2.5",
+    "husky": "^8.0.3",
     "jsdoc": "^4.0.0",
     "jsdoc-to-markdown": "^7.0.1",
     "mkdirp": "^1.0.4",
