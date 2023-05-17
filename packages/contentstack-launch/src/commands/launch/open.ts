@@ -158,10 +158,15 @@ export default class Open extends BaseCommand<typeof Open> {
       uid,
     }));
 
+    if (isEmpty(listOfProjects)) {
+      this.log('Project not found', 'info');
+      this.exit(1);
+    }
+
     if (this.flags.project || this.sharedConfig.currentConfig.uid) {
       this.sharedConfig.currentConfig.uid =
         find(listOfProjects, {
-          uid: this.flags.project,
+          name: this.flags.project,
         })?.uid ||
         find(listOfProjects, {
           uid: this.sharedConfig.currentConfig.uid,
