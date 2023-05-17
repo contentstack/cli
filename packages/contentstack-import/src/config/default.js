@@ -4,6 +4,8 @@ module.exports = {
   // host:'https://eu-api.contentstack.com/v3',
   // use below hosts for azure-na region
   // host:'https://azure-na-api.contentstack.com/v3',
+  // use below hosts for azure-eu region
+  // host:'https://azure-eu-api.contentstack.com/v3',
   // pass locale, only to migrate entries from that locale
   // not passing `locale` will migrate all the locales present
   // locales: ['fr-fr'],
@@ -13,6 +15,7 @@ module.exports = {
     'https://api.contentstack.io': 'https://developerhub-api.contentstack.com',
     'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
     'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
+    'https://azure-eu-api.contentstack.com': 'https://azure-eu-developerhub-api.contentstack.com',
     'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com',
   },
   modules: {
