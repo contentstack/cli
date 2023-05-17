@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 const { Command } = require('@contentstack/cli-command');
-const { printFlagDeprecation, configHandler, flags, isAuthenticated, cliux } = require('@contentstack/cli-utilities');
+const { printFlagDeprecation, configHandler, flags, isAuthenticated } = require('@contentstack/cli-utilities');
 const {
   configWithMToken,
   parameterWithMToken,
@@ -23,73 +23,35 @@ class ExportCommand extends Command {
     const contentTypes = exportCommandFlags['content-types'];
     const branchName = exportCommandFlags.branch;
     let host = this.region;
+    let cmaHost = host.cma.split('//');
+    let cdaHost = host.cda.split('//');
+    host.cma = cmaHost[1];
+    host.cda = cdaHost[1];
     exportCommandFlags['isAuthenticated'] = isAuthenticated();
 
     config.forceStopMarketplaceAppsPrompt = exportCommandFlags.yes;
-    if (host !== undefined) {
-      let cmaHost = host.cma.split('//');
-      let cdaHost = host.cda.split('//');
-      host.cma = cmaHost[1];
-      host.cda = cdaHost[1];
-      if (alias) {
-        const managementTokens = this.getToken(alias);
-        const listOfTokens = configHandler.get('tokens');
-        config.management_token_data = listOfTokens[alias];
 
-        if (managementTokens) {
-          if (extConfig) {
-            await configWithMToken(
-              extConfig,
-              managementTokens,
-              host,
-              contentTypes,
-              branchName,
-              securedAssets,
-              moduleName,
-              data,
-              exportCommandFlags,
-            );
-          } else if (data) {
-            await parameterWithMToken(
-              managementTokens,
-              data,
-              moduleName,
-              host,
-              contentTypes,
-              branchName,
-              securedAssets,
-              exportCommandFlags,
-            );
-          } else if (data === undefined && sourceStack === undefined) {
-            await withoutParameterMToken(
-              managementTokens,
-              moduleName,
-              host,
-              contentTypes,
-              branchName,
-              securedAssets,
-              exportCommandFlags,
-            );
-          } else {
-            this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage');
-          }
-        } else {
-          this.log(alias + ' management token is not present, please add managment token first');
-        }
-      } else if (isAuthenticated()) {
+    if (alias) {
+      const managementTokens = this.getToken(alias);
+      const listOfTokens = configHandler.get('tokens');
+      config.management_token_data = listOfTokens[alias];
+
+      if (managementTokens) {
         if (extConfig) {
-          await configWithAuthToken(
+          await configWithMToken(
             extConfig,
-            moduleName,
+            managementTokens,
             host,
             contentTypes,
             branchName,
             securedAssets,
+            moduleName,
+            data,
             exportCommandFlags,
           );
-        } else if (sourceStack && data) {
-          return await parametersWithAuthToken(
-            sourceStack,
+        } else if (data) {
+          await parameterWithMToken(
+            managementTokens,
             data,
             moduleName,
             host,
@@ -99,24 +61,57 @@ class ExportCommand extends Command {
             exportCommandFlags,
           );
         } else if (data === undefined && sourceStack === undefined) {
-          await withoutParametersWithAuthToken(
+          await withoutParameterMToken(
+            managementTokens,
             moduleName,
             host,
             contentTypes,
             branchName,
             securedAssets,
             exportCommandFlags,
-          ).catch((err) => {
-            console.log(err);
-          });
+          );
         } else {
           this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage');
         }
       } else {
-        cliux.print('Login or provide the alias for management token', { color: 'red' });
+        this.log(alias + ' management token is not present, please add managment token first');
+      }
+    } else if (isAuthenticated()) {
+      if (extConfig) {
+        await configWithAuthToken(
+          extConfig,
+          moduleName,
+          host,
+          contentTypes,
+          branchName,
+          securedAssets,
+          exportCommandFlags,
+        );
+      } else if (sourceStack && data) {
+        return await parametersWithAuthToken(
+          sourceStack,
+          data,
+          moduleName,
+          host,
+          contentTypes,
+          branchName,
+          securedAssets,
+          exportCommandFlags,
+        );
+      } else if (data === undefined && sourceStack === undefined) {
+        await withoutParametersWithAuthToken(
+          moduleName,
+          host,
+          contentTypes,
+          branchName,
+          securedAssets,
+          exportCommandFlags,
+        );
+      } else {
+        this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage');
       }
     } else {
-      cliux.print('CDA and CMA hosts not defined. Please set the region.', { color: 'red' });
+      this.log('Login or provide the alias for management token');
     }
   }
 }
