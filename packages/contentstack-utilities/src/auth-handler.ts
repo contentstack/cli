@@ -48,7 +48,7 @@ class AuthHandler {
     this.authEmailKeyName = 'email';
     this.oauthAccessTokenKeyName = 'oauthAccessToken';
     this.oauthDateTimeKeyName = 'oauthDateTime';
-    this.oauthUserUidKeyName = 'oauthUserUid';
+    this.oauthUserUidKeyName = 'userUid';
     this.oauthOrgUidKeyName = 'oauthOrgUid';
     this.oauthRefreshTokenKeyName = 'oauthRefreshToken';
     this.authorisationTypeKeyName = 'authorisationType';
