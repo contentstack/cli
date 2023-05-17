@@ -1,17 +1,14 @@
-import EventEmitter from "events";
-import { ApolloClient } from "@apollo/client/core";
-import { ContentstackClient, FlagInput } from "@contentstack/cli-utilities";
-import { PrintOptions } from "@contentstack/cli-utilities/types/interfaces";
+import EventEmitter from 'events';
+import { ApolloClient } from '@apollo/client/core';
+import { ContentstackClient, FlagInput } from '@contentstack/cli-utilities';
+import { PrintOptions } from '@contentstack/cli-utilities/types/interfaces';
 
-import config from "../config";
-import { LoggerType } from "./utils";
+import config from '../config';
+import { LoggerType } from './utils';
 
-type Providers = "GitHub" | "FileUpload";
+type Providers = 'GitHub' | 'FileUpload';
 
-type LogFn = (
-  message: string | any,
-  logType?: LoggerType | PrintOptions | undefined
-) => void;
+type LogFn = (message: string | any, logType?: LoggerType | PrintOptions | undefined) => void;
 
 type ExitFn = (code?: number | undefined) => void;
 
@@ -54,11 +51,11 @@ type ConfigType = {
   Record<string, any>;
 
 type GraphqlHeaders = {
-  "X-CS-CLI": string;
+  'X-CS-CLI': string;
   authtoken?: string;
-  "x-cs-cli-id"?: any;
+  'x-cs-cli-id'?: any;
   authorization?: string;
-  "x-project-uid"?: string;
+  'x-project-uid'?: string;
   organization_uid?: string;
 } & Record<string, any>;
 

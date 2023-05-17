@@ -48,7 +48,7 @@ class AuthHandler {
     this.authEmailKeyName = 'email';
     this.oauthAccessTokenKeyName = 'oauthAccessToken';
     this.oauthDateTimeKeyName = 'oauthDateTime';
-    this.oauthUserUidKeyName = 'oauthUserUid';
+    this.oauthUserUidKeyName = 'userUid';
     this.oauthOrgUidKeyName = 'oauthOrgUid';
     this.oauthRefreshTokenKeyName = 'oauthRefreshToken';
     this.authorisationTypeKeyName = 'authorisationType';
@@ -377,7 +377,7 @@ class AuthHandler {
     });
   }
 
-  async isAuthenticated(): Promise<boolean> {
+  isAuthenticated(): boolean {
     const authorizationType = configHandler.get(this.authorisationTypeKeyName);
     return (
       authorizationType === this.authorisationTypeOAUTHValue || authorizationType === this.authorisationTypeAUTHValue
