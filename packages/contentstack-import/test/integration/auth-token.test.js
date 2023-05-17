@@ -19,6 +19,7 @@ const { ENCRYPTION_KEY } = getEnvData();
 const REGION_MAP = {
   NA: 'NA',
   NA_AZ: 'AZURE-NA',
+  EU_AZ: 'AZURE-EU',
   EU: 'EU',
 };
 
