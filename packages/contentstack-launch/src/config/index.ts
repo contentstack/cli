@@ -23,7 +23,7 @@ const config = {
   },
   launchHubUrls: {
     // NOTE CMA url used as launch url mapper to avoid conflict if user used any custom name
-    'https://api.contentstack.io': 'https://app.contentstack.com/launch-api',
+    'https://api.contentstack.io': 'https://launch-api.contentstack.com',
     'https://eu-api.contentstack.com': '',
     'https://azure-na-api.contentstack.com': '',
     'https://dev11-api.csnonprod.com': 'https://dev-launch-api.csnonprod.com',
