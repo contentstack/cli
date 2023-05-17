@@ -20,6 +20,8 @@ class PublishEntriesCommand extends Command {
     entriesFlags.bulkPublish = entriesFlags['bulk-publish'] || entriesFlags.bulkPublish;
     entriesFlags.publishAllContentTypes =
       entriesFlags['publish-all-content-types'] || entriesFlags.publishAllContentTypes || false;
+    entriesFlags.apiVersion = entriesFlags['api-version']
+    delete entriesFlags['api-version'];
     delete entriesFlags['retry-failed'];
     delete entriesFlags['content-types'];
     delete entriesFlags['bulk-publish'];
@@ -184,6 +186,10 @@ PublishEntriesCommand.flags = {
     description:
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
+  }),
+  'api-version': flags.string({
+    description : "API Version to be used",
+    default: '3'
   }),
   'publish-all-content-types': flags.boolean({
     description: '(optional) Publish all contenttypes (cannot be set when contentTypes flag is set)',

@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-dev-dependencies",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Customized dev dependencies for ContentStack projects",
   "main": "lib/index.js",
   "types": "./types/index.d.ts",
@@ -21,6 +21,7 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
+    "@oclif/core": "^2.8.5",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
