@@ -88,30 +88,17 @@ class CloneHandler {
   }
 
   handleStackSelection(options = {}) {
-    let keyPressHandler;
     return new Promise(async (resolve, reject) => {
       try {
-        const { org = {}, msg = '', isSource = true, stackAbortController } = options || {};
-
-        keyPressHandler = async function (_ch, key) {
-          if (key.name === 'left' && key.shift) {
-            stackAbortController.abort();
-            console.clear();
-            process.stdin.removeListener('keypress', keyPressHandler);
-            await cloneCommand.undo();
-          }
-        };
-        process.stdin.addListener('keypress', keyPressHandler);
+        const { org = {}, msg = '', isSource = true } = options || {};
 
         const stackList = await this.getStack(org, msg, isSource).catch(reject);
 
         if (stackList) {
-          const ui = new inquirer.ui.BottomBar();
-          ui.updateBottomBar(chalk.cyan('\nPress shift & left arrow together to undo the operation\n'));
+          this.displayBackOptionMessage();
 
           const selectedStack = await inquirer.prompt(stackList);
-
-          if (stackAbortController.signal.aborted) {
+          if (this.executingCommand != 1) {
             return reject();
           }
           if (isSource) {
@@ -127,10 +114,6 @@ class CloneHandler {
         }
       } catch (error) {
         return reject(error);
-      } finally {
-        if (keyPressHandler) {
-          process.stdin.removeListener('keypress', keyPressHandler);
-        }
       }
     });
   }
@@ -170,7 +153,6 @@ class CloneHandler {
         if (returnBranch) {
           resolve(condition ? result : []);
         } else {
-          // NOTE list options to use to select branch
           if (condition) {
             spinner.succeed('Fetched Branches');
             const { branch } = await inquirer.prompt({
@@ -179,7 +161,9 @@ class CloneHandler {
               message: 'Choose a branch',
               choices: result.map((row) => row.uid),
             });
-
+            if (this.executingCommand != 2) {
+              return reject();
+            }
             if (isSource) {
               config.sourceStackBranch = branch;
             } else {
@@ -224,53 +208,117 @@ class CloneHandler {
       throw e;
     }
   }
-
+  setAbortController(abortController) {
+    this.abortController = abortController;
+  }
+  abort() {
+    this.abortController && this.abortController.abort();
+  }
+  displayBackOptionMessage() {
+    const ui = new inquirer.ui.BottomBar();
+    ui.updateBottomBar(chalk.cyan('\nPress shift & left arrow together to undo the operation\n'));
+  }
+  setBackKeyPressHandler(backKeyPressHandler) {
+    this.backKeyPressHandler = backKeyPressHandler;
+  }
+  removeBackKeyPressHandler() {
+    if (this.backKeyPressHandler) {
+      process.stdin.removeListener('keypress', this.backKeyPressHandler);
+    }
+  }
+  setExectingCommand(command) {
+    // 0 for org, 1 for stack, 1 for branch, 3 stack cancelled, 4 branch cancelled
+    this.executingCommand = command;
+  }
   execute() {
     return new Promise(async (resolve, reject) => {
-      let stackAbortController;
-
+      let keyPressHandler;
       try {
         if (!config.source_stack) {
           const orgMsg = 'Choose an organization where your source stack exists:';
-          const stackMsg = 'Select the source stack';
-
-          stackAbortController = new CustomAbortController();
-
+          this.setExectingCommand(0);
+          this.removeBackKeyPressHandler();
           const org = await cloneCommand.execute(new HandleOrgCommand({ msg: orgMsg, isSource: true }, this));
+          let self = this;
           if (org) {
-            const sourceStack = await cloneCommand.execute(
-              new HandleStackCommand({ org, isSource: true, msg: stackMsg, stackAbortController }, this),
-            );
+            keyPressHandler = async function (_ch, key) {
+              // executingCommand is a tracking property to determine which method invoked this key press.
+              if (key.name === 'left' && key.shift) {
+                if (self.executingCommand === 1) {
+                  self.setExectingCommand(3);
+                } else if (self.executingCommand === 2) {
+                  self.setExectingCommand(4);
+                }
+                config.source_stack = null;
+                config.sourceStackBranch = null;
+                if (self.executingCommand != 0) {
+                  self.abort();
+                  console.clear();
+                  await cloneCommand.undo();
+                }
+              }
+            };
+            process.stdin.addListener('keypress', keyPressHandler);
+            this.setBackKeyPressHandler(keyPressHandler);
 
-            if (config.source_stack) {
-              await cloneCommand.execute(new HandleBranchCommand({ api_key: config.source_stack }, this));
-            }
-
-            if (stackAbortController.signal.aborted) {
-              return reject();
-            }
-            stackName.default = config.stackName || `Copy of ${sourceStack.stack || config.source_alias}`;
+            const params = { org, isSource: true, msg: 'Select the source stack' };
+            await this.executeStackPrompt(params);
           } else {
             return reject('Org not found.');
           }
-        }
-        const exportRes = await cloneCommand.execute(new HandleExportCommand(null, this));
-        await cloneCommand.execute(new SetBranchCommand(null, this));
+        } else {
+          const exportRes = await cloneCommand.execute(new HandleExportCommand(null, this));
+          await cloneCommand.execute(new SetBranchCommand(null, this));
 
-        if (exportRes) {
-          this.executeDestination().catch((error) => {
-            return reject(error);
-          });
+          if (exportRes) {
+            this.executeDestination().catch((error) => {
+              return reject(error);
+            });
+          }
         }
         return resolve();
       } catch (error) {
         return reject(error);
-      } finally {
-        if (stackAbortController) {
-          stackAbortController.abort();
-        }
       }
     });
+  }
+
+  async executeStackPrompt(params = {}) {
+    try {
+      this.setExectingCommand(1);
+      const sourceStack = await cloneCommand.execute(new HandleStackCommand(params, this));
+      if (config.source_stack) {
+        await this.executeBranchPrompt(params);
+      }
+      stackName.default = config.stackName || `Copy of ${sourceStack.stack || config.source_alias}`;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async executeBranchPrompt(parentParams) {
+    try {
+      this.setExectingCommand(2);
+      await cloneCommand.execute(new HandleBranchCommand({ api_key: config.source_stack }, this, this.executeStackPrompt.bind(this, parentParams)));
+      await this.executeExport();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async executeExport() {
+    try {
+      const exportRes = await cloneCommand.execute(new HandleExportCommand(null, this));
+      await cloneCommand.execute(new SetBranchCommand(null, this));
+
+      if (exportRes) {
+        this.executeDestination().catch(() => reject());
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      this.removeBackKeyPressHandler();
+    }
   }
 
   async executeDestination() {
@@ -285,6 +333,7 @@ class CloneHandler {
           canCreateStack = await inquirer.prompt(stackCreationConfirmation);
         }
 
+        this.setExectingCommand(0);
         if (!canCreateStack.stackCreate) {
           if (!config.target_stack) {
             const orgMsg = 'Choose an organization where the destination stack exists: ';
