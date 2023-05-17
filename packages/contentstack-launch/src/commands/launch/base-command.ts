@@ -1,10 +1,10 @@
-import keys from "lodash/keys";
-import { existsSync } from "fs";
-import EventEmitter from "events";
-import { dirname, join } from "path";
-import includes from "lodash/includes";
-import { ApolloClient } from "@apollo/client/core";
-import { Command } from "@contentstack/cli-command";
+import keys from 'lodash/keys';
+import { existsSync } from 'fs';
+import EventEmitter from 'events';
+import { dirname, join } from 'path';
+import includes from 'lodash/includes';
+import { ApolloClient } from '@apollo/client/core';
+import { Command } from '@contentstack/cli-command';
 import {
   Flags,
   FlagInput,
@@ -14,16 +14,14 @@ import {
   ContentstackClient,
   managementSDKClient,
   managementSDKInitiator,
-} from "@contentstack/cli-utilities";
+} from '@contentstack/cli-utilities';
 
-import config from "../../config";
-import { GraphqlApiClient, Logger } from "../../util";
-import { ConfigType, LogFn, Providers } from "../../types";
+import config from '../../config';
+import { GraphqlApiClient, Logger } from '../../util';
+import { ConfigType, LogFn, Providers } from '../../types';
 
-export type Flags<T extends typeof Command> = Interfaces.InferredFlags<
-  typeof BaseCommand["baseFlags"] & T["flags"]
->;
-export type Args<T extends typeof Command> = Interfaces.InferredArgs<T["args"]>;
+export type Flags<T extends typeof Command> = Interfaces.InferredFlags<(typeof BaseCommand)['baseFlags'] & T['flags']>;
+export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
 
 export abstract class BaseCommand<T extends typeof Command> extends Command {
   public log!: LogFn;
@@ -41,12 +39,12 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
   // define flags that can be inherited by any command that extends BaseCommand
   static baseFlags: FlagInput = {
-    "data-dir": Flags.string({
-      char: "d",
-      description: "Current working directory",
+    'data-dir': Flags.string({
+      char: 'd',
+      description: 'Current working directory',
     }),
     config: Flags.string({
-      char: "c",
+      char: 'c',
       description: `Path to the local '${config.configName}' file`,
     }),
   };
@@ -91,23 +89,21 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
    */
   async prepareConfig(): Promise<void> {
     let configPath =
-      this.flags["data-dir"] || this.flags.config
-        ? this.flags.config || join(this.flags["data-dir"], config.configName)
+      this.flags['data-dir'] || this.flags.config
+        ? this.flags.config || join(this.flags['data-dir'], config.configName)
         : join(process.cwd(), config.configName);
-    const baseUrl = (config.launchHubUrls as Record<string, string>)[
-      this.cmaAPIUrl
-    ];
+    const baseUrl = (config.launchHubUrls as Record<string, string>)[this.cmaAPIUrl];
     this.sharedConfig = {
-      ...require("../../config").default,
+      ...require('../../config').default,
       currentConfig: {},
       ...this.flags,
       flags: this.flags,
       host: this.cmaHost,
       config: configPath,
       projectBasePath: dirname(configPath),
-      authtoken: configHandler.get("authtoken"),
-      authType: configHandler.get("authorisationType"),
-      authorization: configHandler.get("oauthAccessToken"),
+      authtoken: configHandler.get('authtoken'),
+      authType: configHandler.get('authorisationType'),
+      authorization: configHandler.get('oauthAccessToken'),
       logsApiBaseUrl: `${baseUrl}/${config.logsApiEndpoint}`,
       manageApiBaseUrl: `${baseUrl}/${config.manageApiEndpoint}`,
     };
@@ -137,19 +133,19 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       } else if (configKeys?.length > 1) {
         this.sharedConfig.currentConfig = await ux
           .inquire({
-            name: "branch",
-            type: "search-list",
+            name: 'branch',
+            type: 'search-list',
             choices: configKeys,
-            message: "Choose a branch",
+            message: 'Choose a branch',
           })
           .then((val: any) => config[val]);
       } else {
         this.sharedConfig.currentConfig = config[configKeys[0]];
       }
 
-      this.sharedConfig.provider = (
-        this.sharedConfig.providerMapper as Record<string, string>
-      )[this.sharedConfig.currentConfig.projectType] as Providers;
+      this.sharedConfig.provider = (this.sharedConfig.providerMapper as Record<string, string>)[
+        this.sharedConfig.currentConfig.projectType
+      ] as Providers;
     }
   }
 

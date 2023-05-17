@@ -16,6 +16,7 @@
         "bulk-publish": false,
         "dev-dependencies": false,
         "launch": false,
+        "branches": false,
         "core": false
     }
 }
