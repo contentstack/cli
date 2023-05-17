@@ -1,6 +1,6 @@
 import * as ContentstackDeliverySDK from 'contentstack';
 import { URL } from 'url';
-import { configHandler, CLIError, Command } from '@contentstack/cli-utilities';
+import { configHandler, CLIError, Command, cliux } from '@contentstack/cli-utilities';
 import { Region } from './interfaces';
 
 const defaultRateLimit = 5;
@@ -33,7 +33,11 @@ abstract class ContentstackCommand extends Command {
   get region() {
     if (this._region) return this._region;
     this._region = configHandler.get('region');
-    if (this._region) return this._region;
+    if(!this._region) {
+      cliux.print("Error: Region not configured. Please set the region.",{color:"red"})
+      process.exit(1)
+    }
+    else return this._region;
   }
 
   get rateLimit() {
