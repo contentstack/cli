@@ -5,7 +5,7 @@
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "^1.2.4",
+    "@contentstack/cli-command": "^1.2.5",
     "@contentstack/cli-utilities": "^1.4.1",
     "bluebird": "^3.7.2",
     "chalk": "^4.1.2",
