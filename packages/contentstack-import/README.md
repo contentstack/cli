@@ -29,6 +29,16 @@ For switching to AZURE-NA region update the hosts at config/default.js
 }
 ```
 
+For switching to AZURE-EU region update the hosts at config/default.js
+
+```js
+{
+  host:'https://azure-eu-api.contentstack.com/v3',
+  cdn: 'https://azure-eu-cdn.contentstack.com/v3'
+ ...
+}
+```
+
 # Usage
 
 <!-- usage -->
@@ -37,7 +47,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import/1.5.3 darwin-arm64 node-v18.15.0
+@contentstack/cli-cm-import/1.5.4 darwin-arm64 node-v18.15.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
