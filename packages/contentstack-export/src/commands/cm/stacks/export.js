@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 const { Command } = require('@contentstack/cli-command');
-const { printFlagDeprecation, configHandler, flags, isAuthenticated } = require('@contentstack/cli-utilities');
+const { printFlagDeprecation, configHandler, flags, isAuthenticated, cliux } = require('@contentstack/cli-utilities');
 const {
   configWithMToken,
   parameterWithMToken,
@@ -71,10 +71,10 @@ class ExportCommand extends Command {
             exportCommandFlags,
           );
         } else {
-          this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage');
+          cliux.print(`error: Please provide a valid command. Run "csdx cm:export --help" command to view the command usage`, {color: 'red'});
         }
       } else {
-        this.log(alias + ' management token is not present, please add managment token first');
+        cliux.print(`error: ${alias} management token is not present, please add managment token first`, {color: 'red'});
       }
     } else if (isAuthenticated()) {
       if (extConfig) {
@@ -108,10 +108,10 @@ class ExportCommand extends Command {
           exportCommandFlags,
         );
       } else {
-        this.log('Please provide a valid command. Run "csdx cm:export --help" command to view the command usage');
+        cliux.print(`error: Please provide a valid command. Run "csdx cm:export --help" command to view the command usage`, {color: 'red'});
       }
     } else {
-      this.log('Login or provide the alias for management token');
+      cliux.print(`error: Login or provide the alias for management token`, {color: 'red'});
     }
   }
 }
