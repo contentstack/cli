@@ -4,8 +4,8 @@ import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
 import { FlagInput, Flags, cliux as ux } from '@contentstack/cli-utilities';
 
-import { Logger, selectOrg } from '../../util';
 import { BaseCommand } from './base-command';
+import { Logger, selectOrg, selectProject } from '../../util';
 import { environmentsQuery, projectsQuery } from '../../graphql';
 
 export default class Environments extends BaseCommand<typeof Environments> {
@@ -46,8 +46,14 @@ export default class Environments extends BaseCommand<typeof Environments> {
         config: this.sharedConfig,
         managementSdk: this.managementSdk,
       });
-      await this.prepareApiClients();
-      await this.selectProject();
+      await this.prepareApiClients(); // NOTE update org-id in header
+      await selectProject({
+        log: this.log,
+        flags: this.flags,
+        config: this.sharedConfig,
+        apolloClient: this.apolloClient,
+      });
+      await this.prepareApiClients(); // NOTE update project-id in header
     }
 
     await this.getEnvironments();
