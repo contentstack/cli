@@ -45,7 +45,7 @@ export default class LogPolling {
     }
   > {
     const statusWatchQuery = this.apolloManageClient.watchQuery({
-      fetchPolicy: "network-only",
+      fetchPolicy: 'network-only',
       query: deploymentQuery,
       variables: {
         query: {
@@ -54,6 +54,7 @@ export default class LogPolling {
         },
       },
       pollInterval: this.config.pollingInterval,
+      errorPolicy: 'all',
     });
     return statusWatchQuery;
   }
@@ -86,12 +87,13 @@ export default class LogPolling {
       }
     });
     const logsWatchQuery = this.apolloLogsClient.watchQuery({
-      fetchPolicy: "network-only",
+      fetchPolicy: 'network-only',
       query: deploymentLogsQuery,
       variables: {
         deploymentUid: this.config.deployment,
       },
       pollInterval: this.config.pollingInterval,
+      errorPolicy: 'all',
     });
     this.subscribeDeploymentLogs(logsWatchQuery);
   }
@@ -175,7 +177,7 @@ export default class LogPolling {
     this.startTime = new Date().getTime() - 10 * 1000;
     this.endTime = new Date().getTime();
     const serverLogsWatchQuery = this.apolloLogsClient.watchQuery({
-      fetchPolicy: "network-only",
+      fetchPolicy: 'network-only',
       query: serverlessLogsQuery,
       variables: {
         query: {
@@ -185,6 +187,7 @@ export default class LogPolling {
         },
       },
       pollInterval: this.config.pollingInterval,
+      errorPolicy: 'all',
     });
     this.subscribeServerLogs(serverLogsWatchQuery);
   }
