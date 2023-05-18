@@ -31,13 +31,14 @@ abstract class ContentstackCommand extends Command {
   }
 
   get region() {
-    if (this._region) return this._region;
-    this._region = configHandler.get('region');
-    if(!this._region) {
-      cliux.print("Error: Region not configured. Please set the region.",{color:"red"})
-      process.exit(1)
+    if (!this._region) this._region = configHandler.get('region');
+
+    if (!this._region) {
+      cliux.print('Error: Region not configured. Please set the region.', { color: 'red' });
+      process.exit(1);
     }
-    else return this._region;
+
+    return this._region;
   }
 
   get rateLimit() {
