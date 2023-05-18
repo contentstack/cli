@@ -4,9 +4,9 @@ import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
 import { FlagInput, Flags, cliux as ux } from '@contentstack/cli-utilities';
 
-import { print, Logger, selectOrg } from '../../util';
 import { BaseCommand } from './base-command';
-import { projectsQuery, environmentsQuery } from '../../graphql';
+import { environmentsQuery } from '../../graphql';
+import { print, Logger, selectOrg, selectProject } from '../../util';
 
 export default class Open extends BaseCommand<typeof Open> {
   static hidden = false;
@@ -81,76 +81,27 @@ export default class Open extends BaseCommand<typeof Open> {
    * @memberof Logs
    */
   async prepareProjectDetails(): Promise<void> {
-    if (!this.sharedConfig.currentConfig.organizationUid) {
+    // NOTE to get environment project UID must be passed as header
+    if (!this.sharedConfig.currentConfig.uid) {
       await selectOrg({
         log: this.log,
         flags: this.flags,
         config: this.sharedConfig,
         managementSdk: this.managementSdk,
       });
-      await this.prepareApiClients();
-    }
-    // NOTE to get environment project UID must be passed as header
-    if (!this.sharedConfig.currentConfig.uid) {
-      await this.selectProject();
+      await this.prepareApiClients(); // NOTE update org-id in header
+      await selectProject({
+        log: this.log,
+        flags: this.flags,
+        config: this.sharedConfig,
+        apolloClient: this.apolloClient,
+      });
+      await this.prepareApiClients(); // NOTE update project-id in header
     }
 
     await this.validateAndSelectEnvironment();
 
     this.openWebsite();
-  }
-
-  /**
-   * @method selectProject - select projects
-   *
-   * @return {*}  {Promise<void>}
-   * @memberof Logs
-   */
-  async selectProject(): Promise<void> {
-    const projects = await this.apolloClient
-      .query({ query: projectsQuery, variables: { query: {} } })
-      .then(({ data: { projects } }) => projects)
-      .catch((error) => {
-        this.log('Unable to fetch projects.!', { color: 'yellow' });
-        this.log(error, 'error');
-        process.exit(1);
-      });
-
-    const listOfProjects = map(projects.edges, ({ node: { uid, name } }) => ({
-      name,
-      value: name,
-      uid,
-    }));
-
-    if (isEmpty(listOfProjects)) {
-      this.log('Project not found', 'info');
-      this.exit(1);
-    }
-
-    if (this.flags.project || this.sharedConfig.currentConfig.uid) {
-      this.sharedConfig.currentConfig.uid =
-        find(listOfProjects, {
-          uid: this.flags.project,
-        })?.uid ||
-        find(listOfProjects, {
-          name: this.flags.project,
-        })?.uid ||
-        find(listOfProjects, {
-          uid: this.sharedConfig.currentConfig.uid,
-        })?.uid;
-    }
-
-    if (!this.sharedConfig.currentConfig.uid) {
-      this.sharedConfig.currentConfig.uid = await ux
-        .inquire({
-          type: 'search-list',
-          name: 'Project',
-          choices: listOfProjects,
-          message: 'Choose a project',
-        })
-        .then((name) => (find(listOfProjects, { name }) as Record<string, any>)?.uid);
-    }
-    await this.prepareApiClients();
   }
 
   /**
