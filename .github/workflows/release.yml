@@ -219,6 +219,23 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-launch/package.json
+          access: public
+      - name: Installing dependencies of branches
+        id: branches-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_branches == 'true'}}
+        working-directory: ./packages/contentstack-branches
+        run: npm install
+      - name: Compiling branches
+        if: ${{ steps.branches-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-branches
+        run: npm run prepack
+      - name: Publishing branches
+        uses: JS-DevTools/npm-publish@v1
+        if: ${{ steps.branches-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-branches/package.json
+          access: public
       - name: Installing dependencies of core
         id: core-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}

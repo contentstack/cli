@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-auth/1.3.1 darwin-arm64 node-v16.19.1
+@contentstack/cli-auth/1.3.5 darwin-arm64 node-v18.15.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -29,16 +29,19 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`csdx auth:login`](#csdx-authlogin)
-* [`csdx auth:logout`](#csdx-authlogout)
-* [`csdx auth:tokens`](#csdx-authtokens)
-* [`csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`](#csdx-authtokensadd--a-value---delivery---management--e-value--k-value--y---token-value)
-* [`csdx auth:tokens:remove`](#csdx-authtokensremove)
-* [`csdx auth:whoami`](#csdx-authwhoami)
-* [`csdx login`](#csdx-login)
-* [`csdx logout`](#csdx-logout)
-* [`csdx tokens`](#csdx-tokens)
-* [`csdx whoami`](#csdx-whoami)
+- [@contentstack/cli-auth](#contentstackcli-auth)
+- [Usage](#usage)
+- [Commands](#commands)
+  - [`csdx auth:login`](#csdx-authlogin)
+  - [`csdx auth:logout`](#csdx-authlogout)
+  - [`csdx auth:tokens`](#csdx-authtokens)
+  - [`csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`](#csdx-authtokensadd--a-value---delivery---management--e-value--k-value--y---token-value)
+  - [`csdx auth:tokens:remove`](#csdx-authtokensremove)
+  - [`csdx auth:whoami`](#csdx-authwhoami)
+  - [`csdx login`](#csdx-login)
+  - [`csdx logout`](#csdx-logout)
+  - [`csdx tokens`](#csdx-tokens)
+  - [`csdx whoami`](#csdx-whoami)
 
 ## `csdx auth:login`
 

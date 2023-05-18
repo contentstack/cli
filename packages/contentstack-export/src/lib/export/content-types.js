@@ -77,7 +77,10 @@ class ContentTypesExport {
 
   async writeContentTypes(contentTypes) {
     function write(contentType) {
-      return fileHelper.writeFile(path.join(this.contentTypesPath, contentType.uid + '.json'), contentType);
+      return fileHelper.writeFile(
+        path.join(this.contentTypesPath,
+          `${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`),
+          contentType);
     }
     await executeTask(contentTypes, write.bind(this), { concurrency: this.writeConcurrency });
     return fileHelper.writeFile(path.join(this.contentTypesPath, 'schema.json'), contentTypes);
