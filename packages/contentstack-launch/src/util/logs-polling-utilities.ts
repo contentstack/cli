@@ -175,7 +175,8 @@ export default class LogPolling {
     this.startTime = new Date().getTime() - 10 * 1000;
     this.endTime = new Date().getTime();
     const serverLogsWatchQuery = this.apolloLogsClient.watchQuery({
-      fetchPolicy: "network-only",
+      fetchPolicy: 'network-only',
+      errorPolicy: 'all',
       query: serverlessLogsQuery,
       variables: {
         query: {
@@ -208,14 +209,14 @@ export default class LogPolling {
     >
   ): void {
     serverLogsWatchQuery.subscribe(({ data, errors, error }) => {
-      ux.action.start("Loading server logs...");
+      ux.action.start('Loading server logs...');
       if (error) {
         ux.action.stop();
-        this.$event.emit("server-logs", { message: error?.message, msgType: "error" });
+        this.$event.emit('server-logs', { message: error?.message, msgType: 'error' });
       }
       if (errors?.length && data === null) {
         ux.action.stop();
-        this.$event.emit("server-logs", { message: errors, msgType: "error" });
+        this.$event.emit('server-logs', { message: errors, msgType: 'error' });
         serverLogsWatchQuery.stopPolling();
       }
 
@@ -223,9 +224,8 @@ export default class LogPolling {
       let logsLength = logsData?.length;
       if (logsLength > 0) {
         ux.action.stop();
-        this.$event.emit("server-logs", { message: logsData, msgType: "info" });
-        this.startTime =
-          new Date(logsData[logsLength - 1].timestamp).getTime() + 1;
+        this.$event.emit('server-logs', { message: logsData, msgType: 'info' });
+        this.startTime = new Date(logsData[logsLength - 1].timestamp).getTime() + 1;
         this.endTime = this.startTime + 10 * 1000;
       } else if (logsLength === 0) {
         this.endTime = this.endTime + 10 * 1000;
