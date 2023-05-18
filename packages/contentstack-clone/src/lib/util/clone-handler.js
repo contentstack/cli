@@ -271,8 +271,8 @@ class CloneHandler {
           await cloneCommand.execute(new SetBranchCommand(null, this));
 
           if (exportRes) {
-            this.executeDestination().catch(() => {
-              reject();
+            this.executeDestination().catch((error) => {
+              return reject(error);
             });
           }
         }
@@ -362,6 +362,8 @@ class CloneHandler {
         await cloneCommand.execute(new CloneTypeSelectionCommand(null, this));
         return resolve();
       } catch (error) {
+        console.log(error);
+        stackAbortController.signal.aborted = true;
         reject(error);
       } finally {
         // If not aborted and ran successfully
