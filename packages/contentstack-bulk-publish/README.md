@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-cm-bulk-publish
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-bulk-publish/1.3.1 darwin-arm64 node-v16.19.1
+@contentstack/cli-cm-bulk-publish/1.3.4 darwin-arm64 node-v18.15.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -29,31 +29,34 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value)
-* [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
-* [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
-* [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
-* [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value-1)
-* [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
-* [`csdx cm:bulk-publish:configure`](#csdx-cmbulk-publishconfigure)
-* [`csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`](#csdx-cmbulk-publishcross-publish--a-value---retry-failed-value---bulk-publish-value---content-type-value---locales-value---source-env-value---environments-value---delivery-token-value--c-value--y---branch-value---onlyassets---onlyentries)
-* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value)
-* [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
-* [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value)
-* [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
-* [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries)
-* [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
-* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value-1)
-* [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value-1)
-* [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value-1)
-* [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value-1)
-* [`csdx cm:entries:unpublish`](#csdx-cmentriesunpublish)
-* [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value-1)
-* [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
-* [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
-* [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
-* [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
-* [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries-1)
+- [@contentstack/cli-cm-bulk-publish](#contentstackcli-cm-bulk-publish)
+- [Usage](#usage)
+- [Commands](#commands)
+  - [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value)
+  - [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
+  - [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
+  - [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
+  - [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value-1)
+  - [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
+  - [`csdx cm:bulk-publish:configure`](#csdx-cmbulk-publishconfigure)
+  - [`csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`](#csdx-cmbulk-publishcross-publish--a-value---retry-failed-value---bulk-publish-value---content-type-value---locales-value---source-env-value---environments-value---delivery-token-value--c-value--y---branch-value---onlyassets---onlyentries)
+  - [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value)
+  - [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
+  - [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value)
+  - [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
+  - [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries)
+  - [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
+  - [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value-1)
+  - [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value-1)
+  - [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value-1)
+  - [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value-1)
+  - [`csdx cm:entries:unpublish`](#csdx-cmentriesunpublish)
+  - [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value-1)
+  - [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
+  - [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
+  - [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
+  - [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
+  - [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries-1)
 
 ## `csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`
 
@@ -72,6 +75,7 @@ FLAGS
   -e, --environments=<value>...  Environments where assets will be published
   -l, --locales=<value>...       Locales to where assets will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          [default: 3] API Version to be used
   --bulk-publish=<value>         [default: true] By default this flag is set as true. It indicates that contentstack's
                                  bulkpublish API will be used to publish the assets
   --delivery-token=<value>       Delivery token for source environment
@@ -134,13 +138,14 @@ Unpublish assets from given environment
 ```
 USAGE
   $ csdx cm:assets:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>]
-    [--retry-failed <value>] [--bulk-unpublish <value>] [--delivery-token <value>]
+    [--retry-failed <value>] [--bulk-unpublish <value>] [--api-version <value>] [--delivery-token <value>]
 
 FLAGS
   -a, --alias=<value>        Alias(name) for the management token
   -c, --config=<value>       Path to the config file
   -e, --environment=<value>  Source Environment
   -y, --yes                  Agree to process the command with the current configuration
+  --api-version=<value>      [default: 3] API Version to be used
   --branch=<value>           [default: main] Specify the branch to fetch the content (by default the main branch is
                              selected)
   --bulk-unpublish=<value>   [default: true] By default this flag is set as true. It indicates that contentstack's
@@ -218,6 +223,7 @@ FLAGS
   -l, --locales=<value>...       Locales where entries will be published
   -t, --contentTypes=<value>...  The Contenttypes from which entries will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          [default: 3] API Version to be used
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries will be published
@@ -281,6 +287,7 @@ FLAGS
   -e, --environments=<value>...  Environments where assets will be published
   -l, --locales=<value>...       Locales to where assets will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          [default: 3] API Version to be used
   --bulk-publish=<value>         [default: true] By default this flag is set as true. It indicates that contentstack's
                                  bulkpublish API will be used to publish the assets
   --delivery-token=<value>       Delivery token for source environment
@@ -403,6 +410,7 @@ FLAGS
   -a, --alias=<value>        Alias(name) for the management token
   -c, --config=<value>       Path to the config file
   -y, --yes                  Agree to process the command with the current configuration
+  --api-version=<value>      [default: 3] API Version to be used
   --bulk-publish=<value>     [default: true] This flag is set to true by default. It indicates that contentstack's
                              bulkpublish API will be used to publish the entries
   --content-type=<value>...  The Contenttypes from which entries will be published
@@ -475,6 +483,7 @@ FLAGS
   -e, --environments=<value>...  Environments where entries will be published
   -l, --locales=<value>...       Locales where entries will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          [default: 3] API Version to be used
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries need to be published
@@ -550,6 +559,7 @@ FLAGS
   -e, --environments=<value>...  Destination environments
   -l, --locales=<value>...       Locales where edited entries will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          [default: 3] API Version to be used
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes which will be checked for edited entries
@@ -615,6 +625,7 @@ FLAGS
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          [default: 3] API Version to be used
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries will be published
@@ -802,6 +813,7 @@ FLAGS
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          [default: 3] API Version to be used
   --content-types=<value>...     The Contenttypes from which entries will be published
   --locales=<value>              Source locale
   --retry-failed=<value>         Retry publishing failed entries from the logfile
@@ -867,6 +879,7 @@ FLAGS
   -e, --environments=<value>...  Environments where entries will be published
   -l, --locales=<value>...       Locales where entries will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          [default: 3] API Version to be used
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries need to be published
@@ -944,6 +957,7 @@ FLAGS
   -e, --environments=<value>...  Destination environments
   -l, --locales=<value>...       Locales where edited entries will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          [default: 3] API Version to be used
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes which will be checked for edited entries
@@ -1011,6 +1025,7 @@ FLAGS
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          [default: 3] API Version to be used
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries will be published
@@ -1078,6 +1093,7 @@ FLAGS
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          [default: 3] API Version to be used
   --content-types=<value>...     The Contenttypes from which entries will be published
   --locales=<value>              Source locale
   --retry-failed=<value>         Retry publishing failed entries from the logfile
@@ -1133,13 +1149,15 @@ Unpublish entries from the given environment
 ```
 USAGE
   $ csdx cm:entries:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>]
-    [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>]
+    [--retry-failed <value>] [--bulk-unpublish <value>] [--api-version <value>] [--content-type <value>]
+    [--delivery-token <value>]
 
 FLAGS
   -a, --alias=<value>        Alias(name) for the management token
   -c, --config=<value>       Path to the config file
   -e, --environment=<value>  Source Environment
   -y, --yes                  Agree to process the command with the current configuration
+  --api-version=<value>      [default: 3] API Version to be used
   --branch=<value>           [default: main] Specify the branch to fetch the content (by default the main branch is
                              selected)
   --bulk-unpublish=<value>   [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -1206,6 +1224,7 @@ FLAGS
   -l, --locales=<value>...       Locales where entries will be published
   -t, --contentTypes=<value>...  The Contenttypes from which entries will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          [default: 3] API Version to be used
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries will be published
