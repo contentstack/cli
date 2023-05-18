@@ -1,6 +1,10 @@
+import map from 'lodash/map';
 import find from 'lodash/find';
+import isEmpty from 'lodash/isEmpty';
+import { ApolloClient } from '@apollo/client/core';
 import { cliux as ux, ContentstackClient, FlagInput } from '@contentstack/cli-utilities';
 
+import { projectsQuery } from '../graphql';
 import { ConfigType, LogFn } from '../types';
 
 type CommpnOptions = {
@@ -65,4 +69,62 @@ async function selectOrg(
   }
 }
 
-export { getOrganizations, selectOrg };
+/**
+ * @method selectProject - select projects
+ *
+ * @return {*}  {Promise<void>}
+ * @memberof Logs
+ */
+async function selectProject(options: {
+  log: LogFn;
+  flags: FlagInput;
+  config: ConfigType;
+  apolloClient: ApolloClient<any>;
+}): Promise<void> {
+  const { log, config, flags, apolloClient } = options;
+  const projects = await apolloClient
+    .query({ query: projectsQuery, variables: { query: {} } })
+    .then(({ data: { projects } }) => projects)
+    .catch((error) => {
+      log('Unable to fetch projects.!', { color: 'yellow' });
+      log(error, 'error');
+      process.exit(1);
+    });
+
+  const listOfProjects = map(projects.edges, ({ node: { uid, name } }) => ({
+    name,
+    value: name,
+    uid,
+  }));
+
+  if (isEmpty(listOfProjects)) {
+    log('Project not found', 'info');
+    process.exit(1);
+  }
+
+  if (config.project || config.currentConfig.uid) {
+    config.currentConfig.uid =
+      find(listOfProjects, {
+        uid: flags.project,
+      })?.uid ||
+      find(listOfProjects, {
+        name: flags.project,
+      })?.uid ||
+      find(listOfProjects, {
+        uid: config.currentConfig.uid,
+      })?.uid;
+  }
+
+  if (!config.currentConfig.uid) {
+    config.currentConfig.uid = await ux
+      .inquire({
+        type: 'search-list',
+        name: 'Project',
+        choices: listOfProjects,
+        message: 'Choose a project',
+      })
+      .then((name) => (find(listOfProjects, { name }) as Record<string, any>)?.uid);
+  }
+}
+
+export { getOrganizations, selectOrg, selectProject };
