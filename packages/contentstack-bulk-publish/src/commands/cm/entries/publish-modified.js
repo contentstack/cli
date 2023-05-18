@@ -16,6 +16,8 @@ class PublishModifiedCommand extends Command {
     entryEditsFlags.contentTypes = entryEditsFlags['content-types'] || entryEditsFlags.contentTypes;
     entryEditsFlags.bulkPublish = entryEditsFlags['bulk-publish'] || entryEditsFlags.bulkPublish;
     entryEditsFlags.sourceEnv = entryEditsFlags['source-env'] || entryEditsFlags.sourceEnv;
+    entryEditsFlags.apiVersion = entryEditsFlags['api-version']
+    delete entryEditsFlags['api-version']
     delete entryEditsFlags['retry-failed'];
     delete entryEditsFlags['content-types'];
     delete entryEditsFlags['bulk-publish'];
@@ -139,6 +141,10 @@ PublishModifiedCommand.flags = {
     description:
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
+  }),
+  'api-version': flags.string({
+    description : "API Version to be used",
+    default: '3'
   }),
   sourceEnv: flags.string({
     char: 's',
