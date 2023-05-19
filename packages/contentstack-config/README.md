@@ -29,14 +29,11 @@ USAGE
 # Commands
 
 <!-- commands -->
-- [@contentstack/cli-config](#contentstackcli-config)
-- [Usage](#usage)
-- [Commands](#commands)
-  - [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
-  - [`csdx config:get:region`](#csdx-configgetregion)
-  - [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
-  - [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
-  - [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
+* [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
+* [`csdx config:get:region`](#csdx-configgetregion)
+* [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
+* [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
+* [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 
 ## `csdx config:get:base-branch`
 
