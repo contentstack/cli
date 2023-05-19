@@ -16,7 +16,7 @@ class PublishModifiedCommand extends Command {
     entryEditsFlags.contentTypes = entryEditsFlags['content-types'] || entryEditsFlags.contentTypes;
     entryEditsFlags.bulkPublish = entryEditsFlags['bulk-publish'] || entryEditsFlags.bulkPublish;
     entryEditsFlags.sourceEnv = entryEditsFlags['source-env'] || entryEditsFlags.sourceEnv;
-    entryEditsFlags.apiVersion = entryEditsFlags['api-version']
+    entryEditsFlags.apiVersion = entryEditsFlags['api-version'] || '3';
     delete entryEditsFlags['api-version']
     delete entryEditsFlags['retry-failed'];
     delete entryEditsFlags['content-types'];
@@ -143,8 +143,7 @@ PublishModifiedCommand.flags = {
     default: 'true',
   }),
   'api-version': flags.string({
-    description : "API Version to be used",
-    default: '3'
+    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
   }),
   sourceEnv: flags.string({
     char: 's',
