@@ -4,7 +4,7 @@ import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
 import { FlagInput, Flags, cliux as ux } from '@contentstack/cli-utilities';
 
-import { Logger, selectOrg } from '../../util';
+import { Logger } from '../../util';
 import { BaseCommand } from './base-command';
 import { environmentsQuery, projectsQuery } from '../../graphql';
 
@@ -47,13 +47,7 @@ export default class Deployments extends BaseCommand<typeof Deployments> {
     await this.prepareApiClients();
 
     if (!this.sharedConfig.currentConfig?.uid) {
-      await selectOrg({
-        log: this.log,
-        flags: this.flags,
-        config: this.sharedConfig,
-        managementSdk: this.managementSdk,
-      });
-      await this.prepareApiClients();
+      await this.selectOrg();
       await this.selectProject();
     }
 
@@ -85,6 +79,49 @@ export default class Deployments extends BaseCommand<typeof Deployments> {
         header: 'Created At',
       },
     });
+  }
+
+  /**
+   * @method selectOrg - select organization
+   *
+   * @return {*}  {Promise<void>}
+   * @memberof Logs
+   */
+  async selectOrg(): Promise<void> {
+    const organizations =
+      (await this.managementSdk
+        ?.organization()
+        .fetchAll()
+        .then(({ items }) => map(items, ({ uid, name }) => ({ name, value: name, uid })))
+        .catch((error) => {
+          this.log('Unable to fetch organizations.', 'warn');
+          this.log(error, 'error');
+          process.exit(1);
+        })) || [];
+
+    if (this.flags.org || this.sharedConfig.currentConfig.organizationUid) {
+      this.sharedConfig.currentConfig.organizationUid =
+        find(organizations, { uid: this.flags.org })?.uid ||
+        find(organizations, {
+          uid: this.sharedConfig.currentConfig.organizationUid,
+        })?.uid;
+
+      if (!this.sharedConfig.currentConfig.organizationUid) {
+        this.log('Organization UID not found!', 'warn');
+      }
+    }
+
+    if (!this.sharedConfig.currentConfig.organizationUid) {
+      this.sharedConfig.currentConfig.organizationUid = await ux
+        .inquire({
+          type: 'search-list',
+          name: 'Organization',
+          choices: organizations,
+          message: 'Choose an organization',
+        })
+        .then((name) => (find(organizations, { name }) as Record<string, any>)?.uid);
+    }
+    await this.prepareApiClients();
   }
 
   /**
