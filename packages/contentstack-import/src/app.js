@@ -5,9 +5,10 @@
  */
 
 const fs = require('fs');
-const ncp = require('ncp');
+const os = require('os');
 const path = require('path');
 const chalk = require('chalk');
+const { copy, copySync, removeSync } = require('fs-extra');
 const util = require('./lib/util/index');
 const login = require('./lib/util/login');
 const { addlogs } = require('./lib/util/log');
@@ -165,21 +166,30 @@ const createBackup = (backupDirPath, config) => {
     if (config.hasOwnProperty('useBackedupDir') && fs.existsSync(config.useBackedupDir)) {
       return resolve(config.useBackedupDir);
     }
-    ncp.limit = config.backupConcurrency || 16;
+
     if (path.isAbsolute(config.data)) {
-      return ncp(config.data, backupDirPath, (error) => {
+      copy(config.data, backupDirPath, (error) => {
         if (error) {
           return reject(error);
         }
         return resolve(backupDirPath);
       });
     } else {
-      ncp(config.data, backupDirPath, (error) => {
-        if (error) {
-          return reject(error);
-        }
+      //handle error :- Cannot copy to a subdirectory of itself 
+      if (config.data === "." || config.data === "./") {
+        const tempDestination = `${os.platform() === 'darwin' ? '/private/tmp' : '/tmp'}/${backupDirPath}`;
+        copySync(config.data, tempDestination);
+        copySync(tempDestination, backupDirPath);
+        removeSync(tempDestination);
         return resolve(backupDirPath);
-      });
+      } else {
+        copy(config.data, backupDirPath,(error) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve(backupDirPath);
+        });
+      }
     }
   });
 };
