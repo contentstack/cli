@@ -19,7 +19,7 @@ import { writeFileSync, existsSync, readFileSync } from 'fs';
 import { cliux as ux, ContentstackClient } from '@contentstack/cli-utilities';
 
 import config from '../config';
-import { print, GraphqlApiClient, LogPolling, getOrganizations } from '../util';
+import { print, GraphqlApiClient, LogPolling } from '../util';
 import {
   branchesQuery,
   frameworkQuery,
@@ -49,7 +49,7 @@ export default class BaseClass {
   public projectCreationRetryCount: number = 0;
   public apolloLogsClient: ApolloClient<any> | undefined;
   public envVariables: Array<Record<string, any>> = [];
-  public managementSdk: ContentstackClient;
+  public managementSdk: ContentstackClient | undefined;
 
   constructor(options: AdapterConstructorInputs) {
     const { log, exit, config, $event, apolloClient, managementSdk, analyticsInfo, apolloLogsClient } = options;
@@ -117,7 +117,16 @@ export default class BaseClass {
    * @memberof BaseClass
    */
   async selectOrg(): Promise<void> {
-    const organizations = (await getOrganizations({ log: this.log, managementSdk: this.managementSdk })) || [];
+    const organizations =
+      (await this.managementSdk
+        ?.organization()
+        .fetchAll()
+        .then(({ items }) => map(items, ({ uid, name }) => ({ name, value: name, uid })))
+        .catch((error) => {
+          this.log('Unable to fetch organizations.', 'warn');
+          this.log(error, 'error');
+          this.exit(1);
+        })) || [];
 
     if (this.config.flags.org && find(organizations, { uid: this.config.flags.org })) {
       this.config.currentConfig.organizationUid = this.config.flags.org;
