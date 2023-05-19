@@ -5,10 +5,10 @@
 With Launch CLI, you can interact with the Contentstack Launch platform using the terminal to create, manage and deploy Launch projects.
 
 <!-- toc -->
-- [Launch CLI plugin](#launch-cli-plugin)
-- [Usage](#usage)
-- [Installation steps](#installation-steps)
-- [Commands](#commands)
+* [Launch CLI plugin](#launch-cli-plugin)
+* [Usage](#usage)
+* [Installation steps](#installation-steps)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
