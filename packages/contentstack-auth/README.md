@@ -29,19 +29,16 @@ USAGE
 # Commands
 
 <!-- commands -->
-- [@contentstack/cli-auth](#contentstackcli-auth)
-- [Usage](#usage)
-- [Commands](#commands)
-  - [`csdx auth:login`](#csdx-authlogin)
-  - [`csdx auth:logout`](#csdx-authlogout)
-  - [`csdx auth:tokens`](#csdx-authtokens)
-  - [`csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`](#csdx-authtokensadd--a-value---delivery---management--e-value--k-value--y---token-value)
-  - [`csdx auth:tokens:remove`](#csdx-authtokensremove)
-  - [`csdx auth:whoami`](#csdx-authwhoami)
-  - [`csdx login`](#csdx-login)
-  - [`csdx logout`](#csdx-logout)
-  - [`csdx tokens`](#csdx-tokens)
-  - [`csdx whoami`](#csdx-whoami)
+* [`csdx auth:login`](#csdx-authlogin)
+* [`csdx auth:logout`](#csdx-authlogout)
+* [`csdx auth:tokens`](#csdx-authtokens)
+* [`csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`](#csdx-authtokensadd--a-value---delivery---management--e-value--k-value--y---token-value)
+* [`csdx auth:tokens:remove`](#csdx-authtokensremove)
+* [`csdx auth:whoami`](#csdx-authwhoami)
+* [`csdx login`](#csdx-login)
+* [`csdx logout`](#csdx-logout)
+* [`csdx tokens`](#csdx-tokens)
+* [`csdx whoami`](#csdx-whoami)
 
 ## `csdx auth:login`
 
