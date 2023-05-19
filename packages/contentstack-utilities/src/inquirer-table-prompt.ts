@@ -7,7 +7,7 @@ const observe = require('inquirer/lib/utils/events');
 const { map, takeUntil } = require('rxjs/operators');
 const Choices = require('inquirer/lib/objects/choices');
 
-export default class TablePrompt extends Base {
+class TablePrompt extends Base {
   /**
    * Initialise the prompt
    *
@@ -214,3 +214,5 @@ export default class TablePrompt extends Base {
     this.screen.render(message, bottomContent);
   }
 }
+
+export = TablePrompt;
