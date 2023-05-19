@@ -19,7 +19,7 @@ async function getOrganizations(
 ): Promise<Record<string, any>[]> {
   const { log, managementSdk } = options;
   const response = await managementSdk
-    ?.organization()
+    .organization()
     .fetchAll({ limit: 100, asc: 'name', include_count: true, skip: skip })
     .catch((error) => {
       log('Unable to fetch organizations.', 'warn');
@@ -28,7 +28,7 @@ async function getOrganizations(
     });
 
   if (response) {
-    organizations = organizations.concat(response?.items as any);
+    organizations = organizations.concat(response.items as any);
     if (organizations.length < response.count) {
       organizations = await getOrganizations(options, skip + 100);
     }
