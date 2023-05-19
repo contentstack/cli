@@ -7,7 +7,7 @@ import { Ora, default as ora } from 'ora';
 import messageHandler from './message-handler';
 import { PrintOptions, InquirePayload, CliUXPromptOptions } from './interfaces';
 
-inquirer.registerPrompt('table', require('inquirer-table-prompt'));
+inquirer.registerPrompt('table', require('./inquirer-table-prompt'));
 
 /**
  * CLI Interface
