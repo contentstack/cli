@@ -2,9 +2,12 @@ import chalk, { Chalk } from 'chalk';
 import { default as inquirer, QuestionCollection, Answers } from 'inquirer';
 import { Table } from '@oclif/core/lib/cli-ux';
 import { ux as cliux, Args, Flags, Command } from '@oclif/core';
+import { Ora, default as ora } from 'ora';
 
 import messageHandler from './message-handler';
 import { PrintOptions, InquirePayload, CliUXPromptOptions } from './interfaces';
+
+inquirer.registerPrompt('table', require('./inquirer-table-prompt'));
 
 /**
  * CLI Interface
@@ -86,6 +89,15 @@ class CLIInterface {
 
   progress(options?: any): any {
     return cliux.progress(options);
+  }
+
+  loaderV2(message: string = '', spinner?: any): Ora | void {
+    if (!spinner) {
+      return ora(message).start();
+    } else {
+      spinner.text = message;
+      spinner.stop();
+    }
   }
 }
 
