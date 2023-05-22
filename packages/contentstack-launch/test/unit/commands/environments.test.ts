@@ -27,7 +27,21 @@ describe('Environments', () => {
     const args = ['--project', deploymentFlags.project];
     await Environments.run(args);
     const inquireStub = stub(cliux, 'inquire').resolves(deploymentFlags.org.uid);
-    expect(inquireStub.calledOnce).to.be.true;
+    expect(inquireStub.calledOnce);
     inquireStub.restore();
+  });
+  it('Should ask for organization with a warning when passed incorrect org uid', async function () {
+    const args = ['--org', deploymentFlags.invalidOrg.uid, '--project', deploymentFlags.project];
+    await Environments.run(args);
+    const orgStub = stub(cliux, 'inquire').resolves(deploymentFlags.invalidOrg.uid);
+    expect(orgStub.calledOnce);
+    orgStub.restore();
+  });
+  it('Should ask for project when passed incorrect project name', async function () {
+    const args = ['--org', deploymentFlags.org.uid, '--project', deploymentFlags.invalidProj];
+    await Environments.run(args);
+    const projectStub = stub(cliux, 'inquire').resolves(deploymentFlags.invalidProj);
+    expect(projectStub.calledOnce);
+    projectStub.restore();
   });
 });
