@@ -1,7 +1,7 @@
-import { FlagInput, Flags } from "@contentstack/cli-utilities";
+import { FlagInput, Flags } from '@contentstack/cli-utilities';
 
-import { BaseCommand } from "./base-command";
-import Contentfly from "../../util/cloud-function";
+import { BaseCommand } from './base-command';
+import Contentfly from '../../util/cloud-function';
 
 export default class Functions extends BaseCommand<typeof Functions> {
   static hidden = false;
@@ -10,10 +10,10 @@ export default class Functions extends BaseCommand<typeof Functions> {
   static examples = [
     '$ csdx launch:functions',
     '$ csdx launch:functions --port=port',
-    '$ csdx launch:logs --data-dir <path/of/current/working/dir>',
-    '$ csdx launch:logs --config <path/to/launch/config/file>',
-    '$ csdx launch:logs --data-dir <path/of/current/working/dir> -p "port number"',
-    '$ csdx launch:logs --config <path/to/launch/config/file> --port=port',
+    '$ csdx launch:functions --data-dir <path/of/current/working/dir>',
+    '$ csdx launch:functions --config <path/to/launch/config/file>',
+    '$ csdx launch:functions --data-dir <path/of/current/working/dir> -p "port number"',
+    '$ csdx launch:functions --config <path/to/launch/config/file> --port=port',
   ];
 
   static flags: FlagInput = {
