@@ -80,11 +80,11 @@ class Config {
   private getObfuscationKey() {
     const obfuscationKeyName = 'obfuscation_key';
     const encConfig = new Conf({ configName: ENC_CONFIG_NAME });
-    let obfuscationKey: any = encConfig.get(obfuscationKeyName);
+    let obfuscationKey: any = encConfig?.get(obfuscationKeyName);
 
     if (!obfuscationKey) {
       encConfig.set(obfuscationKeyName, uuid());
-      obfuscationKey = encConfig.get(obfuscationKeyName);
+      obfuscationKey = encConfig?.get(obfuscationKeyName);
     }
 
     return obfuscationKey;
@@ -174,21 +174,21 @@ class Config {
   }
 
   get(key): string | any {
-    return this.config.get(key);
+    return this.config?.get(key);
   }
 
   async set(key, value) {
-    this.config.set(key, value);
+    this.config?.set(key, value);
     return this.config;
   }
 
   delete(key) {
-    this.config.delete(key);
+    this.config?.delete(key);
     return this.config;
   }
 
   clear() {
-    this.config.clear();
+    this.config?.clear();
   }
 }
 
