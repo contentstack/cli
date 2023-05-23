@@ -5,6 +5,9 @@
 const chalk = require('chalk');
 const path = require('path');
 const { formatError } = require('../util');
+const { configHandler } = require('@contentstack/cli-utilities')
+const apiVersionForNRP = '3.2'
+const nrpApiVersionWarning = `Provided apiVersion is invalid. ${apiVersionForNRP} is only supported value. Continuing with regular bulk-publish for now.`
 
 const { getLoggerInstance, addLogs, getLogsDirPath } = require('../util/logger');
 const logsDir = getLogsDirPath();
@@ -211,9 +214,12 @@ async function UnpublishAsset(data, _config, queue) {
 }
 
 async function performBulkPublish(data, _config, queue) {
+  // add validation for user uid
+  // if user not logged in, then user uid won't be available and NRP too won't work
   let conf;
   const bulkPublishObj = data.obj;
   const stack = bulkPublishObj.stack;
+  let payload = {}
   switch (bulkPublishObj.Type) {
     case 'entry':
       conf = {
@@ -221,15 +227,28 @@ async function performBulkPublish(data, _config, queue) {
         locales: [bulkPublishObj.locale],
         environments: bulkPublishObj.environments,
       };
+      payload['details'] = conf;
+      if (bulkPublishObj.apiVersion) {
+        if (!isNaN(bulkPublishObj.apiVersion) && bulkPublishObj.apiVersion === apiVersionForNRP) {
+          payload['api_version'] = bulkPublishObj.apiVersion
+        } else {
+          if (bulkPublishObj.apiVersion !== '3') { // because 3 is the default value for api-version, and it exists for the purpose of display only
+            console.log(
+              chalk.yellow(nrpApiVersionWarning),
+            );
+          }
+        }
+      }
       stack
         .bulkOperation()
-        .publish({ details: conf })
+        .publish(payload)
         .then((bulkPublishEntriesResponse) => {
           if (!bulkPublishEntriesResponse.error_message) {
             console.log(
               chalk.green(
                 `Bulk entries sent for publish ${JSON.stringify(removePublishDetails(bulkPublishObj.entries))}`,
               ),
+              (bulkPublishEntriesResponse.job_id) ? chalk.yellow(`job_id: ${bulkPublishEntriesResponse.job_id}`) : ''
             );
             delete bulkPublishObj.stack;
             addLogs(
@@ -268,14 +287,27 @@ async function performBulkPublish(data, _config, queue) {
         locales: [bulkPublishObj.locale],
         environments: bulkPublishObj.environments,
       };
+      payload['details'] = conf;
+      if (bulkPublishObj.apiVersion) {
+        if (!isNaN(bulkPublishObj.apiVersion) && bulkPublishObj.apiVersion === apiVersionForNRP) {
+          payload['api_version'] = bulkPublishObj.apiVersion
+        } else {
+          if (bulkPublishObj.apiVersion !== '3') { // because 3 is the default value for api-version, and it exists for the purpose of display only
+            console.log(
+              chalk.yellow(nrpApiVersionWarning),
+            );
+          }
+        }
+      }
       stack
         .bulkOperation()
-        .publish({ details: conf })
+        .publish(payload)
         .then((bulkPublishAssetsResponse) => {
           if (!bulkPublishAssetsResponse.error_message) {
             console.log(
               chalk.green(
                 `Bulk assets sent for publish ${JSON.stringify(removePublishDetails(bulkPublishObj.assets))}`,
+                (bulkPublishAssetsResponse.job_id) ? chalk.yellow(`job_id: ${bulkPublishAssetsResponse.job_id}`) : ''
               ),
             );
             delete bulkPublishObj.stack;
@@ -318,6 +350,7 @@ async function performBulkUnPublish(data, _config, queue) {
   let conf;
   const bulkUnPublishObj = data.obj;
   const stack = bulkUnPublishObj.stack;
+  let payload = {}
   switch (bulkUnPublishObj.Type) {
     case 'entry':
       conf = {
@@ -325,15 +358,28 @@ async function performBulkUnPublish(data, _config, queue) {
         locales: [bulkUnPublishObj.locale],
         environments: bulkUnPublishObj.environments,
       };
+      payload['details'] = conf;
+      if (bulkUnPublishObj.apiVersion) {
+        if (!isNaN(bulkUnPublishObj.apiVersion) && bulkUnPublishObj.apiVersion === apiVersionForNRP) {
+          payload['api_version'] = bulkUnPublishObj.apiVersion
+        } else {
+          if (bulkUnPublishObj.apiVersion !== '3') { // because 3 is the default value for api-version, and it exists for the purpose of display only
+            console.log(
+              chalk.yellow(nrpApiVersionWarning),
+            );
+          }
+        }
+      }
       stack
         .bulkOperation()
-        .unpublish({ details: conf })
+        .unpublish(payload)
         .then((bulkUnPublishEntriesResponse) => {
           if (!bulkUnPublishEntriesResponse.error_message) {
             delete bulkUnPublishObj.stack;
             console.log(
               chalk.green(
                 `Bulk entries sent for Unpublish  ${JSON.stringify(removePublishDetails(bulkUnPublishObj.entries))}`,
+                (bulkUnPublishEntriesResponse.job_id) ? chalk.yellow(`job_id: ${bulkUnPublishEntriesResponse.job_id}`) : ''
               ),
             );
             addLogs(
@@ -372,15 +418,28 @@ async function performBulkUnPublish(data, _config, queue) {
         locales: [bulkUnPublishObj.locale || 'en-us'],
         environments: bulkUnPublishObj.environments,
       };
+      payload['details'] = conf;
+      if (bulkUnPublishObj.apiVersion) {
+        if (!isNaN(bulkUnPublishObj.apiVersion) && bulkUnPublishObj.apiVersion === apiVersionForNRP) {
+          payload['api_version'] = bulkUnPublishObj.apiVersion
+        } else {
+          if (bulkUnPublishObj.apiVersion !== '3') { // because 3 is the default value for api-version, and it exists for the purpose of display only
+            console.log(
+              chalk.yellow(nrpApiVersionWarning),
+            );
+          }
+        }
+      }
       stack
         .bulkOperation()
-        .unpublish({ details: conf })
+        .unpublish(payload)
         .then((bulkUnPublishAssetsResponse) => {
           if (!bulkUnPublishAssetsResponse.error_message) {
             delete bulkUnPublishObj.stack;
             console.log(
               chalk.green(
                 `Bulk assets sent for Unpublish ${JSON.stringify(removePublishDetails(bulkUnPublishObj.assets))}`,
+                (bulkUnPublishAssetsResponse.job_id) ? chalk.yellow(`job_id: ${bulkUnPublishAssetsResponse.job_id}`) : ''
               ),
             );
             addLogs(
