@@ -76,7 +76,9 @@ class StackCloneCommand extends Command {
         const cloneHandler = new CloneHandler(config);
         const managementAPIClient = await managementSDKClient(config);
         cloneHandler.setClient(managementAPIClient);
-        cloneHandler.execute().catch();
+        cloneHandler.execute().catch((error)=>{
+          console.log(error);
+        });
       };
 
       if (sourceManagementTokenAlias && destinationManagementTokenAlias) {
