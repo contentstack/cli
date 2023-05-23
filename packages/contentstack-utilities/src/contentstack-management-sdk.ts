@@ -1,7 +1,7 @@
 import { client, ContentstackClient, ContentstackConfig } from '@contentstack/management';
 import authHandler from './auth-handler';
 import { Agent } from 'node:https';
-import { default as configStore } from './config-handler';
+import configHandler, { default as configStore } from './config-handler';
 
 class ManagementSDKInitiator {
   private analyticsInfo: string;
