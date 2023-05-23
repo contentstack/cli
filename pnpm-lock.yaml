@@ -10,20 +10,20 @@ importers:
 
   packages/contentstack:
     specifiers:
-      '@contentstack/cli-auth': ^1.3.4
-      '@contentstack/cli-cm-bootstrap': ^1.4.4
-      '@contentstack/cli-cm-branches': ^1.0.1
-      '@contentstack/cli-cm-bulk-publish': ^1.3.3
-      '@contentstack/cli-cm-clone': ^1.4.4
-      '@contentstack/cli-cm-export': ^1.5.4
-      '@contentstack/cli-cm-export-to-csv': ^1.3.4
-      '@contentstack/cli-cm-import': ^1.5.4
-      '@contentstack/cli-cm-migrate-rte': ^1.4.3
-      '@contentstack/cli-cm-seed': ^1.4.4
-      '@contentstack/cli-command': ^1.2.4
-      '@contentstack/cli-config': ^1.4.2
-      '@contentstack/cli-launch': ^1.0.1
-      '@contentstack/cli-migration': ^1.3.3
+      '@contentstack/cli-auth': ^1.3.5
+      '@contentstack/cli-cm-bootstrap': ^1.4.5
+      '@contentstack/cli-cm-branches': ^1.0.2
+      '@contentstack/cli-cm-bulk-publish': ^1.3.4
+      '@contentstack/cli-cm-clone': ^1.4.5
+      '@contentstack/cli-cm-export': ^1.5.5
+      '@contentstack/cli-cm-export-to-csv': ^1.3.5
+      '@contentstack/cli-cm-import': ^1.5.5
+      '@contentstack/cli-cm-migrate-rte': ^1.4.4
+      '@contentstack/cli-cm-seed': ^1.4.5
+      '@contentstack/cli-command': ^1.2.5
+      '@contentstack/cli-config': ^1.4.3
+      '@contentstack/cli-launch': ^1.0.2
+      '@contentstack/cli-migration': ^1.3.4
       '@contentstack/cli-utilities': ^1.4.1
       '@contentstack/management': ^1.8.0
       '@oclif/plugin-help': ^5
@@ -115,7 +115,7 @@ importers:
 
   packages/contentstack-auth:
     specifiers:
-      '@contentstack/cli-command': ^1.2.4
+      '@contentstack/cli-command': ^1.2.5
       '@contentstack/cli-utilities': ^1.4.1
       '@fancy-test/nock': ^0.1.1
       '@oclif/plugin-help': ^5.1.19
@@ -178,8 +178,8 @@ importers:
 
   packages/contentstack-bootstrap:
     specifiers:
-      '@contentstack/cli-cm-seed': ^1.4.4
-      '@contentstack/cli-command': ^1.2.4
+      '@contentstack/cli-cm-seed': ^1.4.5
+      '@contentstack/cli-command': ^1.2.5
       '@contentstack/cli-utilities': ^1.4.1
       '@oclif/test': ^2.2.10
       '@types/inquirer': ^9.0.3
@@ -229,9 +229,9 @@ importers:
 
   packages/contentstack-branches:
     specifiers:
-      '@contentstack/cli-auth': ^1.3.4
-      '@contentstack/cli-command': ^1.2.3
-      '@contentstack/cli-config': ^1.4.2
+      '@contentstack/cli-auth': ^1.3.5
+      '@contentstack/cli-command': ^1.2.5
+      '@contentstack/cli-config': ^1.4.3
       '@contentstack/cli-dev-dependencies': ^1.2.0
       '@contentstack/cli-utilities': ^1.4.0
       '@oclif/command': ^1.8.16
@@ -312,7 +312,7 @@ importers:
 
   packages/contentstack-bulk-publish:
     specifiers:
-      '@contentstack/cli-command': ^1.2.4
+      '@contentstack/cli-command': ^1.2.5
       '@contentstack/cli-utilities': ^1.4.1
       '@oclif/test': ^1.2.6
       bluebird: ^3.7.2
@@ -351,9 +351,9 @@ importers:
 
   packages/contentstack-clone:
     specifiers:
-      '@contentstack/cli-cm-export': ^1.5.4
-      '@contentstack/cli-cm-import': ^1.5.4
-      '@contentstack/cli-command': ^1.2.4
+      '@contentstack/cli-cm-export': ^1.5.5
+      '@contentstack/cli-cm-import': ^1.5.5
+      '@contentstack/cli-command': ^1.2.5
       '@contentstack/cli-utilities': ^1.4.1
       '@oclif/test': ^1.2.7
       async: ^3.2.4
@@ -441,7 +441,7 @@ importers:
 
   packages/contentstack-config:
     specifiers:
-      '@contentstack/cli-command': ^1.2.4
+      '@contentstack/cli-command': ^1.2.5
       '@contentstack/cli-utilities': ^1.4.1
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.2.18
@@ -523,9 +523,9 @@ importers:
 
   packages/contentstack-export:
     specifiers:
-      '@contentstack/cli-auth': ^1.3.4
-      '@contentstack/cli-command': ^1.2.4
-      '@contentstack/cli-config': ^1.4.2
+      '@contentstack/cli-auth': ^1.3.5
+      '@contentstack/cli-command': ^1.2.5
+      '@contentstack/cli-config': ^1.4.3
       '@contentstack/cli-dev-dependencies': ^1.2.2
       '@contentstack/cli-utilities': ^1.4.1
       '@oclif/command': ^1.8.16
@@ -592,7 +592,7 @@ importers:
 
   packages/contentstack-export-to-csv:
     specifiers:
-      '@contentstack/cli-command': ^1.2.4
+      '@contentstack/cli-command': ^1.2.5
       '@contentstack/cli-utilities': ^1.4.1
       '@oclif/test': ^2.2.10
       chai: ^4.2.0
@@ -629,7 +629,7 @@ importers:
 
   packages/contentstack-import:
     specifiers:
-      '@contentstack/cli-command': ^1.2.4
+      '@contentstack/cli-command': ^1.2.5
       '@contentstack/cli-utilities': ^1.4.1
       '@oclif/config': ^1.18.3
       '@oclif/test': ^1.2.6
@@ -677,7 +677,7 @@ importers:
   packages/contentstack-launch:
     specifiers:
       '@apollo/client': ^3.7.9
-      '@contentstack/cli-command': ^1.2.4
+      '@contentstack/cli-command': ^1.2.5
       '@contentstack/cli-utilities': ^1.4.1
       '@oclif/plugin-help': ^5
       '@oclif/plugin-plugins': ^2.3.2
@@ -749,7 +749,7 @@ importers:
 
   packages/contentstack-migrate-rte:
     specifiers:
-      '@contentstack/cli-command': ^1.2.4
+      '@contentstack/cli-command': ^1.2.5
       '@contentstack/cli-utilities': ^1.4.1
       '@contentstack/json-rte-serializer': ^2.0.2
       '@oclif/test': ^2.2.10
@@ -796,7 +796,7 @@ importers:
 
   packages/contentstack-migration:
     specifiers:
-      '@contentstack/cli-command': ^1.2.4
+      '@contentstack/cli-command': ^1.2.5
       '@contentstack/cli-utilities': ^1.4.1
       '@oclif/command': ^1.8.16
       '@oclif/config': ^1.18.3
@@ -849,8 +849,8 @@ importers:
 
   packages/contentstack-seed:
     specifiers:
-      '@contentstack/cli-cm-import': ^1.5.4
-      '@contentstack/cli-command': ^1.2.4
+      '@contentstack/cli-cm-import': ^1.5.5
+      '@contentstack/cli-command': ^1.2.5
       '@contentstack/cli-utilities': ^1.4.1
       '@oclif/plugin-help': ^5.1.19
       '@types/inquirer': ^9.0.3
@@ -926,7 +926,6 @@ importers:
       inquirer: 8.2.4
       inquirer-search-checkbox: ^1.0.0
       inquirer-search-list: ^1.2.6
-      inquirer-table-prompt: git@github.com:kego1992/inquirer-table-prompt.git
       lodash: ^4.17.15
       mocha: 10.1.0
       nock: ^13.1.0
@@ -953,7 +952,6 @@ importers:
       inquirer: 8.2.4
       inquirer-search-checkbox: 1.0.0
       inquirer-search-list: 1.2.6
-      inquirer-table-prompt: github.com/kego1992/inquirer-table-prompt/127e093a2e992edca1178d6e18740cc343f442d9
       lodash: 4.17.21
       open: 8.4.2
       ora: 5.4.1
@@ -4241,14 +4239,6 @@ packages:
       escape-string-regexp: 1.0.5
       supports-color: 5.5.0
 
-  /chalk/3.0.0:
-    resolution: {integrity: sha512-4D3B6Wf41KOYRFdszmDqMCGq5VV/uMAB273JILmO+3jAlh8X4qDtdtgCR3fxtbLEMzSx22QdhnDcJvu2u1fVwg==}
-    engines: {node: '>=8'}
-    dependencies:
-      ansi-styles: 4.3.0
-      supports-color: 7.2.0
-    dev: false
-
   /chalk/4.1.2:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
     engines: {node: '>=10'}
@@ -4355,6 +4345,7 @@ packages:
     engines: {node: '>= 0.2.0'}
     dependencies:
       colors: 1.0.3
+    dev: true
 
   /cli-truncate/0.2.1:
     resolution: {integrity: sha512-f4r4yJnbT++qUPI9NR4XLDLq41gQ+uqnPItWG0F5ZkehuNiTTa3EY0S4AqTSUOeJ7/zU41oWPQSNkW5BqPL9bg==}
@@ -4503,6 +4494,7 @@ packages:
   /colors/1.0.3:
     resolution: {integrity: sha512-pFGrxThWcWQ2MsAz6RtgeWe4NK2kUE1WfsrvvlctdII745EW9I0yflqhe7++M5LEc7bV2c/9/5zc8sFcpL0Drw==}
     engines: {node: '>=0.1.90'}
+    dev: true
 
   /colorspace/1.1.4:
     resolution: {integrity: sha512-BgvKJiuVu1igBUF2kEjRCZXol6wiiGbY5ipL/oVPwm0BL9sIpMIzM8IK7vwuxIIzOXMV3Ey5w+vxhm0rR/TN8w==}
@@ -6736,25 +6728,6 @@ packages:
       rxjs: 5.5.12
       string-width: 2.1.1
       strip-ansi: 4.0.0
-      through: 2.3.8
-    dev: false
-
-  /inquirer/7.3.3:
-    resolution: {integrity: sha512-JG3eIAj5V9CwcGvuOmoo6LB9kbAYT8HXffUl6memuszlwDC/qvFAJw49XJ5NROSFNPxp3iQg1GqkFhaY/CR0IA==}
-    engines: {node: '>=8.0.0'}
-    dependencies:
-      ansi-escapes: 4.3.2
-      chalk: 4.1.2
-      cli-cursor: 3.1.0
-      cli-width: 3.0.0
-      external-editor: 3.1.0
-      figures: 3.2.0
-      lodash: 4.17.21
-      mute-stream: 0.0.8
-      run-async: 2.4.1
-      rxjs: 6.6.7
-      string-width: 4.2.3
-      strip-ansi: 6.0.1
       through: 2.3.8
     dev: false
 
@@ -11895,16 +11868,4 @@ packages:
 
   /zen-observable/0.8.15:
     resolution: {integrity: sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==}
-    dev: false
-
-  github.com/kego1992/inquirer-table-prompt/127e093a2e992edca1178d6e18740cc343f442d9:
-    resolution: {tarball: https://codeload.github.com/kego1992/inquirer-table-prompt/tar.gz/127e093a2e992edca1178d6e18740cc343f442d9}
-    name: inquirer-table-prompt
-    version: 0.2.1
-    dependencies:
-      chalk: 3.0.0
-      cli-cursor: 3.1.0
-      cli-table: 0.3.11
-      figures: 3.2.0
-      inquirer: 7.3.3
     dev: false
