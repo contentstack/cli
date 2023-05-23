@@ -14,7 +14,7 @@ let filePath;
 
 /* eslint-disable no-param-reassign */
 
-async function getAssets(stack, folder, bulkPublish, environments, locale, skip = 0) {
+async function getAssets(stack, folder, bulkPublish, environments, locale, apiVersion, skip = 0) {
   return new Promise((resolve, reject) => {
     let queryParams = {
       folder: folder,
@@ -33,7 +33,7 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, skip 
           let assets = assetResponse.items;
           for (let index = 0; index < assetResponse.items.length; index++) {
             if (assets[index].is_dir === true) {
-              await getAssets(stack, assets[index].uid, bulkPublish, environments, locale, 0);
+              await getAssets(stack, assets[index].uid, bulkPublish, environments, locale, apiVersion, 0);
               continue;
             }
             if (bulkPublish) {
@@ -51,6 +51,7 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, skip 
                   environments: environments,
                   locale,
                   stack: stack,
+                  apiVersion
                 });
                 bulkPublishSet = [];
               }
@@ -62,6 +63,7 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, skip 
                   environments: environments,
                   locale,
                   stack: stack,
+                  apiVersion
                 });
                 bulkPublishSet = [];
               }
@@ -79,7 +81,7 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, skip 
           if (skip === assetResponse.count) {
             return resolve(true);
           }
-          await getAssets(stack, folder, bulkPublish, environments, locale, skip);
+          await getAssets(stack, folder, bulkPublish, environments, locale, apiVersion, skip);
           return resolve();
         }
       })
@@ -102,7 +104,7 @@ function setConfig(conf, bp) {
   filePath = initializeLogger(logFileName);
 }
 
-async function start({ retryFailed, bulkPublish, environments, folderUid, locales }, stack, config) {
+async function start({ retryFailed, bulkPublish, environments, folderUid, locales, apiVersion }, stack, config) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`);
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`);
@@ -130,7 +132,7 @@ async function start({ retryFailed, bulkPublish, environments, folderUid, locale
   } else if (folderUid) {
     setConfig(config, bulkPublish);
     for (const element of locales) {
-      await getAssets(stack, folderUid, bulkPublish, environments, element);
+      await getAssets(stack, folderUid, bulkPublish, environments, element, apiVersion);
     }
   }
 }

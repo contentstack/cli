@@ -133,6 +133,10 @@ class CrossPublishCommand extends Command {
       _flags.bulkPublish = _flags['bulk-publish'];
       delete _flags['bulk-publish'];
     }
+    if ('api-version' in _flags) {
+      _flags.apiVersion = _flags['api-version'] || '3';
+      delete _flags['api-version'];
+    }
     if ('source-env' in _flags) {
       _flags.environment = _flags['source-env'];
       delete _flags['source-env'];
@@ -179,6 +183,9 @@ CrossPublishCommand.flags = {
     description:
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
+  }),
+  'api-version': flags.string({
+    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
   }),
   contentType: flags.string({
     char: 't',
