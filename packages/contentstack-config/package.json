@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "author": "Contentstack",
   "scripts": {
     "build": "npm run clean && npm run compile",
@@ -21,8 +21,8 @@
     "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
   },
   "dependencies": {
-    "@contentstack/cli-command": "^1.2.5",
-    "@contentstack/cli-utilities": "^1.4.1",
+    "@contentstack/cli-command": "^1.2.6",
+    "@contentstack/cli-utilities": "^1.4.2",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
     "inquirer": "8.2.4",
