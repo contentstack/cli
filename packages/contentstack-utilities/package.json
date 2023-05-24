@@ -1,9 +1,9 @@
 {
   "name": "@contentstack/cli-utilities",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Utilities for contentstack projects",
   "main": "lib/index.js",
-  "types": "./types/index.d.ts",
+  "types": "lib/index.d.ts",
   "scripts": {
     "prepack": "pnpm compile",
     "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
@@ -25,8 +25,7 @@
   ],
   "files": [
     "/npm-shrinkwrap.json",
-    "/lib",
-    "/types"
+    "/lib"
   ],
   "author": "contentstack",
   "license": "MIT",
@@ -40,7 +39,6 @@
     "inquirer": "8.2.4",
     "inquirer-search-checkbox": "^1.0.0",
     "inquirer-search-list": "^1.2.6",
-    "inquirer-table-prompt": "git@github.com:kego1992/inquirer-table-prompt.git",
     "lodash": "^4.17.15",
     "open": "^8.4.2",
     "ora": "^5.4.0",
