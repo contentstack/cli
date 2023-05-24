@@ -48,3 +48,5 @@ export {
   stdout,
 } from '@oclif/core';
 export { FlagInput, ArgInput } from '@oclif/core/lib/interfaces/parser';
+
+export { default as TablePrompt } from './inquirer-table-prompt';
