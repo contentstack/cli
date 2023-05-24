@@ -29,11 +29,13 @@ const isBlank = (variable) => {
 
 async function getStack(data) {
   const tokenDetails = data.token;
-  const client = await managementSDKClient({
+  const options = {
     host: data.host,
     application: `json-rte-migration/${packageValue.version}`,
     timeout: 120000,
-  });
+  };
+  if (data.branch) options.branchName = data.branch;
+  const client = await managementSDKClient(options);
   const stack = client.stack({ api_key: tokenDetails.apiKey, management_token: tokenDetails.token });
 
   stack.host = data.host;
@@ -86,6 +88,9 @@ async function getConfig(flags) {
       };
       if (flags.locale) {
         config.locale = [flags.locale];
+      }
+      if (flags.branch) {
+        config.branch = flags['branch'];
       }
     }
     if (checkConfig(config)) {
