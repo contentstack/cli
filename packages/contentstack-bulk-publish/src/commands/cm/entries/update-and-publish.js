@@ -15,7 +15,7 @@ class UpdateAndPublishCommand extends Command {
     addFieldsFlags.retryFailed = addFieldsFlags['retry-failed'] || addFieldsFlags.retryFailed || false;
     addFieldsFlags.contentTypes = addFieldsFlags['content-types'] || addFieldsFlags.contentTypes;
     addFieldsFlags.bulkPublish = addFieldsFlags['bulk-publish'] || addFieldsFlags.bulkPublish;
-    addFieldsFlags.apiVersion = addFieldsFlags['api-version'];
+    addFieldsFlags.apiVersion = addFieldsFlags['api-version'] || '3';
     delete addFieldsFlags['api-version'];
     delete addFieldsFlags['retry-failed'];
     delete addFieldsFlags['content-types'];
@@ -123,8 +123,7 @@ UpdateAndPublishCommand.flags = {
     default: 'true',
   }),
   'api-version': flags.string({
-    description : "API Version to be used",
-    default: '3'
+    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
   }),
   'content-types': flags.string({
     description: 'The Contenttypes from which entries will be published',
