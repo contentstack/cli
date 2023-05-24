@@ -5,8 +5,7 @@ import chalk, { Chalk } from "chalk";
 import replace from "lodash/replace";
 import { join, normalize } from "path";
 import isObject from "lodash/isObject";
-import { cliux as ux } from "@contentstack/cli-utilities";
-import { PrintOptions } from "@contentstack/cli-utilities/types/interfaces";
+import { cliux as ux, PrintOptions } from '@contentstack/cli-utilities';
 
 import { LoggerType, PrintType } from "../types";
 
