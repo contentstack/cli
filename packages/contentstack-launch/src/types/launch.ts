@@ -1,7 +1,6 @@
 import EventEmitter from 'events';
 import { ApolloClient } from '@apollo/client/core';
-import { ContentstackClient, FlagInput } from '@contentstack/cli-utilities';
-import { PrintOptions } from '@contentstack/cli-utilities/types/interfaces';
+import { ContentstackClient, FlagInput, PrintOptions } from '@contentstack/cli-utilities';
 
 import config from '../config';
 import { LoggerType } from './utils';
