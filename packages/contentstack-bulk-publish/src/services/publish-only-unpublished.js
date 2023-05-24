@@ -122,6 +122,10 @@ function flagsAdapter(flags) {
     flags.bulkPublish = flags['bulk-publish'];
     delete flags['bulk-publish'];
   }
+  if ('api-version' in flags) {
+    flags.apiVersion = flags['api-version'];
+    delete flags['api-version'];
+  }
   return flags;
 }
 
