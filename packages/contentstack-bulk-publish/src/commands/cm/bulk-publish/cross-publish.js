@@ -134,7 +134,7 @@ class CrossPublishCommand extends Command {
       delete _flags['bulk-publish'];
     }
     if ('api-version' in _flags) {
-      _flags.apiVersion = _flags['api-version'];
+      _flags.apiVersion = _flags['api-version'] || '3';
       delete _flags['api-version'];
     }
     if ('source-env' in _flags) {
@@ -185,8 +185,7 @@ CrossPublishCommand.flags = {
     default: 'true',
   }),
   'api-version': flags.string({
-    description : "API Version to be used",
-    default: '3'
+    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
   }),
   contentType: flags.string({
     char: 't',

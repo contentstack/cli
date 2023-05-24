@@ -46,8 +46,7 @@ PublishOnlyUnpublished.flags = {
     default: 'true',
   }),
   'api-version': flags.string({
-    description : "API Version to be used",
-    default: '3'
+    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
   }),
   sourceEnv: flags.string({
     char: 's',
