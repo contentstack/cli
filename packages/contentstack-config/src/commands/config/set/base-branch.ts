@@ -1,10 +1,10 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, flags, configHandler } from '@contentstack/cli-utilities';
+import { cliux, flags, configHandler, FlagInput } from '@contentstack/cli-utilities';
 import { interactive } from '../../../utils';
 
 export default class BranchSetCommand extends Command {
   static description = 'Set branch for CLI';
-  static flags = {
+  static flags: FlagInput = {
     'stack-api-key': flags.string({ char: 'k', description: 'Stack API Key' }),
     'base-branch': flags.string({ description: 'Base Branch' }),
   };
