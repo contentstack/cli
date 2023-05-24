@@ -50,7 +50,10 @@ StackPublishCommand.examples = [
   'csdx cm:stacks:publish --retry-failed [LOG FILE NAME]',
   '',
   'Using --branch flag',
-  'csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]'
+  'csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]',
+  '',
+  'Using --api-version flag',
+  'csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --api-version [API VERSION]',
 ];
 
 StackPublishCommand.flags = []; // Same as entries and assets.
