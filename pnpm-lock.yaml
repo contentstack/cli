@@ -6,7 +6,7 @@ importers:
     specifiers:
       pnpm: ^7.23.0
     devDependencies:
-      pnpm: 7.32.4
+      pnpm: 7.32.5
 
   packages/contentstack:
     specifiers:
@@ -3278,7 +3278,7 @@ packages:
   /@types/tar/6.1.5:
     resolution: {integrity: sha512-qm2I/RlZij5RofuY7vohTpYNaYcrSQlN2MyjucQc7ZweDwaEWkdN/EeNh6e9zjK6uEm6PwjdMXkcj05BxZdX1Q==}
     dependencies:
-      '@types/node': 16.18.32
+      '@types/node': 14.18.47
       minipass: 4.2.8
     dev: true
 
@@ -3893,8 +3893,8 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /aws-sdk/2.1382.0:
-    resolution: {integrity: sha512-WAe8bqD4kLdyZwRLHn16bt1kT1Ijdx2MWjWHpWR6krLxQKSA5WKXCdO4JoR/ywzbi0k5covQIAgl/ZSNtCvA4Q==}
+  /aws-sdk/2.1383.0:
+    resolution: {integrity: sha512-A8sdfcrlGYXqu5x8dpwh1lg9/o354leCx08N/irwH3U4sAwQin0vHsI9DHmaJ0PLNo/TuzeLE3s4dLpI3mWtww==}
     engines: {node: '>= 10.0.0'}
     dependencies:
       buffer: 4.9.2
@@ -4114,8 +4114,8 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001489
-      electron-to-chromium: 1.4.404
-      node-releases: 2.0.11
+      electron-to-chromium: 1.4.405
+      node-releases: 2.0.12
       update-browserslist-db: 1.0.11_browserslist@4.21.5
     dev: true
 
@@ -5149,8 +5149,8 @@ packages:
     dependencies:
       jake: 10.8.6
 
-  /electron-to-chromium/1.4.404:
-    resolution: {integrity: sha512-te57sWvQdpxmyd1GiswaodKdXdPgn9cN4ht8JlNa04QgtrfnUdWEo1261rY2vaC6TKaiHn0E7QerJWPKFCvMVw==}
+  /electron-to-chromium/1.4.405:
+    resolution: {integrity: sha512-JdDgnwU69FMZURoesf9gNOej2Cms1XJFfLk24y1IBtnAdhTcJY/mXnokmpmxHN59PcykBP4bgUU98vLY44Lhuw==}
     dev: true
 
   /elegant-spinner/1.0.1:
@@ -9111,8 +9111,8 @@ packages:
       process-on-spawn: 1.0.0
     dev: true
 
-  /node-releases/2.0.11:
-    resolution: {integrity: sha512-+M0PwXeU80kRohZ3aT4J/OnR+l9/KD2nVLNNoRgFtnf+umQVFdGBAO2N8+nCnEi0xlh/Wk3zOGC+vNNx+uM79Q==}
+  /node-releases/2.0.12:
+    resolution: {integrity: sha512-QzsYKWhXTWx8h1kIvqfnC++o0pEmpRQA/aenALsL2F4pqNVr7YzcdMlDij5WBnwftRbJCNJL/O7zdKaxKPHqgQ==}
     dev: true
 
   /nopt/5.0.0:
@@ -9424,7 +9424,7 @@ packages:
       '@oclif/plugin-help': 5.2.9
       '@oclif/plugin-not-found': 2.3.23
       '@oclif/plugin-warn-if-update-available': 2.0.37
-      aws-sdk: 2.1382.0
+      aws-sdk: 2.1383.0
       concurrently: 7.6.0
       debug: 4.3.4
       find-yarn-workspace-root: 2.0.0
@@ -9459,7 +9459,7 @@ packages:
       '@oclif/plugin-help': 5.2.9_2unbv6mhrq4prucamkttzlebiq
       '@oclif/plugin-not-found': 2.3.23_2unbv6mhrq4prucamkttzlebiq
       '@oclif/plugin-warn-if-update-available': 2.0.37_2unbv6mhrq4prucamkttzlebiq
-      aws-sdk: 2.1382.0
+      aws-sdk: 2.1383.0
       concurrently: 7.6.0
       debug: 4.3.4
       find-yarn-workspace-root: 2.0.0
@@ -9494,7 +9494,7 @@ packages:
       '@oclif/plugin-help': 5.2.9_5vebceyeyrbj46wx3onulzfguy
       '@oclif/plugin-not-found': 2.3.23_5vebceyeyrbj46wx3onulzfguy
       '@oclif/plugin-warn-if-update-available': 2.0.37_5vebceyeyrbj46wx3onulzfguy
-      aws-sdk: 2.1382.0
+      aws-sdk: 2.1383.0
       concurrently: 7.6.0
       debug: 4.3.4
       find-yarn-workspace-root: 2.0.0
@@ -9529,7 +9529,7 @@ packages:
       '@oclif/plugin-help': 5.2.9
       '@oclif/plugin-not-found': 2.3.23
       '@oclif/plugin-warn-if-update-available': 2.0.37
-      aws-sdk: 2.1382.0
+      aws-sdk: 2.1383.0
       concurrently: 7.6.0
       debug: 4.3.4
       find-yarn-workspace-root: 2.0.0
@@ -9564,7 +9564,7 @@ packages:
       '@oclif/plugin-help': 5.2.9_typescript@4.9.5
       '@oclif/plugin-not-found': 2.3.23_typescript@4.9.5
       '@oclif/plugin-warn-if-update-available': 2.0.37_typescript@4.9.5
-      aws-sdk: 2.1382.0
+      aws-sdk: 2.1383.0
       concurrently: 7.6.0
       debug: 4.3.4
       find-yarn-workspace-root: 2.0.0
@@ -10059,8 +10059,8 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /pnpm/7.32.4:
-    resolution: {integrity: sha512-glcBY+mMH/Fek+fCIEFt2H6uPqwEj+QG4P1ZjHVc1aRYnf1jzULB36zYBcuBfQdT18fxc51BoVmm8yIKNcCGJw==}
+  /pnpm/7.32.5:
+    resolution: {integrity: sha512-Q5WVGhbDVTEjyGk/njUOnOGIJPYCta8Vj7F8LW7hClMlFURSLjHjAD07G5v1Qi0lyhT4bo0QBTxVJnTunjP9FQ==}
     engines: {node: '>=14.6'}
     hasBin: true
     dev: true

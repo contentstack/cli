@@ -1,6 +1,6 @@
 'use strict';
 
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, AxiosResponseHeaders, RawAxiosResponseHeaders } from 'axios';
 
 export class HttpResponse<ResponseType = any> {
   /**
@@ -49,7 +49,7 @@ export class HttpResponse<ResponseType = any> {
    *
    * @returns {Object}
    */
-  get headers() {
+  get headers(): RawAxiosResponseHeaders | AxiosResponseHeaders {
     return this.response.headers;
   }
 }

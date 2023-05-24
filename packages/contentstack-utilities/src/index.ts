@@ -15,6 +15,7 @@ export * from './http-client';
 export { default as NodeCrypto } from './encrypter';
 export { Args as args, Flags as flags, Command } from './cli-ux';
 export * from './helpers';
+export * from './interfaces';
 
 // NOTE Exporting all @oclif/core modules: So that all the module can be acessed through cli-utility
 export {
@@ -46,6 +47,6 @@ export {
   stderr,
   stdout,
 } from '@oclif/core';
-export { FlagInput } from '@oclif/core/lib/interfaces/parser';
+export { FlagInput, ArgInput } from '@oclif/core/lib/interfaces/parser';
 
 export { default as TablePrompt } from './inquirer-table-prompt';

@@ -4,7 +4,7 @@
   "version": "1.2.5",
   "author": "Contentstack",
   "main": "lib/index.js",
-  "types": "./types/index.d.ts",
+  "types": "lib/index.d.ts",
   "scripts": {
     "prepack": "pnpm compile",
     "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
