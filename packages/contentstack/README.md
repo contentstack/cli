@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.7.3 darwin-arm64 node-v18.15.0
+@contentstack/cli/1.7.4 darwin-arm64 node-v18.15.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -303,7 +303,7 @@ FLAGS
   -e, --environments=<value>...  Environments where assets will be published
   -l, --locales=<value>...       Locales to where assets will be published
   -y, --yes                      Agree to process the command with the current configuration
-  --api-version=<value>          [default: 3] API Version to be used
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] By default this flag is set as true. It indicates that contentstack's
                                  bulkpublish API will be used to publish the assets
   --delivery-token=<value>       Delivery token for source environment
@@ -373,7 +373,7 @@ FLAGS
   -c, --config=<value>       Path to the config file
   -e, --environment=<value>  Source Environment
   -y, --yes                  Agree to process the command with the current configuration
-  --api-version=<value>      [default: 3] API Version to be used
+  --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --branch=<value>           [default: main] Specify the branch to fetch the content (by default the main branch is
                              selected)
   --bulk-unpublish=<value>   [default: true] By default this flag is set as true. It indicates that contentstack's
@@ -656,7 +656,7 @@ FLAGS
   -l, --locales=<value>...       Locales where entries will be published
   -t, --contentTypes=<value>...  The Contenttypes from which entries will be published
   -y, --yes                      Agree to process the command with the current configuration
-  --api-version=<value>          [default: 3] API Version to be used
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries will be published
@@ -720,7 +720,7 @@ FLAGS
   -e, --environments=<value>...  Environments where assets will be published
   -l, --locales=<value>...       Locales to where assets will be published
   -y, --yes                      Agree to process the command with the current configuration
-  --api-version=<value>          [default: 3] API Version to be used
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] By default this flag is set as true. It indicates that contentstack's
                                  bulkpublish API will be used to publish the assets
   --delivery-token=<value>       Delivery token for source environment
@@ -843,7 +843,7 @@ FLAGS
   -a, --alias=<value>        Alias(name) for the management token
   -c, --config=<value>       Path to the config file
   -y, --yes                  Agree to process the command with the current configuration
-  --api-version=<value>      [default: 3] API Version to be used
+  --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>     [default: true] This flag is set to true by default. It indicates that contentstack's
                              bulkpublish API will be used to publish the entries
   --content-type=<value>...  The Contenttypes from which entries will be published
@@ -916,7 +916,7 @@ FLAGS
   -e, --environments=<value>...  Environments where entries will be published
   -l, --locales=<value>...       Locales where entries will be published
   -y, --yes                      Agree to process the command with the current configuration
-  --api-version=<value>          [default: 3] API Version to be used
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries need to be published
@@ -992,7 +992,7 @@ FLAGS
   -e, --environments=<value>...  Destination environments
   -l, --locales=<value>...       Locales where edited entries will be published
   -y, --yes                      Agree to process the command with the current configuration
-  --api-version=<value>          [default: 3] API Version to be used
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes which will be checked for edited entries
@@ -1058,7 +1058,7 @@ FLAGS
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
   -y, --yes                      Agree to process the command with the current configuration
-  --api-version=<value>          [default: 3] API Version to be used
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries will be published
@@ -1155,6 +1155,7 @@ FLAGS
   -e, --environment=<value>  Source Environment
   -l, --locale=<value>       Locale filter
   -y, --yes                  Agree to process the command with the current configuration
+  --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-unpublish=<value>   [default: true] This flag is set to true by default. It indicates that contentstack's
                              bulkpublish API will be used to unpublish the entries and assets
   --content-type=<value>     Content type filter
@@ -1246,7 +1247,7 @@ FLAGS
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
   -y, --yes                      Agree to process the command with the current configuration
-  --api-version=<value>          [default: 3] API Version to be used
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --content-types=<value>...     The Contenttypes from which entries will be published
   --locales=<value>              Source locale
   --retry-failed=<value>         Retry publishing failed entries from the logfile
@@ -1370,7 +1371,7 @@ FLAGS
   -e, --environments=<value>...  Environments where entries will be published
   -l, --locales=<value>...       Locales where entries will be published
   -y, --yes                      Agree to process the command with the current configuration
-  --api-version=<value>          [default: 3] API Version to be used
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries need to be published
@@ -1448,7 +1449,7 @@ FLAGS
   -e, --environments=<value>...  Destination environments
   -l, --locales=<value>...       Locales where edited entries will be published
   -y, --yes                      Agree to process the command with the current configuration
-  --api-version=<value>          [default: 3] API Version to be used
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes which will be checked for edited entries
@@ -1516,7 +1517,7 @@ FLAGS
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
   -y, --yes                      Agree to process the command with the current configuration
-  --api-version=<value>          [default: 3] API Version to be used
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries will be published
@@ -1584,7 +1585,7 @@ FLAGS
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
   -y, --yes                      Agree to process the command with the current configuration
-  --api-version=<value>          [default: 3] API Version to be used
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --content-types=<value>...     The Contenttypes from which entries will be published
   --locales=<value>              Source locale
   --retry-failed=<value>         Retry publishing failed entries from the logfile
@@ -1648,7 +1649,7 @@ FLAGS
   -c, --config=<value>       Path to the config file
   -e, --environment=<value>  Source Environment
   -y, --yes                  Agree to process the command with the current configuration
-  --api-version=<value>      [default: 3] API Version to be used
+  --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --branch=<value>           [default: main] Specify the branch to fetch the content (by default the main branch is
                              selected)
   --bulk-unpublish=<value>   [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -1715,7 +1716,7 @@ FLAGS
   -l, --locales=<value>...       Locales where entries will be published
   -t, --contentTypes=<value>...  The Contenttypes from which entries will be published
   -y, --yes                      Agree to process the command with the current configuration
-  --api-version=<value>          [default: 3] API Version to be used
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries will be published
@@ -2314,6 +2315,12 @@ EXAMPLES
   Using --branch flag
 
   $ csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
+
+
+
+  Using --api-version flag
+
+  $ csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --api-version [API VERSION]
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish.js)_
@@ -2463,6 +2470,7 @@ FLAGS
   -e, --environment=<value>  Source Environment
   -l, --locale=<value>       Locale filter
   -y, --yes                  Agree to process the command with the current configuration
+  --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-unpublish=<value>   [default: true] This flag is set to true by default. It indicates that contentstack's
                              bulkpublish API will be used to unpublish the entries and assets
   --content-type=<value>     Content type filter
