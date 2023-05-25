@@ -15,7 +15,7 @@ class UnpublishCommand extends Command {
     unpublishFlags.retryFailed = unpublishFlags['retry-failed'] || unpublishFlags.retryFailed || false;
     unpublishFlags.bulkUnpublish = unpublishFlags['bulk-unpublish'] || unpublishFlags.bulkUnpublish;
     unpublishFlags.deliveryToken = unpublishFlags['delivery-token'] || unpublishFlags.deliveryToken;
-    unpublishFlags.apiVersion = unpublishFlags['api-version']
+    unpublishFlags.apiVersion = unpublishFlags['api-version'] || '3';
     unpublishFlags.onlyAssets = true;
     unpublishFlags.onlyEntries = false;
     delete unpublishFlags['api-version']
@@ -158,8 +158,7 @@ UnpublishCommand.flags = {
     default: 'true',
   }),
   'api-version': flags.string({
-    description : "API Version to be used",
-    default: '3'
+    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
   }),
   'delivery-token': flags.string({
     description: 'Delivery Token for source environment',
