@@ -28,7 +28,15 @@ const isBlank = (variable) => {
 };
 
 async function getStack(data) {
-  const tokenDetails = data.token;
+  const stackOptions = {};
+  if (data.token) {
+    const tokenDetails = data.token;
+    stackOptions['api_key'] = tokenDetails.apiKey;
+    stackOptions['management_token'] = tokenDetails.token;
+  }
+  if (data.stackApiKey) {
+    stackOptions['api_key'] = data.stackApiKey;
+  }
   const options = {
     host: data.host,
     application: `json-rte-migration/${packageValue.version}`,
@@ -36,7 +44,7 @@ async function getStack(data) {
   };
   if (data.branch) options.branchName = data.branch;
   const client = await managementSDKClient(options);
-  const stack = client.stack({ api_key: tokenDetails.apiKey, management_token: tokenDetails.token });
+  const stack = client.stack(stackOptions);
 
   stack.host = data.host;
   return stack;
