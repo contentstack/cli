@@ -20,7 +20,7 @@ class JsonMigrationCommand extends Command {
       if (isEmpty(config.paths)) {
         throw new Error('No value provided for the "paths" property in config.');
       }
-      const stackOptions = { token: token, host: this.cmaHost };
+      const stackOptions = { host: this.cmaHost };
       if (config.alias) {
         stackOptions.token = getToken(config.alias)
       }

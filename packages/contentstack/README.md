@@ -1300,14 +1300,16 @@ Migration script to migrate content from HTML RTE to JSON RTE
 
 ```
 USAGE
-  $ csdx cm:entries:migrate-html-rte [-c <value>] [-a <value>] [--content-type <value>] [--global-field] [-y] [--html-path
-    <value> --json-path <value>] [--delay <value>] [--locale <value>] [--batch-limit <value>]
+  $ csdx cm:entries:migrate-html-rte [-c <value>] [-a <value>] [--stack-api-key <value>] [--content-type <value>]
+    [--global-field] [-y] [--branch <value>] [--html-path <value> --json-path <value>] [--delay <value>] [--locale
+    <value>] [--batch-limit <value>]
 
 FLAGS
   -a, --alias=<value>        Alias(name) for the management token
   -c, --config-path=<value>  Path to config file
   -y, --yes                  Agree to process the command with the current configuration
   --batch-limit=<value>      [default: 50] Provide batch limit for updating entries
+  --branch=<value>           [optional] branch name
   --content-type=<value>     The content type from which entries will be migrated
   --delay=<value>            [default: 1000] Provide delay in ms between two entry update
   --global-field             This flag is set to false by default. It indicates that current content type is a
@@ -1315,6 +1317,7 @@ FLAGS
   --html-path=<value>        Provide path of HTML RTE to migrate
   --json-path=<value>        Provide path of JSON RTE to migrate
   --locale=<value>           The locale from which entries will be migrated
+  --stack-api-key=<value>    Stack api key to be used
 
 DESCRIPTION
   Migration script to migrate content from HTML RTE to JSON RTE
@@ -1914,14 +1917,16 @@ Migration script to migrate content from HTML RTE to JSON RTE
 
 ```
 USAGE
-  $ csdx cm:migrate-rte [-c <value>] [-a <value>] [--content-type <value>] [--global-field] [-y] [--html-path
-    <value> --json-path <value>] [--delay <value>] [--locale <value>] [--batch-limit <value>]
+  $ csdx cm:migrate-rte [-c <value>] [-a <value>] [--stack-api-key <value>] [--content-type <value>]
+    [--global-field] [-y] [--branch <value>] [--html-path <value> --json-path <value>] [--delay <value>] [--locale
+    <value>] [--batch-limit <value>]
 
 FLAGS
   -a, --alias=<value>        Alias(name) for the management token
   -c, --config-path=<value>  Path to config file
   -y, --yes                  Agree to process the command with the current configuration
   --batch-limit=<value>      [default: 50] Provide batch limit for updating entries
+  --branch=<value>           [optional] branch name
   --content-type=<value>     The content type from which entries will be migrated
   --delay=<value>            [default: 1000] Provide delay in ms between two entry update
   --global-field             This flag is set to false by default. It indicates that current content type is a
@@ -1929,6 +1934,7 @@ FLAGS
   --html-path=<value>        Provide path of HTML RTE to migrate
   --json-path=<value>        Provide path of JSON RTE to migrate
   --locale=<value>           The locale from which entries will be migrated
+  --stack-api-key=<value>    Stack api key to be used
 
 DESCRIPTION
   Migration script to migrate content from HTML RTE to JSON RTE
