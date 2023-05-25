@@ -74,6 +74,10 @@ JsonMigrationCommand.flags = {
     description: 'Alias(name) for the management token',
     required: false,
   }),
+  'stack-api-key': flags.string({
+    description: 'Stack api key to be used',
+    required: false,
+  }),
   'content-type': flags.string({
     description: 'The content type from which entries will be migrated',
     required: false,

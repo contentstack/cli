@@ -82,7 +82,6 @@ async function getConfig(flags) {
       config = require(nodePath.resolve(configPath));
     } else {
       config = {
-        alias: flags.alias,
         'content-type': flags['content-type'],
         'global-field': flags['global-field'],
         paths: [
@@ -99,6 +98,12 @@ async function getConfig(flags) {
       }
       if (flags.branch) {
         config.branch = flags['branch'];
+      }
+      if (flags.alias) {
+        config.alias = flags.alias
+      }
+      if (flags['stack-api-key']) {
+        config['stack-api-key'] = flags['stack-api-key']
       }
     }
     if (checkConfig(config)) {
