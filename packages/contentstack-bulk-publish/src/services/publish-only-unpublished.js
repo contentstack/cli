@@ -123,7 +123,7 @@ function flagsAdapter(flags) {
     delete flags['bulk-publish'];
   }
   if ('api-version' in flags) {
-    flags.apiVersion = flags['api-version'];
+    flags.apiVersion = flags['api-version'] || '3';
     delete flags['api-version'];
   }
   return flags;
