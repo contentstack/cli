@@ -20,8 +20,13 @@ class JsonMigrationCommand extends Command {
       if (isEmpty(config.paths)) {
         throw new Error('No value provided for the "paths" property in config.');
       }
-      const token = getToken(config.alias);
       const stackOptions = { token: token, host: this.cmaHost };
+      if (config.alias) {
+        stackOptions.token = getToken(config.alias)
+      }
+      if (config['stack-api-key']) {
+        stackOptions.stackApiKey = config['stack-api-key']
+      }
       if (config.branch) stackOptions.branch = config.branch;
       let stack = await getStack(stackOptions);
       config.entriesCount = 0;
