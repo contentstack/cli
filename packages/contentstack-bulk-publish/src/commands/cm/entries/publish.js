@@ -20,7 +20,7 @@ class PublishEntriesCommand extends Command {
     entriesFlags.bulkPublish = entriesFlags['bulk-publish'] || entriesFlags.bulkPublish;
     entriesFlags.publishAllContentTypes =
       entriesFlags['publish-all-content-types'] || entriesFlags.publishAllContentTypes || false;
-    entriesFlags.apiVersion = entriesFlags['api-version']
+    entriesFlags.apiVersion = entriesFlags['api-version'] || '3';
     delete entriesFlags['api-version'];
     delete entriesFlags['retry-failed'];
     delete entriesFlags['content-types'];
@@ -188,8 +188,7 @@ PublishEntriesCommand.flags = {
     default: 'true',
   }),
   'api-version': flags.string({
-    description : "API Version to be used",
-    default: '3'
+    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
   }),
   'publish-all-content-types': flags.boolean({
     description: '(optional) Publish all contenttypes (cannot be set when contentTypes flag is set)',
