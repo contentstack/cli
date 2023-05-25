@@ -14,6 +14,7 @@ import {
   ContentstackClient,
   managementSDKClient,
   managementSDKInitiator,
+  isAuthenticated,
 } from '@contentstack/cli-utilities';
 
 import config from '../../config';
@@ -50,6 +51,11 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   };
 
   public async init(): Promise<void> {
+    const _isAuthenticated = isAuthenticated();
+    if (!_isAuthenticated) {
+      console.log('Please login to execute this command, csdx auth:login');
+      this.exit(1);
+    }
     await super.init();
     const { args, flags } = await this.parse({
       flags: this.ctor.flags,
