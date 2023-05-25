@@ -2825,13 +2825,16 @@ Show deployment or server logs
 
 ```
 USAGE
-  $ csdx launch:logs [-d <value>] [-c <value>] [-e <value>] [--deployment <value>] [--type d|s]
+  $ csdx launch:logs [-d <value>] [-c <value>] [-e <value>] [--deployment <value>] [--type d|s] [--org <value>]
+    [--project <value>]
 
 FLAGS
   -c, --config=<value>       Path to the local '.cs-launch.json' file
   -d, --data-dir=<value>     Current working directory
   -e, --environment=<value>  Environment name or UID
   --deployment=<value>       Deployment number or UID
+  --org=<value>              [Optional] Provide the organization UID
+  --project=<value>          [Optional] Provide the project UID
   --type=<option>            [default: s] Choose type of flags to show logs
                              d) Deployment logs
                              s) Server logs
