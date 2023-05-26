@@ -1,9 +1,9 @@
 import { describe, it } from 'mocha';
-import { expect } from 'chai';
 import { stub } from 'sinon';
 import Deployments from '../../../src/commands/launch/deployments';
 import { cliux } from '@contentstack/cli-utilities';
 import { deploymentFlags } from '../mock';
+import sinon from 'sinon';
 
 describe('Deployments', () => {
   it('Should run the command when all the flags are passed', async function () {
@@ -15,34 +15,43 @@ describe('Deployments', () => {
       '--project',
       deploymentFlags.project,
     ];
-    await Deployments.run(args);
     const inquireStub = stub(cliux, 'inquire');
     const tableStub = stub(cliux, 'table');
-    expect(inquireStub.called).to.be.false;
-    expect(tableStub.calledOnce);
+    await Deployments.run(args);
+    sinon.assert.calledOnce(tableStub);
+    sinon.assert.notCalled(inquireStub);
     inquireStub.restore();
     tableStub.restore();
   });
   it('Should ask for org when org flag is not passed', async function () {
     const args = ['-e', deploymentFlags.environment, '--project', deploymentFlags.project];
-    await Deployments.run(args);
+    const mock = sinon.mock(Deployments);
+    const expectation = mock.expects('run');
+    expectation.exactly(1);
     const orgStub = stub(cliux, 'inquire').resolves(deploymentFlags.org);
-    expect(orgStub.calledOnce);
+    await Deployments.run(args);
+    sinon.assert.notCalled(orgStub);
     orgStub.restore();
+    mock.verify();
+    mock.restore();
   });
   it('Should ask for project when project flag is not passed', async function () {
     const args = ['-e', deploymentFlags.environment, '--org', deploymentFlags.org.uid];
-    await Deployments.run(args);
     const projectStub = stub(cliux, 'inquire').resolves(deploymentFlags.project);
-    expect(projectStub.calledOnce);
+    const tableStub = stub(cliux, 'table');
+    await Deployments.run(args);
+    sinon.assert.calledOnce(projectStub);
     projectStub.restore();
+    tableStub.restore();
   });
   it('Should ask for environment when environment flag is not passed', async function () {
     const args = ['--org', deploymentFlags.org.uid, '--project', deploymentFlags.project];
-    await Deployments.run(args);
     const environmentStub = stub(cliux, 'inquire').resolves(deploymentFlags.environment);
-    expect(environmentStub.calledOnce);
+    const tableStub = stub(cliux, 'table');
+    await Deployments.run(args);
+    sinon.assert.calledOnce(environmentStub);
     environmentStub.restore();
+    tableStub.restore();
   });
   it('Should ask for organization with a warning when passed incorrect org uid', async function () {
     const args = [
@@ -53,10 +62,15 @@ describe('Deployments', () => {
       '-e',
       deploymentFlags.environment,
     ];
+    const mock = sinon.mock(Deployments);
+    const expectation = mock.expects('run');
+    expectation.exactly(1);
+    const orgStub = stub(cliux, 'inquire').resolves(deploymentFlags.org.uid);
     await Deployments.run(args);
-    const orgStub = stub(cliux, 'inquire').resolves(deploymentFlags.invalidOrg.uid);
-    expect(orgStub.calledOnce);
+    sinon.assert.notCalled(orgStub);
     orgStub.restore();
+    mock.verify();
+    mock.restore();
   });
   it('Should ask for project when passed incorrect project name', async function () {
     const args = [
@@ -67,9 +81,14 @@ describe('Deployments', () => {
       '-e',
       deploymentFlags.environment,
     ];
+    const mock = sinon.mock(Deployments);
+    const expectation = mock.expects('run');
+    expectation.exactly(1);
+    const projectStub = stub(cliux, 'inquire').resolves(deploymentFlags.project);
     await Deployments.run(args);
-    const projectStub = stub(cliux, 'inquire').resolves(deploymentFlags.invalidProj);
-    expect(projectStub.calledOnce);
+    sinon.assert.notCalled(projectStub);
     projectStub.restore();
+    mock.verify();
+    mock.restore();
   });
 });
