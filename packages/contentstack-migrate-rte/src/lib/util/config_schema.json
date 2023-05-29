@@ -28,6 +28,14 @@
       "default": "",
       "examples": ["test1"]
     },
+    "branch": {
+      "$id": "#/properties/branch",
+      "type": "string",
+      "title": "The branch schema",
+      "description": "An explanation about the purpose of this instance.",
+      "default": "",
+      "examples": ["test1"]
+    },
     "content-type": {
       "$id": "#/properties/content-type",
       "type": "string",
