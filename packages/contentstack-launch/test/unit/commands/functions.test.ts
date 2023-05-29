@@ -1,5 +1,5 @@
 import { describe, it } from 'mocha';
-import { expect } from '@oclif/test';
+import { expect } from 'chai';
 import { stub, spy, assert } from 'sinon';
 import Functions from '../../../src/commands/launch/functions';
 import { FunctionsDirectoryNotFoundError } from '../../../src/util/cloud-function/errors/cloud-function.errors';
