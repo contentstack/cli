@@ -1,10 +1,8 @@
 import { describe, it } from 'mocha';
-import { expect } from 'chai';
-import { stub } from 'sinon';
 import Environments from '../../../src/commands/launch/environments';
 import { cliux } from '@contentstack/cli-utilities';
 import { testFlags } from '../mock';
-import sinon from 'sinon';
+import sinon, { stub } from 'sinon';
 import { config } from 'dotenv';
 
 config();
