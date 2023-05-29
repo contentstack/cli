@@ -2,6 +2,7 @@
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import { stub, createSandbox } from 'sinon';
+import { cliux } from '@contentstack/cli-utilities';
 import Logs from '../../../src/commands/launch/logs';
 import * as commonUtils from '../../../src/util/common-utility';
 import { logsMockData } from '../mock/index';
@@ -85,7 +86,10 @@ describe('Log', () => {
     });
 
     it('should select an environment and update the sharedConfig', async () => {
-      const inquireStub = sandbox.stub().resolves({ name: 'Environment 1' });
+      let inquireStub = stub(cliux, 'inquire');
+      inquireStub.callsFake(function () {
+        return Promise.resolve('Environment 1');
+      });
       const findStub = sandbox.stub().returns({ uid: 'Environment UID' });
       const logStub = sandbox.stub();
       const ux = {
