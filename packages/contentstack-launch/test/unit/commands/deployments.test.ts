@@ -1,9 +1,8 @@
 import { describe, it } from 'mocha';
-import { stub } from 'sinon';
 import Deployments from '../../../src/commands/launch/deployments';
 import { cliux } from '@contentstack/cli-utilities';
 import { testFlags } from '../mock';
-import sinon from 'sinon';
+import sinon, { stub } from 'sinon';
 import { config } from 'dotenv';
 
 config();
