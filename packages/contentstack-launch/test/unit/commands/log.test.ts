@@ -123,6 +123,8 @@ describe('Log', () => {
       logInstance.ux = ux;
 
       await logInstance.selectEnvironment();
+
+      inquireStub.restore();
     });
   });
 
