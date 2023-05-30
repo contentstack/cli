@@ -5,7 +5,6 @@ import { stub, spy, assert } from 'sinon';
 import Functions from '../../../src/commands/launch/functions';
 import { FunctionsDirectoryNotFoundError } from '../../../src/util/cloud-function/errors/cloud-function.errors';
 import fs from 'fs';
-import express from 'express';
 
 describe('Functions Command', () => {
   const doesFunctionsFolderExist = fs.existsSync('./functions');
@@ -26,7 +25,6 @@ describe('Functions Command', () => {
     if (doesFunctionsFolderExist === false) {
       fs.mkdirSync('./functions');
     }
-    const app = express();
     const processStub = stub(process, 'exit');
     const logStub = stub(console, 'log');
     const doFilesExistInFolder = fs.readdirSync('./functions');
@@ -47,9 +45,5 @@ describe('Functions Command', () => {
     }
     processStub.restore();
     logStub.restore();
-    app.listen().close((err) => {
-      console.log('closing server');
-      process.exit(err ? 1 : 0);
-    });
   });
 });
