@@ -1,3 +1,3 @@
-describe('Cleanup', async () => {
-  it('Cleanup', () => process.exit(0));
+describe('Cleanup', () => {
+  it('Should cleanup server instances', () => process.exit(0));
 });
