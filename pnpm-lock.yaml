@@ -918,7 +918,7 @@ importers:
       chalk: ^4.0.0
       cli-cursor: ^3.1.0
       cli-table: ^0.3.11
-      conf: ^10.1.2
+      conf: ^10.2.0
       debug: ^4.1.1
       eslint: ^8.18.0
       eslint-config-oclif: ^4.0.0
