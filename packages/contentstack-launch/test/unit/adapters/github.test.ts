@@ -162,6 +162,7 @@ describe('GitHub', () => {
           { name: 'NextJs', value: 'NEXTJS' },
           { name: 'Other', value: 'OTHER' },
         ],
+        repository: { fullName: 'Gatsby Starter' },
       },
     };
     beforeEach(function () {
