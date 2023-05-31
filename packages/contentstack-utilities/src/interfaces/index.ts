@@ -13,6 +13,10 @@ export interface InquirePayload {
   choices?: Array<any>;
   transformer?: Function;
   validate?(input: any, answers?: any): boolean | string | Promise<boolean | string>;
+  selectAll?: boolean;
+  pageSize?: number;
+  columns?: Record<string, any>[];
+  rows?: Array<any>;
 }
 
 export interface Region {
