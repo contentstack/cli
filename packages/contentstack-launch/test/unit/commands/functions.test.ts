@@ -1,4 +1,3 @@
-//THE FILE IS NAMED IN THIS MANNER SO THAT IT RUNS AFTER EVERY UNIT TEST IS RUN, DO NOT CHANGE
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 import { stub, spy, assert } from 'sinon';
