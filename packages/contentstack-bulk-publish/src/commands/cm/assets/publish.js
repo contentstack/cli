@@ -14,7 +14,7 @@ class AssetsPublishCommand extends Command {
     assetsFlags.retryFailed = assetsFlags['retry-failed'] || assetsFlags.retryFailed || false;
     assetsFlags.folderUid = assetsFlags['folder-uid'] || assetsFlags.folderUid;
     assetsFlags.bulkPublish = assetsFlags['bulk-publish'] || assetsFlags.bulkPublish;
-    assetsFlags.apiVersion = assetsFlags['api-version']
+    assetsFlags.apiVersion = assetsFlags['api-version'] || '3'; // setting default value for apiVersion
     delete assetsFlags['api-version']
     delete assetsFlags['retry-failed'];
     delete assetsFlags['folder-uid'];
@@ -214,8 +214,7 @@ AssetsPublishCommand.flags = {
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
   }),
   'api-version': flags.string({
-    description : "API Version to be used",
-    default: '3'
+    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
   }),
   'delivery-token': flags.string({ description: 'Delivery token for source environment' }),
   'source-env': flags.string({ description: 'Source environment' }),

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.2",
+  "version": "1.0.4",
   "commands": {
     "launch:base-command": {
       "id": "launch:base-command",
@@ -150,10 +150,10 @@
       "examples": [
         "$ csdx launch:functions",
         "$ csdx launch:functions --port=port",
-        "$ csdx launch:logs --data-dir <path/of/current/working/dir>",
-        "$ csdx launch:logs --config <path/to/launch/config/file>",
-        "$ csdx launch:logs --data-dir <path/of/current/working/dir> -p \"port number\"",
-        "$ csdx launch:logs --config <path/to/launch/config/file> --port=port"
+        "$ csdx launch:functions --data-dir <path/of/current/working/dir>",
+        "$ csdx launch:functions --config <path/to/launch/config/file>",
+        "$ csdx launch:functions --data-dir <path/of/current/working/dir> -p \"port number\"",
+        "$ csdx launch:functions --config <path/to/launch/config/file> --port=port"
       ],
       "flags": {
         "data-dir": {
@@ -349,6 +349,18 @@
             "s"
           ],
           "default": "s"
+        },
+        "org": {
+          "name": "org",
+          "type": "option",
+          "description": "[Optional] Provide the organization UID",
+          "multiple": false
+        },
+        "project": {
+          "name": "project",
+          "type": "option",
+          "description": "[Optional] Provide the project UID",
+          "multiple": false
         }
       },
       "args": {}
