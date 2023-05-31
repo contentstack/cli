@@ -7,6 +7,7 @@ import {
   printFlagDeprecation,
   flags,
   managementSDKClient,
+  FlagInput,
 } from '@contentstack/cli-utilities';
 import { askTokenType } from '../../../utils/interactive';
 import { tokenValidation } from '../../../utils';
@@ -28,7 +29,7 @@ export default class TokensAddCommand extends Command {
     '$ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery token>',
   ];
 
-  static flags = {
+  static flags: FlagInput = {
     alias: flags.string({ char: 'a', description: 'Name of the token alias' }),
     delivery: flags.boolean({
       char: 'd',
