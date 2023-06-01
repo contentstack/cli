@@ -79,7 +79,7 @@
         "$id": "#/properties/paths/items",
         "anyOf": [
           {
-            "$id": "#/properties/paths/items/anyOf/0",
+            "$id": "html-path and json-path are required",
             "type": "object",
             "title": "The first anyOf schema",
             "description": "An explanation about the purpose of this instance.",
@@ -258,11 +258,15 @@
   },
   "oneOf": [
     {
-      "required": ["alias"]
+      "type": "object",
+      "title": "stack-api-key",
+      "required": ["stack-api-key"]
     },
     {
-      "required": ["stack-api-key"]
+      "type": "object",
+      "title": "alias",
+      "required": ["alias"]
     }
-  ],  
+  ],
   "additionalProperties": true
 }
