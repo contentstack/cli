@@ -41,6 +41,11 @@ class ExportToCsvCommand extends Command {
       required: false,
       multiple: false,
     }),
+    branch: flags.string({
+      description: 'Branch from which entries need to be exported',
+      multiple: false,
+      required: false,
+    }),
   };
 
   async run() {
@@ -55,6 +60,7 @@ class ExportToCsvCommand extends Command {
           locale: locale,
           'content-type': contentTypesFlag,
           alias: managementTokenAlias,
+          branch: branchUid,
         },
       } = await this.parse(ExportToCsvCommand);
 
@@ -76,6 +82,7 @@ class ExportToCsvCommand extends Command {
             let stackAPIClient;
             let language;
             let contentTypes = [];
+            let stackBranches;
             const listOfTokens = configHandler.get('tokens');
 
             if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
@@ -110,7 +117,19 @@ class ExportToCsvCommand extends Command {
             }
 
             stackAPIClient = this.getStackClient(managementAPIClient, stack);
+
+            if (branchUid) {
+              stack.branch_uid = branchUid;
+              stackAPIClient = this.getStackClient(managementAPIClient, stack);
+            } else {
+              stackBranches = await this.getStackBranches(stackAPIClient);
+              const { branch } = await util.chooseBranch(stackBranches);
+              stack.branch_uid = branch;
+              stackAPIClient = this.getStackClient(managementAPIClient, stack);
+            }
+
             const contentTypeCount = await util.getContentTypeCount(stackAPIClient);
+
             const environments = await util.getEnvironments(stackAPIClient); // fetch environments, because in publish details only env uid are available and we need env names
 
             if (contentTypesFlag) {
@@ -208,13 +227,26 @@ class ExportToCsvCommand extends Command {
   }
 
   getStackClient(managementAPIClient, stack) {
+    const stackInit = {
+      api_key: stack.apiKey,
+      branch_uid: stack.branch_uid,
+    };
     if (stack.token) {
       return managementAPIClient.stack({
-        api_key: stack.apiKey,
+        ...stackInit,
         management_token: stack.token,
       });
     }
-    return managementAPIClient.stack({ api_key: stack.apiKey });
+    return managementAPIClient.stack(stackInit);
+  }
+
+  getStackBranches(stackAPIClient) {
+    return stackAPIClient
+      .branch()
+      .query()
+      .find()
+      .then(({ items }) => items)
+      .catch((_err) => {});
   }
 }
 
