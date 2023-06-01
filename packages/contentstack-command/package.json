@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-command",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.2.6",
+  "version": "1.2.8",
   "author": "Contentstack",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,7 +17,7 @@
     "format": "eslint src/**/*.ts --fix"
   },
   "dependencies": {
-    "@contentstack/cli-utilities": "^1.4.2",
+    "@contentstack/cli-utilities": "^1.4.4",
     "contentstack": "^3.10.1"
   },
   "devDependencies": {
