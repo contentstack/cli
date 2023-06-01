@@ -165,7 +165,7 @@ function throwConfigError(error) {
 }
 function checkConfig(config) {
   let v = new Validator();
-  let res = v.validate(config, configSchema, { throwFirst: true });
+  let res = v.validate(config, configSchema, {throwError: true, nestedErrors: true});
   return res.valid;
 }
 function prettyPrint(data) {
