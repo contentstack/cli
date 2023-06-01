@@ -123,9 +123,14 @@ class ExportToCsvCommand extends Command {
               stackAPIClient = this.getStackClient(managementAPIClient, stack);
             } else {
               stackBranches = await this.getStackBranches(stackAPIClient);
-              const { branch } = await util.chooseBranch(stackBranches);
-              stack.branch_uid = branch;
-              stackAPIClient = this.getStackClient(managementAPIClient, stack);
+              if (stackBranches === undefined) {
+                console.log('No branches found!');
+                stackAPIClient = this.getStackClient(managementAPIClient, stack);
+              } else {
+                const { branch } = await util.chooseBranch(stackBranches);
+                stack.branch_uid = branch;
+                stackAPIClient = this.getStackClient(managementAPIClient, stack);
+              }
             }
 
             const contentTypeCount = await util.getContentTypeCount(stackAPIClient);
@@ -245,7 +250,7 @@ class ExportToCsvCommand extends Command {
       .branch()
       .query()
       .find()
-      .then(({ items }) => items)
+      .then(({ items }) => (items !== undefined ? items : []))
       .catch((_err) => {});
   }
 }
