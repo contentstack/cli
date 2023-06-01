@@ -126,6 +126,26 @@ function chooseStack(managementAPIClient, orgUid) {
   });
 }
 
+async function chooseBranch(branchList) {
+  try {
+    const branches = await branchList;
+
+    const branchesArray = branches.map((branch) => branch.uid);
+
+    let _chooseBranch = [
+      {
+        type: 'list',
+        name: 'branch',
+        message: 'Choose a Branch',
+        choices: branchesArray,
+      },
+    ];
+    return await inquirer.prompt(_chooseBranch);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 function getStacks(managementAPIClient, orgUid) {
   return new Promise((resolve, reject) => {
     let result = {};
@@ -167,7 +187,7 @@ function chooseContentType(stackAPIClient, skip) {
 }
 
 function chooseInMemContentTypes(contentTypesList) {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     let _chooseContentType = [
       {
         type: 'checkbox-plus',
@@ -213,7 +233,7 @@ function getContentTypes(stackAPIClient, skip) {
     let result = {};
     stackAPIClient
       .contentType()
-      .query({ skip: skip * 100 })
+      .query({ skip: skip * 100, include_branch: true })
       .find()
       .then((contentTypes) => {
         contentTypes.items.forEach((contentType) => {
@@ -612,6 +632,7 @@ function wait(time) {
 module.exports = {
   chooseOrganization: chooseOrganization,
   chooseStack: chooseStack,
+  chooseBranch: chooseBranch,
   chooseContentType: chooseContentType,
   chooseLanguage: chooseLanguage,
   getEntries: getEntries,
