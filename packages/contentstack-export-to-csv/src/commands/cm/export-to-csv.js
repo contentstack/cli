@@ -119,12 +119,34 @@ class ExportToCsvCommand extends Command {
             stackAPIClient = this.getStackClient(managementAPIClient, stack);
 
             if (branchUid) {
-              stack.branch_uid = branchUid;
-              stackAPIClient = this.getStackClient(managementAPIClient, stack);
+              try {
+                const isBranchExist = await stackAPIClient.branch(branchUid).fetch();
+                if (isBranchExist && typeof isBranchExist === 'object') {
+                  stack.branch_uid = branchUid;
+                  stackAPIClient = this.getStackClient(managementAPIClient, stack);
+                }
+              } catch (error) {
+                switch (error.errorCode) {
+                  case 905: {
+                    console.log('Branch is not valid');
+                    stackBranches = await this.getStackBranches(stackAPIClient);
+                    const { branch } = await util.chooseBranch(stackBranches);
+                    stack.branch_uid = branch;
+                    stackAPIClient = this.getStackClient(managementAPIClient, stack);
+                    break;
+                  }
+                  case 412: {
+                    console.log('Branches are not part of your plan.');
+                    stackAPIClient = this.getStackClient(managementAPIClient, stack);
+                    break;
+                  }
+                }
+              }
             } else {
               stackBranches = await this.getStackBranches(stackAPIClient);
+
               if (stackBranches === undefined) {
-                console.log('No branches found!');
+                console.log('Branches are not part of your plan.');
                 stackAPIClient = this.getStackClient(managementAPIClient, stack);
               } else {
                 const { branch } = await util.chooseBranch(stackBranches);
