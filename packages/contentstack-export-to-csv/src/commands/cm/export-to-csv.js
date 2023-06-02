@@ -1,5 +1,5 @@
 const { Command } = require('@contentstack/cli-command');
-const { configHandler, managementSDKClient, flags, isAuthenticated } = require('@contentstack/cli-utilities');
+const { configHandler, managementSDKClient, flags, isAuthenticated, cliux } = require('@contentstack/cli-utilities');
 const util = require('../../util');
 const config = require('../../util/config');
 
@@ -128,7 +128,7 @@ class ExportToCsvCommand extends Command {
               } catch (error) {
                 switch (error.errorCode) {
                   case 905: {
-                    console.log('Branch is not valid');
+                    cliux.error('Branch is not valid');
                     stackBranches = await this.getStackBranches(stackAPIClient);
                     const { branch } = await util.chooseBranch(stackBranches);
                     stack.branch_uid = branch;
@@ -136,7 +136,7 @@ class ExportToCsvCommand extends Command {
                     break;
                   }
                   case 412: {
-                    console.log('Branches are not part of your plan.');
+                    cliux.error('Branches are not part of your plan.');
                     stackAPIClient = this.getStackClient(managementAPIClient, stack);
                     break;
                   }
@@ -144,9 +144,8 @@ class ExportToCsvCommand extends Command {
               }
             } else {
               stackBranches = await this.getStackBranches(stackAPIClient);
-
               if (stackBranches === undefined) {
-                console.log('Branches are not part of your plan.');
+                cliux.error('Branches are not part of your plan.');
                 stackAPIClient = this.getStackClient(managementAPIClient, stack);
               } else {
                 const { branch } = await util.chooseBranch(stackBranches);
