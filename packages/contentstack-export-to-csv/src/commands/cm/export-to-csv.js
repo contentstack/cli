@@ -149,9 +149,6 @@ class ExportToCsvCommand extends Command {
             } else {
               stackBranches = await this.getStackBranches(stackAPIClient);
               if (stackBranches === undefined) {
-                cliux.error(
-                  'You do not have access to Branches. Please contact the support team to add the Branches feature in your plan.',
-                );
                 stackAPIClient = this.getStackClient(managementAPIClient, stack);
               } else {
                 const { branch } = await util.chooseBranch(stackBranches);
