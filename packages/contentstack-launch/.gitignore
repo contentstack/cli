@@ -16,3 +16,4 @@ dependabot.yml
 *.todo
 /bkp
 .editorconfig
+/functions
