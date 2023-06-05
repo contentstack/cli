@@ -1,12 +1,13 @@
 import map from 'lodash/map';
 import find from 'lodash/find';
 import forEach from 'lodash/forEach';
+import isArray from 'lodash/isArray';
+import includes from 'lodash/includes';
 import { Flags, FlagInput, cliux as ux } from '@contentstack/cli-utilities';
 
-import { Logger } from '../../util';
 import { BaseCommand } from './base-command';
-import { LogPolling } from '../../util/index';
-import { environmentsQuery, projectsQuery } from '../../graphql';
+import { environmentsQuery } from '../../graphql';
+import { Logger, LogPolling, selectOrg, selectProject } from '../../util';
 import { EmitMessage, DeploymentLogResp, ServerLogResp } from '../../types';
 
 export default class Logs extends BaseCommand<typeof Logs> {
@@ -43,6 +44,12 @@ export default class Logs extends BaseCommand<typeof Logs> {
       d) Deployment logs
       s) Server logs
       `,
+    }),
+    org: Flags.string({
+      description: '[Optional] Provide the organization UID',
+    }),
+    project: Flags.string({
+      description: '[Optional] Provide the project UID',
     }),
   };
 
@@ -90,11 +97,21 @@ export default class Logs extends BaseCommand<typeof Logs> {
    * @memberof Logs
    */
   async checkAndSetProjectDetails(): Promise<void> {
-    if (!this.sharedConfig.currentConfig.organizationUid) {
-      await this.selectOrg();
-    }
     if (!this.sharedConfig.currentConfig.uid) {
-      await this.selectProject();
+      await selectOrg({
+        log: this.log,
+        flags: this.flags,
+        config: this.sharedConfig,
+        managementSdk: this.managementSdk,
+      });
+      await this.prepareApiClients(); // NOTE update org-id in header
+      await selectProject({
+        log: this.log,
+        flags: this.flags,
+        config: this.sharedConfig,
+        apolloClient: this.apolloClient,
+      });
+      await this.prepareApiClients(); // NOTE update project-id in header
     }
     await this.validateAndSelectEnvironment();
     if (this.flags.deployment) {
@@ -197,6 +214,12 @@ export default class Logs extends BaseCommand<typeof Logs> {
         this.log(`${formattedLogTimestamp}:  ${log.message}`, msgType);
       });
     } else if (msgType === 'error') {
+      if (isArray(message)) {
+        if (includes(map(message, 'extensions.exception.name'), 'NoServerlessRoutesError')) {
+          this.log('No server logs to display', 'info');
+          process.exit();
+        }
+      }
       this.log(message, msgType);
     }
   }
@@ -220,65 +243,5 @@ export default class Logs extends BaseCommand<typeof Logs> {
         process.exit(1);
       }
     }
-  }
-
-  /**
-   * @method selectOrg - select organization
-   *
-   * @return {*}  {Promise<void>}
-   * @memberof Logs
-   */
-  async selectOrg(): Promise<void> {
-    const organizations =
-      (await this.managementSdk
-        ?.organization()
-        .fetchAll()
-        .then(({ items }) => map(items, ({ uid, name }) => ({ name, value: name, uid })))
-        .catch((error) => {
-          this.log('Unable to fetch organizations.', 'warn');
-          this.log(error, 'error');
-          process.exit(1);
-        })) || [];
-    this.sharedConfig.currentConfig.organizationUid = await ux
-      .inquire({
-        type: 'search-list',
-        name: 'Organization',
-        choices: organizations,
-        message: 'Choose an organization',
-      })
-      .then((name) => (find(organizations, { name }) as Record<string, any>)?.uid);
-    await this.prepareApiClients();
-  }
-
-  /**
-   * @method selectProject - select projects
-   *
-   * @return {*}  {Promise<void>}
-   * @memberof Logs
-   */
-  async selectProject(): Promise<void> {
-    const projects = await this.apolloClient
-      .query({ query: projectsQuery, variables: { query: {} } })
-      .then(({ data: { projects } }) => projects)
-      .catch((error) => {
-        this.log('Unable to fetch projects.!', { color: 'yellow' });
-        this.log(error, 'error');
-        process.exit(1);
-      });
-
-    const listOfProjects = map(projects.edges, ({ node: { uid, name } }) => ({
-      name,
-      value: name,
-      uid,
-    }));
-    this.sharedConfig.currentConfig.uid = await ux
-      .inquire({
-        type: 'search-list',
-        name: 'Project',
-        choices: listOfProjects,
-        message: 'Choose a project',
-      })
-      .then((name) => (find(listOfProjects, { name }) as Record<string, any>)?.uid);
-    await this.prepareApiClients();
   }
 }
