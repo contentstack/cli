@@ -28,9 +28,15 @@ const isBlank = (variable) => {
 
 async function getStack(data) {
   const stackOptions = {};
+  const options = {
+    host: data.host,
+    application: `json-rte-migration/${packageValue.version}`,
+    timeout: 120000,
+  };
   if (data.token) {
     const tokenDetails = data.token;
     stackOptions['api_key'] = tokenDetails.apiKey;
+    options['management_token'] = tokenDetails.token // need to pass management token so that the sdk doesn't get configured with authtoken (throws error in case of oauth, if the provided stack doesn't belong to the org selected while logging in with oauth)
     stackOptions['management_token'] = tokenDetails.token;
   }
   if (data.stackApiKey) {
@@ -39,11 +45,6 @@ async function getStack(data) {
     }
     stackOptions['api_key'] = data.stackApiKey;
   }
-  const options = {
-    host: data.host,
-    application: `json-rte-migration/${packageValue.version}`,
-    timeout: 120000,
-  };
   if (data.branch) options.branchName = data.branch;
   const client = await managementSDKClient(options);
   const stack = client.stack(stackOptions);
