@@ -129,7 +129,7 @@ class ExportToCsvCommand extends Command {
                 switch (error.errorCode) {
                   case 905: {
                     cliux.error(
-                      'The branch you entered does not exist in the selected stack. Please choose a valid branch.',
+                      'The branch you entered does not exist in the selected stack. Please enter a valid branch.',
                     );
                     process.exit(1);
                   }
