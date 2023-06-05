@@ -232,7 +232,7 @@ class ExportToCsvCommand extends Command {
 
             util.write(this, listOfUsers, fileName, 'organization details');
           } catch (error) {
-            if (error.message) {
+            if (error.message || error.errorMessage) {
               this.log(util.formatError(error));
             }
           }
@@ -240,7 +240,7 @@ class ExportToCsvCommand extends Command {
         }
       }
     } catch (error) {
-      if (error.message) {
+      if (error.message || error.errorMessage) {
         this.log(util.formatError(error));
       }
     }
