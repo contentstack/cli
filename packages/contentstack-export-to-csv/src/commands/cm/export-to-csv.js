@@ -128,7 +128,9 @@ class ExportToCsvCommand extends Command {
               } catch (error) {
                 switch (error.errorCode) {
                   case 905: {
-                    cliux.error('Branch is not valid');
+                    cliux.error(
+                      'The branch you entered does not exist in the selected stack. Please choose a valid branch.',
+                    );
                     stackBranches = await this.getStackBranches(stackAPIClient);
                     const { branch } = await util.chooseBranch(stackBranches);
                     stack.branch_uid = branch;
@@ -136,7 +138,9 @@ class ExportToCsvCommand extends Command {
                     break;
                   }
                   case 412: {
-                    cliux.error('Branches are not part of your plan.');
+                    cliux.error(
+                      'You do not have access to Branches. Please contact the support team to add the Branches feature in your plan.',
+                    );
                     stackAPIClient = this.getStackClient(managementAPIClient, stack);
                     break;
                   }
@@ -145,7 +149,9 @@ class ExportToCsvCommand extends Command {
             } else {
               stackBranches = await this.getStackBranches(stackAPIClient);
               if (stackBranches === undefined) {
-                cliux.error('Branches are not part of your plan.');
+                cliux.error(
+                  'You do not have access to Branches. Please contact the support team to add the Branches feature in your plan.',
+                );
                 stackAPIClient = this.getStackClient(managementAPIClient, stack);
               } else {
                 const { branch } = await util.chooseBranch(stackBranches);
