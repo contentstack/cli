@@ -1,4 +1,3 @@
-const contentstacksdk = require('@contentstack/management');
 const { Command } = require('@contentstack/cli-command');
 const command = new Command();
 const chalk = require('chalk');
@@ -21,7 +20,7 @@ const { JSDOM } = require('jsdom');
 const collapseWithSpace = require('collapse-whitespace');
 const { htmlToJson } = require('@contentstack/json-rte-serializer');
 const nodePath = require('path');
-const { cliux, managementSDKClient } = require('@contentstack/cli-utilities');
+const { cliux, managementSDKClient, isAuthenticated } = require('@contentstack/cli-utilities');
 const packageValue = require('../../../package.json');
 const isBlank = (variable) => {
   return isNil(variable) || isEmpty(variable);
@@ -35,6 +34,9 @@ async function getStack(data) {
     stackOptions['management_token'] = tokenDetails.token;
   }
   if (data.stackApiKey) {
+    if (!isAuthenticated()) {
+      throw new Error('Please login to proceed further. Or use `--alias` instead of `--stack-api-key` to proceed without logging in.')
+    }
     stackOptions['api_key'] = data.stackApiKey;
   }
   const options = {
