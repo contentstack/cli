@@ -420,7 +420,7 @@ function startupQuestions() {
   });
 }
 
-function getOrgUsers(managementAPIClient, orgUid, ecsv) {
+function getOrgUsers(managementAPIClient, orgUid) {
   return new Promise((resolve, reject) => {
     managementAPIClient
       .getUser({ include_orgs_roles: true })
@@ -462,10 +462,7 @@ async function getUsers(managementAPIClient, organization, params, result = []) 
       await wait(200);
       return getUsers(managementAPIClient, organization, params, result);
     }
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  } catch (error) {}
 }
 
 function getMappedUsers(users) {
