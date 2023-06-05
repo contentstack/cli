@@ -49,9 +49,11 @@ async function getStack(data) {
   const stack = client.stack(stackOptions);
 
   stack.host = data.host;
-  let branchData = await doesBranchExist(stack, data.branch);
-  if (branchData && branchData.errorCode) {
-    throw new Error(branchData.errorMessage)
+  if (data.branch) {
+    let branchData = await doesBranchExist(stack, data.branch);
+    if (branchData && branchData.errorCode) {
+      throw new Error(branchData.errorMessage)
+    }
   }
   return stack;
 };
