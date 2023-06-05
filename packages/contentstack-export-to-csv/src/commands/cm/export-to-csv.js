@@ -131,18 +131,13 @@ class ExportToCsvCommand extends Command {
                     cliux.error(
                       'The branch you entered does not exist in the selected stack. Please choose a valid branch.',
                     );
-                    stackBranches = await this.getStackBranches(stackAPIClient);
-                    const { branch } = await util.chooseBranch(stackBranches);
-                    stack.branch_uid = branch;
-                    stackAPIClient = this.getStackClient(managementAPIClient, stack);
-                    break;
+                    process.exit(1);
                   }
                   case 412: {
                     cliux.error(
                       'You do not have access to Branches. Please contact the support team to add the Branches feature in your plan.',
                     );
-                    stackAPIClient = this.getStackClient(managementAPIClient, stack);
-                    break;
+                    process.exit(1);
                   }
                 }
               }
