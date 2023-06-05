@@ -20,7 +20,7 @@ const { JSDOM } = require('jsdom');
 const collapseWithSpace = require('collapse-whitespace');
 const { htmlToJson } = require('@contentstack/json-rte-serializer');
 const nodePath = require('path');
-const { cliux, managementSDKClient, isAuthenticated } = require('@contentstack/cli-utilities');
+const { cliux, managementSDKClient, isAuthenticated, doesBranchExist } = require('@contentstack/cli-utilities');
 const packageValue = require('../../../package.json');
 const isBlank = (variable) => {
   return isNil(variable) || isEmpty(variable);
@@ -49,6 +49,10 @@ async function getStack(data) {
   const stack = client.stack(stackOptions);
 
   stack.host = data.host;
+  let branchData = await doesBranchExist(stack, data.branch);
+  if (branchData && branchData.errorCode) {
+    throw new Error(branchData.errorMessage)
+  }
   return stack;
 };
 
