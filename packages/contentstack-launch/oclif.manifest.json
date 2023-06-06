@@ -1,5 +1,5 @@
 {
-  "version": "1.0.4",
+  "version": "1.0.5",
   "commands": {
     "launch:base-command": {
       "id": "launch:base-command",
