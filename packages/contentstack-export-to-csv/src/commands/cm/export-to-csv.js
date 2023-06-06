@@ -1,5 +1,12 @@
 const { Command } = require('@contentstack/cli-command');
-const { configHandler, managementSDKClient, flags, isAuthenticated, cliux } = require('@contentstack/cli-utilities');
+const {
+  configHandler,
+  managementSDKClient,
+  flags,
+  isAuthenticated,
+  cliux,
+  doesBranchExist,
+} = require('@contentstack/cli-utilities');
 const util = require('../../util');
 const config = require('../../util/config');
 
@@ -120,25 +127,16 @@ class ExportToCsvCommand extends Command {
 
             if (branchUid) {
               try {
-                const isBranchExist = await stackAPIClient.branch(branchUid).fetch();
-                if (isBranchExist && typeof isBranchExist === 'object') {
-                  stack.branch_uid = branchUid;
-                  stackAPIClient = this.getStackClient(managementAPIClient, stack);
+                const branchExists = await doesBranchExist(stackAPIClient, branchUid);
+                if (branchExists && branchExists.errorCode) {
+                  throw new Error(branchExists.errorMessage);
                 }
+                stack.branch_uid = branchUid;
+                stackAPIClient = this.getStackClient(managementAPIClient, stack);
               } catch (error) {
-                switch (error.errorCode) {
-                  case 905: {
-                    cliux.error(
-                      'The branch you entered does not exist in the selected stack. Please enter a valid branch.',
-                    );
-                    process.exit(1);
-                  }
-                  case 412: {
-                    cliux.error(
-                      'You do not have access to Branches. Please contact the support team to add the Branches feature in your plan.',
-                    );
-                    process.exit(1);
-                  }
+                if (error.message || error.errorMessage) {
+                  this.log(util.formatError(error));
+                  this.exit();
                 }
               }
             } else {
