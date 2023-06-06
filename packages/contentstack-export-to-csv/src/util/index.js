@@ -8,6 +8,7 @@ const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 
 const config = require('./config.js');
+const { cliux } = require('@contentstack/cli-utilities');
 
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
@@ -142,7 +143,7 @@ async function chooseBranch(branchList) {
     ];
     return await inquirer.prompt(_chooseBranch);
   } catch (err) {
-    console.log(err);
+    cliux.error(err);
   }
 }
 
