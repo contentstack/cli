@@ -128,14 +128,14 @@ class ExportToCsvCommand extends Command {
             if (branchUid) {
               try {
                 const branchExists = await doesBranchExist(stackAPIClient, branchUid);
-                if (branchExists && branchExists.errorCode) {
+                if (branchExists?.errorCode) {
                   throw new Error(branchExists.errorMessage);
                 }
                 stack.branch_uid = branchUid;
                 stackAPIClient = this.getStackClient(managementAPIClient, stack);
               } catch (error) {
                 if (error.message || error.errorMessage) {
-                  this.log(util.formatError(error));
+                  cliux.error(util.formatError(error));
                   this.exit();
                 }
               }
