@@ -159,5 +159,9 @@ EXAMPLES
   $ csdx cm:stacks:import --branch <branch name>  --yes
 ```
 
+_Mangement token and config file: [example_config/management_config.json](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/example_config/management_config.json)_
+
+_Auth token and config file: [example_config/auth_config.json](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/example_config/auth_config.json)_
+
 _See code: [src/commands/cm/stacks/import.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.js)_
 <!-- commandsstop -->
