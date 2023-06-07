@@ -47,7 +47,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import/1.5.6 darwin-arm64 node-v18.15.0
+@contentstack/cli-cm-import/1.5.8 darwin-x64 node-v18.16.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -158,6 +158,10 @@ EXAMPLES
 
   $ csdx cm:stacks:import --branch <branch name>  --yes
 ```
+
+_Mangement token and config file: [example_config/management_config.json](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/example_config/management_config.json)_
+
+_Auth token and config file: [example_config/auth_config.json](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/example_config/auth_config.json)_
 
 _See code: [src/commands/cm/stacks/import.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.js)_
 <!-- commandsstop -->
