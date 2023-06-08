@@ -112,6 +112,18 @@ class ContentTypesImport {
 
       addlogs(this.importConfig, chalk.green('Content types imported successfully'), 'success');
     } catch (error) {
+      let message_content_type = "";
+      if (error.request !== undefined && JSON.parse(error.request.data).content_type !== undefined) {
+        if (JSON.parse(error.request.data).content_type.uid) {
+          message_content_type =
+            ' Update the content type with content_type_uid  - ' + JSON.parse(error.request.data).content_type.uid;
+        } else if (JSON.parse(error.request.data).content_type.title) {
+          message_content_type =
+            ' Update the content type with content_type_title  - ' + JSON.parse(error.request.data).content_type.title;
+        }
+        error.errorMessage =  error.errorMessage + message_content_type;
+      }
+      addlogs(this.importConfig, formatError(error.errorMessage), 'error');
       addlogs(this.importConfig, formatError(error), 'error');
       throw new Error('Failed to import content types');
     }
