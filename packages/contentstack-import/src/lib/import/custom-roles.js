@@ -49,7 +49,7 @@ module.exports = class ImportCustomRoles {
       mkdirp.sync(customRolesMapperPath);
 
       if (!self.customRoles) {
-        addlogs(self.config, chalk.white('No custom-roles found'), 'error');
+        addlogs(self.config, chalk.white('No custom-roles found'), 'info');
         return;
       }
       self.customRolesUids = Object.keys(self.customRoles);
