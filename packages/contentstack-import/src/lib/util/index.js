@@ -187,15 +187,6 @@ exports.getConfig = () => {
 };
 
 exports.formatError = (error) => {
-  let message_content_type = "";
-  if(error.request!==undefined && JSON.parse(error.request.data).content_type!==undefined) {
-    if(JSON.parse(error.request.data).content_type.uid) {
-      message_content_type = " Update the content type with content_type_uid  - "+JSON.parse(error.request.data).content_type.uid;
-    } else if (JSON.parse(error.request.data).content_type.title) {
-      message_content_type = " Update the content type with content_type_title  - "+JSON.parse(error.request.data).content_type.title;
-    }
-  }
-
   try {
     if (typeof error === 'string') {
       error = JSON.parse(error);
@@ -214,7 +205,7 @@ exports.formatError = (error) => {
       message += ' ' + [entity, error.errors[e]].join(' ');
     });
   }
-  return message+message_content_type;
+  return message;
 };
 
 exports.executeTask = (handler, options, tasks = []) => {
