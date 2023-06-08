@@ -568,7 +568,7 @@ module.exports = class ImportEntries {
           // map failed reference uids @mapper/language/unmapped-uids.json
           let refUidMapperPath = path.join(this.entryMapperPath, lang);
 
-          addlogs(this.config, 'staring to update the entry for reposting');
+          addlogs(this.config, 'Starting to update the entry for reposting');
 
           entries = _.map(entries, (entry) => {
             try {
