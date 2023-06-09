@@ -2,7 +2,7 @@ import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
 import path from 'path';
 import { cliux, managementSDKClient } from '@contentstack/cli-utilities';
-import { BranchDiffPayload } from '../interfaces/index';
+import { BranchDiffPayload, MergeSummary } from '../interfaces';
 import {
   askCompareBranch,
   askStackAPIKey,
@@ -12,8 +12,8 @@ import {
   writeFile,
   executeMergeRequest,
   getMergeQueueStatus,
+  readFile,
 } from './';
-
 
 export const prepareMergeRequestPayload = (options) => {
   return {
@@ -26,7 +26,35 @@ export const prepareMergeRequestPayload = (options) => {
   };
 };
 
+function validateMergeSummary(mergeSummary: MergeSummary) {
+  if (!mergeSummary) {
+    cliux.error(`Error: Invalid merge summary`, { color: 'red' });
+    process.exit(1);
+  } else if (!mergeSummary.requestPayload) {
+    cliux.print(`Error: Invalid merge summary, required 'requestPayload'`, { color: 'red' });
+    process.exit(1);
+  } else if (!mergeSummary.requestPayload.base_branch) {
+    cliux.print(`Error: Invalid merge summary, required 'requestPayload.base_branch'`, { color: 'red' });
+    process.exit(1);
+  } else if (!mergeSummary.requestPayload.compare_branch) {
+    cliux.print(`Error: Invalid merge summary, required 'requestPayload.compare_branch'`, { color: 'red' });
+    process.exit(1);
+  } else if (!mergeSummary.requestPayload.default_merge_strategy) {
+    cliux.print(`Error: Invalid merge summary, required 'requestPayload.default_merge_strategy'`, { color: 'red' });
+    process.exit(1);
+  } else if (!mergeSummary.requestPayload.default_merge_strategy) {
+    cliux.print(`Error: Invalid merge summary, required 'requestPayload.default_merge_strategy'`, { color: 'red' });
+    process.exit(1);
+  }
+}
+
 export const setupMergeInputs = async (mergeFlags) => {
+  if (mergeFlags['use-merge-summary']) {
+    let mergeSummary: MergeSummary = (await readFile(mergeFlags['use-merge-summary'])) as MergeSummary;
+    validateMergeSummary(mergeSummary);
+    mergeFlags.mergeSummary = mergeSummary;
+  }
+
   if (!mergeFlags['stack-api-key']) {
     mergeFlags['stack-api-key'] = await askStackAPIKey();
   }
