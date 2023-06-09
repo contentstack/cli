@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-auth",
   "description": "Contentstack CLI plugin for authentication activities",
-  "version": "1.3.2",
+  "version": "1.3.8",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
@@ -21,8 +21,8 @@
     "test:unit": "mocha --forbid-only \"test/unit/*.test.ts\""
   },
   "dependencies": {
-    "@contentstack/cli-command": "^1.2.3",
-    "@contentstack/cli-utilities": "^1.4.0",
+    "@contentstack/cli-command": "^1.2.8",
+    "@contentstack/cli-utilities": "^1.4.4",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
     "inquirer": "8.2.4",

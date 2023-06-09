@@ -2,6 +2,8 @@ import Conf from 'conf';
 import has from 'lodash/has';
 import { v4 as uuid } from 'uuid';
 import { existsSync, unlinkSync, readFileSync } from 'fs';
+import chalk from 'chalk';
+import { cliux } from '.';
 
 const ENC_KEY = process.env.ENC_KEY || 'encryptionKey';
 const ENCRYPT_CONF: boolean = has(process.env, 'ENCRYPT_CONF') ? process.env.ENCRYPT_CONF === 'true' : true;
@@ -80,11 +82,11 @@ class Config {
   private getObfuscationKey() {
     const obfuscationKeyName = 'obfuscation_key';
     const encConfig = new Conf({ configName: ENC_CONFIG_NAME });
-    let obfuscationKey: any = encConfig.get(obfuscationKeyName);
+    let obfuscationKey: any = encConfig?.get(obfuscationKeyName);
 
     if (!obfuscationKey) {
       encConfig.set(obfuscationKeyName, uuid());
-      obfuscationKey = encConfig.get(obfuscationKeyName);
+      obfuscationKey = encConfig?.get(obfuscationKeyName);
     }
 
     return obfuscationKey;
@@ -120,7 +122,9 @@ class Config {
           const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config);
           this.getEncryptedConfig(oldConfigData, true);
         } catch (_error) {
-          // console.trace(error.message)
+          cliux.print(chalk.red("Error: Config file is corrupted"));
+          cliux.print(_error);
+          process.exit(1);
         }
       }
     };
@@ -166,6 +170,9 @@ class Config {
           this.getDecryptedConfig(_configData); // NOTE reinitialize the config with old data and new decrypted file
         } catch (__error) {
           // console.trace(error.message)
+          cliux.print(chalk.red("Error: Config file is corrupted"));
+          cliux.print(_error)
+          process.exit(1);
         }
       }
     }
@@ -174,21 +181,21 @@ class Config {
   }
 
   get(key): string | any {
-    return this.config.get(key);
+    return this.config?.get(key);
   }
 
   async set(key, value) {
-    this.config.set(key, value);
+    this.config?.set(key, value);
     return this.config;
   }
 
   delete(key) {
-    this.config.delete(key);
+    this.config?.delete(key);
     return this.config;
   }
 
   clear() {
-    this.config.clear();
+    this.config?.clear();
   }
 }
 
