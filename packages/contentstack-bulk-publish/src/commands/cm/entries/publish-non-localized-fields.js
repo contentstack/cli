@@ -19,7 +19,9 @@ class NonlocalizedFieldChangesCommand extends Command {
       nonlocalizedFieldChangesFlags['source-env'] || nonlocalizedFieldChangesFlags.sourceEnv;
     nonlocalizedFieldChangesFlags.contentTypes =
       nonlocalizedFieldChangesFlags['content-types'] || nonlocalizedFieldChangesFlags.contentTypes;
-
+      nonlocalizedFieldChangesFlags.apiVersion = nonlocalizedFieldChangesFlags['api-version'] || '3';
+      
+    delete nonlocalizedFieldChangesFlags['api-version']
     delete nonlocalizedFieldChangesFlags['retry-failed'];
     delete nonlocalizedFieldChangesFlags['bulk-publish'];
     delete nonlocalizedFieldChangesFlags['source-env'];
@@ -169,6 +171,9 @@ NonlocalizedFieldChangesCommand.flags = {
     default: 'true',
     hidden: true,
     parse: printFlagDeprecation(['-b', '--bulkPublish'], ['--bulk-publish']),
+  }),
+  'api-version': flags.string({
+    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
   }),
   sourceEnv: flags.string({
     char: 's',

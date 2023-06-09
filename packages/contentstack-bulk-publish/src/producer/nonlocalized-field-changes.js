@@ -225,6 +225,7 @@ async function getEntries(
   bulkPublish,
   environments,
   sourceEnv,
+  apiVersion,
   skip = 0,
 ) {
   return new Promise((resolve, reject) => {
@@ -267,6 +268,7 @@ async function getEntries(
                         Type: 'entry',
                         environments: environments,
                         stack: stack,
+                        apiVersion
                       });
                       bulkPublishSet = [];
                     }
@@ -298,6 +300,7 @@ async function getEntries(
                 Type: 'entry',
                 environments: environments,
                 stack: stack,
+                apiVersion
               });
               bulkPublishSet = [];
             }
@@ -308,7 +311,7 @@ async function getEntries(
           bulkPublishSet = [];
           return resolve();
         }
-        await getEntries(stack, schema, contentType, languages, masterLocale, bulkPublish, environments, skipCount);
+        await getEntries(stack, schema, contentType, languages, masterLocale, bulkPublish, environments, sourceEnv, apiVersion, skipCount);
         return resolve();
       })
       .catch((error) => reject(error));
@@ -329,7 +332,7 @@ async function getLanguages(stack) {
   });
 }
 
-async function start({ retryFailed, bulkPublish, sourceEnv, contentTypes, environments }, stack, config) {
+async function start({ retryFailed, bulkPublish, sourceEnv, contentTypes, environments, apiVersion }, stack, config) {
   process.on('beforeExit', async () => {
     const isErrorLogEmpty = await isEmpty(`${filePath}.error`);
     const isSuccessLogEmpty = await isEmpty(`${filePath}.success`);
@@ -363,7 +366,7 @@ async function start({ retryFailed, bulkPublish, sourceEnv, contentTypes, enviro
     for (const element of contentTypes) {
       /* eslint-disable no-await-in-loop */
       const schema = await getContentTypeSchema(stack, element);
-      await getEntries(stack, schema, element, languages, masterLocale, bulkPublish, environments, sourceEnv);
+      await getEntries(stack, schema, element, languages, masterLocale, bulkPublish, environments, sourceEnv, apiVersion);
       /* eslint-enable no-await-in-loop */
     }
   }

@@ -1,5 +1,12 @@
 const { Command } = require('@contentstack/cli-command');
-const { configHandler, managementSDKClient, flags, isAuthenticated } = require('@contentstack/cli-utilities');
+const {
+  configHandler,
+  managementSDKClient,
+  flags,
+  isAuthenticated,
+  cliux,
+  doesBranchExist,
+} = require('@contentstack/cli-utilities');
 const util = require('../../util');
 const config = require('../../util/config');
 
@@ -41,6 +48,11 @@ class ExportToCsvCommand extends Command {
       required: false,
       multiple: false,
     }),
+    branch: flags.string({
+      description: 'Branch from which entries need to be exported',
+      multiple: false,
+      required: false,
+    }),
   };
 
   async run() {
@@ -55,6 +67,7 @@ class ExportToCsvCommand extends Command {
           locale: locale,
           'content-type': contentTypesFlag,
           alias: managementTokenAlias,
+          branch: branchUid,
         },
       } = await this.parse(ExportToCsvCommand);
 
@@ -76,6 +89,7 @@ class ExportToCsvCommand extends Command {
             let stackAPIClient;
             let language;
             let contentTypes = [];
+            let stackBranches;
             const listOfTokens = configHandler.get('tokens');
 
             if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
@@ -110,7 +124,34 @@ class ExportToCsvCommand extends Command {
             }
 
             stackAPIClient = this.getStackClient(managementAPIClient, stack);
+
+            if (branchUid) {
+              try {
+                const branchExists = await doesBranchExist(stackAPIClient, branchUid);
+                if (branchExists?.errorCode) {
+                  throw new Error(branchExists.errorMessage);
+                }
+                stack.branch_uid = branchUid;
+                stackAPIClient = this.getStackClient(managementAPIClient, stack);
+              } catch (error) {
+                if (error.message || error.errorMessage) {
+                  cliux.error(util.formatError(error));
+                  this.exit();
+                }
+              }
+            } else {
+              stackBranches = await this.getStackBranches(stackAPIClient);
+              if (stackBranches === undefined) {
+                stackAPIClient = this.getStackClient(managementAPIClient, stack);
+              } else {
+                const { branch } = await util.chooseBranch(stackBranches);
+                stack.branch_uid = branch;
+                stackAPIClient = this.getStackClient(managementAPIClient, stack);
+              }
+            }
+
             const contentTypeCount = await util.getContentTypeCount(stackAPIClient);
+
             const environments = await util.getEnvironments(stackAPIClient); // fetch environments, because in publish details only env uid are available and we need env names
 
             if (contentTypesFlag) {
@@ -189,7 +230,7 @@ class ExportToCsvCommand extends Command {
 
             util.write(this, listOfUsers, fileName, 'organization details');
           } catch (error) {
-            if (error.message) {
+            if (error.message || error.errorMessage) {
               this.log(util.formatError(error));
             }
           }
@@ -197,7 +238,7 @@ class ExportToCsvCommand extends Command {
         }
       }
     } catch (error) {
-      if (error.message) {
+      if (error.message || error.errorMessage) {
         this.log(util.formatError(error));
       }
     }
@@ -208,13 +249,26 @@ class ExportToCsvCommand extends Command {
   }
 
   getStackClient(managementAPIClient, stack) {
+    const stackInit = {
+      api_key: stack.apiKey,
+      branch_uid: stack.branch_uid,
+    };
     if (stack.token) {
       return managementAPIClient.stack({
-        api_key: stack.apiKey,
+        ...stackInit,
         management_token: stack.token,
       });
     }
-    return managementAPIClient.stack({ api_key: stack.apiKey });
+    return managementAPIClient.stack(stackInit);
+  }
+
+  getStackBranches(stackAPIClient) {
+    return stackAPIClient
+      .branch()
+      .query()
+      .find()
+      .then(({ items }) => (items !== undefined ? items : []))
+      .catch((_err) => {});
   }
 }
 
@@ -226,8 +280,8 @@ ExportToCsvCommand.examples = [
   'Exporting entries to csv',
   'csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type>',
   '',
-  'Exporting entries to csv with stack name provided',
-  'csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type> --stack-name <stack-name>',
+  'Exporting entries to csv with stack name provided and branch name provided',
+  'csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type> --stack-name <stack-name> --branch <branch-name>',
   '',
   'Exporting organization users to csv',
   'csdx cm:export-to-csv --action <users> --org <org-uid>',

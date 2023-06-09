@@ -1,11 +1,15 @@
-const inquirer = require('inquirer');
 const os = require('os');
-const checkboxPlus = require('inquirer-checkbox-plus-prompt');
-const config = require('./config.js');
-const fastcsv = require('fast-csv');
-const mkdirp = require('mkdirp');
 const fs = require('fs');
+const mkdirp = require('mkdirp');
+const find = require('lodash/find');
+const fastcsv = require('fast-csv');
+const inquirer = require('inquirer');
 const debug = require('debug')('export-to-csv');
+const checkboxPlus = require('inquirer-checkbox-plus-prompt');
+
+const config = require('./config.js');
+const { cliux } = require('@contentstack/cli-utilities');
+
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
 
@@ -45,21 +49,31 @@ function chooseOrganization(managementAPIClient, action) {
   });
 }
 
-function getOrganizations(managementAPIClient) {
-  return new Promise((resolve, reject) => {
-    let result = {};
+async function getOrganizations(managementAPIClient) {
+  try {
+    return await getOrganizationList(managementAPIClient, { skip: 0, page: 1, limit: 100 }, []);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 
-    managementAPIClient
-      .organization()
-      .fetchAll()
-      .then((organizations) => {
-        organizations.items.forEach((org) => {
-          result[org.name] = org.uid;
-        });
-        resolve(result);
-      })
-      .catch((error) => reject(error));
-  });
+async function getOrganizationList(managementAPIClient, params, result = []) {
+  const organizations = await managementAPIClient.organization().fetchAll(params);
+  result = result.concat(organizations.items);
+
+  if (!organizations.items || (organizations.items && organizations.items.length < params.limit)) {
+    const orgMap = {};
+    for (const org of result) {
+      orgMap[org.name] = org.uid;
+    }
+    return orgMap;
+  } else {
+    params.skip = params.page * params.limit;
+    params.page++;
+    await wait(200);
+    return getOrganizationList(managementAPIClient, params, result);
+  }
 }
 
 function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
@@ -113,6 +127,26 @@ function chooseStack(managementAPIClient, orgUid) {
   });
 }
 
+async function chooseBranch(branchList) {
+  try {
+    const branches = await branchList;
+
+    const branchesArray = branches.map((branch) => branch.uid);
+
+    let _chooseBranch = [
+      {
+        type: 'list',
+        name: 'branch',
+        message: 'Choose a Branch',
+        choices: branchesArray,
+      },
+    ];
+    return await inquirer.prompt(_chooseBranch);
+  } catch (err) {
+    cliux.error(err);
+  }
+}
+
 function getStacks(managementAPIClient, orgUid) {
   return new Promise((resolve, reject) => {
     let result = {};
@@ -154,7 +188,7 @@ function chooseContentType(stackAPIClient, skip) {
 }
 
 function chooseInMemContentTypes(contentTypesList) {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     let _chooseContentType = [
       {
         type: 'checkbox-plus',
@@ -200,7 +234,7 @@ function getContentTypes(stackAPIClient, skip) {
     let result = {};
     stackAPIClient
       .contentType()
-      .query({ skip: skip * 100 })
+      .query({ skip: skip * 100, include_branch: true })
       .find()
       .then((contentTypes) => {
         contentTypes.items.forEach((contentType) => {
@@ -387,30 +421,27 @@ function startupQuestions() {
   });
 }
 
-function getOrgUsers(managementAPIClient, orgUid, ecsv) {
+function getOrgUsers(managementAPIClient, orgUid) {
   return new Promise((resolve, reject) => {
     managementAPIClient
       .getUser({ include_orgs_roles: true })
       .then(async (response) => {
         let organization = response.organizations.filter((org) => org.uid === orgUid).pop();
+        if (!organization) return reject(new Error('Org UID not found.'));
         if (organization.is_owner === true) {
           return managementAPIClient
             .organization(organization.uid)
-            .fetch()
-            .then((_response) => {
-              _response
-                .getInvitations()
-                .then((_data) => {
-                  resolve({ items: _data.items });
-                })
-                .catch(reject);
-            });
+            .getInvitations()
+            .then((data) => {
+              resolve({ items: data.items });
+            })
+            .catch(reject);
         }
-        if (!organization.getInvitations) {
+        if (!organization.getInvitations && !find(organization.org_roles, 'admin')) {
           return reject(new Error(config.adminError));
         }
         try {
-          const users = await getUsers(organization, { skip: 0, page: 1, limit: 100 });
+          const users = await getUsers(managementAPIClient, organization, { skip: 0, page: 1, limit: 100 });
           return resolve({ items: users });
         } catch (error) {
           return reject(error);
@@ -420,9 +451,9 @@ function getOrgUsers(managementAPIClient, orgUid, ecsv) {
   });
 }
 
-async function getUsers(organization, params, result = []) {
+async function getUsers(managementAPIClient, organization, params, result = []) {
   try {
-    const users = await organization.getInvitations(params);
+    const users = await managementAPIClient.organization(organization.uid).getInvitations(params);
     if (!users.items || (users.items && !users.items.length)) {
       return result;
     } else {
@@ -430,12 +461,9 @@ async function getUsers(organization, params, result = []) {
       params.skip = params.page * params.limit;
       params.page++;
       await wait(200);
-      return getUsers(organization, params, result);
+      return getUsers(managementAPIClient, organization, params, result);
     }
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  } catch (error) {}
 }
 
 function getMappedUsers(users) {
@@ -464,22 +492,22 @@ function getOrgRoles(managementAPIClient, orgUid, ecsv) {
         if (organization.is_owner === true) {
           return managementAPIClient
             .organization(organization.uid)
-            .fetch()
-            .then((_response) => {
-              _response
-                .roles()
-                .then((_data) => {
-                  resolve({ items: _data.items });
-                })
-                .catch(reject);
-            });
+            .roles()
+            .then((roles) => {
+              resolve({ items: roles.items });
+            })
+            .catch(reject);
         }
-        if (!organization.roles) {
+        if (!organization.roles && !find(organization.org_roles, 'admin')) {
           return reject(new Error(config.adminError));
         }
-        organization
+
+        managementAPIClient
+          .organization(organization.uid)
           .roles()
-          .then((roles) => resolve(roles))
+          .then((roles) => {
+            resolve({ items: roles.items });
+          })
           .catch(reject);
       })
       .catch((error) => reject(error));
@@ -602,6 +630,7 @@ function wait(time) {
 module.exports = {
   chooseOrganization: chooseOrganization,
   chooseStack: chooseStack,
+  chooseBranch: chooseBranch,
   chooseContentType: chooseContentType,
   chooseLanguage: chooseLanguage,
   getEntries: getEntries,

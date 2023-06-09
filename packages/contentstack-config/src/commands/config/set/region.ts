@@ -6,6 +6,8 @@ import {
   args as _args,
   flags as _flags,
   authHandler,
+  FlagInput,
+  ArgInput,
 } from '@contentstack/cli-utilities';
 import { Region } from '../../../interfaces';
 import { regionHandler, interactive } from '../../../utils';
@@ -13,7 +15,7 @@ import { regionHandler, interactive } from '../../../utils';
 export default class RegionSetCommand extends Command {
   config: any;
   static description = 'Set region for CLI';
-  static flags = {
+  static flags: FlagInput = {
     cda: _flags.string({
       char: 'd',
       description:
@@ -42,10 +44,12 @@ export default class RegionSetCommand extends Command {
     '$ csdx config:set:region',
     '$ csdx config:set:region NA',
     '$ csdx config:set:region EU',
+    '$ csdx config:set:region AZURE-NA',
+    '$ csdx config:set:region AZURE-EU',
     '$ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India"',
   ];
 
-  static args = {
+  static args: ArgInput = {
     region: _args.string({ description: 'Name for the region' }),
   };
 
@@ -84,7 +88,7 @@ export default class RegionSetCommand extends Command {
         logger.error('failed to set the region', error);
         cliux.error(`Failed to set region due to: ${error.message}`);
       }
-    } else if (['NA', 'EU', 'AZURE-NA'].includes(selectedRegion)) {
+    } else if (['NA', 'EU', 'AZURE-NA', 'AZURE-EU'].includes(selectedRegion)) {
       const regionDetails: Region = regionHandler.setRegion(selectedRegion);
       await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
       cliux.success(`Region has been set to ${regionDetails.name}`);

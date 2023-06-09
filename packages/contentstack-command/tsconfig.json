@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "declaration": false,
+    "declaration": true,
     "importHelpers": true,
     "module": "commonjs",
     "outDir": "lib",
@@ -13,9 +13,5 @@
   },
   "include": [
     "src/**/*",
-    "../contentstack-config/src/types"
-  ],
-  "exclude": [
-    "src/**/*.d.ts"
   ]
 }

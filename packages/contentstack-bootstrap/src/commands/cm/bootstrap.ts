@@ -7,7 +7,13 @@ import {
   inquireAppType,
   inquireLivePreviewSupport,
 } from '../../bootstrap/interactive';
-import { printFlagDeprecation, managementSDKClient, flags, isAuthenticated } from '@contentstack/cli-utilities';
+import {
+  printFlagDeprecation,
+  managementSDKClient,
+  flags,
+  isAuthenticated,
+  FlagInput,
+} from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
 
@@ -24,7 +30,7 @@ export default class BootstrapCommand extends Command {
     '$ csdx cm:bootstrap --app-name "reactjs-starter" --project-dir <path/to/setup/the/app> --org "your-org-uid" --stack-name "stack-name"',
   ];
 
-  static flags = {
+  static flags: FlagInput = {
     'app-name': flags.string({
       description:
         'App name, reactjs-starter, nextjs-starter, gatsby-starter, angular-starter, nuxt-starter, vue-starter, stencil-starter',
