@@ -65,11 +65,11 @@ module.exports = class ImportGlobalFields {
       let snipUids = Object.keys(self.globalfields);
       return Promise.map(
         snipUids,
-        function (snipUid) {
+        async function (snipUid) {
           let flag = { supressed: false };
           let snip = self.globalfields[snipUid];
           extension_supress(snip.schema, self.config.preserveStackVersion, self.installedExtensions);
-          removeReferenceFields(snip.schema, flag);
+          await removeReferenceFields(snip.schema, flag, self.stackAPIClient);
 
           if (flag.supressed) {
             // eslint-disable-next-line no-undef
