@@ -48,7 +48,7 @@ class AuthHandler {
     this.authEmailKeyName = 'email';
     this.oauthAccessTokenKeyName = 'oauthAccessToken';
     this.oauthDateTimeKeyName = 'oauthDateTime';
-    this.oauthUserUidKeyName = 'oauthUserUid';
+    this.oauthUserUidKeyName = 'userUid';
     this.oauthOrgUidKeyName = 'oauthOrgUid';
     this.oauthRefreshTokenKeyName = 'oauthRefreshToken';
     this.authorisationTypeKeyName = 'authorisationType';
@@ -126,9 +126,41 @@ class AuthHandler {
                   `You can review the access permissions on the page - ${this.OAuthBaseURL}/#!/marketplace/authorized-apps`,
                 );
                 res.writeHead(200, { 'Content-Type': 'text/html' });
-                res.end(
-                  `<h1>Successfully authorized!</h1><h2>You can close this window now.</h2><p>You can review the access permissions on - <a href="${this.OAuthBaseURL}/#!/marketplace/authorized-apps" target="_blank">Authorized Apps page</a></p>`,
-                );
+                res.end(`<style>
+                body {
+                  font-family: Arial, sans-serif;
+                  text-align: center;
+                  margin-top: 100px;
+                }
+              
+                p {
+                  color: #475161;
+                  margin-bottom: 20px;
+                }
+                p button {
+                  background-color: #6c5ce7;
+                  color: #fff;
+                  border: 1px solid transparent;
+                  border-radius: 4px;
+                  font-weight: 600;
+                  line-height: 100%;
+                  text-align: center;
+                  min-height: 2rem;
+                  padding: 0.3125rem 1rem;
+                }
+              </style>
+              <h1 style="color: #6c5ce7">Successfully authorized!</h1>
+              <p style="color: #475161; font-size: 16px; font-weight: 600">You can close this window now.</p>
+              <p>
+                You can review the access permissions on the
+                <a
+                  style="color: #6c5ce7; text-decoration: none"
+                  href="${this.OAuthBaseURL}/#!/marketplace/authorized-apps"
+                  target="_blank"
+                  >Authorized Apps page</a
+                >.
+              </p>`);
+
                 stopServer();
               })
               .catch((error) => {
@@ -377,7 +409,7 @@ class AuthHandler {
     });
   }
 
-  async isAuthenticated(): Promise<boolean> {
+  isAuthenticated(): boolean {
     const authorizationType = configHandler.get(this.authorisationTypeKeyName);
     return (
       authorizationType === this.authorisationTypeOAUTHValue || authorizationType === this.authorisationTypeAUTHValue
