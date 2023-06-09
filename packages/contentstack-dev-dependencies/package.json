@@ -1,9 +1,9 @@
 {
   "name": "@contentstack/cli-dev-dependencies",
-  "version": "1.2.1",
+  "version": "1.2.3",
   "description": "Customized dev dependencies for ContentStack projects",
   "main": "lib/index.js",
-  "types": "./types/index.d.ts",
+  "types": "lib/index.d.ts",
   "scripts": {
     "prepack": "pnpm compile",
     "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
@@ -21,8 +21,8 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.21",
-    "@oclif/core": "^2.3.0"
+    "@oclif/core": "^2.8.5",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@types/node": "^14.14.32",
