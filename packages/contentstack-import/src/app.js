@@ -175,9 +175,9 @@ const createBackup = (backupDirPath, config) => {
         return resolve(backupDirPath);
       });
     } else {
-      //handle error :- Cannot copy to a subdirectory of itself 
-      if (config.data === "." || config.data === "./") {
-        const tempDestination = `${os.platform() === 'darwin' ? '/private/tmp' : '/tmp'}/${backupDirPath}`;
+      //handle mac error :- Cannot copy to a subdirectory of itself 
+      if (os.platform() === 'darwin' && (config.data === "." || config.data === "./")) {
+        const tempDestination = `/private/tmp/${backupDirPath}`;
         copySync(config.data, tempDestination);
         copySync(tempDestination, backupDirPath);
         removeSync(tempDestination);
