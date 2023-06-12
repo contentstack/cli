@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.7.5 darwin-arm64 node-v18.15.0
+@contentstack/cli/1.7.6 darwin-x64 node-v18.16.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -1300,14 +1300,15 @@ Migration script to migrate content from HTML RTE to JSON RTE
 
 ```
 USAGE
-  $ csdx cm:entries:migrate-html-rte [-c <value>] [-a <value>] [--content-type <value>] [--global-field] [-y] [--html-path
-    <value> --json-path <value>] [--delay <value>] [--locale <value>] [--batch-limit <value>]
+  $ csdx cm:entries:migrate-html-rte [-c <value>] [-a <value>] [--content-type <value>] [--global-field] [-y] [--branch <value>]
+    [--html-path <value> --json-path <value>] [--delay <value>] [--locale <value>] [--batch-limit <value>]
 
 FLAGS
   -a, --alias=<value>        Alias(name) for the management token
   -c, --config-path=<value>  Path to config file
   -y, --yes                  Agree to process the command with the current configuration
   --batch-limit=<value>      [default: 50] Provide batch limit for updating entries
+  --branch=<value>           [optional] branch name
   --content-type=<value>     The content type from which entries will be migrated
   --delay=<value>            [default: 1000] Provide delay in ms between two entry update
   --global-field             This flag is set to false by default. It indicates that current content type is a
@@ -1914,14 +1915,15 @@ Migration script to migrate content from HTML RTE to JSON RTE
 
 ```
 USAGE
-  $ csdx cm:migrate-rte [-c <value>] [-a <value>] [--content-type <value>] [--global-field] [-y] [--html-path
-    <value> --json-path <value>] [--delay <value>] [--locale <value>] [--batch-limit <value>]
+  $ csdx cm:migrate-rte [-c <value>] [-a <value>] [--content-type <value>] [--global-field] [-y] [--branch <value>]
+    [--html-path <value> --json-path <value>] [--delay <value>] [--locale <value>] [--batch-limit <value>]
 
 FLAGS
   -a, --alias=<value>        Alias(name) for the management token
   -c, --config-path=<value>  Path to config file
   -y, --yes                  Agree to process the command with the current configuration
   --batch-limit=<value>      [default: 50] Provide batch limit for updating entries
+  --branch=<value>           [optional] branch name
   --content-type=<value>     The content type from which entries will be migrated
   --delay=<value>            [default: 1000] Provide delay in ms between two entry update
   --global-field             This flag is set to false by default. It indicates that current content type is a
@@ -2808,13 +2810,13 @@ EXAMPLES
 
   $ csdx launch:functions --port=port
 
-  $ csdx launch:logs --data-dir <path/of/current/working/dir>
+  $ csdx launch:functions --data-dir <path/of/current/working/dir>
 
-  $ csdx launch:logs --config <path/to/launch/config/file>
+  $ csdx launch:functions --config <path/to/launch/config/file>
 
-  $ csdx launch:logs --data-dir <path/of/current/working/dir> -p "port number"
+  $ csdx launch:functions --data-dir <path/of/current/working/dir> -p "port number"
 
-  $ csdx launch:logs --config <path/to/launch/config/file> --port=port
+  $ csdx launch:functions --config <path/to/launch/config/file> --port=port
 ```
 
 _See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/functions.ts)_
@@ -2825,13 +2827,16 @@ Show deployment or server logs
 
 ```
 USAGE
-  $ csdx launch:logs [-d <value>] [-c <value>] [-e <value>] [--deployment <value>] [--type d|s]
+  $ csdx launch:logs [-d <value>] [-c <value>] [-e <value>] [--deployment <value>] [--type d|s] [--org <value>]
+    [--project <value>]
 
 FLAGS
   -c, --config=<value>       Path to the local '.cs-launch.json' file
   -d, --data-dir=<value>     Current working directory
   -e, --environment=<value>  Environment name or UID
   --deployment=<value>       Deployment number or UID
+  --org=<value>              [Optional] Provide the organization UID
+  --project=<value>          [Optional] Provide the project UID
   --type=<option>            [default: s] Choose type of flags to show logs
                              d) Deployment logs
                              s) Server logs

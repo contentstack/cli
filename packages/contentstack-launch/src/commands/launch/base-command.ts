@@ -14,11 +14,15 @@ import {
   ContentstackClient,
   managementSDKClient,
   managementSDKInitiator,
+  isAuthenticated,
 } from '@contentstack/cli-utilities';
 
 import config from '../../config';
 import { GraphqlApiClient, Logger } from '../../util';
 import { ConfigType, LogFn, Providers } from '../../types';
+import Functions from './functions';
+import { logger } from '@contentstack/cli-utilities';
+import { cliux } from '@contentstack/cli-utilities';
 
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<(typeof BaseCommand)['baseFlags'] & T['flags']>;
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
@@ -50,6 +54,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   };
 
   public async init(): Promise<void> {
+    this.checkAuthenticated();
     await super.init();
     const { args, flags } = await this.parse({
       flags: this.ctor.flags,
@@ -69,6 +74,19 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     // Init logger
     const logger = new Logger(this.sharedConfig);
     this.log = logger.log.bind(logger);
+  }
+
+  public checkAuthenticated() {
+    const self = this;
+    if ((self as this & { id: string }).id === 'launch:functions') {
+      return;
+    }
+    const _isAuthenticated = isAuthenticated();
+    if (!_isAuthenticated) {
+      cliux.print('CLI_AUTH_WHOAMI_FAILED', { color: 'yellow' });
+      cliux.print('You are not logged in. Please login to execute this command, csdx auth:login', { color: 'red' });
+      this.exit(1);
+    }
   }
 
   protected async catch(err: Error & { exitCode?: number }): Promise<any> {
