@@ -33,7 +33,6 @@ module.exports = class ExportStack {
         .stack({ api_key: self.config.source_stack })
         .fetch()
         .catch((error) => {
-          console.log(error);
         });
 
       if (tempStackData && tempStackData.org_uid) {
