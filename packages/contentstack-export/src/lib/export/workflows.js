@@ -59,10 +59,8 @@ module.exports = class ExportWorkFlows {
           if (error.statusCode === 401) {
             addlogs(
               self.config,
-              chalk.red(
-                'You are not allowed to export workflow, Unless you provide email and password in config',
-                'error',
-              ),
+              'You are not allowed to export workflow, Unless you provide email and password in config',
+              'error',
             );
             return resolve();
           }
@@ -86,8 +84,7 @@ module.exports = class ExportWorkFlows {
         }
       }
     } catch (error) {
-      console.log('Error getting roles', error && error.message);
-      addlogs(self.config, 'Error fetching roles in export workflows task.', 'error');
+      addlogs(self.config, `Error fetching roles in export workflows task. ${formatError(error)}`, 'error');
       throw new Error({ message: 'Error fetching roles in export workflows task.' });
     }
   }
@@ -102,8 +99,7 @@ module.exports = class ExportWorkFlows {
         deleteItems.forEach((e) => delete workflow[e]);
       }
     } catch (error) {
-      console.log('Error getting workflow data', error && error.message);
-      addlogs(self.config, 'Error fetching workflow data in export workflows task.', 'error');
+      addlogs(self.config, `Error fetching workflow data in export workflows task. ${formatError(error)}`, 'error');
       throw error;
     }
   }
