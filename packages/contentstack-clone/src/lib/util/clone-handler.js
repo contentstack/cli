@@ -1,12 +1,12 @@
 const ora = require('ora');
 const path = require('path');
 const inquirer = require('inquirer');
-const rimraf = require('rimraf');
 const chalk = require('chalk');
+const prompt = require('prompt');
+const colors = require('@colors/colors/safe');
 
 let exportCmd = require('@contentstack/cli-cm-export');
 let importCmd = require('@contentstack/cli-cm-import');
-const { CustomAbortController } = require('./abort-controller');
 
 const {
   HandleOrgCommand,
@@ -56,6 +56,16 @@ let structureList = [
   'labels',
 ];
 let master_locale;
+
+// Overrides prompt's stop method
+prompt.stop = function () {
+  if (prompt.stopped) {
+      return;
+  }
+  prompt.emit('stop');
+  prompt.stopped = true;
+  return prompt;
+};
 
 class CloneHandler {
   constructor(opt) {
@@ -208,12 +218,6 @@ class CloneHandler {
       throw e;
     }
   }
-  setAbortController(abortController) {
-    this.abortController = abortController;
-  }
-  abort() {
-    this.abortController && this.abortController.abort();
-  }
   displayBackOptionMessage() {
     const ui = new inquirer.ui.BottomBar();
     ui.updateBottomBar(chalk.cyan('\nPress shift & left arrow together to undo the operation\n'));
@@ -252,7 +256,6 @@ class CloneHandler {
                 config.source_stack = null;
                 config.sourceStackBranch = null;
                 if (self.executingCommand != 0) {
-                  self.abort();
                   console.clear();
                   await cloneCommand.undo();
                 }
@@ -261,8 +264,7 @@ class CloneHandler {
             process.stdin.addListener('keypress', keyPressHandler);
             this.setBackKeyPressHandler(keyPressHandler);
 
-            const params = { org, isSource: true, msg: 'Select the source stack' };
-            await this.executeStackPrompt(params);
+            await this.executeStackPrompt({ org, isSource: true, msg: 'Select the source stack' });
           } else {
             return reject('Org not found.');
           }
@@ -312,7 +314,7 @@ class CloneHandler {
       await cloneCommand.execute(new SetBranchCommand(null, this));
 
       if (exportRes) {
-        this.executeDestination().catch(() => reject());
+        this.executeDestination().catch(() => { throw ''; });
       }
     } catch (error) {
       throw error;
@@ -323,59 +325,93 @@ class CloneHandler {
 
   async executeDestination() {
     return new Promise(async (resolve, reject) => {
-      let stackAbortController;
+      let keyPressHandler;
       try {
-        stackAbortController = new CustomAbortController();
-
         let canCreateStack = false;
-
         if (!config.target_stack) {
           canCreateStack = await inquirer.prompt(stackCreationConfirmation);
         }
 
         this.setExectingCommand(0);
-        if (!canCreateStack.stackCreate) {
-          if (!config.target_stack) {
-            const orgMsg = 'Choose an organization where the destination stack exists: ';
-            const org = await cloneCommand.execute(new HandleOrgCommand({ msg: orgMsg }, this));
+        this.removeBackKeyPressHandler();
 
-            if (org) {
-              const stackMsg = 'Choose the destination stack:';
-              await cloneCommand.execute(
-                new HandleDestinationStackCommand({ org, msg: stackMsg, stackAbortController, isSource: false }, this),
-              );
+        const orgMsgExistingStack = 'Choose an organization where the destination stack exists: ';
+        const orgMsgNewStack = 'Choose an organization where you want to create a stack: ';
+        const org = await cloneCommand.execute(new HandleOrgCommand({
+          msg: !canCreateStack.stackCreate ? orgMsgExistingStack : orgMsgNewStack
+        }, this));
+
+        let self = this;
+        if (org) {
+          keyPressHandler = async function (_ch, key) {
+            if (key.name === 'left' && key.shift) {
+              if (self.executingCommand === 1) {
+                self.setExectingCommand(3);
+              } else if (self.executingCommand === 2) {
+                self.setExectingCommand(4);
+              }
+              if (self.createNewStackPrompt) {
+                self.createNewStackPrompt.stop();
+              }
+              config.target_stack = null;
+              config.targetStackBranch = null;
+              if (self.executingCommand != 0) {
+                console.clear();
+                await cloneCommand.undo();
+              }
             }
-          }
+          };
+          process.stdin.addListener('keypress', keyPressHandler);
+          this.setBackKeyPressHandler(keyPressHandler);
 
-          // NOTE GET list of branches if branches enabled
-          if (config.target_stack) {
-            await cloneCommand.execute(
-              new HandleBranchCommand({ isSource: false, api_key: config.target_stack }, this),
-            );
-          }
+          await this.executeStackDestinationPrompt({ org, canCreateStack });
         } else {
-          const orgMsg = 'Choose an organization where you want to create a stack: ';
-          const destinationOrg = await cloneCommand.execute(new HandleOrgCommand({ msg: orgMsg }, this));
-          const orgUid = orgUidList[destinationOrg.Organization];
-          await cloneCommand.execute(new CreateNewStackCommand({ orgUid, stackAbortController }, this));
+          return reject('Org not found.');
         }
-        await cloneCommand.execute(new CloneTypeSelectionCommand(null, this));
+
         return resolve();
       } catch (error) {
-        console.log(error);
-        stackAbortController.signal.aborted = true;
         reject(error);
-      } finally {
-        // If not aborted and ran successfully
-        if (!stackAbortController.signal.aborted) {
-          // Call clean dir.
-          rimraf(this.pathDir, function () {
-            // eslint-disable-next-line no-console
-            console.log('Stack cloning process have been completed successfully');
-          });
-        }
       }
     });
+  }
+
+  async executeStackDestinationPrompt(params) {
+    try {
+      this.setExectingCommand(1);
+      const { org, canCreateStack } = params;
+      if (!canCreateStack.stackCreate) {
+        if (!config.target_stack) {
+          const stackMsg = 'Choose the destination stack:';
+          await cloneCommand.execute(new HandleDestinationStackCommand({ org, msg: stackMsg, isSource: false }, this));
+        }
+        if (config.target_stack) {
+          this.executeBranchDestinationPrompt(params);
+        }
+      } else {
+        const orgUid = orgUidList[org.Organization];
+        await cloneCommand.execute(new CreateNewStackCommand({ orgUid }, this));
+        this.removeBackKeyPressHandler();
+        await cloneCommand.execute(new CloneTypeSelectionCommand(null, this));
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async executeBranchDestinationPrompt(parentParams) {
+    try {
+      this.setExectingCommand(2);
+      await cloneCommand.execute(new HandleBranchCommand({ isSource: false, api_key: config.target_stack }, this, this.executeStackDestinationPrompt.bind(this, parentParams)));
+      this.removeBackKeyPressHandler();
+      await cloneCommand.execute(new CloneTypeSelectionCommand(null, this));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  setCreateNewStackPrompt(createNewStackPrompt) {
+    this.createNewStackPrompt = createNewStackPrompt;
   }
 
   async setBranch() {
@@ -453,38 +489,21 @@ class CloneHandler {
   }
 
   async createNewStack(options) {
-    let keyPressHandler;
     return new Promise(async (resolve, reject) => {
       try {
-        const { orgUid, stackAbortController } = options;
+        const { orgUid } = options;
+        this.displayBackOptionMessage();
         let inputvalue;
-        let uiPromise;
-
-        keyPressHandler = async function (_ch, key) {
-          if (key.name === 'left' && key.shift) {
-            stackAbortController.abort();
-            // We need to close the inquirer promise correctly, otherwise the unclosed question/answer text is displayed in next line.
-            if (uiPromise) {
-              uiPromise.ui.close();
-            }
-            console.clear();
-            process.stdin.removeListener('keypress', keyPressHandler);
-            await cloneCommand.undo();
-          }
-        };
-        process.stdin.addListener('keypress', keyPressHandler);
-
-        const ui = new inquirer.ui.BottomBar();
-        ui.updateBottomBar(chalk.cyan('\nPress shift & left arrow together to undo the operation\n'));
-
         if (!config.stackName) {
-          uiPromise = inquirer.prompt(stackName);
-          inputvalue = await uiPromise;
+          prompt.start();
+          prompt.message = '';
+          this.setCreateNewStackPrompt(prompt);
+          inputvalue = await this.getNewStackPromptResult();
+          this.setCreateNewStackPrompt(null);
         } else {
           inputvalue = { stack: config.stackName };
         }
-
-        if (stackAbortController.signal.aborted) {
+        if (this.executingCommand === 0 || !inputvalue) {
           return reject();
         }
 
@@ -504,15 +523,28 @@ class CloneHandler {
           });
       } catch (error) {
         return reject(error);
-      } finally {
-        if (keyPressHandler) {
-          process.stdin.removeListener('keypress', keyPressHandler);
-        }
       }
     });
   }
 
+  getNewStackPromptResult() {
+    return new Promise((resolve) => {
+      prompt.get({ properties: { name: { description: colors.white(stackName.message), default: colors.grey(stackName.default), } } },
+        function (_, result) {
+          if (prompt.stopped) {
+            prompt.stopped = false;
+            resolve();
+          } else {
+            let _name = result.name.replace(/\[\d+m/g, '');
+            _name = _name.replace(//g, '');
+            resolve({ stack: _name });
+          }
+        });
+    });
+  }
+
   async cloneTypeSelection() {
+    console.clear();
     return new Promise(async (resolve, reject) => {
       const choices = [
         'Structure (all modules except entries & assets)',
