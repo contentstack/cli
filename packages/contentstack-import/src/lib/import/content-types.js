@@ -106,7 +106,7 @@ class ContentTypesImport {
         try {
           await fileHelper.writeFile(path.join(this.contentTypesFolderPath, 'field_rules_uid.json'), this.fieldRules);
         } catch (error) {
-          addlogs(this.importConfig, `Failed to write field rules ${formatError(error)}`, 'success');
+          addlogs(this.importConfig, `Failed to write field rules ${formatError(error)}`, 'error');
         }
       }
 
@@ -149,7 +149,7 @@ class ContentTypesImport {
     const contentTypeResponse = this.stackAPIClient.contentType(contentType.uid);
     Object.assign(contentTypeResponse, cloneDeep(contentType));
     await contentTypeResponse.update();
-    addlogs(this.importConfig, contentType.uid + ' updated with references', 'success');
+    addlogs(this.importConfig, `'${contentType.uid}' updated with references`, 'success');
   }
 
   async updateGlobalFields(uid) {
@@ -167,15 +167,15 @@ class ContentTypesImport {
         // Improve write the updated global fields once all updates are completed
         this.existingGlobalFields.splice(existingGlobalField, 1, globalField);
         await fileHelper.writeFile(this.globalFieldMapperFolderPath, this.existingGlobalFields).catch((error) => {
-          addlogs(this.importConfig, `failed to write updated the global field ${uid} ${formatError(error)}`);
+          addlogs(this.importConfig, `failed to write updated the global field '${uid}'. ${formatError(error)}`);
         });
-        addlogs(this.importConfig, `Updated the global field ${uid} with content type references `);
+        addlogs(this.importConfig, `Updated the global field '${uid}' with content type references `);
         return true;
       } catch (error) {
-        addlogs(this.importConfig, `failed to update the global field ${uid} ${formatError(error)}`);
+        addlogs(this.importConfig, `failed to update the global field '${uid}'. ${formatError(error)}`);
       }
     } else {
-      addlogs(this.importConfig, `Global field ${uid} does not exist, and hence failed to update.`);
+      addlogs(this.importConfig, `Global field '${uid}' does not exist, and hence failed to update.`);
     }
   }
 
