@@ -49,7 +49,7 @@ module.exports = class ImportCustomRoles {
       mkdirp.sync(customRolesMapperPath);
 
       if (!self.customRoles) {
-        addlogs(self.config, chalk.white('No custom-roles found'), 'error');
+        addlogs(self.config, chalk.white('No custom-roles found'), 'success');
         return;
       }
       self.customRolesUids = Object.keys(self.customRoles);
@@ -71,7 +71,7 @@ module.exports = class ImportCustomRoles {
         if (uid in self.customRolesUidMapper) {
           addlogs(
             self.config,
-            chalk.white(`The custom-role ${customRole.name} already exists. Skipping it to avoid duplicates!`),
+            chalk.white(`The custom-role '${customRole.name}' already exists. Skipping it to avoid duplicates!`),
             'success',
           );
           continue;
@@ -98,14 +98,13 @@ module.exports = class ImportCustomRoles {
           self.fails.push(customRole);
 
           if (((error && error.errors && error.errors.name) || '').includes('is not a unique.')) {
-            addlogs(self.config, chalk.red(`${customRole.name} role already exists`), 'info');
+            addlogs(self.config, `custom-role '${customRole.name}' already exists`, 'error');
           } else {
             if (!(error && error.errors && error.errors.name)) {
-              addlogs(self.config, chalk.red(`custom-role: ${customRole.name} already exists`), 'error');
+              addlogs(self.config, `custom-role '${customRole.name}' already exists`, 'error');
             } else {
-              addlogs(self.config, chalk.red(`custom-role: ${customRole.name} failed`), 'error');
+              addlogs(self.config, `custom-role '${customRole.name}' failed`, 'error');
             }
-
             addlogs(self.config, formatError(error), 'error');
           }
         }
@@ -113,7 +112,7 @@ module.exports = class ImportCustomRoles {
       addlogs(self.config, chalk.green('Custom-roles have been imported successfully!'), 'success');
     } catch (error) {
       helper.writeFileSync(customRolesFailsPath, self.fails);
-      addlogs(self.config, chalk.red('Custom-roles import failed'), 'error');
+      addlogs(self.config, 'Custom-roles import failed', 'error');
       addlogs(self.config, formatError(error), 'error');
 
       throw error;
