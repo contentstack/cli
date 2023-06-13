@@ -150,7 +150,7 @@ module.exports = class ExportMarketplaceApps {
         return listOfApps;
       })
       .catch((error) => {
-        log(this.config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
+        log(this.config, `Failed to export marketplace-apps. ${formatError(error)}`, 'error');
       });
   }
 

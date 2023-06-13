@@ -76,16 +76,16 @@ module.exports = class ImportLabels {
               .catch(function (error) {
                 self.fails.push(label);
                 if (error.errors.name) {
-                  addlogs(self.config, chalk.red("Label: '" + label.name + "'  already exist"), 'error');
+                  addlogs(self.config,`Label '${label.name}' already exist`, 'error');
                 } else {
-                  addlogs(self.config, chalk.red("Label: '" + label.name + "' failed to be imported\n"), 'error');
+                  addlogs(self.config,`Label '${label.name}' failed to be imported\n`, 'error');
                 }
               });
           } else {
             // the label has already been created
             addlogs(
               self.config,
-              chalk.white("The label: '" + label.name + "' already exists. Skipping it to avoid duplicates!"),
+              chalk.white(`The label '${label.name}' already exists. Skipping it to avoid duplicates!'`),
               'success',
             );
           }
@@ -104,7 +104,7 @@ module.exports = class ImportLabels {
               return resolve();
             })
             .catch(function (error) {
-              addlogs(self.config, chalk.red(`Failed to import label ${formatError(error)}`), 'error');
+              addlogs(self.config, `Failed to import label, ${formatError(error)}`, 'error');
               // eslint-disable-next-line no-console
               return reject(error);
             });
@@ -113,7 +113,7 @@ module.exports = class ImportLabels {
           // error while importing labels
           helper.writeFileSync(labelUidMapperPath, self.labelUidMapper);
           helper.writeFileSync(labelFailsPath, self.fails);
-          addlogs(self.config, chalk.red(`Failed to import label ${formatError(error)}`), 'error');
+          addlogs(self.config, `Failed to import label, ${formatError(error)}`, 'error');
           return reject(error);
         });
     });
