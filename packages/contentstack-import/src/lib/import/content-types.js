@@ -106,12 +106,24 @@ class ContentTypesImport {
         try {
           await fileHelper.writeFile(path.join(this.contentTypesFolderPath, 'field_rules_uid.json'), this.fieldRules);
         } catch (error) {
-          addlogs(this.importConfig, `Failed to write field rules ${formatError(error)}`, 'success');
+          addlogs(this.importConfig, `Failed to write field rules ${formatError(error)}`, 'error');
         }
       }
 
       addlogs(this.importConfig, chalk.green('Content types imported successfully'), 'success');
     } catch (error) {
+      let message_content_type = "";
+      if (error.request !== undefined && JSON.parse(error.request.data).content_type !== undefined) {
+        if (JSON.parse(error.request.data).content_type.uid) {
+          message_content_type =
+            ' Update the content type with content_type_uid  - ' + JSON.parse(error.request.data).content_type.uid;
+        } else if (JSON.parse(error.request.data).content_type.title) {
+          message_content_type =
+            ' Update the content type with content_type_title  - ' + JSON.parse(error.request.data).content_type.title;
+        }
+        error.errorMessage =  error.errorMessage + message_content_type;
+      }
+      addlogs(this.importConfig, formatError(error.errorMessage), 'error');
       addlogs(this.importConfig, formatError(error), 'error');
       throw new Error('Failed to import content types');
     }
@@ -149,7 +161,7 @@ class ContentTypesImport {
     const contentTypeResponse = this.stackAPIClient.contentType(contentType.uid);
     Object.assign(contentTypeResponse, cloneDeep(contentType));
     await contentTypeResponse.update();
-    addlogs(this.importConfig, contentType.uid + ' updated with references', 'success');
+    addlogs(this.importConfig, `'${contentType.uid}' updated with references`, 'success');
   }
 
   async updateGlobalFields(uid) {
@@ -167,15 +179,15 @@ class ContentTypesImport {
         // Improve write the updated global fields once all updates are completed
         this.existingGlobalFields.splice(existingGlobalField, 1, globalField);
         await fileHelper.writeFile(this.globalFieldMapperFolderPath, this.existingGlobalFields).catch((error) => {
-          addlogs(this.importConfig, `failed to write updated the global field ${uid} ${formatError(error)}`);
+          addlogs(this.importConfig, `failed to write updated the global field '${uid}'. ${formatError(error)}`);
         });
-        addlogs(this.importConfig, `Updated the global field ${uid} with content type references `);
+        addlogs(this.importConfig, `Updated the global field '${uid}' with content type references `);
         return true;
       } catch (error) {
-        addlogs(this.importConfig, `failed to update the global field ${uid} ${formatError(error)}`);
+        addlogs(this.importConfig, `failed to update the global field '${uid}'. ${formatError(error)}`);
       }
     } else {
-      addlogs(this.importConfig, `Global field ${uid} does not exist, and hence failed to update.`);
+      addlogs(this.importConfig, `Global field '${uid}' does not exist, and hence failed to update.`);
     }
   }
 

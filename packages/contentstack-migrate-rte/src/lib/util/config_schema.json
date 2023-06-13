@@ -18,7 +18,7 @@
       ]
     }
   ],
-  "required": ["alias", "content-type", "paths"],
+  "required": ["content-type", "paths"],
   "properties": {
     "alias": {
       "$id": "#/properties/alias",
@@ -35,6 +35,14 @@
       "description": "An explanation about the purpose of this instance.",
       "default": "",
       "examples": ["test1"]
+    },
+    "stack-api-key": {
+      "$id": "#/properties/stack-api-key",
+      "type": "string",
+      "title": "The Stack api key",
+      "description": "An explanation about the purpose of this instance.",
+      "default": "",
+      "examples": ["Migration Test"]
     },
     "content-type": {
       "$id": "#/properties/content-type",
@@ -71,7 +79,7 @@
         "$id": "#/properties/paths/items",
         "anyOf": [
           {
-            "$id": "#/properties/paths/items/anyOf/0",
+            "$id": "html-path and json-path are required",
             "type": "object",
             "title": "The first anyOf schema",
             "description": "An explanation about the purpose of this instance.",
@@ -248,5 +256,17 @@
       "minimum": 1
     }
   },
+  "oneOf": [
+    {
+      "type": "object",
+      "title": "stack-api-key",
+      "required": ["stack-api-key"]
+    },
+    {
+      "type": "object",
+      "title": "alias",
+      "required": ["alias"]
+    }
+  ],
   "additionalProperties": true
 }
