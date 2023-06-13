@@ -356,7 +356,7 @@ module.exports = class ExportAssets {
           : asset.url,
       };
 
-      await helper.makeDirectory(assetFolderPath);
+      mkdirp.sync(assetFolderPath);
       const assetFileStream = fs.createWriteStream(assetFilePath);
       self.assetStream.url = encodeURI(self.assetStream.url);
       self.httpClient
