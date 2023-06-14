@@ -318,6 +318,7 @@ importers:
       bluebird: ^3.7.2
       chai: ^4.2.0
       chalk: ^4.1.2
+      dotenv: ^16.1.4
       eslint: ^8.18.0
       eslint-config-oclif: ^4.0.0
       globby: ^10.0.2
@@ -334,6 +335,7 @@ importers:
       '@contentstack/cli-utilities': link:../contentstack-utilities
       bluebird: 3.7.2
       chalk: 4.1.2
+      dotenv: 16.1.4
       inquirer: 8.2.4
       lodash: 4.17.21
       nock: 13.3.1
@@ -5139,6 +5141,11 @@ packages:
   /dotenv/16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
     engines: {node: '>=12'}
+
+  /dotenv/16.1.4:
+    resolution: {integrity: sha512-m55RtE8AsPeJBpOIFKihEmqUcoVncQIwo7x9U8ZwLEZw9ZpXboz2c+rvog+jUaJvVrZ5kBOeYQBX5+8Aa/OZQw==}
+    engines: {node: '>=12'}
+    dev: false
 
   /eastasianwidth/0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
