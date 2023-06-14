@@ -36,7 +36,19 @@ let extension_uid_Replace = (module.exports = function (schema, preserveStackVer
         schema[i].reference_to = [schema[i].reference_to];
         schema[i].field_metadata.ref_multiple_content_types = true;
       }
-    } else if (schema[i].data_type === 'global_field') {
+    } else if(
+      schema[i].data_type === 'reference' &&
+      schema[i].field_metadata.hasOwnProperty('ref_multiple_content_types') &&
+      installedExtensions && installedExtensions[schema[i].extension_uid]
+    ) {
+      schema[i].extension_uid = installedExtensions[schema[i].extension_uid];
+    } else if(
+      schema[i].data_type === 'text' &&
+      installedExtensions && installedExtensions[schema[i].extension_uid]
+    ) {
+      schema[i].extension_uid = installedExtensions[schema[i].extension_uid];
+    }
+    else if (schema[i].data_type === 'global_field') {
       let global_fields_key_value = schema[i].reference_to;
       let global_fields_data = helper.readFileSync(path.join(globalfieldsPath));
       if (global_fields_data && global_fields_data.hasOwnProperty(global_fields_key_value)) {
