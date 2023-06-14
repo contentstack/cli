@@ -1077,7 +1077,7 @@ module.exports = class ImportEntries {
 
                         let entryUid = entryMapper[eUid];
                         if (entryUid) {
-                          requestObject.entry.environments = 'test';
+                          requestObject.entry.environments = envId;
                           requestObject.entry.locales = locales;
                           return new Promise((resolveEntryPublished, rejectEntryPublished) => {
                             self.stackAPIClient
