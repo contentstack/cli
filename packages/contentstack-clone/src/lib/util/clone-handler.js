@@ -299,7 +299,13 @@ class CloneHandler {
   async executeBranchPrompt(parentParams) {
     try {
       this.setExectingCommand(2);
-      await cloneCommand.execute(new HandleBranchCommand({ api_key: config.source_stack }, this, this.executeStackPrompt.bind(this, parentParams)));
+      await cloneCommand.execute(
+        new HandleBranchCommand(
+          { api_key: config.source_stack },
+          this,
+          this.executeStackPrompt.bind(this, parentParams),
+        ),
+      );
       await this.executeExport();
     } catch (error) {
       throw error;
