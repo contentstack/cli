@@ -9,9 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
       - uses: actions/setup-node@v1
         with:
           node-version: '16.x'
+          cache: 'pnpm'
       - name: Reading Configuration
         id: release_config
         uses: rgarcia-phi/json-to-variables@v1.1.0
@@ -200,6 +204,38 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-bulk-publish/package.json
+      - name: Installing dependencies of launch
+        id: launch-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_launch == 'true'}}
+        working-directory: ./packages/contentstack-launch
+        run: npm install
+      - name: Compiling launch
+        if: ${{ steps.launch-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-launch
+        run: npm run prepack
+      - name: Publishing launch
+        uses: JS-DevTools/npm-publish@v1
+        if: ${{ steps.launch-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-launch/package.json
+          access: public
+      - name: Installing dependencies of branches
+        id: branches-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_branches == 'true'}}
+        working-directory: ./packages/contentstack-branches
+        run: npm install
+      - name: Compiling branches
+        if: ${{ steps.branches-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-branches
+        run: npm run prepack
+      - name: Publishing branches
+        uses: JS-DevTools/npm-publish@v1
+        if: ${{ steps.branches-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-branches/package.json
+          access: public
       - name: Installing dependencies of core
         id: core-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
