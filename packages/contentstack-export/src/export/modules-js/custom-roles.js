@@ -44,7 +44,7 @@ module.exports = class ExportCustomRoles {
       );
       self.customRoles = {};
       customRoles.forEach((role) => {
-        log(self.config, role.name + ' role was exported successfully', 'success');
+        log(self.config, `'${role.name}' role was exported successfully`, 'success');
         self.customRoles[role.uid] = role;
       });
       fileHelper.writeFileSync(path.join(rolesFolderPath, self.rolesConfig.fileName), self.customRoles);
@@ -53,13 +53,12 @@ module.exports = class ExportCustomRoles {
       if (error.statusCode === 401) {
         log(
           self.config,
-          chalk.red('You are not allowed to export roles, Unless you provide email and password in config'),
+          'You are not allowed to export roles, Unless you provide email and password in config',
           'error',
         );
         return;
       }
-      log(self.config, 'Error occurred in exporting roles. ' + error && error.message, 'error');
-      log(self.config, formatError(error), 'error');
+      log(self.config, `Error occurred in exporting roles. ${formatError(error)}`, 'error');
       throw error;
     }
   }
@@ -81,7 +80,7 @@ module.exports = class ExportCustomRoles {
         sourceLocalesMap[locale.uid] = locale;
       }
       for (const locale in localesMap) {
-        if(sourceLocalesMap[locale]!==undefined) {
+        if (sourceLocalesMap[locale] !== undefined) {
           delete sourceLocalesMap[locale]['stackHeaders'];
         }
         localesMap[locale] = sourceLocalesMap[locale];
