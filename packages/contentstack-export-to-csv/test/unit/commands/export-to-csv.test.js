@@ -25,6 +25,11 @@ describe('Export to csv command with action = entries', () => {
     consoleLogStub.restore();
   });
 
+  it('Should ask for action when action is not passed (entries or users)', async () => {
+    await ExportToCsvCommand.run([]);
+    assert.calledOnce(inquireStub);
+  });
+
   it('Should ask for org when org is not passed', async () => {
     const args = ['--action', 'entries'];
     await ExportToCsvCommand.run(args);
@@ -43,7 +48,8 @@ describe('Export to csv command with action = entries', () => {
     await ExportToCsvCommand.run(args);
     assert.calledTwice(inquireStub);
   });
-  it('Should throw error if stack does not have branches enabled', async () => {
+
+  it('Should throw an error if stack does not have branches enabled', async () => {
     const args = [
       '--action',
       'entries',
@@ -97,19 +103,19 @@ describe('Export to csv command with action = entries', () => {
     assert.calledWith(consoleLogStub, `Writing entries to file: ${process.cwd()}/okok_page_en-us_entries_export.csv`);
   });
 
-  it('Should throw error when invalid org is passed', async () => {
+  it('Should throw an error when invalid org is passed', async () => {
     const args = ['--action', 'entries', '--org', 'invalid'];
     await ExportToCsvCommand.run(args);
     assert.calledWith(errorStub, `Couldn't find the organization. Please check input parameters.`);
   });
 
-  it('Should throw error when invalid stack is passed', async () => {
+  it('Should throw an error when invalid stack is passed', async () => {
     const args = ['--action', 'entries', '--org', process.env.ORG, '--stack-api-key', 'invalid'];
     await ExportToCsvCommand.run(args);
     assert.calledWith(errorStub, 'Could not find stack');
   });
 
-  it('Should throw error when invalid branch is passed', async () => {
+  it('Should throw an error when invalid branch is passed', async () => {
     const args = [
       '--action',
       'entries',
@@ -145,6 +151,7 @@ describe('Export to csv command with action = entries', () => {
       `The Content Type invalid was not found. Please try again. Content Type is not valid.`,
     );
   });
+
   it('Should throw an error when invalid locale is passed', async () => {
     const args = [
       '--action',
@@ -187,6 +194,7 @@ describe('Export to csv command with action = users', () => {
     await ExportToCsvCommand.run(args);
     assert.calledOnce(inquireStub);
   });
+
   it('Should write users data to file if the user has permissions', async () => {
     const args = ['--action', 'users', '--org', process.env.ORG];
 
@@ -196,11 +204,13 @@ describe('Export to csv command with action = users', () => {
       `Writing organization details to file: ${process.cwd()}/${process.env.ORG}_users_export.csv`,
     );
   });
-  it('Should show error that user does not have org permissions to perform the operation if user enters such org', async () => {
+
+  it('Should show an error that user does not have org permissions to perform the operation if user enters such org', async () => {
     const args = ['--action', 'users', '--org', process.env.ORG_WITH_NO_PERMISSION];
     await ExportToCsvCommand.run(args);
     assert.calledWith(errorStub, `You don't have the permission to do this operation.`);
   });
+
   it('Should create a file starting with the name passed as org-name flag', async () => {
     const args = ['--action', 'users', '--org', process.env.ORG, '--org-name', 'okok'];
     await ExportToCsvCommand.run(args);
