@@ -9,7 +9,7 @@ const mkdirp = require('mkdirp');
 const merge = require('lodash/merge');
 const { default: config } = require('../../config');
 const { managementSDKClient, isAuthenticated } = require('@contentstack/cli-utilities');
-const { log, fileHelper } = require('../../utils');
+const { log, fileHelper, formatError } = require('../../utils');
 
 class ExportStack {
   stackConfig = config.modules.stack;
@@ -32,7 +32,7 @@ class ExportStack {
         .stack({ api_key: self.config.source_stack })
         .fetch()
         .catch((error) => {
-          console.log(error);
+          log(this.config, formatError(error), 'error');
         });
 
       if (tempStackData && tempStackData.org_uid) {
