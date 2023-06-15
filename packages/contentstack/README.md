@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.4.0 darwin-arm64 node-v18.11.0
+@contentstack/cli/1.7.6 darwin-x64 node-v18.16.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -38,6 +38,11 @@ USAGE
 * [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value)
 * [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
 * [`csdx cm:bootstrap`](#csdx-cmbootstrap)
+* [`csdx cm:branches`](#csdx-cmbranches)
+* [`csdx cm:branches:create`](#csdx-cmbranchescreate)
+* [`csdx cm:branches:delete [-uid <value>] [-k <value>]`](#csdx-cmbranchesdelete--uid-value--k-value)
+* [`csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]`](#csdx-cmbranchesdiff---base-branch-value---compare-branch-value--k-value--module-value)
+* [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
 * [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
 * [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
 * [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value-1)
@@ -74,9 +79,18 @@ USAGE
 * [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
 * [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value-1)
 * [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries-1)
+* [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
 * [`csdx config:get:region`](#csdx-configgetregion)
+* [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
+* [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMANDS]`](#csdx-help-commands)
+* [`csdx launch`](#csdx-launch)
+* [`csdx launch:deployments`](#csdx-launchdeployments)
+* [`csdx launch:environments`](#csdx-launchenvironments)
+* [`csdx launch:functions`](#csdx-launchfunctions)
+* [`csdx launch:logs`](#csdx-launchlogs)
+* [`csdx launch:open`](#csdx-launchopen)
 * [`csdx login`](#csdx-login)
 * [`csdx logout`](#csdx-logout)
 * [`csdx plugins`](#csdx-plugins)
@@ -97,11 +111,12 @@ User sessions login
 
 ```
 USAGE
-  $ csdx auth:login [-u <value>] [-p <value>]
+  $ csdx auth:login [-u <value> | --oauth] [-p <value> | ]
 
 FLAGS
   -p, --password=<value>  Password
   -u, --username=<value>  User name
+  --oauth                 Enables single sign-on (SSO) in Contentstack CLI
 
 DESCRIPTION
   User sessions login
@@ -288,6 +303,7 @@ FLAGS
   -e, --environments=<value>...  Environments where assets will be published
   -l, --locales=<value>...       Locales to where assets will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] By default this flag is set as true. It indicates that contentstack's
                                  bulkpublish API will be used to publish the assets
   --delivery-token=<value>       Delivery token for source environment
@@ -350,13 +366,14 @@ Unpublish assets from given environment
 ```
 USAGE
   $ csdx cm:assets:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>]
-    [--retry-failed <value>] [--bulk-unpublish <value>] [--delivery-token <value>]
+    [--retry-failed <value>] [--bulk-unpublish <value>] [--api-version <value>] [--delivery-token <value>]
 
 FLAGS
   -a, --alias=<value>        Alias(name) for the management token
   -c, --config=<value>       Path to the config file
   -e, --environment=<value>  Source Environment
   -y, --yes                  Agree to process the command with the current configuration
+  --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --branch=<value>           [default: main] Specify the branch to fetch the content (by default the main branch is
                              selected)
   --bulk-unpublish=<value>   [default: true] By default this flag is set as true. It indicates that contentstack's
@@ -438,6 +455,175 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bootstrap](https://github.com/contentstack/cli/blob/main/packages/contentstack-bootstrap/src/commands/cm/bootstrap.ts)_
 
+## `csdx cm:branches`
+
+List the branches
+
+```
+USAGE
+  $ csdx cm:branches
+
+FLAGS
+  -k, --stack-api-key=<value>  Stack API Key
+  --verbose                    Verbose
+
+DESCRIPTION
+  List the branches
+
+EXAMPLES
+  $ csdx cm:branches
+
+  $ csdx cm:branches --verbose
+
+  $ csdx cm:branches -k <stack api key>
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/index.ts)_
+
+## `csdx cm:branches:create`
+
+Create a new branch
+
+```
+USAGE
+  $ csdx cm:branches:create
+  $ csdx cm:branches:create [--source <value>] [--uid <value>] [-k <value>]
+  $ csdx cm:branches:create [--source <value>] [--uid <value>] [--stack-api-key <value>]
+
+FLAGS
+  -k, --stack-api-key=<value>  Stack API key
+  --source=<value>             Source branch from which new branch to be created
+  --uid=<value>                Branch UID to be created
+
+DESCRIPTION
+  Create a new branch
+
+EXAMPLES
+  $ csdx cm:branches:create
+
+  $ csdx cm:branches:create --source main -uid new_branch -k bltxxxxxxxx
+
+  $ csdx cm:branches:create --source main --uid new_branch --stack-api-key bltxxxxxxxx
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/create.ts)_
+
+## `csdx cm:branches:delete [-uid <value>] [-k <value>]`
+
+Delete a branch
+
+```
+USAGE
+  $ csdx cm:branches:delete [-uid <value>] [-k <value>]
+  $ csdx cm:branches:delete [--uid <value>] [--stack-api-key <value>]
+
+FLAGS
+  -k, --stack-api-key=<value>  Stack API key
+  -y, --yes                    Force the deletion of the branch by skipping the confirmation
+  --uid=<value>                Branch UID to be deleted
+
+DESCRIPTION
+  Delete a branch
+
+EXAMPLES
+  $ csdx cm:branches:delete
+
+  $ csdx cm:branches:delete --uid main -k bltxxxxxxxx
+
+  $ csdx cm:branches:delete --uid main --stack-api-key bltxxxxxxxx
+
+  $ csdx cm:branches:delete --uid main --stack-api-key bltxxxxxxxx --yes
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/delete.ts)_
+
+## `csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]`
+
+Differences between two branches
+
+```
+USAGE
+  $ csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]
+
+FLAGS
+  -k, --stack-api-key=<value>  Provide Stack API key to show difference between branches
+  --base-branch=<value>        Base branch
+  --compare-branch=<value>     Compare branch
+  --format=<option>            [default: compact-text] [Optional] Type of flags to show branches differences
+                               <options: compact-text|detailed-text>
+  --module=<option>            Module
+                               <options: content-types|global-fields|all>
+
+DESCRIPTION
+  Differences between two branches
+
+EXAMPLES
+  $ csdx cm:branches:diff
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx"
+
+  $ csdx cm:branches:diff --compare-branch "develop"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --stack-api-key "bltxxxxxxxx"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --module "content-types"
+
+  $ csdx cm:branches:diff --module "content-types" --format "detailed-text"
+
+  $ csdx cm:branches:diff --compare-branch "develop" --format "detailed-text"
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main"
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop"
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --module "content-types"
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types"
+
+  $ csdx cm:branches:diff --stack-api-key "bltxxxxxxxx" --base-branch "main" --compare-branch "develop" --module "content-types" --format "detailed-text"
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/diff.ts)_
+
+## `csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`
+
+Merge changes from a branch
+
+```
+USAGE
+  $ csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>]
+    [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]
+
+FLAGS
+  -k, --stack-api-key=<value>    Provide Stack API key to show difference between branches
+  --base-branch=<value>          Base branch
+  --comment=<value>              Merge comment
+  --compare-branch=<value>       Compare branch name
+  --export-summary-path=<value>  Export summary file path
+  --no-revert                    If passed, will not create the new revert branch
+  --use-merge-summary=<value>    Path of merge summary file
+
+DESCRIPTION
+  Merge changes from a branch
+
+EXAMPLES
+  $ csdx cm:branches:merge --stack-api-key bltxxxxxxxx --compare-branch feature-branch
+
+  $ csdx cm:branches:merge --stack-api-key bltxxxxxxxx --comment "merge comment"
+
+  $ csdx cm:branches:merge -k bltxxxxxxxx --base-branch base-branch
+
+  $ csdx cm:branches:merge --export-summary-path file/path
+
+  $ csdx cm:branches:merge --use-merge-summary file-path
+
+  $ csdx cm:branches:merge -k bltxxxxxxxx --no-revert
+
+  $ csdx cm:branches:merge -k bltxxxxxxxx --compare-branch feature-branch --no-revert
+```
+
+_See code: [@contentstack/cli-cm-branches](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/merge.ts)_
+
 ## `csdx cm:bulk-publish`
 
 Bulk Publish script for managing entries and assets
@@ -470,6 +656,7 @@ FLAGS
   -l, --locales=<value>...       Locales where entries will be published
   -t, --contentTypes=<value>...  The Contenttypes from which entries will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries will be published
@@ -533,6 +720,7 @@ FLAGS
   -e, --environments=<value>...  Environments where assets will be published
   -l, --locales=<value>...       Locales to where assets will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] By default this flag is set as true. It indicates that contentstack's
                                  bulkpublish API will be used to publish the assets
   --delivery-token=<value>       Delivery token for source environment
@@ -655,6 +843,7 @@ FLAGS
   -a, --alias=<value>        Alias(name) for the management token
   -c, --config=<value>       Path to the config file
   -y, --yes                  Agree to process the command with the current configuration
+  --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>     [default: true] This flag is set to true by default. It indicates that contentstack's
                              bulkpublish API will be used to publish the entries
   --content-type=<value>...  The Contenttypes from which entries will be published
@@ -727,6 +916,7 @@ FLAGS
   -e, --environments=<value>...  Environments where entries will be published
   -l, --locales=<value>...       Locales where entries will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries need to be published
@@ -802,6 +992,7 @@ FLAGS
   -e, --environments=<value>...  Destination environments
   -l, --locales=<value>...       Locales where edited entries will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes which will be checked for edited entries
@@ -867,6 +1058,7 @@ FLAGS
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries will be published
@@ -963,6 +1155,7 @@ FLAGS
   -e, --environment=<value>  Source Environment
   -l, --locale=<value>       Locale filter
   -y, --yes                  Agree to process the command with the current configuration
+  --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-unpublish=<value>   [default: true] This flag is set to true by default. It indicates that contentstack's
                              bulkpublish API will be used to unpublish the entries and assets
   --content-type=<value>     Content type filter
@@ -1054,6 +1247,7 @@ FLAGS
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --content-types=<value>...     The Contenttypes from which entries will be published
   --locales=<value>              Source locale
   --retry-failed=<value>         Retry publishing failed entries from the logfile
@@ -1106,14 +1300,16 @@ Migration script to migrate content from HTML RTE to JSON RTE
 
 ```
 USAGE
-  $ csdx cm:entries:migrate-html-rte [-c <value>] [-a <value>] [--content-type <value>] [--global-field] [-y] [--html-path
-    <value> --json-path <value>] [--delay <value>] [--locale <value>] [--batch-limit <value>]
+  $ csdx cm:entries:migrate-html-rte [-c <value>] [-a <value>] [--stack-api-key <value>] [--content-type <value>]
+    [--global-field] [-y] [--branch <value>] [--html-path <value> --json-path <value>] [--delay <value>] [--locale
+    <value>] [--batch-limit <value>]
 
 FLAGS
   -a, --alias=<value>        Alias(name) for the management token
   -c, --config-path=<value>  Path to config file
   -y, --yes                  Agree to process the command with the current configuration
   --batch-limit=<value>      [default: 50] Provide batch limit for updating entries
+  --branch=<value>           [optional] branch name
   --content-type=<value>     The content type from which entries will be migrated
   --delay=<value>            [default: 1000] Provide delay in ms between two entry update
   --global-field             This flag is set to false by default. It indicates that current content type is a
@@ -1121,6 +1317,7 @@ FLAGS
   --html-path=<value>        Provide path of HTML RTE to migrate
   --json-path=<value>        Provide path of JSON RTE to migrate
   --locale=<value>           The locale from which entries will be migrated
+  --stack-api-key=<value>    Stack api key to be used
 
 DESCRIPTION
   Migration script to migrate content from HTML RTE to JSON RTE
@@ -1177,6 +1374,7 @@ FLAGS
   -e, --environments=<value>...  Environments where entries will be published
   -l, --locales=<value>...       Locales where entries will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries need to be published
@@ -1254,6 +1452,7 @@ FLAGS
   -e, --environments=<value>...  Destination environments
   -l, --locales=<value>...       Locales where edited entries will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes which will be checked for edited entries
@@ -1321,6 +1520,7 @@ FLAGS
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries will be published
@@ -1388,6 +1588,7 @@ FLAGS
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --content-types=<value>...     The Contenttypes from which entries will be published
   --locales=<value>              Source locale
   --retry-failed=<value>         Retry publishing failed entries from the logfile
@@ -1443,13 +1644,15 @@ Unpublish entries from the given environment
 ```
 USAGE
   $ csdx cm:entries:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>]
-    [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>]
+    [--retry-failed <value>] [--bulk-unpublish <value>] [--api-version <value>] [--content-type <value>]
+    [--delivery-token <value>]
 
 FLAGS
   -a, --alias=<value>        Alias(name) for the management token
   -c, --config=<value>       Path to the config file
   -e, --environment=<value>  Source Environment
   -y, --yes                  Agree to process the command with the current configuration
+  --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --branch=<value>           [default: main] Specify the branch to fetch the content (by default the main branch is
                              selected)
   --bulk-unpublish=<value>   [default: true] This flag is set to true by default. It indicates that contentstack's
@@ -1516,6 +1719,7 @@ FLAGS
   -l, --locales=<value>...       Locales where entries will be published
   -t, --contentTypes=<value>...  The Contenttypes from which entries will be published
   -y, --yes                      Agree to process the command with the current configuration
+  --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>         [default: true] This flag is set to true by default. It indicates that contentstack's
                                  bulkpublish API will be used to publish the entries
   --content-types=<value>...     The Contenttypes from which entries will be published
@@ -1709,14 +1913,16 @@ Migration script to migrate content from HTML RTE to JSON RTE
 
 ```
 USAGE
-  $ csdx cm:migrate-rte [-c <value>] [-a <value>] [--content-type <value>] [--global-field] [-y] [--html-path
-    <value> --json-path <value>] [--delay <value>] [--locale <value>] [--batch-limit <value>]
+  $ csdx cm:migrate-rte [-c <value>] [-a <value>] [--stack-api-key <value>] [--content-type <value>]
+    [--global-field] [-y] [--branch <value>] [--html-path <value> --json-path <value>] [--delay <value>] [--locale
+    <value>] [--batch-limit <value>]
 
 FLAGS
   -a, --alias=<value>        Alias(name) for the management token
   -c, --config-path=<value>  Path to config file
   -y, --yes                  Agree to process the command with the current configuration
   --batch-limit=<value>      [default: 50] Provide batch limit for updating entries
+  --branch=<value>           [optional] branch name
   --content-type=<value>     The content type from which entries will be migrated
   --delay=<value>            [default: 1000] Provide delay in ms between two entry update
   --global-field             This flag is set to false by default. It indicates that current content type is a
@@ -1724,6 +1930,7 @@ FLAGS
   --html-path=<value>        Provide path of HTML RTE to migrate
   --json-path=<value>        Provide path of JSON RTE to migrate
   --locale=<value>           The locale from which entries will be migrated
+  --stack-api-key=<value>    Stack api key to be used
 
 DESCRIPTION
   Migration script to migrate content from HTML RTE to JSON RTE
@@ -2106,6 +2313,12 @@ EXAMPLES
   Using --branch flag
 
   $ csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
+
+
+
+  Using --api-version flag
+
+  $ csdx cm:stacks:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --api-version [API VERSION]
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish.js)_
@@ -2255,6 +2468,7 @@ FLAGS
   -e, --environment=<value>  Source Environment
   -l, --locale=<value>       Locale filter
   -y, --yes                  Agree to process the command with the current configuration
+  --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-unpublish=<value>   [default: true] This flag is set to true by default. It indicates that contentstack's
                              bulkpublish API will be used to unpublish the entries and assets
   --content-type=<value>     Content type filter
@@ -2329,6 +2543,23 @@ EXAMPLES
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/stacks/unpublish.js)_
 
+## `csdx config:get:base-branch`
+
+Get current branch set for CLI
+
+```
+USAGE
+  $ csdx config:get:base-branch
+
+DESCRIPTION
+  Get current branch set for CLI
+
+EXAMPLES
+  $ csdx config:get:base-branch
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/base-branch.ts)_
+
 ## `csdx config:get:region`
 
 Get current region set for CLI
@@ -2346,23 +2577,70 @@ EXAMPLES
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/region.ts)_
 
+## `csdx config:remove:base-branch`
+
+Remove branch config for CLI
+
+```
+USAGE
+  $ csdx config:remove:base-branch [-k <value>] [-y]
+
+FLAGS
+  -k, --stack-api-key=<value>  Stack API Key
+  -y, --yes                    Force Remove
+
+DESCRIPTION
+  Remove branch config for CLI
+
+EXAMPLES
+  $ csdx config:remove:base-branch
+
+  $ csdx config:remove:base-branch --stack-api-key <value>
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/base-branch.ts)_
+
+## `csdx config:set:base-branch`
+
+Set branch for CLI
+
+```
+USAGE
+  $ csdx config:set:base-branch [-k <value>] [--base-branch <value>]
+
+FLAGS
+  -k, --stack-api-key=<value>  Stack API Key
+  --base-branch=<value>        Base Branch
+
+DESCRIPTION
+  Set branch for CLI
+
+EXAMPLES
+  $ csdx config:set:base-branch
+
+  $ csdx config:set:base-branch --stack-api-key <value> --base-branch <value>
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/base-branch.ts)_
+
 ## `csdx config:set:region [REGION]`
 
 Set region for CLI
 
 ```
 USAGE
-  $ csdx config:set:region [REGION] [-d <value> -m <value> -n <value>]
+  $ csdx config:set:region [REGION] [-d <value> -m <value> --ui-host <value> -n <value>]
 
 ARGUMENTS
   REGION  Name for the region
 
 FLAGS
-  -d, --cda=<value>   Custom host to set for content delivery API, if this flag is added then cma and name flags are
-                      required
-  -m, --cma=<value>   Custom host to set for content management API, , if this flag is added then cda and name flags are
-                      required
-  -n, --name=<value>  Name for the region, if this flag is added then cda and cma flags are required
+  -d, --cda=<value>   Custom host to set for content delivery API, if this flag is added then cma, ui-host and name
+                      flags are required
+  -m, --cma=<value>   Custom host to set for content management API, , if this flag is added then cda, ui-host and name
+                      flags are required
+  -n, --name=<value>  Name for the region, if this flag is added then cda, cma and ui-host flags are required
+  --ui-host=<value>   Custom UI host to set for CLI, if this flag is added then cda, cma and name flags are required
 
 DESCRIPTION
   Set region for CLI
@@ -2372,9 +2650,13 @@ EXAMPLES
 
   $ csdx config:set:region NA
 
-  $ csdx config:set:region NA
+  $ csdx config:set:region EU
 
-  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --name "India"
+  $ csdx config:set:region AZURE-NA
+
+  $ csdx config:set:region AZURE-EU
+
+  $ csdx config:set:region --cma <contentstack_cma_endpoint> --cda <contentstack_cda_endpoint> --ui-host <contentstack_ui_host_endpoint> --name "India"
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/region.ts)_
@@ -2397,7 +2679,226 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.4/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.9/src/commands/help.ts)_
+
+## `csdx launch`
+
+Launch related operations
+
+```
+USAGE
+  $ csdx launch [-d <value>] [-c <value>] [--type GitHub|FileUpload] [--framework Gatsby|NextJs|Other]
+    [--org <value>] [-n <value>] [-e <value>] [--branch <value>] [--build-command <value>] [--out-dir <value>] [--init]
+
+FLAGS
+  -c, --config=<value>       Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>     Current working directory
+  -e, --environment=<value>  [Optional] Environment name for the Launch project
+  -n, --name=<value>         [Optional] Name of the project
+  --branch=<value>           [Optional] GitHub branch name
+  --build-command=<value>    [Optional] Build Command
+  --framework=<option>       [Optional] Type of framework
+                             <options: Gatsby|NextJs|Other>
+  --init                     [Optional, Hidden] Reinitialize the project if it is an existing launch project.
+  --org=<value>              [Optional] Provide the organization UID to create a new project or deployment
+  --out-dir=<value>          [Optional] Output Directory
+  --type=<option>            [Optional] Choose the type of adapters
+                             <options: GitHub|FileUpload>
+
+DESCRIPTION
+  Launch related operations
+
+EXAMPLES
+  $ csdx launch
+
+  $ csdx launch --data-dir <path/of/current/working/dir>
+
+  $ csdx launch --config <path/to/launch/config/file>
+
+  $ csdx launch --type <options: GitHub|FileUpload>
+
+  $ csdx launch --data-dir <path/of/current/working/dir> --type <options: GitHub|FileUpload>
+
+  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload>
+
+  $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value>
+```
+
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/index.ts)_
+
+## `csdx launch:deployments`
+
+Show list of deployments for an environment
+
+```
+USAGE
+  $ csdx launch:deployments [-d <value>] [-c <value>] [--org <value>] [--project <value>] [-e <value>]
+
+FLAGS
+  -c, --config=<value>       Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>     Current working directory
+  -e, --environment=<value>  Environment name or UID
+  --org=<value>              [Optional] Provide the organization UID
+  --project=<value>          [Optional] Provide the project UID
+
+DESCRIPTION
+  Show list of deployments for an environment
+
+EXAMPLES
+  $ csdx launch:deployments
+
+  $ csdx launch:deployments -d "current working directory"
+
+  $ csdx launch:deployments -c "path to the local config file"
+
+  $ csdx launch:deployments -e "environment number or uid" --org=<org UID> --project=<Project UID>
+```
+
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/deployments.ts)_
+
+## `csdx launch:environments`
+
+Show list of environments for a project
+
+```
+USAGE
+  $ csdx launch:environments [-d <value>] [-c <value>] [--org <value>] [--project <value>]
+
+FLAGS
+  -c, --config=<value>    Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>  Current working directory
+  --org=<value>           [Optional] Provide the organization UID
+  --project=<value>       [Optional] Provide the project UID
+
+DESCRIPTION
+  Show list of environments for a project
+
+EXAMPLES
+  $ csdx launch:environments
+
+  $ csdx launch:environments -d "current working directory"
+
+  $ csdx launch:environments -c "path to the local config file"
+
+  $ csdx launch:environments --org=<org UID> --project=<Project UID>
+```
+
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/environments.ts)_
+
+## `csdx launch:functions`
+
+Serve cloud functions
+
+```
+USAGE
+  $ csdx launch:functions [-d <value>] [-c <value>] [-p <value>]
+
+FLAGS
+  -c, --config=<value>    Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>  Current working directory
+  -p, --port=<value>      [default: 3000] Port number
+
+DESCRIPTION
+  Serve cloud functions
+
+EXAMPLES
+  $ csdx launch:functions
+
+  $ csdx launch:functions --port=port
+
+  $ csdx launch:functions --data-dir <path/of/current/working/dir>
+
+  $ csdx launch:functions --config <path/to/launch/config/file>
+
+  $ csdx launch:functions --data-dir <path/of/current/working/dir> -p "port number"
+
+  $ csdx launch:functions --config <path/to/launch/config/file> --port=port
+```
+
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/functions.ts)_
+
+## `csdx launch:logs`
+
+Show deployment or server logs
+
+```
+USAGE
+  $ csdx launch:logs [-d <value>] [-c <value>] [-e <value>] [--deployment <value>] [--type d|s] [--org <value>]
+    [--project <value>]
+
+FLAGS
+  -c, --config=<value>       Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>     Current working directory
+  -e, --environment=<value>  Environment name or UID
+  --deployment=<value>       Deployment number or UID
+  --org=<value>              [Optional] Provide the organization UID
+  --project=<value>          [Optional] Provide the project UID
+  --type=<option>            [default: s] Choose type of flags to show logs
+                             d) Deployment logs
+                             s) Server logs
+
+                             <options: d|s>
+
+DESCRIPTION
+  Show deployment or server logs
+
+EXAMPLES
+  $ csdx launch:logs
+
+  $ csdx launch:logs --data-dir <path/of/current/working/dir>
+
+  $ csdx launch:logs --data-dir <path/of/current/working/dir> --type <options: d|s>
+
+  $ csdx launch:logs --config <path/to/launch/config/file> --type <options: d|s>
+
+  $ csdx launch:logs --deployment=deployment
+
+  $ csdx launch:logs --environment=environment
+
+  $ csdx launch:logs --environment=environment --deployment=deployment
+
+  $ csdx launch:logs --environment=environment --type <options: d|s>
+
+  $ csdx launch:logs --environment=environment --data-dir <path/of/current/working/dir> --deployment=deployment
+
+  $ csdx launch:logs --environment=environment --config <path/to/launch/config/file> --deployment=deployment
+```
+
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/logs.ts)_
+
+## `csdx launch:open`
+
+Open a website for an environment
+
+```
+USAGE
+  $ csdx launch:open [-d <value>] [-c <value>] [--org <value>] [--project <value>] [-e <value>]
+
+FLAGS
+  -c, --config=<value>       Path to the local '.cs-launch.json' file
+  -d, --data-dir=<value>     Current working directory
+  -e, --environment=<value>  Environment name or UID
+  --org=<value>              [Optional] Provide the organization UID
+  --project=<value>          [Optional] Provide the project UID
+
+DESCRIPTION
+  Open a website for an environment
+
+EXAMPLES
+  $ csdx launch:open
+
+  $ csdx launch:open --config <path/to/launch/config/file>
+
+  $ csdx launch:open --data-dir <path/of/current/working/dir>
+
+  $ csdx launch:open --environment=environment
+
+  $ csdx launch:open --environment=environment --config <path/to/launch/config/file>
+
+  $ csdx launch:open --environment=environment --data-dir <path/of/current/working/dir>
+```
+
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/open.ts)_
 
 ## `csdx login`
 
@@ -2405,11 +2906,12 @@ User sessions login
 
 ```
 USAGE
-  $ csdx login [-u <value>] [-p <value>]
+  $ csdx login [-u <value> | --oauth] [-p <value> | ]
 
 FLAGS
   -p, --password=<value>  Password
   -u, --username=<value>  User name
+  --oauth                 Enables single sign-on (SSO) in Contentstack CLI
 
 DESCRIPTION
   User sessions login
@@ -2472,7 +2974,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.3.2/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -2537,7 +3039,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.3.2/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -2577,7 +3079,7 @@ EXAMPLES
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.3.2/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
@@ -2606,7 +3108,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.3.2/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -2654,7 +3156,7 @@ ALIASES
   $ csdx plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.3.2/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -2695,7 +3197,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.3.2/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
