@@ -9,3 +9,5 @@ node_modules
 .DS_Store
 coverage
 tsconfig.tsbuildinfo
+/merge_scripts
+/merge-summary.json

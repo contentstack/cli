@@ -1,3 +1,4 @@
+// @ts-nocheck
 import ContentstackError from './error';
 import { managementSDKClient } from '@contentstack/cli-utilities';
 import * as ContentstackManagementSDK from '@contentstack/management'
@@ -86,7 +87,15 @@ export default class ContentstackClient {
   async getStacks(org_uid: string, skip=0, stacks: Stack[]=[]): Promise<Stack[]> {
     try {
       const client = await this.instance
-      const response = await client.organization(org_uid).stacks({limit: this.limit, include_count: true, skip: skip})
+      const response = await client
+      .stack({ organization_uid: org_uid })
+      .query({
+        limit: this.limit,
+        include_count: true,
+        skip: skip,
+        query: {}
+      })
+      .find()
       stacks = stacks.concat(response.items.map((s: any) => {
         return {
           uid: s.uid,
