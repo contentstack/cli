@@ -47,13 +47,13 @@ exports.initial = (configData) => {
             importRes.then(resolve).catch(reject);
           })
           .catch((error) => {
-            addlogs(config, `Failed to import contents ${util.formatError(error)}`, 'error');
+            addlogs(config, `Failed to import contents. ${util.formatError(error)}`, 'error');
             reject(error);
             process.exit(1);
           });
       } else {
         let filename = path.basename(config.data);
-        addlogs(config, chalk.red(filename + ' Folder does not Exist'), 'error');
+        addlogs(config, chalk.red(`'${filename}' Folder does not exist'`), 'error');
       }
     };
 
@@ -95,7 +95,7 @@ let singleImport = async (APIClient, stackAPIClient, moduleName, types, config) 
         }
       }
       if (!(importResponse && importResponse.empty)) {
-        addlogs(config, moduleName + ' imported successfully!', 'success');
+        addlogs(config, `Module '${moduleName}' imported successfully!`, 'success');
       }
       addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
       return true;
@@ -103,9 +103,9 @@ let singleImport = async (APIClient, stackAPIClient, moduleName, types, config) 
       addlogs(config, 'Please provide valid module name.', 'error');
     }
   } catch (error) {
-    addlogs(config, 'Failed to migrate ' + moduleName, 'error');
+    addlogs(config, `Failed to migrate '${moduleName}'`, 'error');
     addlogs(config, util.formatError(error), 'error');
-    addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
+    addlogs(config, `The log for this is stored at '${path.join(config.oldPath, 'logs', 'import')}'`, 'error');
   }
 };
 
@@ -148,15 +148,11 @@ let allImport = async (APIClient, stackAPIClient, config, types) => {
   } catch (error) {
     addlogs(
       config,
-      chalk.red(
-        'Failed to migrate stack: ' +
-          (config.destinationStackName || config.target_stack) +
-          '. Please check error logs for more info',
-      ),
+      `Failed to migrate stack '${(config.destinationStackName || config.target_stack)}'. Please check error logs for more info`,
       'error',
     );
     addlogs(config, util.formatError(error), 'error');
-    addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
+    addlogs(config, `The log for this is stored at '${path.join(config.oldPath, 'logs', 'import')}'`, 'error');
   }
 };
 
@@ -193,8 +189,8 @@ const validateIfBranchExist = async (stackAPIClient, config, branch) => {
         .catch((_err) => {});
       if (data && typeof data === 'object') {
         if (data.error_message) {
-          addlogs(config, chalk.red(data.error_message), 'error');
-          addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
+          addlogs(config, data.error_message, 'error');
+          addlogs(config, `No branch found with the name '${branch}`, 'error');
           reject({ message: 'No branch found with the name ' + branch, error: error_message });
         } else {
           resolve(data);
@@ -203,7 +199,7 @@ const validateIfBranchExist = async (stackAPIClient, config, branch) => {
         reject({ message: 'No branch found with the name ' + branch, error: {} });
       }
     } catch (error) {
-      addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
+      addlogs(config, `No branch found with the name '${branch}`, 'error');
       reject({ message: 'No branch found with the name ' + branch, error });
     }
   });
