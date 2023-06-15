@@ -35,7 +35,7 @@ class ContentTypesExport {
       await this.writeContentTypes(this.contentTypes);
       log(this.exportConfig, chalk.green('Content type(s) exported successfully'), 'success');
     } catch (error) {
-      log(this.exportConfig, chalk.red(`Failed to export content types ${formatError(error)}`), 'error');
+      log(this.exportConfig, `Failed to export content types ${formatError(error)}`, 'error');
       throw new Error('Failed to export content types');
     }
   }
