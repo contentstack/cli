@@ -74,6 +74,7 @@ module.exports = class ExportMarketplaceApps {
       .stack({ api_key: this.config.source_stack })
       .fetch()
       .catch((error) => {
+        log(this.config, formatError(error), 'error');
         console.log(error);
       });
 
@@ -105,11 +106,12 @@ module.exports = class ExportMarketplaceApps {
   }
 
   async exportInstalledExtensions() {
+    const client = await managementSDKClient({ host: this.developerHubBaseUrl.split('://').pop() });
     const installedApps = (await this.getAllStackSpecificApps()) || [];
 
     if (!_.isEmpty(installedApps)) {
       for (const [index, app] of _.entries(installedApps)) {
-        await this.getAppConfigurations(installedApps, [+index, app]);
+        await this.getAppConfigurations(client, installedApps, [+index, app]);
       }
 
       await fileHelper.writeFileSync(
@@ -150,19 +152,21 @@ module.exports = class ExportMarketplaceApps {
         return listOfApps;
       })
       .catch((error) => {
-        log(this.config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
+        log(this.config, `Failed to export marketplace-apps. ${formatError(error)}`, 'error');
       });
   }
 
-  getAppConfigurations(installedApps, [index, app]) {
-    const appName = app.manifest.name;
+  async getAppConfigurations(sdkClient, installedApps, [index, appInstallation]) {
+    const appName = appInstallation.manifest.name;
     log(this.config, `Exporting ${appName} app and it's config.`, 'success');
 
-    return this.httpClient
-      .get(`${this.developerHubBaseUrl}/installations/${app.uid}/installationData`)
-      .then(async ({ data: result }) => {
+    await sdkClient
+      .organization(this.config.org_uid)
+      .app(appInstallation.manifest.uid)
+      .installation(appInstallation.uid)
+      .installationData()
+      .then(async (result) => {
         const { data, error } = result;
-
         if (_.has(data, 'server_configuration')) {
           if (!this.nodeCrypto && _.has(data, 'server_configuration')) {
             await this.createNodeCryptoInstance();

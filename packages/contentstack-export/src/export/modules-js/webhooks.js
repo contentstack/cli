@@ -60,13 +60,13 @@ module.exports = class ExportWebhooks {
           if (error.statusCode === 401) {
             log(
               self.config,
-              chalk.red('You are not allowed to export webhooks, Unless you provide email and password in config'),
+              'You are not allowed to export webhooks, Unless you provide email and password in config',
               'error',
             );
             return resolve();
           }
-          log(self.config, formatError(error), 'error');
-          reject('Failed export webhooks');
+          log(self.config, `Failed to export webhooks. ${formatError(error)}`, 'error');
+          reject('Failed to export webhooks');
         });
     });
   }

@@ -12,7 +12,7 @@ const _ = require('lodash');
 const chalk = require('chalk');
 const progress = require('progress-stream');
 const { HttpClient, configHandler } = require('@contentstack/cli-utilities');
-const { fileHelper, log } = require('../../utils');
+const { fileHelper, log, formatError } = require('../../utils');
 let { default: config } = require('../../config');
 
 module.exports = class ExportAssets {
@@ -83,7 +83,8 @@ module.exports = class ExportAssets {
                           .catch((error) => {
                             log(
                               self.config,
-                              chalk.red('The following asset failed to download\n' + JSON.stringify(assetJSON)),
+                              `Asset '${assetJSON.uid}' failed to download.\n ${formatError(error)}`,
+                              'error',
                             );
                             log(self.config, error, 'error');
                           });
@@ -94,11 +95,7 @@ module.exports = class ExportAssets {
                             self.assetContents[assetJSON.uid] = assetJSON;
                           })
                           .catch((err) => {
-                            log(
-                              { errorCode: err && err.code, uid: assetJSON.uid },
-                              `Asset download failed - ${assetJSON.uid}`,
-                              'error',
-                            );
+                            log(self.config, `Asset '${assetJSON.uid}' download failed. ${formatError(err)}`, 'error');
                             return err;
                           });
                       }
@@ -110,8 +107,8 @@ module.exports = class ExportAssets {
                       // fileHelper.writeFileSync(this.assetContentsFile, self.assetContents)
                     })
                     .catch((error) => {
-                      console.log('Error fetch/download the asset', error && error.message);
-                      log(self.config, 'Asset batch ' + (batch + 1) + ' failed to download', 'error');
+                      log(self.config, `Asset batch ${batch + 1} failed to download`, 'error');
+                      log(self.config, formatError(error), 'error');
                       log(self.config, error, 'error');
                     });
                 })
@@ -132,22 +129,19 @@ module.exports = class ExportAssets {
                   return resolve();
                 })
                 .catch((error) => {
-                  log(self.config, error, 'success');
+                  log(self.config, error, 'error');
                   reject(error);
                 });
             })
             .catch((error) => {
               fileHelper.writeFileSync(self.assetContentsFile, self.assetContents);
-              log(
-                self.config,
-                chalk.red('Asset export failed due to the following errors ' + JSON.stringify(error), 'error'),
-              );
-              log(self.config, error, 'success');
+              log(self.config, `Asset export failed. ${formatError(error)}`, 'error');
+              log(self.config, error, 'error');
               reject(error);
             });
         })
         .catch((error) => {
-          log(self.config, error, 'success');
+          log(self.config, error, 'error');
           reject(error);
         });
     });
@@ -172,7 +166,7 @@ module.exports = class ExportAssets {
               return resolve();
             })
             .catch((error) => {
-              log(self.config, chalk.red('Error while exporting asset-folders!'), 'error');
+              log(self.config, `Error while exporting asset-folders!\n ${formatError(error)}`, 'error');
               return reject(error);
             });
         })
@@ -316,7 +310,6 @@ module.exports = class ExportAssets {
         })
         .catch((error) => {
           log(self.config, error, 'error');
-          console.log('Error on  fetch', error && error.message);
 
           if (error.status === 408) {
             console.log('retrying', uid);
@@ -378,6 +371,7 @@ module.exports = class ExportAssets {
           return resolve();
         })
         .on('error', (error) => {
+          log(self.config, `Download ${asset.filename}: ${asset.uid} failed!`, 'error');
           log(self.config, error, 'error');
           reject(error);
         });
