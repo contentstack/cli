@@ -31,7 +31,7 @@ class LocaleExport {
       await fileHelper.writeFile(path.join(this.localesPath, this.masterLocaleConfig.fileName), this.masterLocale);
       log(this.exportConfig, 'Completed locale export', 'success');
     } catch (error) {
-      log(this.exportConfig, chalk.red(`Failed to export locales ${formatError(error)}`), 'error');
+      log(this.exportConfig, `Failed to export locales. ${formatError(error)}`, 'error');
       throw new Error('Failed to export locales');
     }
   }
