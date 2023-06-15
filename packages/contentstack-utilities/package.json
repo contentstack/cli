@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-utilities",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "Utilities for contentstack projects",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,7 +13,9 @@
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "posttest": "npm run lint",
     "lint": "eslint src/**/*.ts",
-    "format": "eslint src/**/*.ts --fix"
+    "format": "eslint src/**/*.ts --fix",
+    "test:unit": "mocha --forbid-only \"test/unit/**/*.test.ts\"",
+    "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
   },
   "repository": {
     "type": "git",
