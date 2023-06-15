@@ -17,6 +17,7 @@ const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
 
 let config = require('../../config/default');
+const { formatError } = require('../util');
 
 module.exports = class ExportAssets {
   config;
@@ -86,7 +87,8 @@ module.exports = class ExportAssets {
                           .catch((error) => {
                             addlogs(
                               self.config,
-                              chalk.red('The following asset failed to download\n' + JSON.stringify(assetJSON)),
+                              `Asset '${assetJSON.uid}' failed to download.\n ${formatError(error)}`,
+                              'error'
                             );
                             addlogs(self.config, error, 'error');
                           });
@@ -98,8 +100,8 @@ module.exports = class ExportAssets {
                           })
                           .catch((err) => {
                             addlogs(
-                              { errorCode: err && err.code, uid: assetJSON.uid },
-                              `Asset download failed - ${assetJSON.uid}`,
+                              self.config,
+                              `Asset '${assetJSON.uid}' download failed. ${formatError(err)}`,
                               'error',
                             );
                             return err;
@@ -113,8 +115,8 @@ module.exports = class ExportAssets {
                       // helper.writeFileSync(this.assetContentsFile, self.assetContents)
                     })
                     .catch((error) => {
-                      console.log('Error fetch/download the asset', error && error.message);
-                      addlogs(self.config, 'Asset batch ' + (batch + 1) + ' failed to download', 'error');
+                      addlogs(self.config, `Asset batch ${batch + 1} failed to download`, 'error');
+                      addlogs(self.config, formatError(error), 'error');
                       addlogs(self.config, error, 'error');
                     });
                 })
@@ -135,7 +137,7 @@ module.exports = class ExportAssets {
                   return resolve();
                 })
                 .catch((error) => {
-                  addlogs(self.config, error, 'success');
+                  addlogs(self.config, error, 'error');
                   reject(error);
                 });
             })
@@ -143,14 +145,15 @@ module.exports = class ExportAssets {
               helper.writeFileSync(self.assetContentsFile, self.assetContents);
               addlogs(
                 self.config,
-                chalk.red('Asset export failed due to the following errors ' + JSON.stringify(error), 'error'),
+                `Asset export failed. ${formatError(error)}`,
+                'error'
               );
-              addlogs(self.config, error, 'success');
+              addlogs(self.config, error, 'error');
               reject(error);
             });
         })
         .catch((error) => {
-          addlogs(self.config, error, 'success');
+          addlogs(self.config, error, 'error');
           reject(error);
         });
     });
@@ -175,7 +178,7 @@ module.exports = class ExportAssets {
               return resolve();
             })
             .catch((error) => {
-              addlogs(self.config, chalk.red('Error while exporting asset-folders!'), 'error');
+              addlogs(self.config, `Error while exporting asset-folders!\n ${formatError(error)}`, 'error');
               return reject(error);
             });
         })
@@ -319,7 +322,6 @@ module.exports = class ExportAssets {
         })
         .catch((error) => {
           addlogs(self.config, error, 'error');
-          console.log('Error on  fetch', error && error.message);
 
           if (error.status === 408) {
             console.log('retrying', uid);
@@ -383,6 +385,7 @@ module.exports = class ExportAssets {
           return resolve();
         })
         .on('error', (error) => {
+          addlogs(self.config, `Download ${asset.filename}: ${asset.uid} failed!`, 'error');
           addlogs(self.config, error, 'error');
           reject(error);
         });

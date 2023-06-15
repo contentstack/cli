@@ -45,7 +45,7 @@ module.exports = class ExportCustomRoles {
       );
       self.customRoles = {};
       customRoles.forEach((role) => {
-        addlogs(self.config, role.name + ' role was exported successfully', 'success');
+        addlogs(self.config, `'${role.name}' role was exported successfully`, 'success');
         self.customRoles[role.uid] = role;
       });
       helper.writeFileSync(path.join(rolesFolderPath, self.rolesConfig.fileName), self.customRoles);
@@ -54,13 +54,12 @@ module.exports = class ExportCustomRoles {
       if (error.statusCode === 401) {
         addlogs(
           self.config,
-          chalk.red('You are not allowed to export roles, Unless you provide email and password in config'),
+          'You are not allowed to export roles, Unless you provide email and password in config',
           'error',
         );
         return;
       }
-      addlogs(self.config, 'Error occurred in exporting roles. ' + error && error.message, 'error');
-      addlogs(self.config, formatError(error), 'error');
+      addlogs(self.config, `Error occurred in exporting roles. ${formatError(error)}`, 'error');
       throw error;
     }
   }
