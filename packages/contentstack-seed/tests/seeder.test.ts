@@ -20,7 +20,6 @@ const tmpDirName = '/var/tmp/xxxxxx/';
 const repo = 'stack-gatsby-blog';
 
 const options: ContentModelSeederOptions = {
-  authToken: '',
   cdaHost: '',
   cmaHost: '',
   gitHubPath: '',
@@ -37,7 +36,7 @@ cli = {
 };
 
 const mockParsePath = jest.fn().mockReturnValue({
-  username: 'contentstack-solutions',
+  username: 'fakeUserName55',
   repo: repo,
 });
 
