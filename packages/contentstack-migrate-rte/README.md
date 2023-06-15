@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-cm-migrate-rte
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-migrate-rte/1.4.7 darwin-x64 node-v18.16.0
+@contentstack/cli-cm-migrate-rte/1.4.8 darwin-arm64 node-v18.16.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -36,8 +36,9 @@ Migration script to migrate content from HTML RTE to JSON RTE
 
 ```
 USAGE
-  $ csdx cm:entries:migrate-html-rte [-c <value>] [-a <value>] [--content-type <value>] [--global-field] [-y] [--branch <value>]
-    [--html-path <value> --json-path <value>] [--delay <value>] [--locale <value>] [--batch-limit <value>]
+  $ csdx cm:entries:migrate-html-rte [-c <value>] [-a <value>] [--stack-api-key <value>] [--content-type <value>]
+    [--global-field] [-y] [--branch <value>] [--html-path <value> --json-path <value>] [--delay <value>] [--locale
+    <value>] [--batch-limit <value>]
 
 FLAGS
   -a, --alias=<value>        Alias(name) for the management token
@@ -52,6 +53,7 @@ FLAGS
   --html-path=<value>        Provide path of HTML RTE to migrate
   --json-path=<value>        Provide path of JSON RTE to migrate
   --locale=<value>           The locale from which entries will be migrated
+  --stack-api-key=<value>    Stack api key to be used
 
 DESCRIPTION
   Migration script to migrate content from HTML RTE to JSON RTE
@@ -95,8 +97,9 @@ Migration script to migrate content from HTML RTE to JSON RTE
 
 ```
 USAGE
-  $ csdx cm:migrate-rte [-c <value>] [-a <value>] [--content-type <value>] [--global-field] [-y] [--branch <value>]
-    [--html-path <value> --json-path <value>] [--delay <value>] [--locale <value>] [--batch-limit <value>]
+  $ csdx cm:migrate-rte [-c <value>] [-a <value>] [--stack-api-key <value>] [--content-type <value>]
+    [--global-field] [-y] [--branch <value>] [--html-path <value> --json-path <value>] [--delay <value>] [--locale
+    <value>] [--batch-limit <value>]
 
 FLAGS
   -a, --alias=<value>        Alias(name) for the management token
@@ -111,6 +114,7 @@ FLAGS
   --html-path=<value>        Provide path of HTML RTE to migrate
   --json-path=<value>        Provide path of JSON RTE to migrate
   --locale=<value>           The locale from which entries will be migrated
+  --stack-api-key=<value>    Stack api key to be used
 
 DESCRIPTION
   Migration script to migrate content from HTML RTE to JSON RTE
