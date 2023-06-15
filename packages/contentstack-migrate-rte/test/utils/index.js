@@ -5,8 +5,8 @@ const expectedResponse = require('../dummy/expectedEntriesResponse.json')
 const globalFieldResponse = require('../dummy/globalFieldResponse.json')
 const dummyToken = {
   test1: {
-    token: '***REMOVED***',
-    apiKey: '***REMOVED***',
+    token: 'testManagementToken',
+    apiKey: 'testApiKey',
     type: 'management',
   },
 }
