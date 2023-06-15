@@ -1,5 +1,7 @@
 node_modules
 .todo
+.env
+.dccache
 logs
 contents
 lerna-debug.log
@@ -12,5 +14,7 @@ oclif.manifest.json
 .nyc_output
 contentstack-cli-logs
 packages/**/package-lock.json
+packages/contentstack-import-old/
+packages/contentstack-export-old/
 .dccache
 yarn.lock
