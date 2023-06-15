@@ -31,10 +31,6 @@ function formatError(error) {
   return message;
 }
 
-function formatHostname(hostname) {
-  return hostname.split('//').pop();
-}
-
 function setDelayForBulkPublish(_queue) {
   // empty block
   // queue.requestBatchSize = 1
@@ -62,7 +58,6 @@ function isEmpty(file) {
 module.exports = {
   prettyPrint,
   formatError,
-  formatHostname,
   setDelayForBulkPublish,
   getNumberOfBulkPublishRequests,
   isEmpty,
