@@ -1,10 +1,13 @@
-import chalk from 'chalk';
-import { default as inquirer, QuestionCollection } from 'inquirer';
+import chalk, { Chalk } from 'chalk';
+import { default as inquirer, QuestionCollection, Answers } from 'inquirer';
 import { Table } from '@oclif/core/lib/cli-ux';
-import { ux as cliux, Args, Flags, Command, Help, Plugin, Config } from '@oclif/core';
+import { ux as cliux, Args, Flags, Command } from '@oclif/core';
+import { Ora, default as ora } from 'ora';
 
 import messageHandler from './message-handler';
 import { PrintOptions, InquirePayload, CliUXPromptOptions } from './interfaces';
+
+inquirer.registerPrompt('table', require('./inquirer-table-prompt'));
 
 /**
  * CLI Interface
@@ -22,9 +25,19 @@ class CLIInterface {
 
   init(context) {}
 
+  registerSearchPlugin(): void {
+    inquirer.registerPrompt('search-list', require('inquirer-search-list'));
+    inquirer.registerPrompt('search-checkbox', require('inquirer-search-checkbox'));
+  }
+
   print(message: string, opts?: PrintOptions): void {
-    if (opts && opts.color) {
-      cliux.log(chalk[opts.color](messageHandler.parse(message)));
+    if (opts) {
+      let chalkFn: Chalk = chalk;
+
+      if (opts.color) chalkFn = chalkFn[opts.color] as Chalk;
+      if (opts.bold) chalkFn = chalkFn.bold as Chalk;
+
+      cliux.log(chalkFn(messageHandler.parse(message)));
       return;
     }
 
@@ -56,11 +69,14 @@ class CLIInterface {
     cliux.table(data, columns, options);
   }
 
-  async inquire<T>(inquirePayload: InquirePayload): Promise<T> {
-    inquirePayload.message = messageHandler.parse(inquirePayload.message);
-    const result = await inquirer.prompt(inquirePayload as QuestionCollection<T>);
-
-    return result[inquirePayload.name] as T;
+  async inquire<T>(inquirePayload: InquirePayload | Array<InquirePayload>): Promise<T> {
+    if (Array.isArray(inquirePayload)) {
+      return inquirer.prompt(inquirePayload);
+    } else {
+      inquirePayload.message = messageHandler.parse(inquirePayload.message);
+      const result = await inquirer.prompt(inquirePayload as QuestionCollection<Answers>);
+      return result[inquirePayload.name] as T;
+    }
   }
 
   prompt(name: string, options?: CliUXPromptOptions): Promise<any> {
@@ -68,14 +84,22 @@ class CLIInterface {
   }
 
   confirm(message?: string): Promise<boolean> {
-    return cliux.confirm(message);
+    return cliux.confirm(message as string);
   }
 
   progress(options?: any): any {
     return cliux.progress(options);
   }
+
+  loaderV2(message: string = '', spinner?: any): Ora | void {
+    if (!spinner) {
+      return ora(message).start();
+    } else {
+      spinner.text = message;
+      spinner.stop();
+    }
+  }
 }
 
 export default new CLIInterface();
-
-export { Flags, Args, Command, Help, Plugin, Config };
+export { Flags, Args, Command };

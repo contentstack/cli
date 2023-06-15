@@ -1,5 +1,5 @@
-import { Parser } from '@oclif/core';
-import shortUUID from 'short-uuid';
+
+import * as shortUUID from 'short-uuid';
 import * as path from 'path';
 import { configHandler } from '@contentstack/cli-utilities';
 import { machineIdSync } from 'node-machine-id';
@@ -52,7 +52,7 @@ export default class CsdxContext {
         this.plugin.root,
         this.plugin.config.messageFilePath || './messages/index.json',
       );
-      this.info.shortCommandName = this.plugin?.config?.shortCommandName[cliOpts.id];
+      this.info.shortCommandName = this.plugin?.config?.shortCommandName?.[cliOpts.id];
       analyticsInfo.push(this.info.shortCommandName || cliOpts.id);
     }
     this.flagWarningPrintState = {};

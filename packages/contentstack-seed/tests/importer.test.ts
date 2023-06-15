@@ -15,7 +15,6 @@ describe('importer', () => {
 
     importer.run({
       api_key: '',
-      authToken: '',
       cdaHost: '',
       cmaHost: '',
       master_locale: '',

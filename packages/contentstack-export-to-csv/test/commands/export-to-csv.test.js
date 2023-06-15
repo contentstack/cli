@@ -5,9 +5,7 @@ const config = require('../../src/util/config.js');
 // mock data for Export Entries to CSV
 const sampleEnvironments = { envUid1: 'envName1', envUid2: 'envName2' };
 const sampleEntries = require('../mock-data/entries.json');
-
 // mock data for Export Organization Users
-
 // eslint-disable-next-line no-undef
 describe('export to csv', () => {
   test

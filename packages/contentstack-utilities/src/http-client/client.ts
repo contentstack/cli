@@ -1,7 +1,10 @@
 import Axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { IHttpClient } from './client-interface';
 import { HttpResponse } from './http-response';
+import configStore from '../config-handler';
+import authHandler from '../auth-handler';
 
-export class HttpClient {
+export class HttpClient implements IHttpClient {
   /**
    * The request configuration.
    */
@@ -347,13 +350,25 @@ export class HttpClient {
    * @returns {Request}
    */
   async createAndSendRequest(method: HttpMethod, url: string): Promise<AxiosResponse> {
-    return await this.axiosInstance({
-      url,
-      method,
-      withCredentials: true,
-      ...this.request,
-      data: this.prepareRequestPayload(),
+    let counter = 0;
+    this.axiosInstance.interceptors.response.use(null, async error => {
+      const { message, response } = error;
+      if (response?.data?.error_message?.includes('access token is invalid or expired')) {
+        const token = await this.refreshToken();
+        this.headers({ ...this.request.headers, authorization: token.authorization });
+        return await this.axiosInstance({ url, method, withCredentials: true, ...this.request, data: this.prepareRequestPayload(), })
+      }
+      // Retry while Network timeout or Network Error
+      if (!(message.includes('timeout') || message.includes('Network Error') || message.includes('getaddrinfo ENOTFOUND'))) {
+        return Promise.reject(error);
+      }
+      if (counter < 1) {
+        counter++;
+        return await this.axiosInstance({ url, method, withCredentials: true, ...this.request, data: this.prepareRequestPayload(), })
+      }
+      return Promise.reject(error);
     });
+    return await this.axiosInstance({ url, method, withCredentials: true, ...this.request, data: this.prepareRequestPayload(), })
   }
 
   /**
@@ -362,7 +377,22 @@ export class HttpClient {
   prepareRequestPayload(): any {
     return this.bodyFormat === 'formParams' ? new URLSearchParams(this.request.data).toString() : this.request.data;
   }
+
+  async refreshToken() {
+    const authorisationType = configStore.get('authorisationType');
+    if (authorisationType === 'BASIC') {
+      return Promise.reject('Your session is timed out, please login to proceed');
+    } else if (authorisationType === 'OAUTH') {
+      return authHandler.compareOAuthExpiry(true)
+        .then(() => Promise.resolve({ authorization: `Bearer ${configStore.get('oauthAccessToken')}`, }))
+        .catch((error) => Promise.reject(error));
+    } else {
+      return Promise.reject('You do not have permissions to perform this action, please login to proceed');
+    }
+  }
 }
+
+export interface HttpRequestConfig extends AxiosRequestConfig {}
 
 type BodyFormat = 'json' | 'formParams';
 

@@ -2,7 +2,7 @@ import * as tar from 'tar';
 import * as zlib from 'zlib';
 import * as https from 'https';
 import { Stream } from 'stream';
-import * as mkdirp from 'mkdirp';
+import mkdirp = require('mkdirp');
 import { HttpClient } from '@contentstack/cli-utilities';
 
 import GithubError from './error';
