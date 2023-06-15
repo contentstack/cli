@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.2.0",
+  "version": "1.4.6",
   "author": "Contentstack",
   "scripts": {
     "build": "npm run clean && npm run compile",
@@ -17,16 +17,18 @@
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
     "test:integration": "mocha --forbid-only \"test/run.test.ts\" --integration-test",
-    "test:unit": "mocha --forbid-only \"test/unit/*.test.ts\" --unit-test"
+    "test:unit": "mocha --forbid-only \"test/unit/**/*.test.ts\" --unit-test",
+    "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
   },
   "dependencies": {
-    "@contentstack/cli-command": "^1.2.0",
-    "@contentstack/cli-utilities": "^1.2.0",
+    "@contentstack/cli-command": "^1.2.8",
+    "@contentstack/cli-utilities": "^1.4.4",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
     "mkdirp": "^1.0.4",
     "inquirer": "8.2.4",
-    "winston": "^3.7.2"
+    "winston": "^3.7.2",
+    "lodash": "^4.17.20"
   },
   "devDependencies": {
     "@oclif/test": "^2.2.10",
@@ -43,7 +45,7 @@
     "globby": "^10.0.2",
     "mocha": "10.1.0",
     "nyc": "^15.1.0",
-    "oclif": "^3.1.2",
+    "oclif": "^3.8.1",
     "rimraf": "^2.7.1",
     "sinon": "^15.0.1",
     "tmp": "^0.2.1",
@@ -73,9 +75,10 @@
     ],
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-config/<%- commandPath %>"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint"
+  "csdxConfig": {
+    "shortCommandName": {
+      "config:get:region": "RGT",
+      "config:set:region": "RST"
     }
   },
   "repository": "contentstack/cli"

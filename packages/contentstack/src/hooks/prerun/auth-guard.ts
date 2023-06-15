@@ -1,5 +1,9 @@
-import { logger, cliux, configHandler } from '@contentstack/cli-utilities';
-import * as ContentstackManagementSDK from '@contentstack/management';
+import { 
+  logger, 
+  cliux, 
+  managementSDKClient,
+  isAuthenticated
+} from '@contentstack/cli-utilities';
 
 // TBD: run region command if region is not there
 export default async function (opts): Promise<void> {
@@ -14,13 +18,12 @@ export default async function (opts): Promise<void> {
   }
   // Auth guard
   if (protectedCommands[opts.Command.id]) {
-    const authToken = configHandler.get('authtoken');
-    if (!authToken) {
+    if (!isAuthenticated()) {
       logger.error('No auth token found for command', opts.Command.id);
       cliux.error('Please login to execute the command');
       this.exit();
     }
-    const client = ContentstackManagementSDK.client({ host: region.cma, authtoken: authToken })
+    const client = await managementSDKClient({host: region.cma})
     try {
       const result = await client.getUser();
       if (!result) {

@@ -1,6 +1,7 @@
 import { client, ContentstackClient, ContentstackConfig } from '@contentstack/management';
+import authHandler from './auth-handler';
 import { Agent } from 'node:https';
-import { default as configStore } from './config-handler';
+import configHandler, { default as configStore } from './config-handler';
 
 class ManagementSDKInitiator {
   private analyticsInfo: string;
@@ -50,10 +51,31 @@ class ManagementSDKInitiator {
         },
       },
       refreshToken: () => {
-        return Promise.reject('You do not have permissions to perform this action, please login to proceed');
+        return new Promise((resolve, reject) => {
+          const authorisationType = configStore.get('authorisationType');
+          if (authorisationType === 'BASIC') {
+            // Handle basic auth 401 here
+            reject('Session timed out, please login to proceed');
+          } else if (authorisationType === 'OAUTH') {
+            return authHandler
+              .compareOAuthExpiry(true)
+              .then(() => {
+                resolve({
+                  authorization: `Bearer ${configStore.get('oauthAccessToken')}`,
+                });
+              })
+              .catch((error) => {
+                reject(error);
+              });
+          } else {
+            reject('You do not have permissions to perform this action, please login to proceed');
+          }
+        });
       },
     };
-
+    if (config.endpoint) {
+      option.endpoint = config.endpoint;
+    }
     if (typeof config.branchName === 'string') {
       if (!option.headers) option.headers = {};
       option.headers.branch = config.branchName;
@@ -65,10 +87,18 @@ class ManagementSDKInitiator {
     }
 
     if (!config.management_token) {
-      const authtoken = configStore.get('authtoken');
-      if (authtoken) {
-        option.authtoken = authtoken;
+      const authorisationType = configStore.get('authorisationType');
+      if (authorisationType === 'BASIC') {
+        option.authtoken = configStore.get('authtoken');
         option.authorization = '';
+      } else if (authorisationType === 'OAUTH') {
+        if (!config.skipTokenValidity) {
+          await authHandler.compareOAuthExpiry();
+          option.authorization = `Bearer ${configStore.get('oauthAccessToken')}`;
+        } else {
+          option.authtoken = '';
+          option.authorization = '';
+        }
       } else {
         option.authtoken = '';
         option.authorization = '';
@@ -81,3 +111,4 @@ class ManagementSDKInitiator {
 
 export const managementSDKInitiator = new ManagementSDKInitiator();
 export default managementSDKInitiator.createAPIClient.bind(managementSDKInitiator);
+export { ContentstackConfig, ContentstackClient };
