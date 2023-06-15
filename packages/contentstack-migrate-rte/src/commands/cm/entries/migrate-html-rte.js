@@ -20,8 +20,15 @@ class JsonMigrationCommand extends Command {
       if (isEmpty(config.paths)) {
         throw new Error('No value provided for the "paths" property in config.');
       }
-      const token = getToken(config.alias);
-      let stack = getStack({ token: token, host: this.cmaHost });
+      const stackOptions = { host: this.cmaHost };
+      if (config.alias) {
+        stackOptions.token = getToken(config.alias)
+      }
+      if (config['stack-api-key']) {
+        stackOptions.stackApiKey = config['stack-api-key']
+      }
+      if (config.branch) stackOptions.branch = config.branch;
+      let stack = await getStack(stackOptions);
       config.entriesCount = 0;
       config.contentTypeCount = 0;
       config.errorEntriesUid = {};
@@ -67,6 +74,10 @@ JsonMigrationCommand.flags = {
     description: 'Alias(name) for the management token',
     required: false,
   }),
+  'stack-api-key': flags.string({
+    description: 'Stack api key to be used',
+    required: false,
+  }),
   'content-type': flags.string({
     description: 'The content type from which entries will be migrated',
     required: false,
@@ -81,6 +92,9 @@ JsonMigrationCommand.flags = {
     description: 'Agree to process the command with the current configuration',
     default: false,
     required: false,
+  }),
+  branch: flags.string({
+    description: '[optional] branch name',
   }),
   'html-path': flags.string({
     description: 'Provide path of HTML RTE to migrate',
