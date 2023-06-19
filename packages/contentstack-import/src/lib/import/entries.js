@@ -564,7 +564,7 @@ module.exports = class ImportEntries {
           // map failed reference uids @mapper/language/unmapped-uids.json
           let refUidMapperPath = path.join(this.entryMapperPath, lang);
 
-          addlogs(this.config, 'staring to update the entry for reposting');
+          addlogs(this.config, 'Starting to update the entry for reposting');
 
           entries = _.map(entries, (entry) => {
             try {
@@ -1077,7 +1077,7 @@ module.exports = class ImportEntries {
 
                         let entryUid = entryMapper[eUid];
                         if (entryUid) {
-                          requestObject.entry.environments = 'test';
+                          requestObject.entry.environments = envId;
                           requestObject.entry.locales = locales;
                           return new Promise((resolveEntryPublished, rejectEntryPublished) => {
                             self.stackAPIClient
