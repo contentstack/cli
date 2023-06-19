@@ -134,7 +134,7 @@ class CloneHandler {
       let spinner;
       try {
         const stackAPIClient = client.stack({
-          api_key: config.source_stack,
+          api_key: config.target_stack ? config.target_stack : config.source_stack,
           management_token: config.management_token,
         });
 
@@ -337,12 +337,17 @@ class CloneHandler {
 
         const orgMsgExistingStack = 'Choose an organization where the destination stack exists: ';
         const orgMsgNewStack = 'Choose an organization where you want to create a stack: ';
-        const org = await cloneCommand.execute(new HandleOrgCommand({
-          msg: !canCreateStack.stackCreate ? orgMsgExistingStack : orgMsgNewStack
-        }, this));
 
-        let self = this;
-        if (org) {
+        let org;
+        if (!config.target_stack) {
+          org = await cloneCommand.execute(new HandleOrgCommand({
+            msg: !canCreateStack.stackCreate ? orgMsgExistingStack : orgMsgNewStack
+          }, this));
+        }
+
+        const params = { org, canCreateStack };
+        if (!config.target_stack) {
+          let self = this;
           keyPressHandler = async function (_ch, key) {
             if (key.name === 'left' && key.shift) {
               if (self.executingCommand === 1) {
@@ -363,10 +368,9 @@ class CloneHandler {
           };
           process.stdin.addListener('keypress', keyPressHandler);
           this.setBackKeyPressHandler(keyPressHandler);
-
-          await this.executeStackDestinationPrompt({ org, canCreateStack });
+          await this.executeStackDestinationPrompt(params);
         } else {
-          return reject('Org not found.');
+          await this.executeBranchDestinationPrompt(params);
         }
 
         return resolve();
@@ -381,13 +385,9 @@ class CloneHandler {
       this.setExectingCommand(1);
       const { org, canCreateStack } = params;
       if (!canCreateStack.stackCreate) {
-        if (!config.target_stack) {
-          const stackMsg = 'Choose the destination stack:';
-          await cloneCommand.execute(new HandleDestinationStackCommand({ org, msg: stackMsg, isSource: false }, this));
-        }
-        if (config.target_stack) {
-          this.executeBranchDestinationPrompt(params);
-        }
+        const stackMsg = 'Choose the destination stack:';
+        await cloneCommand.execute(new HandleDestinationStackCommand({ org, msg: stackMsg, isSource: false }, this));
+        this.executeBranchDestinationPrompt(params);
       } else {
         const orgUid = orgUidList[org.Organization];
         await cloneCommand.execute(new CreateNewStackCommand({ orgUid }, this));
