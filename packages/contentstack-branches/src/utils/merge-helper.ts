@@ -55,18 +55,28 @@ export const setupMergeInputs = async (mergeFlags) => {
     mergeFlags.mergeSummary = mergeSummary;
   }
 
+  let { requestPayload: { base_branch = null, compare_branch = null } = {} } = mergeFlags.mergeSummary || {};
+
   if (!mergeFlags['stack-api-key']) {
     mergeFlags['stack-api-key'] = await askStackAPIKey();
   }
   if (!mergeFlags['compare-branch']) {
-    mergeFlags['compare-branch'] = await askCompareBranch();
+    if (!compare_branch) {
+      mergeFlags['compare-branch'] = await askCompareBranch();
+    } else {
+      mergeFlags['compare-branch'] = compare_branch;
+    }
   }
   if (!mergeFlags['base-branch']) {
-    mergeFlags['base-branch'] = getbranchConfig(mergeFlags['stack-api-key']);
-    if (!mergeFlags['base-branch']) {
-      mergeFlags['base-branch'] = await askBaseBranch();
+    if (!base_branch) {
+      mergeFlags['base-branch'] = getbranchConfig(mergeFlags['stack-api-key']);
+      if (!mergeFlags['base-branch']) {
+        mergeFlags['base-branch'] = await askBaseBranch();
+      } else {
+        cliux.print(`\nBase branch: ${mergeFlags['base-branch']}\n`, { color: 'grey' });
+      }
     } else {
-      cliux.print(`\nBase branch: ${mergeFlags['base-branch']}\n`, { color: 'grey' });
+      mergeFlags['base-branch'] = base_branch;
     }
   }
 
