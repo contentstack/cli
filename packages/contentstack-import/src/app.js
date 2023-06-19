@@ -13,6 +13,7 @@ const util = require('./lib/util/index');
 const login = require('./lib/util/login');
 const { addlogs } = require('./lib/util/log');
 const { managementSDKClient, isAuthenticated } = require('@contentstack/cli-utilities');
+const { camelCase } = require('lodash')
 
 exports.initial = (configData) => {
   return new Promise(async (resolve, reject) => {
@@ -176,8 +177,8 @@ const createBackup = (backupDirPath, config) => {
       });
     } else {
       //handle mac error :- Cannot copy to a subdirectory of itself 
-      if (os.platform() === 'darwin' && (config.data === "." || config.data === "./")) {
-        const tempDestination = `/private/tmp/${backupDirPath}`;
+      if (config.data === "." || config.data === "./") {
+        const tempDestination = `${os.platform() === 'darwin' ? '/private/tmp' : '/tmp'}/${camelCase(backupDirPath)}`;
         copySync(config.data, tempDestination);
         copySync(tempDestination, backupDirPath);
         removeSync(tempDestination);
