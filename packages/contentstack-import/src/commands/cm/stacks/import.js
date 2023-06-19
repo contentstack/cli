@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const defaultConfig = require('../../../config/default');
 const { Command } = require('@contentstack/cli-command');
-const { flags, printFlagDeprecation, isAuthenticated } = require('@contentstack/cli-utilities');
+const { flags, printFlagDeprecation, isAuthenticated, cliux } = require('@contentstack/cli-utilities');
 const {
   configWithMToken,
   parameterWithMToken,
@@ -51,7 +51,7 @@ class ImportCommand extends Command {
 
           result.then(resolve).catch(reject);
         } else {
-          console.log('management Token is not present please add managment token first');
+          cliux.print(`error: management Token is not present please add managment token first`, {color: 'red'});
         }
       } else if (isAuthenticated()) {
         let result;
@@ -66,7 +66,7 @@ class ImportCommand extends Command {
 
         result.then(resolve).catch(reject);
       } else {
-        console.log('Login or provide the alias for management token');
+        cliux.print(`error: Login or provide the alias for management token`, {color: 'red'});
       }
     });
   }
