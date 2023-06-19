@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.7.6 darwin-x64 node-v18.16.0
+@contentstack/cli/1.7.7 darwin-arm64 node-v18.11.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -1817,13 +1817,14 @@ Export entries or organization users to csv using this command
 ```
 USAGE
   $ csdx cm:export-to-csv [--action entries|users] [-a <value>] [--org <value>] [-n <value>] [--org-name <value>]
-    [--locale <value>] [--content-type <value>]
+    [--locale <value>] [--content-type <value>] [--branch <value>]
 
 FLAGS
   -a, --alias=<value>       Alias of the management token
   -n, --stack-name=<value>  Name of the stack that needs to be created as csv filename.
   --action=<option>         Option to export data (entries, users)
                             <options: entries|users>
+  --branch=<value>          Branch from which entries need to be exported
   --content-type=<value>    Content type for which entries needs to be exported
   --locale=<value>          Locale for which entries need to be exported
   --org=<value>             Provide organization UID to clone org users
@@ -1843,9 +1844,9 @@ EXAMPLES
 
 
 
-  Exporting entries to csv with stack name provided
+  Exporting entries to csv with stack name provided and branch name provided
 
-  $ csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type> --stack-name <stack-name>
+  $ csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type> --stack-name <stack-name> --branch <branch-name>
 
 
 
