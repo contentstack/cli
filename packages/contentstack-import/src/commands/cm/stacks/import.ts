@@ -112,11 +112,11 @@ export default class ImportCommand extends Command {
       await moduleImporter.start();
       log(importConfig, `The content has been imported to the stack ${importConfig.apiKey} successfully!`, 'success');
     } catch (error) {
-      log(importConfig, `Failed to export stack content - ${formatError(error)}`, 'error');
+      log(importConfig, `Failed to import stack content - ${formatError(error)}`, 'error');
       log(
         importConfig,
         `The log has been stored at ${
-          importConfig.exportDir ? path.join(importConfig.exportDir, 'logs', 'export') : path.join(__dirname, 'logs')
+          importConfig.exportDir ? path.join(importConfig.exportDir, 'logs', 'import') : path.join(__dirname, 'logs')
         }`,
         'info',
       );

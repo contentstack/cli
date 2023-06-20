@@ -48,7 +48,7 @@ class ModuleImporter {
   }
 
   async importByModuleByName(moduleName) {
-    log(this.importConfig, `Starting export of ${moduleName} module`, 'info');
+    log(this.importConfig, `Starting import of ${moduleName} module`, 'info');
 
     const basePath = `${this.importConfig.backupDir}/${moduleName}`;
     // import the modules by name
