@@ -92,7 +92,7 @@ module.exports = class importWorkflows {
                     }
                   }
                 } catch (error) {
-                  log(self.config, chalk.red('Error while importing workflows roles. ' + formatError(error)), 'error');
+                  log(self.config, `Error while importing workflows roles. ${formatError(error)}`, 'error');
                   reject({ message: 'Error while importing workflows roles' });
                 }
               }
@@ -117,17 +117,15 @@ module.exports = class importWorkflows {
               .catch(function (error) {
                 self.fails.push(workflow);
                 if (error.errors.name) {
-                  log(self.config, chalk.red("workflow: '" + workflow.name + "'  already exist"), 'error');
+                  log(self.config, `workflow ${workflow.name} already exist`, 'error');
                 } else if (error.errors['workflow_stages.0.users']) {
                   log(
                     self.config,
-                    chalk.red(
-                      "Failed to import Workflows as you've specified certain roles in the Stage transition and access rules section. We currently don't import roles to the stack.",
-                    ),
+                    "Failed to import Workflows as you've specified certain roles in the Stage transition and access rules section. We currently don't import roles to the stack.",
                     'error',
                   );
                 } else {
-                  log(self.config, chalk.red("workflow: '" + workflow.name + "'  failed"), 'error');
+                  log(self.config, `workflow ${workflow.name} failed.`, 'error');
                 }
               });
           } else {
@@ -149,8 +147,7 @@ module.exports = class importWorkflows {
         })
         .catch(function (error) {
           fileHelper.writeFileSync(workflowFailsPath, self.fails);
-          log(self.config, chalk.red('Workflows import failed'), 'error');
-          log(self.config, formatError(error), 'error');
+          log(self.config, `Workflows import failed. ${formatError(error)}`, 'error');
           return reject(error);
         });
     });

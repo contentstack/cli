@@ -65,13 +65,9 @@ module.exports = class ImportExtensions {
                 let error = JSON.parse(err.message);
                 self.fails.push(ext);
                 if (error.errors.title) {
-                  log(self.config, chalk.white("Extension: '" + ext.title + "' already exists"), 'success');
+                  log(self.config, chalk.white("Extension: '" + ext.title + "' already exists"), 'error');
                 } else {
-                  log(
-                    config,
-                    chalk.white("Extension: '" + ext.title + "' failed to be import\n " + JSON.stringify(error.errors)),
-                    'error',
-                  );
+                  log(self.config, "Extension: '" + ext.title + "' failed to be import" + formatError(error), 'error');
                 }
               });
           }
@@ -96,7 +92,7 @@ module.exports = class ImportExtensions {
         .catch(function (error) {
           // error while importing extensions
           fileHelper.writeFileSync(extFailsPath, self.fails);
-          log(self.config, chalk.red(`Extension import failed ${formatError(error)}`), 'error');
+          log(self.config, `Extension import failed ${formatError(error)}`, 'error');
           reject(error);
         });
     });
