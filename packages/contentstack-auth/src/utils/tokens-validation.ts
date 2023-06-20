@@ -25,15 +25,14 @@ export const validateDeliveryToken = async (
       AZURE_NA: 'azure-na',
       AZURE_EU: 'azure-eu',
     };
-    
-    const stack = contentStackClient
-      .Stack({
-        api_key: apiKey,
-        delivery_token: deliveryToken,
-        environment,
-        region: regionMap[region],
-        host,
-       });
+
+    const stack = contentStackClient.Stack({
+      api_key: apiKey,
+      delivery_token: deliveryToken,
+      environment,
+      region: regionMap[region],
+      host,
+    });
     const parsedHost = host.replace(/^https?:\/\//, '');
     stack.setHost(parsedHost);
     const deliveryTokenResult = await stack.getContentTypes({ limit: 1 });
@@ -97,11 +96,12 @@ export const validateManagementToken = async (
   contentStackClient: any,
   apiKey: string,
   managementToken: string,
+  branch: string,
 ): Promise<any> => {
   let result: { valid: boolean; message: string };
   try {
-    const validationResuslt = await contentStackClient.axiosInstance.get('/content_types?limit=1', {
-      headers: { api_key: apiKey, authorization: managementToken },
+    const validationResuslt = await contentStackClient.axiosInstance.get('/content_types?limit=1&include_branch=true', {
+      headers: { api_key: apiKey, authorization: managementToken, branch },
     });
 
     logger.debug('Management validation result', validationResuslt);
@@ -144,4 +144,3 @@ export const validateAPIKey = async (contentStackClient: any, apiKey: string): P
 
   return result;
 };
-
