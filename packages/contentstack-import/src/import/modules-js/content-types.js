@@ -1,16 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
-const { cloneDeep, remove, isEmpty, find, findIndex } = require('lodash');
-const {
-  fileHelper,
-  log,
-  executeTask,
-  formatError,
-  getInstalledExtensions,
-  schemaTemplate,
-  lookupExtension,
-} = require('../../utils');
+const { cloneDeep, find, findIndex } = require('lodash');
+const { fileHelper, log, executeTask, formatError, schemaTemplate, lookupExtension } = require('../../utils');
 
 class ContentTypesImport {
   constructor(importConfig, stackAPIClient) {
@@ -115,6 +107,18 @@ class ContentTypesImport {
 
       log(this.importConfig, chalk.green('Content types imported successfully'), 'success');
     } catch (error) {
+      let message_content_type = '';
+      if (error.request !== undefined && JSON.parse(error.request.data).content_type !== undefined) {
+        if (JSON.parse(error.request.data).content_type.uid) {
+          message_content_type =
+            ' Update the content type with content_type_uid  - ' + JSON.parse(error.request.data).content_type.uid;
+        } else if (JSON.parse(error.request.data).content_type.title) {
+          message_content_type =
+            ' Update the content type with content_type_title  - ' + JSON.parse(error.request.data).content_type.title;
+        }
+        error.errorMessage = error.errorMessage + message_content_type;
+      }
+      log(this.importConfig, formatError(error.errorMessage), 'error');
       log(this.importConfig, formatError(error), 'error');
       throw new Error('Failed to import content types');
     }
