@@ -4,8 +4,8 @@ const inquirer = require('inquirer');
 const rimraf = require('rimraf');
 const chalk = require('chalk');
 
-let exportCmd = require('@contentstack/cli-cm-export');
-let importCmd = require('@contentstack/cli-cm-import');
+let { default: exportCmd } = require('@contentstack/cli-cm-export');
+let { default: importCmd } = require('@contentstack/cli-cm-import');
 const { CustomAbortController } = require('./abort-controller');
 
 const {
