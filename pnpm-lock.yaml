@@ -653,7 +653,6 @@ importers:
     specifiers:
       '@contentstack/cli-command': ^1.2.0
       '@contentstack/cli-utilities': ^1.2.0
-      '@contentstack/management': ^1.6.1
       '@oclif/config': ^1.18.3
       '@oclif/core': ^2.3.0
       '@oclif/test': ^1.2.6
@@ -679,7 +678,7 @@ importers:
       mocha: ^10.0.0
       ncp: ^2.0.0
       nyc: ^15.1.0
-      oclif: ^3.1.2
+      oclif: ^3.8.1
       promise-limit: ^2.7.0
       rimraf: ^2.7.1
       sinon: ^11.1.1
@@ -691,7 +690,6 @@ importers:
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/management': 1.8.0_debug@4.3.4
       '@oclif/config': 1.18.10
       '@oclif/core': 2.8.5_pjb5dpt6oone62sfqu77666kre
       big-json: 3.2.0

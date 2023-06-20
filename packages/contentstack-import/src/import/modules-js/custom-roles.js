@@ -46,7 +46,7 @@ module.exports = class ImportCustomRoles {
       mkdirp.sync(customRolesMapperPath);
 
       if (!self.customRoles) {
-        log(self.config, chalk.white('No custom-roles found'), 'error');
+        log(self.config, chalk.white('No custom-roles found'), 'info');
         return;
       }
       self.customRolesUids = Object.keys(self.customRoles);
@@ -95,12 +95,12 @@ module.exports = class ImportCustomRoles {
           self.fails.push(customRole);
 
           if (((error && error.errors && error.errors.name) || '').includes('is not a unique.')) {
-            log(self.config, chalk.red(`${customRole.name} role already exists`), 'info');
+            log(self.config, `custom-role ${customRole.name} already exists`, 'info');
           } else {
             if (!(error && error.errors && error.errors.name)) {
-              log(self.config, chalk.red(`custom-role: ${customRole.name} already exists`), 'error');
+              log(self.config, `custom-role: ${customRole.name} already exists`, 'error');
             } else {
-              log(self.config, chalk.red(`custom-role: ${customRole.name} failed`), 'error');
+              log(self.config, `custom-role: ${customRole.name} failed`, 'error');
             }
 
             log(self.config, formatError(error), 'error');
@@ -110,7 +110,7 @@ module.exports = class ImportCustomRoles {
       log(self.config, chalk.green('Custom-roles have been imported successfully!'), 'success');
     } catch (error) {
       fileHelper.writeFileSync(customRolesFailsPath, self.fails);
-      log(self.config, chalk.red('Custom-roles import failed'), 'error');
+      log(self.config, 'Custom-roles import failed', 'error');
       log(self.config, formatError(error), 'error');
 
       throw error;

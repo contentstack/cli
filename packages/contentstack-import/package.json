@@ -7,7 +7,6 @@
   "dependencies": {
     "@contentstack/cli-command": "^1.2.0",
     "@contentstack/cli-utilities": "^1.2.0",
-    "@contentstack/management": "^1.6.1",
     "@oclif/core": "^2.3.0",
     "@oclif/config": "^1.18.3",
     "big-json": "^3.2.0",
@@ -38,7 +37,7 @@
     "globby": "^10.0.2",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
-    "oclif": "^3.1.2",
+    "oclif": "^3.8.1",
     "rimraf": "^2.7.1",
     "sinon": "^11.1.1",
     "tmp": "^0.2.1",
@@ -58,7 +57,7 @@
     "posttest": "npm run lint",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
-    "test:integration": "mocha --forbid-only \"test/integration/*.test.ts\"",
+    "test:integration": "mocha --forbid-only \"test/run.test.js\" --integration-test --timeout 60000",
     "test:unit": "mocha --forbid-only \"test/unit/*.test.ts\""
   },
   "engines": {

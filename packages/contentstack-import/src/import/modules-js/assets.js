@@ -10,7 +10,7 @@ const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const Promise = require('bluebird');
 let { default: config } = require('../../config');
-const { fileHelper, log, uploadAsset } = require('../../utils');
+const { fileHelper, log, uploadAssetHelper } = require('../../utils');
 
 module.exports = class ImportAssets {
   assets;
@@ -94,7 +94,7 @@ module.exports = class ImportAssets {
                     // hence, upload each asset with its version
                     if (self.config.versioning) {
                       return self.uploadVersionedAssets(assetUid, currentAssetFolderPath).catch(function (error) {
-                        log(self.config, (chalk.red('Asset upload failed \n' + error), 'error'));
+                        log(self.config, 'Asset upload failed \n' + error, 'error');
                       });
                     }
 
@@ -132,13 +132,13 @@ module.exports = class ImportAssets {
                         // log them onto /mapper/assets/success.json
                       })
                       .catch(function (error) {
-                        log(self.config, chalk.red('Asset upload failed \n' + error, 'error'));
+                        log(self.config, 'Asset upload failed \n' + error, 'error');
                         return error;
                         // asset failed to upload
                         // log them onto /mapper/assets/fail.json
                       });
                   }
-                  log(self.config, currentAssetFolderPath + ' does not exist!', 'error');
+                  log(self.config, `'${currentAssetFolderPath}' does not exist!`, 'error');
                 },
                 { concurrency: self.assetConfig.assetBatchLimit },
               ).then(function () {
@@ -243,7 +243,7 @@ module.exports = class ImportAssets {
         .catch(function (error) {
           // failed to upload asset
           // write it on fail logs, but do not stop the process
-          log(self.config, chalk.red('Failed to upload asset\n' + error), 'error');
+          log(self.config, 'Failed to upload asset\n' + error, 'error');
           return resolve();
         });
     });
@@ -278,7 +278,7 @@ module.exports = class ImportAssets {
         requestOption.formData['asset[title]'] = metadata.title;
       }
 
-      return uploadAsset(this.config, requestOption, assetPath)
+      return uploadAssetHelper(self.config, requestOption, assetPath)
         .then(function (response) {
           urlContainer[metadata.url] = response.url;
           return resolve();
@@ -311,7 +311,7 @@ module.exports = class ImportAssets {
       if (metadata.hasOwnProperty('title') && typeof metadata.title === 'string') {
         requestOption.title = metadata.title;
       }
-      return uploadAsset(requestOption, assetPath)
+      return uploadAssetHelper(self.config, requestOption, assetPath)
         .then(function (response) {
           uidContainer[metadata.uid] = response.uid;
           urlContainer[metadata.url] = response.url;
@@ -369,7 +369,7 @@ module.exports = class ImportAssets {
             .catch(function (err) {
               let error = JSON.parse(err.message);
               if (error.errors.authorization || error.errors.api_key) {
-                log(self.config, chalk.red('Api_key or management_token is not valid'), 'error');
+                log(self.config, 'Api_key or management_token is not valid', 'error');
                 return reject(error);
               }
 
@@ -475,7 +475,7 @@ module.exports = class ImportAssets {
               error = { errorMessage: err.message };
             }
 
-            log(self.config, chalk.red('Asset ' + assetUid + ' not published, ' + error.errorMessage), 'error');
+            log(self.config, 'Asset ' + assetUid + ' not published, ' + error.errorMessage, 'error');
             return reject(err);
           }
 

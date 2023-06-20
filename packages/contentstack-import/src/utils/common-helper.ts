@@ -7,7 +7,7 @@
 
 import * as _ from 'lodash';
 import * as path from 'path';
-import { HttpClient, managementSDKClient } from '@contentstack/cli-utilities';
+import { HttpClient, managementSDKClient, isAuthenticated } from '@contentstack/cli-utilities';
 import { readFileSync, readdirSync, readFile } from './file-helper';
 import chalk from 'chalk';
 import { log } from './logger';
@@ -33,7 +33,7 @@ export const validateConfig = (importConfig) => {
     !importConfig.password &&
     !importConfig.management_token &&
     importConfig.target_stack &&
-    !importConfig.auth_token
+    !isAuthenticated()
   ) {
     log(importConfig, chalk.red('Kindly provide management_token or email and password'), 'error');
     return 'error';
@@ -171,18 +171,6 @@ export const field_rules_update = (importConfig, ctPath) => {
                     return reject(error);
                   });
               }
-              let ctObj = client
-                .stack({ api_key: importConfig.target_stack, management_token: importConfig.management_token })
-                .contentType(schema.uid);
-              Object.assign(ctObj, _.cloneDeep(schema));
-              ctObj
-                .update()
-                .then(() => {
-                  return resolve('');
-                })
-                .catch((error) => {
-                  return reject(error);
-                });
             }
           }
         }

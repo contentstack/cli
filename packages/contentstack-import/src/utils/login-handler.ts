@@ -8,14 +8,13 @@
  */
 
 import { log } from './logger';
-import { managementSDKClient } from '@contentstack/cli-utilities';
+import { managementSDKClient, isAuthenticated } from '@contentstack/cli-utilities';
 
 const login = async (config): Promise<any> => {
   const client = await managementSDKClient(config);
   if (config.email && config.password) {
     const { user: { authtoken = null } = {} } = await client.login({ email: config.email, password: config.password });
     if (authtoken) {
-      config.authtoken = authtoken;
       config.headers = {
         api_key: config.source_stack,
         access_token: config.access_token,
@@ -27,27 +26,24 @@ const login = async (config): Promise<any> => {
     } else {
       throw new Error('Invalid auth token received after login');
     }
-  } else if (!config.email && !config.password && config.source_stack && config.access_token) {
-    log(
-      config,
-      'Content types, entries, assets, labels, global fields, extensions modules will be exported',
-      'success',
-    );
-    log(
-      config,
-      'Email, password, or management token is not set in the config, cannot export Webhook and label modules',
-      'success',
-    );
-    config.headers = {
-      api_key: config.source_stack,
-      access_token: config.access_token,
-      'X-User-Agent': 'contentstack-export/v',
-    };
-    return config;
-  } else if (config.auth_token && !config.management_token) {
-    await client.stack({ api_key: config.source_stack, management_token: config.management_token }).users();
   } else if (config.management_token) {
-    return '';
+    return config;
+  } else if (isAuthenticated()) {
+    const stackAPIClient = client.stack({
+      api_key: config.target_stack,
+      management_token: config.management_token,
+    });
+    const stack = await stackAPIClient.fetch().catch((error) => {
+      let errorstack_key = error.errors.api_key;
+      if (error.errors.api_key) {
+        log(config, 'Stack Api key ' + errorstack_key[0] + 'Please enter valid Key', 'error');
+        throw error;
+      }
+      log(config, error.errorMessage, 'error');
+      throw error;
+    });
+    config.destinationStackName = stack.name;
+    return config;
   }
 };
 
