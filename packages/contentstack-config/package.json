@@ -77,7 +77,9 @@
   "csdxConfig": {
     "shortCommandName": {
       "config:get:region": "RGT",
-      "config:set:region": "RST"
+      "config:set:region": "RST",
+      "config:get:base-branch": "BRGT",
+      "config:set:base-branch": "BRST"
     }
   },
   "repository": "contentstack/cli"
