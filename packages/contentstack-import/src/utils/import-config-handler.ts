@@ -1,10 +1,11 @@
 import merge from 'merge';
 import * as path from 'path';
 import { omit, filter, includes, isArray } from 'lodash';
-import { configHandler } from '@contentstack/cli-utilities';
+import { configHandler, isAuthenticated } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile } from './file-helper';
 import { askContentDir, askAPIKey } from './interactive';
+import login from './login-handler';
 
 const setupConfig = async (importCmdFlags): Promise<any> => {
   let config = merge({}, defaultConfig);
@@ -34,17 +35,21 @@ const setupConfig = async (importCmdFlags): Promise<any> => {
   }
 
   if (!config.management_token) {
-    if (!configHandler.get('authtoken')) {
-      throw new Error('Please login or provide an alias for the management token');
+    if (!isAuthenticated()) {
+      if (config.username && config.password) {
+        await login(config);
+      } else {
+        throw new Error('Please login or provide an alias for the management token');
+      }
     } else {
       config.apiKey = importCmdFlags['stack-uid'] || importCmdFlags['stack-api-key'] || (await askAPIKey());
       if (typeof config.apiKey !== 'string') {
         throw new Error('Invalid API key received');
       }
-      // Note support the old module
-      config.auth_token = configHandler.get('authtoken');
     }
   }
+
+  config.isAuthenticated = isAuthenticated();
 
   //Note to support the old key
   config.source_stack = config.apiKey;
