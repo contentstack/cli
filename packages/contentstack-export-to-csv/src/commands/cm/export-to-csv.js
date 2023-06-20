@@ -37,7 +37,7 @@ class ExportToCsvCommand extends Command {
       char: 'k',
       multiple: false,
       required: false,
-      description: 'Api key of the stack',
+      description: 'API key of the source stack',
     }),
     'org-name': flags.string({
       multiple: false,
