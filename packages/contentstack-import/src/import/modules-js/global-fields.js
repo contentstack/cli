@@ -11,14 +11,7 @@ let mkdirp = require('mkdirp');
 let Promise = require('bluebird');
 const { isEmpty, merge } = require('lodash');
 let { default: config } = require('../../config');
-const {
-  fileHelper,
-  log,
-  formatError,
-  lookupExtension,
-  getInstalledExtensions,
-  removeReferenceFields,
-} = require('../../utils');
+const { fileHelper, log, formatError, lookupExtension, removeReferenceFields } = require('../../utils');
 
 global._globalField_pending = [];
 
@@ -70,7 +63,7 @@ module.exports = class ImportGlobalFields {
           let flag = { supressed: false };
           let snip = self.globalfields[snipUid];
           lookupExtension(self.config, snip.schema, self.config.preserveStackVersion, self.installedExtensions);
-          removeReferenceFields(snip.schema, flag);
+          await removeReferenceFields(snip.schema, flag, self.stackAPIClient);
 
           if (flag.supressed) {
             // eslint-disable-next-line no-undef
@@ -93,7 +86,7 @@ module.exports = class ImportGlobalFields {
                 let error = JSON.parse(err.message);
                 if (error.errors.title) {
                   // eslint-disable-next-line no-undef
-                  log(self.config, chalk.white(snip.uid + ' globalfield already exists'), 'error');
+                  log(self.config, `Globalfield '${snip.uid} already exists'`, 'error');
                 } else {
                   log(self.config, chalk.red(`Globalfield failed to import ${formatError(error)}`), 'error');
                 }
@@ -121,10 +114,12 @@ module.exports = class ImportGlobalFields {
         })
         .catch(function (err) {
           // error while importing globalfields
+          let error = JSON.parse(err);
+          // error while importing globalfields
           log(self.config, err, 'error');
           fileHelper.writeFileSync(globalfieldsFailsPath, self.fails);
-          log(self.config, chalk.red('globalfields import failed'), 'error');
-          return reject(err);
+          log(self.config, `Globalfields import failed. ${formatError(err)}`, 'error');
+          return reject(error);
         });
     });
   }
