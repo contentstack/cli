@@ -120,6 +120,7 @@ export default class TokensAddCommand extends Command {
           return;
         }
       }
+
       if (!apiKey) {
         apiKey = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_API_KEY', name: 'apiKey' });
       }
@@ -132,23 +133,17 @@ export default class TokensAddCommand extends Command {
 
       let doBranchesExistInPlan: boolean = false;
 
-      try {
-        const { data } = await managementAPIClient.axiosInstance.get('stacks/branches', {
-          headers: { api_key: apiKey, authorization: token },
+      await managementAPIClient
+        .stack({ api_key: apiKey })
+        .branch()
+        .query()
+        .find()
+        .then(() => (doBranchesExistInPlan = true))
+        .catch((err) => {
+          if (err.errorCode && err.errorMessage && branch) {
+            throw new Error(err.errorMessage);
+          }
         });
-        if (data?.branches) {
-          doBranchesExistInPlan = true;
-        }
-      } catch (error) {
-        const {
-          response: {
-            data: { error_message },
-          },
-        } = error;
-        if (error_message && branch) {
-          throw new Error(error_message);
-        }
-      }
 
       if (doBranchesExistInPlan && !branch) {
         branch = await cliux.inquire({
@@ -167,6 +162,7 @@ export default class TokensAddCommand extends Command {
       }
 
       let tokenValidationResult;
+
       if (type === 'delivery') {
         tokenValidationResult = await tokenValidation.validateDeliveryToken(
           this.deliveryAPIClient,
