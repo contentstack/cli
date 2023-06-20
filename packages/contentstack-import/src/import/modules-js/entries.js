@@ -17,7 +17,6 @@ const {
   lookupExtension,
   suppressSchemaReference,
   lookupAssets,
-  getInstalledExtensions,
   lookupEntries,
 } = require('../../utils');
 const { default: config } = require('../../config');
@@ -282,7 +281,7 @@ module.exports = class ImportEntries {
                       self.installedExtensions,
                     );
                   } catch (error) {
-                    log(this.config, 'Failed to update entry while creating entry id ' + eUid);
+                    log(this.config, 'Failed to update entry while creating entry id ' + eUid, 'error');
                     log(this.config, formatError(error), 'error');
                   }
                 }
@@ -472,13 +471,7 @@ module.exports = class ImportEntries {
           } else {
             log(
               this.config,
-              chalk.white(
-                'Unable to find entry file path for ' +
-                  ctUid +
-                  " content type!\nThe file '" +
-                  eFilePath +
-                  "' does not exist!",
-              ),
+              `Unable to find entry file path for '${ctUid}' content type!\nThe file '${eFilePath}' does not exist!`,
               'error',
             );
           }
@@ -492,7 +485,7 @@ module.exports = class ImportEntries {
           return resolve();
         })
         .catch((error) => {
-          log(this.config, chalk.red("Failed to create entries in '" + lang + "' language"), 'error');
+          log(this.config, "Failed to create entries in '" + lang + "' language", 'error');
           return reject(error);
         });
     });
@@ -635,14 +628,7 @@ module.exports = class ImportEntries {
                       .catch((error) => {
                         log(
                           this.config,
-                          chalk.red(
-                            'Entry Uid: ' +
-                              entry.uid +
-                              ' of Content Type: ' +
-                              ctUid +
-                              ' failed to update in locale: ' +
-                              lang,
-                          ),
+                          `Entry Uid '${entry.uid}' of Content Type '${ctUid}' failed to update in locale '${lang}'`,
                           'error',
                         );
 
@@ -671,7 +657,7 @@ module.exports = class ImportEntries {
                 })
                 .catch((error) => {
                   // error while executing entry in batch
-                  log(this.config, chalk.red('Failed re-post entries at batch no: ' + (index + 1)), 'error');
+                  log(this.config, `Failed re-post entries of content type ${ctUid} locale ${lang}`, 'error');
                   log(this.config, formatError(error), 'error');
                   // throw error;
                 });
@@ -690,7 +676,7 @@ module.exports = class ImportEntries {
             })
             .catch((error) => {
               // error while updating entries with references
-              log(this.config, chalk.red(`Failed re-post entries of content type ${ctUid} locale ${lang}`, 'error'));
+              log(this.config, `Failed re-post entries of content type ${ctUid} locale ${lang}`, 'error');
               log(this.config, formatError(error), 'error');
               // throw error;
             });
@@ -1127,10 +1113,10 @@ module.exports = class ImportEntries {
               )
                 .then(() => {
                   // log(this.config, 'Entries published successfully in ' + ctUid + ' content type', 'success')
-                  log(this.config, 'Entries published successfully in ' + ctUid + ' content type');
+                  log(this.config, 'Entries published successfully in ' + ctUid + ' content type', 'info');
                 })
                 .catch((error) => {
-                  log(this.config, `failed to publish entry in content type ${ctUid} ${formatError(error)}`);
+                  log(this.config, `failed to publish entry in content type ${ctUid} ${formatError(error)}`, 'error');
                 });
             },
             {
