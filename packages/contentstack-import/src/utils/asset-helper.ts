@@ -1,16 +1,3 @@
-/**
- * Asset lookup
- *
- */
-
-/*!
- * Contentstack Import
- * Copyright (c) 2019 Contentstack LLC
- * MIT Licensed
- */
-
-'use strict';
-
 import Bluebird from 'bluebird';
 import * as url from 'url';
 import * as path from 'path';
@@ -19,7 +6,6 @@ const debug = require('debug')('util:requests');
 let _ = require('lodash');
 let { marked } = require('marked');
 let helper = require('./file-helper');
-const config = require('../config').default;
 
 const MAX_RETRY_LIMIT = 5;
 
@@ -29,7 +15,7 @@ function validate(req) {
   }
 }
 
-export const uploadAsset = function (req, fsPath, RETRY) {
+export const uploadAssetHelper = function (config, req, fsPath, RETRY) {
   return new Bluebird(function (resolve, reject) {
     try {
       managementSDKClient(config)
@@ -64,15 +50,8 @@ export const uploadAsset = function (req, fsPath, RETRY) {
   });
 };
 
-/*!
- * Contentstack Import
- * Copyright (c) 2019 Contentstack LLC
- * MIT Licensed
- */
-
 // get assets object
 export const lookupAssets = function (data, mappedAssetUids, mappedAssetUrls, assetUidMapperPath, installedExtensions) {
-  const marketplaceAppPath = path.resolve(config.data, 'marketplace_apps', 'marketplace_apps.json');
   if (
     !_.has(data, 'entry') ||
     !_.has(data, 'content_type') ||

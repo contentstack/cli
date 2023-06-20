@@ -75,11 +75,7 @@ module.exports = class ImportWebhooks {
               .catch(function (err) {
                 let error = JSON.parse(err.message);
                 self.fails.push(web);
-                log(
-                  self.config,
-                  chalk.red("Webhooks: '" + web.name + "' failed to be import\n" + formatError(error)),
-                  'error',
-                );
+                log(self.config, `Webhooks '${web.name}' failed to be import.\n ${formatError(error)}`, 'error');
               });
           } else {
             // the webhooks has already been created
@@ -102,7 +98,7 @@ module.exports = class ImportWebhooks {
         .catch(function (error) {
           // error while importing environments
           fileHelper.writeFileSync(webFailsPath, self.fails);
-          log(self.config, chalk.red('Webhooks import failed'), 'error');
+          log(self.config, `Webhooks import failed. ${formatError(error)}`, 'error');
           return reject(error);
         });
     });
