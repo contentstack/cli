@@ -22,8 +22,8 @@ module.exports = class ImportEnvironments {
   envUidMapper = {};
   fetchConcurrency = config.modules.environments.concurrency || config.fetchConcurrency || 2;
 
-  constructor(exportConfig, stackAPIClient) {
-    this.config = exportConfig;
+  constructor(importConfig, stackAPIClient) {
+    this.config = importConfig;
     this.stackAPIClient = stackAPIClient;
   }
 
@@ -100,7 +100,7 @@ module.exports = class ImportEnvironments {
         })
         .catch(function (error) {
           writeFileSync(envFailsPath, self.fails);
-          log(self.config, chalk.red(`Failed to import environment ${formatError(error)}`), 'error');
+          log(self.config, `Failed to import environment ${formatError(error)}`, 'error');
           reject(error);
         });
     });
