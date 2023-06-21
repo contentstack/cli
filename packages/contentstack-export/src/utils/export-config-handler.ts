@@ -10,11 +10,11 @@ import { filter, includes } from 'lodash';
 const setupConfig = async (exportCmdFlags): Promise<any> => {
   let config = merge({}, defaultConfig);
   // setup the config
-  if (exportCmdFlags['external-config-path']) {
-    const externalConfig = await readFile(exportCmdFlags['external-config-path']);
+  if (exportCmdFlags['config']) {
+    const externalConfig = await readFile(exportCmdFlags['config']);
     config = merge.recursive(config, externalConfig);
   }
-  config.exportDir = exportCmdFlags['data'] || exportCmdFlags['data-dir'] || (await askExportDir());
+  config.exportDir = exportCmdFlags['data'] || exportCmdFlags['data-dir'] || config.data || (await askExportDir());
   config.exportDir = path.resolve(config.exportDir);
   //Note to support the old key
   config.data = config.exportDir;
@@ -38,7 +38,8 @@ const setupConfig = async (exportCmdFlags): Promise<any> => {
         throw new Error('Please login or provide an alias for the management token');
       }
     } else {
-      config.apiKey = exportCmdFlags['stack-uid'] || exportCmdFlags['stack-api-key'] || (await askAPIKey());
+      config.apiKey =
+        exportCmdFlags['stack-uid'] || exportCmdFlags['stack-api-key'] || config.source_stack || (await askAPIKey());
       if (typeof config.apiKey !== 'string') {
         throw new Error('Invalid API key received');
       }
