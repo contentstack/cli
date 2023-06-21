@@ -61,7 +61,7 @@ module.exports = class ExportExtensions {
           resolve();
         })
         .catch((error) => {
-          addlogs(self.config, `Failed to export extensions ${formatError(error)}`, 'error');
+          addlogs(self.config, `Failed to export extensions. ${formatError(error)}`, 'error');
           reject();
         });
     });

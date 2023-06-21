@@ -32,7 +32,7 @@ class EntriesExport {
       const locales = await fileHelper.readFile(this.localesFilePath);
       const contentTypes = await fileHelper.readFile(this.schemaFilePath);
       if (contentTypes.length === 0) {
-        addlogs(this.exportConfig, 'No content types found to export entries');
+        addlogs(this.exportConfig, 'No content types found to export entries', 'info');
         return;
       }
       const entryRequestOptions = this.createRequestObjects(locales, contentTypes);
@@ -52,13 +52,13 @@ class EntriesExport {
         await fileHelper.writeLargeFile(entriesFilePath, entries);
         addlogs(
           this.exportConfig,
-          `Exported entries of type ${requestOption.content_type} locale ${requestOption.locale}`,
+          `Exported entries of type '${requestOption.content_type}' locale '${requestOption.locale}'`,
           'success',
         );
         if (this.exportConfig.versioning) {
           addlogs(
             this.exportConfig,
-            `Started export versioned entries of type ${requestOption.content_type} locale ${requestOption.locale}`,
+            `Started export versioned entries of type '${requestOption.content_type}' locale '${requestOption.locale}'`,
             'info',
           );
           for (let entry of entries) {
@@ -85,7 +85,7 @@ class EntriesExport {
               await executeTask(versionedEntries, write.bind(this), { concurrency: this.writeConcurrency });
               addlogs(
                 this.exportConfig,
-                `Exported versioned entries of type ${requestOption.content_type} locale ${requestOption.locale}`,
+                `Exported versioned entries of type '${requestOption.content_type}' locale '${requestOption.locale}'`,
                 'success',
               );
             }
@@ -94,7 +94,7 @@ class EntriesExport {
       }
       addlogs(this.exportConfig, chalk.green('Entries exported successfully'), 'success');
     } catch (error) {
-      addlogs(this.exportConfig, chalk.red(`Failed to export entries ${formatError(error)}`), 'error');
+      addlogs(this.exportConfig, `Failed to export entries ${formatError(error)}`, 'error');
       throw new Error('Failed to export entries');
     }
   }

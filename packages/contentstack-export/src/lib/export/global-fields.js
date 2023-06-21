@@ -95,7 +95,7 @@ module.exports = class ExportGlobalFields {
             }
             return self.getGlobalFields(skip, globalFieldConfig).then(resolve).catch(reject);
           } catch (error) {
-            addlogs(globalFieldConfig, chalk.red(`Failed to export global-fields ${formatError(error)}`), 'error');
+            addlogs(globalFieldConfig, `Failed to export global-fields. ${formatError(error)}`, 'error');
             reject(error);
           }
         })
