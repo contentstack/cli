@@ -1,4 +1,3 @@
-const contentstacksdk = require('@contentstack/management');
 const { Command } = require('@contentstack/cli-command');
 const command = new Command();
 const chalk = require('chalk');
@@ -21,24 +20,42 @@ const { JSDOM } = require('jsdom');
 const collapseWithSpace = require('collapse-whitespace');
 const { htmlToJson } = require('@contentstack/json-rte-serializer');
 const nodePath = require('path');
-const { cliux, managementSDKClient } = require('@contentstack/cli-utilities');
+const { cliux, managementSDKClient, isAuthenticated, doesBranchExist } = require('@contentstack/cli-utilities');
 const packageValue = require('../../../package.json');
 const isBlank = (variable) => {
   return isNil(variable) || isEmpty(variable);
 };
 
 async function getStack(data) {
-  const tokenDetails = data.token;
+  const stackOptions = {};
   const options = {
     host: data.host,
     application: `json-rte-migration/${packageValue.version}`,
     timeout: 120000,
   };
+  if (data.token) {
+    const tokenDetails = data.token;
+    stackOptions['api_key'] = tokenDetails.apiKey;
+    options['management_token'] = tokenDetails.token // need to pass management token so that the sdk doesn't get configured with authtoken (throws error in case of oauth, if the provided stack doesn't belong to the org selected while logging in with oauth)
+    stackOptions['management_token'] = tokenDetails.token;
+  }
+  if (data.stackApiKey) {
+    if (!isAuthenticated()) {
+      throw new Error('Please login to proceed further. Or use `--alias` instead of `--stack-api-key` to proceed without logging in.')
+    }
+    stackOptions['api_key'] = data.stackApiKey;
+  }
   if (data.branch) options.branchName = data.branch;
   const client = await managementSDKClient(options);
-  const stack = client.stack({ api_key: tokenDetails.apiKey, management_token: tokenDetails.token });
+  const stack = client.stack(stackOptions);
 
   stack.host = data.host;
+  if (data.branch) {
+    let branchData = await doesBranchExist(stack, data.branch);
+    if (branchData && branchData.errorCode) {
+      throw new Error(branchData.errorMessage)
+    }
+  }
   return stack;
 };
 
@@ -74,7 +91,6 @@ async function getConfig(flags) {
       config = require(nodePath.resolve(configPath));
     } else {
       config = {
-        alias: flags.alias,
         'content-type': flags['content-type'],
         'global-field': flags['global-field'],
         paths: [
@@ -91,6 +107,12 @@ async function getConfig(flags) {
       }
       if (flags.branch) {
         config.branch = flags['branch'];
+      }
+      if (flags.alias) {
+        config.alias = flags.alias
+      }
+      if (flags['stack-api-key']) {
+        config['stack-api-key'] = flags['stack-api-key']
       }
     }
     if (checkConfig(config)) {
@@ -152,7 +174,7 @@ function throwConfigError(error) {
 }
 function checkConfig(config) {
   let v = new Validator();
-  let res = v.validate(config, configSchema, { throwFirst: true });
+  let res = v.validate(config, configSchema, {throwError: true, nestedErrors: true});
   return res.valid;
 }
 function prettyPrint(data) {
