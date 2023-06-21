@@ -71,13 +71,11 @@ module.exports = class ImportEnvironments {
                 let error = JSON.parse(err.message);
 
                 if (error.errors.name) {
-                  addlogs(self.config, chalk.white("Environment: '" + env.name + "' already exists"), 'error');
+                  addlogs(self.config, `Environment '${env.name}' already exists`, 'error');
                 } else {
                   addlogs(
                     config,
-                    chalk.white(
-                      "Environment: '" + env.name + "' failed to be import\n " + JSON.stringify(error.errors),
-                    ),
+                    `Environment '${env.name}' failed to be import\n ${JSON.stringify(error.errors)}`,
                     'error',
                   );
                 }
@@ -86,7 +84,7 @@ module.exports = class ImportEnvironments {
             // the environment has already been created
             addlogs(
               config,
-              chalk.white("The environment: '" + env.name + "' already exists. Skipping it to avoid duplicates!"),
+              `The environment ${env.name} already exists. Skipping it to avoid duplicates!`,
               'success',
             );
           }
@@ -100,7 +98,7 @@ module.exports = class ImportEnvironments {
         })
         .catch(function (error) {
           helper.writeFileSync(envFailsPath, self.fails);
-          addlogs(self.config, chalk.red(`Failed to import environment ${formatError(error)}`), 'error');
+          addlogs(self.config, `Failed to import environment, ${formatError(error)}`, 'error');
           reject(error);
         });
     });
