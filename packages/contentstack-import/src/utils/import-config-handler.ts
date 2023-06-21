@@ -10,15 +10,15 @@ import login from './login-handler';
 const setupConfig = async (importCmdFlags): Promise<any> => {
   let config = merge({}, defaultConfig);
   // setup the config
-  if (importCmdFlags['external-config-path']) {
-    let externalConfig = await readFile(importCmdFlags['external-config-path']);
+  if (importCmdFlags['config']) {
+    let externalConfig = await readFile(importCmdFlags['config']);
     if (isArray(externalConfig['modules'])) {
       config.modules.types = filter(config.modules.types, (module) => includes(externalConfig['modules'], module));
       externalConfig = omit(externalConfig, ['modules']);
     }
     config = merge.recursive(config, externalConfig);
   }
-  config.contentDir = importCmdFlags['data'] || importCmdFlags['data-dir'] || (await askContentDir());
+  config.contentDir = importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir());
   config.contentDir = path.resolve(config.contentDir);
   //Note to support the old key
   config.data = config.contentDir;
@@ -42,7 +42,8 @@ const setupConfig = async (importCmdFlags): Promise<any> => {
         throw new Error('Please login or provide an alias for the management token');
       }
     } else {
-      config.apiKey = importCmdFlags['stack-uid'] || importCmdFlags['stack-api-key'] || (await askAPIKey());
+      config.apiKey =
+        importCmdFlags['stack-uid'] || importCmdFlags['stack-api-key'] || config.target_stack || (await askAPIKey());
       if (typeof config.apiKey !== 'string') {
         throw new Error('Invalid API key received');
       }

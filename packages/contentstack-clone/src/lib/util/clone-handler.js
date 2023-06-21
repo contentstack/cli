@@ -3,6 +3,7 @@ const path = require('path');
 const inquirer = require('inquirer');
 const rimraf = require('rimraf');
 const chalk = require('chalk');
+const fs = require('fs');
 
 let { default: exportCmd } = require('@contentstack/cli-cm-export');
 let { default: importCmd } = require('@contentstack/cli-cm-import');
@@ -571,6 +572,7 @@ class CloneHandler {
 
       if (config.forceStopMarketplaceAppsPrompt) cmd.push('-y');
 
+      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(config));
       let exportData = exportCmd.run(cmd);
       exportData.then(() => resolve(true)).catch(reject);
     });
@@ -595,6 +597,7 @@ class CloneHandler {
 
       if (config.forceStopMarketplaceAppsPrompt) cmd.push('-y');
 
+      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(config));
       await importCmd.run(cmd);
       return resolve();
     });

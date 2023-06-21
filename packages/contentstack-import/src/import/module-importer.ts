@@ -1,5 +1,4 @@
 import { FsUtility } from '@contentstack/cli-utilities';
-import * as path from 'path';
 import { backupHandler, log, validateBranch, masterLocalDetails, sanitizeStack } from '../utils';
 import startModuleImport from './modules';
 import startJSModuleImport from './modules-js';
