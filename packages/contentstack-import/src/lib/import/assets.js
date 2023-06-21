@@ -97,7 +97,7 @@ module.exports = class ImportAssets {
                     // hence, upload each asset with its version
                     if (self.config.versioning) {
                       return self.uploadVersionedAssets(assetUid, currentAssetFolderPath).catch(function (error) {
-                        addlogs(self.config, (chalk.red('Asset upload failed \n' + error), 'error'));
+                        addlogs(self.config, `Asset upload failed.\n ${error}`, 'error');
                       });
                     }
 
@@ -111,7 +111,7 @@ module.exports = class ImportAssets {
                       } else {
                         addlogs(
                           self.config,
-                          self.assets[assetUid].parent_uid + " parent_uid was not found! Thus, setting it as 'null'",
+                          `'${self.assets[assetUid].parent_uid}' parent_uid was not found! Thus, setting it as 'null'`,
                           'error',
                         );
                       }
@@ -135,13 +135,13 @@ module.exports = class ImportAssets {
                         // log them onto /mapper/assets/success.json
                       })
                       .catch(function (error) {
-                        addlogs(self.config, chalk.red('Asset upload failed \n' + error, 'error'));
+                        addlogs(self.config, `Asset upload failed.\n ${error}`, 'error');
                         return error;
                         // asset failed to upload
                         // log them onto /mapper/assets/fail.json
                       });
                   }
-                  addlogs(self.config, currentAssetFolderPath + ' does not exist!', 'error');
+                  addlogs(self.config, `'${currentAssetFolderPath}' does not exist!`, 'error');
                 },
                 { concurrency: self.assetConfig.assetBatchLimit },
               ).then(function () {
@@ -195,7 +195,8 @@ module.exports = class ImportAssets {
         } else {
           addlogs(
             self.config,
-            (lastVersion.parent_uid + " parent_uid was not found! Thus, setting it as 'null'", 'error'),
+            `'${lastVersion.parent_uid}' parent_uid was not found! Thus, setting it as 'null'`,
+            'error'
           );
           versionedAssetMetadata.forEach(function (assetMetadata) {
             assetMetadata.parent_uid = null;
@@ -247,7 +248,7 @@ module.exports = class ImportAssets {
         .catch(function (error) {
           // failed to upload asset
           // write it on fail logs, but do not stop the process
-          addlogs(self.config, chalk.red('Failed to upload asset\n' + error), 'error');
+          addlogs(self.config, `Failed to upload asset\n ${error}`, 'error');
           return resolve();
         });
     });
@@ -377,7 +378,7 @@ module.exports = class ImportAssets {
             .catch(function (err) {
               let error = JSON.parse(err.message);
               if (error.errors.authorization || error.errors.api_key) {
-                addlogs(self.config, chalk.red('Api_key or management_token is not valid'), 'error');
+                addlogs(self.config, 'Api_key or management_token is not valid', 'error');
                 return reject(error);
               }
 
@@ -483,7 +484,7 @@ module.exports = class ImportAssets {
               error = { errorMessage: err.message };
             }
 
-            addlogs(self.config, chalk.red('Asset ' + assetUid + ' not published, ' + error.errorMessage), 'error');
+            addlogs(self.config, `Asset '${assetUid}' not published, ${error.errorMessage}`, 'error');
             return reject(err);
           }
 
