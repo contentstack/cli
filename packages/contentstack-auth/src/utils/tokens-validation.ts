@@ -114,6 +114,9 @@ export const validateManagementToken = async (
     logger.error('Failed to validate management token', error);
     if (error.response && error.response.status === 401) {
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN') };
+    }
+    if (error?.response?.data) {
+      throw new Error(error.response.data?.error_message);
     } else {
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY') };
     }
