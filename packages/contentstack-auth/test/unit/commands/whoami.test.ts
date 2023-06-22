@@ -1,8 +1,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { stub } from 'sinon';
-import WhoamiCommand from '../../src/commands/auth/whoami';
-import { cliux } from '../../src/utils';
+import WhoamiCommand from '../../../src/commands/auth/whoami';
+import { cliux } from '@contentstack/cli-utilities';
 
 describe('Whoami Command', () => {
   let getEmailStub;
@@ -30,10 +29,10 @@ describe('Whoami Command', () => {
     const getEmailStub = sinon.stub(WhoamiCommand.prototype, 'email').get(function getterFn() {
       throw new Error('No logged in');
     });
-    const errorMessageStub = sinon.stub(cliux, 'error').returns();
+    const printStub = sinon.stub(cliux, 'print');
     await WhoamiCommand.run([]);
-    expect(errorMessageStub.calledOnce).to.be.true;
-    errorMessageStub.restore();
+
+    expect(printStub.calledWith('CLI_AUTH_WHOAMI_FAILED', { color: 'yellow' })).to.be.true;
     getEmailStub.restore();
   });
 });
