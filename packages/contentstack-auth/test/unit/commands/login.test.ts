@@ -35,13 +35,6 @@ describe('Login Command', () => {
     cliuxStub1.restore();
   });
 
-  it.skip('Login with invalid credentials, should print error message', async function () {
-    const cliuxStub2 = sinon.stub(cliux, 'error').returns();
-    await LoginCommand.run(['-u', invalidCredentials.email, '-p', invalidCredentials.password]);
-    expect(cliuxStub2.calledOnce).to.be.true;
-    cliuxStub2.restore();
-  });
-
   it('Login with with only email, should prompt for password', async function () {
     const askPasswordStub = sinon.stub(interactive, 'askPassword').resolves(credentials.password);
     await LoginCommand.run(['-u', credentials.email]);

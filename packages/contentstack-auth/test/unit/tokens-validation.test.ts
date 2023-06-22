@@ -69,9 +69,18 @@ describe('Tokens Validation', () => {
     };
   });
   describe('#Delivery token', function () {
-    it.skip('Valid delivery token, should return the token', async function () {
+    it('Valid delivery token, should return the token', async function () {
+      const stackStub = {
+        setHost: sinon.stub(),
+        getContentTypes: sinon.stub().resolves({ content_types: [] }),
+      };
+
+      const contentStackClientStub = {
+        Stack: sinon.stub().returns(stackStub),
+      };
+
       const result = await tokenValidation.validateDeliveryToken(
-        contentStackClient,
+        contentStackClientStub,
         validAPIkey,
         validDeliveryToken,
         validEnvironemnt,
@@ -80,6 +89,7 @@ describe('Tokens Validation', () => {
       );
 
       expect(result.valid).to.be.true;
+      expect(result.message).to.be.an('object');
     });
     it('invalid delivery token, should return false', async function () {
       const result = await tokenValidation.validateDeliveryToken(
@@ -104,15 +114,28 @@ describe('Tokens Validation', () => {
     });
   });
   describe('#Management Token', function () {
-    it.skip('Valid Management token, should return true', async function () {
+    it('Valid Management token, should return true', async function () {
+      const contentStackClient = {
+        axiosInstance: {
+          get: sinon.stub().resolves({ status: 200 }),
+        },
+      };
+
       const result = await tokenValidation.validateManagementToken(
         contentStackClient,
         validAPIkey,
         validManagementToken,
       );
+
       expect(result.valid).to.be.true;
+      expect(result.message).to.be.an('object');
     });
     it('invalid Management token, should return false', async function () {
+      const contentStackClient = {
+        axiosInstance: {
+          get: sinon.stub().resolves({ status: 401 }),
+        },
+      };
       const result = await tokenValidation.validateManagementToken(
         contentStackClient,
         validAPIkey,
