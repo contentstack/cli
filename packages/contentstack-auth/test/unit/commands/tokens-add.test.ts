@@ -76,13 +76,6 @@ describe('Tokens Add Command', () => {
     inquireStub.restore();
   });
 
-  it.skip('Add a token with invalid api key, should fail to add', async function () {
-    const inquireStub = sinon.stub(cliux, 'inquire').resolves(validEnvironment);
-    await TokensAddCommand.run(['-a', 'test-api-key-token2', '-k', 'invalid', '-d', '-t', validDeliveryToken]);
-    expect(Boolean(config.get(`${configKeyTokens}.test-api-key-token2`))).to.be.false;
-    inquireStub.restore();
-  });
-
   it('Add a valid management token, should be added scuccessfully', async function () {
     await TokensAddCommand.run(['-a', 'test-management-token', '-k', validAPIKey, '-m', '-t', validmanagementToken]);
     expect(Boolean(config.get(`${configKeyTokens}.test-management-token`))).to.be.true;
