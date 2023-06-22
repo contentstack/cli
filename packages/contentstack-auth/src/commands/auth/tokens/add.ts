@@ -69,6 +69,11 @@ export default class TokensAddCommand extends Command {
       description: 'Force adding',
       parse: printFlagDeprecation(['-f', '--force'], ['-y', '--yes']),
     }),
+    branch: flags.string({
+      required: false,
+      multiple: false,
+      description: 'Branch name',
+    }),
   };
 
   static usage =
@@ -85,6 +90,7 @@ export default class TokensAddCommand extends Command {
     let isDelivery = addTokenFlags.delivery;
     let isManagement = addTokenFlags.management;
     let environment = addTokenFlags.environment;
+    let branch = addTokenFlags.branch;
     const configKeyTokens = 'tokens';
 
     if (!isDelivery && !isManagement && !Boolean(environment)) {
@@ -114,12 +120,37 @@ export default class TokensAddCommand extends Command {
           return;
         }
       }
+
       if (!apiKey) {
         apiKey = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_API_KEY', name: 'apiKey' });
       }
 
       if (!token) {
         token = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_TOKEN', name: 'token' });
+      }
+
+      const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
+
+      let doBranchesExistInPlan: boolean = false;
+
+      await managementAPIClient
+        .stack({ api_key: apiKey })
+        .branch()
+        .query()
+        .find()
+        .then(() => (doBranchesExistInPlan = true))
+        .catch((err) => {
+          if (err.errorCode && err.errorMessage && branch) {
+            throw new Error(err.errorMessage);
+          }
+        });
+
+      if (doBranchesExistInPlan && !branch) {
+        branch = await cliux.inquire({
+          type: 'input',
+          message: 'CLI_AUTH_ENTER_BRANCH',
+          name: 'branch',
+        });
       }
 
       if (isDelivery && !environment) {
@@ -131,6 +162,7 @@ export default class TokensAddCommand extends Command {
       }
 
       let tokenValidationResult;
+
       if (type === 'delivery') {
         tokenValidationResult = await tokenValidation.validateDeliveryToken(
           this.deliveryAPIClient,
@@ -141,8 +173,12 @@ export default class TokensAddCommand extends Command {
           this.cdaHost,
         );
       } else if (type === 'management') {
-        const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
-        tokenValidationResult = await tokenValidation.validateManagementToken(managementAPIClient, apiKey, token);
+        tokenValidationResult = await tokenValidation.validateManagementToken(
+          managementAPIClient,
+          apiKey,
+          token,
+          doBranchesExistInPlan ? branch : null,
+        );
       }
       if (!tokenValidationResult.valid) {
         throw new CLIError(tokenValidationResult.message);
