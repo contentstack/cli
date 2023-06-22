@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable node/no-extraneous-require */
 const { Command } = require('@contentstack/cli-command');
-const { cliux, flags } = require('@contentstack/cli-utilities');
+const { cliux, flags, isAuthenticated } = require('@contentstack/cli-utilities');
 const { start } = require('../../../producer/unpublish');
 const store = require('../../../util/store.js');
 const configKey = 'Unpublish';
@@ -11,6 +11,12 @@ let config;
 
 class UnpublishCommand extends Command {
   async run() {
+    if (!isAuthenticated()) {
+      this.error('You need to login, first. See: auth:login --help', {
+        exit: 2,
+        suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
+      });
+    }
     const { flags: unpublishFlags } = await this.parse(UnpublishCommand);
     unpublishFlags.retryFailed = unpublishFlags['retry-failed'] || unpublishFlags.retryFailed || false;
     unpublishFlags.bulkUnpublish = unpublishFlags['bulk-unpublish'] || unpublishFlags.bulkUnpublish;
