@@ -1,6 +1,6 @@
 /* eslint-disable node/no-extraneous-require */
 const { Command } = require('@contentstack/cli-command');
-const { cliux, printFlagDeprecation, flags } = require('@contentstack/cli-utilities');
+const { cliux, printFlagDeprecation, flags, isAuthenticated } = require('@contentstack/cli-utilities');
 const { start } = require('../../../producer/cross-publish');
 const store = require('../../../util/store.js');
 const configKey = 'cross_env_publish';
@@ -10,6 +10,12 @@ let config;
 
 class CrossPublishCommand extends Command {
   async run() {
+    if (!isAuthenticated()) {
+      this.error('You need to login, first. See: auth:login --help', {
+        exit: 2,
+        suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
+      });
+    }
     const { flags: _flags } = await this.parse(CrossPublishCommand);
     const crossPublishFlags = this.flagsAdapter(_flags || {});
     let updatedFlags;
