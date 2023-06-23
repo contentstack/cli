@@ -1,8 +1,7 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, messageHandler, managementSDKClient, flags } from '@contentstack/cli-utilities';
+import { cliux, messageHandler, managementSDKClient, flags, isAuthenticated } from '@contentstack/cli-utilities';
 import { getbranchesList, getbranchConfig, interactive, handleErrorMsg } from '../../../utils/index';
 import chalk from 'chalk';
-
 export default class BranchListCommand extends Command {
   static description: string = messageHandler.parse('List the branches'); // Note: Update the description
 
@@ -28,6 +27,11 @@ export default class BranchListCommand extends Command {
         stackApiKey = await interactive.askStackAPIKey();
       }
 
+      if (!isAuthenticated()) {
+        const err = { errorMessage: 'You are not logged in. Please login with command $ csdx auth:login' };
+        handleErrorMsg(err);
+        process.exit(1);
+      }
       const baseBranch: string = getbranchConfig(stackApiKey) || 'main';
       const listOfBranch = await managementAPIClient
         .stack({ api_key: stackApiKey })
