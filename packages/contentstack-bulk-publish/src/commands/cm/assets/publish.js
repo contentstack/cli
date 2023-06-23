@@ -1,5 +1,5 @@
 const { Command } = require('@contentstack/cli-command');
-const { printFlagDeprecation, flags } = require('@contentstack/cli-utilities');
+const { printFlagDeprecation, flags, isAuthenticated } = require('@contentstack/cli-utilities');
 const { start: startPublish } = require('../../../producer/publish-assets');
 const { start: startCrossPublish } = require('../../../producer/cross-publish');
 const store = require('../../../util/store.js');
@@ -10,6 +10,12 @@ let config;
 
 class AssetsPublishCommand extends Command {
   async run() {
+    if (!isAuthenticated()) {
+      this.error('You need to login, first. See: auth:login --help', {
+        exit: 2,
+        suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
+      });
+    }
     const { flags: assetsFlags } = await this.parse(AssetsPublishCommand);
     assetsFlags.retryFailed = assetsFlags['retry-failed'] || assetsFlags.retryFailed || false;
     assetsFlags.folderUid = assetsFlags['folder-uid'] || assetsFlags.folderUid;
