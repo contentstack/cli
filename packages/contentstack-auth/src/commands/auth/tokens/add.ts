@@ -171,6 +171,7 @@ export default class TokensAddCommand extends Command {
           environment,
           this.region.name,
           this.cdaHost,
+          doBranchesExistInPlan ? branch : null,
         );
       } else if (type === 'management') {
         tokenValidationResult = await tokenValidation.validateManagementToken(
@@ -185,9 +186,9 @@ export default class TokensAddCommand extends Command {
       }
 
       if (isManagement) {
-        configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, type });
+        configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, type, branch });
       } else {
-        configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, environment, type });
+        configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, environment, type, branch });
       }
 
       if (isAliasExist) {
