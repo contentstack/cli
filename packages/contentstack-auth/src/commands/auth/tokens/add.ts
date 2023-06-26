@@ -8,6 +8,8 @@ import {
   flags,
   managementSDKClient,
   FlagInput,
+  isAuthenticated,
+  messageHandler,
 } from '@contentstack/cli-utilities';
 import { askTokenType } from '../../../utils/interactive';
 import { tokenValidation } from '../../../utils';
@@ -127,6 +129,13 @@ export default class TokensAddCommand extends Command {
 
       if (!token) {
         token = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_TOKEN', name: 'token' });
+      }
+
+      if (!isAuthenticated()) {
+        this.error(messageHandler.parse('CLI_AUTH_LOGIN_FAILED'), {
+          exit: 2,
+          suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
+        });
       }
 
       const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
