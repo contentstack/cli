@@ -132,7 +132,7 @@ export default class TokensAddCommand extends Command {
       }
 
       if (!isAuthenticated()) {
-        this.error(messageHandler.parse('CLI_AUTH_LOGIN_FAILED'), {
+        this.error(messageHandler.parse('CLI_AUTH_AUTHENTICATION_FAILED'), {
           exit: 2,
           suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
         });
