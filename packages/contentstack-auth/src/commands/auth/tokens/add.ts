@@ -131,30 +131,32 @@ export default class TokensAddCommand extends Command {
         token = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_TOKEN', name: 'token' });
       }
 
-      if (!isAuthenticated()) {
-        this.error(messageHandler.parse('CLI_AUTH_AUTHENTICATION_FAILED'), {
-          exit: 2,
-          suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-        });
-      }
-
       const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
 
       let doBranchesExistInPlan: boolean = false;
 
-      await managementAPIClient
-        .stack({ api_key: apiKey })
-        .branch()
-        .query()
-        .find()
-        .then(() => (doBranchesExistInPlan = true))
-        .catch((err) => {
-          if (err.errorCode && err.errorMessage && branch) {
-            throw new Error(err.errorMessage);
-          }
-        });
+      if (isManagement && apiKey && token) {
+        await managementAPIClient
+          .stack({ api_key: apiKey, management_token: token })
+          .branch()
+          .query()
+          .find()
+          .then(() => (doBranchesExistInPlan = true))
+          .catch((err) => {
+            if (err.errorCode && err.errorMessage && branch) {
+              throw new Error(err.errorMessage);
+            }
+          });
+      } else {
+        if (!apiKey) {
+          throw new Error('Api key is required');
+        }
+        if (!token) {
+          throw new Error('Token is required');
+        }
+      }
 
-      if (doBranchesExistInPlan && !branch) {
+      if ((doBranchesExistInPlan && !branch) || isDelivery) {
         branch = await cliux.inquire({
           type: 'input',
           message: 'CLI_AUTH_ENTER_BRANCH',
@@ -180,7 +182,7 @@ export default class TokensAddCommand extends Command {
           environment,
           this.region.name,
           this.cdaHost,
-          doBranchesExistInPlan ? branch : null,
+          branch || null,
         );
       } else if (type === 'management') {
         tokenValidationResult = await tokenValidation.validateManagementToken(
