@@ -52,10 +52,8 @@ export const validateDeliveryToken = async (
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY') };
     } else if (error.error_code === 141) {
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_ENVIRONMENT_NAME') };
-    } else if (error.error_code === 901) {
-      throw new Error(
-        `The Branch '${branch}' was not found. Or You have insufficient permissions to perform operation on this branch`,
-      );
+    } else if (error?.error_code) {
+      throw new Error(error?.error_message);
     } else {
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_DELIVERY_TOKEN') };
     }
