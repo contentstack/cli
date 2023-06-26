@@ -175,6 +175,7 @@ export default class TokensAddCommand extends Command {
       let tokenValidationResult;
 
       if (type === 'delivery') {
+        branch = branch || 'main';
         tokenValidationResult = await tokenValidation.validateDeliveryToken(
           this.deliveryAPIClient,
           apiKey,
@@ -182,7 +183,7 @@ export default class TokensAddCommand extends Command {
           environment,
           this.region.name,
           this.cdaHost,
-          branch || 'main',
+          branch,
         );
       } else if (type === 'management') {
         tokenValidationResult = await tokenValidation.validateManagementToken(
