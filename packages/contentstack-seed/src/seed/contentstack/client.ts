@@ -143,8 +143,7 @@ export default class ContentstackClient {
         org_uid: response.org_uid,
       };
     } catch (error) {
-      const newError = this.buildError(error);
-      throw newError;
+      throw this.buildError(error);
     }
   }
 
