@@ -107,11 +107,12 @@ module.exports = class ExportMarketplaceApps {
   }
 
   async exportInstalledExtensions() {
+    const client = await managementSDKClient({ host: this.developerHubBaseUrl.split("://").pop() })
     const installedApps = (await this.getAllStackSpecificApps()) || [];
 
     if (!_.isEmpty(installedApps)) {
       for (const [index, app] of _.entries(installedApps)) {
-        await this.getAppConfigurations(installedApps, [+index, app]);
+        await this.getAppConfigurations(client, installedApps, [+index, app]);
       }
 
       await writeFileSync(path.join(this.marketplaceAppPath, this.marketplaceAppConfig.fileName), installedApps);
@@ -149,36 +150,38 @@ module.exports = class ExportMarketplaceApps {
         return listOfApps;
       })
       .catch((error) => {
-        log(this.config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
+        log(this.config, `Failed to export marketplace-apps. ${formatError(error)}`, 'error');
       });
   }
 
-  getAppConfigurations(installedApps, [index, app]) {
-    const appName = app.manifest.name;
+  async getAppConfigurations(sdkClient, installedApps, [index, appInstallation]) {
+    const appName = appInstallation.manifest.name;
     log(this.config, `Exporting ${appName} app and it's config.`, 'success');
 
-    return this.httpClient
-      .get(`${this.developerHubBaseUrl}/installations/${app.uid}/installationData`)
-      .then(async ({ data: result }) => {
-        const { data, error } = result;
-
-        if (_.has(data, 'server_configuration')) {
-          if (!this.nodeCrypto && _.has(data, 'server_configuration')) {
-            await this.createNodeCryptoInstance();
-          }
-
-          if (!_.isEmpty(data.server_configuration)) {
-            installedApps[index]['server_configuration'] = this.nodeCrypto.encrypt(data.server_configuration);
-            log(this.config, `Exported ${appName} app and it's config.`, 'success');
-          } else {
-            log(this.config, `Exported ${appName} app`, 'success');
-          }
-        } else if (error) {
-          log(this.config, `Error on exporting ${appName} app and it's config.`, 'error');
+    await sdkClient
+    .organization(this.config.org_uid)
+    .app(appInstallation.manifest.uid)
+    .installation(appInstallation.uid)
+    .installationData()
+    .then(async result => {
+      const {data, error} = result;
+      if (_.has(data, 'server_configuration')) {
+        if (!this.nodeCrypto && _.has(data, 'server_configuration')) {
+          await this.createNodeCryptoInstance();
         }
-      })
-      .catch((err) => {
-        log(this.config, `Failed to export ${appName} app config ${formatError(err)}`, 'error');
-      });
+
+        if (!_.isEmpty(data.server_configuration)) {
+          installedApps[index]['server_configuration'] = this.nodeCrypto.encrypt(data.server_configuration);
+          log(this.config, `Exported ${appName} app and it's config.`, 'success');
+        } else {
+          log(this.config, `Exported ${appName} app`, 'success');
+        }
+      } else if (error) {
+        log(this.config, `Error on exporting ${appName} app and it's config.`, 'error');
+      }
+    })
+    .catch(err => {
+      log(this.config, `Failed to export ${appName} app config ${formatError(err)}`, 'error');
+    })
   }
 };
