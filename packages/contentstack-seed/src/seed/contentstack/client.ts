@@ -1,4 +1,3 @@
-// @ts-nocheck
 import ContentstackError from './error';
 import { managementSDKClient } from '@contentstack/cli-utilities';
 import * as ContentstackManagementSDK from '@contentstack/management'
