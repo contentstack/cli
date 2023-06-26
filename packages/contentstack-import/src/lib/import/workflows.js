@@ -97,7 +97,7 @@ module.exports = class importWorkflows {
                 } catch (error) {
                   addlogs(
                     self.config,
-                    chalk.red('Error while importing workflows roles. ' + formatError(error)),
+                    `Error while importing workflows roles. ${formatError(error)}`,
                     'error',
                   );
                   reject({ message: 'Error while importing workflows roles' });
@@ -128,24 +128,22 @@ module.exports = class importWorkflows {
               .catch(function (error) {
                 self.fails.push(workflow);
                 if (error.errors.name) {
-                  addlogs(self.config, chalk.red("workflow: '" + workflow.name + "'  already exist"), 'error');
+                  addlogs(self.config, `workflow ${workflow.name} already exist`, 'error');
                 } else if (error.errors['workflow_stages.0.users']) {
                   addlogs(
                     self.config,
-                    chalk.red(
-                      "Failed to import Workflows as you've specified certain roles in the Stage transition and access rules section. We currently don't import roles to the stack.",
-                    ),
+                    "Failed to import Workflows as you've specified certain roles in the Stage transition and access rules section. We currently don't import roles to the stack.",
                     'error',
                   );
                 } else {
-                  addlogs(self.config, chalk.red("workflow: '" + workflow.name + "'  failed"), 'error');
+                  addlogs(self.config, `workflow ${workflow.name} failed.`, 'error');
                 }
               });
           } else {
             // the workflow has already been created
             addlogs(
               self.config,
-              chalk.white("The Workflows: '" + workflow.name + "' already exists. Skipping it to avoid duplicates!"),
+              chalk.white( `The Workflows ${workflow.name} already exists. Skipping it to avoid duplicates!`),
               'success',
             );
           }
@@ -160,8 +158,7 @@ module.exports = class importWorkflows {
         })
         .catch(function (error) {
           helper.writeFileSync(workflowFailsPath, self.fails);
-          addlogs(self.config, chalk.red('Workflows import failed'), 'error');
-          addlogs(self.config, formatError(error), 'error');
+          addlogs(self.config, `Workflows import failed. ${formatError(error)}`, 'error');
           return reject(error);
         });
     });

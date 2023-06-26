@@ -66,7 +66,7 @@ module.exports = class ExportEnvironments {
           }
         })
         .catch((error) => {
-          addlogs(self.config, `Environments export failed ${formatError(error)}`, 'error');
+          addlogs(self.config, `Environments export failed. ${formatError(error)}`, 'error');
           reject(error);
         });
     });
