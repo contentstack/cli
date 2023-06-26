@@ -156,7 +156,7 @@ export default class TokensAddCommand extends Command {
         }
       }
 
-      if ((doBranchesExistInPlan && !branch) || isDelivery) {
+      if (doBranchesExistInPlan && !branch) {
         branch = await cliux.inquire({
           type: 'input',
           message: 'CLI_AUTH_ENTER_BRANCH',
@@ -182,7 +182,7 @@ export default class TokensAddCommand extends Command {
           environment,
           this.region.name,
           this.cdaHost,
-          branch || null,
+          branch || 'main',
         );
       } else if (type === 'management') {
         tokenValidationResult = await tokenValidation.validateManagementToken(
