@@ -30,7 +30,6 @@ export default class BranchListCommand extends Command {
       if (!isAuthenticated()) {
         const err = { errorMessage: 'You are not logged in. Please login with command $ csdx auth:login' };
         handleErrorMsg(err);
-        process.exit(1);
       }
       const baseBranch: string = getbranchConfig(stackApiKey) || 'main';
       const listOfBranch = await managementAPIClient
