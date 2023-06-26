@@ -29,6 +29,18 @@ export interface BranchCompactTextRes {
   deleted?: BranchDiffRes[];
 }
 
+export interface MergeSummary {
+  requestPayload: MergeSummaryRequestPayload;
+}
+
+type MergeSummaryRequestPayload = {
+  base_branch: string;
+  compare_branch: string;
+  default_merge_strategy: string;
+  item_merge_strategies?: any[];
+  no_revert?: boolean;
+  merge_comment?: string;
+};
 export interface MergeInputOptions {
   compareBranch: string;
   strategy: string;
@@ -40,7 +52,7 @@ export interface MergeInputOptions {
   baseBranch: string;
   format?: string;
   exportSummaryPath?: string;
-  useMergeSummary?: string;
+  mergeSummary?: MergeSummary;
   stackAPIKey: string;
   host: string;
   enableEntryExp: boolean;
