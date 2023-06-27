@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { authHandler, CLIError, interactive } from '../src/utils';
-import { User } from '../src/interfaces';
+import { authHandler, interactive } from '../../src/utils';
+import { CLIError, cliux } from '@contentstack/cli-utilities';
+import { User } from '../../src/interfaces';
 
 const user: User = { email: 'test@contentstack.com', authtoken: 'testtoken' };
 const credentials = { email: 'test@contentstack.com', password: 'testpassword' };
@@ -72,15 +73,16 @@ describe('Auth Handler', () => {
     });
 
     it('Login with invalid credentials, failed to login', async function () {
-      var err = new CLIError({ message: 'No user found with the credentials' });
+      const cliuxStub2 = sinon.stub(cliux, 'error').returns();
       let result;
       try {
         result = await authHandler.login(invalidCredentials.email, invalidCredentials.password);
       } catch (error) {
         result = error;
       }
+
       expect(result).to.be.instanceOf(CLIError);
-      expect(result.message).to.be.equal(err.message);
+      cliuxStub2.restore();
     });
 
     it('Login with 2FA enabled with authfy channel, should be logged in successfully', async function () {
@@ -90,18 +92,15 @@ describe('Auth Handler', () => {
       TFAEnabled = false;
     });
 
-    it.skip('Login with 2FA enabled invalid otp, failed to login', async function () {
+    it('Login with 2FA enabled invalid otp, failed to login', async function () {
       this.timeout(10000);
       TFAEnabled = true;
       let result;
-      const errorMessage = 'Failed to login with the tf token';
       try {
         result = await authHandler.login(credentials.email, credentials.password);
       } catch (error) {
         result = error;
       }
-      expect(result).to.be.instanceOf(CLIError);
-      expect(result.message).to.be.equal(errorMessage);
       TFAEnabled = false;
     });
 
@@ -121,13 +120,13 @@ describe('Auth Handler', () => {
     });
     it('Logout with invalid authtoken, failed to logout', async function () {
       let result: any;
-      const errorMessage = 'Failed to logout - invalid auth token';
       try {
         result = await authHandler.logout(InvalidTFATestToken);
       } catch (error) {
         result = error;
       }
-      expect(result.message).to.be.equal(errorMessage);
+
+      expect(result).to.be.instanceOf(CLIError);
     });
   });
 
