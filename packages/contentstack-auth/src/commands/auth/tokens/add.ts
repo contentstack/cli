@@ -75,6 +75,7 @@ export default class TokensAddCommand extends Command {
       required: false,
       multiple: false,
       description: 'Branch name',
+      hidden: true,
     }),
   };
 
@@ -142,17 +143,26 @@ export default class TokensAddCommand extends Command {
 
       let doBranchesExistInPlan: boolean = false;
 
-      await managementAPIClient
-        .stack({ api_key: apiKey })
-        .branch()
-        .query()
-        .find()
-        .then(() => (doBranchesExistInPlan = true))
-        .catch((err) => {
-          if (err.errorCode && err.errorMessage && branch) {
-            throw new Error(err.errorMessage);
-          }
-        });
+      if (isManagement && apiKey && token) {
+        await managementAPIClient
+          .stack({ api_key: apiKey, management_token: token })
+          .branch()
+          .query()
+          .find()
+          .then(() => (doBranchesExistInPlan = true))
+          .catch((err) => {
+            if (err.errorCode && err.errorMessage && branch) {
+              throw new Error(err.errorMessage);
+            }
+          });
+      } else {
+        if (!apiKey) {
+          throw new Error('Api key is required');
+        }
+        if (!token) {
+          throw new Error('Token is required');
+        }
+      }
 
       if (doBranchesExistInPlan && !branch) {
         branch = await cliux.inquire({
@@ -173,6 +183,7 @@ export default class TokensAddCommand extends Command {
       let tokenValidationResult;
 
       if (type === 'delivery') {
+        branch = branch || 'main';
         tokenValidationResult = await tokenValidation.validateDeliveryToken(
           this.deliveryAPIClient,
           apiKey,
@@ -180,6 +191,7 @@ export default class TokensAddCommand extends Command {
           environment,
           this.region.name,
           this.cdaHost,
+          branch,
         );
       } else if (type === 'management') {
         tokenValidationResult = await tokenValidation.validateManagementToken(
@@ -194,9 +206,9 @@ export default class TokensAddCommand extends Command {
       }
 
       if (isManagement) {
-        configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, type });
+        configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, type, branch });
       } else {
-        configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, environment, type });
+        configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, environment, type, branch });
       }
 
       if (isAliasExist) {
