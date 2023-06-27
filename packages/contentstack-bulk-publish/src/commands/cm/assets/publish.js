@@ -10,12 +10,6 @@ let config;
 
 class AssetsPublishCommand extends Command {
   async run() {
-    if (!isAuthenticated()) {
-      this.error('You need to login, first. See: auth:login --help', {
-        exit: 2,
-        suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-      });
-    }
     const { flags: assetsFlags } = await this.parse(AssetsPublishCommand);
     assetsFlags.retryFailed = assetsFlags['retry-failed'] || assetsFlags.retryFailed || false;
     assetsFlags.folderUid = assetsFlags['folder-uid'] || assetsFlags.folderUid;
@@ -36,29 +30,32 @@ class AssetsPublishCommand extends Command {
     if (this.validate(updatedFlags)) {
       let stack;
       if (!updatedFlags.retryFailed) {
-        if (!updatedFlags.alias) {
-          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
+        config = {
+          host: this.cmaHost,
+          cda: this.cdaHost,
+          branch: assetsFlags.branch,
+        };
+        if (updatedFlags.alias) {
+          // Validate management token alias.
+          try {
+            this.getToken(updatedFlags.alias);
+            config.alias = updatedFlags.alias;
+          } catch (error) {
+            this.error(
+              `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
+              { exit: 2 },
+            );
+          }
+        } else if (updatedFlags['stack-api-key']) {
+          config.stackApiKey = updatedFlags['stack-api-key'];
+        } else {
+          this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
         if (updatedFlags.folderUid === undefined) {
           // set default value for folderUid
           updatedFlags.folderUid = 'cs_root';
         }
-        // Validate management token alias.
-        try {
-          this.getToken(updatedFlags.alias);
-        } catch (error) {
-          this.error(
-            `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
-            { exit: 2 },
-          );
-        }
-        config = {
-          alias: updatedFlags.alias,
-          host: this.cmaHost,
-          cda: this.cdaHost,
-          branch: assetsFlags.branch,
-        };
         stack = await getStack(config);
       }
       if (await this.confirmFlags(updatedFlags)) {
@@ -158,6 +155,10 @@ AssetsPublishCommand.flags = {
   alias: flags.string({
     char: 'a',
     description: 'Alias(name) for the management token',
+  }),
+  'stack-api-key': flags.string({
+    description: 'Stack api key to be used',
+    required: false,
   }),
   'retry-failed': flags.string({
     description: 'Retry publishing failed assets from the logfile (optional, will override all other flags)',
