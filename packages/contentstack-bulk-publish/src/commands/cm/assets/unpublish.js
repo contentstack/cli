@@ -11,12 +11,6 @@ let config;
 
 class UnpublishCommand extends Command {
   async run() {
-    if (!isAuthenticated()) {
-      this.error('You need to login, first. See: auth:login --help', {
-        exit: 2,
-        suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-      });
-    }
     const { flags: unpublishFlags } = await this.parse(UnpublishCommand);
     unpublishFlags.retryFailed = unpublishFlags['retry-failed'] || unpublishFlags.retryFailed || false;
     unpublishFlags.bulkUnpublish = unpublishFlags['bulk-unpublish'] || unpublishFlags.bulkUnpublish;
@@ -39,28 +33,31 @@ class UnpublishCommand extends Command {
     if (this.validate(updatedFlags)) {
       let stack;
       if (!updatedFlags.retryFailed) {
-        if (!updatedFlags.alias) {
-          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
+        config = {
+          host: this.cmaHost,
+          cda: this.cdaHost,
+          branch: unpublishFlags.branch,
+        };
+        if (updatedFlags.alias) {
+          // Validate management token alias.
+          try {
+            this.getToken(updatedFlags.alias);
+            config.alias = updatedFlags.alias;
+          } catch (error) {
+            this.error(
+              `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
+              { exit: 2 },
+            );
+          }
+        } else if (updatedFlags['stack-api-key']) {
+          config.stackApiKey = updatedFlags['stack-api-key'];
+        } else {
+          this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
         }
         if (!updatedFlags.deliveryToken) {
           updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token of your source environment');
         }
         updatedFlags.bulkUnpublish = updatedFlags.bulkUnpublish === 'false' ? false : true;
-        // Validate management token alias.
-        try {
-          this.getToken(updatedFlags.alias);
-        } catch (error) {
-          this.error(
-            `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add --alias ${updatedFlags.alias}'`,
-            { exit: 2 },
-          );
-        }
-        config = {
-          alias: updatedFlags.alias,
-          host: this.cmaHost,
-          cda: this.cdaHost,
-          branch: unpublishFlags.branch,
-        };
         stack = await getStack(config);
       }
       if (!updatedFlags.deliveryToken && updatedFlags.deliveryToken.length === 0) {
@@ -135,6 +132,10 @@ UnpublishCommand.flags = {
   alias: flags.string({
     char: 'a',
     description: 'Alias(name) for the management token',
+  }),
+  'stack-api-key': flags.string({
+    description: 'Stack api key to be used',
+    required: false,
   }),
   environment: flags.string({
     char: 'e',
