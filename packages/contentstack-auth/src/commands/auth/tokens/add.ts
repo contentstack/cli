@@ -75,6 +75,7 @@ export default class TokensAddCommand extends Command {
       required: false,
       multiple: false,
       description: 'Branch name',
+      hidden: true,
     }),
   };
 
