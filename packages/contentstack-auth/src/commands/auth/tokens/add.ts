@@ -8,8 +8,6 @@ import {
   flags,
   managementSDKClient,
   FlagInput,
-  isAuthenticated,
-  messageHandler,
 } from '@contentstack/cli-utilities';
 import { askTokenType } from '../../../utils/interactive';
 import { tokenValidation } from '../../../utils';
