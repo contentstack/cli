@@ -18,7 +18,8 @@
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
     "test:integration": "mocha --forbid-only \"test/integration/*.test.ts\"",
-    "test:unit": "mocha --forbid-only \"test/unit/*.test.ts\""
+    "test:unit": "mocha --forbid-only \"test/unit/**/*.test.ts\"",
+    "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
   },
   "dependencies": {
     "@contentstack/cli-command": "^1.2.9",

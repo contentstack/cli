@@ -41,6 +41,7 @@
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-not-found": "^2.3.9",
     "@oclif/plugin-plugins": "^2.1.7",
+    "@oclif/core": "^2.8.2",
     "chalk": "^4.1.2",
     "debug": "^4.1.1",
     "figlet": "^1.5.2",

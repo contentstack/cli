@@ -87,6 +87,13 @@
     "bin": "csdx",
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-export/<%- commandPath %>"
   },
-  "csdxConfig": {},
+  "csdxConfig": {
+    "shortCommandName": {
+      "cm:branches:create": "BRCR",
+      "cm:branches:delete": "BRDEL",
+      "cm:branches:diff": "BRDIF",
+      "cm:branches:merge": "BRMRG"
+    }
+  },
   "repository": "https://github.com/contentstack/cli"
 }

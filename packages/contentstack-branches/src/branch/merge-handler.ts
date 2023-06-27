@@ -1,7 +1,7 @@
 import path from 'path';
 import forEach from 'lodash/forEach';
 import { cliux } from '@contentstack/cli-utilities';
-import { MergeInputOptions } from '../interfaces';
+import { MergeInputOptions, MergeSummary } from '../interfaces';
 import {
   selectMergeStrategy,
   selectMergeStrategySubOptions,
@@ -26,7 +26,7 @@ export default class MergeHandler {
   private executeOption?: string;
   private displayFormat: string;
   private exportSummaryPath: string;
-  private useMergeSummary: string;
+  private mergeSummary: MergeSummary;
   private stackAPIKey: string;
   private userInputs: MergeInputOptions;
   private host: string;
@@ -40,7 +40,7 @@ export default class MergeHandler {
     this.branchCompareData = options.branchCompareData;
     this.displayFormat = options.format;
     this.exportSummaryPath = options.exportSummaryPath || path.resolve(process.cwd());
-    this.useMergeSummary = options.useMergeSummary;
+    this.mergeSummary = options.mergeSummary;
     this.userInputs = options;
     this.mergeSettings = {
       baseBranch: options.baseBranch, // UID of the base branch, where the changes will be merged into
@@ -54,11 +54,15 @@ export default class MergeHandler {
   }
 
   async start() {
+    if (this.mergeSummary) {
+      this.loadMergeSettings();
+      await this.displayMergeSummary();
+      return await this.executeMerge(this.mergeSummary.requestPayload);
+    }
     await this.collectMergeSettings();
-
-    // Merge final process
     const mergePayload = prepareMergeRequestPayload(this.mergeSettings);
     if (this.executeOption === 'execute') {
+      await this.exportSummary(mergePayload);
       await this.executeMerge(mergePayload);
     } else if (this.executeOption === 'export') {
       await this.exportSummary(mergePayload);
@@ -194,7 +198,7 @@ export default class MergeHandler {
     if (!this.exportSummaryPath) {
       this.exportSummaryPath = await askExportMergeSummaryPath();
     }
-    const summary = {
+    const summary: MergeSummary = {
       requestPayload: mergePayload,
     };
     await writeFile(path.join(this.exportSummaryPath, 'merge-summary.json'), summary);
@@ -253,5 +257,14 @@ export default class MergeHandler {
     this.mergeSettings.itemMergeStrategies = [];
 
     await this.start();
+  }
+
+  loadMergeSettings() {
+    this.mergeSettings.baseBranch = this.mergeSummary.requestPayload.base_branch;
+    this.mergeSettings.compareBranch = this.mergeSummary.requestPayload.compare_branch;
+    this.mergeSettings.strategy = this.mergeSummary.requestPayload.default_merge_strategy;
+    this.mergeSettings.itemMergeStrategies = this.mergeSummary.requestPayload.item_merge_strategies;
+    this.mergeSettings.noRevert = this.mergeSummary.requestPayload.no_revert;
+    this.mergeSettings.mergeComment = this.mergeSummary.requestPayload.merge_comment;
   }
 }

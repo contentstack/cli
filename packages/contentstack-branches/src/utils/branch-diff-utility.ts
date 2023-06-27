@@ -306,18 +306,34 @@ async function baseAndCompareBranchDiff(params: {
   if (baseBranchFieldExists && compareBranchFieldExists) {
     await prepareModifiedDiff(params);
   } else if (baseBranchFieldExists && !compareBranchFieldExists) {
+    let displayName= baseBranchFieldExists?.display_name;
+    let path = baseBranchFieldExists?.uid;
+    let field = baseBranchFieldExists?.data_type;
+    if(baseBranchFieldExists.path === 'description'){
+      displayName = 'Description';
+      path = baseBranchFieldExists?.path;
+      field = 'metadata'
+    }
     params.listOfDeletedFields.push({
-      path: baseBranchFieldExists?.uid,
-      displayName: baseBranchFieldExists?.display_name,
+      path: path,
+      displayName:displayName,
       uid: baseBranchFieldExists?.uid,
-      field: baseBranchFieldExists?.data_type,
+      field: field,
     });
   } else if (!baseBranchFieldExists && compareBranchFieldExists) {
+    let displayName= compareBranchFieldExists?.display_name;
+    let path = compareBranchFieldExists?.uid;
+    let field = compareBranchFieldExists?.data_type;
+    if(compareBranchFieldExists.path === 'description'){
+      displayName = 'Description';
+      path = compareBranchFieldExists?.path;
+      field = 'metadata'
+    }
     params.listOfAddedFields.push({
-      path: compareBranchFieldExists?.uid,
-      displayName: compareBranchFieldExists?.display_name,
+      path: path,
+      displayName: displayName,
       uid: compareBranchFieldExists?.uid,
-      field: compareBranchFieldExists?.data_type,
+      field: field,
     });
   }
 }
@@ -332,23 +348,27 @@ async function prepareModifiedDiff(params: {
 }) {
   const { baseBranchFieldExists, compareBranchFieldExists } = params;
   if (
-    baseBranchFieldExists.path === 'description' ||
-    baseBranchFieldExists.path === 'title' ||
-    baseBranchFieldExists.path === 'options.singleton'
+    compareBranchFieldExists.path === 'description' ||
+    compareBranchFieldExists.path === 'title' ||
+    compareBranchFieldExists.path === 'options.singleton'
   ) {
     let displayName: string;
     if (baseBranchFieldExists.path === 'options.singleton') {
-      displayName = 'Single/Multiple';
+      if(compareBranchFieldExists.value){
+        displayName = 'Single'
+      }else{
+        displayName = 'Multiple'
+      }
     } else if (baseBranchFieldExists.path === 'description') {
       displayName = 'Description';
     } else if (baseBranchFieldExists.path === 'title') {
-      displayName = 'Name';
+      displayName = 'Display Name';
     }
     params.listOfModifiedFields.push({
-      path: baseBranchFieldExists.path,
+      path: '',
       displayName: displayName,
       uid: baseBranchFieldExists.path,
-      field: 'metadata',
+      field: 'changed',
     });
   } else {
     if (baseBranchFieldExists?.display_name && compareBranchFieldExists?.display_name) {
@@ -381,7 +401,7 @@ async function prepareModifiedDiff(params: {
             path: field['path'],
             displayName: field['displayName'],
             uid: field['uid'],
-            field: field['fieldType'],
+            field: `${field['fieldType']} field`,
           });
         }
       }
@@ -422,14 +442,15 @@ function printVerboseTextView(branchTextRes: BranchDiffVerboseRes): void {
  */
 function printModifiedFields(modfiedFields: ModifiedFieldsInput): void {
   if (modfiedFields.modified?.length || modfiedFields.added?.length || modfiedFields.deleted?.length) {
+    forEach(modfiedFields.modified, (diff: ModifiedFieldsType) => {
+      const field: string = diff.field ? `${diff.field}` : 'field';
+      const fieldDetail = diff.path ? `(${diff.path}) ${field}`: `${field}`;
+      cliux.print(`   ${chalk.blue(`± "${diff.displayName}" ${fieldDetail}`)}`);
+    });
+
     forEach(modfiedFields.added, (diff: ModifiedFieldsType) => {
       const field: string = diff.field ? `${diff.field} field` : 'field';
       cliux.print(`   ${chalk.green(`+ "${diff.displayName}" (${diff.path}) ${field}`)}`);
-    });
-
-    forEach(modfiedFields.modified, (diff: ModifiedFieldsType) => {
-      const field: string = diff.field ? `${diff.field} field` : 'field';
-      cliux.print(`   ${chalk.blue(`± "${diff.displayName}" (${diff.path}) ${field}`)}`);
     });
 
     forEach(modfiedFields.deleted, (diff: ModifiedFieldsType) => {
