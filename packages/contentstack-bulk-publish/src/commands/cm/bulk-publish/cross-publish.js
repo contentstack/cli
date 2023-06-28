@@ -10,12 +10,6 @@ let config;
 
 class CrossPublishCommand extends Command {
   async run() {
-    if (!isAuthenticated()) {
-      this.error('You need to login, first. See: auth:login --help', {
-        exit: 2,
-        suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-      });
-    }
     const { flags: _flags } = await this.parse(CrossPublishCommand);
     const crossPublishFlags = this.flagsAdapter(_flags || {});
     let updatedFlags;
@@ -28,28 +22,31 @@ class CrossPublishCommand extends Command {
     if (this.validate(updatedFlags)) {
       let stack;
       if (!updatedFlags.retryFailed) {
-        if (!updatedFlags.alias) {
-          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
+        config = {
+          host: this.cmaHost,
+          cda: this.cdaHost,
+          branch: crossPublishFlags.branch,
+        };
+        if (updatedFlags.alias) {
+          try {
+            this.getToken(updatedFlags.alias);
+            config.alias = updatedFlags.alias;
+          } catch (error) {
+            this.error(
+              `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
+              { exit: 2 },
+            );
+          }
+        } else if (updatedFlags['stack-api-key']) {
+          config.stackApiKey = updatedFlags['stack-api-key'];
+        } else {
+          this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
         }
         if (!updatedFlags.deliveryToken) {
           updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token of your source environment');
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
-        // Validate management token alias.
-        try {
-          this.getToken(updatedFlags.alias);
-        } catch (error) {
-          this.error(
-            `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
-            { exit: 2 },
-          );
-        }
-        config = {
-          alias: updatedFlags.alias,
-          host: this.cmaHost,
-          cda: this.cdaHost,
-          branch: crossPublishFlags.branch,
-        };
+
         stack = await getStack(config);
       }
 
@@ -168,6 +165,10 @@ But, if retryFailed flag is set, then only a logfile is required
 
 CrossPublishCommand.flags = {
   alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
+  'stack-api-key': flags.string({
+    description: 'Stack api key to be used',
+    required: false,
+  }),
   retryFailed: flags.string({
     char: 'r',
     description: '(optional) Retry publishing failed entries from the logfile (this flag overrides all other flags)',
