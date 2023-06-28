@@ -1,14 +1,15 @@
-import { FsUtility } from '@contentstack/cli-utilities';
+import { ContentstackClient, FsUtility } from '@contentstack/cli-utilities';
+import { ImportConfig, Modules } from '../types';
 import { backupHandler, log, validateBranch, masterLocalDetails, sanitizeStack } from '../utils';
 import startModuleImport from './modules';
 import startJSModuleImport from './modules-js';
 
 class ModuleImporter {
-  private managementAPIClient: any;
-  private importConfig: any;
+  private managementAPIClient: ContentstackClient;
+  private importConfig: ImportConfig;
   private stackAPIClient: any;
 
-  constructor(managementAPIClient, importConfig) {
+  constructor(managementAPIClient: ContentstackClient, importConfig: ImportConfig) {
     this.managementAPIClient = managementAPIClient;
     this.stackAPIClient = this.managementAPIClient.stack({
       api_key: importConfig.apiKey,
@@ -46,7 +47,7 @@ class ModuleImporter {
     return this.importAllModules();
   }
 
-  async importByModuleByName(moduleName) {
+  async importByModuleByName(moduleName: Modules) {
     log(this.importConfig, `Starting import of ${moduleName} module`, 'info');
 
     const basePath = `${this.importConfig.backupDir}/${moduleName}`;

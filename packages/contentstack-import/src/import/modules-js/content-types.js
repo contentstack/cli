@@ -63,11 +63,11 @@ class ContentTypesImport {
 
       // seed content type
       log(this.importConfig, 'Started to seed content types', 'info');
-      await executeTask(this.seedContentType.bind(this), { concurrency: this.importConcurrency }, this.contentTypes);
+      await executeTask(this.contentTypes, this.seedContentType.bind(this), { concurrency: this.importConcurrency });
       log(this.importConfig, 'Created content types', 'success');
 
       log(this.importConfig, 'Started to update content types with references', 'info');
-      await executeTask(this.updateContentType.bind(this), { concurrency: this.importConcurrency }, this.contentTypes);
+      await executeTask(this.contentTypes, this.updateContentType.bind(this), { concurrency: this.importConcurrency });
       log(this.importConfig, 'Updated content types with references', 'success');
 
       // global field update
@@ -79,13 +79,9 @@ class ContentTypesImport {
         this.existingGlobalFields = fileHelper.readFileSync(this.globalFieldMapperFolderPath);
         try {
           log(this.importConfig, 'Started to update pending global field with content type references', 'info');
-          await executeTask(
-            this.updateGlobalFields.bind(this),
-            {
-              concurrency: this.importConcurrency,
-            },
-            this.pendingGlobalFields,
-          );
+          await executeTask(this.pendingGlobalFields, this.updateGlobalFields.bind(this), {
+            concurrency: this.importConcurrency,
+          });
           log(this.importConfig, 'Updated pending global fields with content type with references', 'success');
         } catch (error) {
           log(

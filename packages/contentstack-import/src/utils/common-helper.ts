@@ -13,9 +13,10 @@ import chalk from 'chalk';
 import { log } from './logger';
 import defaultConfig from '../config';
 import promiseLimit from 'promise-limit';
+import { ImportConfig } from '../types';
 
-let config;
-export const initialization = (configData) => {
+let config: ImportConfig;
+export const initialization = (configData: ImportConfig) => {
   config = buildAppConfig(configData);
   const res = validateConfig(config);
 
@@ -24,7 +25,7 @@ export const initialization = (configData) => {
   }
 };
 
-export const validateConfig = (importConfig) => {
+export const validateConfig = (importConfig: ImportConfig) => {
   if (importConfig.email && importConfig.password && !importConfig.target_stack) {
     log(importConfig, chalk.red('Kindly provide api_token'), 'error');
     return 'error';
@@ -46,12 +47,12 @@ export const validateConfig = (importConfig) => {
   }
 };
 
-export const buildAppConfig = (importConfig) => {
+export const buildAppConfig = (importConfig: ImportConfig) => {
   importConfig = _.merge(defaultConfig, importConfig);
   return importConfig;
 };
 
-export const sanitizeStack = (importConfig) => {
+export const sanitizeStack = (importConfig: ImportConfig) => {
   if (typeof importConfig.preserveStackVersion !== 'boolean' || !importConfig.preserveStackVersion) {
     return Promise.resolve();
   }
@@ -102,26 +103,26 @@ export const sanitizeStack = (importConfig) => {
   }
 };
 
-export const masterLocalDetails = (stackAPIClient): Promise<any> => {
+export const masterLocalDetails = (stackAPIClient: any): Promise<any> => {
   return new Promise((resolve, reject) => {
     const result = stackAPIClient.locale().query();
     result
       .find()
-      .then((response) => {
-        const masterLocalObj = response.items.filter((obj) => {
+      .then((response: any) => {
+        const masterLocalObj = response.items.filter((obj: any) => {
           if (obj.fallback_locale === null) {
             return obj;
           }
         });
         return resolve(masterLocalObj[0]);
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         return reject(error);
       });
   });
 };
 
-export const field_rules_update = (importConfig, ctPath) => {
+export const field_rules_update = (importConfig: ImportConfig, ctPath: string) => {
   return new Promise(async (resolve, reject) => {
     let client = await managementSDKClient(config);
 
@@ -167,7 +168,7 @@ export const field_rules_update = (importConfig, ctPath) => {
                   .then(() => {
                     return resolve('');
                   })
-                  .catch((error) => {
+                  .catch((error: Error) => {
                     return reject(error);
                   });
               }
@@ -183,7 +184,7 @@ export const getConfig = () => {
   return config;
 };
 
-export const formatError = (error) => {
+export const formatError = (error: any) => {
   try {
     if (typeof error === 'string') {
       error = JSON.parse(error);
@@ -191,8 +192,8 @@ export const formatError = (error) => {
       error = JSON.parse(error.message);
     }
   } catch (e) {}
-  let message = error.errorMessage || error.error_message || error.message || error;
-  if (error.errors && Object.keys(error.errors).length > 0) {
+  let message = error?.errorMessage || error?.error_message || error?.message || error;
+  if (error && error.errors && Object.keys(error.errors).length > 0) {
     Object.keys(error.errors).forEach((e) => {
       let entity = e;
       if (e === 'authorization') entity = 'Management Token';
@@ -205,7 +206,11 @@ export const formatError = (error) => {
   return message;
 };
 
-export const executeTask = (handler, options, tasks = []) => {
+export const executeTask = (
+  tasks: unknown[] = [],
+  handler: (task: unknown) => Promise<unknown>,
+  options: { concurrency: number },
+) => {
   if (typeof handler !== 'function') {
     throw new Error('Invalid handler');
   }
@@ -218,7 +223,7 @@ export const executeTask = (handler, options, tasks = []) => {
   );
 };
 
-export const validateBranch = async (stackAPIClient, config, branch) => {
+export const validateBranch = async (stackAPIClient: any, config: ImportConfig, branch: any) => {
   return new Promise(async (resolve, reject) => {
     try {
       const data = await stackAPIClient.branch(branch).fetch();

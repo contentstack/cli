@@ -50,7 +50,7 @@ export const schemaTemplate = {
  * MIT Licensed
  */
 
-export const suppressSchemaReference = function (schema, flag) {
+export const suppressSchemaReference = function (schema: any, flag: any) {
   for (var i in schema) {
     if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
       suppressSchemaReference(schema[i].schema, flag);
@@ -78,7 +78,7 @@ export const suppressSchemaReference = function (schema, flag) {
   }
 };
 
-export const removeReferenceFields = async function (schema, flag, stackAPIClient) {
+export const removeReferenceFields = async function (schema: any, flag: any, stackAPIClient: any) {
   for (let i = 0; i < schema.length; i++) {
     if (schema[i].data_type === 'group') {
       await removeReferenceFields(schema[i].schema, flag, stackAPIClient);

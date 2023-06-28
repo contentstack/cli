@@ -1,7 +1,8 @@
 import Bluebird from 'bluebird';
 import * as url from 'url';
 import * as path from 'path';
-import { managementSDKClient } from '@contentstack/cli-utilities';
+import { ContentstackClient, managementSDKClient } from '@contentstack/cli-utilities';
+import { ImportConfig } from 'src/types';
 const debug = require('debug')('util:requests');
 let _ = require('lodash');
 let { marked } = require('marked');
@@ -9,17 +10,17 @@ let helper = require('./file-helper');
 
 const MAX_RETRY_LIMIT = 5;
 
-function validate(req) {
+function validate(req: any) {
   if (typeof req !== 'object') {
     throw new Error(`Invalid params passed for request\n${JSON.stringify(arguments)}`);
   }
 }
 
-export const uploadAssetHelper = function (config, req, fsPath, RETRY) {
+export const uploadAssetHelper = function (config: ImportConfig, req: any, fsPath: string, RETRY?: number) {
   return new Bluebird(function (resolve, reject) {
     try {
       managementSDKClient(config)
-        .then((APIClient) => {
+        .then((APIClient: ContentstackClient) => {
           validate(req);
           if (typeof RETRY !== 'number') {
             RETRY = 1;
@@ -51,7 +52,13 @@ export const uploadAssetHelper = function (config, req, fsPath, RETRY) {
 };
 
 // get assets object
-export const lookupAssets = function (data, mappedAssetUids, mappedAssetUrls, assetUidMapperPath, installedExtensions) {
+export const lookupAssets = function (
+  data: any,
+  mappedAssetUids: string[],
+  mappedAssetUrls: string[],
+  assetUidMapperPath: string[],
+  installedExtensions: string[],
+) {
   if (
     !_.has(data, 'entry') ||
     !_.has(data, 'content_type') ||
@@ -61,15 +68,15 @@ export const lookupAssets = function (data, mappedAssetUids, mappedAssetUrls, as
   ) {
     throw new Error('Invalid inputs for lookupAssets!');
   }
-  let parent = [];
-  let assetUids = [];
-  let assetUrls = [];
-  let unmatchedUids = [];
-  let unmatchedUrls = [];
-  let matchedUids = [];
-  let matchedUrls = [];
+  let parent: string[] = [];
+  let assetUids: string[] = [];
+  let assetUrls: string[] = [];
+  let unmatchedUids: string[] = [];
+  let unmatchedUrls: string[] = [];
+  let matchedUids: string[] = [];
+  let matchedUrls: string[] = [];
 
-  let find = function (schema, entryToFind) {
+  let find = function (schema: any, entryToFind: any) {
     for (let i = 0, _i = schema.length; i < _i; i++) {
       if (
         schema[i].data_type === 'text' &&
@@ -118,8 +125,8 @@ export const lookupAssets = function (data, mappedAssetUids, mappedAssetUrls, as
     }
   };
 
-  function findAssetIdsFromJsonCustomFields(entryObj, ctSchema) {
-    ctSchema.map((row) => {
+  function findAssetIdsFromJsonCustomFields(entryObj: any, ctSchema: any) {
+    ctSchema.map((row: any) => {
       if (row.data_type === 'json') {
         if (entryObj[row.uid] && row.field_metadata.extension && row.field_metadata.is_asset) {
           if (installedExtensions && installedExtensions[row.extension_uid]) {
@@ -138,15 +145,15 @@ export const lookupAssets = function (data, mappedAssetUids, mappedAssetUrls, as
     });
   }
 
-  function findAssetIdsFromJsonRte(entryObj, ctSchema) {
+  function findAssetIdsFromJsonRte(entryObj: any, ctSchema: any) {
     for (const element of ctSchema) {
       switch (element.data_type) {
         case 'blocks': {
           if (entryObj[element.uid]) {
             if (element.multiple) {
-              entryObj[element.uid].forEach((e) => {
+              entryObj[element.uid].forEach((e: any) => {
                 let key = Object.keys(e).pop();
-                let subBlock = element.blocks.filter((block) => block.uid === key).pop();
+                let subBlock = element.blocks.filter((block: any) => block.uid === key).pop();
                 findAssetIdsFromJsonRte(e[key], subBlock.schema);
               });
             }
@@ -157,7 +164,7 @@ export const lookupAssets = function (data, mappedAssetUids, mappedAssetUrls, as
         case 'group': {
           if (entryObj[element.uid]) {
             if (element.multiple) {
-              entryObj[element.uid].forEach((e) => {
+              entryObj[element.uid].forEach((e: any) => {
                 findAssetIdsFromJsonRte(e, element.schema);
               });
             } else {
@@ -169,7 +176,7 @@ export const lookupAssets = function (data, mappedAssetUids, mappedAssetUrls, as
         case 'json': {
           if (entryObj[element.uid] && element.field_metadata.rich_text_type) {
             if (element.multiple) {
-              entryObj[element.uid].forEach((jsonRteData) => {
+              entryObj[element.uid].forEach((jsonRteData: any) => {
                 gatherJsonRteAssetIds(jsonRteData);
               });
             } else {
@@ -182,8 +189,8 @@ export const lookupAssets = function (data, mappedAssetUids, mappedAssetUrls, as
     }
   }
 
-  function gatherJsonRteAssetIds(jsonRteData) {
-    jsonRteData.children.forEach((element) => {
+  function gatherJsonRteAssetIds(jsonRteData: any) {
+    jsonRteData.children.forEach((element: any) => {
       if (element.type) {
         switch (element.type) {
           case 'a':
@@ -228,7 +235,7 @@ export const lookupAssets = function (data, mappedAssetUids, mappedAssetUrls, as
   assetUrls = _.uniq(assetUrls);
   let entry = JSON.stringify(data.entry);
 
-  assetUrls.forEach(function (assetUrl) {
+  assetUrls.forEach(function (assetUrl: any) {
     let mappedAssetUrl = mappedAssetUrls[assetUrl];
     if (typeof mappedAssetUrl !== 'undefined') {
       entry = entry.replace(new RegExp(assetUrl, 'img'), mappedAssetUrl);
@@ -238,7 +245,7 @@ export const lookupAssets = function (data, mappedAssetUids, mappedAssetUrls, as
     }
   });
 
-  assetUids.forEach(function (assetUid) {
+  assetUids.forEach(function (assetUid: any) {
     let uid = mappedAssetUids[assetUid];
     if (typeof uid !== 'undefined') {
       entry = entry.replace(new RegExp(assetUid, 'img'), uid);
@@ -305,7 +312,7 @@ export const lookupAssets = function (data, mappedAssetUids, mappedAssetUrls, as
   return JSON.parse(entry);
 };
 
-function findFileUrls(schema, _entry, assetUrls) {
+function findFileUrls(schema: any, _entry: any, assetUrls: any) {
   let markdownRegEx;
   let markdownMatch;
 
@@ -348,7 +355,15 @@ function findFileUrls(schema, _entry, assetUrls) {
   }
 }
 
-function updateFileFields(objekt, parent, pos, mappedAssetUids, matchedUids, unmatchedUids, mappedAssetUrls?: any) {
+function updateFileFields(
+  objekt: any,
+  parent: any,
+  pos: any,
+  mappedAssetUids: any,
+  matchedUids: any,
+  unmatchedUids: any,
+  mappedAssetUrls?: any,
+) {
   if (_.isPlainObject(objekt) && _.has(objekt, 'filename') && _.has(objekt, 'uid')) {
     if (typeof pos !== 'undefined') {
       if (typeof pos === 'number' || typeof pos === 'string') {

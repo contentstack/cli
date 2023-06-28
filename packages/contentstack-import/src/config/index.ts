@@ -1,4 +1,6 @@
-export default {
+import { DefaultConfig } from '../types';
+
+const config: DefaultConfig = {
   versioning: false,
   // use below hosts for eu region
   // host:'https://eu-api.contentstack.com/v3',
@@ -356,3 +358,5 @@ export default {
   // useBackedupDir: '',
   // backupConcurrency: 10,
 };
+
+export default config;
