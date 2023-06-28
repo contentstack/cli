@@ -1,15 +1,16 @@
 import path from 'node:path';
 import { Command } from '@contentstack/cli-command';
 import {
-  logger,
-  cliux,
   messageHandler,
   printFlagDeprecation,
   managementSDKClient,
   flags,
+  FlagInput,
+  ContentstackClient,
 } from '@contentstack/cli-utilities';
 import { ModuleImporter } from '../../../import';
 import { setupImportConfig, formatError, log } from '../../../utils';
+import { ImportConfig } from '../../../types';
 
 export default class ImportCommand extends Command {
   static description = messageHandler.parse('Import content from a stack');
@@ -25,7 +26,7 @@ export default class ImportCommand extends Command {
     `csdx cm:stacks:import --branch <branch name>  --yes`,
   ];
 
-  static flags = {
+  static flags: FlagInput = {
     config: flags.string({
       char: 'c',
       description: '[optional] path of config file',
@@ -97,26 +98,27 @@ export default class ImportCommand extends Command {
   static usage: string =
     'cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]';
 
-  async run(): Promise<any> {
+  async run(): Promise<void> {
     // setup import config
     // initialize the importer
     // start import
-    let importConfig: any = {};
+    let contentDir: string;
     try {
-      const { flags } = (await this.parse(ImportCommand)) as any;
-      importConfig = await setupImportConfig(flags);
+      const { flags } = await this.parse(ImportCommand);
+      let importConfig = await setupImportConfig(flags);
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
-      const managementAPIClient = await managementSDKClient(importConfig);
+      contentDir = importConfig.contentDir;
+      const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       await moduleImporter.start();
       log(importConfig, `The content has been imported to the stack ${importConfig.apiKey} successfully!`, 'success');
     } catch (error) {
-      log(importConfig, `Failed to import stack content - ${formatError(error)}`, 'error');
+      log({ data: contentDir } as ImportConfig, `Failed to import stack content - ${formatError(error)}`, 'error');
       log(
-        importConfig,
+        { data: contentDir } as ImportConfig,
         `The log has been stored at ${
-          importConfig.exportDir ? path.join(importConfig.exportDir, 'logs', 'import') : path.join(__dirname, 'logs')
+          { data: contentDir } ? path.join(contentDir, 'logs', 'import') : path.join(__dirname, 'logs')
         }`,
         'info',
       );
