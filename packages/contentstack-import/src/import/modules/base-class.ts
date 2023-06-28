@@ -10,7 +10,7 @@ import { PublishConfig } from '@contentstack/management/types/utility/publish';
 import { FolderData } from '@contentstack/management/types/stack/asset/folder';
 
 import { log } from '../../utils';
-import configType from '../../../types/config';
+import { ImportConfig, ModuleClassParams } from '../../types';
 
 export type AdditionalKeys = {
   backupDir: string;
@@ -52,11 +52,11 @@ export type CustomPromiseHandler = (input: CustomPromiseHandlerInput) => Promise
 export default abstract class BaseClass {
   readonly client: Stack;
 
-  public importConfig: typeof configType & AdditionalKeys;
+  public importConfig: ImportConfig;
 
-  public modulesConfig: typeof configType.modules;
+  public modulesConfig: any;
 
-  constructor({ importConfig, stackAPIClient }) {
+  constructor({ importConfig, stackAPIClient }: Omit<ModuleClassParams, 'moduleName'>) {
     this.client = stackAPIClient;
     this.importConfig = importConfig;
     this.modulesConfig = importConfig.modules;
@@ -204,14 +204,14 @@ export default abstract class BaseClass {
 
     const { uid, entity, reject, resolve, apiData, additionalInfo, includeParamOnCompletion } = apiOptions;
 
-    const onSuccess = (response) =>
+    const onSuccess = (response: any) =>
       resolve({
         response,
         isLastRequest,
         additionalInfo,
         apiData: includeParamOnCompletion ? apiData : undefined,
       });
-    const onReject = (error) =>
+    const onReject = (error: Error) =>
       reject({
         error,
         isLastRequest,
