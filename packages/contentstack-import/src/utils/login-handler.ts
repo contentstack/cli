@@ -9,8 +9,9 @@
 
 import { log } from './logger';
 import { managementSDKClient, isAuthenticated } from '@contentstack/cli-utilities';
+import { ImportConfig } from '../types';
 
-const login = async (config): Promise<any> => {
+const login = async (config: ImportConfig): Promise<any> => {
   const client = await managementSDKClient(config);
   if (config.email && config.password) {
     const { user: { authtoken = null } = {} } = await client.login({ email: config.email, password: config.password });
@@ -33,13 +34,13 @@ const login = async (config): Promise<any> => {
       api_key: config.target_stack,
       management_token: config.management_token,
     });
-    const stack = await stackAPIClient.fetch().catch((error) => {
-      let errorstack_key = error.errors.api_key;
-      if (error.errors.api_key) {
+    const stack = await stackAPIClient.fetch().catch((error: any) => {
+      let errorstack_key = error?.errors?.api_key;
+      if (errorstack_key) {
         log(config, 'Stack Api key ' + errorstack_key[0] + 'Please enter valid Key', 'error');
         throw error;
       }
-      log(config, error.errorMessage, 'error');
+      log(config, error?.errorMessage, 'error');
       throw error;
     });
     config.destinationStackName = stack.name;

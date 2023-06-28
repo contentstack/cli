@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "declaration": false,
+    "declaration": true,
     "importHelpers": true,
     "module": "commonjs",
     "outDir": "lib",
@@ -11,6 +11,7 @@
     "skipLibCheck": true,
     "sourceMap": false,
     "esModuleInterop": true,
+    "noImplicitAny": true,
     "lib": [
       "es2019",
       "es2020.promise",
@@ -18,10 +19,12 @@
     "strictPropertyInitialization": false,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    "types/*"
+  ],
   "exclude": [
     "node_modules",
-    "lib",
-    "typings/**"
+    "lib"
   ]
 }
