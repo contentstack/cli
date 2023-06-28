@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as mkdirp from 'mkdirp';
+import { mkdirpSync } from 'mkdirp';
 import bigJSON from 'big-json';
 
-export const readFileSync = function (filePath, parse): any {
+export const readFileSync = function (filePath: string, parse: boolean): unknown {
   let data;
   parse = typeof parse === 'undefined' ? true : parse;
   filePath = path.resolve(filePath);
@@ -30,7 +30,7 @@ export const readFile = async (filePath: string, options = { type: 'json' }): Pr
   });
 };
 
-export const readLargeFile = function (filePath, options: any = {}): Promise<any> {
+export const readLargeFile = function (filePath: string, options: { type?: string } = {}): Promise<any> {
   if (typeof filePath !== 'string') {
     return;
   }
@@ -39,13 +39,13 @@ export const readLargeFile = function (filePath, options: any = {}): Promise<any
     return new Promise((resolve, reject) => {
       const readStream = fs.createReadStream(filePath, { encoding: 'utf-8' });
       const parseStream = bigJSON.createParseStream();
-      parseStream.on('data', function (data) {
+      parseStream.on('data', function (data: unknown) {
         if (options.type === 'array') {
           return resolve(Object.values(data));
         }
         resolve(data);
       });
-      parseStream.on('error', (error) => {
+      parseStream.on('error', (error: Error) => {
         console.log('error', error);
         reject(error);
       });
@@ -54,12 +54,12 @@ export const readLargeFile = function (filePath, options: any = {}): Promise<any
   }
 };
 
-export const writeFileSync = function (filePath, data): void {
+export const writeFileSync = function (filePath: string, data: any): void {
   data = typeof data === 'object' ? JSON.stringify(data) : data || '{}';
   fs.writeFileSync(filePath, data);
 };
 
-export const writeFile = function (filePath, data): Promise<any> {
+export const writeFile = function (filePath: string, data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     data = typeof data === 'object' ? JSON.stringify(data) : data || '{}';
     fs.writeFile(filePath, data, (error) => {
@@ -71,7 +71,7 @@ export const writeFile = function (filePath, data): Promise<any> {
   });
 };
 
-export const writeLargeFile = function (filePath, data): Promise<any> {
+export const writeLargeFile = function (filePath: string, data: any): Promise<any> {
   if (typeof filePath !== 'string' || typeof data !== 'object') {
     return;
   }
@@ -91,16 +91,16 @@ export const writeLargeFile = function (filePath, data): Promise<any> {
   });
 };
 
-export const makeDirectory = function (dir): void {
+export const makeDirectory = function (dir: string): void {
   for (const key in arguments) {
     const dirname = path.resolve(arguments[key]);
     if (!fs.existsSync(dirname)) {
-      mkdirp.sync(dirname);
+      mkdirpSync(dirname);
     }
   }
 };
 
-export const readdir = function (dirPath): any {
+export const readdir = function (dirPath: string): any {
   if (fs.existsSync(dirPath)) {
     return fs.readdirSync(dirPath);
   } else {
@@ -108,6 +108,6 @@ export const readdir = function (dirPath): any {
   }
 };
 
-exports.fileExistsSync = function (path) {
+exports.fileExistsSync = function (path: string) {
   return fs.existsSync(path);
 };

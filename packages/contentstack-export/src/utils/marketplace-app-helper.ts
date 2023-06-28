@@ -9,7 +9,7 @@ export const getDeveloperHubUrl = async () => {
     developerHubBaseUrl = await cliux.inquire({
       type: 'input',
       name: 'name',
-      validate: (url) => {
+      validate: (url: string) => {
         if (!url) return "Developer-hub URL can't be empty.";
 
         return true;
