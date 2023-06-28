@@ -12,6 +12,7 @@ import { FsUtility } from '@contentstack/cli-utilities';
 import config from '../../config';
 import { log, formatError } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
+import { ModuleClassParams } from '../../types';
 
 export default class ImportAssets extends BaseClass {
   private fs: FsUtility;
@@ -27,7 +28,7 @@ export default class ImportAssets extends BaseClass {
   private assetsUrlMap: Record<string, unknown> = {};
   private assetsFolderMap: Record<string, unknown> = {};
 
-  constructor({ importConfig, stackAPIClient }) {
+  constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
 
     this.assetsPath = join(this.importConfig.backupDir, 'assets');
@@ -299,8 +300,8 @@ export default class ImportAssets extends BaseClass {
    * @param {Record<string, any>[]} folders object
    * @returns {Array<Record<string, any>>} Array<Record<string, any>>
    */
-  constructFolderImportOrder(folders): Array<Record<string, any>> {
-    let parentUid = [];
+  constructFolderImportOrder(folders: any): Array<Record<string, any>> {
+    let parentUid: unknown[] = [];
     // NOTE: Read root folder
     const importOrder = filter(folders, { parent_uid: null }).map(({ uid, name, parent_uid, created_at }) => {
       parentUid.push(uid);
