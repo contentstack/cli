@@ -1,13 +1,14 @@
 import merge from 'merge';
 import * as path from 'path';
-import { configHandler, isAuthenticated } from '@contentstack/cli-utilities';
+import { configHandler, isAuthenticated, FlagInput } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile } from './file-helper';
 import { askExportDir, askAPIKey } from './interactive';
 import login from './basic-login';
 import { filter, includes } from 'lodash';
+import { ExportConfig } from '../types';
 
-const setupConfig = async (exportCmdFlags): Promise<any> => {
+const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   let config = merge({}, defaultConfig);
   // setup the config
   if (exportCmdFlags['config']) {

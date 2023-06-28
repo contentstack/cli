@@ -1,9 +1,17 @@
 import path from 'path';
 import { Command } from '@contentstack/cli-command';
-import { cliux, messageHandler, printFlagDeprecation, managementSDKClient, flags } from '@contentstack/cli-utilities';
+import {
+  cliux,
+  messageHandler,
+  printFlagDeprecation,
+  managementSDKClient,
+  flags,
+  ContentstackClient,
+  FlagInput,
+} from '@contentstack/cli-utilities';
 import { ModuleExporter } from '../../../export';
 import { setupExportConfig, log, formatError } from '../../../utils';
-import { ExportConfig } from '../../../interfaces';
+import { ExportConfig } from '../../../types';
 
 export default class ExportCommand extends Command {
   static description: string = messageHandler.parse('Export content from a stack');
@@ -21,7 +29,7 @@ export default class ExportCommand extends Command {
   static usage: string =
     'cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]';
 
-  static flags = {
+  static flags: FlagInput = {
     config: flags.string({
       char: 'c',
       description: '[optional] path of the config',
@@ -91,27 +99,24 @@ export default class ExportCommand extends Command {
 
   static aliases: string[] = ['cm:export'];
 
-  async run(): Promise<any> {
-    // setup export config
-    // initialize the exporter
-    // start export
-    let exportConfig: any = {};
+  async run(): Promise<void> {
+    let exportDir: string;
     try {
-      // todo - fix flag type issues
       const { flags } = await this.parse(ExportCommand);
-      exportConfig = await setupExportConfig(flags);
+      let exportConfig = await setupExportConfig(flags);
       // Note setting host to create cma client
       exportConfig.host = this.cmaHost;
-      const managementAPIClient = await managementSDKClient(exportConfig);
-      const moduleExpoter = new ModuleExporter(managementAPIClient, exportConfig);
-      await moduleExpoter.start();
+      exportDir = exportConfig.data || exportConfig.exportDir;
+      const managementAPIClient: ContentstackClient = await managementSDKClient(exportConfig);
+      const moduleExporter = new ModuleExporter(managementAPIClient, exportConfig);
+      await moduleExporter.start();
       log(exportConfig, `The content of the stack ${exportConfig.apiKey} has been exported successfully!`, 'success');
     } catch (error) {
-      log(exportConfig, `Failed to export stack content - ${formatError(error)}`, 'error');
+      log({ data: exportDir } as ExportConfig, `Failed to export stack content - ${formatError(error)}`, 'error');
       log(
-        exportConfig,
+        { data: exportDir } as ExportConfig,
         `The log has been stored at ${
-          exportConfig.exportDir ? path.join(exportConfig.exportDir, 'logs', 'export') : path.join(__dirname, 'logs')
+          exportDir ? path.join(exportDir, 'logs', 'export') : path.join(__dirname, 'logs')
         }`,
         'info',
       );

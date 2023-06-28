@@ -6,7 +6,8 @@
 
 import * as winston from 'winston';
 import * as path from 'path';
-import * as mkdirp from 'mkdirp';
+import { mkdirpSync } from 'mkdirp';
+import { ExportConfig } from '../types';
 
 const slice = Array.prototype.slice;
 
@@ -15,7 +16,7 @@ const ansiRegexPattern = [
   '(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PR-TZcf-ntqry=><~]))',
 ].join('|');
 
-function returnString(args) {
+function returnString(args: unknown[]) {
   let returnStr = '';
   if (args && args.length) {
     returnStr = args
@@ -49,24 +50,23 @@ const myCustomLevels = {
   },
 };
 
-let logger;
-let errorLogger;
+let logger: winston.Logger;
+let errorLogger: winston.Logger;
 
 let successTransport;
 let errorTransport;
 
-function init(_logPath) {
+function init(_logPath: string) {
   if (!logger || !errorLogger) {
     const logsDir = path.resolve(_logPath, 'logs', 'export');
     // Create dir if doesn't already exist
-    mkdirp.sync(logsDir);
+    mkdirpSync(logsDir);
 
     successTransport = {
       filename: path.join(logsDir, 'success.log'),
       maxFiles: 20,
       maxsize: 1000000,
       tailable: true,
-      json: true,
       level: 'info',
     };
 
@@ -75,7 +75,6 @@ function init(_logPath) {
       maxFiles: 20,
       maxsize: 1000000,
       tailable: true,
-      json: true,
       level: 'error',
     };
 
@@ -103,7 +102,7 @@ function init(_logPath) {
   }
 
   return {
-    log: function (message) {
+    log: function (message: any) {
       const args = slice.call(arguments);
       const logString = returnString(args);
       if (logString) {
@@ -117,7 +116,7 @@ function init(_logPath) {
         logger.log('warn', logString);
       }
     },
-    error: function (message) {
+    error: function (message: any) {
       const args = slice.call(arguments);
       const logString = returnString(args);
       if (logString) {
@@ -134,7 +133,7 @@ function init(_logPath) {
   };
 }
 
-export const log = async (config, message, type) => {
+export const log = async (config: ExportConfig, message: any, type: string) => {
   config.data = config.data || path.join(__dirname, 'logs');
   // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
@@ -148,7 +147,7 @@ export const log = async (config, message, type) => {
 export const unlinkFileLogger = () => {
   if (logger) {
     const transports = logger.transports;
-    transports.forEach((transport) => {
+    transports.forEach((transport: any) => {
       if (transport.name === 'file') {
         logger.remove(transport);
       }
@@ -157,7 +156,7 @@ export const unlinkFileLogger = () => {
 
   if (errorLogger) {
     const transports = errorLogger.transports;
-    transports.forEach((transport) => {
+    transports.forEach((transport: any) => {
       if (transport.name === 'file') {
         errorLogger.remove(transport);
       }

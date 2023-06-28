@@ -1,4 +1,6 @@
-export default {
+import { DefaultConfig } from '../types';
+
+const config: DefaultConfig = {
   versioning: false,
   host: 'https://api.contentstack.io/v3',
   developerHubUrls: {
@@ -46,6 +48,11 @@ export default {
       fileName: 'custom-roles.json',
       customRolesLocalesFileName: 'custom-roles-locales.json',
     },
+    'custom-roles': {
+      dirName: 'custom-roles',
+      fileName: 'custom-roles.json',
+      customRolesLocalesFileName: 'custom-roles-locales.json',
+    },
     environments: {
       dirName: 'environments',
       fileName: 'environments.json',
@@ -75,6 +82,11 @@ export default {
       fileName: 'globalfields.json',
       validKeys: ['title', 'uid', 'schema', 'options', 'singleton', 'description'],
     },
+    'global-fields': {
+      dirName: 'global_fields',
+      fileName: 'globalfields.json',
+      validKeys: ['title', 'uid', 'schema', 'options', 'singleton', 'description'],
+    },
     assets: {
       dirName: 'assets',
       fileName: 'assets.json',
@@ -93,6 +105,13 @@ export default {
       includeVersionedAssets: false,
     },
     content_types: {
+      dirName: 'content_types',
+      fileName: 'content_types.json',
+      validKeys: ['title', 'uid', 'field_rules', 'schema', 'options', 'singleton', 'description'],
+      // total no of content types fetched in each 'get content types' call
+      limit: 100,
+    },
+    'content-types': {
       dirName: 'content_types',
       fileName: 'content_types.json',
       validKeys: ['title', 'uid', 'field_rules', 'schema', 'options', 'singleton', 'description'],
@@ -131,6 +150,10 @@ export default {
       entries: ['stack', 'locales', 'content-types'],
     },
     marketplace_apps: {
+      dirName: 'marketplace_apps',
+      fileName: 'marketplace_apps.json',
+    },
+    'marketplace-apps': {
       dirName: 'marketplace_apps',
       fileName: 'marketplace_apps.json',
     },
@@ -367,3 +390,5 @@ export default {
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
   useNewModuleStructure: true,
 };
+
+export default config;

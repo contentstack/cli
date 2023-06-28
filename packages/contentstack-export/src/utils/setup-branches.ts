@@ -1,8 +1,9 @@
 import * as path from 'path';
 import { writeFileSync, makeDirectory } from './file-helper';
 import { isAuthenticated, configHandler } from '@contentstack/cli-utilities';
+import { ExportConfig } from 'src/types';
 
-const setupBranches = async (config, stackAPIClient) => {
+const setupBranches = async (config: ExportConfig, stackAPIClient: any) => {
   if (typeof config !== 'object') {
     throw new Error('Invalid config to setup the branch');
   }
@@ -13,7 +14,7 @@ const setupBranches = async (config, stackAPIClient) => {
     const result = await stackAPIClient
       .branch(config.branchName)
       .fetch()
-      .catch((_err) => {});
+      .catch((_err: Error) => {});
     if (result && typeof result === 'object') {
       branches.push(result);
     } else {
@@ -25,7 +26,7 @@ const setupBranches = async (config, stackAPIClient) => {
         .branch()
         .query()
         .find()
-        .catch((_err) => {});
+        .catch((_err: Error) => {});
       if (result && result.items && Array.isArray(result.items) && result.items.length > 0) {
         branches = result.items;
       } else {

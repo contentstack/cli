@@ -7,7 +7,9 @@
 import promiseLimit from 'promise-limit';
 import { isAuthenticated } from '@contentstack/cli-utilities';
 
-export const validateConfig = function (config) {
+import { ExternalConfig } from '../types';
+
+export const validateConfig = function (config: ExternalConfig) {
   if (!config.host || !config.cdn) {
     throw new Error('Host/CDN end point is missing from config');
   }
@@ -37,7 +39,7 @@ export const validateConfig = function (config) {
   }
 };
 
-export const formatError = function (error) {
+export const formatError = function (error: any) {
   try {
     if (typeof error === 'string') {
       error = JSON.parse(error);
@@ -59,7 +61,11 @@ export const formatError = function (error) {
   return message;
 };
 
-export const executeTask = function (tasks = [], handler, options) {
+export const executeTask = function (
+  tasks: unknown[] = [],
+  handler: (task: unknown) => Promise<unknown>,
+  options: { concurrency: number },
+) {
   if (typeof handler !== 'function') {
     throw new Error('Invalid handler');
   }

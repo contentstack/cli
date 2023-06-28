@@ -5,9 +5,9 @@ import chunk from 'lodash/chunk';
 import isEmpty from 'lodash/isEmpty';
 import entries from 'lodash/entries';
 import isEqual from 'lodash/isEqual';
-import { Stack } from '@contentstack/management/types/stack';
 
 import { log } from '../../utils';
+import { ExportConfig, ModuleClassParams } from '../../types';
 
 export type ApiOptions = {
   uid?: string;
@@ -48,15 +48,15 @@ export type ApiModuleType =
   | 'download-asset';
 
 export default abstract class BaseClass {
-  readonly client: Stack;
-  public exportConfig: Record<string, any>;
+  readonly client: any;
+  public exportConfig: ExportConfig;
 
-  constructor({ exportConfig, stackAPIClient }) {
+  constructor({ exportConfig, stackAPIClient }: Omit<ModuleClassParams, 'moduleName'>) {
     this.client = stackAPIClient;
     this.exportConfig = exportConfig;
   }
 
-  get stack(): Stack {
+  get stack(): any {
     return this.client;
   }
 
@@ -158,15 +158,15 @@ export default abstract class BaseClass {
         return this.stack
           .asset(uid)
           .fetch(queryParam)
-          .then((response) => resolve({ response, isLastRequest, additionalInfo }))
-          .catch((error) => reject({ error, isLastRequest, additionalInfo }));
+          .then((response: any) => resolve({ response, isLastRequest, additionalInfo }))
+          .catch((error: Error) => reject({ error, isLastRequest, additionalInfo }));
       case 'assets':
         return this.stack
           .asset()
           .query(queryParam)
           .find()
-          .then((response) => resolve({ response, isLastRequest, additionalInfo }))
-          .catch((error) => reject({ error, isLastRequest, additionalInfo }));
+          .then((response: any) => resolve({ response, isLastRequest, additionalInfo }))
+          .catch((error: Error) => reject({ error, isLastRequest, additionalInfo }));
       case 'download-asset':
         return this.stack
           .asset()
