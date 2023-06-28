@@ -6,9 +6,10 @@ import defaultConfig from '../config';
 import { readFile } from './file-helper';
 import { askContentDir, askAPIKey } from './interactive';
 import login from './login-handler';
+import { ImportConfig } from '../types';
 
-const setupConfig = async (importCmdFlags): Promise<any> => {
-  let config = merge({}, defaultConfig);
+const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
+  let config: ImportConfig = merge({}, defaultConfig);
   // setup the config
   if (importCmdFlags['config']) {
     let externalConfig = await readFile(importCmdFlags['config']);
@@ -36,7 +37,7 @@ const setupConfig = async (importCmdFlags): Promise<any> => {
 
   if (!config.management_token) {
     if (!isAuthenticated()) {
-      if (config.username && config.password) {
+      if (config.email && config.password) {
         await login(config);
       } else {
         throw new Error('Please login or provide an alias for the management token');
