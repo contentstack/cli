@@ -8,13 +8,20 @@
  * MIT Licensed
  */
 
+import { ImportConfig } from '../types';
+
 // eslint-disable-next-line unicorn/filename-case
 let path = require('path');
 const _ = require('lodash');
 let helper = require('./file-helper');
 
 // eslint-disable-next-line camelcase
-export const lookupExtension = function (config, schema, preserveStackVersion, installedExtensions) {
+export const lookupExtension = function (
+  config: ImportConfig,
+  schema: any,
+  preserveStackVersion: any,
+  installedExtensions: any,
+) {
   const extensionPath = path.resolve(config.data, 'mapper/extensions', 'uid-mapping.json');
   const globalfieldsPath = path.resolve(config.data, 'mapper/globalfields', 'uid-mapping.json');
   const marketplaceAppPath = path.resolve(config.data, 'marketplace_apps', 'marketplace_apps.json');
@@ -58,9 +65,9 @@ export const lookupExtension = function (config, schema, preserveStackVersion, i
         }
       }
     } else if (schema[i].data_type === 'json' && schema[i].hasOwnProperty('plugins') && schema[i].plugins.length > 0) {
-      const newPluginUidsArray = [];
+      const newPluginUidsArray: any[] = [];
       const data = helper.readFileSync(path.join(extensionPath));
-      schema[i].plugins.forEach((extension_key_value) => {
+      schema[i].plugins.forEach((extension_key_value: string) => {
         if (data && data.hasOwnProperty(extension_key_value)) {
           newPluginUidsArray.push(data[extension_key_value]);
         }
