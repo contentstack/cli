@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.7.7 darwin-arm64 node-v18.16.0
+@contentstack/cli/1.7.8 darwin-x64 node-v18.16.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -1816,19 +1816,20 @@ Export entries or organization users to csv using this command
 
 ```
 USAGE
-  $ csdx cm:export-to-csv [--action entries|users] [-a <value>] [--org <value>] [-n <value>] [--org-name <value>]
-    [--locale <value>] [--content-type <value>] [--branch <value>]
+  $ csdx cm:export-to-csv [--action entries|users] [-a <value>] [--org <value>] [-n <value>] [-k <value>] [--org-name
+    <value>] [--locale <value>] [--content-type <value>] [--branch <value>]
 
 FLAGS
-  -a, --alias=<value>       Alias of the management token
-  -n, --stack-name=<value>  Name of the stack that needs to be created as csv filename.
-  --action=<option>         Option to export data (entries, users)
-                            <options: entries|users>
-  --branch=<value>          Branch from which entries need to be exported
-  --content-type=<value>    Content type for which entries needs to be exported
-  --locale=<value>          Locale for which entries need to be exported
-  --org=<value>             Provide organization UID to clone org users
-  --org-name=<value>        Name of the organization that needs to be created as csv filename.
+  -a, --alias=<value>          Alias of the management token
+  -k, --stack-api-key=<value>  API key of the source stack
+  -n, --stack-name=<value>     Name of the stack that needs to be created as csv filename.
+  --action=<option>            Option to export data (entries, users)
+                               <options: entries|users>
+  --branch=<value>             Branch from which entries need to be exported
+  --content-type=<value>       Content type for which entries needs to be exported
+  --locale=<value>             Locale for which entries need to be exported
+  --org=<value>                Provide organization UID to clone org users
+  --org-name=<value>           Name of the organization that needs to be created as csv filename.
 
 DESCRIPTION
   Export entries or organization users to csv using this command
