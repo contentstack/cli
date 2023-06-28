@@ -8,8 +8,6 @@ import {
   flags,
   managementSDKClient,
   FlagInput,
-  isAuthenticated,
-  messageHandler,
 } from '@contentstack/cli-utilities';
 import { askTokenType } from '../../../utils/interactive';
 import { tokenValidation } from '../../../utils';
@@ -75,6 +73,7 @@ export default class TokensAddCommand extends Command {
       required: false,
       multiple: false,
       description: 'Branch name',
+      hidden: true,
     }),
   };
 
@@ -131,28 +130,30 @@ export default class TokensAddCommand extends Command {
         token = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_TOKEN', name: 'token' });
       }
 
-      if (!isAuthenticated()) {
-        this.error(messageHandler.parse('CLI_AUTH_AUTHENTICATION_FAILED'), {
-          exit: 2,
-          suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-        });
-      }
-
       const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
 
       let doBranchesExistInPlan: boolean = false;
 
-      await managementAPIClient
-        .stack({ api_key: apiKey })
-        .branch()
-        .query()
-        .find()
-        .then(() => (doBranchesExistInPlan = true))
-        .catch((err) => {
-          if (err.errorCode && err.errorMessage && branch) {
-            throw new Error(err.errorMessage);
-          }
-        });
+      if (isManagement && apiKey && token) {
+        await managementAPIClient
+          .stack({ api_key: apiKey, management_token: token })
+          .branch()
+          .query()
+          .find()
+          .then(() => (doBranchesExistInPlan = true))
+          .catch((err) => {
+            if (err.errorCode && err.errorMessage && branch) {
+              throw new Error(err.errorMessage);
+            }
+          });
+      } else {
+        if (!apiKey) {
+          throw new Error('Api key is required');
+        }
+        if (!token) {
+          throw new Error('Token is required');
+        }
+      }
 
       if (doBranchesExistInPlan && !branch) {
         branch = await cliux.inquire({
@@ -173,6 +174,7 @@ export default class TokensAddCommand extends Command {
       let tokenValidationResult;
 
       if (type === 'delivery') {
+        branch = branch || 'main';
         tokenValidationResult = await tokenValidation.validateDeliveryToken(
           this.deliveryAPIClient,
           apiKey,
@@ -180,6 +182,7 @@ export default class TokensAddCommand extends Command {
           environment,
           this.region.name,
           this.cdaHost,
+          branch,
         );
       } else if (type === 'management') {
         tokenValidationResult = await tokenValidation.validateManagementToken(
