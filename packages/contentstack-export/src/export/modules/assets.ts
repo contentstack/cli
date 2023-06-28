@@ -13,6 +13,7 @@ import { createWriteStream } from 'node:fs';
 import { resolve as pResolve } from 'node:path';
 import { FsUtility, getDirectories, configHandler } from '@contentstack/cli-utilities';
 
+import { ModuleClassParams } from '../../types';
 import config from '../../config';
 import { log } from '../../utils';
 import BaseClass, { CustomPromiseHandler, CustomPromiseHandlerInput } from './base-class';
@@ -23,7 +24,7 @@ export default class ExportAssets extends BaseClass {
   private assetsFolder: Record<string, unknown>[] = [];
   public versionedAssets: Record<string, unknown>[] = [];
 
-  constructor({ exportConfig, stackAPIClient }) {
+  constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
   }
 
@@ -263,7 +264,7 @@ export default class ExportAssets extends BaseClass {
       .query(queryParam)
       .count()
       .then(({ assets }: any) => assets)
-      .catch((error) => {
+      .catch((error: Error) => {
         log(this.exportConfig, 'Get count query failed', 'error');
         log(this.exportConfig, error, 'error');
       });
