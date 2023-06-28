@@ -1,14 +1,16 @@
 import * as path from 'path';
+import { ContentstackClient } from '@contentstack/cli-utilities';
 import { setupBranches, setupExportDir, log, formatError } from '../utils';
 import startModuleExport from './modules';
 import startJSModuleExport from './modules-js';
+import { ExportConfig, Modules } from '../types';
 
 class ModuleExporter {
-  private managementAPIClient: any;
-  private exportConfig: any;
-  private stackAPIClient: any;
+  private managementAPIClient: ContentstackClient;
+  private exportConfig: ExportConfig;
+  private stackAPIClient: ReturnType<ContentstackClient['stack']>;
 
-  constructor(managementAPIClient, exportConfig) {
+  constructor(managementAPIClient: ContentstackClient, exportConfig: ExportConfig) {
     this.managementAPIClient = managementAPIClient;
     this.stackAPIClient = this.managementAPIClient.stack({
       api_key: exportConfig.apiKey,
@@ -29,7 +31,7 @@ class ModuleExporter {
     return this.export();
   }
 
-  async exportByBranches(): Promise<any> {
+  async exportByBranches(): Promise<void> {
     // loop through the branches and export it parallel
     for (const branch of this.exportConfig.branches) {
       try {
@@ -52,7 +54,7 @@ class ModuleExporter {
     return this.exportAllModules();
   }
 
-  async exportByModuleByName(moduleName) {
+  async exportByModuleByName(moduleName: Modules) {
     log(this.exportConfig, `Starting export of ${moduleName} module`, 'info');
     // export the modules by name
     // calls the module runner which inturn calls the module itself
@@ -77,9 +79,9 @@ class ModuleExporter {
     }
   }
 
-  async exportSingleModule(moduleName): Promise<any> {
+  async exportSingleModule(moduleName: Modules): Promise<void> {
     // Note stack is always exported
-    let exportModules = ['stack'];
+    let exportModules: Modules[] = ['stack'];
     const {
       modules: { [moduleName]: { dependencies = [] } = {} },
     } = this.exportConfig;
