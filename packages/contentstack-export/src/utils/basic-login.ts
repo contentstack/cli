@@ -7,6 +7,7 @@
  * MIT Licensed
  */
 
+import { ExportConfig, ExternalConfig } from '../types';
 import { log } from './logger';
 const {
   managementSDKClient,
@@ -16,7 +17,7 @@ const {
   authHandler,
 } = require('@contentstack/cli-utilities');
 
-const login = async (config): Promise<any> => {
+const login = async (config: ExternalConfig): Promise<any> => {
   const client = await managementSDKClient(config);
   if (config.email && config.password) {
     const response = await client.login({ email: config.email, password: config.password }).catch(Promise.reject);
