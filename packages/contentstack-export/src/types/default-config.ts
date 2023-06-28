@@ -1,51 +1,74 @@
+import { Modules } from '.';
+
 export default interface DefaultConfig {
   versioning: boolean;
   host: string;
+  cdn?: string;
   developerHubUrls: any;
   // use below hosts for eu region
   // host:'https://eu-api.contentstack.com/v3',
   // use below hosts for azure-na region
   // host:'https://azure-na-api.contentstack.com/v3',
   modules: {
-    types: string[];
+    types: Modules[];
     locales: {
       dirName: string;
       fileName: string;
       requiredKeys: string[];
+      dependencies?: Modules[];
     };
     customRoles: {
       dirName: string;
       fileName: string;
       customRolesLocalesFileName: string;
+      dependencies?: Modules[];
+    };
+    'custom-roles': {
+      dirName: string;
+      fileName: string;
+      customRolesLocalesFileName: string;
+      dependencies?: Modules[];
     };
     environments: {
       dirName: string;
       fileName: string;
+      dependencies?: Modules[];
     };
     labels: {
       dirName: string;
       fileName: string;
       invalidKeys: string[];
+      dependencies?: Modules[];
     };
     webhooks: {
       dirName: string;
       fileName: string;
+      dependencies?: Modules[];
     };
     releases: {
       dirName: string;
       fileName: string;
       releasesList: string;
       invalidKeys: string[];
+      dependencies?: Modules[];
     };
     workflows: {
       dirName: string;
       fileName: string;
       invalidKeys: string[];
+      dependencies?: Modules[];
     };
     globalfields: {
       dirName: string;
       fileName: string;
       validKeys: string[];
+      dependencies?: Modules[];
+    };
+    'global-fields': {
+      dirName: string;
+      fileName: string;
+      validKeys: string[];
+      dependencies?: Modules[];
     };
     assets: {
       dirName: string;
@@ -63,6 +86,7 @@ export default interface DefaultConfig {
       displayExecutionTime: boolean;
       enableDownloadStatus: boolean;
       includeVersionedAssets: boolean;
+      dependencies?: Modules[];
     };
     content_types: {
       dirName: string;
@@ -70,6 +94,15 @@ export default interface DefaultConfig {
       validKeys: string[];
       // total no of content types fetched in each 'get content types' call
       limit: number;
+      dependencies?: Modules[];
+    };
+    'content-types': {
+      dirName: string;
+      fileName: string;
+      validKeys: string[];
+      // total no of content types fetched in each 'get content types' call
+      limit: number;
+      dependencies?: Modules[];
     };
     entries: {
       dirName: string;
@@ -79,15 +112,17 @@ export default interface DefaultConfig {
       downloadLimit: number;
       // total no of entries fetched in each content type in a single call
       limit: number;
-      dependencies: string[];
+      dependencies?: Modules[];
     };
     extensions: {
       dirName: string;
       fileName: string;
+      dependencies?: Modules[];
     };
     stack: {
       dirName: string;
       fileName: string;
+      dependencies?: Modules[];
     };
     dependency: {
       entries: string[];
@@ -95,6 +130,17 @@ export default interface DefaultConfig {
     marketplace_apps: {
       dirName: string;
       fileName: string;
+      dependencies?: Modules[];
+    };
+    'marketplace-apps': {
+      dirName: string;
+      fileName: string;
+      dependencies?: Modules[];
+    };
+    masterLocale: {
+      dirName: string;
+      fileName: string;
+      requiredKeys: string[];
     };
   };
   languagesCode: string[];
