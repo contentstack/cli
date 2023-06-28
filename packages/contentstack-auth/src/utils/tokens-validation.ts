@@ -16,6 +16,7 @@ export const validateDeliveryToken = async (
   environment: string,
   region: string,
   host: string,
+  branch: string,
 ): Promise<any> => {
   let result: { valid: boolean; message: string };
   try {
@@ -32,7 +33,9 @@ export const validateDeliveryToken = async (
       environment,
       region: regionMap[region],
       host,
+      branch,
     });
+
     const parsedHost = host.replace(/^https?:\/\//, '');
     stack.setHost(parsedHost);
     const deliveryTokenResult = await stack.getContentTypes({ limit: 1 });
@@ -49,6 +52,8 @@ export const validateDeliveryToken = async (
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY') };
     } else if (error.error_code === 141) {
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_ENVIRONMENT_NAME') };
+    } else if (error?.error_code) {
+      throw new Error(error?.error_message);
     } else {
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_DELIVERY_TOKEN') };
     }
