@@ -8,8 +8,6 @@ import {
   flags,
   managementSDKClient,
   FlagInput,
-  isAuthenticated,
-  messageHandler,
 } from '@contentstack/cli-utilities';
 import { askTokenType } from '../../../utils/interactive';
 import { tokenValidation } from '../../../utils';
@@ -132,13 +130,6 @@ export default class TokensAddCommand extends Command {
         token = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_TOKEN', name: 'token' });
       }
 
-      if (!isAuthenticated()) {
-        this.error(messageHandler.parse('CLI_AUTH_AUTHENTICATION_FAILED'), {
-          exit: 2,
-          suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-        });
-      }
-
       const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
 
       let doBranchesExistInPlan: boolean = false;
@@ -206,9 +197,9 @@ export default class TokensAddCommand extends Command {
       }
 
       if (isManagement) {
-        configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, type, branch });
+        configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, type });
       } else {
-        configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, environment, type, branch });
+        configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, environment, type });
       }
 
       if (isAliasExist) {
