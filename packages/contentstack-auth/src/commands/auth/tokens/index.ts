@@ -19,7 +19,6 @@ export default class TokensListCommand extends Command {
             apiKey: managementTokens[item].apiKey,
             environment: managementTokens[item].environment ? managementTokens[item].environment : '-',
             type: managementTokens[item].type,
-            branch: managementTokens[item].branch || '-',
           });
         });
 
@@ -41,9 +40,6 @@ export default class TokensListCommand extends Command {
               minWidth: 7,
             },
             type: {
-              minWidth: 7,
-            },
-            branch: {
               minWidth: 7,
             },
           },
