@@ -70,6 +70,7 @@ FLAGS
   -a, --alias=<value>            Alias(name) for the management token
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Environments where assets will be published
+  -k, --stack-api-key=<value>    Stack api key to be used
   -l, --locales=<value>...       Locales to where assets will be published
   -y, --yes                      Agree to process the command with the current configuration
   --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
@@ -124,6 +125,12 @@ EXAMPLES
   Using --source-env
 
   $ csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
+
+
+
+  Using --stack-api-key flag
+
+  $ csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --stack-api-key [STACK API KEY]
 ```
 
 _See code: [src/commands/cm/assets/publish.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/assets/publish.js)_
@@ -134,8 +141,9 @@ Unpublish assets from given environment
 
 ```
 USAGE
-  $ csdx cm:assets:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>]
-    [--retry-failed <value>] [--bulk-unpublish <value>] [--api-version <value>] [--delivery-token <value>]
+  $ csdx cm:assets:unpublish [-a <value>] [--stack-api-key <value>] [-e <value>] [-c <value>] [-y] [--locale <value>]
+    [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--api-version <value>] [--delivery-token
+    <value>]
 
 FLAGS
   -a, --alias=<value>        Alias(name) for the management token
@@ -150,6 +158,7 @@ FLAGS
   --delivery-token=<value>   Delivery Token for source environment
   --locale=<value>           Locale filter
   --retry-failed=<value>     Retry unpublishing failed assets from the logfile
+  --stack-api-key=<value>    Stack api key to be used
 
 DESCRIPTION
   Unpublish assets from given environment
@@ -282,6 +291,7 @@ FLAGS
   -a, --alias=<value>            Alias(name) for the management token
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Environments where assets will be published
+  -k, --stack-api-key=<value>    Stack api key to be used
   -l, --locales=<value>...       Locales to where assets will be published
   -y, --yes                      Agree to process the command with the current configuration
   --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
@@ -336,6 +346,12 @@ EXAMPLES
   Using --source-env
 
   $ csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
+
+
+
+  Using --stack-api-key flag
+
+  $ csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --stack-api-key [STACK API KEY]
 ```
 
 ## `csdx cm:bulk-publish:clear`
