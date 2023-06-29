@@ -157,6 +157,7 @@ AssetsPublishCommand.flags = {
     description: 'Alias(name) for the management token',
   }),
   'stack-api-key': flags.string({
+    char: 'k',
     description: 'Stack api key to be used',
     required: false,
   }),
@@ -245,6 +246,9 @@ AssetsPublishCommand.examples = [
   '',
   'Using --source-env',
   'csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]',
+  '',
+  'Using --stack-api-key',
+  'csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --stack-api-key [STACK API KEY]'
 ];
 
 AssetsPublishCommand.aliases = ['cm:bulk-publish:assets'];
