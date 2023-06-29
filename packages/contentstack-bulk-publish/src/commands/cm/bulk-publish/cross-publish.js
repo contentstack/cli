@@ -166,6 +166,7 @@ But, if retryFailed flag is set, then only a logfile is required
 CrossPublishCommand.flags = {
   alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
   'stack-api-key': flags.string({
+    char: '-k',
     description: 'Stack api key to be used',
     required: false,
   }),
@@ -270,6 +271,10 @@ CrossPublishCommand.examples = [
   '',
   'Using --branch flag',
   'csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]',
+  '',
+  'Using --stack-api-key flag',
+  'csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN]',
+  '',
 ];
 
 CrossPublishCommand.usage = `cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`;
