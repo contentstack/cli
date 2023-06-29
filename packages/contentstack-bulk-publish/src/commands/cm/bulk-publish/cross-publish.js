@@ -166,7 +166,7 @@ But, if retryFailed flag is set, then only a logfile is required
 CrossPublishCommand.flags = {
   alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
   'stack-api-key': flags.string({
-    char: '-k',
+    char: 'k',
     description: 'Stack api key to be used',
     required: false,
   }),
