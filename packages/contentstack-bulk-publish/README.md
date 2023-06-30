@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-cm-bulk-publish
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-bulk-publish/1.3.8 darwin-arm64 node-v18.16.0
+@contentstack/cli-cm-bulk-publish/1.3.9 darwin-arm64 node-v16.19.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -81,7 +81,6 @@ FLAGS
   --retry-failed=<value>         Retry publishing failed assets from the logfile (optional, will override all other
                                  flags)
   --source-env=<value>           Source environment
-  --stack-api-key=<value>        Stack api key to be used
 
 DESCRIPTION
   Publish assets to the specified environments
@@ -142,24 +141,23 @@ Unpublish assets from given environment
 
 ```
 USAGE
-  $ csdx cm:assets:unpublish [-a <value>] [--stack-api-key <value>] [-e <value>] [-c <value>] [-y] [--locale <value>]
-    [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--api-version <value>] [--delivery-token
-    <value>]
+  $ csdx cm:assets:unpublish [-a <value>] [-k <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch
+    <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--api-version <value>] [--delivery-token <value>]
 
 FLAGS
-  -a, --alias=<value>        Alias(name) for the management token
-  -c, --config=<value>       Path to the config file
-  -e, --environment=<value>  Source Environment
-  -y, --yes                  Agree to process the command with the current configuration
-  --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-  --branch=<value>           [default: main] Specify the branch to fetch the content (by default the main branch is
-                             selected)
-  --bulk-unpublish=<value>   [default: true] By default this flag is set as true. It indicates that contentstack's
-                             bulkpublish API will be used to unpublish the assets
-  --delivery-token=<value>   Delivery Token for source environment
-  --locale=<value>           Locale filter
-  --retry-failed=<value>     Retry unpublishing failed assets from the logfile
-  --stack-api-key=<value>    Stack api key to be used
+  -a, --alias=<value>          Alias(name) for the management token
+  -c, --config=<value>         Path to the config file
+  -e, --environment=<value>    Source Environment
+  -k, --stack-api-key=<value>  Stack api key to be used
+  -y, --yes                    Agree to process the command with the current configuration
+  --api-version=<value>        API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+  --branch=<value>             [default: main] Specify the branch to fetch the content (by default the main branch is
+                               selected)
+  --bulk-unpublish=<value>     [default: true] By default this flag is set as true. It indicates that contentstack's
+                               bulkpublish API will be used to unpublish the assets
+  --delivery-token=<value>     Delivery Token for source environment
+  --locale=<value>             Locale filter
+  --retry-failed=<value>       Retry unpublishing failed assets from the logfile
 
 DESCRIPTION
   Unpublish assets from given environment
@@ -194,6 +192,12 @@ EXAMPLES
   Using --branch flag
 
   $ csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
+
+
+
+  Using --stack-api-key flag
+
+  $ csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN]
 ```
 
 _See code: [src/commands/cm/assets/unpublish.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/assets/unpublish.js)_
@@ -303,7 +307,6 @@ FLAGS
   --retry-failed=<value>         Retry publishing failed assets from the logfile (optional, will override all other
                                  flags)
   --source-env=<value>           Source environment
-  --stack-api-key=<value>        Stack api key to be used
 
 DESCRIPTION
   Publish assets to the specified environments
@@ -420,11 +423,11 @@ USAGE
     [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]
 
 FLAGS
-  --, --stack-api-key=<value>  Stack api key to be used
   -B, --branch=<value>         [default: main] Specify the branch to fetch the content (by default the main branch is
                                selected)
   -a, --alias=<value>          Alias(name) for the management token
   -c, --config=<value>         Path to the config file
+  -k, --stack-api-key=<value>  Stack api key to be used
   -y, --yes                    Agree to process the command with the current configuration
   --api-version=<value>        API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --bulk-publish=<value>       [default: true] This flag is set to true by default. It indicates that contentstack's

@@ -134,6 +134,7 @@ UnpublishCommand.flags = {
     description: 'Alias(name) for the management token',
   }),
   'stack-api-key': flags.string({
+    char: 'k',
     description: 'Stack api key to be used',
     required: false,
   }),
@@ -186,6 +187,9 @@ UnpublishCommand.examples = [
   '',
   'Using --branch flag',
   'csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]',
+  '',
+  'Using --stack-api-key flag',
+  'csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN]',
 ];
 
 module.exports = UnpublishCommand;
