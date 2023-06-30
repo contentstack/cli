@@ -13,8 +13,7 @@ async function getStack(data) {
     options.management_token = tokenDetails.token;
     stackOptions.management_token = tokenDetails.token;
     stackOptions.api_key = tokenDetails.apiKey;
-  }
-  if (data.stackApiKey) {
+  } else if (data.stackApiKey) {
     if (!isAuthenticated()) {
       throw new Error('Please login to proceed further. Or use `--alias` instead of `--stack-api-key` to proceed without logging in.')
     }
