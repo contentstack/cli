@@ -100,7 +100,10 @@ export default class SeedCommand extends Command {
       return result;
     } catch (error) {
       let errorObj: any = error;
-      cliux.print(`Error: ${errorObj.message}`,{color:'red'})
+      if(errorObj.message!==undefined) {
+        cliux.print(`Error: ${errorObj.message}`,{color:'red'})
+        this.exit(1);
+      }
       this.error(errorObj, { exit: 1, suggestions: errorObj.suggestions });
     }
   }
