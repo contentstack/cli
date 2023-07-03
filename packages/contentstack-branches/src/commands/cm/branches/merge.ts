@@ -85,7 +85,7 @@ export default class BranchMergeCommand extends Command {
         noRevert: branchMergeFlags['no-revert'],
         format: 'compact-text',
         exportSummaryPath: branchMergeFlags['export-summary-path'],
-        useMergeSummary: branchMergeFlags['use-merge-summary'],
+        mergeSummary: branchMergeFlags.mergeSummary,
         host: this.cmaHost,
         enableEntryExp: true,
       }).start();
