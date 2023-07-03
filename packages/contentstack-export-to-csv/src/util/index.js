@@ -8,7 +8,7 @@ const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 
 const config = require('./config.js');
-const { cliux } = require('@contentstack/cli-utilities');
+const { cliux, configHandler } = require('@contentstack/cli-utilities');
 
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
@@ -59,9 +59,22 @@ async function getOrganizations(managementAPIClient) {
 }
 
 async function getOrganizationList(managementAPIClient, params, result = []) {
-  const organizations = await managementAPIClient.organization().fetchAll(params);
-  result = result.concat(organizations.items);
+  let organizations;
+  if (configHandler.get('oauthOrgUid')) {
+    const orgUid = configHandler.get('oauthOrgUid');
+    organizations = await managementAPIClient.organization(orgUid).fetch();
+    result = result.concat([organizations]);
 
+  } else {
+    organizations = await managementAPIClient.organization().fetchAll({ limit: 100 });
+    result = result.concat(organizations.items);
+
+  }
+
+  // const organizations = await managementAPIClient.organization().fetchAll(params);
+  // result = result.concat(organizations.items);
+
+  console.log(result, 'rrrrrrrr');
   if (!organizations.items || (organizations.items && organizations.items.length < params.limit)) {
     const orgMap = {};
     for (const org of result) {
@@ -76,9 +89,20 @@ async function getOrganizationList(managementAPIClient, params, result = []) {
   }
 }
 
+//write in async/await
 function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
   return new Promise((resolve, reject) => {
     let result = {};
+
+    // if (configHandler.get('oauthOrgUid')) {
+    //   const orgUid = configHandler.get('oauthOrgUid');
+    //   result = managementAPIClient.organization(orgUid).fetch();
+    //   result = result.concat([organizations]);
+    //   result[result.name] = result.uid;
+    // } 
+
+    
+
     managementAPIClient
       .getUser({ include_orgs_roles: true })
       .then((response) => {
@@ -92,6 +116,7 @@ function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
         organizations.forEach((org) => {
           result[org.name] = org.uid;
         });
+      
         resolve(result);
       })
       .catch((error) => reject(error));
