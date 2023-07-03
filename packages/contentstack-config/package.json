@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "author": "Contentstack",
   "scripts": {
     "build": "npm run clean && npm run compile",
@@ -77,7 +77,9 @@
   "csdxConfig": {
     "shortCommandName": {
       "config:get:region": "RGT",
-      "config:set:region": "RST"
+      "config:set:region": "RST",
+      "config:get:base-branch": "BRGT",
+      "config:set:base-branch": "BRST"
     }
   },
   "repository": "contentstack/cli"

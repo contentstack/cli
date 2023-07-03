@@ -145,7 +145,6 @@ EXAMPLES
 
   $ csdx cm:stacks:export --branch [optional] branch name
 ```
-
 _Mangement token and config file: [example_config/management_config.json](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/example_config/management_config.json)_
 
 _Auth token and config file: [example_config/auth_config.json](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/example_config/auth_config.json)_
