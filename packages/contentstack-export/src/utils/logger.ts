@@ -6,7 +6,7 @@
 
 import * as winston from 'winston';
 import * as path from 'path';
-import { mkdirpSync } from 'mkdirp';
+import * as mkdirp from 'mkdirp';
 import { ExportConfig } from '../types';
 
 const slice = Array.prototype.slice;
@@ -60,7 +60,7 @@ function init(_logPath: string) {
   if (!logger || !errorLogger) {
     const logsDir = path.resolve(_logPath, 'logs', 'export');
     // Create dir if doesn't already exist
-    mkdirpSync(logsDir);
+    mkdirp.sync(logsDir);
 
     successTransport = {
       filename: path.join(logsDir, 'success.log'),
