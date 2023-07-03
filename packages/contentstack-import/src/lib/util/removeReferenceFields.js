@@ -4,12 +4,12 @@ const _ = require('lodash');
 const removeReferenceFields = (module.exports = async function (schema, flag, stackAPIClient) {
   for (let i = 0; i < schema.length; i++) {
     if (schema[i].data_type === 'group') {
-      removeReferenceFields(schema[i].schema, flag);
+       removeReferenceFields(schema[i].schema, flag);
     } else if (schema[i].data_type === 'blocks') {
       for (var block in schema[i].blocks) {
         removeReferenceFields(schema[i].blocks[block].schema, flag);
       }
-    } else if (schema[i].data_type === 'reference') {
+    } else if (schema[i].data_type === 'reference' || schema[i].reference_to ) {
       flag.supressed = true;
       // Check if content-type exists
       // If exists, then no change should be required.
