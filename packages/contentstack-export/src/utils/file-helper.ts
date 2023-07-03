@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { mkdirpSync } from 'mkdirp';
+import * as mkdirp from 'mkdirp';
 import bigJSON from 'big-json';
 
 export const readFileSync = function (filePath: string, parse: boolean): unknown {
@@ -95,7 +95,7 @@ export const makeDirectory = function (dir: string): void {
   for (const key in arguments) {
     const dirname = path.resolve(arguments[key]);
     if (!fs.existsSync(dirname)) {
-      mkdirpSync(dirname);
+      mkdirp.sync(dirname);
     }
   }
 };
