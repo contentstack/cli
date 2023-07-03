@@ -6,7 +6,7 @@
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "^1.2.0",
-    "@contentstack/cli-utilities": "^1.2.0",
+    "@contentstack/cli-utilities": "^1.5.0",
     "@oclif/config": "^1.18.3",
     "@oclif/core": "^2.3.0",
     "big-json": "^3.2.0",
@@ -79,7 +79,6 @@
     "plugin"
   ],
   "main": "./lib/commands/cm/stacks/import.js",
-  "types": "./types/index.d.ts",
   "license": "MIT",
   "oclif": {
     "commands": "./lib/commands",
