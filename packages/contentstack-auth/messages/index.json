@@ -3,6 +3,7 @@
   "CLI_AUTH_LOGIN_ENTER_PASSWORD": "Enter your password",
   "CLI_AUTH_LOGIN_SUCCESS": "Successfully logged in!!",
   "CLI_AUTH_LOGIN_FAILED": "Login Error",
+  "CLI_AUTH_AUTHENTICATION_FAILED": "You need to login first. See: auth:login --help",
   "CLI_AUTH_LOGIN_DESCRIPTION": "User session login",
   "CLI_AUTH_LOGIN_FLAG_USERNAME": "User name",
   "CLI_AUTH_LOGIN_FLAG_PASSWORD": "Password",
@@ -43,5 +44,6 @@
   "CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN": "Invalid management token",
   "CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY": "Invalid api key",
   "CLI_AUTH_EXIT_PROCESS": "Exiting the process...",
-  "CLI_SELECT_TOKEN_TYPE": "Select the type of token to add"
+  "CLI_SELECT_TOKEN_TYPE": "Select the type of token to add",
+  "CLI_AUTH_ENTER_BRANCH": "Enter branch name"
 }
