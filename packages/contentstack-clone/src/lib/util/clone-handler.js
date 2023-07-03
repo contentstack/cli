@@ -19,6 +19,7 @@ const {
   Clone,
   HandleBranchCommand,
 } = require('../helpers/command-helpers');
+const { configHandler } = require('@contentstack/cli-utilities')
 
 let client = {};
 let config;
@@ -441,9 +442,16 @@ class CloneHandler {
     return new Promise(async (resolve, reject) => {
       const spinner = ora('Fetching Organization').start();
       try {
-        let organizations = await client.organization().fetchAll({ limit: 100 });
+        let organizations;
+        if (configHandler.get('oauthOrgUid')) {
+          const orgUid = configHandler.get('oauthOrgUid');
+          organizations = await client.organization(orgUid).fetch();
+        } else {
+          organizations = await client.organization().fetchAll({ limit: 100 });
+        }
+        
         spinner.succeed('Fetched Organization');
-        for (const element of organizations.items) {
+        for (const element of organizations.items || [organizations]) {
           orgUidList[element.name] = element.uid;
           orgChoice.choices.push(element.name);
         }
