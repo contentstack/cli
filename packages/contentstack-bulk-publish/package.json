@@ -9,6 +9,7 @@
     "@contentstack/cli-utilities": "^1.4.5",
     "bluebird": "^3.7.2",
     "chalk": "^4.1.2",
+    "dotenv": "^16.1.4",
     "inquirer": "8.2.4",
     "lodash": "^4.17.15",
     "nock": "^13.0.2",
@@ -92,7 +93,7 @@
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
-    "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
+    "test:unit": "nyc mocha --forbid-only \"test/unit/**/*.test.js\"",
     "posttest": "eslint .",
     "version": "oclif readme && git add README.md",
     "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
