@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import bigJSON from 'big-json';
+import { FsUtility } from '@contentstack/cli-utilities';
 
 export const readFileSync = function (filePath: string, parse: boolean): unknown {
   let data;
@@ -111,3 +112,5 @@ export const readdir = function (dirPath: string): any {
 exports.fileExistsSync = function (path: string) {
   return fs.existsSync(path);
 };
+
+export const fsUtil = new FsUtility();
