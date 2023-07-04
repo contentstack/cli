@@ -343,7 +343,7 @@ const config: DefaultConfig = {
     stacks: '/stacks/',
     labels: '/labels/',
   },
-  updatedModules: ['assets'],
+  updatedModules: ['assets', 'locales'],
   rateLimit: 5,
   preserveStackVersion: false,
   entriesPublish: true,
