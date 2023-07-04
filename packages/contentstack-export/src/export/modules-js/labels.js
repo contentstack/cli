@@ -55,7 +55,6 @@ module.exports = class ExportLabels {
             );
             return resolve();
           }
-
           log(self.config, `Failed to export labels. ${formatError(error)}`, 'error');
           reject();
         });

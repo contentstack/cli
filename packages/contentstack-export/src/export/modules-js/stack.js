@@ -32,7 +32,6 @@ class ExportStack {
         .stack({ api_key: self.config.source_stack })
         .fetch()
         .catch((error) => {
-          log(this.config, formatError(error), 'error');
         });
 
       if (tempStackData && tempStackData.org_uid) {

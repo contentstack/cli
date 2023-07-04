@@ -98,13 +98,24 @@ function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
   });
 }
 
-function chooseStack(managementAPIClient, orgUid) {
+function chooseStack(managementAPIClient, orgUid, stackApiKey) {
   return new Promise(async (resolve, reject) => {
     try {
       let stacks = await getStacks(managementAPIClient, orgUid);
+
+      if (stackApiKey) {
+        const stackName = Object.keys(stacks).find((key) => stacks[key] === stackApiKey);
+
+        if (stackName) {
+          resolve({ name: stackName, apiKey: stackApiKey });
+        } else {
+          throw new Error('Could not find stack');
+        }
+        return;
+      }
+
       let stackList = Object.keys(stacks);
       stackList.push(config.cancelString);
-
       let _chooseStack = [
         {
           type: 'list',
@@ -242,7 +253,9 @@ function getContentTypes(stackAPIClient, skip) {
         });
         resolve(result);
       })
-      .catch((error) => reject(error));
+      .catch((error) => {
+        reject(error);
+      });
   });
 }
 
@@ -397,7 +410,7 @@ function write(command, entries, fileName, message) {
     process.chdir(directory);
   }
   // eslint-disable-next-line no-undef
-  command.log(`Writing ${message} to file: ${process.cwd()}${delimeter}${fileName}`);
+  cliux.print(`Writing ${message} to file: ${process.cwd()}${delimeter}${fileName}`);
   fastcsv.writeToPath(fileName, entries, { headers: true });
 }
 

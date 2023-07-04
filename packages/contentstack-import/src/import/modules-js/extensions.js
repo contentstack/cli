@@ -65,7 +65,7 @@ module.exports = class ImportExtensions {
                 let error = JSON.parse(err.message);
                 self.fails.push(ext);
                 if (error.errors.title) {
-                  log(self.config, chalk.white("Extension: '" + ext.title + "' already exists"), 'error');
+                  log(self.config, `Extension '${ext.title}' already exists`, 'error');
                 } else {
                   log(self.config, "Extension: '" + ext.title + "' failed to be import" + formatError(error), 'error');
                 }

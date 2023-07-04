@@ -82,7 +82,7 @@ module.exports = class ImportLabels {
             // the label has already been created
             log(
               self.config,
-              chalk.white("The label: '" + label.name + "' already exists. Skipping it to avoid duplicates!"),
+              chalk.white(`The label '${label.name}' already exists. Skipping it to avoid duplicates!'`),
               'success',
             );
           }

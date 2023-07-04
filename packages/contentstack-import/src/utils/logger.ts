@@ -89,7 +89,10 @@ function init(_logPath: string) {
     errorLogger = winston.createLogger({
       transports: [
         new winston.transports.File(errorTransport),
-        new winston.transports.Console({ level: 'error', format: winston.format.simple() }),
+        new winston.transports.Console({
+          level: 'error',
+          format: winston.format.combine(winston.format.colorize({ all: true,colors:{ error: 'red'} }), winston.format.simple()),
+        }),
       ],
       levels: { error: 0 },
     });
