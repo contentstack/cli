@@ -12,64 +12,17 @@ type CommpnOptions = {
   managementSdk: ContentstackClient;
 };
 
-// async function getOrganizations(
-//   options: CommpnOptions,
-//   skip = 0,
-//   organizations: Record<string, any>[] = [],
-// ): Promise<Record<string, any>[]> {
-//   const { log, managementSdk } = options;
-
-//   console.log('options', managementSdk);
-//   if (configHandler.get('oauthOrgUid')) {
-//     const orgUid = configHandler.get('oauthOrgUid');
-//     const response = await managementSdk
-//       .organization(orgUid)
-//       .fetch()
-//       .catch((error) => {
-//         log('Unable to fetch organizations.', 'warn');
-//         log(error, 'error');
-//         process.exit(1);
-//       });
-
-//     if (response) {
-//       organizations = organizations.concat(response as any);
-//     }
-//   } else {
-//     const response = await managementSdk
-//       .organization()
-//       .fetchAll({ limit: 100, asc: 'name', include_count: true, skip: skip })
-//       .catch((error) => {
-//         log('Unable to fetch organizations.', 'warn');
-//         log(error, 'error');
-//         process.exit(1);
-//       });
-
-//     if (response) {
-//       organizations = organizations.concat(response.items as any);
-//       if (organizations.length < response.count) {
-//         organizations = await getOrganizations(options, skip + 100);
-//       }
-//     }
-//   }
-
-//   console.log('organizationsorganizationsorganizations', organizations);
-
-//   return organizations;
-// }
-
 async function getOrganizations(
   options: CommpnOptions,
   skip = 0,
   organizations: Record<string, any>[] = [],
 ): Promise<Record<string, any>[]> {
   const { log, managementSdk } = options;
-  const configUid = configHandler.get('oauthOrgUid');
-
-  console.log('configUid', managementSdk);
+  const configOrgUid = configHandler.get('oauthOrgUid');
 
   try {
-    if (configUid) {
-      const response = await managementSdk.organization(configUid).fetch();
+    if (configOrgUid) {
+      const response = await managementSdk.organization(configOrgUid).fetch();
       organizations.push(...[response]);
     } else {
       const response = await managementSdk
@@ -86,8 +39,6 @@ async function getOrganizations(
     log(error, 'error');
     process.exit(1);
   }
-
-  console.log('organizationsorganizationsorganizations', organizations);
 
   return organizations;
 }

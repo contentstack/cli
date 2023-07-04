@@ -60,21 +60,16 @@ async function getOrganizations(managementAPIClient) {
 
 async function getOrganizationList(managementAPIClient, params, result = []) {
   let organizations;
-  if (configHandler.get('oauthOrgUid')) {
-    const orgUid = configHandler.get('oauthOrgUid');
-    organizations = await managementAPIClient.organization(orgUid).fetch();
-    result = result.concat([organizations]);
+  const configOrgUid = configHandler.get('oauthOrgUid');
 
+  if (configOrgUid) {
+    organizations = await managementAPIClient.organization(configOrgUid).fetch();
+    result = result.concat([organizations]);
   } else {
     organizations = await managementAPIClient.organization().fetchAll({ limit: 100 });
     result = result.concat(organizations.items);
-
   }
 
-  // const organizations = await managementAPIClient.organization().fetchAll(params);
-  // result = result.concat(organizations.items);
-
-  console.log(result, 'rrrrrrrr');
   if (!organizations.items || (organizations.items && organizations.items.length < params.limit)) {
     const orgMap = {};
     for (const org of result) {
@@ -89,38 +84,33 @@ async function getOrganizationList(managementAPIClient, params, result = []) {
   }
 }
 
-//write in async/await
-function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
-  return new Promise((resolve, reject) => {
+async function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
+  try {
     let result = {};
+    const configOrgUid = configHandler.get('oauthOrgUid');
 
-    // if (configHandler.get('oauthOrgUid')) {
-    //   const orgUid = configHandler.get('oauthOrgUid');
-    //   result = managementAPIClient.organization(orgUid).fetch();
-    //   result = result.concat([organizations]);
-    //   result[result.name] = result.uid;
-    // } 
+    if (configOrgUid) {
+      const response = await managementAPIClient.organization(configOrgUid).fetch();
+      result[response.name] = response.uid;
+    } else {
+      const response = await managementAPIClient.getUser({ include_orgs_roles: true });
+      const organizations = response.organizations.filter((org) => {
+        if (org.org_roles) {
+          const org_role = org.org_roles.shift();
+          return org_role.admin;
+        }
+        return org.is_owner === true;
+      });
 
-    
+      organizations.forEach((org) => {
+        result[org.name] = org.uid;
+      });
+  }
 
-    managementAPIClient
-      .getUser({ include_orgs_roles: true })
-      .then((response) => {
-        let organizations = response.organizations.filter((org) => {
-          if (org.org_roles) {
-            const org_role = org.org_roles.shift();
-            return org_role.admin;
-          }
-          return org.is_owner === true;
-        });
-        organizations.forEach((org) => {
-          result[org.name] = org.uid;
-        });
-      
-        resolve(result);
-      })
-      .catch((error) => reject(error));
-  });
+    return result;
+  } catch (error) {
+    throw error;
+  }
 }
 
 function chooseStack(managementAPIClient, orgUid, stackApiKey) {

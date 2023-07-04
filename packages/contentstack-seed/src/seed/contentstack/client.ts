@@ -50,36 +50,20 @@ export default class ContentstackClient {
   async getOrganizations(skip = 0, organizations: Organization[] = []): Promise<Organization[]> {
     try {
       const client = await this.instance;
+      const configOrgUid = configHandler.get('oauthOrgUid');
 
-      if (configHandler.get('oauthOrgUid')) {
-        const orgUid = configHandler.get('oauthOrgUid');
-        const response = await client.organization(orgUid).fetch();
-
-        organizations = organizations.concat(
-          [response].map((o: any) => {
-            return {
-              uid: o.uid,
-              name: o.name,
-              enabled: o.enabled,
-            };
-          }) as Organization[],
-        );
+      if (configOrgUid) {
+        const response = await client.organization(configOrgUid).fetch();
+        const mappedOrganization = this.mapOrganization(response);
+        organizations.push(mappedOrganization);
       } else {
         const response = await client
           .organization()
-          .fetchAll({ limit: this.limit, asc: 'name', include_count: true, skip: skip });
-        organizations = organizations.concat(
-          response.items.map((o: any) => {
-            return {
-              uid: o.uid,
-              name: o.name,
-              enabled: o.enabled,
-            };
-          }) as Organization[],
-        );
+          .fetchAll({ limit: this.limit, asc: 'name', include_count: true, skip });
+        organizations.push(...response.items.map(this.mapOrganization));
 
         if (organizations.length < response.count) {
-          organizations = await this.getOrganizations(skip + this.limit);
+          organizations = await this.getOrganizations(skip + this.limit, organizations);
         }
       }
 
@@ -87,6 +71,14 @@ export default class ContentstackClient {
     } catch (error) {
       throw this.buildError(error);
     }
+  }
+
+  private mapOrganization(o: any): Organization {
+    return {
+      uid: o.uid,
+      name: o.name,
+      enabled: o.enabled,
+    };
   }
 
   async getStack(stackUID: string): Promise<Stack> {
