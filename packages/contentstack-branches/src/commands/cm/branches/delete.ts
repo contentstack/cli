@@ -1,7 +1,7 @@
 import { Command } from '@contentstack/cli-command';
-import { messageHandler, flags, cliux } from '@contentstack/cli-utilities';
+import { messageHandler, flags, cliux, isAuthenticated } from '@contentstack/cli-utilities';
 import { deleteBranch } from '../../../utils/delete-branch';
-import { interactive } from '../../../utils';
+import { interactive, handleErrorMsg } from '../../../utils';
 
 export default class BranchDeleteCommand extends Command {
   static description: string = messageHandler.parse('Delete a branch');
@@ -32,7 +32,10 @@ export default class BranchDeleteCommand extends Command {
   async run(): Promise<any> {
     const { flags: branchDeleteFlags } = await this.parse(BranchDeleteCommand);
     let apiKey = branchDeleteFlags['stack-api-key'];
-
+    if (!isAuthenticated()) {
+      const err = { errorMessage: 'You are not logged in. Please login with command $ csdx auth:login' };
+      handleErrorMsg(err);
+    }
     if (!apiKey) {
       apiKey = await interactive.askStackAPIKey();
     }

@@ -1,6 +1,6 @@
 import { Command } from '@contentstack/cli-command';
-import { cliux, flags } from '@contentstack/cli-utilities';
-import { setupMergeInputs, displayBranchStatus } from '../../../utils';
+import { cliux, flags, isAuthenticated } from '@contentstack/cli-utilities';
+import { setupMergeInputs, displayBranchStatus, handleErrorMsg } from '../../../utils';
 import { MergeHandler } from '../../../branch';
 export default class BranchMergeCommand extends Command {
   static description: string = 'Merge changes from a branch'; //TBD update the description
@@ -65,6 +65,10 @@ export default class BranchMergeCommand extends Command {
     try {
       let { flags: branchMergeFlags } = await this.parse(BranchMergeCommand);
       branchMergeFlags = await setupMergeInputs(branchMergeFlags);
+      if (!isAuthenticated()) {
+        const err = { errorMessage: 'You are not logged in. Please login with command $ csdx auth:login' };
+        handleErrorMsg(err);
+      }
       // display branch status
       const branchCompareData = await displayBranchStatus({
         stackAPIKey: branchMergeFlags['stack-api-key'],
