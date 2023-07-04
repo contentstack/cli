@@ -53,10 +53,11 @@ class ModuleImporter {
     const basePath = `${this.importConfig.backupDir}/${moduleName}`;
     // import the modules by name
     // calls the module runner which inturn calls the module itself
+    //TODO:- Need to handle it for extensions new FsUtility({ basePath }).isNewFsStructure
     if (
       this.importConfig.useNewModuleStructure &&
       this.importConfig.updatedModules.indexOf(moduleName) !== -1 &&
-      new FsUtility({ basePath }).isNewFsStructure
+      new FsUtility({ basePath }).isNewFsStructure   
     ) {
       return startModuleImport({
         stackAPIClient: this.stackAPIClient,
@@ -64,11 +65,11 @@ class ModuleImporter {
         moduleName,
       });
     }
-    return startJSModuleImport({
-      stackAPIClient: this.stackAPIClient,
-      importConfig: this.importConfig,
-      moduleName,
-    });
+      return startJSModuleImport({
+        stackAPIClient: this.stackAPIClient,
+        importConfig: this.importConfig,
+        moduleName,
+      });
   }
 
   async importAllModules(): Promise<any> {
