@@ -59,7 +59,7 @@ class ModuleExporter {
     // export the modules by name
     // calls the module runner which inturn calls the module itself
     let exportedModuleResponse;
-    if (this.exportConfig.updatedModules.indexOf(moduleName) !== -1) {
+    if (this.exportConfig.useNewModuleStructure && this.exportConfig.updatedModules.indexOf(moduleName) !== -1) {
       exportedModuleResponse = await startModuleExport({
         stackAPIClient: this.stackAPIClient,
         exportConfig: this.exportConfig,
