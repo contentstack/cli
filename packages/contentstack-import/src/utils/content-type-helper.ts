@@ -86,7 +86,7 @@ export const removeReferenceFields = async function (schema: any, flag: any, sta
       for (var block in schema[i].blocks) {
         await removeReferenceFields(schema[i].blocks[block].schema, flag, stackAPIClient);
       }
-    } else if (schema[i].data_type === 'reference') {
+    } else if (schema[i].data_type === 'reference' || schema[i].reference_to) {
       flag.supressed = true;
       // Check if content-type exists
       // If exists, then no change should be required.
