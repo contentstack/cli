@@ -443,9 +443,10 @@ class CloneHandler {
       const spinner = ora('Fetching Organization').start();
       try {
         let organizations;
-        if (configHandler.get('oauthOrgUid')) {
-          const orgUid = configHandler.get('oauthOrgUid');
-          organizations = await client.organization(orgUid).fetch();
+        const configOrgUid = configHandler.get('oauthOrgUid');
+
+        if (configOrgUid) {
+          organizations = await client.organization(configOrgUid).fetch();
         } else {
           organizations = await client.organization().fetchAll({ limit: 100 });
         }
