@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import * as bigJSON from 'big-json';
+import { FsUtility } from '@contentstack/cli-utilities';
 
 export const readFileSync = function (filePath: string, parse: boolean = true): any {
   let data;
@@ -129,3 +130,5 @@ export const isFolderExist = async (folderPath: string): Promise<any> => {
 export const fileExistsSync = function (path: string) {
   return fs.existsSync(path);
 };
+
+export const fsUtil = new FsUtility();
