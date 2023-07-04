@@ -3,30 +3,37 @@
 
 Contentstack is a headless CMS with an API-first approach that puts content at the centre. It is designed to simplify the process of publication by separating code from content.
 
-Currently, the CLI is in Beta and supports content management scripts through which you can perform the following tasks: 
+CLI supports content management scripts through which you can perform the following tasks:
 
 - Bulk publish content
-- Export content 
+- Export content
 - Import content
 - Clone Stack
-- Seed Stack from Github
+- Seed Stack from GitHub
+- Perform Launch operations
+- Migrate content
+- Migrate HTML RTE to JSON RTE content
+- Change Master Locale
+- Use Bootstrap plugin
+- Use Tsgen plugin
+
 
 ## Installing CLI
 ### Prerequisites
 Contentstack account
-Node.js version 8 or above
+Node.js version 16 or above
 
 ### Installation
 To install CLI on your system, run the below command in your terminal:
 
 ```
-npm install -g @contentstack/cli 
+npm install -g @contentstack/cli
 ```
 
 To verify the installation, run `csdx` in the command window.
 
 ## Usage
-After the successful installation of CLI, use the `--help` parameter to display the help section of the CLI. You can even combine this parameter with a specific command to get the help section of that command. 
+After the successful installation of CLI, use the `--help` parameter to display the help section of the CLI. You can even combine this parameter with a specific command to get the help section of that command.
 
 ```shell
 $ csdx --help
