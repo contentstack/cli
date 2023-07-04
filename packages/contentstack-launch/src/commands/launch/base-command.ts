@@ -69,7 +69,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     this.$event = new EventEmitter();
 
     await this.prepareConfig();
-    this.initCmaSDK();
+    await this.initCmaSDK();
 
     // Init logger
     const logger = new Logger(this.sharedConfig);
