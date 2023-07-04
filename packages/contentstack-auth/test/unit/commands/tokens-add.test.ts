@@ -253,5 +253,22 @@ describe('Management and Delivery token flags', () => {
       ]);
       assert.calledWith(successStub, 'CLI_AUTH_TOKENS_ADD_SUCCESS');
     });
+    it('Should throw and error for stack with branches disabled', async () => {
+      let branch = 'my-branch';
+      await TokensAddCommand.run([
+        '-d',
+        '-a',
+        'newToken',
+        '-k',
+        process.env.BRANCH_DISABLED_API_KEY!,
+        '-t',
+        process.env.BRANCH_DISABLED_DELIVERY_TOKEN!,
+        '-e',
+        process.env.BRANCH_DISABLED_ENVIRONMENT!,
+        '--branch',
+        branch,
+      ]);
+      assert.calledOnce(errorStub);
+    });
   });
 });
