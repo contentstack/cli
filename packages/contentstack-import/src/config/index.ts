@@ -62,6 +62,7 @@ const config: DefaultConfig = {
     extensions: {
       dirName: 'extensions',
       fileName: 'extensions.json',
+      validKeys: ['data_type', 'srcdoc', 'title', 'type', 'mutiple', 'config']
     },
     webhooks: {
       dirName: 'webhooks',
@@ -343,7 +344,7 @@ const config: DefaultConfig = {
     stacks: '/stacks/',
     labels: '/labels/',
   },
-  updatedModules: ['assets'],
+  updatedModules: ['assets', 'extensions'],
   rateLimit: 5,
   preserveStackVersion: false,
   entriesPublish: true,

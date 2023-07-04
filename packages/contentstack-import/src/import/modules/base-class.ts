@@ -8,6 +8,7 @@ import { Stack } from '@contentstack/management/types/stack';
 import { AssetData } from '@contentstack/management/types/stack/asset';
 import { PublishConfig } from '@contentstack/management/types/utility/publish';
 import { FolderData } from '@contentstack/management/types/stack/asset/folder';
+import { ExtensionData } from '@contentstack/management/types/stack/extension';
 
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
@@ -16,7 +17,7 @@ export type AdditionalKeys = {
   backupDir: string;
 };
 
-export type ApiModuleType = 'create-assets' | 'replace-assets' | 'publish-assets' | 'create-assets-folder';
+export type ApiModuleType = 'create-assets' | 'replace-assets' | 'publish-assets' | 'create-assets-folder' | 'create-extensions';
 
 export type ApiOptions = {
   uid?: string;
@@ -243,6 +244,12 @@ export default abstract class BaseClass {
         return this.stack
           .asset(uid)
           .publish(pick(apiData, ['publishDetails']) as PublishConfig)
+          .then(onSuccess)
+          .catch(onReject);
+      case 'create-extensions':
+        return this.stack
+          .extension()
+          .create({ extension: pick(apiData, this.modulesConfig.extensions.validKeys) as ExtensionData})
           .then(onSuccess)
           .catch(onReject);
       default:
