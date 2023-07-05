@@ -33,6 +33,12 @@ class ExportToCsvCommand extends Command {
       required: false,
       description: 'Name of the stack that needs to be created as csv filename.',
     }),
+    'stack-api-key': flags.string({
+      char: 'k',
+      multiple: false,
+      required: false,
+      description: 'API key of the source stack',
+    }),
     'org-name': flags.string({
       multiple: false,
       required: false,
@@ -64,6 +70,7 @@ class ExportToCsvCommand extends Command {
           action: actionFlag,
           'org-name': orgName,
           'stack-name': stackName,
+          'stack-api-key': stackAPIKey,
           locale: locale,
           'content-type': contentTypesFlag,
           alias: managementTokenAlias,
@@ -119,8 +126,11 @@ class ExportToCsvCommand extends Command {
               } else {
                 organization = await util.chooseOrganization(managementAPIClient); // prompt for organization
               }
-
-              stack = await util.chooseStack(managementAPIClient, organization.uid); // prompt for stack
+              if (!stackAPIKey) {
+                stack = await util.chooseStack(managementAPIClient, organization.uid); // prompt for stack
+              } else {
+                stack = await util.chooseStack(managementAPIClient, organization.uid, stackAPIKey);
+              }
             }
 
             stackAPIClient = this.getStackClient(managementAPIClient, stack);
@@ -156,6 +166,19 @@ class ExportToCsvCommand extends Command {
 
             if (contentTypesFlag) {
               contentTypes = contentTypesFlag.split(',').map(this.snakeCase);
+              const contentTypesArray = await stackAPIClient
+                .contentType()
+                .query()
+                .find()
+                .then((res) => res.items.map((contentType) => contentType.uid));
+
+              const doesContentTypeExist = contentTypesArray.includes(contentTypesFlag);
+
+              if (!doesContentTypeExist) {
+                throw new Error(
+                  `The Content Type ${contentTypesFlag} was not found. Please try again. Content Type is not valid.`,
+                );
+              }
             } else {
               for (let index = 0; index <= contentTypeCount / 100; index++) {
                 const contentTypesMap = await util.getContentTypes(stackAPIClient, index);
@@ -193,12 +216,11 @@ class ExportToCsvCommand extends Command {
                 );
                 flatEntries = flatEntries.concat(flatEntriesResult);
               }
-              let fileName = `${stack.name}_${contentType}_${language.code}_entries_export.csv`;
-
+              let fileName = `${stackName ? stackName : stack.name}_${contentType}_${language.code}_entries_export.csv`;
               util.write(this, flatEntries, fileName, 'entries'); // write to file
             }
           } catch (error) {
-            this.log(util.formatError(error));
+            cliux.error(util.formatError(error));
           }
           break;
         }
@@ -225,13 +247,13 @@ class ExportToCsvCommand extends Command {
             const mappedRoles = util.getMappedRoles(orgRoles);
             const listOfUsers = util.cleanOrgUsers(orgUsers, mappedUsers, mappedRoles);
             const fileName = `${util.kebabize(
-              organization.name.replace(config.organizationNameRegex, ''),
+              (orgName ? orgName : organization.name).replace(config.organizationNameRegex, ''),
             )}_users_export.csv`;
 
             util.write(this, listOfUsers, fileName, 'organization details');
           } catch (error) {
             if (error.message || error.errorMessage) {
-              this.log(util.formatError(error));
+              cliux.error(util.formatError(error));
             }
           }
           break;
@@ -239,7 +261,7 @@ class ExportToCsvCommand extends Command {
       }
     } catch (error) {
       if (error.message || error.errorMessage) {
-        this.log(util.formatError(error));
+        cliux.error(util.formatError(error));
       }
     }
   }
