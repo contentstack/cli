@@ -515,18 +515,21 @@ module.exports = class ImportMarketplaceApps {
       return Promise.resolve();
     }
 
-    let installation = this.client.organization(this.config.org_uid).app(app.manifest.uid).installation(uid);
+    let installation = this.client
+    .organization(this.config.org_uid)
+    .app(app.manifest.uid)
+    .installation(uid)
 
-    installation = Object.assign(installation, payload);
+    installation = Object.assign(installation, payload)
 
     return installation
-      .update()
-      .then(async (data) => {
-        if (data) {
-          log(this.config, `${app.manifest.name} app config updated successfully.!`, 'success');
-        }
-      })
-      .catch((error) => log(this.config, formatError(error), 'error'));
+    .update()
+    .then(async data => {
+      if (data) {
+        log(this.config, `${app.manifest.name} app config updated successfully.!`, 'success');
+      }
+    })
+    .catch((error) => log(this.config, formatError(error), 'error'))
   }
 
   validateAppName(name) {

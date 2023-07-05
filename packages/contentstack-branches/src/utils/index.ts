@@ -48,6 +48,23 @@ export const writeFile = (filePath, data) => {
   });
 };
 
+// by default file type is json
+export const readFile = (filePath, options = { type: 'json' }) => {
+  return new Promise((resolve, reject) => {
+    filePath = path.resolve(filePath);
+    fs.readFile(filePath, 'utf-8', (error, data) => {
+      if (error) {
+        reject(error);
+      } else {
+        if (options.type !== 'json') {
+          return resolve(data);
+        }
+        resolve(JSON.parse(data));
+      }
+    });
+  });
+};
+
 export async function getMergeQueueStatus(stackAPIClient, payload): Promise<any> {
   const mergeJobUID: string = payload.uid;
   return await stackAPIClient
