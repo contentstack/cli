@@ -1,7 +1,7 @@
 import { Command } from '@contentstack/cli-command';
-import { messageHandler, flags } from '@contentstack/cli-utilities';
+import { messageHandler, flags, isAuthenticated } from '@contentstack/cli-utilities';
 import { createBranch } from '../../../utils/create-branch';
-import { interactive } from '../../../utils';
+import { interactive, handleErrorMsg } from '../../../utils';
 
 export default class BranchCreateCommand extends Command {
   static description: string = messageHandler.parse('Create a new branch'); // Note: Update the description
@@ -33,7 +33,10 @@ export default class BranchCreateCommand extends Command {
       uid: branchCreateFlags.uid,
       source: branchCreateFlags.source,
     };
-
+    if (!isAuthenticated()) {
+      const err = { errorMessage: 'You are not logged in. Please login with command $ csdx auth:login' };
+      handleErrorMsg(err);
+    }
     if (!apiKey) {
       apiKey = await interactive.askStackAPIKey();
     }

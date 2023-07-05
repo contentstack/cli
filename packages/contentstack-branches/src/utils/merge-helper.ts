@@ -2,7 +2,7 @@ import startCase from 'lodash/startCase';
 import camelCase from 'lodash/camelCase';
 import path from 'path';
 import { cliux, managementSDKClient } from '@contentstack/cli-utilities';
-import { BranchDiffPayload } from '../interfaces/index';
+import { BranchDiffPayload, MergeSummary } from '../interfaces';
 import {
   askCompareBranch,
   askStackAPIKey,
@@ -12,8 +12,8 @@ import {
   writeFile,
   executeMergeRequest,
   getMergeQueueStatus,
+  readFile,
 } from './';
-
 
 export const prepareMergeRequestPayload = (options) => {
   return {
@@ -26,19 +26,57 @@ export const prepareMergeRequestPayload = (options) => {
   };
 };
 
+function validateMergeSummary(mergeSummary: MergeSummary) {
+  if (!mergeSummary) {
+    cliux.error(`Error: Invalid merge summary`, { color: 'red' });
+    process.exit(1);
+  } else if (!mergeSummary.requestPayload) {
+    cliux.print(`Error: Invalid merge summary, required 'requestPayload'`, { color: 'red' });
+    process.exit(1);
+  } else if (!mergeSummary.requestPayload.base_branch) {
+    cliux.print(`Error: Invalid merge summary, required 'requestPayload.base_branch'`, { color: 'red' });
+    process.exit(1);
+  } else if (!mergeSummary.requestPayload.compare_branch) {
+    cliux.print(`Error: Invalid merge summary, required 'requestPayload.compare_branch'`, { color: 'red' });
+    process.exit(1);
+  } else if (!mergeSummary.requestPayload.default_merge_strategy) {
+    cliux.print(`Error: Invalid merge summary, required 'requestPayload.default_merge_strategy'`, { color: 'red' });
+    process.exit(1);
+  } else if (!mergeSummary.requestPayload.default_merge_strategy) {
+    cliux.print(`Error: Invalid merge summary, required 'requestPayload.default_merge_strategy'`, { color: 'red' });
+    process.exit(1);
+  }
+}
+
 export const setupMergeInputs = async (mergeFlags) => {
+  if (mergeFlags['use-merge-summary']) {
+    let mergeSummary: MergeSummary = (await readFile(mergeFlags['use-merge-summary'])) as MergeSummary;
+    validateMergeSummary(mergeSummary);
+    mergeFlags.mergeSummary = mergeSummary;
+  }
+
+  let { requestPayload: { base_branch = null, compare_branch = null } = {} } = mergeFlags.mergeSummary || {};
+
   if (!mergeFlags['stack-api-key']) {
     mergeFlags['stack-api-key'] = await askStackAPIKey();
   }
   if (!mergeFlags['compare-branch']) {
-    mergeFlags['compare-branch'] = await askCompareBranch();
+    if (!compare_branch) {
+      mergeFlags['compare-branch'] = await askCompareBranch();
+    } else {
+      mergeFlags['compare-branch'] = compare_branch;
+    }
   }
   if (!mergeFlags['base-branch']) {
-    mergeFlags['base-branch'] = getbranchConfig(mergeFlags['stack-api-key']);
-    if (!mergeFlags['base-branch']) {
-      mergeFlags['base-branch'] = await askBaseBranch();
+    if (!base_branch) {
+      mergeFlags['base-branch'] = getbranchConfig(mergeFlags['stack-api-key']);
+      if (!mergeFlags['base-branch']) {
+        mergeFlags['base-branch'] = await askBaseBranch();
+      } else {
+        cliux.print(`\nBase branch: ${mergeFlags['base-branch']}\n`, { color: 'grey' });
+      }
     } else {
-      cliux.print(`\nBase branch: ${mergeFlags['base-branch']}\n`, { color: 'grey' });
+      mergeFlags['base-branch'] = base_branch;
     }
   }
 
