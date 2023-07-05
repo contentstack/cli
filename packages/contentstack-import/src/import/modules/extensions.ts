@@ -76,7 +76,7 @@ export default class ImportAssets extends BaseClass {
       const { title } = apiData;
       this.extFailed.push(apiData);
       if (err?.errors?.title) {
-        log(this.importConfig, `Extension '${title}' already exists`, 'error');
+        log(this.importConfig, `Extension '${title}' already exists`, 'info');
       } else {
         log(this.importConfig, `Extension '${title}' failed to be import ${formatError(error)}`, 'error');
         log(this.importConfig, error, 'error');
