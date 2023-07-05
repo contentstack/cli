@@ -20,7 +20,7 @@ const {
   lookupEntries,
 } = require('../../utils');
 const { default: config } = require('../../config');
-
+const addlogs = log;
 module.exports = class ImportEntries {
   mappedAssetUidPath;
   mappedAssetUrlPath;
@@ -104,7 +104,7 @@ module.exports = class ImportEntries {
             }
           }
         } catch (error) {
-          log(this.config, `Failed to read the content types to import entries ${formatError(error)}`);
+          addlogs(this.config, `Failed to read the content types to import entries ${util.formatError(error)}`);
           process.exit(0);
         }
       }
@@ -148,15 +148,15 @@ module.exports = class ImportEntries {
                 (self.config.hasOwnProperty('onlylocales') && self.config.onlylocales.indexOf(lang) !== -1) ||
                 !self.config.hasOwnProperty('onlylocales')
               ) {
-                log(this.config, `Starting to create entries ${lang} locale`, 'info');
+                addlogs(self.config, `Starting to create entries ${lang} locale`, 'info');
                 await self.createEntries(lang, mappedAssetUids, mappedAssetUrls);
                 log(this.config, 'Entries created successfully', 'info');
                 try {
                   await self.getCreatedEntriesWOUid();
                 } catch (error) {
-                  log(
-                    this.config,
-                    `Failed get the existing entries to update the mapper ${formatError(error)}, 'error`,
+                  addlogs(
+                    self.config,
+                    `Failed get the existing entries to update the mapper ${util.formatError(error)}, 'error`,
                   );
                 }
                 log(this.config, 'Starting to update entries with references', 'info');
@@ -164,7 +164,7 @@ module.exports = class ImportEntries {
                 log(this.config, "Successfully imported '" + lang + "' entries!", 'success');
                 counter++;
               } else {
-                log(this.config, lang + ' has not been configured for import, thus skipping it', 'success');
+                addlogs(self.config, lang + ' has not been configured for import, thus skipping it', 'success');
                 counter++;
               }
             },
@@ -187,9 +187,9 @@ module.exports = class ImportEntries {
                   try {
                     await self.field_rules_update(schema);
                   } catch (error) {
-                    log(
-                      this.config,
-                      `Failed to update the field rules for content type ${schema.uid} ${formatError(error)}`,
+                    addlogs(
+                      self.config,
+                      `Failed to update the field rules for content type ${schema.uid} ${util.formatError(error)}`,
                     );
                   }
                 }
@@ -254,7 +254,7 @@ module.exports = class ImportEntries {
                 'success',
               );
             } else {
-              log(this.config, `Creating entries for content type ${ctUid} in language ${lang} ...`, 'success');
+              addlogs(this.config, `Creating entries for content type ${ctUid} in language ${lang} ...`, 'success');
               for (let eUid in entries) {
                 if (eUid) {
                   try {
@@ -281,8 +281,8 @@ module.exports = class ImportEntries {
                       self.installedExtensions,
                     );
                   } catch (error) {
-                    log(this.config, 'Failed to update entry while creating entry id ' + eUid, 'error');
-                    log(this.config, formatError(error), 'error');
+                    addlogs(this.config, 'Failed to update entry while creating entry id ' + eUid);
+                    addlogs(this.config, util.formatError(error), 'error');
                   }
                 }
               }
@@ -485,7 +485,7 @@ module.exports = class ImportEntries {
           return resolve();
         })
         .catch((error) => {
-          log(this.config, "Failed to create entries in '" + lang + "' language", 'error');
+          addlogs(this.config, chalk.red("Failed to create entries in '" + lang + "' language"), 'error');
           return reject(error);
         });
     });
@@ -554,7 +554,7 @@ module.exports = class ImportEntries {
           // map failed reference uids @mapper/language/unmapped-uids.json
           let refUidMapperPath = path.join(this.entryMapperPath, lang);
 
-          log(this.config, 'staring to update the entry for reposting');
+          addlogs(this.config, 'staring to update the entry for reposting');
 
           entries = _.map(entries, (entry) => {
             try {
@@ -581,7 +581,10 @@ module.exports = class ImportEntries {
               _entry.uid = uid;
               return _entry;
             } catch (error) {
-              log(this.config, `Failed to update the entry ${uid} references while reposting ${formatError(error)}`);
+              addlogs(
+                this.config,
+                `Failed to update the entry ${uid} references while reposting ${util.formatError(error)}`,
+              );
             }
           });
 
@@ -657,8 +660,8 @@ module.exports = class ImportEntries {
                 })
                 .catch((error) => {
                   // error while executing entry in batch
-                  log(this.config, `Failed re-post entries of content type ${ctUid} locale ${lang}`, 'error');
-                  log(this.config, formatError(error), 'error');
+                  addlogs(this.config, chalk.red('Failed re-post entries at batch no: ' + (index + 1)), 'error');
+                  addlogs(this.config, util.formatError(error), 'error');
                   // throw error;
                 });
             },
@@ -676,8 +679,11 @@ module.exports = class ImportEntries {
             })
             .catch((error) => {
               // error while updating entries with references
-              log(this.config, `Failed re-post entries of content type ${ctUid} locale ${lang}`, 'error');
-              log(this.config, formatError(error), 'error');
+              addlogs(
+                this.config,
+                chalk.red(`Failed re-post entries of content type ${ctUid} locale ${lang}`, 'error'),
+              );
+              addlogs(this.config, util.formatError(error), 'error');
               // throw error;
             });
         },
@@ -692,7 +698,7 @@ module.exports = class ImportEntries {
         })
         .catch((error) => {
           // error while updating entry references
-          log(this.config, chalk.red('Failed to re post entries in ' + lang + ' language'), 'error');
+          addlogs(this.config, chalk.red('Failed to re post entries in ' + lang + ' language'), 'error');
           return reject(error);
         });
     });
@@ -767,7 +773,7 @@ module.exports = class ImportEntries {
               // empty function
             })
             .catch((_error) => {
-              log(this.config, formatError(_error), 'error');
+              addlogs(this.config, util.formatError(error), 'error');
               reject(`Failed suppress content type ${schema.uid} reference fields`);
             });
           // update 5 content types at a time
@@ -869,8 +875,8 @@ module.exports = class ImportEntries {
                     return resolveContentType();
                   })
                   .catch((error) => {
-                    log(this.config, chalk.red('Failed to re-update ' + schema.uid), 'error');
-                    log(this.config, error, 'error');
+                    addlogs(this.config, chalk.red('Failed to re-update ' + schema.uid), 'error');
+                    addlogs(this.config, error, 'error');
                     return rejectContentType(error);
                   });
               })
@@ -930,8 +936,8 @@ module.exports = class ImportEntries {
               log(this.config, 'Removed bugged entry from master ' + JSON.stringify(entry), 'success');
             })
             .catch((error) => {
-              log(this.config, chalk.red('Failed to remove bugged entry from master language'), 'error');
-              log(this.config, formatError(error), 'error');
+              addlogs(this.config, chalk.red('Failed to remove bugged entry from master language'), 'error');
+              addlogs(this.config, util.formatError(error), 'error');
             });
         },
         {
@@ -954,7 +960,7 @@ module.exports = class ImportEntries {
         })
         .catch((error) => {
           // error while removing bugged entries from stack
-          log(this.config, formatError(error), 'error');
+          addlogs(this.config, util.formatError(error), 'error');
         });
     });
   }
@@ -1076,7 +1082,7 @@ module.exports = class ImportEntries {
                                 // log(this.config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
                                 log(
                                   this.config,
-                                  'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type',
+                                  `Entry '${eUid}' published successfully in '${ctUid}' content type`,
                                   'success',
                                 );
                                 return resolveEntryPublished(result);
@@ -1085,7 +1091,7 @@ module.exports = class ImportEntries {
                               .catch((err) => {
                                 log(
                                   this.config,
-                                  `failed to publish entry ${eUid} content type ${ctUid} ${formatError(err)}`,
+                                  `failed to publish entry ${eUid} content type ${ctUid} ${util.formatError(err)}`,
                                 );
                                 return resolveEntryPublished('');
                               });
@@ -1104,7 +1110,7 @@ module.exports = class ImportEntries {
                     })
                     .catch((error) => {
                       // error while executing entry in batch
-                      log(this.config, formatError(error), 'error');
+                      addlogs(this.config, util.formatError(error), 'error');
                     });
                 },
                 {
@@ -1112,11 +1118,10 @@ module.exports = class ImportEntries {
                 },
               )
                 .then(() => {
-                  // log(this.config, 'Entries published successfully in ' + ctUid + ' content type', 'success')
-                  log(this.config, 'Entries published successfully in ' + ctUid + ' content type', 'info');
+                  addlogs(this.config, 'Entries published successfully in ' + ctUid + ' content type', 'success');
                 })
                 .catch((error) => {
-                  log(this.config, `failed to publish entry in content type ${ctUid} ${formatError(error)}`, 'error');
+                  addlogs(this.config, `failed to publish entry in content type ${ctUid} ${util.formatError(error)}`);
                 });
             },
             {
@@ -1128,7 +1133,7 @@ module.exports = class ImportEntries {
               // log('Published entries successfully in ' +);
             })
             .catch((error) => {
-              log(`Failed to publish few entries in ${lang} ${formatError(error)}`);
+              addlogs(this.config, `Failed to publish few entries in ${lang} ${util.formatError(error)}`, 'error');
             });
         },
         {
@@ -1139,7 +1144,7 @@ module.exports = class ImportEntries {
           return resolve();
         })
         .catch((error) => {
-          log(`Failed to publish entries ${formatError(error)}`);
+          addlogs(this.config, `Failed to publish entries ${util.formatError(error)}`, 'error');
         });
     });
   }
