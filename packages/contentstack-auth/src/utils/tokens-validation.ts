@@ -16,6 +16,7 @@ export const validateDeliveryToken = async (
   environment: string,
   region: string,
   host: string,
+  branch: string,
 ): Promise<any> => {
   let result: { valid: boolean; message: string };
   try {
@@ -25,15 +26,16 @@ export const validateDeliveryToken = async (
       AZURE_NA: 'azure-na',
       AZURE_EU: 'azure-eu',
     };
-    
-    const stack = contentStackClient
-      .Stack({
-        api_key: apiKey,
-        delivery_token: deliveryToken,
-        environment,
-        region: regionMap[region],
-        host,
-       });
+
+    const stack = contentStackClient.Stack({
+      api_key: apiKey,
+      delivery_token: deliveryToken,
+      environment,
+      region: regionMap[region],
+      host,
+      branch,
+    });
+
     const parsedHost = host.replace(/^https?:\/\//, '');
     stack.setHost(parsedHost);
     const deliveryTokenResult = await stack.getContentTypes({ limit: 1 });
@@ -50,6 +52,8 @@ export const validateDeliveryToken = async (
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY') };
     } else if (error.error_code === 141) {
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_ENVIRONMENT_NAME') };
+    } else if (error?.error_code) {
+      throw new Error(error?.error_message);
     } else {
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_DELIVERY_TOKEN') };
     }
@@ -97,11 +101,12 @@ export const validateManagementToken = async (
   contentStackClient: any,
   apiKey: string,
   managementToken: string,
+  branch: string,
 ): Promise<any> => {
   let result: { valid: boolean; message: string };
   try {
-    const validationResuslt = await contentStackClient.axiosInstance.get('/content_types?limit=1', {
-      headers: { api_key: apiKey, authorization: managementToken },
+    const validationResuslt = await contentStackClient.axiosInstance.get('/content_types?limit=1&include_branch=true', {
+      headers: { api_key: apiKey, authorization: managementToken, branch },
     });
 
     logger.debug('Management validation result', validationResuslt);
@@ -114,6 +119,9 @@ export const validateManagementToken = async (
     logger.error('Failed to validate management token', error);
     if (error.response && error.response.status === 401) {
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN') };
+    }
+    if (error?.response?.data) {
+      throw new Error(error.response.data?.error_message);
     } else {
       result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY') };
     }
@@ -144,4 +152,3 @@ export const validateAPIKey = async (contentStackClient: any, apiKey: string): P
 
   return result;
 };
-

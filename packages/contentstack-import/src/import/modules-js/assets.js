@@ -108,7 +108,7 @@ module.exports = class ImportAssets {
                       } else {
                         log(
                           self.config,
-                          self.assets[assetUid].parent_uid + " parent_uid was not found! Thus, setting it as 'null'",
+                          `'${self.assets[assetUid].parent_uid}' parent_uid was not found! Thus, setting it as 'null'`,
                           'error',
                         );
                       }
@@ -474,7 +474,6 @@ module.exports = class ImportAssets {
             } catch (cError) {
               error = { errorMessage: err.message };
             }
-
             log(self.config, 'Asset ' + assetUid + ' not published, ' + error.errorMessage, 'error');
             return reject(err);
           }

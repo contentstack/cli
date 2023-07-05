@@ -17,6 +17,7 @@ export default interface ExportConfig extends DefaultConfig {
   singleModuleExport?: boolean;
   moduleName?: Modules;
   master_locale: masterLocale;
+
   headers?: {
     api_key: string;
     access_token?: string;

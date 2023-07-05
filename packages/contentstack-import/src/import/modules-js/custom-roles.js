@@ -68,7 +68,7 @@ module.exports = class ImportCustomRoles {
         if (uid in self.customRolesUidMapper) {
           log(
             self.config,
-            chalk.white(`The custom-role ${customRole.name} already exists. Skipping it to avoid duplicates!`),
+            chalk.white(`The custom-role '${customRole.name}' already exists. Skipping it to avoid duplicates!`),
             'success',
           );
           continue;
@@ -112,7 +112,6 @@ module.exports = class ImportCustomRoles {
       fileHelper.writeFileSync(customRolesFailsPath, self.fails);
       log(self.config, 'Custom-roles import failed', 'error');
       log(self.config, formatError(error), 'error');
-
       throw error;
     }
   }

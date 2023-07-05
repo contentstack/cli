@@ -6,6 +6,7 @@ import entries from 'lodash/entries';
 import isEqual from 'lodash/isEqual';
 import { Stack } from '@contentstack/management/types/stack';
 import { AssetData } from '@contentstack/management/types/stack/asset';
+import { LocaleData } from '@contentstack/management/types/stack/locale';
 import { PublishConfig } from '@contentstack/management/types/utility/publish';
 import { FolderData } from '@contentstack/management/types/stack/asset/folder';
 import { ExtensionData } from '@contentstack/management/types/stack/extension';
@@ -17,7 +18,14 @@ export type AdditionalKeys = {
   backupDir: string;
 };
 
-export type ApiModuleType = 'create-assets' | 'replace-assets' | 'publish-assets' | 'create-assets-folder' | 'create-extensions';
+export type ApiModuleType =
+  | 'create-assets'
+  | 'replace-assets'
+  | 'publish-assets'
+  | 'create-assets-folder' 
+  | 'create-extensions'
+  | 'create-locale'
+  | 'update-locale';
 
 export type ApiOptions = {
   uid?: string;
@@ -250,6 +258,18 @@ export default abstract class BaseClass {
         return this.stack
           .extension()
           .create({ extension: pick(apiData, this.modulesConfig.extensions.validKeys) as ExtensionData})
+          .then(onSuccess)
+          .catch(onReject);
+      case 'create-locale':
+        return this.stack
+          .locale()
+          .create({ locale: pick(apiData, ['name', 'code']) as LocaleData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'update-locale':
+        return this.stack
+          .locale(apiData.code)
+          .update({ locale: pick(apiData, [...this.modulesConfig.locales.requiredKeys]) as LocaleData })
           .then(onSuccess)
           .catch(onReject);
       default:
