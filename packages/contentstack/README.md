@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.7.6 darwin-arm64 node-v18.11.0
+@contentstack/cli/1.7.8 darwin-arm64 node-v18.11.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -2681,7 +2681,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.9/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.11/src/commands/help.ts)_
 
 ## `csdx launch`
 

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import ContentstackError from './error';
 import { managementSDKClient } from '@contentstack/cli-utilities';
 import * as ContentstackManagementSDK from '@contentstack/management'
@@ -149,8 +148,8 @@ export default class ContentstackClient {
   }
 
   private buildError(error: any) {
-    const message = error.response.data?.error_message || error.response.statusText;
-    const status = error.response.status;
+    const message = error.errorMessage || error.response.data?.errorMessage || error.response.statusText;
+    const status = error.status; 
     return new ContentstackError(message, status);
   }
 }
