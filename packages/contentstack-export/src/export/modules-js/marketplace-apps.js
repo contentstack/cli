@@ -181,9 +181,9 @@ module.exports = class ExportMarketplaceApps {
         } else if (error) {
           log(this.config, `Error on exporting ${appName} app and it's config.`, 'error');
         }
-      })
-      .catch((err) => {
-        log(this.config, `Failed to export ${appName} app config ${formatError(err)}`, 'error');
-      });
+    })
+    .catch(err => {
+      log(this.config, `Failed to export ${appName} app config ${formatError(err)}`, 'error');
+    })
   }
 };
