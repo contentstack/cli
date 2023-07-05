@@ -368,7 +368,7 @@ const config: DefaultConfig = {
     'xh',
     'zu',
   ],
-  updatedModules: ['assets','extensions'],
+  updatedModules: ['assets', 'locales', 'extensions'],
   apis: {
     userSession: '/user-session/',
     globalfields: '/global_fields/',
