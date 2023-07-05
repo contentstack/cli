@@ -89,16 +89,20 @@ module.exports = class ImportLanguages {
               .catch(function (err) {
                 let error = JSON.parse(err.message);
                 if (error.hasOwnProperty('errorCode') && error.errorCode === 247) {
-                  log(self.config, error.errors.code[0], 'success');
+                  if(error?.errors?.code){
+                    log(self.config, error.errors.code[0], 'error');
+                  }else{
+                    log(self.config, err, 'error');
+                  }
                   return err;
                 }
                 self.fails.push(lang);
-                log(self.config, chalk.red("Language: '" + lang.code + "' failed to be import\n"), 'error');
+                log(self.config, `Language '${lang.code}' failed to import\n`, 'error');
                 log(self.config, formatError(err), 'error');
               });
           } else {
             // the language has already been created
-            log(self.config, chalk.yellow("The language: '" + lang.code + "' already exists."), 'error');
+            log(self.config, `The language '${lang.code}' already exists.`, 'error');
           }
 
           return Promise.resolve();
@@ -123,8 +127,7 @@ module.exports = class ImportLanguages {
         .catch(function (error) {
           // error while importing languages
           fileHelper.writeFileSync(langFailsPath, self.fails);
-          log(self.config, chalk.red('Language import failed'), 'error');
-          log(self.config, formatError(error), 'error');
+          log(self.config, `Language import failed. ${formatError(error)}`, 'error');
           reject('failed to import Languages');
         });
     });

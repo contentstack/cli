@@ -132,7 +132,7 @@ module.exports = class importWorkflows {
             // the workflow has already been created
             log(
               self.config,
-              chalk.white("The Workflows: '" + workflow.name + "' already exists. Skipping it to avoid duplicates!"),
+              chalk.white( `The Workflows ${workflow.name} already exists. Skipping it to avoid duplicates!`),
               'success',
             );
           }

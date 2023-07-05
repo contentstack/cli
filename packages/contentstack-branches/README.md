@@ -1,11 +1,10 @@
-# @contentstack/cli-cm-export
+# @contentstack/cli-cm-branches
 
-It is Contentstack’s CLI plugin to export content from the stack. To learn how to export and import content in Contentstack, refer to the [Migration guide](https://www.contentstack.com/docs/developers/cli/migration/).
-
+It is Contentstack’s CLI plugin to compare and merge content.
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-* [@contentstack/cli-cm-export](#contentstackcli-cm-export)
+* [@contentstack/cli-cm-branches](#contentstackcli-cm-branches)
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
@@ -38,7 +37,7 @@ $ npm install -g @contentstack/cli-cm-branches
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-branches/1.0.5 darwin-arm64 node-v18.11.0
+@contentstack/cli-cm-branches/1.0.7 darwin-arm64 node-v18.11.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
