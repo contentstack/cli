@@ -81,7 +81,7 @@
   "main": "./lib/commands/cm/stacks/import.js",
   "license": "MIT",
   "oclif": {
-    "commands": "./src/commands",
+    "commands": "./lib/commands",
     "bin": "csdx",
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-import/<%- commandPath %>"
   },
