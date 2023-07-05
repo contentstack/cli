@@ -1037,7 +1037,7 @@ module.exports = class ImportEntries {
               if (entries === undefined) {
                 addlogs(
                   this.config,
-                  `There are no entries belonging to Content Type UID' ${ctUid} in language ${lang}`,
+                  `No entries were found for Content type: ${ctUid} in language: ${lang}`,
                   'info',
                 );
               } else {
