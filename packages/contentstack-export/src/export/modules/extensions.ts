@@ -6,7 +6,7 @@ import { log, formatError } from '../../utils';
 import BaseClass from './base-class';
 import { ModuleClassParams } from '../../types';
 
-export default class ExportAssets extends BaseClass {
+export default class ExportExtensions extends BaseClass {
   private extensionsFolderPath: string;
   private extensions: Record<string, unknown>;
   public extensionConfig = config.modules.extensions;
