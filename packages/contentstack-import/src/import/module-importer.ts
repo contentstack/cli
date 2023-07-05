@@ -1,4 +1,4 @@
-import { ContentstackClient, FsUtility } from '@contentstack/cli-utilities';
+import { ContentstackClient } from '@contentstack/cli-utilities';
 import { ImportConfig, Modules } from '../types';
 import { backupHandler, log, validateBranch, masterLocalDetails, sanitizeStack } from '../utils';
 import startModuleImport from './modules';
