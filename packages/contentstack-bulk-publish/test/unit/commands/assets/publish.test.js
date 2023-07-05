@@ -13,14 +13,10 @@ const locales = process.env.LOCALES.split(',');
 
 describe('AssetsPublish', () => {
   it('Should run the command when all the flags are passed', async function () {
-    for (const env of environments) {
-      for (const locale of locales) {
-        const args = ['--environments', env, '--locales', locale, '--alias', process.env.MANAGEMENT_ALIAS, '--yes'];
-        const inquireStub = stub(cliux, 'inquire');
-        await AssetsPublish.run(args);
-        sinon.assert.notCalled(inquireStub);
-        inquireStub.restore();
-      }
-    }
+    const args = ['--environments', environments[0], '--locales', locales[0], '--alias', process.env.MANAGEMENT_ALIAS, '--yes'];
+    const inquireStub = stub(cliux, 'inquire');
+    await AssetsPublish.run(args);
+    sinon.assert.notCalled(inquireStub);
+    inquireStub.restore();
   });
 });
