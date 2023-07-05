@@ -103,7 +103,7 @@ class ContentTypesImport {
 
       log(this.importConfig, chalk.green('Content types imported successfully'), 'success');
     } catch (error) {
-      let message_content_type = '';
+      let message_content_type = "";
       if (error.request !== undefined && JSON.parse(error.request.data).content_type !== undefined) {
         if (JSON.parse(error.request.data).content_type.uid) {
           message_content_type =
