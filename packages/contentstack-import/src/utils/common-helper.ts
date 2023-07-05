@@ -103,7 +103,7 @@ export const sanitizeStack = (importConfig: ImportConfig) => {
   }
 };
 
-export const masterLocalDetails = (stackAPIClient: any): Promise<any> => {
+export const masterLocalDetails = (stackAPIClient: any): Promise<{ code: string }> => {
   return new Promise((resolve, reject) => {
     const result = stackAPIClient.locale().query();
     result
