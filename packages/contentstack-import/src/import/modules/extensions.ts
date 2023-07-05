@@ -8,7 +8,7 @@ import { log, formatError } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams } from '../../types';
 
-export default class ImportAssets extends BaseClass {
+export default class ImportExtensions extends BaseClass {
   private fs: FsUtility;
   private mapperDirPath: string;
   private extensionsFolderPath: string;
@@ -16,7 +16,7 @@ export default class ImportAssets extends BaseClass {
   private extSuccessPath: string;
   private extFailsPath: string;
   public extensionsConfig = config.modules.extensions;
-  private extensions: Record<string, any> = {};
+  private extensions: Record<string, unknown>;
   private extUidMapper: Record<string, unknown> = {};
   public extSuccess: Record<string, unknown>[] = [];
   public extFailed: Record<string, unknown>[] = [];
