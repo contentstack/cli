@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-branches",
   "description": "Contentstack CLI plugin to do branches operations",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
@@ -92,7 +92,8 @@
       "cm:branches:create": "BRCR",
       "cm:branches:delete": "BRDEL",
       "cm:branches:diff": "BRDIF",
-      "cm:branches:merge": "BRMRG"
+      "cm:branches:merge": "BRMRG",
+      "cm:branches": "BRLS"
     }
   },
   "repository": "https://github.com/contentstack/cli"
