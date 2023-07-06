@@ -91,6 +91,17 @@ const config: DefaultConfig = {
       folderValidKeys: ['name', 'parent_uid'],
       validKeys: ['title', 'parent_uid', 'description', 'tags'],
     },
+    'assets-old': {
+      dirName: 'assets',
+      fileName: 'assets.json',
+      // This is the total no. of asset objects fetched in each 'get assets' call
+      limit: 100,
+      host: 'https://api.contentstack.io',
+      validKeys: ['uid', 'filename', 'url', 'status'],
+      assetBatchLimit: 1,
+      uploadAssetsConcurrency: 1,
+      importFoldersConcurrency: 1,
+    },
     content_types: {
       dirName: 'content_types',
       fileName: 'content_types.json',
