@@ -29,6 +29,7 @@ export default interface DefaultConfig {
     extensions: {
       dirName: string;
       fileName: string;
+      validKeys: string[];
     };
     webhooks: {
       dirName: string;
