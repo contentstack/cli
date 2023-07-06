@@ -1,9 +1,9 @@
 const fs = require('fs');
 const _ = require('lodash');
-const { default: config } = require('../../../src/config');
+const { default: config } = require('../../../lib/config');
 const { Command } = require('@contentstack/cli-command');
 const { managementSDKClient, HttpClient } = require('@contentstack/cli-utilities');
-const { getDeveloperHubUrl } = require('../../../src/lib/util/marketplace-app-helper');
+const { getDeveloperHubUrl } = require('../../../lib/utils/marketplace-app-helper');
 const pjson = require('../../../package.json');
 const { REGIONS } = require('../../config.json');
 const { expect } = require('@oclif/test');
