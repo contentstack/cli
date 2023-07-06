@@ -58,7 +58,7 @@ export const askExportDir = async (): Promise<string> => {
 };
 
 export const askAPIKey = async (): Promise<string> => {
-  return cliux.inquire<string>({
+  return await cliux.inquire<string>({
     type: 'input',
     message: 'Enter the stack api key',
     name: 'apiKey',
