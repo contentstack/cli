@@ -6,7 +6,7 @@ import { FsUtility } from '@contentstack/cli-utilities';
 import config from '../../config';
 import { log, formatError } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
-import { ModuleClassParams } from '../../types';
+import { ModuleClassParams, Extensions } from '../../types';
 
 export default class ImportExtensions extends BaseClass {
   private fs: FsUtility;
@@ -15,11 +15,11 @@ export default class ImportExtensions extends BaseClass {
   private extUidMapperPath: string;
   private extSuccessPath: string;
   private extFailsPath: string;
-  public extensionsConfig = config.modules.extensions;
+  private extensionsConfig: Extensions;
   private extensions: Record<string, unknown>;
-  private extUidMapper: Record<string, unknown> = {};
-  public extSuccess: Record<string, unknown>[] = [];
-  public extFailed: Record<string, unknown>[] = [];
+  private extUidMapper: Record<string, unknown>;
+  private extSuccess: Record<string, unknown>[];
+  private extFailed: Record<string, unknown>[];
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -34,6 +34,10 @@ export default class ImportExtensions extends BaseClass {
       join(this.importConfig.backupDir, 'extensions', 'extensions.json'),
       true,
     ) as Record<string, unknown>;
+    this.extFailed = [];
+    this.extSuccess = [];
+    this.extUidMapper = {};
+    this.extensionsConfig = config.modules.extensions;
   }
 
   /**
