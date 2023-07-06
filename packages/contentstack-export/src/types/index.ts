@@ -64,5 +64,11 @@ export interface ExternalConfig extends ExportConfig {
   password?: string;
 }
 
+export interface Extensions{
+  dirName: string;
+  fileName: string;
+  dependencies?: Modules[];
+};
+
 export { default as DefaultConfig } from './default-config';
 export { default as ExportConfig } from './export-config';
