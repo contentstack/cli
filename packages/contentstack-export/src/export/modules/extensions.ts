@@ -4,16 +4,17 @@ import { FsUtility} from '@contentstack/cli-utilities';
 import config from '../../config';
 import { log, formatError } from '../../utils';
 import BaseClass from './base-class';
-import { ModuleClassParams } from '../../types';
+import { Extensions, ModuleClassParams } from '../../types';
 
 export default class ExportExtensions extends BaseClass {
   private extensionsFolderPath: string;
   private extensions: Record<string, unknown>;
-  public extensionConfig = config.modules.extensions;
+  public extensionConfig: Extensions;
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
     this.extensions ={}
+    this.extensionConfig = config.modules.extensions;
   }
 
   get queryParam(): Record<string, unknown> {
