@@ -30,7 +30,7 @@ module.exports = class ImportAssets {
   constructor(importConfig, stackAPIClient) {
     this.config = _.merge(config, importConfig);
     this.stackAPIClient = stackAPIClient;
-    this.assetConfig = config.modules.assets;
+    this.assetConfig = config.modules['assets-old'];
     this.assetBatchLimit =
       this.assetConfig.hasOwnProperty('assetBatchLimit') && typeof this.assetConfig.assetBatchLimit === 'number'
         ? this.assetConfig.assetBatchLimit
@@ -40,7 +40,7 @@ module.exports = class ImportAssets {
   start() {
     let self = this;
     log(self.config, 'Migrating assets', 'success');
-    this.assetsFolderPath = path.join(this.config.data, this.config.modules.assets.dirName);
+    this.assetsFolderPath = path.join(this.config.data, this.assetConfig.dirName);
     this.mapperDirPath = path.resolve(this.config.data, 'mapper', 'assets');
     this.environmentPath = path.resolve(this.config.data, 'environments', 'environments.json');
     this.uidMapperPath = path.join(this.mapperDirPath, 'uid-mapping.json');

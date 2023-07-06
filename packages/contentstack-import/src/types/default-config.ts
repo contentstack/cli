@@ -59,6 +59,16 @@ export default interface DefaultConfig {
       folderValidKeys: string[];
       validKeys: string[];
     };
+    'assets-old': {
+      dirName: string;
+      fileName: string;
+      limit: number;
+      host: string;
+      validKeys: string[];
+      assetBatchLimit: number;
+      uploadAssetsConcurrency: number;
+      importFoldersConcurrency: number;
+    };
     content_types: {
       dirName: string;
       fileName: string;

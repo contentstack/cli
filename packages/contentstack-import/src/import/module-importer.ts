@@ -1,4 +1,4 @@
-import { ContentstackClient, FsUtility } from '@contentstack/cli-utilities';
+import { ContentstackClient } from '@contentstack/cli-utilities';
 import { ImportConfig, Modules } from '../types';
 import { backupHandler, log, validateBranch, masterLocalDetails, sanitizeStack } from '../utils';
 import startModuleImport from './modules';
@@ -53,6 +53,7 @@ class ModuleImporter {
     const basePath = `${this.importConfig.backupDir}/${moduleName}`;
     // import the modules by name
     // calls the module runner which inturn calls the module itself
+    // Todo: Implement a mechanism to determine whether module is new or old
     if (
       this.importConfig.useNewModuleStructure &&
       this.importConfig.updatedModules.indexOf(moduleName) !== -1
