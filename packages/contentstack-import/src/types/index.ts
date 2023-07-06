@@ -48,5 +48,11 @@ export type ModuleClassParams = {
   moduleName: Modules;
 };
 
+export interface Extensions{
+  dirName: string;
+  fileName: string;
+  dependencies?: Modules[];
+};
+
 export { default as DefaultConfig } from './default-config';
 export { default as ImportConfig } from './import-config';
