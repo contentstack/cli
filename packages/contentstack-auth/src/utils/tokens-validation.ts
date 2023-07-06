@@ -97,37 +97,6 @@ export const validateEnvironment = async (
  * @returns { valid: boolean; message: any }
  * Note: Fetching one content type using the management token to check whether it is valid or not
  */
-export const validateManagementToken = async (
-  contentStackClient: any,
-  apiKey: string,
-  managementToken: string,
-  branch: string,
-): Promise<any> => {
-  let result: { valid: boolean; message: string };
-  try {
-    const validationResuslt = await contentStackClient.axiosInstance.get('/content_types?limit=1&include_branch=true', {
-      headers: { api_key: apiKey, authorization: managementToken, branch },
-    });
-
-    logger.debug('Management validation result', validationResuslt);
-    if (validationResuslt.status === 200) {
-      result = { valid: true, message: validationResuslt };
-    } else {
-      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN') };
-    }
-  } catch (error) {
-    logger.error('Failed to validate management token', error);
-    if (error.response && error.response.status === 401) {
-      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN') };
-    }
-    if (error?.response?.data) {
-      throw new Error(error.response.data?.error_message);
-    } else {
-      result = { valid: false, message: messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_API_KEY') };
-    }
-  }
-  return result;
-};
 
 /**
  * Validate API key
