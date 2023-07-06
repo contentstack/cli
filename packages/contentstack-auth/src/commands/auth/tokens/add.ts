@@ -8,6 +8,8 @@ import {
   flags,
   managementSDKClient,
   FlagInput,
+  HttpClient,
+  messageHandler,
 } from '@contentstack/cli-utilities';
 import { askTokenType } from '../../../utils/interactive';
 import { tokenValidation } from '../../../utils';
@@ -151,12 +153,16 @@ export default class TokensAddCommand extends Command {
           branch,
         );
       } else if (type === 'management') {
-        const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
-        tokenValidationResult = await managementAPIClient
-          .stack({ api_key: apiKey, management_token: token })
-          .environment()
-          .query()
-          .findOne();
+        // FIXME - Once the SDK refresh token issue is resolved, need to revert this back to SDK call
+        const httpClient = new HttpClient({ headers: { api_key: apiKey, authorization: token } });
+
+        const response = (await httpClient.get(`https://${this.cmaHost}/v3/environments?limit=1`)).data;
+
+        if (response?.error_code === 105) {
+          throw new Error(messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN'));
+        } else if (response?.error_message) {
+          throw new Error(response.error_message);
+        }
       }
       if (isManagement) {
         configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, type });
@@ -172,7 +178,7 @@ export default class TokensAddCommand extends Command {
     } catch (error) {
       logger.error('token add error', error.message);
       cliux.print('CLI_AUTH_TOKENS_ADD_FAILED', { color: 'yellow' });
-      cliux.error(error.errorMessage ? error.errorMessage : error.message);
+      cliux.error(error.message.message ? error.message.message : error.message);
     }
   }
 }
