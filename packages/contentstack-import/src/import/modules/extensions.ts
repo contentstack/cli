@@ -23,7 +23,7 @@ export default class ImportExtensions extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-
+    this.extensionsConfig = config.modules.extensions;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'extensions');
     this.extensionsFolderPath = join(this.importConfig.backupDir, this.extensionsConfig.dirName);
     this.extUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
@@ -37,7 +37,6 @@ export default class ImportExtensions extends BaseClass {
     this.extFailed = [];
     this.extSuccess = [];
     this.extUidMapper = {};
-    this.extensionsConfig = config.modules.extensions;
   }
 
   /**
@@ -78,10 +77,10 @@ export default class ImportExtensions extends BaseClass {
     const onReject = ({ error, apiData }: any) => {
       const err = error?.message ? JSON.parse(error.message): error;
       const { title } = apiData;
-      this.extFailed.push(apiData);
       if (err?.errors?.title) {
         log(this.importConfig, `Extension '${title}' already exists`, 'info');
       } else {
+        this.extFailed.push(apiData);
         log(this.importConfig, `Extension '${title}' failed to be import ${formatError(error)}`, 'error');
         log(this.importConfig, error, 'error');
       }
@@ -93,9 +92,9 @@ export default class ImportExtensions extends BaseClass {
         apiContent,
         processName: 'import extensions',
         apiParams: {
-          serializeData: this.serializeAssets.bind(this),
-          reject: onReject,
-          resolve: onSuccess,
+          serializeData: this.serializeExtensions.bind(this),
+          reject: onReject.bind(this),
+          resolve: onSuccess.bind(this),
           entity: 'create-extensions',
           includeParamOnCompletion: true,
         },
@@ -111,7 +110,7 @@ export default class ImportExtensions extends BaseClass {
    * @param {ApiOptions} apiOptions ApiOptions
    * @returns {ApiOptions} ApiOptions
    */
-  serializeAssets(apiOptions: ApiOptions): ApiOptions {
+  serializeExtensions(apiOptions: ApiOptions): ApiOptions {
     const { apiData: extension } = apiOptions;
     if (this.extUidMapper.hasOwnProperty(extension.uid)) {
       log(this.importConfig, `Extension '${extension.title}' already exists. Skipping it to avoid duplicates!`, 'info');
