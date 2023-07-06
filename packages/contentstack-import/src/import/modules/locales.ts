@@ -5,13 +5,8 @@
  * MIT Licensed
  */
 
-let fs = require('fs');
-let chalk = require('chalk');
-let mkdirp = require('mkdirp');
-let Promise = require('bluebird');
-
 import * as path from 'path';
-import { filter, isEmpty } from 'lodash';
+import { values, isEmpty, filter, pick } from 'lodash';
 import { cliux } from '@contentstack/cli-utilities';
 import { fsUtil, log, formatError, fileHelper } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
@@ -33,10 +28,12 @@ export default class ImportLocales extends BaseClass {
   public client: any;
   private reqConcurrency: number;
   private masterLanguage: {
+    code: string;
+  };
+  private masterLanguageConfig: {
     dirName: string;
     fileName: string;
     requiredKeys: string[];
-    code?: string;
   };
   private sourceMasterLanguage: Record<string, any>;
 
@@ -44,10 +41,13 @@ export default class ImportLocales extends BaseClass {
     super({ importConfig, stackAPIClient });
     this.config = importConfig;
     this.localeConfig = importConfig.modules.locales;
-    this.masterLanguage = importConfig.modules.masterLocale;
+    this.masterLanguage = importConfig.masterLocale;
+    this.masterLanguageConfig = importConfig.modules.masterLocale;
     this.stackAPIClient = stackAPIClient;
     this.languages = [];
     this.langUidMapper = {};
+    this.createdLocales = [];
+    this.failedLocales = [];
     this.reqConcurrency = this.localeConfig.writeConcurrency || this.config.writeConcurrency;
     this.langMapperPath = path.resolve(this.config.data, 'mapper', 'languages');
     this.langFolderPath = path.resolve(this.config.data, this.localeConfig.dirName);
@@ -74,10 +74,9 @@ export default class ImportLocales extends BaseClass {
       log(this.config, 'No languages found to import', 'info');
       return;
     }
-    this.sourceMasterLanguage = fsUtil.readFile(path.join(this.langFolderPath, this.masterLanguage.fileName)) as Record<
-      string,
-      any
-    >;
+    this.sourceMasterLanguage = fsUtil.readFile(
+      path.join(this.langFolderPath, this.masterLanguageConfig.fileName),
+    ) as Record<string, any>;
     await fileHelper.makeDirectory(this.langMapperPath);
     if (fileHelper.fileExistsSync(this.langUidMapperPath)) {
       this.langUidMapper = fsUtil.readFile(this.langUidMapperPath) || {};
@@ -89,6 +88,7 @@ export default class ImportLocales extends BaseClass {
       log(this.config, formatError(error), 'error');
       Promise.reject('Failed to import locales');
     });
+    fsUtil.writeFile(this.langFailsPath, this.failedLocales);
     await this.updateLocales().catch((error) => {
       log(this.config, formatError(error), 'error');
       Promise.reject('Failed to update locales');
@@ -107,7 +107,7 @@ export default class ImportLocales extends BaseClass {
           log(this.config, formatError(error), 'error');
         });
       if (
-        masterLangDetails?.name?.toString().toUpperCase() ===
+        masterLangDetails?.name?.toString().toUpperCase() !==
         sourceMasterLangDetails[0]['name']?.toString().toUpperCase()
       ) {
         cliux.print('WARNING!!! The master language name for the source and destination is different.', {
@@ -141,7 +141,7 @@ export default class ImportLocales extends BaseClass {
   async createLocales(): Promise<any> {
     const onSuccess = ({ response = {}, apiData: { uid, code } = undefined }: any) => {
       this.langUidMapper[uid] = response.uid;
-      this.createdLocales.push(response.items);
+      this.createdLocales.push(pick(response, [...this.localeConfig.requiredKeys]));
       log(this.importConfig, `Created locale: '${code}'`, 'info');
       fsUtil.writeFile(this.langUidMapperPath, this.langUidMapper);
     };
@@ -150,15 +150,15 @@ export default class ImportLocales extends BaseClass {
       log(this.importConfig, formatError(error), 'error');
       this.failedLocales.push({ uid, code });
     };
-
     return await this.makeConcurrentCall({
       processName: 'Import locales',
-      apiContent: filter(this.languages, (locale) => {
-        locale.code !== this.masterLanguage?.code;
-      }) as Record<string, any>[],
+      apiContent: filter(values(this.languages), (lang) => lang.code !== this.masterLanguage.code) as Record<
+        string,
+        any
+      >[],
       apiParams: {
-        reject: onReject,
-        resolve: onSuccess,
+        reject: onReject.bind(this),
+        resolve: onSuccess.bind(this),
         entity: 'create-locale',
         includeParamOnCompletion: true,
       },
@@ -169,18 +169,19 @@ export default class ImportLocales extends BaseClass {
   async updateLocales(): Promise<unknown> {
     const onSuccess = ({ response = {}, apiData: { uid, code } = undefined }: any) => {
       log(this.importConfig, `Updated locale: '${code}'`, 'info');
+      fsUtil.writeFile(this.langSuccessPath, this.createdLocales);
     };
     const onReject = ({ error, apiData: { uid, code } = undefined }: any) => {
       log(this.importConfig, `Language '${code}' failed to update`, 'error');
       log(this.importConfig, formatError(error), 'error');
+      fsUtil.writeFile(this.langFailsPath, this.failedLocales);
     };
-
     return await this.makeConcurrentCall({
       processName: 'Update locales',
-      apiContent: this.languages,
+      apiContent: values(this.languages),
       apiParams: {
-        reject: onReject,
-        resolve: onSuccess,
+        reject: onReject.bind(this),
+        resolve: onSuccess.bind(this),
         entity: 'update-locale',
         includeParamOnCompletion: true,
       },
