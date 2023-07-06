@@ -11,7 +11,6 @@ import {
 } from '@contentstack/cli-utilities';
 import { askTokenType } from '../../../utils/interactive';
 import { tokenValidation } from '../../../utils';
-
 export default class TokensAddCommand extends Command {
   static description = 'Adds management/delivery tokens to your session to use it with other CLI commands';
 
@@ -130,39 +129,6 @@ export default class TokensAddCommand extends Command {
         token = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_TOKEN', name: 'token' });
       }
 
-      const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
-
-      let doBranchesExistInPlan: boolean = false;
-
-      if (isManagement && apiKey && token) {
-        await managementAPIClient
-          .stack({ api_key: apiKey, management_token: token })
-          .branch()
-          .query()
-          .find()
-          .then(() => (doBranchesExistInPlan = true))
-          .catch((err) => {
-            if (err.errorCode && err.errorMessage && branch) {
-              throw new Error(err.errorMessage);
-            }
-          });
-      } else {
-        if (!apiKey) {
-          throw new Error('Api key is required');
-        }
-        if (!token) {
-          throw new Error('Token is required');
-        }
-      }
-
-      if (doBranchesExistInPlan && !branch) {
-        branch = await cliux.inquire({
-          type: 'input',
-          message: 'CLI_AUTH_ENTER_BRANCH',
-          name: 'branch',
-        });
-      }
-
       if (isDelivery && !environment) {
         environment = await cliux.inquire({
           type: 'input',
@@ -185,17 +151,13 @@ export default class TokensAddCommand extends Command {
           branch,
         );
       } else if (type === 'management') {
-        tokenValidationResult = await tokenValidation.validateManagementToken(
-          managementAPIClient,
-          apiKey,
-          token,
-          doBranchesExistInPlan ? branch : null,
-        );
+        const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
+        tokenValidationResult = await managementAPIClient
+          .stack({ api_key: apiKey, management_token: token })
+          .environment()
+          .query()
+          .findOne();
       }
-      if (!tokenValidationResult.valid) {
-        throw new CLIError(tokenValidationResult.message);
-      }
-
       if (isManagement) {
         configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, type });
       } else {
@@ -210,7 +172,7 @@ export default class TokensAddCommand extends Command {
     } catch (error) {
       logger.error('token add error', error.message);
       cliux.print('CLI_AUTH_TOKENS_ADD_FAILED', { color: 'yellow' });
-      cliux.print(error.message.message ? error.message.message : error.message, { color: 'red' });
+      cliux.error(error.errorMessage ? error.errorMessage : error.message);
     }
   }
 }
