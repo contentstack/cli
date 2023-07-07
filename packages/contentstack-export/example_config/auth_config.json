@@ -5,9 +5,14 @@
   },
   "source_stack": "bltXXXXXXXXXX",
   "data": "file path",
-  "branchName":"example1",
+  "branchName": "example1",
   "moduleName": "content-types",
   "fetchConcurrency": 5,
   "writeConcurrency": 5,
-  "securedAssets":false
+  "updatedModules": [
+    "assets",
+    "locales"
+  ],
+  "useNewModuleStructure": true,
+  "securedAssets": false
 }
