@@ -388,7 +388,7 @@ const config: DefaultConfig = {
   writeConcurrency: 5,
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
-  useNewModuleStructure: false,
+  useNewModuleStructure: true,
 };
 
 export default config;
