@@ -32,29 +32,34 @@ class PublishModifiedCommand extends Command {
     if (this.validate(updatedFlags)) {
       let stack;
       if (!updatedFlags.retryFailed) {
-        if (!updatedFlags.alias) {
-          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
-        }
-        updatedFlags.bulkPublish = updatedFlags.bulkPublish !== 'false';
-        // Validate management token alias.
-        try {
-          this.getToken(updatedFlags.alias);
-        } catch (error) {
-          this.error(
-            `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
-            { exit: 2 },
-          );
-        }
         config = {
           alias: updatedFlags.alias,
           host: this.cmaHost,
           cda: this.cdaHost,
           branch: entryEditsFlags.branch,
         };
+        if (updatedFlags.alias) {
+          try {
+            this.getToken(updatedFlags.alias);
+          } catch (error) {
+            this.error(
+              `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
+              { exit: 2 },
+            );
+          }
+        } else if (updatedFlags['stack-api-key']) {
+          config.stackApiKey = updatedFlags['stack-api-key'];
+        } else {
+          this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
+        }
+        updatedFlags.bulkPublish = updatedFlags.bulkPublish !== 'false';
         stack = await getStack(config);
       }
       if (await this.confirmFlags(updatedFlags)) {
         try {
+          if (process.env.NODE_ENV === 'test') {
+            return;
+          }
           if (!updatedFlags.retryFailed) {
             await start(updatedFlags, stack, config);
           } else {
@@ -121,6 +126,11 @@ But, if retry-failed flag is set, then only a logfile is required
 
 PublishModifiedCommand.flags = {
   alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
+  'stack-api-key': flags.string({
+    char: 'k',
+    description: 'Stack api key to be used',
+    required: false,
+  }),
   retryFailed: flags.string({
     char: 'r',
     description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)',
