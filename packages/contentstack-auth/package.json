@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@contentstack/cli-command": "^1.2.9",
-    "@contentstack/cli-utilities": "^1.4.5",
+    "@contentstack/cli-utilities": "^1.5.0",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
     "inquirer": "8.2.4",
@@ -83,6 +83,16 @@
       "auth:tokens": "LSTKN",
       "auth:tokens:add": "ADTKN",
       "auth:tokens:remove": "RMTKN"
+    }
+  },
+  "csdxConfig": {
+    "shortCommandName": {
+      "auth:login": "LOGIN",
+      "auth:logout": "LOGOUT",
+      "auth:whoami": "WHOMAI",
+      "auth:tokens": "LSTTKN",
+      "auth:tokens:add": "ADDTKN",
+      "auth:tokens:remove": "RMVTKN"
     }
   },
   "repository": "contentstack/cli"
