@@ -47,7 +47,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import/1.5.10 darwin-arm64 node-v18.16.0
+@contentstack/cli-cm-import/1.7.0 darwin-arm64 node-v18.11.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -63,7 +63,7 @@ USAGE
 
 ## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
-Import script for importing the content into the new stack
+Import content from a stack
 
 ```
 USAGE
@@ -83,11 +83,7 @@ FLAGS
                                     <options: disable|current>
 
 DESCRIPTION
-  Import script for importing the content into the new stack
-  ...
-  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import
-  command.
-
+  Import content from a stack
 
 ALIASES
   $ csdx cm:import
@@ -112,7 +108,7 @@ EXAMPLES
 
 ## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
-Import script for importing the content into the new stack
+Import content from a stack
 
 ```
 USAGE
@@ -132,11 +128,7 @@ FLAGS
                                     <options: disable|current>
 
 DESCRIPTION
-  Import script for importing the content into the new stack
-  ...
-  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import
-  command.
-
+  Import content from a stack
 
 ALIASES
   $ csdx cm:import
@@ -158,9 +150,6 @@ EXAMPLES
 
   $ csdx cm:stacks:import --branch <branch name>  --yes
 ```
-_Mangement token and config file: [example_config/management_config.json](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/example_config/management_config.json)_
 
-_Auth token and config file: [example_config/auth_config.json](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/example_config/auth_config.json)_
-
-_See code: [src/commands/cm/stacks/import.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.js)_
+_See code: [src/commands/cm/stacks/import.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.ts)_
 <!-- commandsstop -->
