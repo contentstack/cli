@@ -143,7 +143,12 @@ async function getSyncEntries(
 ) {
   return new Promise(async (resolve, reject) => {
     try {
-      const tokenDetails = command.getToken(config.alias);
+      let tokenDetails;
+      if (config.stackApiKey) {
+        tokenDetails = { apiKey: config.stackApiKey };
+      } else {
+        tokenDetails = command.getToken(config.alias);
+      }
       const queryParamsObj = {};
       const pairs = queryParams.split('&').filter((e) => e !== null && e !== '' && e !== undefined);
       for (let i in pairs) {
