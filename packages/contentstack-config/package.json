@@ -1,14 +1,14 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.1.0",
+  "version": "1.4.8",
   "author": "Contentstack",
   "scripts": {
     "build": "npm run clean && npm run compile",
-    "clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "npm run build && oclif manifest && oclif readme",
+    "prepack": "pnpm compile && oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md",
     "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "pretest": "tsc -p test",
@@ -17,18 +17,19 @@
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
     "test:integration": "mocha --forbid-only \"test/run.test.ts\" --integration-test",
-    "test:unit": "mocha --forbid-only \"test/unit/*.test.ts\" --unit-test"
+    "test:unit": "mocha --forbid-only \"test/unit/**/*.test.ts\" --unit-test",
+    "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
   },
   "dependencies": {
-    "@contentstack/cli-command": "^1.1.0",
-    "@contentstack/cli-utilities": "^1.1.0",
+    "@contentstack/cli-command": "^1.2.9",
+    "@contentstack/cli-utilities": "^1.4.5",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
     "inquirer": "8.2.4",
-    "winston": "^3.7.2"
+    "winston": "^3.7.2",
+    "lodash": "^4.17.20"
   },
   "devDependencies": {
-    "oclif": "^3.1.2",
     "@oclif/test": "^2.2.10",
     "@types/chai": "^4.2.18",
     "@types/inquirer": "^9.0.3",
@@ -36,14 +37,14 @@
     "@types/mocha": "^8.2.2",
     "@types/node": "^14.14.32",
     "@types/sinon": "^10.0.2",
-    "@types/tar": "^4.0.3",
     "chai": "^4.3.4",
     "eslint": "^8.18.0",
-    "eslint-config-oclif": "^3.1.0",
+    "eslint-config-oclif": "^4.0.0",
     "eslint-config-oclif-typescript": "^0.1.0",
     "globby": "^10.0.2",
     "mocha": "10.1.0",
     "nyc": "^15.1.0",
+    "oclif": "^3.8.1",
     "rimraf": "^2.7.1",
     "sinon": "^15.0.1",
     "tmp": "^0.2.1",
@@ -51,7 +52,7 @@
     "typescript": "^4.9.3"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "/lib",
@@ -73,9 +74,12 @@
     ],
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-config/<%- commandPath %>"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint"
+  "csdxConfig": {
+    "shortCommandName": {
+      "config:get:region": "RGT",
+      "config:set:region": "RST",
+      "config:get:base-branch": "BRGT",
+      "config:set:base-branch": "BRST"
     }
   },
   "repository": "contentstack/cli"

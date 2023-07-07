@@ -1,15 +1,22 @@
 import { IPromptOptions } from "@oclif/core/lib/cli-ux";
 
 export interface PrintOptions {
+  bold?: boolean;
   color?: string;
 }
 
 export interface InquirePayload {
   type: string;
   name: string;
+  default?: any;
   message: string;
   choices?: Array<any>;
   transformer?: Function;
+  validate?(input: any, answers?: any): boolean | string | Promise<boolean | string>;
+  selectAll?: boolean;
+  pageSize?: number;
+  columns?: Record<string, any>[];
+  rows?: Array<any>;
 }
 
 export interface Region {

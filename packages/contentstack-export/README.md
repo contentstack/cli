@@ -30,6 +30,16 @@ For switching to AZURE-NA region update the hosts at config/default.js
 }
 ```
 
+For switching to AZURE-EU region update the hosts at config/default.js
+
+```js
+{
+  host:'https://azure-eu-api.contentstack.com/v3',
+  cdn: 'https://azure-eu-cdn.contentstack.com/v3',
+ ...
+}
+```
+
 # Usage
 
 <!-- usage -->
@@ -38,7 +48,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-export/1.3.0 darwin-x64 node-v18.12.1
+@contentstack/cli-cm-export/1.5.9 darwin-arm64 node-v18.16.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -135,6 +145,9 @@ EXAMPLES
 
   $ csdx cm:stacks:export --branch [optional] branch name
 ```
+_Mangement token and config file: [example_config/management_config.json](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/example_config/management_config.json)_
+
+_Auth token and config file: [example_config/auth_config.json](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/example_config/auth_config.json)_
 
 _See code: [src/commands/cm/stacks/export.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/stacks/export.js)_
 <!-- commandsstop -->

@@ -1,7 +1,5 @@
-// @ts-ignore
-import { Flags } from '@oclif/core';
-import { Command, flags } from '@contentstack/cli-command';
-import { printFlagDeprecation } from '@contentstack/cli-utilities';
+import { Command } from '@contentstack/cli-command';
+import { printFlagDeprecation, flags, isAuthenticated, FlagInput } from '@contentstack/cli-utilities';
 import ContentModelSeeder, { ContentModelSeederOptions } from '../../../seed';
 
 export default class SeedCommand extends Command {
@@ -17,7 +15,7 @@ export default class SeedCommand extends Command {
 
   static usage = 'cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]';
 
-  static flags = {
+  static flags: FlagInput = {
     repo: flags.string({
       char: 'r',
       description: 'GitHub account or GitHub account/repository',
@@ -77,7 +75,7 @@ export default class SeedCommand extends Command {
     try {
       const { flags: seedFlags } = await this.parse(SeedCommand);
 
-      if (!this.authToken) {
+      if (!isAuthenticated()) {
         this.error('You need to login, first. See: auth:login --help', {
           exit: 2,
           suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
@@ -88,13 +86,13 @@ export default class SeedCommand extends Command {
         parent: this,
         cdaHost: this.cdaHost,
         cmaHost: this.cmaHost,
-        authToken: this.authToken,
         gitHubPath: seedFlags.repo,
         orgUid: seedFlags.org,
         stackUid: seedFlags['stack-api-key'] || seedFlags.stack,
         stackName: seedFlags['stack-name'],
         fetchLimit: seedFlags['fetch-limit'],
         skipStackConfirmation: seedFlags['yes'],
+        isAuthenticated: isAuthenticated(),
       };
 
       const seeder = new ContentModelSeeder(options);

@@ -5,13 +5,15 @@
  */
 
 const fs = require('fs');
-const ncp = require('ncp');
+const os = require('os');
 const path = require('path');
 const chalk = require('chalk');
+const { copy, copySync, removeSync } = require('fs-extra');
 const util = require('./lib/util/index');
 const login = require('./lib/util/login');
 const { addlogs } = require('./lib/util/log');
-const { managementSDKClient } = require('@contentstack/cli-utilities');
+const { managementSDKClient, isAuthenticated } = require('@contentstack/cli-utilities');
+const { camelCase } = require('lodash')
 
 exports.initial = (configData) => {
   return new Promise(async (resolve, reject) => {
@@ -47,21 +49,27 @@ exports.initial = (configData) => {
             importRes.then(resolve).catch(reject);
           })
           .catch((error) => {
-            addlogs(config, `Failed to import contents ${util.formatError(error)}`, 'error');
-            reject(e);
+            addlogs(config, `Failed to import contents. ${util.formatError(error)}`, 'error');
+            reject(error);
             process.exit(1);
           });
       } else {
         let filename = path.basename(config.data);
-        addlogs(config, chalk.red(filename + ' Folder does not Exist'), 'error');
+        addlogs(config, chalk.red(`'${filename}' Folder does not exist'`), 'error');
       }
     };
 
     if (config) {
-      if ((config.email && config.password) || config.auth_token) {
-        login(config).then(backupAndImportData(APIClient, stackAPIClient)).catch(reject);
-      } else if (config.management_token) {
+      if (config.management_token || config.isAuthenticated) {
         await backupAndImportData(APIClient, stackAPIClient);
+      } else if ((config.email && config.password) || isAuthenticated()) {
+        login(config).then(backupAndImportData(APIClient, stackAPIClient)).catch(reject);
+      } else if (config.email && config.password) {
+        login(config)
+          .then(backupAndImportData.apply(null, [APIClient, stackAPIClient]))
+          .catch(reject);
+      } else {
+        reject('Kindly login or provide management_token');
       }
     }
   });
@@ -89,7 +97,7 @@ let singleImport = async (APIClient, stackAPIClient, moduleName, types, config) 
         }
       }
       if (!(importResponse && importResponse.empty)) {
-        addlogs(config, moduleName + ' imported successfully!', 'success');
+        addlogs(config, `Module '${moduleName}' imported successfully!`, 'success');
       }
       addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'success');
       return true;
@@ -97,9 +105,9 @@ let singleImport = async (APIClient, stackAPIClient, moduleName, types, config) 
       addlogs(config, 'Please provide valid module name.', 'error');
     }
   } catch (error) {
-    addlogs(config, 'Failed to migrate ' + moduleName, 'error');
+    addlogs(config, `Failed to migrate '${moduleName}'`, 'error');
     addlogs(config, util.formatError(error), 'error');
-    addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
+    addlogs(config, `The log for this is stored at '${path.join(config.oldPath, 'logs', 'import')}'`, 'error');
   }
 };
 
@@ -142,15 +150,11 @@ let allImport = async (APIClient, stackAPIClient, config, types) => {
   } catch (error) {
     addlogs(
       config,
-      chalk.red(
-        'Failed to migrate stack: ' +
-          (config.destinationStackName || config.target_stack) +
-          '. Please check error logs for more info',
-      ),
+      `Failed to migrate stack '${(config.destinationStackName || config.target_stack)}'. Please check error logs for more info`,
       'error',
     );
     addlogs(config, util.formatError(error), 'error');
-    addlogs(config, 'The log for this is stored at ' + path.join(config.oldPath, 'logs', 'import'), 'error');
+    addlogs(config, `The log for this is stored at '${path.join(config.oldPath, 'logs', 'import')}'`, 'error');
   }
 };
 
@@ -159,21 +163,30 @@ const createBackup = (backupDirPath, config) => {
     if (config.hasOwnProperty('useBackedupDir') && fs.existsSync(config.useBackedupDir)) {
       return resolve(config.useBackedupDir);
     }
-    ncp.limit = config.backupConcurrency || 16;
+
     if (path.isAbsolute(config.data)) {
-      return ncp(config.data, backupDirPath, (error) => {
+      copy(config.data, backupDirPath, (error) => {
         if (error) {
           return reject(error);
         }
         return resolve(backupDirPath);
       });
     } else {
-      ncp(config.data, backupDirPath, (error) => {
-        if (error) {
-          return reject(error);
-        }
+      //handle mac error :- Cannot copy to a subdirectory of itself 
+      if (config.data === "." || config.data === "./") {
+        const tempDestination = `${os.platform() === 'darwin' ? '/private/tmp' : '/tmp'}/${camelCase(backupDirPath)}`;
+        copySync(config.data, tempDestination);
+        copySync(tempDestination, backupDirPath);
+        removeSync(tempDestination);
         return resolve(backupDirPath);
-      });
+      } else {
+        copy(config.data, backupDirPath,(error) => {
+          if (error) {
+            return reject(error);
+          }
+          return resolve(backupDirPath);
+        });
+      }
     }
   });
 };
@@ -187,8 +200,8 @@ const validateIfBranchExist = async (stackAPIClient, config, branch) => {
         .catch((_err) => {});
       if (data && typeof data === 'object') {
         if (data.error_message) {
-          addlogs(config, chalk.red(data.error_message), 'error');
-          addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
+          addlogs(config, data.error_message, 'error');
+          addlogs(config, `No branch found with the name '${branch}`, 'error');
           reject({ message: 'No branch found with the name ' + branch, error: error_message });
         } else {
           resolve(data);
@@ -197,7 +210,7 @@ const validateIfBranchExist = async (stackAPIClient, config, branch) => {
         reject({ message: 'No branch found with the name ' + branch, error: {} });
       }
     } catch (error) {
-      addlogs(config, chalk.red('No branch found with the name ' + branch), 'error');
+      addlogs(config, `No branch found with the name '${branch}`, 'error');
       reject({ message: 'No branch found with the name ' + branch, error });
     }
   });

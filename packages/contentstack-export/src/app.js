@@ -6,7 +6,7 @@ const util = require('./lib/util');
 const login = require('./lib/util/login');
 const setupBranches = require('./lib/util/setup-branches');
 const { addlogs, unlinkFileLogger } = require('./lib/util/log');
-const { managementSDKClient } = require('@contentstack/cli-utilities');
+const { managementSDKClient, isAuthenticated } = require('@contentstack/cli-utilities');
 
 exports.initial = async (config) => {
   return new Promise(async (resolve, reject) => {
@@ -36,7 +36,7 @@ exports.initial = async (config) => {
               await allExport(APIClient, stackAPIClient, config, types, branch.uid);
             }
           } catch (error) {
-            addlogs(config, `failed export contents ${branch.uid} ${util.formatError(error)}`, 'error');
+            addlogs(config, `failed export contents '${branch.uid}' ${util.formatError(error)}`, 'error');
           }
         }
       } else {
@@ -47,20 +47,26 @@ exports.initial = async (config) => {
             await allExport(APIClient, stackAPIClient, config, types);
           }
         } catch (error) {
-          addlogs(config, `failed export contents ${util.formatError(error)}`, 'error');
+          addlogs(config, `failed export contents. ${util.formatError(error)}`, 'error');
         }
       }
     };
 
-    // try {
-    if (
+    if (config.management_token || config.isAuthenticated) {
+      try {
+        await fetchBranchAndExport(APIClient, stackAPIClient);
+      } catch (error) {
+        addlogs(config, `${util.formatError(error)}`, 'error');
+      }
+      resolve();
+    } else if (
       (config.email && config.password) ||
       (!config.email && !config.password && config.source_stack && config.access_token) ||
-      (config.auth_token && !config.management_token)
+      (isAuthenticated() && !config.management_token)
     ) {
       login
-        .login(config)
-        .then(async () => {
+        .login(config, APIClient, stackAPIClient)
+        .then(async function () {
           // setup branches
           try {
             await fetchBranchAndExport(APIClient, stackAPIClient);
@@ -71,21 +77,15 @@ exports.initial = async (config) => {
           resolve();
         })
         .catch((error) => {
-          console.log('error', error && error.message);
           if (error && error.errors && error.errors.api_key) {
-            addlogs(config, chalk.red('Stack Api key ' + error.errors.api_key[0], 'Please enter valid Key', 'error'));
+            addlogs(config, `Stack Api key '${error.errors.api_key[0]}', Please enter valid Key`, 'error');
             addlogs(config, 'The log for this is stored at ' + config.data + '/export/logs', 'success');
           } else {
             addlogs(config, `${util.formatError(error)}`, 'error');
           }
         });
-    } else if (config.management_token) {
-      try {
-        await fetchBranchAndExport(APIClient, stackAPIClient);
-      } catch (error) {
-        addlogs(config, util.formatError(error), 'error');
-      }
-      resolve();
+    } else {
+      reject('Kindly login or provide management_token');
     }
   });
 };
@@ -111,7 +111,7 @@ const singleExport = async (APIClient, stackAPIClient, moduleName, types, config
           config = _.merge(config, master_locale);
         }
       }
-      addlogs(config, moduleName + ' was exported successfully!', 'success');
+      addlogs(config, `Module '${moduleName}' was exported successfully!`, 'success');
       addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'success');
     } else {
       addlogs(config, 'Please provide valid module name.', 'error');
@@ -119,8 +119,8 @@ const singleExport = async (APIClient, stackAPIClient, moduleName, types, config
     return true;
   } catch (error) {
     addlogs(config, `${util.formatError(error)}`, 'error');
-    addlogs(config, 'Failed to migrate ' + moduleName, 'error');
-    addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error');
+    addlogs(config, `Failed to migrate module '${moduleName}'`, 'error');
+    addlogs(config, `The log for this is stored at '${path.join(config.data, 'logs', 'export')}'`, 'error');
   }
 };
 
@@ -148,9 +148,9 @@ const allExport = async (APIClient, stackAPIClient, config, types, branchName) =
     addlogs(config, util.formatError(error), 'error');
     addlogs(
       config,
-      chalk.red('Failed to migrate stack: ' + config.source_stack + '. Please check error logs for more info'),
+      `Failed to migrate stack '${config.sourceStackName || config.source_stack}'. Please check error logs for more info.`,
       'error',
     );
-    addlogs(config, 'The log for this is stored at ' + path.join(config.data, 'logs', 'export'), 'error');
+    addlogs(config, `The log for this is stored at '${path.join(config.data, 'logs', 'export')}'`, 'error');
   }
 };

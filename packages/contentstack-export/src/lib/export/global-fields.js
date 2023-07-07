@@ -34,8 +34,8 @@ module.exports = class ExportGlobalFields {
         include_count: true,
       },
     };
-    this.stackAPIClient = stackAPIClient;
     this.config = merge(config, exportConfig);
+    this.stackAPIClient = stackAPIClient;
     this.globalfieldsFolderPath = path.resolve(
       this.config.data,
       this.config.branchName || '',
@@ -89,22 +89,17 @@ module.exports = class ExportGlobalFields {
               }
               self.global_fields.push(globalField);
             });
-
             skip += self.limit;
-
-            if (skip > globalFieldResponse.count) {
+            if (skip >= globalFieldResponse.count) {
               return resolve();
             }
-
             return self.getGlobalFields(skip, globalFieldConfig).then(resolve).catch(reject);
           } catch (error) {
-            addlogs(globalFieldConfig, chalk.red(`Failed to export global-fields ${formatError(error)}`), 'error');
+            addlogs(globalFieldConfig, `Failed to export global-fields. ${formatError(error)}`, 'error');
             reject(error);
           }
         })
-        .catch((error) => {
-          reject(error);
-        });
+        .catch(reject);
     });
   }
 
@@ -117,7 +112,6 @@ module.exports = class ExportGlobalFields {
           self.global_fields,
         );
         addlogs(self.config, chalk.green('Global Fields export completed successfully'), 'success');
-
         resolve();
       } catch (error) {
         addlogs(self.config, error, 'error');

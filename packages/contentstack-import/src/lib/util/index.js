@@ -6,7 +6,7 @@
  */
 
 const _ = require('lodash');
-const { HttpClient, managementSDKClient } = require('@contentstack/cli-utilities');
+const { HttpClient, managementSDKClient, isAuthenticated } = require('@contentstack/cli-utilities');
 const fs = require('./fs');
 const path = require('path');
 const chalk = require('chalk');
@@ -33,7 +33,7 @@ exports.validateConfig = (importConfig) => {
     !importConfig.password &&
     !importConfig.management_token &&
     importConfig.target_stack &&
-    !importConfig.auth_token
+    !isAuthenticated()
   ) {
     addlogs(importConfig, chalk.red('Kindly provide management_token or email and password'), 'error');
     return 'error';

@@ -8,8 +8,15 @@ const _ = require('lodash');
 const path = require('path');
 const chalk = require('chalk');
 const mkdirp = require('mkdirp');
-const contentstack = require('@contentstack/management');
-const { cliux, HttpClient, NodeCrypto, managementSDKClient } = require('@contentstack/cli-utilities');
+const {
+  cliux,
+  HttpClient,
+  NodeCrypto,
+  managementSDKClient,
+  isAuthenticated,
+  HttpClientDecorator,
+  OauthDecorator,
+} = require('@contentstack/cli-utilities');
 
 const { formatError } = require('../util');
 let config = require('../../config/default');
@@ -35,8 +42,6 @@ module.exports = class ImportMarketplaceApps {
   }
 
   async start() {
-    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
-    this.client = contentstack.client({ authtoken: this.config.auth_token, endpoint: this.developerHubBaseUrl });
     this.mapperDirPath = path.resolve(this.config.data, 'mapper', 'marketplace_apps');
     this.uidMapperPath = path.join(this.mapperDirPath, 'uid-mapping.json');
     this.marketplaceAppFolderPath = path.resolve(this.config.data, this.marketplaceAppConfig.dirName);
@@ -46,7 +51,7 @@ module.exports = class ImportMarketplaceApps {
 
     if (_.isEmpty(this.marketplaceApps)) {
       return Promise.resolve();
-    } else if (!this.config.auth_token) {
+    } else if (!isAuthenticated()) {
       cliux.print(
         '\nWARNING!!! To import Marketplace apps, you must be logged in. Please check csdx auth:login --help to log in\n',
         { color: 'yellow' },
@@ -54,14 +59,20 @@ module.exports = class ImportMarketplaceApps {
       return Promise.resolve();
     }
 
+    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
+    this.client = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
+
     await this.getOrgUid();
 
-    this.httpClient = new HttpClient({
-      headers: {
-        authtoken: this.config.auth_token,
-        organization_uid: this.config.org_uid,
-      },
-    });
+    const httpClient = new HttpClient();
+    if (!this.config.auth_token) {
+      this.httpClient = new OauthDecorator(httpClient);
+      const headers = await this.httpClient.preHeadersCheck(this.config);
+      this.httpClient = this.httpClient.headers(headers);
+    } else {
+      this.httpClient = new HttpClientDecorator(httpClient);
+      this.httpClient.headers(this.config);
+    }
 
     if (!fs.existsSync(this.mapperDirPath)) {
       mkdirp.sync(this.mapperDirPath);
@@ -71,18 +82,16 @@ module.exports = class ImportMarketplaceApps {
   }
 
   async getOrgUid() {
-    if (this.config.auth_token) {
-      const tempAPIClient = await managementSDKClient({ host: this.config.host });
-      const tempStackData = await tempAPIClient
-        .stack({ api_key: this.config.target_stack })
-        .fetch()
-        .catch((error) => {
-          console.log(error);
-        });
+    const tempAPIClient = await managementSDKClient({ host: this.config.host });
+    const tempStackData = await tempAPIClient
+      .stack({ api_key: this.config.target_stack })
+      .fetch()
+      .catch((error) => {
+        console.log(error);
+      });
 
-      if (tempStackData && tempStackData.org_uid) {
-        this.config.org_uid = tempStackData.org_uid;
-      }
+    if (tempStackData && tempStackData.org_uid) {
+      this.config.org_uid = tempStackData.org_uid;
     }
   }
 
@@ -210,18 +219,14 @@ module.exports = class ImportMarketplaceApps {
 
     for (let app of privateApps) {
       // NOTE keys can be passed to install new app in the developer hub
-      app.manifest = _.pick(app.manifest, [
-        'uid',
-        'name',
-        'description',
-        'icon',
-        'target_type',
-        'ui_location',
-        'webhook',
-        'oauth',
-      ]);
+      app.manifest = _.pick(app.manifest, ['uid', 'name', 'description', 'icon', 'target_type', 'webhook', 'oauth']);
       this.appOrginalName = app.manifest.name;
-      await this.createPrivateApps(app.manifest);
+      await this.createPrivateApps({
+        oauth: app.oauth,
+        webhook: app.webhook,
+        ui_location: app.ui_location,
+        ...app.manifest,
+      });
     }
 
     this.appOrginalName = undefined;
@@ -264,9 +269,9 @@ module.exports = class ImportMarketplaceApps {
     let locations = app.ui_location && app.ui_location.locations;
 
     if (!uidCleaned && !_.isEmpty(locations)) {
-      app.ui_location.locations = this.uodateManifestUILocations(locations, 'uid');
+      app.ui_location.locations = this.updateManifestUILocations(locations, 'uid');
     } else if (uidCleaned && !_.isEmpty(locations)) {
-      app.ui_location.locations = this.uodateManifestUILocations(locations, 'name', appSuffix);
+      app.ui_location.locations = this.updateManifestUILocations(locations, 'name', appSuffix);
     }
 
     if (app.name > 20) {
@@ -291,7 +296,7 @@ module.exports = class ImportMarketplaceApps {
       } else {
         log(this.config, formatError(message), 'error');
 
-        if (this.config.forceStopMarketplaceAppsPrompt) return resolve();
+        if (this.config.forceStopMarketplaceAppsPrompt) return Promise.resolve();
 
         if (
           await cliux.confirm(
@@ -300,7 +305,7 @@ module.exports = class ImportMarketplaceApps {
             ),
           )
         ) {
-          resolve();
+          Promise.resolve();
         } else {
           process.exit();
         }
@@ -328,7 +333,7 @@ module.exports = class ImportMarketplaceApps {
     return this.createPrivateApps(app, true, appSuffix + 1);
   }
 
-  uodateManifestUILocations(locations, type = 'uid', appSuffix = 1) {
+  updateManifestUILocations(locations, type = 'uid', appSuffix = 1) {
     switch (type) {
       case 'uid':
         return _.map(locations, (location) => {
@@ -389,7 +394,10 @@ module.exports = class ImportMarketplaceApps {
         .catch((error) => error);
 
       if (installation.installation_uid) {
-        log(this.config, `${app.manifest.name} app installed successfully.!`, 'success');
+        let appName = this.appNameMapping[app.manifest.name]
+          ? this.appNameMapping[app.manifest.name]
+          : app.manifest.name;
+        log(this.config, `${appName} app installed successfully.!`, 'success');
         await this.makeRedirectUrlCall(installation, app.manifest.name);
         this.installationUidMapping[app.uid] = installation.installation_uid;
         updateParam = { manifest: app.manifest, ...installation, configuration, server_configuration };
@@ -507,16 +515,21 @@ module.exports = class ImportMarketplaceApps {
       return Promise.resolve();
     }
 
-    return this.httpClient
-      .put(`${this.developerHubBaseUrl}/installations/${uid}`, payload)
-      .then(({ data }) => {
-        if (data.message) {
-          log(this.config, formatError(data.message), 'success');
-        } else {
-          log(this.config, `${app.manifest.name} app config updated successfully.!`, 'success');
-        }
-      })
-      .catch((error) => log(this.config, formatError(error), 'error'));
+    let installation = this.client
+    .organization(this.config.org_uid)
+    .app(app.manifest.uid)
+    .installation(uid)
+
+    installation = Object.assign(installation, payload)
+
+    return installation
+    .update()
+    .then(async data => {
+      if (data) {
+        log(this.config, `${app.manifest.name} app config updated successfully.!`, 'success');
+      }
+    })
+    .catch((error) => log(this.config, formatError(error), 'error'))
   }
 
   validateAppName(name) {

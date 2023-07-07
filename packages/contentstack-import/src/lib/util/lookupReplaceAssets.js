@@ -219,7 +219,9 @@ module.exports = function (data, mappedAssetUids, mappedAssetUrls, assetUidMappe
         [data.entry.uid]: matchedUids,
       };
     }
-    helper.writeFile(path.join(assetUidMapperPath, 'matched-asset-uids.json'));
+    if (!helper.fileExistsSync(path.join(assetUidMapperPath, 'matched-asset-uids.json'))) {
+      helper.writeFile(path.join(assetUidMapperPath, 'matched-asset-uids.json'));
+    }
   }
 
   if (unmatchedUids.length) {
@@ -297,7 +299,7 @@ function findFileUrls(schema, _entry, assetUrls) {
     text = JSON.stringify(_entry);
   }
   markdownRegEx = new RegExp(
-    '(https://(assets|(eu-|azure-na-)?images).contentstack.(io|com)/v3/assets/(.*?)/(.*?)/(.*?)/(.*?)(?="))',
+    '(https://(assets|(eu-|azure-na-|azure-eu-)?images).contentstack.(io|com)/v3/assets/(.*?)/(.*?)/(.*?)/(.*?)(?="))',
     'g',
   );
   while ((markdownMatch = markdownRegEx.exec(text)) !== null) {

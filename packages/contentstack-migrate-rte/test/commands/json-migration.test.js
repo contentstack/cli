@@ -21,8 +21,8 @@ describe('Migration Config validation', () => {
   getTokenCallback
     .withArgs('test1')
     .returns({
-      token: 'cs2f6c60355c432bc95972e068',
-      apiKey: 'blt1f36f82ccc346cc5',
+      token: 'testManagementToken',
+      apiKey: 'testApiKey',
       type: 'management',
     })
     .withArgs('invalidAlias')
@@ -263,8 +263,8 @@ describe('Content Type with Single RTE Field of Single Type', function () {
   });
   const getTokenCallback = sinon.stub();
   getTokenCallback.withArgs('test1').returns({
-    token: 'cs2f6c60355c432bc95972e068',
-    apiKey: 'blt1f36f82ccc346cc5',
+    token: 'testManagementToken',
+    apiKey: 'testApiKey',
     type: 'management',
   });
 
@@ -569,8 +569,8 @@ describe('Global Field Migration', () => {
 
   const getTokenCallback = sinon.stub();
   getTokenCallback.withArgs('test1').returns({
-    token: 'cs2f6c60355c432bc95972e068',
-    apiKey: 'blt1f36f82ccc346cc5',
+    token: 'testManagementToken',
+    apiKey: 'testApiKey',
     type: 'management',
   });
   test
@@ -710,8 +710,8 @@ describe('Global Field Migration', () => {
 describe('Content Type with single rte of multiple type', () => {
   const getTokenCallback = sinon.stub();
   getTokenCallback.withArgs('test1').returns({
-    token: 'cs2f6c60355c432bc95972e068',
-    apiKey: 'blt1f36f82ccc346cc5',
+    token: 'testManagementToken',
+    apiKey: 'testApiKey',
     type: 'management',
   });
   test
@@ -727,8 +727,8 @@ describe('Content Type with single rte of multiple type', () => {
 describe('Content Type with Single RTE inside modular block', () => {
   const getTokenCallback = sinon.stub();
   getTokenCallback.withArgs('test1').returns({
-    token: 'cs2f6c60355c432bc95972e068',
-    apiKey: 'blt1f36f82ccc346cc5',
+    token: 'testManagementToken',
+    apiKey: 'testApiKey',
     type: 'management',
   });
   test
@@ -757,8 +757,8 @@ describe('Content Type with Single RTE inside modular block', () => {
 describe('Content Type with Single RTE of type multiple inside group', () => {
   const getTokenCallback = sinon.stub();
   getTokenCallback.withArgs('test1').returns({
-    token: 'cs2f6c60355c432bc95972e068',
-    apiKey: 'blt1f36f82ccc346cc5',
+    token: 'testManagementToken',
+    apiKey: 'testApiKey',
     type: 'management',
   });
   test
@@ -787,8 +787,8 @@ describe('Content Type with Single RTE of type multiple inside group', () => {
 describe('Content Type with Single RTE inside group of type multiple', () => {
   const getTokenCallback = sinon.stub();
   getTokenCallback.withArgs('test1').returns({
-    token: 'cs2f6c60355c432bc95972e068',
-    apiKey: 'blt1f36f82ccc346cc5',
+    token: 'testManagementToken',
+    apiKey: 'testApiKey',
     type: 'management',
   });
   test
@@ -817,8 +817,8 @@ describe('Content Type with Single RTE inside group of type multiple', () => {
 describe('Content Type with multiple file field', () => {
   const getTokenCallback = sinon.stub();
   getTokenCallback.withArgs('test1').returns({
-    token: 'cs2f6c60355c432bc95972e068',
-    apiKey: 'blt1f36f82ccc346cc5',
+    token: 'testManagementToken',
+    apiKey: 'testApiKey',
     type: 'management',
   });
   test
@@ -847,8 +847,8 @@ describe('Content Type with multiple file field', () => {
 describe('Migration with old flags and command', () => {
   const getTokenCallback = sinon.stub();
   getTokenCallback.withArgs('test1').returns({
-    token: 'cs2f6c60355c432bc95972e068',
-    apiKey: 'blt1f36f82ccc346cc5',
+    token: 'testManagementToken',
+    apiKey: 'testApiKey',
     type: 'management',
   });
 

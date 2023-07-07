@@ -25,8 +25,8 @@ module.exports = class ExportEnvironments {
   };
 
   constructor(exportConfig, stackAPIClient) {
-    this.stackAPIClient = stackAPIClient;
     this.config = merge(this.config, exportConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
@@ -42,7 +42,7 @@ module.exports = class ExportEnvironments {
     mkdirp.sync(environmentsFolderPath);
     addlogs(self.config, 'Starting environment export', 'success');
 
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       self.stackAPIClient
         .environment()
         .query(self.requestOptions.qs)
@@ -66,7 +66,7 @@ module.exports = class ExportEnvironments {
           }
         })
         .catch((error) => {
-          addlogs(self.config, `Environments export failed ${formatError(error)}`, 'error');
+          addlogs(self.config, `Environments export failed. ${formatError(error)}`, 'error');
           reject(error);
         });
     });

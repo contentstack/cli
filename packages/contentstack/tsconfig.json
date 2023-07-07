@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "declaration": false,
+    "declaration": true,
     "importHelpers": true,
     "module": "commonjs",
     "outDir": "lib",
@@ -9,7 +9,8 @@
     "target": "es2017",
     "allowJs": true,
     "sourceMap": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true
   },
   "include": [
     "src/**/*"

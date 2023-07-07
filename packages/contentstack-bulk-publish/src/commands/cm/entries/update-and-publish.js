@@ -1,5 +1,5 @@
-const { Command, flags } = require('@contentstack/cli-command');
-const { printFlagDeprecation, cliux } = require('@contentstack/cli-utilities');
+const { Command } = require('@contentstack/cli-command');
+const { printFlagDeprecation, cliux, flags } = require('@contentstack/cli-utilities');
 
 const store = require('../../../util/store.js');
 const { getStack } = require('../../../util/client.js');
@@ -15,6 +15,8 @@ class UpdateAndPublishCommand extends Command {
     addFieldsFlags.retryFailed = addFieldsFlags['retry-failed'] || addFieldsFlags.retryFailed || false;
     addFieldsFlags.contentTypes = addFieldsFlags['content-types'] || addFieldsFlags.contentTypes;
     addFieldsFlags.bulkPublish = addFieldsFlags['bulk-publish'] || addFieldsFlags.bulkPublish;
+    addFieldsFlags.apiVersion = addFieldsFlags['api-version'] || '3';
+    delete addFieldsFlags['api-version'];
     delete addFieldsFlags['retry-failed'];
     delete addFieldsFlags['content-types'];
     delete addFieldsFlags['bulk-publish'];
@@ -43,10 +45,11 @@ class UpdateAndPublishCommand extends Command {
         }
         config = {
           alias: updatedFlags.alias,
-          host: this.region.cma,
+          host: this.cmaHost,
+          cda: this.cdaHost,
           branch: addFieldsFlags.branch,
         };
-        stack = getStack(config);
+        stack = await getStack(config);
       }
       if (await this.confirmFlags(updatedFlags)) {
         try {
@@ -118,6 +121,9 @@ UpdateAndPublishCommand.flags = {
     description:
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
+  }),
+  'api-version': flags.string({
+    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
   }),
   'content-types': flags.string({
     description: 'The Contenttypes from which entries will be published',

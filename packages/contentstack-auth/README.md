@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-auth/1.1.0 darwin-x64 node-v18.12.1
+@contentstack/cli-auth/1.3.10 darwin-arm64 node-v18.16.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -46,11 +46,12 @@ User sessions login
 
 ```
 USAGE
-  $ csdx auth:login [-u <value>] [-p <value>]
+  $ csdx auth:login [-u <value> | --oauth] [-p <value> | ]
 
 FLAGS
   -p, --password=<value>  Password
   -u, --username=<value>  User name
+  --oauth                 Enables single sign-on (SSO) in Contentstack CLI
 
 DESCRIPTION
   User sessions login
@@ -226,11 +227,12 @@ User sessions login
 
 ```
 USAGE
-  $ csdx login [-u <value>] [-p <value>]
+  $ csdx login [-u <value> | --oauth] [-p <value> | ]
 
 FLAGS
   -p, --password=<value>  Password
   -u, --username=<value>  User name
+  --oauth                 Enables single sign-on (SSO) in Contentstack CLI
 
 DESCRIPTION
   User sessions login

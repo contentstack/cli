@@ -11,12 +11,13 @@ const Promise = require('bluebird');
 const _ = require('lodash');
 const chalk = require('chalk');
 const progress = require('progress-stream');
-const { HttpClient } = require('@contentstack/cli-utilities');
+const { HttpClient, configHandler } = require('@contentstack/cli-utilities');
 
 const helper = require('../util/helper');
 const { addlogs } = require('../util/log');
 
 let config = require('../../config/default');
+const { formatError } = require('../util');
 
 module.exports = class ExportAssets {
   config;
@@ -53,11 +54,11 @@ module.exports = class ExportAssets {
     // Create asset folder
     mkdirp.sync(this.assetsFolderPath);
 
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       // TBD: getting all the assets should have optimized
       return self
         .getAssetCount()
-        .then(function (count) {
+        .then((count) => {
           const assetBatches = [];
 
           if (typeof count !== 'number' || count === 0) {
@@ -70,36 +71,37 @@ module.exports = class ExportAssets {
 
           return Promise.map(
             assetBatches,
-            function (batch) {
+            (batch) => {
               return self
                 .getAssetJSON(batch)
-                .then(function (assetsJSON) {
+                .then((assetsJSON) => {
                   return Promise.map(
                     assetsJSON,
-                    function (assetJSON) {
+                    (assetJSON) => {
                       if (self.assetConfig.downloadVersionAssets) {
                         return self
                           .getVersionedAssetJSON(assetJSON.uid, assetJSON._version)
-                          .then(function () {
+                          .then(() => {
                             self.assetContents[assetJSON.uid] = assetJSON;
                           })
-                          .catch(function (error) {
+                          .catch((error) => {
                             addlogs(
                               self.config,
-                              chalk.red('The following asset failed to download\n' + JSON.stringify(assetJSON)),
+                              `Asset '${assetJSON.uid}' failed to download.\n ${formatError(error)}`,
+                              'error'
                             );
                             addlogs(self.config, error, 'error');
                           });
                       } else {
                         return self
                           .downloadAsset(assetJSON)
-                          .then(function () {
+                          .then(() => {
                             self.assetContents[assetJSON.uid] = assetJSON;
                           })
                           .catch((err) => {
                             addlogs(
-                              { errorCode: err && err.code, uid: assetJSON.uid },
-                              `Asset download failed - ${assetJSON.uid}`,
+                              self.config,
+                              `Asset '${assetJSON.uid}' download failed. ${formatError(err)}`,
                               'error',
                             );
                             return err;
@@ -108,49 +110,50 @@ module.exports = class ExportAssets {
                     },
                     { concurrency: self.vLimit },
                   )
-                    .then(function () {
+                    .then(() => {
                       addlogs(self.config, 'Batch no ' + (batch + 1) + ' of assets is complete', 'success');
                       // helper.writeFileSync(this.assetContentsFile, self.assetContents)
                     })
-                    .catch(function (error) {
-                      console.log('Error fetch/download the asset', error && error.message);
-                      addlogs(self.config, 'Asset batch ' + (batch + 1) + ' failed to download', 'error');
+                    .catch((error) => {
+                      addlogs(self.config, `Asset batch ${batch + 1} failed to download`, 'error');
+                      addlogs(self.config, formatError(error), 'error');
                       addlogs(self.config, error, 'error');
                     });
                 })
-                .catch(function (error) {
+                .catch((error) => {
                   addlogs(self.config, error, 'error');
                   reject(error);
                 });
             },
             { concurrency: self.assetConfig.concurrencyLimit || 1 },
           )
-            .then(function () {
+            .then(() => {
               helper.writeFileSync(self.assetContentsFile, self.assetContents);
 
               return self
                 .exportFolders()
-                .then(function () {
+                .then(() => {
                   addlogs(self.config, chalk.green('Asset export completed successfully'), 'success');
                   return resolve();
                 })
-                .catch(function (error) {
-                  addlogs(self.config, error, 'success');
+                .catch((error) => {
+                  addlogs(self.config, error, 'error');
                   reject(error);
                 });
             })
-            .catch(function (error) {
+            .catch((error) => {
               helper.writeFileSync(self.assetContentsFile, self.assetContents);
               addlogs(
                 self.config,
-                chalk.red('Asset export failed due to the following errors ' + JSON.stringify(error), 'error'),
+                `Asset export failed. ${formatError(error)}`,
+                'error'
               );
-              addlogs(self.config, error, 'success');
+              addlogs(self.config, error, 'error');
               reject(error);
             });
         })
-        .catch(function (error) {
-          addlogs(self.config, error, 'success');
+        .catch((error) => {
+          addlogs(self.config, error, 'error');
           reject(error);
         });
     });
@@ -158,10 +161,10 @@ module.exports = class ExportAssets {
 
   exportFolders() {
     const self = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       return self
         .getAssetCount(true)
-        .then(function (fCount) {
+        .then((fCount) => {
           if (fCount === 0) {
             addlogs(self.config, 'No folders were found in the stack!', 'success');
             return resolve();
@@ -169,17 +172,17 @@ module.exports = class ExportAssets {
 
           return self
             .getFolderJSON(0, fCount)
-            .then(function () {
+            .then(() => {
               // asset folders have been successfully exported
               addlogs(self.config, 'Asset-folders have been successfully exported!', 'success');
               return resolve();
             })
-            .catch(function (error) {
-              addlogs(self.config, chalk.red('Error while exporting asset-folders!'), 'error');
+            .catch((error) => {
+              addlogs(self.config, `Error while exporting asset-folders!\n ${formatError(error)}`, 'error');
               return reject(error);
             });
         })
-        .catch(function (error) {
+        .catch((error) => {
           addlogs(self.config, error, 'error');
           // error while fetching asset folder count
           return reject(error);
@@ -189,7 +192,7 @@ module.exports = class ExportAssets {
 
   getFolderJSON(skip, fCount) {
     const self = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       if (typeof skip !== 'number') {
         skip = 0;
       }
@@ -213,13 +216,14 @@ module.exports = class ExportAssets {
           skip += 100;
           self.folderData.push(...response.items);
           return self.getFolderJSON(skip, fCount).then(resolve).catch(reject);
-        });
+        })
+        .catch((error) => reject(error));
     });
   }
 
   getAssetCount(folder) {
     const self = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       if (folder && typeof folder === 'boolean') {
         const queryOptions = {
           skip: 99999990,
@@ -254,7 +258,7 @@ module.exports = class ExportAssets {
 
   getAssetJSON(skip) {
     const self = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       if (typeof skip !== 'number') {
         skip = 0;
       }
@@ -283,7 +287,7 @@ module.exports = class ExportAssets {
     const self = this;
     const assetVersionInfo = bucket || [];
 
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       if (self.assetDownloadRetry[uid + version] > self.assetDownloadRetryLimit) {
         console.log('Reached max', self.assetDownloadRetry[uid + version]);
         return reject(new Error('Asset Max download retry limit exceeded! ' + uid));
@@ -308,7 +312,7 @@ module.exports = class ExportAssets {
         .then((versionedAssetJSONResponse) => {
           self
             .downloadAsset(versionedAssetJSONResponse)
-            .then(function () {
+            .then(() => {
               assetVersionInfo.splice(0, 0, versionedAssetJSONResponse);
               // Remove duplicates
               assetVersionInfo = _.uniqWith(assetVersionInfo, _.isEqual);
@@ -318,7 +322,6 @@ module.exports = class ExportAssets {
         })
         .catch((error) => {
           addlogs(self.config, error, 'error');
-          console.log('Error on  fetch', error && error.message);
 
           if (error.status === 408) {
             console.log('retrying', uid);
@@ -328,7 +331,6 @@ module.exports = class ExportAssets {
               : (self.assetDownloadRetry[uid + version] = 1);
             return self.getVersionedAssetJSON(uid, version, assetVersionInfo).then(resolve).catch(reject);
           }
-
           reject(error);
         });
     });
@@ -336,7 +338,7 @@ module.exports = class ExportAssets {
 
   downloadAsset(asset) {
     const self = this;
-    return new Promise(async function (resolve, reject) {
+    return new Promise(async (resolve, reject) => {
       const assetFolderPath = path.resolve(self.assetsFolderPath, asset.uid);
       const assetFilePath = path.resolve(assetFolderPath, asset.filename);
 
@@ -350,11 +352,11 @@ module.exports = class ExportAssets {
       }
       self.assetStream = {
         url: self.config.securedAssets
-          ? `${asset.url}?authtoken=${self.config.authtoken || self.config.auth_token}`
+          ? `${asset.url}?authtoken=${configHandler.get('authtoken')}`
           : asset.url,
       };
 
-      await helper.makeDirectory(assetFolderPath);
+      mkdirp.sync(assetFolderPath);
       const assetFileStream = fs.createWriteStream(assetFilePath);
       self.assetStream.url = encodeURI(self.assetStream.url);
       self.httpClient
@@ -366,7 +368,7 @@ module.exports = class ExportAssets {
               time: 5000,
               length: assetStreamRequest.headers['content-length'],
             });
-            str.on('progress', function (progressData) {
+            str.on('progress', (progressData) => {
               console.log(`${asset.filename}: ${Math.round(progressData.percentage)}%`);
             });
             assetStreamRequest.pipe(str).pipe(assetFileStream);
@@ -378,11 +380,12 @@ module.exports = class ExportAssets {
           reject(error);
         });
       assetFileStream
-        .on('close', function () {
+        .on('close', () => {
           addlogs(self.config, 'Downloaded ' + asset.filename + ': ' + asset.uid + ' successfully!', 'success');
           return resolve();
         })
         .on('error', (error) => {
+          addlogs(self.config, `Download ${asset.filename}: ${asset.uid} failed!`, 'error');
           addlogs(self.config, error, 'error');
           reject(error);
         });
@@ -391,26 +394,26 @@ module.exports = class ExportAssets {
 
   getFolders() {
     const self = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       return self
         .getAssetCount(true)
-        .then(function (count) {
+        .then((count) => {
           if (count === 0) {
             addlogs(self.config, 'No folders were found in the stack', 'success');
             return resolve();
           }
           return self
             .getFolderDetails(0, count)
-            .then(function () {
+            .then(() => {
               addlogs(self.config, chalk.green('Exported asset-folders successfully!'), 'success');
               return resolve();
             })
-            .catch(function (error) {
+            .catch((error) => {
               addlogs(self.config, error, 'error');
               reject(error);
             });
         })
-        .catch(function (error) {
+        .catch((error) => {
           addlogs(self.config, error, 'error');
           reject(error);
         });
@@ -419,7 +422,7 @@ module.exports = class ExportAssets {
 
   getFolderDetails(skip, tCount) {
     const self = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       if (typeof skip !== 'number') {
         skip = 0;
       }

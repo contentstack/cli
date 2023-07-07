@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const defaultConfig = require('../../../config/default');
-const { Command, flags } = require('@contentstack/cli-command');
-const { configHandler } = require('@contentstack/cli-utilities');
+const { Command } = require('@contentstack/cli-command');
+const { flags, printFlagDeprecation, isAuthenticated, cliux } = require('@contentstack/cli-utilities');
 const {
   configWithMToken,
   parameterWithMToken,
@@ -10,7 +10,6 @@ const {
   parametersWithAuthToken,
   withoutParametersWithAuthToken,
 } = require('../../../lib/util/import-flags');
-const { printFlagDeprecation } = require('@contentstack/cli-utilities');
 
 class ImportCommand extends Command {
   async run() {
@@ -22,12 +21,12 @@ class ImportCommand extends Command {
     const moduleName = importCommandFlags.module;
     const backupdir = importCommandFlags['backup-dir'];
     const alias = importCommandFlags['alias'] || importCommandFlags['management-token-alias'];
-    let _authToken = configHandler.get('authtoken');
     importCommandFlags.branchName = importCommandFlags.branch;
     importCommandFlags.importWebhookStatus = importCommandFlags['import-webhook-status'];
     delete importCommandFlags.branch;
     delete importCommandFlags['import-webhook-status'];
     let host = self.cmaHost;
+    importCommandFlags['isAuthenticated'] = isAuthenticated();
 
     return new Promise((resolve, reject) => {
       if (data) {
@@ -42,63 +41,32 @@ class ImportCommand extends Command {
         if (managementTokens) {
           let result;
 
-          if ((extConfig && _authToken) || alias) {
-            result = configWithMToken(
-              extConfig,
-              managementTokens,
-              moduleName,
-              host,
-              _authToken,
-              backupdir,
-              importCommandFlags,
-            );
+          if ((extConfig && isAuthenticated()) || alias) {
+            result = configWithMToken(extConfig, managementTokens, moduleName, host, backupdir, importCommandFlags);
           } else if (data) {
-            result = parameterWithMToken(
-              managementTokens,
-              data,
-              moduleName,
-              host,
-              _authToken,
-              backupdir,
-              importCommandFlags,
-            );
+            result = parameterWithMToken(managementTokens, data, moduleName, host, backupdir, importCommandFlags);
           } else {
-            result = withoutParameterMToken(
-              managementTokens,
-              moduleName,
-              host,
-              _authToken,
-              backupdir,
-              importCommandFlags,
-            );
+            result = withoutParameterMToken(managementTokens, moduleName, host, backupdir, importCommandFlags);
           }
 
           result.then(resolve).catch(reject);
         } else {
-          console.log('management Token is not present please add managment token first');
+          cliux.print(`error: management Token is not present please add managment token first`, {color: 'red'});
         }
-      } else if (_authToken) {
+      } else if (isAuthenticated()) {
         let result;
 
         if (extConfig) {
-          result = configWithAuthToken(extConfig, _authToken, moduleName, host, backupdir, importCommandFlags);
+          result = configWithAuthToken(extConfig, moduleName, host, backupdir, importCommandFlags);
         } else if (targetStack && data) {
-          result = parametersWithAuthToken(
-            _authToken,
-            targetStack,
-            data,
-            moduleName,
-            host,
-            backupdir,
-            importCommandFlags,
-          );
+          result = parametersWithAuthToken(targetStack, data, moduleName, host, backupdir, importCommandFlags);
         } else {
-          result = withoutParametersWithAuthToken(_authToken, moduleName, host, backupdir, importCommandFlags);
+          result = withoutParametersWithAuthToken(moduleName, host, backupdir, importCommandFlags);
         }
 
         result.then(resolve).catch(reject);
       } else {
-        console.log('Login or provide the alias for management token');
+        cliux.print(`error: Login or provide the alias for management token`, {color: 'red'});
       }
     });
   }
