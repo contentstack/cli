@@ -1,16 +1,19 @@
 const mkdirp = require('mkdirp');
 const path = require('path');
 const helper = require('./helper');
+const {isAuthenticated, configHandler} = require('@contentstack/cli-utilities')
 
 const setupBranches = async (config, branch, stackAPIClient) => {
   if (typeof config !== 'object') {
     throw new Error('Invalid config to setup the branch');
   }
+
   let branches = [];
+
   const headers = { api_key: config.source_stack };
 
-  if (config.auth_token) {
-    headers['authtoken'] = config.auth_token;
+  if (isAuthenticated()) {
+    headers['authtoken'] = configHandler.get('authtoken');
   } else if (config.management_token) {
     headers['authorization'] = config.management_token;
   }

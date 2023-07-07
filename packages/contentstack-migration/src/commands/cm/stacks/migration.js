@@ -6,14 +6,13 @@
 // Dependencies
 const Listr = require('listr');
 const { resolve, extname } = require('path');
-const { Command, flags } = require('@contentstack/cli-command');
+const { Command } = require('@contentstack/cli-command');
 const { waterfall } = require('async');
 const { Parser } = require('../../../modules');
 const { ActionList } = require('../../../actions');
 const fs = require('fs');
 const chalk = require('chalk');
-const { configHandler } = require('@contentstack/cli-utilities');
-const { printFlagDeprecation } = require('@contentstack/cli-utilities');
+const { printFlagDeprecation, managementSDKClient, flags, isAuthenticated } = require('@contentstack/cli-utilities');
 
 const { ApiError, SchemaValidator, MigrationError, FieldValidator } = require('../../../validators');
 
@@ -50,7 +49,7 @@ class MigrationCommand extends Command {
     const { branch } = migrationCommandFlags || {};
     const filePath = migrationCommandFlags['file-path'] || migrationCommandFlags.filePath;
     const multi = migrationCommandFlags.multiple || migrationCommandFlags.multi;
-    const authtoken = configHandler.get('authtoken');
+    const authtoken = isAuthenticated();
     const apiKey = migrationCommandFlags['api-key'] || migrationCommandFlags['stack-api-key'];
     const alias = migrationCommandFlags['alias'] || migrationCommandFlags['management-token-alias'];
     const config = migrationCommandFlags['config'];
@@ -82,6 +81,7 @@ class MigrationCommand extends Command {
       set('config', mapInstance, configObj);
     }
 
+    const APIClient = await managementSDKClient({ host: this.cmaHost });
     let stackSDKInstance;
     if (branch) {
       set(BRANCH, mapInstance, branch);
@@ -93,13 +93,13 @@ class MigrationCommand extends Command {
         set(MANAGEMENT_TOKEN, mapInstance, managementToken);
         set(API_KEY, mapInstance, managementToken.apiKey);
         if (branch) {
-          stackSDKInstance = this.managementAPIClient.stack({
+          stackSDKInstance = APIClient.stack({
             management_token: managementToken.token,
             api_key: managementToken.apiKey,
             branch_uid: branch,
           });
         } else {
-          stackSDKInstance = this.managementAPIClient.stack({
+          stackSDKInstance = APIClient.stack({
             management_token: managementToken.token,
             api_key: managementToken.apiKey,
           });
@@ -108,19 +108,18 @@ class MigrationCommand extends Command {
     } else if (authtoken) {
       set(AUTH_TOKEN, mapInstance, authtoken);
       set(API_KEY, mapInstance, apiKey);
-      this.managementAPIClient = { authtoken: this.authToken };
       if (branch) {
-        stackSDKInstance = this.managementAPIClient.stack({
+        stackSDKInstance = APIClient.stack({
           api_key: apiKey,
           branch_uid: branch,
         });
       } else {
-        stackSDKInstance = this.managementAPIClient.stack({ api_key: apiKey });
+        stackSDKInstance = APIClient.stack({ api_key: apiKey });
       }
     }
 
     set(MANAGEMENT_SDK, mapInstance, stackSDKInstance);
-    set(MANAGEMENT_CLIENT, mapInstance, this.managementAPIClient);
+    set(MANAGEMENT_CLIENT, mapInstance, APIClient);
 
     if (multi) {
       await this.execMultiFiles(filePath, mapInstance);
@@ -236,13 +235,11 @@ MigrationCommand.flags = {
   'stack-api-key': flags.string({
     char: 'k',
     description: 'With this flag add the API key of your stack.',
-    dependsOn: ['authtoken'],
     exclusive: ['alias'],
   }),
   alias: flags.string({
     char: 'a',
     description: 'Use this flag to add the management token alias.',
-    exclusive: ['authtoken'],
   }),
   'file-path': flags.string({
     description: 'Use this flag to provide the path of the file of the migration script provided by the user.',
@@ -259,7 +256,6 @@ MigrationCommand.flags = {
     description: '[optional] inline configuration, <key1>:<value1>',
     multiple: true,
   }),
-
   multiple: flags.boolean({
     description: 'This flag helps you to migrate multiple content files in a single instance.',
   }),
@@ -268,7 +264,7 @@ MigrationCommand.flags = {
   'api-key': flags.string({
     char: 'k',
     description: 'With this flag add the API key of your stack.',
-    dependsOn: ['authtoken'],
+    // dependsOn: ['authtoken'],
     exclusive: ['alias'],
     parse: printFlagDeprecation(['--api-key'], ['-k', '--stack-api-key']),
     hidden: true,

@@ -1,6 +1,6 @@
 /* eslint-disable node/no-extraneous-require */
-const { Command, flags } = require('@contentstack/cli-command');
-const { cliux, printFlagDeprecation } = require('@contentstack/cli-utilities');
+const { Command } = require('@contentstack/cli-command');
+const { cliux, printFlagDeprecation, flags } = require('@contentstack/cli-utilities');
 const { start } = require('../../../producer/cross-publish');
 const store = require('../../../util/store.js');
 const configKey = 'cross_env_publish';
@@ -40,11 +40,11 @@ class CrossPublishCommand extends Command {
         }
         config = {
           alias: updatedFlags.alias,
-          host: this.region.cma,
-          cda: this.region.cda,
+          host: this.cmaHost,
+          cda: this.cdaHost,
           branch: crossPublishFlags.branch,
         };
-        stack = getStack(config);
+        stack = await getStack(config);
       }
 
       if (!updatedFlags.deliveryToken && updatedFlags.deliveryToken.length === 0) {
@@ -133,6 +133,10 @@ class CrossPublishCommand extends Command {
       _flags.bulkPublish = _flags['bulk-publish'];
       delete _flags['bulk-publish'];
     }
+    if ('api-version' in _flags) {
+      _flags.apiVersion = _flags['api-version'] || '3';
+      delete _flags['api-version'];
+    }
     if ('source-env' in _flags) {
       _flags.environment = _flags['source-env'];
       delete _flags['source-env'];
@@ -179,6 +183,9 @@ CrossPublishCommand.flags = {
     description:
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
+  }),
+  'api-version': flags.string({
+    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
   }),
   contentType: flags.string({
     char: 't',

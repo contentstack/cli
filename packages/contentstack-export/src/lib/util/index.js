@@ -4,12 +4,12 @@
  * MIT Licensed
  */
 
-var _ = require('lodash');
-var defaultConfig = require('../../config/default');
-const chalk = require('chalk');
+const _ = require('lodash');
+const defaultConfig = require('../../config/default');
 const promiseLimit = require('promise-limit');
+const { isAuthenticated } = require('@contentstack/cli-utilities');
 
-exports.validateConfig = function (config) {
+exports.validateConfig = (config) => {
   if (!config.host || !config.cdn) {
     throw new Error('Host/CDN end point is missing from config');
   }
@@ -22,7 +22,7 @@ exports.validateConfig = function (config) {
     !config.management_token &&
     config.source_stack &&
     !config.access_token &&
-    !config.auth_token
+    !isAuthenticated()
   ) {
     throw new Error('Kindly provide management_token or email and password');
   } else if (
@@ -31,7 +31,7 @@ exports.validateConfig = function (config) {
     !config.access_token &&
     config.source_stack &&
     !config.management_token &&
-    !config.auth_token
+    !isAuthenticated()
   ) {
     throw new Error('Kindly provide access_token or management_token');
   } else if (!config.email && !config.password && config.preserveStackVersion) {

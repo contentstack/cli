@@ -1,7 +1,6 @@
 'use strict';
-
-const { Command, flags } = require('@contentstack/cli-command');
-const { printFlagDeprecation } = require('@contentstack/cli-utilities');
+const { Command } = require('@contentstack/cli-command');
+const { printFlagDeprecation, flags } = require('@contentstack/cli-utilities');
 const { publishOnlyUnpublishedService } = require('../../../services/publish-only-unpublished');
 
 class PublishOnlyUnpublished extends Command {
@@ -45,6 +44,9 @@ PublishOnlyUnpublished.flags = {
     description:
       "This flag is set to true by default. It indicates that contentstack's bulkpublish API will be used to publish the entries",
     default: 'true',
+  }),
+  'api-version': flags.string({
+    description : "API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].",
   }),
   sourceEnv: flags.string({
     char: 's',

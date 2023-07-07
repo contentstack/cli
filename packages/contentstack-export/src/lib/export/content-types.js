@@ -37,7 +37,7 @@ class ContentTypesExport {
       await this.writeContentTypes(this.contentTypes);
       addlogs(this.exportConfig, chalk.green('Content type(s) exported successfully'), 'success');
     } catch (error) {
-      addlogs(this.exportConfig, chalk.red(`Failed to export content types ${formatError(error)}`), 'error');
+      addlogs(this.exportConfig, `Failed to export content types ${formatError(error)}`, 'error');
       throw new Error('Failed to export content types');
     }
   }
@@ -58,7 +58,7 @@ class ContentTypesExport {
       }
       return await this.getContentTypes(skip);
     } else {
-      console.log('No content types returned for the given query');
+      addlogs(this.exportConfig, 'No content types returned for the given query', 'info');
     }
   }
 
@@ -77,7 +77,10 @@ class ContentTypesExport {
 
   async writeContentTypes(contentTypes) {
     function write(contentType) {
-      return fileHelper.writeFile(path.join(this.contentTypesPath, contentType.uid + '.json'), contentType);
+      return fileHelper.writeFile(
+        path.join(this.contentTypesPath,
+          `${contentType.uid === 'schema' ? 'schema|1' : contentType.uid}.json`),
+          contentType);
     }
     await executeTask(contentTypes, write.bind(this), { concurrency: this.writeConcurrency });
     return fileHelper.writeFile(path.join(this.contentTypesPath, 'schema.json'), contentTypes);

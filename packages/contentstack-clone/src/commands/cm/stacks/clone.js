@@ -1,5 +1,5 @@
-const { Command, flags } = require('@contentstack/cli-command');
-const { configHandler } = require('@contentstack/cli-utilities');
+const { Command } = require('@contentstack/cli-command');
+const { configHandler, flags, isAuthenticated, managementSDKClient } = require('@contentstack/cli-utilities');
 const { CloneHandler } = require('../../../lib/util/clone-handler');
 let config = require('../../../lib/util/dummyConfig.json');
 const path = require('path');
@@ -11,7 +11,6 @@ class StackCloneCommand extends Command {
   async run() {
     try {
       let self = this;
-      let _authToken = configHandler.get('authtoken');
       const { flags: cloneCommandFlags } = await self.parse(StackCloneCommand);
       const {
         yes,
@@ -70,17 +69,21 @@ class StackCloneCommand extends Command {
         await this.removeContentDirIfNotEmptyBeforeClone(pathdir); // NOTE remove if folder not empty before clone
         this.registerCleanupOnInterrupt(pathdir);
 
-        config.auth_token = _authToken;
+        config.auth_token = configHandler.get('authtoken');
         config.host = this.cmaHost;
         config.cdn = this.cdaHost;
         config.pathDir = pathdir;
         const cloneHandler = new CloneHandler(config);
-        cloneHandler.execute().catch();
+        const managementAPIClient = await managementSDKClient(config);
+        cloneHandler.setClient(managementAPIClient);
+        cloneHandler.execute().catch((error)=>{
+          console.log(error);
+        });
       };
 
       if (sourceManagementTokenAlias && destinationManagementTokenAlias) {
         if (sourceStackBranch || targetStackBranch) {
-          if (_authToken) {
+          if (isAuthenticated()) {
             handleClone();
           } else {
             console.log('Please login to execute this command, csdx auth:login');
@@ -89,7 +92,7 @@ class StackCloneCommand extends Command {
         } else {
           handleClone();
         }
-      } else if (_authToken) {
+      } else if (isAuthenticated()) {
         handleClone();
       } else {
         console.log('Please login to execute this command, csdx auth:login');

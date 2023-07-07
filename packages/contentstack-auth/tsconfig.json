@@ -1,6 +1,9 @@
 {
+  "ts-node": {
+    "transpileOnly": true
+  },
   "compilerOptions": {
-    "declaration": false,
+    "declaration": true,
     "importHelpers": true,
     "module": "commonjs",
     "outDir": "lib",
@@ -13,8 +16,5 @@
   },
   "include": [
     "src/**/*"
-  ],
-  "exclude": [
-    "src/**/*.d.ts"
   ]
 }

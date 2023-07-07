@@ -1,51 +1,50 @@
 {
   "name": "@contentstack/cli-cm-bootstrap",
   "description": "Bootstrap contentstack apps",
-  "version": "1.2.0",
+  "version": "1.4.10",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
     "build": "npm run clean && npm run compile",
-    "clean": "rm -rf ./lib && rm -rf tsconfig.build.tsbuildinfo",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
-    "prepack": "npm run build && oclif manifest && oclif readme",
+    "prepack": "pnpm compile && oclif manifest && oclif readme",
     "version": "oclif readme && git add README.md",
     "test": "npm run build && npm run test:e2e",
     "test:e2e": "nyc mocha \"test/**/*.test.js\"",
     "test:report": "nyc --reporter=lcov mocha \"test/**/*.test.js\""
   },
   "dependencies": {
-    "@contentstack/cli-cm-seed": "^1.2.0",
-    "@contentstack/cli-command": "^1.1.0",
-    "@contentstack/cli-utilities": "^1.1.0",
-    "@contentstack/management": "^1.6.1",
+    "@contentstack/cli-cm-seed": "^1.4.10",
+    "@contentstack/cli-command": "^1.2.9",
+    "@contentstack/cli-utilities": "^1.4.5",
     "inquirer": "8.2.4",
     "mkdirp": "^1.0.4",
-    "tar": "^6.0.5"
+    "tar": "^6.1.13"
   },
   "devDependencies": {
-    "oclif": "^3.1.2",
     "@oclif/test": "^2.2.10",
     "@types/inquirer": "^9.0.3",
     "@types/mkdirp": "^1.0.1",
     "@types/node": "^14.14.32",
-    "@types/tar": "^4.0.3",
+    "@types/tar": "^6.1.3",
     "chai": "^4.3.4",
     "eslint": "^8.18.0",
-    "eslint-config-oclif": "^3.1.0",
+    "eslint-config-oclif": "^4.0.0",
     "eslint-config-oclif-typescript": "^0.1.0",
     "globby": "^10.0.2",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
+    "oclif": "^3.8.1",
     "rimraf": "^2.7.1",
     "tmp": "^0.2.1",
     "ts-node": "^8.10.2",
     "typescript": "^4.9.3"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "/lib",
@@ -67,6 +66,11 @@
       "@contentstack/cli-cm-seed"
     ],
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-bootstrap/<%- commandPath %>"
+  },
+  "csdxConfig": {
+    "shortCommandName": {
+      "cm:bootstrap": "BTSTRP"
+    }
   },
   "repository": "contentstack/cli"
 }

@@ -24,8 +24,8 @@ module.exports = class ExportExtensions {
   };
 
   constructor(exportConfig, stackAPIClient) {
-    this.stackAPIClient = stackAPIClient;
     this.config = merge(config, exportConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
@@ -61,7 +61,7 @@ module.exports = class ExportExtensions {
           resolve();
         })
         .catch((error) => {
-          addlogs(self.config, `Failed to export extensions ${formatError(error)}`, 'error');
+          addlogs(self.config, `Failed to export extensions. ${formatError(error)}`, 'error');
           reject();
         });
     });

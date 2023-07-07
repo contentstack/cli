@@ -11,7 +11,7 @@ const configKey = 'publish_unpublished_env';
 
 async function publishOnlyUnpublishedService(UnpublishedEntriesCommand) {
   let config;
-  const _flags = await this.parse(UnpublishedEntriesCommand)
+  const _flags = await this.parse(UnpublishedEntriesCommand);
   const unpublishedEntriesFlags = flagsAdapter(_flags.flags);
   let updatedFlags;
   try {
@@ -39,10 +39,11 @@ async function publishOnlyUnpublishedService(UnpublishedEntriesCommand) {
       }
       config = {
         alias: updatedFlags.alias,
-        host: this.region.cma,
+        host: this.cmaHost,
+        cda: this.cdaHost,
         branch: unpublishedEntriesFlags.branch,
       };
-      stack = getStack(config);
+      stack = await getStack(config);
     }
     if (await confirmFlags(updatedFlags)) {
       try {
@@ -120,6 +121,10 @@ function flagsAdapter(flags) {
   if ('bulk-publish' in flags) {
     flags.bulkPublish = flags['bulk-publish'];
     delete flags['bulk-publish'];
+  }
+  if ('api-version' in flags) {
+    flags.apiVersion = flags['api-version'] || '3';
+    delete flags['api-version'];
   }
   return flags;
 }

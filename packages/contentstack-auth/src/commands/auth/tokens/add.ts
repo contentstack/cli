@@ -1,10 +1,13 @@
-import { Command, flags } from '@contentstack/cli-command';
+import { Command } from '@contentstack/cli-command';
 import {
   logger,
   cliux,
   CLIError,
   configHandler,
   printFlagDeprecation,
+  flags,
+  managementSDKClient,
+  FlagInput,
 } from '@contentstack/cli-utilities';
 import { askTokenType } from '../../../utils/interactive';
 import { tokenValidation } from '../../../utils';
@@ -26,7 +29,7 @@ export default class TokensAddCommand extends Command {
     '$ csdx auth:tokens:add --alias <alias> --stack-api-key <stack api key> --delivery -e <environment> --token <delivery token>',
   ];
 
-  static flags = {
+  static flags: FlagInput = {
     alias: flags.string({ char: 'a', description: 'Name of the token alias' }),
     delivery: flags.boolean({
       char: 'd',
@@ -66,9 +69,16 @@ export default class TokensAddCommand extends Command {
       description: 'Force adding',
       parse: printFlagDeprecation(['-f', '--force'], ['-y', '--yes']),
     }),
+    branch: flags.string({
+      required: false,
+      multiple: false,
+      description: 'Branch name',
+      hidden: true,
+    }),
   };
 
-  static usage = 'auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]';
+  static usage =
+    'auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]';
 
   async run(): Promise<any> {
     // @ts-ignore
@@ -81,6 +91,7 @@ export default class TokensAddCommand extends Command {
     let isDelivery = addTokenFlags.delivery;
     let isManagement = addTokenFlags.management;
     let environment = addTokenFlags.environment;
+    let branch = addTokenFlags.branch;
     const configKeyTokens = 'tokens';
 
     if (!isDelivery && !isManagement && !Boolean(environment)) {
@@ -110,12 +121,46 @@ export default class TokensAddCommand extends Command {
           return;
         }
       }
+
       if (!apiKey) {
         apiKey = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_API_KEY', name: 'apiKey' });
       }
 
       if (!token) {
         token = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_TOKEN', name: 'token' });
+      }
+
+      const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
+
+      let doBranchesExistInPlan: boolean = false;
+
+      if (isManagement && apiKey && token) {
+        await managementAPIClient
+          .stack({ api_key: apiKey, management_token: token })
+          .branch()
+          .query()
+          .find()
+          .then(() => (doBranchesExistInPlan = true))
+          .catch((err) => {
+            if (err.errorCode && err.errorMessage && branch) {
+              throw new Error(err.errorMessage);
+            }
+          });
+      } else {
+        if (!apiKey) {
+          throw new Error('Api key is required');
+        }
+        if (!token) {
+          throw new Error('Token is required');
+        }
+      }
+
+      if (doBranchesExistInPlan && !branch) {
+        branch = await cliux.inquire({
+          type: 'input',
+          message: 'CLI_AUTH_ENTER_BRANCH',
+          name: 'branch',
+        });
       }
 
       if (isDelivery && !environment) {
@@ -127,11 +172,25 @@ export default class TokensAddCommand extends Command {
       }
 
       let tokenValidationResult;
+
       if (type === 'delivery') {
-        tokenValidationResult = await tokenValidation.validateDeliveryToken(this.deliveryAPIClient, apiKey, token, environment, this.region.name, this.cdaHost);
+        branch = branch || 'main';
+        tokenValidationResult = await tokenValidation.validateDeliveryToken(
+          this.deliveryAPIClient,
+          apiKey,
+          token,
+          environment,
+          this.region.name,
+          this.cdaHost,
+          branch,
+        );
       } else if (type === 'management') {
-        this.managementAPIClient = { host: this.cmaHost, authorization: token, api_key: apiKey };
-        tokenValidationResult = await tokenValidation.validateManagementToken(this.managementAPIClient, apiKey, token);
+        tokenValidationResult = await tokenValidation.validateManagementToken(
+          managementAPIClient,
+          apiKey,
+          token,
+          doBranchesExistInPlan ? branch : null,
+        );
       }
       if (!tokenValidationResult.valid) {
         throw new CLIError(tokenValidationResult.message);

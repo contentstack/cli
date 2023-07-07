@@ -19,8 +19,8 @@ module.exports = class ExportLabels {
   labelConfig = config.modules.labels;
 
   constructor(exportConfig, stackAPIClient) {
-    this.stackAPIClient = stackAPIClient;
     this.config = merge(config, exportConfig);
+    this.stackAPIClient = stackAPIClient;
   }
 
   start() {
@@ -37,7 +37,7 @@ module.exports = class ExportLabels {
         .then((response) => {
           if (response.items.length !== 0) {
             response.items.forEach(function (label) {
-              addlogs(self.config, label.name + ' labels was exported successfully', 'success');
+              addlogs(self.config, `'${label.name}' label was exported successfully`, 'success');
               self.labels[label.uid] = label;
               const deleteItems = self.config.modules.labels.invalidKeys;
               deleteItems.forEach((e) => delete label[e]);
@@ -53,15 +53,13 @@ module.exports = class ExportLabels {
           if (error.statusCode === 401) {
             addlogs(
               self.config,
-              chalk.red(
-                'You are not allowed to export label, Unless you provide email and password in config',
-                'error',
-              ),
+              'You are not allowed to export label, Unless you provide email and password in config',
+              'error'
             );
             return resolve();
           }
 
-          addlogs(self.config, formatError(error), 'error');
+          addlogs(self.config,  `Failed to export labels. ${formatError(error)}`, 'error');
           reject();
         });
     });

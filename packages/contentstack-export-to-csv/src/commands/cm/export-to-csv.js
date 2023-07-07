@@ -1,5 +1,12 @@
-const { Command, flags } = require('@contentstack/cli-command');
-const { configHandler, managementSDKClient } = require('@contentstack/cli-utilities');
+const { Command } = require('@contentstack/cli-command');
+const {
+  configHandler,
+  managementSDKClient,
+  flags,
+  isAuthenticated,
+  cliux,
+  doesBranchExist,
+} = require('@contentstack/cli-utilities');
 const util = require('../../util');
 const config = require('../../util/config');
 
@@ -26,6 +33,12 @@ class ExportToCsvCommand extends Command {
       required: false,
       description: 'Name of the stack that needs to be created as csv filename.',
     }),
+    'stack-api-key': flags.string({
+      char: 'k',
+      multiple: false,
+      required: false,
+      description: 'API key of the source stack',
+    }),
     'org-name': flags.string({
       multiple: false,
       required: false,
@@ -41,15 +54,12 @@ class ExportToCsvCommand extends Command {
       required: false,
       multiple: false,
     }),
+    branch: flags.string({
+      description: 'Branch from which entries need to be exported',
+      multiple: false,
+      required: false,
+    }),
   };
-
-  get getAuthToken() {
-    try {
-      return this.authToken;
-    } catch (error) {
-      return undefined;
-    }
-  }
 
   async run() {
     try {
@@ -60,9 +70,11 @@ class ExportToCsvCommand extends Command {
           action: actionFlag,
           'org-name': orgName,
           'stack-name': stackName,
+          'stack-api-key': stackAPIKey,
           locale: locale,
           'content-type': contentTypesFlag,
           alias: managementTokenAlias,
+          branch: branchUid,
         },
       } = await this.parse(ExportToCsvCommand);
 
@@ -84,6 +96,7 @@ class ExportToCsvCommand extends Command {
             let stackAPIClient;
             let language;
             let contentTypes = [];
+            let stackBranches;
             const listOfTokens = configHandler.get('tokens');
 
             if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
@@ -101,7 +114,7 @@ class ExportToCsvCommand extends Command {
             } else {
               let organization;
 
-              if (!this.isAuthenticated()) {
+              if (!isAuthenticated()) {
                 this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
                   exit: 2,
                   suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
@@ -113,16 +126,59 @@ class ExportToCsvCommand extends Command {
               } else {
                 organization = await util.chooseOrganization(managementAPIClient); // prompt for organization
               }
-
-              stack = await util.chooseStack(managementAPIClient, organization.uid); // prompt for stack
+              if (!stackAPIKey) {
+                stack = await util.chooseStack(managementAPIClient, organization.uid); // prompt for stack
+              } else {
+                stack = await util.chooseStack(managementAPIClient, organization.uid, stackAPIKey);
+              }
             }
 
             stackAPIClient = this.getStackClient(managementAPIClient, stack);
+
+            if (branchUid) {
+              try {
+                const branchExists = await doesBranchExist(stackAPIClient, branchUid);
+                if (branchExists?.errorCode) {
+                  throw new Error(branchExists.errorMessage);
+                }
+                stack.branch_uid = branchUid;
+                stackAPIClient = this.getStackClient(managementAPIClient, stack);
+              } catch (error) {
+                if (error.message || error.errorMessage) {
+                  cliux.error(util.formatError(error));
+                  this.exit();
+                }
+              }
+            } else {
+              stackBranches = await this.getStackBranches(stackAPIClient);
+              if (stackBranches === undefined) {
+                stackAPIClient = this.getStackClient(managementAPIClient, stack);
+              } else {
+                const { branch } = await util.chooseBranch(stackBranches);
+                stack.branch_uid = branch;
+                stackAPIClient = this.getStackClient(managementAPIClient, stack);
+              }
+            }
+
             const contentTypeCount = await util.getContentTypeCount(stackAPIClient);
+
             const environments = await util.getEnvironments(stackAPIClient); // fetch environments, because in publish details only env uid are available and we need env names
 
             if (contentTypesFlag) {
               contentTypes = contentTypesFlag.split(',').map(this.snakeCase);
+              const contentTypesArray = await stackAPIClient
+                .contentType()
+                .query()
+                .find()
+                .then((res) => res.items.map((contentType) => contentType.uid));
+
+              const doesContentTypeExist = contentTypesArray.includes(contentTypesFlag);
+
+              if (!doesContentTypeExist) {
+                throw new Error(
+                  `The Content Type ${contentTypesFlag} was not found. Please try again. Content Type is not valid.`,
+                );
+              }
             } else {
               for (let index = 0; index <= contentTypeCount / 100; index++) {
                 const contentTypesMap = await util.getContentTypes(stackAPIClient, index);
@@ -160,19 +216,18 @@ class ExportToCsvCommand extends Command {
                 );
                 flatEntries = flatEntries.concat(flatEntriesResult);
               }
-              let fileName = `${stack.name}_${contentType}_${language.code}_entries_export.csv`;
-
+              let fileName = `${stackName ? stackName : stack.name}_${contentType}_${language.code}_entries_export.csv`;
               util.write(this, flatEntries, fileName, 'entries'); // write to file
             }
           } catch (error) {
-            this.log(util.formatError(error));
+            cliux.error(util.formatError(error));
           }
           break;
         }
         case config.exportUsers:
         case 'users': {
           try {
-            if (!this.isAuthenticated()) {
+            if (!isAuthenticated()) {
               this.error(config.CLI_EXPORT_CSV_LOGIN_FAILED, {
                 exit: 2,
                 suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
@@ -192,21 +247,21 @@ class ExportToCsvCommand extends Command {
             const mappedRoles = util.getMappedRoles(orgRoles);
             const listOfUsers = util.cleanOrgUsers(orgUsers, mappedUsers, mappedRoles);
             const fileName = `${util.kebabize(
-              organization.name.replace(config.organizationNameRegex, ''),
+              (orgName ? orgName : organization.name).replace(config.organizationNameRegex, ''),
             )}_users_export.csv`;
 
             util.write(this, listOfUsers, fileName, 'organization details');
           } catch (error) {
-            if (error.message) {
-              this.log(util.formatError(error));
+            if (error.message || error.errorMessage) {
+              cliux.error(util.formatError(error));
             }
           }
           break;
         }
       }
     } catch (error) {
-      if (error.message) {
-        this.log(util.formatError(error));
+      if (error.message || error.errorMessage) {
+        cliux.error(util.formatError(error));
       }
     }
   }
@@ -216,13 +271,26 @@ class ExportToCsvCommand extends Command {
   }
 
   getStackClient(managementAPIClient, stack) {
+    const stackInit = {
+      api_key: stack.apiKey,
+      branch_uid: stack.branch_uid,
+    };
     if (stack.token) {
       return managementAPIClient.stack({
-        api_key: stack.apiKey,
+        ...stackInit,
         management_token: stack.token,
       });
     }
-    return managementAPIClient.stack({ api_key: stack.apiKey });
+    return managementAPIClient.stack(stackInit);
+  }
+
+  getStackBranches(stackAPIClient) {
+    return stackAPIClient
+      .branch()
+      .query()
+      .find()
+      .then(({ items }) => (items !== undefined ? items : []))
+      .catch((_err) => {});
   }
 }
 
@@ -234,8 +302,8 @@ ExportToCsvCommand.examples = [
   'Exporting entries to csv',
   'csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type>',
   '',
-  'Exporting entries to csv with stack name provided',
-  'csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type> --stack-name <stack-name>',
+  'Exporting entries to csv with stack name provided and branch name provided',
+  'csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type> --stack-name <stack-name> --branch <branch-name>',
   '',
   'Exporting organization users to csv',
   'csdx cm:export-to-csv --action <users> --org <org-uid>',

@@ -6,12 +6,15 @@ module.exports = {
     'https://api.contentstack.io': 'https://developerhub-api.contentstack.com',
     'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
     'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
+    'https://azure-eu-api.contentstack.com': 'https://azure-eu-developerhub-api.contentstack.com',
     'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com',
   },
   // use below hosts for eu region
   // host:'https://eu-api.contentstack.com/v3',
   // use below hosts for azure-na region
   // host:'https://azure-na-api.contentstack.com/v3',
+  // use below hosts for azure-eu region
+  // host:'https://azure-eu-api.contentstack.com/v3',
   modules: {
     types: [
       'stack',
@@ -32,6 +35,11 @@ module.exports = {
       dirName: 'locales',
       fileName: 'locales.json',
       requiredKeys: ['code', 'uid', 'name', 'fallback_locale'],
+    },
+    masterLocale: {
+      dirName: 'locales',
+      fileName: 'master-locale.json',
+      requiredKeys: ['code', 'uid', 'name'],
     },
     customRoles: {
       dirName: 'custom-roles',
