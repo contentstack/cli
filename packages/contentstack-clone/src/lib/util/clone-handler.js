@@ -61,7 +61,7 @@ let master_locale;
 // Overrides prompt's stop method
 prompt.stop = function () {
   if (prompt.stopped) {
-      return;
+    return;
   }
   prompt.emit('stop');
   prompt.stopped = true;
@@ -321,7 +321,9 @@ class CloneHandler {
       await cloneCommand.execute(new SetBranchCommand(null, this));
 
       if (exportRes) {
-        this.executeDestination().catch(() => { throw ''; });
+        this.executeDestination().catch(() => {
+          throw '';
+        });
       }
     } catch (error) {
       throw error;
@@ -347,9 +349,14 @@ class CloneHandler {
 
         let org;
         if (!config.target_stack) {
-          org = await cloneCommand.execute(new HandleOrgCommand({
-            msg: !canCreateStack.stackCreate ? orgMsgExistingStack : orgMsgNewStack
-          }, this));
+          org = await cloneCommand.execute(
+            new HandleOrgCommand(
+              {
+                msg: !canCreateStack.stackCreate ? orgMsgExistingStack : orgMsgNewStack,
+              },
+              this,
+            ),
+          );
         }
 
         const params = { org, canCreateStack };
@@ -409,7 +416,13 @@ class CloneHandler {
   async executeBranchDestinationPrompt(parentParams) {
     try {
       this.setExectingCommand(2);
-      await cloneCommand.execute(new HandleBranchCommand({ isSource: false, api_key: config.target_stack }, this, this.executeStackDestinationPrompt.bind(this, parentParams)));
+      await cloneCommand.execute(
+        new HandleBranchCommand(
+          { isSource: false, api_key: config.target_stack },
+          this,
+          this.executeStackDestinationPrompt.bind(this, parentParams),
+        ),
+      );
       this.removeBackKeyPressHandler();
       await cloneCommand.execute(new CloneTypeSelectionCommand(null, this));
     } catch (error) {
@@ -536,7 +549,12 @@ class CloneHandler {
 
   getNewStackPromptResult() {
     return new Promise((resolve) => {
-      prompt.get({ properties: { name: { description: colors.white(stackName.message), default: colors.grey(stackName.default), } } },
+      prompt.get(
+        {
+          properties: {
+            name: { description: colors.white(stackName.message), default: colors.grey(stackName.default) },
+          },
+        },
         function (_, result) {
           if (prompt.stopped) {
             prompt.stopped = false;
@@ -546,7 +564,8 @@ class CloneHandler {
             _name = _name.replace(//g, '');
             resolve({ stack: _name });
           }
-        });
+        },
+      );
     });
   }
 
@@ -617,8 +636,8 @@ class CloneHandler {
       if (config.destination_alias) {
         cmd.push('-a', config.destination_alias);
       }
-      if (config.sourceStackBranch) {
-        cmd.push('-d', path.join(__dirname, config.sourceStackBranch));
+      if (!config.data && config.sourceStackBranch) {
+        cmd.push('-d', path.join(config.pathDir, config.sourceStackBranch));
       }
       if (config.targetStackBranch) {
         cmd.push('--branch', config.targetStackBranch);
