@@ -582,6 +582,7 @@ FLAGS
   -a, --alias=<value>            Alias(name) for the management token
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
+  -k, --stack-api-key=<value>    Stack api key to be used
   -l, --locales=<value>...       Locales where edited entries will be published
   -y, --yes                      Agree to process the command with the current configuration
   --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
@@ -632,6 +633,12 @@ EXAMPLES
   Using --branch
 
   $ csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
+
+
+
+  Using --stack-api-key
+
+  $ csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] -stack-api-key [STACK API KEY]
 ```
 
 ## `csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`
@@ -981,6 +988,7 @@ FLAGS
   -a, --alias=<value>            Alias(name) for the management token
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
+  -k, --stack-api-key=<value>    Stack api key to be used
   -l, --locales=<value>...       Locales where edited entries will be published
   -y, --yes                      Agree to process the command with the current configuration
   --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
@@ -1031,6 +1039,12 @@ EXAMPLES
   Using --branch
 
   $ csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]
+
+
+
+  Using --stack-api-key
+
+  $ csdx cm:entries:publish-modified --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] --source-env [SOURCE_ENV] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] -stack-api-key [STACK API KEY]
 ```
 
 _See code: [src/commands/cm/entries/publish-modified.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/entries/publish-modified.js)_
