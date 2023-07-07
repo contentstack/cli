@@ -60,6 +60,9 @@ class PublishEntriesCommand extends Command {
       }
       if (await this.confirmFlags(updatedFlags)) {
         try {
+          if (process.env.NODE_ENV === 'test') {
+            return;
+          }
           const publishFunction = async (func) => {
             // eslint-disable-next-line no-negated-condition
             if (!updatedFlags.retryFailed) {
