@@ -62,7 +62,7 @@ const config: DefaultConfig = {
     extensions: {
       dirName: 'extensions',
       fileName: 'extensions.json',
-      validKeys: ['data_type', 'srcdoc', 'title', 'type', 'mutiple', 'config']
+      validKeys: ['data_type', 'srcdoc', 'title', 'type', 'mutiple', 'config'],
     },
     webhooks: {
       dirName: 'webhooks',
@@ -366,7 +366,7 @@ const config: DefaultConfig = {
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
   getEncryptionKeyMaxRetry: 3,
-  useNewModuleStructure: false,
+  useNewModuleStructure: true,
   // useBackedupDir: '',
   // backupConcurrency: 10,
 };
