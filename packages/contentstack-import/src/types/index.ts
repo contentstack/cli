@@ -54,5 +54,11 @@ export interface Extensions{
   dependencies?: Modules[];
 };
 
+export interface MarketplaceAppsConfig{
+  dirName: string;
+  fileName: string;
+  dependencies?: Modules[];
+};
+
 export { default as DefaultConfig } from './default-config';
 export { default as ImportConfig } from './import-config';
