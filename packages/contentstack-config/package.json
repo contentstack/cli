@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.4.8",
+  "version": "1.4.9",
   "author": "Contentstack",
   "scripts": {
     "build": "npm run clean && npm run compile",
@@ -22,9 +22,10 @@
   },
   "dependencies": {
     "@contentstack/cli-command": "^1.2.9",
-    "@contentstack/cli-utilities": "^1.4.5",
+    "@contentstack/cli-utilities": "^1.5.0",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
+    "mkdirp": "^1.0.4",
     "inquirer": "8.2.4",
     "winston": "^3.7.2",
     "lodash": "^4.17.20"
