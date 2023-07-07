@@ -1,42 +1,77 @@
 {
   "name": "@contentstack/cli-cm-import",
   "description": "Contentstack CLI plugin to import content into stack",
-  "version": "1.5.10",
+  "version": "1.6.0",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "^1.2.9",
-    "@contentstack/cli-utilities": "^1.4.5",
+    "@contentstack/cli-command": "^1.2.0",
+    "@contentstack/cli-utilities": "^1.5.0",
+    "@contentstack/management": "^1.8.0",
     "@oclif/config": "^1.18.3",
+    "@oclif/core": "^2.3.0",
     "big-json": "^3.2.0",
     "bluebird": "^3.7.2",
     "chalk": "^4.1.2",
     "debug": "^4.1.0",
-    "fs-extra": "^11.1.1",
     "lodash": "^4.17.20",
     "marked": "^4.0.17",
+    "merge": "^2.1.1",
     "mkdirp": "^1.0.4",
+    "ncp": "^2.0.0",
     "promise-limit": "^2.7.0",
+    "tslib": "^2.4.1",
     "winston": "^3.7.2"
   },
   "devDependencies": {
     "@oclif/test": "^1.2.6",
+    "@types/bluebird": "^3.5.38",
+    "@types/chai": "^4.2.18",
+    "@types/mkdirp": "^1.0.2",
+    "@types/mocha": "^8.2.2",
+    "@types/ncp": "^2.0.5",
+    "@types/node": "^14.14.32",
+    "@types/sinon": "^10.0.2",
+    "@types/tar": "^4.0.3",
+    "@typescript-eslint/eslint-plugin": "^5.48.2",
     "chai": "^4.2.0",
     "eslint": "^8.18.0",
     "eslint-config-oclif": "^4.0.0",
     "globby": "^10.0.2",
     "mocha": "^10.0.0",
     "nyc": "^15.1.0",
-    "oclif": "^3.8.1"
+    "oclif": "^3.8.1",
+    "rimraf": "^2.7.1",
+    "sinon": "^11.1.1",
+    "tmp": "^0.2.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.3"
+  },
+  "scripts": {
+    "build": "npm run clean && npm run compile",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json",
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "pnpm compile && oclif manifest && oclif readme",
+    "version": "oclif readme && git add README.md",
+    "test:report": "tsc -p test && nyc --reporter=lcov --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "pretest": "tsc -p test",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "posttest": "npm run lint",
+    "lint": "eslint src/**/*.ts",
+    "format": "eslint src/**/*.ts --fix",
+    "test:integration": "mocha --forbid-only \"test/run.test.js\" --integration-test --timeout 60000",
+    "test:unit": "mocha --forbid-only \"test/unit/*.test.ts\""
   },
   "engines": {
     "node": ">=14.0.0"
   },
   "files": [
+    "/bin",
+    "/lib",
+    "/messages",
     "/npm-shrinkwrap.json",
-    "/oclif.manifest.json",
-    "/src",
-    "/messages"
+    "/oclif.manifest.json"
   ],
   "homepage": "https://github.com/contentstack/cli",
   "keywords": [
@@ -44,19 +79,10 @@
     "cli",
     "plugin"
   ],
-  "scripts": {
-    "pack": "npm pack && mv *.tgz ../../build",
-    "postpack": "rm -f oclif.manifest.json",
-    "prepack": "oclif manifest && oclif readme",
-    "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "version": "oclif readme && git add README.md",
-    "test:integration": "mocha --forbid-only \"test/run.test.js\" --integration-test --timeout 60000",
-    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
-  },
-  "main": "./src/commands/cm/stacks/import.js",
+  "main": "./lib/commands/cm/stacks/import.js",
   "license": "MIT",
   "oclif": {
-    "commands": "./src/commands",
+    "commands": "./lib/commands",
     "bin": "csdx",
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-import/<%- commandPath %>"
   },
@@ -66,7 +92,7 @@
     },
     "shortCommandName": {
       "cm:stacks:import": "IMPRT",
-      "cm:import": "O-IMPRT"
+      "cm:import": "IMPRT"
     }
   },
   "repository": "https://github.com/contentstack/cli"

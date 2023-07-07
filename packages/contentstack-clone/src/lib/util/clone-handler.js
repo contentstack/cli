@@ -2,11 +2,12 @@ const ora = require('ora');
 const path = require('path');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
+const fs = require('fs');
+let { default: exportCmd } = require('@contentstack/cli-cm-export');
+let { default: importCmd } = require('@contentstack/cli-cm-import');
+const { CustomAbortController } = require('./abort-controller');
 const prompt = require('prompt');
 const colors = require('@colors/colors/safe');
-
-let exportCmd = require('@contentstack/cli-cm-export');
-let importCmd = require('@contentstack/cli-cm-import');
 
 const {
   HandleOrgCommand,
@@ -301,7 +302,13 @@ class CloneHandler {
   async executeBranchPrompt(parentParams) {
     try {
       this.setExectingCommand(2);
-      await cloneCommand.execute(new HandleBranchCommand({ api_key: config.source_stack }, this, this.executeStackPrompt.bind(this, parentParams)));
+      await cloneCommand.execute(
+        new HandleBranchCommand(
+          { api_key: config.source_stack },
+          this,
+          this.executeStackPrompt.bind(this, parentParams),
+        ),
+      );
       await this.executeExport();
     } catch (error) {
       throw error;
@@ -597,6 +604,7 @@ class CloneHandler {
 
       if (config.forceStopMarketplaceAppsPrompt) cmd.push('-y');
 
+      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(config));
       let exportData = exportCmd.run(cmd);
       exportData.then(() => resolve(true)).catch(reject);
     });
@@ -621,6 +629,7 @@ class CloneHandler {
 
       if (config.forceStopMarketplaceAppsPrompt) cmd.push('-y');
 
+      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(config));
       await importCmd.run(cmd);
       return resolve();
     });
