@@ -25,6 +25,8 @@ export default interface ExportConfig extends DefaultConfig {
     'X-User-Agent': string;
   };
   access_token?: string;
+  org_uid?: string;
+  source_stack?: string;
 }
 
 type branch = {
