@@ -11,7 +11,7 @@
     "fast-csv": "^4.3.6",
     "inquirer": "8.2.4",
     "inquirer-checkbox-plus-prompt": "1.0.1",
-    "mkdirp": "^1.0.4"
+    "mkdirp": "^3.0.1"
   },
   "devDependencies": {
     "@oclif/test": "^2.2.10",
