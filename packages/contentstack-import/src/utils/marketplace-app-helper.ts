@@ -39,47 +39,6 @@ export const getOrgUid = async (stackAPIClient: any, config: ImportConfig): Prom
   return tempStackData?.org_uid || '';
 };
 
-export const getAndValidateEncryptionKey = async (params: {
-  defaultValue: string;
-  retry: number;
-  marketplaceApps: Record<string, any>;
-  config?: ImportConfig;
-}): Promise<string> => {
-  const { defaultValue, retry, marketplaceApps, config } = params;
-  let appConfig = find(
-    marketplaceApps,
-    ({ configuration, server_configuration }) => isEmpty(configuration) || isEmpty(server_configuration),
-  );
-
-  if (!appConfig) {
-    return defaultValue;
-  }
-
-  const encryptionKey = await askEncryptionKey(defaultValue);
-
-  try {
-    appConfig = isEmpty(appConfig.configuration) ? appConfig.configuration : appConfig.server_configuration;
-    const nodeCrypto = new NodeCrypto({ encryptionKey });
-    nodeCrypto.decrypt(appConfig);
-  } catch (error) {
-    if (retry < config.getEncryptionKeyMaxRetry && error.code === 'ERR_OSSL_EVP_BAD_DECRYPT') {
-      cliux.print(
-        `Provided encryption key is not valid or your data might be corrupted.! attempt(${retry}/${config.getEncryptionKeyMaxRetry})`,
-        { color: 'red' },
-      );
-      // NOTE max retry limit is 3
-      return getAndValidateEncryptionKey({ defaultValue: encryptionKey, retry: retry + 1, marketplaceApps });
-    } else {
-      cliux.print(
-        `Maximum retry limit exceeded. Closing the process, please try again.! attempt(${retry}/${config.getEncryptionKeyMaxRetry})`,
-        { color: 'red' },
-      );
-      process.exit(1);
-    }
-  }
-
-  return encryptionKey;
-};
 
 export const getConfirmationToCreateApps = async (privateApps: any, config: ImportConfig): Promise<boolean> => {
   if (!config.forceStopMarketplaceAppsPrompt) {
