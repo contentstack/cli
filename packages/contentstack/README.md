@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.7.8 darwin-x64 node-v18.16.0
+@contentstack/cli/1.7.10 darwin-x64 node-v18.12.1
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -301,6 +301,7 @@ FLAGS
   -a, --alias=<value>            Alias(name) for the management token
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Environments where assets will be published
+  -k, --stack-api-key=<value>    Stack api key to be used
   -l, --locales=<value>...       Locales to where assets will be published
   -y, --yes                      Agree to process the command with the current configuration
   --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
@@ -355,6 +356,12 @@ EXAMPLES
   Using --source-env
 
   $ csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
+
+
+
+  Using --stack-api-key flag
+
+  $ csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --stack-api-key [STACK API KEY]
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/assets/publish.js)_
@@ -365,22 +372,23 @@ Unpublish assets from given environment
 
 ```
 USAGE
-  $ csdx cm:assets:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>]
-    [--retry-failed <value>] [--bulk-unpublish <value>] [--api-version <value>] [--delivery-token <value>]
+  $ csdx cm:assets:unpublish [-a <value>] [-k <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch
+    <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--api-version <value>] [--delivery-token <value>]
 
 FLAGS
-  -a, --alias=<value>        Alias(name) for the management token
-  -c, --config=<value>       Path to the config file
-  -e, --environment=<value>  Source Environment
-  -y, --yes                  Agree to process the command with the current configuration
-  --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-  --branch=<value>           [default: main] Specify the branch to fetch the content (by default the main branch is
-                             selected)
-  --bulk-unpublish=<value>   [default: true] By default this flag is set as true. It indicates that contentstack's
-                             bulkpublish API will be used to unpublish the assets
-  --delivery-token=<value>   Delivery Token for source environment
-  --locale=<value>           Locale filter
-  --retry-failed=<value>     Retry unpublishing failed assets from the logfile
+  -a, --alias=<value>          Alias(name) for the management token
+  -c, --config=<value>         Path to the config file
+  -e, --environment=<value>    Source Environment
+  -k, --stack-api-key=<value>  Stack api key to be used
+  -y, --yes                    Agree to process the command with the current configuration
+  --api-version=<value>        API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+  --branch=<value>             [default: main] Specify the branch to fetch the content (by default the main branch is
+                               selected)
+  --bulk-unpublish=<value>     [default: true] By default this flag is set as true. It indicates that contentstack's
+                               bulkpublish API will be used to unpublish the assets
+  --delivery-token=<value>     Delivery Token for source environment
+  --locale=<value>             Locale filter
+  --retry-failed=<value>       Retry unpublishing failed assets from the logfile
 
 DESCRIPTION
   Unpublish assets from given environment
@@ -415,6 +423,12 @@ EXAMPLES
   Using --branch flag
 
   $ csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
+
+
+
+  Using --stack-api-key flag
+
+  $ csdx cm:assets:unpublish --bulk-unpublish --environment [SOURCE ENV] --locale [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN]
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/assets/unpublish.js)_
@@ -718,6 +732,7 @@ FLAGS
   -a, --alias=<value>            Alias(name) for the management token
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Environments where assets will be published
+  -k, --stack-api-key=<value>    Stack api key to be used
   -l, --locales=<value>...       Locales to where assets will be published
   -y, --yes                      Agree to process the command with the current configuration
   --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
@@ -772,6 +787,12 @@ EXAMPLES
   Using --source-env
 
   $ csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
+
+
+
+  Using --stack-api-key flag
+
+  $ csdx cm:assets:publish --environments [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE] --stack-api-key [STACK API KEY]
 ```
 
 ## `csdx cm:bulk-publish:clear`
@@ -838,23 +859,24 @@ USAGE
     [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]
 
 FLAGS
-  -B, --branch=<value>       [default: main] Specify the branch to fetch the content (by default the main branch is
-                             selected)
-  -a, --alias=<value>        Alias(name) for the management token
-  -c, --config=<value>       Path to the config file
-  -y, --yes                  Agree to process the command with the current configuration
-  --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-  --bulk-publish=<value>     [default: true] This flag is set to true by default. It indicates that contentstack's
-                             bulkpublish API will be used to publish the entries
-  --content-type=<value>...  The Contenttypes from which entries will be published
-  --delivery-token=<value>   Delivery token for source environment
-  --environments=<value>...  Destination Environments
-  --locales=<value>          Source locale
-  --onlyAssets               Unpublish only assets
-  --onlyEntries              Unpublish only entries
-  --retry-failed=<value>     (optional) Retry publishing failed entries from the logfile (this flag overrides all other
-                             flags)
-  --source-env=<value>       Source Env
+  -B, --branch=<value>         [default: main] Specify the branch to fetch the content (by default the main branch is
+                               selected)
+  -a, --alias=<value>          Alias(name) for the management token
+  -c, --config=<value>         Path to the config file
+  -k, --stack-api-key=<value>  Stack api key to be used
+  -y, --yes                    Agree to process the command with the current configuration
+  --api-version=<value>        API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+  --bulk-publish=<value>       [default: true] This flag is set to true by default. It indicates that contentstack's
+                               bulkpublish API will be used to publish the entries
+  --content-type=<value>...    The Contenttypes from which entries will be published
+  --delivery-token=<value>     Delivery token for source environment
+  --environments=<value>...    Destination Environments
+  --locales=<value>            Source locale
+  --onlyAssets                 Unpublish only assets
+  --onlyEntries                Unpublish only entries
+  --retry-failed=<value>       (optional) Retry publishing failed entries from the logfile (this flag overrides all
+                               other flags)
+  --source-env=<value>         Source Env
 
 DESCRIPTION
   Publish entries and assets from one environment to other environments
@@ -893,6 +915,12 @@ EXAMPLES
   Using --branch flag
 
   $ csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
+
+
+
+  Using --stack-api-key flag
+
+  $ csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN]
 ```
 
 _See code: [@contentstack/cli-cm-bulk-publish](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/bulk-publish/cross-publish.js)_
@@ -1866,7 +1894,7 @@ _See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/
 
 ## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
-Import script for importing the content into the new stack
+Import content from a stack
 
 ```
 USAGE
@@ -1886,11 +1914,7 @@ FLAGS
                                     <options: disable|current>
 
 DESCRIPTION
-  Import script for importing the content into the new stack
-  ...
-  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import
-  command.
-
+  Import content from a stack
 
 ALIASES
   $ csdx cm:import
@@ -2187,11 +2211,11 @@ EXAMPLES
   $ csdx cm:stacks:export --branch [optional] branch name
 ```
 
-_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/stacks/export.js)_
+_See code: [@contentstack/cli-cm-export](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/stacks/export.ts)_
 
 ## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
 
-Import script for importing the content into the new stack
+Import content from a stack
 
 ```
 USAGE
@@ -2211,11 +2235,7 @@ FLAGS
                                     <options: disable|current>
 
 DESCRIPTION
-  Import script for importing the content into the new stack
-  ...
-  Once you export content from the source stack, import it to your destination stack by using the cm:stacks:import
-  command.
-
+  Import content from a stack
 
 ALIASES
   $ csdx cm:import
@@ -2238,7 +2258,7 @@ EXAMPLES
   $ csdx cm:stacks:import --branch <branch name>  --yes
 ```
 
-_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.js)_
+_See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.ts)_
 
 ## `csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`
 
@@ -2689,7 +2709,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.9/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.11/src/commands/help.ts)_
 
 ## `csdx launch`
 
