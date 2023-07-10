@@ -104,7 +104,11 @@ module.exports = class ImportEntries {
             }
           }
         } catch (error) {
-          addlogs(this.config, `Failed to read the content types to import entries ${util.formatError(error)}`);
+          addlogs(
+            this.config,
+            `Failed to read the content types to import entries ${util.formatError(error)}`,
+            'error',
+          );
           process.exit(0);
         }
       }
