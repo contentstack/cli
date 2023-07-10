@@ -9,10 +9,17 @@ const AddTokenCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens
 const RegionSetCommand = require('@contentstack/cli-config/lib/commands/config/set/region').default;
 const ExportCommand = require('@contentstack/cli-cm-export/src/commands/cm/stacks/export');
 
-const { getStackDetailsByRegion, getContentTypesCount, cleanUp, getEnvData, getEntriesCount, deleteStack } = require('./utils/helper');
+const {
+  getStackDetailsByRegion,
+  getContentTypesCount,
+  cleanUp,
+  getEnvData,
+  getEntriesCount,
+  deleteStack,
+} = require('./utils/helper');
 const { PRINT_LOGS, IMPORT_PATH } = require('./config.json');
-const defaultConfig = require('../../src/config/default');
-const { modules } = require('../../src/config/default');
+const { default: defaultConfig } = require('../../src/config');
+const modules = defaultConfig.modules;
 
 const { DELIMITER, KEY_VAL_DELIMITER } = process.env;
 const { ENCRYPTION_KEY } = getEnvData();
@@ -29,8 +36,16 @@ module.exports = (region) => {
   for (let stack of Object.keys(stackDetails)) {
     const basePath = path.join(__dirname, '..', '..', `${IMPORT_PATH}_${stack}`);
     const importBasePath = path.join(basePath, stackDetails[stack].BRANCH ? stackDetails[stack].BRANCH : 'main');
-    const contentTypesBasePath = path.join(basePath, stackDetails[stack].BRANCH ? stackDetails[stack].BRANCH : 'main', modules.content_types.dirName);
-    const entriesBasePath = path.join(basePath, stackDetails[stack].BRANCH ? stackDetails[stack].BRANCH : 'main', modules.entries.dirName);
+    const contentTypesBasePath = path.join(
+      basePath,
+      stackDetails[stack].BRANCH ? stackDetails[stack].BRANCH : 'main',
+      modules.content_types.dirName,
+    );
+    const entriesBasePath = path.join(
+      basePath,
+      stackDetails[stack].BRANCH ? stackDetails[stack].BRANCH : 'main',
+      modules.entries.dirName,
+    );
     const messageFilePath = path.join(__dirname, '..', '..', 'messages/index.json');
     messageHandler.init({ messageFilePath });
     const username = ENCRYPTION_KEY ? crypto.decrypt(region.USERNAME) : region.USERNAME;
@@ -46,13 +61,31 @@ module.exports = (region) => {
         });
 
       customTest
-        .command(AddTokenCommand, ['-a', stackDetails[stack].EXPORT_ALIAS_NAME, '-k', stackDetails[stack].EXPORT_STACK_API_KEY, '--management', '--token', stackDetails[stack].EXPORT_MANAGEMENT_TOKEN, '-y'])
+        .command(AddTokenCommand, [
+          '-a',
+          stackDetails[stack].EXPORT_ALIAS_NAME,
+          '-k',
+          stackDetails[stack].EXPORT_STACK_API_KEY,
+          '--management',
+          '--token',
+          stackDetails[stack].EXPORT_MANAGEMENT_TOKEN,
+          '-y',
+        ])
         .it(`Adding token for ${stack}`, (_, done) => {
           done();
         });
 
       customTest
-        .command(AddTokenCommand, ['-a', stackDetails[stack].ALIAS_NAME, '-k', stackDetails[stack].STACK_API_KEY, '--management', '--token', stackDetails[stack].MANAGEMENT_TOKEN, '-y'])
+        .command(AddTokenCommand, [
+          '-a',
+          stackDetails[stack].ALIAS_NAME,
+          '-k',
+          stackDetails[stack].STACK_API_KEY,
+          '--management',
+          '--token',
+          stackDetails[stack].MANAGEMENT_TOKEN,
+          '-y',
+        ])
         .it(`Adding token for ${stack}`, (_, done) => {
           done();
         });
@@ -83,7 +116,7 @@ module.exports = (region) => {
             try {
               if (fs.existsSync(contentTypesBasePath)) {
                 let contentTypes = await fsPromises.readdir(contentTypesBasePath);
-                importedContentTypesCount = contentTypes.filter(ct => !ct.includes('schema.json')).length;
+                importedContentTypesCount = contentTypes.filter((ct) => !ct.includes('schema.json')).length;
               }
             } catch (error) {
               console.trace(error);
@@ -95,31 +128,29 @@ module.exports = (region) => {
       });
 
       describe('Check if all entries are imported correctly', () => {
-        test
-          .stdout({ print: PRINT_LOGS || false })
-          .it('should check all entries are imported', async (_, done) => {
-            let importedEntriesCount = 0;
-            const entriesCount = await getEntriesCount(stackDetails);
+        test.stdout({ print: PRINT_LOGS || false }).it('should check all entries are imported', async (_, done) => {
+          let importedEntriesCount = 0;
+          const entriesCount = await getEntriesCount(stackDetails);
 
-            try {
-              if (fs.existsSync(entriesBasePath)) {
-                let contentTypes = await fsPromises.readdir(entriesBasePath);
-                for (let contentType of contentTypes) {
-                  let ctPath = path.join(entriesBasePath, contentType);
-                  let locales = await fsPromises.readdir(ctPath);
-                  for (let locale of locales) {
-                    let entries = await fsPromises.readFile(path.join(ctPath, locale), 'utf-8');
-                    importedEntriesCount += Object.keys(JSON.parse(entries)).length;
-                  }
+          try {
+            if (fs.existsSync(entriesBasePath)) {
+              let contentTypes = await fsPromises.readdir(entriesBasePath);
+              for (let contentType of contentTypes) {
+                let ctPath = path.join(entriesBasePath, contentType);
+                let locales = await fsPromises.readdir(ctPath);
+                for (let locale of locales) {
+                  let entries = await fsPromises.readFile(path.join(ctPath, locale), 'utf-8');
+                  importedEntriesCount += Object.keys(JSON.parse(entries)).length;
                 }
               }
-            } catch (error) {
-              console.trace(error);
             }
+          } catch (error) {
+            console.trace(error);
+          }
 
-            expect(entriesCount).to.be.an('number').eq(importedEntriesCount);
-            done();
-          });
+          expect(entriesCount).to.be.an('number').eq(importedEntriesCount);
+          done();
+        });
       });
 
       after(async () => {
