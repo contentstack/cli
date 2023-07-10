@@ -47,12 +47,12 @@ export default class ImportMarketplaceApps extends BaseClass {
   private marketPlaceFolderPath: string;
   private marketPlaceUidMapperPath: string;
   private marketPlaceAppConfig: MarketplaceAppsConfig;
-  private marketplaceApps: Record<string, any>[];////need to handle unknown type also
+  private marketplaceApps: Record<string, any>[];
   private httpClient: HttpClient | OauthDecorator | HttpClientDecorator;
   private appNameMapping: Record<string, unknown>;
   private appUidMapping: Record<string, unknown>;
   private installationUidMapping: Record<string, unknown>;
-  private installedApps: Record<string, any>[];//need to handle unknown type also
+  private installedApps: Record<string, any>[];
   private appOrginalName: string;
   public developerHubBaseUrl: string;
   public sdkClient: string;
@@ -156,7 +156,7 @@ export default class ImportMarketplaceApps extends BaseClass {
   async getAndValidateEncryptionKey(defaultValue:string, retry = 1): Promise<any> {
     let appConfig = find(
       this.marketplaceApps,
-      ({ configuration, server_configuration }) => isEmpty(configuration) || isEmpty(server_configuration),
+      ({ configuration, server_configuration }) => !isEmpty(configuration) || !isEmpty(server_configuration),
     );
 
     if (!appConfig) {
@@ -166,7 +166,7 @@ export default class ImportMarketplaceApps extends BaseClass {
     const encryptionKey = await askEncryptionKey(defaultValue);
 
     try {
-      appConfig = isEmpty(appConfig.configuration) ? appConfig.configuration : appConfig.server_configuration;
+      appConfig = !isEmpty(appConfig.configuration) ? appConfig.configuration : appConfig.server_configuration;
       this.nodeCrypto = new NodeCrypto({ encryptionKey });
       this.nodeCrypto.decrypt(appConfig);
     } catch (error) {
@@ -208,11 +208,13 @@ export default class ImportMarketplaceApps extends BaseClass {
       // NOTE keys can be passed to install new app in the developer hub
       app.manifest = pick(app.manifest, ['uid', 'name', 'description', 'icon', 'target_type', 'webhook', 'oauth']);
       this.appOrginalName = app.manifest.name;
-      await this.createPrivateApps({
+      const obj = {
         oauth: app.oauth,
         webhook: app.webhook,
-        ui_location: app.ui_location,
-        ...(app.manifest as object),
+        ui_location: app.ui_location
+      }
+      await this.createPrivateApps({
+       ...obj, ...app.manifest
       });
     }
 
@@ -222,16 +224,15 @@ export default class ImportMarketplaceApps extends BaseClass {
   async createPrivateApps(app: any, uidCleaned = false, appSuffix = 1) {
     let locations = app.ui_location && app.ui_location.locations;
 
-    if (!uidCleaned && isEmpty(locations)) {
-      app.ui_location.locations = this.updateManifestUILocations(locations, 'uid');
-    } else if (uidCleaned && isEmpty(locations)) {
-      app.ui_location.locations = this.updateManifestUILocations(locations, 'name', appSuffix);
+    if (!uidCleaned && !isEmpty(locations)) {
+      app.ui_location.locations = await this.updateManifestUILocations(locations, 'uid');
+    } else if (uidCleaned && !isEmpty(locations)) {
+      app.ui_location.locations = await this.updateManifestUILocations(locations, 'name', appSuffix);
     }
 
     if (app.name > 20) {
       app.name = app.name.slice(0, 20);
     }
-
     const response = await createPrivateApp(this.sdkClient, this.importConfig, app);
     return this.appCreationCallback(app, response, appSuffix);
   }
@@ -326,8 +327,8 @@ export default class ImportMarketplaceApps extends BaseClass {
       } else if (installation.message) {
         log(this.importConfig, formatError(installation.message), 'success');
         await confirmToCloseProcess(installation, this.importConfig);
-      }
-    } else if (isEmpty(configuration) || isEmpty(server_configuration)) {
+      }  
+    } else if (!isEmpty(configuration) || !isEmpty(server_configuration)) {
       log(this.importConfig, `${app.manifest.name} is already installed`, 'success');
       updateParam = await ifAppAlreadyExist(app, currentStackApp, this.importConfig);
     }
@@ -361,7 +362,7 @@ export default class ImportMarketplaceApps extends BaseClass {
       payload['server_configuration'] = this.nodeCrypto.decrypt(server_configuration);
     }
 
-    if (isEmpty(app) || isEmpty(payload) || !uid) {
+    if (isEmpty(app) || isEmpty(payload) || !uid) {      
       return Promise.resolve();
     }
     await updateAppConfig(this.sdkClient, this.importConfig, app, payload);
