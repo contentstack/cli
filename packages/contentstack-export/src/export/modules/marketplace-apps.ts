@@ -81,7 +81,7 @@ export default class ExportMarketplaceApps extends BaseClass {
     }
   }
 
-  async getAllStackSpecificApps(skip: number = 0): Promise<any> {
+  async getAllStackSpecificApps(skip = 0): Promise<any> {
     const data = await getStackSpecificApps({
       developerHubBaseUrl: this.developerHubBaseUrl,
       httpClient: this.httpClient as HttpClient,
