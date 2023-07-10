@@ -8,10 +8,8 @@ import {
   FlagInput,
   HttpClient,
   messageHandler,
-  CLIError,
 } from '@contentstack/cli-utilities';
 import { askTokenType } from '../../../utils/interactive';
-import { tokenValidation } from '../../../utils';
 export default class TokensAddCommand extends Command {
   static description = 'Adds management/delivery tokens to your session to use it with other CLI commands';
 
@@ -138,21 +136,7 @@ export default class TokensAddCommand extends Command {
         });
       }
 
-      if (type === 'delivery') {
-        branch = branch || 'main';
-        const tokenValidationResult = await tokenValidation.validateDeliveryToken(
-          this.deliveryAPIClient,
-          apiKey,
-          token,
-          environment,
-          this.region.name,
-          this.cdaHost,
-          branch,
-        );
-        if (!tokenValidationResult.valid) {
-          throw new CLIError(tokenValidationResult.message);
-        }
-      } else if (type === 'management') {
+      if (type === 'management') {
         // FIXME - Once the SDK refresh token issue is resolved, need to revert this back to SDK call
         const httpClient = new HttpClient({ headers: { api_key: apiKey, authorization: token } });
 
