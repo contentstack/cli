@@ -82,7 +82,6 @@ export const getAndValidateEncryptionKey = async (params: {
 };
 
 export const getConfirmationToCreateApps = async (privateApps: any, config: ImportConfig): Promise<boolean> => {
-  console.log("getConfirmationToCreateApps----",config.forceStopMarketplaceAppsPrompt)
   if (!config.forceStopMarketplaceAppsPrompt) {
     if (
       !(await cliux.confirm(
@@ -145,7 +144,7 @@ export const handleNameConflict = async (app: any, appSuffix: number, config: Im
   return app;
 };
 
-export const makeRedirectUrlCall = async (response: any, appName: string, config: ImportConfig) => {
+export const makeRedirectUrlCall = async (response: any, appName: string, config: ImportConfig):Promise<void> => {
   if (response.redirect_url) {
     log(config, `${appName} - OAuth api call started.!`, 'info');
     await new HttpClient({ maxRedirects: 20, maxBodyLength: Infinity })
@@ -191,23 +190,20 @@ export const ifAppAlreadyExist = async (app: any, currentStackApp: any, config: 
     server_configuration,
   } = app;
 
-  if (isEmpty(configuration) || isEmpty(server_configuration)) {
+  if (!isEmpty(configuration) || !isEmpty(server_configuration)) {
     cliux.print(
       `\nWARNING!!! The ${name} app already exists and it may have its own configuration. But the current app you install has its own configuration which is used internally to manage content.\n`,
       { color: 'yellow' },
     );
-      console.log("config.forceStopMarketplaceAppsPrompt------",config.forceStopMarketplaceAppsPrompt)
+
     const configOption = config.forceStopMarketplaceAppsPrompt
       ? 'Update it with the new configuration.'
       : await selectConfiguration();
-      console.log("configOption---",configOption)
     if (configOption === 'Exit') {
       process.exit();
     } else if (configOption === 'Update it with the new configuration.') {
-      console.log("here---",configOption)
       updateParam = { manifest: app.manifest, ...currentStackApp, configuration, server_configuration };
     }
-    console.log("updateParam---",updateParam)
   }
 
   return updateParam;
@@ -222,7 +218,6 @@ export const updateAppConfig = async (
   let installation = client.organization(config.org_uid).app(app?.manifest?.uid).installation(app?.uid);
 
   installation = Object.assign(installation, payload);
-  console.log("installation---",installation)
   return await installation
     .update()
     .then((data: any) => {
