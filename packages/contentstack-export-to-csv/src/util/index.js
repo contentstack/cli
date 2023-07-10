@@ -8,7 +8,7 @@ const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 
 const config = require('./config.js');
-const { cliux } = require('@contentstack/cli-utilities');
+const { cliux, configHandler } = require('@contentstack/cli-utilities');
 
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
@@ -59,8 +59,16 @@ async function getOrganizations(managementAPIClient) {
 }
 
 async function getOrganizationList(managementAPIClient, params, result = []) {
-  const organizations = await managementAPIClient.organization().fetchAll(params);
-  result = result.concat(organizations.items);
+  let organizations;
+  const configOrgUid = configHandler.get('oauthOrgUid');
+
+  if (configOrgUid) {
+    organizations = await managementAPIClient.organization(configOrgUid).fetch();
+    result = result.concat([organizations]);
+  } else {
+    organizations = await managementAPIClient.organization().fetchAll({ limit: 100 });
+    result = result.concat(organizations.items);
+  }
 
   if (!organizations.items || (organizations.items && organizations.items.length < params.limit)) {
     const orgMap = {};
@@ -76,26 +84,33 @@ async function getOrganizationList(managementAPIClient, params, result = []) {
   }
 }
 
-function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
-  return new Promise((resolve, reject) => {
+async function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
+  try {
     let result = {};
-    managementAPIClient
-      .getUser({ include_orgs_roles: true })
-      .then((response) => {
-        let organizations = response.organizations.filter((org) => {
-          if (org.org_roles) {
-            const org_role = org.org_roles.shift();
-            return org_role.admin;
-          }
-          return org.is_owner === true;
-        });
-        organizations.forEach((org) => {
-          result[org.name] = org.uid;
-        });
-        resolve(result);
-      })
-      .catch((error) => reject(error));
-  });
+    const configOrgUid = configHandler.get('oauthOrgUid');
+
+    if (configOrgUid) {
+      const response = await managementAPIClient.organization(configOrgUid).fetch();
+      result[response.name] = response.uid;
+    } else {
+      const response = await managementAPIClient.getUser({ include_orgs_roles: true });
+      const organizations = response.organizations.filter((org) => {
+        if (org.org_roles) {
+          const org_role = org.org_roles.shift();
+          return org_role.admin;
+        }
+        return org.is_owner === true;
+      });
+
+      organizations.forEach((org) => {
+        result[org.name] = org.uid;
+      });
+  }
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
 }
 
 function chooseStack(managementAPIClient, orgUid, stackApiKey) {
