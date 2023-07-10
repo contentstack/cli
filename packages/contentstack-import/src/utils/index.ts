@@ -8,7 +8,6 @@ export { uploadAssetHelper, lookupAssets } from './asset-helper';
 export {
   getDeveloperHubUrl,
   getOrgUid,
-  getAndValidateEncryptionKey,
   getConfirmationToCreateApps,
   createPrivateApp,
   handleNameConflict,
