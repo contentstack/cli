@@ -9,7 +9,7 @@
     "@contentstack/cli-cm-import": "^1.6.0",
     "@contentstack/cli-command": "^1.2.10",
     "@contentstack/cli-utilities": "^1.5.0",
-    "@contentstack/management": "^1.6.1",
+    "@contentstack/management": "^1.8.0",
     "@colors/colors": "^1.5.0",
     "async": "^3.2.4",
     "chalk": "^4.1.0",
