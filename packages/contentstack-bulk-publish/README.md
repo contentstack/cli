@@ -506,6 +506,7 @@ FLAGS
   -c, --config=<value>           Path for the external config file (A new config file can be generated at the current
                                  working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`)
   -e, --environments=<value>...  Environments where entries will be published
+  -k, --stack-api-key=<value>    Stack api key to be used
   -l, --locales=<value>...       Locales where entries will be published
   -y, --yes                      Agree to process the command with the current configuration
   --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
@@ -565,6 +566,12 @@ EXAMPLES
   Using --source-env
 
   $ csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
+
+
+
+  Using --stack-api-key
+
+  $ csdx cm:entries:publish -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
 ```
 
 ## `csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`
@@ -903,6 +910,7 @@ FLAGS
   -c, --config=<value>           Path for the external config file (A new config file can be generated at the current
                                  working directory using `csdx cm:bulk-publish:configure -a [ALIAS]`)
   -e, --environments=<value>...  Environments where entries will be published
+  -k, --stack-api-key=<value>    Stack api key to be used
   -l, --locales=<value>...       Locales where entries will be published
   -y, --yes                      Agree to process the command with the current configuration
   --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
@@ -962,6 +970,12 @@ EXAMPLES
   Using --source-env
 
   $ csdx cm:entries:publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
+
+
+
+  Using --stack-api-key
+
+  $ csdx cm:entries:publish -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY] --source-env [SOURCE ENVIRONMENT] --delivery-token [DELIVERY TOKEN]
 ```
 
 _See code: [src/commands/cm/entries/publish.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/entries/publish.js)_
