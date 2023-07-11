@@ -28,8 +28,8 @@ export default class ContentstackClient {
 
   limit: number;
 
-  constructor(cmaHost: string, limit: number) {
-    this.instance = managementSDKClient({ host: cmaHost });
+  constructor(cmaHost: string, limit: number, managementToken?: string) {
+    this.instance = managementSDKClient({ host: cmaHost, management_token: managementToken });
     this.limit = limit || 100;
   }
 
@@ -165,7 +165,7 @@ export default class ContentstackClient {
 
   private buildError(error: any) {
     const message = error.errorMessage || error.response.data?.errorMessage || error.response.statusText;
-    const status = error.status; 
+    const status = error.status;
     return new ContentstackError(message, status);
   }
 }
