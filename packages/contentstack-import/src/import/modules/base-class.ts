@@ -10,6 +10,7 @@ import { LocaleData } from '@contentstack/management/types/stack/locale';
 import { PublishConfig } from '@contentstack/management/types/utility/publish';
 import { FolderData } from '@contentstack/management/types/stack/asset/folder';
 import { ExtensionData } from '@contentstack/management/types/stack/extension';
+import { EnvironmentData } from '@contentstack/management/types/stack/environment';
 
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
@@ -22,10 +23,11 @@ export type ApiModuleType =
   | 'create-assets'
   | 'replace-assets'
   | 'publish-assets'
-  | 'create-assets-folder' 
+  | 'create-assets-folder'
   | 'create-extensions'
   | 'create-locale'
-  | 'update-locale';
+  | 'update-locale'
+  | 'create-environments';
 
 export type ApiOptions = {
   uid?: string;
@@ -257,7 +259,7 @@ export default abstract class BaseClass {
       case 'create-extensions':
         return this.stack
           .extension()
-          .create({ extension: pick(apiData, this.modulesConfig.extensions.validKeys) as ExtensionData})
+          .create({ extension: pick(apiData, this.modulesConfig.extensions.validKeys) as ExtensionData })
           .then(onSuccess)
           .catch(onReject);
       case 'create-locale':
@@ -270,6 +272,12 @@ export default abstract class BaseClass {
         return this.stack
           .locale(apiData.code)
           .update({ locale: pick(apiData, [...this.modulesConfig.locales.requiredKeys]) as LocaleData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'create-environments':
+        return this.stack
+          .environment()
+          .create({ extension: apiData as EnvironmentData })// need to handle after queryparam fix
           .then(onSuccess)
           .catch(onReject);
       default:
