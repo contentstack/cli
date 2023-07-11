@@ -1,22 +1,59 @@
-let { default: config } = require('../config');
-const { cliux, configHandler } = require('@contentstack/cli-utilities');
+import { cliux, configHandler, NodeCrypto ,HttpClient} from '@contentstack/cli-utilities';
 
-export const getDeveloperHubUrl = async () => {
+import { formatError, log } from '../utils';
+import { ExportConfig } from '../types';
+import { askDeveloperHub } from './interactive';
+
+export const getDeveloperHubUrl = async (exportConfig: ExportConfig) => {
   const { cma, name } = configHandler.get('region') || {};
-  let developerHubBaseUrl = config.developerHubUrls[cma];
+  let developerHubBaseUrl = exportConfig.developerHubUrls[cma];
 
   if (!developerHubBaseUrl) {
-    developerHubBaseUrl = await cliux.inquire({
-      type: 'input',
-      name: 'name',
-      validate: (url: string) => {
-        if (!url) return "Developer-hub URL can't be empty.";
-
-        return true;
-      },
-      message: `Enter the developer-hub base URL for the ${name} region - `,
-    });
+    developerHubBaseUrl = await askDeveloperHub(name);
   }
 
   return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
+};
+
+export async function getOrgUid(stackAPIClient: any, config: ExportConfig): Promise<string> {
+  const tempStackData = await stackAPIClient.fetch().catch((error: any) => {
+    log(config, formatError(error), 'error');
+  });
+
+  return tempStackData?.org_uid;
+}
+
+export async function createNodeCryptoInstance(config: ExportConfig): Promise<NodeCrypto> {
+  const cryptoArgs = { encryptionKey: '' };
+
+  if (config.forceStopMarketplaceAppsPrompt) {
+    cryptoArgs['encryptionKey'] = config.marketplaceAppEncryptionKey;
+  } else {
+    cryptoArgs['encryptionKey'] = await cliux.inquire({
+      type: 'input',
+      name: 'name',
+      default: config.marketplaceAppEncryptionKey,
+      validate: (url) => {
+        if (!url) return "Encryption key can't be empty.";
+
+        return true;
+      },
+      message: 'Enter marketplace app configurations encryption key',
+    });
+  }
+
+  return new NodeCrypto(cryptoArgs);
+}
+
+export const getStackSpecificApps = async(params: {
+  developerHubBaseUrl: string;
+  httpClient: HttpClient;
+  config: ExportConfig;
+  skip: number
+}) => {
+  const { developerHubBaseUrl, httpClient, config, skip } = params;
+  return httpClient
+  .get(`${developerHubBaseUrl}/installations?target_uids=${config.source_stack}&skip=${skip}`)
+    .then((data: any) => data.data)
+    .catch((error: any) => log(config, `Failed to export marketplace-apps ${formatError(error)}`, 'error'));
 };
