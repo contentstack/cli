@@ -29,6 +29,7 @@ export interface ContentModelSeederOptions {
   fetchLimit: string | undefined;
   skipStackConfirmation: string | undefined;
   isAuthenticated: boolean | false;
+  managementToken?: string | undefined;
 }
 
 export default class ContentModelSeeder {
@@ -55,7 +56,7 @@ export default class ContentModelSeeder {
     this.ghRepo = gh.repo;
     const limit = Number(this.options.fetchLimit);
 
-    this.csClient = new ContentstackClient(options.cmaHost, limit);
+    this.csClient = new ContentstackClient(options.cmaHost, limit, options.managementToken);
     this.ghClient = new GitHubClient(this.ghUsername, DEFAULT_STACK_PATTERN);
   }
 
@@ -113,7 +114,11 @@ export default class ContentModelSeeder {
     }
 
     if (repoExists === false) {
-      cliux.error(repoResponseData.status === 403 ? repoResponseData.statusMessage : `Could not find GitHub repository '${this.ghPath}'.`);
+      cliux.error(
+        repoResponseData.status === 403
+          ? repoResponseData.statusMessage
+          : `Could not find GitHub repository '${this.ghPath}'.`,
+      );
       if (this.parent) this.parent.exit(1);
     } else {
       let organizationResponse: Organization | undefined;
