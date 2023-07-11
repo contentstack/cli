@@ -86,7 +86,6 @@ export default class ImportExtensions extends BaseClass {
       }
     };
 
-    /* eslint-disable no-await-in-loop */
     await this.makeConcurrentCall(
       {
         apiContent,
