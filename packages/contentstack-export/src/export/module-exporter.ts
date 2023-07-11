@@ -74,7 +74,7 @@ class ModuleExporter {
     }
 
     // set master locale to config
-    if (moduleName === 'stack' && exportedModuleResponse.code) {
+    if (moduleName === 'stack' && exportedModuleResponse?.code) {
       this.exportConfig.master_locale = { code: exportedModuleResponse.code };
     }
   }
