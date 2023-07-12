@@ -104,6 +104,7 @@ export default class SeedCommand extends Command {
         fetchLimit: seedFlags['fetch-limit'],
         skipStackConfirmation: seedFlags['yes'],
         isAuthenticated: isAuthenticated(),
+        alias: managementTokenAlias,
       };
 
       const listOfTokens = configHandler.get('tokens');
@@ -112,8 +113,6 @@ export default class SeedCommand extends Command {
         options.managementToken = listOfTokens[managementTokenAlias].token;
         options.stackUid = listOfTokens[managementTokenAlias].apiKey;
       }
-
-      console.log(options, 'options');
 
       const seeder = new ContentModelSeeder(options);
       const result = await seeder.run();
