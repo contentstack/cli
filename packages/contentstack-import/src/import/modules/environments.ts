@@ -3,7 +3,7 @@ import values from 'lodash/values';
 import { join, resolve } from 'node:path';
 
 import config from '../../config';
-import { log, formatError, fsUtil } from '../../utils';
+import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, EnvironmentConfig } from '../../types';
 
@@ -44,7 +44,7 @@ export default class ImportEnvironments extends BaseClass {
     log(this.importConfig, 'Migrating environments', 'info');
 
     await fsUtil.makeDirectory(this.mapperDirPath);
-    this.envUidMapper = fsUtil.fileExistsSync(this.envUidMapperPath)
+    this.envUidMapper = fileHelper.fileExistsSync(this.envUidMapperPath)
       ? (fsUtil.readFile(join(this.envUidMapperPath), true) as Record<string, unknown>)
       : {};
 
