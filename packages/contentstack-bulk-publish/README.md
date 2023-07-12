@@ -1174,24 +1174,25 @@ Unpublish entries from the given environment
 
 ```
 USAGE
-  $ csdx cm:entries:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>]
-    [--retry-failed <value>] [--bulk-unpublish <value>] [--api-version <value>] [--content-type <value>]
+  $ csdx cm:entries:unpublish [-a <value>] [-k <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch
+    <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--api-version <value>] [--content-type <value>]
     [--delivery-token <value>]
 
 FLAGS
-  -a, --alias=<value>        Alias(name) for the management token
-  -c, --config=<value>       Path to the config file
-  -e, --environment=<value>  Source Environment
-  -y, --yes                  Agree to process the command with the current configuration
-  --api-version=<value>      API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
-  --branch=<value>           [default: main] Specify the branch to fetch the content (by default the main branch is
-                             selected)
-  --bulk-unpublish=<value>   [default: true] This flag is set to true by default. It indicates that contentstack's
-                             bulkpublish API will be used to unpublish the entries
-  --content-type=<value>     Content type filter
-  --delivery-token=<value>   Delivery token for source environment
-  --locale=<value>           Locale filter
-  --retry-failed=<value>     Retry publishing failed entries from the logfile
+  -a, --alias=<value>          Alias(name) for the management token
+  -c, --config=<value>         Path to the config file
+  -e, --environment=<value>    Source Environment
+  -k, --stack-api-key=<value>  Stack api key to be used
+  -y, --yes                    Agree to process the command with the current configuration
+  --api-version=<value>        API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
+  --branch=<value>             [default: main] Specify the branch to fetch the content (by default the main branch is
+                               selected)
+  --bulk-unpublish=<value>     [default: true] This flag is set to true by default. It indicates that contentstack's
+                               bulkpublish API will be used to unpublish the entries
+  --content-type=<value>       Content type filter
+  --delivery-token=<value>     Delivery token for source environment
+  --locale=<value>             Locale filter
+  --retry-failed=<value>       Retry publishing failed entries from the logfile
 
 DESCRIPTION
   Unpublish entries from the given environment
@@ -1223,11 +1224,15 @@ EXAMPLES
 
 
 
-
-
   Using --branch flag
 
   $ csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]
+
+
+
+  Using --stack-api-key flag
+
+  $ csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN]
 ```
 
 _See code: [src/commands/cm/entries/unpublish.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/entries/unpublish.js)_
