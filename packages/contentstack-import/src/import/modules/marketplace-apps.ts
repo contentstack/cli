@@ -83,7 +83,7 @@ export default class ImportMarketplaceApps extends BaseClass {
    * @returns {Promise<void>} Promise<void>
    */
   async start(): Promise<void> {
-    log(this.importConfig, 'Migrating new marketplace apps', 'info');
+    log(this.importConfig, 'Migrating marketplace apps', 'info');
 
     if (isEmpty(this.marketplaceApps)) {
       return Promise.resolve();
