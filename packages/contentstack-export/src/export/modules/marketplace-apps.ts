@@ -53,7 +53,7 @@ export default class ExportMarketplaceApps extends BaseClass {
       return Promise.resolve();
     }
 
-    log(this.exportConfig, 'Starting new marketplace app export', 'info');
+    log(this.exportConfig, 'Starting marketplace app export', 'info');
     
     this.marketplaceAppPath = pResolve(
       this.exportConfig.data,
