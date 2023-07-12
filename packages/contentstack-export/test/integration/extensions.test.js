@@ -17,16 +17,13 @@ module.exports = (region) => {
       : path.join(__dirname, '..', '..', `${EXPORT_PATH}_${stack}`);
     const extensionsBasePath = path.join(exportBasePath, modules.extensions.dirName);
     const extensionsJson = path.join(extensionsBasePath, modules.extensions.fileName);
-    const messageFilePath = path.join(__dirname, '..', '..', 'messages/index.json');
-
-    messageHandler.init({ messageFilePath });
-    const { promptMessageList } = require(messageFilePath);
 
     describe('ContentStack-Export extensions', () => {
       describe('cm:stacks:export extensions [auth-token]', () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
-          .stub(cliUX, 'prompt', async (name) => {
+          .stub(cliUX, 'inquire', async (input) => {
+            const { name } = input;
             switch (name) {
               case 'apiKey':
                 return stackDetails[stack].STACK_API_KEY;
@@ -35,14 +32,7 @@ module.exports = (region) => {
             }
           })
           .stdout({ print: PRINT_LOGS || false })
-          .command([
-            'cm:stacks:export',             
-            '--stack-api-key',
-            stackDetails[stack].STACK_API_KEY,
-            '--data-dir',
-            `${EXPORT_PATH}_${stack}`,
-            '--module',
-            'extensions'])
+          .command(['cm:stacks:export', '--module', 'extensions'])
           .it('Check extensions count', async () => {
             let exportedExtensionsCount = 0;
             const extensionsCount = await getExtensionsCount(stackDetails[stack]);
@@ -98,4 +88,3 @@ module.exports = (region) => {
     });
   }
 };
- 

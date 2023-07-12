@@ -4,6 +4,7 @@ import chunk from 'lodash/chunk';
 import isEmpty from 'lodash/isEmpty';
 import entries from 'lodash/entries';
 import isEqual from 'lodash/isEqual';
+import omit from 'lodash/omit';
 import { Stack } from '@contentstack/management/types/stack';
 import { AssetData } from '@contentstack/management/types/stack/asset';
 import { LocaleData } from '@contentstack/management/types/stack/locale';
@@ -259,7 +260,7 @@ export default abstract class BaseClass {
       case 'create-extensions':
         return this.stack
           .extension()
-          .create({ extension: pick(apiData, this.modulesConfig.extensions.validKeys) as ExtensionData })
+          .create({ extension: omit(apiData, ['uid', 'SYS_ACL']) as ExtensionData })
           .then(onSuccess)
           .catch(onReject);
       case 'create-locale':
@@ -277,7 +278,7 @@ export default abstract class BaseClass {
       case 'create-environments':
         return this.stack
           .environment()
-          .create({ extension: apiData as EnvironmentData })// need to handle after queryparam fix
+          .create({ environment: omit(apiData, ['uid', 'ACL']) as EnvironmentData })
           .then(onSuccess)
           .catch(onReject);
       default:

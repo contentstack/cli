@@ -116,7 +116,7 @@ export default class ImportEnvironments extends BaseClass {
       log(this.importConfig, `Environment '${environment.name}' already exists. Skipping it to avoid duplicates!`, 'info');
       apiOptions.entity = undefined;
     } else {
-      apiOptions.apiData = omit(environment, ['uid', 'ACL']);
+      apiOptions.apiData = environment;
     }
     return apiOptions;
   }
