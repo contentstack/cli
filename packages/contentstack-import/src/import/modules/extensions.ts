@@ -3,7 +3,7 @@ import values from 'lodash/values';
 import { join, resolve } from 'node:path';
 
 import config from '../../config';
-import { log, formatError, fsUtil } from '../../utils';
+import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, Extensions } from '../../types';
 
@@ -44,7 +44,7 @@ export default class ImportExtensions extends BaseClass {
     log(this.importConfig, 'Migrating extensions', 'info');
 
     await fsUtil.makeDirectory(this.mapperDirPath);
-    this.extUidMapper = fsUtil.fileExistsSync(this.extUidMapperPath)
+    this.extUidMapper = fileHelper.fileExistsSync(this.extUidMapperPath)
       ? (fsUtil.readFile(join(this.extUidMapperPath), true) as Record<string, unknown>)
       : {};
 
