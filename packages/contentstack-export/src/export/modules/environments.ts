@@ -25,7 +25,7 @@ export default class ExportEnvironments extends BaseClass {
   }
 
   async start(): Promise<void> {
-    log(this.exportConfig, 'Starting new environment export', 'info');
+    log(this.exportConfig, 'Starting environment export', 'info');
 
     this.environmentsFolderPath = pResolve(
       this.exportConfig.data,
