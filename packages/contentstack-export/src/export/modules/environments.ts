@@ -1,9 +1,8 @@
 import { resolve as pResolve } from 'node:path';
-import { FsUtility } from '@contentstack/cli-utilities';
 
 import config from '../../config';
 import BaseClass from './base-class';
-import { log, formatError } from '../../utils';
+import { log, formatError, fsUtil } from '../../utils';
 import { EnvironmentConfig, ModuleClassParams } from '../../types';
 
 export default class ExportEnvironments extends BaseClass {
@@ -32,7 +31,7 @@ export default class ExportEnvironments extends BaseClass {
       this.exportConfig.branchName || '',
       this.environmentConfig.dirName,
     );
-
+    await fsUtil.makeDirectory(this.environmentsFolderPath);
     await this.getEnvironments();
   }
 
@@ -52,10 +51,7 @@ export default class ExportEnvironments extends BaseClass {
         const extUid = environments.items[index].uid;
         this.environments[extUid] = environments.items[index];
       }
-      new FsUtility({ basePath: this.environmentsFolderPath }).writeFile(
-        pResolve(this.environmentsFolderPath, this.environmentConfig.fileName),
-        this.environments,
-      );
+      fsUtil.writeFile(pResolve(this.environmentsFolderPath, this.environmentConfig.fileName), this.environments);
       log(this.exportConfig, 'All the environments have been exported successfully!', 'success');
     } else {
       log(this.exportConfig, 'No environments found', 'info');
