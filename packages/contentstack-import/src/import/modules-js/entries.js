@@ -104,7 +104,11 @@ module.exports = class ImportEntries {
             }
           }
         } catch (error) {
-          addlogs(this.config, `Failed to read the content types to import entries ${util.formatError(error)}`);
+          addlogs(
+            this.config,
+            `Failed to read the content types to import entries ${formatError(error)}`,
+            'error',
+          );
           process.exit(0);
         }
       }
@@ -156,7 +160,7 @@ module.exports = class ImportEntries {
                 } catch (error) {
                   addlogs(
                     self.config,
-                    `Failed get the existing entries to update the mapper ${util.formatError(error)}, 'error`,
+                    `Failed get the existing entries to update the mapper ${formatError(error)}, 'error`,
                   );
                 }
                 log(this.config, 'Starting to update entries with references', 'info');
@@ -164,7 +168,7 @@ module.exports = class ImportEntries {
                 log(this.config, "Successfully imported '" + lang + "' entries!", 'success');
                 counter++;
               } else {
-                addlogs(self.config, lang + ' has not been configured for import, thus skipping it', 'success');
+                addlogs(self.config, `'${lang}' has not been configured for import, thus skipping it`, 'success');
                 counter++;
               }
             },
@@ -189,7 +193,8 @@ module.exports = class ImportEntries {
                   } catch (error) {
                     addlogs(
                       self.config,
-                      `Failed to update the field rules for content type ${schema.uid} ${util.formatError(error)}`,
+                      `Failed to update the field rules for content type '${schema.uid}' ${formatError(error)}`,
+                      'error',
                     );
                   }
                 }
@@ -282,7 +287,7 @@ module.exports = class ImportEntries {
                     );
                   } catch (error) {
                     addlogs(this.config, 'Failed to update entry while creating entry id ' + eUid);
-                    addlogs(this.config, util.formatError(error), 'error');
+                    addlogs(this.config, formatError(error), 'error');
                   }
                 }
               }
@@ -583,7 +588,8 @@ module.exports = class ImportEntries {
             } catch (error) {
               addlogs(
                 this.config,
-                `Failed to update the entry ${uid} references while reposting ${util.formatError(error)}`,
+                `Failed to update the entry ${uid} references while reposting ${formatError(error)}`,
+                'error',
               );
             }
           });
@@ -660,8 +666,8 @@ module.exports = class ImportEntries {
                 })
                 .catch((error) => {
                   // error while executing entry in batch
-                  addlogs(this.config, chalk.red('Failed re-post entries at batch no: ' + (index + 1)), 'error');
-                  addlogs(this.config, util.formatError(error), 'error');
+                  addlogs(this.config, `Failed re-post entries at batch no: '${index + 1}`, 'error');
+                  addlogs(this.config, formatError(error), 'error');
                   // throw error;
                 });
             },
@@ -679,11 +685,8 @@ module.exports = class ImportEntries {
             })
             .catch((error) => {
               // error while updating entries with references
-              addlogs(
-                this.config,
-                chalk.red(`Failed re-post entries of content type ${ctUid} locale ${lang}`, 'error'),
-              );
-              addlogs(this.config, util.formatError(error), 'error');
+              addlogs(this.config, `Failed re-post entries of content type ${ctUid} locale ${lang}`, 'error');
+              addlogs(this.config, formatError(error), 'error');
               // throw error;
             });
         },
@@ -773,7 +776,7 @@ module.exports = class ImportEntries {
               // empty function
             })
             .catch((_error) => {
-              addlogs(this.config, util.formatError(error), 'error');
+              addlogs(this.config, formatError(error), 'error');
               reject(`Failed suppress content type ${schema.uid} reference fields`);
             });
           // update 5 content types at a time
@@ -937,7 +940,7 @@ module.exports = class ImportEntries {
             })
             .catch((error) => {
               addlogs(this.config, chalk.red('Failed to remove bugged entry from master language'), 'error');
-              addlogs(this.config, util.formatError(error), 'error');
+              addlogs(this.config, formatError(error), 'error');
             });
         },
         {
@@ -960,7 +963,7 @@ module.exports = class ImportEntries {
         })
         .catch((error) => {
           // error while removing bugged entries from stack
-          addlogs(this.config, util.formatError(error), 'error');
+          addlogs(this.config, formatError(error), 'error');
         });
     });
   }
@@ -1027,102 +1030,115 @@ module.exports = class ImportEntries {
             async (ctUid) => {
               let eFilePath = path.resolve(this.ePath, ctUid, lang + '.json');
               let entries = await fileHelper.readLargeFile(eFilePath);
-
-              let eUids = Object.keys(entries);
-              let batches = [];
-              let batchSize;
-
-              if (eUids.length > 0) {
-                let entryBatchLimit = this.eConfig.batchLimit || 10;
-                batchSize = Math.round(entryBatchLimit / 3);
-                // Run entry creation in batches
-                for (let i = 0; i < eUids.length; i += batchSize) {
-                  batches.push(eUids.slice(i, i + batchSize));
-                }
+              if (entries === undefined) {
+                addlogs(this.config, `No entries were found for Content type: ${ctUid} in language: ${lang}`, 'info');
               } else {
-                return;
-              }
+                let eUids = Object.keys(entries);
+                let batches = [];
+                let batchSize;
 
-              return Promise.map(
-                batches,
-                async (batch, index) => {
-                  return Promise.map(
-                    batch,
-                    async (eUid) => {
-                      let entry = entries[eUid];
-                      let envId = [];
-                      let locales = [];
-                      if (entry.publish_details && entry.publish_details.length > 0) {
-                        _.forEach(entries[eUid].publish_details, (pubObject) => {
-                          if (
-                            self.environment.hasOwnProperty(pubObject.environment) &&
-                            _.indexOf(envId, self.environment[pubObject.environment].name) === -1
-                          ) {
-                            envId.push(self.environment[pubObject.environment].name);
-                          }
-                          if (pubObject.locale) {
-                            let idx = _.indexOf(locales, pubObject.locale);
-                            if (idx === -1) {
-                              locales.push(pubObject.locale);
+                if (eUids.length > 0) {
+                  let entryBatchLimit = this.eConfig.batchLimit || 10;
+                  batchSize = Math.round(entryBatchLimit / 3);
+                  // Run entry creation in batches
+                  for (let i = 0; i < eUids.length; i += batchSize) {
+                    batches.push(eUids.slice(i, i + batchSize));
+                  }
+                } else {
+                  return;
+                }
+
+                return Promise.map(
+                  batches,
+                  async (batch, index) => {
+                    return Promise.map(
+                      batch,
+                      async (eUid) => {
+                        let entry = entries[eUid];
+                        let envId = [];
+                        let locales = [];
+                        if (entry.publish_details && entry.publish_details.length > 0) {
+                          _.forEach(entries[eUid].publish_details, (pubObject) => {
+                            if (
+                              self.environment.hasOwnProperty(pubObject.environment) &&
+                              _.indexOf(envId, self.environment[pubObject.environment].name) === -1
+                            ) {
+                              envId.push(self.environment[pubObject.environment].name);
                             }
-                          }
-                        });
-
-                        let entryUid = entryMapper[eUid];
-                        if (entryUid) {
-                          requestObject.entry.environments = envId;
-                          requestObject.entry.locales = locales;
-                          return new Promise((resolveEntryPublished, rejectEntryPublished) => {
-                            self.stackAPIClient
-                              .contentType(ctUid)
-                              .entry(entryUid)
-                              .publish({ publishDetails: requestObject.entry, locale: lang })
-                              // eslint-disable-next-line max-nested-callbacks
-                              .then((result) => {
-                                // log(this.config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
-                                log(
-                                  this.config,
-                                  `Entry '${eUid}' published successfully in '${ctUid}' content type`,
-                                  'success',
-                                );
-                                return resolveEntryPublished(result);
-                                // eslint-disable-next-line max-nested-callbacks
-                              })
-                              .catch((err) => {
-                                log(
-                                  this.config,
-                                  `failed to publish entry ${eUid} content type ${ctUid} ${util.formatError(err)}`,
-                                );
-                                return resolveEntryPublished('');
-                              });
+                            if (pubObject.locale) {
+                              let idx = _.indexOf(locales, pubObject.locale);
+                              if (idx === -1) {
+                                locales.push(pubObject.locale);
+                              }
+                            }
                           });
+
+                          let entryUid = entryMapper[eUid];
+                          if (entryUid) {
+                            requestObject.entry.environments = envId;
+                            requestObject.entry.locales = locales;
+                            return new Promise((resolveEntryPublished, rejectEntryPublished) => {
+                              self.stackAPIClient
+                                .contentType(ctUid)
+                                .entry(entryUid)
+                                .publish({ publishDetails: requestObject.entry, locale: lang })
+                                // eslint-disable-next-line max-nested-callbacks
+                                .then((result) => {
+                                  // addlogs(this.config, 'Entry ' + eUid + ' published successfully in ' + ctUid + ' content type', 'success')
+                                  addlogs(
+                                    this.config,
+                                    `Entry '${eUid}' published successfully in '${ctUid}' content type`,
+                                    'success',
+                                  );
+                                  return resolveEntryPublished(result);
+                                  // eslint-disable-next-line max-nested-callbacks
+                                })
+                                .catch((err) => {
+                                  addlogs(
+                                    this.config,
+                                    `failed to publish entry '${eUid}' content type '${ctUid}' ${formatError(
+                                      err,
+                                    )}`,
+                                    'error',
+                                  );
+                                  return resolveEntryPublished('');
+                                });
+                            });
+                          }
+                        } else {
+                          return {};
                         }
-                      } else {
-                        return {};
-                      }
-                    },
-                    {
-                      concurrency: 1,
-                    },
-                  )
-                    .then(() => {
-                      // empty function
-                    })
-                    .catch((error) => {
-                      // error while executing entry in batch
-                      addlogs(this.config, util.formatError(error), 'error');
-                    });
-                },
-                {
-                  concurrency: 1,
-                },
-              )
-                .then(() => {
-                  addlogs(this.config, 'Entries published successfully in ' + ctUid + ' content type', 'success');
-                })
-                .catch((error) => {
-                  addlogs(this.config, `failed to publish entry in content type ${ctUid} ${util.formatError(error)}`);
-                });
+                      },
+                      {
+                        concurrency: 1,
+                      },
+                    )
+                      .then(() => {
+                        // empty function
+                      })
+                      .catch((error) => {
+                        // error while executing entry in batch
+                        addlogs(this.config, formatError(error), 'error');
+                        addlogs(this.config, error, 'error');
+                      });
+                  },
+                  {
+                    concurrency: 1,
+                  },
+                )
+                  .then(() => {
+                    // addlogs(this.config, 'Entries published successfully in ' + ctUid + ' content type', 'success')
+                    addlogs(this.config, `Entries published successfully in '${ctUid}' content type`, 'info');
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    addlogs(
+                      this.config,
+                      `failed to publish entry in content type '${ctUid}' ${formatError(error)}`,
+                      'error',
+                    );
+                  });
+              }
             },
             {
               concurrency: 1,
@@ -1133,7 +1149,7 @@ module.exports = class ImportEntries {
               // log('Published entries successfully in ' +);
             })
             .catch((error) => {
-              addlogs(this.config, `Failed to publish few entries in ${lang} ${util.formatError(error)}`, 'error');
+              addlogs(this.config, `Failed to publish few entries in ${lang} ${formatError(error)}`, 'error');
             });
         },
         {
@@ -1144,7 +1160,7 @@ module.exports = class ImportEntries {
           return resolve();
         })
         .catch((error) => {
-          addlogs(this.config, `Failed to publish entries ${util.formatError(error)}`, 'error');
+          addlogs(this.config, `Failed to publish entries ${formatError(error)}`, 'error');
         });
     });
   }
