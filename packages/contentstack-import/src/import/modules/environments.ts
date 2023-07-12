@@ -1,16 +1,13 @@
 import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
-import omit from 'lodash/omit';
-import {join, resolve } from 'node:path';
-import { FsUtility } from '@contentstack/cli-utilities';
+import { join, resolve } from 'node:path';
 
 import config from '../../config';
-import { log, formatError } from '../../utils';
+import { log, formatError, fsUtil } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
-import { ModuleClassParams, EnvironmentConfig, } from '../../types';
+import { ModuleClassParams, EnvironmentConfig } from '../../types';
 
 export default class ImportEnvironments extends BaseClass {
-  private fs: FsUtility;
   private mapperDirPath: string;
   private environmentsFolderPath: string;
   private envUidMapperPath: string;
@@ -28,13 +25,12 @@ export default class ImportEnvironments extends BaseClass {
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'environments');
     this.environmentsFolderPath = join(this.importConfig.backupDir, this.environmentsConfig.dirName);
     this.envUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
-    this.envSuccessPath = join(this.importConfig.backupDir, 'environments', 'success.json');
-    this.envFailsPath = join(this.importConfig.backupDir, 'environments', 'fails.json');
-    this.fs = new FsUtility({ basePath: this.mapperDirPath });
-    this.environments = this.fs.readFile(
-      join(this.importConfig.backupDir, 'environments', 'environments.json'),
-      true,
-    ) as Record<string, unknown>;
+    this.envSuccessPath = join(this.mapperDirPath, 'success.json');
+    this.envFailsPath = join(this.mapperDirPath, 'fails.json');
+    this.environments = fsUtil.readFile(join(this.environmentsFolderPath, 'environments.json'), true) as Record<
+      string,
+      unknown
+    >;
     this.envFailed = [];
     this.envSuccess = [];
     this.envUidMapper = {};
@@ -47,16 +43,19 @@ export default class ImportEnvironments extends BaseClass {
   async start(): Promise<void> {
     log(this.importConfig, 'Migrating environments', 'info');
 
-    this.envUidMapper = this.fs.readFile(join(this.envUidMapperPath), true) as Record<string, unknown> || {};
+    await fsUtil.makeDirectory(this.mapperDirPath);
+    this.envUidMapper = fsUtil.fileExistsSync(this.envUidMapperPath)
+      ? (fsUtil.readFile(join(this.envUidMapperPath), true) as Record<string, unknown>)
+      : {};
 
     await this.importEnvironments();
 
     if (this.envSuccess?.length) {
-      new FsUtility({ basePath: this.environmentsFolderPath }).writeFile(this.envSuccessPath, this.envSuccess);
+      fsUtil.writeFile(this.envSuccessPath, this.envSuccess);
     }
 
     if (this.envFailed?.length) {
-      new FsUtility({ basePath: this.environmentsFolderPath }).writeFile(this.envFailsPath, this.envFailed);
+      fsUtil.writeFile(this.envFailsPath, this.envFailed);
     }
   }
 
@@ -72,11 +71,11 @@ export default class ImportEnvironments extends BaseClass {
       this.envSuccess.push(response);
       this.envUidMapper[uid] = response.uid;
       log(this.importConfig, `Environment '${name}' imported successfully`, 'success');
-      new FsUtility({ basePath: this.environmentsFolderPath }).writeFile(this.envUidMapperPath, this.envUidMapper);
+      fsUtil.writeFile(this.envUidMapperPath, this.envUidMapper);
     };
 
     const onReject = ({ error, apiData }: any) => {
-      const err = error?.message ? JSON.parse(error.message): error;
+      const err = error?.message ? JSON.parse(error.message) : error;
       const { name } = apiData;
       if (err?.errors?.name) {
         log(this.importConfig, `Environment '${name}' already exists`, 'info');
@@ -113,7 +112,11 @@ export default class ImportEnvironments extends BaseClass {
   serializeEnvironments(apiOptions: ApiOptions): ApiOptions {
     const { apiData: environment } = apiOptions;
     if (this.envUidMapper.hasOwnProperty(environment.uid)) {
-      log(this.importConfig, `Environment '${environment.name}' already exists. Skipping it to avoid duplicates!`, 'info');
+      log(
+        this.importConfig,
+        `Environment '${environment.name}' already exists. Skipping it to avoid duplicates!`,
+        'info',
+      );
       apiOptions.entity = undefined;
     } else {
       apiOptions.apiData = environment;

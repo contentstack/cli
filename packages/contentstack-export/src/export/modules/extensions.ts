@@ -1,8 +1,7 @@
 import { resolve as pResolve } from 'node:path';
-import { FsUtility} from '@contentstack/cli-utilities';
 
 import config from '../../config';
-import { log, formatError } from '../../utils';
+import { log, formatError, fsUtil } from '../../utils';
 import BaseClass from './base-class';
 import { Extensions, ModuleClassParams } from '../../types';
 
@@ -13,7 +12,7 @@ export default class ExportExtensions extends BaseClass {
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
-    this.extensions ={}
+    this.extensions = {};
     this.extensionConfig = config.modules.extensions;
   }
 
@@ -32,32 +31,29 @@ export default class ExportExtensions extends BaseClass {
       this.exportConfig.branchName || '',
       this.extensionConfig.dirName,
     );
-
+    await fsUtil.makeDirectory(this.extensionsFolderPath);
     await this.getExtensions();
   }
 
-  async getExtensions(): Promise<void>{
+  async getExtensions(): Promise<void> {
     const extensions = await this.stack
-    .extension()
-    .query(this.queryParam)
-    .find()
-    .then((data: any) => data)
-    .catch(({ error }: any) => {
-      log(this.exportConfig, `Failed to export extensions ${formatError(error)}`, 'error');
-      log(this.exportConfig, error, 'error');
-    })
+      .extension()
+      .query(this.queryParam)
+      .find()
+      .then((data: any) => data)
+      .catch(({ error }: any) => {
+        log(this.exportConfig, `Failed to export extensions ${formatError(error)}`, 'error');
+        log(this.exportConfig, error, 'error');
+      });
 
-    if(extensions?.items?.length){
-      for(let index=0; index< extensions?.count; index++){
+    if (extensions?.items?.length) {
+      for (let index = 0; index < extensions?.count; index++) {
         const extUid = extensions.items[index].uid;
-        this.extensions[extUid] = extensions.items[index];  
+        this.extensions[extUid] = extensions.items[index];
       }
-      new FsUtility({ basePath: this.extensionsFolderPath }).writeFile(
-        pResolve(this.extensionsFolderPath, this.extensionConfig.fileName),
-        this.extensions,
-      );
+      fsUtil.writeFile(pResolve(this.extensionsFolderPath, this.extensionConfig.fileName), this.extensions);
       log(this.exportConfig, 'All the extensions have been exported successfully!', 'success');
-    }else{
+    } else {
       log(this.exportConfig, 'No extensions found', 'info');
     }
   }
