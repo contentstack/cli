@@ -129,10 +129,14 @@ export default class ContentstackClient {
     }
   }
 
-  async getContentTypeCount(api_key: string): Promise<number> {
+  async getContentTypeCount(api_key: string, managementToken?: string): Promise<number> {
     try {
       const client = await this.instance;
-      const response = await client.stack({ api_key: api_key }).contentType().query({ include_count: true }).find();
+      const response = await client
+        .stack({ api_key: api_key, management_token: managementToken })
+        .contentType()
+        .query({ include_count: true })
+        .find();
       return response.count as number;
     } catch (error) {
       throw this.buildError(error);
@@ -165,7 +169,7 @@ export default class ContentstackClient {
 
   private buildError(error: any) {
     const message = error.errorMessage || error.response.data?.errorMessage || error.response.statusText;
-    const status = error.status; 
+    const status = error.status;
     return new ContentstackError(message, status);
   }
 }
