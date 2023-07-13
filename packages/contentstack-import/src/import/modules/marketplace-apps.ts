@@ -9,7 +9,6 @@ import filter from 'lodash/filter';
 import pick from 'lodash/pick';
 import { join, resolve } from 'node:path';
 import {
-  FsUtility,
   isAuthenticated,
   cliux,
   HttpClient,
@@ -36,13 +35,13 @@ import {
   updateAppConfig,
   getConfirmationToCreateApps,
   generateUidMapper,
+  fsUtil,
 } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, MarketplaceAppsConfig } from '../../types';
-import {askEncryptionKey} from '../../utils/interactive';
+import { askEncryptionKey } from '../../utils/interactive';
 
 export default class ImportMarketplaceApps extends BaseClass {
-  private fs: FsUtility;
   private mapperDirPath: string;
   private marketPlaceFolderPath: string;
   private marketPlaceUidMapperPath: string;
@@ -65,8 +64,7 @@ export default class ImportMarketplaceApps extends BaseClass {
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'marketplace_apps');
     this.marketPlaceFolderPath = join(this.importConfig.backupDir, this.marketPlaceAppConfig.dirName);
     this.marketPlaceUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
-    this.fs = new FsUtility({ basePath: this.mapperDirPath });
-    this.marketplaceApps = this.fs.readFile(
+    this.marketplaceApps = fsUtil.readFile(
       join(this.marketPlaceFolderPath, this.marketPlaceAppConfig.fileName),
       true,
     ) as Record<string, unknown>[];
@@ -83,7 +81,7 @@ export default class ImportMarketplaceApps extends BaseClass {
    * @returns {Promise<void>} Promise<void>
    */
   async start(): Promise<void> {
-    log(this.importConfig, 'Migrating new marketplace apps', 'info');
+    log(this.importConfig, 'Migrating marketplace apps', 'info');
 
     if (isEmpty(this.marketplaceApps)) {
       return Promise.resolve();
@@ -94,7 +92,7 @@ export default class ImportMarketplaceApps extends BaseClass {
       );
       return Promise.resolve();
     }
-
+    await fsUtil.makeDirectory(this.mapperDirPath);
     this.developerHubBaseUrl = this.importConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.importConfig));
     this.sdkClient = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
     this.importConfig.org_uid = await getOrgUid(this.stack, this.importConfig);
@@ -146,14 +144,14 @@ export default class ImportMarketplaceApps extends BaseClass {
     }
 
     const uidMapper = await generateUidMapper(this.installedApps, this.marketplaceApps, this.appNameMapping);
-    new FsUtility({ basePath: this.mapperDirPath }).writeFile(this.marketPlaceUidMapperPath, {
+    fsUtil.writeFile(this.marketPlaceUidMapperPath, {
       app_uid: this.appUidMapping,
       extension_uid: uidMapper || {},
       installation_uid: this.installationUidMapping,
     });
   }
 
-  async getAndValidateEncryptionKey(defaultValue:string, retry = 1): Promise<any> {
+  async getAndValidateEncryptionKey(defaultValue: string, retry = 1): Promise<any> {
     let appConfig = find(
       this.marketplaceApps,
       ({ configuration, server_configuration }) => !isEmpty(configuration) || !isEmpty(server_configuration),
@@ -211,10 +209,11 @@ export default class ImportMarketplaceApps extends BaseClass {
       const obj = {
         oauth: app.oauth,
         webhook: app.webhook,
-        ui_location: app.ui_location
-      }
+        ui_location: app.ui_location,
+      };
       await this.createPrivateApps({
-       ...obj, ...app.manifest
+        ...obj,
+        ...app.manifest,
       });
     }
 
@@ -327,7 +326,7 @@ export default class ImportMarketplaceApps extends BaseClass {
       } else if (installation.message) {
         log(this.importConfig, formatError(installation.message), 'success');
         await confirmToCloseProcess(installation, this.importConfig);
-      }  
+      }
     } else if (!isEmpty(configuration) || !isEmpty(server_configuration)) {
       log(this.importConfig, `${app.manifest.name} is already installed`, 'success');
       updateParam = await ifAppAlreadyExist(app, currentStackApp, this.importConfig);
@@ -354,7 +353,7 @@ export default class ImportMarketplaceApps extends BaseClass {
     };
     const payload: payloadConfig = { configuration: {}, server_configuration: {} };
     const { uid, configuration, server_configuration } = app;
-    
+
     if (!isEmpty(configuration)) {
       payload['configuration'] = this.nodeCrypto.decrypt(configuration);
     }
@@ -362,7 +361,7 @@ export default class ImportMarketplaceApps extends BaseClass {
       payload['server_configuration'] = this.nodeCrypto.decrypt(server_configuration);
     }
 
-    if (isEmpty(app) || isEmpty(payload) || !uid) {      
+    if (isEmpty(app) || isEmpty(payload) || !uid) {
       return Promise.resolve();
     }
     await updateAppConfig(this.sdkClient, this.importConfig, app, payload);

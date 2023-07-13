@@ -8,9 +8,8 @@
  * MIT Licensed
  */
 import { join } from 'node:path';
-import { FsUtility} from '@contentstack/cli-utilities';
+import { FsUtility } from '@contentstack/cli-utilities';
 import { ImportConfig } from '../types';
-
 
 // eslint-disable-next-line camelcase
 export const lookupExtension = function (
@@ -19,7 +18,7 @@ export const lookupExtension = function (
   preserveStackVersion: any,
   installedExtensions: any,
 ) {
-  const fs = new FsUtility({basePath: config.backupDir})
+  const fs = new FsUtility({ basePath: config.backupDir });
   const extensionPath = join(config.backupDir, 'mapper/extensions', 'uid-mapping.json');
   const globalfieldsPath = join(config.backupDir, 'mapper/globalfields', 'uid-mapping.json');
 
@@ -44,6 +43,15 @@ export const lookupExtension = function (
         schema[i].reference_to = [schema[i].reference_to];
         schema[i].field_metadata.ref_multiple_content_types = true;
       }
+    } else if (
+      schema[i].data_type === 'reference' &&
+      schema[i].field_metadata.hasOwnProperty('ref_multiple_content_types') &&
+      installedExtensions &&
+      installedExtensions[schema[i].extension_uid]
+    ) {
+      schema[i].extension_uid = installedExtensions[schema[i].extension_uid];
+    } else if (schema[i].data_type === 'text' && installedExtensions && installedExtensions[schema[i].extension_uid]) {
+      schema[i].extension_uid = installedExtensions[schema[i].extension_uid];
     } else if (schema[i].data_type === 'global_field') {
       const global_fields_key_value = schema[i].reference_to;
       const global_fields_data = fs.readFile(globalfieldsPath) as Record<string, unknown>;
