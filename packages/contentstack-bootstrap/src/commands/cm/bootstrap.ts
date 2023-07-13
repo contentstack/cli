@@ -13,6 +13,7 @@ import {
   flags,
   isAuthenticated,
   FlagInput,
+  configHandler,
 } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
@@ -168,7 +169,12 @@ export default class BootstrapCommand extends Command {
       if (org) seedParams.org = org;
       if (stackName) seedParams.stackName = stackName;
       if (yes) seedParams.yes = yes;
-      if (managementTokenAlias) seedParams.managementToken = managementTokenAlias;
+      if (managementTokenAlias) {
+        seedParams.managementTokenAlias = managementTokenAlias;
+        const listOfTokens = configHandler.get('tokens');
+        const managementToken = listOfTokens[managementTokenAlias].token;
+        seedParams.managementToken = managementToken;
+      }
 
       // initiate bootstrsourceap
       const options: BootstrapOptions = {
