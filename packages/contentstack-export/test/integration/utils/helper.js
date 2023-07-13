@@ -179,19 +179,19 @@ const getExtensionsCount = async (data) => {
 
   return extensionCount;
 };
-const getMarketplaceAppsCount = async () => {
-  const count = await getAllStackSpecificApps();
+const getMarketplaceAppsCount = async (stack) => {
+  const count = await getAllStackSpecificApps(stack);
   return count;
 };
 
-const getAllStackSpecificApps = async (skip = 0) => {
-  const developerHubBaseUrl = await getDeveloperHubUrl();
+const getAllStackSpecificApps = async (stack, skip = 0) => {
+  const developerHubBaseUrl = await getDeveloperHubUrl(config);
   const httpClient = new HttpClient().headers({
     authtoken: config.auth_token,
     organization_uid: config.org_uid,
   });
   return httpClient
-    .get(`${developerHubBaseUrl}/installations?target_uids=${config.source_stack}&skip=${skip}`)
+    .get(`${developerHubBaseUrl}/installations?target_uids=${stack.STACK_API_KEY}&skip=${skip}`)
     .then(async ({ data }) => {
       const { count } = data;
 
