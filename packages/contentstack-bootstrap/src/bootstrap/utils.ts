@@ -26,7 +26,7 @@ export const setupEnvironments = async (
   clonedDirectory: string,
   region: any,
   livePreviewEnabled: boolean,
-  managementToken: string,
+  managementToken?: string,
 ) => {
   const environmentResult = await managementAPIClient
     .stack({ api_key, management_token: managementToken })
@@ -55,7 +55,10 @@ export const setupEnvironments = async (
           },
         };
         try {
-          const tokenResult = await managementAPIClient.stack({ api_key }).deliveryToken().create(body);
+          const tokenResult = await managementAPIClient
+            .stack({ api_key, management_token: managementToken })
+            .deliveryToken()
+            .create(body);
           if (tokenResult.token) {
             const environmentVariables: EnviornmentVariables = {
               api_key,
