@@ -26,6 +26,7 @@ export interface SeedParams {
   org?: string;
   stackName?: string;
   yes?: string;
+  managementTokenAlias?: string | undefined;
   managementToken?: string | undefined;
 }
 
@@ -93,8 +94,8 @@ export default class Bootstrap {
       if (this.options.seedParams.yes) {
         cmd.push('-y', this.options.seedParams.yes);
       }
-      if (this.options.seedParams.managementToken) {
-        cmd.push('--alias', this.options.seedParams.managementToken);
+      if (this.options.seedParams.managementTokenAlias) {
+        cmd.push('--alias', this.options.seedParams.managementTokenAlias);
       }
 
       const result = await ContentStackSeed.run(cmd);
@@ -106,6 +107,7 @@ export default class Bootstrap {
           this.cloneDirectory,
           this.region,
           this.options.livePreviewEnabled as boolean,
+          this.options.seedParams.managementToken as string,
         );
       } else {
         throw new Error(messageHandler.parse('CLI_BOOTSTRAP_NO_API_KEY_FOUND'));
