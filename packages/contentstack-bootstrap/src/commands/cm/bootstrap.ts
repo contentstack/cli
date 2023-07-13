@@ -102,17 +102,12 @@ export default class BootstrapCommand extends Command {
       hidden: true,
       parse: printFlagDeprecation(['-s', '--appType'], ['--app-type']),
     }),
-    alias: flags.string({
-      char: 'a',
-      description: 'Alias of the management token',
-    }),
   };
 
   async run() {
     const { flags: bootstrapCommandFlags } = await this.parse(BootstrapCommand);
-    const managementTokenAlias = bootstrapCommandFlags.alias;
     try {
-      if (!isAuthenticated() && !managementTokenAlias) {
+      if (!isAuthenticated()) {
         this.error(messageHandler.parse('CLI_BOOTSTRAP_LOGIN_FAILED'), {
           exit: 2,
           suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
@@ -169,12 +164,6 @@ export default class BootstrapCommand extends Command {
       if (org) seedParams.org = org;
       if (stackName) seedParams.stackName = stackName;
       if (yes) seedParams.yes = yes;
-      if (managementTokenAlias) {
-        seedParams.managementTokenAlias = managementTokenAlias;
-        const listOfTokens = configHandler.get('tokens');
-        const managementToken = listOfTokens[managementTokenAlias].token;
-        seedParams.managementToken = managementToken;
-      }
 
       // initiate bootstrsourceap
       const options: BootstrapOptions = {
