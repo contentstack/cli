@@ -7,7 +7,7 @@ jobs:
     if: ${{ github.actor == 'dependabot[bot]' || github.actor == 'snyk-bot' || contains(github.event.pull_request.head.ref, 'snyk-fix-')  || contains(github.event.pull_request.head.ref, 'snyk-upgrade-')}}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
       - name: Login into JIRA
         uses: atlassian/gajira-login@master
         env:
