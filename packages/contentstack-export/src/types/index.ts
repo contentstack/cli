@@ -82,5 +82,13 @@ export interface EnvironmentConfig {
   dependencies?: Modules[];
 }
 
+export interface LabelConfig {
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
+  dependencies?: Modules[];
+  limit?: number;
+}
+
 export { default as DefaultConfig } from './default-config';
 export { default as ExportConfig } from './export-config';
