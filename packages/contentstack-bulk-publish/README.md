@@ -852,6 +852,7 @@ FLAGS
                                  bulkpublish API will be used to publish the entries
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
+  -k, --stack-api-key=<value>    Stack api key to be used
   -y, --yes                      Agree to process the command with the current configuration
   --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --content-types=<value>...     The Contenttypes from which entries will be published
@@ -898,6 +899,12 @@ EXAMPLES
   Using --branch
 
   $ csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME] -source-env [SOURCE ENV]
+
+
+
+  Using --stack-api-key
+
+  $ csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a [MANAGEMENT TOKEN ALIAS] --stack-api-key [STACK API KEY] -source-env [SOURCE ENV]
 ```
 
 ## `csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`
@@ -1146,6 +1153,7 @@ FLAGS
                                  bulkpublish API will be used to publish the entries
   -c, --config=<value>           Path to the config file
   -e, --environments=<value>...  Destination environments
+  -k, --stack-api-key=<value>    Stack api key to be used
   -y, --yes                      Agree to process the command with the current configuration
   --api-version=<value>          API Version to be used. Values [Default: 3, Nested Reference Publishing: 3.2].
   --content-types=<value>...     The Contenttypes from which entries will be published
@@ -1192,6 +1200,12 @@ EXAMPLES
   Using --branch
 
   $ csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME] -source-env [SOURCE ENV]
+
+
+
+  Using --stack-api-key
+
+  $ csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a [MANAGEMENT TOKEN ALIAS] --stack-api-key [STACK API KEY] -source-env [SOURCE ENV]
 ```
 
 _See code: [src/commands/cm/entries/publish-only-unpublished.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/entries/publish-only-unpublished.js)_
