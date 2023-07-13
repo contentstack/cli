@@ -256,7 +256,6 @@ jobs:
         with:
           message: 'Released version'
       - name: Create Release
-        uses: actions/create-release@v1.1.4
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
