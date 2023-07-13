@@ -400,10 +400,11 @@ The configure command is used to generate a configuration file for publish scrip
 
 ```
 USAGE
-  $ csdx cm:bulk-publish:configure [-a <value>]
+  $ csdx cm:bulk-publish:configure [-a <value>] [-k <value>]
 
 FLAGS
-  -a, --alias=<value>  Alias(name) for the management token
+  -a, --alias=<value>          Alias(name) for the management token
+  -k, --stack-api-key=<value>  Stack api key to be used
 
 DESCRIPTION
   The configure command is used to generate a configuration file for publish scripts.
@@ -417,6 +418,8 @@ EXAMPLES
   $ csdx cm:stacks:publish-configure -a <management_token_alias>
 
   $ csdx cm:stacks:publish-configure --alias <management_token_alias>
+
+  $ csdx cm:stacks:publish-configure --stack-api-key <stack_api_key>
 ```
 
 ## `csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`
@@ -1462,10 +1465,11 @@ The configure command is used to generate a configuration file for publish scrip
 
 ```
 USAGE
-  $ csdx cm:stacks:publish-configure [-a <value>]
+  $ csdx cm:stacks:publish-configure [-a <value>] [-k <value>]
 
 FLAGS
-  -a, --alias=<value>  Alias(name) for the management token
+  -a, --alias=<value>          Alias(name) for the management token
+  -k, --stack-api-key=<value>  Stack api key to be used
 
 DESCRIPTION
   The configure command is used to generate a configuration file for publish scripts.
@@ -1479,6 +1483,8 @@ EXAMPLES
   $ csdx cm:stacks:publish-configure -a <management_token_alias>
 
   $ csdx cm:stacks:publish-configure --alias <management_token_alias>
+
+  $ csdx cm:stacks:publish-configure --stack-api-key <stack_api_key>
 ```
 
 _See code: [src/commands/cm/stacks/publish-configure.js](https://github.com/contentstack/cli/blob/main/packages/contentstack-bulk-publish/src/commands/cm/stacks/publish-configure.js)_
