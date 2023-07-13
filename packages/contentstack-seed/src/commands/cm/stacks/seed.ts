@@ -88,7 +88,7 @@ export default class SeedCommand extends Command {
       const managementTokenAlias = seedFlags.alias;
 
       if (!isAuthenticated() && !managementTokenAlias) {
-        this.error('You need to login, first. See: auth:login --help', {
+        this.error('You need to login or provide an alias for the management token. See: auth:login --help', {
           exit: 2,
           suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
         });
