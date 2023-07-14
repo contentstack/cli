@@ -54,31 +54,33 @@ export const setupEnvironments = async (
             ],
           },
         };
-        try {
-          const tokenResult = await managementAPIClient
-            .stack({ api_key, management_token: managementToken })
-            .deliveryToken()
-            .create(body);
-          if (tokenResult.token) {
-            const environmentVariables: EnviornmentVariables = {
-              api_key,
-              deliveryToken: tokenResult.token,
-              environment: environment.name,
-              livePreviewEnabled,
-            };
-            await envFileHandler(
-              appConfig.appConfigKey || '',
-              environmentVariables,
-              clonedDirectory,
-              region,
-              livePreviewEnabled,
-            );
-          } else {
-            cliux.print(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_TOKEN_FOR_ENV', environment.name));
+        if (!managementToken) {
+          try {
+            const tokenResult = await managementAPIClient
+              .stack({ api_key, management_token: managementToken })
+              .deliveryToken()
+              .create(body);
+            if (tokenResult.token) {
+              const environmentVariables: EnviornmentVariables = {
+                api_key,
+                deliveryToken: tokenResult.token,
+                environment: environment.name,
+                livePreviewEnabled,
+              };
+              await envFileHandler(
+                appConfig.appConfigKey || '',
+                environmentVariables,
+                clonedDirectory,
+                region,
+                livePreviewEnabled,
+              );
+            } else {
+              cliux.print(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_TOKEN_FOR_ENV', environment.name));
+            }
+          } catch (error) {
+            console.log('error', error);
+            cliux.print(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_ENV_FILE_FOR_ENV', environment.name));
           }
-        } catch (error) {
-          console.log('error', error);
-          cliux.print(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_ENV_FILE_FOR_ENV', environment.name));
         }
       } else {
         cliux.print('No environments name found for the environment');
