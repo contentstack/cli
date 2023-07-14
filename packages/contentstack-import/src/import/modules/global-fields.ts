@@ -8,184 +8,121 @@
 import * as path from 'path';
 import { values, isEmpty, filter, pick } from 'lodash';
 import { cliux } from '@contentstack/cli-utilities';
-import { fsUtil, log, formatError, fileHelper } from '../../utils';
+import { fsUtil, log, formatError, fileHelper, lookupExtension, removeReferenceFields } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
-import BaseClass from './base-class';
+import BaseClass, { ApiOptions } from './base-class';
 
-export default class ImportLocales extends BaseClass {
-  private langMapperPath: string;
-  private langFolderPath: string;
-  private langFailsPath: string;
-  private langSuccessPath: string;
-  private langUidMapperPath: string;
-  private languages: Record<string, unknown>[];
+export default class ImportGlobalFields extends BaseClass {
+  private gFsMapperPath: string;
+  private gFsFolderPath: string;
+  private gFsFailsPath: string;
+  private gFsSuccessPath: string;
+  private gFsUidMapperPath: string;
+  private gFsPendingPath: string;
+  private pendingGFs: string[];
+  private failedGFs: Record<string, unknown>[];
+  private createdGFs: Record<string, unknown>[];
+  private gFs: Record<string, unknown>[];
+  private gFsUidMapper: Record<string, string>;
   private config: ImportConfig;
   private stackAPIClient: any;
-  private failedLocales: Record<string, unknown>[];
-  private createdLocales: Record<string, unknown>[];
-  private langUidMapper: any;
-  private localeConfig: any;
-  public client: any;
+  private marketplaceAppMapperPath: string;
   private reqConcurrency: number;
-  private masterLanguage: {
-    code: string;
-  };
-  private masterLanguageConfig: {
+  private installedExtensions: Record<string, unknown>;
+  private gFsConfig: {
     dirName: string;
     fileName: string;
-    requiredKeys: string[];
+    validKeys: string[];
+    limit: number;
+    writeConcurrency?: number;
   };
-  private sourceMasterLanguage: Record<string, any>;
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
     this.config = importConfig;
-    this.localeConfig = importConfig.modules.locales;
-    this.masterLanguage = importConfig.masterLocale;
-    this.masterLanguageConfig = importConfig.modules.masterLocale;
-    this.stackAPIClient = stackAPIClient;
-    this.languages = [];
-    this.langUidMapper = {};
-    this.createdLocales = [];
-    this.failedLocales = [];
-    this.reqConcurrency = this.localeConfig.writeConcurrency || this.config.writeConcurrency;
-    this.langMapperPath = path.resolve(this.config.data, 'mapper', 'languages');
-    this.langFolderPath = path.resolve(this.config.data, this.localeConfig.dirName);
-    this.langFailsPath = path.resolve(this.config.data, 'mapper', 'languages', 'fails.json');
-    this.langSuccessPath = path.resolve(this.config.data, 'mapper', 'languages', 'success.json');
-    this.langUidMapperPath = path.resolve(this.config.data, 'mapper', 'languages', 'uid-mapper.json');
+    this.gFsConfig = importConfig.modules['global-fields'];
+    this.gFs = [];
+    this.gFsUidMapper = {};
+    this.createdGFs = [];
+    this.failedGFs = [];
+    this.reqConcurrency = this.gFsConfig.writeConcurrency || this.config.writeConcurrency;
+    this.gFsMapperPath = path.resolve(this.config.data, 'mapper', 'global_fields');
+    this.gFsFolderPath = path.resolve(this.config.data, this.gFsConfig.dirName);
+    this.gFsFailsPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'fails.json');
+    this.gFsSuccessPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'success.json');
+    this.gFsUidMapperPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'uid-mapping.json');
+    this.gFsPendingPath = path.resolve(this.config.data, 'mapper', 'global_fields', 'pending_global_fields.js');
+    this.marketplaceAppMapperPath = path.join(this.config.data, 'mapper', 'marketplace_apps', 'uid-mapping.json');
   }
 
   async start(): Promise<any> {
     /**
-     * read locales
+     * read global fields
+     * check if its empty
      * create a mapper dir
-     * read / create a locale uid mapper
-     * update master language details if it same
-     * create locales
-     * update locales
+     * create global fields, using base class concurrent method
+     * Use serialization method to lookup the extensions and identify references the  push it to the pending list
+     * OnSuccess and Reject write it the files
+     * Once finished write the pending global fields
      */
 
-    this.languages = fsUtil.readFile(path.join(this.langFolderPath, this.localeConfig.fileName)) as Record<
-      string,
-      unknown
-    >[];
-    if (!this.languages || isEmpty(this.languages)) {
-      log(this.config, 'No languages found to import', 'info');
+    this.gFs = fsUtil.readFile(path.join(this.gFsFolderPath, this.gFsConfig.fileName)) as Record<string, unknown>[];
+    if (!this.gFs || isEmpty(this.gFs)) {
+      log(this.config, 'No global fields found to import', 'info');
       return;
     }
-    this.sourceMasterLanguage = fsUtil.readFile(
-      path.join(this.langFolderPath, this.masterLanguageConfig.fileName),
-    ) as Record<string, any>;
-    await fileHelper.makeDirectory(this.langMapperPath);
-    if (fileHelper.fileExistsSync(this.langUidMapperPath)) {
-      this.langUidMapper = fsUtil.readFile(this.langUidMapperPath) || {};
+    await fsUtil.makeDirectory(this.gFsMapperPath);
+    if (fileHelper.fileExistsSync(this.gFsUidMapperPath)) {
+      this.gFsUidMapper = (fsUtil.readFile(this.gFsUidMapperPath) || {}) as Record<string, string>;
     }
-    await this.checkAndUpdateMasterLocale().catch((error) => {
-      log(this.config, formatError(error), 'error');
-    });
-    await this.createLocales().catch((error) => {
-      log(this.config, formatError(error), 'error');
-      Promise.reject('Failed to import locales');
-    });
-    fsUtil.writeFile(this.langFailsPath, this.failedLocales);
-    await this.updateLocales().catch((error) => {
-      log(this.config, formatError(error), 'error');
-      Promise.reject('Failed to update locales');
-    });
+    this.installedExtensions = (
+      ((await fsUtil.readFile(this.marketplaceAppMapperPath)) as any) || { extension_uid: {} }
+    ).extension_uid;
 
-    log(this.config, 'Languages have been imported successfully!', 'success');
+    await this.importGFs();
+    fsUtil.writeFile(this.gFsPendingPath, this.pendingGFs);
+    log(this.config, 'Global fields have been imported successfully!', 'success');
   }
 
-  async checkAndUpdateMasterLocale(): Promise<any> {
-    let sourceMasterLangDetails = (this.sourceMasterLanguage && Object.values(this.sourceMasterLanguage)) || [];
-    if (sourceMasterLangDetails?.[0]?.code === this.masterLanguage?.code) {
-      let masterLangDetails = await this.stackAPIClient
-        .locale(this.masterLanguage['code'])
-        .fetch()
-        .catch((error: Error) => {
-          log(this.config, formatError(error), 'error');
-        });
-      if (
-        masterLangDetails?.name?.toString().toUpperCase() !==
-        sourceMasterLangDetails[0]['name']?.toString().toUpperCase()
-      ) {
-        cliux.print('WARNING!!! The master language name for the source and destination is different.', {
-          color: 'yellow',
-        });
-        cliux.print(`Old Master language name: ${masterLangDetails['name']}`, { color: 'red' });
-        cliux.print(`New Master language name: ${sourceMasterLangDetails[0]['name']}`, { color: 'green' });
-        const langUpdateConfirmation: boolean = await cliux.inquire({
-          type: 'confirm',
-          message: 'Are you sure you want to update name of master language?',
-          name: 'confirmation',
-        });
-
-        if (langUpdateConfirmation) {
-          let langUid = sourceMasterLangDetails[0] && sourceMasterLangDetails[0]['uid'];
-          let sourceMasterLanguage = this.sourceMasterLanguage[langUid];
-          if (!sourceMasterLanguage) {
-            log(this.config, `Master language details not found with id ${langUid} to update`, 'warn');
-          }
-          const langUpdateRequest = this.stackAPIClient.locale(sourceMasterLanguage.code);
-          langUpdateRequest.name = sourceMasterLanguage.name;
-          await langUpdateRequest.update().catch(function (error: Error) {
-            log(this.config, formatError(error), 'error');
-          });
-          log(this.config, 'Master Languages name have been updated successfully!', 'success');
-        }
-      }
-    }
-  }
-
-  async createLocales(): Promise<any> {
-    const onSuccess = ({ response = {}, apiData: { uid, code } = undefined }: any) => {
-      this.langUidMapper[uid] = response.uid;
-      this.createdLocales.push(pick(response, [...this.localeConfig.requiredKeys]));
-      log(this.importConfig, `Created locale: '${code}'`, 'info');
-      fsUtil.writeFile(this.langUidMapperPath, this.langUidMapper);
+  async importGFs() {
+    const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
+      this.createdGFs.push(globalField.items);
+      this.gFsUidMapper[uid] = globalField.items;
+      fsUtil.writeFile(this.gFsMapperPath, this.gFsUidMapper);
+      log(this.config, 'Global field ' + uid + ' created successfully', 'success');
     };
-    const onReject = ({ error, apiData: { uid, code } = undefined }: any) => {
-      log(this.importConfig, `Language '${code}' failed to import`, 'error');
+    const onReject = ({ error, apiData: { uid } = undefined }: any) => {
+      log(this.importConfig, `Global fields '${uid}' failed to import`, 'error');
       log(this.importConfig, formatError(error), 'error');
-      this.failedLocales.push({ uid, code });
+      this.failedGFs.push({ uid });
     };
     return await this.makeConcurrentCall({
-      processName: 'Import locales',
-      apiContent: filter(values(this.languages), (lang) => lang.code !== this.masterLanguage.code) as Record<
-        string,
-        any
-      >[],
+      processName: 'Import global fields',
+      apiContent: this.gFs,
       apiParams: {
+        serializeData: this.serializeGFs.bind(this),
         reject: onReject.bind(this),
         resolve: onSuccess.bind(this),
-        entity: 'create-locale',
+        entity: 'create-gfs',
         includeParamOnCompletion: true,
       },
       concurrencyLimit: this.reqConcurrency,
     });
   }
 
-  async updateLocales(): Promise<unknown> {
-    const onSuccess = ({ response = {}, apiData: { uid, code } = undefined }: any) => {
-      log(this.importConfig, `Updated locale: '${code}'`, 'info');
-      fsUtil.writeFile(this.langSuccessPath, this.createdLocales);
-    };
-    const onReject = ({ error, apiData: { uid, code } = undefined }: any) => {
-      log(this.importConfig, `Language '${code}' failed to update`, 'error');
-      log(this.importConfig, formatError(error), 'error');
-      fsUtil.writeFile(this.langFailsPath, this.failedLocales);
-    };
-    return await this.makeConcurrentCall({
-      processName: 'Update locales',
-      apiContent: values(this.languages),
-      apiParams: {
-        reject: onReject.bind(this),
-        resolve: onSuccess.bind(this),
-        entity: 'update-locale',
-        includeParamOnCompletion: true,
-      },
-      concurrencyLimit: this.reqConcurrency,
-    });
+  /**
+   * @method serializeGFs
+   * @param {ApiOptions} apiOptions ApiOptions
+   * @returns {ApiOptions} ApiOptions
+   */
+  async serializeGFs(apiOptions: ApiOptions): Promise<ApiOptions> {
+    const { apiData: globalField } = apiOptions;
+    lookupExtension(this.config, globalField.schema, this.config.preserveStackVersion, this.installedExtensions);
+    const referenceCheck = { suppressed: false };
+    await removeReferenceFields(globalField.schema, referenceCheck, this.stackAPIClient);
+    if (referenceCheck.suppressed) {
+      this.pendingGFs.push(globalField.uid);
+    }
+    return apiOptions;
   }
 }
