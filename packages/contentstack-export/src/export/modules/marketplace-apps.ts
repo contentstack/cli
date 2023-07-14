@@ -6,7 +6,6 @@ import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
 import {
   managementSDKClient,
-  FsUtility,
   isAuthenticated,
   cliux,
   NodeCrypto,
@@ -23,6 +22,7 @@ import {
   createNodeCryptoInstance,
   formatError,
   getStackSpecificApps,
+  fsUtil,
 } from '../../utils';
 import BaseClass from './base-class';
 import { ModuleClassParams, MarketplaceAppsConfig } from '../../types';
@@ -39,7 +39,7 @@ export default class ExportMarketplaceApps extends BaseClass {
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
     this.httpClient = new HttpClient();
-    this.marketplaceAppConfig = config.modules.marketplace_apps
+    this.marketplaceAppConfig = config.modules.marketplace_apps;
     this.listOfApps = [];
     this.installedApps = [];
   }
@@ -53,24 +53,24 @@ export default class ExportMarketplaceApps extends BaseClass {
       return Promise.resolve();
     }
 
-    log(this.exportConfig, 'Starting new marketplace app export', 'info');
-    
+    log(this.exportConfig, 'Starting marketplace app export', 'info');
+
     this.marketplaceAppPath = pResolve(
       this.exportConfig.data,
       this.exportConfig.branchName || '',
       this.marketplaceAppConfig.dirName,
     );
-
+    await fsUtil.makeDirectory(this.marketplaceAppPath);
     this.developerHubBaseUrl = this.exportConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.exportConfig));
     this.exportConfig.org_uid = await getOrgUid(this.stack, this.exportConfig);
 
     await this.setHttpClient();
-    await this.getAllStackSpecificApps()
+    await this.getAllStackSpecificApps();
     this.installedApps = this.listOfApps;
     await this.exportInstalledExtensions();
   }
 
-  async setHttpClient(): Promise<void>{
+  async setHttpClient(): Promise<void> {
     if (!this.exportConfig.auth_token) {
       this.httpClient = new OauthDecorator(this.httpClient);
       const headers = await this.httpClient.preHeadersCheck(this.exportConfig);
@@ -117,10 +117,7 @@ export default class ExportMarketplaceApps extends BaseClass {
         await this.getAppConfigurations(+index, app);
       }
 
-      new FsUtility({ basePath: this.marketplaceAppPath }).writeFile(
-        pResolve(this.marketplaceAppPath, this.marketplaceAppConfig.fileName),
-        this.installedApps,
-      );
+      fsUtil.writeFile(pResolve(this.marketplaceAppPath, this.marketplaceAppConfig.fileName), this.installedApps);
 
       log(this.exportConfig, 'All the marketplace apps have been exported successfully', 'info');
     }

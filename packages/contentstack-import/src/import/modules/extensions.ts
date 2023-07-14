@@ -1,15 +1,13 @@
 import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
-import {join, resolve } from 'node:path';
-import { FsUtility } from '@contentstack/cli-utilities';
+import { join, resolve } from 'node:path';
 
 import config from '../../config';
-import { log, formatError } from '../../utils';
+import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, Extensions } from '../../types';
 
 export default class ImportExtensions extends BaseClass {
-  private fs: FsUtility;
   private mapperDirPath: string;
   private extensionsFolderPath: string;
   private extUidMapperPath: string;
@@ -27,13 +25,12 @@ export default class ImportExtensions extends BaseClass {
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'extensions');
     this.extensionsFolderPath = join(this.importConfig.backupDir, this.extensionsConfig.dirName);
     this.extUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
-    this.extSuccessPath = join(this.importConfig.backupDir, 'extensions', 'success.json');
-    this.extFailsPath = join(this.importConfig.backupDir, 'extensions', 'fails.json');
-    this.fs = new FsUtility({ basePath: this.mapperDirPath });
-    this.extensions = this.fs.readFile(
-      join(this.importConfig.backupDir, 'extensions', 'extensions.json'),
-      true,
-    ) as Record<string, unknown>;
+    this.extSuccessPath = join(this.mapperDirPath, 'success.json');
+    this.extFailsPath = join(this.mapperDirPath, 'fails.json');
+    this.extensions = fsUtil.readFile(join(this.extensionsFolderPath, 'extensions.json'), true) as Record<
+      string,
+      unknown
+    >;
     this.extFailed = [];
     this.extSuccess = [];
     this.extUidMapper = {};
@@ -46,16 +43,19 @@ export default class ImportExtensions extends BaseClass {
   async start(): Promise<void> {
     log(this.importConfig, 'Migrating extensions', 'info');
 
-    this.extUidMapper = this.fs.readFile(join(this.extUidMapperPath), true) as Record<string, unknown> || {};
+    await fsUtil.makeDirectory(this.mapperDirPath);
+    this.extUidMapper = fileHelper.fileExistsSync(this.extUidMapperPath)
+      ? (fsUtil.readFile(join(this.extUidMapperPath), true) as Record<string, unknown>)
+      : {};
 
     await this.importExtensions();
 
     if (this.extSuccess?.length) {
-      new FsUtility({ basePath: this.extensionsFolderPath }).writeFile(this.extSuccessPath, this.extSuccess);
+      fsUtil.writeFile(this.extSuccessPath, this.extSuccess);
     }
 
     if (this.extFailed?.length) {
-      new FsUtility({ basePath: this.extensionsFolderPath }).writeFile(this.extFailsPath, this.extFailed);
+      fsUtil.writeFile(this.extFailsPath, this.extFailed);
     }
   }
 
@@ -71,11 +71,11 @@ export default class ImportExtensions extends BaseClass {
       this.extSuccess.push(response);
       this.extUidMapper[uid] = response.uid;
       log(this.importConfig, `Extension '${title}' imported successfully`, 'success');
-      new FsUtility({ basePath: this.extensionsFolderPath }).writeFile(this.extUidMapperPath, this.extUidMapper);
+      fsUtil.writeFile(this.extUidMapperPath, this.extUidMapper);
     };
 
     const onReject = ({ error, apiData }: any) => {
-      const err = error?.message ? JSON.parse(error.message): error;
+      const err = error?.message ? JSON.parse(error.message) : error;
       const { title } = apiData;
       if (err?.errors?.title) {
         log(this.importConfig, `Extension '${title}' already exists`, 'info');
@@ -86,7 +86,6 @@ export default class ImportExtensions extends BaseClass {
       }
     };
 
-    /* eslint-disable no-await-in-loop */
     await this.makeConcurrentCall(
       {
         apiContent,
