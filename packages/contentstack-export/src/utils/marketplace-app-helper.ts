@@ -1,4 +1,4 @@
-import { cliux, configHandler, NodeCrypto ,HttpClient} from '@contentstack/cli-utilities';
+import { cliux, configHandler, NodeCrypto, HttpClient } from '@contentstack/cli-utilities';
 
 import { formatError, log } from '../utils';
 import { ExportConfig } from '../types';
@@ -6,7 +6,7 @@ import { askDeveloperHub } from './interactive';
 
 export const getDeveloperHubUrl = async (exportConfig: ExportConfig) => {
   const { cma, name } = configHandler.get('region') || {};
-  let developerHubBaseUrl = exportConfig.developerHubUrls[cma];
+  let developerHubBaseUrl = exportConfig?.developerHubUrls[cma];
 
   if (!developerHubBaseUrl) {
     developerHubBaseUrl = await askDeveloperHub(name);
@@ -45,15 +45,15 @@ export async function createNodeCryptoInstance(config: ExportConfig): Promise<No
   return new NodeCrypto(cryptoArgs);
 }
 
-export const getStackSpecificApps = async(params: {
+export const getStackSpecificApps = async (params: {
   developerHubBaseUrl: string;
   httpClient: HttpClient;
   config: ExportConfig;
-  skip: number
+  skip: number;
 }) => {
   const { developerHubBaseUrl, httpClient, config, skip } = params;
   return httpClient
-  .get(`${developerHubBaseUrl}/installations?target_uids=${config.source_stack}&skip=${skip}`)
+    .get(`${developerHubBaseUrl}/installations?target_uids=${config.source_stack}&skip=${skip}`)
     .then((data: any) => data.data)
     .catch((error: any) => log(config, `Failed to export marketplace-apps ${formatError(error)}`, 'error'));
 };
