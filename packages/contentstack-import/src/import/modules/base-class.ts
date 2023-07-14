@@ -10,6 +10,8 @@ import { LocaleData } from '@contentstack/management/types/stack/locale';
 import { PublishConfig } from '@contentstack/management/types/utility/publish';
 import { FolderData } from '@contentstack/management/types/stack/asset/folder';
 import { ExtensionData } from '@contentstack/management/types/stack/extension';
+import { GlobalFieldData } from '@contentstack/management/types/stack/globalField';
+import { ContentTypeData } from '@contentstack/management/types/stack/contentType';
 
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
@@ -22,16 +24,20 @@ export type ApiModuleType =
   | 'create-assets'
   | 'replace-assets'
   | 'publish-assets'
-  | 'create-assets-folder' 
+  | 'create-assets-folder'
   | 'create-extensions'
   | 'create-locale'
-  | 'update-locale';
+  | 'update-locale'
+  | 'create-gfs'
+  | 'create-cts'
+  | 'update-cts'
+  | 'update-gfs';
 
 export type ApiOptions = {
   uid?: string;
   url?: string;
   entity: ApiModuleType;
-  apiData?: Record<any, any>;
+  apiData?: Record<any, any> | any;
   resolve: (value: any) => void;
   reject: (error: any) => void;
   additionalInfo?: Record<any, any>;
@@ -206,9 +212,9 @@ export default abstract class BaseClass {
    * @param {Record<string, any>} isLastRequest - Boolean
    * @return {Promise} Promise<void>
    */
-  makeAPICall(apiOptions: ApiOptions, isLastRequest = false): Promise<void> {
+  async makeAPICall(apiOptions: ApiOptions, isLastRequest = false): Promise<void> {
     if (apiOptions.serializeData instanceof Function) {
-      apiOptions = apiOptions.serializeData(apiOptions);
+      apiOptions = await apiOptions.serializeData(apiOptions);
     }
 
     const { uid, entity, reject, resolve, apiData, additionalInfo, includeParamOnCompletion } = apiOptions;
@@ -257,7 +263,7 @@ export default abstract class BaseClass {
       case 'create-extensions':
         return this.stack
           .extension()
-          .create({ extension: pick(apiData, this.modulesConfig.extensions.validKeys) as ExtensionData})
+          .create({ extension: pick(apiData, this.modulesConfig.extensions.validKeys) as ExtensionData })
           .then(onSuccess)
           .catch(onReject);
       case 'create-locale':
@@ -270,6 +276,30 @@ export default abstract class BaseClass {
         return this.stack
           .locale(apiData.code)
           .update({ locale: pick(apiData, [...this.modulesConfig.locales.requiredKeys]) as LocaleData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'create-gfs':
+        return this.stack
+          .globalField()
+          .create({ global_field: apiData as GlobalFieldData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'create-cts':
+        return this.stack
+          .contentType()
+          .create({ content_type: apiData as ContentTypeData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'update-cts':
+        return this.stack
+          .contentType(apiData.uid)
+          .update({ content_type: apiData as ContentTypeData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'update-gfs':
+        return this.stack
+          .globalField(apiData)
+          .update({ global_field: apiData as GlobalFieldData })
           .then(onSuccess)
           .catch(onReject);
       default:
