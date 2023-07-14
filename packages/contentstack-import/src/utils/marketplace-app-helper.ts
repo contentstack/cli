@@ -200,8 +200,8 @@ export const generateUidMapper = async (
   for (const app of installedApps) {
     listOfNewMeta.push(...map(app?.ui_location?.locations, 'meta').flat());
   }
-  for (const { extension_uid, name, path } of filter(listOfOldMeta, 'name')) {
-    const meta = find(listOfNewMeta, { name, path }) || find(listOfNewMeta, { name: appNameMapping[name], path });
+  for (const { extension_uid, name, path, uid, data_type } of filter(listOfOldMeta, 'name')) {
+    const meta = find(listOfNewMeta, { name, path }) || find(listOfNewMeta, { name: appNameMapping[name], path }) || find(listOfNewMeta, {name, uid, data_type});
 
     if (meta) {
       extensionUidMap[extension_uid] = meta.extension_uid;
