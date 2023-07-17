@@ -57,6 +57,8 @@ export default class ImportEnvironments extends BaseClass {
     if (this.envFailed?.length) {
       fsUtil.writeFile(this.envFailsPath, this.envFailed);
     }
+
+    log(this.importConfig, 'Environments have been imported successfully!', 'success');
   }
 
   async importEnvironments() {
