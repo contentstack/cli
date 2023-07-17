@@ -1,5 +1,5 @@
 import { Command } from '@contentstack/cli-command';
-import { printFlagDeprecation, flags, isAuthenticated, FlagInput } from '@contentstack/cli-utilities';
+import { printFlagDeprecation, flags, isAuthenticated, FlagInput, cliux } from '@contentstack/cli-utilities';
 import ContentModelSeeder, { ContentModelSeederOptions } from '../../../seed';
 
 export default class SeedCommand extends Command {
@@ -100,6 +100,11 @@ export default class SeedCommand extends Command {
       return result;
     } catch (error) {
       let errorObj: any = error;
+      if(errorObj.message!==undefined) {
+        cliux.loader();
+        cliux.print(`Error: ${errorObj.message}`,{color:'red'})
+        this.exit(1);
+      }
       this.error(errorObj, { exit: 1, suggestions: errorObj.suggestions });
     }
   }
