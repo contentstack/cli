@@ -57,6 +57,8 @@ export default class ImportExtensions extends BaseClass {
     if (this.extFailed?.length) {
       fsUtil.writeFile(this.extFailsPath, this.extFailed);
     }
+
+    log(this.importConfig, 'Extensions have been imported successfully!', 'success');
   }
 
   async importExtensions(): Promise<any> {
