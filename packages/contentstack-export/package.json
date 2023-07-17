@@ -31,6 +31,7 @@
     "@contentstack/cli-dev-dependencies": "^1.2.3",
     "@oclif/plugin-help": "^5.1.19",
     "@oclif/test": "^1.2.6",
+    "@types/mkdirp": "^1.0.2",
     "@types/progress-stream": "^2.0.2",
     "assert": "^2.0.0",
     "chai": "^4.2.0",
