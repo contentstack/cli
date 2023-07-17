@@ -1,5 +1,6 @@
 import * as process from 'process';
 import * as path from 'path';
+import ImportCommand from '@contentstack/cli-cm-import';
 
 const STACK_FOLDER = 'stack';
 
@@ -16,9 +17,5 @@ export async function run(options: ImporterOptions) {
   const importPath = path.resolve(options.tmpPath, STACK_FOLDER);
 
   process.chdir(options.tmpPath);
-
-  // moving here to fix jest testing bug
-  const { parametersWithAuthToken } = require('@contentstack/cli-cm-import/src/lib/util/import-flags');
-
-  await parametersWithAuthToken(options.api_key, importPath, '', options.cmaHost, '', {});
+  await ImportCommand.run(['-k', options.api_key, '-d', importPath]);
 }

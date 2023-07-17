@@ -1,0 +1,13 @@
+{
+  "recursive": true,
+  "spec": [
+    "test/unit/commands/assets/publish.test.js",
+    "test/unit/commands/assets/unpublish.test.js",
+    "test/unit/commands/bulk-publish/cross-publish.test.js",
+    "test/unit/commands/entries/publish.test.js",
+    "test/unit/commands/entries/unpublish.test.js"
+  ],
+  "reporter": "dot",
+  "timeout": 60000,
+  "exit": true
+}
