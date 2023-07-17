@@ -1,29 +1,45 @@
 import fs from 'fs';
+import { cliux } from '@contentstack/cli-utilities';
 import { entryCreateScript } from './entry-create-script';
 import { entryUpdateScript } from './entry-update-script';
+import { entryCreateUpdateScript } from './entry-create-update-script';
 
 type CreateMergeScriptsProps = {
   uid: string;
-  status: string;
+  entry_merge_strategy: string;
 };
 
 export function generateMergeScripts(mergeSummary, mergeJobUID) {
   try {
     let scriptFolderPath;
 
-    if (mergeSummary.content_types.modified && mergeSummary.content_types.modified?.length !== 0) {
-      mergeSummary.content_types.modified.map((contentType) => {
-        let data = entryUpdateScript(contentType.uid);
-        scriptFolderPath = createMergeScripts(contentType, data, mergeJobUID);
-      });
-    }
+    const processContentType = (contentType, scriptFunction) => {
+      const data = scriptFunction(contentType.uid);
+      scriptFolderPath = createMergeScripts(contentType, data, mergeJobUID);
+    };
 
-    if (mergeSummary.content_types.added && mergeSummary.content_types.added?.length !== 0) {
-      mergeSummary.content_types.added?.map((contentType) => {
-        let data = entryCreateScript(contentType.uid);
-        scriptFolderPath = createMergeScripts(contentType, data, mergeJobUID);
-      });
-    }
+    const mergeStrategies = {
+      merge_existing_new: entryCreateUpdateScript,
+      merge_existing: entryUpdateScript,
+      merge_new: entryCreateScript,
+      ignore: entryCreateUpdateScript,
+    };
+
+    const processContentTypes = (contentTypes, messageType) => {
+      if (contentTypes && contentTypes.length > 0) {
+        contentTypes.forEach((contentType) => {
+          const mergeStrategy = contentType.entry_merge_strategy;
+          if (mergeStrategies.hasOwnProperty(mergeStrategy)) {
+            processContentType(contentType, mergeStrategies[mergeStrategy]);
+          }
+        });
+      } else {
+        cliux.print(`No ${messageType} entries selected for merge`, { color: 'yellow' });
+      }
+    };
+
+    processContentTypes(mergeSummary.modified, 'Modified');
+    processContentTypes(mergeSummary.added, 'New');
 
     return scriptFolderPath;
   } catch (error) {
@@ -32,10 +48,12 @@ export function generateMergeScripts(mergeSummary, mergeJobUID) {
 }
 
 export function getContentypeMergeStatus(status) {
-  if (status === 'modified') {
+  if (status === 'merge_existing') {
     return 'updated';
-  } else if (status === 'compare_only') {
+  } else if (status === 'merge_new') {
     return 'created';
+  } else if (status === 'merge_existing_new') {
+    return 'created_updated';
   } else {
     return '';
   }
@@ -64,7 +82,9 @@ export function createMergeScripts(contentType: CreateMergeScriptsProps, content
         fs.mkdirSync(fullPath);
       }
       fs.writeFileSync(
-        `${fullPath}/${fileCreatedAt}_${getContentypeMergeStatus(contentType.status)}_${contentType.uid}.js`,
+        `${fullPath}/${fileCreatedAt}_${getContentypeMergeStatus(contentType.entry_merge_strategy)}_${
+          contentType.uid
+        }.js`,
         content,
         'utf-8',
       );
