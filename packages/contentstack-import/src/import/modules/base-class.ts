@@ -12,6 +12,7 @@ import { PublishConfig } from '@contentstack/management/types/utility/publish';
 import { FolderData } from '@contentstack/management/types/stack/asset/folder';
 import { ExtensionData } from '@contentstack/management/types/stack/extension';
 import { EnvironmentData } from '@contentstack/management/types/stack/environment';
+import { LabelData } from '@contentstack/management/types/stack/label';
 
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
@@ -28,7 +29,9 @@ export type ApiModuleType =
   | 'create-extensions'
   | 'create-locale'
   | 'update-locale'
-  | 'create-environments';
+  | 'create-environments'
+  | 'create-labels'
+  | 'update-labels';
 
 export type ApiOptions = {
   uid?: string;
@@ -281,6 +284,21 @@ export default abstract class BaseClass {
           .create({ environment: omit(apiData, ['uid', 'ACL']) as EnvironmentData })
           .then(onSuccess)
           .catch(onReject);
+      case 'create-labels':
+        return this.stack
+          .label()
+          .create({ label: omit(apiData, ['uid']) as LabelData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'update-labels':
+        return this.stack
+          .label(apiData.uid)
+          .fetch()
+          .then(async (response) => {
+            response.parent = apiData.parent;
+            await response.update().then(onSuccess).catch(onReject);
+          })
+          .catch(onReject)
       default:
         return Promise.resolve();
     }
