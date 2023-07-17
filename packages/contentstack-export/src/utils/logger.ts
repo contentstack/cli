@@ -6,7 +6,7 @@
 
 import * as winston from 'winston';
 import * as path from 'path';
-import * as mkdirp from 'mkdirp';
+import mkdirp from 'mkdirp';
 import { ExportConfig } from '../types';
 
 const slice = Array.prototype.slice;
