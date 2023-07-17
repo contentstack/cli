@@ -1,6 +1,6 @@
 const fs = require('fs');
 const _ = require('lodash');
-const config = require('../../../src/config/default');
+const { default: config } = require('../../../src/config');
 const { Command } = require('@contentstack/cli-command');
 const { managementSDKClient, HttpClient } = require('@contentstack/cli-utilities');
 const { getDeveloperHubUrl } = require('../../../src/lib/util/marketplace-app-helper');
