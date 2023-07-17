@@ -46,6 +46,7 @@ export default class Importlabels extends BaseClass {
       this.labels = fsUtil.readFile(join(this.labelsFolderPath, 'labels.json'), true) as Record<string, unknown>;
     } else {
       log(this.importConfig, `No such file or directory - '${this.labelsFolderPath}'`, 'error');
+      return;
     }
 
     //create labels in mapper directory
@@ -65,6 +66,8 @@ export default class Importlabels extends BaseClass {
     if (this.failedLabel?.length) {
       fsUtil.writeFile(this.labelFailsPath, this.failedLabel);
     }
+
+    log(this.importConfig, 'Labels have been imported successfully!', 'success');
   }
 
   async importlabels() {

@@ -13,6 +13,7 @@ import { FolderData } from '@contentstack/management/types/stack/asset/folder';
 import { ExtensionData } from '@contentstack/management/types/stack/extension';
 import { EnvironmentData } from '@contentstack/management/types/stack/environment';
 import { LabelData } from '@contentstack/management/types/stack/label';
+import { WebhookData } from '@contentstack/management/types/stack/webhook';
 
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
@@ -31,7 +32,8 @@ export type ApiModuleType =
   | 'update-locale'
   | 'create-environments'
   | 'create-labels'
-  | 'update-labels';
+  | 'update-labels'
+  | 'create-webhooks';
 
 export type ApiOptions = {
   uid?: string;
@@ -263,7 +265,7 @@ export default abstract class BaseClass {
       case 'create-extensions':
         return this.stack
           .extension()
-          .create({ extension: omit(apiData, ['uid', 'SYS_ACL']) as ExtensionData })
+          .create({ extension: omit(apiData, ['uid']) as ExtensionData })
           .then(onSuccess)
           .catch(onReject);
       case 'create-locale':
@@ -281,7 +283,7 @@ export default abstract class BaseClass {
       case 'create-environments':
         return this.stack
           .environment()
-          .create({ environment: omit(apiData, ['uid', 'ACL']) as EnvironmentData })
+          .create({ environment: omit(apiData, ['uid']) as EnvironmentData })
           .then(onSuccess)
           .catch(onReject);
       case 'create-labels':
@@ -298,7 +300,13 @@ export default abstract class BaseClass {
             response.parent = apiData.parent;
             await response.update().then(onSuccess).catch(onReject);
           })
-          .catch(onReject)
+          .catch(onReject);
+      case 'create-webhooks':
+        return this.stack
+          .webhook()
+          .create({ webhook: omit(apiData, ['uid']) as WebhookData })
+          .then(onSuccess)
+          .catch(onReject);
       default:
         return Promise.resolve();
     }

@@ -144,7 +144,7 @@ const config: DefaultConfig = {
     },
     stack: {
       dirName: 'stack',
-      fileName: 'stack.json',
+      fileName: 'stack.json'
     },
     dependency: {
       entries: ['stack', 'locales', 'content-types'],
@@ -368,7 +368,7 @@ const config: DefaultConfig = {
     'xh',
     'zu',
   ],
-  updatedModules: ['assets', 'locales', 'extensions', 'marketplace-apps', 'environments', 'labels'],
+  updatedModules: ['assets', 'locales', 'extensions', 'marketplace-apps', 'environments', 'labels', 'webhooks'],
   apis: {
     userSession: '/user-session/',
     globalfields: '/global_fields/',
