@@ -6,7 +6,7 @@
 
 import * as winston from 'winston';
 import * as path from 'path';
-import * as mkdirp from 'mkdirp';
+import mkdirp from 'mkdirp';
 import { ImportConfig } from '../types';
 
 const slice = Array.prototype.slice;
@@ -91,7 +91,10 @@ function init(_logPath: string) {
         new winston.transports.File(errorTransport),
         new winston.transports.Console({
           level: 'error',
-          format: winston.format.combine(winston.format.colorize({ all: true,colors:{ error: 'red'} }), winston.format.simple()),
+          format: winston.format.combine(
+            winston.format.colorize({ all: true, colors: { error: 'red' } }),
+            winston.format.simple(),
+          ),
         }),
       ],
       levels: { error: 0 },
