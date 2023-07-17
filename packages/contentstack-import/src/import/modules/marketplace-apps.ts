@@ -97,8 +97,9 @@ export default class ImportMarketplaceApps extends BaseClass {
     this.sdkClient = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
     this.importConfig.org_uid = await getOrgUid(this.stack, this.importConfig);
     await this.setHttpClient();
+    await this.startInstallation();
 
-    return this.startInstallation();
+    log(this.importConfig, 'Marketplace apps have been imported successfully!', 'success');
   }
 
   async setHttpClient(): Promise<void> {
