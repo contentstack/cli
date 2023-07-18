@@ -127,6 +127,15 @@ module.exports = class ImportLanguages {
         .catch(function (error) {
           // error while importing languages
           fileHelper.writeFileSync(langFailsPath, self.fails);
+          let message_content_type = '';
+          if (error.request !== undefined && JSON.parse(error.request.data).locale !== undefined) {
+            if (JSON.parse(error.request.data).locale.code) {
+              message_content_type =
+                ' For language with code - ' + JSON.parse(error.request.data).locale.code;
+            } 
+            error.errorMessage = error.errorMessage + message_content_type;
+          }
+          log(self.config, formatError(error.errorMessage), 'error');
           log(self.config, `Language import failed. ${formatError(error)}`, 'error');
           reject('failed to import Languages');
         });

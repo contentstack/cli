@@ -114,10 +114,19 @@ module.exports = class ImportGlobalFields {
         })
         .catch(function (err) {
           // error while importing globalfields
-          let error = JSON.parse(err);
+          let error = err;
           // error while importing globalfields
-          log(self.config, err, 'error');
+          // log(self.config, err, 'error');
           fileHelper.writeFileSync(globalfieldsFailsPath, self.fails);
+          let message_content_type = '';
+          if (error.request !== undefined && JSON.parse(error.request.data).global_field !== undefined) {
+            if (JSON.parse(error.request.data).global_field.title) {
+              message_content_type =
+                ' Due to Global Field Title - ' + JSON.parse(error.request.data).global_field.title;
+            }
+            error.errorMessage = error.errorMessage + message_content_type;
+          }
+          log(self.config, formatError(error.errorMessage), 'error');
           log(self.config, `Globalfields import failed. ${formatError(err)}`, 'error');
           return reject(error);
         });
