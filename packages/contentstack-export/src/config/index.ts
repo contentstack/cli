@@ -60,7 +60,7 @@ const config: DefaultConfig = {
     labels: {
       dirName: 'labels',
       fileName: 'labels.json',
-      invalidKeys: ['stackHeaders', 'uid', 'urlPath', 'created_at', 'updated_at', 'created_by', 'updated_by'],
+      invalidKeys: ['stackHeaders', 'urlPath', 'created_at', 'updated_at', 'created_by', 'updated_by'],
     },
     webhooks: {
       dirName: 'webhooks',
@@ -374,6 +374,8 @@ const config: DefaultConfig = {
     'extensions',
     'marketplace-apps',
     'environments',
+    'labels',
+    'webhooks',
     'global-fields',
     'content-types',
   ],
