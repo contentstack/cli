@@ -105,7 +105,15 @@ export default class ImportGlobalFields extends BaseClass {
     );
   }
 
-  async createGFs({ apiParams, element: globalField, isLastRequest }) {
+  async createGFs({
+    apiParams,
+    element: globalField,
+    isLastRequest,
+  }: {
+    apiParams: ApiOptions;
+    element: Record<string, string>;
+    isLastRequest: boolean;
+  }) {
     return new Promise(async (resolve, reject) => {
       lookupExtension(this.config, globalField.schema, this.config.preserveStackVersion, this.installedExtensions);
       const isReferenceFieldRemoved = await removeReferenceFields(globalField.schema, undefined, this.stackAPIClient);
