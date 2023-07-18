@@ -71,5 +71,10 @@ export interface LabelConfig{
   fileName: string;
 }
 
+export interface WebhookConfig{
+  dirName: string;
+  fileName: string;
+}
+
 export { default as DefaultConfig } from './default-config';
 export { default as ImportConfig } from './import-config';
