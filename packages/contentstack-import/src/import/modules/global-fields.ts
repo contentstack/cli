@@ -8,6 +8,7 @@
 import * as path from 'path';
 import { values, isEmpty, filter, pick } from 'lodash';
 import { cliux } from '@contentstack/cli-utilities';
+import { GlobalFieldData } from '@contentstack/management/types/stack/globalField';
 import { fsUtil, log, formatError, fileHelper, lookupExtension, removeReferenceFields } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
@@ -45,6 +46,7 @@ export default class ImportGlobalFields extends BaseClass {
     this.gFsUidMapper = {};
     this.createdGFs = [];
     this.failedGFs = [];
+    this.pendingGFs = [];
     this.reqConcurrency = this.gFsConfig.writeConcurrency || this.config.writeConcurrency;
     this.gFsMapperPath = path.resolve(this.config.data, 'mapper', 'global_fields');
     this.gFsFolderPath = path.resolve(this.config.data, this.gFsConfig.dirName);
@@ -56,16 +58,6 @@ export default class ImportGlobalFields extends BaseClass {
   }
 
   async start(): Promise<any> {
-    /**
-     * read global fields
-     * check if its empty
-     * create a mapper dir
-     * create global fields, using base class concurrent method
-     * Use serialization method to lookup the extensions and identify references the  push it to the pending list
-     * OnSuccess and Reject write it the files
-     * Once finished write the pending global fields
-     */
-
     this.gFs = fsUtil.readFile(path.join(this.gFsFolderPath, this.gFsConfig.fileName)) as Record<string, unknown>[];
     if (!this.gFs || isEmpty(this.gFs)) {
       log(this.config, 'No global fields found to import', 'info');
@@ -81,14 +73,14 @@ export default class ImportGlobalFields extends BaseClass {
 
     await this.importGFs();
     fsUtil.writeFile(this.gFsPendingPath, this.pendingGFs);
-    log(this.config, 'Global fields have been imported successfully!', 'success');
+    log(this.config, 'Global fields import has been completed!', 'info');
   }
 
   async importGFs() {
     const onSuccess = ({ response: globalField, apiData: { uid } = undefined }: any) => {
-      this.createdGFs.push(globalField.items);
-      this.gFsUidMapper[uid] = globalField.items;
-      fsUtil.writeFile(this.gFsMapperPath, this.gFsUidMapper);
+      this.createdGFs.push(globalField);
+      this.gFsUidMapper[uid] = globalField;
+      fsUtil.writeFile(this.gFsUidMapperPath, this.gFsUidMapper);
       log(this.config, 'Global field ' + uid + ' created successfully', 'success');
     };
     const onReject = ({ error, apiData: { uid } = undefined }: any) => {
@@ -96,33 +88,47 @@ export default class ImportGlobalFields extends BaseClass {
       log(this.importConfig, formatError(error), 'error');
       this.failedGFs.push({ uid });
     };
-    return await this.makeConcurrentCall({
-      processName: 'Import global fields',
-      apiContent: this.gFs,
-      apiParams: {
-        serializeData: this.serializeGFs.bind(this),
-        reject: onReject.bind(this),
-        resolve: onSuccess.bind(this),
-        entity: 'create-gfs',
-        includeParamOnCompletion: true,
+
+    return await this.makeConcurrentCall(
+      {
+        processName: 'Import global fields',
+        apiContent: this.gFs,
+        apiParams: {
+          reject: onReject.bind(this),
+          resolve: onSuccess.bind(this),
+          entity: 'create-gfs',
+          includeParamOnCompletion: true,
+        },
+        concurrencyLimit: this.reqConcurrency,
       },
-      concurrencyLimit: this.reqConcurrency,
-    });
+      this.createGFs.bind(this),
+    );
   }
 
-  /**
-   * @method serializeGFs
-   * @param {ApiOptions} apiOptions ApiOptions
-   * @returns {ApiOptions} ApiOptions
-   */
-  async serializeGFs(apiOptions: ApiOptions): Promise<ApiOptions> {
-    const { apiData: globalField } = apiOptions;
-    lookupExtension(this.config, globalField.schema, this.config.preserveStackVersion, this.installedExtensions);
-    const referenceCheck = { suppressed: false };
-    await removeReferenceFields(globalField.schema, referenceCheck, this.stackAPIClient);
-    if (referenceCheck.suppressed) {
-      this.pendingGFs.push(globalField.uid);
-    }
-    return apiOptions;
+  async createGFs({ apiParams, element: globalField, isLastRequest }) {
+    return new Promise(async (resolve, reject) => {
+      lookupExtension(this.config, globalField.schema, this.config.preserveStackVersion, this.installedExtensions);
+      const isReferenceFieldRemoved = await removeReferenceFields(globalField.schema, undefined, this.stackAPIClient);
+      if (isReferenceFieldRemoved) {
+        this.pendingGFs.push(globalField.uid);
+      }
+      return this.stack
+        .globalField()
+        .create({ global_field: globalField as GlobalFieldData })
+        .then((response) => {
+          apiParams.resolve({
+            response,
+            apiData: globalField,
+          });
+          resolve(true);
+        })
+        .catch((error) => {
+          apiParams.reject({
+            error,
+            apiData: globalField,
+          });
+          reject(true);
+        });
+    });
   }
 }
