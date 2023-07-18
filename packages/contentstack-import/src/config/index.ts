@@ -373,6 +373,8 @@ const config: DefaultConfig = {
     'locales',
     'marketplace-apps',
     'environments',
+    'labels',
+    'webhooks',
     'global-fields',
     'content-types',
   ],

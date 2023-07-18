@@ -14,6 +14,8 @@ import { ExtensionData } from '@contentstack/management/types/stack/extension';
 import { GlobalFieldData } from '@contentstack/management/types/stack/globalField';
 import { ContentTypeData } from '@contentstack/management/types/stack/contentType';
 import { EnvironmentData } from '@contentstack/management/types/stack/environment';
+import { LabelData } from '@contentstack/management/types/stack/label';
+import { WebhookData } from '@contentstack/management/types/stack/webhook';
 
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
@@ -34,7 +36,10 @@ export type ApiModuleType =
   | 'create-cts'
   | 'update-cts'
   | 'update-gfs'
-  | 'create-environments';
+  | 'create-environments'
+  | 'create-labels'
+  | 'update-labels'
+  | 'create-webhooks';
 
 export type ApiOptions = {
   uid?: string;
@@ -268,7 +273,7 @@ export default abstract class BaseClass {
       case 'create-extensions':
         return this.stack
           .extension()
-          .create({ extension: omit(apiData, ['uid', 'SYS_ACL']) as ExtensionData })
+          .create({ extension: omit(apiData, ['uid']) as ExtensionData })
           .then(onSuccess)
           .catch(onReject);
       case 'create-locale':
@@ -292,7 +297,28 @@ export default abstract class BaseClass {
       case 'create-environments':
         return this.stack
           .environment()
-          .create({ environment: omit(apiData, ['uid', 'ACL']) as EnvironmentData })
+          .create({ environment: omit(apiData, ['uid']) as EnvironmentData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'create-labels':
+        return this.stack
+          .label()
+          .create({ label: omit(apiData, ['uid']) as LabelData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'update-labels':
+        return this.stack
+          .label(apiData.uid)
+          .fetch()
+          .then(async (response) => {
+            response.parent = apiData.parent;
+            await response.update().then(onSuccess).catch(onReject);
+          })
+          .catch(onReject);
+      case 'create-webhooks':
+        return this.stack
+          .webhook()
+          .create({ webhook: omit(apiData, ['uid']) as WebhookData })
           .then(onSuccess)
           .catch(onReject);
       default:
