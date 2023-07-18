@@ -87,7 +87,7 @@ export default class ContentTypesImport extends BaseClass {
 
     this.cTs = fsUtil.readFile(path.join(this.cTsFolderPath, 'schema.json')) as Record<string, unknown>[];
     if (!this.cTs || isEmpty(this.cTs)) {
-      log(this.config, 'No content type found to import', 'info');
+      log(this.importConfig, 'No content type found to import', 'info');
       return;
     }
     await fsUtil.makeDirectory(this.cTsMapperPath);
@@ -106,19 +106,20 @@ export default class ContentTypesImport extends BaseClass {
       log(this.importConfig, `Error while updating pending global field ${formatError(error)}`, 'error');
     });
     log(this.importConfig, 'Updated pending global fields with content type with references', 'success');
-    log(this.config, 'Content types have been imported successfully!', 'success');
+    log(this.importConfig, 'Content types have been imported successfully!', 'success');
   }
 
   async seedCTs(): Promise<any> {
-    const onSuccess = ({ response: contentType, apiData: { uid } = undefined }: any) => {
+    const onSuccess = ({ response: globalField, apiData: { content_type: { uid = null } = {} } = {} }: any) => {
       log(this.importConfig, `${uid} content type seeded`, 'info');
     };
-    const onReject = ({ error, apiData: { uid } = undefined }: any) => {
+    const onReject = ({ error, apiData: { content_type: { uid = null } = {} } = {} }: any) => {
       if (error.errorCode === 115 && (error.errors.uid || error.errors.title)) {
         log(this.importConfig, `${uid} content type already exist`, 'info');
+      } else {
+        log(this.importConfig, formatError(error), 'error');
+        process.exit(1);
       }
-      log(this.importConfig, formatError(error), 'error');
-      Promise.reject(`Content type '${uid}' seed error`);
     };
     return await this.makeConcurrentCall({
       processName: 'Import content types',
@@ -139,7 +140,7 @@ export default class ContentTypesImport extends BaseClass {
    * @param {ApiOptions} apiOptions ApiOptions
    * @returns {ApiOptions} ApiOptions
    */
-  async serializeCTs(apiOptions: ApiOptions): Promise<ApiOptions> {
+  serializeCTs(apiOptions: ApiOptions): ApiOptions {
     const { apiData: contentType } = apiOptions;
     const updatedCT = cloneDeep(schemaTemplate);
     updatedCT.content_type.uid = contentType.uid;
@@ -149,12 +150,12 @@ export default class ContentTypesImport extends BaseClass {
   }
 
   async updateCTs(): Promise<any> {
-    const onSuccess = ({ response: contentType, apiData: { uid } = undefined }: any) => {
+    const onSuccess = ({ response: contentType, apiData: { uid } }: any) => {
       log(this.importConfig, `${uid} updated with references`, 'success');
     };
-    const onReject = ({ error, apiData: { uid } = undefined }: any) => {
+    const onReject = ({ error, apiData: { uid } }: any) => {
       log(this.importConfig, formatError(error), 'error');
-      Promise.reject(`Content type '${uid}' update error`);
+      throw new Error(`Content type '${uid}' update error`);
     };
     return await this.makeConcurrentCall({
       processName: 'Update content types',
@@ -175,13 +176,21 @@ export default class ContentTypesImport extends BaseClass {
    * @param {ApiOptions} apiOptions ApiOptions
    * @returns {ApiOptions} ApiOptions
    */
-  async serializeUpdateCTs(apiOptions: ApiOptions): Promise<ApiOptions> {
+  serializeUpdateCTs(apiOptions: ApiOptions): ApiOptions {
     const { apiData: contentType } = apiOptions;
     if (contentType.field_rules) {
       this.fieldRules.push(contentType.uid);
       delete contentType.field_rules;
     }
-    lookupExtension(this.config, contentType.schema, this.config.preserveStackVersion, this.installedExtensions);
+    lookupExtension(
+      this.importConfig,
+      contentType.schema,
+      this.importConfig.preserveStackVersion,
+      this.installedExtensions,
+    );
+    const contentTypePayload = this.stack.contentType(contentType.uid);
+    Object.assign(contentTypePayload, cloneDeep(contentType));
+    apiOptions.apiData = contentTypePayload;
     return apiOptions;
   }
 
@@ -215,13 +224,21 @@ export default class ContentTypesImport extends BaseClass {
    * @param {ApiOptions} apiOptions ApiOptions
    * @returns {ApiOptions} ApiOptions
    */
-  async serializeUpdateGFs(apiOptions: ApiOptions): Promise<ApiOptions> {
+  serializeUpdateGFs(apiOptions: ApiOptions): ApiOptions {
     const {
       apiData: { uid },
     } = apiOptions;
     const globalField = find(this.gFs, { uid });
-    lookupExtension(this.config, globalField.schema, this.config.preserveStackVersion, this.installedExtensions);
+    lookupExtension(
+      this.importConfig,
+      globalField.schema,
+      this.importConfig.preserveStackVersion,
+      this.installedExtensions,
+    );
     apiOptions.apiData = globalField;
+    const globalFieldPayload = this.stack.globalField(uid);
+    Object.assign(globalFieldPayload, cloneDeep(globalField));
+    apiOptions.apiData = globalFieldPayload;
     return apiOptions;
   }
 }
