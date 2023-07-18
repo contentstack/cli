@@ -290,11 +290,11 @@ export default abstract class BaseClass {
       case 'update-gfs':
         return apiData.update().then(onSuccess).catch(onReject);
       case 'create-environments':
-      // return this.stack
-      //   .environment()
-      //   .create({ environment: omit(apiData, ['uid', 'ACL']) as EnvironmentData })
-      //   .then(onSuccess)
-      //   .catch(onReject);
+        return this.stack
+          .environment()
+          .create({ environment: omit(apiData, ['uid', 'ACL']) as EnvironmentData })
+          .then(onSuccess)
+          .catch(onReject);
       default:
         return Promise.resolve();
     }
