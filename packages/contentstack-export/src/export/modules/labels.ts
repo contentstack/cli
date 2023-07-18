@@ -61,7 +61,7 @@ export default class ExportLabels extends BaseClass {
           return await this.getLabels(skip);
         }
       })
-      .catch(({ error }: any) => {
+      .catch((error: any) => {
         log(this.exportConfig, `Failed to export labels. ${formatError(error)}`, 'error');
         log(this.exportConfig, error, 'error');
       });
@@ -70,9 +70,9 @@ export default class ExportLabels extends BaseClass {
   sanitizeAttribs(labels: Record<string, string>[]) {
     for (let index = 0; index < labels?.length; index++) {
       const labelUid = labels[index].uid;
-      const labelName = labels[index].name;
-      log(this.exportConfig, `'${labelName}' label was exported successfully`, 'success');
+      const labelName = labels[index]?.name;
       this.labels[labelUid] = omit(labels[index], this.labelConfig.invalidKeys);
+      log(this.exportConfig, `'${labelName}' label was exported successfully`, 'success');
     }
   }
 }

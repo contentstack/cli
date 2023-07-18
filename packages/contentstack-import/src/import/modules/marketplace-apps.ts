@@ -36,6 +36,7 @@ import {
   getConfirmationToCreateApps,
   generateUidMapper,
   fsUtil,
+  fileHelper
 } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, MarketplaceAppsConfig } from '../../types';
@@ -64,10 +65,6 @@ export default class ImportMarketplaceApps extends BaseClass {
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'marketplace_apps');
     this.marketPlaceFolderPath = join(this.importConfig.backupDir, this.marketPlaceAppConfig.dirName);
     this.marketPlaceUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
-    this.marketplaceApps = fsUtil.readFile(
-      join(this.marketPlaceFolderPath, this.marketPlaceAppConfig.fileName),
-      true,
-    ) as Record<string, unknown>[];
     this.httpClient = new HttpClient();
     this.appNameMapping = {};
     this.appUidMapping = {};
@@ -83,6 +80,13 @@ export default class ImportMarketplaceApps extends BaseClass {
   async start(): Promise<void> {
     log(this.importConfig, 'Migrating marketplace apps', 'info');
 
+    if (fileHelper.fileExistsSync(this.marketPlaceFolderPath)) {
+      this.marketplaceApps = fsUtil.readFile(join(this.marketPlaceFolderPath, this.marketPlaceAppConfig.fileName), true) as Record<string,unknown>[];
+    } else {
+      log(this.importConfig, `No such file or directory - '${this.marketPlaceFolderPath}'`, 'error');
+      return;
+    }
+
     if (isEmpty(this.marketplaceApps)) {
       return Promise.resolve();
     } else if (!isAuthenticated()) {
@@ -97,8 +101,9 @@ export default class ImportMarketplaceApps extends BaseClass {
     this.sdkClient = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
     this.importConfig.org_uid = await getOrgUid(this.stack, this.importConfig);
     await this.setHttpClient();
+    await this.startInstallation();
 
-    return this.startInstallation();
+    log(this.importConfig, 'Marketplace apps have been imported successfully!', 'success');
   }
 
   async setHttpClient(): Promise<void> {
