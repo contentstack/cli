@@ -27,10 +27,6 @@ export default class ImportEnvironments extends BaseClass {
     this.envUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
     this.envSuccessPath = join(this.mapperDirPath, 'success.json');
     this.envFailsPath = join(this.mapperDirPath, 'fails.json');
-    this.environments = fsUtil.readFile(join(this.environmentsFolderPath, 'environments.json'), true) as Record<
-      string,
-      unknown
-    >;
     this.envFailed = [];
     this.envSuccess = [];
     this.envUidMapper = {};
@@ -42,6 +38,14 @@ export default class ImportEnvironments extends BaseClass {
    */
   async start(): Promise<void> {
     log(this.importConfig, 'Migrating environments', 'info');
+
+    //Step1 check folder exists or not
+    if (fileHelper.fileExistsSync(this.environmentsFolderPath)) {
+      this.environments = fsUtil.readFile(join(this.environmentsFolderPath, 'environments.json'), true) as Record<string,unknown>;
+    } else {
+      log(this.importConfig, `No such file or directory - '${this.environmentsFolderPath}'`, 'error');
+      return;
+    }
 
     await fsUtil.makeDirectory(this.mapperDirPath);
     this.envUidMapper = fileHelper.fileExistsSync(this.envUidMapperPath)
@@ -57,6 +61,8 @@ export default class ImportEnvironments extends BaseClass {
     if (this.envFailed?.length) {
       fsUtil.writeFile(this.envFailsPath, this.envFailed);
     }
+
+    log(this.importConfig, 'Environments have been imported successfully!', 'success');
   }
 
   async importEnvironments() {
