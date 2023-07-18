@@ -64,10 +64,11 @@ export interface ExternalConfig extends ExportConfig {
   password?: string;
 }
 
-export interface Extensions {
+export interface ExtensionsConfig {
   dirName: string;
   fileName: string;
   dependencies?: Modules[];
+  limit?: number;
 }
 
 export interface MarketplaceAppsConfig {
@@ -80,6 +81,22 @@ export interface EnvironmentConfig {
   dirName: string;
   fileName: string;
   dependencies?: Modules[];
+  limit?: number;
+}
+
+export interface LabelConfig {
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
+  dependencies?: Modules[];
+  limit?: number;
+}
+
+export interface WebhookConfig {
+  dirName: string;
+  fileName: string;
+  dependencies?: Modules[];
+  limit?: number;
 }
 
 export { default as DefaultConfig } from './default-config';
