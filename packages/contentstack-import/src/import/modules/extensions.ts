@@ -27,10 +27,6 @@ export default class ImportExtensions extends BaseClass {
     this.extUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
     this.extSuccessPath = join(this.mapperDirPath, 'success.json');
     this.extFailsPath = join(this.mapperDirPath, 'fails.json');
-    this.extensions = fsUtil.readFile(join(this.extensionsFolderPath, 'extensions.json'), true) as Record<
-      string,
-      unknown
-    >;
     this.extFailed = [];
     this.extSuccess = [];
     this.extUidMapper = {};
@@ -42,6 +38,14 @@ export default class ImportExtensions extends BaseClass {
    */
   async start(): Promise<void> {
     log(this.importConfig, 'Migrating extensions', 'info');
+
+    //Step1 check folder exists or not
+    if (fileHelper.fileExistsSync(this.extensionsFolderPath)) {
+      this.extensions = fsUtil.readFile(join(this.extensionsFolderPath, 'extensions.json'), true) as Record<string,unknown>;
+    } else {
+      log(this.importConfig, `No such file or directory - '${this.extensionsFolderPath}'`, 'error');
+      return;
+    }
 
     await fsUtil.makeDirectory(this.mapperDirPath);
     this.extUidMapper = fileHelper.fileExistsSync(this.extUidMapperPath)
@@ -57,6 +61,8 @@ export default class ImportExtensions extends BaseClass {
     if (this.extFailed?.length) {
       fsUtil.writeFile(this.extFailsPath, this.extFailed);
     }
+
+    log(this.importConfig, 'Extensions have been imported successfully!', 'success');
   }
 
   async importExtensions(): Promise<any> {
