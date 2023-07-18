@@ -147,6 +147,15 @@ module.exports = class importWorkflows {
         })
         .catch(function (error) {
           fileHelper.writeFileSync(workflowFailsPath, self.fails);
+          let message_content_type = '';
+          if (error.request !== undefined && JSON.parse(error.request.data).workflow !== undefined) {
+            if (JSON.parse(error.request.data).workflow.name) {
+              message_content_type =
+                ' Due to Workflow name - ' + JSON.parse(error.request.data).workflow.name;
+            }
+            error.errorMessage = error.errorMessage + message_content_type;
+          }
+          log(self.config, formatError(error.errorMessage), 'error');
           log(self.config, `Workflows import failed. ${formatError(error)}`, 'error');
           return reject(error);
         });
