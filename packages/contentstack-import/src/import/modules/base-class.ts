@@ -61,6 +61,7 @@ export type EnvType = {
 export type CustomPromiseHandlerInput = {
   index: number;
   batchIndex: number;
+  element?: Record<string, unknown>;
   apiParams?: ApiOptions;
   isLastRequest: boolean;
 };
@@ -137,6 +138,7 @@ export default abstract class BaseClass {
             promise = promisifyHandler({
               apiParams,
               isLastRequest,
+              element,
               index: Number(index),
               batchIndex: Number(batchIndex),
             });
@@ -215,9 +217,9 @@ export default abstract class BaseClass {
    * @param {Record<string, any>} isLastRequest - Boolean
    * @return {Promise} Promise<void>
    */
-  async makeAPICall(apiOptions: ApiOptions, isLastRequest = false): Promise<void> {
+  makeAPICall(apiOptions: ApiOptions, isLastRequest = false): Promise<void> {
     if (apiOptions.serializeData instanceof Function) {
-      apiOptions = await apiOptions.serializeData(apiOptions);
+      apiOptions = apiOptions.serializeData(apiOptions);
     }
 
     const { uid, entity, reject, resolve, apiData, additionalInfo, includeParamOnCompletion } = apiOptions;
@@ -281,36 +283,18 @@ export default abstract class BaseClass {
           .update({ locale: pick(apiData, [...this.modulesConfig.locales.requiredKeys]) as LocaleData })
           .then(onSuccess)
           .catch(onReject);
-      case 'create-gfs':
-        return this.stack
-          .globalField()
-          .create({ global_field: apiData as GlobalFieldData })
-          .then(onSuccess)
-          .catch(onReject);
       case 'create-cts':
-        return this.stack
-          .contentType()
-          .create({ content_type: apiData as ContentTypeData })
-          .then(onSuccess)
-          .catch(onReject);
+        return this.stack.contentType().create(apiData).then(onSuccess).catch(onReject);
       case 'update-cts':
-        return this.stack
-          .contentType(apiData.uid)
-          .update({ content_type: apiData as ContentTypeData })
-          .then(onSuccess)
-          .catch(onReject);
+        return apiData.update().then(onSuccess).catch(onReject);
       case 'update-gfs':
-        return this.stack
-          .globalField(apiData)
-          .update({ global_field: apiData as GlobalFieldData })
-          .then(onSuccess)
-          .catch(onReject);
+        return apiData.update().then(onSuccess).catch(onReject);
       case 'create-environments':
-        return this.stack
-          .environment()
-          .create({ environment: omit(apiData, ['uid', 'ACL']) as EnvironmentData })
-          .then(onSuccess)
-          .catch(onReject);
+      // return this.stack
+      //   .environment()
+      //   .create({ environment: omit(apiData, ['uid', 'ACL']) as EnvironmentData })
+      //   .then(onSuccess)
+      //   .catch(onReject);
       default:
         return Promise.resolve();
     }
