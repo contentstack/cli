@@ -13,6 +13,7 @@ import {
   flags,
   isAuthenticated,
   FlagInput,
+  configHandler,
 } from '@contentstack/cli-utilities';
 import config, { getAppLevelConfigByName, AppConfig } from '../../config';
 import messageHandler from '../../messages';
@@ -105,7 +106,6 @@ export default class BootstrapCommand extends Command {
 
   async run() {
     const { flags: bootstrapCommandFlags } = await this.parse(BootstrapCommand);
-
     try {
       if (!isAuthenticated()) {
         this.error(messageHandler.parse('CLI_BOOTSTRAP_LOGIN_FAILED'), {
