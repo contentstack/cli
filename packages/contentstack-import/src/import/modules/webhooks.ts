@@ -98,7 +98,7 @@ export default class ImportWebhooks extends BaseClass {
         apiContent,
         processName: 'create webhooks',
         apiParams: {
-          serializeData: this.serializelabels.bind(this),
+          serializeData: this.serializeWebhooks.bind(this),
           reject: onReject.bind(this),
           resolve: onSuccess.bind(this),
           entity: 'create-webhooks',
@@ -112,11 +112,11 @@ export default class ImportWebhooks extends BaseClass {
   }
 
   /**
-   * @method serializelabels
+   * @method serializeWebhooks
    * @param {ApiOptions} apiOptions ApiOptions
    * @returns {ApiOptions} ApiOptions
    */
-  serializelabels(apiOptions: ApiOptions): ApiOptions {
+  serializeWebhooks(apiOptions: ApiOptions): ApiOptions {
     const { apiData: webhook } = apiOptions;
 
     if (this.webhookUidMapper.hasOwnProperty(webhook.uid)) {
