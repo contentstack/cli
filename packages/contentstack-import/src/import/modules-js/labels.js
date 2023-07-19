@@ -112,7 +112,7 @@ module.exports = class ImportLabels {
           if (error.request !== undefined && JSON.parse(error.request.data).label !== undefined) {
             if (JSON.parse(error.request.data).label.name) {
               message_content_type =
-                ' Due to label titled - ' + JSON.parse(error.request.data).label.name;
+                ' Failed label: ' + JSON.parse(error.request.data).label.name;
             } 
             error.errorMessage = error.errorMessage + message_content_type;
           }

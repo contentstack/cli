@@ -151,7 +151,7 @@ module.exports = class importWorkflows {
           if (error.request !== undefined && JSON.parse(error.request.data).workflow !== undefined) {
             if (JSON.parse(error.request.data).workflow.name) {
               message_content_type =
-                ' Due to Workflow name - ' + JSON.parse(error.request.data).workflow.name;
+                ' Failed workflow: ' + JSON.parse(error.request.data).workflow.name;
             }
             error.errorMessage = error.errorMessage + message_content_type;
           }
