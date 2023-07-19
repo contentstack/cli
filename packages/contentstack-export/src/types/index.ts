@@ -99,5 +99,20 @@ export interface WebhookConfig {
   limit?: number;
 }
 
+export interface WorkflowConfig{
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
+  dependencies?: Modules[];
+  limit?: number;
+}
+
+export interface CustomRoleConfig{
+  dirName: string;
+  fileName: string;
+  customRolesLocalesFileName: string;
+  dependencies?: Modules[];
+}
+
 export { default as DefaultConfig } from './default-config';
 export { default as ExportConfig } from './export-config';
