@@ -131,7 +131,7 @@ module.exports = class ImportLanguages {
           if (error.request !== undefined && JSON.parse(error.request.data).locale !== undefined) {
             if (JSON.parse(error.request.data).locale.code) {
               message_content_type =
-                ' For language with code - ' + JSON.parse(error.request.data).locale.code;
+                ' Code of the failed language: ' + JSON.parse(error.request.data).locale.code;
             } 
             error.errorMessage = error.errorMessage + message_content_type;
           }
