@@ -96,7 +96,7 @@ module.exports = class ImportExtensions {
           if (error.request !== undefined && JSON.parse(error.request.data).extension.title !== undefined) {
             if (JSON.parse(error.request.data).extension.title) {
               message_content_type =
-                ' Due to Extension name - ' + JSON.parse(error.request.data).extension.title;
+                ' Failed extension: ' + JSON.parse(error.request.data).extension.title;
             }
             error.errorMessage = error.errorMessage + message_content_type;
           }

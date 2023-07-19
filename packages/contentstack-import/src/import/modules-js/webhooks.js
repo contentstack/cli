@@ -102,7 +102,7 @@ module.exports = class ImportWebhooks {
           if (error.request !== undefined && JSON.parse(error.request.data).webhook !== undefined) {
             if (JSON.parse(error.request.data).webhook.name) {
               message_content_type =
-                ' Due to Webhook name - ' + JSON.parse(error.request.data).webhook.name;
+                ' Failed webhook: ' + JSON.parse(error.request.data).webhook.name;
             }
             error.errorMessage = error.errorMessage + message_content_type;
           }

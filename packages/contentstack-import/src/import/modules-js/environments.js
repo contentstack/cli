@@ -98,7 +98,7 @@ module.exports = class ImportEnvironments {
           if (error.request !== undefined && JSON.parse(error.request.data).environment !== undefined) {
             if (JSON.parse(error.request.data).environment.name) {
               message_content_type =
-                ' In Environment name - ' + JSON.parse(error.request.data).environment.name;
+                ' Failed environment: ' + JSON.parse(error.request.data).environment.name;
             }
             error.errorMessage = error.errorMessage + message_content_type;
           }

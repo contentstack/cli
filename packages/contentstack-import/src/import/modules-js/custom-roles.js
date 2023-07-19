@@ -114,7 +114,7 @@ module.exports = class ImportCustomRoles {
         if (error.request !== undefined && JSON.parse(error.request.data).role !== undefined) {
           if (JSON.parse(error.request.data).role.name) {
             message_content_type =
-              ' Due to custom-role named  - ' + JSON.parse(error.request.data).role.name;
+              ' Failed custom-role: ' + JSON.parse(error.request.data).role.name;
           }
           error.errorMessage = error.errorMessage + message_content_type;
         }
