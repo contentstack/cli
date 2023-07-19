@@ -14,13 +14,14 @@ export default class ExportWebhooks extends BaseClass {
   private qs: {
     include_count: boolean;
     skip?: number;
+    asc: string;
   };
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
     this.webhooks = {};
     this.webhookConfig = config.modules.webhooks;
-    this.qs = { include_count: true };
+    this.qs = { include_count: true, asc: 'updated_at' };
   }
 
   async start(): Promise<void> {

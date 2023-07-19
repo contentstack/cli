@@ -1,6 +1,6 @@
+import { resolve as pResolve } from 'node:path';
 import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
-import { resolve as pResolve } from 'node:path';
 
 import config from '../../config';
 import BaseClass from './base-class';
