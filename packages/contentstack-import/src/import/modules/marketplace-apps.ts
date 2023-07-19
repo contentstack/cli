@@ -34,9 +34,8 @@ import {
   ifAppAlreadyExist,
   updateAppConfig,
   getConfirmationToCreateApps,
-  generateUidMapper,
   fsUtil,
-  fileHelper
+  fileHelper,
 } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, MarketplaceAppsConfig } from '../../types';
@@ -81,7 +80,10 @@ export default class ImportMarketplaceApps extends BaseClass {
     log(this.importConfig, 'Migrating marketplace apps', 'info');
 
     if (fileHelper.fileExistsSync(this.marketPlaceFolderPath)) {
-      this.marketplaceApps = fsUtil.readFile(join(this.marketPlaceFolderPath, this.marketPlaceAppConfig.fileName), true) as Record<string,unknown>[];
+      this.marketplaceApps = fsUtil.readFile(
+        join(this.marketPlaceFolderPath, this.marketPlaceAppConfig.fileName),
+        true,
+      ) as Record<string, unknown>[];
     } else {
       log(this.importConfig, `No such file or directory - '${this.marketPlaceFolderPath}'`, 'error');
       return;
@@ -148,12 +150,42 @@ export default class ImportMarketplaceApps extends BaseClass {
       await this.installApps(app);
     }
 
-    const uidMapper = await generateUidMapper(this.installedApps, this.marketplaceApps, this.appNameMapping);
+    const uidMapper = await this.generateUidMapper();
     fsUtil.writeFile(this.marketPlaceUidMapperPath, {
       app_uid: this.appUidMapping,
       extension_uid: uidMapper || {},
       installation_uid: this.installationUidMapping,
     });
+  }
+
+  async generateUidMapper(): Promise<Record<string, unknown>> {
+    const listOfNewMeta = [];
+    const listOfOldMeta = [];
+    const extensionUidMap: Record<string, unknown> = {};
+    this.installedApps = await getAllStackSpecificApps(
+      this.developerHubBaseUrl,
+      this.httpClient as HttpClient,
+      this.importConfig,
+    );
+
+    for (const app of this.marketplaceApps) {
+      listOfOldMeta.push(...map(app?.ui_location?.locations, 'meta').flat());
+    }
+    for (const app of this.installedApps) {
+      listOfNewMeta.push(...map(app?.ui_location?.locations, 'meta').flat());
+    }
+    for (const { extension_uid, name, path, uid, data_type } of filter(listOfOldMeta, 'name')) {
+      const meta =
+        find(listOfNewMeta, { name, path }) ||
+        find(listOfNewMeta, { name: this.appNameMapping[name], path }) ||
+        find(listOfNewMeta, { name, uid, data_type });
+
+      if (meta) {
+        extensionUidMap[extension_uid] = meta.extension_uid;
+      }
+    }
+
+    return extensionUidMap;
   }
 
   async getAndValidateEncryptionKey(defaultValue: string, retry = 1): Promise<any> {

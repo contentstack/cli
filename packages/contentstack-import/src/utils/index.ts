@@ -16,8 +16,7 @@ export {
   confirmToCloseProcess,
   getAllStackSpecificApps,
   ifAppAlreadyExist,
-  updateAppConfig,
-  generateUidMapper
+  updateAppConfig
 } from './marketplace-app-helper';
 export { schemaTemplate, suppressSchemaReference, removeReferenceFields } from './content-type-helper';
 export { lookupExtension } from './extension-helper';
