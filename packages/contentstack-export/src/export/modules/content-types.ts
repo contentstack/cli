@@ -65,8 +65,8 @@ export default class ContentTypesExport extends BaseClass {
       let updatedContentTypes = this.sanitizeAttribs(contentTypeSearchResponse.items);
       this.contentTypes.push(...updatedContentTypes);
 
-      skip += this.contentTypesConfig.limit;
-      if (skip > contentTypeSearchResponse.count) {
+      skip += this.contentTypesConfig.limit || 100;
+      if (skip >= contentTypeSearchResponse.count) {
         return;
       }
       return await this.getContentTypes(skip);
