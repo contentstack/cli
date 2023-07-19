@@ -28,7 +28,11 @@ export const setupEnvironments = async (
   livePreviewEnabled: boolean,
   managementToken?: string,
 ) => {
-  const environmentResult = await managementAPIClient.stack({ api_key }).environment().query().find();
+  const environmentResult = await managementAPIClient
+    .stack({ api_key, management_token: managementToken })
+    .environment()
+    .query()
+    .find();
   if (Array.isArray(environmentResult.items) && environmentResult.items.length > 0) {
     for (const environment of environmentResult.items) {
       if (environment.name) {
