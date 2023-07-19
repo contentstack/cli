@@ -355,7 +355,7 @@ const config: DefaultConfig = {
     stacks: '/stacks/',
     labels: '/labels/',
   },
-  updatedModules: ['assets', 'extensions', 'locales','marketplace-apps', 'environments', 'labels', 'webhooks'],
+  updatedModules: ['assets', 'extensions', 'locales','marketplace-apps', 'environments', 'labels', 'webhooks', 'custom-roles'],
   rateLimit: 5,
   preserveStackVersion: false,
   entriesPublish: true,
