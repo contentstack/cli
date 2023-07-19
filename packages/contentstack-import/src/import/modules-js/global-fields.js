@@ -122,7 +122,7 @@ module.exports = class ImportGlobalFields {
           if (error.request !== undefined && JSON.parse(error.request.data).global_field !== undefined) {
             if (JSON.parse(error.request.data).global_field.title) {
               message_content_type =
-                ' Due to Global Field Title - ' + JSON.parse(error.request.data).global_field.title;
+                ' Failed global field: ' + JSON.parse(error.request.data).global_field.title;
             }
             error.errorMessage = error.errorMessage + message_content_type;
           }
