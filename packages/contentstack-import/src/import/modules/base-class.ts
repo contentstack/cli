@@ -11,6 +11,8 @@ import { LocaleData } from '@contentstack/management/types/stack/locale';
 import { PublishConfig } from '@contentstack/management/types/utility/publish';
 import { FolderData } from '@contentstack/management/types/stack/asset/folder';
 import { ExtensionData } from '@contentstack/management/types/stack/extension';
+import { GlobalFieldData } from '@contentstack/management/types/stack/globalField';
+import { ContentTypeData } from '@contentstack/management/types/stack/contentType';
 import { EnvironmentData } from '@contentstack/management/types/stack/environment';
 import { LabelData } from '@contentstack/management/types/stack/label';
 import { WebhookData } from '@contentstack/management/types/stack/webhook';
@@ -32,6 +34,10 @@ export type ApiModuleType =
   | 'create-extensions'
   | 'create-locale'
   | 'update-locale'
+  | 'create-gfs'
+  | 'create-cts'
+  | 'update-cts'
+  | 'update-gfs'
   | 'create-environments'
   | 'create-labels'
   | 'update-labels'
@@ -43,7 +49,7 @@ export type ApiOptions = {
   uid?: string;
   url?: string;
   entity: ApiModuleType;
-  apiData?: Record<any, any>;
+  apiData?: Record<any, any> | any;
   resolve: (value: any) => void;
   reject: (error: any) => void;
   additionalInfo?: Record<any, any>;
@@ -64,6 +70,7 @@ export type EnvType = {
 export type CustomPromiseHandlerInput = {
   index: number;
   batchIndex: number;
+  element?: Record<string, unknown>;
   apiParams?: ApiOptions;
   isLastRequest: boolean;
 };
@@ -140,6 +147,7 @@ export default abstract class BaseClass {
             promise = promisifyHandler({
               apiParams,
               isLastRequest,
+              element,
               index: Number(index),
               batchIndex: Number(batchIndex),
             });
@@ -284,6 +292,12 @@ export default abstract class BaseClass {
           .update({ locale: pick(apiData, [...this.modulesConfig.locales.requiredKeys]) as LocaleData })
           .then(onSuccess)
           .catch(onReject);
+      case 'create-cts':
+        return this.stack.contentType().create(apiData).then(onSuccess).catch(onReject);
+      case 'update-cts':
+        return apiData.update().then(onSuccess).catch(onReject);
+      case 'update-gfs':
+        return apiData.update().then(onSuccess).catch(onReject);
       case 'create-environments':
         return this.stack
           .environment()
