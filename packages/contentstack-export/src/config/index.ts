@@ -376,6 +376,7 @@ const config: DefaultConfig = {
     'environments',
     'labels',
     'webhooks',
+    'custom-roles',
     'global-fields',
     'content-types',
   ],
