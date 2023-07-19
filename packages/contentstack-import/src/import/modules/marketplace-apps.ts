@@ -16,6 +16,7 @@ import {
   HttpClientDecorator,
   managementSDKClient,
   NodeCrypto,
+  ContentstackClient
 } from '@contentstack/cli-utilities';
 import chalk from 'chalk';
 
@@ -54,7 +55,7 @@ export default class ImportMarketplaceApps extends BaseClass {
   private installedApps: Record<string, any>[];
   private appOrginalName: string;
   public developerHubBaseUrl: string;
-  public sdkClient: string;
+  public sdkClient: ContentstackClient;
   public nodeCrypto: NodeCrypto;
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
@@ -349,7 +350,7 @@ export default class ImportMarketplaceApps extends BaseClass {
 
     if (!currentStackApp) {
       // NOTE install new app
-      const mappedUid = this.appUidMapping[app?.manifest?.uid];
+      const mappedUid = this.appUidMapping[app?.manifest?.uid] as string;
       const installation = await installApp(this.sdkClient, this.importConfig, app?.manifest?.uid, mappedUid);
 
       if (installation.installation_uid) {
