@@ -11,7 +11,7 @@ importers:
   packages/contentstack:
     specifiers:
       '@contentstack/cli-auth': ^1.3.11
-      '@contentstack/cli-cm-bootstrap': ^1.4.12
+      '@contentstack/cli-cm-bootstrap': ^1.4.13
       '@contentstack/cli-cm-branches': ^1.0.9
       '@contentstack/cli-cm-bulk-publish': ^1.3.9
       '@contentstack/cli-cm-clone': ^1.4.12
