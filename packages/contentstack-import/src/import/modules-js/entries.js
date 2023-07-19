@@ -406,7 +406,7 @@ module.exports = class ImportEntries {
                             } else {
                               log(
                                 this.config,
-                                `Failed to create an entry ${eUid} ${formatError(error)}. Title of the failed entry: ${
+                                `Failed to create an entry ${eUid} ${formatError(error)} Title of the failed entry: ${
                                   JSON.parse(error.request.data).entry.title
                                 }`,
                                 'error',
