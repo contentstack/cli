@@ -184,29 +184,3 @@ export const updateAppConfig = async (
     })
     .catch((error: any) => log(config, `Failed to update app config - ${formatError(error)}`, 'error'));
 };
-
-export const generateUidMapper = async (
-  installedApps: Record<string, any>[],
-  marketplaceApps: Record<string, any>[],
-  appNameMapping: Record<string, unknown>,
-):Promise<Record<string, unknown>> => {
-  const listOfNewMeta = [];
-  const listOfOldMeta = [];
-  const extensionUidMap: Record<string, unknown>={};
-
-  for (const app of marketplaceApps) {
-    listOfOldMeta.push(...map(app?.ui_location?.locations, 'meta').flat());
-  }
-  for (const app of installedApps) {
-    listOfNewMeta.push(...map(app?.ui_location?.locations, 'meta').flat());
-  }
-  for (const { extension_uid, name, path, uid, data_type } of filter(listOfOldMeta, 'name')) {
-    const meta = find(listOfNewMeta, { name, path }) || find(listOfNewMeta, { name: appNameMapping[name], path }) || find(listOfNewMeta, {name, uid, data_type});
-
-    if (meta) {
-      extensionUidMap[extension_uid] = meta.extension_uid;
-    }
-  }
-
-  return extensionUidMap;
-};

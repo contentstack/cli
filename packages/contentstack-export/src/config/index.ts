@@ -368,7 +368,7 @@ const config: DefaultConfig = {
     'xh',
     'zu',
   ],
-  updatedModules: ['assets', 'locales', 'extensions', 'marketplace-apps', 'environments', 'labels', 'webhooks'],
+  updatedModules: ['assets', 'locales', 'extensions', 'marketplace-apps', 'environments', 'labels', 'webhooks','custom-roles'],
   apis: {
     userSession: '/user-session/',
     globalfields: '/global_fields/',
