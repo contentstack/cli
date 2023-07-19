@@ -63,7 +63,7 @@ export default class GlobalFieldsExport extends BaseClass {
     if (Array.isArray(globalFieldsFetchResponse.items) && globalFieldsFetchResponse.items.length > 0) {
       this.sanitizeAttribs(globalFieldsFetchResponse.items);
       skip += this.globalFieldsConfig.limit || 100;
-      if (skip > globalFieldsFetchResponse.count) {
+      if (skip >= globalFieldsFetchResponse.count) {
         return;
       }
       return await this.getGlobalFields(skip);
