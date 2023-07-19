@@ -16,6 +16,8 @@ import { ContentTypeData } from '@contentstack/management/types/stack/contentTyp
 import { EnvironmentData } from '@contentstack/management/types/stack/environment';
 import { LabelData } from '@contentstack/management/types/stack/label';
 import { WebhookData } from '@contentstack/management/types/stack/webhook';
+import { WorkflowData } from '@contentstack/management/types/stack/workflow';
+import { RoleData } from '@contentstack/management/types/stack/role';
 
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
@@ -39,7 +41,9 @@ export type ApiModuleType =
   | 'create-environments'
   | 'create-labels'
   | 'update-labels'
-  | 'create-webhooks';
+  | 'create-webhooks'
+  | 'create-workflows'
+  | 'create-custom-role';
 
 export type ApiOptions = {
   uid?: string;
@@ -321,6 +325,19 @@ export default abstract class BaseClass {
           .create({ webhook: omit(apiData, ['uid']) as WebhookData })
           .then(onSuccess)
           .catch(onReject);
+      case 'create-workflows':
+        return this.stack
+          .workflow()
+          .create({ workflow: apiData as WorkflowData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'create-custom-role':
+        return this.stack
+          .role()
+          .create({ role: apiData as RoleData })
+          .then(onSuccess)
+          .catch(onReject);
+
       default:
         return Promise.resolve();
     }
