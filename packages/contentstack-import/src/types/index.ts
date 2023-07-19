@@ -76,5 +76,17 @@ export interface WebhookConfig{
   fileName: string;
 }
 
+export interface WorkflowConfig{
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
+}
+
+export interface CustomRoleConfig{
+  dirName: string;
+  fileName: string;
+  customRolesLocalesFileName: string;
+}
+
 export { default as DefaultConfig } from './default-config';
 export { default as ImportConfig } from './import-config';
