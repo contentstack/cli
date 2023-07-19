@@ -189,9 +189,9 @@ module.exports = class ImportMarketplaceApps {
     for (const app of allInstalledApps) {
       listOfNewMeta.push(..._.map(app.ui_location && app.ui_location.locations, 'meta').flat());
     }
-    for (const { extension_uid, name, path } of _.filter(listOfOldMeta, 'name')) {
+    for (const { extension_uid, name, path, uid, data_type } of _.filter(listOfOldMeta, 'name')) {
       const meta =
-        _.find(listOfNewMeta, { name, path }) || _.find(listOfNewMeta, { name: this.appNameMapping[name], path });
+        _.find(listOfNewMeta, { name, path }) || _.find(listOfNewMeta, { name: this.appNameMapping[name], path }) || _.find(listOfNewMeta, { name, uid, data_type });
 
       if (meta) {
         extensionUidMapp[extension_uid] = meta.extension_uid;
