@@ -22,6 +22,7 @@ USAGE
   $ csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]
 
 FLAGS
+  -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  Provide stack api key to seed content to
   -n, --stack-name=<value>     Name of a new stack that needs to be created.
   -o, --org=<value>            Provide Organization UID to create a new stack
@@ -56,6 +57,7 @@ USAGE
   $ csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]
 
 FLAGS
+  -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  Provide stack api key to seed content to
   -n, --stack-name=<value>     Name of a new stack that needs to be created.
   -o, --org=<value>            Provide Organization UID to create a new stack
