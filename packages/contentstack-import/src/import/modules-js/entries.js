@@ -104,11 +104,7 @@ module.exports = class ImportEntries {
             }
           }
         } catch (error) {
-          addlogs(
-            this.config,
-            `Failed to read the content types to import entries ${formatError(error)}`,
-            'error',
-          );
+          addlogs(this.config, `Failed to read the content types to import entries ${formatError(error)}`, 'error');
           process.exit(0);
         }
       }
@@ -400,7 +396,7 @@ module.exports = class ImportEntries {
                           }
                         })
                         .catch((error) => {
-                          if (error.hasOwnProperty('error_code') && error.error_code === 119) {
+                          if (error.hasOwnProperty('errorCode') && error.errorCode === 119) {
                             if (error.errors.title) {
                               log(
                                 this.config,
@@ -408,7 +404,13 @@ module.exports = class ImportEntries {
                                 'error',
                               );
                             } else {
-                              log(this.config, `Failed to create an entry ${eUid} ${formatError(error)}`, 'error');
+                              log(
+                                this.config,
+                                `Failed to create an entry ${eUid} ${formatError(error)}. Title of the failed entry: ${
+                                  JSON.parse(error.request.data).entry.title
+                                }`,
+                                'error',
+                              );
                             }
                             self.createdEntriesWOUid.push({
                               content_type: ctUid,
@@ -421,7 +423,13 @@ module.exports = class ImportEntries {
                           }
                           // TODO: if status code: 422, check the reason
                           // 429 for rate limit
-                          log(this.config, `Failed to create an entry ${eUid} ${formatError(error)}`, 'error');
+                          log(
+                            this.config,
+                            `Failed to create an entry ${eUid} ${formatError(error)}. Title of the failed entry: ${
+                              JSON.parse(error.request.data).entry.title
+                            }`,
+                            'error',
+                          );
                           self.fails.push({
                             content_type: ctUid,
                             locale: lang,
@@ -490,7 +498,17 @@ module.exports = class ImportEntries {
           return resolve();
         })
         .catch((error) => {
-          addlogs(this.config, chalk.red("Failed to create entries in '" + lang + "' language"), 'error');
+          addlogs(
+            this.config,
+            chalk.red(
+              "Failed to create entries in '" +
+                lang +
+                "' language. " +
+                'Title of the failed entry: ' +
+                JSON.parse(error.request.data).entry.title,
+            ),
+            'error',
+          );
           return reject(error);
         });
     });
@@ -1096,9 +1114,7 @@ module.exports = class ImportEntries {
                                 .catch((err) => {
                                   addlogs(
                                     this.config,
-                                    `failed to publish entry '${eUid}' content type '${ctUid}' ${formatError(
-                                      err,
-                                    )}`,
+                                    `failed to publish entry '${eUid}' content type '${ctUid}' ${formatError(err)}`,
                                     'error',
                                   );
                                   return resolveEntryPublished('');
