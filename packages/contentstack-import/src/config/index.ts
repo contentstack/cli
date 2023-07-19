@@ -372,7 +372,6 @@ const config: DefaultConfig = {
     'extensions',
     'locales',
     'marketplace-apps',
-    'environments',
     'labels',
     'global-fields',
     'content-types',

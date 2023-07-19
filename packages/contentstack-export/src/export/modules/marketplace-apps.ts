@@ -12,6 +12,7 @@ import {
   HttpClientDecorator,
   OauthDecorator,
   HttpClient,
+  ContentstackClient,
 } from '@contentstack/cli-utilities';
 
 import config from '../../config';
@@ -123,9 +124,10 @@ export default class ExportMarketplaceApps extends BaseClass {
     }
   }
 
-  //TODO: need to replace any with Record<string, unknown>
   async getAppConfigurations(index: number, appInstallation: any) {
-    const sdkClient = await managementSDKClient({ host: this.developerHubBaseUrl.split('://').pop() });
+    const sdkClient: ContentstackClient = await managementSDKClient({
+      host: this.developerHubBaseUrl.split('://').pop(),
+    });
     const appName = appInstallation?.manifest?.name;
     log(this.exportConfig, `Exporting ${appName} app and it's config.`, 'info');
 
