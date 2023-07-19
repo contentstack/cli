@@ -52,10 +52,7 @@ export const setupEnvironments = async (
         };
         if (!managementToken) {
           try {
-            const tokenResult = await managementAPIClient
-              .stack({ api_key, management_token: managementToken })
-              .deliveryToken()
-              .create(body);
+            const tokenResult = await managementAPIClient.stack({ api_key }).deliveryToken().create(body);
             if (tokenResult.token) {
               const environmentVariables: EnviornmentVariables = {
                 api_key,
