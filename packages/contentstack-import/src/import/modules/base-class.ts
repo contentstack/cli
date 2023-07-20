@@ -13,7 +13,7 @@ import { FolderData } from '@contentstack/management/types/stack/asset/folder';
 import { ExtensionData } from '@contentstack/management/types/stack/extension';
 import { GlobalFieldData } from '@contentstack/management/types/stack/globalField';
 import { ContentTypeData } from '@contentstack/management/types/stack/contentType';
-import { EnvironmentData } from '@contentstack/management/types/stack/environment';
+// import { EnvironmentData } from '@contentstack/management/types/stack/environment';
 import { LabelData } from '@contentstack/management/types/stack/label';
 import { WebhookData } from '@contentstack/management/types/stack/webhook';
 import { WorkflowData } from '@contentstack/management/types/stack/workflow';
@@ -299,11 +299,11 @@ export default abstract class BaseClass {
       case 'update-gfs':
         return apiData.update().then(onSuccess).catch(onReject);
       case 'create-environments':
-        return this.stack
-          .environment()
-          .create({ environment: omit(apiData, ['uid']) as EnvironmentData })
-          .then(onSuccess)
-          .catch(onReject);
+        // return this.stack
+        //   .environment()
+        //   .create({ environment: omit(apiData, ['uid']) as EnvironmentData })
+        //   .then(onSuccess)
+        //   .catch(onReject);
       case 'create-labels':
         return this.stack
           .label()
