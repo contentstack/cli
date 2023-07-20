@@ -1,5 +1,12 @@
 import { Command } from '@contentstack/cli-command';
-import { printFlagDeprecation, flags, isAuthenticated, FlagInput, cliux } from '@contentstack/cli-utilities';
+import {
+  printFlagDeprecation,
+  flags,
+  isAuthenticated,
+  FlagInput,
+  cliux,
+  configHandler,
+} from '@contentstack/cli-utilities';
 import ContentModelSeeder, { ContentModelSeederOptions } from '../../../seed';
 
 export default class SeedCommand extends Command {
@@ -67,6 +74,10 @@ export default class SeedCommand extends Command {
       exclusive: ['org', 'name'],
       parse: printFlagDeprecation(['s', 'stack'], ['-k', 'stack-api-key']),
     }),
+    alias: flags.string({
+      char: 'a',
+      description: 'Alias of the management token',
+    }),
   };
 
   static aliases = ['cm:seed'];
@@ -74,14 +85,14 @@ export default class SeedCommand extends Command {
   async run() {
     try {
       const { flags: seedFlags } = await this.parse(SeedCommand);
+      const managementTokenAlias = seedFlags.alias;
 
-      if (!isAuthenticated()) {
-        this.error('You need to login, first. See: auth:login --help', {
+      if (!isAuthenticated() && !managementTokenAlias) {
+        this.error('You need to login or provide an alias for the management token. See: auth:login --help', {
           exit: 2,
           suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
         });
       }
-
       const options: ContentModelSeederOptions = {
         parent: this,
         cdaHost: this.cdaHost,
@@ -93,16 +104,24 @@ export default class SeedCommand extends Command {
         fetchLimit: seedFlags['fetch-limit'],
         skipStackConfirmation: seedFlags['yes'],
         isAuthenticated: isAuthenticated(),
+        alias: managementTokenAlias,
       };
+
+      const listOfTokens = configHandler.get('tokens');
+
+      if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
+        options.managementToken = listOfTokens[managementTokenAlias].token;
+        options.stackUid = listOfTokens[managementTokenAlias].apiKey;
+      }
 
       const seeder = new ContentModelSeeder(options);
       const result = await seeder.run();
       return result;
     } catch (error) {
       let errorObj: any = error;
-      if(errorObj.message!==undefined) {
+      if (errorObj.message !== undefined) {
         cliux.loader();
-        cliux.print(`Error: ${errorObj.message}`,{color:'red'})
+        cliux.print(`Error: ${errorObj.message}`, { color: 'red' });
         this.exit(1);
       }
       this.error(errorObj, { exit: 1, suggestions: errorObj.suggestions });
