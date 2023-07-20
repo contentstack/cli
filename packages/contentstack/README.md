@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.7.10 darwin-x64 node-v18.12.1
+@contentstack/cli/1.7.11 darwin-arm64 node-v18.15.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -440,9 +440,10 @@ Bootstrap contentstack apps
 ```
 USAGE
   $ csdx cm:bootstrap [--app-name <value>] [--project-dir <value>] [-k <value> | --org <value> | -n <value>] [-y
-    <value>]
+    <value>] [-a <value>]
 
 FLAGS
+  -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  Provide stack API key to seed content
   -n, --stack-name=<value>     Name of a new stack that will be created.
   -y, --yes=<value>            [Optional] Skip stack confirmation
@@ -2030,7 +2031,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -2044,6 +2045,7 @@ USAGE
   $ csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]
 
 FLAGS
+  -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  Provide stack api key to seed content to
   -n, --stack-name=<value>     Name of a new stack that needs to be created.
   -o, --org=<value>            Provide Organization UID to create a new stack
@@ -2294,7 +2296,7 @@ EXAMPLES
 
   $ csdx cm:migration --config-file <path/to/json/config/file> --file-path <migration/script/file/path>
 
-  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path> 
+  $ csdx cm:migration --multiple --file-path <migration/scripts/dir/path>
 
   $ csdx cm:migration --alias --file-path <migration/script/file/path> -k <api-key>
 ```
@@ -2454,6 +2456,7 @@ USAGE
   $ csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]
 
 FLAGS
+  -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  Provide stack api key to seed content to
   -n, --stack-name=<value>     Name of a new stack that needs to be created.
   -o, --org=<value>            Provide Organization UID to create a new stack
@@ -3037,7 +3040,7 @@ ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:install myplugin 
+  $ csdx plugins:install myplugin
 
   $ csdx plugins:install https://github.com/someuser/someplugin
 
@@ -3102,7 +3105,7 @@ ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:install myplugin 
+  $ csdx plugins:install myplugin
 
   $ csdx plugins:install https://github.com/someuser/someplugin
 
