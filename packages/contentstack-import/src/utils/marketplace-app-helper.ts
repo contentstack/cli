@@ -3,7 +3,7 @@ import map from 'lodash/map';
 import omit from 'lodash/omit';
 import includes from 'lodash/includes';
 import chalk from 'chalk';
-import { cliux, configHandler, HttpClient, ContentstackClient } from '@contentstack/cli-utilities';
+import { cliux, configHandler, HttpClient, ContentstackClient, managementSDKClient } from '@contentstack/cli-utilities';
 
 import { ImportConfig } from '../types';
 import { log } from './logger';
@@ -33,10 +33,14 @@ export const getDeveloperHubUrl = async (config: ImportConfig): Promise<string> 
   return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
 };
 
-export const getOrgUid = async (stackAPIClient: any, config: ImportConfig): Promise<string> => {
-  const tempStackData = await stackAPIClient.fetch().catch((error: any) => {
-    log(config, formatError(error), 'error');
-  });
+export const getOrgUid = async (config: ImportConfig): Promise<string> => {
+  const tempAPIClient = await managementSDKClient({ host: config.host });
+  const tempStackData = await tempAPIClient
+    .stack({ api_key: config.target_stack })
+    .fetch()
+    .catch((error: any) => {
+      log(config, formatError(error), 'error');
+    });
 
   return tempStackData?.org_uid || '';
 };
@@ -177,7 +181,7 @@ export const updateAppConfig = async (
   app: any,
   payload: { configuration: Record<string, unknown>; server_configuration: Record<string, unknown> },
 ): Promise<any> => {
-  let installation =  client.organization(config.org_uid).app(app?.manifest?.uid).installation(app?.uid);
+  let installation = client.organization(config.org_uid).app(app?.manifest?.uid).installation(app?.uid);
 
   installation = Object.assign(installation, payload);
   return await installation
