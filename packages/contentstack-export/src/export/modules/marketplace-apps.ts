@@ -63,7 +63,7 @@ export default class ExportMarketplaceApps extends BaseClass {
     );
     await fsUtil.makeDirectory(this.marketplaceAppPath);
     this.developerHubBaseUrl = this.exportConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.exportConfig));
-    this.exportConfig.org_uid = await getOrgUid(this.stack, this.exportConfig);
+    this.exportConfig.org_uid = await getOrgUid(this.exportConfig);
 
     await this.setHttpClient();
     await this.getAllStackSpecificApps();
