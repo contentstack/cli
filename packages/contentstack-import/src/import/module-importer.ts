@@ -23,7 +23,7 @@ class ModuleImporter {
       await validateBranch(this.stackAPIClient, this.importConfig, this.importConfig.branchName);
     }
 
-    // Temporarily adding this api key to verify management token has read and write permissions
+    // Temporarily adding this api call to verify management token has read and write permissions
     const httpClient = new HttpClient({
       headers: { api_key: this.importConfig.apiKey, authorization: this.importConfig.management_token },
     });
