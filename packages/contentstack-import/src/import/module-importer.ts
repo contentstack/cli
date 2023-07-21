@@ -1,4 +1,4 @@
-import { ContentstackClient } from '@contentstack/cli-utilities';
+import { ContentstackClient, HttpClient } from '@contentstack/cli-utilities';
 import { ImportConfig, Modules } from '../types';
 import { backupHandler, log, validateBranch, masterLocalDetails, sanitizeStack } from '../utils';
 import startModuleImport from './modules';
@@ -22,6 +22,22 @@ class ModuleImporter {
     if (this.importConfig.branchName) {
       await validateBranch(this.stackAPIClient, this.importConfig, this.importConfig.branchName);
     }
+
+    const httpClient = new HttpClient({
+      headers: { api_key: this.importConfig.apiKey, authorization: this.importConfig.management_token },
+    });
+
+    const { data } = await httpClient.post('https://api.contentstack.io/v3/locales', {
+      locale: {
+        name: 'English',
+        code: 'en-us',
+      },
+    });
+
+    if (data.error_code === 161) {
+      throw new Error(data.error_message);
+    }
+
     if (!this.importConfig.master_locale) {
       let masterLocalResponse = await masterLocalDetails(this.stackAPIClient);
       this.importConfig['master_locale'] = { code: masterLocalResponse.code };
