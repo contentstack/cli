@@ -24,6 +24,8 @@ class ModuleImporter {
     }
 
     // Temporarily adding this api call to verify management token has read and write permissions
+    // TODO: CS-40354 - CLI | import rewrite | Migrate HTTP call to SDK call once fix is ready from SDK side
+
     const httpClient = new HttpClient({
       headers: { api_key: this.importConfig.apiKey, authorization: this.importConfig.management_token },
     });
