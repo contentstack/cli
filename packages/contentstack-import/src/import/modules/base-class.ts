@@ -4,11 +4,20 @@ import chunk from 'lodash/chunk';
 import isEmpty from 'lodash/isEmpty';
 import entries from 'lodash/entries';
 import isEqual from 'lodash/isEqual';
+import omit from 'lodash/omit';
 import { Stack } from '@contentstack/management/types/stack';
 import { AssetData } from '@contentstack/management/types/stack/asset';
 import { LocaleData } from '@contentstack/management/types/stack/locale';
 import { PublishConfig } from '@contentstack/management/types/utility/publish';
 import { FolderData } from '@contentstack/management/types/stack/asset/folder';
+import { ExtensionData } from '@contentstack/management/types/stack/extension';
+import { GlobalFieldData } from '@contentstack/management/types/stack/globalField';
+import { ContentTypeData } from '@contentstack/management/types/stack/contentType';
+// import { EnvironmentData } from '@contentstack/management/types/stack/environment';
+import { LabelData } from '@contentstack/management/types/stack/label';
+import { WebhookData } from '@contentstack/management/types/stack/webhook';
+import { WorkflowData } from '@contentstack/management/types/stack/workflow';
+import { RoleData } from '@contentstack/management/types/stack/role';
 
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
@@ -22,14 +31,25 @@ export type ApiModuleType =
   | 'replace-assets'
   | 'publish-assets'
   | 'create-assets-folder'
+  | 'create-extensions'
   | 'create-locale'
-  | 'update-locale';
+  | 'update-locale'
+  | 'create-gfs'
+  | 'create-cts'
+  | 'update-cts'
+  | 'update-gfs'
+  | 'create-environments'
+  | 'create-labels'
+  | 'update-labels'
+  | 'create-webhooks'
+  | 'create-workflows'
+  | 'create-custom-role';
 
 export type ApiOptions = {
   uid?: string;
   url?: string;
   entity: ApiModuleType;
-  apiData?: Record<any, any>;
+  apiData?: Record<any, any> | any;
   resolve: (value: any) => void;
   reject: (error: any) => void;
   additionalInfo?: Record<any, any>;
@@ -50,6 +70,7 @@ export type EnvType = {
 export type CustomPromiseHandlerInput = {
   index: number;
   batchIndex: number;
+  element?: Record<string, unknown>;
   apiParams?: ApiOptions;
   isLastRequest: boolean;
 };
@@ -126,6 +147,7 @@ export default abstract class BaseClass {
             promise = promisifyHandler({
               apiParams,
               isLastRequest,
+              element,
               index: Number(index),
               batchIndex: Number(batchIndex),
             });
@@ -252,6 +274,12 @@ export default abstract class BaseClass {
           .publish(pick(apiData, ['publishDetails']) as PublishConfig)
           .then(onSuccess)
           .catch(onReject);
+      case 'create-extensions':
+        return this.stack
+          .extension()
+          .create({ extension: omit(apiData, ['uid']) as ExtensionData })
+          .then(onSuccess)
+          .catch(onReject);
       case 'create-locale':
         return this.stack
           .locale()
@@ -264,6 +292,52 @@ export default abstract class BaseClass {
           .update({ locale: pick(apiData, [...this.modulesConfig.locales.requiredKeys]) as LocaleData })
           .then(onSuccess)
           .catch(onReject);
+      case 'create-cts':
+        return this.stack.contentType().create(apiData).then(onSuccess).catch(onReject);
+      case 'update-cts':
+        return apiData.update().then(onSuccess).catch(onReject);
+      case 'update-gfs':
+        return apiData.update().then(onSuccess).catch(onReject);
+      case 'create-environments':
+        // return this.stack
+        //   .environment()
+        //   .create({ environment: omit(apiData, ['uid']) as EnvironmentData })
+        //   .then(onSuccess)
+        //   .catch(onReject);
+      case 'create-labels':
+        return this.stack
+          .label()
+          .create({ label: omit(apiData, ['uid']) as LabelData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'update-labels':
+        return this.stack
+          .label(apiData.uid)
+          .fetch()
+          .then(async (response) => {
+            response.parent = apiData.parent;
+            await response.update().then(onSuccess).catch(onReject);
+          })
+          .catch(onReject);
+      case 'create-webhooks':
+        return this.stack
+          .webhook()
+          .create({ webhook: omit(apiData, ['uid']) as WebhookData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'create-workflows':
+        return this.stack
+          .workflow()
+          .create({ workflow: apiData as WorkflowData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'create-custom-role':
+        return this.stack
+          .role()
+          .create({ role: apiData as RoleData })
+          .then(onSuccess)
+          .catch(onReject);
+
       default:
         return Promise.resolve();
     }

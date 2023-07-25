@@ -7,13 +7,9 @@
  * Copyright (c) 2019 Contentstack LLC
  * MIT Licensed
  */
-
+import { join } from 'node:path';
+import { FsUtility } from '@contentstack/cli-utilities';
 import { ImportConfig } from '../types';
-
-// eslint-disable-next-line unicorn/filename-case
-let path = require('path');
-const _ = require('lodash');
-let helper = require('./file-helper');
 
 // eslint-disable-next-line camelcase
 export const lookupExtension = function (
@@ -22,9 +18,9 @@ export const lookupExtension = function (
   preserveStackVersion: any,
   installedExtensions: any,
 ) {
-  const extensionPath = path.resolve(config.data, 'mapper/extensions', 'uid-mapping.json');
-  const globalfieldsPath = path.resolve(config.data, 'mapper/globalfields', 'uid-mapping.json');
-  const marketplaceAppPath = path.resolve(config.data, 'marketplace_apps', 'marketplace_apps.json');
+  const fs = new FsUtility({ basePath: config.backupDir });
+  const extensionPath = join(config.backupDir, 'mapper/extensions', 'uid-mapping.json');
+  const globalfieldsPath = join(config.backupDir, 'mapper/globalfields', 'uid-mapping.json');
 
   for (let i in schema) {
     if (schema[i].data_type === 'group') {
@@ -47,27 +43,24 @@ export const lookupExtension = function (
         schema[i].reference_to = [schema[i].reference_to];
         schema[i].field_metadata.ref_multiple_content_types = true;
       }
-    } else if(
+    } else if (
       schema[i].data_type === 'reference' &&
       schema[i].field_metadata.hasOwnProperty('ref_multiple_content_types') &&
-      installedExtensions && installedExtensions[schema[i].extension_uid]
+      installedExtensions &&
+      installedExtensions[schema[i].extension_uid]
     ) {
       schema[i].extension_uid = installedExtensions[schema[i].extension_uid];
-    } else if(
-      schema[i].data_type === 'text' &&
-      installedExtensions && installedExtensions[schema[i].extension_uid]
-    ) {
+    } else if (schema[i].data_type === 'text' && installedExtensions && installedExtensions[schema[i].extension_uid]) {
       schema[i].extension_uid = installedExtensions[schema[i].extension_uid];
-    }
-    else if (schema[i].data_type === 'global_field') {
-      let global_fields_key_value = schema[i].reference_to;
-      let global_fields_data = helper.readFileSync(path.join(globalfieldsPath));
+    } else if (schema[i].data_type === 'global_field') {
+      const global_fields_key_value = schema[i].reference_to;
+      const global_fields_data = fs.readFile(globalfieldsPath) as Record<string, unknown>;
       if (global_fields_data && global_fields_data.hasOwnProperty(global_fields_key_value)) {
         schema[i].reference_to = global_fields_data[global_fields_key_value];
       }
     } else if (schema[i].hasOwnProperty('extension_uid')) {
       const extension_key_value = schema[i].extension_uid;
-      const data = helper.readFileSync(path.join(extensionPath));
+      const data = fs.readFile(extensionPath) as Record<string, unknown>;
       if (data && data.hasOwnProperty(extension_key_value)) {
         // eslint-disable-next-line camelcase
         schema[i].extension_uid = data[extension_key_value];
@@ -78,7 +71,7 @@ export const lookupExtension = function (
       }
     } else if (schema[i].data_type === 'json' && schema[i].hasOwnProperty('plugins') && schema[i].plugins.length > 0) {
       const newPluginUidsArray: any[] = [];
-      const data = helper.readFileSync(path.join(extensionPath));
+      const data = fs.readFile(extensionPath) as Record<string, unknown>;
       schema[i].plugins.forEach((extension_key_value: string) => {
         if (data && data.hasOwnProperty(extension_key_value)) {
           newPluginUidsArray.push(data[extension_key_value]);
