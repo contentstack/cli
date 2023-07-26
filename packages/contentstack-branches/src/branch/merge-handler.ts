@@ -162,7 +162,6 @@ export default class MergeHandler {
       compareData: this.mergeSettings.mergeContent,
       strategy: this.strategy,
       strategySubOption: this.strategySubOption,
-      itemMergeStrategies: this.mergeSettings.itemMergeStrategies,
     });
   }
 
