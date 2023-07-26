@@ -12,7 +12,7 @@ const locales = process.env.LOCALES.split(',');
 const contentTypes = process.env.CONTENT_TYPES.split(',');
 
 describe('EntriesPublish', () => {
-  it('Should run the command when all the flags are passed', async function () {
+  it('Should run the command when all the flags are passed', async () => {
     const args = ['--content-types', contentTypes[0], '--environments', environments[0], '--locales', locales[0], '--alias', process.env.MANAGEMENT_ALIAS, '--yes'];
     const entriesPublishSpy = sinon.spy(EntriesPublish.prototype, 'run');
     await EntriesPublish.run(args);
