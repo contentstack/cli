@@ -14,6 +14,7 @@ import {
   executeMerge,
   generateMergeScripts,
   selectCustomPreferences,
+  deleteModifiedFields,
 } from '../utils';
 
 const enableEntryExp = false;
@@ -56,7 +57,7 @@ export default class MergeHandler {
   async start() {
     if (this.mergeSummary) {
       this.loadMergeSettings();
-      await this.displayMergeSummary();
+      this.displayMergeSummary();
       return await this.executeMerge(this.mergeSummary.requestPayload);
     }
     await this.collectMergeSettings();
@@ -90,6 +91,10 @@ export default class MergeHandler {
       } else {
         this.strategySubOption = strategyResponse;
       }
+    }
+    // delete the entire array element if only delete array has length else delete the delete key only from the object
+    if (this.strategy !== 'overwrite_with_compare') {
+      deleteModifiedFields(this.branchCompareData.content_types.modified);
     }
     if (this.strategy === 'custom_preferences') {
       this.mergeSettings.itemMergeStrategies = [];
@@ -126,7 +131,7 @@ export default class MergeHandler {
       this.mergeSettings.strategy = 'overwrite_with_compare';
     }
 
-    await this.displayMergeSummary();
+    this.displayMergeSummary();
 
     if (!this.executeOption) {
       const executionResponse = await selectMergeExecution();
@@ -155,6 +160,9 @@ export default class MergeHandler {
     displayMergeSummary({
       format: this.displayFormat,
       compareData: this.mergeSettings.mergeContent,
+      strategy: this.strategy,
+      strategySubOption: this.strategySubOption,
+      itemMergeStrategies: this.mergeSettings.itemMergeStrategies,
     });
   }
 
@@ -175,9 +183,6 @@ export default class MergeHandler {
         mergeContent[module].added = moduleBranchCompareData.added;
         break;
       case 'merge_modified_only_prefer_base':
-        mergeContent[module].modified = moduleBranchCompareData.modified;
-        break;
-      case 'merge_modified_only_prefer_compare':
         mergeContent[module].modified = moduleBranchCompareData.modified;
         break;
       case 'merge_modified_only_prefer_compare':
