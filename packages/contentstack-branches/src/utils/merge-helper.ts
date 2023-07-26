@@ -122,7 +122,7 @@ export const displayBranchStatus = async (options) => {
   return parsedResponse;
 };
 
-export const displayMergeSummary = ({ format, compareData, strategy, strategySubOption, itemMergeStrategies }) => {
+export const displayMergeSummary = ({ format, compareData, strategy, strategySubOption }) => {
   cliux.print(' ');
   cliux.print(`Merge Summary:`, { color: 'yellow' });
 
