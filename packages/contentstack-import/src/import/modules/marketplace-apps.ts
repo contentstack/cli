@@ -102,7 +102,7 @@ export default class ImportMarketplaceApps extends BaseClass {
     await fsUtil.makeDirectory(this.mapperDirPath);
     this.developerHubBaseUrl = this.importConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.importConfig));
     this.sdkClient = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
-    this.importConfig.org_uid = await getOrgUid(this.stack, this.importConfig);
+    this.importConfig.org_uid = await getOrgUid(this.importConfig);
     await this.setHttpClient();
     await this.startInstallation();
 
