@@ -75,8 +75,9 @@ export default class BranchMergeCommand extends Command {
         baseBranch: branchMergeFlags['base-branch'],
         compareBranch: branchMergeFlags['compare-branch'],
         host: this.cmaHost,
-        format: 'compact-text',
+        format: 'detailed-text',
       });
+
       await new MergeHandler({
         stackAPIKey: branchMergeFlags['stack-api-key'],
         compareBranch: branchMergeFlags['compare-branch'],
@@ -87,7 +88,7 @@ export default class BranchMergeCommand extends Command {
         mergeComment: branchMergeFlags.comment,
         executeOption: branchMergeFlags['merge-action'],
         noRevert: branchMergeFlags['no-revert'],
-        format: 'compact-text',
+        format: 'detailed-text',
         exportSummaryPath: branchMergeFlags['export-summary-path'],
         mergeSummary: branchMergeFlags.mergeSummary,
         host: this.cmaHost,
