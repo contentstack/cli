@@ -23,12 +23,6 @@ export default class ExportEnvironments extends BaseClass {
     this.qs = { include_count: true };
   }
 
-  get queryParam(): Record<string, unknown> {
-    return {
-      asc: 'updated_at',
-      include_count: true,
-    };
-  }
 
   async start(): Promise<void> {
     log(this.exportConfig, 'Starting environment export', 'info');
@@ -56,7 +50,7 @@ export default class ExportEnvironments extends BaseClass {
     }
     await this.stack
       .environment()
-      .query(this.queryParam)
+      .query(this.qs)
       .find()
       .then(async (data: any) => {
         const { items, count } = data;
