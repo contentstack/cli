@@ -15,7 +15,7 @@ $ npm install -g @contentstack/cli-cm-bootstrap
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-bootstrap/1.4.12 darwin-arm64 node-v18.11.0
+@contentstack/cli-cm-bootstrap/1.4.13 darwin-arm64 node-v18.16.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -45,9 +45,10 @@ Bootstrap contentstack apps
 ```
 USAGE
   $ csdx cm:bootstrap [--app-name <value>] [--project-dir <value>] [-k <value> | --org <value> | -n <value>] [-y
-    <value>]
+    <value>] [-a <value>]
 
 FLAGS
+  -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  Provide stack API key to seed content
   -n, --stack-name=<value>     Name of a new stack that will be created.
   -y, --yes=<value>            [Optional] Skip stack confirmation
