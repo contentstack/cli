@@ -374,7 +374,6 @@ const config: DefaultConfig = {
     'locales',
     'extensions',
     'marketplace-apps',
-    'environments',
     'labels',
     'webhooks',
     'custom-roles',

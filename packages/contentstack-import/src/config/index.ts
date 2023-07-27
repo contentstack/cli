@@ -372,7 +372,6 @@ const config: DefaultConfig = {
     'extensions',
     'locales',
     'marketplace-apps',
-    'environments',
     'labels',
     'global-fields',
     'content-types',
@@ -389,7 +388,7 @@ const config: DefaultConfig = {
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
   getEncryptionKeyMaxRetry: 3,
-  useNewModuleStructure: true,
+  useNewModuleStructure: true
   // useBackedupDir: '',
   // backupConcurrency: 10,
 };
