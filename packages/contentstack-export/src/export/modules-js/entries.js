@@ -1,5 +1,6 @@
 const path = require('path');
 const chalk = require('chalk');
+const { values } = require('lodash');
 const { executeTask, formatError, fileHelper, log } = require('../../utils');
 
 class EntriesExport {
@@ -59,7 +60,7 @@ class EntriesExport {
             `Started export versioned entries of type '${requestOption.content_type}' locale '${requestOption.locale}'`,
             'info',
           );
-          for (let entry of entries) {
+          for (let entry of values(entries)) {
             const versionedEntries = await this.getEntryByVersion(
               {
                 ...requestOption,
@@ -192,6 +193,25 @@ class EntriesExport {
       entriesList[entry.uid] = entry;
     });
     return entriesList;
+  }
+
+  async getEntryByVersion(requestOptions, version, entries = []) {
+    const queryRequestObject = {
+      locale: requestOptions.locale,
+      except: {
+        BASE: this.entriesConfig.invalidKeys,
+      },
+      version,
+    };
+    const entryResponse = await this.stackAPIClient
+      .contentType(requestOptions.content_type)
+      .entry(requestOptions.uid)
+      .fetch(queryRequestObject);
+    entries.push(entryResponse);
+    if (--version > 0) {
+      return await this.getEntryByVersion(requestOptions, version, entries);
+    }
+    return entries;
   }
 }
 
