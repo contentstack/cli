@@ -137,6 +137,7 @@ const config: DefaultConfig = {
       // total no of entries fetched in each content type in a single call
       limit: 100,
       dependencies: ['locales', 'content-types'],
+      exportVersions: true,
     },
     extensions: {
       dirName: 'extensions',
@@ -379,6 +380,7 @@ const config: DefaultConfig = {
     'custom-roles',
     'global-fields',
     'content-types',
+    'entries',
   ],
   apis: {
     userSession: '/user-session/',
