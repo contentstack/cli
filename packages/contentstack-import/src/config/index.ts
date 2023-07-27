@@ -389,6 +389,7 @@ const config: DefaultConfig = {
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
   getEncryptionKeyMaxRetry: 3,
   useNewModuleStructure: true,
+  createBackupDir: './temp'
   // useBackedupDir: '',
   // backupConcurrency: 10,
 };
