@@ -6,12 +6,19 @@ import { fileHelper } from './index';
 
 export default function setupBackupDir(importConfig: ImportConfig): Promise<string> {
   return new Promise(async (resolve, reject) => {
-    if (fileHelper.fileExistsSync(importConfig.useBackedupDir)) {
+    if (importConfig.hasOwnProperty('useBackedupDir')) {
       return resolve(importConfig.useBackedupDir);
     }
 
-    const backupDirPath =
-      importConfig?.useBackedupDir || path.join(process.cwd(), '_backup_' + Math.floor(Math.random() * 1000));
+    //NOTE: If the backup folder's directory is provided, create it at that location; otherwise, the default path (working directory).
+    let backupDirPath = path.join(process.cwd(), '_backup_' + Math.floor(Math.random() * 1000));
+    if (importConfig.createBackupDir) {
+      if (!fileHelper.fileExistsSync(importConfig.createBackupDir)) {
+        fileHelper.makeDirectory(importConfig.createBackupDir);
+      }
+      backupDirPath = importConfig.createBackupDir;
+    }
+
     const limit = importConfig.backupConcurrency || 16;
     if (path.isAbsolute(importConfig.contentDir)) {
       return ncp(importConfig.contentDir, backupDirPath, { limit }, (error) => {
