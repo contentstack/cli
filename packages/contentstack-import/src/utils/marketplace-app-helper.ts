@@ -1,19 +1,21 @@
 import isEmpty from 'lodash/isEmpty';
-import find from 'lodash/find';
 import map from 'lodash/map';
 import omit from 'lodash/omit';
-import filter from 'lodash/filter';
 import includes from 'lodash/includes';
 import chalk from 'chalk';
-import { cliux, configHandler, HttpClient, NodeCrypto } from '@contentstack/cli-utilities';
+import { cliux, configHandler, HttpClient, ContentstackClient, managementSDKClient } from '@contentstack/cli-utilities';
 
 import { ImportConfig } from '../types';
 import { log } from './logger';
 import { askDeveloperHubUrl } from './interactive';
 import { formatError } from '../utils';
-import { askEncryptionKey, getAppName, askAppName, selectConfiguration } from '../utils/interactive';
+import { getAppName, askAppName, selectConfiguration } from '../utils/interactive';
 
-export const getAllStackSpecificApps = async (developerHubBaseUrl: string, httpClient: HttpClient, config: ImportConfig) => {
+export const getAllStackSpecificApps = async (
+  developerHubBaseUrl: string,
+  httpClient: HttpClient,
+  config: ImportConfig,
+) => {
   return await httpClient
     .get(`${developerHubBaseUrl}/installations?target_uids=${config.target_stack}`)
     .then(({ data }) => data.data)
@@ -31,14 +33,17 @@ export const getDeveloperHubUrl = async (config: ImportConfig): Promise<string> 
   return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
 };
 
-export const getOrgUid = async (stackAPIClient: any, config: ImportConfig): Promise<string> => {
-  const tempStackData = await stackAPIClient.fetch().catch((error: any) => {
-    log(config, formatError(error), 'error');
-  });
+export const getOrgUid = async (config: ImportConfig): Promise<string> => {
+  const tempAPIClient = await managementSDKClient({ host: config.host });
+  const tempStackData = await tempAPIClient
+    .stack({ api_key: config.target_stack })
+    .fetch()
+    .catch((error: any) => {
+      log(config, formatError(error), 'error');
+    });
 
   return tempStackData?.org_uid || '';
 };
-
 
 export const getConfirmationToCreateApps = async (privateApps: any, config: ImportConfig): Promise<boolean> => {
   if (!config.forceStopMarketplaceAppsPrompt) {
@@ -73,23 +78,25 @@ export const getConfirmationToCreateApps = async (privateApps: any, config: Impo
   }
 };
 
-export const createPrivateApp = async (client: any, config: ImportConfig, app: any): Promise<any> => {
+export const createPrivateApp = async (client: ContentstackClient, config: ImportConfig, app: any): Promise<any> => {
+  const privateApp = omit(app, ['uid']) as any;
   return await client
     .organization(config.org_uid)
     .app()
-    .create(omit(app, ['uid']))
+    .create(privateApp)
     .catch((error: any) => error);
 };
 
 export const installApp = async (
-  client: any,
+  client: ContentstackClient,
   config: ImportConfig,
   appManifestUid?: string,
-  mappedUid?: unknown,
+  mappedUid?: string,
 ): Promise<any> => {
+  const appUid = mappedUid || appManifestUid;
   return await client
     .organization(config.org_uid)
-    .app(mappedUid || appManifestUid)
+    .app(appUid)
     .install({ targetUid: config.target_stack, targetType: 'stack' })
     .catch((error: any) => error);
 };
@@ -103,7 +110,7 @@ export const handleNameConflict = async (app: any, appSuffix: number, config: Im
   return app;
 };
 
-export const makeRedirectUrlCall = async (response: any, appName: string, config: ImportConfig):Promise<void> => {
+export const makeRedirectUrlCall = async (response: any, appName: string, config: ImportConfig): Promise<void> => {
   if (response.redirect_url) {
     log(config, `${appName} - OAuth api call started.!`, 'info');
     await new HttpClient({ maxRedirects: 20, maxBodyLength: Infinity })
@@ -169,7 +176,7 @@ export const ifAppAlreadyExist = async (app: any, currentStackApp: any, config: 
 };
 
 export const updateAppConfig = async (
-  client: any,
+  client: ContentstackClient,
   config: ImportConfig,
   app: any,
   payload: { configuration: Record<string, unknown>; server_configuration: Record<string, unknown> },
@@ -182,5 +189,5 @@ export const updateAppConfig = async (
     .then((data: any) => {
       log(config, `${app?.manifest?.name} app config updated successfully.!`, 'success');
     })
-    .catch((error: any) => log(config, `Failed to update app config - ${formatError(error)}`, 'error'));
+    .catch((error: any) => log(config, `Failed to update app config.${formatError(error)}`, 'error'));
 };
