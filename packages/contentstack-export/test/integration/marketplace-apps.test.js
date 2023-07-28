@@ -1,10 +1,9 @@
-let defaultConfig = require('../../src/config/default');
 const fs = require('fs');
 const path = require('path');
 const { test } = require('@oclif/test');
 const { cliux: cliUX, messageHandler } = require('@contentstack/cli-utilities');
 
-const { default: config } = require('../../src/config');
+const { default: config } = require('../../lib/config');
 const modules = config.modules;
 const { getStackDetailsByRegion, getMarketplaceAppsCount, cleanUp, checkCounts } = require('./utils/helper');
 const { EXPORT_PATH, DEFAULT_TIMEOUT } = require('./config.json');
@@ -18,20 +17,17 @@ module.exports = (region) => {
       : path.join(__dirname, '..', '..', `${EXPORT_PATH}_${stack}`);
     const marketplaceAppsBasePath = path.join(exportBasePath, modules.marketplace_apps.dirName);
     const marketplaceAppsJson = path.join(marketplaceAppsBasePath, modules.marketplace_apps.fileName);
-    const messageFilePath = path.join(__dirname, '..', '..', 'messages/index.json');
-
-    messageHandler.init({ messageFilePath });
-    const { promptMessageList } = require(messageFilePath);
 
     describe('ContentStack-Export marketplace-apps', () => {
       describe('cm:stacks:export marketplace-apps [auth-token]', () => {
         test
           .timeout(DEFAULT_TIMEOUT || 600000) // NOTE setting default timeout as 10 minutes
-          .stub(cliUX, 'prompt', async (name) => {
+          .stub(cliUX, 'inquire', async (input) => {
+            const { name } = input;
             switch (name) {
-              case promptMessageList.promptSourceStack:
+              case 'apiKey':
                 return stackDetails[stack].STACK_API_KEY;
-              case promptMessageList.promptPathStoredData:
+              case 'dir':
                 return `${EXPORT_PATH}_${stack}`;
             }
           })
@@ -90,9 +86,9 @@ module.exports = (region) => {
 
     afterEach(async () => {
       await cleanUp(path.join(__dirname, '..', '..', `${EXPORT_PATH}_${stack}`));
-      defaultConfig.management_token = undefined;
-      defaultConfig.branch = undefined;
-      defaultConfig.branches = [];
+      config.management_token = undefined;
+      config.branch = undefined;
+      config.branches = [];
     });
   }
 };
