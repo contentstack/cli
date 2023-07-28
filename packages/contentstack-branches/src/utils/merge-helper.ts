@@ -127,7 +127,7 @@ export const displayMergeSummary = ({ format, compareData, strategy, strategySub
   cliux.print(`Merge Summary:`, { color: 'yellow' });
 
   for (let module in compareData) {
-    const mergePreferBaseOrCompare = strategy === 'merge_prefer_base' || 'merge_prefer_compare';
+    const mergePreferBaseOrCompare = strategy === 'merge_prefer_base' || strategy === 'merge_prefer_compare';
     if (mergePreferBaseOrCompare && strategySubOption === 'both') {
       delete compareData[module].deleted;
     }
