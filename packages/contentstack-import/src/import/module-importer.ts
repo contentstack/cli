@@ -65,11 +65,11 @@ class ModuleImporter {
         moduleName,
       });
     }
-    return startJSModuleImport({
-      stackAPIClient: this.stackAPIClient,
-      importConfig: this.importConfig,
-      moduleName,
-    });
+      return startJSModuleImport({
+        stackAPIClient: this.stackAPIClient,
+        importConfig: this.importConfig,
+        moduleName,
+      });
   }
 
   async importAllModules(): Promise<any> {

@@ -2,16 +2,14 @@ import { Command } from '@contentstack/cli-command';
 import {
   logger,
   cliux,
-  CLIError,
   configHandler,
   printFlagDeprecation,
   flags,
-  managementSDKClient,
   FlagInput,
+  HttpClient,
+  messageHandler,
 } from '@contentstack/cli-utilities';
 import { askTokenType } from '../../../utils/interactive';
-import { tokenValidation } from '../../../utils';
-
 export default class TokensAddCommand extends Command {
   static description = 'Adds management/delivery tokens to your session to use it with other CLI commands';
 
@@ -130,39 +128,6 @@ export default class TokensAddCommand extends Command {
         token = await cliux.inquire({ type: 'input', message: 'CLI_AUTH_TOKENS_ADD_ENTER_TOKEN', name: 'token' });
       }
 
-      const managementAPIClient = await managementSDKClient({ host: this.cmaHost });
-
-      let doBranchesExistInPlan: boolean = false;
-
-      if (isManagement && apiKey && token) {
-        await managementAPIClient
-          .stack({ api_key: apiKey, management_token: token })
-          .branch()
-          .query()
-          .find()
-          .then(() => (doBranchesExistInPlan = true))
-          .catch((err) => {
-            if (err.errorCode && err.errorMessage && branch) {
-              throw new Error(err.errorMessage);
-            }
-          });
-      } else {
-        if (!apiKey) {
-          throw new Error('Api key is required');
-        }
-        if (!token) {
-          throw new Error('Token is required');
-        }
-      }
-
-      if (doBranchesExistInPlan && !branch) {
-        branch = await cliux.inquire({
-          type: 'input',
-          message: 'CLI_AUTH_ENTER_BRANCH',
-          name: 'branch',
-        });
-      }
-
       if (isDelivery && !environment) {
         environment = await cliux.inquire({
           type: 'input',
@@ -171,31 +136,18 @@ export default class TokensAddCommand extends Command {
         });
       }
 
-      let tokenValidationResult;
+      if (type === 'management') {
+        // FIXME - Once the SDK refresh token issue is resolved, need to revert this back to SDK call
+        const httpClient = new HttpClient({ headers: { api_key: apiKey, authorization: token } });
 
-      if (type === 'delivery') {
-        branch = branch || 'main';
-        tokenValidationResult = await tokenValidation.validateDeliveryToken(
-          this.deliveryAPIClient,
-          apiKey,
-          token,
-          environment,
-          this.region.name,
-          this.cdaHost,
-          branch,
-        );
-      } else if (type === 'management') {
-        tokenValidationResult = await tokenValidation.validateManagementToken(
-          managementAPIClient,
-          apiKey,
-          token,
-          doBranchesExistInPlan ? branch : null,
-        );
-      }
-      if (!tokenValidationResult.valid) {
-        throw new CLIError(tokenValidationResult.message);
-      }
+        const response = (await httpClient.get(`https://${this.cmaHost}/v3/environments?limit=1`)).data;
 
+        if (response?.error_code === 105) {
+          throw new Error(messageHandler.parse('CLI_AUTH_TOKENS_VALIDATION_INVALID_MANAGEMENT_TOKEN'));
+        } else if (response?.error_message) {
+          throw new Error(response.error_message);
+        }
+      }
       if (isManagement) {
         configHandler.set(`${configKeyTokens}.${alias}`, { token, apiKey, type });
       } else {
@@ -210,7 +162,7 @@ export default class TokensAddCommand extends Command {
     } catch (error) {
       logger.error('token add error', error.message);
       cliux.print('CLI_AUTH_TOKENS_ADD_FAILED', { color: 'yellow' });
-      cliux.print(error.message.message ? error.message.message : error.message, { color: 'red' });
+      cliux.error(error.message.message ? error.message.message : error.message);
     }
   }
 }
