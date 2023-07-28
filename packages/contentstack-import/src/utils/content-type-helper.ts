@@ -78,7 +78,11 @@ export const suppressSchemaReference = function (schema: any, flag: any) {
   }
 };
 
-export const removeReferenceFields = async function (schema: any, flag: any, stackAPIClient: any) {
+export const removeReferenceFields = async function (
+  schema: any,
+  flag = { supressed: false },
+  stackAPIClient: any,
+): Promise<boolean | void> {
   for (let i = 0; i < schema.length; i++) {
     if (schema[i].data_type === 'group') {
       await removeReferenceFields(schema[i].schema, flag, stackAPIClient);
@@ -124,6 +128,7 @@ export const removeReferenceFields = async function (schema: any, flag: any, sta
           });
         }
       }
+      return true;
     } else if (
       // handling entry references in json rte
       schema[i].data_type === 'json' &&
@@ -133,6 +138,7 @@ export const removeReferenceFields = async function (schema: any, flag: any, sta
     ) {
       flag.supressed = true;
       schema[i].reference_to = ['sys_assets'];
+      return true;
     }
   }
 };
