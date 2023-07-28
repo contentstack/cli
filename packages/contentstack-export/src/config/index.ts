@@ -60,7 +60,7 @@ const config: DefaultConfig = {
     labels: {
       dirName: 'labels',
       fileName: 'labels.json',
-      invalidKeys: ['stackHeaders', 'uid', 'urlPath', 'created_at', 'updated_at', 'created_by', 'updated_by'],
+      invalidKeys: ['stackHeaders', 'urlPath', 'created_at', 'updated_at', 'created_by', 'updated_by'],
     },
     webhooks: {
       dirName: 'webhooks',
@@ -368,7 +368,17 @@ const config: DefaultConfig = {
     'xh',
     'zu',
   ],
-  updatedModules: ['assets', 'locales'],
+  updatedModules: [
+    'assets',
+    'locales',
+    'extensions',
+    'marketplace-apps',
+    'labels',
+    'webhooks',
+    'custom-roles',
+    'global-fields',
+    'content-types',
+  ],
   apis: {
     userSession: '/user-session/',
     globalfields: '/global_fields/',
