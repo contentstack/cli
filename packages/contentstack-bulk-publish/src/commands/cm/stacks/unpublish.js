@@ -37,28 +37,31 @@ class UnpublishCommand extends Command {
     if (this.validate(updatedFlags)) {
       let stack;
       if (!updatedFlags.retryFailed) {
-        if (!updatedFlags.alias) {
-          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
-        }
-        if (!updatedFlags.deliveryToken) {
-          updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token of your source environment');
-        }
-        updatedFlags.bulkUnpublish = updatedFlags.bulkUnpublish === 'false' ? false : true;
-        // Validate management token alias.
-        try {
-          this.getToken(updatedFlags.alias);
-        } catch (error) {
-          this.error(
-            `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add --alias ${updatedFlags.alias}'`,
-            { exit: 2 },
-          );
-        }
         config = {
           alias: updatedFlags.alias,
           host: this.cmaHost,
           cda: this.cdaHost,
           branch: unpublishFlags.branch,
         };
+        if (updatedFlags.alias) {
+          try {
+            this.getToken(updatedFlags.alias);
+            config.alias = updatedFlags.alias;
+          } catch (error) {
+            this.error(
+              `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
+              { exit: 2 },
+            );
+          }
+        } else if (updatedFlags['stack-api-key']) {
+          config.stackApiKey = updatedFlags['stack-api-key'];
+        } else {
+          this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
+        }
+        if (!updatedFlags.deliveryToken) {
+          updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token of your source environment');
+        }
+        updatedFlags.bulkUnpublish = updatedFlags.bulkUnpublish === 'false' ? false : true;
         stack = await getStack(config);
       }
       if (!updatedFlags.deliveryToken && updatedFlags.deliveryToken.length === 0) {
@@ -160,6 +163,10 @@ UnpublishCommand.flags = {
   alias: flags.string({
     char: 'a',
     description: 'Alias(name) for the management token',
+  }),
+  'stack-api-key': flags.string({
+    char: 'k',
+    description: 'Stack api key to be used',
   }),
   environment: flags.string({
     char: 'e',
@@ -277,6 +284,9 @@ UnpublishCommand.examples = [
   '',
   'Using --branch flag',
   'csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --alias [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]',
+  '',
+  'Using --stack-api-key flag',
+  'csdx cm:stacks:unpublish --bulk-unpublish --content-type [CONTENT TYPE] --environment [SOURCE ENV] --locale [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN]',
 ];
 
 UnpublishCommand.aliases = ['cm:bulk-publish:unpublish'];
