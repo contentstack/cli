@@ -53,11 +53,13 @@ module.exports = class ImportCustomRoles {
 
       self.localesUidMap = await getLocalesUidMap(self.stackAPIClient, self.config, self.customRolesLocales);
 
+      self.environmentsUidMap={}
       if (fs.existsSync(environmentsUidMapperFolderPath)) {
         self.environmentsUidMap = fileHelper.readFileSync(
           path.resolve(environmentsUidMapperFolderPath, 'uid-mapping.json'),
         );
       }
+      self.entriesUidMap={}
       if (fs.existsSync(entriesUidMapperFolderPath)) {
         self.entriesUidMap = fileHelper.readFileSync(path.resolve(entriesUidMapperFolderPath, 'uid-mapping.json'));
       }

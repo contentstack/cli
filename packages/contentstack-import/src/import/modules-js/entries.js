@@ -794,7 +794,7 @@ module.exports = class ImportEntries {
               // empty function
             })
             .catch((_error) => {
-              addlogs(this.config, formatError(error), 'error');
+              addlogs(this.config, formatError(_error), 'error');
               reject(`Failed suppress content type ${schema.uid} reference fields`);
             });
           // update 5 content types at a time
