@@ -299,11 +299,11 @@ export default abstract class BaseClass {
       case 'update-gfs':
         return apiData.update().then(onSuccess).catch(onReject);
       case 'create-environments':
-        // return this.stack
-        //   .environment()
-        //   .create({ environment: omit(apiData, ['uid']) as EnvironmentData })
-        //   .then(onSuccess)
-        //   .catch(onReject);
+      // return this.stack
+      //   .environment()
+      //   .create({ environment: omit(apiData, ['uid']) as EnvironmentData })
+      //   .then(onSuccess)
+      //   .catch(onReject);
       case 'create-labels':
         return this.stack
           .label()
