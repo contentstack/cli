@@ -143,7 +143,7 @@ export const displayMergeSummary = ({ format, compareData, strategy, strategySub
 export const deleteModifiedFields = (iterableModifiedArray) => {
   iterableModifiedArray.map(({ modifiedFields }, index: number) => {
     const { modified, deleted, added } = modifiedFields;
-    const checkDeletedOnly = deleted.length > 0 && modified.length === 0 && added.length === 0;
+    const checkDeletedOnly = deleted?.length > 0 && modified?.length === 0 && added?.length === 0;
     if (checkDeletedOnly) {
       iterableModifiedArray.splice(index, 1);
     } else {
