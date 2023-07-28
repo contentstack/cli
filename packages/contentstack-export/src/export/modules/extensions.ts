@@ -23,13 +23,6 @@ export default class ExportExtensions extends BaseClass {
     this.qs = { include_count: true };
   }
 
-  get queryParam(): Record<string, unknown> {
-    return {
-      asc: 'updated_at',
-      include_count: true,
-    };
-  }
-
   async start(): Promise<void> {
     log(this.exportConfig, 'Starting extension export', 'info');
 
@@ -56,7 +49,7 @@ export default class ExportExtensions extends BaseClass {
     }
     await this.stack
       .extension()
-      .query(this.queryParam)
+      .query(this.qs)
       .find()
       .then(async (data: any) => {
         const { items, count } = data;
