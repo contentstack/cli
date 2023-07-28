@@ -29,6 +29,7 @@ export default interface DefaultConfig {
     extensions: {
       dirName: string;
       fileName: string;
+      validKeys: string[];
     };
     webhooks: {
       dirName: string;
@@ -74,6 +75,12 @@ export default interface DefaultConfig {
       validKeys: string[];
       limit: number;
     };
+    'content-types': {
+      dirName: string;
+      fileName: string;
+      validKeys: string[];
+      limit: number;
+    };
     entries: {
       dirName: string;
       fileName: string;
@@ -82,6 +89,12 @@ export default interface DefaultConfig {
       assetBatchLimit: number;
     };
     globalfields: {
+      dirName: string;
+      fileName: string;
+      validKeys: string[];
+      limit: number;
+    };
+    'global-fields': {
       dirName: string;
       fileName: string;
       validKeys: string[];
