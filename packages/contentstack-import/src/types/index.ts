@@ -48,5 +48,45 @@ export type ModuleClassParams = {
   moduleName: Modules;
 };
 
+export interface Extensions{
+  dirName: string;
+  fileName: string;
+  dependencies?: Modules[];
+};
+
+export interface MarketplaceAppsConfig{
+  dirName: string;
+  fileName: string;
+  dependencies?: Modules[];
+};
+
+export interface EnvironmentConfig {
+  dirName: string;
+  fileName: string;
+  dependencies?: Modules[];
+}
+
+export interface LabelConfig{
+  dirName: string;
+  fileName: string;
+}
+
+export interface WebhookConfig{
+  dirName: string;
+  fileName: string;
+}
+
+export interface WorkflowConfig{
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
+}
+
+export interface CustomRoleConfig{
+  dirName: string;
+  fileName: string;
+  customRolesLocalesFileName: string;
+}
+
 export { default as DefaultConfig } from './default-config';
 export { default as ImportConfig } from './import-config';
