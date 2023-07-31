@@ -4,7 +4,7 @@ import camelCase from 'lodash/camelCase';
 import forEach from 'lodash/forEach';
 import { cliux, messageHandler } from '@contentstack/cli-utilities';
 
-import { BranchDiffRes } from '../interfaces';
+import { BranchDiffRes, BranchModifiedDetails } from '../interfaces';
 
 export async function selectModule(): Promise<string> {
   return await cliux.inquire({
@@ -180,9 +180,9 @@ export async function selectCustomPreferences(module, payload) {
       tableRows.push(row);
     });
 
-    forEach(payload.modified, (item: BranchDiffRes) => {
+    forEach(payload.modified, (item: BranchModifiedDetails) => {
       const row: any = {};
-      row.name = `± ${item.title}`;
+      row.name = `± ${item.moduleDetails.title}`;
       row.status = 'modified';
       row.value = item;
       tableRows.push(row);
