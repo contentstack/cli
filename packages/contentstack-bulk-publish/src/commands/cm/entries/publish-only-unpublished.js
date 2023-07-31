@@ -22,6 +22,10 @@ But, if retry-failed flag is set, then only a logfile is required
 
 PublishOnlyUnpublished.flags = {
   alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
+  'stack-api-key': flags.string({
+    char: 'k',
+    description: 'Stack api key to be used',
+  }),
   retryFailed: flags.string({
     char: 'r',
     hidden: true,
@@ -102,6 +106,9 @@ PublishOnlyUnpublished.examples = [
   '',
   'Using --branch',
   'csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME] -source-env [SOURCE ENV]',
+  '',
+  'Using --stack-api-key',
+  'csdx cm:entries:publish-only-unpublished -b --content-types [CONTENT TYPES] -e [ENVIRONMENTS] --locales LOCALE -a [MANAGEMENT TOKEN ALIAS] --stack-api-key [STACK API KEY] -source-env [SOURCE ENV]',
 ];
 
 PublishOnlyUnpublished.aliases = ['cm:bulk-publish:unpublished-entries'];

@@ -19,7 +19,7 @@ const {
 } = require('@contentstack/cli-utilities');
 const { default: config } = require('../../config');
 const { formatError, log, fileHelper } = require('../../utils');
-const { getDeveloperHubUrl } = require('../../utils');
+const { getDeveloperHubUrl, createNodeCryptoInstance } = require('../../utils');
 
 module.exports = class ExportMarketplaceApps {
   client;
@@ -43,7 +43,7 @@ module.exports = class ExportMarketplaceApps {
       return Promise.resolve();
     }
 
-    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl());
+    this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
 
     await this.getOrgUid();
 
@@ -65,6 +65,8 @@ module.exports = class ExportMarketplaceApps {
     );
     mkdirp.sync(this.marketplaceAppPath);
 
+    this.nodeCrypto= await createNodeCryptoInstance(config);
+
     return this.exportInstalledExtensions();
   }
 
@@ -81,28 +83,6 @@ module.exports = class ExportMarketplaceApps {
     if (tempStackData && tempStackData.org_uid) {
       this.config.org_uid = tempStackData.org_uid;
     }
-  }
-
-  async createNodeCryptoInstance() {
-    const cryptoArgs = {};
-
-    if (this.config.forceStopMarketplaceAppsPrompt) {
-      cryptoArgs['encryptionKey'] = this.config.marketplaceAppEncryptionKey;
-    } else {
-      cryptoArgs['encryptionKey'] = await cliux.inquire({
-        type: 'input',
-        name: 'name',
-        default: this.config.marketplaceAppEncryptionKey,
-        validate: (url) => {
-          if (!url) return "Encryption key can't be empty.";
-
-          return true;
-        },
-        message: 'Enter marketplace app configurations encryption key',
-      });
-    }
-
-    this.nodeCrypto = new NodeCrypto(cryptoArgs);
   }
 
   async exportInstalledExtensions() {

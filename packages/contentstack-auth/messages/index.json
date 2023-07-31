@@ -1,4 +1,5 @@
 {
+  "CLI_AUTH_LOGIN_ASK_CHANNEL_FOR_OTP": "Please select OTP channel",
   "CLI_AUTH_LOGIN_ENTER_EMAIL_ADDRESS": "Enter your email address",
   "CLI_AUTH_LOGIN_ENTER_PASSWORD": "Enter your password",
   "CLI_AUTH_LOGIN_SUCCESS": "Successfully logged in!!",
