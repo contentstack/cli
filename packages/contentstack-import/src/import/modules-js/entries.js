@@ -104,11 +104,7 @@ module.exports = class ImportEntries {
             }
           }
         } catch (error) {
-          addlogs(
-            this.config,
-            `Failed to read the content types to import entries ${formatError(error)}`,
-            'error',
-          );
+          addlogs(this.config, `Failed to read the content types to import entries ${formatError(error)}`, 'error');
           process.exit(0);
         }
       }
@@ -776,7 +772,7 @@ module.exports = class ImportEntries {
               // empty function
             })
             .catch((_error) => {
-              addlogs(this.config, formatError(error), 'error');
+              addlogs(this.config, formatError(_error), 'error');
               reject(`Failed suppress content type ${schema.uid} reference fields`);
             });
           // update 5 content types at a time
@@ -1096,9 +1092,7 @@ module.exports = class ImportEntries {
                                 .catch((err) => {
                                   addlogs(
                                     this.config,
-                                    `failed to publish entry '${eUid}' content type '${ctUid}' ${formatError(
-                                      err,
-                                    )}`,
+                                    `failed to publish entry '${eUid}' content type '${ctUid}' ${formatError(err)}`,
                                     'error',
                                   );
                                   return resolveEntryPublished('');

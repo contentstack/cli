@@ -118,7 +118,7 @@ export default class ImportCommand extends Command {
       log(
         { data: contentDir } as ImportConfig,
         `The log has been stored at ${
-          { data: contentDir } ? path.join(contentDir, 'logs', 'import') : path.join(__dirname, 'logs')
+          { data: contentDir } ? path.join(contentDir || __dirname, 'logs', 'import') : path.join(__dirname, 'logs')
         }`,
         'info',
       );
