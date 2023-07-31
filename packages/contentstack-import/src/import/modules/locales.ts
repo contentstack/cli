@@ -57,15 +57,6 @@ export default class ImportLocales extends BaseClass {
   }
 
   async start(): Promise<any> {
-    /**
-     * read locales
-     * create a mapper dir
-     * read / create a locale uid mapper
-     * update master language details if it same
-     * create locales
-     * update locales
-     */
-
     this.languages = fsUtil.readFile(path.join(this.langFolderPath, this.localeConfig.fileName)) as Record<
       string,
       unknown
