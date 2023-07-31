@@ -64,5 +64,55 @@ export interface ExternalConfig extends ExportConfig {
   password?: string;
 }
 
+export interface ExtensionsConfig {
+  dirName: string;
+  fileName: string;
+  dependencies?: Modules[];
+  limit?: number;
+}
+
+export interface MarketplaceAppsConfig {
+  dirName: string;
+  fileName: string;
+  dependencies?: Modules[];
+}
+
+export interface EnvironmentConfig {
+  dirName: string;
+  fileName: string;
+  dependencies?: Modules[];
+  limit?: number;
+}
+
+export interface LabelConfig {
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
+  dependencies?: Modules[];
+  limit?: number;
+}
+
+export interface WebhookConfig {
+  dirName: string;
+  fileName: string;
+  dependencies?: Modules[];
+  limit?: number;
+}
+
+export interface WorkflowConfig{
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
+  dependencies?: Modules[];
+  limit?: number;
+}
+
+export interface CustomRoleConfig{
+  dirName: string;
+  fileName: string;
+  customRolesLocalesFileName: string;
+  dependencies?: Modules[];
+}
+
 export { default as DefaultConfig } from './default-config';
 export { default as ExportConfig } from './export-config';

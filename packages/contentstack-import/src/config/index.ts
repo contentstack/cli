@@ -62,6 +62,7 @@ const config: DefaultConfig = {
     extensions: {
       dirName: 'extensions',
       fileName: 'extensions.json',
+      validKeys: ['data_type', 'srcdoc', 'title', 'type', 'mutiple', 'config'],
     },
     webhooks: {
       dirName: 'webhooks',
@@ -108,6 +109,12 @@ const config: DefaultConfig = {
       validKeys: ['title', 'uid', 'schema', 'options', 'singleton', 'description'],
       limit: 100,
     },
+    'content-types': {
+      dirName: 'content_types',
+      fileName: 'content_types.json',
+      validKeys: ['title', 'uid', 'schema', 'options', 'singleton', 'description'],
+      limit: 100,
+    },
     entries: {
       dirName: 'entries',
       fileName: 'entries.json',
@@ -116,6 +123,12 @@ const config: DefaultConfig = {
       assetBatchLimit: 5,
     },
     globalfields: {
+      dirName: 'global_fields',
+      fileName: 'globalfields.json',
+      validKeys: ['title', 'uid', 'schema', 'options', 'singleton', 'description'],
+      limit: 100,
+    },
+    'global-fields': {
       dirName: 'global_fields',
       fileName: 'globalfields.json',
       validKeys: ['title', 'uid', 'schema', 'options', 'singleton', 'description'],
@@ -354,7 +367,17 @@ const config: DefaultConfig = {
     stacks: '/stacks/',
     labels: '/labels/',
   },
-  updatedModules: ['assets', 'locales'],
+  updatedModules: [
+    'assets',
+    'extensions',
+    'locales',
+    'marketplace-apps',
+    'labels',
+    'global-fields',
+    'content-types',
+    'webhooks',
+    'custom-roles',
+  ],
   rateLimit: 5,
   preserveStackVersion: false,
   entriesPublish: true,
