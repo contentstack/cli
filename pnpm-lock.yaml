@@ -364,7 +364,6 @@ importers:
       '@contentstack/cli-cm-import': ^1.7.1
       '@contentstack/cli-command': ^1.2.11
       '@contentstack/cli-utilities': ^1.5.1
-      '@contentstack/management': ~1.10.0
       '@oclif/test': ^1.2.7
       async: ^3.2.4
       chai: ^4.2.0
@@ -390,7 +389,6 @@ importers:
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/management': 1.10.0
       async: 3.2.4
       chalk: 4.1.2
       child_process: 1.0.2
@@ -1501,18 +1499,6 @@ packages:
       slate-hyperscript: 0.62.0_slate@0.72.8
       tslib: 2.6.0
       uuid: 8.3.2
-    dev: false
-
-  /@contentstack/management/1.10.0:
-    resolution: {integrity: sha512-wnmVS19n3cZeh6T2PbBXGCr4irktunVmuECTyPF5++Rsc6GDO+FoQGCZdvzHpRZE0GLiPFIID50z2TZuNArEOg==}
-    engines: {node: '>=8.0.0'}
-    dependencies:
-      axios: 0.27.2
-      form-data: 3.0.1
-      lodash: 4.17.21
-      qs: 6.11.2
-    transitivePeerDependencies:
-      - debug
     dev: false
 
   /@contentstack/management/1.10.0_debug@4.3.4:
@@ -4199,15 +4185,6 @@ packages:
       uuid: 8.0.0
       xml2js: 0.5.0
     dev: true
-
-  /axios/0.27.2:
-    resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
-    dependencies:
-      follow-redirects: 1.15.2
-      form-data: 4.0.0
-    transitivePeerDependencies:
-      - debug
-    dev: false
 
   /axios/0.27.2_debug@4.3.4:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
