@@ -98,15 +98,6 @@ module.exports = class ImportWebhooks {
         .catch(function (error) {
           // error while importing environments
           fileHelper.writeFileSync(webFailsPath, self.fails);
-          let message_content_type = '';
-          if (error.request !== undefined && JSON.parse(error.request.data).webhook !== undefined) {
-            if (JSON.parse(error.request.data).webhook.name) {
-              message_content_type =
-                ' Failed webhook: ' + JSON.parse(error.request.data).webhook.name;
-            }
-            error.errorMessage = error.errorMessage + message_content_type;
-          }
-          log(self.config, formatError(error.errorMessage), 'error');
           log(self.config, `Webhooks import failed. ${formatError(error)}`, 'error');
           return reject(error);
         });

@@ -88,7 +88,7 @@ module.exports = class ImportGlobalFields {
                   // eslint-disable-next-line no-undef
                   log(self.config, `Globalfield '${snip.uid} already exists'`, 'error');
                 } else {
-                  log(self.config, chalk.red(`Globalfield failed to import ${formatError(error)}`), 'error');
+                  log(self.config, chalk.red(`Globalfield ${snip.title}failed to import ${formatError(error)}`), 'error');
                 }
 
                 self.fails.push(snip);
@@ -117,16 +117,7 @@ module.exports = class ImportGlobalFields {
           let error = err;
           // error while importing globalfields
           // log(self.config, err, 'error');
-          fileHelper.writeFileSync(globalfieldsFailsPath, self.fails);
-          let message_content_type = '';
-          if (error.request !== undefined && JSON.parse(error.request.data).global_field !== undefined) {
-            if (JSON.parse(error.request.data).global_field.title) {
-              message_content_type =
-                ' Failed global field: ' + JSON.parse(error.request.data).global_field.title;
-            }
-            error.errorMessage = error.errorMessage + message_content_type;
-          }
-          log(self.config, formatError(error.errorMessage), 'error');
+          fileHelper.writeFileSync(globalfieldsFailsPath, self.fails);s
           log(self.config, `Globalfields import failed. ${formatError(err)}`, 'error');
           return reject(error);
         });

@@ -112,15 +112,6 @@ module.exports = class ImportCustomRoles {
       log(self.config, chalk.green('Custom-roles have been imported successfully!'), 'success');
     } catch (error) {
       fileHelper.writeFileSync(customRolesFailsPath, self.fails);
-              let message_content_type = '';
-        if (error.request !== undefined && JSON.parse(error.request.data).role !== undefined) {
-          if (JSON.parse(error.request.data).role.name) {
-            message_content_type =
-              ' Failed custom-role: ' + JSON.parse(error.request.data).role.name;
-          }
-          error.errorMessage = error.errorMessage + message_content_type;
-        }
-        log(self.config, formatError(error.errorMessage), 'error');
       log(self.config, 'Custom-roles import failed', 'error');
       log(self.config, formatError(error), 'error');
       throw error;

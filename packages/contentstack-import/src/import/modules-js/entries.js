@@ -407,7 +407,7 @@ module.exports = class ImportEntries {
                               log(
                                 this.config,
                                 `Failed to create an entry ${eUid} ${formatError(error)} Title of the failed entry: ${
-                                  JSON.parse(error.request.data).entry.title
+                                  entries[eUid].title
                                 }`,
                                 'error',
                               );
@@ -426,7 +426,7 @@ module.exports = class ImportEntries {
                           log(
                             this.config,
                             `Failed to create an entry ${eUid} ${formatError(error)}. Title of the failed entry: ${
-                              JSON.parse(error.request.data).entry.title
+                              entries[eUid].title
                             }`,
                             'error',
                           );

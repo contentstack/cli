@@ -92,15 +92,6 @@ module.exports = class ImportExtensions {
         .catch(function (error) {
           // error while importing extensions
           fileHelper.writeFileSync(extFailsPath, self.fails);
-          let message_content_type = '';
-          if (error.request !== undefined && JSON.parse(error.request.data).extension.title !== undefined) {
-            if (JSON.parse(error.request.data).extension.title) {
-              message_content_type =
-                ' Failed extension: ' + JSON.parse(error.request.data).extension.title;
-            }
-            error.errorMessage = error.errorMessage + message_content_type;
-          }
-          log(self.config, formatError(error.errorMessage), 'error');
           log(self.config, `Extension import failed ${formatError(error)}`, 'error');
           reject(error);
         });
