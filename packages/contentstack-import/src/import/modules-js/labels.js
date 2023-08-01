@@ -108,15 +108,6 @@ module.exports = class ImportLabels {
         })
         .catch(function (error) {
           // error while importing labels
-          let message_content_type = '';
-          if (error.request !== undefined && JSON.parse(error.request.data).label !== undefined) {
-            if (JSON.parse(error.request.data).label.name) {
-              message_content_type =
-                ' Failed label: ' + JSON.parse(error.request.data).label.name;
-            } 
-            error.errorMessage = error.errorMessage + message_content_type;
-          }
-          log(self.config, formatError(error.errorMessage), 'error');
           fileHelper.writeFileSync(labelUidMapperPath, self.labelUidMapper);
           fileHelper.writeFileSync(labelFailsPath, self.fails);
           log(self.config, `Failed to import label, ${formatError(error)}`, 'error');
