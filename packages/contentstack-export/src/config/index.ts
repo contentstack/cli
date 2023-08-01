@@ -380,7 +380,8 @@ const config: DefaultConfig = {
     'global-fields',
     'content-types',
     'entries',
-    'workflows'
+    'workflows',
+    'stack'
   ],
   apis: {
     userSession: '/user-session/',

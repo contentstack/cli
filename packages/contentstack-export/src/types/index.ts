@@ -114,5 +114,12 @@ export interface CustomRoleConfig{
   dependencies?: Modules[];
 }
 
+export interface StackConfig{
+    dirName: string;
+    fileName: string;
+    dependencies?: Modules[];
+    limit?: number;
+}
+
 export { default as DefaultConfig } from './default-config';
 export { default as ExportConfig } from './export-config';
