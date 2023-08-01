@@ -31,13 +31,14 @@ export default class ExportStack extends BaseClass {
       }
     }
     if (!this.exportConfig.preserveStackVersion && !this.exportConfig.hasOwnProperty('master_locale')) {
+      //fetch master locale details
       return this.getLocales();
     } else if (this.exportConfig.preserveStackVersion) {
       return this.exportStack();
     }
   }
 
-  async getStack() {
+  async getStack(): Promise<any> {
     return await this.stack.fetch().catch((error: any) => {
       log(this.exportConfig, `Failed to export stack. ${formatError(error)}`, 'error');
     });
@@ -76,7 +77,7 @@ export default class ExportStack extends BaseClass {
       });
   }
 
-  async exportStack() {
+  async exportStack(): Promise<any> {
     log(this.exportConfig, 'Exporting stack details', 'success');
     await fsUtil.makeDirectory(this.stackFolderPath);
     return this.stack
