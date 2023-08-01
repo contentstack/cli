@@ -117,7 +117,7 @@ module.exports = class ImportGlobalFields {
           let error = err;
           // error while importing globalfields
           // log(self.config, err, 'error');
-          fileHelper.writeFileSync(globalfieldsFailsPath, self.fails);s
+          fileHelper.writeFileSync(globalfieldsFailsPath, self.fails);
           log(self.config, `Globalfields import failed. ${formatError(err)}`, 'error');
           return reject(error);
         });
