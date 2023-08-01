@@ -114,7 +114,7 @@ module.exports = class ImportGlobalFields {
         })
         .catch(function (err) {
           // error while importing globalfields
-          let error = err;
+          let error = JSON.parse(err);
           // error while importing globalfields
           // log(self.config, err, 'error');
           fileHelper.writeFileSync(globalfieldsFailsPath, self.fails);
