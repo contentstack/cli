@@ -94,15 +94,6 @@ module.exports = class ImportEnvironments {
         })
         .catch(function (error) {
           writeFileSync(envFailsPath, self.fails);
-          let message_content_type = '';
-          if (error.request !== undefined && JSON.parse(error.request.data).environment !== undefined) {
-            if (JSON.parse(error.request.data).environment.name) {
-              message_content_type =
-                ' Failed environment: ' + JSON.parse(error.request.data).environment.name;
-            }
-            error.errorMessage = error.errorMessage + message_content_type;
-          }
-          log(self.config, formatError(error.errorMessage), 'error');
           log(self.config, `Failed to import environment ${formatError(error)}`, 'error');
           reject(error);
         });
