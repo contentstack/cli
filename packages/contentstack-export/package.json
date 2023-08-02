@@ -80,9 +80,9 @@
     "plugin"
   ],
   "license": "MIT",
-  "main": "./lib/commands/cm/stacks/export.js",
+  "main": "./src/commands/cm/stacks/export.js",
   "oclif": {
-    "commands": "./lib/commands",
+    "commands": "./src/commands",
     "bin": "csdx",
     "devPlugins": [
       "@oclif/plugin-help"
