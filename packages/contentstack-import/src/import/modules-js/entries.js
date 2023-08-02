@@ -498,12 +498,7 @@ module.exports = class ImportEntries {
           return resolve();
         })
         .catch((error) => {
-          let title = "";
-          if(error?.request?.data){
-            if(JSON.parse(error.request.data).entry.title!==undefined) {
-              title = JSON.parse(error.request.data).entry.title;
-            }
-          }
+          let title = JSON.parse(error?.request?.data ||"{}").entry?.title
           addlogs(
             this.config,
             chalk.red(
@@ -511,7 +506,7 @@ module.exports = class ImportEntries {
                 lang +
                 "' language. " +
                 'Title of the failed entry: ' +
-                title,
+                title||"",
             ),
             'error',
           );
