@@ -244,3 +244,185 @@ function findUidsInNewRefFields(entry: any, uids: string[]) {
     }
   }
 }
+
+export const removeUidsFromJsonRteFields = (
+  entry: Record<string, any>,
+  ctSchema: Record<string, any>[],
+): Record<string, any> => {
+  for (const element of ctSchema) {
+    switch (element.data_type) {
+      case 'blocks': {
+        if (entry[element.uid]) {
+          if (element.multiple) {
+            entry[element.uid] = entry[element.uid].map((e: any) => {
+              let key = Object.keys(e).pop();
+              let subBlock = element.blocks.filter((block: any) => block.uid === key).pop();
+              e[key] = removeUidsFromJsonRteFields(e[key], subBlock.schema);
+              return e;
+            });
+          }
+        }
+        break;
+      }
+      case 'global_field':
+      case 'group': {
+        if (entry[element.uid]) {
+          if (element.multiple) {
+            entry[element.uid] = entry[element.uid].map((e) => {
+              e = removeUidsFromJsonRteFields(e, element.schema);
+              return e;
+            });
+          } else {
+            entry[element.uid] = removeUidsFromJsonRteFields(entry[element.uid], element.schema);
+          }
+        }
+        break;
+      }
+      case 'json': {
+        if (entry[element.uid] && element.field_metadata.rich_text_type) {
+          if (element.multiple) {
+            entry[element.uid] = entry[element.uid].map((jsonRteData: any) => {
+              delete jsonRteData.uid; // remove uid
+
+              if (_.isObject(jsonRteData.attrs)) {
+                jsonRteData.attrs.dirty = true;
+              }
+
+              if (!_.isEmpty(jsonRteData.children)) {
+                jsonRteData.children = _.map(jsonRteData.children, (child) => removeUidsFromChildren(child));
+              }
+
+              return jsonRteData;
+            });
+          } else {
+            delete entry[element.uid].uid; // remove uid
+            if (entry[element.uid] && _.isObject(entry[element.uid].attrs)) {
+              entry[element.uid].attrs.dirty = true;
+            }
+            if (entry[element.uid] && !_.isEmpty(entry[element.uid].children)) {
+              entry[element.uid].children = _.map(entry[element.uid].children, (child) =>
+                removeUidsFromChildren(child),
+              );
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+  return entry;
+};
+
+function removeUidsFromChildren(children: Record<string, any>[] | any) {
+  if (children.length && children.length > 0) {
+    return children.map((child: any) => {
+      if (child.type && child.type.length > 0) {
+        delete child.uid; // remove uid
+
+        if (_.isObject(child.attrs)) {
+          child.attrs.dirty = true;
+        }
+      }
+      if (child.children && child.children.length > 0) {
+        child.children = removeUidsFromChildren(child.children);
+      }
+      return child;
+    });
+  } else {
+    if (children.type && children.type.length > 0) {
+      delete children.uid; // remove uid
+      if (_.isObject(children.attrs)) {
+        children.attrs.dirty = true;
+      }
+    }
+    if (children.children && children.children.length > 0) {
+      children.children = removeUidsFromChildren(children.children);
+    }
+    return children;
+  }
+}
+
+export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema: Record<string, any>[]) => {
+  for (const element of ctSchema) {
+    switch (element.data_type) {
+      case 'blocks': {
+        if (entry[element.uid]) {
+          if (element.multiple) {
+            entry[element.uid] = entry[element.uid].map((e: any) => {
+              let key = Object.keys(e).pop();
+              let subBlock = element.blocks.filter((block: any) => block.uid === key).pop();
+              e[key] = removeEntryRefsFromJSONRTE(e[key], subBlock.schema);
+              return e;
+            });
+          }
+        }
+        break;
+      }
+      case 'global_field':
+      case 'group': {
+        if (entry[element.uid]) {
+          if (element.multiple) {
+            entry[element.uid] = entry[element.uid].map((e) => {
+              e = removeEntryRefsFromJSONRTE(e, element.schema);
+              return e;
+            });
+          } else {
+            entry[element.uid] = removeEntryRefsFromJSONRTE(entry[element.uid], element.schema);
+          }
+        }
+        break;
+      }
+      case 'json': {
+        if (entry[element.uid] && element.field_metadata.rich_text_type) {
+          if (element.multiple) {
+            entry[element.uid] = entry[element.uid].map((jsonRteData: any) => {
+              // repeated code from else block, will abstract later
+              let entryReferences = jsonRteData.children.filter((e: any) => doEntryReferencesExist(e));
+              if (entryReferences.length > 0) {
+                jsonRteData.children = jsonRteData.children.filter((e: any) => !doEntryReferencesExist(e));
+                return jsonRteData; // return jsonRteData without entry references
+              } else {
+                return jsonRteData; // return jsonRteData as it is, because there are no entry references
+              }
+            });
+          } else {
+            let entryReferences = entry[element.uid].children.filter((e: any) => doEntryReferencesExist(e));
+            if (entryReferences.length > 0) {
+              entry[element.uid].children = entry[element.uid].children.filter((e: any) => !doEntryReferencesExist(e));
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+  return entry;
+};
+
+function doEntryReferencesExist(element: Record<string, any>[] | any): boolean {
+  // checks if the children of p element contain any references
+  // only checking one level deep, not recursive
+
+  if (element.length) {
+    for (const item of element) {
+      if ((item.type === 'p' || item.type === 'a') && item.children && item.children.length > 0) {
+        return doEntryReferencesExist(item.children);
+      } else if (isEntryRef(item)) {
+        return true;
+      }
+    }
+  } else {
+    if (isEntryRef(element)) {
+      return true;
+    }
+
+    if ((element.type === 'p' || element.type === 'a') && element.children && element.children.length > 0) {
+      return doEntryReferencesExist(element.children);
+    }
+  }
+  return false;
+}
+
+function isEntryRef(element: any) {
+  return element.type === 'reference' && element.attrs.type === 'entry';
+}
