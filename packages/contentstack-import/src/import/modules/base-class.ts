@@ -43,7 +43,8 @@ export type ApiModuleType =
   | 'update-labels'
   | 'create-webhooks'
   | 'create-workflows'
-  | 'create-custom-role';
+  | 'create-custom-role'
+  | 'create-entries';
 
 export type ApiOptions = {
   uid?: string;
@@ -231,7 +232,7 @@ export default abstract class BaseClass {
       apiOptions = apiOptions.serializeData(apiOptions);
     }
 
-    const { uid, entity, reject, resolve, apiData, additionalInfo, includeParamOnCompletion } = apiOptions;
+    const { uid, entity, reject, resolve, apiData, additionalInfo = {}, includeParamOnCompletion } = apiOptions;
 
     const onSuccess = (response: any) =>
       resolve({
@@ -295,6 +296,9 @@ export default abstract class BaseClass {
       case 'create-cts':
         return this.stack.contentType().create(apiData).then(onSuccess).catch(onReject);
       case 'update-cts':
+        if (additionalInfo.skip) {
+          return Promise.resolve(onSuccess(apiData));
+        }
         return apiData.update().then(onSuccess).catch(onReject);
       case 'update-gfs':
         return apiData.update().then(onSuccess).catch(onReject);
@@ -337,7 +341,13 @@ export default abstract class BaseClass {
           .create({ role: apiData as RoleData })
           .then(onSuccess)
           .catch(onReject);
-
+      case 'create-entries':
+        return this.stack
+          .contentType(additionalInfo.ctUid)
+          .entry()
+          .create({ entry: apiData })
+          .then(onSuccess)
+          .catch(onReject);
       default:
         return Promise.resolve();
     }
