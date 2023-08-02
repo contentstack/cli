@@ -388,7 +388,7 @@ const config: DefaultConfig = {
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
   getEncryptionKeyMaxRetry: 3,
-  useNewModuleStructure: true
+  useNewModuleStructure: true,
   // useBackedupDir: '',
   // backupConcurrency: 10,
 };
