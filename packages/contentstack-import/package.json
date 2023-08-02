@@ -7,7 +7,7 @@
   "dependencies": {
     "@contentstack/cli-command": "^1.2.11",
     "@contentstack/cli-utilities": "^1.5.1",
-    "@contentstack/management":  "~1.10.0",
+    "@contentstack/management": "~1.10.0",
     "@oclif/config": "^1.18.3",
     "@oclif/core": "^2.9.3",
     "big-json": "^3.2.0",
@@ -79,10 +79,10 @@
     "cli",
     "plugin"
   ],
-  "main": "./lib/commands/cm/stacks/import.js",
+  "main": "./src/commands/cm/stacks/import.js",
   "license": "MIT",
   "oclif": {
-    "commands": "./lib/commands",
+    "commands": "./src/commands",
     "bin": "csdx",
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-import/<%- commandPath %>"
   },
