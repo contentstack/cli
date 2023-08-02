@@ -13,9 +13,10 @@ export default function setupBackupDir(importConfig: ImportConfig): Promise<stri
     //NOTE: If the backup folder's directory is provided, create it at that location; otherwise, the default path (working directory).
     let backupDirPath = path.join(process.cwd(), '_backup_' + Math.floor(Math.random() * 1000));
     if (importConfig.createBackupDir) {
-      if (!fileHelper.fileExistsSync(importConfig.createBackupDir)) {
-        fileHelper.makeDirectory(importConfig.createBackupDir);
+      if (fileHelper.fileExistsSync(importConfig.createBackupDir)) {
+        fileHelper.removeDirSync(importConfig.createBackupDir);
       }
+      fileHelper.makeDirectory(importConfig.createBackupDir);
       backupDirPath = importConfig.createBackupDir;
     }
 

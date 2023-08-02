@@ -131,4 +131,8 @@ export const fileExistsSync = function (path: string) {
   return fs.existsSync(path);
 };
 
+export const removeDirSync = function(path: string){
+  fs.rmdirSync(path, { recursive: true});
+}
+
 export const fsUtil = new FsUtility();
