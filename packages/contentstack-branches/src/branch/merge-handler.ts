@@ -104,7 +104,7 @@ export default class MergeHandler {
           modified: [],
           deleted: [],
         };
-        const selectedItems = await selectCustomPreferences(module, this.branchCompareData[module]);
+        const selectedItems = await selectCustomPreferences(module, this.branchCompareData[module], this.displayFormat);
         forEach(selectedItems, (item) => {
           this.mergeSettings.mergeContent[module][item.status].push(item.value);
           this.mergeSettings.itemMergeStrategies.push(item.value);
