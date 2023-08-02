@@ -1009,6 +1009,7 @@ module.exports = class ImportEntries {
         })
         .catch((error) => {
           log(this.config, `failed to update the field rules ${formatError(error)}`);
+          return reject(error);
         });
     });
   }
