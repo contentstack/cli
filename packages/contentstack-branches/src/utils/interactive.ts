@@ -166,7 +166,7 @@ export async function askMergeComment(): Promise<string> {
   });
 }
 
-export async function selectCustomPreferences(module, payload) {
+export async function selectCustomPreferences(module, payload, displayFormat) {
   // cliux.print(`\n Select from ${startCase(camelCase(module))}`, { color: 'yellow' });
 
   // parse rows
@@ -180,9 +180,10 @@ export async function selectCustomPreferences(module, payload) {
       tableRows.push(row);
     });
 
-    forEach(payload.modified, (item: BranchModifiedDetails) => {
+    forEach(payload.modified, (item: BranchDiffRes | BranchModifiedDetails) => {
       const row: any = {};
-      row.name = `± ${item.moduleDetails.title}`;
+      if (displayFormat === 'detailed-text') row.name = `± ${item['moduleDetails'].title}`;
+      else row.name = `± ${item['title']}`;
       row.status = 'modified';
       row.value = item;
       tableRows.push(row);
