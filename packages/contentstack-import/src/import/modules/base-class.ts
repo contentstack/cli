@@ -44,7 +44,9 @@ export type ApiModuleType =
   | 'create-webhooks'
   | 'create-workflows'
   | 'create-custom-role'
-  | 'create-entries';
+  | 'create-entries'
+  | 'update-entries'
+  | 'publish-entries';
 
 export type ApiOptions = {
   uid?: string;
@@ -343,9 +345,21 @@ export default abstract class BaseClass {
           .catch(onReject);
       case 'create-entries':
         return this.stack
-          .contentType(additionalInfo.ctUid)
+          .contentType(additionalInfo.cTUid)
           .entry()
           .create({ entry: apiData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'update-entries':
+        return apiData.update().then(onSuccess).catch(onReject);
+      case 'publish-entries':
+        if (additionalInfo.skip) {
+          return Promise.resolve(onSuccess(apiData));
+        }
+        return this.stack
+          .contentType(additionalInfo.cTUid)
+          .entry(additionalInfo.entryUid)
+          .publish({ publishDetails: apiData, locale: additionalInfo.locale })
           .then(onSuccess)
           .catch(onReject);
       default:

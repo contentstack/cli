@@ -20,5 +20,10 @@ export {
 } from './marketplace-app-helper';
 export { schemaTemplate, suppressSchemaReference, removeReferenceFields } from './content-type-helper';
 export { lookupExtension } from './extension-helper';
-export { lookupEntries, removeUidsFromJsonRteFields, removeEntryRefsFromJSONRTE } from './entries-helper';
+export {
+  lookupEntries,
+  removeUidsFromJsonRteFields,
+  removeEntryRefsFromJSONRTE,
+  restoreJsonRteEntryRefs,
+} from './entries-helper';
 export * from './common-helper';
