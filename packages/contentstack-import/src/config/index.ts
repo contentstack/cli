@@ -377,7 +377,8 @@ const config: DefaultConfig = {
     'content-types',
     'webhooks',
     'custom-roles',
-    'workflows'
+    'workflows',
+    'entries',
   ],
   rateLimit: 5,
   preserveStackVersion: false,
