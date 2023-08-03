@@ -152,11 +152,6 @@ export default class EntriesImport extends BaseClass {
         log(this.importConfig, 'Publishing entries', 'info');
         this.envs = fileHelper.readFileSync(this.envPath);
         for (let entryRequestOption of entryRequestOptions) {
-          log(
-            this.importConfig,
-            `Starting publish entries for ${entryRequestOption.cTUid} in locale ${entryRequestOption.locale}`,
-            'info',
-          );
           await this.publishEntries(entryRequestOption).catch((error) => {
             log(
               this.importConfig,
@@ -285,12 +280,12 @@ export default class EntriesImport extends BaseClass {
     });
     const contentType = find(this.cTs, { uid: cTUid });
 
-    const onSuccess = ({ response, apiData: { uid, url, title }, additionalInfo: { entryFileName } }: any) => {
-      log(this.importConfig, `Created entry: '${title}' of content type ${cTUid} in locale ${locale}`, 'info');
-      this.entriesUidMapper[uid] = response.uid;
-      response.sourceEntryFilePath = path.join(basePath, entryFileName); // stores source file path temporarily
-      response.entryOldUid = uid; // stores old uid temporarily
-      entriesCreateFileHelper.writeIntoFile({ [response.uid]: response } as any, { mapKeyVal: true });
+    const onSuccess = ({ response, apiData: entry, additionalInfo: { entryFileName } }: any) => {
+      log(this.importConfig, `Created entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`, 'info');
+      this.entriesUidMapper[entry.uid] = response.uid;
+      entry.sourceEntryFilePath = path.join(basePath, entryFileName); // stores source file path temporarily
+      entry.entryOldUid = entry.uid; // stores old uid temporarily
+      entriesCreateFileHelper.writeIntoFile({ [response.uid]: entry } as any, { mapKeyVal: true });
     };
     const onReject = ({ error, apiData: { uid, title } }: any) => {
       log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to create`, 'error');
@@ -353,7 +348,7 @@ export default class EntriesImport extends BaseClass {
       },
       this.assetUidMapper,
       this.assetUrlMapper,
-      path.join(this.entriesPath, cTUid, locale),
+      path.join(this.entriesPath, cTUid),
       this.installedExtensions,
     );
     delete entry.publish_details;
@@ -394,7 +389,7 @@ export default class EntriesImport extends BaseClass {
     const onReject = ({ error, apiData: { uid, title } }: any) => {
       log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to update`, 'error');
       log(this.importConfig, formatError(error), 'error');
-      this.failedEntries.push({ content_type: cTUid, locale, entry: { uid, title } });
+      this.failedEntries.push({ content_type: cTUid, locale, entry: { uid: this.entriesUidMapper[uid], title } });
     };
 
     for (const index in indexer) {
@@ -459,8 +454,8 @@ export default class EntriesImport extends BaseClass {
         path.join(this.entriesMapperPath, cTUid, locale),
       );
 
-      const entryResponse = this.stack.contentType(contentType.uid).entry(entry.uid);
-      Object.assign(entryResponse, entry);
+      const entryResponse = this.stack.contentType(contentType.uid).entry(this.entriesUidMapper[entry.uid]);
+      Object.assign(entryResponse, cloneDeep(entry));
       delete entryResponse.publish_details;
       apiOptions.apiData = entryResponse;
       return apiOptions;
@@ -543,7 +538,6 @@ export default class EntriesImport extends BaseClass {
             }
           }
         }
-
         const contentTypeResponse: any = await this.stack
           .contentType(contentType.uid)
           .fetch()
@@ -557,6 +551,7 @@ export default class EntriesImport extends BaseClass {
         await contentTypeResponse.update().catch((error) => {
           log(this.importConfig, `failed to update the field rules of ${cTUid} ${formatError(error)}`, 'error');
         });
+        log(this.importConfig, `Updated the field rules of ${cTUid}`, 'info');
       } else {
         log(this.importConfig, `No field rules found in content type ${cTUid} to update`, 'error');
       }
@@ -571,6 +566,11 @@ export default class EntriesImport extends BaseClass {
     const indexer = fs.indexFileContent;
     const indexerCount = values(indexer).length;
     const contentType = find(this.cTs, { uid: cTUid });
+
+    if (indexerCount === 0) {
+      return Promise.resolve();
+    }
+    log(this.importConfig, `Starting publish entries for ${cTUid} in locale ${locale}`, 'info');
 
     const onSuccess = ({ response, apiData: { environments }, additionalInfo: { entryUid } }: any) => {
       log(
@@ -607,7 +607,7 @@ export default class EntriesImport extends BaseClass {
             resolve: onSuccess,
             entity: 'publish-entries',
             includeParamOnCompletion: true,
-            serializeData: this.serializeEntries.bind(this),
+            serializeData: this.serializePublishEntries.bind(this),
             additionalInfo: { contentType, locale, cTUid },
           },
           concurrencyLimit: this.importConcurrency,
