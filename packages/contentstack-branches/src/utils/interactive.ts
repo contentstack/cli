@@ -231,7 +231,7 @@ export async function selectCustomPreferences(module, payload, displayFormat) {
   forEach(selectedStrategies, (strategy: string, index: number) => {
     const selectedItem = tableRows[index];
     if (strategy && selectedItem) {
-      delete selectedItem.value.status;
+      // delete selectedItem.value.status;
       selectedItem.value.merge_strategy = strategy;
       updatedArray.push(selectedItem);
     }

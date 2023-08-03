@@ -152,6 +152,22 @@ export const deleteModifiedFields = (iterableModifiedArray) => {
   });
 };
 
+export const formatPayload = (payload) => {
+  const modifiedPayload = payload.item_merge_strategies.map((value) => {
+    let moduleDetailsCopy;
+    if (value.moduleDetails) {
+      moduleDetailsCopy = value.moduleDetails;
+      delete value.moduleDetails;
+    }
+    if (value.modifiedFields) delete value.modifiedFields;
+    return {
+      ...value,
+      ...moduleDetailsCopy,
+    };
+  });
+  return { ...payload, item_merge_strategies: [...modifiedPayload] };
+};
+
 export const executeMerge = async (apiKey, mergePayload, host): Promise<any> => {
   const stackAPIClient = await (await managementSDKClient({ host })).stack({ api_key: apiKey });
   const mergeResponse = await executeMergeRequest(stackAPIClient, { params: mergePayload });
