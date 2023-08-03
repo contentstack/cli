@@ -17,10 +17,6 @@ module.exports = (region) => {
       : path.join(__dirname, '..', '..', `${EXPORT_PATH}_${stack}`);
     const customRolesBasePath = path.join(exportBasePath, modules.customRoles.dirName);
     const customRolesJson = path.join(customRolesBasePath, modules.customRoles.fileName);
-    const messageFilePath = path.join(__dirname, '..', '..', 'messages/index.json');
-
-    messageHandler.init({ messageFilePath });
-    const { promptMessageList } = require(messageFilePath);
 
     describe('ContentStack-Export custom-roles', () => {
       describe('cm:stacks:export custom-roles [auth-token]', () => {
