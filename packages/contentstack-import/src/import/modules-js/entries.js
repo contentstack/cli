@@ -406,9 +406,9 @@ module.exports = class ImportEntries {
                             } else {
                               log(
                                 this.config,
-                                `Failed to create an entry ${eUid} ${formatError(error)} Title of the failed entry: ${
+                                `Failed to create an entry ${eUid} ${formatError(error)} Title of the failed entry: '${
                                   entries[eUid].title
-                                }`,
+                                }'`,
                                 'error',
                               );
                             }
@@ -425,9 +425,9 @@ module.exports = class ImportEntries {
                           // 429 for rate limit
                           log(
                             this.config,
-                            `Failed to create an entry ${eUid} ${formatError(error)}. Title of the failed entry: ${
+                            `Failed to create an entry ${eUid} ${formatError(error)}. Title of the failed entry: '${
                               entries[eUid].title
-                            }`,
+                            }'`,
                             'error',
                           );
                           self.fails.push({
@@ -506,7 +506,7 @@ module.exports = class ImportEntries {
                 lang +
                 "' language. " +
                 'Title of the failed entry: ' +
-                title||"",
+                `'${title||""}'`,
             ),
             'error',
           );
