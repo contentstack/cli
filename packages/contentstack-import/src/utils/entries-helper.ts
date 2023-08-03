@@ -8,7 +8,7 @@ import config from '../config';
 import * as fileHelper from './file-helper';
 
 // update references in entry object
-export const lookupEntries = function (data: any, mappedUids: string[], uidMapperPath: string) {
+export const lookupEntries = function (data: any, mappedUids: Record<string, any>, uidMapperPath: string) {
   let parent: string[] = [];
   let uids: string[] = [];
   let unmapped: string[] = [];
@@ -425,4 +425,161 @@ function doEntryReferencesExist(element: Record<string, any>[] | any): boolean {
 
 function isEntryRef(element: any) {
   return element.type === 'reference' && element.attrs.type === 'entry';
+}
+
+export const restoreJsonRteEntryRefs = (
+  entry: Record<string, any>,
+  sourceStackEntry,
+  ctSchema,
+  { mappedAssetUids, mappedAssetUrls },
+) => {
+  // let mappedAssetUids = fileHelper.readFileSync(this.mappedAssetUidPath) || {};
+  // let mappedAssetUrls = fileHelper.readFileSync(this.mappedAssetUrlPath) || {};
+  for (const element of ctSchema) {
+    switch (element.data_type) {
+      case 'blocks': {
+        if (entry[element.uid]) {
+          if (element.multiple) {
+            entry[element.uid] = entry[element.uid].map((e, eIndex) => {
+              let key = Object.keys(e).pop();
+              let subBlock = element.blocks.filter((block) => block.uid === key).pop();
+              let sourceStackElement = sourceStackEntry[element.uid][eIndex][key];
+              e[key] = restoreJsonRteEntryRefs(e[key], sourceStackElement, subBlock.schema, {
+                mappedAssetUids,
+                mappedAssetUrls,
+              });
+              return e;
+            });
+          }
+        }
+        break;
+      }
+      case 'global_field':
+      case 'group': {
+        if (entry[element.uid]) {
+          if (element.multiple) {
+            entry[element.uid] = entry[element.uid].map((e, eIndex) => {
+              let sourceStackElement = sourceStackEntry[element.uid][eIndex];
+              e = restoreJsonRteEntryRefs(e, sourceStackElement, element.schema, { mappedAssetUids, mappedAssetUrls });
+              return e;
+            });
+          } else {
+            let sourceStackElement = sourceStackEntry[element.uid];
+            entry[element.uid] = restoreJsonRteEntryRefs(entry[element.uid], sourceStackElement, element.schema, {
+              mappedAssetUids,
+              mappedAssetUrls,
+            });
+          }
+        }
+        break;
+      }
+      case 'json': {
+        if (entry[element.uid] && element.field_metadata.rich_text_type) {
+          if (element.multiple) {
+            entry[element.uid] = entry[element.uid].map((field, index) => {
+              // i am facing a Maximum call stack exceeded issue,
+              // probably because of this loop operation
+
+              let entryRefs = sourceStackEntry[element.uid][index].children
+                .map((e, i) => {
+                  return { index: i, value: e };
+                })
+                .filter((e) => doEntryReferencesExist(e.value))
+                .map((e) => {
+                  // commenting the line below resolved the maximum call stack exceeded issue
+                  // e.value = this.setDirtyTrue(e.value)
+                  setDirtyTrue(e.value);
+                  return e;
+                })
+                .map((e) => {
+                  // commenting the line below resolved the maximum call stack exceeded issue
+                  // e.value = this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls)
+                  resolveAssetRefsInEntryRefsForJsonRte(e.value, mappedAssetUids, mappedAssetUrls);
+                  return e;
+                });
+
+              if (entryRefs.length > 0) {
+                entryRefs.forEach((entryRef) => {
+                  field.children.splice(entryRef.index, 0, entryRef.value);
+                });
+              }
+              return field;
+            });
+          } else {
+            let entryRefs = sourceStackEntry[element.uid].children
+              .map((e, index) => {
+                return { index: index, value: e };
+              })
+              .filter((e) => doEntryReferencesExist(e.value))
+              .map((e) => {
+                setDirtyTrue(e.value);
+                return e;
+              })
+              .map((e) => {
+                resolveAssetRefsInEntryRefsForJsonRte(e.value, mappedAssetUids, mappedAssetUrls);
+                return e;
+              });
+
+            if (entryRefs.length > 0) {
+              entryRefs.forEach((entryRef) => {
+                if (!_.isEmpty(entry[element.uid]) && entry[element.uid].children) {
+                  entry[element.uid].children.splice(entryRef.index, 0, entryRef.value);
+                }
+              });
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+  return entry;
+};
+
+function setDirtyTrue(jsonRteChild: Record<string, any>) {
+  // also removing uids in this function
+  if (jsonRteChild.type) {
+    if (_.isObject(jsonRteChild.attrs)) {
+      jsonRteChild.attrs['dirty'] = true;
+    }
+    delete jsonRteChild.uid;
+
+    if (jsonRteChild.children && jsonRteChild.children.length > 0) {
+      jsonRteChild.children = jsonRteChild.children.map((subElement) => this.setDirtyTrue(subElement));
+    }
+  }
+  return jsonRteChild;
+}
+
+function resolveAssetRefsInEntryRefsForJsonRte(jsonRteChild, mappedAssetUids, mappedAssetUrls) {
+  if (jsonRteChild.type) {
+    if (jsonRteChild.attrs.type === 'asset') {
+      let assetUrl;
+      if (mappedAssetUids[jsonRteChild.attrs['asset-uid']]) {
+        jsonRteChild.attrs['asset-uid'] = mappedAssetUids[jsonRteChild.attrs['asset-uid']];
+      }
+
+      if (jsonRteChild.attrs['display-type'] !== 'link') {
+        assetUrl = jsonRteChild.attrs['asset-link'];
+      } else {
+        assetUrl = jsonRteChild.attrs['href'];
+      }
+
+      if (mappedAssetUrls[assetUrl]) {
+        if (jsonRteChild.attrs['display-type'] !== 'link') {
+          jsonRteChild.attrs['asset-link'] = mappedAssetUrls[assetUrl];
+        } else {
+          jsonRteChild.attrs['href'] = mappedAssetUrls[assetUrl];
+        }
+      }
+    }
+
+    if (jsonRteChild.children && jsonRteChild.children.length > 0) {
+      jsonRteChild.children = jsonRteChild.children.map((subElement) =>
+        resolveAssetRefsInEntryRefsForJsonRte(subElement, mappedAssetUids, mappedAssetUrls),
+      );
+    }
+  }
+
+  return jsonRteChild;
 }
