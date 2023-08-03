@@ -18,9 +18,6 @@ module.exports = (region) => {
 
     const localeBasePath = path.join(exportBasePath, modules.locales.dirName);
     const localeJson = path.join(localeBasePath, modules.locales.fileName);
-    const messageFilePath = path.join(__dirname, '..', '..', 'messages/index.json');
-    messageHandler.init({ messageFilePath });
-    const { promptMessageList } = require(messageFilePath);
 
     describe('ContentStack-Export locales', () => {
       describe('cm:stacks:export locales [auth-token]', () => {
