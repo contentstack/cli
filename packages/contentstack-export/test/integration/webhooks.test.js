@@ -17,10 +17,6 @@ module.exports = (region) => {
       : path.join(__dirname, '..', '..', `${EXPORT_PATH}_${stack}`);
     const webhooksBasePath = path.join(exportBasePath, modules.webhooks.dirName);
     const webhooksJson = path.join(webhooksBasePath, modules.webhooks.fileName);
-    const messageFilePath = path.join(__dirname, '..', '..', 'messages/index.json');
-
-    messageHandler.init({ messageFilePath });
-    const { promptMessageList } = require(messageFilePath);
 
     describe('ContentStack-Export webhooks', () => {
       describe('cm:stacks:export webhooks [auth-token]', () => {
