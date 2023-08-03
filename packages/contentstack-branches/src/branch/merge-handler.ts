@@ -15,6 +15,7 @@ import {
   generateMergeScripts,
   selectCustomPreferences,
   deleteModifiedFields,
+  formatPayload,
 } from '../utils';
 
 const enableEntryExp = false;
@@ -212,18 +213,19 @@ export default class MergeHandler {
   async executeMerge(mergePayload) {
     let spinner;
     try {
+      const formattedPayload = formatPayload(mergePayload);
       if (!this.mergeSettings.mergeComment) {
         this.mergeSettings.mergeComment = await askMergeComment();
-        mergePayload.merge_comment = this.mergeSettings.mergeComment;
+        formattedPayload.merge_comment = this.mergeSettings.mergeComment;
       }
 
       spinner = cliux.loaderV2('Merging the changes...');
-      const mergeResponse = await executeMerge(this.stackAPIKey, mergePayload, this.host);
+      const mergeResponse = await executeMerge(this.stackAPIKey, formattedPayload, this.host);
       cliux.loaderV2('', spinner);
       cliux.success(`Merged the changes successfully. Merge UID: ${mergeResponse.uid}`);
 
       if (this.enableEntryExp) {
-        this.executeEntryExpFlow(mergeResponse.uid, mergePayload);
+        this.executeEntryExpFlow(mergeResponse.uid, formattedPayload);
       }
     } catch (error) {
       cliux.loaderV2('', spinner);
