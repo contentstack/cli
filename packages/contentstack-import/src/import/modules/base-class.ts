@@ -351,7 +351,7 @@ export default abstract class BaseClass {
           .then(onSuccess)
           .catch(onReject);
       case 'update-entries':
-        return apiData.update().then(onSuccess).catch(onReject);
+        return apiData.update({ locale: additionalInfo.locale }).then(onSuccess).catch(onReject);
       case 'publish-entries':
         if (additionalInfo.skip) {
           return Promise.resolve(onSuccess(apiData));
