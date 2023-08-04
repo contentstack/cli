@@ -103,7 +103,7 @@ export function entryCreateScript(contentType) {
               let compareEntryRef = getValueByPath(entryDetails, references[i]);
               let baseEntryRef = getValueByPath(baseEntry, references[i]);
   
-              if (compareEntryRef.length > 0 && baseEntryRef.length >= 0) {
+              if (compareEntryRef && compareEntryRef.length > 0 && baseEntryRef && baseEntryRef.length >= 0) {
                 let compareRefEntry = await managementAPIClient
                   .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
                   .contentType(compareEntryRef[0]._content_type_uid)

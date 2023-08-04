@@ -47,7 +47,7 @@ export function generateMergeScripts(mergeSummary, mergeJobUID) {
   }
 }
 
-export function getContentypeMergeStatus(status) {
+export function getContentTypeMergeStatus(status) {
   if (status === 'merge_existing') {
     return 'updated';
   } else if (status === 'merge_new') {
@@ -82,7 +82,7 @@ export function createMergeScripts(contentType: CreateMergeScriptsProps, content
         fs.mkdirSync(fullPath);
       }
       fs.writeFileSync(
-        `${fullPath}/${fileCreatedAt}_${getContentypeMergeStatus(contentType.entry_merge_strategy)}_${
+        `${fullPath}/${fileCreatedAt}_${getContentTypeMergeStatus(contentType.entry_merge_strategy)}_${
           contentType.uid
         }.js`,
         content,
