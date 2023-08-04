@@ -46,7 +46,8 @@ export type ApiModuleType =
   | 'create-custom-role'
   | 'create-entries'
   | 'update-entries'
-  | 'publish-entries';
+  | 'publish-entries'
+  | 'delete-entries';
 
 export type ApiOptions = {
   uid?: string;
@@ -347,7 +348,7 @@ export default abstract class BaseClass {
         return this.stack
           .contentType(additionalInfo.cTUid)
           .entry()
-          .create({ entry: apiData })
+          .create({ entry: apiData }, { locale: additionalInfo.locale })
           .then(onSuccess)
           .catch(onReject);
       case 'update-entries':
@@ -360,6 +361,13 @@ export default abstract class BaseClass {
           .contentType(additionalInfo.cTUid)
           .entry(additionalInfo.entryUid)
           .publish({ publishDetails: apiData, locale: additionalInfo.locale })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'delete-entries':
+        return this.stack
+          .contentType(apiData.cTUid)
+          .entry(apiData.entryUid)
+          .delete({ locale: this.importConfig?.master_locale?.code })
           .then(onSuccess)
           .catch(onReject);
       default:
