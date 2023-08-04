@@ -990,10 +990,15 @@ module.exports = class ImportEntries {
     return new Promise((resolve, reject) => {
       if (schema.field_rules) {
         let fieldRuleLength = schema.field_rules.length;
+        const fieldDatatypeMap = {};
+        for (let i = 0; i < schema.schema.length ; i++) {
+          const field = schema.schema[i].uid;
+          fieldDatatypeMap[field] = schema.schema[i].data_type; 
+        }
         for (let k = 0; k < fieldRuleLength; k++) {
           let fieldRuleConditionLength = schema.field_rules[k].conditions.length;
           for (let i = 0; i < fieldRuleConditionLength; i++) {
-            if (schema.field_rules[k].conditions[i].operand_field === 'reference') {
+            if (fieldDatatypeMap[schema.field_rules[k].conditions[i].operand_field] === 'reference') {
               let fieldRulesValue = schema.field_rules[k].conditions[i].value;
               let fieldRulesArray = fieldRulesValue.split('.');
               let updatedValue = [];
@@ -1027,6 +1032,7 @@ module.exports = class ImportEntries {
         })
         .catch((error) => {
           log(this.config, `failed to update the field rules ${formatError(error)}`);
+          return reject(error);
         });
     });
   }
