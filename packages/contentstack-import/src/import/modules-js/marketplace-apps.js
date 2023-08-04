@@ -520,14 +520,12 @@ module.exports = class ImportMarketplaceApps {
       return Promise.resolve();
     }
 
-    let installation = this.client.organization(this.config.org_uid).app(app.manifest.uid).installation(uid);
-
-    installation = Object.assign(installation, payload);
-
-    return installation
-      .update()
-      .then(async (data) => {
-        if (data) {
+    return this.httpClient
+      .put(`${this.developerHubBaseUrl}/installations/${uid}`, payload)
+      .then(({ data }) => {
+        if (data.message) {
+          log(this.config, formatError(data.message), 'success');
+        } else {
           log(this.config, `${app.manifest.name} app config updated successfully.!`, 'success');
         }
       })
