@@ -406,7 +406,7 @@ module.exports = class ImportEntries {
                             } else {
                               log(
                                 this.config,
-                                `Failed to create an entry ${eUid} ${formatError(error)} Title of the failed entry: '${
+                                `Failed to create an entry '${eUid}' ${formatError(error)} Title of the failed entry: '${
                                   entries[eUid].title
                                 }'`,
                                 'error',
@@ -425,7 +425,7 @@ module.exports = class ImportEntries {
                           // 429 for rate limit
                           log(
                             this.config,
-                            `Failed to create an entry ${eUid} ${formatError(error)}. Title of the failed entry: '${
+                            `Failed to create an entry '${eUid}' ${formatError(error)}. Title of the failed entry: '${
                               entries[eUid].title
                             }'`,
                             'error',
@@ -607,7 +607,7 @@ module.exports = class ImportEntries {
             } catch (error) {
               addlogs(
                 this.config,
-                `Failed to update the entry ${uid} references while reposting ${formatError(error)}`,
+                `Failed to update the entry '${uid}' references while reposting ${formatError(error)}`,
                 'error',
               );
             }
@@ -704,7 +704,7 @@ module.exports = class ImportEntries {
             })
             .catch((error) => {
               // error while updating entries with references
-              addlogs(this.config, `Failed re-post entries of content type ${ctUid} locale ${lang}`, 'error');
+              addlogs(this.config, `Failed re-post entries of content type '${ctUid}' locale '${lang}'`, 'error');
               addlogs(this.config, formatError(error), 'error');
               // throw error;
             });
@@ -796,7 +796,7 @@ module.exports = class ImportEntries {
             })
             .catch((_error) => {
               addlogs(this.config, formatError(_error), 'error');
-              reject(`Failed suppress content type ${schema.uid} reference fields`);
+              reject(`Failed suppress content type '${schema.uid}' reference fields`);
             });
           // update 5 content types at a time
         },
