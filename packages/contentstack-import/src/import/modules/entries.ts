@@ -52,6 +52,7 @@ export default class EntriesImport extends BaseClass {
   private locales: Record<string, any>[];
   private entriesUidMapper: Record<string, any>;
   private envs: Record<string, any>;
+  private autoCreatedEntries: Record<string, any>[];
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -78,19 +79,11 @@ export default class EntriesImport extends BaseClass {
     this.jsonRteCTs = [];
     this.jsonRteCTsWithRef = [];
     this.envs = {};
+    this.autoCreatedEntries = [];
   }
 
   async start(): Promise<any> {
     try {
-      /**
-       * Read CTS
-       * Suppress CTS
-       * Read locales
-       * Create request objs
-       * create entries
-       * update entries
-       */
-
       this.cTs = fsUtil.readFile(path.join(this.cTsPath, 'schema.json')) as Record<string, unknown>[];
       if (!this.cTs || isEmpty(this.cTs)) {
         log(this.importConfig, 'No content type found', 'info');
@@ -132,14 +125,19 @@ export default class EntriesImport extends BaseClass {
 
       log(this.importConfig, 'Restoring content type changes', 'info');
       await this.enableMandatoryCTReferences().catch((error) => {
-        log(this.importConfig, `failed update content type references ${formatError(error)}`, 'error');
+        log(this.importConfig, `Error while updating content type references ${formatError(error)}`, 'error');
       });
 
-      log(this.importConfig, 'Removing entries from master language which got created by default', 'info');
-      await this.removeAutoCreatedEntries().catch((error) => {
-        log(this.importConfig, `failed to remove auto created entries in master locale ${formatError(error)}`, 'error');
-      });
-
+      if (this.autoCreatedEntries.length > 0) {
+        log(this.importConfig, 'Removing entries from master language which got created by default', 'info');
+        await this.removeAutoCreatedEntries().catch((error) => {
+          log(
+            this.importConfig,
+            `Error while removing auto created entries in master locale ${formatError(error)}`,
+            'error',
+          );
+        });
+      }
       // Update field rule of content types which are got removed earlier
       log(this.importConfig, 'Updating the field rules of content type', 'info');
       await this.updateFieldRules().catch((error) => {
@@ -269,6 +267,7 @@ export default class EntriesImport extends BaseClass {
       return Promise.resolve();
     }
     log(this.importConfig, `Starting to create entries for ${cTUid} in locale ${locale}`, 'info');
+    const isMasterLocale = locale === this.importConfig?.master_locale?.code;
     // Write created entries
     const entriesCreateFileHelper = new FsUtility({
       moduleName: 'created-entries',
@@ -285,6 +284,9 @@ export default class EntriesImport extends BaseClass {
       this.entriesUidMapper[entry.uid] = response.uid;
       entry.sourceEntryFilePath = path.join(basePath, entryFileName); // stores source file path temporarily
       entry.entryOldUid = entry.uid; // stores old uid temporarily
+      if (!isMasterLocale) {
+        this.autoCreatedEntries.push({ cTUid, locale, entryUid: response.uid });
+      }
       entriesCreateFileHelper.writeIntoFile({ [response.uid]: entry } as any, { mapKeyVal: true });
     };
     const onReject = ({ error, apiData: { uid, title } }: any) => {
@@ -508,7 +510,29 @@ export default class EntriesImport extends BaseClass {
     return apiOptions;
   }
 
-  async removeAutoCreatedEntries(): Promise<void> {}
+  async removeAutoCreatedEntries(): Promise<void> {
+    const onSuccess = ({ response, apiData: { entryUid } }: any) => {
+      log(this.importConfig, `Auto created entry in master locale removed - entry uid ${entryUid} `, 'success');
+    };
+    const onReject = ({ error, apiData: { entryUid } }: any) => {
+      log(
+        this.importConfig,
+        `Failed to remove auto created entry in master locale - entry uid ${entryUid} \n ${formatError(error)}`,
+        'error',
+      );
+    };
+    return await this.makeConcurrentCall({
+      processName: 'Remove auto created entry in master locale',
+      apiContent: this.autoCreatedEntries,
+      apiParams: {
+        reject: onReject.bind(this),
+        resolve: onSuccess.bind(this),
+        entity: 'delete-entries',
+        includeParamOnCompletion: true,
+      },
+      concurrencyLimit: this.importConcurrency,
+    });
+  }
 
   async updateFieldRules(): Promise<void> {
     let cTsWithFieldRules = fsUtil.readFile(path.join(this.cTsPath + '/field_rules_uid.json')) as Record<string, any>[];
