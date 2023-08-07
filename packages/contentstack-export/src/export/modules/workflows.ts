@@ -62,7 +62,7 @@ export default class ExportWorkFlows extends BaseClass {
           return await this.getWorkflows(skip);
         }
       })
-      .catch(({ error }: any) => {
+      .catch((error: any) => {
         log(this.exportConfig, `Failed to export workflows.${formatError(error)}`, 'error');
         log(this.exportConfig, error, 'error');
       });
