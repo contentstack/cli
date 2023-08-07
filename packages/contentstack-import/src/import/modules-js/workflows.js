@@ -117,7 +117,7 @@ module.exports = class importWorkflows {
               .catch(function (error) {
                 self.fails.push(workflow);
                 if (error.errors.name) {
-                  log(self.config, `workflow ${workflow.name} already exist`, 'error');
+                  log(self.config, `workflow '${workflow.name}' already exist`, 'error');
                 } else if (error.errors['workflow_stages.0.users']) {
                   log(
                     self.config,
@@ -125,7 +125,7 @@ module.exports = class importWorkflows {
                     'error',
                   );
                 } else {
-                  log(self.config, `workflow ${workflow.name} failed.`, 'error');
+                  log(self.config, `Workflow '${workflow.name}' failed.`, 'error');
                 }
               });
           } else {
