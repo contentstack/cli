@@ -1,5 +1,5 @@
+import { join } from "path";
 import map from "lodash/map";
-import { resolve } from "path";
 import omit from "lodash/omit";
 import find from "lodash/find";
 import split from "lodash/split";
@@ -10,6 +10,7 @@ import { cliux as ux } from "@contentstack/cli-utilities";
 
 import { print } from "../util";
 import BaseClass from "./base-class";
+import { AdapterConstructorInputs } from "../types";
 import { getRemoteUrls } from "../util/create-git-meta";
 import {
   repositoriesQuery,
@@ -18,6 +19,10 @@ import {
 } from "../graphql";
 
 export default class GitHub extends BaseClass {
+  constructor(options: AdapterConstructorInputs) {
+    super(options);
+  }
+
   /**
    * @method run - initialization function
    *
@@ -225,7 +230,9 @@ export default class GitHub extends BaseClass {
    * @memberof GitHub
    */
   async checkGitRemoteAvailableAndValid(): Promise<boolean | void> {
-    const localRemoteUrl = (await getRemoteUrls(resolve(this.config.projectBasePath, '.git/config')))?.origin || '';
+    const localRemoteUrl =
+      (await getRemoteUrls(join(this.config.projectBasePath, ".git/config")))
+        ?.origin || "";
 
     if (!localRemoteUrl) {
       this.log("GitHub project not identified!", "error");
