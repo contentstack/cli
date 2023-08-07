@@ -1,6 +1,6 @@
 import find from 'lodash/find';
 import { resolve as pResolve } from 'node:path';
-import { isAuthenticated } from '@contentstack/cli-utilities';
+import { isAuthenticated, managementSDKClient } from '@contentstack/cli-utilities';
 
 import config from '../../config';
 import BaseClass from './base-class';
@@ -39,7 +39,11 @@ export default class ExportStack extends BaseClass {
   }
 
   async getStack(): Promise<any> {
-    return await this.stack.fetch().catch((error: any) => {
+    const tempAPIClient = await managementSDKClient({ host: this.exportConfig.host });
+    return await tempAPIClient
+    .stack({ api_key: this.exportConfig.source_stack })
+    .fetch()
+    .catch((error: any) => {
       log(this.exportConfig, `Failed to export stack. ${formatError(error)}`, 'error');
     });
   }
