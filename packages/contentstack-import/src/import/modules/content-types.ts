@@ -201,7 +201,7 @@ export default class ContentTypesImport extends BaseClass {
       log(this.importConfig, `Updated the global field ${uid} with content type references`, 'info');
     };
     const onReject = ({ error, apiData: { uid } = undefined }: any) => {
-      log(this.importConfig, `failed to update the global field ${uid} ${formatError(error)}`, 'error');
+      log(this.importConfig, `failed to update the global field '${uid}' ${formatError(error)}`, 'error');
     };
     return await this.makeConcurrentCall({
       processName: 'Update pending global fields',
