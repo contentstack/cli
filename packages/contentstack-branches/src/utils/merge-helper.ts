@@ -122,17 +122,50 @@ export const displayBranchStatus = async (options) => {
   return parsedResponse;
 };
 
-export const displayMergeSummary = (options) => {
+export const displayMergeSummary = ({ format, compareData, strategy, strategySubOption }) => {
   cliux.print(' ');
   cliux.print(`Merge Summary:`, { color: 'yellow' });
-  for (let module in options.compareData) {
-    if (options.format === 'compact-text') {
-      branchDiff.printCompactTextView(options.compareData[module]);
-    } else if (options.format === 'detailed-text') {
-      branchDiff.printVerboseTextView(options.compareData[module]);
+
+  for (let module in compareData) {
+    const mergePreferBaseOrCompare = strategy === 'merge_prefer_base' || strategy === 'merge_prefer_compare';
+    if (mergePreferBaseOrCompare && strategySubOption === 'both') {
+      delete compareData[module].deleted;
+    }
+    if (format === 'compact-text') {
+      branchDiff.printCompactTextView(compareData[module]);
+    } else if (format === 'detailed-text') {
+      branchDiff.printVerboseTextView(compareData[module]);
     }
   }
   cliux.print(' ');
+};
+
+export const deleteModifiedFields = (iterableModifiedArray) => {
+  iterableModifiedArray.map(({ modifiedFields }, index: number) => {
+    const { modified, deleted, added } = modifiedFields;
+    const checkDeletedOnly = deleted?.length > 0 && modified?.length === 0 && added?.length === 0;
+    if (checkDeletedOnly) {
+      iterableModifiedArray.splice(index, 1);
+    } else {
+      delete modifiedFields.deleted;
+    }
+  });
+};
+
+export const formatPayload = (payload) => {
+  const modifiedPayload = payload.item_merge_strategies.map((value) => {
+    let moduleDetailsCopy;
+    if (value.moduleDetails) {
+      moduleDetailsCopy = value.moduleDetails;
+      delete value.moduleDetails;
+    }
+    if (value.modifiedFields) delete value.modifiedFields;
+    return {
+      ...value,
+      ...moduleDetailsCopy,
+    };
+  });
+  return { ...payload, item_merge_strategies: [...modifiedPayload] };
 };
 
 export const executeMerge = async (apiKey, mergePayload, host): Promise<any> => {

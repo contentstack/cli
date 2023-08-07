@@ -14,6 +14,8 @@ import {
   executeMerge,
   generateMergeScripts,
   selectCustomPreferences,
+  deleteModifiedFields,
+  formatPayload,
 } from '../utils';
 
 const enableEntryExp = false;
@@ -56,7 +58,7 @@ export default class MergeHandler {
   async start() {
     if (this.mergeSummary) {
       this.loadMergeSettings();
-      await this.displayMergeSummary();
+      this.displayMergeSummary();
       return await this.executeMerge(this.mergeSummary.requestPayload);
     }
     await this.collectMergeSettings();
@@ -91,6 +93,10 @@ export default class MergeHandler {
         this.strategySubOption = strategyResponse;
       }
     }
+    // delete the entire array element if only delete array has length else delete the delete key only from the object
+    if (this.strategy !== 'overwrite_with_compare') {
+      deleteModifiedFields(this.branchCompareData.content_types.modified);
+    }
     if (this.strategy === 'custom_preferences') {
       this.mergeSettings.itemMergeStrategies = [];
       for (let module in this.branchCompareData) {
@@ -99,7 +105,7 @@ export default class MergeHandler {
           modified: [],
           deleted: [],
         };
-        const selectedItems = await selectCustomPreferences(module, this.branchCompareData[module]);
+        const selectedItems = await selectCustomPreferences(module, this.branchCompareData[module], this.displayFormat);
         forEach(selectedItems, (item) => {
           this.mergeSettings.mergeContent[module][item.status].push(item.value);
           this.mergeSettings.itemMergeStrategies.push(item.value);
@@ -126,7 +132,7 @@ export default class MergeHandler {
       this.mergeSettings.strategy = 'overwrite_with_compare';
     }
 
-    await this.displayMergeSummary();
+    this.displayMergeSummary();
 
     if (!this.executeOption) {
       const executionResponse = await selectMergeExecution();
@@ -155,6 +161,8 @@ export default class MergeHandler {
     displayMergeSummary({
       format: this.displayFormat,
       compareData: this.mergeSettings.mergeContent,
+      strategy: this.strategy,
+      strategySubOption: this.strategySubOption,
     });
   }
 
@@ -175,9 +183,6 @@ export default class MergeHandler {
         mergeContent[module].added = moduleBranchCompareData.added;
         break;
       case 'merge_modified_only_prefer_base':
-        mergeContent[module].modified = moduleBranchCompareData.modified;
-        break;
-      case 'merge_modified_only_prefer_compare':
         mergeContent[module].modified = moduleBranchCompareData.modified;
         break;
       case 'merge_modified_only_prefer_compare':
@@ -208,18 +213,19 @@ export default class MergeHandler {
   async executeMerge(mergePayload) {
     let spinner;
     try {
+      const formattedPayload = formatPayload(mergePayload);
       if (!this.mergeSettings.mergeComment) {
         this.mergeSettings.mergeComment = await askMergeComment();
-        mergePayload.merge_comment = this.mergeSettings.mergeComment;
+        formattedPayload.merge_comment = this.mergeSettings.mergeComment;
       }
 
       spinner = cliux.loaderV2('Merging the changes...');
-      const mergeResponse = await executeMerge(this.stackAPIKey, mergePayload, this.host);
+      const mergeResponse = await executeMerge(this.stackAPIKey, formattedPayload, this.host);
       cliux.loaderV2('', spinner);
       cliux.success(`Merged the changes successfully. Merge UID: ${mergeResponse.uid}`);
 
       if (this.enableEntryExp) {
-        this.executeEntryExpFlow(mergeResponse.uid, mergePayload);
+        this.executeEntryExpFlow(mergeResponse.uid, formattedPayload);
       }
     } catch (error) {
       cliux.loaderV2('', spinner);

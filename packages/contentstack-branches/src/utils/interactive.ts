@@ -4,7 +4,7 @@ import camelCase from 'lodash/camelCase';
 import forEach from 'lodash/forEach';
 import { cliux, messageHandler } from '@contentstack/cli-utilities';
 
-import { BranchDiffRes } from '../interfaces';
+import { BranchDiffRes, BranchModifiedDetails } from '../interfaces';
 
 export async function selectModule(): Promise<string> {
   return await cliux.inquire({
@@ -166,7 +166,7 @@ export async function askMergeComment(): Promise<string> {
   });
 }
 
-export async function selectCustomPreferences(module, payload) {
+export async function selectCustomPreferences(module, payload, displayFormat) {
   // cliux.print(`\n Select from ${startCase(camelCase(module))}`, { color: 'yellow' });
 
   // parse rows
@@ -180,9 +180,10 @@ export async function selectCustomPreferences(module, payload) {
       tableRows.push(row);
     });
 
-    forEach(payload.modified, (item: BranchDiffRes) => {
+    forEach(payload.modified, (item: BranchDiffRes | BranchModifiedDetails) => {
       const row: any = {};
-      row.name = `± ${item.title}`;
+      if (displayFormat === 'detailed-text') row.name = `± ${item['moduleDetails'].title}`;
+      else row.name = `± ${item['title']}`;
       row.status = 'modified';
       row.value = item;
       tableRows.push(row);
@@ -230,7 +231,7 @@ export async function selectCustomPreferences(module, payload) {
   forEach(selectedStrategies, (strategy: string, index: number) => {
     const selectedItem = tableRows[index];
     if (strategy && selectedItem) {
-      delete selectedItem.value.status;
+      // delete selectedItem.value.status;
       selectedItem.value.merge_strategy = strategy;
       updatedArray.push(selectedItem);
     }

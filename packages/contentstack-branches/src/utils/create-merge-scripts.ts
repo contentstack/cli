@@ -64,7 +64,9 @@ export function createMergeScripts(contentType: CreateMergeScriptsProps, content
         fs.mkdirSync(fullPath);
       }
       fs.writeFileSync(
-        `${fullPath}/${fileCreatedAt}_${getContentypeMergeStatus(contentType.status)}_${contentType.uid}.js`,
+        `${fullPath}/${fileCreatedAt}_${getContentypeMergeStatus(
+          contentType['moduleDetails'].status ? contentType['moduleDetails'].status : contentType.status,
+        )}_${contentType['moduleDetails'].uid ? contentType['moduleDetails'].uid : contentType.uid}.js`,
         content,
         'utf-8',
       );
