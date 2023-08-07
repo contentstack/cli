@@ -380,7 +380,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
     let workflow = '';
     const envArr = [];
     entry.publish_details.forEach((env) => {
-      envArr.push(JSON.stringify([environments[env['environment']], env['locale']]));
+      envArr.push(JSON.stringify([environments[env['environment']], env['locale'], env['time']]));
     });
     delete entry.publish_details;
     if ('_workflow' in entry) {
