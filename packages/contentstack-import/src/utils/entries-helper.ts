@@ -268,7 +268,7 @@ export const removeUidsFromJsonRteFields = (
       case 'group': {
         if (entry[element.uid]) {
           if (element.multiple) {
-            entry[element.uid] = entry[element.uid].map((e) => {
+            entry[element.uid] = entry[element.uid].map((e: any) => {
               e = removeUidsFromJsonRteFields(e, element.schema);
               return e;
             });
@@ -362,7 +362,7 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
       case 'group': {
         if (entry[element.uid]) {
           if (element.multiple) {
-            entry[element.uid] = entry[element.uid].map((e) => {
+            entry[element.uid] = entry[element.uid].map((e: any) => {
               e = removeEntryRefsFromJSONRTE(e, element.schema);
               return e;
             });
@@ -429,9 +429,9 @@ function isEntryRef(element: any) {
 
 export const restoreJsonRteEntryRefs = (
   entry: Record<string, any>,
-  sourceStackEntry,
-  ctSchema,
-  { mappedAssetUids, mappedAssetUrls },
+  sourceStackEntry: any,
+  ctSchema: any,
+  { mappedAssetUids, mappedAssetUrls }: any,
 ) => {
   // let mappedAssetUids = fileHelper.readFileSync(this.mappedAssetUidPath) || {};
   // let mappedAssetUrls = fileHelper.readFileSync(this.mappedAssetUrlPath) || {};
@@ -440,9 +440,9 @@ export const restoreJsonRteEntryRefs = (
       case 'blocks': {
         if (entry[element.uid]) {
           if (element.multiple) {
-            entry[element.uid] = entry[element.uid].map((e, eIndex) => {
+            entry[element.uid] = entry[element.uid].map((e: any, eIndex: number) => {
               let key = Object.keys(e).pop();
-              let subBlock = element.blocks.filter((block) => block.uid === key).pop();
+              let subBlock = element.blocks.filter((block: any) => block.uid === key).pop();
               let sourceStackElement = sourceStackEntry[element.uid][eIndex][key];
               e[key] = restoreJsonRteEntryRefs(e[key], sourceStackElement, subBlock.schema, {
                 mappedAssetUids,
@@ -458,7 +458,7 @@ export const restoreJsonRteEntryRefs = (
       case 'group': {
         if (entry[element.uid]) {
           if (element.multiple) {
-            entry[element.uid] = entry[element.uid].map((e, eIndex) => {
+            entry[element.uid] = entry[element.uid].map((e: any, eIndex: number) => {
               let sourceStackElement = sourceStackEntry[element.uid][eIndex];
               e = restoreJsonRteEntryRefs(e, sourceStackElement, element.schema, { mappedAssetUids, mappedAssetUrls });
               return e;
@@ -476,22 +476,22 @@ export const restoreJsonRteEntryRefs = (
       case 'json': {
         if (entry[element.uid] && element.field_metadata.rich_text_type) {
           if (element.multiple) {
-            entry[element.uid] = entry[element.uid].map((field, index) => {
+            entry[element.uid] = entry[element.uid].map((field: any, index: number) => {
               // i am facing a Maximum call stack exceeded issue,
               // probably because of this loop operation
 
               let entryRefs = sourceStackEntry[element.uid][index].children
-                .map((e, i) => {
+                .map((e: any, i: number) => {
                   return { index: i, value: e };
                 })
-                .filter((e) => doEntryReferencesExist(e.value))
-                .map((e) => {
+                .filter((e: any) => doEntryReferencesExist(e.value))
+                .map((e: any) => {
                   // commenting the line below resolved the maximum call stack exceeded issue
                   // e.value = this.setDirtyTrue(e.value)
                   setDirtyTrue(e.value);
                   return e;
                 })
-                .map((e) => {
+                .map((e: any) => {
                   // commenting the line below resolved the maximum call stack exceeded issue
                   // e.value = this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls)
                   resolveAssetRefsInEntryRefsForJsonRte(e.value, mappedAssetUids, mappedAssetUrls);
@@ -499,7 +499,7 @@ export const restoreJsonRteEntryRefs = (
                 });
 
               if (entryRefs.length > 0) {
-                entryRefs.forEach((entryRef) => {
+                entryRefs.forEach((entryRef: any) => {
                   field.children.splice(entryRef.index, 0, entryRef.value);
                 });
               }
@@ -507,21 +507,21 @@ export const restoreJsonRteEntryRefs = (
             });
           } else {
             let entryRefs = sourceStackEntry[element.uid].children
-              .map((e, index) => {
+              .map((e: any, index: number) => {
                 return { index: index, value: e };
               })
-              .filter((e) => doEntryReferencesExist(e.value))
-              .map((e) => {
+              .filter((e: any) => doEntryReferencesExist(e.value))
+              .map((e: any) => {
                 setDirtyTrue(e.value);
                 return e;
               })
-              .map((e) => {
+              .map((e: any) => {
                 resolveAssetRefsInEntryRefsForJsonRte(e.value, mappedAssetUids, mappedAssetUrls);
                 return e;
               });
 
             if (entryRefs.length > 0) {
-              entryRefs.forEach((entryRef) => {
+              entryRefs.forEach((entryRef: any) => {
                 if (!_.isEmpty(entry[element.uid]) && entry[element.uid].children) {
                   entry[element.uid].children.splice(entryRef.index, 0, entryRef.value);
                 }
@@ -536,7 +536,7 @@ export const restoreJsonRteEntryRefs = (
   return entry;
 };
 
-function setDirtyTrue(jsonRteChild: Record<string, any>) {
+function setDirtyTrue(jsonRteChild: any) {
   // also removing uids in this function
   if (jsonRteChild.type) {
     if (_.isObject(jsonRteChild.attrs)) {
@@ -545,13 +545,13 @@ function setDirtyTrue(jsonRteChild: Record<string, any>) {
     delete jsonRteChild.uid;
 
     if (jsonRteChild.children && jsonRteChild.children.length > 0) {
-      jsonRteChild.children = jsonRteChild.children.map((subElement) => this.setDirtyTrue(subElement));
+      jsonRteChild.children = jsonRteChild.children.map((subElement: any) => this.setDirtyTrue(subElement));
     }
   }
   return jsonRteChild;
 }
 
-function resolveAssetRefsInEntryRefsForJsonRte(jsonRteChild, mappedAssetUids, mappedAssetUrls) {
+function resolveAssetRefsInEntryRefsForJsonRte(jsonRteChild: any, mappedAssetUids: any, mappedAssetUrls: any) {
   if (jsonRteChild.type) {
     if (jsonRteChild.attrs.type === 'asset') {
       let assetUrl;
@@ -575,7 +575,7 @@ function resolveAssetRefsInEntryRefsForJsonRte(jsonRteChild, mappedAssetUids, ma
     }
 
     if (jsonRteChild.children && jsonRteChild.children.length > 0) {
-      jsonRteChild.children = jsonRteChild.children.map((subElement) =>
+      jsonRteChild.children = jsonRteChild.children.map((subElement: any) =>
         resolveAssetRefsInEntryRefsForJsonRte(subElement, mappedAssetUids, mappedAssetUrls),
       );
     }
