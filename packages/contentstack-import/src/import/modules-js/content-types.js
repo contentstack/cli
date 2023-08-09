@@ -103,7 +103,7 @@ class ContentTypesImport {
 
       log(this.importConfig, chalk.green('Content types imported successfully'), 'success');
     } catch (error) {
-      let message_content_type = "";
+      let message_content_type = '';
       if (error.request !== undefined && JSON.parse(error.request.data).content_type !== undefined) {
         if (JSON.parse(error.request.data).content_type.uid) {
           message_content_type =
@@ -140,24 +140,32 @@ class ContentTypesImport {
   }
 
   async updateContentType(contentType) {
-    if (typeof contentType !== 'object') return;
-    const requestObject = cloneDeep(this.requestOptions);
-    if (contentType.field_rules) {
-      this.fieldRules.push(contentType.uid);
-      delete contentType.field_rules;
-    }
+    try {
+      if (typeof contentType !== 'object') return;
+      const requestObject = cloneDeep(this.requestOptions);
+      if (contentType.field_rules) {
+        this.fieldRules.push(contentType.uid);
+        delete contentType.field_rules;
+      }
 
-    lookupExtension(
-      this.importConfig,
-      contentType.schema,
-      this.importConfig.preserveStackVersion,
-      this.installedExtensions,
-    );
-    requestObject.json.content_type = contentType;
-    const contentTypeResponse = this.stackAPIClient.contentType(contentType.uid);
-    Object.assign(contentTypeResponse, cloneDeep(contentType));
-    await contentTypeResponse.update();
-    log(this.importConfig, contentType.uid + ' updated with references', 'success');
+      lookupExtension(
+        this.importConfig,
+        contentType.schema,
+        this.importConfig.preserveStackVersion,
+        this.installedExtensions,
+      );
+      requestObject.json.content_type = contentType;
+      const contentTypeResponse = this.stackAPIClient.contentType(contentType.uid);
+      Object.assign(contentTypeResponse, cloneDeep(contentType));
+      await contentTypeResponse.update().catch((error) => {
+        log(this.importConfig, `Failed to updates content type ${contentType.uid} ${formatError(error)}`, 'error');
+      });
+      log(this.importConfig, contentType.uid + ' updated with references', 'success');
+    } catch (error) {
+      log(this.importConfig, `failed to update contenttype ${contentType.uid} ${formatError(error)}`, 'error');
+      console.log('Content type', JSON.stringify(contentType || {}));
+      console.log(error);
+    }
   }
 
   async updateGlobalFields(uid) {
