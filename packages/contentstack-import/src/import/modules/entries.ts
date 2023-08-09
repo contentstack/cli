@@ -433,37 +433,33 @@ export default class EntriesImport extends BaseClass {
       additionalInfo: { cTUid, locale, contentType },
     } = apiOptions;
 
-    try {
-      const sourceEntryFilePath = entry.sourceEntryFilePath;
-      const sourceEntry = ((fsUtil.readFile(sourceEntryFilePath) || {}) as Record<any, any>)[entry.entryOldUid];
-      // Removing temp values
-      delete entry.sourceEntryFilePath;
-      delete entry.entryOldUid;
-      if (this.jsonRteCTs.indexOf(cTUid) > -1) {
-        // the entries stored in eSuccessFilePath, have the same uids as the entries from source data
-        entry = restoreJsonRteEntryRefs(entry, sourceEntry, contentType.schema, {
-          mappedAssetUids: this.assetUidMapper,
-          mappedAssetUrls: this.assetUrlMapper,
-        });
-      }
-
-      entry = lookupEntries(
-        {
-          content_type: contentType,
-          entry,
-        },
-        this.entriesUidMapper,
-        path.join(this.entriesMapperPath, cTUid, locale),
-      );
-
-      const entryResponse = this.stack.contentType(contentType.uid).entry(this.entriesUidMapper[entry.uid]);
-      Object.assign(entryResponse, cloneDeep(entry));
-      delete entryResponse.publish_details;
-      apiOptions.apiData = entryResponse;
-      return apiOptions;
-    } catch (error) {
-      console.log('error', error);
+    const sourceEntryFilePath = entry.sourceEntryFilePath;
+    const sourceEntry = ((fsUtil.readFile(sourceEntryFilePath) || {}) as Record<any, any>)[entry.entryOldUid];
+    // Removing temp values
+    delete entry.sourceEntryFilePath;
+    delete entry.entryOldUid;
+    if (this.jsonRteCTs.indexOf(cTUid) > -1) {
+      // the entries stored in eSuccessFilePath, have the same uids as the entries from source data
+      entry = restoreJsonRteEntryRefs(entry, sourceEntry, contentType.schema, {
+        mappedAssetUids: this.assetUidMapper,
+        mappedAssetUrls: this.assetUrlMapper,
+      });
     }
+
+    entry = lookupEntries(
+      {
+        content_type: contentType,
+        entry,
+      },
+      this.entriesUidMapper,
+      path.join(this.entriesMapperPath, cTUid, locale),
+    );
+
+    const entryResponse = this.stack.contentType(contentType.uid).entry(this.entriesUidMapper[entry.uid]);
+    Object.assign(entryResponse, cloneDeep(entry));
+    delete entryResponse.publish_details;
+    apiOptions.apiData = entryResponse;
+    return apiOptions;
   }
 
   async enableMandatoryCTReferences(): Promise<void> {
