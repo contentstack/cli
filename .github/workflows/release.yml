@@ -83,7 +83,7 @@ jobs:
         working-directory: ./packages/contentstack-clone
         run: npm install
       - name: Run ls
-        run: ls -R
+        run: ls -R node_modules/@contentstack/cli-cm-export
       - name: Installing dependencies of export to csv
         id: export-to-csv-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_export-to-csv == 'true'}}
@@ -131,13 +131,6 @@ jobs:
         if: ${{ steps.launch-installation.conclusion == 'success'  }}
         working-directory: ./packages/contentstack-launch
         run: npm run prepack
-      - name: Publishing launch
-        uses: JS-DevTools/npm-publish@v1
-        if: ${{ steps.launch-installation.conclusion == 'success'  }}
-        with:
-          token: '***REMOVED***'
-          package: ./packages/contentstack-launch/package.json
-          access: public
       - name: Installing dependencies of branches
         id: branches-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_branches == 'true'}}
@@ -147,25 +140,11 @@ jobs:
         if: ${{ steps.branches-installation.conclusion == 'success'  }}
         working-directory: ./packages/contentstack-branches
         run: npm run prepack
-      - name: Publishing branches
-        uses: JS-DevTools/npm-publish@v1
-        if: ${{ steps.branches-installation.conclusion == 'success'  }}
-        with:
-          token: '***REMOVED***'
-          package: ./packages/contentstack-branches/package.json
-          access: public
       - name: Installing dependencies of core
         id: core-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
         working-directory: ./packages/contentstack
         run: npm install
-      - name: Publishing core
-        id: publish-core
-        uses: JS-DevTools/npm-publish@v1
-        if: ${{ steps.core-installation.conclusion == 'success'  }}
-        with:
-          token: '***REMOVED***'
-          package: ./packages/contentstack/package.json
       - uses: actions/checkout@v2
         with:
           ref: 'prod-qa-pipeline'
