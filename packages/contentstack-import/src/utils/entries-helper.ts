@@ -90,7 +90,7 @@ export const lookupEntries = function (data: any, mappedUids: Record<string, any
       }
     }
   };
-  const find = function (schema: any, _entry: any) {
+  const find = function (schema: any = [], _entry: any) {
     for (let i = 0, _i = schema.length; i < _i; i++) {
       switch (schema[i].data_type) {
         case 'reference':
