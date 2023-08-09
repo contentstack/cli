@@ -97,7 +97,7 @@ module.exports = class ImportCustomRoles {
           self.fails.push(customRole);
 
           if (((error && error.errors && error.errors.name) || '').includes('is not a unique.')) {
-            log(self.config, `custom-role ${customRole.name} already exists`, 'info');
+            log(self.config, `custom-role '${customRole.name}' already exists`, 'info');
           } else {
             if (!(error && error.errors && error.errors.name)) {
               log(self.config, `custom-role: ${customRole.name} already exists`, 'error');
