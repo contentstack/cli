@@ -85,6 +85,7 @@ export const lookupAssets = function (
       ) {
         parent.push(schema[i].uid);
         findFileUrls(schema[i], entryToFind, assetUrls);
+        // findAssetIdsFromHtmlRte(schema[i], entryToFind);
         parent.pop();
       }
       if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
@@ -350,7 +351,8 @@ function findFileUrls(schema: any, _entry: any, assetUrls: any) {
   );
   while ((markdownMatch = markdownRegEx.exec(text)) !== null) {
     if (markdownMatch && typeof markdownMatch[0] === 'string') {
-      assetUrls.push(markdownMatch[0]);
+      let assetUrl = markdownMatch[0].replace(/\\/g, '');
+      assetUrls.push(assetUrl);
     }
   }
 }
