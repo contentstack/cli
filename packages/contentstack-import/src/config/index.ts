@@ -377,7 +377,8 @@ const config: DefaultConfig = {
     'content-types',
     'webhooks',
     'custom-roles',
-    'workflows'
+    'workflows',
+    'entries',
   ],
   rateLimit: 5,
   preserveStackVersion: false,
@@ -389,7 +390,7 @@ const config: DefaultConfig = {
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
   getEncryptionKeyMaxRetry: 3,
-  useNewModuleStructure: true
+  useNewModuleStructure: true,
   // useBackedupDir: '',
   // backupConcurrency: 10,
 };
