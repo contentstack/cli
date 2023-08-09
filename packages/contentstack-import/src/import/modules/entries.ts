@@ -435,7 +435,7 @@ export default class EntriesImport extends BaseClass {
 
     try {
       const sourceEntryFilePath = entry.sourceEntryFilePath;
-      const sourceEntry = (fsUtil.readFile(sourceEntryFilePath) || {})[entry.entryOldUid];
+      const sourceEntry = ((fsUtil.readFile(sourceEntryFilePath) || {}) as Record<any, any>)[entry.entryOldUid];
       // Removing temp values
       delete entry.sourceEntryFilePath;
       delete entry.entryOldUid;
@@ -572,7 +572,7 @@ export default class EntriesImport extends BaseClass {
           continue;
         }
         contentTypeResponse.field_rules = contentType.field_rules;
-        await contentTypeResponse.update().catch((error) => {
+        await contentTypeResponse.update().catch((error: Error) => {
           log(this.importConfig, `failed to update the field rules of ${cTUid} ${formatError(error)}`, 'error');
         });
         log(this.importConfig, `Updated the field rules of ${cTUid}`, 'info');
@@ -650,7 +650,10 @@ export default class EntriesImport extends BaseClass {
   serializePublishEntries(apiOptions: ApiOptions): ApiOptions {
     let { apiData: entry, additionalInfo } = apiOptions;
     additionalInfo.entryUid = this.entriesUidMapper[entry.uid];
-    const requestObject = {
+    const requestObject: {
+      environments: Array<string>;
+      locales: Array<string>;
+    } = {
       environments: [],
       locales: [],
     };
