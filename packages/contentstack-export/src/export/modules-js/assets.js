@@ -367,7 +367,7 @@ module.exports = class ExportAssets {
         });
       assetFileStream
         .on('close', function () {
-          log(self.config, 'Downloaded ' + asset.filename + ': ' + asset.uid + ' successfully!', 'success');
+          // log(self.config, 'Downloaded ' + asset.filename + ': ' + asset.uid + ' successfully!', 'success');
           return resolve();
         })
         .on('error', (error) => {

@@ -10,7 +10,7 @@ const chalk = require('chalk');
 const mkdirp = require('mkdirp');
 const Promise = require('bluebird');
 let { default: config } = require('../../config');
-const { fileHelper, log, uploadAssetHelper } = require('../../utils');
+const { fileHelper, log, uploadAssetHelper, formatError } = require('../../utils');
 
 module.exports = class ImportAssets {
   assets;
@@ -463,7 +463,7 @@ module.exports = class ImportAssets {
         .asset(assetUid)
         .publish({ publishDetails: requestObject.json.asset })
         .then(function () {
-          log(self.config, 'Asset ' + assetUid + ' published successfully', 'success');
+          //log(self.config, 'Asset ' + assetUid + ' published successfully', 'success');
           return resolve();
         })
         .catch(function (err) {
@@ -475,10 +475,12 @@ module.exports = class ImportAssets {
               error = { errorMessage: err.message };
             }
             log(self.config, 'Asset ' + assetUid + ' not published, ' + error.errorMessage, 'error');
-            return reject(err);
+            //return reject(err);
           }
 
-          return reject(err);
+          log(self.config, `Failed to publish asset ${assetUid} ${formatError(err)}`);
+
+          //return reject(err);
         });
     });
   }
