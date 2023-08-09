@@ -56,7 +56,7 @@ export default class EntriesExport extends BaseClass {
       for (let entryRequestOption of entryRequestOptions) {
         log(
           this.exportConfig,
-          `Starting export of entries of contenttype - ${entryRequestOption.contentType} locale - ${entryRequestOption.locale}`,
+          `Starting export of entries of content type - ${entryRequestOption.contentType} locale - ${entryRequestOption.locale}`,
           'info',
         );
         await this.getEntries(entryRequestOption);
