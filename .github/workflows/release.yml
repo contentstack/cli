@@ -72,7 +72,7 @@ jobs:
         if: ${{ env.release_releaseAll == 'true' || env.release_plugins_export == 'true'}}
         working-directory: ./packages/contentstack-export
         run: npm install
-      - name: Compiling config
+      - name: Compiling export
         if: ${{ steps.export-installation.conclusion == 'success'  }}
         working-directory: ./packages/contentstack-export
         run: npm run prepack
@@ -81,6 +81,10 @@ jobs:
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_import == 'true'}}
         working-directory: ./packages/contentstack-import
         run: npm install
+      - name: Compiling import
+        if: ${{ steps.import-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-import
+        run: npm run prepack
       - name: Installing dependencies of clone
         id: clone-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_clone == 'true'}}
