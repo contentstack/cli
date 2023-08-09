@@ -381,7 +381,7 @@ const config: DefaultConfig = {
     'content-types',
     'entries',
     'workflows',
-    'stack'
+    'stack',
   ],
   apis: {
     userSession: '/user-session/',
@@ -402,7 +402,7 @@ const config: DefaultConfig = {
   writeConcurrency: 5,
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
-  useNewModuleStructure: true,
+  useNewModuleStructure: false,
 };
 
 export default config;
