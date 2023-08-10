@@ -3,9 +3,8 @@ const { cliux } = require('@contentstack/cli-utilities');
 const sinon = require('sinon');
 const { config } = require('dotenv');
 const { expect } = require('chai');
+
 const AssetsUnpublish = require('../../../../src/commands/cm/assets/unpublish');
-// const LogoutCommand = require('@contentstack/cli');
-const { test } = require('@oclif/test');
 
 const { stub } = sinon;
 
@@ -31,7 +30,7 @@ describe('AssetsUnpublish', () => {
     inquireStub.restore();
   });
 
-  it('Should fail when alias and stack api key flags are not passed', async function () {
+  it('Should fail when alias and stack api key flags are not passed', async () => {
     const args = ['--environment', environments[0], '--locale', locales[0], '--yes'];
     const inquireStub = stub(cliux, 'prompt');
     const assetUnpublishSpy = sinon.spy(AssetsUnpublish.prototype, 'run');
