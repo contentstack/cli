@@ -194,25 +194,6 @@ class EntriesExport {
     });
     return entriesList;
   }
-
-  async getEntryByVersion(requestOptions, version, entries = []) {
-    const queryRequestObject = {
-      locale: requestOptions.locale,
-      except: {
-        BASE: this.entriesConfig.invalidKeys,
-      },
-      version,
-    };
-    const entryResponse = await this.stackAPIClient
-      .contentType(requestOptions.content_type)
-      .entry(requestOptions.uid)
-      .fetch(queryRequestObject);
-    entries.push(entryResponse);
-    if (--version > 0) {
-      return await this.getEntryByVersion(requestOptions, version, entries);
-    }
-    return entries;
-  }
 }
 
 module.exports = EntriesExport;
