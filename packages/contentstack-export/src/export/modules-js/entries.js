@@ -1,5 +1,6 @@
 const path = require('path');
 const chalk = require('chalk');
+const { values } = require('lodash');
 const { executeTask, formatError, fileHelper, log } = require('../../utils');
 
 class EntriesExport {
@@ -59,7 +60,7 @@ class EntriesExport {
             `Started export versioned entries of type '${requestOption.content_type}' locale '${requestOption.locale}'`,
             'info',
           );
-          for (let entry of entries) {
+          for (let entry of values(entries)) {
             const versionedEntries = await this.getEntryByVersion(
               {
                 ...requestOption,
