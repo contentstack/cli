@@ -191,7 +191,9 @@ module.exports = class ImportMarketplaceApps {
     }
     for (const { extension_uid, name, path, uid, data_type } of _.filter(listOfOldMeta, 'name')) {
       const meta =
-        _.find(listOfNewMeta, { name, path }) || _.find(listOfNewMeta, { name: this.appNameMapping[name], path }) || _.find(listOfNewMeta, { name, uid, data_type });
+        _.find(listOfNewMeta, { name, path }) ||
+        _.find(listOfNewMeta, { name: this.appNameMapping[name], path }) ||
+        _.find(listOfNewMeta, { name, uid, data_type });
 
       if (meta) {
         extensionUidMapp[extension_uid] = meta.extension_uid;
@@ -515,21 +517,16 @@ module.exports = class ImportMarketplaceApps {
       return Promise.resolve();
     }
 
-    let installation = this.client
-    .organization(this.config.org_uid)
-    .app(app.manifest.uid)
-    .installation(uid)
-
-    installation = Object.assign(installation, payload)
-
-    return installation
-    .update()
-    .then(async data => {
-      if (data) {
-        log(this.config, `${app.manifest.name} app config updated successfully.!`, 'success');
-      }
-    })
-    .catch((error) => log(this.config, formatError(error), 'error'))
+    return this.httpClient
+      .put(`${this.developerHubBaseUrl}/installations/${uid}`, payload)
+      .then(({ data }) => {
+        if (data.message) {
+          log(this.config, formatError(data.message), 'success');
+        } else {
+          log(this.config, `${app.manifest.name} app config updated successfully.!`, 'success');
+        }
+      })
+      .catch((error) => log(this.config, formatError(error), 'error'));
   }
 
   validateAppName(name) {
