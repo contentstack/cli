@@ -43,7 +43,11 @@ export type ApiModuleType =
   | 'update-labels'
   | 'create-webhooks'
   | 'create-workflows'
-  | 'create-custom-role';
+  | 'create-custom-role'
+  | 'create-entries'
+  | 'update-entries'
+  | 'publish-entries'
+  | 'delete-entries';
 
 export type ApiOptions = {
   uid?: string;
@@ -231,7 +235,7 @@ export default abstract class BaseClass {
       apiOptions = apiOptions.serializeData(apiOptions);
     }
 
-    const { uid, entity, reject, resolve, apiData, additionalInfo, includeParamOnCompletion } = apiOptions;
+    const { uid, entity, reject, resolve, apiData, additionalInfo = {}, includeParamOnCompletion } = apiOptions;
 
     const onSuccess = (response: any) =>
       resolve({
@@ -295,15 +299,18 @@ export default abstract class BaseClass {
       case 'create-cts':
         return this.stack.contentType().create(apiData).then(onSuccess).catch(onReject);
       case 'update-cts':
+        if (additionalInfo.skip) {
+          return Promise.resolve(onSuccess(apiData));
+        }
         return apiData.update().then(onSuccess).catch(onReject);
       case 'update-gfs':
         return apiData.update().then(onSuccess).catch(onReject);
       case 'create-environments':
-        // return this.stack
-        //   .environment()
-        //   .create({ environment: omit(apiData, ['uid']) as EnvironmentData })
-        //   .then(onSuccess)
-        //   .catch(onReject);
+      // return this.stack
+      //   .environment()
+      //   .create({ environment: omit(apiData, ['uid']) as EnvironmentData })
+      //   .then(onSuccess)
+      //   .catch(onReject);
       case 'create-labels':
         return this.stack
           .label()
@@ -337,7 +344,32 @@ export default abstract class BaseClass {
           .create({ role: apiData as RoleData })
           .then(onSuccess)
           .catch(onReject);
-
+      case 'create-entries':
+        return this.stack
+          .contentType(additionalInfo.cTUid)
+          .entry()
+          .create({ entry: apiData }, { locale: additionalInfo.locale })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'update-entries':
+        return apiData.update({ locale: additionalInfo.locale }).then(onSuccess).catch(onReject);
+      case 'publish-entries':
+        if (additionalInfo.skip) {
+          return Promise.resolve(onSuccess(apiData));
+        }
+        return this.stack
+          .contentType(additionalInfo.cTUid)
+          .entry(additionalInfo.entryUid)
+          .publish({ publishDetails: apiData, locale: additionalInfo.locale })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'delete-entries':
+        return this.stack
+          .contentType(apiData.cTUid)
+          .entry(apiData.entryUid)
+          .delete({ locale: this.importConfig?.master_locale?.code })
+          .then(onSuccess)
+          .catch(onReject);
       default:
         return Promise.resolve();
     }
