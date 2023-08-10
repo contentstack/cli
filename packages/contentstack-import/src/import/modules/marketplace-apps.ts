@@ -36,7 +36,6 @@ import {
   confirmToCloseProcess,
   getAllStackSpecificApps,
   ifAppAlreadyExist,
-  updateAppConfig,
   getConfirmationToCreateApps,
   fsUtil,
   fileHelper,
@@ -402,6 +401,18 @@ export default class ImportMarketplaceApps extends BaseClass {
     if (isEmpty(app) || isEmpty(payload) || !uid) {
       return Promise.resolve();
     }
-    await updateAppConfig(this.sdkClient, this.importConfig, app, payload);
+
+    // TODO migrate this HTTP API call into SDK
+    // NOTE Use updateAppConfig(this.sdkClient, this.importConfig, app, payload) utility when migrating to SDK call;
+    return this.httpClient
+      .put(`${this.developerHubBaseUrl}/installations/${uid}`, payload)
+      .then(({ data }) => {
+        if (data.message) {
+          log(this.importConfig, formatError(data.message), 'success');
+        } else {
+          log(this.importConfig, `${app.manifest.name} app config updated successfully.!`, 'success');
+        }
+      })
+      .catch((error) => log(this.importConfig, formatError(error), 'error'));
   }
 }
