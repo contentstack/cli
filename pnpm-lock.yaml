@@ -13,15 +13,15 @@ importers:
       '@contentstack/cli-cm-bootstrap': ^1.4.13
       '@contentstack/cli-cm-branches': ^1.0.10
       '@contentstack/cli-cm-bulk-publish': ^1.3.10
-      '@contentstack/cli-cm-clone': ^1.4.13
+      '@contentstack/cli-cm-clone': ^1.4.14
       '@contentstack/cli-cm-export': ^1.7.0
       '@contentstack/cli-cm-export-to-csv': ^1.3.12
-      '@contentstack/cli-cm-import': ^1.7.0
+      '@contentstack/cli-cm-import': ^1.7.1
       '@contentstack/cli-cm-migrate-rte': ^1.4.10
       '@contentstack/cli-cm-seed': ^1.4.13
       '@contentstack/cli-command': ^1.2.11
       '@contentstack/cli-config': ^1.4.10
-      '@contentstack/cli-launch': ^1.0.9
+      '@contentstack/cli-launch': ^1.0.10
       '@contentstack/cli-migration': ^1.3.10
       '@contentstack/cli-utilities': ^1.5.1
       '@contentstack/management': ~1.10.0
@@ -360,7 +360,7 @@ importers:
     specifiers:
       '@colors/colors': ^1.5.0
       '@contentstack/cli-cm-export': ^1.7.0
-      '@contentstack/cli-cm-import': ^1.7.0
+      '@contentstack/cli-cm-import': ^1.7.1
       '@contentstack/cli-command': ^1.2.11
       '@contentstack/cli-utilities': ^1.5.1
       '@oclif/test': ^1.2.7
@@ -1544,6 +1544,19 @@ packages:
       slate-hyperscript: 0.62.0_slate@0.72.8
       tslib: 2.6.0
       uuid: 8.3.2
+    dev: false
+
+  /@contentstack/management/1.10.0:
+    resolution:
+      { integrity: sha512-wnmVS19n3cZeh6T2PbBXGCr4irktunVmuECTyPF5++Rsc6GDO+FoQGCZdvzHpRZE0GLiPFIID50z2TZuNArEOg== }
+    engines: { node: '>=8.0.0' }
+    dependencies:
+      axios: 0.27.2
+      form-data: 3.0.1
+      lodash: 4.17.21
+      qs: 6.11.2
+    transitivePeerDependencies:
+      - debug
     dev: false
 
   /@contentstack/management/1.10.0_debug@4.3.4:
