@@ -141,4 +141,5 @@ export default interface DefaultConfig {
   marketplaceAppEncryptionKey: string;
   getEncryptionKeyMaxRetry: number;
   useNewModuleStructure: boolean;
+  createBackupDir?: string;
 }
