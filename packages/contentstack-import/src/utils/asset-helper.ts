@@ -85,7 +85,9 @@ export const lookupAssets = function (
       ) {
         parent.push(schema[i].uid);
         findFileUrls(schema[i], entryToFind, assetUrls);
-        // findAssetIdsFromHtmlRte(schema[i], entryToFind);
+        if (schema[i].field_metadata.rich_text_type) {
+          findAssetIdsFromHtmlRte(entryToFind, schema[i]);
+        }
         parent.pop();
       }
       if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
@@ -125,6 +127,15 @@ export const lookupAssets = function (
       }
     }
   };
+
+  function findAssetIdsFromHtmlRte(entryObj: any, ctSchema: any) {
+    const regex = /<img asset_uid=\\"([^"]+)\\"/g;
+    let match;
+    const entry = JSON.stringify(entryObj);
+    while ((match = regex.exec(entry)) !== null) {
+      assetUids.push(match[1]);
+    }
+  }
 
   function findAssetIdsFromJsonCustomFields(entryObj: any, ctSchema: any) {
     ctSchema.map((row: any) => {
