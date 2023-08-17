@@ -184,6 +184,8 @@ export default class ImportWorkflows extends BaseClass {
     const workflowStages = workflow.workflow_stages;
     let stageIndex = 0;
     for (const stage of workflowStages) {
+      delete stage.uid;
+
       if (stage?.SYS_ACL?.users?.uids?.length && stage?.SYS_ACL?.users?.uids[0] !== '$all') {
         stage.SYS_ACL.users.uids = ['$all'];
       }
