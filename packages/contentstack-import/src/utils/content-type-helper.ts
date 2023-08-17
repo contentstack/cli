@@ -147,6 +147,7 @@ export const removeReferenceFields = async function (
     ) {
       flag.supressed = true;
       schema[i].reference_to = ['sys_assets'];
+      return true; // undo remove
     }
   }
 };
