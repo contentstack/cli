@@ -65,6 +65,8 @@ module.exports = class importWorkflows {
             }
 
             for (const stage of workflowStages) {
+              delete stage.uid;
+
               if (stage.SYS_ACL.users.uids.length && stage.SYS_ACL.users.uids[0] !== '$all') {
                 stage.SYS_ACL.users.uids = ['$all'];
               }
@@ -132,7 +134,7 @@ module.exports = class importWorkflows {
             // the workflow has already been created
             log(
               self.config,
-              chalk.white( `The Workflows ${workflow.name} already exists. Skipping it to avoid duplicates!`),
+              chalk.white(`The Workflows ${workflow.name} already exists. Skipping it to avoid duplicates!`),
               'success',
             );
           }
