@@ -11,18 +11,18 @@ importers:
   packages/contentstack:
     specifiers:
       '@contentstack/cli-auth': ^1.3.12
-      '@contentstack/cli-cm-bootstrap': ^1.4.13
+      '@contentstack/cli-cm-bootstrap': ^1.4.14
       '@contentstack/cli-cm-branches': ^1.0.10
       '@contentstack/cli-cm-bulk-publish': ^1.3.10
-      '@contentstack/cli-cm-clone': ^1.4.13
-      '@contentstack/cli-cm-export': ^1.7.0
+      '@contentstack/cli-cm-clone': ^1.4.15
+      '@contentstack/cli-cm-export': ~1.8.0
       '@contentstack/cli-cm-export-to-csv': ^1.3.12
-      '@contentstack/cli-cm-import': ^1.7.0
+      '@contentstack/cli-cm-import': ~1.8.0
       '@contentstack/cli-cm-migrate-rte': ^1.4.10
-      '@contentstack/cli-cm-seed': ^1.4.13
+      '@contentstack/cli-cm-seed': ^1.4.14
       '@contentstack/cli-command': ^1.2.11
       '@contentstack/cli-config': ^1.4.10
-      '@contentstack/cli-launch': ^1.0.9
+      '@contentstack/cli-launch': ^1.0.10
       '@contentstack/cli-migration': ^1.3.10
       '@contentstack/cli-utilities': ^1.5.1
       '@contentstack/management': ~1.10.0
@@ -182,7 +182,7 @@ importers:
 
   packages/contentstack-bootstrap:
     specifiers:
-      '@contentstack/cli-cm-seed': ^1.4.13
+      '@contentstack/cli-cm-seed': ^1.4.14
       '@contentstack/cli-command': ^1.2.11
       '@contentstack/cli-utilities': ^1.5.1
       '@oclif/test': ^2.2.10
@@ -360,11 +360,10 @@ importers:
   packages/contentstack-clone:
     specifiers:
       '@colors/colors': ^1.5.0
-      '@contentstack/cli-cm-export': ^1.7.0
-      '@contentstack/cli-cm-import': ^1.7.0
+      '@contentstack/cli-cm-export': ~1.8.0
+      '@contentstack/cli-cm-import': ~1.8.0
       '@contentstack/cli-command': ^1.2.11
       '@contentstack/cli-utilities': ^1.5.1
-      '@contentstack/management': ~1.10.0
       '@oclif/test': ^1.2.7
       async: ^3.2.4
       chai: ^4.2.0
@@ -390,7 +389,6 @@ importers:
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/management': 1.10.0
       async: 3.2.4
       chalk: 4.1.2
       child_process: 1.0.2
@@ -917,7 +915,7 @@ importers:
 
   packages/contentstack-seed:
     specifiers:
-      '@contentstack/cli-cm-import': ^1.7.0
+      '@contentstack/cli-cm-import': ~1.8.0
       '@contentstack/cli-command': ^1.2.11
       '@contentstack/cli-utilities': ^1.5.1
       '@oclif/plugin-help': ^5.1.19
@@ -1503,23 +1501,9 @@ packages:
       uuid: 8.3.2
     dev: false
 
-  /@contentstack/management/1.10.0:
-    resolution:
-      { integrity: sha512-wnmVS19n3cZeh6T2PbBXGCr4irktunVmuECTyPF5++Rsc6GDO+FoQGCZdvzHpRZE0GLiPFIID50z2TZuNArEOg== }
-    engines: { node: '>=8.0.0' }
-    dependencies:
-      axios: 0.27.2
-      form-data: 3.0.1
-      lodash: 4.17.21
-      qs: 6.11.2
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
   /@contentstack/management/1.10.0_debug@4.3.4:
-    resolution:
-      { integrity: sha512-wnmVS19n3cZeh6T2PbBXGCr4irktunVmuECTyPF5++Rsc6GDO+FoQGCZdvzHpRZE0GLiPFIID50z2TZuNArEOg== }
-    engines: { node: '>=8.0.0' }
+    resolution: {integrity: sha512-wnmVS19n3cZeh6T2PbBXGCr4irktunVmuECTyPF5++Rsc6GDO+FoQGCZdvzHpRZE0GLiPFIID50z2TZuNArEOg==}
+    engines: {node: '>=8.0.0'}
     dependencies:
       axios: 0.27.2_debug@4.3.4
       form-data: 3.0.1
@@ -2354,9 +2338,8 @@ packages:
     dev: true
 
   /@oclif/color/1.0.9:
-    resolution:
-      { integrity: sha512-ntc/fZwuf4NRfYbXVoUNFyMB9IxVx/ls/WbSLKbkD9UpsmwY1I3J4DJKKRFRpenmTuxGQW8Lyzm7X3vhzHpDQA== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-ntc/fZwuf4NRfYbXVoUNFyMB9IxVx/ls/WbSLKbkD9UpsmwY1I3J4DJKKRFRpenmTuxGQW8Lyzm7X3vhzHpDQA==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       ansi-styles: 4.3.0
       chalk: 4.1.2
@@ -2365,9 +2348,8 @@ packages:
       tslib: 2.6.0
 
   /@oclif/command/1.8.33_@oclif+config@1.18.14:
-    resolution:
-      { integrity: sha512-7ZPvThrZaICX1hoZ/S82DaGgjI3UGG2rveBfxCE9JlgvrDQQiHLA6a/N7Hf3jq6t51AkXbBMhaMOBzXtSd73QA== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-7ZPvThrZaICX1hoZ/S82DaGgjI3UGG2rveBfxCE9JlgvrDQQiHLA6a/N7Hf3jq6t51AkXbBMhaMOBzXtSd73QA==}
+    engines: {node: '>=12.0.0'}
     peerDependencies:
       '@oclif/config': ^1
     dependencies:
@@ -2396,9 +2378,8 @@ packages:
     dev: false
 
   /@oclif/config/1.18.14:
-    resolution:
-      { integrity: sha512-cLT/deFDm6A69LjAfV5ZZMMvMDlPt7sjMHYBrsOgQ5Upq5kDMgbaZM3hEbw74DmYIsuhq2E2wYrPD+Ax2qAfkA== }
-    engines: { node: '>=8.0.0' }
+    resolution: {integrity: sha512-cLT/deFDm6A69LjAfV5ZZMMvMDlPt7sjMHYBrsOgQ5Upq5kDMgbaZM3hEbw74DmYIsuhq2E2wYrPD+Ax2qAfkA==}
+    engines: {node: '>=8.0.0'}
     dependencies:
       '@oclif/errors': 1.3.6
       '@oclif/parser': 3.8.15
@@ -2411,9 +2392,8 @@ packages:
     dev: false
 
   /@oclif/core/2.9.4:
-    resolution:
-      { integrity: sha512-eFRRpV+tJ6nMkhay2M9IppjSF3atRrgj6Qo83qUslaFSAW3NAl4mIhx1mKmTwQx5rgSrar03xICtSAWJ6gZtag== }
-    engines: { node: '>=14.0.0' }
+    resolution: {integrity: sha512-eFRRpV+tJ6nMkhay2M9IppjSF3atRrgj6Qo83qUslaFSAW3NAl4mIhx1mKmTwQx5rgSrar03xICtSAWJ6gZtag==}
+    engines: {node: '>=14.0.0'}
     dependencies:
       '@types/cli-progress': 3.11.0
       ansi-escapes: 4.3.2
@@ -2453,9 +2433,8 @@ packages:
     dev: true
 
   /@oclif/core/2.9.4_4qcp7qp4jxxdgb4qbxgwox4hwq:
-    resolution:
-      { integrity: sha512-eFRRpV+tJ6nMkhay2M9IppjSF3atRrgj6Qo83qUslaFSAW3NAl4mIhx1mKmTwQx5rgSrar03xICtSAWJ6gZtag== }
-    engines: { node: '>=14.0.0' }
+    resolution: {integrity: sha512-eFRRpV+tJ6nMkhay2M9IppjSF3atRrgj6Qo83qUslaFSAW3NAl4mIhx1mKmTwQx5rgSrar03xICtSAWJ6gZtag==}
+    engines: {node: '>=14.0.0'}
     dependencies:
       '@types/cli-progress': 3.11.0
       ansi-escapes: 4.3.2
@@ -2494,9 +2473,8 @@ packages:
       - typescript
 
   /@oclif/core/2.9.4_npeoqfxwgl5njwqojmpesqhar4:
-    resolution:
-      { integrity: sha512-eFRRpV+tJ6nMkhay2M9IppjSF3atRrgj6Qo83qUslaFSAW3NAl4mIhx1mKmTwQx5rgSrar03xICtSAWJ6gZtag== }
-    engines: { node: '>=14.0.0' }
+    resolution: {integrity: sha512-eFRRpV+tJ6nMkhay2M9IppjSF3atRrgj6Qo83qUslaFSAW3NAl4mIhx1mKmTwQx5rgSrar03xICtSAWJ6gZtag==}
+    engines: {node: '>=14.0.0'}
     dependencies:
       '@types/cli-progress': 3.11.0
       ansi-escapes: 4.3.2
@@ -2535,9 +2513,8 @@ packages:
       - typescript
 
   /@oclif/core/2.9.4_typescript@4.9.5:
-    resolution:
-      { integrity: sha512-eFRRpV+tJ6nMkhay2M9IppjSF3atRrgj6Qo83qUslaFSAW3NAl4mIhx1mKmTwQx5rgSrar03xICtSAWJ6gZtag== }
-    engines: { node: '>=14.0.0' }
+    resolution: {integrity: sha512-eFRRpV+tJ6nMkhay2M9IppjSF3atRrgj6Qo83qUslaFSAW3NAl4mIhx1mKmTwQx5rgSrar03xICtSAWJ6gZtag==}
+    engines: {node: '>=14.0.0'}
     dependencies:
       '@types/cli-progress': 3.11.0
       ansi-escapes: 4.3.2
@@ -2587,9 +2564,8 @@ packages:
     dev: false
 
   /@oclif/help/1.0.12:
-    resolution:
-      { integrity: sha512-nvjgcZm2HsIEXEDYqo0+lXMSNe6Bx9vxZnJ9HqxMdSX6CNxr9ovvm5EilNGc9IxbtNXYlct+DE1le6urGmrlrw== }
-    engines: { node: '>=8.0.0' }
+    resolution: {integrity: sha512-nvjgcZm2HsIEXEDYqo0+lXMSNe6Bx9vxZnJ9HqxMdSX6CNxr9ovvm5EilNGc9IxbtNXYlct+DE1le6urGmrlrw==}
+    engines: {node: '>=8.0.0'}
     dependencies:
       '@oclif/config': 1.18.12
       '@oclif/errors': 1.3.6
@@ -2609,9 +2585,8 @@ packages:
     dev: false
 
   /@oclif/parser/3.8.15:
-    resolution:
-      { integrity: sha512-M7ljUexkyJkR2efqG+PL31fAWyWDW1dczaMKoY+sOVqk78sm23iDMOJj/1vkfUrhO+W8dhseoPFnpSB6Hewfyw== }
-    engines: { node: '>=8.0.0' }
+    resolution: {integrity: sha512-M7ljUexkyJkR2efqG+PL31fAWyWDW1dczaMKoY+sOVqk78sm23iDMOJj/1vkfUrhO+W8dhseoPFnpSB6Hewfyw==}
+    engines: {node: '>=8.0.0'}
     dependencies:
       '@oclif/errors': 1.3.6
       '@oclif/linewrap': 1.0.0
@@ -2620,9 +2595,8 @@ packages:
     dev: false
 
   /@oclif/plugin-help/5.2.14:
-    resolution:
-      { integrity: sha512-7hMLc6zqxeRfG4nvHHQPpbaBj60efM3ULFkCpHZkdLms/ezIkNo40F661QuraIjMP/NN+U6VSfBCGuPkRyxVkA== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-7hMLc6zqxeRfG4nvHHQPpbaBj60efM3ULFkCpHZkdLms/ezIkNo40F661QuraIjMP/NN+U6VSfBCGuPkRyxVkA==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.9.4
     transitivePeerDependencies:
@@ -2633,9 +2607,8 @@ packages:
     dev: true
 
   /@oclif/plugin-help/5.2.14_4qcp7qp4jxxdgb4qbxgwox4hwq:
-    resolution:
-      { integrity: sha512-7hMLc6zqxeRfG4nvHHQPpbaBj60efM3ULFkCpHZkdLms/ezIkNo40F661QuraIjMP/NN+U6VSfBCGuPkRyxVkA== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-7hMLc6zqxeRfG4nvHHQPpbaBj60efM3ULFkCpHZkdLms/ezIkNo40F661QuraIjMP/NN+U6VSfBCGuPkRyxVkA==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.9.4_4qcp7qp4jxxdgb4qbxgwox4hwq
     transitivePeerDependencies:
@@ -2645,9 +2618,8 @@ packages:
       - typescript
 
   /@oclif/plugin-help/5.2.14_npeoqfxwgl5njwqojmpesqhar4:
-    resolution:
-      { integrity: sha512-7hMLc6zqxeRfG4nvHHQPpbaBj60efM3ULFkCpHZkdLms/ezIkNo40F661QuraIjMP/NN+U6VSfBCGuPkRyxVkA== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-7hMLc6zqxeRfG4nvHHQPpbaBj60efM3ULFkCpHZkdLms/ezIkNo40F661QuraIjMP/NN+U6VSfBCGuPkRyxVkA==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.9.4_npeoqfxwgl5njwqojmpesqhar4
     transitivePeerDependencies:
@@ -2657,9 +2629,8 @@ packages:
       - typescript
 
   /@oclif/plugin-help/5.2.14_typescript@4.9.5:
-    resolution:
-      { integrity: sha512-7hMLc6zqxeRfG4nvHHQPpbaBj60efM3ULFkCpHZkdLms/ezIkNo40F661QuraIjMP/NN+U6VSfBCGuPkRyxVkA== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-7hMLc6zqxeRfG4nvHHQPpbaBj60efM3ULFkCpHZkdLms/ezIkNo40F661QuraIjMP/NN+U6VSfBCGuPkRyxVkA==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.9.4_typescript@4.9.5
     transitivePeerDependencies:
@@ -2670,9 +2641,8 @@ packages:
     dev: true
 
   /@oclif/plugin-not-found/2.3.32:
-    resolution:
-      { integrity: sha512-tVFHfR9XRUWrcxBugHjFr7HUmbLheDX05IaFr7fMF2hcvcqDs3DBjy42WKEoXSaBVTcST6KKhoSy2UVX8pk9Fg== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-tVFHfR9XRUWrcxBugHjFr7HUmbLheDX05IaFr7fMF2hcvcqDs3DBjy42WKEoXSaBVTcST6KKhoSy2UVX8pk9Fg==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/color': 1.0.9
       '@oclif/core': 2.9.4
@@ -2685,9 +2655,8 @@ packages:
     dev: true
 
   /@oclif/plugin-not-found/2.3.32_4qcp7qp4jxxdgb4qbxgwox4hwq:
-    resolution:
-      { integrity: sha512-tVFHfR9XRUWrcxBugHjFr7HUmbLheDX05IaFr7fMF2hcvcqDs3DBjy42WKEoXSaBVTcST6KKhoSy2UVX8pk9Fg== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-tVFHfR9XRUWrcxBugHjFr7HUmbLheDX05IaFr7fMF2hcvcqDs3DBjy42WKEoXSaBVTcST6KKhoSy2UVX8pk9Fg==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/color': 1.0.9
       '@oclif/core': 2.9.4_4qcp7qp4jxxdgb4qbxgwox4hwq
@@ -2699,9 +2668,8 @@ packages:
       - typescript
 
   /@oclif/plugin-not-found/2.3.32_npeoqfxwgl5njwqojmpesqhar4:
-    resolution:
-      { integrity: sha512-tVFHfR9XRUWrcxBugHjFr7HUmbLheDX05IaFr7fMF2hcvcqDs3DBjy42WKEoXSaBVTcST6KKhoSy2UVX8pk9Fg== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-tVFHfR9XRUWrcxBugHjFr7HUmbLheDX05IaFr7fMF2hcvcqDs3DBjy42WKEoXSaBVTcST6KKhoSy2UVX8pk9Fg==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/color': 1.0.9
       '@oclif/core': 2.9.4_npeoqfxwgl5njwqojmpesqhar4
@@ -2714,9 +2682,8 @@ packages:
     dev: true
 
   /@oclif/plugin-not-found/2.3.32_typescript@4.9.5:
-    resolution:
-      { integrity: sha512-tVFHfR9XRUWrcxBugHjFr7HUmbLheDX05IaFr7fMF2hcvcqDs3DBjy42WKEoXSaBVTcST6KKhoSy2UVX8pk9Fg== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-tVFHfR9XRUWrcxBugHjFr7HUmbLheDX05IaFr7fMF2hcvcqDs3DBjy42WKEoXSaBVTcST6KKhoSy2UVX8pk9Fg==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/color': 1.0.9
       '@oclif/core': 2.9.4_typescript@4.9.5
@@ -2775,9 +2742,8 @@ packages:
     dev: false
 
   /@oclif/plugin-warn-if-update-available/2.0.44:
-    resolution:
-      { integrity: sha512-52Ww0B4F1tMhwjw2fe73lhmfDI/F4ynf3ur7/xnpnVBEvj5JG4sqolbEJV/0lV85+4dJNsYJRxubbPYjxcbCcA== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-52Ww0B4F1tMhwjw2fe73lhmfDI/F4ynf3ur7/xnpnVBEvj5JG4sqolbEJV/0lV85+4dJNsYJRxubbPYjxcbCcA==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.9.4
       chalk: 4.1.2
@@ -2795,9 +2761,8 @@ packages:
     dev: true
 
   /@oclif/plugin-warn-if-update-available/2.0.44_4qcp7qp4jxxdgb4qbxgwox4hwq:
-    resolution:
-      { integrity: sha512-52Ww0B4F1tMhwjw2fe73lhmfDI/F4ynf3ur7/xnpnVBEvj5JG4sqolbEJV/0lV85+4dJNsYJRxubbPYjxcbCcA== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-52Ww0B4F1tMhwjw2fe73lhmfDI/F4ynf3ur7/xnpnVBEvj5JG4sqolbEJV/0lV85+4dJNsYJRxubbPYjxcbCcA==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.9.4_4qcp7qp4jxxdgb4qbxgwox4hwq
       chalk: 4.1.2
@@ -2815,9 +2780,8 @@ packages:
     dev: true
 
   /@oclif/plugin-warn-if-update-available/2.0.44_npeoqfxwgl5njwqojmpesqhar4:
-    resolution:
-      { integrity: sha512-52Ww0B4F1tMhwjw2fe73lhmfDI/F4ynf3ur7/xnpnVBEvj5JG4sqolbEJV/0lV85+4dJNsYJRxubbPYjxcbCcA== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-52Ww0B4F1tMhwjw2fe73lhmfDI/F4ynf3ur7/xnpnVBEvj5JG4sqolbEJV/0lV85+4dJNsYJRxubbPYjxcbCcA==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.9.4_npeoqfxwgl5njwqojmpesqhar4
       chalk: 4.1.2
@@ -2835,9 +2799,8 @@ packages:
     dev: true
 
   /@oclif/plugin-warn-if-update-available/2.0.44_typescript@4.9.5:
-    resolution:
-      { integrity: sha512-52Ww0B4F1tMhwjw2fe73lhmfDI/F4ynf3ur7/xnpnVBEvj5JG4sqolbEJV/0lV85+4dJNsYJRxubbPYjxcbCcA== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-52Ww0B4F1tMhwjw2fe73lhmfDI/F4ynf3ur7/xnpnVBEvj5JG4sqolbEJV/0lV85+4dJNsYJRxubbPYjxcbCcA==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.9.4_typescript@4.9.5
       chalk: 4.1.2
@@ -2864,9 +2827,8 @@ packages:
     dev: true
 
   /@oclif/test/2.3.31:
-    resolution:
-      { integrity: sha512-dTWCni+Zv9aSuzyamS95+GJaIub6EAI+CT+pA1MP10RZF54mF7CKaas7t8dvNvDp1Y194hi64cqe+cNwZlR5ng== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-dTWCni+Zv9aSuzyamS95+GJaIub6EAI+CT+pA1MP10RZF54mF7CKaas7t8dvNvDp1Y194hi64cqe+cNwZlR5ng==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.9.4
       fancy-test: 2.0.31
@@ -2879,9 +2841,8 @@ packages:
     dev: true
 
   /@oclif/test/2.3.31_4qcp7qp4jxxdgb4qbxgwox4hwq:
-    resolution:
-      { integrity: sha512-dTWCni+Zv9aSuzyamS95+GJaIub6EAI+CT+pA1MP10RZF54mF7CKaas7t8dvNvDp1Y194hi64cqe+cNwZlR5ng== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-dTWCni+Zv9aSuzyamS95+GJaIub6EAI+CT+pA1MP10RZF54mF7CKaas7t8dvNvDp1Y194hi64cqe+cNwZlR5ng==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.9.4_4qcp7qp4jxxdgb4qbxgwox4hwq
       fancy-test: 2.0.31
@@ -2894,9 +2855,8 @@ packages:
     dev: true
 
   /@oclif/test/2.3.31_npeoqfxwgl5njwqojmpesqhar4:
-    resolution:
-      { integrity: sha512-dTWCni+Zv9aSuzyamS95+GJaIub6EAI+CT+pA1MP10RZF54mF7CKaas7t8dvNvDp1Y194hi64cqe+cNwZlR5ng== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-dTWCni+Zv9aSuzyamS95+GJaIub6EAI+CT+pA1MP10RZF54mF7CKaas7t8dvNvDp1Y194hi64cqe+cNwZlR5ng==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.9.4_npeoqfxwgl5njwqojmpesqhar4
       fancy-test: 2.0.31
@@ -3041,23 +3001,20 @@ packages:
     dev: false
 
   /@sigstore/bundle/1.0.0:
-    resolution:
-      { integrity: sha512-yLvrWDOh6uMOUlFCTJIZEnwOT9Xte7NPXUqVexEKGSF5XtBAuSg5du0kn3dRR0p47a4ah10Y0mNt8+uyeQXrBQ== }
-    engines: { node: ^14.17.0 || ^16.13.0 || >=18.0.0 }
+    resolution: {integrity: sha512-yLvrWDOh6uMOUlFCTJIZEnwOT9Xte7NPXUqVexEKGSF5XtBAuSg5du0kn3dRR0p47a4ah10Y0mNt8+uyeQXrBQ==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dependencies:
       '@sigstore/protobuf-specs': 0.2.0
     dev: true
 
   /@sigstore/protobuf-specs/0.2.0:
-    resolution:
-      { integrity: sha512-8ZhZKAVfXjIspDWwm3D3Kvj0ddbJ0HqDZ/pOs5cx88HpT8mVsotFrg7H1UMnXOuDHz6Zykwxn4mxG3QLuN+RUg== }
-    engines: { node: ^14.17.0 || ^16.13.0 || >=18.0.0 }
+    resolution: {integrity: sha512-8ZhZKAVfXjIspDWwm3D3Kvj0ddbJ0HqDZ/pOs5cx88HpT8mVsotFrg7H1UMnXOuDHz6Zykwxn4mxG3QLuN+RUg==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dev: true
 
   /@sigstore/tuf/1.0.3:
-    resolution:
-      { integrity: sha512-2bRovzs0nJZFlCN3rXirE4gwxCn97JNjMmwpecqlbgV9WcxX7WRuIrgzx/X7Ib7MYRbyUTpBYE0s2x6AmZXnlg== }
-    engines: { node: ^14.17.0 || ^16.13.0 || >=18.0.0 }
+    resolution: {integrity: sha512-2bRovzs0nJZFlCN3rXirE4gwxCn97JNjMmwpecqlbgV9WcxX7WRuIrgzx/X7Ib7MYRbyUTpBYE0s2x6AmZXnlg==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dependencies:
       '@sigstore/protobuf-specs': 0.2.0
       tuf-js: 1.1.7
@@ -4214,9 +4171,8 @@ packages:
     dev: true
 
   /aws-sdk/2.1418.0:
-    resolution:
-      { integrity: sha512-6WDMJQAWKwVt+44+61c/SAXKpUSwToqBMeaqizhEe3GN8TWfxMc9RfCnsYIIwS+L+5hedmKC5oc6Fg2ujs8KUQ== }
-    engines: { node: '>= 10.0.0' }
+    resolution: {integrity: sha512-6WDMJQAWKwVt+44+61c/SAXKpUSwToqBMeaqizhEe3GN8TWfxMc9RfCnsYIIwS+L+5hedmKC5oc6Fg2ujs8KUQ==}
+    engines: {node: '>= 10.0.0'}
     dependencies:
       buffer: 4.9.2
       events: 1.1.1
@@ -4229,15 +4185,6 @@ packages:
       uuid: 8.0.0
       xml2js: 0.5.0
     dev: true
-
-  /axios/0.27.2:
-    resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
-    dependencies:
-      follow-redirects: 1.15.2
-      form-data: 4.0.0
-    transitivePeerDependencies:
-      - debug
-    dev: false
 
   /axios/0.27.2_debug@4.3.4:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
@@ -4687,8 +4634,7 @@ packages:
     dev: true
 
   /caniuse-lite/1.0.30001517:
-    resolution:
-      { integrity: sha512-Vdhm5S11DaFVLlyiKu4hiUTkpZu+y1KA/rZZqVQfOD5YdDT/eQKlkt7NaE0WGOFgX32diqt9MiP9CAiFeRklaA== }
+    resolution: {integrity: sha512-Vdhm5S11DaFVLlyiKu4hiUTkpZu+y1KA/rZZqVQfOD5YdDT/eQKlkt7NaE0WGOFgX32diqt9MiP9CAiFeRklaA==}
     dev: true
 
   /cardinal/2.1.1:
@@ -5493,8 +5439,7 @@ packages:
       jake: 10.8.7
 
   /electron-to-chromium/1.4.466:
-    resolution:
-      { integrity: sha512-TSkRvbXRXD8BwhcGlZXDsbI2lRoP8dvqR7LQnqQNk9KxXBc4tG8O+rTuXgTyIpEdiqSGKEBSqrxdqEntnjNncA== }
+    resolution: {integrity: sha512-TSkRvbXRXD8BwhcGlZXDsbI2lRoP8dvqR7LQnqQNk9KxXBc4tG8O+rTuXgTyIpEdiqSGKEBSqrxdqEntnjNncA==}
     dev: true
 
   /elegant-spinner/1.0.1:
@@ -6344,9 +6289,8 @@ packages:
       - supports-color
 
   /fancy-test/2.0.31:
-    resolution:
-      { integrity: sha512-Ok4L7GuoVdOBKtwlHdSnBYDBSFeWazcr6+/lhcC0LWS+sJYOXgbyCPP54fTt2TM1T8QWUm4ULHKQGOHKS61pfg== }
-    engines: { node: '>=12.0.0' }
+    resolution: {integrity: sha512-Ok4L7GuoVdOBKtwlHdSnBYDBSFeWazcr6+/lhcC0LWS+sJYOXgbyCPP54fTt2TM1T8QWUm4ULHKQGOHKS61pfg==}
+    engines: {node: '>=12.0.0'}
     dependencies:
       '@types/chai': 4.3.5
       '@types/lodash': 4.14.195
@@ -10425,9 +10369,8 @@ packages:
     dev: true
 
   /pnpm/7.33.5:
-    resolution:
-      { integrity: sha512-TkmfIv/+WEWqj5Rj4ThrLXLDE04OvvlAk2CthE/vApDoK0ebMusuwPMOVmB+GCDCIWeCn9YmVtQaj9DMSg9CZw== }
-    engines: { node: '>=14.6' }
+    resolution: {integrity: sha512-TkmfIv/+WEWqj5Rj4ThrLXLDE04OvvlAk2CthE/vApDoK0ebMusuwPMOVmB+GCDCIWeCn9YmVtQaj9DMSg9CZw==}
+    engines: {node: '>=14.6'}
     hasBin: true
     dev: true
 
@@ -11200,9 +11143,8 @@ packages:
     dev: true
 
   /sigstore/1.8.0:
-    resolution:
-      { integrity: sha512-ogU8qtQ3VFBawRJ8wjsBEX/vIFeHuGs1fm4jZtjWQwjo8pfAt7T/rh+udlAN4+QUe0IzA8qRSc/YZ7dHP6kh+w== }
-    engines: { node: ^14.17.0 || ^16.13.0 || >=18.0.0 }
+    resolution: {integrity: sha512-ogU8qtQ3VFBawRJ8wjsBEX/vIFeHuGs1fm4jZtjWQwjo8pfAt7T/rh+udlAN4+QUe0IzA8qRSc/YZ7dHP6kh+w==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     hasBin: true
     dependencies:
       '@sigstore/bundle': 1.0.0
@@ -12342,8 +12284,7 @@ packages:
     dev: false
 
   /whatwg-fetch/3.6.16:
-    resolution:
-      { integrity: sha512-83avoGbZ0qtjtNrU3UTT3/Xd3uZ7DyfSYLuc1fL5iYs+93P+UkIVF6/6xpRVWeQcvbc7kSnVybSAVbd6QFW5Fg== }
+    resolution: {integrity: sha512-83avoGbZ0qtjtNrU3UTT3/Xd3uZ7DyfSYLuc1fL5iYs+93P+UkIVF6/6xpRVWeQcvbc7kSnVybSAVbd6QFW5Fg==}
     dev: false
 
   /whatwg-mimetype/3.0.0:
