@@ -1,4 +1,4 @@
-export function entryUpdateScript(contentType) {
+export function entryCreateUpdateScript(contentType) {
   return `
   module.exports = async ({ migration, stackSDKInstance, managementAPIClient, config, branch, apiKey }) => {
     const keysToRemove = [
