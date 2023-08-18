@@ -1,5 +1,5 @@
-import { join } from "path";
 import find from "lodash/find";
+import { resolve } from "path";
 import { existsSync } from "fs";
 import isEmpty from "lodash/isEmpty";
 import includes from "lodash/includes";
@@ -7,15 +7,9 @@ import { cliux as ux } from "@contentstack/cli-utilities";
 
 import BaseClass from "./base-class";
 import { getRemoteUrls } from "../util";
-import { AdapterConstructorInputs } from "../types";
 
 export default class PreCheck extends BaseClass {
   public projectBasePath: string = process.cwd();
-
-  constructor(options: AdapterConstructorInputs) {
-    super(options);
-  }
-
   /**
    * @method run
    *
@@ -140,7 +134,7 @@ export default class PreCheck extends BaseClass {
    */
   async identifyWhatProjectItIs(): Promise<void> {
     const localRemoteUrl =
-      (await getRemoteUrls(join(this.config.projectBasePath, ".git/config")))
+      (await getRemoteUrls(resolve(this.config.projectBasePath, ".git/config")))
         ?.origin || "";
 
     switch (true) {
@@ -149,9 +143,9 @@ export default class PreCheck extends BaseClass {
         this.log('Git project identified', 'info');
         break;
       default:
-        if (existsSync(join(this.config.projectBasePath, '.git'))) {
-          this.log('Git config found but remote URL not found in the config!', {
-            color: 'yellow',
+        if (existsSync(resolve(this.config.projectBasePath, ".git"))) {
+          this.log("Git config found but remote URL not found in the config!", {
+            color: "yellow",
             bold: true,
           });
         }
