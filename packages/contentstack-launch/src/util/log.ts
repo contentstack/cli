@@ -3,7 +3,7 @@ import winston from "winston";
 import { existsSync } from "fs";
 import chalk, { Chalk } from "chalk";
 import replace from "lodash/replace";
-import { join, normalize } from "path";
+import { normalize, resolve } from "path";
 import isObject from "lodash/isObject";
 import { cliux as ux, PrintOptions } from '@contentstack/cli-utilities';
 
@@ -62,9 +62,10 @@ export default class Logger {
     }
 
     if (existsSync(this.config.projectBasePath)) {
-      const filename = normalize(
-        join(this.config.projectBasePath, "logs", `${logType}.log`)
-      ).replace(/^(\.\.(\/|\\|$))+/, "");
+      const filename = normalize(resolve(this.config.projectBasePath, "logs", `${logType}.log`)).replace(
+        /^(\.\.(\/|\\|$))+/,
+        "",
+      );
       const loggerOptions: winston.LoggerOptions = {
         transports: [
           new winston.transports.File({
