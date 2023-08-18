@@ -128,7 +128,6 @@ export const removeReferenceFields = async function (
           });
         }
       }
-      return true;
     } else if (
       // handling entry references in json rte
       schema[i].data_type === 'json' &&
@@ -147,7 +146,6 @@ export const removeReferenceFields = async function (
     ) {
       flag.supressed = true;
       schema[i].reference_to = ['sys_assets'];
-      return true; // undo remove
     }
   }
 };
