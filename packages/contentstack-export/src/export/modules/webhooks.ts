@@ -62,7 +62,7 @@ export default class ExportWebhooks extends BaseClass {
           return await this.getWebhooks(skip);
         }
       })
-      .catch(({ error }: any) => {
+      .catch((error: any) => {
         log(this.exportConfig, `Failed to export webhooks.${formatError(error)}`, 'error');
         log(this.exportConfig, error, 'error');
       });
