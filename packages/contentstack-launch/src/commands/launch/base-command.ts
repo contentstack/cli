@@ -1,7 +1,7 @@
 import keys from 'lodash/keys';
 import { existsSync } from 'fs';
 import EventEmitter from 'events';
-import { dirname, join } from 'path';
+import { dirname, resolve } from 'path';
 import includes from 'lodash/includes';
 import { ApolloClient } from '@apollo/client/core';
 import { Command } from '@contentstack/cli-command';
@@ -108,8 +108,8 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   async prepareConfig(): Promise<void> {
     let configPath =
       this.flags['data-dir'] || this.flags.config
-        ? this.flags.config || join(this.flags['data-dir'], config.configName)
-        : join(process.cwd(), config.configName);
+        ? this.flags.config || resolve(this.flags['data-dir'], config.configName)
+        : resolve(process.cwd(), config.configName);
     const baseUrl = (config.launchHubUrls as Record<string, string>)[this.cmaAPIUrl];
     this.sharedConfig = {
       ...require('../../config').default,
