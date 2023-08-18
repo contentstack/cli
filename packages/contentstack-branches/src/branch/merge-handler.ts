@@ -289,8 +289,9 @@ export default class MergeHandler {
 
     if (scriptFolderPath !== undefined) {
       cliux.success(`\nSuccess! We have generated entry migration files in the folder ${scriptFolderPath}`);
-
-      const migrationCommand = `csdx cm:stacks:migration --multiple --file-path ./${scriptFolderPath} --config compare-branch:${mergePayload.compare_branch} --branch ${mergePayload.base_branch} --stack-api-key ${this.stackAPIKey}`;
+      cliux.print('\nWARNING!!! Migration is not intended to be run more than once. Migrated(entries/assets) will be duplicated if run more than once', {color: 'yellow'});
+      
+      const migrationCommand = `csdx cm:stacks:migration --multiple --file-path ./${scriptFolderPath} --config {compare-branch:${mergePayload.compare_branch},file-path:./${scriptFolderPath}} --branch ${mergePayload.base_branch} --stack-api-key ${this.stackAPIKey}`;
       cliux.print(
         `\nKindly follow the steps in the guide "https://www.contentstack.com/docs/developers/cli/migrate-branch-entries" to update the migration scripts, and then run the command:\n\n${migrationCommand}`,
         { color: 'blue' },
