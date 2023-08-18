@@ -1,5 +1,7 @@
 export function entryUpdateScript(contentType) {
   return `
+  const fs = require('fs');
+  const path = require('path');
   module.exports = async ({ migration, stackSDKInstance, managementAPIClient, config, branch, apiKey }) => {
     const keysToRemove = [
       'content_type_uid',
@@ -23,6 +25,13 @@ export function entryUpdateScript(contentType) {
     ];
   
     let compareBranch = config['compare-branch'];
+    let filePath = config['file-path'] || process.cwd();
+    let assetDirPath = path.resolve(filePath, 'assets');
+    let assetDetails = [];
+    let newAssetDetails = [];
+    let assetUIDMapper = {};
+    let assetUrlMapper = {};
+    let assetRefPath = {};
   
     function converter(data) {
       let arr = [];
@@ -85,6 +94,279 @@ export function entryUpdateScript(contentType) {
       return references;
     };
 
+    const findAssets = function (schema, entry, refPath, path) {
+      for (const i in schema) {
+        const currentPath = path ? path + '[' + schema[i].uid : schema[i].uid;
+        if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
+          return findAssets(schema[i].schema, entry, refPath, currentPath);
+        } else if (schema[i].data_type === 'blocks') {
+          for (const block in schema[i].blocks) {
+            {
+              if (schema[i].blocks[block].schema) {
+                return findAssets(
+                  schema[i].blocks[block].schema,
+                  entry,
+                  refPath,
+                  currentPath + '[' + block + '][' + schema[i].blocks[block].uid + ']',
+                );
+              }
+            }
+          }
+        } else if (schema[i].data_type === 'json' && schema[i].field_metadata.rich_text_type) {
+          findAssetIdsFromJsonRte(entry, schema, refPath, path);
+        } else if (
+          schema[i].data_type === 'text' &&
+          schema[i].field_metadata &&
+          (schema[i].field_metadata.markdown || schema[i].field_metadata.rich_text_type)
+        ) {
+          findFileUrls(schema[i], entry);
+        } else if (schema[i].data_type === 'file') {
+          refPath.push(currentPath)
+          const imgDetails = getValueByPath(entry, currentPath);
+          if (imgDetails) {
+            const obj = {
+              uid: imgDetails.uid,
+              parent_uid: imgDetails.parent_uid,
+              description: imgDetails.description,
+              title: imgDetails.title,
+              filename: imgDetails.filename,
+              url: imgDetails.url,
+            };
+            assetDetails.push(obj);
+          }
+        }
+      }
+    };
+  
+    function findFileUrls(schema, _entry) {
+      let markdownRegEx;
+      let markdownMatch;
+      let text;
+      // Regex to detect v3 asset uri patterns
+      if (schema && schema.field_metadata && schema.field_metadata.markdown) {
+        text = marked(JSON.stringify(_entry));
+      } else {
+        text = JSON.stringify(_entry);
+      }
+      markdownRegEx = new RegExp(
+        '(https://(assets|(eu-|azure-na-|azure-eu-)?images).contentstack.(io|com)/v3/assets/(.*?)/(.*?)/(.*?)/(.*?)(?="))',
+        'g',
+      );
+      while ((markdownMatch = markdownRegEx.exec(text)) !== null) {
+        if (markdownMatch && typeof markdownMatch[0] === 'string') {
+          const assetDetails = markdownMatch[0].split('/');
+          //fetch assetUID from url
+          const assetUID = assetDetails && assetDetails[6];
+          const obj = {
+            uid: assetUID,
+            url: markdownMatch[0],
+          };
+          assetDetails.push(obj);
+        }
+      }
+    }
+  
+    function findAssetIdsFromJsonRte(entryObj, ctSchema) {
+      for (const element of ctSchema) {
+        switch (element.data_type) {
+          case 'blocks': {
+            if (entryObj[element.uid]) {
+              if (element.multiple) {
+                entryObj[element.uid].forEach((e) => {
+                  let key = Object.keys(e).pop();
+                  let subBlock = element.blocks.filter((block) => block.uid === key).pop();
+                  findAssetIdsFromJsonRte(e[key], subBlock.schema);
+                });
+              }
+            }
+            break;
+          }
+          case 'global_field':
+          case 'group': {
+            if (entryObj[element.uid]) {
+              if (element.multiple) {
+                entryObj[element.uid].forEach((e) => {
+                  findAssetIdsFromJsonRte(e, element.schema);
+                });
+              } else {
+                findAssetIdsFromJsonRte(entryObj[element.uid], element.schema);
+              }
+            }
+            break;
+          }
+          case 'json': {
+            if (entryObj[element.uid] && element.field_metadata.rich_text_type) {
+              if (element.multiple) {
+                entryObj[element.uid].forEach((jsonRteData) => {
+                  gatherJsonRteAssetIds(jsonRteData);
+                });
+              } else {
+                gatherJsonRteAssetIds(entryObj[element.uid]);
+              }
+            }
+            break;
+          }
+        }
+      }
+    }
+  
+    function gatherJsonRteAssetIds(jsonRteData) {
+      jsonRteData.children.forEach((element) => {
+        if (element.type) {
+          switch (element.type) {
+            case 'a':
+            case 'p': {
+              if (element.children && element.children.length > 0) {
+                gatherJsonRteAssetIds(element);
+              }
+              break;
+            }
+            case 'reference': {
+              if (Object.keys(element.attrs).length > 0 && element.attrs.type === 'asset') {
+                assetDetails.push({ uid: element.attrs['asset-uid'] });
+                if (element.attrs['asset-link']) {
+                  const assetDetails = element.attrs['asset-link'].split('/');
+                  //fetch assetUID from url
+                  const assetUID = assetDetails && assetDetails[6];
+                  const obj = {
+                    uid: assetUID,
+                    url: element.attrs['asset-link'],
+                  };
+                  assetDetails.push(obj);
+                } else if (element.attrs['href']) {
+                  const assetDetails = element.attrs['href'].split('/');
+                  //fetch assetUID from url
+                  const assetUID = assetDetails && assetDetails[6];
+                  const obj = {
+                    uid: assetUID,
+                    url: element.attrs['href'],
+                  };
+                  assetDetails.push(obj);
+                }
+              }
+              if (element.children && element.children.length > 0) {
+                gatherJsonRteAssetIds(element);
+              }
+              break;
+            }
+          }
+        }
+      });
+    }
+  
+    const updateAssetDetailsInEntries = function (entry) {
+      assetRefPath[entry.uid].forEach((refPath) => {
+        let imgDetails = entry[refPath];
+        if (imgDetails !== 'undefined' && imgDetails?.uid) {
+          entry[refPath] = assetUIDMapper[imgDetails.uid];
+        } else {
+          imgDetails = getValueByPath(entry, refPath);
+          if(imgDetails !== 'undefined' && imgDetails?.uid){
+            updateValueByPath(entry, refPath, assetUIDMapper[imgDetails.uid]);
+          }
+        }
+      });
+      entry = JSON.stringify(entry);
+      const assetUrls = assetDetails.map((asset) => asset.url);
+      const assetUIDs = assetDetails.map((asset) => asset.uid);
+      assetUrls.forEach(function (assetUrl) {
+        let mappedAssetUrl = assetUrlMapper[assetUrl];
+        if (typeof mappedAssetUrl !== 'undefined') {
+         entry = entry.replace(assetUrl, mappedAssetUrl);
+        }
+      });
+  
+      assetUIDs.forEach(function (assetUid) {
+        let uid = assetUIDMapper[assetUid];
+        if (typeof uid !== 'undefined') {
+          entry = entry.replace(new RegExp(assetUid, 'img'), uid);
+        }
+      });
+      return JSON.parse(entry);
+    };
+  
+    const checkAndDownloadAsset = async function (cAsset) {
+      if (cAsset) {
+        const assetUID = cAsset.uid;
+        const bAssetDetail = await managementAPIClient
+          .stack({ api_key: stackSDKInstance.api_key, branch_uid: branch })
+          .asset(assetUID)
+          .fetch()
+          .then((assets) => assets)
+          .catch((error) => {});
+        if (bAssetDetail) return;
+        else {
+          const cAssetDetail = await managementAPIClient
+            .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
+            .asset(assetUID)
+            .fetch()
+            .then((assets) => assets)
+            .catch((error) => {});
+          const updatedObj = {
+            parent_uid: cAssetDetail.parent_uid,
+            description: cAssetDetail.description,
+            title: cAssetDetail.title,
+            filename: cAssetDetail.filename,
+            url: cAssetDetail.url,
+          };
+          Object.assign(cAsset, updatedObj);
+          const url = cAssetDetail?.url;
+          if (url) {
+            const assetFolderPath = path.resolve(assetDirPath, assetUID);
+            if (!fs.existsSync(assetFolderPath)) fs.mkdirSync(assetFolderPath);
+            const assetFilePath = path.resolve(assetFolderPath, cAsset.filename);
+            const assetWriterStream = fs.createWriteStream(assetFilePath);
+            const data = await managementAPIClient
+              .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
+              .asset(assetUID)
+              .download({ url, responseType: 'stream' })
+              .then(({ data }) => data)
+              .catch((error) => {
+                throw error;
+              });
+            assetWriterStream.on('error', (error) => {
+              throw error;
+            });
+            data.pipe(assetWriterStream);
+          }
+        }
+      }
+      return cAsset;
+    };
+  
+    const uploadAssets = async function () {
+      const assetFolderMap = JSON.parse(fs.readFileSync(path.resolve(filePath, 'folder-mapper.json'), 'utf8'));
+      const stackAPIClient = managementAPIClient.stack({ api_key: stackSDKInstance.api_key, branch_uid: branch });
+      for (let i = 0; i < assetDetails?.length; i++) {
+        const asset = assetDetails[i];
+        let requestOption = {};
+  
+        requestOption.parent_uid = assetFolderMap[asset.parent_uid] || asset.parent_uid;
+  
+        if (asset.hasOwnProperty('description') && typeof asset.description === 'string') {
+          requestOption.description = asset.description;
+        }
+  
+        if (asset.hasOwnProperty('tags') && Array.isArray(asset.tags)) {
+          requestOption.tags = asset.tags;
+        }
+  
+        if (asset.hasOwnProperty('title') && typeof asset.title === 'string') {
+          requestOption.title = asset.title;
+        }
+        requestOption.upload = path.resolve(assetDirPath, asset.uid, asset.filename);
+        const res = await stackAPIClient
+          .asset()
+          .create(requestOption)
+          .then((asset) => asset)
+          .catch((error) => {
+            throw error;
+          });
+        assetUIDMapper[asset.uid] = res && res.uid;
+        assetUrlMapper[asset.url] = res && res.url;
+      }
+    };
+
     const updateEntryTask = () => {
       return {
         title: 'Update Entries',
@@ -104,6 +386,35 @@ export function entryUpdateScript(contentType) {
           .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
           .contentType('${contentType}')
           .fetch();
+
+          for (let i = 0; i < compareBranchEntries?.items?.length; i++) {
+            assetRefPath[compareBranchEntries.items[i].uid] = []
+            findAssets(contentType.schema, compareBranchEntries.items[i], assetRefPath[compareBranchEntries.items[i].uid]);
+          }
+
+          for (let i = 0; i < baseBranchEntries?.items?.length; i++) {
+            assetRefPath[baseBranchEntries.items[i].uid] = []
+            findAssets(contentType.schema, baseBranchEntries.items[i], assetRefPath[baseBranchEntries.items[i].uid]);
+          }
+          assetDetails = [...new Map(assetDetails.map((item) => [item['uid'], item])).values()];
+          newAssetDetails = assetDetails;
+
+          if (newAssetDetails && newAssetDetails.length) {
+            if (!fs.existsSync(assetDirPath)) {
+              fs.mkdirSync(assetDirPath);
+            }
+            for (let i = 0; i < newAssetDetails.length; i++) {
+              const asset = newAssetDetails[i];
+              const updatedCAsset = await checkAndDownloadAsset(asset);
+              if(updatedCAsset === undefined){
+                delete newAssetDetails[i];
+                newAssetDetails.splice(i, 1);
+                --i;
+              }
+              newAssetDetails[i] = updatedCAsset;
+            }
+            await uploadAssets();
+          }
 
           let flag = {
             references: false
@@ -142,6 +453,7 @@ export function entryUpdateScript(contentType) {
             if (contentType.options.singleton) {
               compareBranchEntries.items.map(async (el) => {
                 let entryDetails = deleteUnwantedKeysFromObject(el, keysToRemove);
+                entryDetails = updateAssetDetailsInEntries(entryDetails);
   
                 if (baseBranchEntries && baseBranchEntries.items.length) {
                   let baseEntryUid = baseBranchEntries.items[0].uid;
@@ -170,7 +482,7 @@ export function entryUpdateScript(contentType) {
   
               arr.map(async (el) => {
                 let entryDetails = deleteUnwantedKeysFromObject(compareMap.get(el), keysToRemove);
-  
+                entryDetails = updateAssetDetailsInEntries(entryDetails);
                 if (compareMap.get(el) && !baseMap.get(el)) {
                   let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails });
                 
