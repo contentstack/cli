@@ -166,7 +166,11 @@ export default class ImportWorkflows extends BaseClass {
     );
   }
 
-  updateNextAvailableStagesUid(workflow, newWorkflowStages, oldWorkflowStages) {
+  updateNextAvailableStagesUid(
+    workflow: Record<string, any>,
+    newWorkflowStages: Record<string, any>[],
+    oldWorkflowStages: Record<string, any>[],
+  ) {
     newWorkflowStages = map(newWorkflowStages, (newStage, index) => {
       const oldStage = oldWorkflowStages[index];
       if (!isEmpty(oldStage.next_available_stages)) {
