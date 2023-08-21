@@ -53,11 +53,11 @@ export const uploadAssetHelper = function (config: ImportConfig, req: any, fsPat
 
 // get assets object
 export const lookupAssets = function (
-  data: any,
-  mappedAssetUids: string[],
-  mappedAssetUrls: string[],
-  assetUidMapperPath: string[],
-  installedExtensions: string[],
+  data: Record<string, any>,
+  mappedAssetUids: Record<string, any>,
+  mappedAssetUrls: Record<string, any>,
+  assetUidMapperPath: string,
+  installedExtensions: Record<string, any>[],
 ) {
   if (
     !_.has(data, 'entry') ||
