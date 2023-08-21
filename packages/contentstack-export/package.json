@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-export",
   "description": "Contentstack CLI plugin to export content from stack",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
@@ -62,6 +62,7 @@
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
     "test:integration": "INTEGRATION_TEST=true mocha --config ./test/.mocharc.js --forbid-only \"test/run.test.js\"",
+    "test:integration:report": "INTEGRATION_TEST=true nyc --extension .js mocha --forbid-only \"test/run.test.js\"",
     "test:unit": "mocha --forbid-only \"test/unit/*.test.ts\""
   },
   "engines": {
