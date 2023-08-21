@@ -49,8 +49,8 @@ class ExportStack {
       return self.getLocales(apiDetails);
     } else if (self.config.preserveStackVersion) {
       log(self.config, 'Exporting stack details', 'success');
-      let stackFolderPath = path.resolve(self.config.data, stackConfig.dirName);
-      let stackContentsFile = path.resolve(stackFolderPath, stackConfig.fileName);
+      let stackFolderPath = path.resolve(self.config.data, this.stackConfig.dirName);
+      let stackContentsFile = path.resolve(stackFolderPath, this.stackConfig.fileName);
 
       mkdirp.sync(stackFolderPath);
 
