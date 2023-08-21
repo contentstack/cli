@@ -54,8 +54,8 @@ export type ApiOptions = {
   url?: string;
   entity: ApiModuleType;
   apiData?: Record<any, any> | any;
-  resolve: (value: any) => void;
-  reject: (error: any) => void;
+  resolve: (value: any) => Promise<void> | void;
+  reject: (error: any) => Promise<void> | void;
   additionalInfo?: Record<any, any>;
   includeParamOnCompletion?: boolean;
   serializeData?: (input: ApiOptions) => any;
