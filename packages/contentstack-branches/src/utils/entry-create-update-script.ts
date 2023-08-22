@@ -416,7 +416,11 @@ export function entryCreateUpdateScript(contentType) {
             }
             await uploadAssets();
           }
-  
+          
+          let flag = {
+            references: false
+          };
+          
           const references = await findReference(contentType.schema, '', flag);
   
           async function updateEntry(entry, entryDetails) {
