@@ -31,17 +31,22 @@ export function entryCreateScript(contentType) {
     let assetUIDMapper = {};
     let assetUrlMapper = {};
     let assetRefPath = {};
+    let isAssetDownload = false;
 
     function getValueByPath(obj, path) {
       return path.split('[').reduce((o, key) => o && o[key.replace(/\]$/, '')], obj);
     }
   
-    function updateValueByPath(obj, path, newValue) {
+    function updateValueByPath(obj, path, newValue, type, index) {
       path.split('[').reduce((o, key, index, arr) => {
         if (index === arr.length - 1) {
-          o[key.replace(/\]$/, '')][0].uid = newValue;
+          if (type === 'file') {
+            o[key.replace(/]$/, '')][index] = newValue;
+          } else {
+            o[key.replace(/]$/, '')][0].uid = newValue;
+          }
         } else {
-          return o[key.replace(/\]$/, '')];
+          return o[key.replace(/]$/, '')];
         }
       }, obj);
     }
@@ -101,16 +106,32 @@ export function entryCreateScript(contentType) {
         } else if (schema[i].data_type === 'file') {
           refPath.push(currentPath)
           const imgDetails = getValueByPath(entry, currentPath);
-          if (imgDetails) {
-            const obj = {
-              uid: imgDetails.uid,
-              parent_uid: imgDetails.parent_uid,
-              description: imgDetails.description,
-              title: imgDetails.title,
-              filename: imgDetails.filename,
-              url: imgDetails.url,
-            };
-            cAssetDetails.push(obj);
+          if (schema[i].multiple) {
+            if (imgDetails && imgDetails.length) {
+              imgDetails.forEach((img) => {
+                const obj = {
+                  uid: img.uid,
+                  parent_uid: img.parent_uid,
+                  description: img.description,
+                  title: img.title,
+                  filename: img.filename,
+                  url: img.url,
+                };
+                cAssetDetails.push(obj);
+              });
+            }
+          } else {
+            if (imgDetails) {
+              const obj = {
+                uid: imgDetails.uid,
+                parent_uid: imgDetails.parent_uid,
+                description: imgDetails.description,
+                title: imgDetails.title,
+                filename: imgDetails.filename,
+                url: imgDetails.url,
+              };
+              cAssetDetails.push(obj);
+            }
           }
         }
       }
@@ -235,12 +256,26 @@ export function entryCreateScript(contentType) {
     const updateAssetDetailsInEntries = function (entry) {
       assetRefPath[entry.uid].forEach((refPath) => {
         let imgDetails = entry[refPath];
-        if (imgDetails !== 'undefined' && imgDetails?.uid) {
-          entry[refPath] = assetUIDMapper[imgDetails.uid];
+        if (imgDetails !== undefined) {
+          if (imgDetails && !Array.isArray(imgDetails)) {
+            entry[refPath] = assetUIDMapper[imgDetails.uid];
+          } else if (imgDetails && Array.isArray(imgDetails)) {
+            for (let i = 0; i < imgDetails.length; i++) {
+              const img = imgDetails[i];
+              entry[refPath][i] = assetUIDMapper[img.uid];
+            }
+          }
         } else {
           imgDetails = getValueByPath(entry, refPath);
-          if(imgDetails !== 'undefined' && imgDetails?.uid){
-            updateValueByPath(entry, refPath, assetUIDMapper[imgDetails.uid]);
+          if (imgDetails && !Array.isArray(imgDetails)) {
+            const imgUID = imgDetails?.uid;
+            updateValueByPath(entry, refPath, assetUIDMapper[imgUID], 'file', 0);
+          } else if (imgDetails && Array.isArray(imgDetails)) {
+            for (let i = 0; i < imgDetails.length; i++) {
+              const img = imgDetails[i];
+              const imgUID = img?.uid;
+              updateValueByPath(entry, refPath, assetUIDMapper[imgUID], 'file', i);
+            }
           }
         }
       });
@@ -264,16 +299,21 @@ export function entryCreateScript(contentType) {
     };
   
     const checkAndDownloadAsset = async function (cAsset) {
-      if (cAsset) {
-        const assetUID = cAsset.uid;
+      const assetUID = cAsset?.uid;
+      if (cAsset && assetUID) {
         const bAssetDetail = await managementAPIClient
           .stack({ api_key: stackSDKInstance.api_key, branch_uid: branch })
           .asset(assetUID)
           .fetch()
           .then((assets) => assets)
           .catch((error) => {});
-        if (bAssetDetail) return;
+        if (bAssetDetail) {
+            assetUIDMapper[cAsset.uid] = bAssetDetail.uid;
+            assetUrlMapper[cAsset.url] = bAssetDetail.url;
+            return false;
+        }
         else {
+          isAssetDownload = true;
           const cAssetDetail = await managementAPIClient
             .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
             .asset(assetUID)
@@ -380,14 +420,11 @@ export function entryCreateScript(contentType) {
             for (let i = 0; i < cAssetDetails.length; i++) {
               const asset = cAssetDetails[i];
               const updatedCAsset = await checkAndDownloadAsset(asset);
-              if(updatedCAsset === undefined){
-                delete cAssetDetails[i];
-                cAssetDetails.splice(i, 1);
-                --i;
+              if (updatedCAsset) {
+                cAssetDetails[i] = updatedCAsset;
               }
-              cAssetDetails[i] = updatedCAsset;
             }
-            await uploadAssets();
+            if (isAssetDownload) await uploadAssets();
           }
 
           let flag = {
