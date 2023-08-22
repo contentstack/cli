@@ -1226,6 +1226,9 @@ module.exports = class ImportEntries {
                 let entryReferences = jsonRteData.children.filter((e) => this.doEntryReferencesExist(e));
                 if (entryReferences.length > 0) {
                   jsonRteData.children = jsonRteData.children.filter((e) => !this.doEntryReferencesExist(e));
+                  if (jsonRteData.children.length === 0) {
+                    jsonRteData.children.push(JSON.parse(structuredPTag)); 
+                  }
                   return jsonRteData; // return jsonRteData without entry references
                 } else {
                   return jsonRteData; // return jsonRteData as it is, because there are no entry references
