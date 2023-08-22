@@ -32,6 +32,7 @@ export function entryUpdateScript(contentType) {
     let assetUIDMapper = {};
     let assetUrlMapper = {};
     let assetRefPath = {};
+    let isAssetDownload = false;
   
     function converter(data) {
       let arr = [];
@@ -58,12 +59,16 @@ export function entryUpdateScript(contentType) {
       return path.split('[').reduce((o, key) => o && o[key.replace(/\]$/, '')], obj);
     }
   
-    function updateValueByPath(obj, path, newValue) {
+    function updateValueByPath(obj, path, newValue, type, index) {
       path.split('[').reduce((o, key, index, arr) => {
         if (index === arr.length - 1) {
-          o[key.replace(/\]$/, '')][0].uid = newValue;
+          if (type === 'file') {
+            o[key.replace(/]$/, '')][index] = newValue;
+          } else {
+            o[key.replace(/]$/, '')][0].uid = newValue;
+          }
         } else {
-          return o[key.replace(/\]$/, '')];
+          return o[key.replace(/]$/, '')];
         }
       }, obj);
     }
@@ -123,16 +128,32 @@ export function entryUpdateScript(contentType) {
         } else if (schema[i].data_type === 'file') {
           refPath.push(currentPath)
           const imgDetails = getValueByPath(entry, currentPath);
-          if (imgDetails) {
-            const obj = {
-              uid: imgDetails.uid,
-              parent_uid: imgDetails.parent_uid,
-              description: imgDetails.description,
-              title: imgDetails.title,
-              filename: imgDetails.filename,
-              url: imgDetails.url,
-            };
-            assetDetails.push(obj);
+          if (schema[i].multiple) {
+            if (imgDetails && imgDetails.length) {
+              imgDetails.forEach((img) => {
+                const obj = {
+                  uid: img.uid,
+                  parent_uid: img.parent_uid,
+                  description: img.description,
+                  title: img.title,
+                  filename: img.filename,
+                  url: img.url,
+                };
+                assetDetails.push(obj);
+              });
+            }
+          } else {
+            if (imgDetails) {
+              const obj = {
+                uid: imgDetails.uid,
+                parent_uid: imgDetails.parent_uid,
+                description: imgDetails.description,
+                title: imgDetails.title,
+                filename: imgDetails.filename,
+                url: imgDetails.url,
+              };
+              assetDetails.push(obj);
+            }
           }
         }
       }
@@ -257,12 +278,26 @@ export function entryUpdateScript(contentType) {
     const updateAssetDetailsInEntries = function (entry) {
       assetRefPath[entry.uid].forEach((refPath) => {
         let imgDetails = entry[refPath];
-        if (imgDetails !== 'undefined' && imgDetails?.uid) {
-          entry[refPath] = assetUIDMapper[imgDetails.uid];
+        if (imgDetails !== undefined) {
+          if (imgDetails && !Array.isArray(imgDetails)) {
+            entry[refPath] = assetUIDMapper[imgDetails.uid];
+          } else if (imgDetails && imgDetailsArray.isArray(imgDetails)) {
+            for (let i = 0; i < imgDetails.length; i++) {
+              const img = imgDetails[i];
+              entry[refPath][i] = assetUIDMapper[img.uid];
+            }
+          }
         } else {
           imgDetails = getValueByPath(entry, refPath);
-          if(imgDetails !== 'undefined' && imgDetails?.uid){
-            updateValueByPath(entry, refPath, assetUIDMapper[imgDetails.uid]);
+          if (imgDetails && !Array.isArray(imgDetails)) {
+            const imgUID = imgDetails?.uid;
+            updateValueByPath(entry, refPath, assetUIDMapper[imgUID], 'file', 0);
+          } else if (imgDetails && Array.isArray(imgDetails)) {
+            for (let i = 0; i < imgDetails.length; i++) {
+              const img = imgDetails[i];
+              const imgUID = img?.uid;
+              updateValueByPath(entry, refPath, assetUIDMapper[imgUID], 'file', i);
+            }
           }
         }
       });
@@ -294,8 +329,13 @@ export function entryUpdateScript(contentType) {
           .fetch()
           .then((assets) => assets)
           .catch((error) => {});
-        if (bAssetDetail) return;
+          if (bAssetDetail) {
+            assetUIDMapper[cAsset.uid] = bAssetDetail.uid;
+            assetUrlMapper[cAsset.url] = bAssetDetail.url;
+            return false;
+          }
         else {
+          isAssetDownload = true;
           const cAssetDetail = await managementAPIClient
             .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
             .asset(assetUID)
@@ -406,14 +446,11 @@ export function entryUpdateScript(contentType) {
             for (let i = 0; i < newAssetDetails.length; i++) {
               const asset = newAssetDetails[i];
               const updatedCAsset = await checkAndDownloadAsset(asset);
-              if(updatedCAsset === undefined){
-                delete newAssetDetails[i];
-                newAssetDetails.splice(i, 1);
-                --i;
+              if(updatedCAsset){
+                newAssetDetails[i] = updatedCAsset;
               }
-              newAssetDetails[i] = updatedCAsset;
             }
-            await uploadAssets();
+            if (isAssetDownload) await uploadAssets();
           }
 
           let flag = {
