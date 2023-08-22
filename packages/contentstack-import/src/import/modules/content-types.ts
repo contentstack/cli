@@ -10,6 +10,7 @@ import { isEmpty, find, cloneDeep, map } from 'lodash';
 import { fsUtil, log, formatError, schemaTemplate, lookupExtension } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
+import { updateFieldRules } from '../../utils/content-type-helper';
 
 export default class ContentTypesImport extends BaseClass {
   private cTsMapperPath: string;
@@ -179,7 +180,7 @@ export default class ContentTypesImport extends BaseClass {
   serializeUpdateCTs(apiOptions: ApiOptions): ApiOptions {
     const { apiData: contentType } = apiOptions;
     if (contentType.field_rules) {
-      contentType.field_rules = this.updateFieldRules(contentType);
+      contentType.field_rules = updateFieldRules(contentType);
       if (!contentType.field_rules.length) {
         delete contentType.field_rules;
       }
@@ -243,30 +244,5 @@ export default class ContentTypesImport extends BaseClass {
     Object.assign(globalFieldPayload, cloneDeep(globalField));
     apiOptions.apiData = globalFieldPayload;
     return apiOptions;
-  }
-
-  updateFieldRules(contentType: any) {
-    const fieldDataTypeMap: { [key: string]: string } = {};
-    for (let i = 0; i < contentType.schema.length; i++) {
-      const field = contentType.schema[i];
-      fieldDataTypeMap[field.uid] = field.data_type;
-    }
-    const fieldRules = [...contentType.field_rules];
-    let len = fieldRules.length;
-    // Looping backwards as we need to delete elements as we move.
-    for (let i = len - 1; i >= 0; i--) {
-      const conditions = fieldRules[i].conditions;
-      let isReference = false;
-      for (let j = 0; j < conditions.length; j++) {
-        const field = conditions[j].operand_field;
-        if (fieldDataTypeMap[field] === 'reference') {
-          isReference = true;
-        }
-      }
-      if (isReference) {
-        fieldRules.splice(i, 1);
-      }
-    }
-    return fieldRules;
   }
 }
