@@ -373,6 +373,7 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
         break;
       }
       case 'json': {
+        const structuredPTag = '{"type":"p","attrs":{},"children":[{"text":""}]}';
         if (entry[element.uid] && element.field_metadata.rich_text_type) {
           if (element.multiple) {
             entry[element.uid] = entry[element.uid].map((jsonRteData: any) => {
@@ -389,6 +390,9 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
             let entryReferences = entry[element.uid].children.filter((e: any) => doEntryReferencesExist(e));
             if (entryReferences.length > 0) {
               entry[element.uid].children = entry[element.uid].children.filter((e: any) => !doEntryReferencesExist(e));
+              if (entry[element.uid].children.length === 0) {
+                entry[element.uid].children.push(JSON.parse(structuredPTag)); 
+              }
             }
           }
         }
