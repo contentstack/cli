@@ -396,7 +396,7 @@ module.exports = class ImportEntries {
                           }
                         })
                         .catch((error) => {
-                          if (error.hasOwnProperty('error_code') && error.error_code === 119) {
+                          if (error.hasOwnProperty('errorCode') && error.errorCode === 119) {
                             if (error.errors.title) {
                               log(
                                 this.config,
@@ -404,7 +404,13 @@ module.exports = class ImportEntries {
                                 'error',
                               );
                             } else {
-                              log(this.config, `Failed to create an entry ${eUid} ${formatError(error)}`, 'error');
+                              log(
+                                this.config,
+                                `Failed to create an entry '${eUid}' ${formatError(error)} Title of the failed entry: '${
+                                  entries[eUid].title
+                                }'`,
+                                'error',
+                              );
                             }
                             self.createdEntriesWOUid.push({
                               content_type: ctUid,
@@ -417,7 +423,13 @@ module.exports = class ImportEntries {
                           }
                           // TODO: if status code: 422, check the reason
                           // 429 for rate limit
-                          log(this.config, `Failed to create an entry ${eUid} ${formatError(error)}`, 'error');
+                          log(
+                            this.config,
+                            `Failed to create an entry '${eUid}' ${formatError(error)}. Title of the failed entry: '${
+                              entries[eUid].title
+                            }'`,
+                            'error',
+                          );
                           self.fails.push({
                             content_type: ctUid,
                             locale: lang,
@@ -486,7 +498,18 @@ module.exports = class ImportEntries {
           return resolve();
         })
         .catch((error) => {
-          addlogs(this.config, chalk.red("Failed to create entries in '" + lang + "' language"), 'error');
+          let title = JSON.parse(error?.request?.data ||"{}").entry?.title
+          addlogs(
+            this.config,
+            chalk.red(
+              "Failed to create entries in '" +
+                lang +
+                "' language. " +
+                'Title of the failed entry: ' +
+                `'${title||""}'`,
+            ),
+            'error',
+          );
           return reject(error);
         });
     });
@@ -584,7 +607,7 @@ module.exports = class ImportEntries {
             } catch (error) {
               addlogs(
                 this.config,
-                `Failed to update the entry ${uid} references while reposting ${formatError(error)}`,
+                `Failed to update the entry '${uid}' references while reposting ${formatError(error)}`,
                 'error',
               );
             }
@@ -681,7 +704,7 @@ module.exports = class ImportEntries {
             })
             .catch((error) => {
               // error while updating entries with references
-              addlogs(this.config, `Failed re-post entries of content type ${ctUid} locale ${lang}`, 'error');
+              addlogs(this.config, `Failed re-post entries of content type '${ctUid}' locale '${lang}'`, 'error');
               addlogs(this.config, formatError(error), 'error');
               // throw error;
             });
@@ -773,7 +796,7 @@ module.exports = class ImportEntries {
             })
             .catch((_error) => {
               addlogs(this.config, formatError(_error), 'error');
-              reject(`Failed suppress content type ${schema.uid} reference fields`);
+              reject(`Failed suppress content type '${schema.uid}' reference fields`);
             });
           // update 5 content types at a time
         },
@@ -967,10 +990,15 @@ module.exports = class ImportEntries {
     return new Promise((resolve, reject) => {
       if (schema.field_rules) {
         let fieldRuleLength = schema.field_rules.length;
+        const fieldDatatypeMap = {};
+        for (let i = 0; i < schema.schema.length ; i++) {
+          const field = schema.schema[i].uid;
+          fieldDatatypeMap[field] = schema.schema[i].data_type; 
+        }
         for (let k = 0; k < fieldRuleLength; k++) {
           let fieldRuleConditionLength = schema.field_rules[k].conditions.length;
           for (let i = 0; i < fieldRuleConditionLength; i++) {
-            if (schema.field_rules[k].conditions[i].operand_field === 'reference') {
+            if (fieldDatatypeMap[schema.field_rules[k].conditions[i].operand_field] === 'reference') {
               let fieldRulesValue = schema.field_rules[k].conditions[i].value;
               let fieldRulesArray = fieldRulesValue.split('.');
               let updatedValue = [];
@@ -1004,6 +1032,7 @@ module.exports = class ImportEntries {
         })
         .catch((error) => {
           log(this.config, `failed to update the field rules ${formatError(error)}`);
+          return reject(error);
         });
     });
   }
