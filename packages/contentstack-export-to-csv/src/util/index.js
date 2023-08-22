@@ -384,8 +384,10 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
     });
     delete entry.publish_details;
     if ('_workflow' in entry) {
-      workflow = entry['_workflow']['name'];
-      delete entry['_workflow'];
+        if(entry._workflow?.name) {
+          workflow = entry['_workflow']['name'];
+          delete entry['_workflow'];
+        }
     }
     entry = flatten(entry);
     entry['publish_details'] = envArr;
