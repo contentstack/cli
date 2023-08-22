@@ -381,6 +381,9 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
               let entryReferences = jsonRteData.children.filter((e: any) => doEntryReferencesExist(e));
               if (entryReferences.length > 0) {
                 jsonRteData.children = jsonRteData.children.filter((e: any) => !doEntryReferencesExist(e));
+                if (jsonRteData.children.length === 0) { // empty children array are no longer acceptable by the API, a default structure must be there 
+                  jsonRteData.children.push(JSON.parse(structuredPTag)); 
+                }
                 return jsonRteData; // return jsonRteData without entry references
               } else {
                 return jsonRteData; // return jsonRteData as it is, because there are no entry references
