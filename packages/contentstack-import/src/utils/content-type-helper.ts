@@ -142,3 +142,28 @@ export const removeReferenceFields = async function (
     }
   }
 };
+
+export const updateFieldRules = function (contentType: any) {
+  const fieldDataTypeMap: { [key: string]: string } = {};
+  for (let i = 0; i < contentType.schema.length; i++) {
+    const field = contentType.schema[i];
+    fieldDataTypeMap[field.uid] = field.data_type;
+  }
+  const fieldRules = [...contentType.field_rules];
+  let len = fieldRules.length;
+  // Looping backwards as we need to delete elements as we move.
+  for (let i = len - 1; i >= 0; i--) {
+    const conditions = fieldRules[i].conditions;
+    let isReference = false;
+    for (let j = 0; j < conditions.length; j++) {
+      const field = conditions[j].operand_field;
+      if (fieldDataTypeMap[field] === 'reference') {
+        isReference = true;
+      }
+    }
+    if (isReference) {
+      fieldRules.splice(i, 1);
+    }
+  }
+  return fieldRules;
+}
