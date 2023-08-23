@@ -111,6 +111,7 @@ export default class ExportCommand extends Command {
       const moduleExporter = new ModuleExporter(managementAPIClient, exportConfig);
       await moduleExporter.start();
       log(exportConfig, `The content of the stack ${exportConfig.apiKey} has been exported successfully!`, 'success');
+      log(exportConfig, `The log has been stored at '${path.join(exportDir, 'logs', 'export')}'`, 'success');
     } catch (error) {
       log({ data: exportDir } as ExportConfig, `Failed to export stack content - ${formatError(error)}`, 'error');
       log(
