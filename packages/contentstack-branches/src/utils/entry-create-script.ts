@@ -46,7 +46,7 @@ export function entryCreateScript(contentType) {
             o[key.replace(/]$/, '')][0].uid = newValue;
           }
         } else {
-          return o[key.replace(/]$/, '')];
+          return o[key.replace(/\]$/, '')];
         }
       }, obj);
     }
