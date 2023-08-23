@@ -118,7 +118,7 @@ export function entryUpdateScript(contentType) {
             }
           }
         } else if (schema[i].data_type === 'json' && schema[i].field_metadata.rich_text_type) {
-          findAssetIdsFromJsonRte(entry, schema[i].schema, refPath, path);
+          findAssetIdsFromJsonRte(entry, schema, refPath, path);
         } else if (
           schema[i].data_type === 'text' &&
           schema[i].field_metadata &&
@@ -188,44 +188,46 @@ export function entryUpdateScript(contentType) {
     }
   
     function findAssetIdsFromJsonRte(entryObj, ctSchema) {
-      for (const element of ctSchema) {
-        switch (element.data_type) {
-          case 'blocks': {
-            if (entryObj[element.uid]) {
-              if (element.multiple) {
-                entryObj[element.uid].forEach((e) => {
-                  let key = Object.keys(e).pop();
-                  let subBlock = element.blocks.filter((block) => block.uid === key).pop();
-                  findAssetIdsFromJsonRte(e[key], subBlock.schema);
-                });
+      if(ctSchema !== undefined || ctSchema !== null){
+        for (const element of ctSchema) {
+          switch (element.data_type) {
+            case 'blocks': {
+              if (entryObj[element.uid]) {
+                if (element.multiple) {
+                  entryObj[element.uid].forEach((e) => {
+                    let key = Object.keys(e).pop();
+                    let subBlock = element.blocks.filter((block) => block.uid === key).pop();
+                    findAssetIdsFromJsonRte(e[key], subBlock.schema);
+                  });
+                }
               }
+              break;
             }
-            break;
-          }
-          case 'global_field':
-          case 'group': {
-            if (entryObj[element.uid]) {
-              if (element.multiple) {
-                entryObj[element.uid].forEach((e) => {
-                  findAssetIdsFromJsonRte(e, element.schema);
-                });
-              } else {
-                findAssetIdsFromJsonRte(entryObj[element.uid], element.schema);
+            case 'global_field':
+            case 'group': {
+              if (entryObj[element.uid]) {
+                if (element.multiple) {
+                  entryObj[element.uid].forEach((e) => {
+                    findAssetIdsFromJsonRte(e, element.schema);
+                  });
+                } else {
+                  findAssetIdsFromJsonRte(entryObj[element.uid], element.schema);
+                }
               }
+              break;
             }
-            break;
-          }
-          case 'json': {
-            if (entryObj[element.uid] && element.field_metadata.rich_text_type) {
-              if (element.multiple) {
-                entryObj[element.uid].forEach((jsonRteData) => {
-                  gatherJsonRteAssetIds(jsonRteData);
-                });
-              } else {
-                gatherJsonRteAssetIds(entryObj[element.uid]);
+            case 'json': {
+              if (entryObj[element.uid] && element.field_metadata.rich_text_type) {
+                if (element.multiple) {
+                  entryObj[element.uid].forEach((jsonRteData) => {
+                    gatherJsonRteAssetIds(jsonRteData);
+                  });
+                } else {
+                  gatherJsonRteAssetIds(entryObj[element.uid]);
+                }
               }
+              break;
             }
-            break;
           }
         }
       }
