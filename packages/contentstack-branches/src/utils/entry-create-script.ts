@@ -96,7 +96,7 @@ export function entryCreateScript(contentType) {
             }
           }
         } else if (schema[i].data_type === 'json' && schema[i].field_metadata.rich_text_type) {
-          findAssetIdsFromJsonRte(entry, schema, refPath, path);
+          findAssetIdsFromJsonRte(entry, schema[i].schema, refPath, path);
         } else if (
           schema[i].data_type === 'text' &&
           schema[i].field_metadata &&
