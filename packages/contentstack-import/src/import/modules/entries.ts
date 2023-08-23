@@ -209,14 +209,6 @@ export default class EntriesImport extends BaseClass {
       jsonRteEmbeddedEntries: false,
     };
     suppressSchemaReference(contentType.schema, flag);
-    // Check if suppress modified flag
-    if (flag.suppressed) {
-      this.modifiedCTs.push(find(this.cTs, { uid: contentType.uid }));
-    } else {
-      // Note: Skips the content type from update if no reference found
-      apiOptions.additionalInfo = { skip: true };
-      return apiOptions;
-    }
 
     if (flag.references) {
       this.refCTs.push(contentType.uid);
@@ -231,6 +223,16 @@ export default class EntriesImport extends BaseClass {
         }
       }
     }
+
+    // Check if suppress modified flag
+    if (flag.suppressed) {
+      this.modifiedCTs.push(find(this.cTs, { uid: contentType.uid }));
+    } else {
+      // Note: Skips the content type from update if no reference found
+      apiOptions.additionalInfo = { skip: true };
+      return apiOptions;
+    }
+
     lookupExtension(
       this.importConfig,
       contentType.schema,
@@ -266,7 +268,7 @@ export default class EntriesImport extends BaseClass {
     if (indexerCount === 0) {
       return Promise.resolve();
     }
-    log(this.importConfig, `Starting to create entries for ${cTUid} in locale ${locale}`, 'info');
+    // log(this.importConfig, `Starting to create entries for ${cTUid} in locale ${locale}`, 'info');
     const isMasterLocale = locale === this.importConfig?.master_locale?.code;
     // Write created entries
     const entriesCreateFileHelper = new FsUtility({
@@ -381,7 +383,7 @@ export default class EntriesImport extends BaseClass {
     if (indexerCount === 0) {
       return Promise.resolve();
     }
-    log(this.importConfig, `Starting to update entries with references for ${cTUid} in locale ${locale}`, 'info');
+    // log(this.importConfig, `Starting to update entries with references for ${cTUid} in locale ${locale}`, 'info');
 
     const contentType = find(this.cTs, { uid: cTUid });
 
@@ -590,7 +592,7 @@ export default class EntriesImport extends BaseClass {
     if (indexerCount === 0) {
       return Promise.resolve();
     }
-    log(this.importConfig, `Starting publish entries for ${cTUid} in locale ${locale}`, 'info');
+    // log(this.importConfig, `Starting publish entries for ${cTUid} in locale ${locale}`, 'info');
 
     const onSuccess = ({ response, apiData: { environments }, additionalInfo: { entryUid } }: any) => {
       log(
