@@ -68,7 +68,7 @@ export function entryUpdateScript(contentType) {
             o[key.replace(/]$/, '')][0].uid = newValue;
           }
         } else {
-          return o[key.replace(/]$/, '')];
+          return o[key.replace(/\]$/, '')];
         }
       }, obj);
     }
@@ -281,7 +281,7 @@ export function entryUpdateScript(contentType) {
         if (imgDetails !== undefined) {
           if (imgDetails && !Array.isArray(imgDetails)) {
             entry[refPath] = assetUIDMapper[imgDetails.uid];
-          } else if (imgDetails && imgDetailsArray.isArray(imgDetails)) {
+          } else if (imgDetails && Array.isArray(imgDetails)) {
             for (let i = 0; i < imgDetails.length; i++) {
               const img = imgDetails[i];
               entry[refPath][i] = assetUIDMapper[img.uid];
