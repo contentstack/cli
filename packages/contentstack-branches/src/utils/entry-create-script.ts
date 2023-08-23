@@ -81,12 +81,12 @@ export function entryCreateScript(contentType) {
       for (const i in schema) {
         const currentPath = path ? path + '[' + schema[i].uid : schema[i].uid;
         if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
-          return findAssets(schema[i].schema, entry, refPath, currentPath);
+          findAssets(schema[i].schema, entry, refPath, currentPath);
         } else if (schema[i].data_type === 'blocks') {
           for (const block in schema[i].blocks) {
             {
               if (schema[i].blocks[block].schema) {
-                return findAssets(
+                findAssets(
                   schema[i].blocks[block].schema,
                   entry,
                   refPath,
