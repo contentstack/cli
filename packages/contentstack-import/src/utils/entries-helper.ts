@@ -8,7 +8,14 @@ import config from '../config';
 import * as fileHelper from './file-helper';
 
 // update references in entry object
-export const lookupEntries = function (data: any, mappedUids: Record<string, any>, uidMapperPath: string) {
+export const lookupEntries = function (
+  data: {
+    content_type: any;
+    entry: any;
+  },
+  mappedUids: Record<string, any>,
+  uidMapperPath: string,
+) {
   let parent: string[] = [];
   let uids: string[] = [];
   let unmapped: string[] = [];
@@ -91,7 +98,7 @@ export const lookupEntries = function (data: any, mappedUids: Record<string, any
     }
   };
   const find = function (schema: any = [], _entry: any) {
-    for (let i = 0, _i = schema.length; i < _i; i++) {
+    for (let i = 0, _i = schema?.length; i < _i; i++) {
       switch (schema[i].data_type) {
         case 'reference':
           if (Array.isArray(schema[i].reference_to)) {
