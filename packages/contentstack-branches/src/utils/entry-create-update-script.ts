@@ -188,7 +188,7 @@ export function entryCreateUpdateScript(contentType) {
     }
   
     function findAssetIdsFromJsonRte(entryObj, ctSchema) {
-      if(ctSchema !== undefined || ctSchema !== null){
+      if(ctSchema !== undefined){
         for (const element of ctSchema) {
           switch (element.data_type) {
             case 'blocks': {
