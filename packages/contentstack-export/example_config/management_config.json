@@ -13,5 +13,6 @@
     "locales"
   ],
   "useNewModuleStructure": true,
-  "securedAssets": false
+  "securedAssets": false,
+  "createBackupDir": "./temp"
 }
