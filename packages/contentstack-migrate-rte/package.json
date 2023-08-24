@@ -5,9 +5,9 @@
   "author": "contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "^1.2.11",
-    "@contentstack/cli-utilities": "^1.5.1",
-    "@contentstack/json-rte-serializer": "^2.0.2",
+    "@contentstack/cli-command": "~1.2.11",
+    "@contentstack/cli-utilities": "~1.5.1",
+    "@contentstack/json-rte-serializer": "~2.0.2",
     "collapse-whitespace": "^1.1.7",
     "chalk": "^4.1.2",
     "jsdom": "^20.0.3",

@@ -56,7 +56,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   //Note to support the old key
   config.source_stack = config.apiKey;
 
-  config.importWebhookStatus = importCmdFlags.importWebhookStatus;
+  config.importWebhookStatus = importCmdFlags['import-webhook-status'];
   config.forceStopMarketplaceAppsPrompt = importCmdFlags.yes;
 
   if (importCmdFlags['branch']) {

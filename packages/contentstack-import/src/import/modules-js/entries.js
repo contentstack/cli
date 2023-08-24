@@ -406,9 +406,9 @@ module.exports = class ImportEntries {
                             } else {
                               log(
                                 this.config,
-                                `Failed to create an entry '${eUid}' ${formatError(error)} Title of the failed entry: '${
-                                  entries[eUid].title
-                                }'`,
+                                `Failed to create an entry '${eUid}' ${formatError(
+                                  error,
+                                )} Title of the failed entry: '${entries[eUid].title}'`,
                                 'error',
                               );
                             }
@@ -498,7 +498,7 @@ module.exports = class ImportEntries {
           return resolve();
         })
         .catch((error) => {
-          let title = JSON.parse(error?.request?.data ||"{}").entry?.title
+          let title = JSON.parse(error?.request?.data || '{}').entry?.title;
           addlogs(
             this.config,
             chalk.red(
@@ -506,7 +506,7 @@ module.exports = class ImportEntries {
                 lang +
                 "' language. " +
                 'Title of the failed entry: ' +
-                `'${title||""}'`,
+                `'${title || ''}'`,
             ),
             'error',
           );
@@ -991,9 +991,9 @@ module.exports = class ImportEntries {
       if (schema.field_rules) {
         let fieldRuleLength = schema.field_rules.length;
         const fieldDatatypeMap = {};
-        for (let i = 0; i < schema.schema.length ; i++) {
+        for (let i = 0; i < schema.schema.length; i++) {
           const field = schema.schema[i].uid;
-          fieldDatatypeMap[field] = schema.schema[i].data_type; 
+          fieldDatatypeMap[field] = schema.schema[i].data_type;
         }
         for (let k = 0; k < fieldRuleLength; k++) {
           let fieldRuleConditionLength = schema.field_rules[k].conditions.length;
@@ -1218,6 +1218,7 @@ module.exports = class ImportEntries {
           break;
         }
         case 'json': {
+          const structuredPTag = '{"type":"p","attrs":{},"children":[{"text":""}]}';
           if (entry[element.uid] && element.field_metadata.rich_text_type) {
             if (element.multiple) {
               entry[element.uid] = entry[element.uid].map((jsonRteData) => {
@@ -1225,6 +1226,9 @@ module.exports = class ImportEntries {
                 let entryReferences = jsonRteData.children.filter((e) => this.doEntryReferencesExist(e));
                 if (entryReferences.length > 0) {
                   jsonRteData.children = jsonRteData.children.filter((e) => !this.doEntryReferencesExist(e));
+                  if (jsonRteData.children.length === 0) {
+                    jsonRteData.children.push(JSON.parse(structuredPTag)); 
+                  }
                   return jsonRteData; // return jsonRteData without entry references
                 } else {
                   return jsonRteData; // return jsonRteData as it is, because there are no entry references
@@ -1236,6 +1240,9 @@ module.exports = class ImportEntries {
                 entry[element.uid].children = entry[element.uid].children.filter(
                   (e) => !this.doEntryReferencesExist(e),
                 );
+                if (entry[element.uid].children.length === 0) {
+                  entry[element.uid].children.push(JSON.parse(structuredPTag)); 
+                }
               }
             }
           }
