@@ -80,6 +80,7 @@ export default class EntriesImport extends BaseClass {
     this.jsonRteCTsWithRef = [];
     this.envs = {};
     this.autoCreatedEntries = [];
+    this.failedEntries = [];
   }
 
   async start(): Promise<any> {
@@ -109,6 +110,17 @@ export default class EntriesImport extends BaseClass {
       await fileHelper.writeLargeFile(path.join(this.entriesMapperPath, 'uid-mapping.json'), this.entriesUidMapper); // TBD: manages mapper in one file, should find an alternative
       fsUtil.writeFile(path.join(this.entriesMapperPath, 'failed-entries.json'), this.failedEntries);
 
+      if (this.autoCreatedEntries.length > 0) {
+        log(this.importConfig, 'Removing entries from master language which got created by default', 'info');
+        await this.removeAutoCreatedEntries().catch((error) => {
+          log(
+            this.importConfig,
+            `Error while removing auto created entries in master locale ${formatError(error)}`,
+            'error',
+          );
+        });
+      }
+
       // Update entries with references
       const entryUpdateRequestOptions = this.populateEntryUpdatePayload();
       for (let entryUpdateRequestOption of entryUpdateRequestOptions) {
@@ -128,16 +140,6 @@ export default class EntriesImport extends BaseClass {
         log(this.importConfig, `Error while updating content type references ${formatError(error)}`, 'error');
       });
 
-      if (this.autoCreatedEntries.length > 0) {
-        log(this.importConfig, 'Removing entries from master language which got created by default', 'info');
-        await this.removeAutoCreatedEntries().catch((error) => {
-          log(
-            this.importConfig,
-            `Error while removing auto created entries in master locale ${formatError(error)}`,
-            'error',
-          );
-        });
-      }
       // Update field rule of content types which are got removed earlier
       log(this.importConfig, 'Updating the field rules of content type', 'info');
       await this.updateFieldRules().catch((error) => {
@@ -229,7 +231,7 @@ export default class EntriesImport extends BaseClass {
       this.modifiedCTs.push(find(this.cTs, { uid: contentType.uid }));
     } else {
       // Note: Skips the content type from update if no reference found
-      apiOptions.additionalInfo = { skip: true };
+      apiOptions.apiData = null;
       return apiOptions;
     }
 
@@ -272,7 +274,7 @@ export default class EntriesImport extends BaseClass {
     const isMasterLocale = locale === this.importConfig?.master_locale?.code;
     // Write created entries
     const entriesCreateFileHelper = new FsUtility({
-      moduleName: 'created-entries',
+      moduleName: 'entries',
       indexFileName: 'index.json',
       basePath: path.join(this.entriesMapperPath, cTUid, locale),
       chunkFileSize: this.entriesConfig.chunkFileSize,
@@ -281,15 +283,15 @@ export default class EntriesImport extends BaseClass {
     });
     const contentType = find(this.cTs, { uid: cTUid });
 
-    const onSuccess = ({ response, apiData: entry, additionalInfo: { entryFileName } }: any) => {
+    const onSuccess = ({ response, apiData: entry, additionalInfo }: any) => {
       log(this.importConfig, `Created entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`, 'info');
-      this.entriesUidMapper[entry.uid] = response.uid;
-      entry.sourceEntryFilePath = path.join(basePath, entryFileName); // stores source file path temporarily
-      entry.entryOldUid = entry.uid; // stores old uid temporarily
-      if (!isMasterLocale) {
+      if (!isMasterLocale && !additionalInfo[entry.uid]?.isLocalized) {
         this.autoCreatedEntries.push({ cTUid, locale, entryUid: response.uid });
       }
-      entriesCreateFileHelper.writeIntoFile({ [response.uid]: entry } as any, { mapKeyVal: true });
+      this.entriesUidMapper[entry.uid] = response.uid;
+      entry.sourceEntryFilePath = path.join(basePath, additionalInfo.entryFileName); // stores source file path temporarily
+      entry.entryOldUid = entry.uid; // stores old uid temporarily
+      entriesCreateFileHelper.writeIntoFile({ [entry.uid]: entry } as any, { mapKeyVal: true });
     };
     const onReject = ({ error, apiData: { uid, title } }: any) => {
       log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to create`, 'error');
@@ -315,7 +317,7 @@ export default class EntriesImport extends BaseClass {
             entity: 'create-entries',
             includeParamOnCompletion: true,
             serializeData: this.serializeEntries.bind(this),
-            additionalInfo: { contentType, locale, cTUid, entryFileName: indexer[index] },
+            additionalInfo: { contentType, locale, cTUid, entryFileName: indexer[index], isMasterLocale },
           },
           concurrencyLimit: this.importConcurrency,
         }).then(() => {
@@ -334,7 +336,7 @@ export default class EntriesImport extends BaseClass {
   serializeEntries(apiOptions: ApiOptions): ApiOptions {
     let {
       apiData: entry,
-      additionalInfo: { cTUid, locale, contentType },
+      additionalInfo: { cTUid, locale, contentType, isMasterLocale },
     } = apiOptions;
 
     if (this.jsonRteCTs.indexOf(cTUid) > -1) {
@@ -356,6 +358,16 @@ export default class EntriesImport extends BaseClass {
       this.installedExtensions,
     );
     delete entry.publish_details;
+    // checking the entry is a localized one or not
+    if (!isMasterLocale && this.entriesUidMapper.hasOwnProperty(entry.uid)) {
+      const entryResponse = this.stack.contentType(contentType.uid).entry(this.entriesUidMapper[entry.uid]);
+      Object.assign(entryResponse, cloneDeep(entry), { uid: this.entriesUidMapper[entry.uid] });
+      apiOptions.apiData = entryResponse;
+      apiOptions.additionalInfo[entryResponse.uid] = {
+        isLocalized: true,
+      };
+      return apiOptions;
+    }
     apiOptions.apiData = entry;
     return apiOptions;
   }
@@ -393,7 +405,12 @@ export default class EntriesImport extends BaseClass {
     const onReject = ({ error, apiData: { uid, title } }: any) => {
       log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to update`, 'error');
       log(this.importConfig, formatError(error), 'error');
-      this.failedEntries.push({ content_type: cTUid, locale, entry: { uid: this.entriesUidMapper[uid], title } });
+      this.failedEntries.push({
+        content_type: cTUid,
+        locale,
+        entry: { uid: this.entriesUidMapper[uid], title },
+        entryId: uid,
+      });
     };
 
     for (const index in indexer) {
@@ -458,7 +475,7 @@ export default class EntriesImport extends BaseClass {
     );
 
     const entryResponse = this.stack.contentType(contentType.uid).entry(this.entriesUidMapper[entry.uid]);
-    Object.assign(entryResponse, cloneDeep(entry));
+    Object.assign(entryResponse, cloneDeep(entry), { uid: this.entriesUidMapper[entry.uid] });
     delete entryResponse.publish_details;
     apiOptions.apiData = entryResponse;
     return apiOptions;
@@ -527,6 +544,7 @@ export default class EntriesImport extends BaseClass {
         resolve: onSuccess.bind(this),
         entity: 'delete-entries',
         includeParamOnCompletion: true,
+        additionalInfo: { locale: this.importConfig?.master_locale?.code },
       },
       concurrencyLimit: this.importConcurrency,
     });
@@ -668,7 +686,8 @@ export default class EntriesImport extends BaseClass {
         }
       });
     } else {
-      additionalInfo.skip = true;
+      additionalInfo.apiData = null;
+      return apiOptions;
     }
     apiOptions.apiData = requestObject;
     return apiOptions;
