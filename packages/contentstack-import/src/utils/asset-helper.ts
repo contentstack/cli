@@ -53,11 +53,11 @@ export const uploadAssetHelper = function (config: ImportConfig, req: any, fsPat
 
 // get assets object
 export const lookupAssets = function (
-  data: any,
-  mappedAssetUids: string[],
-  mappedAssetUrls: string[],
-  assetUidMapperPath: string[],
-  installedExtensions: string[],
+  data: Record<string, any>,
+  mappedAssetUids: Record<string, any>,
+  mappedAssetUrls: Record<string, any>,
+  assetUidMapperPath: string,
+  installedExtensions: Record<string, any>[],
 ) {
   if (
     !_.has(data, 'entry') ||
@@ -85,6 +85,9 @@ export const lookupAssets = function (
       ) {
         parent.push(schema[i].uid);
         findFileUrls(schema[i], entryToFind, assetUrls);
+        if (schema[i].field_metadata.rich_text_type) {
+          findAssetIdsFromHtmlRte(entryToFind, schema[i]);
+        }
         parent.pop();
       }
       if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
@@ -143,6 +146,15 @@ export const lookupAssets = function (
 
       return row;
     });
+  }
+
+  function findAssetIdsFromHtmlRte(entryObj: any, ctSchema: any) {
+    const regex = /<img asset_uid=\\"([^"]+)\\"/g;
+    let match;
+    const entry = JSON.stringify(entryObj);
+    while ((match = regex.exec(entry)) !== null) {
+      assetUids.push(match[1]);
+    }
   }
 
   function findAssetIdsFromJsonRte(entryObj: any, ctSchema: any) {
@@ -350,7 +362,8 @@ function findFileUrls(schema: any, _entry: any, assetUrls: any) {
   );
   while ((markdownMatch = markdownRegEx.exec(text)) !== null) {
     if (markdownMatch && typeof markdownMatch[0] === 'string') {
-      assetUrls.push(markdownMatch[0]);
+      let assetUrl = markdownMatch[0].replace(/\\/g, '');
+      assetUrls.push(assetUrl);
     }
   }
 }
