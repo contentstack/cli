@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { copy } from 'fs-extra';
+import { cliux } from '@contentstack/cli-utilities';
 
 import { fileHelper } from './index';
 import { ImportConfig } from '../types';
@@ -10,11 +11,17 @@ export default function setupBackupDir(importConfig: ImportConfig): Promise<stri
       return resolve(importConfig.useBackedupDir);
     }
 
-    const backupDir = importConfig.createBackupDir ? importConfig.createBackupDir : process.cwd();
-    const subDir = isSubDirectory(importConfig.contentDir, backupDir);
+    const subDir = isSubDirectory(importConfig);
     let backupDirPath: string;
 
     if (subDir) {
+      backupDirPath = path.resolve(importConfig.contentDir, '..', '_backup_' + Math.floor(Math.random() * 1000));
+      if (importConfig.createBackupDir) {
+        cliux.print(`Warning!!! Provided createBackupDir is subdirectory.Cannot copy to a subdirectory of itself. New Backup directory path - ${backupDirPath}`, {
+          color: 'yellow',
+        });
+      }
+    } else {
       //NOTE: If the backup folder's directory is provided, create it at that location; otherwise, the default path (working directory).
       backupDirPath = path.join(process.cwd(), '_backup_' + Math.floor(Math.random() * 1000));
       if (importConfig.createBackupDir) {
@@ -24,8 +31,6 @@ export default function setupBackupDir(importConfig: ImportConfig): Promise<stri
         fileHelper.makeDirectory(importConfig.createBackupDir);
         backupDirPath = importConfig.createBackupDir;
       }
-    } else {
-      backupDirPath = path.join('..', process.cwd(), '_backup_' + Math.floor(Math.random() * 1000));
     }
 
     if (backupDirPath) {
@@ -39,11 +44,18 @@ export default function setupBackupDir(importConfig: ImportConfig): Promise<stri
   });
 }
 
-function isSubDirectory(parent: string, child: string) {
+/**
+ * Check whether provided backup directory path is sub directory or not
+ * @param importConfig
+ * @returns
+ */
+function isSubDirectory(importConfig: ImportConfig) {
+  const parent = importConfig.contentDir;
+  const child = importConfig.createBackupDir ? importConfig.createBackupDir : process.cwd();
   const relative = path.relative(parent, child);
   if (relative) {
     return relative && !relative.startsWith('..') && !path.isAbsolute(relative);
-  } else {
-    return false;
   }
+  //true if both parent and child have same path
+  return true;
 }
