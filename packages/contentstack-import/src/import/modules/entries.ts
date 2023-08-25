@@ -612,7 +612,7 @@ export default class EntriesImport extends BaseClass {
     }
     // log(this.importConfig, `Starting publish entries for ${cTUid} in locale ${locale}`, 'info');
 
-    const onSuccess = ({ response, apiData: { environments }, additionalInfo: { entryUid } }: any) => {
+    const onSuccess = ({ response, apiData: { environments, entryUid }, additionalInfo }: any) => {
       log(
         this.importConfig,
         `Published entry: '${entryUid}' of content type ${cTUid} and locale ${locale} in ${environments?.join(
@@ -621,10 +621,10 @@ export default class EntriesImport extends BaseClass {
         'info',
       );
     };
-    const onReject = ({ error, apiData, additionalInfo: { entryUid } }: any) => {
+    const onReject = ({ error, apiData, additionalInfo }: any) => {
       log(
         this.importConfig,
-        `${entryUid} entry of content type ${cTUid} in locale ${locale} failed to publish`,
+        `${apiData.entryUid} entry of content type ${cTUid} in locale ${locale} failed to publish`,
         'error',
       );
       log(this.importConfig, formatError(error), 'error');
@@ -665,13 +665,14 @@ export default class EntriesImport extends BaseClass {
    */
   serializePublishEntries(apiOptions: ApiOptions): ApiOptions {
     let { apiData: entry, additionalInfo } = apiOptions;
-    additionalInfo.entryUid = this.entriesUidMapper[entry.uid];
     const requestObject: {
       environments: Array<string>;
       locales: Array<string>;
+      entryUid: string;
     } = {
       environments: [],
       locales: [],
+      entryUid: this.entriesUidMapper[entry.uid],
     };
     if (entry.publish_details && entry.publish_details.length > 0) {
       forEach(entry.publish_details, (pubObject) => {
@@ -686,7 +687,7 @@ export default class EntriesImport extends BaseClass {
         }
       });
     } else {
-      additionalInfo.apiData = null;
+      apiOptions.apiData = null;
       return apiOptions;
     }
     apiOptions.apiData = requestObject;
