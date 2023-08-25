@@ -362,8 +362,11 @@ export default abstract class BaseClass {
         }
         return this.stack
           .contentType(additionalInfo.cTUid)
-          .entry(additionalInfo.entryUid)
-          .publish({ publishDetails: apiData, locale: additionalInfo.locale })
+          .entry(apiData.entryUid)
+          .publish({
+            publishDetails: { environments: apiData.environments, locales: apiData.locales },
+            locale: additionalInfo.locale,
+          })
           .then(onSuccess)
           .catch(onReject);
       case 'delete-entries':
