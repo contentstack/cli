@@ -474,7 +474,9 @@ export function entryCreateScript(contentType) {
             compareFilteredProperties.length !== 0 &&
               compareFilteredProperties.forEach(async (entryDetails) => {
                 entryDetails = updateAssetDetailsInEntries(entryDetails);
-                let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails }).catch(error => throw error;);
+                let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails }).catch(error => {
+                  throw error;
+                });
                 if(createdEntry){
                   if (flag.references) {
                     await updateReferences(entryDetails, createdEntry, references);
