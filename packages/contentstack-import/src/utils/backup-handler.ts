@@ -18,7 +18,7 @@ export default function setupBackupDir(importConfig: ImportConfig): Promise<stri
       backupDirPath = path.resolve(importConfig.contentDir, '..', '_backup_' + Math.floor(Math.random() * 1000));
       if (importConfig.createBackupDir) {
         cliux.print(
-          `Warning!!! Provided backup directory path is a sub directory of the content directory, Cannot copy to a sub directory. New Backup directory created - ${backupDirPath}`,
+          `Warning!!! Provided backup directory path is a sub directory of the content directory, Cannot copy to a sub directory. Hence new backup directory created - ${backupDirPath}`,
           {
             color: 'yellow',
           },
