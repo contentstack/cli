@@ -37,11 +37,11 @@ export function entryCreateScript(contentType) {
       return path.split('[').reduce((o, key) => o && o[key.replace(/\]$/, '')], obj);
     }
   
-    function updateValueByPath(obj, path, newValue, type, index) {
+    function updateValueByPath(obj, path, newValue, type, fileIndex) {
       path.split('[').reduce((o, key, index, arr) => {
         if (index === arr.length - 1) {
           if (type === 'file') {
-            o[key.replace(/]$/, '')][index] = newValue;
+            o[key.replace(/]$/, '')][fileIndex] = newValue;
           } else {
             o[key.replace(/]$/, '')][0].uid = newValue;
           }
@@ -81,7 +81,7 @@ export function entryCreateScript(contentType) {
       for (const i in schema) {
         const currentPath = path ? path + '[' + schema[i].uid : schema[i].uid;
         if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
-          findAssets(schema[i].schema, entry, refPath, currentPath);
+          findAssets(schema[i].schema, entry, refPath, currentPath + '[0]');
         } else if (schema[i].data_type === 'blocks') {
           for (const block in schema[i].blocks) {
             {
@@ -386,6 +386,14 @@ export function entryCreateScript(contentType) {
         assetUrlMapper[asset.url] = res && res.url;
       }
     };
+    
+    function handleErrorMsg(err) {
+      if (err?.errorMessage) {
+       console.log(err.errorMessage);
+      } else if (err?.message) {
+        console.log(err.message);
+      }
+    }
 
     const createEntryTask = () => {
       return {
@@ -466,13 +474,13 @@ export function entryCreateScript(contentType) {
             compareFilteredProperties.length !== 0 &&
               compareFilteredProperties.forEach(async (entryDetails) => {
                 entryDetails = updateAssetDetailsInEntries(entryDetails);
-                let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails }).catch(error => {
-                  throw error;
-                });
-                if (flag.references) {
-                  await updateReferences(entryDetails, createdEntry, references);
+                let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails }).catch(error => throw error;);
+                if(createdEntry){
+                  if (flag.references) {
+                    await updateReferences(entryDetails, createdEntry, references);
+                  }
+                  await updateEntry(createdEntry, entryDetails);
                 }
-                await updateEntry(createdEntry, entryDetails);
               });
           } catch (error) {
             throw error;
