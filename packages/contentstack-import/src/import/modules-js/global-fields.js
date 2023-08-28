@@ -83,7 +83,6 @@ module.exports = class ImportGlobalFields {
                 log(self.config, chalk.green('Global field ' + global_field_uid + ' created successfully'), 'success');
               })
               .catch(function (err) {
-                console.log
                 let error = JSON.parse(err.message);
                 if (error.errors.title) {
                   // eslint-disable-next-line no-undef
