@@ -299,8 +299,8 @@ export default abstract class BaseClass {
       case 'create-cts':
         return this.stack.contentType().create(apiData).then(onSuccess).catch(onReject);
       case 'update-cts':
-        if (additionalInfo.skip) {
-          return Promise.resolve(onSuccess(apiData));
+        if (!apiData) {
+          return Promise.resolve();
         }
         return apiData.update().then(onSuccess).catch(onReject);
       case 'update-gfs':
@@ -345,6 +345,9 @@ export default abstract class BaseClass {
           .then(onSuccess)
           .catch(onReject);
       case 'create-entries':
+        if (additionalInfo[apiData?.uid]?.isLocalized) {
+          return apiData.update({ locale: additionalInfo.locale }).then(onSuccess).catch(onReject);
+        }
         return this.stack
           .contentType(additionalInfo.cTUid)
           .entry()
@@ -354,20 +357,23 @@ export default abstract class BaseClass {
       case 'update-entries':
         return apiData.update({ locale: additionalInfo.locale }).then(onSuccess).catch(onReject);
       case 'publish-entries':
-        if (additionalInfo.skip) {
-          return Promise.resolve(onSuccess(apiData));
+        if (!apiData) {
+          return Promise.resolve();
         }
         return this.stack
           .contentType(additionalInfo.cTUid)
-          .entry(additionalInfo.entryUid)
-          .publish({ publishDetails: apiData, locale: additionalInfo.locale })
+          .entry(apiData.entryUid)
+          .publish({
+            publishDetails: { environments: apiData.environments, locales: apiData.locales },
+            locale: additionalInfo.locale,
+          })
           .then(onSuccess)
           .catch(onReject);
       case 'delete-entries':
         return this.stack
           .contentType(apiData.cTUid)
           .entry(apiData.entryUid)
-          .delete({ locale: this.importConfig?.master_locale?.code })
+          .delete({ locale: additionalInfo.locale })
           .then(onSuccess)
           .catch(onReject);
       default:
