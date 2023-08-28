@@ -59,11 +59,11 @@ export function entryUpdateScript(contentType) {
       return path.split('[').reduce((o, key) => o && o[key.replace(/\]$/, '')], obj);
     }
   
-    function updateValueByPath(obj, path, newValue, type, index) {
+    function updateValueByPath(obj, path, newValue, type, fileIndex) {
       path.split('[').reduce((o, key, index, arr) => {
         if (index === arr.length - 1) {
           if (type === 'file') {
-            o[key.replace(/]$/, '')][index] = newValue;
+            o[key.replace(/]$/, '')][fileIndex] = newValue;
           } else {
             o[key.replace(/]$/, '')][0].uid = newValue;
           }
@@ -103,7 +103,7 @@ export function entryUpdateScript(contentType) {
       for (const i in schema) {
         const currentPath = path ? path + '[' + schema[i].uid : schema[i].uid;
         if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
-          findAssets(schema[i].schema, entry, refPath, currentPath);
+          findAssets(schema[i].schema, entry, refPath, currentPath + '[0]');
         } else if (schema[i].data_type === 'blocks') {
           for (const block in schema[i].blocks) {
             {
