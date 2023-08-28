@@ -380,6 +380,7 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
         break;
       }
       case 'json': {
+        const structuredPTag = '{"type":"p","attrs":{},"children":[{"text":""}]}';
         if (entry[element.uid] && element.field_metadata.rich_text_type) {
           if (element.multiple) {
             entry[element.uid] = entry[element.uid].map((jsonRteData: any) => {
@@ -387,6 +388,9 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
               let entryReferences = jsonRteData.children.filter((e: any) => doEntryReferencesExist(e));
               if (entryReferences.length > 0) {
                 jsonRteData.children = jsonRteData.children.filter((e: any) => !doEntryReferencesExist(e));
+                if (jsonRteData.children.length === 0) { // empty children array are no longer acceptable by the API, a default structure must be there 
+                  jsonRteData.children.push(JSON.parse(structuredPTag)); 
+                }
                 return jsonRteData; // return jsonRteData without entry references
               } else {
                 return jsonRteData; // return jsonRteData as it is, because there are no entry references
@@ -396,6 +400,9 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
             let entryReferences = entry[element.uid].children.filter((e: any) => doEntryReferencesExist(e));
             if (entryReferences.length > 0) {
               entry[element.uid].children = entry[element.uid].children.filter((e: any) => !doEntryReferencesExist(e));
+              if (entry[element.uid].children.length === 0) {
+                entry[element.uid].children.push(JSON.parse(structuredPTag)); 
+              }
             }
           }
         }
