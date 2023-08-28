@@ -134,13 +134,13 @@ function init(_logPath: string) {
 }
 
 export const log = async (config: ExportConfig, message: any, type: string) => {
-  config.data = config.data || path.join(__dirname, 'logs');
+  const logsPath = config.data || __dirname;
   // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
     // removed type argument from init method
-    init(config.data).log(message);
+    init(logsPath).log(message);
   } else {
-    init(config.data).error(message);
+    init(logsPath).error(message);
   }
 };
 
