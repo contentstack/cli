@@ -665,9 +665,9 @@ importers:
       '@oclif/test': ^1.2.6
       '@types/bluebird': ^3.5.38
       '@types/chai': ^4.2.18
+      '@types/fs-extra': ^11.0.1
       '@types/mkdirp': ^1.0.2
       '@types/mocha': ^8.2.2
-      '@types/ncp': ^2.0.5
       '@types/node': ^14.14.32
       '@types/sinon': ^10.0.2
       '@types/tar': ^4.0.3
@@ -679,13 +679,13 @@ importers:
       debug: ^4.1.0
       eslint: ^8.18.0
       eslint-config-oclif: ^4.0.0
+      fs-extra: ^11.1.1
       globby: ^10.0.2
       lodash: ^4.17.20
       marked: ^4.0.17
       merge: ^2.1.1
       mkdirp: ^1.0.4
       mocha: ^10.0.0
-      ncp: ^2.0.0
       nyc: ^15.1.0
       oclif: ^3.8.1
       promise-limit: ^2.7.0
@@ -706,11 +706,11 @@ importers:
       bluebird: 3.7.2
       chalk: 4.1.2
       debug: 4.3.4
+      fs-extra: 11.1.1
       lodash: 4.17.21
       marked: 4.3.0
       merge: 2.1.1
       mkdirp: 1.0.4
-      ncp: 2.0.0
       promise-limit: 2.7.0
       tslib: 2.6.0
       winston: 3.10.0
@@ -718,9 +718,9 @@ importers:
       '@oclif/test': 1.2.9
       '@types/bluebird': 3.5.38
       '@types/chai': 4.3.5
+      '@types/fs-extra': 11.0.1
       '@types/mkdirp': 1.0.2
       '@types/mocha': 8.2.3
-      '@types/ncp': 2.0.5
       '@types/node': 14.18.53
       '@types/sinon': 10.0.15
       '@types/tar': 4.0.5
@@ -3222,6 +3222,13 @@ packages:
     resolution: {integrity: sha512-3zsplnP2djeps5P9OyarTxwRpMLoe5Ash8aL9iprw0JxB+FAHjY+ifn4yZUuW4/9hqtnmor6uvjSRzJhiVbrEQ==}
     dev: true
 
+  /@types/fs-extra/11.0.1:
+    resolution: {integrity: sha512-MxObHvNl4A69ofaTRU8DFqvgzzv8s9yRtaPPm5gud9HDNvpB3GPQFvNuTWAI59B9huVGV5jXYJwbCsmBsOGYWA==}
+    dependencies:
+      '@types/jsonfile': 6.1.1
+      '@types/node': 16.18.38
+    dev: true
+
   /@types/glob/7.2.0:
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
     dependencies:
@@ -3281,6 +3288,12 @@ packages:
     resolution: {integrity: sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==}
     dev: true
 
+  /@types/jsonfile/6.1.1:
+    resolution: {integrity: sha512-GSgiRCVeapDN+3pqA35IkQwasaCh/0YFH5dEF6S88iDvEn901DjOeH3/QPY+XYP1DFzDZPvIvfeEgk+7br5png==}
+    dependencies:
+      '@types/node': 16.18.38
+    dev: true
+
   /@types/keyv/3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
     dependencies:
@@ -3336,12 +3349,6 @@ packages:
 
   /@types/mocha/8.2.3:
     resolution: {integrity: sha512-ekGvFhFgrc2zYQoX4JeZPmVzZxw6Dtllga7iGHzfbYIYkAMUx/sAFP2GdFpLff+vdHXu5fl7WX9AT+TtqYcsyw==}
-    dev: true
-
-  /@types/ncp/2.0.5:
-    resolution: {integrity: sha512-ocK0p8JuFmX7UkMabFPjY0F7apPvQyLWt5qtdvuvQEBz9i4m2dbzV+6L1zNaUp042RfnL6pHnxDE53OH6XQ9VQ==}
-    dependencies:
-      '@types/node': 16.18.38
     dev: true
 
   /@types/node/14.18.53:
@@ -6596,6 +6603,15 @@ packages:
     resolution: {integrity: sha512-cHEpEQHUg0f8XdtZCc2ZAhrHzKzT0MrFUTcvx+hfxYu7rGMDc5SKoXFh+n4YigxsHXRzc6OrCshdR1bWH6HHyg==}
     dev: true
 
+  /fs-extra/11.1.1:
+    resolution: {integrity: sha512-MGIE4HOvQCeUCzmlHs0vXpih4ysz4wg9qiSAu6cd42lVwPbTM1TjV7RusoyQqMmk/95gdQZX72u+YW+c3eEpFQ==}
+    engines: {node: '>=14.14'}
+    dependencies:
+      graceful-fs: 4.2.11
+      jsonfile: 6.1.0
+      universalify: 2.0.0
+    dev: false
+
   /fs-extra/8.1.0:
     resolution: {integrity: sha512-yhlQgA6mnOJUKOsRUFsgJdQCvkKhcz8tlZG5HBQfReYZy46OwLcY+Zia0mtdHsOo9y/hP+CxMN0TU9QxoOtG4g==}
     engines: {node: '>=6 <7 || >=8'}
@@ -9274,11 +9290,6 @@ packages:
 
   /natural-orderby/2.0.3:
     resolution: {integrity: sha512-p7KTHxU0CUrcOXe62Zfrb5Z13nLvPhSWR/so3kFulUQU0sgUll2Z0LwpsLN351eOOD+hRGu/F1g+6xDfPeD++Q==}
-
-  /ncp/2.0.0:
-    resolution: {integrity: sha512-zIdGUrPRFTUELUvr3Gmc7KZ2Sw/h1PiVM0Af/oHB6zgnV1ikqSfRk+TOufi79aHYCW3NiOXmr1BP5nWbzojLaA==}
-    hasBin: true
-    dev: false
 
   /negotiator/0.6.3:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
