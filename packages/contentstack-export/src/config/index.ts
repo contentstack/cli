@@ -1,6 +1,7 @@
 import { DefaultConfig } from '../types';
 
 const config: DefaultConfig = {
+  version: 1,
   versioning: false,
   host: 'https://api.contentstack.io/v3',
   developerHubUrls: {
@@ -369,20 +370,6 @@ const config: DefaultConfig = {
     'xh',
     'zu',
   ],
-  updatedModules: [
-    'assets',
-    'locales',
-    'extensions',
-    'marketplace-apps',
-    'labels',
-    'webhooks',
-    'custom-roles',
-    'global-fields',
-    'content-types',
-    'entries',
-    'workflows',
-    'stack',
-  ],
   apis: {
     userSession: '/user-session/',
     globalfields: '/global_fields/',
@@ -402,7 +389,6 @@ const config: DefaultConfig = {
   writeConcurrency: 5,
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
-  useNewModuleStructure: true,
 };
 
 export default config;
