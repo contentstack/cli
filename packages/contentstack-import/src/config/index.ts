@@ -379,6 +379,7 @@ const config: DefaultConfig = {
     'custom-roles',
     'workflows',
     'entries',
+    'environments'
   ],
   rateLimit: 5,
   preserveStackVersion: false,
