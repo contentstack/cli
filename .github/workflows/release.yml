@@ -249,6 +249,10 @@ jobs:
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
         working-directory: ./packages/contentstack
         run: npm install
+      - name: Compiling core
+        if: ${{ steps.core-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack
+        run: npm run prepack
       - name: Publishing core
         id: publish-core
         uses: JS-DevTools/npm-publish@v2.2.1
