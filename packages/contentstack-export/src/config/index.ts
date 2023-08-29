@@ -382,6 +382,7 @@ const config: DefaultConfig = {
     'entries',
     'workflows',
     'stack',
+    'environments'
   ],
   apis: {
     userSession: '/user-session/',
