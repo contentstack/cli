@@ -316,12 +316,12 @@ function getLanguages(stackAPIClient) {
   });
 }
 
-function getEntries(stackAPIClient, contentType, language, skip) {
+function getEntries(stackAPIClient, contentType, language, skip, limit) {
   return new Promise((resolve, reject) => {
     stackAPIClient
       .contentType(contentType)
       .entry()
-      .query({ include_publish_details: true, locale: language, skip: skip * 100 })
+      .query({ include_publish_details: true, locale: language, skip: skip * 100, limit: limit })
       .find()
       .then((entries) => resolve(entries))
       .catch((error) => reject(error));
@@ -373,9 +373,8 @@ function exitProgram() {
 
 function cleanEntries(entries, language, environments, contentTypeUid) {
   const filteredEntries = entries.filter((entry) => {
-    return entry['locale'] === language && entry.publish_details.length > 0;
+    return entry['locale'] === language;
   });
-
   return filteredEntries.map((entry) => {
     let workflow = '';
     const envArr = [];
@@ -405,6 +404,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
     delete entry.publishRequest;
     return entry;
   });
+  console.log(filteredEntries.length);
 }
 
 function getDateTime() {
