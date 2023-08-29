@@ -1,9 +1,12 @@
 import chalk from 'chalk';
-import isEmpty from 'lodash/isEmpty';
-import values from 'lodash/values';
+import map from 'lodash/map';
 import find from 'lodash/find';
+import { join } from 'node:path';
+import values from 'lodash/values';
+import filter from 'lodash/filter';
+import isEmpty from 'lodash/isEmpty';
+import cloneDeep from 'lodash/cloneDeep';
 import findIndex from 'lodash/findIndex';
-import { join, resolve } from 'node:path';
 
 import config from '../../config';
 import BaseClass, { ApiOptions } from './base-class';
@@ -47,7 +50,10 @@ export default class ImportWorkflows extends BaseClass {
 
     //Step1 check folder exists or not
     if (fileHelper.fileExistsSync(this.workflowsFolderPath)) {
-      this.workflows = fsUtil.readFile(join(this.workflowsFolderPath, this.workflowsConfig.fileName), true) as Record<string, unknown>;
+      this.workflows = fsUtil.readFile(join(this.workflowsFolderPath, this.workflowsConfig.fileName), true) as Record<
+        string,
+        unknown
+      >;
     } else {
       log(this.importConfig, `No such file or directory - '${this.workflowsFolderPath}'`, 'error');
       return;
@@ -86,13 +92,14 @@ export default class ImportWorkflows extends BaseClass {
       .then((data: any) => data)
       .catch((err: any) => log(this.importConfig, `Failed to fetch roles. ${formatError(err)}`, 'error'));
 
-    for (const role of roles?.items) {
+    for (const role of roles?.items || []) {
       this.roleNameMap[role.name] = role.uid;
     }
   }
 
   async importWorkflows() {
     const apiContent = values(this.workflows);
+    const oldWorkflows = cloneDeep(values(this.workflows));
 
     //check and create custom roles if not exists
     for (const workflow of values(this.workflows)) {
@@ -101,7 +108,21 @@ export default class ImportWorkflows extends BaseClass {
       }
     }
 
-    const onSuccess = ({ response, apiData: { uid, name } = { uid: null, name: '' } }: any) => {
+    const onSuccess = async ({ response, apiData: { uid, name } = { uid: null, name: '' } }: any) => {
+      const oldWorkflowStages = find(oldWorkflows, { uid })?.workflow_stages;
+      if (!isEmpty(filter(oldWorkflowStages, ({ next_available_stages }) => !isEmpty(next_available_stages)))) {
+        let updateRresponse = await this.updateNextAvailableStagesUid(
+          response,
+          response.workflow_stages,
+          oldWorkflowStages,
+        ).catch((error) => {
+          log(this.importConfig, `Workflow '${name}' update failed.`, 'error');
+          log(this.importConfig, error, 'error');
+        });
+
+        if (updateRresponse) response = updateRresponse;
+      }
+
       this.createdWorkflows.push(response);
       this.workflowUidMapper[uid] = response.uid;
       log(this.importConfig, `Workflow '${name}' imported successfully`, 'success');
@@ -145,6 +166,31 @@ export default class ImportWorkflows extends BaseClass {
     );
   }
 
+  updateNextAvailableStagesUid(
+    workflow: Record<string, any>,
+    newWorkflowStages: Record<string, any>[],
+    oldWorkflowStages: Record<string, any>[],
+  ) {
+    newWorkflowStages = map(newWorkflowStages, (newStage, index) => {
+      const oldStage = oldWorkflowStages[index];
+      if (!isEmpty(oldStage.next_available_stages)) {
+        newStage.next_available_stages = map(oldStage.next_available_stages, (stageUid) => {
+          if (stageUid === '$all') return stageUid;
+          const stageName = find(oldWorkflowStages, { uid: stageUid })?.name;
+          return find(newWorkflowStages, { name: stageName })?.uid;
+        }).filter((val) => val);
+      }
+
+      return newStage;
+    });
+
+    workflow.workflow_stages = newWorkflowStages;
+
+    const updateWorkflow = this.stack.workflow(workflow.uid);
+    Object.assign(updateWorkflow, workflow);
+    return updateWorkflow.update();
+  }
+
   /**
    * @method serializeWorkflows
    * @param {ApiOptions} apiOptions ApiOptions
@@ -165,6 +211,14 @@ export default class ImportWorkflows extends BaseClass {
       if (!workflow.branches) {
         workflow.branches = ['main'];
       }
+      for (const stage of workflow.workflow_stages) {
+        delete stage.uid;
+
+        if (!isEmpty(stage.next_available_stages)) {
+          stage.next_available_stages = ['$all'];
+        }
+      }
+
       apiOptions.apiData = workflow;
     }
     return apiOptions;

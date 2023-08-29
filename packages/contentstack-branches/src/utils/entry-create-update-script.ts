@@ -1,4 +1,4 @@
-export function entryUpdateScript(contentType) {
+export function entryCreateUpdateScript(contentType) {
   return `
   const fs = require('fs');
   const path = require('path');
@@ -59,19 +59,19 @@ export function entryUpdateScript(contentType) {
       return path.split('[').reduce((o, key) => o && o[key.replace(/\]$/, '')], obj);
     }
   
-    function updateValueByPath(obj, path, newValue, type, fileIndex) {
-      path.split('[').reduce((o, key, index, arr) => {
-        if (index === arr.length - 1) {
-          if (type === 'file') {
-            o[key.replace(/]$/, '')][fileIndex] = newValue;
-          } else {
-            o[key.replace(/]$/, '')][0].uid = newValue;
-          }
+  function updateValueByPath(obj, path, newValue, type, fileIndex) {
+    path.split('[').reduce((o, key, index, arr) => {
+      if (index === arr.length - 1) {
+        if (type === 'file') {
+          o[key.replace(/]$/, '')][fileIndex] = newValue;
         } else {
-          return o[key.replace(/\]$/, '')];
+          o[key.replace(/]$/, '')][0].uid = newValue;
         }
-      }, obj);
-    }
+      } else {
+        return o[key.replace(/\]$/, '')];
+      }
+    }, obj);
+  }
 
     const findReference = function (schema, path, flag) {
       let references = [];
@@ -99,65 +99,65 @@ export function entryUpdateScript(contentType) {
       return references;
     };
 
-    const findAssets = function (schema, entry, refPath, path) {
-      for (const i in schema) {
-        const currentPath = path ? path + '[' + schema[i].uid : schema[i].uid;
-        if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
-          findAssets(schema[i].schema, entry, refPath, currentPath + '[0]');
-        } else if (schema[i].data_type === 'blocks') {
-          for (const block in schema[i].blocks) {
-            {
-              if (schema[i].blocks[block].schema) {
-                findAssets(
-                  schema[i].blocks[block].schema,
-                  entry,
-                  refPath,
-                  currentPath + '[' + block + '][' + schema[i].blocks[block].uid + ']',
-                );
-              }
-            }
-          }
-        } else if (schema[i].data_type === 'json' && schema[i].field_metadata.rich_text_type) {
-          findAssetIdsFromJsonRte(entry, schema, refPath, path);
-        } else if (
-          schema[i].data_type === 'text' &&
-          schema[i].field_metadata &&
-          (schema[i].field_metadata.markdown || schema[i].field_metadata.rich_text_type)
-        ) {
-          findFileUrls(schema[i], entry);
-        } else if (schema[i].data_type === 'file') {
-          refPath.push(currentPath)
-          const imgDetails = getValueByPath(entry, currentPath);
-          if (schema[i].multiple) {
-            if (imgDetails && imgDetails.length) {
-              imgDetails.forEach((img) => {
-                const obj = {
-                  uid: img.uid,
-                  parent_uid: img.parent_uid,
-                  description: img.description,
-                  title: img.title,
-                  filename: img.filename,
-                  url: img.url,
-                };
-                assetDetails.push(obj);
-              });
-            }
-          } else {
-            if (imgDetails) {
-              const obj = {
-                uid: imgDetails.uid,
-                parent_uid: imgDetails.parent_uid,
-                description: imgDetails.description,
-                title: imgDetails.title,
-                filename: imgDetails.filename,
-                url: imgDetails.url,
-              };
-              assetDetails.push(obj);
+  const findAssets = function (schema, entry, refPath, path) {
+    for (const i in schema) {
+      const currentPath = path ? path + '[' + schema[i].uid : schema[i].uid;
+      if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
+        findAssets(schema[i].schema, entry, refPath, currentPath + '[0]');
+      } else if (schema[i].data_type === 'blocks') {
+        for (const block in schema[i].blocks) {
+          {
+            if (schema[i].blocks[block].schema) {
+              findAssets(
+                schema[i].blocks[block].schema,
+                entry,
+                refPath,
+                currentPath + '[' + block + '][' + schema[i].blocks[block].uid + ']',
+              );
             }
           }
         }
+      } else if (schema[i].data_type === 'json' && schema[i].field_metadata.rich_text_type) {
+        findAssetIdsFromJsonRte(entry, schema, refPath, path);
+      } else if (
+        schema[i].data_type === 'text' &&
+        schema[i].field_metadata &&
+        (schema[i].field_metadata.markdown || schema[i].field_metadata.rich_text_type)
+      ) {
+        findFileUrls(schema[i], entry);
+      } else if (schema[i].data_type === 'file') {
+        refPath.push(currentPath)
+        const imgDetails = getValueByPath(entry, currentPath);
+        if (schema[i].multiple) {
+          if (imgDetails && imgDetails.length) {
+            imgDetails.forEach((img) => {
+              const obj = {
+                uid: img.uid,
+                parent_uid: img.parent_uid,
+                description: img.description,
+                title: img.title,
+                filename: img.filename,
+                url: img.url,
+              };
+              assetDetails.push(obj);
+            });
+          }
+        } else {
+          if (imgDetails) {
+            const obj = {
+              uid: imgDetails.uid,
+              parent_uid: imgDetails.parent_uid,
+              description: imgDetails.description,
+              title: imgDetails.title,
+              filename: imgDetails.filename,
+              url: imgDetails.url,
+            };
+            assetDetails.push(obj);
+          }
+        }
       }
-    };
+    }
+  };
   
     function findFileUrls(schema, _entry) {
       let markdownRegEx;
@@ -278,31 +278,31 @@ export function entryUpdateScript(contentType) {
     }
   
     const updateAssetDetailsInEntries = function (entry) {
-      assetRefPath[entry.uid].forEach((refPath) => {
-        let imgDetails = entry[refPath];
-        if (imgDetails !== undefined) {
-          if (imgDetails && !Array.isArray(imgDetails)) {
-            entry[refPath] = assetUIDMapper[imgDetails.uid];
-          } else if (imgDetails && Array.isArray(imgDetails)) {
-            for (let i = 0; i < imgDetails.length; i++) {
-              const img = imgDetails[i];
-              entry[refPath][i] = assetUIDMapper[img.uid];
-            }
-          }
-        } else {
-          imgDetails = getValueByPath(entry, refPath);
-          if (imgDetails && !Array.isArray(imgDetails)) {
-            const imgUID = imgDetails?.uid;
-            updateValueByPath(entry, refPath, assetUIDMapper[imgUID], 'file', 0);
-          } else if (imgDetails && Array.isArray(imgDetails)) {
-            for (let i = 0; i < imgDetails.length; i++) {
-              const img = imgDetails[i];
-              const imgUID = img?.uid;
-              updateValueByPath(entry, refPath, assetUIDMapper[imgUID], 'file', i);
-            }
+    assetRefPath[entry.uid].forEach((refPath) => {
+      let imgDetails = entry[refPath];
+      if (imgDetails !== undefined) {
+        if (imgDetails && !Array.isArray(imgDetails)) {
+          entry[refPath] = assetUIDMapper[imgDetails.uid];
+        } else if (imgDetails && Array.isArray(imgDetails)) {
+          for (let i = 0; i < imgDetails.length; i++) {
+            const img = imgDetails[i];
+            entry[refPath][i] = assetUIDMapper[img.uid];
           }
         }
-      });
+      } else {
+        imgDetails = getValueByPath(entry, refPath);
+        if (imgDetails && !Array.isArray(imgDetails)) {
+          const imgUID = imgDetails?.uid;
+          updateValueByPath(entry, refPath, assetUIDMapper[imgUID], 'file', 0);
+        } else if (imgDetails && Array.isArray(imgDetails)) {
+          for (let i = 0; i < imgDetails.length; i++) {
+            const img = imgDetails[i];
+            const imgUID = img?.uid;
+            updateValueByPath(entry, refPath, assetUIDMapper[imgUID], 'file', i);
+          }
+        }
+      }
+    });
       entry = JSON.stringify(entry);
       const assetUrls = assetDetails.map((asset) => asset.url);
       const assetUIDs = assetDetails.map((asset) => asset.uid);
@@ -331,11 +331,11 @@ export function entryUpdateScript(contentType) {
           .fetch()
           .then((assets) => assets)
           .catch((error) => {});
-          if (bAssetDetail) {
-            assetUIDMapper[cAsset.uid] = bAssetDetail.uid;
-            assetUrlMapper[cAsset.url] = bAssetDetail.url;
-            return false;
-          }
+        if (bAssetDetail) {
+          assetUIDMapper[cAsset.uid] = bAssetDetail.uid;
+          assetUrlMapper[cAsset.url] = bAssetDetail.url;
+          return false;
+        }
         else {
           isAssetDownload = true;
           const cAssetDetail = await managementAPIClient
@@ -409,6 +409,7 @@ export function entryUpdateScript(contentType) {
       }
     };
 
+
     const updateEntryTask = () => {
       return {
         title: 'Update Entries',
@@ -428,7 +429,7 @@ export function entryUpdateScript(contentType) {
           .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
           .contentType('${contentType}')
           .fetch();
-
+        
           for (let i = 0; i < compareBranchEntries?.items?.length; i++) {
             assetRefPath[compareBranchEntries.items[i].uid] = []
             findAssets(contentType.schema, compareBranchEntries.items[i], assetRefPath[compareBranchEntries.items[i].uid]);
@@ -454,11 +455,11 @@ export function entryUpdateScript(contentType) {
             }
             if (isAssetDownload) await uploadAssets();
           }
-
+          
           let flag = {
             references: false
           };
-  
+          
           const references = await findReference(contentType.schema, '', flag);
   
           async function updateEntry(entry, entryDetails) {
