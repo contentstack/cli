@@ -593,7 +593,7 @@ export default class EntriesImport extends BaseClass {
         });
         log(this.importConfig, `Updated the field rules of ${cTUid}`, 'info');
       } else {
-        log(this.importConfig, `No field rules found in content type ${cTUid} to update`, 'error');
+        log(this.importConfig, `No field rules found in content type ${cTUid} to update`, 'info');
       }
     }
   }
