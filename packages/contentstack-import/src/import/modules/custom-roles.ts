@@ -198,11 +198,17 @@ export default class ImportCustomRoles extends BaseClass {
 
   getTransformUidsFactory = (rule: Record<string, any>) => {
     if (rule.module === 'environment') {
-      rule.environments = map(rule.environments, (env: any) => this.environmentsUidMap[env]);
+      if(!isEmpty(this.environmentsUidMap)){
+        rule.environments = map(rule.environments, (env: any) => this.environmentsUidMap[env]);
+      }
     } else if (rule.module === 'locale') {
-      rule.locales = map(rule.locales, (locale: any) => this.localesUidMap[locale]);
+      if(!isEmpty(this.localesUidMap)){
+        rule.locales = map(rule.locales, (locale: any) => this.localesUidMap[locale]);
+      }
     } else if (rule.module === 'entry') {
-      rule.entries = map(rule.entries, (entry: any) => this.entriesUidMap[entry]);
+      if(!isEmpty(this.entriesUidMap)){
+        rule.entries = map(rule.entries, (entry: any) => this.entriesUidMap[entry]);
+      }
     }
     return rule;
   };
