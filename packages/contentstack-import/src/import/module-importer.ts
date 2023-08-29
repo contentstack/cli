@@ -51,7 +51,6 @@ class ModuleImporter {
       this.importConfig.backupDir = backupDir;
       // To support the old config
       this.importConfig.data = backupDir;
-      log(this.importConfig, `Backup directory path - '${backupDir}'`, 'info');
     }
 
     await sanitizeStack(this.stackAPIClient);
