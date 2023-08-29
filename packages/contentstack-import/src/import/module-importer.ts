@@ -60,7 +60,7 @@ class ModuleImporter {
   }
 
   async import() {
-    log(this.importConfig, `Starting to import content ${this.importConfig.contentVersion}`, 'info');
+    log(this.importConfig, `Starting to import content version ${this.importConfig.contentVersion}`, 'info');
 
     // checks for single module or all modules
     if (this.importConfig.singleModuleImport) {
