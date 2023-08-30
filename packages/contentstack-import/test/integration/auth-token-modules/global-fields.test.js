@@ -7,8 +7,8 @@ const LoginCommand = require('@contentstack/cli-auth/lib/commands/auth/login').d
 const RegionSetCommand = require('@contentstack/cli-config/lib/commands/config/set/region').default;
 const ExportCommand = require('@contentstack/cli-cm-export/src/commands/cm/stacks/export');
 
-const defaultConfig = require('../../../src/config/default');
-const { modules } = require('../../../src/config/default');
+const { default: defaultConfig } = require('../../../src/config');
+const modules = defaultConfig.modules;
 const { getStackDetailsByRegion, cleanUp, getEnvData, getGlobalFieldsCount } = require('../utils/helper');
 const { PRINT_LOGS, IMPORT_PATH } = require('../config.json');
 const { DELIMITER, KEY_VAL_DELIMITER } = process.env;
@@ -21,7 +21,7 @@ const REGION_MAP = {
   EU: 'EU',
 };
 
-module.exports = region => {
+module.exports = (region) => {
   const stackDetails = getStackDetailsByRegion(region.REGION, DELIMITER, KEY_VAL_DELIMITER);
   for (const stack of Object.keys(stackDetails)) {
     const basePath = path.join(__dirname, '..', '..', `${IMPORT_PATH}_${stack}`);
@@ -44,7 +44,15 @@ module.exports = region => {
 
       customTest
         .stdout({ print: PRINT_LOGS || false })
-        .command(ExportCommand, ['--alias', '--stack-api-key', stackDetails[stack].EXPORT_STACK_API_KEY, '--data-dir', basePath, '--module', 'global-fields'])
+        .command(ExportCommand, [
+          '--alias',
+          '--stack-api-key',
+          stackDetails[stack].EXPORT_STACK_API_KEY,
+          '--data-dir',
+          basePath,
+          '--module',
+          'global-fields',
+        ])
         .it('should work without any errors', (_, done) => {
           done();
         });
@@ -52,7 +60,15 @@ module.exports = region => {
       describe('Import assets using cm:stacks:import command', () => {
         test
           .stdout({ print: PRINT_LOGS || false })
-          .command(['cm:stacks:import', '--stack-api-key', stackDetails[stack].STACK_API_KEY, '--data-dir', importBasePath, '--module', 'global-fields'])
+          .command([
+            'cm:stacks:import',
+            '--stack-api-key',
+            stackDetails[stack].STACK_API_KEY,
+            '--data-dir',
+            importBasePath,
+            '--module',
+            'global-fields',
+          ])
           .it('should work without any errors', async (_, done) => {
             let importedGlobalFieldsCount = 0;
             const globalFieldsCount = await getGlobalFieldsCount(stackDetails[stack]);

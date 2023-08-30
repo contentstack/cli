@@ -7,9 +7,8 @@ const LoginCommand = require('@contentstack/cli-auth/lib/commands/auth/login').d
 const AddTokenCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens/add').default;
 const RegionSetCommand = require('@contentstack/cli-config/lib/commands/config/set/region').default;
 const ExportCommand = require('@contentstack/cli-cm-export/src/commands/cm/stacks/export');
-
-const defaultConfig = require('../../src/config/default');
-const { modules } = require('../../src/config/default');
+const { default: defaultConfig } = require('../../src/config');
+const modules = defaultConfig.modules;
 const { getStackDetailsByRegion, cleanUp, deleteStack, getEnvData, getCustomRolesCount } = require('./utils/helper');
 const { PRINT_LOGS, IMPORT_PATH } = require('./config.json');
 const { DELIMITER, KEY_VAL_DELIMITER } = process.env;
@@ -22,7 +21,7 @@ const REGION_MAP = {
   EU: 'EU',
 };
 
-module.exports = region => {
+module.exports = (region) => {
   const stackDetails = getStackDetailsByRegion(region.REGION, DELIMITER, KEY_VAL_DELIMITER);
   for (const stack of Object.keys(stackDetails)) {
     const basePath = path.join(__dirname, '..', '..', `${IMPORT_PATH}_${stack}`);
@@ -42,22 +41,47 @@ module.exports = region => {
         .it('should work without any errors', (_, done) => {
           done();
         });
-      
+
       customTest
-        .command(AddTokenCommand, ['-a', stackDetails[stack].EXPORT_ALIAS_NAME, '-k', stackDetails[stack].EXPORT_STACK_API_KEY, '--management', '--token', stackDetails[stack].EXPORT_MANAGEMENT_TOKEN, '-y'])
+        .command(AddTokenCommand, [
+          '-a',
+          stackDetails[stack].EXPORT_ALIAS_NAME,
+          '-k',
+          stackDetails[stack].EXPORT_STACK_API_KEY,
+          '--management',
+          '--token',
+          stackDetails[stack].EXPORT_MANAGEMENT_TOKEN,
+          '-y',
+        ])
         .it(`Adding token for ${stack}`, (_, done) => {
           done();
         });
 
       customTest
-        .command(AddTokenCommand, ['-a', stackDetails[stack].ALIAS_NAME, '-k', stackDetails[stack].STACK_API_KEY, '--management', '--token', stackDetails[stack].MANAGEMENT_TOKEN, '-y'])
+        .command(AddTokenCommand, [
+          '-a',
+          stackDetails[stack].ALIAS_NAME,
+          '-k',
+          stackDetails[stack].STACK_API_KEY,
+          '--management',
+          '--token',
+          stackDetails[stack].MANAGEMENT_TOKEN,
+          '-y',
+        ])
         .it(`Adding token for ${stack}`, (_, done) => {
           done();
         });
-      
+
       customTest
         .stdout({ print: PRINT_LOGS || false })
-        .command(ExportCommand, ['--alias', stackDetails[stack].EXPORT_ALIAS_NAME, '--data-dir', basePath, '--module', 'custom-roles'])
+        .command(ExportCommand, [
+          '--alias',
+          stackDetails[stack].EXPORT_ALIAS_NAME,
+          '--data-dir',
+          basePath,
+          '--module',
+          'custom-roles',
+        ])
         .it('should work without any errors', (_, done) => {
           done();
         });
@@ -65,7 +89,15 @@ module.exports = region => {
       describe('Import assets using cm:stacks:import command', () => {
         test
           .stdout({ print: PRINT_LOGS || false })
-          .command(['cm:stacks:import', '--alias', stackDetails[stack].ALIAS_NAME, '--data-dir', importBasePath, '--module', 'custom-roles'])
+          .command([
+            'cm:stacks:import',
+            '--alias',
+            stackDetails[stack].ALIAS_NAME,
+            '--data-dir',
+            importBasePath,
+            '--module',
+            'custom-roles',
+          ])
           .it('should work without any errors', async (_, done) => {
             let importedCustomRolesCount = 0;
             const customRolesCount = await getCustomRolesCount(stackDetails[stack]);
