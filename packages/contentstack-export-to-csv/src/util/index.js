@@ -199,7 +199,7 @@ function chooseContentType(stackAPIClient, skip) {
     let _chooseContentType = [
       {
         type: 'checkbox',
-        message: 'Choose Content Type',
+        message: 'Choose Content Type (Press Space to select all the content type) ',
         choices: contentTypesList,
         name: 'chosenContentTypes',
         loop: false,
@@ -218,7 +218,7 @@ function chooseInMemContentTypes(contentTypesList) {
     let _chooseContentType = [
       {
         type: 'checkbox-plus',
-        message: 'Choose Content Type',
+        message: 'Choose Content Type (Press Space to select all the content type)',
         choices: contentTypesList,
         name: 'chosenContentTypes',
         loop: false,
@@ -378,12 +378,15 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
   return filteredEntries.map((entry) => {
     let workflow = '';
     const envArr = [];
+    const workFlowStage = JSON.stringify(entry.setWorkflowStage);
     if(entry.publish_details.length) {
       entry.publish_details.forEach((env) => {
         envArr.push(JSON.stringify([environments[env['environment']], env['locale'], env['time']]));
       });
     }
+
     delete entry.publish_details;
+    delete entry.setWorkflowStage;
     if ('_workflow' in entry) {
         if(entry._workflow?.name) {
           workflow = entry['_workflow']['name'];
@@ -395,6 +398,8 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
     entry['_workflow'] = workflow;
     entry['ACL'] = JSON.stringify({}); // setting ACL to empty obj
     entry['content_type_uid'] = contentTypeUid; // content_type_uid is being returned as 'uid' from the sdk for some reason
+    entry['setWorkflowStage'] = workFlowStage;
+
     // entry['url'] might also be wrong
     delete entry.stackHeaders;
     delete entry.update;
