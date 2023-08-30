@@ -1,7 +1,1 @@
-{
-    "promptMessageList": {
-      "promptMasterLocale": "Provide the master locale of the source stack",
-      "promptSourceStack": "Provide the API Key of the source stack",
-      "promptPathStoredData": "Provide the path to store the content"
-    }
-}
+{}

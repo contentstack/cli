@@ -4,23 +4,18 @@ import omit from 'lodash/omit';
 import find from 'lodash/find';
 import FormData from 'form-data';
 import filter from 'lodash/filter';
-import { basename, join } from 'path';
 import includes from 'lodash/includes';
+import { basename, resolve } from 'path';
 import { cliux, ux } from '@contentstack/cli-utilities';
 import { createReadStream, existsSync, PathLike, statSync } from 'fs';
 
 import { print } from '../util';
 import BaseClass from './base-class';
 import { getFileList } from '../util/fs';
-import { AdapterConstructorInputs } from '../types';
 import { createSignedUploadUrlMutation, importProjectMutation } from '../graphql';
 
 export default class FileUpload extends BaseClass {
   private signedUploadUrlData!: Record<string, any>;
-
-  constructor(options: AdapterConstructorInputs) {
-    super(options);
-  }
 
   /**
    * @method run
@@ -181,7 +176,7 @@ export default class FileUpload extends BaseClass {
    */
   fileValidation() {
     const basePath = this.config.projectBasePath;
-    const packageJsonPath = join(basePath, 'package.json');
+    const packageJsonPath = resolve(basePath, 'package.json');
 
     if (!existsSync(packageJsonPath)) {
       this.log('Package.json file not found.', 'info');
@@ -199,7 +194,7 @@ export default class FileUpload extends BaseClass {
     ux.action.start('Preparing zip file');
     const projectName = basename(this.config.projectBasePath);
     const zipName = `${Date.now()}_${projectName}.zip`;
-    const zipPath = join(this.config.projectBasePath, zipName);
+    const zipPath = resolve(this.config.projectBasePath, zipName);
     const zip = new AdmZip();
     const zipEntries = filter(
       await getFileList(this.config.projectBasePath, true, true),
