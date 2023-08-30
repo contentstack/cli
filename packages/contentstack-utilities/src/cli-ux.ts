@@ -102,5 +102,4 @@ class CLIInterface {
 }
 
 export default new CLIInterface();
-
 export { Flags, Args, Command };
