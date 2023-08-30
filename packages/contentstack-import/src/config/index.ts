@@ -367,20 +367,6 @@ const config: DefaultConfig = {
     stacks: '/stacks/',
     labels: '/labels/',
   },
-  updatedModules: [
-    'assets',
-    'extensions',
-    'locales',
-    'marketplace-apps',
-    'labels',
-    'global-fields',
-    'content-types',
-    'webhooks',
-    'custom-roles',
-    'workflows',
-    'entries',
-    'environments'
-  ],
   rateLimit: 5,
   preserveStackVersion: false,
   entriesPublish: true,
@@ -391,7 +377,6 @@ const config: DefaultConfig = {
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
   getEncryptionKeyMaxRetry: 3,
-  useNewModuleStructure: true,
   // useBackedupDir: '',
   // backupConcurrency: 10,
 };

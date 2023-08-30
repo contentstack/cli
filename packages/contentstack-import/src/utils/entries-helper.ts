@@ -388,8 +388,9 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
               let entryReferences = jsonRteData.children.filter((e: any) => doEntryReferencesExist(e));
               if (entryReferences.length > 0) {
                 jsonRteData.children = jsonRteData.children.filter((e: any) => !doEntryReferencesExist(e));
-                if (jsonRteData.children.length === 0) { // empty children array are no longer acceptable by the API, a default structure must be there 
-                  jsonRteData.children.push(JSON.parse(structuredPTag)); 
+                if (jsonRteData.children.length === 0) {
+                  // empty children array are no longer acceptable by the API, a default structure must be there
+                  jsonRteData.children.push(JSON.parse(structuredPTag));
                 }
                 return jsonRteData; // return jsonRteData without entry references
               } else {
@@ -401,7 +402,7 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
             if (entryReferences.length > 0) {
               entry[element.uid].children = entry[element.uid].children.filter((e: any) => !doEntryReferencesExist(e));
               if (entry[element.uid].children.length === 0) {
-                entry[element.uid].children.push(JSON.parse(structuredPTag)); 
+                entry[element.uid].children.push(JSON.parse(structuredPTag));
               }
             }
           }
@@ -559,7 +560,7 @@ function setDirtyTrue(jsonRteChild: any) {
     delete jsonRteChild.uid;
 
     if (jsonRteChild.children && jsonRteChild.children.length > 0) {
-      jsonRteChild.children = jsonRteChild.children.map((subElement: any) => this.setDirtyTrue(subElement));
+      jsonRteChild.children = jsonRteChild.children.map((subElement: any) => setDirtyTrue(subElement));
     }
   }
   return jsonRteChild;
