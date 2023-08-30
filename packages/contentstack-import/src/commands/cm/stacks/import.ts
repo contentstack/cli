@@ -117,9 +117,9 @@ export default class ImportCommand extends Command {
       log(importConfig, `The content has been imported to the stack ${importConfig.apiKey} successfully!`, 'success');
       log(importConfig, `The log has been stored at '${path.join(importConfig.backupDir, 'logs', 'import')}'`, 'success');
     } catch (error) {
-      log({ data: contentDir } as ImportConfig, `Failed to import stack content - ${formatError(error)}`, 'error');
+      log({ data: backupDir } as ImportConfig, `Failed to import stack content - ${formatError(error)}`, 'error');
       log(
-        { data: contentDir } as ImportConfig,
+        { data: backupDir } as ImportConfig,
         `The log has been stored at ${
           { data: backupDir } ? path.join(backupDir || __dirname, 'logs', 'import') : path.join(__dirname, 'logs')
         }`,

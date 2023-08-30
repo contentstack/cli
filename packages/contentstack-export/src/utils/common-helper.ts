@@ -81,6 +81,9 @@ export const executeTask = function (
 
 // Note: we can add more useful details in meta file
 export const writeExportMetaFile = (exportConfig: ExportConfig) => {
-  const exportMeta = { version: exportConfig.version, logsPath: path.join(exportConfig.exportDir, 'logs', 'export') };
-  fsUtil.writeFile(path.join(exportConfig.exportDir, 'export-info.json'), exportMeta);
+  const exportMeta = {
+    contentVersion: exportConfig.contentVersion,
+    logsPath: path.join(exportConfig.exportDir, 'logs', 'export'),
+  };
+  fsUtil.writeFile(path.join(exportConfig.exportDir, exportConfig.branchName || '', 'export-info.json'), exportMeta);
 };

@@ -47,7 +47,7 @@ class ModuleExporter {
   }
 
   async export() {
-    log(this.exportConfig, `Started to export content, version is ${this.exportConfig.version}`, 'info');
+    log(this.exportConfig, `Started to export content, version is ${this.exportConfig.contentVersion}`, 'info');
     // checks for single module or all modules
     if (this.exportConfig.singleModuleExport) {
       return this.exportSingleModule(this.exportConfig.moduleName);
@@ -60,7 +60,7 @@ class ModuleExporter {
     // export the modules by name
     // calls the module runner which inturn calls the module itself
     let exportedModuleResponse;
-    if (this.exportConfig.version === 2) {
+    if (this.exportConfig.contentVersion === 2) {
       exportedModuleResponse = await startModuleExport({
         stackAPIClient: this.stackAPIClient,
         exportConfig: this.exportConfig,
