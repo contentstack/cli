@@ -454,6 +454,7 @@ export default class EntriesImport extends BaseClass {
 
     const sourceEntryFilePath = entry.sourceEntryFilePath;
     const sourceEntry = ((fsUtil.readFile(sourceEntryFilePath) || {}) as Record<any, any>)[entry.entryOldUid];
+    const newUid = this.entriesUidMapper[entry.entryOldUid];
     // Removing temp values
     delete entry.sourceEntryFilePath;
     delete entry.entryOldUid;
@@ -474,8 +475,8 @@ export default class EntriesImport extends BaseClass {
       path.join(this.entriesMapperPath, cTUid, locale),
     );
 
-    const entryResponse = this.stack.contentType(contentType.uid).entry(this.entriesUidMapper[entry.uid]);
-    Object.assign(entryResponse, cloneDeep(entry), { uid: this.entriesUidMapper[entry.uid] });
+    const entryResponse = this.stack.contentType(contentType.uid).entry(newUid);
+    Object.assign(entryResponse, cloneDeep(entry), { uid: newUid });
     delete entryResponse.publish_details;
     apiOptions.apiData = entryResponse;
     return apiOptions;
@@ -558,11 +559,16 @@ export default class EntriesImport extends BaseClass {
     for (let cTUid of cTsWithFieldRules) {
       const contentType = find(this.cTs, { uid: cTUid });
       if (contentType.field_rules) {
+        const fieldDatatypeMap: any = {};
+        for (let i = 0; i < contentType.schema.length; i++) {
+          const field = contentType.schema[i].uid;
+          fieldDatatypeMap[field] = contentType.schema[i].data_type;
+        }
         let fieldRuleLength = contentType.field_rules.length;
         for (let k = 0; k < fieldRuleLength; k++) {
           let fieldRuleConditionLength = contentType.field_rules[k].conditions.length;
           for (let i = 0; i < fieldRuleConditionLength; i++) {
-            if (contentType.field_rules[k].conditions[i].operand_field === 'reference') {
+            if (fieldDatatypeMap[contentType.field_rules[k].conditions[i].operand_field] === 'reference') {
               let fieldRulesValue = contentType.field_rules[k].conditions[i].value;
               let fieldRulesArray = fieldRulesValue.split('.');
               let updatedValue = [];
