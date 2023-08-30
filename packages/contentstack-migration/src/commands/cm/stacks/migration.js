@@ -160,7 +160,13 @@ class MigrationCommand extends Command {
       requests.splice(0, requests.length);
     } catch (error) {
       // errorHandler(null, null, null, error)
-      this.log(error);
+      if (error.message) {
+        this.log(error.message);
+      } else if (error.errorMessage) {
+        this.log(error.errorMessage);
+      }else{
+        this.log(error)
+      }
     }
   }
 
