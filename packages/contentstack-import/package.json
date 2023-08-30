@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@oclif/test": "^1.2.6",
+    "@types/big-json": "^3.2.0",
     "@types/bluebird": "^3.5.38",
     "@types/chai": "^4.2.18",
     "@types/fs-extra": "^11.0.1",
