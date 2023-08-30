@@ -378,9 +378,11 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
   return filteredEntries.map((entry) => {
     let workflow = '';
     const envArr = [];
-    entry.publish_details.forEach((env) => {
-      envArr.push(JSON.stringify([environments[env['environment']], env['locale'], env['time']]));
-    });
+    if(entry.publish_details.length) {
+      entry.publish_details.forEach((env) => {
+        envArr.push(JSON.stringify([environments[env['environment']], env['locale'], env['time']]));
+      });
+    }
     delete entry.publish_details;
     if ('_workflow' in entry) {
         if(entry._workflow?.name) {
