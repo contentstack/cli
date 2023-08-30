@@ -9,9 +9,8 @@ class StackPublishCommand extends Command {
   async run() {
     try {
       this.optionController = new OptionController();
-
-      this.entriesPublishReceiver = new EntriesPublishReceiverCommand(this.argv);
-      this.assetsPublishReceiver = new AssetsPublishReceiverCommand(this.argv);
+      this.entriesPublishReceiver = new EntriesPublishReceiverCommand(this.argv, this.config);
+      this.assetsPublishReceiver = new AssetsPublishReceiverCommand(this.argv, this.config);
       this.entriesAndAssetsPublishReceiver = new PublishEntriesAndAssetsCommand();
 
       this.publishEntriesCommand = new PublishEntriesCommand(this.entriesPublishReceiver);
