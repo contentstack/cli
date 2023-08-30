@@ -132,7 +132,8 @@ export default class ImportWorkflows extends BaseClass {
     const onReject = ({ error, apiData }: any) => {
       const err = error?.message ? JSON.parse(error.message) : error;
       const { name } = apiData;
-      if (err?.errors?.name) {
+      const workflowExists = err?.errors?.name || err?.errors?.['workflow.name'];
+      if (workflowExists) {
         log(this.importConfig, `Workflow '${name}' already exists`, 'info');
       } else {
         this.failedWebhooks.push(apiData);

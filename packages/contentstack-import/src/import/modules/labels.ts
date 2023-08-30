@@ -152,7 +152,7 @@ export default class Importlabels extends BaseClass {
           apiContent,
           processName: 'update labels',
           apiParams: {
-            serializeData: this.serializeUpdatelabels.bind(this),
+            serializeData: this.serializeUpdateLabels.bind(this),
             reject: onReject.bind(this),
             resolve: onSuccess.bind(this),
             entity: 'update-labels',
@@ -171,7 +171,7 @@ export default class Importlabels extends BaseClass {
    * @param {ApiOptions} apiOptions ApiOptions
    * @returns {ApiOptions} ApiOptions
    */
-  serializeUpdatelabels(apiOptions: ApiOptions): ApiOptions {
+  serializeUpdateLabels(apiOptions: ApiOptions): ApiOptions {
     const { apiData: label } = apiOptions;
     const labelUid = label.uid;
     if (this.labelUidMapper.hasOwnProperty(labelUid)) {
