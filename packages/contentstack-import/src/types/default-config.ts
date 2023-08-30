@@ -129,7 +129,6 @@ export default interface DefaultConfig {
     stacks: string;
     labels: string;
   };
-  updatedModules: string[];
   rateLimit: number;
   preserveStackVersion: boolean;
   entriesPublish: boolean;
@@ -140,6 +139,5 @@ export default interface DefaultConfig {
   developerHubBaseUrl: string;
   marketplaceAppEncryptionKey: string;
   getEncryptionKeyMaxRetry: number;
-  useNewModuleStructure: boolean;
   createBackupDir?: string;
 }

@@ -37,6 +37,7 @@ export default function setupBackupDir(importConfig: ImportConfig): Promise<stri
     }
 
     if (backupDirPath) {
+      cliux.print('Copying content to the backup directory...');
       return copy(importConfig.contentDir, backupDirPath, (error: any) => {
         if (error) {
           return reject(error);
