@@ -2,11 +2,12 @@ const ora = require('ora');
 const path = require('path');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
+const fs = require('fs');
+let { default: exportCmd } = require('@contentstack/cli-cm-export');
+let { default: importCmd } = require('@contentstack/cli-cm-import');
+const { CustomAbortController } = require('./abort-controller');
 const prompt = require('prompt');
 const colors = require('@colors/colors/safe');
-
-let exportCmd = require('@contentstack/cli-cm-export');
-let importCmd = require('@contentstack/cli-cm-import');
 
 const {
   HandleOrgCommand,
@@ -19,6 +20,7 @@ const {
   Clone,
   HandleBranchCommand,
 } = require('../helpers/command-helpers');
+const { configHandler } = require('@contentstack/cli-utilities')
 
 let client = {};
 let config;
@@ -60,7 +62,7 @@ let master_locale;
 // Overrides prompt's stop method
 prompt.stop = function () {
   if (prompt.stopped) {
-      return;
+    return;
   }
   prompt.emit('stop');
   prompt.stopped = true;
@@ -301,7 +303,13 @@ class CloneHandler {
   async executeBranchPrompt(parentParams) {
     try {
       this.setExectingCommand(2);
-      await cloneCommand.execute(new HandleBranchCommand({ api_key: config.source_stack }, this, this.executeStackPrompt.bind(this, parentParams)));
+      await cloneCommand.execute(
+        new HandleBranchCommand(
+          { api_key: config.source_stack },
+          this,
+          this.executeStackPrompt.bind(this, parentParams),
+        ),
+      );
       await this.executeExport();
     } catch (error) {
       throw error;
@@ -314,7 +322,9 @@ class CloneHandler {
       await cloneCommand.execute(new SetBranchCommand(null, this));
 
       if (exportRes) {
-        this.executeDestination().catch(() => { throw ''; });
+        this.executeDestination().catch(() => {
+          throw '';
+        });
       }
     } catch (error) {
       throw error;
@@ -340,9 +350,14 @@ class CloneHandler {
 
         let org;
         if (!config.target_stack) {
-          org = await cloneCommand.execute(new HandleOrgCommand({
-            msg: !canCreateStack.stackCreate ? orgMsgExistingStack : orgMsgNewStack
-          }, this));
+          org = await cloneCommand.execute(
+            new HandleOrgCommand(
+              {
+                msg: !canCreateStack.stackCreate ? orgMsgExistingStack : orgMsgNewStack,
+              },
+              this,
+            ),
+          );
         }
 
         const params = { org, canCreateStack };
@@ -402,7 +417,13 @@ class CloneHandler {
   async executeBranchDestinationPrompt(parentParams) {
     try {
       this.setExectingCommand(2);
-      await cloneCommand.execute(new HandleBranchCommand({ isSource: false, api_key: config.target_stack }, this, this.executeStackDestinationPrompt.bind(this, parentParams)));
+      await cloneCommand.execute(
+        new HandleBranchCommand(
+          { isSource: false, api_key: config.target_stack },
+          this,
+          this.executeStackDestinationPrompt.bind(this, parentParams),
+        ),
+      );
       this.removeBackKeyPressHandler();
       await cloneCommand.execute(new CloneTypeSelectionCommand(null, this));
     } catch (error) {
@@ -441,9 +462,17 @@ class CloneHandler {
     return new Promise(async (resolve, reject) => {
       const spinner = ora('Fetching Organization').start();
       try {
-        let organizations = await client.organization().fetchAll({ limit: 100 });
+        let organizations;
+        const configOrgUid = configHandler.get('oauthOrgUid');
+
+        if (configOrgUid) {
+          organizations = await client.organization(configOrgUid).fetch();
+        } else {
+          organizations = await client.organization().fetchAll({ limit: 100 });
+        }
+        
         spinner.succeed('Fetched Organization');
-        for (const element of organizations.items) {
+        for (const element of organizations.items || [organizations]) {
           orgUidList[element.name] = element.uid;
           orgChoice.choices.push(element.name);
         }
@@ -529,7 +558,12 @@ class CloneHandler {
 
   getNewStackPromptResult() {
     return new Promise((resolve) => {
-      prompt.get({ properties: { name: { description: colors.white(stackName.message), default: colors.grey(stackName.default), } } },
+      prompt.get(
+        {
+          properties: {
+            name: { description: colors.white(stackName.message), default: colors.grey(stackName.default) },
+          },
+        },
         function (_, result) {
           if (prompt.stopped) {
             prompt.stopped = false;
@@ -539,7 +573,8 @@ class CloneHandler {
             _name = _name.replace(//g, '');
             resolve({ stack: _name });
           }
-        });
+        },
+      );
     });
   }
 
@@ -597,6 +632,7 @@ class CloneHandler {
 
       if (config.forceStopMarketplaceAppsPrompt) cmd.push('-y');
 
+      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(config));
       let exportData = exportCmd.run(cmd);
       exportData.then(() => resolve(true)).catch(reject);
     });
@@ -609,8 +645,8 @@ class CloneHandler {
       if (config.destination_alias) {
         cmd.push('-a', config.destination_alias);
       }
-      if (config.sourceStackBranch) {
-        cmd.push('-d', path.join(__dirname, config.sourceStackBranch));
+      if (!config.data && config.sourceStackBranch) {
+        cmd.push('-d', path.join(config.pathDir, config.sourceStackBranch));
       }
       if (config.targetStackBranch) {
         cmd.push('--branch', config.targetStackBranch);
@@ -621,6 +657,7 @@ class CloneHandler {
 
       if (config.forceStopMarketplaceAppsPrompt) cmd.push('-y');
 
+      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(config));
       await importCmd.run(cmd);
       return resolve();
     });
