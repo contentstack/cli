@@ -1,7 +1,8 @@
 import { Command } from '@contentstack/cli-command';
-import { messageHandler, flags } from '@contentstack/cli-utilities';
+import { messageHandler, flags, isAuthenticated } from '@contentstack/cli-utilities';
 import { BranchOptions } from '../../../interfaces/index';
 import { BranchDiffHandler } from '../../../branch';
+import { handleErrorMsg } from '../../../utils';
 
 export default class BranchDiffCommand extends Command {
   static description: string = messageHandler.parse('Differences between two branches');
@@ -59,6 +60,10 @@ export default class BranchDiffCommand extends Command {
         format: branchDiffFlags.format,
         host: this.cmaHost
       };
+      if (!isAuthenticated()) {
+        const err = { errorMessage: 'You are not logged in. Please login with command $ csdx auth:login' };
+        handleErrorMsg(err);
+      }
       const diffHandler = new BranchDiffHandler(options);
       await diffHandler.run();
     } catch (error: any) {
