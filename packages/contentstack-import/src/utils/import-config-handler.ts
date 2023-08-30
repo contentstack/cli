@@ -26,7 +26,8 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   config.data = config.contentDir;
 
   if (fileExistsSync(path.join(config.contentDir, 'export-info.json'))) {
-    config.contentVersion = ((await readFile(path.join(config.contentDir, 'export-info.json'))) || {}).version || 2;
+    config.contentVersion =
+      ((await readFile(path.join(config.contentDir, 'export-info.json'))) || {}).contentVersion || 2;
   } else {
     config.contentVersion = 1;
   }

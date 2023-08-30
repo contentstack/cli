@@ -1,7 +1,7 @@
 import { Modules } from '.';
 
 export default interface DefaultConfig {
-  version: number;
+  contentVersion: number;
   versioning: boolean;
   host: string;
   cdn?: string;

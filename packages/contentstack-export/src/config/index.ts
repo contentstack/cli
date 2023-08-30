@@ -1,7 +1,7 @@
 import { DefaultConfig } from '../types';
 
 const config: DefaultConfig = {
-  version: 1,
+  contentVersion: 2,
   versioning: false,
   host: 'https://api.contentstack.io/v3',
   developerHubUrls: {
