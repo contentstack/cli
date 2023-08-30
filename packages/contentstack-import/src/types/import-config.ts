@@ -42,7 +42,8 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   backupConcurrency?: number;
   authtoken?: string;
   destinationStackName?: string;
-  org_uid?:string;
+  org_uid?: string;
+  contentVersion: number;
 }
 
 type branch = {

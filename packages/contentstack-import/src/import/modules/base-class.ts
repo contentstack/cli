@@ -304,6 +304,9 @@ export default abstract class BaseClass {
         }
         return apiData.update().then(onSuccess).catch(onReject);
       case 'update-gfs':
+        if (!apiData) {
+          return Promise.resolve();
+        }
         return apiData.update().then(onSuccess).catch(onReject);
       case 'create-environments':
         return this.stack
@@ -355,9 +358,12 @@ export default abstract class BaseClass {
           .then(onSuccess)
           .catch(onReject);
       case 'update-entries':
+        if (!apiData) {
+          return Promise.resolve();
+        }
         return apiData.update({ locale: additionalInfo.locale }).then(onSuccess).catch(onReject);
       case 'publish-entries':
-        if (!apiData) {
+        if (!apiData || !apiData.entryUid) {
           return Promise.resolve();
         }
         return this.stack

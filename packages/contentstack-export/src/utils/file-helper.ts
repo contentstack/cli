@@ -50,7 +50,7 @@ export const readLargeFile = function (filePath: string, options: { type?: strin
         console.log('error', error);
         reject(error);
       });
-      readStream.pipe(parseStream);
+      readStream.pipe(parseStream as any);
     });
   }
 };

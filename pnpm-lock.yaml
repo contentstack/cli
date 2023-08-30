@@ -547,6 +547,7 @@ importers:
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5.1.19
       '@oclif/test': ^1.2.6
+      '@types/big-json': ^3.2.0
       '@types/mkdirp': ^1.0.2
       '@types/progress-stream': ^2.0.2
       assert: ^2.0.0
@@ -602,6 +603,7 @@ importers:
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
       '@oclif/plugin-help': 5.2.14_typescript@4.9.5
       '@oclif/test': 1.2.9
+      '@types/big-json': 3.2.0
       '@types/mkdirp': 1.0.2
       '@types/progress-stream': 2.0.2
       assert: 2.0.0
@@ -663,6 +665,7 @@ importers:
       '@oclif/config': ^1.18.3
       '@oclif/core': ^2.9.3
       '@oclif/test': ^1.2.6
+      '@types/big-json': ^3.2.0
       '@types/bluebird': ^3.5.38
       '@types/chai': ^4.2.18
       '@types/fs-extra': ^11.0.1
@@ -716,6 +719,7 @@ importers:
       winston: 3.10.0
     devDependencies:
       '@oclif/test': 1.2.9
+      '@types/big-json': 3.2.0
       '@types/bluebird': 3.5.38
       '@types/chai': 4.3.5
       '@types/fs-extra': 11.0.1
@@ -3150,6 +3154,12 @@ packages:
     resolution: {integrity: sha512-MitHFXnhtgwsGZWtT68URpOvLN4EREih1u3QtQiN4VdAxWKRVvGCSvw/Qth0M0Qq3pJpnGOu5JaM/ydK7OGbqg==}
     dependencies:
       '@babel/types': 7.22.5
+    dev: true
+
+  /@types/big-json/3.2.0:
+    resolution: {integrity: sha512-2nV9P72HH6FAoxoJLIKxNGLSX6pM9nm1YiOfQQwr7Sy3oz2rF4RRsxmaB7T/tcESecAqM6f0CYjx6GqnrN5X2Q==}
+    dependencies:
+      '@types/node': 16.18.38
     dev: true
 
   /@types/bluebird/3.5.38:
