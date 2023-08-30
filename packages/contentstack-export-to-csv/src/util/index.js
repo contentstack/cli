@@ -199,7 +199,7 @@ function chooseContentType(stackAPIClient, skip) {
     let _chooseContentType = [
       {
         type: 'checkbox',
-        message: 'Choose Content Type (Press Space to select all the content type) ',
+        message: 'Choose Content Type (Press Space to select the content types) ',
         choices: contentTypesList,
         name: 'chosenContentTypes',
         loop: false,
@@ -218,7 +218,7 @@ function chooseInMemContentTypes(contentTypesList) {
     let _chooseContentType = [
       {
         type: 'checkbox-plus',
-        message: 'Choose Content Type (Press Space to select all the content type)',
+        message: 'Choose Content Type (Press Space to select the content types)',
         choices: contentTypesList,
         name: 'chosenContentTypes',
         loop: false,
@@ -394,11 +394,11 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
         }
     }
     entry = flatten(entry);
+    entry['setWorkflowStage'] = workFlowStage;
     entry['publish_details'] = envArr;
     entry['_workflow'] = workflow;
     entry['ACL'] = JSON.stringify({}); // setting ACL to empty obj
     entry['content_type_uid'] = contentTypeUid; // content_type_uid is being returned as 'uid' from the sdk for some reason
-    entry['setWorkflowStage'] = workFlowStage;
 
     // entry['url'] might also be wrong
     delete entry.stackHeaders;
