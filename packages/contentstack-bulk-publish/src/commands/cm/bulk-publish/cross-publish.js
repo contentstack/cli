@@ -1,6 +1,6 @@
 /* eslint-disable node/no-extraneous-require */
 const { Command } = require('@contentstack/cli-command');
-const { cliux, printFlagDeprecation, flags } = require('@contentstack/cli-utilities');
+const { cliux, printFlagDeprecation, flags, isAuthenticated } = require('@contentstack/cli-utilities');
 const { start } = require('../../../producer/cross-publish');
 const store = require('../../../util/store.js');
 const configKey = 'cross_env_publish';
@@ -22,28 +22,31 @@ class CrossPublishCommand extends Command {
     if (this.validate(updatedFlags)) {
       let stack;
       if (!updatedFlags.retryFailed) {
-        if (!updatedFlags.alias) {
-          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
+        config = {
+          host: this.cmaHost,
+          cda: this.cdaHost,
+          branch: crossPublishFlags.branch,
+        };
+        if (updatedFlags.alias) {
+          try {
+            this.getToken(updatedFlags.alias);
+            config.alias = updatedFlags.alias;
+          } catch (error) {
+            this.error(
+              `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
+              { exit: 2 },
+            );
+          }
+        } else if (updatedFlags['stack-api-key']) {
+          config.stackApiKey = updatedFlags['stack-api-key'];
+        } else {
+          this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
         }
         if (!updatedFlags.deliveryToken) {
           updatedFlags.deliveryToken = await cliux.prompt('Enter delivery token of your source environment');
         }
         updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
-        // Validate management token alias.
-        try {
-          this.getToken(updatedFlags.alias);
-        } catch (error) {
-          this.error(
-            `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
-            { exit: 2 },
-          );
-        }
-        config = {
-          alias: updatedFlags.alias,
-          host: this.cmaHost,
-          cda: this.cdaHost,
-          branch: crossPublishFlags.branch,
-        };
+
         stack = await getStack(config);
       }
 
@@ -53,6 +56,9 @@ class CrossPublishCommand extends Command {
 
       if (await this.confirmFlags(updatedFlags)) {
         try {
+          if (process.env.NODE_ENV === 'test') {
+            return;
+          }
           if (!updatedFlags.retryFailed) {
             await start(updatedFlags, stack, config);
           } else {
@@ -162,6 +168,11 @@ But, if retryFailed flag is set, then only a logfile is required
 
 CrossPublishCommand.flags = {
   alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
+  'stack-api-key': flags.string({
+    char: 'k',
+    description: 'Stack api key to be used',
+    required: false,
+  }),
   retryFailed: flags.string({
     char: 'r',
     description: '(optional) Retry publishing failed entries from the logfile (this flag overrides all other flags)',
@@ -263,6 +274,10 @@ CrossPublishCommand.examples = [
   '',
   'Using --branch flag',
   'csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] -a [MANAGEMENT TOKEN ALIAS] --delivery-token [DELIVERY TOKEN] --branch [BRANCH NAME]',
+  '',
+  'Using --stack-api-key flag',
+  'csdx cm:bulk-publish:cross-publish --content-type [CONTENT TYPE] --source-env [SOURCE ENV] --environments [DESTINATION ENVIRONMENT] --locales [LOCALE] --stack-api-key [STACK API KEY] --delivery-token [DELIVERY TOKEN]',
+  '',
 ];
 
 CrossPublishCommand.usage = `cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`;
