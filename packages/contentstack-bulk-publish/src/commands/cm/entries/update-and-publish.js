@@ -30,25 +30,29 @@ class UpdateAndPublishCommand extends Command {
     if (this.validate(updatedFlags)) {
       let stack;
       if (!updatedFlags.retryFailed) {
-        if (!updatedFlags.alias) {
-          updatedFlags.alias = await cliux.prompt('Please enter the management token alias to be used');
-        }
-        updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
-        // Validate management token alias.
-        try {
-          this.getToken(updatedFlags.alias);
-        } catch (error) {
-          this.error(
-            `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
-            { exit: 2 },
-          );
-        }
         config = {
           alias: updatedFlags.alias,
           host: this.cmaHost,
           cda: this.cdaHost,
           branch: addFieldsFlags.branch,
         };
+        if (updatedFlags.alias) {
+          try {
+            this.getToken(updatedFlags.alias);
+            config.alias = updatedFlags.alias;
+          } catch (error) {
+            this.error(
+              `The configured management token alias ${updatedFlags.alias} has not been added yet. Add it using 'csdx auth:tokens:add -a ${updatedFlags.alias}'`,
+              { exit: 2 },
+            );
+          }
+        } else if (updatedFlags['stack-api-key']) {
+          config.stackApiKey = updatedFlags['stack-api-key'];
+        } else {
+          this.error('Please use `--alias` or `--stack-api-key` to proceed.', { exit: 2 });
+        }
+        updatedFlags.bulkPublish = updatedFlags.bulkPublish === 'false' ? false : true;
+
         stack = await getStack(config);
       }
       if (await this.confirmFlags(updatedFlags)) {
@@ -114,6 +118,10 @@ But, if retry-failed flag is set, then only a logfile is required
 
 UpdateAndPublishCommand.flags = {
   alias: flags.string({ char: 'a', description: 'Alias(name) for the management token' }),
+  'stack-api-key': flags.string({
+    char: 'k',
+    description: 'Stack api key to be used',
+  }),
   'retry-failed': flags.string({
     description: 'Retry publishing failed entries from the logfile (optional, overrides all other flags)',
   }),
@@ -177,7 +185,7 @@ UpdateAndPublishCommand.flags = {
 
 UpdateAndPublishCommand.examples = [
   'General Usage',
-  'csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
+  'csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS]',
   '',
   'Using --config or -c flag',
   'Generate a config file at the current working directory using `csdx cm:stacks:publish-configure -a [ALIAS]`',
@@ -188,7 +196,10 @@ UpdateAndPublishCommand.examples = [
   'csdx cm:entries:update-and-publish --retry-failed [LOG FILE NAME]',
   '',
   'Using --branch',
-  'csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locale [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]',
+  'csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] -a [MANAGEMENT TOKEN ALIAS] --branch [BRANCH NAME]',
+  '',
+  'Using --stack-api-key',
+  'csdx cm:entries:update-and-publish --content-types [CONTENT TYPE 1] [CONTENT TYPE 2] -e [ENVIRONMENT 1] [ENVIRONMENT 2] --locales [LOCALE 1] [LOCALE 2] --stack-api-key [STACK API KEY]',
 ];
 
 UpdateAndPublishCommand.aliases = ['cm:bulk-publish:add-fields'];
