@@ -321,7 +321,7 @@ function getEntries(stackAPIClient, contentType, language, skip, limit) {
     stackAPIClient
       .contentType(contentType)
       .entry()
-      .query({ include_publish_details: true, locale: language, skip: skip * 100, limit: limit })
+      .query({ include_publish_details: true, locale: language, skip: skip * 100, limit: limit, include_workflow: true })
       .find()
       .then((entries) => resolve(entries))
       .catch((error) => reject(error));
@@ -378,7 +378,6 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
   return filteredEntries.map((entry) => {
     let workflow = '';
     const envArr = [];
-    const workFlowStage = JSON.stringify(entry.setWorkflowStage);
     if(entry.publish_details.length) {
       entry.publish_details.forEach((env) => {
         envArr.push(JSON.stringify([environments[env['environment']], env['locale'], env['time']]));
@@ -394,7 +393,6 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
         }
     }
     entry = flatten(entry);
-    entry['setWorkflowStage'] = workFlowStage;
     entry['publish_details'] = envArr;
     entry['_workflow'] = workflow;
     entry['ACL'] = JSON.stringify({}); // setting ACL to empty obj
