@@ -53,10 +53,12 @@ export default class ExportWorkFlows extends BaseClass {
       .fetchAll(this.qs)
       .then(async (data: any) => {
         const { items, count } = data;
+        //NOTE - Handle the case where old workflow api is enabled in that case getting responses as objects.
+        const workflowCount = count !== undefined ? count : items.length;
         if (items?.length) {
           await this.sanitizeAttribs(items);
           skip += this.workflowConfig.limit || 100;
-          if (skip >= count) {
+          if (skip >= workflowCount) {
             return;
           }
           return await this.getWorkflows(skip);
