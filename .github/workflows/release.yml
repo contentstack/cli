@@ -12,7 +12,7 @@ jobs:
       - uses: pnpm/action-setup@v2.2.4
         with:
           version: 7
-      - uses: actions/setup-node@v3.7.0
+      - uses: actions/setup-node@v1
         with:
           node-version: '18.x'
           cache: 'pnpm'
@@ -249,6 +249,10 @@ jobs:
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
         working-directory: ./packages/contentstack
         run: npm install
+      - name: Compiling core
+        if: ${{ steps.core-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack
+        run: npm run prepack
       - name: Publishing core
         id: publish-core
         uses: JS-DevTools/npm-publish@v2.2.1
