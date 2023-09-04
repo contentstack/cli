@@ -90,7 +90,7 @@ export const removeReferenceFields = async function (
       for (var block in schema[i].blocks) {
         await removeReferenceFields(schema[i].blocks[block].schema, flag, stackAPIClient);
       }
-    } else if (schema[i].data_type === 'reference' || schema[i].reference_to) {
+    } else if (schema[i].data_type === 'reference') {
       flag.supressed = true;
       // Check if content-type exists
       // If exists, then no change should be required.
@@ -128,7 +128,15 @@ export const removeReferenceFields = async function (
           });
         }
       }
-      return true;
+    } else if (
+      // handling entry references in json rte
+      schema[i].data_type === 'json' &&
+      schema[i].field_metadata.allow_json_rte &&
+      schema[i].field_metadata.embed_entry &&
+      schema[i].reference_to.length > 1
+    ) {
+      flag.supressed = true;
+      schema[i].reference_to = ['sys_assets'];
     } else if (
       // handling entry references in json rte
       schema[i].data_type === 'json' &&
@@ -138,7 +146,6 @@ export const removeReferenceFields = async function (
     ) {
       flag.supressed = true;
       schema[i].reference_to = ['sys_assets'];
-      return true;
     }
   }
 };
