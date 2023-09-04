@@ -15,7 +15,6 @@ import {
   ContentstackClient,
 } from '@contentstack/cli-utilities';
 
-import config from '../../config';
 import {
   log,
   getDeveloperHubUrl,
@@ -40,7 +39,7 @@ export default class ExportMarketplaceApps extends BaseClass {
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
     this.httpClient = new HttpClient();
-    this.marketplaceAppConfig = config.modules.marketplace_apps;
+    this.marketplaceAppConfig = exportConfig.modules.marketplace_apps;
     this.listOfApps = [];
     this.installedApps = [];
   }
