@@ -3,7 +3,6 @@ import values from 'lodash/values';
 import omit from 'lodash/omit';
 import { join, resolve } from 'node:path';
 
-import config from '../../config';
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, LabelConfig } from '../../types';
@@ -22,7 +21,7 @@ export default class Importlabels extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.labelsConfig = config.modules.labels;
+    this.labelsConfig = importConfig.modules.labels;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'labels');
     this.labelsFolderPath = join(this.importConfig.backupDir, this.labelsConfig.dirName);
     this.labelUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
@@ -106,7 +105,7 @@ export default class Importlabels extends BaseClass {
           entity: 'create-labels',
           includeParamOnCompletion: true,
         },
-        concurrencyLimit: config.fetchConcurrency || 1,
+        concurrencyLimit: this.importConfig.fetchConcurrency || 1,
       },
       undefined,
       false,
@@ -158,7 +157,7 @@ export default class Importlabels extends BaseClass {
             entity: 'update-labels',
             includeParamOnCompletion: true,
           },
-          concurrencyLimit: config.fetchConcurrency || 1,
+          concurrencyLimit: this.importConfig.fetchConcurrency || 1,
         },
         undefined,
         false,
