@@ -60,13 +60,6 @@ export const setupMergeInputs = async (mergeFlags) => {
   if (!mergeFlags['stack-api-key']) {
     mergeFlags['stack-api-key'] = await askStackAPIKey();
   }
-  if (!mergeFlags['compare-branch']) {
-    if (!compare_branch) {
-      mergeFlags['compare-branch'] = await askCompareBranch();
-    } else {
-      mergeFlags['compare-branch'] = compare_branch;
-    }
-  }
   if (!mergeFlags['base-branch']) {
     if (!base_branch) {
       mergeFlags['base-branch'] = getbranchConfig(mergeFlags['stack-api-key']);
@@ -77,6 +70,13 @@ export const setupMergeInputs = async (mergeFlags) => {
       }
     } else {
       mergeFlags['base-branch'] = base_branch;
+    }
+  }
+  if (!mergeFlags['compare-branch']) {
+    if (!compare_branch) {
+      mergeFlags['compare-branch'] = await askCompareBranch();
+    } else {
+      mergeFlags['compare-branch'] = compare_branch;
     }
   }
 
