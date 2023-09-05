@@ -84,7 +84,7 @@ const config: DefaultConfig = {
       publishAssets: true,
       fileName: 'assets.json',
       importSameStructure: true,
-      uploadAssetsConcurrency: 5,
+      uploadAssetsConcurrency: 2,
       displayExecutionTime: false,
       importFoldersConcurrency: 1,
       includeVersionedAssets: false,

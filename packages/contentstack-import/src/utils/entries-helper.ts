@@ -138,7 +138,7 @@ export const lookupEntries = function (
     }
   };
 
-  function findEntryIdsFromJsonRte(entry: any, ctSchema: any) {
+  function findEntryIdsFromJsonRte(entry: any, ctSchema: any = []) {
     for (const element of ctSchema) {
       switch (element.data_type) {
         case 'blocks': {
@@ -254,7 +254,7 @@ function findUidsInNewRefFields(entry: any, uids: string[]) {
 
 export const removeUidsFromJsonRteFields = (
   entry: Record<string, any>,
-  ctSchema: Record<string, any>[],
+  ctSchema: Record<string, any>[] = [],
 ): Record<string, any> => {
   for (const element of ctSchema) {
     switch (element.data_type) {
@@ -349,7 +349,7 @@ function removeUidsFromChildren(children: Record<string, any>[] | any) {
   }
 }
 
-export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema: Record<string, any>[]) => {
+export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema: Record<string, any>[] = []) => {
   for (const element of ctSchema) {
     switch (element.data_type) {
       case 'blocks': {
@@ -445,7 +445,7 @@ function isEntryRef(element: any) {
 export const restoreJsonRteEntryRefs = (
   entry: Record<string, any>,
   sourceStackEntry: any,
-  ctSchema: any,
+  ctSchema: any = [],
   { mappedAssetUids, mappedAssetUrls }: any,
 ) => {
   // let mappedAssetUids = fileHelper.readFileSync(this.mappedAssetUidPath) || {};
@@ -454,7 +454,7 @@ export const restoreJsonRteEntryRefs = (
     switch (element.data_type) {
       case 'blocks': {
         if (entry[element.uid]) {
-          if (element.multiple) {
+          if (element.multiple && Array.isArray(entry[element.uid])) {
             entry[element.uid] = entry[element.uid].map((e: any, eIndex: number) => {
               let key = Object.keys(e).pop();
               let subBlock = element.blocks.filter((block: any) => block.uid === key).pop();
@@ -472,7 +472,7 @@ export const restoreJsonRteEntryRefs = (
       case 'global_field':
       case 'group': {
         if (entry[element.uid]) {
-          if (element.multiple) {
+          if (element.multiple && Array.isArray(entry[element.uid])) {
             entry[element.uid] = entry[element.uid].map((e: any, eIndex: number) => {
               let sourceStackElement = sourceStackEntry[element.uid][eIndex];
               e = restoreJsonRteEntryRefs(e, sourceStackElement, element.schema, { mappedAssetUids, mappedAssetUrls });
@@ -490,7 +490,7 @@ export const restoreJsonRteEntryRefs = (
       }
       case 'json': {
         if (entry[element.uid] && element.field_metadata.rich_text_type) {
-          if (element.multiple) {
+          if (element.multiple && Array.isArray(entry[element.uid])) {
             entry[element.uid] = entry[element.uid].map((field: any, index: number) => {
               // i am facing a Maximum call stack exceeded issue,
               // probably because of this loop operation
