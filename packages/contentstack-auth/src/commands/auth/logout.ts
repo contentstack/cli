@@ -60,6 +60,7 @@ export default class LogoutCommand extends Command {
         }
       } else {
         cliux.loader('CLI_AUTH_LOGOUT_LOADER_START');
+        await oauthHandler.oauthLogout()
         cliux.loader('');
         logger.info('successfully logged out');
         cliux.success('CLI_AUTH_LOGOUT_SUCCESS');
