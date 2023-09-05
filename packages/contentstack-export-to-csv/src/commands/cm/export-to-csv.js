@@ -207,7 +207,7 @@ class ExportToCsvCommand extends Command {
               const entriesCount = await util.getEntriesCount(stackAPIClient, contentType, language.code);
               let flatEntries = [];
               for (let index = 0; index < entriesCount / 100; index++) {
-                const entriesResult = await util.getEntries(stackAPIClient, contentType, language.code, index);
+                const entriesResult = await util.getEntries(stackAPIClient, contentType, language.code, index, 100);
                 const flatEntriesResult = util.cleanEntries(
                   entriesResult.items,
                   language.code,
