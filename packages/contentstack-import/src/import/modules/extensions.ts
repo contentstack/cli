@@ -2,7 +2,6 @@ import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
 import { join, resolve } from 'node:path';
 
-import config from '../../config';
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, Extensions } from '../../types';
@@ -21,7 +20,7 @@ export default class ImportExtensions extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.extensionsConfig = config.modules.extensions;
+    this.extensionsConfig = importConfig.modules.extensions;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'extensions');
     this.extensionsFolderPath = join(this.importConfig.backupDir, this.extensionsConfig.dirName);
     this.extUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
@@ -103,7 +102,7 @@ export default class ImportExtensions extends BaseClass {
           entity: 'create-extensions',
           includeParamOnCompletion: true,
         },
-        concurrencyLimit: config.concurrency || config.fetchConcurrency || 1,
+        concurrencyLimit: this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1,
       },
       undefined,
       false,

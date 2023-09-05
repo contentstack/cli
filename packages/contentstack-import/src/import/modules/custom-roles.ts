@@ -2,7 +2,6 @@ import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
 import { join, resolve } from 'node:path';
 
-import config from '../../config';
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, CustomRoleConfig } from '../../types';
@@ -30,7 +29,7 @@ export default class ImportCustomRoles extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.customRolesConfig = config.modules.customRoles;
+    this.customRolesConfig = importConfig.modules.customRoles;
     this.customRolesMapperPath = join(this.importConfig.backupDir, 'mapper', 'custom-roles');
     this.customRolesFolderPath = join(this.importConfig.backupDir, this.customRolesConfig.dirName);
     this.customRolesUidMapperPath = join(this.customRolesMapperPath, 'uid-mapping.json');
@@ -155,7 +154,7 @@ export default class ImportCustomRoles extends BaseClass {
           entity: 'create-custom-role',
           includeParamOnCompletion: true,
         },
-        concurrencyLimit: config.fetchConcurrency || 1,
+        concurrencyLimit: this.importConfig.fetchConcurrency || 1,
       },
       undefined,
       false,
