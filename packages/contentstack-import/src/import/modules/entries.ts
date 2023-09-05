@@ -339,36 +339,47 @@ export default class EntriesImport extends BaseClass {
       additionalInfo: { cTUid, locale, contentType, isMasterLocale },
     } = apiOptions;
 
-    if (this.jsonRteCTs.indexOf(cTUid) > -1) {
-      entry = removeUidsFromJsonRteFields(entry, contentType.schema);
+    try {
+      if (this.jsonRteCTs.indexOf(cTUid) > -1) {
+        entry = removeUidsFromJsonRteFields(entry, contentType.schema);
+      }
+      // remove entry references from json-rte fields
+      if (this.jsonRteCTsWithRef.indexOf(cTUid) > -1) {
+        entry = removeEntryRefsFromJSONRTE(entry, contentType.schema);
+      }
+      // will replace all old asset uid/urls with new ones
+      entry = lookupAssets(
+        {
+          content_type: contentType,
+          entry: entry,
+        },
+        this.assetUidMapper,
+        this.assetUrlMapper,
+        path.join(this.entriesPath, cTUid),
+        this.installedExtensions,
+      );
+      delete entry.publish_details;
+      // checking the entry is a localized one or not
+      if (!isMasterLocale && this.entriesUidMapper.hasOwnProperty(entry.uid)) {
+        const entryResponse = this.stack.contentType(contentType.uid).entry(this.entriesUidMapper[entry.uid]);
+        Object.assign(entryResponse, cloneDeep(entry), { uid: this.entriesUidMapper[entry.uid] });
+        apiOptions.apiData = entryResponse;
+        apiOptions.additionalInfo[entryResponse.uid] = {
+          isLocalized: true,
+        };
+        return apiOptions;
+      }
+      apiOptions.apiData = entry;
+    } catch (error) {
+      log(
+        this.importConfig,
+        `${entry.title} entry of content type ${cTUid} in locale ${locale} failed to create`,
+        'error',
+      );
+      log(this.importConfig, formatError(error), 'error');
+      this.failedEntries.push({ content_type: cTUid, locale, entry: { uid: entry.uid, title: entry.title } });
+      apiOptions.apiData = null;
     }
-    // remove entry references from json-rte fields
-    if (this.jsonRteCTsWithRef.indexOf(cTUid) > -1) {
-      entry = removeEntryRefsFromJSONRTE(entry, contentType.schema);
-    }
-    // will replace all old asset uid/urls with new ones
-    entry = lookupAssets(
-      {
-        content_type: contentType,
-        entry: entry,
-      },
-      this.assetUidMapper,
-      this.assetUrlMapper,
-      path.join(this.entriesPath, cTUid),
-      this.installedExtensions,
-    );
-    delete entry.publish_details;
-    // checking the entry is a localized one or not
-    if (!isMasterLocale && this.entriesUidMapper.hasOwnProperty(entry.uid)) {
-      const entryResponse = this.stack.contentType(contentType.uid).entry(this.entriesUidMapper[entry.uid]);
-      Object.assign(entryResponse, cloneDeep(entry), { uid: this.entriesUidMapper[entry.uid] });
-      apiOptions.apiData = entryResponse;
-      apiOptions.additionalInfo[entryResponse.uid] = {
-        isLocalized: true,
-      };
-      return apiOptions;
-    }
-    apiOptions.apiData = entry;
     return apiOptions;
   }
 
@@ -451,34 +462,43 @@ export default class EntriesImport extends BaseClass {
       apiData: entry,
       additionalInfo: { cTUid, locale, contentType },
     } = apiOptions;
+    try {
+      const sourceEntryFilePath = entry.sourceEntryFilePath;
+      const sourceEntry = ((fsUtil.readFile(sourceEntryFilePath) || {}) as Record<any, any>)[entry.entryOldUid];
+      const newUid = this.entriesUidMapper[entry.entryOldUid];
+      // Removing temp values
+      delete entry.sourceEntryFilePath;
+      delete entry.entryOldUid;
+      if (this.jsonRteCTs.indexOf(cTUid) > -1) {
+        // the entries stored in eSuccessFilePath, have the same uids as the entries from source data
+        entry = restoreJsonRteEntryRefs(entry, sourceEntry, contentType.schema, {
+          mappedAssetUids: this.assetUidMapper,
+          mappedAssetUrls: this.assetUrlMapper,
+        });
+      }
 
-    const sourceEntryFilePath = entry.sourceEntryFilePath;
-    const sourceEntry = ((fsUtil.readFile(sourceEntryFilePath) || {}) as Record<any, any>)[entry.entryOldUid];
-    const newUid = this.entriesUidMapper[entry.entryOldUid];
-    // Removing temp values
-    delete entry.sourceEntryFilePath;
-    delete entry.entryOldUid;
-    if (this.jsonRteCTs.indexOf(cTUid) > -1) {
-      // the entries stored in eSuccessFilePath, have the same uids as the entries from source data
-      entry = restoreJsonRteEntryRefs(entry, sourceEntry, contentType.schema, {
-        mappedAssetUids: this.assetUidMapper,
-        mappedAssetUrls: this.assetUrlMapper,
-      });
+      entry = lookupEntries(
+        {
+          content_type: contentType,
+          entry,
+        },
+        this.entriesUidMapper,
+        path.join(this.entriesMapperPath, cTUid, locale),
+      );
+
+      const entryResponse = this.stack.contentType(contentType.uid).entry(newUid);
+      Object.assign(entryResponse, cloneDeep(entry), { uid: newUid });
+      delete entryResponse.publish_details;
+      apiOptions.apiData = entryResponse;
+    } catch (error) {
+      log(
+        this.importConfig,
+        `${entry.title} entry of content type ${cTUid} in locale ${locale} failed to update`,
+        'error',
+      );
+      log(this.importConfig, formatError(error), 'error');
+      apiOptions.apiData = null;
     }
-
-    entry = lookupEntries(
-      {
-        content_type: contentType,
-        entry,
-      },
-      this.entriesUidMapper,
-      path.join(this.entriesMapperPath, cTUid, locale),
-    );
-
-    const entryResponse = this.stack.contentType(contentType.uid).entry(newUid);
-    Object.assign(entryResponse, cloneDeep(entry), { uid: newUid });
-    delete entryResponse.publish_details;
-    apiOptions.apiData = entryResponse;
     return apiOptions;
   }
 
