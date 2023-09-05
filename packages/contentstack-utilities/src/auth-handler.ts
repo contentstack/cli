@@ -409,6 +409,44 @@ class AuthHandler {
     });
   }
 
+  async oauthLogout(): Promise<void> {
+    const authorization = await this.listOauthAppAuthorizations();
+    const response = await this.revokeOauthAppAuthorization(authorization)
+    debugger
+  }
+
+  async listOauthAppAuthorizations(): Promise<object> {
+    const headers = {
+      authorization: `Bearer ${configHandler.get(this.oauthAccessTokenKeyName)}`,
+      organization_uid: configHandler.get(this.oauthOrgUidKeyName),
+      'Content-type': 'application/json'
+    }
+    const httpClient = new HttpClient().headers(headers)
+    await this.setOAuthBaseURL();
+    return httpClient
+      .get(`${this.OAuthBaseURL}/apps-api/manifests/${this.OAuthAppId}/authorizations`)
+      .then(({data}) => {
+        let userUid = configHandler.get(this.oauthUserUidKeyName)
+        let currentUserAuthorization = data.data.filter(element => element.user.uid === userUid);
+        return currentUserAuthorization[0].authorization_uid  // filter authorizations by current logged in user
+      })
+  }
+
+  async revokeOauthAppAuthorization(authorizationId): Promise<object> {
+    const headers = {
+      authorization: `Bearer ${configHandler.get(this.oauthAccessTokenKeyName)}`,
+      organization_uid: configHandler.get(this.oauthOrgUidKeyName),
+      'Content-type': 'application/json'
+    }
+    const httpClient = new HttpClient().headers(headers)
+    await this.setOAuthBaseURL();
+    return httpClient
+      .delete(`${this.OAuthBaseURL}/apps-api/manifests/${this.OAuthAppId}/authorizations/${authorizationId}`)
+      .then(({data}) => {
+        return data
+      })
+  }
+
   isAuthenticated(): boolean {
     const authorizationType = configHandler.get(this.authorisationTypeKeyName);
     return (
