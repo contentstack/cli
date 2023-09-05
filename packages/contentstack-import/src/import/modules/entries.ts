@@ -577,7 +577,8 @@ export default class EntriesImport extends BaseClass {
       return;
     }
     for (let cTUid of cTsWithFieldRules) {
-      const contentType = find(this.cTs, { uid: cTUid });
+      const cTs: Record<string, any>[] = fsUtil.readFile(path.join(this.cTsPath, 'schema.json')) as Record<string, unknown>[];
+      const contentType: any = find(cTs, { uid: cTUid });
       if (contentType.field_rules) {
         const fieldDatatypeMap: any = {};
         for (let i = 0; i < contentType.schema.length; i++) {
@@ -585,6 +586,11 @@ export default class EntriesImport extends BaseClass {
           fieldDatatypeMap[field] = contentType.schema[i].data_type;
         }
         let fieldRuleLength = contentType.field_rules.length;
+        const fieldDatatypeMap: {[key: string]: string} = {};
+        for (let i = 0; i < contentType.schema.length; i++) {
+          const field = contentType.schema[i].uid;
+          fieldDatatypeMap[field] = contentType.schema[i].data_type;
+        }
         for (let k = 0; k < fieldRuleLength; k++) {
           let fieldRuleConditionLength = contentType.field_rules[k].conditions.length;
           for (let i = 0; i < fieldRuleConditionLength; i++) {
