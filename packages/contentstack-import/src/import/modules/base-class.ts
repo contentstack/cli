@@ -348,6 +348,9 @@ export default abstract class BaseClass {
           .then(onSuccess)
           .catch(onReject);
       case 'create-entries':
+        if (!apiData) {
+          return Promise.resolve();
+        }
         if (additionalInfo[apiData?.uid]?.isLocalized) {
           return apiData.update({ locale: additionalInfo.locale }).then(onSuccess).catch(onReject);
         }
