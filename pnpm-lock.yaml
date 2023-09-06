@@ -634,7 +634,7 @@ importers:
       globby: ^10.0.2
       inquirer: 8.2.4
       inquirer-checkbox-plus-prompt: 1.0.1
-      mkdirp: ^1.0.4
+      mkdirp: ^3.0.1
       mocha: ^10.0.0
       nyc: ^15.1.0
       oclif: ^3.8.1
@@ -645,7 +645,7 @@ importers:
       fast-csv: 4.3.6
       inquirer: 8.2.4
       inquirer-checkbox-plus-prompt: 1.0.1
-      mkdirp: 1.0.4
+      mkdirp: 3.0.1
     devDependencies:
       '@oclif/test': 2.3.31
       chai: 4.3.7
@@ -9213,6 +9213,12 @@ packages:
     resolution: {integrity: sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==}
     engines: {node: '>=10'}
     hasBin: true
+
+  /mkdirp/3.0.1:
+    resolution: {integrity: sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dev: false
 
   /mkdirp2/1.0.5:
     resolution: {integrity: sha512-xOE9xbICroUDmG1ye2h4bZ8WBie9EGmACaco8K8cx6RlkJJrxGIqjGqztAI+NMhexXBcdGbSEzI6N3EJPevxZw==}
