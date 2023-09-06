@@ -206,11 +206,7 @@ export default abstract class BaseClass {
       // info: Batch No. 20 of import assets is complete
       if (currentIndexer) batchMsg += `Current chunk processing is (${currentIndexer}/${indexerCount})`;
 
-      log(
-        this.importConfig,
-        `Batch No. (${batchNo}/${totelBatches}) of ${processName} is complete. ${batchMsg}`,
-        'success',
-      );
+      log(this.importConfig, `Batch No. (${batchNo}/${totelBatches}) of ${processName} is complete`, 'success');
     }
 
     if (this.importConfig.modules.assets.displayExecutionTime) {
