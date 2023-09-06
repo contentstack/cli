@@ -431,9 +431,9 @@ class AuthHandler {
     return httpClient
       .get(`${this.OAuthBaseURL}/apps-api/manifests/${this.OAuthAppId}/authorizations`)
       .then(({data}) => {
-        if (data.data.length > 0) {
+        if (data?.data?.length > 0) {
           const userUid = configHandler.get(this.oauthUserUidKeyName)
-          const currentUserAuthorization = data.data.filter(element => element.user.uid === userUid);
+          const currentUserAuthorization = data?.data?.filter(element => element.user.uid === userUid) || [];
           if (currentUserAuthorization.length === 0) {
             throw new Error(messageHandler.parse("CLI_AUTH_LOGOUT_NO_AUTHORIZATIONS_USER"))
           }
