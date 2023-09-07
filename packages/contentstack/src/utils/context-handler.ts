@@ -1,3 +1,4 @@
+
 import * as shortUUID from 'short-uuid';
 import * as path from 'path';
 import { configHandler } from '@contentstack/cli-utilities';
@@ -15,6 +16,7 @@ export default class CsdxContext {
   readonly messageFilePath: string;
   readonly analyticsInfo: string;
   public flagWarningPrintState: any;
+  public flags: any;
 
   constructor(cliOpts: any, cliConfig: any) {
     const analyticsInfo = [];
