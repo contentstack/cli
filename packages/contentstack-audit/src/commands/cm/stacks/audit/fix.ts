@@ -1,9 +1,9 @@
-import { BaseCommand } from '../../../base-command';
+import { BaseCommand } from '../../../../base-command';
 
 export default class AuditFix extends BaseCommand<typeof AuditFix> {
   static description = 'Audit fix command';
 
-  static aliases: string[] = ['cm:audit:fix'];
+  static aliases: string[] = ['cm::stacks:audit:fix'];
 
   static examples = ['$ <%= config.bin %> <%= command.id %>'];
 
