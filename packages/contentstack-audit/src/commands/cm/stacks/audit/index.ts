@@ -1,7 +1,7 @@
-import { BaseCommand } from '../../../base-command';
+import { BaseCommand } from '../../../../base-command';
 
 export default class Audit extends BaseCommand<typeof Audit> {
-  static aliases: string[] = ['cm:audit'];
+  static aliases: string[] = ['cm:stacks:audit'];
 
   static description = 'Audit and find possible errors in the exported data';
 
