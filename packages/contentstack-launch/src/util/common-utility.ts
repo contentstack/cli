@@ -2,7 +2,7 @@ import map from 'lodash/map';
 import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
 import { ApolloClient } from '@apollo/client/core';
-import { cliux as ux, ContentstackClient, FlagInput } from '@contentstack/cli-utilities';
+import { cliux as ux, ContentstackClient, FlagInput, configHandler } from '@contentstack/cli-utilities';
 
 import { projectsQuery } from '../graphql';
 import { ConfigType, LogFn } from '../types';
@@ -18,20 +18,26 @@ async function getOrganizations(
   organizations: Record<string, any>[] = [],
 ): Promise<Record<string, any>[]> {
   const { log, managementSdk } = options;
-  const response = await managementSdk
-    .organization()
-    .fetchAll({ limit: 100, asc: 'name', include_count: true, skip: skip })
-    .catch((error) => {
-      log('Unable to fetch organizations.', 'warn');
-      log(error, 'error');
-      process.exit(1);
-    });
+  const configOrgUid = configHandler.get('oauthOrgUid');
 
-  if (response) {
-    organizations = organizations.concat(response.items as any);
-    if (organizations.length < response.count) {
-      organizations = await getOrganizations(options, skip + 100);
+  try {
+    if (configOrgUid) {
+      const response = await managementSdk.organization(configOrgUid).fetch();
+      organizations.push(...[response]);
+    } else {
+      const response = await managementSdk
+        .organization()
+        .fetchAll({ limit: 100, asc: 'name', include_count: true, skip });
+      organizations.push(...response.items);
+
+      if (organizations.length < response.count) {
+        organizations = await getOrganizations(options, skip + 100, organizations);
+      }
     }
+  } catch (error) {
+    log('Unable to fetch organizations.', 'warn');
+    log(error, 'error');
+    process.exit(1);
   }
 
   return organizations;

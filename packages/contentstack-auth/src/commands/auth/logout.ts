@@ -50,19 +50,18 @@ export default class LogoutCommand extends Command {
     try {
       const managementAPIClient = await managementSDKClient({ host: this.cmaHost, skipTokenValidity: true });
       authHandler.client = managementAPIClient;
-      if ((await oauthHandler.isAuthenticated()) && (await oauthHandler.isAuthorisationTypeBasic())) {
-        if (confirm === true) {
-          cliux.loader('CLI_AUTH_LOGOUT_LOADER_START');
-          await authHandler.logout(configHandler.get('authtoken'));
-          cliux.loader('');
-          logger.info('successfully logged out');
-          cliux.success('CLI_AUTH_LOGOUT_SUCCESS');
-        }
-      } else {
+      if (confirm === true && (await oauthHandler.isAuthenticated())) {
         cliux.loader('CLI_AUTH_LOGOUT_LOADER_START');
+        if (await oauthHandler.isAuthorisationTypeBasic()) {
+          await authHandler.logout(configHandler.get('authtoken'));
+        } else if (await oauthHandler.isAuthorisationTypeOAuth()) {
+          await oauthHandler.oauthLogout()
+        }
         cliux.loader('');
         logger.info('successfully logged out');
         cliux.success('CLI_AUTH_LOGOUT_SUCCESS');
+      } else {
+        cliux.success('CLI_AUTH_LOGOUT_ALREADY');
       }
     } catch (error) {
       let errorMessage = '';
