@@ -9,13 +9,14 @@ const {
 } = require('@contentstack/cli-utilities');
 const util = require('../../util');
 const config = require('../../util/config');
+const interactive = require('../../util/interactive');
 
 class ExportToCsvCommand extends Command {
   static flags = {
     action: flags.string({
       required: false,
       multiple: false,
-      options: ['entries', 'users'],
+      options: ['entries', 'users', 'taxonomies'],
       description: `Option to export data (entries, users)`,
     }),
     alias: flags.string({
@@ -59,6 +60,9 @@ class ExportToCsvCommand extends Command {
       multiple: false,
       required: false,
     }),
+    'taxonomy-uid': flags.string({
+      description: 'Provide taxonomy uid fow which terms need to be exported',
+    }),
   };
 
   async run() {
@@ -75,6 +79,7 @@ class ExportToCsvCommand extends Command {
           'content-type': contentTypesFlag,
           alias: managementTokenAlias,
           branch: branchUid,
+          'taxonomy-uid': taxonomyUID,
         },
       } = await this.parse(ExportToCsvCommand);
 
@@ -96,69 +101,17 @@ class ExportToCsvCommand extends Command {
             let stackAPIClient;
             let language;
             let contentTypes = [];
-            let stackBranches;
-            const listOfTokens = configHandler.get('tokens');
 
-            if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
-              managementAPIClient = await managementSDKClient({
-                host: this.cmaHost,
-                management_token: listOfTokens[managementTokenAlias].token,
-              });
-              stack = {
-                name: stackName || managementTokenAlias,
-                apiKey: listOfTokens[managementTokenAlias].apiKey,
-                token: listOfTokens[managementTokenAlias].token,
-              };
-            } else if (managementTokenAlias) {
-              this.error('Provided management token alias not found in your config.!');
+            if (managementTokenAlias) {
+              const { stackDetails, apiClient } = await this.getAliasDetails(managementTokenAlias);
+              managementAPIClient = apiClient;
+              stack = stackDetails;
             } else {
-              let organization;
-
-              if (!isAuthenticated()) {
-                this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
-                  exit: 2,
-                  suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-                });
-              }
-
-              if (org) {
-                organization = { uid: org };
-              } else {
-                organization = await util.chooseOrganization(managementAPIClient); // prompt for organization
-              }
-              if (!stackAPIKey) {
-                stack = await util.chooseStack(managementAPIClient, organization.uid); // prompt for stack
-              } else {
-                stack = await util.chooseStack(managementAPIClient, organization.uid, stackAPIKey);
-              }
+              stack = await this.getStackDetails(managementAPIClient, stackAPIKey, org);
             }
 
             stackAPIClient = this.getStackClient(managementAPIClient, stack);
-
-            if (branchUid) {
-              try {
-                const branchExists = await doesBranchExist(stackAPIClient, branchUid);
-                if (branchExists?.errorCode) {
-                  throw new Error(branchExists.errorMessage);
-                }
-                stack.branch_uid = branchUid;
-                stackAPIClient = this.getStackClient(managementAPIClient, stack);
-              } catch (error) {
-                if (error.message || error.errorMessage) {
-                  cliux.error(util.formatError(error));
-                  this.exit();
-                }
-              }
-            } else {
-              stackBranches = await this.getStackBranches(stackAPIClient);
-              if (stackBranches === undefined) {
-                stackAPIClient = this.getStackClient(managementAPIClient, stack);
-              } else {
-                const { branch } = await util.chooseBranch(stackBranches);
-                stack.branch_uid = branch;
-                stackAPIClient = this.getStackClient(managementAPIClient, stack);
-              }
-            }
+            await this.checkAndUpdateBranchDetail(branchUid, stack, stackAPIClient, managementAPIClient);
 
             const contentTypeCount = await util.getContentTypeCount(stackAPIClient);
 
@@ -258,6 +211,30 @@ class ExportToCsvCommand extends Command {
           }
           break;
         }
+        case config.exportTaxonomies:
+        case 'taxonomies': {
+          let stack;
+          let stackAPIClient;
+          let taxUID;
+          if (managementTokenAlias) {
+            const { stackDetails, apiClient } = await this.getAliasDetails(managementTokenAlias);
+            managementAPIClient = apiClient;
+            stack = stackDetails;
+          } else {
+            stack = await this.getStackDetails(managementAPIClient, stackAPIKey, org);
+          }
+          if (taxonomyUID) {
+            taxUID = taxonomyUID;
+          } else {
+            taxUID = await interactive.askTaxonomyUID();
+            //validate taxUID
+          }
+
+          stackAPIClient = this.getStackClient(managementAPIClient, stack);
+          await this.checkAndUpdateBranchDetail(branchUid, stack, stackAPIClient, managementAPIClient);
+          await this.createTaxonomyAndTermCsvFile(stackName, stack, taxUID);
+          break;
+        }
       }
     } catch (error) {
       if (error.message || error.errorMessage) {
@@ -291,6 +268,101 @@ class ExportToCsvCommand extends Command {
       .find()
       .then(({ items }) => (items !== undefined ? items : []))
       .catch((_err) => {});
+  }
+
+  async checkAndUpdateBranchDetail(branchUid, stack, stackAPIClient, managementAPIClient) {
+    if (branchUid) {
+      try {
+        const branchExists = await doesBranchExist(stackAPIClient, branchUid);
+        if (branchExists?.errorCode) {
+          throw new Error(branchExists.errorMessage);
+        }
+        stack.branch_uid = branchUid;
+        stackAPIClient = getStackClient(managementAPIClient, stack);
+      } catch (error) {
+        if (error.message || error.errorMessage) {
+          cliux.error(util.formatError(error));
+          this.exit();
+        }
+      }
+    } else {
+      const stackBranches = await this.getStackBranches(stackAPIClient);
+      if (stackBranches === undefined) {
+        stackAPIClient = this.getStackClient(managementAPIClient, stack);
+      } else {
+        const { branch } = await util.chooseBranch(stackBranches);
+        stack.branch_uid = branch;
+        stackAPIClient = this.getStackClient(managementAPIClient, stack);
+      }
+    }
+  }
+
+  async getAliasDetails(managementTokenAlias) {
+    let apiClient, stackDetails;
+    const listOfTokens = configHandler.get('tokens');
+    if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
+      apiClient = await managementSDKClient({
+        host: this.cmaHost,
+        management_token: listOfTokens[managementTokenAlias].token,
+      });
+      stackDetails = {
+        name: stackName || managementTokenAlias,
+        apiKey: listOfTokens[managementTokenAlias].apiKey,
+        token: listOfTokens[managementTokenAlias].token,
+      };
+    } else if (managementTokenAlias) {
+      this.error('Provided management token alias not found in your config.!');
+    }
+    return {
+      apiClient,
+      stackDetails,
+    };
+  }
+
+  async getStackDetails(managementAPIClient, stackAPIKey, org) {
+    let organization, stackDetails;
+
+    if (!isAuthenticated()) {
+      this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
+        exit: 2,
+        suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
+      });
+    }
+
+    if (org) {
+      organization = { uid: org };
+    } else {
+      organization = await util.chooseOrganization(managementAPIClient); // prompt for organization
+    }
+    if (!stackAPIKey) {
+      stackDetails = await util.chooseStack(managementAPIClient, organization.uid); // prompt for stack
+    } else {
+      stackDetails = await util.chooseStack(managementAPIClient, organization.uid, stackAPIKey);
+    }
+    return stackDetails;
+  }
+
+  async createTaxonomyAndTermCsvFile(stackName, stack, taxUID){
+    const { cma, name } = configHandler.get('region') || {};
+    const payload = {
+      baseUrl: `${cma}/api/v3/taxonomies`,
+      apiKey: stack.apiKey,
+      mgToken: stack?.token
+    };
+    //check whether the taxonomy is valid or not
+    const taxonomy = await util.getTaxonomy(payload, taxUID);
+
+    payload['url'] = payload.baseUrl;
+    const taxonomies = await util.getAllTaxonomies(payload);
+    const filteredTaxonomies = util.formatTaxonomiesResp(taxonomies);
+    let fileName = `${stackName ? stackName : stack.name}_taxonomies.csv`;
+    util.write(this, filteredTaxonomies, fileName, 'taxonomies'); // write to file
+
+    payload['url'] = `${payload.baseUrl}/${taxUID}/terms`;
+    const terms = await util.getAllTermsOfTaxonomy(payload);
+    const filteredTerms = util.formatTermsOfTaxonomyResp(terms, taxUID);
+    fileName = `${stackName ? stackName : stack.name}_${taxonomy ? taxonomy.name : ''}_${taxUID}_terms.csv`;
+    util.write(this, filteredTerms, fileName, 'terms');
   }
 }
 
