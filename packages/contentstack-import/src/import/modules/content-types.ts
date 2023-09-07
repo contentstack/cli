@@ -10,6 +10,7 @@ import { isEmpty, find, cloneDeep, map } from 'lodash';
 import { fsUtil, log, formatError, schemaTemplate, lookupExtension } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
+import { updateFieldRules } from '../../utils/content-type-helper';
 
 export default class ContentTypesImport extends BaseClass {
   private cTsMapperPath: string;
@@ -179,8 +180,11 @@ export default class ContentTypesImport extends BaseClass {
   serializeUpdateCTs(apiOptions: ApiOptions): ApiOptions {
     const { apiData: contentType } = apiOptions;
     if (contentType.field_rules) {
+      contentType.field_rules = updateFieldRules(contentType);
+      if (!contentType.field_rules.length) {
+        delete contentType.field_rules;
+      }
       this.fieldRules.push(contentType.uid);
-      delete contentType.field_rules;
     }
     lookupExtension(
       this.importConfig,
