@@ -9,8 +9,8 @@ const AddTokenCommand = require('@contentstack/cli-auth/lib/commands/auth/tokens
 const RegionSetCommand = require('@contentstack/cli-config/lib/commands/config/set/region').default;
 const ExportCommand = require('@contentstack/cli-cm-export/src/commands/cm/stacks/export');
 
-const defaultConfig = require('../../src/config/default');
-const { modules } = require('../../src/config/default');
+const { default: defaultConfig } = require('../../src/config');
+const modules = defaultConfig.modules;
 const { getStackDetailsByRegion, cleanUp, deleteStack, getEnvData, getEntriesCount } = require('./utils/helper');
 const { PRINT_LOGS, IMPORT_PATH } = require('./config.json');
 const { DELIMITER, KEY_VAL_DELIMITER } = process.env;
@@ -23,7 +23,7 @@ const REGION_MAP = {
   EU: 'EU',
 };
 
-module.exports = region => {
+module.exports = (region) => {
   const stackDetails = getStackDetailsByRegion(region.REGION, DELIMITER, KEY_VAL_DELIMITER);
   for (const stack of Object.keys(stackDetails)) {
     const basePath = path.join(__dirname, '..', '..', `${IMPORT_PATH}_${stack}`);
@@ -42,22 +42,47 @@ module.exports = region => {
         .it('should work without any errors', (_, done) => {
           done();
         });
-      
+
       customTest
-        .command(AddTokenCommand, ['-a', stackDetails[stack].EXPORT_ALIAS_NAME, '-k', stackDetails[stack].EXPORT_STACK_API_KEY, '--management', '--token', stackDetails[stack].EXPORT_MANAGEMENT_TOKEN, '-y'])
+        .command(AddTokenCommand, [
+          '-a',
+          stackDetails[stack].EXPORT_ALIAS_NAME,
+          '-k',
+          stackDetails[stack].EXPORT_STACK_API_KEY,
+          '--management',
+          '--token',
+          stackDetails[stack].EXPORT_MANAGEMENT_TOKEN,
+          '-y',
+        ])
         .it(`Adding token for ${stack}`, (_, done) => {
           done();
         });
 
       customTest
-        .command(AddTokenCommand, ['-a', stackDetails[stack].ALIAS_NAME, '-k', stackDetails[stack].STACK_API_KEY, '--management', '--token', stackDetails[stack].MANAGEMENT_TOKEN, '-y'])
+        .command(AddTokenCommand, [
+          '-a',
+          stackDetails[stack].ALIAS_NAME,
+          '-k',
+          stackDetails[stack].STACK_API_KEY,
+          '--management',
+          '--token',
+          stackDetails[stack].MANAGEMENT_TOKEN,
+          '-y',
+        ])
         .it(`Adding token for ${stack}`, (_, done) => {
           done();
         });
-      
+
       customTest
         .stdout({ print: PRINT_LOGS || false })
-        .command(ExportCommand, ['--alias', stackDetails[stack].EXPORT_ALIAS_NAME, '--data-dir', basePath, '--module', 'entries'])
+        .command(ExportCommand, [
+          '--alias',
+          stackDetails[stack].EXPORT_ALIAS_NAME,
+          '--data-dir',
+          basePath,
+          '--module',
+          'entries',
+        ])
         .it('should work without any errors', (_, done) => {
           done();
         });
@@ -65,14 +90,22 @@ module.exports = region => {
       describe('Import assets using cm:stacks:import command', () => {
         test
           .stdout({ print: PRINT_LOGS || false })
-          .command(['cm:stacks:import', '--alias', stackDetails[stack].ALIAS_NAME, '--data-dir', importBasePath, '--module', 'entries'])
+          .command([
+            'cm:stacks:import',
+            '--alias',
+            stackDetails[stack].ALIAS_NAME,
+            '--data-dir',
+            importBasePath,
+            '--module',
+            'entries',
+          ])
           .it('should work without any errors', async (_, done) => {
-            let importedEntriesCount = 0
+            let importedEntriesCount = 0;
             const entriesCount = await getEntriesCount(stackDetails[stack]);
 
             try {
               if (fs.existsSync(entriesBasePath)) {
-                let contentTypes = await fsPromises.readdir(entriesBasePath)
+                let contentTypes = await fsPromises.readdir(entriesBasePath);
                 for (let contentType of contentTypes) {
                   let ctPath = path.join(entriesBasePath, contentType);
                   let locales = await fsPromises.readdir(ctPath);
@@ -83,7 +116,7 @@ module.exports = region => {
                 }
               }
             } catch (error) {
-              console.trace(error)
+              console.trace(error);
             }
 
             expect(entriesCount).to.be.an('number').eq(importedEntriesCount);
