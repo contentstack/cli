@@ -12,5 +12,6 @@
   "fetchConcurrency": 5,
   "writeConcurrency": 5,
   "securedAssets":false,
-  "developerHubBaseUrl": ""
+  "developerHubBaseUrl": "",
+  "createBackupDir": "./temp"
 }
