@@ -13,6 +13,7 @@ importers:
       '@contentstack/cli-audit': ~0.0.0-alpha
       '@contentstack/cli-auth': ~1.3.13
       '@contentstack/cli-cm-bootstrap': ~1.4.15
+      '@contentstack/cli-cm-branches': ~1.0.12
       '@contentstack/cli-cm-bulk-publish': ~1.3.11
       '@contentstack/cli-cm-clone': ~1.4.16
       '@contentstack/cli-cm-export': ~1.8.1
@@ -66,6 +67,7 @@ importers:
       '@contentstack/cli-audit': link:../contentstack-audit
       '@contentstack/cli-auth': link:../contentstack-auth
       '@contentstack/cli-cm-bootstrap': link:../contentstack-bootstrap
+      '@contentstack/cli-cm-branches': link:../contentstack-branches
       '@contentstack/cli-cm-bulk-publish': link:../contentstack-bulk-publish
       '@contentstack/cli-cm-clone': link:../contentstack-clone
       '@contentstack/cli-cm-export': link:../contentstack-export
