@@ -38,7 +38,7 @@ module.exports = class ImportEntries {
   ctPath;
   lPath;
   importConcurrency;
-  skipFiles = ['__master.json', '__priority.json', 'schema.json'];
+  skipFiles = ['__master.json', '__priority.json', 'schema.json','.DS_Store'];
 
   constructor(importConfig, stackAPIClient) {
     this.config = _.merge(config, importConfig);
