@@ -669,6 +669,14 @@ function wait(time) {
   });
 }
 
+/**
+ * fetch all taxonomies in the provided stack
+ * @param {object} payload 
+ * @param {number} skip 
+ * @param {number} limit 
+ * @param {array} taxonomies 
+ * @returns 
+ */
 async function getAllTaxonomies(payload, skip = 0, limit = 100, taxonomies = []) {
   const response = await apiRequestHandler(payload, skip, limit);
   if(response){
@@ -683,6 +691,14 @@ async function getAllTaxonomies(payload, skip = 0, limit = 100, taxonomies = [])
   return taxonomies;
 }
 
+/**
+ * fetch terms of related taxonomy
+ * @param {object} payload 
+ * @param {number} skip 
+ * @param {number} limit 
+ * @param {array} terms 
+ * @returns 
+ */
 async function getAllTermsOfTaxonomy(payload, skip = 0, limit = 100, terms = []) {
   const response = await apiRequestHandler(payload, skip, limit);
   if(response){
@@ -697,6 +713,12 @@ async function getAllTermsOfTaxonomy(payload, skip = 0, limit = 100, terms = [])
   return terms;
 }
 
+/**
+ * Verify the existence of a taxonomy. Obtain its details if it exists and return
+ * @param {object} payload 
+ * @param {string} taxonomyUID 
+ * @returns 
+ */
 async function getTaxonomy(payload, taxonomyUID) {
   payload['url'] = `${payload.baseUrl}/${taxonomyUID}`;
   const resp = await apiRequestHandler(payload);
@@ -743,28 +765,43 @@ async function apiRequestHandler(payload, skip, limit) {
     .catch((err) => handleErrorMsg(err));
 }
 
+/**
+ * Change taxonomies data in required CSV headers format
+ * @param {array} taxonomies 
+ * @returns 
+ */
 function formatTaxonomiesData(taxonomies) {
-  const filteredTaxonomies = taxonomies.map((taxonomy) => {
-    return {
-      'Taxonomy UID': taxonomy.uid,
-      Name: taxonomy.name,
-      Description: taxonomy.description,
-    };
-  });
-  return filteredTaxonomies;
+  if(taxonomies?.length){
+    const formattedTaxonomies = taxonomies.map((taxonomy) => {
+      return {
+        'Taxonomy UID': taxonomy.uid,
+        Name: taxonomy.name,
+        Description: taxonomy.description,
+      };
+    });
+    return formattedTaxonomies;
+  }
 }
 
+/**
+ * Modify the linked taxonomy data's terms in required CSV headers format
+ * @param {array} terms 
+ * @param {string} taxonomyUID 
+ * @returns 
+ */
 function formatTermsOfTaxonomyData(terms, taxonomyUID) {
-  const filteredTerms = terms.map((term) => {
-    return {
-      'Taxonomy UID': taxonomyUID,
-      UID: term.uid,
-      Name: term.name,
-      Description: term.description,
-      'Parent UID': term.parent_uid,
-    };
-  });
-  return filteredTerms;
+  if(terms?.length){
+    const formattedTerms = terms.map((term) => {
+      return {
+        'Taxonomy UID': taxonomyUID,
+        UID: term.uid,
+        Name: term.name,
+        Description: term.description,
+        'Parent UID': term.parent_uid,
+      };
+    });
+    return formattedTerms;
+  }
 }
 
 function handleErrorMsg(err) {
