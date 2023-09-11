@@ -371,6 +371,22 @@ function exitProgram() {
   process.exit();
 }
 
+function sanitizeEntries(flatEntry) {
+  // sanitize against CSV Injections
+  const CSVRegex = /^[\\+\\=@\\-]/
+  for (key in flatEntry) {
+    if (typeof flatEntry[key] === 'string' && flatEntry[key].match(CSVRegex)) {
+      flatEntry[key] = flatEntry[key].replace(/\"/g, "\"\"");
+      flatEntry[key] = `"'${flatEntry[key]}"`
+    } else if (typeof flatEntry[key] === 'object') {
+      // convert any objects or arrays to string
+      // to store this data correctly in csv
+      flatEntry[key] = JSON.stringify(flatEntry[key]);
+    }
+  }
+  return flatEntry;
+}
+
 function cleanEntries(entries, language, environments, contentTypeUid) {
   const filteredEntries = entries.filter((entry) => {
     return entry['locale'] === language;
@@ -393,6 +409,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
         }
     }
     entry = flatten(entry);
+    entry = sanitizeEntries(entry);
     entry['publish_details'] = envArr;
     entry['_workflow'] = workflow;
     entry['ACL'] = JSON.stringify({}); // setting ACL to empty obj
@@ -409,7 +426,6 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
     delete entry.publishRequest;
     return entry;
   });
-  console.log(filteredEntries.length);
 }
 
 function getDateTime() {
