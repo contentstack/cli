@@ -230,7 +230,6 @@ class ExportToCsvCommand extends Command {
           }
 
           stackAPIClient = this.getStackClient(managementAPIClient, stack);
-          await this.checkAndUpdateBranchDetail(branchUid, stack, stackAPIClient, managementAPIClient);
           await this.createTaxonomyAndTermCsvFile(stackName, stack, taxUID);
           break;
         }
@@ -269,6 +268,13 @@ class ExportToCsvCommand extends Command {
       .catch((_err) => {});
   }
 
+  /**
+   * check whether branch enabled org or not and update branch details
+   * @param {string} branchUid 
+   * @param {object} stack 
+   * @param {*} stackAPIClient 
+   * @param {*} managementAPIClient 
+   */
   async checkAndUpdateBranchDetail(branchUid, stack, stackAPIClient, managementAPIClient) {
     if (branchUid) {
       try {
@@ -296,6 +302,12 @@ class ExportToCsvCommand extends Command {
     }
   }
 
+  /**
+   * fetch stack details from alias token
+   * @param {string} managementTokenAlias 
+   * @param {string} stackName 
+   * @returns 
+   */
   async getAliasDetails(managementTokenAlias, stackName) {
     let apiClient, stackDetails;
     const listOfTokens = configHandler.get('tokens');
@@ -318,6 +330,13 @@ class ExportToCsvCommand extends Command {
     };
   }
 
+  /**
+   * fetch stack details on basis of the selected org and stack
+   * @param {*} managementAPIClient 
+   * @param {string} stackAPIKey 
+   * @param {string} org 
+   * @returns 
+   */
   async getStackDetails(managementAPIClient, stackAPIKey, org) {
     let organization, stackDetails;
 
@@ -341,6 +360,12 @@ class ExportToCsvCommand extends Command {
     return stackDetails;
   }
 
+  /**
+   * Create a taxonomies csv file for stack and a terms csv file for associated taxonomies
+   * @param {string} stackName 
+   * @param {object} stack 
+   * @param {string} taxUID 
+   */
   async createTaxonomyAndTermCsvFile(stackName, stack, taxUID){
     const { cma } = configHandler.get('region') || {};
     const payload = {
