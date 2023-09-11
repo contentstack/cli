@@ -12,7 +12,7 @@ async function askTaxonomyUID() {
   return await cliux.inquire({
     type: 'input',
     message: 'Enter taxonomy UID',
-    name: 'taxonomy_uid',
+    name: 'taxonomyUid',
     validate: inquireRequireFieldValidation,
   });
 }
