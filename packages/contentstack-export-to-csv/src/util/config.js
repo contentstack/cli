@@ -1,4 +1,5 @@
 module.exports = {
+  limit:100,
   cancelString: 'Cancel and Exit',
   exportEntries: 'Export entries to a .CSV file',
   exportUsers: "Export organization users' data to a .CSV file",
