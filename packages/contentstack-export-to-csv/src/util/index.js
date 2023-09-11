@@ -671,29 +671,36 @@ function wait(time) {
 
 async function getAllTaxonomies(payload, skip = 0, limit = 100, taxonomies = []) {
   const response = await apiRequestHandler(payload, skip, limit);
-  skip += limit || 100;
-  taxonomies = [...taxonomies, ...response.taxonomies];
-  if (skip >= response?.count) {
-    return taxonomies;
-  } else {
-    return getAllTaxonomies(payload, skip, limit, taxonomies);
+  if(response){
+    skip += config.limit || 100;
+    taxonomies = [...taxonomies, ...response.taxonomies];
+    if (skip >= response?.count) {
+      return taxonomies;
+    } else {
+      return getAllTaxonomies(payload, skip, limit, taxonomies);
+    }
   }
+  return taxonomies;
 }
 
 async function getAllTermsOfTaxonomy(payload, skip = 0, limit = 100, terms = []) {
   const response = await apiRequestHandler(payload, skip, limit);
-  skip += limit || 100;
-  terms = [...terms, ...response.terms];
-  if (skip >= response?.count) {
-    return terms;
-  } else {
-    return getAllTermsOfTaxonomy(payload, skip, limit, terms);
+  if(response){
+    skip += config.limit || 100;
+    terms = [...terms, ...response.terms];
+    if (skip >= response?.count) {
+      return terms;
+    } else {
+      return getAllTermsOfTaxonomy(payload, skip, limit, terms);
+    }
   }
+  return terms;
 }
 
 async function getTaxonomy(payload, taxonomyUID) {
   payload['url'] = `${payload.baseUrl}/${taxonomyUID}`;
-  return await apiRequestHandler(payload);
+  const resp = await apiRequestHandler(payload);
+  return resp?.taxonomy || '';
 }
 
 async function apiRequestHandler(payload, skip, limit) {
@@ -703,7 +710,7 @@ async function apiRequestHandler(payload, skip, limit) {
   };
 
   if (payload?.mgToken) headers['authorization'] = payload.mgToken;
-  else headers['authToken'] = configHandler.get('authToken');
+  else headers['authToken'] = configHandler.get('authtoken');
 
   const params = {
     include_count: true,
@@ -724,10 +731,10 @@ async function apiRequestHandler(payload, skip, limit) {
       if ([200, 201, 202].includes(status)) return data;
       else {
         let errorMsg;
-        if (status === 500) errorMsg = data.message;
-        else errorMsg = data.error_message;
+        if ([500, 503, 502].includes(status)) errorMsg = data?.message || data;
+        else errorMsg = data?.error_message;
         if(errorMsg === undefined){
-          errorMsg = Object.values(data.errors) && flat(Object.values(data.errors));
+          errorMsg = Object.values(data?.errors) && flat(Object.values(data.errors));
         }
         cliux.print(`Error: ${errorMsg}`, { color: 'red' });
         process.exit(1);
@@ -736,7 +743,7 @@ async function apiRequestHandler(payload, skip, limit) {
     .catch((err) => handleErrorMsg(err));
 }
 
-function formatTaxonomiesResp(taxonomies) {
+function formatTaxonomiesData(taxonomies) {
   const filteredTaxonomies = taxonomies.map((taxonomy) => {
     return {
       'Taxonomy UID': taxonomy.uid,
@@ -747,7 +754,7 @@ function formatTaxonomiesResp(taxonomies) {
   return filteredTaxonomies;
 }
 
-function formatTermsOfTaxonomyResp(terms, taxonomyUID) {
+function formatTermsOfTaxonomyData(terms, taxonomyUID) {
   const filteredTerms = terms.map((term) => {
     return {
       'Taxonomy UID': taxonomyUID,
@@ -800,7 +807,7 @@ module.exports = {
   formatError: formatError,
   getAllTaxonomies,
   getAllTermsOfTaxonomy,
-  formatTaxonomiesResp,
-  formatTermsOfTaxonomyResp,
+  formatTaxonomiesData,
+  formatTermsOfTaxonomyData,
   getTaxonomy,
 };
