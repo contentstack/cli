@@ -103,7 +103,7 @@ class ExportToCsvCommand extends Command {
             let contentTypes = [];
 
             if (managementTokenAlias) {
-              const { stackDetails, apiClient } = await this.getAliasDetails(managementTokenAlias);
+              const { stackDetails, apiClient } = await this.getAliasDetails(managementTokenAlias, stackName);
               managementAPIClient = apiClient;
               stack = stackDetails;
             } else {
@@ -217,7 +217,7 @@ class ExportToCsvCommand extends Command {
           let stackAPIClient;
           let taxUID;
           if (managementTokenAlias) {
-            const { stackDetails, apiClient } = await this.getAliasDetails(managementTokenAlias);
+            const { stackDetails, apiClient } = await this.getAliasDetails(managementTokenAlias, stackName);
             managementAPIClient = apiClient;
             stack = stackDetails;
           } else {
@@ -227,7 +227,6 @@ class ExportToCsvCommand extends Command {
             taxUID = taxonomyUID;
           } else {
             taxUID = await interactive.askTaxonomyUID();
-            //validate taxUID
           }
 
           stackAPIClient = this.getStackClient(managementAPIClient, stack);
@@ -280,7 +279,7 @@ class ExportToCsvCommand extends Command {
         stack.branch_uid = branchUid;
         stackAPIClient = getStackClient(managementAPIClient, stack);
       } catch (error) {
-        if (error.message || error.errorMessage) {
+        if (error?.message || error?.errorMessage) {
           cliux.error(util.formatError(error));
           this.exit();
         }
@@ -297,7 +296,7 @@ class ExportToCsvCommand extends Command {
     }
   }
 
-  async getAliasDetails(managementTokenAlias) {
+  async getAliasDetails(managementTokenAlias, stackName) {
     let apiClient, stackDetails;
     const listOfTokens = configHandler.get('tokens');
     if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
@@ -343,9 +342,9 @@ class ExportToCsvCommand extends Command {
   }
 
   async createTaxonomyAndTermCsvFile(stackName, stack, taxUID){
-    const { cma, name } = configHandler.get('region') || {};
+    const { cma } = configHandler.get('region') || {};
     const payload = {
-      baseUrl: `${cma}/api/v3/taxonomies`,
+      baseUrl: `${cma}/v3/taxonomies`,
       apiKey: stack.apiKey,
       mgToken: stack?.token
     };
@@ -354,15 +353,15 @@ class ExportToCsvCommand extends Command {
 
     payload['url'] = payload.baseUrl;
     const taxonomies = await util.getAllTaxonomies(payload);
-    const filteredTaxonomies = util.formatTaxonomiesResp(taxonomies);
+    const formattedTaxonomiesData = util.formatTaxonomiesData(taxonomies);
     let fileName = `${stackName ? stackName : stack.name}_taxonomies.csv`;
-    util.write(this, filteredTaxonomies, fileName, 'taxonomies'); // write to file
+    util.write(this, formattedTaxonomiesData, fileName, 'taxonomies'); 
 
     payload['url'] = `${payload.baseUrl}/${taxUID}/terms`;
     const terms = await util.getAllTermsOfTaxonomy(payload);
-    const filteredTerms = util.formatTermsOfTaxonomyResp(terms, taxUID);
-    fileName = `${stackName ? stackName : stack.name}_${taxonomy ? taxonomy.name : ''}_${taxUID}_terms.csv`;
-    util.write(this, filteredTerms, fileName, 'terms');
+    const formattedTermsData = util.formatTermsOfTaxonomyData(terms, taxUID);
+    fileName = `${stackName ? stackName : stack.name}_${taxonomy?.name ? taxonomy.name : ''}_${taxUID}_terms.csv`;
+    util.write(this, formattedTermsData, fileName, 'terms');
   }
 }
 
