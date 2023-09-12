@@ -61,7 +61,7 @@ class ExportToCsvCommand extends Command {
       required: false,
     }),
     'taxonomy-uid': flags.string({
-      description: 'Provide taxonomy uid fow which terms need to be exported',
+      description: 'Provide taxonomy UID for which terms need to be exported',
     }),
   };
 
