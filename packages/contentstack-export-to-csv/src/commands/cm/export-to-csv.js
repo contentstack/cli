@@ -9,7 +9,6 @@ const {
 } = require('@contentstack/cli-utilities');
 const util = require('../../util');
 const config = require('../../util/config');
-const interactive = require('../../util/interactive');
 
 class ExportToCsvCommand extends Command {
   static flags = {
@@ -223,14 +222,9 @@ class ExportToCsvCommand extends Command {
           } else {
             stack = await this.getStackDetails(managementAPIClient, stackAPIKey, org);
           }
-          if (taxonomyUID) {
-            taxUID = taxonomyUID;
-          } else {
-            taxUID = await interactive.askTaxonomyUID();
-          }
 
           stackAPIClient = this.getStackClient(managementAPIClient, stack);
-          await this.createTaxonomyAndTermCsvFile(stackName, stack, taxUID);
+          await this.createTaxonomyAndTermCsvFile(stackName, stack, taxonomyUID);
           break;
         }
       }
@@ -270,10 +264,10 @@ class ExportToCsvCommand extends Command {
 
   /**
    * check whether branch enabled org or not and update branch details
-   * @param {string} branchUid 
-   * @param {object} stack 
-   * @param {*} stackAPIClient 
-   * @param {*} managementAPIClient 
+   * @param {string} branchUid
+   * @param {object} stack
+   * @param {*} stackAPIClient
+   * @param {*} managementAPIClient
    */
   async checkAndUpdateBranchDetail(branchUid, stack, stackAPIClient, managementAPIClient) {
     if (branchUid) {
@@ -304,9 +298,9 @@ class ExportToCsvCommand extends Command {
 
   /**
    * fetch stack details from alias token
-   * @param {string} managementTokenAlias 
-   * @param {string} stackName 
-   * @returns 
+   * @param {string} managementTokenAlias
+   * @param {string} stackName
+   * @returns
    */
   async getAliasDetails(managementTokenAlias, stackName) {
     let apiClient, stackDetails;
@@ -332,10 +326,10 @@ class ExportToCsvCommand extends Command {
 
   /**
    * fetch stack details on basis of the selected org and stack
-   * @param {*} managementAPIClient 
-   * @param {string} stackAPIKey 
-   * @param {string} org 
-   * @returns 
+   * @param {*} managementAPIClient
+   * @param {string} stackAPIKey
+   * @param {string} org
+   * @returns
    */
   async getStackDetails(managementAPIClient, stackAPIKey, org) {
     let organization, stackDetails;
@@ -362,43 +356,55 @@ class ExportToCsvCommand extends Command {
 
   /**
    * Create a taxonomies csv file for stack and a terms csv file for associated taxonomies
-   * @param {string} stackName 
-   * @param {object} stack 
-   * @param {string} taxUID 
+   * @param {string} stackName
+   * @param {object} stack
+   * @param {string} taxUID
    */
-  async createTaxonomyAndTermCsvFile(stackName, stack, taxUID){
+  async createTaxonomyAndTermCsvFile(stackName, stack, taxUID) {
     const { cma } = configHandler.get('region') || {};
     const payload = {
       baseUrl: `${cma}/v3/taxonomies`,
       apiKey: stack.apiKey,
-      mgToken: stack?.token
+      mgToken: stack?.token,
     };
     //check whether the taxonomy is valid or not
-    const taxonomy = await util.getTaxonomy(payload, taxUID);
-
-    payload['url'] = payload.baseUrl;
-    const taxonomies = await util.getAllTaxonomies(payload);
-    const formattedTaxonomiesData = util.formatTaxonomiesData(taxonomies);
-    let fileName = `${stackName ? stackName : stack.name}_taxonomies.csv`;
-    if(formattedTaxonomiesData?.length){
-      util.write(this, formattedTaxonomiesData, fileName, 'taxonomies'); 
-    }else{
-      cliux.print('No taxonomies are found in the provided stack. Please provide a valid stack!\n', {color: 'yellow'});
+    let taxonomies = [];
+    if (taxUID) {
+      const taxonomy = await util.getTaxonomy(payload, taxUID);
+      taxonomies.push(taxonomy);
+    } else {
+      payload['url'] = payload.baseUrl;
+      taxonomies = await util.getAllTaxonomies(payload);
     }
 
-    payload['url'] = `${payload.baseUrl}/${taxUID}/terms`;
-    const terms = await util.getAllTermsOfTaxonomy(payload);
-    const formattedTermsData = util.formatTermsOfTaxonomyData(terms, taxUID);
-    fileName = `${stackName ? stackName : stack.name}_${taxonomy?.name ? taxonomy.name : ''}_${taxUID}_terms.csv`;
-    if(formattedTermsData?.length){
-      util.write(this, formattedTermsData, fileName, 'terms');
-    }else{
-      cliux.print(`No terms are found for the provided taxonomy UID. Please provide a valid taxonomy UID!`, {color: 'yellow'});
+    const formattedTaxonomiesData = util.formatTaxonomiesData(taxonomies);
+    if (formattedTaxonomiesData?.length) {
+      const fileName = `${stackName ? stackName : stack.name}_taxonomies.csv`;
+      util.write(this, formattedTaxonomiesData, fileName, 'taxonomies');
+    } else {
+      cliux.print('info: No taxonomies found. Please provide a valid stack!', { color: 'blue' });
+    }
+
+    for (let index = 0; index < taxonomies?.length; index++) {
+      const taxonomy = taxonomies[index];
+      const taxonomyUID = taxonomy?.uid;
+      if (taxonomyUID) {
+        payload['url'] = `${payload.baseUrl}/${taxonomyUID}/terms`;
+        const terms = await util.getAllTermsOfTaxonomy(payload);
+        const formattedTermsData = util.formatTermsOfTaxonomyData(terms, taxonomyUID);
+        const taxonomyName = taxonomy?.name ? taxonomy.name : '';
+        const termFileName = `${stackName ? stackName : stack.name}_${taxonomyName}_${taxonomyUID}_terms.csv`;
+        if (formattedTermsData?.length) {
+          util.write(this, formattedTermsData, termFileName, 'terms');
+        } else {
+          cliux.print(`info: No terms found for the taxonomy UID - '${taxonomyUID}'`, { color: 'blue' });
+        }
+      }
     }
   }
 }
 
-ExportToCsvCommand.description = `Export entries or organization users to csv using this command`;
+ExportToCsvCommand.description = `Export entries, taxonomies, terms or organization users to csv using this command`;
 
 ExportToCsvCommand.examples = [
   'csdx cm:export-to-csv',
@@ -414,6 +420,10 @@ ExportToCsvCommand.examples = [
   '',
   'Exporting organization users to csv with organization name provided',
   'csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>',
+  'Exporting taxonomies and related terms to csv with taxonomy uid provided',
+  'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --taxonomy-uid <taxonomy-uid>',
+  'Exporting taxonomies and respective terms to csv',
+  'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias>',
 ];
 
 module.exports = ExportToCsvCommand;
