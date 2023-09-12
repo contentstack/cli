@@ -380,13 +380,21 @@ class ExportToCsvCommand extends Command {
     const taxonomies = await util.getAllTaxonomies(payload);
     const formattedTaxonomiesData = util.formatTaxonomiesData(taxonomies);
     let fileName = `${stackName ? stackName : stack.name}_taxonomies.csv`;
-    util.write(this, formattedTaxonomiesData, fileName, 'taxonomies'); 
+    if(formattedTaxonomiesData?.length){
+      util.write(this, formattedTaxonomiesData, fileName, 'taxonomies'); 
+    }else{
+      cliux.print('No taxonomies are found in the provided stack. Please provide a valid stack!\n', {color: 'yellow'});
+    }
 
     payload['url'] = `${payload.baseUrl}/${taxUID}/terms`;
     const terms = await util.getAllTermsOfTaxonomy(payload);
     const formattedTermsData = util.formatTermsOfTaxonomyData(terms, taxUID);
     fileName = `${stackName ? stackName : stack.name}_${taxonomy?.name ? taxonomy.name : ''}_${taxUID}_terms.csv`;
-    util.write(this, formattedTermsData, fileName, 'terms');
+    if(formattedTermsData?.length){
+      util.write(this, formattedTermsData, fileName, 'terms');
+    }else{
+      cliux.print(`No terms are found for the provided taxonomy UID. Please provide a valid taxonomy UID!`, {color: 'yellow'});
+    }
   }
 }
 
