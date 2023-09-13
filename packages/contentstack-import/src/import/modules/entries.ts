@@ -284,14 +284,27 @@ export default class EntriesImport extends BaseClass {
     const contentType = find(this.cTs, { uid: cTUid });
 
     const onSuccess = ({ response, apiData: entry, additionalInfo }: any) => {
-      log(this.importConfig, `Created entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`, 'info');
-      if (!isMasterLocale && !additionalInfo[entry.uid]?.isLocalized) {
-        this.autoCreatedEntries.push({ cTUid, locale, entryUid: response.uid });
+      if (additionalInfo[entry.uid]?.isLocalized) {
+        let oldUid = additionalInfo[entry.uid].entryOldUid;
+        log(this.importConfig, `Localized entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`, 'info');
+        entry.uid = oldUid;
+        entry.entryOldUid = oldUid;
+        entry.sourceEntryFilePath = path.join(basePath, additionalInfo.entryFileName); // stores source file path temporarily
+        entriesCreateFileHelper.writeIntoFile({ [oldUid]: entry } as any, { mapKeyVal: true });
+      } else {
+        log(this.importConfig, `Created entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`, 'info');
+        // This is for creating localized entries that do not have a counterpart in master locale.
+        // For example : To create entry1 in fr-fr, where en-us is the master locale
+        // entry1 will get created in en-us first, then fr-fr version will be created
+        // thus entry1 has to be removed from en-us at the end.
+        if (!isMasterLocale && !additionalInfo[entry.uid]?.isLocalized) {
+          this.autoCreatedEntries.push({ cTUid, locale, entryUid: response.uid });
+        }
+        this.entriesUidMapper[entry.uid] = response.uid;
+        entry.sourceEntryFilePath = path.join(basePath, additionalInfo.entryFileName); // stores source file path temporarily
+        entry.entryOldUid = entry.uid; // stores old uid temporarily
+        entriesCreateFileHelper.writeIntoFile({ [entry.uid]: entry } as any, { mapKeyVal: true });
       }
-      this.entriesUidMapper[entry.uid] = response.uid;
-      entry.sourceEntryFilePath = path.join(basePath, additionalInfo.entryFileName); // stores source file path temporarily
-      entry.entryOldUid = entry.uid; // stores old uid temporarily
-      entriesCreateFileHelper.writeIntoFile({ [entry.uid]: entry } as any, { mapKeyVal: true });
     };
     const onReject = ({ error, apiData: { uid, title } }: any) => {
       log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to create`, 'error');
@@ -366,6 +379,7 @@ export default class EntriesImport extends BaseClass {
         apiOptions.apiData = entryResponse;
         apiOptions.additionalInfo[entryResponse.uid] = {
           isLocalized: true,
+          entryOldUid: entry.uid
         };
         return apiOptions;
       }
