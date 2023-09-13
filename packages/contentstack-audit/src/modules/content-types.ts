@@ -46,7 +46,7 @@ export default class ContentType {
         this.curentCTName = ct.title;
         this.ctErrors[this.curentCTId] = [];
         const { uid, title } = ct;
-        await this.lookForRefrence([{ uid, name: title }], ct);
+        await this.lookForReference([{ uid, name: title }], ct);
         this.log($t(auditMsg.SCAN_CT_SUCCESS_MSG, { title }), 'info');
       }
 
@@ -95,7 +95,17 @@ export default class ContentType {
     }
   }
 
-  async lookForRefrence(
+  /**
+   * The function `lookForReference` iterates through a given schema and performs validation checks
+   * based on the data type of each field.
+   * @param {Record<string, unknown>[]} tree - An array of objects representing the tree structure of
+   * the content type or field being validated. Each object in the array should have a "uid" property
+   * representing the unique identifier of the field or content type, and a "name" property
+   * representing the display name of the field or content type.
+   * @param {ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType}  - -
+   * `tree`: An array of objects representing the path to the current field in the content type schema.
+   */
+  async lookForReference(
     tree: Record<string, unknown>[] = [],
     { schema }: ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType,
   ) {
@@ -167,7 +177,7 @@ export default class ContentType {
    */
   async validateGlobalField(tree: Record<string, unknown>[] = [], field: GlobalFieldDataType) {
     // NOTE Any GlobalField related logic can be added here
-    await this.lookForRefrence(tree, field);
+    await this.lookForReference(tree, field);
   }
 
   /**
@@ -197,7 +207,7 @@ export default class ContentType {
     for (const block of blocks) {
       const { uid, title } = block;
 
-      await this.lookForRefrence([...tree, { uid, name: title }, { uid: field.uid, name: field.display_name }], block);
+      await this.lookForReference([...tree, { uid, name: title }, { uid: field.uid, name: field.display_name }], block);
     }
   }
 
@@ -212,7 +222,7 @@ export default class ContentType {
    */
   async validateGroupField(tree: Record<string, unknown>[] = [], field: GroupFieldDataType) {
     // NOTE Any Group Field related logic can be added here (Ex data serialization or picking any metadata for report etc.,)
-    await this.lookForRefrence(tree, field);
+    await this.lookForReference(tree, field);
   }
 
   /**
