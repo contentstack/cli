@@ -199,7 +199,7 @@ function chooseContentType(stackAPIClient, skip) {
     let _chooseContentType = [
       {
         type: 'checkbox',
-        message: 'Choose Content Type',
+        message: 'Choose Content Type (Press Space to select the content types) ',
         choices: contentTypesList,
         name: 'chosenContentTypes',
         loop: false,
@@ -218,7 +218,7 @@ function chooseInMemContentTypes(contentTypesList) {
     let _chooseContentType = [
       {
         type: 'checkbox-plus',
-        message: 'Choose Content Type',
+        message: 'Choose Content Type (Press Space to select the content types)',
         choices: contentTypesList,
         name: 'chosenContentTypes',
         loop: false,
@@ -316,12 +316,12 @@ function getLanguages(stackAPIClient) {
   });
 }
 
-function getEntries(stackAPIClient, contentType, language, skip) {
+function getEntries(stackAPIClient, contentType, language, skip, limit) {
   return new Promise((resolve, reject) => {
     stackAPIClient
       .contentType(contentType)
       .entry()
-      .query({ include_publish_details: true, locale: language, skip: skip * 100 })
+      .query({ include_publish_details: true, locale: language, skip: skip * 100, limit: limit, include_workflow: true })
       .find()
       .then((entries) => resolve(entries))
       .catch((error) => reject(error));
@@ -371,27 +371,50 @@ function exitProgram() {
   process.exit();
 }
 
+function sanitizeEntries(flatEntry) {
+  // sanitize against CSV Injections
+  const CSVRegex = /^[\\+\\=@\\-]/
+  for (key in flatEntry) {
+    if (typeof flatEntry[key] === 'string' && flatEntry[key].match(CSVRegex)) {
+      flatEntry[key] = flatEntry[key].replace(/\"/g, "\"\"");
+      flatEntry[key] = `"'${flatEntry[key]}"`
+    } else if (typeof flatEntry[key] === 'object') {
+      // convert any objects or arrays to string
+      // to store this data correctly in csv
+      flatEntry[key] = JSON.stringify(flatEntry[key]);
+    }
+  }
+  return flatEntry;
+}
+
 function cleanEntries(entries, language, environments, contentTypeUid) {
   const filteredEntries = entries.filter((entry) => {
-    return entry['locale'] === language && entry.publish_details.length > 0;
+    return entry['locale'] === language;
   });
-
   return filteredEntries.map((entry) => {
     let workflow = '';
     const envArr = [];
-    entry.publish_details.forEach((env) => {
-      envArr.push(JSON.stringify([environments[env['environment']], env['locale'], env['time']]));
-    });
+    if(entry.publish_details.length) {
+      entry.publish_details.forEach((env) => {
+        envArr.push(JSON.stringify([environments[env['environment']], env['locale'], env['time']]));
+      });
+    }
+
     delete entry.publish_details;
+    delete entry.setWorkflowStage;
     if ('_workflow' in entry) {
-      workflow = entry['_workflow']['name'];
-      delete entry['_workflow'];
+        if(entry._workflow?.name) {
+          workflow = entry['_workflow']['name'];
+          delete entry['_workflow'];
+        }
     }
     entry = flatten(entry);
+    entry = sanitizeEntries(entry);
     entry['publish_details'] = envArr;
     entry['_workflow'] = workflow;
     entry['ACL'] = JSON.stringify({}); // setting ACL to empty obj
     entry['content_type_uid'] = contentTypeUid; // content_type_uid is being returned as 'uid' from the sdk for some reason
+
     // entry['url'] might also be wrong
     delete entry.stackHeaders;
     delete entry.update;
