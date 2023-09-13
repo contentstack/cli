@@ -14,7 +14,10 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   public log!: LogFn;
   public logger!: Logger;
   public readonly $t = $t;
-  protected sharedConfig: ConfigType = config;
+  protected sharedConfig: ConfigType = {
+    ...config,
+    basePath: process.cwd(),
+  };
   readonly messages: typeof messages = messages;
 
   protected args!: Args<T>;
@@ -28,7 +31,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     }),
     'data-dir': Flags.string({
       char: 'd',
-      description: commonMsg.CURRENT_WORKING_DIR,
+      description: commonMsg.DATA_DIR,
     }),
   };
 
@@ -46,6 +49,8 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     });
     this.flags = flags as Flags<T>;
     this.args = args as Args<T>;
+
+    this.sharedConfig = Object.assign(this.sharedConfig, { flags: this.flags });
 
     ux.registerSearchPlugin();
     this.registerConfig();
