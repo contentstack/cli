@@ -12,7 +12,13 @@ export default class Audit extends BaseCommand<typeof Audit> {
 
   static description = 'Audit and find possible errors in the exported data';
 
-  static examples = ['$ <%= config.bin %> <%= command.id %>'];
+  static examples = [
+    '$ <%= config.bin %> <%= command.id %>',
+    '$ <%= config.bin %> <%= command.id %> --report-path=<path>',
+    '$ <%= config.bin %> <%= command.id %> --report-path=<path> --csv',
+    '$ <%= config.bin %> <%= command.id %> --report-path=<path> --filter="name=<filter-value>"',
+    '$ <%= config.bin %> <%= command.id %> --report-path=<path> --modules=content-types --filter="name="<filter-value>"',
+  ];
 
   static flags: FlagInput = {
     'report-path': Flags.string({
