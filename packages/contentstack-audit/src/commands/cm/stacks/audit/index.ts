@@ -84,7 +84,7 @@ export default class Audit extends BaseCommand<typeof Audit> {
         }
       }
     } catch (error) {
-      console.log(error);
+      this.log(error, 'error');
       this.exit(1);
     }
   }
