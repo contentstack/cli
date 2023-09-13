@@ -2,13 +2,14 @@ const os = require('os');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const find = require('lodash/find');
+const flat = require('lodash/flatten');
 const fastcsv = require('fast-csv');
 const inquirer = require('inquirer');
 const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 
 const config = require('./config.js');
-const { cliux, configHandler } = require('@contentstack/cli-utilities');
+const { cliux, configHandler, HttpClient, messageHandler } = require('@contentstack/cli-utilities');
 
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
@@ -105,7 +106,7 @@ async function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
       organizations.forEach((org) => {
         result[org.name] = org.uid;
       });
-  }
+    }
 
     return result;
   } catch (error) {
@@ -321,7 +322,13 @@ function getEntries(stackAPIClient, contentType, language, skip, limit) {
     stackAPIClient
       .contentType(contentType)
       .entry()
-      .query({ include_publish_details: true, locale: language, skip: skip * 100, limit: limit, include_workflow: true })
+      .query({
+        include_publish_details: true,
+        locale: language,
+        skip: skip * 100,
+        limit: limit,
+        include_workflow: true,
+      })
       .find()
       .then((entries) => resolve(entries))
       .catch((error) => reject(error));
@@ -378,7 +385,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
   return filteredEntries.map((entry) => {
     let workflow = '';
     const envArr = [];
-    if(entry.publish_details.length) {
+    if (entry.publish_details.length) {
       entry.publish_details.forEach((env) => {
         envArr.push(JSON.stringify([environments[env['environment']], env['locale'], env['time']]));
       });
@@ -387,10 +394,10 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
     delete entry.publish_details;
     delete entry.setWorkflowStage;
     if ('_workflow' in entry) {
-        if(entry._workflow?.name) {
-          workflow = entry['_workflow']['name'];
-          delete entry['_workflow'];
-        }
+      if (entry._workflow?.name) {
+        workflow = entry['_workflow']['name'];
+        delete entry['_workflow'];
+      }
     }
     entry = flatten(entry);
     entry['publish_details'] = envArr;
@@ -443,7 +450,7 @@ function startupQuestions() {
         type: 'list',
         name: 'action',
         message: 'Choose Action',
-        choices: [config.exportEntries, config.exportUsers, 'Exit'],
+        choices: [config.exportEntries, config.exportUsers, config.exportTaxonomies, 'Exit'],
       },
     ];
     inquirer
@@ -662,6 +669,152 @@ function wait(time) {
   });
 }
 
+/**
+ * fetch all taxonomies in the provided stack
+ * @param {object} payload 
+ * @param {number} skip 
+ * @param {number} limit 
+ * @param {array} taxonomies 
+ * @returns 
+ */
+async function getAllTaxonomies(payload, skip = 0, limit = 100, taxonomies = []) {
+  const response = await apiRequestHandler(payload, skip, limit);
+  if(response){
+    skip += config.limit || 100;
+    taxonomies = [...taxonomies, ...response.taxonomies];
+    if (skip >= response?.count) {
+      return taxonomies;
+    } else {
+      return getAllTaxonomies(payload, skip, limit, taxonomies);
+    }
+  }
+  return taxonomies;
+}
+
+/**
+ * fetch terms of related taxonomy
+ * @param {object} payload 
+ * @param {number} skip 
+ * @param {number} limit 
+ * @param {array} terms 
+ * @returns 
+ */
+async function getAllTermsOfTaxonomy(payload, skip = 0, limit = 100, terms = []) {
+  const response = await apiRequestHandler(payload, skip, limit);
+  if(response){
+    skip += config.limit || 100;
+    terms = [...terms, ...response.terms];
+    if (skip >= response?.count) {
+      return terms;
+    } else {
+      return getAllTermsOfTaxonomy(payload, skip, limit, terms);
+    }
+  }
+  return terms;
+}
+
+/**
+ * Verify the existence of a taxonomy. Obtain its details if it exists and return
+ * @param {object} payload 
+ * @param {string} taxonomyUID 
+ * @returns 
+ */
+async function getTaxonomy(payload, taxonomyUID) {
+  payload['url'] = `${payload.baseUrl}/${taxonomyUID}`;
+  const resp = await apiRequestHandler(payload);
+  return resp?.taxonomy || '';
+}
+
+async function apiRequestHandler(payload, skip, limit) {
+  const headers = {
+    api_key: payload.apiKey,
+    'Content-Type': 'application/json',
+  };
+
+  if (payload?.mgToken) headers['authorization'] = payload.mgToken;
+  else headers['authToken'] = configHandler.get('authtoken');
+
+  const params = {
+    include_count: true,
+    skip: 0,
+    limit: 30,
+  };
+
+  if (skip >= 0) params['skip'] = skip;
+  if (limit >= 0) params['limit'] = limit;
+
+  return await new HttpClient()
+    .headers(headers)
+    .queryParams(params)
+    .get(payload.url)
+    .then((res) => {
+      //NOTE - temporary code for handling api errors response
+      const { status, data } = res;
+      if ([200, 201, 202].includes(status)) return data;
+      else {
+        let errorMsg;
+        if ([500, 503, 502].includes(status)) errorMsg = data?.message || data;
+        else errorMsg = data?.error_message;
+        if(errorMsg === undefined){
+          errorMsg = Object.values(data?.errors) && flat(Object.values(data.errors));
+        }
+        cliux.print(`Error: ${errorMsg}`, { color: 'red' });
+        process.exit(1);
+      }
+    })
+    .catch((err) => handleErrorMsg(err));
+}
+
+/**
+ * Change taxonomies data in required CSV headers format
+ * @param {array} taxonomies 
+ * @returns 
+ */
+function formatTaxonomiesData(taxonomies) {
+  if(taxonomies?.length){
+    const formattedTaxonomies = taxonomies.map((taxonomy) => {
+      return {
+        'Taxonomy UID': taxonomy.uid,
+        Name: taxonomy.name,
+        Description: taxonomy.description,
+      };
+    });
+    return formattedTaxonomies;
+  }
+}
+
+/**
+ * Modify the linked taxonomy data's terms in required CSV headers format
+ * @param {array} terms 
+ * @param {string} taxonomyUID 
+ * @returns 
+ */
+function formatTermsOfTaxonomyData(terms, taxonomyUID) {
+  if(terms?.length){
+    const formattedTerms = terms.map((term) => {
+      return {
+        'Taxonomy UID': taxonomyUID,
+        UID: term.uid,
+        Name: term.name,
+        'Parent UID': term.parent_uid,
+      };
+    });
+    return formattedTerms;
+  }
+}
+
+function handleErrorMsg(err) {
+  if (err?.errorMessage) {
+    cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
+  } else if (err?.message) {
+    cliux.print(`Error: ${err.message}`, { color: 'red' });
+  } else {
+    console.log(err);
+    cliux.print(`Error: ${messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' });
+  }
+  process.exit(1);
+}
+
 module.exports = {
   chooseOrganization: chooseOrganization,
   chooseStack: chooseStack,
@@ -688,4 +841,9 @@ module.exports = {
   chooseInMemContentTypes: chooseInMemContentTypes,
   getEntriesCount: getEntriesCount,
   formatError: formatError,
+  getAllTaxonomies,
+  getAllTermsOfTaxonomy,
+  formatTaxonomiesData,
+  formatTermsOfTaxonomyData,
+  getTaxonomy,
 };
