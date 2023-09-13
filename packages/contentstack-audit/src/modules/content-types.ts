@@ -16,6 +16,7 @@ import {
   ReferenceFieldDataType,
   GroupFieldDataType,
 } from '../types';
+import { $t, auditMsg } from '../messages';
 
 export default class ContentType {
   private log: LogFn;
@@ -46,7 +47,7 @@ export default class ContentType {
         this.ctErrors[this.curentCTId] = [];
         const { uid, title } = ct;
         await this.lookForRefrence([{ uid, name: title }], ct);
-        this.log(`The scanning of content type '${title}' has been successfully finished.`, 'info');
+        this.log($t(auditMsg.SCAN_CT_SUCCESS_MSG, { title }), 'info');
       }
 
       if (!existsSync(this.config.reportPath)) {
@@ -67,7 +68,7 @@ export default class ContentType {
       csvStream
         .pipe(assetFileStream)
         .on('close', () => {
-          this.log(`Writing CSV report completed. You can find reports at '${this.config.reportPath}'`, 'info');
+          this.log($t(auditMsg.FINAL_REPORT_PATH, { path: this.config.reportPath }), 'info');
           this.log(''); // NOTE add new line in terminal
         })
         .on('error', (error) => {
