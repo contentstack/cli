@@ -796,7 +796,6 @@ function formatTermsOfTaxonomyData(terms, taxonomyUID) {
         'Taxonomy UID': taxonomyUID,
         UID: term.uid,
         Name: term.name,
-        Description: term.description,
         'Parent UID': term.parent_uid,
       };
     });
