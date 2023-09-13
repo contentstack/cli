@@ -15,7 +15,11 @@
     "noUnusedParameters": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "lib": [
+      "ES2019",
+      "es2020.promise"
+    ],
   },
   "include": [
     "src/**/*",
