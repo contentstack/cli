@@ -38,7 +38,7 @@ module.exports = class ImportEntries {
   ctPath;
   lPath;
   importConcurrency;
-  skipFiles = ['__master.json', '__priority.json', 'schema.json'];
+  skipFiles = ['__master.json', '__priority.json', 'schema.json','.DS_Store'];
 
   constructor(importConfig, stackAPIClient) {
     this.config = _.merge(config, importConfig);
@@ -1258,7 +1258,7 @@ module.exports = class ImportEntries {
 
     if (element.length) {
       for (const item of element) {
-        if ((item.type === 'p' || item.type === 'a') && item.children && item.children.length > 0) {
+        if ((item.type === 'p' || item.type === 'a' || item.type === 'span') && item.children && item.children.length > 0) {
           return this.doEntryReferencesExist(item.children);
         } else if (this.isEntryRef(item)) {
           return true;
@@ -1269,7 +1269,7 @@ module.exports = class ImportEntries {
         return true;
       }
 
-      if ((element.type === 'p' || element.type === 'a') && element.children && element.children.length > 0) {
+      if ((element.type === 'p' || element.type === 'a' || element.type ==='span') && element.children && element.children.length > 0) {
         return this.doEntryReferencesExist(element.children);
       }
     }
