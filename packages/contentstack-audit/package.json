@@ -55,7 +55,7 @@
       "-v"
     ],
     "topics": {
-      "cm:audit": {
+      "cm:stacks:audit": {
         "description": "Audit and find possible refrence errors in the exported data"
       }
     },
