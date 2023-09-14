@@ -19,6 +19,8 @@ import {
 } from '../types';
 import { $t, auditMsg } from '../messages';
 
+/* The `ContentType` class is responsible for scanning content types, looking for references, and
+generating a report in JSON and CSV formats. */
 export default class ContentType {
   private log: LogFn;
   private config: ConfigType;
@@ -44,7 +46,7 @@ export default class ContentType {
       throw new Error($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }));
     }
 
-    this.contentTypes = JSON.parse(readFileSync(join(this.folderPath, 'schema.json'), 'utf-8'));
+    this.contentTypes = JSON.parse(readFileSync(join(this.folderPath, 'schema.json'), 'utf-8')); // TODO check size
 
     for (const ct of this.contentTypes) {
       this.currentCTId = ct.uid;
@@ -55,47 +57,66 @@ export default class ContentType {
       this.log($t(auditMsg.SCAN_CT_SUCCESS_MSG, { title }), 'info');
     }
 
-    if (!existsSync(this.config.reportPath)) {
-      mkdirSync(this.config.reportPath, { recursive: true });
-    }
-
-    // NOTE write int json
-    writeFileSync(join(this.config.reportPath, 'content-types.json'), JSON.stringify(this.ctErrors));
-    this.log(''); // NOTE add new line in terminal
-
-    // NOTE write into CSV
-    const csvStream = csv.format({ headers: true });
-    const csvPath = join(this.config.reportPath, 'content-types.csv');
-    const assetFileStream = createWriteStream(csvPath);
-    assetFileStream.on('error', (error) => {
-      throw error;
-    });
-    csvStream
-      .pipe(assetFileStream)
-      .on('close', () => {
-        this.log($t(auditMsg.FINAL_REPORT_PATH, { path: this.config.reportPath }), 'info');
-        this.log(''); // NOTE add new line in terminal
-      })
-      .on('error', (error) => {
-        throw error;
-      });
-    const ctRefIssues: RefErrorReturnType[] = Object.values(this.ctErrors).flat();
-    const columns: (keyof typeof OutputColumn)[] =
-      (this.config.flags.columns || '').split(',') || Object.keys(OutputColumn);
-
-    for (const issue of ctRefIssues) {
-      let row: Record<string, string | string[]> = {};
-
-      for (const column of columns) {
-        row[column] = issue[OutputColumn[column]];
-      }
-
-      csvStream.write(row);
-    }
-
-    csvStream.end();
+    await this.prepareReport();
 
     return this.ctErrors;
+  }
+
+  /**
+   * The `prepareReport` function prepares a report by writing content types errors into a JSON file
+   * and a CSV file.
+   * @returns The `prepareReport()` function returns a Promise that resolves to `void`.
+   */
+  prepareReport(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (!existsSync(this.config.reportPath)) {
+        mkdirSync(this.config.reportPath, { recursive: true });
+      }
+
+      // NOTE write int json
+      writeFileSync(join(this.config.reportPath, 'content-types.json'), JSON.stringify(this.ctErrors));
+      this.log(''); // NOTE add new line in terminal
+
+      // NOTE write into CSV
+      const csvStream = csv.format({ headers: true });
+      const csvPath = join(this.config.reportPath, 'content-types.csv');
+      const assetFileStream = createWriteStream(csvPath);
+      assetFileStream.on('error', (error) => {
+        throw error;
+      });
+      csvStream
+        .pipe(assetFileStream)
+        .on('close', () => {
+          resolve();
+          this.log($t(auditMsg.FINAL_REPORT_PATH, { path: this.config.reportPath }), 'warn');
+          this.log(''); // NOTE add new line in terminal
+        })
+        .on('error', reject);
+
+      const defaultColumns = Object.keys(OutputColumn);
+      const userDefinedColumns = this.config.flags.columns ? this.config.flags.columns.split(',') : null;
+      let ctRefIssues: RefErrorReturnType[] = Object.values(this.ctErrors).flat();
+      const columns: (keyof typeof OutputColumn)[] = userDefinedColumns
+        ? [...userDefinedColumns, ...defaultColumns.filter((val: string) => !userDefinedColumns.includes(val))]
+        : defaultColumns;
+
+      if (this.config.flags.filter) {
+        const [column, value]: [keyof typeof OutputColumn, string] = this.config.flags.filter.split('=');
+        ctRefIssues = ctRefIssues.filter((row: RefErrorReturnType) => row[OutputColumn[column]] === value);
+      }
+
+      for (const issue of ctRefIssues) {
+        let row: Record<string, string | string[]> = {};
+
+        for (const column of columns) {
+          row[column] = issue[OutputColumn[column]];
+        }
+
+        csvStream.write(row);
+      }
+
+      csvStream.end();
+    });
   }
 
   /**
@@ -103,15 +124,16 @@ export default class ContentType {
    * based on the data type of each field.
    * @param {Record<string, unknown>[]} tree - An array of objects representing the tree structure of
    * the content type or field being validated. Each object in the array should have a "uid" property
-   * representing the unique identifier of the field or content type, and a "name" property
-   * representing the display name of the field or content type.
+   * representing the unique identifier of the content type or field, and a "name" property
+   * representing the display name of the content type or field.
    * @param {ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType}  - -
-   * `tree`: An array of objects representing the path to the current field in the content type schema.
+   * `tree`: An array of objects representing the tree structure of the content type or field. Each
+   * object in the array should have a `uid` and `name` property.
    */
   async lookForReference(
     tree: Record<string, unknown>[],
     { schema }: ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType,
-  ) {
+  ): Promise<void> {
     for (const field of schema) {
       switch (field.data_type) {
         case 'reference':
@@ -158,10 +180,10 @@ export default class ContentType {
   }
 
   /**
-   * The function "validateReferenceFields" validates reference fields in a tree data structure.
+   * The function validates a reference field in a tree data structure.
    * @param {Record<string, unknown>[]} tree - The "tree" parameter is an array of objects, where each
    * object represents a node in a tree-like structure. Each object can have multiple properties, and
-   * the values of these properties can be of any data type.
+   * the structure of the tree is defined by the relationships between these properties.
    * @param {ReferenceFieldDataType} field - The `field` parameter is of type `ReferenceFieldDataType`.
    * @returns an array of RefErrorReturnType.
    */
@@ -170,25 +192,27 @@ export default class ContentType {
   }
 
   /**
-   * The function "validateGlobalField" is an asynchronous function that takes in an array of objects
-   * and a field of type GlobalFieldDataType, and it performs some logic related to GlobalField.
-   * @param {Record<string, unknown>[]} tree - The `tree` parameter is an array of objects, where each
-   * object represents a record. Each record is a key-value pair, where the key is a string and the
-   * value can be of any type.
+   * The function "validateGlobalField" asynchronously validates a global field by looking for a
+   * reference in a tree data structure.
+   * @param {Record<string, unknown>[]} tree - The `tree` parameter is an array of objects. Each object
+   * represents a node in a tree structure. The tree structure can be represented as a hierarchical
+   * structure where each object can have child nodes.
    * @param {GlobalFieldDataType} field - The `field` parameter is of type `GlobalFieldDataType`. It
    * represents the field that needs to be validated.
    */
-  async validateGlobalField(tree: Record<string, unknown>[], field: GlobalFieldDataType) {
+  async validateGlobalField(tree: Record<string, unknown>[], field: GlobalFieldDataType): Promise<void> {
     // NOTE Any GlobalField related logic can be added here
     await this.lookForReference(tree, field);
   }
 
   /**
-   * The function `validateJsonRTEFields` validates the reference to values in a JSON RTE field.
-   * @param {Record<string, unknown>[]} tree - The "tree" parameter is an array of objects, where each
-   * object represents a record in JSON format.
-   * @param {JsonRTEFieldDataType} field - The field parameter is of type JsonRTEFieldDataType.
-   * @returns The function `validateJsonRTEFields` is returning an array of `RefErrorReturnType` objects.
+   * The function validates the reference to values in a JSON RTE field.
+   * @param {Record<string, unknown>[]} tree - The "tree" parameter is an array of objects where each
+   * object represents a node in a tree-like structure. Each object can have multiple key-value pairs,
+   * where the key is a string and the value can be of any type.
+   * @param {JsonRTEFieldDataType} field - The `field` parameter is of type `JsonRTEFieldDataType`.
+   * @returns The function `validateJsonRTEFields` is returning an array of `RefErrorReturnType`
+   * objects.
    */
   validateJsonRTEFields(tree: Record<string, unknown>[], field: JsonRTEFieldDataType): RefErrorReturnType[] {
     // NOTE Other possible reference logic will be added related to JSON RTE (Ex missing assets, extensions etc.,)
@@ -196,14 +220,16 @@ export default class ContentType {
   }
 
   /**
-   * The function `validateModularBlocksField` traverses each module in a given tree and looks for
+   * The function validates the modular blocks field by traversing each module and looking for
    * references.
-   * @param {Record<string, unknown>[]} tree - The `tree` parameter is an array of objects, where each
-   * object represents a node in a tree structure. Each object has a `uid` property and a `name`
-   * property.
+   * @param {Record<string, unknown>[]} tree - An array of objects representing the tree structure of
+   * the modular blocks. Each object in the array represents a node in the tree and contains properties
+   * like "uid" and "name".
    * @param {ModularBlocksDataType} field - The `field` parameter is of type `ModularBlocksDataType`.
+   * It represents a modular blocks field and contains an array of blocks. Each block has properties
+   * like `uid` and `title`.
    */
-  async validateModularBlocksField(tree: Record<string, unknown>[], field: ModularBlocksDataType) {
+  async validateModularBlocksField(tree: Record<string, unknown>[], field: ModularBlocksDataType): Promise<void> {
     const { blocks } = field;
 
     // NOTE Traverse each and every module and look for reference
@@ -215,27 +241,29 @@ export default class ContentType {
   }
 
   /**
-   * The function `validateGroupField` is used to validate a group field by looking for references in a
-   * tree data structure.
-   * @param {Record<string, unknown>[]} tree - The `tree` parameter is an array of objects, where each
-   * object represents a node in a tree structure. Each object can have any number of key-value pairs,
-   * where the keys are strings and the values can be of any type.
+   * The function `validateGroupField` is an asynchronous function that validates a group field by
+   * looking for a reference in a tree data structure.
+   * @param {Record<string, unknown>[]} tree - The `tree` parameter is an array of objects that
+   * represents a tree structure. Each object in the array represents a node in the tree, and it
+   * contains key-value pairs where the keys are field names and the values are the corresponding field
+   * values.
    * @param {GroupFieldDataType} field - The `field` parameter is of type `GroupFieldDataType`. It
    * represents the group field that needs to be validated.
    */
-  async validateGroupField(tree: Record<string, unknown>[], field: GroupFieldDataType) {
+  async validateGroupField(tree: Record<string, unknown>[], field: GroupFieldDataType): Promise<void> {
     // NOTE Any Group Field related logic can be added here (Ex data serialization or picking any metadata for report etc.,)
     await this.lookForReference(tree, field);
   }
 
   /**
-   * The function `validateReferenceToValues` checks if the references specified in a field exist in a
-   * given tree of records and returns any missing references.
+   * The function `validateReferenceToValues` checks if all the references specified in a field exist
+   * in a given tree of records and returns any missing references.
    * @param {Record<string, unknown>[]} tree - An array of objects representing a tree structure. Each
    * object in the array should have a "name" property.
-   * @param {ReferenceFieldDataType | JsonRTEFieldDataType} field - The `field` parameter is of type
-   * `ReferenceFieldDataType` or `JsonRTEFieldDataType`.
-   * @returns The function `validateReferenceToValues` returns an array of `RefErrorReturnType` objects.
+   * @param {ReferenceFieldDataType | JsonRTEFieldDataType} field - The `field` parameter is an object
+   * that represents a reference field in a content type. It has the following properties:
+   * @returns The function `validateReferenceToValues` returns an array of `RefErrorReturnType`
+   * objects.
    */
   validateReferenceToValues(
     tree: Record<string, unknown>[],

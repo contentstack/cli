@@ -89,10 +89,10 @@ type GlobalFieldSchemaTypes = ReferenceFieldDataType | GroupFieldDataType | Cust
 type ModularBlocksSchemaTypes = ReferenceFieldDataType | JsonRTEFieldDataType;
 
 enum OutputColumn {
-  'Content name' = 'name',
-  'Field type' = 'data_type',
+  'Content Type name' = 'name',
   'Field name' = 'display_name',
-  'Missing reference' = 'missingRefs',
+  'Field type' = 'data_type',
+  'Missing references' = 'missingRefs',
   Path = 'treeStr',
 }
 
