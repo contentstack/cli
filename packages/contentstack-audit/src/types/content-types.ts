@@ -48,7 +48,7 @@ type ReferenceFieldDataType = CommonDataTypeStruct & {
 // NOTE Type 2
 type GlobalFieldDataType = CommonDataTypeStruct & {
   reference_to: string[];
-  schema: GlobalFieldSchemTypes[];
+  schema: GlobalFieldSchemaTypes[];
 };
 
 // NOTE Type 3
@@ -61,7 +61,7 @@ type JsonRTEFieldDataType = CommonDataTypeStruct & {
 
 // NOTE Type 5
 type GroupFieldDataType = CommonDataTypeStruct & {
-  schema: GroupFieldSchemTypes[];
+  schema: GroupFieldSchemaTypes[];
 };
 
 // NOTE Type 6
@@ -82,11 +82,19 @@ type ModularBlocksDataType = CommonDataTypeStruct & {
 };
 
 // NOTE It can have following field types global, Custom, json/json rte, reference
-type GroupFieldSchemTypes = CommonDataTypeStruct | GlobalFieldDataType | ReferenceFieldDataType;
+type GroupFieldSchemaTypes = CommonDataTypeStruct | GlobalFieldDataType | ReferenceFieldDataType;
 
-type GlobalFieldSchemTypes = ReferenceFieldDataType | GroupFieldDataType | CustomFieldDataType;
+type GlobalFieldSchemaTypes = ReferenceFieldDataType | GroupFieldDataType | CustomFieldDataType;
 
-type ModularBlocksSchemTypes = ReferenceFieldDataType | JsonRTEFieldDataType;
+type ModularBlocksSchemaTypes = ReferenceFieldDataType | JsonRTEFieldDataType;
+
+enum OutputColumn {
+  'Content name' = 'name',
+  'Field type' = 'data_type',
+  'Field name' = 'display_name',
+  'Missing reference' = 'missingRefs',
+  Path = 'treeStr',
+}
 
 export {
   ContentTypeStruct,
@@ -98,6 +106,7 @@ export {
   GroupFieldDataType,
   ModularBlocksDataType,
   RefErrorReturnType,
-  ModularBlocksSchemTypes,
+  ModularBlocksSchemaTypes,
   ModularBlockType,
+  OutputColumn,
 };

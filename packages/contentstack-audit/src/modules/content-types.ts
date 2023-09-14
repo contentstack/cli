@@ -6,15 +6,16 @@ import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync }
 import {
   LogFn,
   ConfigType,
+  OutputColumn,
   ModularBlockType,
   ContentTypeStruct,
+  GroupFieldDataType,
   RefErrorReturnType,
   GlobalFieldDataType,
   JsonRTEFieldDataType,
   ModularBlocksDataType,
   ModuleConstructorParam,
   ReferenceFieldDataType,
-  GroupFieldDataType,
 } from '../types';
 import { $t, auditMsg } from '../messages';
 
@@ -22,8 +23,8 @@ export default class ContentType {
   private log: LogFn;
   private config: ConfigType;
   private folderPath: string;
-  private curentCTId!: string;
-  private curentCTName!: string;
+  private currentCTId!: string;
+  private currentCTName!: string;
   private ctErrors: Record<string, any> = {};
   private contentTypes: ContentTypeStruct[] = [];
 
@@ -39,60 +40,62 @@ export default class ContentType {
    * @returns The function `run()` returns the `ctErrors` object.
    */
   async run() {
-    try {
-      this.contentTypes = JSON.parse(readFileSync(join(this.folderPath, 'schema.json'), 'utf-8'));
-      for (const ct of this.contentTypes) {
-        this.curentCTId = ct.uid;
-        this.curentCTName = ct.title;
-        this.ctErrors[this.curentCTId] = [];
-        const { uid, title } = ct;
-        await this.lookForReference([{ uid, name: title }], ct);
-        this.log($t(auditMsg.SCAN_CT_SUCCESS_MSG, { title }), 'info');
-      }
+    if (!existsSync(this.folderPath)) {
+      throw new Error($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }));
+    }
 
-      if (!existsSync(this.config.reportPath)) {
-        mkdirSync(this.config.reportPath, { recursive: true });
-      }
+    this.contentTypes = JSON.parse(readFileSync(join(this.folderPath, 'schema.json'), 'utf-8'));
 
-      // NOTE write int json
-      writeFileSync(join(this.config.reportPath, 'content-types.json'), JSON.stringify(this.ctErrors));
-      this.log(''); // NOTE add new line in terminal
+    for (const ct of this.contentTypes) {
+      this.currentCTId = ct.uid;
+      this.currentCTName = ct.title;
+      this.ctErrors[this.currentCTId] = [];
+      const { uid, title } = ct;
+      await this.lookForReference([{ uid, name: title }], ct);
+      this.log($t(auditMsg.SCAN_CT_SUCCESS_MSG, { title }), 'info');
+    }
 
-      // NOTE write into CSV
-      const csvStream = csv.format({ headers: true });
-      const csvPath = join(this.config.reportPath, 'content-types.csv');
-      const assetFileStream = createWriteStream(csvPath);
-      assetFileStream.on('error', (error) => {
+    if (!existsSync(this.config.reportPath)) {
+      mkdirSync(this.config.reportPath, { recursive: true });
+    }
+
+    // NOTE write int json
+    writeFileSync(join(this.config.reportPath, 'content-types.json'), JSON.stringify(this.ctErrors));
+    this.log(''); // NOTE add new line in terminal
+
+    // NOTE write into CSV
+    const csvStream = csv.format({ headers: true });
+    const csvPath = join(this.config.reportPath, 'content-types.csv');
+    const assetFileStream = createWriteStream(csvPath);
+    assetFileStream.on('error', (error) => {
+      throw error;
+    });
+    csvStream
+      .pipe(assetFileStream)
+      .on('close', () => {
+        this.log($t(auditMsg.FINAL_REPORT_PATH, { path: this.config.reportPath }), 'info');
+        this.log(''); // NOTE add new line in terminal
+      })
+      .on('error', (error) => {
         throw error;
       });
-      csvStream
-        .pipe(assetFileStream)
-        .on('close', () => {
-          this.log($t(auditMsg.FINAL_REPORT_PATH, { path: this.config.reportPath }), 'info');
-          this.log(''); // NOTE add new line in terminal
-        })
-        .on('error', (error) => {
-          throw error;
-        });
-      const errors: RefErrorReturnType[] = Object.values(this.ctErrors).flat();
+    const ctRefIssues: RefErrorReturnType[] = Object.values(this.ctErrors).flat();
+    const columns: (keyof typeof OutputColumn)[] =
+      (this.config.flags.columns || '').split(',') || Object.keys(OutputColumn);
 
-      for (const error of errors) {
-        const { data_type, missingRefs, display_name, name, treeStr } = error;
-        csvStream.write({
-          'Content name': name,
-          'Field name': display_name,
-          'Field type': data_type,
-          'Missing reference': missingRefs,
-          Path: treeStr,
-        });
+    for (const issue of ctRefIssues) {
+      let row: Record<string, string | string[]> = {};
+
+      for (const column of columns) {
+        row[column] = issue[OutputColumn[column]];
       }
 
-      csvStream.end();
-
-      return this.ctErrors;
-    } catch (error) {
-      throw error;
+      csvStream.write(row);
     }
+
+    csvStream.end();
+
+    return this.ctErrors;
   }
 
   /**
@@ -106,13 +109,13 @@ export default class ContentType {
    * `tree`: An array of objects representing the path to the current field in the content type schema.
    */
   async lookForReference(
-    tree: Record<string, unknown>[] = [],
+    tree: Record<string, unknown>[],
     { schema }: ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType,
   ) {
     for (const field of schema) {
       switch (field.data_type) {
         case 'reference':
-          this.ctErrors[this.curentCTId].push(
+          this.ctErrors[this.currentCTId].push(
             ...this.validateReferenceField(
               [...tree, { uid: field.uid, name: field.display_name }],
               field as ReferenceFieldDataType,
@@ -130,7 +133,7 @@ export default class ContentType {
             // NOTE Custom field type
           } else if (field.field_metadata.allow_json_rte) {
             // NOTE JSON RTE field type
-            this.ctErrors[this.curentCTId].push(
+            this.ctErrors[this.currentCTId].push(
               ...this.validateJsonRTEFields(
                 [...tree, { uid: field.uid, name: field.display_name }],
                 field as ReferenceFieldDataType,
@@ -162,8 +165,8 @@ export default class ContentType {
    * @param {ReferenceFieldDataType} field - The `field` parameter is of type `ReferenceFieldDataType`.
    * @returns an array of RefErrorReturnType.
    */
-  validateReferenceField(tree: Record<string, unknown>[] = [], field: ReferenceFieldDataType): RefErrorReturnType[] {
-    return this.validateRefrenceToValues(tree, field);
+  validateReferenceField(tree: Record<string, unknown>[], field: ReferenceFieldDataType): RefErrorReturnType[] {
+    return this.validateReferenceToValues(tree, field);
   }
 
   /**
@@ -175,7 +178,7 @@ export default class ContentType {
    * @param {GlobalFieldDataType} field - The `field` parameter is of type `GlobalFieldDataType`. It
    * represents the field that needs to be validated.
    */
-  async validateGlobalField(tree: Record<string, unknown>[] = [], field: GlobalFieldDataType) {
+  async validateGlobalField(tree: Record<string, unknown>[], field: GlobalFieldDataType) {
     // NOTE Any GlobalField related logic can be added here
     await this.lookForReference(tree, field);
   }
@@ -187,9 +190,9 @@ export default class ContentType {
    * @param {JsonRTEFieldDataType} field - The field parameter is of type JsonRTEFieldDataType.
    * @returns The function `validateJsonRTEFields` is returning an array of `RefErrorReturnType` objects.
    */
-  validateJsonRTEFields(tree: Record<string, unknown>[] = [], field: JsonRTEFieldDataType): RefErrorReturnType[] {
-    // NOTE Other possible refrence logice will be added related to JSON RTE (Ex missing assets, extensions etc.,)
-    return this.validateRefrenceToValues(tree, field);
+  validateJsonRTEFields(tree: Record<string, unknown>[], field: JsonRTEFieldDataType): RefErrorReturnType[] {
+    // NOTE Other possible reference logic will be added related to JSON RTE (Ex missing assets, extensions etc.,)
+    return this.validateReferenceToValues(tree, field);
   }
 
   /**
@@ -200,10 +203,10 @@ export default class ContentType {
    * property.
    * @param {ModularBlocksDataType} field - The `field` parameter is of type `ModularBlocksDataType`.
    */
-  async validateModularBlocksField(tree: Record<string, unknown>[] = [], field: ModularBlocksDataType) {
+  async validateModularBlocksField(tree: Record<string, unknown>[], field: ModularBlocksDataType) {
     const { blocks } = field;
 
-    // NOTE Traverse each and every module and look for refrence
+    // NOTE Traverse each and every module and look for reference
     for (const block of blocks) {
       const { uid, title } = block;
 
@@ -220,29 +223,29 @@ export default class ContentType {
    * @param {GroupFieldDataType} field - The `field` parameter is of type `GroupFieldDataType`. It
    * represents the group field that needs to be validated.
    */
-  async validateGroupField(tree: Record<string, unknown>[] = [], field: GroupFieldDataType) {
+  async validateGroupField(tree: Record<string, unknown>[], field: GroupFieldDataType) {
     // NOTE Any Group Field related logic can be added here (Ex data serialization or picking any metadata for report etc.,)
     await this.lookForReference(tree, field);
   }
 
   /**
-   * The function `validateRefrenceToValues` checks if the references specified in a field exist in a
+   * The function `validateReferenceToValues` checks if the references specified in a field exist in a
    * given tree of records and returns any missing references.
    * @param {Record<string, unknown>[]} tree - An array of objects representing a tree structure. Each
    * object in the array should have a "name" property.
    * @param {ReferenceFieldDataType | JsonRTEFieldDataType} field - The `field` parameter is of type
    * `ReferenceFieldDataType` or `JsonRTEFieldDataType`.
-   * @returns The function `validateRefrenceToValues` returns an array of `RefErrorReturnType` objects.
+   * @returns The function `validateReferenceToValues` returns an array of `RefErrorReturnType` objects.
    */
-  validateRefrenceToValues(
-    tree: Record<string, unknown>[] = [],
+  validateReferenceToValues(
+    tree: Record<string, unknown>[],
     field: ReferenceFieldDataType | JsonRTEFieldDataType,
   ): RefErrorReturnType[] {
     const missingRefs = [];
     const { reference_to, display_name, data_type } = field;
 
     for (const reference of reference_to) {
-      // NOTE can skip specific refrences keys (Ex, system defined keys can be skiped)
+      // NOTE can skip specific references keys (Ex, system defined keys can be skipped)
       if (this.config.skipRefs.includes(reference)) continue;
 
       const refExist = find(this.contentTypes, { uid: reference });
@@ -259,8 +262,8 @@ export default class ContentType {
             data_type,
             missingRefs,
             display_name,
-            ct_uid: this.curentCTId,
-            name: this.curentCTName,
+            ct_uid: this.currentCTId,
+            name: this.currentCTName,
             treeStr: tree.map(({ name }) => name).join(' ➜ '),
           },
         ]
