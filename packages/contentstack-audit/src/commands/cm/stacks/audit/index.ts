@@ -49,7 +49,7 @@ export default class Audit extends BaseCommand<typeof Audit> {
         switch (module) {
           case 'content-types':
             const ctErrors = await new ContentType({ config: this.sharedConfig, log: this.log }).run();
-            cliux.table(
+            ux.table(
               Object.values(ctErrors).flat(),
               {
                 name: {
@@ -90,7 +90,7 @@ export default class Audit extends BaseCommand<typeof Audit> {
         }
       }
     } catch (error) {
-      this.log(error, 'error');
+      this.log(error instanceof Error ? error.message : error, 'error');
       this.exit(1);
     }
   }
