@@ -5,11 +5,22 @@ const errors = {
 const commonMsg = {
   CONFIG: 'Path of the external config',
   CURRENT_WORKING_DIR: 'Current working directory.',
+  DATA_DIR: 'Path and location where data is stored',
 };
 
-const messages: typeof errors & typeof commonMsg = {
+const auditMsg = {
+  REPORT_PATH: 'Path to store the audit reports',
+  MODULES: 'Provide list of modules to be audited',
+  REFERENCE_ONLY: 'Checks only for missing references',
+  NOT_VALID_PATH: "Provided path: '{path}' is not valid",
+  SCAN_CT_SUCCESS_MSG: "The scanning of content type '{title}' has been successfully finished.",
+  FINAL_REPORT_PATH: "Writing reports completed. You can find reports at '{path}'",
+};
+
+const messages: typeof errors & typeof commonMsg & typeof auditMsg = {
   ...errors,
   ...commonMsg,
+  ...auditMsg,
 };
 
 /**
@@ -32,4 +43,4 @@ function $t(msg: string, args: Record<string, string>): string {
 }
 
 export default messages;
-export { $t, errors, commonMsg };
+export { $t, errors, commonMsg, auditMsg };
