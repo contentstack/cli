@@ -17,8 +17,8 @@ importers:
       '@contentstack/cli-cm-bulk-publish': ~1.3.11
       '@contentstack/cli-cm-clone': ~1.4.17
       '@contentstack/cli-cm-export': ~1.8.1
-      '@contentstack/cli-cm-import': ~1.8.4
       '@contentstack/cli-cm-export-to-csv': ~1.4.2
+      '@contentstack/cli-cm-import': ~1.8.4
       '@contentstack/cli-cm-migrate-rte': ~1.4.11
       '@contentstack/cli-cm-seed': ~1.4.16
       '@contentstack/cli-command': ~1.2.12
@@ -2491,6 +2491,47 @@ packages:
       - '@types/node'
       - typescript
 
+  /@oclif/core/2.13.0_p35ng363u6hdnkpdl7uptulkfi:
+    resolution: {integrity: sha512-U/AgA/Jcqc04VwmsO/xSc3gJjVKkST8SB3wC3o3kzTAE4UWTOTMkHTtLujYZA5sUvBLhs66+A4dfrjz2sZQBdA==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@types/cli-progress': 3.11.0
+      ansi-escapes: 4.3.2
+      ansi-styles: 4.3.0
+      cardinal: 2.1.1
+      chalk: 4.1.2
+      clean-stack: 3.0.1
+      cli-progress: 3.12.0
+      debug: 4.3.4_supports-color@8.1.1
+      ejs: 3.1.9
+      fs-extra: 9.1.0
+      get-package-type: 0.1.0
+      globby: 11.1.0
+      hyperlinker: 1.0.0
+      indent-string: 4.0.0
+      is-wsl: 2.2.0
+      js-yaml: 3.14.1
+      natural-orderby: 2.0.3
+      object-treeify: 1.1.33
+      password-prompt: 1.1.2
+      semver: 7.5.4
+      slice-ansi: 4.0.0
+      string-width: 4.2.3
+      strip-ansi: 6.0.1
+      supports-color: 8.1.1
+      supports-hyperlinks: 2.3.0
+      ts-node: 10.9.1_p35ng363u6hdnkpdl7uptulkfi
+      tslib: 2.6.0
+      widest-line: 3.1.0
+      wordwrap: 1.0.0
+      wrap-ansi: 7.0.0
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - typescript
+    dev: true
+
   /@oclif/core/2.13.0_typescript@4.9.5:
     resolution: {integrity: sha512-U/AgA/Jcqc04VwmsO/xSc3gJjVKkST8SB3wC3o3kzTAE4UWTOTMkHTtLujYZA5sUvBLhs66+A4dfrjz2sZQBdA==}
     engines: {node: '>=14.0.0'}
@@ -2863,6 +2904,20 @@ packages:
     engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.13.0_npeoqfxwgl5njwqojmpesqhar4
+      chalk: 4.1.2
+      fast-levenshtein: 3.0.0
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - typescript
+    dev: true
+
+  /@oclif/plugin-not-found/2.4.0_p35ng363u6hdnkpdl7uptulkfi:
+    resolution: {integrity: sha512-EOoesBEgyj4TMdHUpnCqN7qqH0f1NHh7buTdWfhwlSjbfrL9rAuodiART5/zgtsj5b8uao3aXdcx1gPxWOogEw==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@oclif/core': 2.13.0_p35ng363u6hdnkpdl7uptulkfi
       chalk: 4.1.2
       fast-levenshtein: 3.0.0
     transitivePeerDependencies:
@@ -10172,7 +10227,7 @@ packages:
     dependencies:
       '@oclif/core': 2.15.0_p35ng363u6hdnkpdl7uptulkfi
       '@oclif/plugin-help': 5.2.14_p35ng363u6hdnkpdl7uptulkfi
-      '@oclif/plugin-not-found': 2.3.32_p35ng363u6hdnkpdl7uptulkfi
+      '@oclif/plugin-not-found': 2.4.0_p35ng363u6hdnkpdl7uptulkfi
       '@oclif/plugin-warn-if-update-available': 2.0.44_p35ng363u6hdnkpdl7uptulkfi
       aws-sdk: 2.1418.0
       concurrently: 7.6.0
