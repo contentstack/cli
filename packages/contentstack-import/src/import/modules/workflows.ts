@@ -185,7 +185,11 @@ export default class ImportWorkflows extends BaseClass {
     });
 
     const updateWorkflow = this.stack.workflow(workflow.uid);
-    Object.assign(updateWorkflow, { workflow_stages: newWorkflowStages, name: workflow.name });
+    Object.assign(updateWorkflow, {
+      name: workflow.name,
+      branches: workflow.branches,
+      workflow_stages: newWorkflowStages,
+    });
 
     return updateWorkflow.update();
   }
