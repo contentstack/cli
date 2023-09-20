@@ -1,122 +1,75 @@
 import { join } from 'path';
 import find from 'lodash/find';
-import * as csv from 'fast-csv';
-import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync } from 'fs';
 
 import {
   LogFn,
   ConfigType,
-  OutputColumn,
   ModularBlockType,
   ContentTypeStruct,
   GroupFieldDataType,
   RefErrorReturnType,
+  CtConstructorParam,
   GlobalFieldDataType,
   JsonRTEFieldDataType,
   ModularBlocksDataType,
   ModuleConstructorParam,
   ReferenceFieldDataType,
 } from '../types';
+import auditConfig from '../config';
 import { $t, auditMsg } from '../messages';
 
 /* The `ContentType` class is responsible for scanning content types, looking for references, and
 generating a report in JSON and CSV formats. */
 export default class ContentType {
-  private log: LogFn;
-  private config: ConfigType;
-  private folderPath: string;
-  private currentCTId!: string;
-  private currentCTName!: string;
-  private ctErrors: Record<string, any> = {};
-  private contentTypes: ContentTypeStruct[] = [];
+  public log: LogFn;
+  public fileName: string;
+  public config: ConfigType;
+  public folderPath: string;
+  public currentUid!: string;
+  public currentTitle!: string;
+  public gfSchema: ContentTypeStruct[];
+  public ctSchema: ContentTypeStruct[];
+  protected schema: ContentTypeStruct[] = [];
+  protected missingRefs: Record<string, any> = {};
+  public moduleName: keyof typeof auditConfig.moduleConfig = 'content-types';
 
-  constructor({ log, config }: ModuleConstructorParam) {
+  constructor({ log, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
     this.log = log;
     this.config = config;
-    this.folderPath = join(config.basePath, config.moduleConfig['content-types'].dirName);
+    this.ctSchema = ctSchema;
+    this.gfSchema = gfSchema;
+    this.fileName = config.moduleConfig[this.moduleName].fileName;
+    this.folderPath = join(config.basePath, config.moduleConfig[this.moduleName].dirName);
+
+    if (moduleName) this.moduleName = moduleName;
   }
 
   /**
-   * The above function scans content types, looks for references, and generates a report in both JSON
-   * and CSV formats.
-   * @returns The function `run()` returns the `ctErrors` object.
+   * The `run` function checks if a folder path exists, sets the schema based on the module name,
+   * iterates over the schema and looks for references, and returns a list of missing references.
+   * @returns the `missingRefs` object.
    */
   async run() {
     if (!existsSync(this.folderPath)) {
       throw new Error($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }));
     }
 
-    this.contentTypes = JSON.parse(readFileSync(join(this.folderPath, 'schema.json'), 'utf-8')); // TODO check size
+    this.schema = this.moduleName === 'content-types' ? this.ctSchema : this.gfSchema;
 
-    for (const ct of this.contentTypes) {
-      this.currentCTId = ct.uid;
-      this.currentCTName = ct.title;
-      this.ctErrors[this.currentCTId] = [];
-      const { uid, title } = ct;
-      await this.lookForReference([{ uid, name: title }], ct);
-      this.log($t(auditMsg.SCAN_CT_SUCCESS_MSG, { title }), 'info');
+    for (const schema of this.schema ?? []) {
+      this.currentUid = schema.uid;
+      this.currentTitle = schema.title;
+      this.missingRefs[this.currentUid] = [];
+      const { uid, title } = schema;
+      await this.lookForReference([{ uid, name: title }], schema);
+      this.log(
+        $t(auditMsg.SCAN_CT_SUCCESS_MSG, { title, module: this.config.moduleConfig[this.moduleName].name }),
+        'info',
+      );
     }
 
-    await this.prepareReport();
-
-    return this.ctErrors;
-  }
-
-  /**
-   * The `prepareReport` function prepares a report by writing content types errors into a JSON file
-   * and a CSV file.
-   * @returns The `prepareReport()` function returns a Promise that resolves to `void`.
-   */
-  prepareReport(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      if (!existsSync(this.config.reportPath)) {
-        mkdirSync(this.config.reportPath, { recursive: true });
-      }
-
-      // NOTE write int json
-      writeFileSync(join(this.config.reportPath, 'content-types.json'), JSON.stringify(this.ctErrors));
-      this.log(''); // NOTE add new line in terminal
-
-      // NOTE write into CSV
-      const csvStream = csv.format({ headers: true });
-      const csvPath = join(this.config.reportPath, 'content-types.csv');
-      const assetFileStream = createWriteStream(csvPath);
-      assetFileStream.on('error', (error) => {
-        throw error;
-      });
-      csvStream
-        .pipe(assetFileStream)
-        .on('close', () => {
-          resolve();
-          this.log($t(auditMsg.FINAL_REPORT_PATH, { path: this.config.reportPath }), 'warn');
-          this.log(''); // NOTE add new line in terminal
-        })
-        .on('error', reject);
-
-      const defaultColumns = Object.keys(OutputColumn);
-      const userDefinedColumns = this.config.flags.columns ? this.config.flags.columns.split(',') : null;
-      let ctRefIssues: RefErrorReturnType[] = Object.values(this.ctErrors).flat();
-      const columns: (keyof typeof OutputColumn)[] = userDefinedColumns
-        ? [...userDefinedColumns, ...defaultColumns.filter((val: string) => !userDefinedColumns.includes(val))]
-        : defaultColumns;
-
-      if (this.config.flags.filter) {
-        const [column, value]: [keyof typeof OutputColumn, string] = this.config.flags.filter.split('=');
-        ctRefIssues = ctRefIssues.filter((row: RefErrorReturnType) => row[OutputColumn[column]] === value);
-      }
-
-      for (const issue of ctRefIssues) {
-        let row: Record<string, string | string[]> = {};
-
-        for (const column of columns) {
-          row[column] = issue[OutputColumn[column]];
-        }
-
-        csvStream.write(row);
-      }
-
-      csvStream.end();
-    });
+    return this.missingRefs;
   }
 
   /**
@@ -134,10 +87,10 @@ export default class ContentType {
     tree: Record<string, unknown>[],
     { schema }: ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType,
   ): Promise<void> {
-    for (const field of schema) {
+    for (const field of schema ?? []) {
       switch (field.data_type) {
         case 'reference':
-          this.ctErrors[this.currentCTId].push(
+          this.missingRefs[this.currentUid].push(
             ...this.validateReferenceField(
               [...tree, { uid: field.uid, name: field.display_name }],
               field as ReferenceFieldDataType,
@@ -155,7 +108,7 @@ export default class ContentType {
             // NOTE Custom field type
           } else if (field.field_metadata.allow_json_rte) {
             // NOTE JSON RTE field type
-            this.ctErrors[this.currentCTId].push(
+            this.missingRefs[this.currentUid].push(
               ...this.validateJsonRTEFields(
                 [...tree, { uid: field.uid, name: field.display_name }],
                 field as ReferenceFieldDataType,
@@ -202,6 +155,25 @@ export default class ContentType {
    */
   async validateGlobalField(tree: Record<string, unknown>[], field: GlobalFieldDataType): Promise<void> {
     // NOTE Any GlobalField related logic can be added here
+    const missingRefs = [];
+    const { reference_to, display_name, data_type } = field;
+
+    if (!find(this.gfSchema, { uid: reference_to })) {
+      missingRefs.push(reference_to);
+    }
+
+    if (missingRefs.length) {
+      this.missingRefs[this.currentUid].push({
+        tree,
+        data_type,
+        missingRefs,
+        display_name,
+        ct_uid: this.currentUid,
+        name: this.currentTitle,
+        treeStr: tree.map(({ name }) => name).join(' ➜ '),
+      });
+    }
+
     await this.lookForReference(tree, field);
   }
 
@@ -236,7 +208,7 @@ export default class ContentType {
     for (const block of blocks) {
       const { uid, title } = block;
 
-      await this.lookForReference([...tree, { uid, name: title }, { uid: field.uid, name: field.display_name }], block);
+      await this.lookForReference([...tree, { uid, name: title }], block);
     }
   }
 
@@ -272,11 +244,11 @@ export default class ContentType {
     const missingRefs = [];
     const { reference_to, display_name, data_type } = field;
 
-    for (const reference of reference_to) {
-      // NOTE can skip specific references keys (Ex, system defined keys can be skipped)
+    for (const reference of reference_to ?? []) {
+      // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
       if (this.config.skipRefs.includes(reference)) continue;
 
-      const refExist = find(this.contentTypes, { uid: reference });
+      const refExist = find(this.ctSchema, { uid: reference });
 
       if (!refExist) {
         missingRefs.push(reference);
@@ -290,8 +262,8 @@ export default class ContentType {
             data_type,
             missingRefs,
             display_name,
-            ct_uid: this.currentCTId,
-            name: this.currentCTName,
+            ct_uid: this.currentUid,
+            name: this.currentTitle,
             treeStr: tree.map(({ name }) => name).join(' ➜ '),
           },
         ]
