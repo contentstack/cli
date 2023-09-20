@@ -25,6 +25,7 @@ const config: DefaultConfig = {
       'environments',
       'extensions',
       'webhooks',
+      'taxonomies',
       'global-fields',
       'content-types',
       'custom-roles',
@@ -157,6 +158,16 @@ const config: DefaultConfig = {
     'marketplace-apps': {
       dirName: 'marketplace_apps',
       fileName: 'marketplace_apps.json',
+    },
+    taxonomies: {
+      dirName: 'taxonomies',
+      fileName: 'taxonomies.json',
+      invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by'],
+    },
+    terms: {
+      dirName: 'terms',
+      fileName: 'terms.json',
+      invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by'],
     },
   },
   languagesCode: [
