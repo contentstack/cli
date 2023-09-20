@@ -1,7 +1,7 @@
 import winston from 'winston';
 import messageHandler from './message-handler';
 
-class LoggerService {
+export class LoggerService {
   name: string;
   data: object | null;
   logger: winston.Logger;
@@ -37,9 +37,9 @@ class LoggerService {
           return message;
         }),
       ),
-      // level: (config.get('logger.level') as string) || 'error',
-      level: 'error',
-      silent: true
+      // // level: (config.get('logger.level') as string) || 'error',
+      // level: 'error',
+      // silent: true
       // silent: config.get('logger.enabled') && process.env.CLI_ENV !== 'TEST' ? false : false,
     });
     this.logger = logger;
@@ -97,5 +97,3 @@ class LoggerService {
     }
   }
 }
-
-export default new LoggerService('cli');
