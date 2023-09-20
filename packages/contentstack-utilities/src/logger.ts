@@ -1,7 +1,6 @@
 import winston from 'winston';
 import messageHandler from './message-handler';
-
-export class LoggerService {
+class LoggerService {
   name: string;
   data: object | null;
   logger: winston.Logger;
@@ -17,7 +16,7 @@ export class LoggerService {
       transports: [
         // new winston.transports.Console(),
         new winston.transports.File({
-          filename: `./logs/${name}.log`,
+          filename: `../contentstack/logs/${name}.log`,
         }),
       ],
       format: winston.format.combine(
@@ -97,3 +96,5 @@ export class LoggerService {
     }
   }
 }
+
+export default new LoggerService('cli')
