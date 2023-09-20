@@ -54,7 +54,7 @@ USAGE
 
 FLAGS
   -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Current working directory.
+  -d, --data-dir=<value>  Path and location where data is stored
 
 DESCRIPTION
   Audit fix command
@@ -74,11 +74,21 @@ Audit and find possible errors in the exported data
 
 ```
 USAGE
-  $ csdx cm:stacks:audit [-c <value>] [-d <value>]
+  $ csdx cm:stacks:audit [-c <value>] [-d <value>] [--report-path <value>] [--reference-only] [--modules
+    content-types|global-fields] [--columns <value> | ] [--sort <value>] [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Current working directory.
+  -d, --data-dir=<value>  Path and location where data is stored
+  --columns=<value>       only show provided columns (comma-separated)
+  --csv                   output is csv format [alias: --output=csv]
+  --filter=<value>        filter property by partial string matching, ex: name=foo
+  --modules=<option>...   Provide list of modules to be audited
+                          <options: content-types|global-fields>
+  --no-truncate           do not truncate output to fit screen
+  --reference-only        Checks only for missing references
+  --report-path=<value>   Path to store the audit reports
+  --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Audit and find possible errors in the exported data
@@ -88,6 +98,14 @@ ALIASES
 
 EXAMPLES
   $ csdx cm:stacks:audit
+
+  $ csdx cm:stacks:audit --report-path=<path>
+
+  $ csdx cm:stacks:audit --report-path=<path> --csv
+
+  $ csdx cm:stacks:audit --report-path=<path> --filter="name=<filter-value>"
+
+  $ csdx cm:stacks:audit --report-path=<path> --modules=content-types --filter="name="<filter-value>"
 ```
 
 _See code: [src/commands/cm/stacks/audit/index.ts](https://github.com/contentstack/audit/blob/main/packages/contentstack-audit/src/commands/cm/stacks/audit/index.ts)_
@@ -102,7 +120,7 @@ USAGE
 
 FLAGS
   -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Current working directory.
+  -d, --data-dir=<value>  Path and location where data is stored
 
 DESCRIPTION
   Audit fix command
@@ -142,10 +160,13 @@ List installed plugins.
 
 ```
 USAGE
-  $ csdx plugins [--core]
+  $ csdx plugins [--json] [--core]
 
 FLAGS
   --core  Show core plugins.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
   List installed plugins.
@@ -154,7 +175,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -219,7 +240,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -259,7 +280,7 @@ EXAMPLES
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
@@ -288,7 +309,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -336,7 +357,7 @@ ALIASES
   $ csdx plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -377,5 +398,5 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.4.7/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/update.ts)_
 <!-- commandsstop -->
