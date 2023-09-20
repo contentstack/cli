@@ -5,7 +5,7 @@ import { logger, messageHandler, cliux, managementSDKInitiator } from '@contents
  */
 export default function (_opts): void {
   const { context } = this.config;
-  logger.init(context);
+  // logger.init(context);
   messageHandler.init(context);
   cliux.init(context);
   managementSDKInitiator.init(context);
