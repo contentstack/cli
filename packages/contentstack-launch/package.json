@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-launch",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Launch related operations",
   "author": "Contentstack CLI",
   "bin": {
@@ -32,7 +32,7 @@
     "esm": "^3.2.25",
     "express": "^4.18.2",
     "form-data": "^4.0.0",
-    "graphql": "^16.6.0",
+    "graphql": "^16.8.1",
     "ini": "^3.0.1",
     "lodash": "^4.17.21",
     "open": "^8.4.2",
