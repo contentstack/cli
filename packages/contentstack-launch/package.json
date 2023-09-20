@@ -18,8 +18,8 @@
   ],
   "dependencies": {
     "@apollo/client": "^3.7.9",
-    "@contentstack/cli-command": "~1.2.12",
-    "@contentstack/cli-utilities": "~1.5.2",
+    "@contentstack/cli-command": "~1.2.13",
+    "@contentstack/cli-utilities": "~1.5.3",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^3.3.2",
     "@oclif/core": "^2.9.3",
