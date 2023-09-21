@@ -14,10 +14,10 @@ class LoggerService {
 
     const logger = winston.createLogger({
       transports: [
-        // new winston.transports.Console(),
-        new winston.transports.File({
-          filename: `../contentstack/logs/${name}.log`,
-        }),
+        new winston.transports.Console(),
+        // new winston.transports.File({
+        //   filename: `../contentstack/logs/${name}.log`,
+        // }),
       ],
       format: winston.format.combine(
         winston.format.colorize(),
@@ -30,7 +30,7 @@ class LoggerService {
           }
           // parse message
           info.message = messageHandler.parse(info.message);
-          let message = `${LoggerService.dateFormat()}:${name}:${info.level}:${info.message}`;
+          let message = `${LoggerService.dateFormat()} : ${name}: ${info.level} : ${info.message}`;
           message = info.obj ? message + `:${stringifiedParam}` : message;
           message = this.data ? message + `:${JSON.stringify(this.data)}` : message;
           return message;
