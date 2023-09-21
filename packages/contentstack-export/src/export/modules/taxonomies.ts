@@ -9,7 +9,7 @@ import BaseClass from './base-class';
 import { log, fsUtil } from '../../utils';
 import { TaxonomiesConfig, TermsConfig, ModuleClassParams } from '../../types';
 
-//NOTE: Temp types to request api need to remove once sdk ready
+//NOTE: Temp types need to remove once sdk available
 type TaxonomyPayload = {
   baseUrl: string;
   url: string;
@@ -21,10 +21,10 @@ export default class ExportTaxonomies extends BaseClass {
   private taxonomies: Record<string, Record<string, string>>;
   private terms: Record<string, Record<string, string>>;
   private taxonomiesConfig: TaxonomiesConfig;
+  private taxonomyPayload: TaxonomyPayload;
   private termsConfig: TermsConfig;
   public taxonomiesFolderPath: string;
   public termsFolderPath: string;
-  private taxonomyPayload: TaxonomyPayload;
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
@@ -79,7 +79,7 @@ export default class ExportTaxonomies extends BaseClass {
    */
   async getAllTaxonomies(payload: TaxonomyPayload, skip = 0): Promise<any> {
     const response = await this.apiRequestHandler(payload, skip);
-    if (response) {
+    if (response?.taxonomies) {
       skip += this.taxonomiesConfig.limit || 100;
       this.sanitizeTaxonomiesAttribs(response.taxonomies);
       if (skip >= response?.count) {
@@ -120,7 +120,7 @@ export default class ExportTaxonomies extends BaseClass {
         log(this.exportConfig, `No terms found for taxonomy - '${taxonomyUID}'`, 'info');
       } else {
         fsUtil.writeFile(pResolve(this.termsFolderPath, `${taxonomyUID}-${this.termsConfig.fileName}`), this.terms);
-        log(this.exportConfig, `Taxonomy - '${taxonomyUID}' terms was exported successfully`, 'success');
+        log(this.exportConfig, `Terms from taxonomy '${taxonomyUID}' were successfully exported.`, 'success');
       }
     }
     log(this.exportConfig, `All the terms have been exported successfully!`, 'success');
@@ -134,7 +134,7 @@ export default class ExportTaxonomies extends BaseClass {
    */
   async fetchTermsOfTaxonomy(payload: TaxonomyPayload, skip = 0): Promise<any> {
     const response = await this.apiRequestHandler(payload, skip);
-    if (response) {
+    if (response?.terms) {
       skip += this.termsConfig.limit || 100;
       this.sanitizeTermsAttribs(response.terms);
       if (skip >= response?.count) {
@@ -158,6 +158,7 @@ export default class ExportTaxonomies extends BaseClass {
     }
   }
 
+  //NOTE: Temp code need to remove once sdk available
   async apiRequestHandler(payload: TaxonomyPayload, skip: number) {
     const headers: any = {
       api_key: payload.apiKey,
@@ -196,6 +197,7 @@ export default class ExportTaxonomies extends BaseClass {
       .catch((err: any) => this.handleErrorMsg(err));
   }
 
+  //NOTE: Temp code need to remove once sdk available
   handleErrorMsg(err: any) {
     if (err?.errorMessage) {
       cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
