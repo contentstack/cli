@@ -188,10 +188,12 @@ module.exports = class importWorkflows {
       return newStage;
     });
 
-    workflow.workflow_stages = newWorkflowStages;
-
     const updateWorkflow = this.stackAPIClient.workflow(workflow.uid);
-    Object.assign(updateWorkflow, workflow);
+    Object.assign(updateWorkflow, {
+      name: workflow.name,
+      branches: workflow.branches,
+      workflow_stages: newWorkflowStages,
+    });
     return updateWorkflow.update();
   }
 };
