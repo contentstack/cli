@@ -968,7 +968,7 @@ importers:
       '@types/node': ^14.14.32
       '@types/tar': ^6.1.3
       '@types/tmp': ^0.2.0
-      axios: 1.3.4
+      axios: 1.4.0
       eslint: ^8.18.0
       eslint-config-oclif: ^4.0.0
       eslint-config-oclif-typescript: ^0.1.0
@@ -987,7 +987,7 @@ importers:
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      axios: 1.3.4
+      axios: 1.4.0
       inquirer: 8.2.4
       mkdirp: 1.0.4
       tar: 6.1.15
@@ -4600,17 +4600,17 @@ packages:
   /axios/1.3.4:
     resolution: {integrity: sha512-toYm+Bsyl6VC5wSkfkbbNB6ROv7KY93PEBBL6xyDczaIHasAiv4wPqQ/c4RjoQzipxRD2W5g21cOqQulZ7rHwQ==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
     dev: false
 
-  /axios/1.3.4_debug@4.3.4:
-    resolution: {integrity: sha512-toYm+Bsyl6VC5wSkfkbbNB6ROv7KY93PEBBL6xyDczaIHasAiv4wPqQ/c4RjoQzipxRD2W5g21cOqQulZ7rHwQ==}
+  /axios/1.4.0:
+    resolution: {integrity: sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==}
     dependencies:
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
