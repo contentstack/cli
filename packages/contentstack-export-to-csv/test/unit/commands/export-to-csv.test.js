@@ -14,15 +14,6 @@ const directory = './data';
 const taxonomyFileName = join(process.cwd(), 'data', mockData.stacks[0].name);
 const userFileName = join(process.cwd(), 'data', mockData.organizations[0].name);
 
-
-/* eslint-disable no-undef */
-const { describe, it, beforeEach, afterEach } = require('mocha');
-const ExportToCsvCommand = require('../../../src/commands/cm/export-to-csv');
-const { stub, assert } = require('sinon');
-const { config } = require('dotenv');
-const inquirer = require('inquirer');
-const { cliux } = require('@contentstack/cli-utilities');
-
 //!SECTION ------old test cases -------------
 
 // config();
