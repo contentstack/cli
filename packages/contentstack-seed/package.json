@@ -1,11 +1,11 @@
 {
   "name": "@contentstack/cli-cm-seed",
   "description": "create a Stack from existing content types, entries, assets, etc.",
-  "version": "1.4.16",
+  "version": "1.4.17",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-cm-import": "~1.8.4",
+    "@contentstack/cli-cm-import": "~1.8.5",
     "@contentstack/cli-command": "~1.2.12",
     "@contentstack/cli-utilities": "~1.5.2",
     "axios": "1.3.4",
