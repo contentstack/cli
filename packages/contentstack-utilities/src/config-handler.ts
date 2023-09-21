@@ -19,6 +19,8 @@ const oldConfigDirectory = xdgBasedir.config || path.join(os.tmpdir(), uniqueStr
 const pathPrefix = path.join('configstore', `${CONFIG_NAME}.json`);
 const oldConfigPath = path.join(oldConfigDirectory, pathPrefix);
 
+const cwd = process.env.CS_CLI_CONFIG_PATH;
+
 class Config {
   private config: Conf;
 
@@ -81,7 +83,7 @@ class Config {
 
   private getObfuscationKey() {
     const obfuscationKeyName = 'obfuscation_key';
-    const encConfig = new Conf({ configName: ENC_CONFIG_NAME });
+    const encConfig = new Conf({ configName: ENC_CONFIG_NAME, cwd });
     let obfuscationKey: any = encConfig?.get(obfuscationKeyName);
 
     if (!obfuscationKey) {
@@ -110,7 +112,7 @@ class Config {
       try {
         // NOTE reading current code base encrypted file if exist
         const encryptionKey: any = this.getObfuscationKey();
-        this.config = new Conf({ configName: CONFIG_NAME, encryptionKey });
+        this.config = new Conf({ configName: CONFIG_NAME, encryptionKey, cwd });
 
         if (Object.keys(configData || {})?.length) {
           this.config.set(configData); // NOTE set config data if passed any
@@ -122,7 +124,7 @@ class Config {
           const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config);
           this.getEncryptedConfig(oldConfigData, true);
         } catch (_error) {
-          cliux.print(chalk.red("Error: Config file is corrupted"));
+          cliux.print(chalk.red('Error: Config file is corrupted'));
           cliux.print(_error);
           process.exit(1);
         }
@@ -148,7 +150,7 @@ class Config {
 
   private getDecryptedConfig(configData?: Record<string, unknown>) {
     try {
-      this.config = new Conf({ configName: CONFIG_NAME });
+      this.config = new Conf({ configName: CONFIG_NAME, cwd });
 
       if (Object.keys(configData || {})?.length) {
         this.config.set(configData); // NOTE set config data if passed any
@@ -158,7 +160,7 @@ class Config {
 
       try {
         const encryptionKey: any = this.getObfuscationKey();
-        let config = new Conf({ configName: CONFIG_NAME, encryptionKey });
+        let config = new Conf({ configName: CONFIG_NAME, encryptionKey, cwd });
         const oldConfigData = this.getConfigDataAndUnlinkConfigFile(config);
         this.getDecryptedConfig(oldConfigData); // NOTE NOTE reinitialize the config with old data and new decrypted file
       } catch (_error) {
@@ -170,8 +172,8 @@ class Config {
           this.getDecryptedConfig(_configData); // NOTE reinitialize the config with old data and new decrypted file
         } catch (__error) {
           // console.trace(error.message)
-          cliux.print(chalk.red("Error: Config file is corrupted"));
-          cliux.print(_error)
+          cliux.print(chalk.red('Error: Config file is corrupted'));
+          cliux.print(_error);
           process.exit(1);
         }
       }
@@ -184,7 +186,7 @@ class Config {
     return this.config?.get(key);
   }
 
-  async set(key, value) {
+  set(key, value) {
     this.config?.set(key, value);
     return this.config;
   }

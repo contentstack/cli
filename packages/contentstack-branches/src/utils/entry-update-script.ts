@@ -483,7 +483,9 @@ export function entryUpdateScript(contentType) {
                   .query({ query: { title: compareRefEntry.title } })
                   .find();
   
-                updateValueByPath(entryDetails, references[i], baseRefEntry.items[0].uid);
+                  if(baseRefEntry?.items?.length > 0 && baseRefEntry.items[0]?.uid){
+                    updateValueByPath(entryDetails, references[i], baseRefEntry.items[0].uid);
+                  }
               }
             }
           }
