@@ -143,8 +143,11 @@ class ContentTypesImport {
     if (typeof contentType !== 'object') return;
     const requestObject = cloneDeep(this.requestOptions);
     if (contentType.field_rules) {
+      contentType.field_rules = this.updateFieldRules(contentType);
+      if (!contentType.field_rules.length) {
+        delete contentType.field_rules;
+      }
       this.fieldRules.push(contentType.uid);
-      delete contentType.field_rules;
     }
 
     lookupExtension(
@@ -196,6 +199,31 @@ class ContentTypesImport {
     this.contentTypes.forEach((ct) => {
       this.titleToUIdMap.set(ct.uid, ct.title);
     });
+  }
+
+  updateFieldRules(contentType) {
+    const fieldDataTypeMap = {};
+    for (let i = 0; i < contentType.schema.length; i++) {
+      const field = contentType.schema[i];
+      fieldDataTypeMap[field.uid] = field.data_type;
+    }
+    const fieldRules = [...contentType.field_rules];
+    let len = fieldRules.length;
+    // Looping backwards as we need to delete elements as we move.
+    for (let i = len - 1; i >= 0; i--) {
+      const conditions = fieldRules[i].conditions;
+      let isReference = false;
+      for (let j = 0; j < conditions.length; j++) {
+        const field = conditions[j].operand_field;
+        if (fieldDataTypeMap[field] === 'reference') {
+          isReference = true;
+        }
+      }
+      if (isReference) {
+        fieldRules.splice(i, 1);
+      }
+    }
+    return fieldRules;
   }
 }
 
