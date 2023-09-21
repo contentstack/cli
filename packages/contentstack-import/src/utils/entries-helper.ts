@@ -21,9 +21,7 @@ export const lookupEntries = function (data: any, mappedUids: Record<string, any
     jsonRteData.children.forEach((element: any) => {
       if (element.type) {
         switch (element.type) {
-          case 'a':
-          case 'span':
-          case 'p': {
+          default: {
             if (element.children && element.children.length > 0) {
               gatherJsonRteEntryIds(element);
             }
