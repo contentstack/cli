@@ -1,10 +1,16 @@
 const config = {
-  modules: ['content-types', 'entries', 'global-fields'],
+  modules: ['content-types', 'global-fields'],
   skipRefs: ['sys_assets'],
   moduleConfig: {
     'content-types': {
+      name: 'content type',
+      fileName: 'schema.json',
       dirName: 'content_types',
-      fileName: 'content_types.json',
+    },
+    'global-fields': {
+      name: 'global field',
+      dirName: 'global_fields',
+      fileName: 'globalfields.json',
     },
   },
 };
