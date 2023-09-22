@@ -11,9 +11,10 @@ const commonMsg = {
 const auditMsg = {
   REPORT_PATH: 'Path to store the audit reports',
   MODULES: 'Provide list of modules to be audited',
+  AUDIT_START_SPINNER: 'Starting {module} scanning',
   REFERENCE_ONLY: 'Checks only for missing references',
   NOT_VALID_PATH: "Provided path: '{path}' is not valid",
-  SCAN_CT_SUCCESS_MSG: "The scanning of content type '{title}' has been successfully finished.",
+  SCAN_CT_SUCCESS_MSG: "The scanning of {module} '{title}' has been successfully finished.",
   FINAL_REPORT_PATH: "Writing reports completed. You can find reports at '{path}'",
 };
 
