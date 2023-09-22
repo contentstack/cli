@@ -90,8 +90,6 @@ export default class Audit extends BaseCommand<typeof Audit> {
 
       this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
     } catch (error) {
-      console.trace(error);
-      console.log(error);
       this.log(error instanceof Error ? error.message : error, 'error');
       ux.action.stop('Process failed.!');
       this.exit(1);
