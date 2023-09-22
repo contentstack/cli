@@ -1,10 +1,11 @@
+import config from '../config';
 import { ConfigType, LogFn } from './utils';
 
 type ContentTypeStruct = {
   uid: string;
   title: string;
   description: string;
-  schema: (
+  schema?: (
     | ReferenceFieldDataType
     | GlobalFieldDataType
     | CustomFieldDataType
@@ -17,6 +18,12 @@ type ContentTypeStruct = {
 type ModuleConstructorParam = {
   log: LogFn;
   config: ConfigType;
+  moduleName?: keyof typeof config.moduleConfig;
+};
+
+type CtConstructorParam = {
+  gfSchema: ContentTypeStruct[] | [];
+  ctSchema: ContentTypeStruct[] | [];
 };
 
 type CommonDataTypeStruct = {
@@ -47,7 +54,7 @@ type ReferenceFieldDataType = CommonDataTypeStruct & {
 
 // NOTE Type 2
 type GlobalFieldDataType = CommonDataTypeStruct & {
-  reference_to: string[];
+  reference_to: string;
   schema: GlobalFieldSchemaTypes[];
 };
 
@@ -89,7 +96,7 @@ type GlobalFieldSchemaTypes = ReferenceFieldDataType | GroupFieldDataType | Cust
 type ModularBlocksSchemaTypes = ReferenceFieldDataType | JsonRTEFieldDataType;
 
 enum OutputColumn {
-  'Content Type name' = 'name',
+  Title = 'name',
   'Field name' = 'display_name',
   'Field type' = 'data_type',
   'Missing references' = 'missingRefs',
@@ -97,6 +104,7 @@ enum OutputColumn {
 }
 
 export {
+  CtConstructorParam,
   ContentTypeStruct,
   ModuleConstructorParam,
   ReferenceFieldDataType,
