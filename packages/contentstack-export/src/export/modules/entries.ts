@@ -54,11 +54,11 @@ export default class EntriesExport extends BaseClass {
       }
       const entryRequestOptions = this.createRequestObjects(locales, contentTypes);
       for (let entryRequestOption of entryRequestOptions) {
-        log(
-          this.exportConfig,
-          `Starting export of entries of content type - ${entryRequestOption.contentType} locale - ${entryRequestOption.locale}`,
-          'info',
-        );
+        // log(
+        //   this.exportConfig,
+        //   `Starting export of entries of content type - ${entryRequestOption.contentType} locale - ${entryRequestOption.locale}`,
+        //   'info',
+        // );
         await this.getEntries(entryRequestOption);
         this.entriesFileHelper?.completeFile(true);
         log(
