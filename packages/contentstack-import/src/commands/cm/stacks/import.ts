@@ -91,6 +91,16 @@ export default class ImportCommand extends Command {
       required: false,
       description: '[optional] Override marketplace prompts',
     }),
+    'replace-existing': flags.boolean({
+      required: false,
+      default: false,
+      description: '[optional] replace existing modules',
+    }),
+    'skip-existing': flags.boolean({
+      required: false,
+      default: false,
+      description: '[optional] removes the module exist warning messages',
+    }),
   };
 
   static aliases: string[] = ['cm:import'];
@@ -115,7 +125,11 @@ export default class ImportCommand extends Command {
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       await moduleImporter.start();
       log(importConfig, `The content has been imported to the stack ${importConfig.apiKey} successfully!`, 'success');
-      log(importConfig, `The log has been stored at '${path.join(importConfig.backupDir, 'logs', 'import')}'`, 'success');
+      log(
+        importConfig,
+        `The log has been stored at '${path.join(importConfig.backupDir, 'logs', 'import')}'`,
+        'success',
+      );
     } catch (error) {
       log({ data: backupDir } as ImportConfig, `Failed to import stack content - ${formatError(error)}`, 'error');
       log(
