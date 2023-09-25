@@ -13,7 +13,7 @@ import { FolderData } from '@contentstack/management/types/stack/asset/folder';
 import { ExtensionData } from '@contentstack/management/types/stack/extension';
 import { GlobalFieldData } from '@contentstack/management/types/stack/globalField';
 import { ContentTypeData } from '@contentstack/management/types/stack/contentType';
-// import { EnvironmentData } from '@contentstack/management/types/stack/environment';
+import { EnvironmentData } from '@contentstack/management/types/stack/environment';
 import { LabelData } from '@contentstack/management/types/stack/label';
 import { WebhookData } from '@contentstack/management/types/stack/webhook';
 import { WorkflowData } from '@contentstack/management/types/stack/workflow';
@@ -206,11 +206,7 @@ export default abstract class BaseClass {
       // info: Batch No. 20 of import assets is complete
       if (currentIndexer) batchMsg += `Current chunk processing is (${currentIndexer}/${indexerCount})`;
 
-      log(
-        this.importConfig,
-        `Batch No. (${batchNo}/${totelBatches}) of ${processName} is complete. ${batchMsg}`,
-        'success',
-      );
+      log(this.importConfig, `Batch No. (${batchNo}/${totelBatches}) of ${processName} is complete`, 'success');
     }
 
     if (this.importConfig.modules.assets.displayExecutionTime) {
@@ -299,18 +295,21 @@ export default abstract class BaseClass {
       case 'create-cts':
         return this.stack.contentType().create(apiData).then(onSuccess).catch(onReject);
       case 'update-cts':
-        if (additionalInfo.skip) {
-          return Promise.resolve(onSuccess(apiData));
+        if (!apiData) {
+          return Promise.resolve();
         }
         return apiData.update().then(onSuccess).catch(onReject);
       case 'update-gfs':
+        if (!apiData) {
+          return Promise.resolve();
+        }
         return apiData.update().then(onSuccess).catch(onReject);
       case 'create-environments':
-      // return this.stack
-      //   .environment()
-      //   .create({ environment: omit(apiData, ['uid']) as EnvironmentData })
-      //   .then(onSuccess)
-      //   .catch(onReject);
+        return this.stack
+          .environment()
+          .create({ environment: omit(apiData, ['uid']) as EnvironmentData })
+          .then(onSuccess)
+          .catch(onReject);
       case 'create-labels':
         return this.stack
           .label()
@@ -345,6 +344,12 @@ export default abstract class BaseClass {
           .then(onSuccess)
           .catch(onReject);
       case 'create-entries':
+        if (!apiData) {
+          return Promise.resolve();
+        }
+        if (additionalInfo[apiData?.uid]?.isLocalized) {
+          return apiData.update({ locale: additionalInfo.locale }).then(onSuccess).catch(onReject);
+        }
         return this.stack
           .contentType(additionalInfo.cTUid)
           .entry()
@@ -352,22 +357,28 @@ export default abstract class BaseClass {
           .then(onSuccess)
           .catch(onReject);
       case 'update-entries':
+        if (!apiData) {
+          return Promise.resolve();
+        }
         return apiData.update({ locale: additionalInfo.locale }).then(onSuccess).catch(onReject);
       case 'publish-entries':
-        if (additionalInfo.skip) {
-          return Promise.resolve(onSuccess(apiData));
+        if (!apiData || !apiData.entryUid) {
+          return Promise.resolve();
         }
         return this.stack
           .contentType(additionalInfo.cTUid)
-          .entry(additionalInfo.entryUid)
-          .publish({ publishDetails: apiData, locale: additionalInfo.locale })
+          .entry(apiData.entryUid)
+          .publish({
+            publishDetails: { environments: apiData.environments, locales: apiData.locales },
+            locale: additionalInfo.locale,
+          })
           .then(onSuccess)
           .catch(onReject);
       case 'delete-entries':
         return this.stack
           .contentType(apiData.cTUid)
           .entry(apiData.entryUid)
-          .delete({ locale: this.importConfig?.master_locale?.code })
+          .delete({ locale: additionalInfo.locale })
           .then(onSuccess)
           .catch(onReject);
       default:
