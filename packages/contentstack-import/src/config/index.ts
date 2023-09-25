@@ -28,6 +28,7 @@ const config: DefaultConfig = {
       'assets',
       'extensions',
       'marketplace-apps',
+      'taxonomies',
       'global-fields',
       'content-types',
       'custom-roles',
@@ -141,6 +142,14 @@ const config: DefaultConfig = {
     marketplace_apps: {
       dirName: 'marketplace_apps',
       fileName: 'marketplace_apps.json',
+    },
+    taxonomies: {
+      dirName: 'taxonomies',
+      fileName: 'taxonomies.json'
+    },
+    terms: {
+      dirName: 'terms',
+      fileName: 'terms.json'
     },
   },
   languagesCode: [
