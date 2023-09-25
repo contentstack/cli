@@ -101,8 +101,7 @@ export default class ImportMarketplaceApps extends BaseClass {
     this.developerHubBaseUrl = this.importConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.importConfig));
     this.sdkClient = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
     this.appSdkAxiosInstance = await managementSDKClient({
-      host: this.developerHubBaseUrl.split('://').pop(),
-      endpoint: this.developerHubBaseUrl,
+      host: this.developerHubBaseUrl.split('://').pop()
     });
     this.importConfig.org_uid = await getOrgUid(this.importConfig);
     await this.setHttpClient();

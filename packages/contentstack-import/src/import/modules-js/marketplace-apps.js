@@ -62,8 +62,7 @@ module.exports = class ImportMarketplaceApps {
     this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
     this.client = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
     this.appSdkAxiosInstance = await managementSDKClient({
-      host: this.developerHubBaseUrl.split('://').pop(),
-      endpoint: this.developerHubBaseUrl,
+      host: this.developerHubBaseUrl.split('://').pop()
     });
     await this.getOrgUid();
 
