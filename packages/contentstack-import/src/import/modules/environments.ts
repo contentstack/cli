@@ -1,6 +1,6 @@
 import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
@@ -67,7 +67,7 @@ export default class ImportEnvironments extends BaseClass {
   async importEnvironments() {
     if (this.environments === undefined || isEmpty(this.environments)) {
       log(this.importConfig, 'No Environment Found', 'info');
-      return resolve();
+      return;
     }
 
     const apiContent = values(this.environments);
