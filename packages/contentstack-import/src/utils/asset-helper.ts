@@ -205,8 +205,7 @@ export const lookupAssets = function (
     jsonRteData.children.forEach((element: any) => {
       if (element.type) {
         switch (element.type) {
-          case 'a':
-          case 'p': {
+          default: {
             if (element.children && element.children.length > 0) {
               gatherJsonRteAssetIds(element);
             }
