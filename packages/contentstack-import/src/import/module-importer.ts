@@ -59,6 +59,8 @@ class ModuleImporter {
   }
 
   async import() {
+    log(this.importConfig, `Starting to import content version ${this.importConfig.contentVersion}`, 'info');
+
     // checks for single module or all modules
     if (this.importConfig.singleModuleImport) {
       return this.importByModuleByName(this.importConfig.moduleName);
@@ -68,27 +70,21 @@ class ModuleImporter {
 
   async importByModuleByName(moduleName: Modules) {
     log(this.importConfig, `Starting import of ${moduleName} module`, 'info');
-
-    const basePath = `${this.importConfig.backupDir}/${moduleName}`;
     // import the modules by name
     // calls the module runner which inturn calls the module itself
     // Todo: Implement a mechanism to determine whether module is new or old
-    if (
-      this.importConfig.useNewModuleStructure &&
-      this.importConfig.updatedModules.indexOf(moduleName) !== -1
-      //&& new FsUtility({ basePath }).isNewFsStructure
-    ) {
+    if (this.importConfig.contentVersion === 2) {
       return startModuleImport({
         stackAPIClient: this.stackAPIClient,
         importConfig: this.importConfig,
         moduleName,
       });
     }
-      return startJSModuleImport({
-        stackAPIClient: this.stackAPIClient,
-        importConfig: this.importConfig,
-        moduleName,
-      });
+    return startJSModuleImport({
+      stackAPIClient: this.stackAPIClient,
+      importConfig: this.importConfig,
+      moduleName,
+    });
   }
 
   async importAllModules(): Promise<any> {
