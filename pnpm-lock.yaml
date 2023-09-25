@@ -3650,9 +3650,6 @@ packages:
   /@types/node/16.18.38:
     resolution: {integrity: sha512-6sfo1qTulpVbkxECP+AVrHV9OoJqhzCsfTNp5NIG+enM4HyM3HvZCO798WShIXBN0+QtDIcutJCjsVYnQP5rIQ==}
 
-  /@types/node/20.5.9:
-    resolution: {integrity: sha512-PcGNd//40kHAS3sTlzKB9C9XL4K0sTup8nbG5lC14kzEteTNuAFh9u5nA0o5TWnSG2r/JNPRXFVcHJIIeRlmqQ==}
-
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
     dev: true
@@ -8192,7 +8189,7 @@ packages:
       - supports-color
     dev: true
 
-  /jest-config/29.6.1_@types+node@20.5.9:
+  /jest-config/29.6.1_3rpyy5m6ecptevocbfxnh4t3uq:
     resolution: {integrity: sha512-XdjYV2fy2xYixUiV2Wc54t3Z4oxYPAELUzWnV6+mcbq0rh742X2p52pii5A3oeRzYjLnQxCsZmp0qpI6klE2cQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     peerDependencies:
@@ -8267,6 +8264,45 @@ packages:
       slash: 3.0.0
       strip-json-comments: 3.1.1
       ts-node: 8.10.2_typescript@4.9.5
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /jest-config/29.6.1_@types+node@16.18.38:
+    resolution: {integrity: sha512-XdjYV2fy2xYixUiV2Wc54t3Z4oxYPAELUzWnV6+mcbq0rh742X2p52pii5A3oeRzYjLnQxCsZmp0qpI6klE2cQ==}
+    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    peerDependencies:
+      '@types/node': '*'
+      ts-node: '>=9.0.0'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      ts-node:
+        optional: true
+    dependencies:
+      '@babel/core': 7.22.9
+      '@jest/test-sequencer': 29.6.1
+      '@jest/types': 29.6.1
+      '@types/node': 16.18.38
+      babel-jest: 29.6.1_@babel+core@7.22.9
+      chalk: 4.1.2
+      ci-info: 3.8.0
+      deepmerge: 4.3.1
+      glob: 7.2.3
+      graceful-fs: 4.2.11
+      jest-circus: 29.6.1
+      jest-environment-node: 29.6.1
+      jest-get-type: 29.4.3
+      jest-regex-util: 29.4.3
+      jest-resolve: 29.6.1
+      jest-runner: 29.6.1
+      jest-util: 29.6.1
+      jest-validate: 29.6.1
+      micromatch: 4.0.5
+      parse-json: 5.2.0
+      pretty-format: 29.6.1
+      slash: 3.0.0
+      strip-json-comments: 3.1.1
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -9654,34 +9690,6 @@ packages:
       yargs-unparser: 2.0.0
     dev: true
 
-  /mocha/10.2.0:
-    resolution: {integrity: sha512-IDY7fl/BecMwFHzoqF2sg/SHHANeBoMMXFlS9r0OXKDssYE1M5O43wUY/9BVPeIvfH2zmEbBfseqN9gBQZzXkg==}
-    engines: {node: '>= 14.0.0'}
-    hasBin: true
-    dependencies:
-      ansi-colors: 4.1.1
-      browser-stdout: 1.3.1
-      chokidar: 3.5.3
-      debug: 4.3.4_supports-color@8.1.1
-      diff: 5.0.0
-      escape-string-regexp: 4.0.0
-      find-up: 5.0.0
-      glob: 7.2.0
-      he: 1.2.0
-      js-yaml: 4.1.0
-      log-symbols: 4.1.0
-      minimatch: 5.0.1
-      ms: 2.1.3
-      nanoid: 3.3.3
-      serialize-javascript: 6.0.0
-      strip-json-comments: 3.1.1
-      supports-color: 8.1.1
-      workerpool: 6.2.1
-      yargs: 16.2.0
-      yargs-parser: 20.2.4
-      yargs-unparser: 2.0.0
-    dev: true
-
   /mock-stdin/1.0.0:
     resolution: {integrity: sha512-tukRdb9Beu27t6dN+XztSRHq9J0B/CoAOySGzHfn8UTfmqipA5yNT/sDUEyYdAV3Hpka6Wx6kOMxuObdOex60Q==}
 
@@ -10231,40 +10239,6 @@ packages:
   /object-treeify/1.1.33:
     resolution: {integrity: sha512-EFVjAYfzWqWsBMRHPMAXLCDIJnpMhdWAqR7xG6M6a2cs6PMFpl/+Z20w9zDW4vkxOFfddegBKq9Rehd0bxWE7A==}
     engines: {node: '>= 10'}
-
-  /oclif/3.15.0_p35ng363u6hdnkpdl7uptulkfi:
-    resolution: {integrity: sha512-iwIjseO6Zuw1X66bN268yVuT6U7Qfwcp4CP4FZ/fd/a81eqQ6CTSCfeInjn/uDhfC/U01KrbNZPIZCMkjWHzxA==}
-    engines: {node: '>=12.0.0'}
-    hasBin: true
-    dependencies:
-      '@oclif/core': 2.15.0_p35ng363u6hdnkpdl7uptulkfi
-      '@oclif/plugin-help': 5.2.14_p35ng363u6hdnkpdl7uptulkfi
-      '@oclif/plugin-not-found': 2.4.0_p35ng363u6hdnkpdl7uptulkfi
-      '@oclif/plugin-warn-if-update-available': 2.0.44_p35ng363u6hdnkpdl7uptulkfi
-      aws-sdk: 2.1418.0
-      concurrently: 7.6.0
-      debug: 4.3.4
-      find-yarn-workspace-root: 2.0.0
-      fs-extra: 8.1.0
-      github-slugger: 1.5.0
-      got: 11.8.6
-      lodash: 4.17.21
-      normalize-package-data: 3.0.3
-      semver: 7.5.4
-      shelljs: 0.8.5
-      tslib: 2.6.0
-      yeoman-environment: 3.19.3
-      yeoman-generator: 5.9.0_yeoman-environment@3.19.3
-    transitivePeerDependencies:
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/node'
-      - bluebird
-      - encoding
-      - mem-fs
-      - supports-color
-      - typescript
-    dev: true
 
   /oclif/3.9.1:
     resolution: {integrity: sha512-gJ8gJrohFY8qEeVBOw7wgAFdwPt2CTTkEFXDTkfUeXap6URIy6ngP7g/E1A2zFt2I0wH/qQHwcfuTpfBbj1+Uw==}
