@@ -4,7 +4,6 @@ import forEach from 'lodash/forEach';
 import values from 'lodash/values';
 import { resolve as pResolve } from 'node:path';
 
-import config from '../../config';
 import BaseClass from './base-class';
 import { log, formatError, fsUtil } from '../../utils';
 import { CustomRoleConfig, ModuleClassParams } from '../../types';
@@ -21,7 +20,7 @@ export default class ExportCustomRoles extends BaseClass {
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
     this.customRoles = {};
-    this.customRolesConfig = config.modules.customRoles;
+    this.customRolesConfig = exportConfig.modules.customRoles;
     this.existingRoles = { Admin: 1, Developer: 1, 'Content Manager': 1 };
     this.localesMap = {};
     this.sourceLocalesMap = {};
