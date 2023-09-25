@@ -8,7 +8,14 @@ import config from '../config';
 import * as fileHelper from './file-helper';
 
 // update references in entry object
-export const lookupEntries = function (data: any, mappedUids: Record<string, any>, uidMapperPath: string) {
+export const lookupEntries = function (
+  data: {
+    content_type: any;
+    entry: any;
+  },
+  mappedUids: Record<string, any>,
+  uidMapperPath: string,
+) {
   let parent: string[] = [];
   let uids: string[] = [];
   let unmapped: string[] = [];
@@ -21,9 +28,7 @@ export const lookupEntries = function (data: any, mappedUids: Record<string, any
     jsonRteData.children.forEach((element: any) => {
       if (element.type) {
         switch (element.type) {
-          case 'a':
-          case 'span':
-          case 'p': {
+          default: {
             if (element.children && element.children.length > 0) {
               gatherJsonRteEntryIds(element);
             }
@@ -92,7 +97,7 @@ export const lookupEntries = function (data: any, mappedUids: Record<string, any
     }
   };
   const find = function (schema: any = [], _entry: any) {
-    for (let i = 0, _i = schema.length; i < _i; i++) {
+    for (let i = 0, _i = schema?.length; i < _i; i++) {
       switch (schema[i].data_type) {
         case 'reference':
           if (Array.isArray(schema[i].reference_to)) {
@@ -132,7 +137,7 @@ export const lookupEntries = function (data: any, mappedUids: Record<string, any
     }
   };
 
-  function findEntryIdsFromJsonRte(entry: any, ctSchema: any) {
+  function findEntryIdsFromJsonRte(entry: any, ctSchema: any = []) {
     for (const element of ctSchema) {
       switch (element.data_type) {
         case 'blocks': {
@@ -248,7 +253,7 @@ function findUidsInNewRefFields(entry: any, uids: string[]) {
 
 export const removeUidsFromJsonRteFields = (
   entry: Record<string, any>,
-  ctSchema: Record<string, any>[],
+  ctSchema: Record<string, any>[] = [],
 ): Record<string, any> => {
   for (const element of ctSchema) {
     switch (element.data_type) {
@@ -343,7 +348,7 @@ function removeUidsFromChildren(children: Record<string, any>[] | any) {
   }
 }
 
-export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema: Record<string, any>[]) => {
+export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema: Record<string, any>[] = []) => {
   for (const element of ctSchema) {
     switch (element.data_type) {
       case 'blocks': {
@@ -382,8 +387,9 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
               let entryReferences = jsonRteData.children.filter((e: any) => doEntryReferencesExist(e));
               if (entryReferences.length > 0) {
                 jsonRteData.children = jsonRteData.children.filter((e: any) => !doEntryReferencesExist(e));
-                if (jsonRteData.children.length === 0) { // empty children array are no longer acceptable by the API, a default structure must be there 
-                  jsonRteData.children.push(JSON.parse(structuredPTag)); 
+                if (jsonRteData.children.length === 0) {
+                  // empty children array are no longer acceptable by the API, a default structure must be there
+                  jsonRteData.children.push(JSON.parse(structuredPTag));
                 }
                 return jsonRteData; // return jsonRteData without entry references
               } else {
@@ -395,7 +401,7 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
             if (entryReferences.length > 0) {
               entry[element.uid].children = entry[element.uid].children.filter((e: any) => !doEntryReferencesExist(e));
               if (entry[element.uid].children.length === 0) {
-                entry[element.uid].children.push(JSON.parse(structuredPTag)); 
+                entry[element.uid].children.push(JSON.parse(structuredPTag));
               }
             }
           }
@@ -438,7 +444,7 @@ function isEntryRef(element: any) {
 export const restoreJsonRteEntryRefs = (
   entry: Record<string, any>,
   sourceStackEntry: any,
-  ctSchema: any,
+  ctSchema: any = [],
   { mappedAssetUids, mappedAssetUrls }: any,
 ) => {
   // let mappedAssetUids = fileHelper.readFileSync(this.mappedAssetUidPath) || {};
@@ -447,7 +453,7 @@ export const restoreJsonRteEntryRefs = (
     switch (element.data_type) {
       case 'blocks': {
         if (entry[element.uid]) {
-          if (element.multiple) {
+          if (element.multiple && Array.isArray(entry[element.uid])) {
             entry[element.uid] = entry[element.uid].map((e: any, eIndex: number) => {
               let key = Object.keys(e).pop();
               let subBlock = element.blocks.filter((block: any) => block.uid === key).pop();
@@ -465,7 +471,7 @@ export const restoreJsonRteEntryRefs = (
       case 'global_field':
       case 'group': {
         if (entry[element.uid]) {
-          if (element.multiple) {
+          if (element.multiple && Array.isArray(entry[element.uid])) {
             entry[element.uid] = entry[element.uid].map((e: any, eIndex: number) => {
               let sourceStackElement = sourceStackEntry[element.uid][eIndex];
               e = restoreJsonRteEntryRefs(e, sourceStackElement, element.schema, { mappedAssetUids, mappedAssetUrls });
@@ -483,7 +489,7 @@ export const restoreJsonRteEntryRefs = (
       }
       case 'json': {
         if (entry[element.uid] && element.field_metadata.rich_text_type) {
-          if (element.multiple) {
+          if (element.multiple && Array.isArray(entry[element.uid])) {
             entry[element.uid] = entry[element.uid].map((field: any, index: number) => {
               // i am facing a Maximum call stack exceeded issue,
               // probably because of this loop operation
@@ -553,7 +559,7 @@ function setDirtyTrue(jsonRteChild: any) {
     delete jsonRteChild.uid;
 
     if (jsonRteChild.children && jsonRteChild.children.length > 0) {
-      jsonRteChild.children = jsonRteChild.children.map((subElement: any) => this.setDirtyTrue(subElement));
+      jsonRteChild.children = jsonRteChild.children.map((subElement: any) => setDirtyTrue(subElement));
     }
   }
   return jsonRteChild;
