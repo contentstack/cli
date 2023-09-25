@@ -20,7 +20,7 @@ export async function getOrgUid(config: ExportConfig): Promise<string> {
     .stack({ api_key: config.source_stack })
     .fetch()
     .catch((error: any) => {
-      log(this.config, formatError(error), 'error');
+      log(config, formatError(error), 'error');
     });
 
   return tempStackData?.org_uid;
