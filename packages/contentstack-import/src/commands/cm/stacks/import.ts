@@ -103,22 +103,25 @@ export default class ImportCommand extends Command {
     // initialize the importer
     // start import
     let contentDir: string;
+    let backupDir: string;
     try {
       const { flags } = await this.parse(ImportCommand);
       let importConfig = await setupImportConfig(flags);
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
       contentDir = importConfig.contentDir;
+      backupDir = importConfig.backupDir;
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       await moduleImporter.start();
       log(importConfig, `The content has been imported to the stack ${importConfig.apiKey} successfully!`, 'success');
+      log(importConfig, `The log has been stored at '${path.join(importConfig.backupDir, 'logs', 'import')}'`, 'success');
     } catch (error) {
-      log({ data: contentDir } as ImportConfig, `Failed to import stack content - ${formatError(error)}`, 'error');
+      log({ data: backupDir } as ImportConfig, `Failed to import stack content - ${formatError(error)}`, 'error');
       log(
-        { data: contentDir } as ImportConfig,
+        { data: backupDir } as ImportConfig,
         `The log has been stored at ${
-          { data: contentDir } ? path.join(contentDir || __dirname, 'logs', 'import') : path.join(__dirname, 'logs')
+          { data: backupDir } ? path.join(backupDir || __dirname, 'logs', 'import') : path.join(__dirname, 'logs')
         }`,
         'info',
       );
