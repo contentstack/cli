@@ -10,8 +10,8 @@ const mockData = require('../../mock-data/common.mock.json');
 
 const { cma } = configHandler.get('region');
 // const directory = './data';
-// const taxonomyFileName = join(process.cwd(), 'data', mockData.stacks[0].name);
-// const userFileName = join(process.cwd(), 'data', mockData.organizations[0].name);
+const taxonomyFileName = join(process.cwd(), 'data', mockData.stacks[0].name);
+//const userFileName = join(process.cwd(), 'data', mockData.organizations[0].name);
 
 describe('export-to-csv with action taxonomies', () => {
   describe('Create taxonomies & terms csv file with all flags including taxonomy uid', () => {
@@ -94,7 +94,6 @@ describe('export-to-csv with action taxonomies', () => {
   describe('Create taxonomies & terms csv file with prompt', () => {
     test
       .stdout({ print: process.env.PRINT === "true" || false })
-      .stub(mkdirp, 'sync', () => directory)
       .stub(fs, 'existsSync', () => new PassThrough())
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .stub(inquirer, 'registerPrompt', () => {})
