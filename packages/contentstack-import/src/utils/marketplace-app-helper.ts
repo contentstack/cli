@@ -17,8 +17,7 @@ export const getAllStackSpecificApps = async (
   config: ImportConfig,
 ) => {
   const appSdkAxiosInstance = await managementSDKClient({
-    host: developerHubBaseUrl.split('://').pop(),
-    endpoint: developerHubBaseUrl,
+    host: developerHubBaseUrl.split('://').pop()
   });
   return await appSdkAxiosInstance.axiosInstance
     .get(`${developerHubBaseUrl}/installations?target_uids=${config.target_stack}`, {
