@@ -56,8 +56,7 @@ export const getStackSpecificApps = async (params: {
 }) => {
   const { developerHubBaseUrl, httpClient, config, skip } = params;
   const appSdkAxiosInstance = await managementSDKClient({
-    host: developerHubBaseUrl.split('://').pop(),
-    endpoint: developerHubBaseUrl,
+    host: developerHubBaseUrl.split('://').pop()
   });
   return appSdkAxiosInstance.axiosInstance
     .get(`${developerHubBaseUrl}/installations?target_uids=${config.source_stack}&skip=${skip}`, {
