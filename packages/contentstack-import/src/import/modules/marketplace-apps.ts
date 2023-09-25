@@ -20,7 +20,6 @@ import {
   ContentstackClient,
 } from '@contentstack/cli-utilities';
 
-import config from '../../config';
 import BaseClass from './base-class';
 import { askEncryptionKey } from '../../utils/interactive';
 import { ModuleClassParams, MarketplaceAppsConfig } from '../../types';
@@ -60,7 +59,7 @@ export default class ImportMarketplaceApps extends BaseClass {
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
 
-    this.marketPlaceAppConfig = config.modules.marketplace_apps;
+    this.marketPlaceAppConfig = importConfig.modules.marketplace_apps;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'marketplace_apps');
     this.marketPlaceFolderPath = join(this.importConfig.backupDir, this.marketPlaceAppConfig.dirName);
     this.marketPlaceUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
