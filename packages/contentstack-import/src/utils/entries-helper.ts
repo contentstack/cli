@@ -21,8 +21,7 @@ export const lookupEntries = function (data: any, mappedUids: Record<string, any
     jsonRteData.children.forEach((element: any) => {
       if (element.type) {
         switch (element.type) {
-          case 'a':
-          case 'p': {
+          default: {
             if (element.children && element.children.length > 0) {
               gatherJsonRteEntryIds(element);
             }
@@ -412,7 +411,7 @@ function doEntryReferencesExist(element: Record<string, any>[] | any): boolean {
 
   if (element.length) {
     for (const item of element) {
-      if ((item.type === 'p' || item.type === 'a') && item.children && item.children.length > 0) {
+      if ((item.type === 'p' || item.type === 'a' || item.type === 'span') && item.children && item.children.length > 0) {
         return doEntryReferencesExist(item.children);
       } else if (isEntryRef(item)) {
         return true;
@@ -423,7 +422,7 @@ function doEntryReferencesExist(element: Record<string, any>[] | any): boolean {
       return true;
     }
 
-    if ((element.type === 'p' || element.type === 'a') && element.children && element.children.length > 0) {
+    if ((element.type === 'p' || element.type === 'a' || element.type === 'span') && element.children && element.children.length > 0) {
       return doEntryReferencesExist(element.children);
     }
   }
