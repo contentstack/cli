@@ -1,6 +1,6 @@
 import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
@@ -69,7 +69,7 @@ export default class ImportWebhooks extends BaseClass {
   async importWebhooks() {
     if (this.webhooks === undefined || isEmpty(this.webhooks)) {
       log(this.importConfig, 'No Webhook Found', 'info');
-      return resolve();
+      return;
     }
 
     const apiContent = values(this.webhooks);
