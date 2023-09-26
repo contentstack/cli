@@ -5,29 +5,26 @@
 With Launch CLI, you can interact with the Contentstack Launch platform using the terminal to create, manage and deploy Launch projects.
 
 <!-- toc -->
-
-- [Launch CLI plugin](#launch-cli-plugin)
-- [Usage](#usage)
-- [Installation steps](#installation-steps)
-- [Commands](#commands)
+* [Launch CLI plugin](#launch-cli-plugin)
+* [Usage](#usage)
+* [Installation steps](#installation-steps)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli-launch
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli-launch/1.0.12 darwin-arm64 node-v20.7.0
+@contentstack/cli-launch/1.0.12 darwin-arm64 node-v18.11.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Installation steps
