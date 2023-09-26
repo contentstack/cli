@@ -1,7 +1,7 @@
 import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
 import omit from 'lodash/omit';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
@@ -72,7 +72,7 @@ export default class Importlabels extends BaseClass {
   async importlabels() {
     if (this.labels === undefined || isEmpty(this.labels)) {
       log(this.importConfig, 'No Label Found', 'info');
-      return resolve();
+      return;
     }
 
     const apiContent = values(this.labels);
