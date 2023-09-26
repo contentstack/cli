@@ -1,6 +1,7 @@
 import { Modules } from '.';
 
 export default interface DefaultConfig {
+  contentVersion: number;
   versioning: boolean;
   host: string;
   cdn?: string;
@@ -143,9 +144,20 @@ export default interface DefaultConfig {
       fileName: string;
       requiredKeys: string[];
     };
+    taxonomies: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
+    terms: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
   };
   languagesCode: string[];
-  updatedModules: string[];
   apis: {
     userSession: string;
     globalfields: string;
@@ -165,5 +177,4 @@ export default interface DefaultConfig {
   writeConcurrency: number;
   developerHubBaseUrl: string;
   marketplaceAppEncryptionKey: string;
-  useNewModuleStructure: boolean;
 }
