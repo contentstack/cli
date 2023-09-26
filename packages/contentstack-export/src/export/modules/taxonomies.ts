@@ -120,7 +120,7 @@ export default class ExportTaxonomies extends BaseClass {
         log(this.exportConfig, `No terms found for taxonomy - '${taxonomyUID}'`, 'info');
       } else {
         fsUtil.writeFile(pResolve(this.termsFolderPath, `${taxonomyUID}-${this.termsConfig.fileName}`), this.terms);
-        log(this.exportConfig, `Terms from taxonomy '${taxonomyUID}' were successfully exported.`, 'success');
+        log(this.exportConfig, `Terms from taxonomy '${taxonomyUID}' were exported successfully.`, 'success');
       }
     }
     log(this.exportConfig, `All the terms have been exported successfully!`, 'success');
@@ -172,6 +172,7 @@ export default class ExportTaxonomies extends BaseClass {
       include_count: true,
       skip: 0,
       limit: this.taxonomiesConfig.limit || 100,
+      depth: 0 // include all the terms if set to 0
     };
 
     if (skip >= 0) params['skip'] = skip;
