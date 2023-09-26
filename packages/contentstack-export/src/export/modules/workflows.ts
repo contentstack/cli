@@ -2,7 +2,6 @@ import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
 
-import config from '../../config';
 import BaseClass from './base-class';
 import { log, formatError, fsUtil } from '../../utils';
 import { WorkflowConfig, ModuleClassParams } from '../../types';
@@ -19,7 +18,7 @@ export default class ExportWorkFlows extends BaseClass {
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
     this.workflows = {};
-    this.workflowConfig = config.modules.workflows;
+    this.workflowConfig = exportConfig.modules.workflows;
     this.qs = { include_count: true };
   }
 
@@ -53,10 +52,12 @@ export default class ExportWorkFlows extends BaseClass {
       .fetchAll(this.qs)
       .then(async (data: any) => {
         const { items, count } = data;
+        //NOTE - Handle the case where old workflow api is enabled in that case getting responses as objects.
+        const workflowCount = count !== undefined ? count : items.length;
         if (items?.length) {
           await this.sanitizeAttribs(items);
           skip += this.workflowConfig.limit || 100;
-          if (skip >= count) {
+          if (skip >= workflowCount) {
             return;
           }
           return await this.getWorkflows(skip);
