@@ -1,12 +1,12 @@
-import isEmpty from 'lodash/isEmpty';
-import values from 'lodash/values';
 import keys from 'lodash/keys';
-import flatten from 'lodash/flatten';
 import { join } from 'node:path';
+import values from 'lodash/values';
+import isEmpty from 'lodash/isEmpty';
+import flatten from 'lodash/flatten';
 import { configHandler } from '@contentstack/cli-utilities';
 
-import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
+import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import { ModuleClassParams, TaxonomiesConfig, TermsConfig } from '../../types';
 
 //NOTE: Temp types need to remove once sdk available

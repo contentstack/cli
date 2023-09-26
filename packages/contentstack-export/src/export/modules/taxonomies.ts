@@ -1,7 +1,7 @@
 import omit from 'lodash/omit';
+import keys from 'lodash/keys';
 import isEmpty from 'lodash/isEmpty';
 import flatten from 'lodash/flatten';
-import keys from 'lodash/keys';
 import { resolve as pResolve } from 'node:path';
 import { cliux, configHandler, HttpClient } from '@contentstack/cli-utilities';
 
