@@ -156,9 +156,7 @@ function chooseStack(managementAPIClient, orgUid, stackApiKey) {
 
 async function chooseBranch(branchList) {
   try {
-    const branches = await branchList;
-
-    const branchesArray = branches.map((branch) => branch.uid);
+    const branchesArray = branchList.map((branch) => branch.uid);
 
     let _chooseBranch = [
       {
@@ -846,4 +844,5 @@ module.exports = {
   formatTaxonomiesData,
   formatTermsOfTaxonomyData,
   getTaxonomy,
+  getStacks
 };
