@@ -44,6 +44,8 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   destinationStackName?: string;
   org_uid?: string;
   contentVersion: number;
+  replaceExisting?: boolean;
+  skipExisting?: boolean;
 }
 
 type branch = {
