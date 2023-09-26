@@ -2,7 +2,6 @@ import find from 'lodash/find';
 import { resolve as pResolve } from 'node:path';
 import { isAuthenticated, managementSDKClient } from '@contentstack/cli-utilities';
 
-import config from '../../config';
 import BaseClass from './base-class';
 import { log, formatError, fsUtil } from '../../utils';
 import { StackConfig, ModuleClassParams } from '../../types';
@@ -17,7 +16,7 @@ export default class ExportStack extends BaseClass {
 
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
-    this.stackConfig = config.modules.stack;
+    this.stackConfig = exportConfig.modules.stack;
     this.qs = { include_count: true };
     this.stackFolderPath = pResolve(this.exportConfig.data, this.stackConfig.dirName);
   }
@@ -41,11 +40,9 @@ export default class ExportStack extends BaseClass {
   async getStack(): Promise<any> {
     const tempAPIClient = await managementSDKClient({ host: this.exportConfig.host });
     return await tempAPIClient
-    .stack({ api_key: this.exportConfig.source_stack })
-    .fetch()
-    .catch((error: any) => {
-      log(this.exportConfig, `Failed to export stack. ${formatError(error)}`, 'error');
-    });
+      .stack({ api_key: this.exportConfig.source_stack })
+      .fetch()
+      .catch((error: any) => {});
   }
 
   async getLocales(skip: number = 0) {
