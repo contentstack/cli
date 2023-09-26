@@ -16,10 +16,17 @@ export const getAllStackSpecificApps = async (
   httpClient: HttpClient,
   config: ImportConfig,
 ) => {
-  return await httpClient
-    .get(`${developerHubBaseUrl}/installations?target_uids=${config.target_stack}`)
-    .then(({ data }) => data.data)
-    .catch((error) => log(config, `Failed to export marketplace-apps ${formatError(error)}`, 'error'));
+  const appSdkAxiosInstance = await managementSDKClient({
+    host: developerHubBaseUrl.split('://').pop()
+  });
+  return await appSdkAxiosInstance.axiosInstance
+    .get(`${developerHubBaseUrl}/installations?target_uids=${config.target_stack}`, {
+      headers: {
+        organization_uid: config.org_uid,
+      },
+    })
+    .then(( {data}:any) => data.data)
+    .catch((error:any) => log(config, `Failed to export marketplace-apps ${formatError(error)}`, 'error'));
 };
 
 export const getDeveloperHubUrl = async (config: ImportConfig): Promise<string> => {
