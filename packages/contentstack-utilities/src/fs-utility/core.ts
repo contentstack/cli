@@ -285,8 +285,8 @@ export default class FsUtility {
       if (this.fileExt === 'json') {
         this.writableStream.write('}');
       }
-      this.closeFile(closeIndexer);
     }
+    this.closeFile(closeIndexer);
   }
 
   /**
