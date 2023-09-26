@@ -2,10 +2,9 @@ import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
 import keys from 'lodash/keys';
 import flatten from 'lodash/flatten';
-import { join, resolve as pResolve } from 'node:path';
-import { cliux, configHandler, HttpClient } from '@contentstack/cli-utilities';
+import { join } from 'node:path';
+import { configHandler } from '@contentstack/cli-utilities';
 
-import config from '../../config';
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, TaxonomiesConfig, TermsConfig } from '../../types';
@@ -21,17 +20,23 @@ type TaxonomyPayload = {
 
 export default class ImportTaxonomies extends BaseClass {
   private taxonomiesMapperDirPath: string;
-  private termsMapperDirPath: string;
   private taxonomiesFolderPath: string;
-  private termsFolderPath: string;
   private taxSuccessPath: string;
   private taxFailsPath: string;
   private taxonomiesConfig: TaxonomiesConfig;
-  private termsConfig: TermsConfig;
   private taxonomies: Record<string, unknown>;
-  private taxonomiesSuccess: Record<string, unknown> = {};
-  private taxonomiesFailed: Record<string, unknown> = {};
+  private termsFolderPath: string;
+  private termsMapperDirPath: string;
+  private termsConfig: TermsConfig;
+  private termsSuccessPath: string;
+  private termsFailsPath: string;
   private taxonomyPayload: TaxonomyPayload;
+  public taxonomiesSuccess: Record<string, unknown> = {};
+  public taxonomiesFailed: Record<string, unknown> = {};
+  public termsSuccess: Record<string, Record<string, unknown>> = {};
+  public termsFailed: Record<string, Record<string, unknown>> = {};
+  public terms: Record<string, unknown> = {};
+  public taxonomyUIDs: string[] = [];
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -43,6 +48,8 @@ export default class ImportTaxonomies extends BaseClass {
     this.termsFolderPath = join(this.taxonomiesFolderPath, this.termsConfig.dirName);
     this.taxSuccessPath = join(this.taxonomiesMapperDirPath, 'success.json');
     this.taxFailsPath = join(this.taxonomiesMapperDirPath, 'fails.json');
+    this.termsSuccessPath = join(this.termsMapperDirPath, 'success.json');
+    this.termsFailsPath = join(this.termsMapperDirPath, 'fails.json');
     this.taxonomyPayload = {
       baseUrl: '',
       url: '',
@@ -84,25 +91,27 @@ export default class ImportTaxonomies extends BaseClass {
     await fsUtil.makeDirectory(this.taxonomiesMapperDirPath);
     await fsUtil.makeDirectory(this.termsMapperDirPath);
 
+    //Step 3 import taxonomy and create success & failure file
     await this.importTaxonomies();
-    // create terms related to respective taxonomy
+    this.createTaxonomySuccessAndFailedFile();
+
     if (!fileHelper.fileExistsSync(this.termsFolderPath)) {
-      log(this.importConfig, `No such file or directory - '${this.taxonomiesFolderPath}'`, 'error');
+      log(this.importConfig, `No such file or directory - '${this.termsFolderPath}'`, 'error');
       return;
     }
+    //Step 4 import terms and create success & failure file
     await this.importTerms();
-
-    if (this.taxonomiesSuccess !== undefined && !isEmpty(this.taxonomiesSuccess)) {
-      fsUtil.writeFile(this.taxSuccessPath, this.taxonomiesSuccess);
-    }
-
-    if (this.taxonomiesFailed !== undefined &&!isEmpty(this.taxonomiesFailed)) {
-      fsUtil.writeFile(this.taxFailsPath, this.taxonomiesFailed);
-    }
+    this.createTermSuccessAndFailedFile();
 
     log(this.importConfig, 'Taxonomies have been imported successfully!', 'success');
   }
 
+  /**
+   * create taxonomy and enter success & failure related data into taxonomies mapper file
+   * @method importTaxonomies
+   * @async
+   * @returns {Promise<any>} Promise<any>
+   */
   async importTaxonomies(): Promise<any> {
     if (this.taxonomies === undefined || isEmpty(this.taxonomies)) {
       log(this.importConfig, 'No Taxonomies Found', 'info');
@@ -110,6 +119,7 @@ export default class ImportTaxonomies extends BaseClass {
     }
 
     const apiContent = values(this.taxonomies);
+    this.taxonomyUIDs = keys(this.taxonomies);
 
     const onSuccess = ({
       response: { data, status } = { data: null, status: null },
@@ -117,12 +127,16 @@ export default class ImportTaxonomies extends BaseClass {
     }: any) => {
       //NOTE - Temp code to handle error thru API. Will remove this once sdk is ready
       if ([200, 201, 202].includes(status)) {
-        this.taxonomiesSuccess[uid] = data;
+        const { taxonomy } = data;
+        this.taxonomiesSuccess[taxonomy.uid] = taxonomy;
         log(this.importConfig, `Taxonomy '${name}' imported successfully`, 'success');
       } else {
         let errorMsg;
         if ([500, 503, 502].includes(status)) errorMsg = data?.message || data;
         else errorMsg = data?.error_message;
+        if (errorMsg === undefined) {
+          errorMsg = Object.values(data?.errors) && flatten(Object.values(data.errors));
+        }
         this.taxonomiesFailed[uid] = `Taxonomy '${name}' failed to be import. ${JSON.stringify(errorMsg)}`;
         log(this.importConfig, `Taxonomy '${name}' failed to be import. ${JSON.stringify(errorMsg)}`, 'error');
       }
@@ -152,7 +166,7 @@ export default class ImportTaxonomies extends BaseClass {
           includeParamOnCompletion: true,
           additionalInfo: this.taxonomyPayload,
         },
-        concurrencyLimit: config.concurrency || config.fetchConcurrency || 1,
+        concurrencyLimit: this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1,
       },
       undefined,
       false,
@@ -176,61 +190,94 @@ export default class ImportTaxonomies extends BaseClass {
     return apiOptions;
   }
 
+  /**
+   * create taxonomies success and fail in (mapper/taxonomies)
+   * @method createTaxonomySuccessAndFailedFile
+   */
+  createTaxonomySuccessAndFailedFile() {
+    if (this.taxonomiesSuccess !== undefined && !isEmpty(this.taxonomiesSuccess)) {
+      fsUtil.writeFile(this.taxSuccessPath, this.taxonomiesSuccess);
+    }
+
+    if (this.taxonomiesFailed !== undefined && !isEmpty(this.taxonomiesFailed)) {
+      fsUtil.writeFile(this.taxFailsPath, this.taxonomiesFailed);
+    }
+  }
+
+  /**
+   * create terms and enter success & failure related data into terms mapper file
+   * @method importTerms
+   * @async
+   * @returns {Promise<any>} Promise<any>
+   */
   async importTerms(): Promise<any> {
-    if (this.taxonomies === undefined || isEmpty(this.taxonomies)) {
+    if (!this.taxonomyUIDs?.length) {
       return;
     }
 
-    const listOfTaxonomyUIDs = keys(this.taxonomies);
-
     const onSuccess = ({
-      response,
-      apiData: { uid, name, taxonomy_uid } = { uid: null, name: '', taxonomy_uid: '' },
+      response: { data, status } = { data: null, status: null },
+      apiData: { uid, name, taxonomy_uid } = { uid: null, name: '', taxonomy_uid: null },
     }: any) => {
-      this.taxonomiesSuccess[uid] = response;
-      log(this.importConfig, `Term '${name}' imported successfully`, 'success');
+      //NOTE - Temp code to handle error thru API. Will remove this once sdk is ready
+      if ([200, 201, 202].includes(status)) {
+        if (!this.termsSuccess[taxonomy_uid]) this.termsSuccess[taxonomy_uid] = {};
+        const { term } = data;
+        this.termsSuccess[taxonomy_uid][term.uid] = term;
+        log(this.importConfig, `Term '${name}' imported successfully`, 'success');
+      } else {
+        if (!this.termsFailed[taxonomy_uid]) this.termsFailed[taxonomy_uid] = {};
+        let errorMsg;
+        if ([500, 503, 502].includes(status)) errorMsg = data?.message || data;
+        else errorMsg = data?.error_message;
+        if (errorMsg === undefined) {
+          errorMsg = Object.values(data?.errors) && flatten(Object.values(data.errors));
+        }
+        this.termsFailed[taxonomy_uid][uid] = `Terms '${name}' failed to be import. ${JSON.stringify(errorMsg)}`;
+        log(this.importConfig, `Terms '${name}' failed to be import. ${JSON.stringify(errorMsg)}`, 'error');
+      }
     };
 
     const onReject = ({ error, apiData }: any) => {
+      const { uid, taxonomy_uid, name } = apiData;
+      if (!this.termsFailed[taxonomy_uid]) this.termsFailed[taxonomy_uid] = {};
       const err = error?.message ? JSON.parse(error.message) : error;
-      const { name } = apiData;
       if (err?.errors?.name) {
         log(this.importConfig, `Term '${name}' already exists`, 'info');
       } else {
-        this.taxonomiesSuccess[apiData.uid] = apiData;
+        this.termsFailed[taxonomy_uid][apiData.uid] = apiData;
         log(this.importConfig, `Term '${name}' failed to be import ${formatError(error)}`, 'error');
         log(this.importConfig, error, 'error');
       }
     };
 
-    for (const taxUID of listOfTaxonomyUIDs) {
-      const terms = fsUtil.readFile(
+    for (const taxUID of this.taxonomyUIDs) {
+      //read terms from respective taxonomy
+      this.terms = fsUtil.readFile(
         join(this.termsFolderPath, `${taxUID}-${this.termsConfig.fileName}`),
         true,
       ) as Record<string, unknown>;
-      const dirPath = pResolve(this.termsMapperDirPath, `${taxUID}-terms`);
-      if (!fileHelper.fileExistsSync(dirPath)) {
-        await fsUtil.makeDirectory(dirPath);
-      }
-      //success and fail path for particular taxonomy uid
-      const apiContent = values(terms);
-      await this.makeConcurrentCall(
-        {
-          apiContent,
-          processName: 'import terms',
-          apiParams: {
-            serializeData: this.serializeTerms.bind(this),
-            reject: onReject,
-            resolve: onSuccess,
-            entity: 'create-terms',
-            includeParamOnCompletion: true,
-            additionalInfo: this.taxonomyPayload,
+
+      if (this.terms !== undefined && !isEmpty(this.terms)) {
+        const apiContent = values(this.terms);
+        await this.makeConcurrentCall(
+          {
+            apiContent,
+            processName: 'import terms',
+            apiParams: {
+              serializeData: this.serializeTerms.bind(this),
+              reject: onReject,
+              resolve: onSuccess,
+              entity: 'create-terms',
+              includeParamOnCompletion: true,
+              additionalInfo: this.taxonomyPayload,
+            },
+            concurrencyLimit: this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1,
           },
-          concurrencyLimit: config.concurrency || config.fetchConcurrency || 1,
-        },
-        undefined,
-        false,
-      );
+          undefined,
+          false,
+        );
+      }
     }
   }
 
@@ -243,5 +290,19 @@ export default class ImportTaxonomies extends BaseClass {
     const { apiData: term } = apiOptions;
     apiOptions.apiData = term;
     return apiOptions;
+  }
+
+  /**
+   * create terms success and fail in (mapper/taxonomies/terms)
+   * @method createTermSuccessAndFailedFile
+   */
+  createTermSuccessAndFailedFile() {
+    if (this.termsSuccess !== undefined && !isEmpty(this.termsSuccess)) {
+      fsUtil.writeFile(this.termsSuccessPath, this.termsSuccess);
+    }
+
+    if (this.termsFailed !== undefined && !isEmpty(this.termsFailed)) {
+      fsUtil.writeFile(this.termsFailsPath, this.termsFailed);
+    }
   }
 }
