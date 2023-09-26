@@ -83,6 +83,9 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   // Note to support old modules
   config.target_stack = config.apiKey;
 
+  config.replaceExisting = importCmdFlags['replace-existing'];
+  config.skipExisting = importCmdFlags['skip-existing'];
+
   return config;
 };
 
