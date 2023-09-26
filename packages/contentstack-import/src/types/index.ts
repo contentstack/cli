@@ -93,14 +93,12 @@ export interface TaxonomiesConfig{
   dirName: string;
   fileName: string;
   dependencies?: Modules[];
-  limit?: number;
 }
 
 export interface TermsConfig{
   dirName: string;
   fileName: string;
   dependencies?: Modules[];
-  limit?: number;
 }
 
 export { default as DefaultConfig } from './default-config';

@@ -181,7 +181,7 @@ export default class ImportTaxonomies extends BaseClass {
   serializeTaxonomy(apiOptions: ApiOptions): ApiOptions {
     const { apiData: taxonomy } = apiOptions;
     if (this.taxonomiesSuccess.hasOwnProperty(taxonomy.uid)) {
-      log(this.importConfig, `Taxonomy '${taxonomy.title}' already exists. Skipping it to avoid duplicates!`, 'info');
+      log(this.importConfig, `Taxonomy '${taxonomy.name}' already exists. Skipping it to avoid duplicates!`, 'info');
       apiOptions.entity = undefined;
     } else {
       apiOptions.apiData = taxonomy;
