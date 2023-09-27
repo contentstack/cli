@@ -13,11 +13,11 @@ const directory = join(process.cwd(), 'data');
 const taxonomyFileName = join(process.cwd(), 'data', mockData.stacks[0].name);
 
 describe('export-to-csv with action taxonomies', () => {
-  if(!fs.existsSync(directory)) fs.mkdirSync(directory);
+  if (!fs.existsSync(directory)) fs.mkdirSync(directory);
 
   describe('Create taxonomies & terms csv file with all flags including taxonomy uid', () => {
     test
-      .stdout({ print: process.env.PRINT === "true" || false  })
+      .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .nock(cma, (api) => {
         api
@@ -53,7 +53,7 @@ describe('export-to-csv with action taxonomies', () => {
 
   describe('Create taxonomies & terms csv file with all flags excluding taxonomy uid', () => {
     test
-      .stdout({ print: process.env.PRINT === "true" || false  })
+      .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .nock(cma, (api) => {
         api
@@ -92,7 +92,7 @@ describe('export-to-csv with action taxonomies', () => {
 
   describe('Create taxonomies & terms csv file with prompt', () => {
     test
-      .stdout({ print: process.env.PRINT === "true" || false })
+      .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .stub(inquirer, 'registerPrompt', () => {})
       .stub(inquirer, 'prompt', () => {
@@ -130,7 +130,7 @@ describe('export-to-csv with action entries', () => {
 
   describe('Create entries csv file with flags', () => {
     test
-      .stdout({ print: process.env.PRINT === "true" || false  })
+      .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .nock(cma, (api) => {
         api
@@ -138,23 +138,27 @@ describe('export-to-csv with action entries', () => {
           .reply(200, { stacks: mockData.stacks });
       })
       .nock(cma, (api) => {
-        api.get('/v3/environments').reply(200, {environments: mockData.environments});
+        api.get('/v3/environments').reply(200, { environments: mockData.environments });
       })
       .nock(cma, (api) => {
         api.get('/v3/content_types?count=true').reply(200, { content_types: 2 });
       })
       .nock(cma, (api) => {
-        api.get('/v3/content_types').reply(200, {content_types: mockData.contentTypes} );
+        api.get('/v3/content_types').reply(200, { content_types: mockData.contentTypes });
       })
       .nock(cma, (api) => {
         api
-          .get(`/v3/content_types/${mockData.contentTypes[0].uid}/entries?include_publish_details=true&locale=en1&count=true`)
+          .get(
+            `/v3/content_types/${mockData.contentTypes[0].uid}/entries?include_publish_details=true&locale=en1&count=true`,
+          )
           .reply(200, { entries: 2 });
       })
       .nock(cma, (api) => {
         api
-          .get(`/v3/content_types/${mockData.contentTypes[0].uid}/entries?include_publish_details=true&locale=en1&skip=0&limit=100&include_workflow=true`)
-          .reply(200, {entries: mockData.entry});
+          .get(
+            `/v3/content_types/${mockData.contentTypes[0].uid}/entries?include_publish_details=true&locale=en1&skip=0&limit=100&include_workflow=true`,
+          )
+          .reply(200, { entries: mockData.entry });
       })
       .command([
         'cm:export-to-csv',
@@ -176,7 +180,7 @@ describe('export-to-csv with action entries', () => {
 
   describe('Create entries csv file with prompt', () => {
     test
-      .stdout({ print: process.env.PRINT === "true" || false })
+      .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .stub(inquirer, 'registerPrompt', () => {})
       .stub(inquirer, 'prompt', () => {
@@ -234,7 +238,7 @@ describe('export-to-csv with action entries', () => {
 describe('export-to-csv with action users', () => {
   describe('Export users csv file with flags', () => {
     test
-      .stdout({ print: process.env.PRINT === "true" || false  })
+      .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .nock(cma, (api) => {
         api.get('/v3/user?include_orgs_roles=true').reply(200, { user: mockData.users[0] });
@@ -256,7 +260,7 @@ describe('export-to-csv with action users', () => {
 
   describe('Export users csv file with prompt', () => {
     test
-      .stdout({ print: process.env.PRINT === "true" || false  })
+      .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .stub(inquirer, 'registerPrompt', () => {})
       .stub(inquirer, 'prompt', () => {
