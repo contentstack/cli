@@ -7,8 +7,7 @@ import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync }
 import config from '../../../../config';
 import { auditMsg } from '../../../../messages';
 import { BaseCommand } from '../../../../base-command';
-import ContentType from '../../../../modules/content-types';
-import GlobalField from '../../../../modules/global-fields';
+import { Entries, GlobalField, ContentType } from '../../../../modules';
 import { ContentTypeStruct, OutputColumn, RefErrorReturnType } from '../../../../types';
 
 export default class Audit extends BaseCommand<typeof Audit> {
@@ -29,6 +28,7 @@ export default class Audit extends BaseCommand<typeof Audit> {
       description: auditMsg.REPORT_PATH,
     }),
     'reference-only': Flags.boolean({
+      hidden: true,
       description: auditMsg.REFERENCE_ONLY,
     }),
     modules: Flags.string({
@@ -51,13 +51,14 @@ export default class Audit extends BaseCommand<typeof Audit> {
       const reportPath = this.flags['report-path'] || process.cwd();
       this.sharedConfig.reportPath = resolve(reportPath, 'audit-report');
       let { ctSchema, gfSchema } = this.getCtAndGfSchema();
+      let missingCtRefs, missingGfRefs, missingEntryRefs;
 
       for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
         ux.action.start(this.$t(this.messages.AUDIT_START_SPINNER, { module }));
 
         switch (module) {
           case 'content-types':
-            const missingCtRefs = await new ContentType({
+            missingCtRefs = await new ContentType({
               ctSchema,
               gfSchema,
               log: this.log,
@@ -66,10 +67,9 @@ export default class Audit extends BaseCommand<typeof Audit> {
             }).run();
 
             await this.prepareReport(module, missingCtRefs);
-            this.showOutputOnScreen(missingCtRefs);
             break;
           case 'global-fields':
-            const missingGfRefs = await new GlobalField({
+            missingGfRefs = await new GlobalField({
               ctSchema,
               gfSchema,
               log: this.log,
@@ -78,19 +78,36 @@ export default class Audit extends BaseCommand<typeof Audit> {
             }).run();
 
             await this.prepareReport(module, missingGfRefs);
-            this.showOutputOnScreen(missingGfRefs);
             break;
           case 'entries':
+            missingEntryRefs = await new Entries({
+              ctSchema,
+              gfSchema,
+              log: this.log,
+              moduleName: module,
+              config: this.sharedConfig,
+            }).run();
+            await this.prepareReport(module, missingEntryRefs);
             break;
         }
 
         ux.action.stop();
-        this.log('');
+      }
+
+      if (this.sharedConfig.showTerminalOutput) {
+        this.log(''); // NOTE adding new line
+        for (const missingRefs of [missingCtRefs, missingGfRefs, missingEntryRefs]) {
+          if (missingRefs) {
+            this.showOutputOnScreen(missingRefs);
+            this.log(''); // NOTE adding new line
+          }
+        }
       }
 
       this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
     } catch (error) {
       this.log(error instanceof Error ? error.message : error, 'error');
+      console.trace(error);
       ux.action.stop('Process failed.!');
       this.exit(1);
     }
@@ -170,7 +187,7 @@ export default class Audit extends BaseCommand<typeof Audit> {
           minWidth: 7,
           header: 'Missing references',
           get: (row) => {
-            return chalk.red(row.missingRefs);
+            return chalk.red(typeof row.missingRefs === 'object' ? JSON.stringify(row.missingRefs) : row.missingRefs);
           },
         },
         treeStr: {
@@ -182,7 +199,6 @@ export default class Audit extends BaseCommand<typeof Audit> {
         ...this.flags,
       },
     );
-    this.log(''); // NOTE add new line in terminal
   }
 
   /**
@@ -203,7 +219,6 @@ export default class Audit extends BaseCommand<typeof Audit> {
 
       // NOTE write int json
       writeFileSync(join(this.sharedConfig.reportPath, `${moduleName}.json`), JSON.stringify(listOfMissingRefs));
-      this.log(''); // NOTE add new line in terminal
 
       // NOTE write into CSV
       const csvStream = csv.format({ headers: true });
@@ -216,7 +231,7 @@ export default class Audit extends BaseCommand<typeof Audit> {
         .pipe(assetFileStream)
         .on('close', () => {
           resolve();
-          this.log(''); // NOTE add new line in terminal
+          // this.log(''); // NOTE add new line in terminal
         })
         .on('error', reject);
 
@@ -237,6 +252,7 @@ export default class Audit extends BaseCommand<typeof Audit> {
 
         for (const column of columns) {
           row[column] = issue[OutputColumn[column]];
+          row[column] = typeof row[column] === 'object' ? JSON.stringify(row[column]) : row[column];
         }
 
         csvStream.write(row);

@@ -14,8 +14,9 @@ const auditMsg = {
   AUDIT_START_SPINNER: 'Starting {module} scanning',
   REFERENCE_ONLY: 'Checks only for missing references',
   NOT_VALID_PATH: "Provided path: '{path}' is not valid",
-  SCAN_CT_SUCCESS_MSG: "The scanning of {module} '{title}' has been successfully finished.",
   FINAL_REPORT_PATH: "Writing reports completed. You can find reports at '{path}'",
+  SCAN_CT_SUCCESS_MSG: "The scanning of {module} '{title}' has been successfully finished.",
+  SCAN_ENTRY_SUCCESS_MSG: "The scanning of {module}({local}) '{title}' has been successfully finished.",
 };
 
 const messages: typeof errors & typeof commonMsg & typeof auditMsg = {
