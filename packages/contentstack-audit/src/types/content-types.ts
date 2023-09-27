@@ -89,7 +89,7 @@ type ModularBlocksDataType = CommonDataTypeStruct & {
 };
 
 // NOTE It can have following field types global, Custom, json/json rte, reference
-type GroupFieldSchemaTypes = CommonDataTypeStruct | GlobalFieldDataType | ReferenceFieldDataType;
+type GroupFieldSchemaTypes = GroupFieldDataType | CommonDataTypeStruct | GlobalFieldDataType | ReferenceFieldDataType;
 
 type GlobalFieldSchemaTypes = ReferenceFieldDataType | GroupFieldDataType | CustomFieldDataType;
 
