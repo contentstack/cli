@@ -243,13 +243,10 @@ describe('export-to-csv with action users', () => {
       .stub(mkdirp, 'sync', () => {})
       .stub(process, 'chdir', () => {})
       .nock(cma, (api) => {
-        api.get('/v3/user?include_orgs_roles=true').reply(200, { user: mockData.users[0] });
+        api.get('/v3/user?include_orgs_roles=true').reply(200, { user: mockData.users[0] }).persist();
       })
       .nock(cma, (api) => {
         api.get(`/v3/organizations/${mockData.organizations[0].uid}/roles`).reply(200, { roles: mockData.roles });
-      })
-      .nock(cma, (api) => {
-        api.get('/v3/user?include_orgs_roles=true').reply(200, { user: mockData.users[0] });
       })
       .nock(cma, (api) => {
         api
@@ -274,13 +271,10 @@ describe('export-to-csv with action users', () => {
         api.get(`/v3/organizations?limit=100`).reply(200, { organizations: mockData.organizations });
       })
       .nock(cma, (api) => {
-        api.get('/v3/user?include_orgs_roles=true').reply(200, { user: mockData.users[0] });
+        api.get('/v3/user?include_orgs_roles=true').reply(200, { user: mockData.users[0] }).persist();
       })
       .nock(cma, (api) => {
         api.get(`/v3/organizations/${mockData.organizations[0].uid}/roles`).reply(200, { roles: mockData.roles });
-      })
-      .nock(cma, (api) => {
-        api.get('/v3/user?include_orgs_roles=true').reply(200, { user: mockData.users[0] });
       })
       .nock(cma, (api) => {
         api
