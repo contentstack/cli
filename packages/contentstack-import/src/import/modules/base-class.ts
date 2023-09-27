@@ -18,6 +18,7 @@ import { LabelData } from '@contentstack/management/types/stack/label';
 import { WebhookData } from '@contentstack/management/types/stack/webhook';
 import { WorkflowData } from '@contentstack/management/types/stack/workflow';
 import { RoleData } from '@contentstack/management/types/stack/role';
+import { HttpClient } from '@contentstack/cli-utilities';
 
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
@@ -47,7 +48,9 @@ export type ApiModuleType =
   | 'create-entries'
   | 'update-entries'
   | 'publish-entries'
-  | 'delete-entries';
+  | 'delete-entries'
+  | 'create-taxonomies'
+  | 'create-terms';
 
 export type ApiOptions = {
   uid?: string;
@@ -379,6 +382,19 @@ export default abstract class BaseClass {
           .contentType(apiData.cTUid)
           .entry(apiData.entryUid)
           .delete({ locale: additionalInfo.locale })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'create-taxonomies':
+        return new HttpClient()
+          .headers(additionalInfo.headers)
+          .post(additionalInfo.url, { taxonomy: apiData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'create-terms':
+        const url = `${additionalInfo.baseUrl}/${apiData.taxonomy_uid}/terms`;
+        return new HttpClient()
+          .headers(additionalInfo.headers)
+          .post(url, { term: apiData })
           .then(onSuccess)
           .catch(onReject);
       default:
