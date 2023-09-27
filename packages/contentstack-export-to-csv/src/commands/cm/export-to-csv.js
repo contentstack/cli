@@ -277,7 +277,7 @@ class ExportToCsvCommand extends Command {
           throw new Error(branchExists.errorMessage);
         }
         stack.branch_uid = branchUid;
-        stackAPIClient = getStackClient(managementAPIClient, stack);
+        stackAPIClient = this.getStackClient(managementAPIClient, stack);
       } catch (error) {
         if (error?.message || error?.errorMessage) {
           cliux.error(util.formatError(error));
