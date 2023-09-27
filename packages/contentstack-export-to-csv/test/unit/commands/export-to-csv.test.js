@@ -188,8 +188,7 @@ describe('export-to-csv with action entries', () => {
           action: 'entries',
           chosenOrg: mockData.organizations[0].name,
           chosenStack: mockData.stacks[0].name,
-          chosenLanguage: 'en1',
-          chosenContentTypes: mockData.contentTypes[0].title
+          chosenContentTypes: mockData.contentTypes[0]
         });
       })
       .nock(cma, (api) => {
@@ -225,9 +224,9 @@ describe('export-to-csv with action entries', () => {
       .nock(cma, (api) => {
         api
           .get(`/v3/content_types/${mockData.contentTypes[0].uid}/entries?include_publish_details=true&locale=en1&skip=0&limit=100&include_workflow=true`)
-          .reply(200, {entry: mockData.entry});
+          .reply(200, {entries: mockData.entry});
       })
-      .command(['cm:export-to-csv'])
+      .command(['cm:export-to-csv', '--locale', 'en1'])
       .it('Entries CSV file should be created with prompt');
   });
 });
