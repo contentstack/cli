@@ -47,7 +47,6 @@ describe('export-to-csv with action taxonomies', () => {
       ])
       .do(({ stdout }) => {
         expect(stdout).to.contain(`Writing taxonomies to file: ${taxonomyFileName}_taxonomies.csv`);
-        //expect(stdout).to.contain(`Writing taxonomies to file: ${taxonomyFileName}_taxonomies.csv`)
       })
       .it('CSV file should be created');
   });
@@ -127,11 +126,11 @@ describe('export-to-csv with action taxonomies', () => {
 });
 
 describe('export-to-csv with action entries', () => {
-  if(!fs.existsSync(directory)) fs.mkdirSync(directory);
+  if (!fs.existsSync(directory)) fs.mkdirSync(directory);
 
   describe('Create entries csv file with flags', () => {
     test
-      .stdout({ print: true })
+      .stdout({ print: process.env.PRINT === "true" || false  })
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .nock(cma, (api) => {
         api
@@ -141,14 +140,11 @@ describe('export-to-csv with action entries', () => {
       .nock(cma, (api) => {
         api.get('/v3/environments').reply(200, {environments: mockData.environments});
       })
-      // .nock(cma, (api) => {
-      //   api.get('/v3/stack/branches').reply(200, { branch: mockData.branch });
-      // })
       .nock(cma, (api) => {
         api.get('/v3/content_types?count=true').reply(200, { content_types: 2 });
       })
       .nock(cma, (api) => {
-        api.get('/v3/content_types').reply(200, {res: mockData.contentTypes} );
+        api.get('/v3/content_types').reply(200, {content_types: mockData.contentTypes} );
       })
       .nock(cma, (api) => {
         api
@@ -180,21 +176,18 @@ describe('export-to-csv with action entries', () => {
 
   describe('Create entries csv file with prompt', () => {
     test
-      .stdout({ print: true })
+      .stdout({ print: process.env.PRINT === "true" || false })
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .stub(inquirer, 'registerPrompt', () => {})
       .stub(inquirer, 'prompt', () => {
         return Promise.resolve({
           action: 'entries',
           chosenOrg: mockData.organizations[0].name,
+          chosenLanguage: mockData.locales[0].name,
           chosenStack: mockData.stacks[0].name,
-          chosenContentTypes: mockData.contentTypes[0]
+          chosenContentTypes: [mockData.contentTypes[0].uid],
+          branch: mockData.branch.uid,
         });
-      })
-      .nock(cma, (api) => {
-        api
-          .get(`/v3/stacks?&query={"org_uid":"${mockData.organizations[0].uid}"}`)
-          .reply(200, { stacks: mockData.stacks });
       })
       .nock(cma, (api) => {
         api.get(`/v3/organizations?limit=100`).reply(200, { organizations: mockData.organizations });
@@ -205,28 +198,35 @@ describe('export-to-csv with action entries', () => {
           .reply(200, { stacks: mockData.stacks });
       })
       .nock(cma, (api) => {
-        api.get('/v3/environments').reply(200, {environments: mockData.environments});
+        api.get('/v3/environments').reply(200, { environments: mockData.environments });
       })
-      // .nock(cma, (api) => {
-      //   api.get('/v3/stack/branches').reply(200, { branch: mockData.branch });
-      // })
+      .nock(cma, (api) => {
+        api.get('/v3/locales').reply(200, { locales: mockData.locales });
+      })
+      .nock(cma, (api) => {
+        api.get('/v3/stacks/branches').reply(200, { branches: mockData.branch });
+      })
       .nock(cma, (api) => {
         api.get('/v3/content_types?count=true').reply(200, { content_types: 2 });
       })
       .nock(cma, (api) => {
-        api.get('/v3/content_types?skip=0&include_branch=true').reply(200, {contentTypes: mockData.contentTypes} );
+        api.get('/v3/content_types?skip=0&include_branch=true').reply(200, { content_types: mockData.contentTypes });
       })
       .nock(cma, (api) => {
         api
-          .get(`/v3/content_types/${mockData.contentTypes[0].uid}/entries?include_publish_details=true&locale=en1&count=true`)
-          .reply(200, { entries: 2 });
+          .get(
+            `/v3/content_types/${mockData.contentTypes[0].uid}/entries?include_publish_details=true&locale=${mockData.locales[0].code}&count=true`,
+          )
+          .reply(200, { entries: 1 });
       })
       .nock(cma, (api) => {
         api
-          .get(`/v3/content_types/${mockData.contentTypes[0].uid}/entries?include_publish_details=true&locale=en1&skip=0&limit=100&include_workflow=true`)
-          .reply(200, {entries: mockData.entry});
+          .get(
+            `/v3/content_types/${mockData.contentTypes[0].uid}/entries?include_publish_details=true&locale=${mockData.locales[0].code}&skip=0&limit=100&include_workflow=true`,
+          )
+          .reply(200, { entries: mockData.entry });
       })
-      .command(['cm:export-to-csv', '--locale', 'en1'])
+      .command(['cm:export-to-csv'])
       .it('Entries CSV file should be created with prompt');
   });
 });
@@ -253,7 +253,7 @@ describe('export-to-csv with action users', () => {
       .command(['cm:export-to-csv', '--action', 'users', '--org', mockData.organizations[0].uid])
       .it('Users csv file should be successfully created');
   });
-  
+
   describe('Export users csv file with prompt', () => {
     test
       .stdout({ print: process.env.PRINT === "true" || false  })
