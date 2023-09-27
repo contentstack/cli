@@ -1,6 +1,6 @@
 import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
@@ -118,7 +118,7 @@ export default class ImportCustomRoles extends BaseClass {
   async importCustomRoles() {
     if (this.customRoles === undefined || isEmpty(this.customRoles)) {
       log(this.importConfig, 'No custom-roles found', 'info');
-      return resolve();
+      return;
     }
 
     const apiContent = values(this.customRoles);
