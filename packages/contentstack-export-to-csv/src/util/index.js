@@ -399,7 +399,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
   return filteredEntries.map((entry) => {
     let workflow = '';
     const envArr = [];
-    if (entry.publish_details.length) {
+    if (entry?.publish_details?.length) {
       entry.publish_details.forEach((env) => {
         envArr.push(JSON.stringify([environments[env['environment']], env['locale'], env['time']]));
       });
