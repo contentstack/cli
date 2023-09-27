@@ -227,5 +227,17 @@
       "created_at": "2023-06-12T18:59:56.853Z",
       "updated_at": "2023-06-12T18:59:56.853Z"
     }
+  ],
+  "locales": [
+    {
+      "code": "en1",
+      "name": "English - En",
+      "fallback_locale": "en-us",
+      "uid": "gsfdasgdf",
+      "created_at": "2023-09-11T10:44:40.213Z",
+      "updated_at": "2023-09-11T10:44:40.213Z",
+      "ACL": [],
+      "_version": 1
+    }
   ]
 }
