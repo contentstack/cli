@@ -156,9 +156,7 @@ function chooseStack(managementAPIClient, orgUid, stackApiKey) {
 
 async function chooseBranch(branchList) {
   try {
-    const branches = await branchList;
-
-    const branchesArray = branches.map((branch) => branch.uid);
+    const branchesArray = branchList.map((branch) => branch.uid);
 
     let _chooseBranch = [
       {
@@ -401,7 +399,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
   return filteredEntries.map((entry) => {
     let workflow = '';
     const envArr = [];
-    if (entry.publish_details.length) {
+    if (entry?.publish_details?.length) {
       entry.publish_details.forEach((env) => {
         envArr.push(JSON.stringify([environments[env['environment']], env['locale'], env['time']]));
       });
@@ -862,4 +860,5 @@ module.exports = {
   formatTaxonomiesData,
   formatTermsOfTaxonomyData,
   getTaxonomy,
+  getStacks
 };
