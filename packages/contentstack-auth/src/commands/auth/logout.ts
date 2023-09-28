@@ -1,6 +1,5 @@
 import { Command } from '@contentstack/cli-command';
 import {
-  logger,
   cliux,
   configHandler,
   printFlagDeprecation,
@@ -11,8 +10,8 @@ import {
 } from '@contentstack/cli-utilities';
 
 import { authHandler } from '../../utils';
-
-export default class LogoutCommand extends Command {
+import { BaseCommand } from './base-command';
+export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
   static run;
   static description = 'User session logout';
   static examples = ['$ csdx auth:logout', '$ csdx auth:logout -y', '$ csdx auth:logout --yes'];
@@ -58,7 +57,7 @@ export default class LogoutCommand extends Command {
           await oauthHandler.oauthLogout()
         }
         cliux.loader('');
-        logger.info('successfully logged out');
+        this.logger.info('successfully logged out');
         cliux.success('CLI_AUTH_LOGOUT_SUCCESS');
       } else {
         cliux.success('CLI_AUTH_LOGOUT_ALREADY');
@@ -77,7 +76,7 @@ export default class LogoutCommand extends Command {
         }
       }
 
-      logger.error('Logout failed', errorMessage);
+      this.logger.error('Logout failed', errorMessage);
       cliux.print('CLI_AUTH_LOGOUT_FAILED', { color: 'yellow' });
       cliux.print(errorMessage, { color: 'red' });
     } finally {

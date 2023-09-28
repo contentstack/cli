@@ -1,6 +1,9 @@
 import winston from 'winston';
+import path, { resolve } from 'path';
+
 import messageHandler from './message-handler';
-class LoggerService {
+
+export class LoggerService {
   name: string;
   data: object | null;
   logger: winston.Logger;
@@ -8,16 +11,16 @@ class LoggerService {
   static dateFormat(): string {
     return new Date(Date.now()).toUTCString();
   }
-  constructor(name: string) {
+  constructor(pathToLog: string, name: string) {
     this.data = null;
     this.name = null;
 
     const logger = winston.createLogger({
       transports: [
-        new winston.transports.Console(),
-        // new winston.transports.File({
-        //   filename: `../contentstack/logs/${name}.log`,
-        // }),
+        // new winston.transports.Console(),
+        new winston.transports.File({
+          filename: process.env.CS_CLI_LOG_PATH || path.join(pathToLog, `/logs/${name}.log`),
+        }),
       ],
       format: winston.format.combine(
         winston.format.colorize(),
@@ -96,5 +99,3 @@ class LoggerService {
     }
   }
 }
-
-export default new LoggerService('cli')
