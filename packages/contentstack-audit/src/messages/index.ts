@@ -12,10 +12,13 @@ const auditMsg = {
   REPORT_PATH: 'Path to store the audit reports',
   MODULES: 'Provide list of modules to be audited',
   AUDIT_START_SPINNER: 'Starting {module} scanning',
+  PREPARING_ENTRY_METADATA: 'Creating entry metadata',
   REFERENCE_ONLY: 'Checks only for missing references',
   NOT_VALID_PATH: "Provided path: '{path}' is not valid",
-  SCAN_CT_SUCCESS_MSG: "The scanning of {module} '{title}' has been successfully finished.",
+  NO_MISSING_REF_FOUND: 'We have not identified any missing references.',
   FINAL_REPORT_PATH: "Writing reports completed. You can find reports at '{path}'",
+  SCAN_CT_SUCCESS_MSG: "The scanning of {module} '{title}' has been successfully finished.",
+  SCAN_ENTRY_SUCCESS_MSG: "The scanning of {module}({local}) '{title}' has been successfully finished.",
 };
 
 const messages: typeof errors & typeof commonMsg & typeof auditMsg = {
