@@ -1,6 +1,7 @@
 const config = {
-  modules: ['content-types', 'global-fields'],
+  showTerminalOutput: true,
   skipRefs: ['sys_assets'],
+  modules: ['content-types', 'global-fields', 'entries'],
   moduleConfig: {
     'content-types': {
       name: 'content type',
@@ -11,6 +12,16 @@ const config = {
       name: 'global field',
       dirName: 'global_fields',
       fileName: 'globalfields.json',
+    },
+    entries: {
+      name: 'entries',
+      dirName: 'entries',
+      fileName: 'entries.json',
+    },
+    locales: {
+      name: 'locales',
+      dirName: 'locales',
+      fileName: 'locales.json',
     },
   },
 };
