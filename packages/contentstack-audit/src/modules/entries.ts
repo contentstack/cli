@@ -3,6 +3,7 @@ import values from 'lodash/values';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
+import { FsUtility } from '@contentstack/cli-utilities';
 
 import {
   LogFn,
@@ -27,7 +28,6 @@ import {
 } from '../types';
 import auditConfig from '../config';
 import { $t, auditMsg } from '../messages';
-import { FsUtility } from '@contentstack/cli-utilities';
 
 export default class Entries {
   public log: LogFn;
@@ -95,9 +95,27 @@ export default class Entries {
     }
     this.log('', 'info'); // Adding empty line
 
+    for (let propName in this.missingRefs) {
+      if (!this.missingRefs[propName].length) {
+        delete this.missingRefs[propName];
+      }
+    }
+
     return this.missingRefs;
   }
 
+  /**
+   * The function `lookForReference` iterates over a given schema and validates different field types
+   * such as reference, global field, JSON, modular blocks, and group fields.
+   * @param {Record<string, unknown>[]} tree - An array of objects representing the tree structure of
+   * the content type or field being validated. Each object in the array has the following properties:
+   * @param {ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType}  - -
+   * `tree`: An array of objects representing the tree structure of the content type or field being
+   * validated.
+   * @param {EntryStruct | EntryGlobalFieldDataType | EntryModularBlocksDataType |
+   * EntryGroupFieldDataType} entry - The `entry` parameter is an object that represents the data of an
+   * entry. It can have different types depending on the `schema` parameter.
+   */
   async lookForReference(
     tree: Record<string, unknown>[],
     { schema }: ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType,
@@ -152,6 +170,19 @@ export default class Entries {
     }
   }
 
+  /**
+   * The function `validateReferenceField` validates the reference values of a given field in a tree
+   * structure.
+   * @param {Record<string, unknown>[]} tree - An array of objects representing a tree structure. Each
+   * object in the array should have a unique identifier field.
+   * @param {ReferenceFieldDataType} fieldStructure - The `fieldStructure` parameter is of type
+   * `ReferenceFieldDataType`. It represents the structure of the reference field that needs to be
+   * validated.
+   * @param {EntryReferenceFieldDataType[]} field - The `field` parameter is an array of
+   * `EntryReferenceFieldDataType` objects.
+   * @returns the result of calling the `validateReferenceValues` function with the provided arguments
+   * `tree`, `fieldStructure`, and `field`.
+   */
   validateReferenceField(
     tree: Record<string, unknown>[],
     fieldStructure: ReferenceFieldDataType,
@@ -160,6 +191,18 @@ export default class Entries {
     return this.validateReferenceValues(tree, fieldStructure, field);
   }
 
+  /**
+   * The function "validateGlobalField" is an asynchronous function that takes in a tree,
+   * fieldStructure, and field as parameters and looks for references in the tree.
+   * @param {Record<string, unknown>[]} tree - The `tree` parameter is an array of objects. Each object
+   * represents a node in a tree structure. The tree structure can be represented as a hierarchical
+   * structure where each object can have child objects.
+   * @param {GlobalFieldDataType} fieldStructure - The `fieldStructure` parameter is of type
+   * `GlobalFieldDataType` and represents the structure of the global field. It defines the expected
+   * properties and their types for the global field.
+   * @param {EntryGlobalFieldDataType} field - The `field` parameter is of type
+   * `EntryGlobalFieldDataType`. It represents a single global field entry.
+   */
   async validateGlobalField(
     tree: Record<string, unknown>[],
     fieldStructure: GlobalFieldDataType,
@@ -169,6 +212,18 @@ export default class Entries {
     await this.lookForReference(tree, fieldStructure, field);
   }
 
+  /**
+   * The function `validateJsonRTEFields` is used to validate the JSON RTE fields by checking if the
+   * referenced entries exist and adding missing references to a tree structure.
+   * @param {Record<string, unknown>[]} tree - An array of objects representing the tree structure of
+   * the JSON RTE fields.
+   * @param {JsonRTEFieldDataType} fieldStructure - The `fieldStructure` parameter is of type
+   * `JsonRTEFieldDataType` and represents the structure of a JSON RTE field. It contains properties
+   * such as `uid`, `data_type`, and `display_name`.
+   * @param {EntryJsonRTEFieldDataType} field - The `field` parameter is of type
+   * `EntryJsonRTEFieldDataType`, which represents a JSON RTE field in an entry. It contains properties
+   * such as `uid`, `attrs`, and `children`.
+   */
   async validateJsonRTEFields(
     tree: Record<string, unknown>[],
     fieldStructure: JsonRTEFieldDataType,
@@ -177,24 +232,24 @@ export default class Entries {
     // NOTE Other possible reference logic will be added related to JSON RTE (Ex missing assets, extensions etc.,)
     for (const child of field?.children ?? []) {
       const { uid: childrenUid, attrs, children } = child;
-      const { 'entry-uid': entryUid } = attrs || {};
+      const { 'entry-uid': entryUid, 'content-type-uid': contentTypeUid } = attrs || {};
 
       if (entryUid) {
         const refExist = find(this.entryMetaData, { uid: entryUid });
 
         if (!refExist) {
-          tree.push(
-            { field: 'children' },
-            { field: childrenUid, uid: fieldStructure.uid, name: fieldStructure.display_name },
-          );
+          tree.push({ field: 'children' }, { field: childrenUid, uid: fieldStructure.uid });
           this.missingRefs[this.currentUid].push({
             tree,
             uid: this.currentUid,
             name: this.currentTitle,
             data_type: fieldStructure.data_type,
             display_name: fieldStructure.display_name,
-            treeStr: tree.map(({ field, name }) => name || field).join(' ➜ '),
-            missingRefs: [{ uid: entryUid, 'content-type-uid': fieldStructure.uid }],
+            treeStr: tree
+              .map(({ name }) => name)
+              .filter((val) => val)
+              .join(' ➜ '),
+            missingRefs: [{ uid: entryUid, 'content-type-uid': contentTypeUid }],
           });
         }
       }
@@ -205,6 +260,19 @@ export default class Entries {
     }
   }
 
+  /**
+   * The function validates the modular blocks field by traversing each module and looking for
+   * references.
+   * @param {Record<string, unknown>[]} tree - The `tree` parameter is an array of objects that
+   * represent the structure of the modular blocks field. Each object in the array represents a level
+   * in the tree structure, and it contains a `field` property that represents the unique identifier of
+   * the modular block at that level.
+   * @param {ModularBlocksDataType} fieldStructure - The `fieldStructure` parameter is of type
+   * `ModularBlocksDataType` and represents the structure of the modular blocks field. It contains
+   * information about the blocks and their properties.
+   * @param {EntryModularBlocksDataType[]} field - The `field` parameter is an array of objects of type
+   * `EntryModularBlocksDataType`.
+   */
   async validateModularBlocksField(
     tree: Record<string, unknown>[],
     fieldStructure: ModularBlocksDataType,
@@ -224,6 +292,15 @@ export default class Entries {
     }
   }
 
+  /**
+   * The function validates a group field by looking for a reference in a tree structure.
+   * @param {Record<string, unknown>[]} tree - An array of objects representing the tree structure.
+   * @param {GroupFieldDataType} fieldStructure - The `fieldStructure` parameter is of type
+   * `GroupFieldDataType` and represents the structure of the group field. It contains information
+   * about the fields and their types within the group.
+   * @param {EntryGroupFieldDataType} field - The `field` parameter is of type
+   * `EntryGroupFieldDataType` and represents a single group field entry.
+   */
   async validateGroupField(
     tree: Record<string, unknown>[],
     fieldStructure: GroupFieldDataType,
@@ -233,6 +310,21 @@ export default class Entries {
     await this.lookForReference(tree, fieldStructure, field);
   }
 
+  /**
+   * The function `validateReferenceValues` checks if the references in a given field exist in the
+   * provided tree and returns any missing references.
+   * @param {Record<string, unknown>[]} tree - An array of objects representing the tree structure of
+   * the data. Each object in the array represents a node in the tree.
+   * @param {ReferenceFieldDataType} fieldStructure - The `fieldStructure` parameter is of type
+   * `ReferenceFieldDataType` and represents the structure of a reference field. It contains properties
+   * such as `data_type` (the data type of the reference field) and `display_name` (the display name of
+   * the reference field).
+   * @param {EntryReferenceFieldDataType[]} field - The `field` parameter is an array of objects
+   * representing entry reference fields. Each object in the array has properties such as `uid` which
+   * represents the unique identifier of the referenced entry.
+   * @returns The function `validateReferenceValues` returns an array of `EntryRefErrorReturnType`
+   * objects.
+   */
   validateReferenceValues(
     tree: Record<string, unknown>[],
     fieldStructure: ReferenceFieldDataType,
@@ -271,7 +363,12 @@ export default class Entries {
       : [];
   }
 
+  /**
+   * The function prepares entry metadata by reading and processing files from different locales and
+   * schemas.
+   */
   async prepareEntryMetaData() {
+    this.log(auditMsg.PREPARING_ENTRY_METADATA, 'info');
     const localesFolderPath = resolve(this.config.basePath, this.config.moduleConfig.locales.dirName);
     const localesPath = join(localesFolderPath, this.config.moduleConfig.locales.fileName);
     const masterLocalesPath = join(localesFolderPath, 'master-locale.json');
