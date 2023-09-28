@@ -1,5 +1,5 @@
 export const testFlags = {
-  noProjOrg: { uid: 'bltad5c549697d10039' },
+  noProjOrg: { uid: '***REMOVED***xx' },
   invalidOrg: { name: 'Invalid Org', uid: 'abcd' },
   invalidProj: 'abcd',
 };
@@ -29,7 +29,7 @@ export const logsMockData = {
 export const githubAdapterMockData = {
   userconnection: {
     __typename: 'UserConnection',
-    userUid: 'blt161e02c9fffa78f6',
+    userUid: '***REMOVED***xx',
     provider: 'GitHub',
   },
   adapterConstructorInputs: {
@@ -43,7 +43,7 @@ export const githubAdapterMockData = {
       host: 'api.contentstack.io',
       config: '/Users/shrutika.almeida/Downloads/React-Starter/.cs-launch.json',
       projectBasePath: '/Users/shrutika.almeida/Downloads/React-Starter',
-      authtoken: '***REMOVED***',
+      authtoken: '***REMOVED***xx',
       authType: 'BASIC',
       authorization: undefined,
       logsApiBaseUrl: 'https://launch-api.contentstack.com/logs/graphql',
