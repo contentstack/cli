@@ -2,7 +2,6 @@ import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
 
-import config from '../../config';
 import BaseClass from './base-class';
 import { log, formatError, fsUtil } from '../../utils';
 import { LabelConfig, ModuleClassParams } from '../../types';
@@ -19,7 +18,7 @@ export default class ExportLabels extends BaseClass {
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
     this.labels = {};
-    this.labelConfig = config.modules.labels;
+    this.labelConfig = exportConfig.modules.labels;
     this.qs = { include_count: true };
   }
 
