@@ -30,23 +30,19 @@ USAGE
 
 # Commands
 <!-- commands -->
-- [@contentstack/cli-audit](#contentstackcli-audit)
-  - [How to install this plugin](#how-to-install-this-plugin)
-  - [How to use this plugin](#how-to-use-this-plugin)
-- [Commands](#commands)
-  - [`csdx cm::stacks:audit:fix`](#csdx-cmstacksauditfix)
-  - [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
-  - [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix-1)
-  - [`csdx help [COMMANDS]`](#csdx-help-commands)
-  - [`csdx plugins`](#csdx-plugins)
-  - [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
-  - [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
-  - [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin-1)
-  - [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
-  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
-  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-1)
-  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-2)
-  - [`csdx plugins:update`](#csdx-pluginsupdate)
+* [`csdx cm::stacks:audit:fix`](#csdx-cmstacksauditfix)
+* [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
+* [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix-1)
+* [`csdx help [COMMANDS]`](#csdx-help-commands)
+* [`csdx plugins`](#csdx-plugins)
+* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
+* [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
+* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin-1)
+* [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
+* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
+* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-1)
+* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-2)
+* [`csdx plugins:update`](#csdx-pluginsupdate)
 
 ## `csdx cm::stacks:audit:fix`
 
