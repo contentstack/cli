@@ -20,7 +20,7 @@ $ npm install -g @contentstack/cli-audit
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli-audit/0.0.0-alpha darwin-arm64 node-v16.19.0
+@contentstack/cli-audit/0.0.0-alpha darwin-arm64 node-v20.7.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -74,8 +74,9 @@ Audit and find possible errors in the exported data
 
 ```
 USAGE
-  $ csdx cm:stacks:audit [-c <value>] [-d <value>] [--report-path <value>] [--reference-only] [--modules
-    content-types|global-fields] [--columns <value> | ] [--sort <value>] [--filter <value>] [--csv | --no-truncate]
+  $ csdx cm:stacks:audit [-c <value>] [-d <value>] [--report-path <value>] [--modules
+    content-types|global-fields|entries] [--columns <value> | ] [--sort <value>] [--filter <value>] [--csv |
+    --no-truncate]
 
 FLAGS
   -c, --config=<value>    Path of the external config
@@ -84,9 +85,8 @@ FLAGS
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
   --modules=<option>...   Provide list of modules to be audited
-                          <options: content-types|global-fields>
+                          <options: content-types|global-fields|entries>
   --no-truncate           do not truncate output to fit screen
-  --reference-only        Checks only for missing references
   --report-path=<value>   Path to store the audit reports
   --sort=<value>          property to sort by (prepend '-' for descending)
 
