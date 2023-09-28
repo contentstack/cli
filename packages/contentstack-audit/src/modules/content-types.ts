@@ -69,6 +69,12 @@ export default class ContentType {
       );
     }
 
+    for (let propName in this.missingRefs) {
+      if (!this.missingRefs[propName].length) {
+        delete this.missingRefs[propName];
+      }
+    }
+
     return this.missingRefs;
   }
 
