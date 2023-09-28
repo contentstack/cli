@@ -1,7 +1,8 @@
 import { Command } from '@contentstack/cli-command';
-import { logger, cliux, configHandler, flags, FlagInput } from '@contentstack/cli-utilities';
+import { cliux, configHandler, flags, FlagInput } from '@contentstack/cli-utilities';
+import { BaseCommand } from '../base-command';
 
-export default class TokensRemoveCommand extends Command {
+export default class TokensRemoveCommand extends BaseCommand<typeof TokensRemoveCommand> {
   static description = 'Removes selected tokens';
   static examples = ['$ csdx auth:tokens:remove', '$ csdx auth:tokens:remove -a <alias>'];
   static flags: FlagInput = {
@@ -42,7 +43,7 @@ export default class TokensRemoveCommand extends Command {
         choices: tokenOptions,
       });
 
-      logger.debug('selected tokens', selectedTokens);
+      this.logger.debug('selected tokens', selectedTokens);
       if (selectedTokens.length === 0) {
         return;
       }
@@ -52,7 +53,7 @@ export default class TokensRemoveCommand extends Command {
         cliux.success('CLI_AUTH_TOKENS_REMOVE_SUCCESS');
       });
     } catch (error) {
-      logger.error('Token remove error', error.message);
+      this.logger.error('Token remove error', error.message);
       cliux.print('CLI_AUTH_TOKENS_REMOVE_FAILED', { color: 'yellow' });
       cliux.print(error.message, { color: 'red' });
     }
