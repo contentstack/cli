@@ -1,4 +1,4 @@
-import { join } from 'path';
+import { resolve } from 'path';
 import find from 'lodash/find';
 import { existsSync } from 'fs';
 
@@ -40,7 +40,7 @@ export default class ContentType {
     this.ctSchema = ctSchema;
     this.gfSchema = gfSchema;
     this.fileName = config.moduleConfig[this.moduleName].fileName;
-    this.folderPath = join(config.basePath, config.moduleConfig[this.moduleName].dirName);
+    this.folderPath = resolve(config.basePath, config.moduleConfig[this.moduleName].dirName);
 
     if (moduleName) this.moduleName = moduleName;
   }
@@ -67,6 +67,12 @@ export default class ContentType {
         $t(auditMsg.SCAN_CT_SUCCESS_MSG, { title, module: this.config.moduleConfig[this.moduleName].name }),
         'info',
       );
+    }
+
+    for (let propName in this.missingRefs) {
+      if (!this.missingRefs[propName].length) {
+        delete this.missingRefs[propName];
+      }
     }
 
     return this.missingRefs;
