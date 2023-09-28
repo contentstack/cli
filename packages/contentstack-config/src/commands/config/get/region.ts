@@ -2,7 +2,7 @@ import { Command } from '@contentstack/cli-command';
 import { cliux } from '@contentstack/cli-utilities';
 
 import { Region } from '../../../interfaces';
-import { BaseCommand } from '../../../base-command';
+import { BaseCommand } from '../base-command';
 
 export default class RegionGetCommand extends BaseCommand<typeof RegionGetCommand> {
   static description = 'Get current region set for CLI';
