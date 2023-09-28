@@ -37,8 +37,8 @@ class ModuleImporter {
       },
     });
 
-    if (data.error_code === 161) {
-      throw new Error(data.error_message);
+    if ([161, 105].includes(data.error_code)) {
+      throw new Error(data.error_code === 105 ? 'Sorry but you don\'t have access to this stack' : data.error_message);
     }
 
     if (!this.importConfig.master_locale) {
