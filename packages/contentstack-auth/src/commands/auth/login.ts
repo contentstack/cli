@@ -9,7 +9,7 @@ import {
 } from '@contentstack/cli-utilities';
 import { User } from '../../interfaces';
 import { authHandler, interactive } from '../../utils';
-import { BaseCommand } from './base-command';
+import { BaseCommand } from '../../base-command';
 
 export default class LoginCommand extends BaseCommand<typeof LoginCommand> {
   static run; // to fix the test issue
