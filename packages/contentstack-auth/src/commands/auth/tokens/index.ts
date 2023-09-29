@@ -1,6 +1,6 @@
 import { Command } from '@contentstack/cli-command';
 import { cliux, configHandler } from '@contentstack/cli-utilities';
-import { BaseCommand } from '../base-command';
+import { BaseCommand } from '../../../base-command';
 export default class TokensListCommand extends BaseCommand<typeof TokensListCommand> {
   static aliases = ['tokens'];
   static examples = ['$ csdx auth:tokens'];
