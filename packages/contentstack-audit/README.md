@@ -20,7 +20,7 @@ $ npm install -g @contentstack/cli-audit
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli-audit/0.0.0-alpha darwin-arm64 node-v20.7.0
+@contentstack/cli-audit/0.0.0-alpha darwin-arm64 node-v16.19.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -30,9 +30,8 @@ USAGE
 
 # Commands
 <!-- commands -->
-* [`csdx cm::stacks:audit:fix`](#csdx-cmstacksauditfix)
 * [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
-* [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix-1)
+* [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
 * [`csdx help [COMMANDS]`](#csdx-help-commands)
 * [`csdx plugins`](#csdx-plugins)
 * [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
@@ -43,30 +42,6 @@ USAGE
 * [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-1)
 * [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-2)
 * [`csdx plugins:update`](#csdx-pluginsupdate)
-
-## `csdx cm::stacks:audit:fix`
-
-Audit fix command
-
-```
-USAGE
-  $ csdx cm::stacks:audit:fix [-c <value>] [-d <value>]
-
-FLAGS
-  -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path and location where data is stored
-
-DESCRIPTION
-  Audit fix command
-
-ALIASES
-  $ csdx cm::stacks:audit:fix
-
-EXAMPLES
-  $ csdx cm::stacks:audit:fix
-```
-
-_See code: [src/commands/cm/stacks/audit/fix.ts](https://github.com/contentstack/audit/blob/main/packages/contentstack-audit/src/commands/cm/stacks/audit/fix.ts)_
 
 ## `csdx cm:stacks:audit`
 
@@ -112,24 +87,39 @@ _See code: [src/commands/cm/stacks/audit/index.ts](https://github.com/contentsta
 
 ## `csdx cm:stacks:audit:fix`
 
-Audit fix command
+Audit and find possible errors in the exported data and fix
 
 ```
 USAGE
-  $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>]
+  $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
+    content-types|global-fields|entries] [--backup-dir <value> --backup-data] [-y]
 
 FLAGS
   -c, --config=<value>    Path of the external config
   -d, --data-dir=<value>  Path and location where data is stored
+  -y, --yes               Use this flag to skip confirmation
+  --backup-data           Create backup from original data
+  --backup-dir=<value>    Provided path to backup original data
+  --modules=<option>...   Provide list of modules to be audited
+                          <options: content-types|global-fields|entries>
+  --report-path=<value>   Path to store the audit reports
 
 DESCRIPTION
-  Audit fix command
+  Audit and find possible errors in the exported data and fix
 
 ALIASES
-  $ csdx cm::stacks:audit:fix
+  $ csdx cm:stacks:audit:fix
 
 EXAMPLES
   $ csdx cm:stacks:audit:fix
+
+  $ csdx cm:stacks:audit:fix --report-path=<path>
+
+  $ csdx cm:stacks:audit:fix --report-path=<path> --csv
+
+  $ csdx cm:stacks:audit:fix --report-path=<path> --filter="name=<filter-value>"
+
+  $ csdx cm:stacks:audit:fix --report-path=<path> --modules=content-types --filter="name="<filter-value>"
 ```
 
 _See code: [src/commands/cm/stacks/audit/fix.ts](https://github.com/contentstack/audit/blob/main/packages/contentstack-audit/src/commands/cm/stacks/audit/fix.ts)_
