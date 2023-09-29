@@ -43,14 +43,19 @@ export default class TokensRemoveCommand extends BaseCommand<typeof TokensRemove
         choices: tokenOptions,
       });
 
-      this.logger.debug('selected tokens', selectedTokens);
       if (selectedTokens.length === 0) {
         return;
       }
+      
+      selectedTokens.forEach((ele)=>{
+        this.logger.info('selected tokens',ele);
+      })
+    
       selectedTokens.forEach((element) => {
         const selectedToken = element.split(':')[0];
         configHandler.delete(`tokens.${selectedToken}`);
         cliux.success('CLI_AUTH_TOKENS_REMOVE_SUCCESS');
+        this.logger.info('Token removed successfully !!', element);
       });
     } catch (error) {
       this.logger.error('Token remove error', error.message);
