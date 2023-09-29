@@ -1,6 +1,6 @@
 import { Command } from '@contentstack/cli-command';
 import { cliux } from '@contentstack/cli-utilities';
-import { BaseCommand } from './base-command';
+import { BaseCommand } from '../../base-command';
 
 export default class WhoamiCommand extends BaseCommand<typeof WhoamiCommand> {
   static description = 'Display current users email address';
