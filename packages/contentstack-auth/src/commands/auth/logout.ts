@@ -10,7 +10,7 @@ import {
 } from '@contentstack/cli-utilities';
 
 import { authHandler } from '../../utils';
-import { BaseCommand } from './base-command';
+import { BaseCommand } from '../../base-command';
 export default class LogoutCommand extends BaseCommand<typeof LogoutCommand> {
   static run;
   static description = 'User session logout';

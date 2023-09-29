@@ -10,7 +10,7 @@ import {
   Flags,
 } from '@contentstack/cli-utilities';
 import { askTokenType } from '../../../utils/interactive';
-import { BaseCommand } from '../base-command';
+import { BaseCommand } from '../../../base-command';
 export default class TokensAddCommand extends BaseCommand<typeof TokensAddCommand> {
   static description = 'Adds management/delivery tokens to your session to use it with other CLI commands';
 

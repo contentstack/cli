@@ -10,7 +10,8 @@ import {
 } from '@contentstack/cli-utilities';
 import { Region } from '../../../interfaces';
 import { regionHandler, interactive } from '../../../utils';
-import { Args, BaseCommand } from '../base-command';
+import { Args, BaseCommand } from '../../../base-command';
+
 export default class RegionSetCommand extends BaseCommand<typeof RegionSetCommand> {
   config: any;
   static description = 'Set region for CLI';
