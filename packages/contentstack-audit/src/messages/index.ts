@@ -21,10 +21,17 @@ const auditMsg = {
   SCAN_ENTRY_SUCCESS_MSG: "The scanning of {module}({local}) '{title}' has been successfully finished.",
 };
 
-const messages: typeof errors & typeof commonMsg & typeof auditMsg = {
+const auditFixMsg = {
+  BACKUP_DATA: 'Create backup from original data',
+  BKP_PATH: 'Provided path to backup original data',
+  FIXED_CONTENT_PATH_MAG: 'You can locate the fixed content at {path}',
+};
+
+const messages: typeof errors & typeof commonMsg & typeof auditMsg & typeof auditFixMsg = {
   ...errors,
   ...commonMsg,
   ...auditMsg,
+  ...auditFixMsg,
 };
 
 /**
@@ -47,4 +54,4 @@ function $t(msg: string, args: Record<string, string>): string {
 }
 
 export default messages;
-export { $t, errors, commonMsg, auditMsg };
+export { $t, errors, commonMsg, auditMsg, auditFixMsg };
