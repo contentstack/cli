@@ -13,7 +13,7 @@ import { ModuleClassParams, TaxonomiesConfig, TermsConfig } from '../../types';
 type TaxonomyPayload = {
   baseUrl: string;
   url: string;
-  mgToken: string;
+  mgToken?: string;
   reqPayload: Record<string, unknown>;
   headers: Record<string, unknown>;
 };
@@ -118,7 +118,7 @@ export default class ImportTaxonomies extends BaseClass {
       return;
     }
 
-    const apiContent = values(this.taxonomies);
+    const apiContent = values(this.taxonomies) as Record<string, any>[];;
     this.taxonomyUIDs = keys(this.taxonomies);
 
     const onSuccess = ({
@@ -131,7 +131,7 @@ export default class ImportTaxonomies extends BaseClass {
         this.taxonomiesSuccess[taxonomy.uid] = taxonomy;
         log(this.importConfig, `Taxonomy '${name}' imported successfully`, 'success');
       } else {
-        let errorMsg;
+        let errorMsg:any;
         if ([500, 503, 502].includes(status)) errorMsg = data?.message || data;
         else errorMsg = data?.error_message;
         if (errorMsg === undefined) {
@@ -259,7 +259,7 @@ export default class ImportTaxonomies extends BaseClass {
       ) as Record<string, unknown>;
 
       if (this.terms !== undefined && !isEmpty(this.terms)) {
-        const apiContent = values(this.terms);
+        const apiContent = values(this.terms) as Record<string, any>[];
         await this.makeConcurrentCall(
           {
             apiContent,
