@@ -61,7 +61,10 @@ type GlobalFieldDataType = CommonDataTypeStruct & {
 };
 
 // NOTE Type 3
-type CustomFieldDataType = CommonDataTypeStruct & {};
+type CustomFieldDataType = CommonDataTypeStruct & {
+  reference_to: string[];
+  extension_uid: string;
+};
 
 // NOTE Type 4
 type JsonRTEFieldDataType = CommonDataTypeStruct & {
