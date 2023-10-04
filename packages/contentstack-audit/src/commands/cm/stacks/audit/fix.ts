@@ -5,9 +5,9 @@ import { auditFixMsg, auditMsg } from '../../../../messages';
 import { AuditBaseCommand } from '../../../../audit-base-command';
 
 export default class AuditFix extends AuditBaseCommand {
-  static aliases: string[] = ['cm:stacks:audit:fix'];
+  static aliases: string[] = ['audit:fix', 'cm:stacks:audit:fix'];
 
-  static description = 'Audit and find possible errors in the exported data and fix';
+  static description = 'Audit and fix possible errors in the exported data';
 
   static examples = [
     '$ <%= config.bin %> <%= command.id %>',
@@ -40,6 +40,9 @@ export default class AuditFix extends AuditBaseCommand {
     yes: Flags.boolean({
       char: 'y',
       description: 'Use this flag to skip confirmation',
+    }),
+    ...ux.table.flags({
+      only: ['columns', 'sort', 'filter', 'csv', 'no-truncate'],
     }),
   };
 

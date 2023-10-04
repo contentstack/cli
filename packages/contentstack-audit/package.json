@@ -61,7 +61,10 @@
     ],
     "topics": {
       "cm:stacks:audit": {
-        "description": "Audit and find possible refrence errors in the exported data"
+        "description": "Audit and find possible errors in the exported data"
+      },
+      "cm:stacks:audit:fix": {
+        "description": "Audit and fix possible errors in the exported data"
       }
     },
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-audit/<%- commandPath %>"
