@@ -97,9 +97,9 @@ export default class ImportGlobalFields extends BaseClass {
       if (error?.errors?.title) {
         if (this.importConfig.replaceExisting) {
           // Note: skipping the pending GFs from update, reason: pending GFs gets updated at the CTs import
-          if (this.pendingGFs.indexOf(uid) === -1) {
-            this.existingGFs.push(globalField);
-          }
+          // if (this.pendingGFs.indexOf(uid) === -1) {
+          this.existingGFs.push(globalField);
+          // }
         }
         if (!this.importConfig.skipExisting) {
           log(this.importConfig, `Global fields '${uid}' already exist`, 'info');
@@ -203,7 +203,9 @@ export default class ImportGlobalFields extends BaseClass {
   serializeReplaceGFs(apiOptions: ApiOptions): ApiOptions {
     const { apiData: globalField } = apiOptions;
     const globalFieldPayload = this.stack.globalField(globalField.uid);
-    Object.assign(globalFieldPayload, cloneDeep(globalField));
+    Object.assign(globalFieldPayload, cloneDeep(globalField), {
+      stackHeaders: globalFieldPayload.stackHeaders,
+    });
     apiOptions.apiData = globalFieldPayload;
     return apiOptions;
   }

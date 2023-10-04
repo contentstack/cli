@@ -57,6 +57,7 @@ export default class FsUtility {
       chunkFileSize,
       indexFileName,
       defaultInitContent,
+      useIndexer = false,
       createDirIfNotExist = true,
     } = options;
     this.metaHandler = metaHandler;
@@ -70,6 +71,10 @@ export default class FsUtility {
     this.indexFileName = indexFileName || 'index.json';
     this.pageInfo.hasNextPage = keys(this.indexFileContent).length > 0;
     this.defaultInitContent = defaultInitContent || (this.fileExt === 'json' ? '{' : '');
+
+    if (useIndexer) {
+      this.writeIndexer = this.indexFileContent;
+    }
 
     if (createDirIfNotExist) {
       this.createFolderIfNotExist(this.basePath);
