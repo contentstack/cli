@@ -189,7 +189,7 @@ export default class ContentTypesImport extends BaseClass {
       }
       this.fieldRules.push(contentType.uid);
     }
-    //update taxonomy field and display warning msg if taxonomy creation failed before removing
+    //will remove taxonomy if taxonomy doesn't exists in stack
     lookUpTaxonomy(contentType.schema, this.taxonomies);
     lookupExtension(
       this.importConfig,
