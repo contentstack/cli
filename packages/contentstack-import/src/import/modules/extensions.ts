@@ -178,9 +178,11 @@ export default class ImportExtensions extends BaseClass {
         });
       if (extensionsInStack) {
         const extensionPayload = this.stack.extension(extension.uid);
-        Object.assign(extensionPayload, cloneDeep(extensionsInStack), {
+        Object.assign(extensionPayload, extensionsInStack, cloneDeep(extension), {
           uid: extensionsInStack.uid,
           urlPath: extensionsInStack.urlPath,
+          _version: extensionsInStack._version,
+          stackHeaders: extensionsInStack.stackHeaders,
         });
         return extensionPayload
           .update()
