@@ -1,4 +1,5 @@
 import keys from 'lodash/keys';
+import pick from 'lodash/pick';
 import { join } from 'node:path';
 import values from 'lodash/values';
 import isEmpty from 'lodash/isEmpty';
@@ -128,7 +129,7 @@ export default class ImportTaxonomies extends BaseClass {
       //NOTE - Temp code to handle error thru API. Will remove this once sdk is ready
       if ([200, 201, 202].includes(status)) {
         const { taxonomy } = data;
-        this.taxonomiesSuccess[taxonomy.uid] = taxonomy;
+        this.taxonomiesSuccess[taxonomy.uid] = pick(taxonomy, ['name', 'description']);
         log(this.importConfig, `Taxonomy '${name}' imported successfully`, 'success');
       } else {
         let errorMsg:any;
@@ -223,7 +224,7 @@ export default class ImportTaxonomies extends BaseClass {
       if ([200, 201, 202].includes(status)) {
         if (!this.termsSuccess[taxonomy_uid]) this.termsSuccess[taxonomy_uid] = {};
         const { term } = data;
-        this.termsSuccess[taxonomy_uid][term.uid] = term;
+        this.termsSuccess[taxonomy_uid][term.uid] = pick(term, ['name']);
         log(this.importConfig, `Term '${name}' imported successfully`, 'success');
       } else {
         if (!this.termsFailed[taxonomy_uid]) this.termsFailed[taxonomy_uid] = {};
