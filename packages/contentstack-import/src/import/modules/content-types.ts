@@ -50,7 +50,7 @@ export default class ContentTypesImport extends BaseClass {
     writeConcurrency?: number;
   };
   private taxonomiesPath: string;
-  public taxonomies: Record<string, unknown>[] = [];
+  public taxonomies: Record<string, unknown>;
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -97,7 +97,7 @@ export default class ContentTypesImport extends BaseClass {
     this.installedExtensions = (
       ((await fsUtil.readFile(this.marketplaceAppMapperPath)) as any) || { extension_uid: {} }
     ).extension_uid;
-    this.taxonomies = fsUtil.readFile(this.taxonomiesPath) as Record<string, unknown>[];
+    this.taxonomies = fsUtil.readFile(this.taxonomiesPath) as Record<string, unknown>;
 
     await this.seedCTs();
     log(this.importConfig, 'Created content types', 'success');
