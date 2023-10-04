@@ -5,7 +5,7 @@ import { auditMsg } from '../../../../messages';
 import { AuditBaseCommand } from '../../../../audit-base-command';
 
 export default class Audit extends AuditBaseCommand {
-  static aliases: string[] = ['cm:stacks:audit'];
+  static aliases: string[] = ['audit', 'cm:stacks:audit'];
 
   static description = 'Audit and find possible errors in the exported data';
 
