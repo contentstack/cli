@@ -48,17 +48,18 @@ export type ModuleClassParams = {
   moduleName: Modules;
 };
 
-export interface Extensions{
+export interface Extensions {
   dirName: string;
   fileName: string;
+  validKeys: string[];
   dependencies?: Modules[];
-};
+}
 
-export interface MarketplaceAppsConfig{
+export interface MarketplaceAppsConfig {
   dirName: string;
   fileName: string;
   dependencies?: Modules[];
-};
+}
 
 export interface EnvironmentConfig {
   dirName: string;
@@ -66,23 +67,23 @@ export interface EnvironmentConfig {
   dependencies?: Modules[];
 }
 
-export interface LabelConfig{
+export interface LabelConfig {
   dirName: string;
   fileName: string;
 }
 
-export interface WebhookConfig{
+export interface WebhookConfig {
   dirName: string;
   fileName: string;
 }
 
-export interface WorkflowConfig{
+export interface WorkflowConfig {
   dirName: string;
   fileName: string;
   invalidKeys: string[];
 }
 
-export interface CustomRoleConfig{
+export interface CustomRoleConfig {
   dirName: string;
   fileName: string;
   customRolesLocalesFileName: string;
