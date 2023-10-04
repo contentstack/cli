@@ -1,4 +1,5 @@
 import keys from 'lodash/keys';
+import pick from 'lodash/pick';
 import { join } from 'node:path';
 import values from 'lodash/values';
 import isEmpty from 'lodash/isEmpty';
@@ -13,7 +14,7 @@ import { ModuleClassParams, TaxonomiesConfig, TermsConfig } from '../../types';
 type TaxonomyPayload = {
   baseUrl: string;
   url: string;
-  mgToken: string;
+  mgToken?: string;
   reqPayload: Record<string, unknown>;
   headers: Record<string, unknown>;
 };
@@ -118,7 +119,7 @@ export default class ImportTaxonomies extends BaseClass {
       return;
     }
 
-    const apiContent = values(this.taxonomies);
+    const apiContent = values(this.taxonomies) as Record<string, any>[];;
     this.taxonomyUIDs = keys(this.taxonomies);
 
     const onSuccess = ({
@@ -128,10 +129,10 @@ export default class ImportTaxonomies extends BaseClass {
       //NOTE - Temp code to handle error thru API. Will remove this once sdk is ready
       if ([200, 201, 202].includes(status)) {
         const { taxonomy } = data;
-        this.taxonomiesSuccess[taxonomy.uid] = taxonomy;
+        this.taxonomiesSuccess[taxonomy.uid] = pick(taxonomy, ['name', 'description']);
         log(this.importConfig, `Taxonomy '${name}' imported successfully`, 'success');
       } else {
-        let errorMsg;
+        let errorMsg:any;
         if ([500, 503, 502].includes(status)) errorMsg = data?.message || data;
         else errorMsg = data?.error_message;
         if (errorMsg === undefined) {
@@ -223,7 +224,7 @@ export default class ImportTaxonomies extends BaseClass {
       if ([200, 201, 202].includes(status)) {
         if (!this.termsSuccess[taxonomy_uid]) this.termsSuccess[taxonomy_uid] = {};
         const { term } = data;
-        this.termsSuccess[taxonomy_uid][term.uid] = term;
+        this.termsSuccess[taxonomy_uid][term.uid] = pick(term, ['name']);
         log(this.importConfig, `Term '${name}' imported successfully`, 'success');
       } else {
         if (!this.termsFailed[taxonomy_uid]) this.termsFailed[taxonomy_uid] = {};
@@ -259,7 +260,7 @@ export default class ImportTaxonomies extends BaseClass {
       ) as Record<string, unknown>;
 
       if (this.terms !== undefined && !isEmpty(this.terms)) {
-        const apiContent = values(this.terms);
+        const apiContent = values(this.terms) as Record<string, any>[];
         await this.makeConcurrentCall(
           {
             apiContent,
