@@ -1,5 +1,4 @@
 import cliux from './cli-ux';
-import logger from './logger';
 import HttpClient from './http-client';
 import configHandler from './config-handler';
 import * as ContentstackManagementSDK from '@contentstack/management';
@@ -7,6 +6,7 @@ import messageHandler from './message-handler';
 const http = require('http');
 const url = require('url');
 import open from 'open';
+import {LoggerService} from './logger';
 const crypto = require('crypto');
 
 /**
@@ -33,7 +33,7 @@ class AuthHandler {
   private authorisationTypeOAUTHValue: string;
   private authorisationTypeAUTHValue: string;
   private allAuthConfigItems: any;
-
+  private logger:any;
   set host(contentStackHost) {
     this._host = contentStackHost;
   }
@@ -74,7 +74,9 @@ class AuthHandler {
       ],
     };
   }
-
+  initLog() {
+    this.logger = new LoggerService(process.cwd(), 'cli-log');
+  }
   async setOAuthBaseURL() {
     if (configHandler.get('region')['uiHost']) {
       this.OAuthBaseURL = configHandler.get('region')['uiHost'] || '';
@@ -92,6 +94,7 @@ class AuthHandler {
    */
   async oauth(): Promise<object> {
     return new Promise((resolve, reject) => {
+      this.initLog();
       this.createHTTPServer()
         .then(() => {
           this.openOAuthURL()
@@ -100,12 +103,12 @@ class AuthHandler {
               resolve({});
             })
             .catch((error) => {
-              logger.error('OAuth login failed', error.message);
+              this.logger.error('OAuth login failed', error.message);
               reject(error);
             });
         })
         .catch((error) => {
-          logger.error('OAuth login failed', error.message);
+          this.logger.error('OAuth login failed', error.message);
           reject(error);
         });
     });
