@@ -30,28 +30,24 @@ USAGE
 
 # Commands
 <!-- commands -->
-- [@contentstack/cli-audit](#contentstackcli-audit)
-  - [How to install this plugin](#how-to-install-this-plugin)
-  - [How to use this plugin](#how-to-use-this-plugin)
-- [Commands](#commands)
-  - [`csdx audit`](#csdx-audit)
-  - [`csdx audit:fix`](#csdx-auditfix)
-  - [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
-  - [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
-  - [`csdx help [COMMANDS]`](#csdx-help-commands)
-  - [`csdx plugins`](#csdx-plugins)
-  - [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
-  - [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
-  - [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin-1)
-  - [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
-  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
-  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-1)
-  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-2)
-  - [`csdx plugins:update`](#csdx-pluginsupdate)
+* [`csdx audit`](#csdx-audit)
+* [`csdx audit:fix`](#csdx-auditfix)
+* [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
+* [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
+* [`csdx help [COMMANDS]`](#csdx-help-commands)
+* [`csdx plugins`](#csdx-plugins)
+* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
+* [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
+* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin-1)
+* [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
+* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
+* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-1)
+* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-2)
+* [`csdx plugins:update`](#csdx-pluginsupdate)
 
 ## `csdx audit`
 
-Audit and find possible errors in the exported data
+Perform audits and find possible errors in the exported Contentstack data
 
 ```
 USAGE
@@ -62,9 +58,17 @@ USAGE
 FLAGS
   -c, --config=<value>    Path of the external config.
   -d, --data-dir=<value>  Path where the data is stored.
+  --columns=<value>       only show provided columns (comma-separated)
+  --csv                   output is csv format [alias: --output=csv]
+  --filter=<value>        filter property by partial string matching, ex: name=foo
+  --modules=<option>...   Provide the list of modules to be audited.
+                          <options: content-types|global-fields|entries>
+  --no-truncate           do not truncate output to fit screen
+  --report-path=<value>   Path to store the audit reports.
+  --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
-  Audit and find possible errors in the exported data
+  Perform audits and find possible errors in the exported Contentstack data
 
 ALIASES
   $ csdx audit
@@ -93,18 +97,18 @@ USAGE
     [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
-  -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path and location where data is stored
+  -c, --config=<value>    Path of the external config.
+  -d, --data-dir=<value>  Path where the data is stored.
   -y, --yes               Use this flag to skip confirmation
   --backup-dir=<value>    Provided path to backup original data
   --columns=<value>       only show provided columns (comma-separated)
   --copy-dir              Create backup from original data
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide list of modules to be audited
+  --modules=<option>...   Provide the list of modules to be audited.
                           <options: content-types|global-fields|entries>
   --no-truncate           do not truncate output to fit screen
-  --report-path=<value>   Path to store the audit reports
+  --report-path=<value>   Path to store the audit reports.
   --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
@@ -128,7 +132,7 @@ EXAMPLES
 
 ## `csdx cm:stacks:audit`
 
-Audit and find possible errors in the exported data
+Perform audits and find possible errors in the exported Contentstack data
 
 ```
 USAGE
@@ -149,7 +153,7 @@ FLAGS
   --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
-  Audit and find possible errors in the exported data
+  Perform audits and find possible errors in the exported Contentstack data
 
 ALIASES
   $ csdx audit
@@ -182,6 +186,17 @@ USAGE
 FLAGS
   -c, --config=<value>    Path of the external config.
   -d, --data-dir=<value>  Path where the data is stored.
+  -y, --yes               Use this flag to skip confirmation
+  --backup-dir=<value>    Provided path to backup original data
+  --columns=<value>       only show provided columns (comma-separated)
+  --copy-dir              Create backup from original data
+  --csv                   output is csv format [alias: --output=csv]
+  --filter=<value>        filter property by partial string matching, ex: name=foo
+  --modules=<option>...   Provide the list of modules to be audited.
+                          <options: content-types|global-fields|entries>
+  --no-truncate           do not truncate output to fit screen
+  --report-path=<value>   Path to store the audit reports.
+  --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Audit and fix possible errors in the exported data
@@ -222,7 +237,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.19/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.20/src/commands/help.ts)_
 
 ## `csdx plugins`
 
@@ -245,7 +260,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -310,7 +325,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -350,7 +365,7 @@ EXAMPLES
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
@@ -379,7 +394,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -427,7 +442,7 @@ ALIASES
   $ csdx plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -468,5 +483,5 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/update.ts)_
 <!-- commandsstop -->
