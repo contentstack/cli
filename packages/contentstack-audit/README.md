@@ -93,17 +93,23 @@ Audit and fix possible errors in the exported data
 ```
 USAGE
   $ csdx audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--backup-dir <value> --backup-data] [-y]
+    content-types|global-fields|entries] [--backup-dir <value> --copy-dir] [-y] [--columns <value> | ] [--sort <value>]
+    [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   -c, --config=<value>    Path of the external config
   -d, --data-dir=<value>  Path and location where data is stored
   -y, --yes               Use this flag to skip confirmation
-  --backup-data           Create backup from original data
   --backup-dir=<value>    Provided path to backup original data
+  --columns=<value>       only show provided columns (comma-separated)
+  --copy-dir              Create backup from original data
+  --csv                   output is csv format [alias: --output=csv]
+  --filter=<value>        filter property by partial string matching, ex: name=foo
   --modules=<option>...   Provide list of modules to be audited
                           <options: content-types|global-fields|entries>
+  --no-truncate           do not truncate output to fit screen
   --report-path=<value>   Path to store the audit reports
+  --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Audit and fix possible errors in the exported data
@@ -113,11 +119,11 @@ ALIASES
   $ csdx cm:stacks:audit:fix
 
 EXAMPLES
-  $ csdx audit:fix
+  $ csdx audit:fix --copy-dir
 
-  $ csdx audit:fix --report-path=<path>
+  $ csdx audit:fix --report-path=<path> --copy-dir
 
-  $ csdx audit:fix --report-path=<path> --csv
+  $ csdx audit:fix --report-path=<path> --copy-dir --csv
 
   $ csdx audit:fix --report-path=<path> --filter="name=<filter-value>"
 
@@ -174,17 +180,23 @@ Audit and fix possible errors in the exported data
 ```
 USAGE
   $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--backup-dir <value> --backup-data] [-y]
+    content-types|global-fields|entries] [--backup-dir <value> --copy-dir] [-y] [--columns <value> | ] [--sort <value>]
+    [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   -c, --config=<value>    Path of the external config
   -d, --data-dir=<value>  Path and location where data is stored
   -y, --yes               Use this flag to skip confirmation
-  --backup-data           Create backup from original data
   --backup-dir=<value>    Provided path to backup original data
+  --columns=<value>       only show provided columns (comma-separated)
+  --copy-dir              Create backup from original data
+  --csv                   output is csv format [alias: --output=csv]
+  --filter=<value>        filter property by partial string matching, ex: name=foo
   --modules=<option>...   Provide list of modules to be audited
                           <options: content-types|global-fields|entries>
+  --no-truncate           do not truncate output to fit screen
   --report-path=<value>   Path to store the audit reports
+  --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Audit and fix possible errors in the exported data
@@ -194,11 +206,11 @@ ALIASES
   $ csdx cm:stacks:audit:fix
 
 EXAMPLES
-  $ csdx cm:stacks:audit:fix
+  $ csdx cm:stacks:audit:fix --copy-dir
 
-  $ csdx cm:stacks:audit:fix --report-path=<path>
+  $ csdx cm:stacks:audit:fix --report-path=<path> --copy-dir
 
-  $ csdx cm:stacks:audit:fix --report-path=<path> --csv
+  $ csdx cm:stacks:audit:fix --report-path=<path> --copy-dir --csv
 
   $ csdx cm:stacks:audit:fix --report-path=<path> --filter="name=<filter-value>"
 
