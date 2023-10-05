@@ -1,6 +1,5 @@
 import winston from 'winston';
 import path, { resolve } from 'path';
-
 import messageHandler from './message-handler';
 
 export class LoggerService {
@@ -14,12 +13,11 @@ export class LoggerService {
   constructor(pathToLog: string, name: string) {
     this.data = null;
     this.name = null;
-
     const logger = winston.createLogger({
       transports: [
         // new winston.transports.Console(),
         new winston.transports.File({
-          filename: process.env.CS_CLI_LOG_PATH || path.join(pathToLog, `/logs/${name}.log`),
+          filename: path.resolve(process.env.CS_CLI_LOG_PATH || `${pathToLog}/logs`, `${name}.log`),
         }),
       ],
       format: winston.format.combine(
