@@ -787,13 +787,11 @@ async function apiRequestHandler(payload, skip, limit) {
 function formatTaxonomiesData(taxonomies) {
   if (taxonomies?.length) {
     const formattedTaxonomies = taxonomies.map((taxonomy) => {
-      let obj = {
+      return sanitizeData({
         'Taxonomy UID': taxonomy.uid,
         Name: taxonomy.name,
         Description: taxonomy.description,
-      };
-      obj = sanitizeData(obj);
-      return obj;
+      });
     });
     return formattedTaxonomies;
   }
@@ -808,14 +806,12 @@ function formatTaxonomiesData(taxonomies) {
 function formatTermsOfTaxonomyData(terms, taxonomyUID) {
   if (terms?.length) {
     const formattedTerms = terms.map((term) => {
-      let obj = {
+      return sanitizeData({
         'Taxonomy UID': taxonomyUID,
         UID: term.uid,
         Name: term.name,
         'Parent UID': term.parent_uid,
-      }
-      obj = sanitizeData(obj);
-      return obj;
+      });
     });
     return formattedTerms;
   }
@@ -864,5 +860,5 @@ module.exports = {
   formatTaxonomiesData,
   formatTermsOfTaxonomyData,
   getTaxonomy,
-  getStacks
+  getStacks,
 };
