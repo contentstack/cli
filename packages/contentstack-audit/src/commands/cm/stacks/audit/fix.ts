@@ -30,8 +30,8 @@ export default class AuditFix extends AuditBaseCommand {
       options: config.modules,
       description: auditMsg.MODULES,
     }),
-    'backup-data': Flags.boolean({
-      description: auditFixMsg.BACKUP_DATA,
+    'copy-dir': Flags.boolean({
+      description: auditFixMsg.COPY_DATA,
     }),
     'backup-dir': Flags.string({
       dependsOn: ['backup-data'],
