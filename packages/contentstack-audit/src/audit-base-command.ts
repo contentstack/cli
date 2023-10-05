@@ -117,11 +117,11 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
   }
 
   /**
-   * The function `createBackUp` creates a backup of data if the `backup-data` flag is set, and throws
+   * The function `createBackUp` creates a backup of data if the `copy-dir` flag is set, and throws
    * an error if the specified path does not exist.
    */
   async createBackUp() {
-    if (this.currentCommand === 'cm:stacks:audit:fix' && this.flags['backup-data']) {
+    if (this.currentCommand === 'cm:stacks:audit:fix' && this.flags['copy-dir']) {
       if (!existsSync(this.sharedConfig.basePath)) {
         throw Error(this.$t(this.messages.NOT_VALID_PATH, { path: this.sharedConfig.basePath }));
       }
