@@ -423,7 +423,12 @@ export function entryCreateUpdateScript(contentType) {
           .query()
           .find();
   
-        let baseBranchEntries = await stackSDKInstance.contentType('${contentType}').entry().query().find();
+        let baseBranchEntries = await stackSDKInstance
+        .contentType('${contentType}')
+        .entry()
+        .query()
+        .find()
+        catch(error => console.log(error.errorMessage || error.message || JSON.stringify(error)))
   
         let contentType = await managementAPIClient
           .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
@@ -463,8 +468,10 @@ export function entryCreateUpdateScript(contentType) {
           const references = await findReference(contentType.schema, '', flag);
   
           async function updateEntry(entry, entryDetails) {
-            Object.assign(entry, { ...entryDetails });
-            await entry.update();
+            if (entry) {
+              Object.assign(entry, { ...entryDetails });
+              await entry.update();
+            }
           }
 
           async function updateReferences(entryDetails, baseEntry, references) {
@@ -499,7 +506,10 @@ export function entryCreateUpdateScript(contentType) {
   
                 if (baseBranchEntries && baseBranchEntries.items.length) {
                   let baseEntryUid = baseBranchEntries.items[0].uid;
-                  let entry = await stackSDKInstance.contentType('${contentType}').entry(baseEntryUid);
+                  let entry = await stackSDKInstance
+                  .contentType('${contentType}')
+                  .entry(baseEntryUid)
+                  .catch(error => console.log(error.errorMessage || error.message || JSON.stringify(error)))
                   
                   if (flag.references) {
                     await updateReferences(entryDetails, baseBranchEntries.items[0], references);
@@ -507,7 +517,11 @@ export function entryCreateUpdateScript(contentType) {
   
                   await updateEntry(entry, entryDetails);
                 } else {
-                  let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails });
+                  let createdEntry = await stackSDKInstance
+                  .contentType('${contentType}')
+                  .entry()
+                  .create({ entry: entryDetails })
+                  .catch(error => console.log(error.errorMessage || error.message || JSON.stringify(error)))
                 
                   if (flag.references) {
                     await updateReferences(entryDetails, createdEntry, references);
@@ -526,7 +540,11 @@ export function entryCreateUpdateScript(contentType) {
                 let entryDetails = deleteUnwantedKeysFromObject(compareMap.get(el), keysToRemove);
                 entryDetails = updateAssetDetailsInEntries(entryDetails);
                 if (compareMap.get(el) && !baseMap.get(el)) {
-                  let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails });
+                  let createdEntry = await stackSDKInstance
+                  .contentType('${contentType}')
+                  .entry()
+                  .create({ entry: entryDetails })
+                  .catch(error => console.log(error.errorMessage || error.message || JSON.stringify(error)))
                 
                   if (flag.references) {
                     await updateReferences(entryDetails, createdEntry, references);
@@ -535,7 +553,10 @@ export function entryCreateUpdateScript(contentType) {
                   await updateEntry(createdEntry, entryDetails);
                 } else if (compareMap.get(el) && baseMap.get(el)) {
                   let baseEntry = baseMap.get(el);
-                  let entry = await stackSDKInstance.contentType('${contentType}').entry(baseEntry.uid);
+                  let entry = await stackSDKInstance
+                  .contentType('${contentType}')
+                  .entry(baseEntry.uid)
+                  .catch(error => console.log(error.errorMessage || error.message || JSON.stringify(error)))
                   
                   if (flag.references) {
                     await updateReferences(entryDetails, baseEntry, references);
