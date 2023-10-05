@@ -15,7 +15,7 @@ import { ContentTypeStruct, OutputColumn, RefErrorReturnType } from '../../../..
 export default class Audit extends BaseCommand<typeof Audit> {
   static aliases: string[] = ['cm:stacks:audit'];
 
-  static description = 'Audit and find possible errors in the exported data';
+  static description = 'Perform audits and find possible errors in the exported Contentstack data';
 
   static examples = [
     '$ <%= config.bin %> <%= command.id %>',
