@@ -134,7 +134,6 @@
       "@oclif/plugin-not-found",
       "@oclif/plugin-plugins",
       "@contentstack/cli-config",
-      "@contentstack/cli-audit",
       "@contentstack/cli-auth",
       "@contentstack/cli-cm-import",
       "@contentstack/cli-cm-export",
@@ -146,7 +145,8 @@
       "@contentstack/cli-migration",
       "@contentstack/cli-cm-bulk-publish",
       "@contentstack/cli-cm-branches",
-      "@contentstack/cli-launch"
+      "@contentstack/cli-launch",
+      "@contentstack/cli-audit"
     ],
     "hooks": {
       "prerun": [
