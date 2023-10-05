@@ -30,20 +30,24 @@ USAGE
 
 # Commands
 <!-- commands -->
-* [`csdx audit`](#csdx-audit)
-* [`csdx audit:fix`](#csdx-auditfix)
-* [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
-* [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
-* [`csdx help [COMMANDS]`](#csdx-help-commands)
-* [`csdx plugins`](#csdx-plugins)
-* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
-* [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
-* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin-1)
-* [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-1)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-2)
-* [`csdx plugins:update`](#csdx-pluginsupdate)
+- [@contentstack/cli-audit](#contentstackcli-audit)
+  - [How to install this plugin](#how-to-install-this-plugin)
+  - [How to use this plugin](#how-to-use-this-plugin)
+- [Commands](#commands)
+  - [`csdx audit`](#csdx-audit)
+  - [`csdx audit:fix`](#csdx-auditfix)
+  - [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
+  - [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
+  - [`csdx help [COMMANDS]`](#csdx-help-commands)
+  - [`csdx plugins`](#csdx-plugins)
+  - [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
+  - [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
+  - [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin-1)
+  - [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
+  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
+  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-1)
+  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-2)
+  - [`csdx plugins:update`](#csdx-pluginsupdate)
 
 ## `csdx audit`
 
@@ -56,16 +60,8 @@ USAGE
     --no-truncate]
 
 FLAGS
-  -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path and location where data is stored
-  --columns=<value>       only show provided columns (comma-separated)
-  --csv                   output is csv format [alias: --output=csv]
-  --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide list of modules to be audited
-                          <options: content-types|global-fields|entries>
-  --no-truncate           do not truncate output to fit screen
-  --report-path=<value>   Path to store the audit reports
-  --sort=<value>          property to sort by (prepend '-' for descending)
+  -c, --config=<value>    Path of the external config.
+  -d, --data-dir=<value>  Path where the data is stored.
 
 DESCRIPTION
   Audit and find possible errors in the exported data
@@ -141,15 +137,15 @@ USAGE
     --no-truncate]
 
 FLAGS
-  -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path and location where data is stored
+  -c, --config=<value>    Path of the external config.
+  -d, --data-dir=<value>  Path where the data is stored.
   --columns=<value>       only show provided columns (comma-separated)
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide list of modules to be audited
+  --modules=<option>...   Provide the list of modules to be audited.
                           <options: content-types|global-fields|entries>
   --no-truncate           do not truncate output to fit screen
-  --report-path=<value>   Path to store the audit reports
+  --report-path=<value>   Path to store the audit reports.
   --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
@@ -184,19 +180,8 @@ USAGE
     [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
-  -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path and location where data is stored
-  -y, --yes               Use this flag to skip confirmation
-  --backup-dir=<value>    Provided path to backup original data
-  --columns=<value>       only show provided columns (comma-separated)
-  --copy-dir              Create backup from original data
-  --csv                   output is csv format [alias: --output=csv]
-  --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide list of modules to be audited
-                          <options: content-types|global-fields|entries>
-  --no-truncate           do not truncate output to fit screen
-  --report-path=<value>   Path to store the audit reports
-  --sort=<value>          property to sort by (prepend '-' for descending)
+  -c, --config=<value>    Path of the external config.
+  -d, --data-dir=<value>  Path where the data is stored.
 
 DESCRIPTION
   Audit and fix possible errors in the exported data
