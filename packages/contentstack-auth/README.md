@@ -5,40 +5,44 @@ It is Contentstack’s CLI plugin to perform authentication-related activities. 
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-* [@contentstack/cli-auth](#contentstackcli-auth)
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [@contentstack/cli-auth](#contentstackcli-auth)
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g @contentstack/cli-auth
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-auth/1.3.13 darwin-x64 node-v20.7.0
+@contentstack/cli-auth/1.3.13 darwin-arm64 node-v20.7.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-* [`csdx auth:login`](#csdx-authlogin)
-* [`csdx auth:logout`](#csdx-authlogout)
-* [`csdx auth:tokens`](#csdx-authtokens)
-* [`csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`](#csdx-authtokensadd--a-value---delivery---management--e-value--k-value--y---token-value)
-* [`csdx auth:tokens:remove`](#csdx-authtokensremove)
-* [`csdx auth:whoami`](#csdx-authwhoami)
-* [`csdx login`](#csdx-login)
-* [`csdx logout`](#csdx-logout)
-* [`csdx tokens`](#csdx-tokens)
-* [`csdx whoami`](#csdx-whoami)
+
+- [`csdx auth:login`](#csdx-authlogin)
+- [`csdx auth:logout`](#csdx-authlogout)
+- [`csdx auth:tokens`](#csdx-authtokens)
+- [`csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`](#csdx-authtokensadd--a-value---delivery---management--e-value--k-value--y---token-value)
+- [`csdx auth:tokens:remove`](#csdx-authtokensremove)
+- [`csdx auth:whoami`](#csdx-authwhoami)
+- [`csdx login`](#csdx-login)
+- [`csdx logout`](#csdx-logout)
+- [`csdx tokens`](#csdx-tokens)
+- [`csdx whoami`](#csdx-whoami)
 
 ## `csdx auth:login`
 
@@ -324,4 +328,5 @@ ALIASES
 EXAMPLES
   $ csdx auth:whoami
 ```
+
 <!-- commandsstop -->
