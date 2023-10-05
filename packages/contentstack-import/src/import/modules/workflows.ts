@@ -8,7 +8,6 @@ import isEmpty from 'lodash/isEmpty';
 import cloneDeep from 'lodash/cloneDeep';
 import findIndex from 'lodash/findIndex';
 
-import config from '../../config';
 import BaseClass, { ApiOptions } from './base-class';
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import { ModuleClassParams, WorkflowConfig } from '../../types';
@@ -28,7 +27,7 @@ export default class ImportWorkflows extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.workflowsConfig = config.modules.workflows;
+    this.workflowsConfig = importConfig.modules.workflows;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'workflows');
     this.workflowsFolderPath = join(this.importConfig.backupDir, this.workflowsConfig.dirName);
     this.workflowUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
@@ -132,7 +131,8 @@ export default class ImportWorkflows extends BaseClass {
     const onReject = ({ error, apiData }: any) => {
       const err = error?.message ? JSON.parse(error.message) : error;
       const { name } = apiData;
-      if (err?.errors?.name) {
+      const workflowExists = err?.errors?.name || err?.errors?.['workflow.name'];
+      if (workflowExists) {
         log(this.importConfig, `Workflow '${name}' already exists`, 'info');
       } else {
         this.failedWebhooks.push(apiData);
@@ -159,7 +159,7 @@ export default class ImportWorkflows extends BaseClass {
           entity: 'create-workflows',
           includeParamOnCompletion: true,
         },
-        concurrencyLimit: config.fetchConcurrency || 1,
+        concurrencyLimit: this.importConfig.fetchConcurrency || 1,
       },
       undefined,
       false,
@@ -258,7 +258,7 @@ export default class ImportWorkflows extends BaseClass {
               includeParamOnCompletion: true,
               additionalInfo: { workflowUid: workflow.uid, stageIndex },
             },
-            concurrencyLimit: config.fetchConcurrency || 1,
+            concurrencyLimit: this.importConfig.fetchConcurrency || 1,
           },
           undefined,
           false,
