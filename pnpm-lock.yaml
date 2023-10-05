@@ -11,15 +11,15 @@ importers:
   packages/contentstack:
     specifiers:
       '@contentstack/cli-auth': ~1.3.13
-      '@contentstack/cli-cm-bootstrap': ~1.4.16
+      '@contentstack/cli-cm-bootstrap': ~1.5.0
       '@contentstack/cli-cm-branches': ~1.0.13
       '@contentstack/cli-cm-bulk-publish': ~1.3.11
-      '@contentstack/cli-cm-clone': ~1.4.17
-      '@contentstack/cli-cm-export': ~1.8.2
+      '@contentstack/cli-cm-clone': ~1.5.0
+      '@contentstack/cli-cm-export': ~1.9.0
       '@contentstack/cli-cm-export-to-csv': ~1.4.2
-      '@contentstack/cli-cm-import': ~1.8.4
+      '@contentstack/cli-cm-import': ~1.9.0
       '@contentstack/cli-cm-migrate-rte': ~1.4.11
-      '@contentstack/cli-cm-seed': ~1.4.16
+      '@contentstack/cli-cm-seed': ~1.5.1
       '@contentstack/cli-command': ~1.2.12
       '@contentstack/cli-config': ~1.4.11
       '@contentstack/cli-launch': ~1.0.12
@@ -78,7 +78,7 @@ importers:
       '@contentstack/cli-launch': link:../contentstack-launch
       '@contentstack/cli-migration': link:../contentstack-migration
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/management': 1.10.0_debug@4.3.4
+      '@contentstack/management': 1.10.2_debug@4.3.4
       '@oclif/core': 2.9.4_4qcp7qp4jxxdgb4qbxgwox4hwq
       '@oclif/plugin-help': 5.2.14_4qcp7qp4jxxdgb4qbxgwox4hwq
       '@oclif/plugin-not-found': 2.4.0_4qcp7qp4jxxdgb4qbxgwox4hwq
@@ -182,7 +182,7 @@ importers:
 
   packages/contentstack-bootstrap:
     specifiers:
-      '@contentstack/cli-cm-seed': ~1.4.16
+      '@contentstack/cli-cm-seed': ~1.5.0
       '@contentstack/cli-command': ~1.2.12
       '@contentstack/cli-utilities': ~1.5.2
       '@oclif/test': ^2.2.10
@@ -356,8 +356,8 @@ importers:
   packages/contentstack-clone:
     specifiers:
       '@colors/colors': ^1.5.0
-      '@contentstack/cli-cm-export': ~1.8.2
-      '@contentstack/cli-cm-import': ~1.8.4
+      '@contentstack/cli-cm-export': ~1.9.0
+      '@contentstack/cli-cm-import': ~1.9.0
       '@contentstack/cli-command': ~1.2.12
       '@contentstack/cli-utilities': ~1.5.2
       '@oclif/test': ^1.2.7
@@ -541,6 +541,7 @@ importers:
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5.1.19
       '@oclif/test': ^1.2.6
+      '@types/big-json': ^3.2.0
       '@types/mkdirp': ^1.0.2
       '@types/progress-stream': ^2.0.2
       assert: ^2.0.0
@@ -594,6 +595,7 @@ importers:
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
       '@oclif/plugin-help': 5.2.14_typescript@4.9.5
       '@oclif/test': 1.2.9
+      '@types/big-json': 3.2.0
       '@types/mkdirp': 1.0.2
       '@types/progress-stream': 2.0.2
       assert: 2.0.0
@@ -651,14 +653,15 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.2.12
       '@contentstack/cli-utilities': ~1.5.2
-      '@contentstack/management': ~1.10.0
+      '@contentstack/management': ~1.10.2
       '@oclif/core': ^2.9.3
       '@oclif/test': ^1.2.6
+      '@types/big-json': ^3.2.0
       '@types/bluebird': ^3.5.38
       '@types/chai': ^4.2.18
+      '@types/fs-extra': ^11.0.1
       '@types/mkdirp': ^1.0.2
       '@types/mocha': ^8.2.2
-      '@types/ncp': ^2.0.5
       '@types/node': ^14.14.32
       '@types/sinon': ^10.0.2
       '@types/tar': ^4.0.3
@@ -670,13 +673,13 @@ importers:
       debug: ^4.1.0
       eslint: ^8.18.0
       eslint-config-oclif: ^4.0.0
+      fs-extra: ^11.1.1
       globby: ^10.0.2
       lodash: ^4.17.20
       marked: ^4.0.17
       merge: ^2.1.1
       mkdirp: ^1.0.4
       mocha: ^10.0.0
-      ncp: ^2.0.0
       nyc: ^15.1.0
       oclif: ^3.8.1
       promise-limit: ^2.7.0
@@ -690,27 +693,28 @@ importers:
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/management': 1.10.0_debug@4.3.4
+      '@contentstack/management': 1.10.2_debug@4.3.4
       '@oclif/core': 2.9.4_4qcp7qp4jxxdgb4qbxgwox4hwq
       big-json: 3.2.0
       bluebird: 3.7.2
       chalk: 4.1.2
       debug: 4.3.4
+      fs-extra: 11.1.1
       lodash: 4.17.21
       marked: 4.3.0
       merge: 2.1.1
       mkdirp: 1.0.4
-      ncp: 2.0.0
       promise-limit: 2.7.0
       tslib: 2.6.0
       winston: 3.10.0
     devDependencies:
       '@oclif/test': 1.2.9
+      '@types/big-json': 3.2.0
       '@types/bluebird': 3.5.38
       '@types/chai': 4.3.5
+      '@types/fs-extra': 11.0.1
       '@types/mkdirp': 1.0.2
       '@types/mocha': 8.2.3
-      '@types/ncp': 2.0.5
       '@types/node': 14.18.53
       '@types/sinon': 10.0.15
       '@types/tar': 4.0.5
@@ -901,7 +905,7 @@ importers:
 
   packages/contentstack-seed:
     specifiers:
-      '@contentstack/cli-cm-import': ~1.8.4
+      '@contentstack/cli-cm-import': ~1.9.0
       '@contentstack/cli-command': ~1.2.12
       '@contentstack/cli-utilities': ~1.5.2
       '@oclif/plugin-help': ^5.1.19
@@ -911,7 +915,7 @@ importers:
       '@types/node': ^14.14.32
       '@types/tar': ^6.1.3
       '@types/tmp': ^0.2.0
-      axios: 1.3.4
+      axios: 1.4.0
       eslint: ^8.18.0
       eslint-config-oclif: ^4.0.0
       eslint-config-oclif-typescript: ^0.1.0
@@ -930,7 +934,6 @@ importers:
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      axios: 1.3.4
       inquirer: 8.2.4
       mkdirp: 1.0.4
       tar: 6.1.15
@@ -944,6 +947,7 @@ importers:
       '@types/node': 14.18.53
       '@types/tar': 6.1.5
       '@types/tmp': 0.2.3
+      axios: 1.4.0
       eslint: 8.45.0
       eslint-config-oclif: 4.0.0_eslint@8.45.0
       eslint-config-oclif-typescript: 0.1.0_mhvizudgavq6jzvqzwcqcv4nnm
@@ -956,7 +960,7 @@ importers:
 
   packages/contentstack-utilities:
     specifiers:
-      '@contentstack/management': ~1.10.0
+      '@contentstack/management': ~1.10.2
       '@oclif/core': ^2.9.3
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.2.18
@@ -1000,7 +1004,7 @@ importers:
       winston: ^3.7.2
       xdg-basedir: ^4.0.0
     dependencies:
-      '@contentstack/management': 1.10.0_debug@4.3.4
+      '@contentstack/management': 1.10.2_debug@4.3.4
       '@oclif/core': 2.9.4_4qcp7qp4jxxdgb4qbxgwox4hwq
       axios: 1.3.4_debug@4.3.4
       chalk: 4.1.2
@@ -1487,11 +1491,11 @@ packages:
       uuid: 8.3.2
     dev: false
 
-  /@contentstack/management/1.10.0_debug@4.3.4:
-    resolution: {integrity: sha512-wnmVS19n3cZeh6T2PbBXGCr4irktunVmuECTyPF5++Rsc6GDO+FoQGCZdvzHpRZE0GLiPFIID50z2TZuNArEOg==}
+  /@contentstack/management/1.10.2_debug@4.3.4:
+    resolution: {integrity: sha512-jO24EqcCJhOjqdsqw8y3T0SPPAd0DG4BByjUcV0S28W2yoa8aBbcjcbZioRPzRLYKTmZWsAZissl18cIJm5djQ==}
     engines: {node: '>=8.0.0'}
     dependencies:
-      axios: 0.27.2_debug@4.3.4
+      axios: 1.5.0_debug@4.3.4
       form-data: 3.0.1
       lodash: 4.17.21
       qs: 6.11.2
@@ -3208,6 +3212,12 @@ packages:
       '@babel/types': 7.22.5
     dev: true
 
+  /@types/big-json/3.2.0:
+    resolution: {integrity: sha512-2nV9P72HH6FAoxoJLIKxNGLSX6pM9nm1YiOfQQwr7Sy3oz2rF4RRsxmaB7T/tcESecAqM6f0CYjx6GqnrN5X2Q==}
+    dependencies:
+      '@types/node': 16.18.38
+    dev: true
+
   /@types/bluebird/3.5.38:
     resolution: {integrity: sha512-yR/Kxc0dd4FfwtEoLZMoqJbM/VE/W7hXn/MIjb+axcwag0iFmSPK7OBUZq1YWLynJUoWQkfUrI7T0HDqGApNSg==}
     dev: true
@@ -3278,6 +3288,13 @@ packages:
     resolution: {integrity: sha512-3zsplnP2djeps5P9OyarTxwRpMLoe5Ash8aL9iprw0JxB+FAHjY+ifn4yZUuW4/9hqtnmor6uvjSRzJhiVbrEQ==}
     dev: true
 
+  /@types/fs-extra/11.0.1:
+    resolution: {integrity: sha512-MxObHvNl4A69ofaTRU8DFqvgzzv8s9yRtaPPm5gud9HDNvpB3GPQFvNuTWAI59B9huVGV5jXYJwbCsmBsOGYWA==}
+    dependencies:
+      '@types/jsonfile': 6.1.1
+      '@types/node': 16.18.38
+    dev: true
+
   /@types/glob/7.2.0:
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
     dependencies:
@@ -3337,6 +3354,12 @@ packages:
     resolution: {integrity: sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==}
     dev: true
 
+  /@types/jsonfile/6.1.1:
+    resolution: {integrity: sha512-GSgiRCVeapDN+3pqA35IkQwasaCh/0YFH5dEF6S88iDvEn901DjOeH3/QPY+XYP1DFzDZPvIvfeEgk+7br5png==}
+    dependencies:
+      '@types/node': 16.18.38
+    dev: true
+
   /@types/keyv/3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
     dependencies:
@@ -3392,12 +3415,6 @@ packages:
 
   /@types/mocha/8.2.3:
     resolution: {integrity: sha512-ekGvFhFgrc2zYQoX4JeZPmVzZxw6Dtllga7iGHzfbYIYkAMUx/sAFP2GdFpLff+vdHXu5fl7WX9AT+TtqYcsyw==}
-    dev: true
-
-  /@types/ncp/2.0.5:
-    resolution: {integrity: sha512-ocK0p8JuFmX7UkMabFPjY0F7apPvQyLWt5qtdvuvQEBz9i4m2dbzV+6L1zNaUp042RfnL6pHnxDE53OH6XQ9VQ==}
-    dependencies:
-      '@types/node': 16.18.38
     dev: true
 
   /@types/node/14.18.53:
@@ -4210,7 +4227,6 @@ packages:
 
   /asynckit/0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
-    dev: false
 
   /at-least-node/1.0.0:
     resolution: {integrity: sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==}
@@ -4242,27 +4258,28 @@ packages:
       xml2js: 0.5.0
     dev: true
 
-  /axios/0.27.2_debug@4.3.4:
-    resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
-    dependencies:
-      follow-redirects: 1.15.2_debug@4.3.4
-      form-data: 4.0.0
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
-  /axios/1.3.4:
+  /axios/1.3.4_debug@4.3.4:
     resolution: {integrity: sha512-toYm+Bsyl6VC5wSkfkbbNB6ROv7KY93PEBBL6xyDczaIHasAiv4wPqQ/c4RjoQzipxRD2W5g21cOqQulZ7rHwQ==}
     dependencies:
-      follow-redirects: 1.15.2
+      follow-redirects: 1.15.2_debug@4.3.4
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
     dev: false
 
-  /axios/1.3.4_debug@4.3.4:
-    resolution: {integrity: sha512-toYm+Bsyl6VC5wSkfkbbNB6ROv7KY93PEBBL6xyDczaIHasAiv4wPqQ/c4RjoQzipxRD2W5g21cOqQulZ7rHwQ==}
+  /axios/1.4.0:
+    resolution: {integrity: sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==}
+    dependencies:
+      follow-redirects: 1.15.2
+      form-data: 4.0.0
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+    dev: true
+
+  /axios/1.5.0_debug@4.3.4:
+    resolution: {integrity: sha512-D4DdjDo5CY50Qms0qGQTTw6Q44jl7zRwY7bthds06pUGfChBCTcQs+N743eFWGEd6pRTMd6A+I87aWyFV5wiZQ==}
     dependencies:
       follow-redirects: 1.15.2_debug@4.3.4
       form-data: 4.0.0
@@ -5004,7 +5021,6 @@ packages:
     engines: {node: '>= 0.8'}
     dependencies:
       delayed-stream: 1.0.0
-    dev: false
 
   /command-line-args/5.2.1:
     resolution: {integrity: sha512-H4UfQhZyakIjC74I9d34fGYDwk3XpSr17QhEd0Q3I9Xq1CETHo4Hcuo87WyWHpAF1aSLjLRf5lD9ZGX2qStUvg==}
@@ -5362,7 +5378,6 @@ packages:
   /delayed-stream/1.0.0:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
     engines: {node: '>=0.4.0'}
-    dev: false
 
   /delegates/1.0.0:
     resolution: {integrity: sha512-bd2L678uiWATM6m5Z1VzNCErI3jiGzt6HGY8OVICs40JQq/HALfbyNJmp0UDakEY4pMMaN0Ly5om/B1VI/+xfQ==}
@@ -6576,7 +6591,7 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
-    dev: false
+    dev: true
 
   /follow-redirects/1.15.2_debug@4.3.4:
     resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
@@ -6628,7 +6643,6 @@ packages:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       mime-types: 2.1.35
-    dev: false
 
   /forwarded/0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
@@ -6650,6 +6664,15 @@ packages:
   /fromentries/1.3.2:
     resolution: {integrity: sha512-cHEpEQHUg0f8XdtZCc2ZAhrHzKzT0MrFUTcvx+hfxYu7rGMDc5SKoXFh+n4YigxsHXRzc6OrCshdR1bWH6HHyg==}
     dev: true
+
+  /fs-extra/11.1.1:
+    resolution: {integrity: sha512-MGIE4HOvQCeUCzmlHs0vXpih4ysz4wg9qiSAu6cd42lVwPbTM1TjV7RusoyQqMmk/95gdQZX72u+YW+c3eEpFQ==}
+    engines: {node: '>=14.14'}
+    dependencies:
+      graceful-fs: 4.2.11
+      jsonfile: 6.1.0
+      universalify: 2.0.0
+    dev: false
 
   /fs-extra/8.1.0:
     resolution: {integrity: sha512-yhlQgA6mnOJUKOsRUFsgJdQCvkKhcz8tlZG5HBQfReYZy46OwLcY+Zia0mtdHsOo9y/hP+CxMN0TU9QxoOtG4g==}
@@ -9059,14 +9082,12 @@ packages:
   /mime-db/1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
     engines: {node: '>= 0.6'}
-    dev: false
 
   /mime-types/2.1.35:
     resolution: {integrity: sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==}
     engines: {node: '>= 0.6'}
     dependencies:
       mime-db: 1.52.0
-    dev: false
 
   /mime/1.6.0:
     resolution: {integrity: sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==}
@@ -9336,11 +9357,6 @@ packages:
 
   /natural-orderby/2.0.3:
     resolution: {integrity: sha512-p7KTHxU0CUrcOXe62Zfrb5Z13nLvPhSWR/so3kFulUQU0sgUll2Z0LwpsLN351eOOD+hRGu/F1g+6xDfPeD++Q==}
-
-  /ncp/2.0.0:
-    resolution: {integrity: sha512-zIdGUrPRFTUELUvr3Gmc7KZ2Sw/h1PiVM0Af/oHB6zgnV1ikqSfRk+TOufi79aHYCW3NiOXmr1BP5nWbzojLaA==}
-    hasBin: true
-    dev: false
 
   /negotiator/0.6.3:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
@@ -10664,7 +10680,6 @@ packages:
 
   /proxy-from-env/1.1.0:
     resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
-    dev: false
 
   /proxyquire/2.1.3:
     resolution: {integrity: sha512-BQWfCqYM+QINd+yawJz23tbBM40VIGXOdDw3X344KcclI/gtBbdWF6SlQ4nK/bYhF9d27KYug9WzljHC6B9Ysg==}
