@@ -141,15 +141,15 @@ USAGE
     --no-truncate]
 
 FLAGS
-  -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path and location where data is stored
+  -c, --config=<value>    Path of the external config.
+  -d, --data-dir=<value>  Path where the data is stored.
   --columns=<value>       only show provided columns (comma-separated)
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide list of modules to be audited
+  --modules=<option>...   Provide the list of modules to be audited.
                           <options: content-types|global-fields|entries>
   --no-truncate           do not truncate output to fit screen
-  --report-path=<value>   Path to store the audit reports
+  --report-path=<value>   Path to store the audit reports.
   --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
