@@ -1,7 +1,7 @@
 import { Command } from '@contentstack/cli-command';
-import { logger, cliux, configHandler } from '@contentstack/cli-utilities';
-
-export default class TokensListCommand extends Command {
+import { cliux, configHandler } from '@contentstack/cli-utilities';
+import { BaseCommand } from '../../../base-command';
+export default class TokensListCommand extends BaseCommand<typeof TokensListCommand> {
   static aliases = ['tokens'];
   static examples = ['$ csdx auth:tokens'];
   static description = 'Lists all existing tokens added to the session';
@@ -52,7 +52,7 @@ export default class TokensListCommand extends Command {
         cliux.print('CLI_AUTH_TOKENS_LIST_NO_TOKENS');
       }
     } catch (error) {
-      logger.error('Token list error', error.message);
+      this.logger.error('Token list error', error.message);
       cliux.print('CLI_AUTH_TOKENS_LIST_FAILED', { color: 'yellow' });
       cliux.print(error.message, { color: 'red' });
     }
