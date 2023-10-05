@@ -90,7 +90,7 @@ export default class ContentType {
   async writeFixContent() {
     let canWrite = true;
 
-    if (this.fix && !this.config.flags['backup-data']) {
+    if (this.fix && !this.config.flags['copy-dir']) {
       canWrite = this.config.flags.yes || (await ux.confirm('Would you like to overwrite existing file.?'));
     }
 
@@ -193,7 +193,6 @@ export default class ContentType {
       missingRefs.push(reference_to);
 
       try {
-        // field.reference_to = field.reference_to?.filter((ref) => !missingRefs.includes(ref));
         delete field.reference_to;
         fixStatus = 'Fixed';
       } catch (_error) {

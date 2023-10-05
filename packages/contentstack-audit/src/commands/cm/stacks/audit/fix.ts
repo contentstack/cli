@@ -10,9 +10,9 @@ export default class AuditFix extends AuditBaseCommand {
   static description = 'Audit and fix possible errors in the exported data';
 
   static examples = [
-    '$ <%= config.bin %> <%= command.id %>',
-    '$ <%= config.bin %> <%= command.id %> --report-path=<path>',
-    '$ <%= config.bin %> <%= command.id %> --report-path=<path> --csv',
+    '$ <%= config.bin %> <%= command.id %> --copy-dir',
+    '$ <%= config.bin %> <%= command.id %> --report-path=<path> --copy-dir',
+    '$ <%= config.bin %> <%= command.id %> --report-path=<path> --copy-dir --csv',
     '$ <%= config.bin %> <%= command.id %> --report-path=<path> --filter="name=<filter-value>"',
     '$ <%= config.bin %> <%= command.id %> --report-path=<path> --modules=content-types --filter="name="<filter-value>"',
   ];
@@ -34,7 +34,7 @@ export default class AuditFix extends AuditBaseCommand {
       description: auditFixMsg.COPY_DATA,
     }),
     'backup-dir': Flags.string({
-      dependsOn: ['backup-data'],
+      dependsOn: ['copy-dir'],
       description: auditFixMsg.BKP_PATH,
     }),
     yes: Flags.boolean({
