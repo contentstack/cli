@@ -7,7 +7,7 @@ import { AuditBaseCommand } from '../../../../audit-base-command';
 export default class Audit extends AuditBaseCommand {
   static aliases: string[] = ['audit', 'cm:stacks:audit'];
 
-  static description = 'Audit and find possible errors in the exported data';
+  static description = 'Perform audits and find possible errors in the exported Contentstack data';
 
   static examples = [
     '$ <%= config.bin %> <%= command.id %>',

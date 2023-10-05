@@ -3,22 +3,22 @@ const errors = {
 };
 
 const commonMsg = {
-  CONFIG: 'Path of the external config',
+  CONFIG: 'Path of the external config.',
   CURRENT_WORKING_DIR: 'Current working directory.',
-  DATA_DIR: 'Path and location where data is stored',
+  DATA_DIR: 'Path where the data is stored.',
 };
 
 const auditMsg = {
-  REPORT_PATH: 'Path to store the audit reports',
-  MODULES: 'Provide list of modules to be audited',
-  AUDIT_START_SPINNER: 'Starting {module} scanning',
-  PREPARING_ENTRY_METADATA: 'Creating entry metadata',
-  REFERENCE_ONLY: 'Checks only for missing references',
-  NOT_VALID_PATH: "Provided path: '{path}' is not valid",
-  NO_MISSING_REF_FOUND: 'We have not identified any missing references.',
-  FINAL_REPORT_PATH: "Writing reports completed. You can find reports at '{path}'",
-  SCAN_CT_SUCCESS_MSG: "The scanning of {module} '{title}' has been successfully finished.",
-  SCAN_ENTRY_SUCCESS_MSG: "The scanning of {module}({local}) '{title}' has been successfully finished.",
+  REPORT_PATH: 'Path to store the audit reports.',
+  MODULES: 'Provide the list of modules to be audited.',
+  AUDIT_START_SPINNER: 'Starting {module} scanning...',
+  PREPARING_ENTRY_METADATA: 'Creating entry metadata...',
+  REFERENCE_ONLY: 'Checks only for missing references.',
+  NOT_VALID_PATH: "Provided path '{path}' is not valid.",
+  NO_MISSING_REF_FOUND: 'No missing references found.',
+  FINAL_REPORT_PATH: "Reports ready. Please find the reports at '{path}'.",
+  SCAN_CT_SUCCESS_MSG: "Successfully completed the scanning of {module} '{title}'.",
+  SCAN_ENTRY_SUCCESS_MSG: "Successfully completed the scanning of {module} ({local}) '{title}'.",
 };
 
 const auditFixMsg = {
