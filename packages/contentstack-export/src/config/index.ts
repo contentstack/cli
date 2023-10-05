@@ -1,6 +1,7 @@
 import { DefaultConfig } from '../types';
 
 const config: DefaultConfig = {
+  contentVersion: 2,
   versioning: false,
   host: 'https://api.contentstack.io/v3',
   developerHubUrls: {
@@ -96,8 +97,8 @@ const config: DefaultConfig = {
       invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by', '_metadata', 'published'],
       // no of asset version files (of a single asset) that'll be downloaded parallel
       chunkFileSize: 1, // measured on Megabits (5mb)
-      downloadLimit: 10,
-      fetchConcurrency: 10,
+      downloadLimit: 5,
+      fetchConcurrency: 5,
       assetsMetaKeys: [], // Default keys ['uid', 'url', 'filename']
       securedAssets: false,
       displayExecutionTime: false,
@@ -369,20 +370,6 @@ const config: DefaultConfig = {
     'xh',
     'zu',
   ],
-  updatedModules: [
-    'assets',
-    'locales',
-    'extensions',
-    'marketplace-apps',
-    'labels',
-    'webhooks',
-    'custom-roles',
-    'global-fields',
-    'content-types',
-    'entries',
-    'workflows',
-    'stack',
-  ],
   apis: {
     userSession: '/user-session/',
     globalfields: '/global_fields/',
@@ -402,7 +389,6 @@ const config: DefaultConfig = {
   writeConcurrency: 5,
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
-  useNewModuleStructure: false,
 };
 
 export default config;
