@@ -4,6 +4,7 @@ import filter from 'lodash/filter';
 import unionBy from 'lodash/unionBy';
 import orderBy from 'lodash/orderBy';
 import isEmpty from 'lodash/isEmpty';
+import uniq from 'lodash/uniq';
 import { existsSync } from 'node:fs';
 import includes from 'lodash/includes';
 import { resolve as pResolve, join } from 'node:path';
@@ -258,9 +259,11 @@ export default class ImportAssets extends BaseClass {
     };
     const serializeData = (apiOptions: ApiOptions) => {
       const { apiData: asset } = apiOptions;
-      const publishDetails = filter(asset.publish_details, 'environment');
+      const publishDetails = filter(asset.publish_details, ({ environment }) => {
+        return this.environments.hasOwnProperty(environment);
+      });
+      const environments = uniq(map(publishDetails, ({ environment }) => this.environments[environment].name));
       const locales = map(publishDetails, 'locale');
-      const environments = map(publishDetails, ({ environment }) => this.environments[environment].name);
 
       asset.locales = locales;
       asset.environments = environments;
