@@ -1,6 +1,7 @@
-import { cliux, logger, CLIError } from '@contentstack/cli-utilities';
+import { cliux, CLIError } from '@contentstack/cli-utilities';
 import { User } from '../interfaces';
 import { askOTPChannel, askOTP } from './interactive';
+import { LoggerService } from '@contentstack/cli-utilities';
 
 /**
  * @class
@@ -9,6 +10,7 @@ import { askOTPChannel, askOTP } from './interactive';
 class AuthHandler {
   private _client;
   private _host;
+  public logger!: LoggerService;
   set client(contentStackClient) {
     this._client = contentStackClient;
   }
@@ -16,6 +18,9 @@ class AuthHandler {
     this._host = contentStackHost;
   }
 
+  initLog() {
+    this.logger = new LoggerService(process.cwd(), 'cli-log');
+  }
   /**
    *
    *
@@ -26,6 +31,7 @@ class AuthHandler {
    * TBD: take out the otp implementation from login and create a new method/function to handle otp
    */
   async login(email: string, password: string, tfaToken?: string): Promise<User> {
+    this.initLog();
     return new Promise((resolve, reject) => {
       if (email && password) {
         const loginPayload: {
@@ -39,7 +45,7 @@ class AuthHandler {
         this._client
           .login(loginPayload)
           .then(async (result: any) => {
-            logger.debug('login result', result);
+            this.logger.debug('login result', result);
             if (result.user) {
               resolve(result.user as User);
             } else if (result.error_code === 294) {
@@ -50,7 +56,7 @@ class AuthHandler {
                   await this._client.axiosInstance.post('/user/request_token_sms', { user: loginPayload });
                   cliux.print('CLI_AUTH_LOGIN_SECURITY_CODE_SEND_SUCCESS');
                 } catch (error) {
-                  logger.error('Failed to send the security code', error);
+                  this.logger.error('Failed to send the security code', error);
                   reject(new CLIError({ message: 'Failed to login - failed to send the security code' }));
                   return;
                 }
@@ -59,7 +65,7 @@ class AuthHandler {
               try {
                 resolve(await this.login(email, password, tfToken));
               } catch (error) {
-                logger.error('Failed to login with tfa token', error);
+                this.logger.error('Failed to login with tfa token', error);
                 reject(new CLIError({ message: 'Failed to login with the tf token' }));
               }
             } else {
@@ -67,7 +73,7 @@ class AuthHandler {
             }
           })
           .catch((error: any) => {
-            logger.error('Failed to login', error);
+            this.logger.error('Failed to login', error);
             reject(new CLIError({ message: error.errorMessage }));
           });
       } else {
@@ -82,6 +88,7 @@ class AuthHandler {
    * @returns {Promise} Promise object returns response object from Contentstack
    */
   async logout(authtoken: string): Promise<object> {
+    this.initLog();
     return new Promise((resolve, reject) => {
       if (authtoken) {
         this._client
@@ -90,7 +97,7 @@ class AuthHandler {
             return resolve(response);
           })
           .catch((error: Error) => {
-            logger.error('Failed to logout', error);
+            this.logger.error('Failed to logout', error);
             return reject(new CLIError({ message: 'Failed to logout - ' + error.message }));
           });
       } else {
@@ -105,13 +112,14 @@ class AuthHandler {
    * @returns {Promise} Promise object returns response object from Contentstack
    */
   async validateAuthtoken(authtoken: string): Promise<object> {
+    this.initLog();
     return new Promise((resolve, reject) => {
       if (authtoken) {
         this._client
           .getUser()
           .then((user: object) => resolve(user))
           .catch((error: Error) => {
-            logger.error('Failed to validate token', error);
+            this.logger.error('Failed to validate token', error);
             reject(new CLIError({ message: 'Failed to validate token - ' + error.message }));
           });
       } else {
