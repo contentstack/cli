@@ -10,26 +10,26 @@ importers:
 
   packages/contentstack:
     specifiers:
-      '@contentstack/cli-auth': ~1.3.13
-      '@contentstack/cli-cm-bootstrap': ~1.5.0
+      '@contentstack/cli-auth': ~1.3.14
+      '@contentstack/cli-cm-bootstrap': ~1.5.1
       '@contentstack/cli-cm-branches': ~1.0.14
-      '@contentstack/cli-cm-bulk-publish': ~1.3.11
-      '@contentstack/cli-cm-clone': ~1.5.0
-      '@contentstack/cli-cm-export': ~1.9.0
-      '@contentstack/cli-cm-export-to-csv': ~1.4.2
-      '@contentstack/cli-cm-import': ~1.9.0
-      '@contentstack/cli-cm-migrate-rte': ~1.4.11
+      '@contentstack/cli-cm-bulk-publish': ~1.3.12
+      '@contentstack/cli-cm-clone': ~1.5.1
+      '@contentstack/cli-cm-export': ~1.9.1
+      '@contentstack/cli-cm-export-to-csv': ~1.4.3
+      '@contentstack/cli-cm-import': ~1.9.1
+      '@contentstack/cli-cm-migrate-rte': ~1.4.12
       '@contentstack/cli-cm-seed': ~1.5.1
-      '@contentstack/cli-command': ~1.2.12
-      '@contentstack/cli-config': ~1.4.11
+      '@contentstack/cli-command': ~1.2.13
+      '@contentstack/cli-config': ~1.4.12
       '@contentstack/cli-launch': ~1.0.12
       '@contentstack/cli-migration': ~1.3.13
-      '@contentstack/cli-utilities': ~1.5.2
+      '@contentstack/cli-utilities': ~1.5.3
       '@contentstack/management': ~1.10.0
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5
       '@oclif/plugin-not-found': ^2.4.0
-      '@oclif/plugin-plugins': ^3.3.2
+      '@oclif/plugin-plugins': ^3.3.0
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.2.18
       '@types/inquirer': ^9.0.3
@@ -119,8 +119,8 @@ importers:
 
   packages/contentstack-auth:
     specifiers:
-      '@contentstack/cli-command': ~1.2.12
-      '@contentstack/cli-utilities': ~1.5.2
+      '@contentstack/cli-command': ~1.2.13
+      '@contentstack/cli-utilities': ~1.5.3
       '@fancy-test/nock': ^0.1.1
       '@oclif/plugin-help': ^5.1.19
       '@oclif/test': ^2.2.10
@@ -183,8 +183,8 @@ importers:
   packages/contentstack-bootstrap:
     specifiers:
       '@contentstack/cli-cm-seed': ~1.5.0
-      '@contentstack/cli-command': ~1.2.12
-      '@contentstack/cli-utilities': ~1.5.2
+      '@contentstack/cli-command': ~1.2.13
+      '@contentstack/cli-utilities': ~1.5.3
       '@oclif/test': ^2.2.10
       '@types/inquirer': ^9.0.3
       '@types/mkdirp': ^1.0.1
@@ -233,11 +233,11 @@ importers:
 
   packages/contentstack-branches:
     specifiers:
-      '@contentstack/cli-auth': ~1.3.13
-      '@contentstack/cli-command': ~1.2.12
+      '@contentstack/cli-auth': ~1.3.14
+      '@contentstack/cli-command': ~1.2.13
       '@contentstack/cli-config': ~1.4.11
       '@contentstack/cli-dev-dependencies': ~1.2.3
-      '@contentstack/cli-utilities': ~1.5.2
+      '@contentstack/cli-utilities': ~1.5.3
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5.1.19
       '@oclif/test': ^1.2.6
@@ -312,8 +312,8 @@ importers:
 
   packages/contentstack-bulk-publish:
     specifiers:
-      '@contentstack/cli-command': ~1.2.12
-      '@contentstack/cli-utilities': ~1.5.2
+      '@contentstack/cli-command': ~1.2.13
+      '@contentstack/cli-utilities': ~1.5.3
       '@oclif/test': ^1.2.6
       bluebird: ^3.7.2
       chai: ^4.2.0
@@ -358,8 +358,8 @@ importers:
       '@colors/colors': ^1.5.0
       '@contentstack/cli-cm-export': ~1.9.0
       '@contentstack/cli-cm-import': ~1.9.0
-      '@contentstack/cli-command': ~1.2.12
-      '@contentstack/cli-utilities': ~1.5.2
+      '@contentstack/cli-command': ~1.2.13
+      '@contentstack/cli-utilities': ~1.5.3
       '@oclif/test': ^1.2.7
       async: ^3.2.4
       chai: ^4.2.0
@@ -408,7 +408,7 @@ importers:
 
   packages/contentstack-command:
     specifiers:
-      '@contentstack/cli-utilities': ~1.5.2
+      '@contentstack/cli-utilities': ~1.5.3
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.2.18
       '@types/mkdirp': ^1.0.1
@@ -449,8 +449,8 @@ importers:
 
   packages/contentstack-config:
     specifiers:
-      '@contentstack/cli-command': ~1.2.12
-      '@contentstack/cli-utilities': ~1.5.2
+      '@contentstack/cli-command': ~1.2.13
+      '@contentstack/cli-utilities': ~1.5.3
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.2.18
       '@types/inquirer': ^9.0.3
@@ -533,11 +533,11 @@ importers:
 
   packages/contentstack-export:
     specifiers:
-      '@contentstack/cli-auth': ~1.3.13
-      '@contentstack/cli-command': ~1.2.12
+      '@contentstack/cli-auth': ~1.3.14
+      '@contentstack/cli-command': ~1.2.13
       '@contentstack/cli-config': ~1.4.11
       '@contentstack/cli-dev-dependencies': ~1.2.3
-      '@contentstack/cli-utilities': ~1.5.2
+      '@contentstack/cli-utilities': ~1.5.3
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5.1.19
       '@oclif/test': ^1.2.6
@@ -614,8 +614,8 @@ importers:
 
   packages/contentstack-export-to-csv:
     specifiers:
-      '@contentstack/cli-command': ~1.2.12
-      '@contentstack/cli-utilities': ~1.5.2
+      '@contentstack/cli-command': ~1.2.13
+      '@contentstack/cli-utilities': ~1.5.3
       '@oclif/test': ^2.2.10
       chai: ^4.2.0
       chalk: ^4.1.0
@@ -651,8 +651,8 @@ importers:
 
   packages/contentstack-import:
     specifiers:
-      '@contentstack/cli-command': ~1.2.12
-      '@contentstack/cli-utilities': ~1.5.2
+      '@contentstack/cli-command': ~1.2.13
+      '@contentstack/cli-utilities': ~1.5.3
       '@contentstack/management': ~1.10.2
       '@oclif/core': ^2.9.3
       '@oclif/test': ^1.2.6
@@ -735,11 +735,11 @@ importers:
   packages/contentstack-launch:
     specifiers:
       '@apollo/client': ^3.7.9
-      '@contentstack/cli-command': ~1.2.12
-      '@contentstack/cli-utilities': ~1.5.2
+      '@contentstack/cli-command': ~1.2.13
+      '@contentstack/cli-utilities': ~1.5.3
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5
-      '@oclif/plugin-plugins': ^3.3.2
+      '@oclif/plugin-plugins': ^3.3.0
       '@oclif/test': ^2.3.6
       '@types/adm-zip': ^0.5.0
       '@types/chai': ^4
@@ -811,8 +811,8 @@ importers:
 
   packages/contentstack-migrate-rte:
     specifiers:
-      '@contentstack/cli-command': ~1.2.12
-      '@contentstack/cli-utilities': ~1.5.2
+      '@contentstack/cli-command': ~1.2.13
+      '@contentstack/cli-utilities': ~1.5.3
       '@contentstack/json-rte-serializer': ~2.0.2
       '@oclif/test': ^2.2.10
       chai: ^4.3.4
@@ -858,8 +858,8 @@ importers:
 
   packages/contentstack-migration:
     specifiers:
-      '@contentstack/cli-command': ~1.2.12
-      '@contentstack/cli-utilities': ~1.5.2
+      '@contentstack/cli-command': ~1.2.13
+      '@contentstack/cli-utilities': ~1.5.3
       '@oclif/test': ^2.2.10
       async: ^3.2.4
       callsites: ^3.1.0
@@ -906,8 +906,8 @@ importers:
   packages/contentstack-seed:
     specifiers:
       '@contentstack/cli-cm-import': ~1.9.0
-      '@contentstack/cli-command': ~1.2.12
-      '@contentstack/cli-utilities': ~1.5.2
+      '@contentstack/cli-command': ~1.2.13
+      '@contentstack/cli-utilities': ~1.5.3
       '@oclif/plugin-help': ^5.1.19
       '@types/inquirer': ^9.0.3
       '@types/jest': ^26.0.15
@@ -915,7 +915,7 @@ importers:
       '@types/node': ^14.14.32
       '@types/tar': ^6.1.3
       '@types/tmp': ^0.2.0
-      axios: 1.4.0
+      axios: 1.3.4
       eslint: ^8.18.0
       eslint-config-oclif: ^4.0.0
       eslint-config-oclif-typescript: ^0.1.0
@@ -934,6 +934,7 @@ importers:
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
+      axios: 1.3.4
       inquirer: 8.2.4
       mkdirp: 1.0.4
       tar: 6.1.15
@@ -947,7 +948,6 @@ importers:
       '@types/node': 14.18.53
       '@types/tar': 6.1.5
       '@types/tmp': 0.2.3
-      axios: 1.4.0
       eslint: 8.45.0
       eslint-config-oclif: 4.0.0_eslint@8.45.0
       eslint-config-oclif-typescript: 0.1.0_mhvizudgavq6jzvqzwcqcv4nnm
@@ -2357,7 +2357,7 @@ packages:
       supports-color: 8.1.1
       supports-hyperlinks: 2.3.0
       ts-node: 10.9.1
-      tslib: 2.6.0
+      tslib: 2.6.2
       widest-line: 3.1.0
       wordwrap: 1.0.0
       wrap-ansi: 7.0.0
@@ -2398,7 +2398,7 @@ packages:
       supports-color: 8.1.1
       supports-hyperlinks: 2.3.0
       ts-node: 10.9.1_4qcp7qp4jxxdgb4qbxgwox4hwq
-      tslib: 2.6.0
+      tslib: 2.6.2
       widest-line: 3.1.0
       wordwrap: 1.0.0
       wrap-ansi: 7.0.0
@@ -2438,7 +2438,7 @@ packages:
       supports-color: 8.1.1
       supports-hyperlinks: 2.3.0
       ts-node: 10.9.1_npeoqfxwgl5njwqojmpesqhar4
-      tslib: 2.6.0
+      tslib: 2.6.2
       widest-line: 3.1.0
       wordwrap: 1.0.0
       wrap-ansi: 7.0.0
@@ -2478,7 +2478,7 @@ packages:
       supports-color: 8.1.1
       supports-hyperlinks: 2.3.0
       ts-node: 10.9.1_typescript@4.9.5
-      tslib: 2.6.0
+      tslib: 2.6.2
       widest-line: 3.1.0
       wordwrap: 1.0.0
       wrap-ansi: 7.0.0
@@ -3835,28 +3835,28 @@ packages:
     resolution: {integrity: sha512-Nl8WTesHp89RF803Se9X3IiHjdmLBrIvPMaJkl+rKVJAYyPsz1TEUbu89943HpvujtSJgDUx9W4vZw3K1Mr3sA==}
     engines: {node: '>=8'}
     dependencies:
-      tslib: 2.6.0
+      tslib: 2.6.2
     dev: false
 
   /@wry/equality/0.5.6:
     resolution: {integrity: sha512-D46sfMTngaYlrH+OspKf8mIJETntFnf6Hsjb0V41jAXJ7Bx2kB8Rv8RCUujuVWYttFtHkUNp7g+FwxNQAr6mXA==}
     engines: {node: '>=8'}
     dependencies:
-      tslib: 2.6.0
+      tslib: 2.6.2
     dev: false
 
   /@wry/trie/0.3.2:
     resolution: {integrity: sha512-yRTyhWSls2OY/pYLfwff867r8ekooZ4UI+/gxot5Wj8EFwSf2rG+n+Mo/6LoLQm1TKA4GRj2+LCpbfS937dClQ==}
     engines: {node: '>=8'}
     dependencies:
-      tslib: 2.6.0
+      tslib: 2.6.2
     dev: false
 
   /@wry/trie/0.4.3:
     resolution: {integrity: sha512-I6bHwH0fSf6RqQcnnXLJKhkSXG45MFral3GxPaY4uAl0LYDZM+YDVDAiU9bYwjTuysy1S0IeecWtmq1SZA3M1w==}
     engines: {node: '>=8'}
     dependencies:
-      tslib: 2.6.0
+      tslib: 2.6.2
     dev: false
 
   /JSONStream/1.3.5:
@@ -4227,6 +4227,7 @@ packages:
 
   /asynckit/0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
+    dev: false
 
   /at-least-node/1.0.0:
     resolution: {integrity: sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==}
@@ -4258,6 +4259,16 @@ packages:
       xml2js: 0.5.0
     dev: true
 
+  /axios/1.3.4:
+    resolution: {integrity: sha512-toYm+Bsyl6VC5wSkfkbbNB6ROv7KY93PEBBL6xyDczaIHasAiv4wPqQ/c4RjoQzipxRD2W5g21cOqQulZ7rHwQ==}
+    dependencies:
+      follow-redirects: 1.15.2
+      form-data: 4.0.0
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /axios/1.3.4_debug@4.3.4:
     resolution: {integrity: sha512-toYm+Bsyl6VC5wSkfkbbNB6ROv7KY93PEBBL6xyDczaIHasAiv4wPqQ/c4RjoQzipxRD2W5g21cOqQulZ7rHwQ==}
     dependencies:
@@ -4267,16 +4278,6 @@ packages:
     transitivePeerDependencies:
       - debug
     dev: false
-
-  /axios/1.4.0:
-    resolution: {integrity: sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==}
-    dependencies:
-      follow-redirects: 1.15.2
-      form-data: 4.0.0
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-    dev: true
 
   /axios/1.5.0_debug@4.3.4:
     resolution: {integrity: sha512-D4DdjDo5CY50Qms0qGQTTw6Q44jl7zRwY7bthds06pUGfChBCTcQs+N743eFWGEd6pRTMd6A+I87aWyFV5wiZQ==}
@@ -5021,6 +5022,7 @@ packages:
     engines: {node: '>= 0.8'}
     dependencies:
       delayed-stream: 1.0.0
+    dev: false
 
   /command-line-args/5.2.1:
     resolution: {integrity: sha512-H4UfQhZyakIjC74I9d34fGYDwk3XpSr17QhEd0Q3I9Xq1CETHo4Hcuo87WyWHpAF1aSLjLRf5lD9ZGX2qStUvg==}
@@ -5378,6 +5380,7 @@ packages:
   /delayed-stream/1.0.0:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
     engines: {node: '>=0.4.0'}
+    dev: false
 
   /delegates/1.0.0:
     resolution: {integrity: sha512-bd2L678uiWATM6m5Z1VzNCErI3jiGzt6HGY8OVICs40JQq/HALfbyNJmp0UDakEY4pMMaN0Ly5om/B1VI/+xfQ==}
@@ -6591,7 +6594,7 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
-    dev: true
+    dev: false
 
   /follow-redirects/1.15.2_debug@4.3.4:
     resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
@@ -6643,6 +6646,7 @@ packages:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       mime-types: 2.1.35
+    dev: false
 
   /forwarded/0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
@@ -6949,7 +6953,7 @@ packages:
       graphql: ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
     dependencies:
       graphql: 16.8.1
-      tslib: 2.6.0
+      tslib: 2.6.2
     dev: false
 
   /graphql/16.8.1:
@@ -9082,12 +9086,14 @@ packages:
   /mime-db/1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
     engines: {node: '>= 0.6'}
+    dev: false
 
   /mime-types/2.1.35:
     resolution: {integrity: sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==}
     engines: {node: '>= 0.6'}
     dependencies:
       mime-db: 1.52.0
+    dev: false
 
   /mime/1.6.0:
     resolution: {integrity: sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==}
@@ -10680,6 +10686,7 @@ packages:
 
   /proxy-from-env/1.1.0:
     resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
+    dev: false
 
   /proxyquire/2.1.3:
     resolution: {integrity: sha512-BQWfCqYM+QINd+yawJz23tbBM40VIGXOdDw3X344KcclI/gtBbdWF6SlQ4nK/bYhF9d27KYug9WzljHC6B9Ysg==}
@@ -11888,7 +11895,7 @@ packages:
     resolution: {integrity: sha512-uivwYcQaxAucv1CzRp2n/QdYPo4ILf9VXgH19zEIjFx2EJufV16P0JtJVpYHy89DItG6Kwj2oIUjrcK5au+4tQ==}
     engines: {node: '>=8'}
     dependencies:
-      tslib: 2.6.0
+      tslib: 2.6.2
     dev: false
 
   /ts-jest/29.1.1_dqjx4clx5uib3whf4y4dxwq3by:
@@ -12065,7 +12072,6 @@ packages:
 
   /tslib/2.6.2:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
-    dev: false
 
   /tsutils/3.21.0_typescript@4.9.5:
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
