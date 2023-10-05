@@ -286,7 +286,7 @@ export default class Entries {
       const entryBlock = field[index];
       const { uid } = ctBlock;
 
-      if (entryBlock[uid]) {
+      if (entryBlock?.[uid]) {
         await this.lookForReference([...tree, { field: uid }], ctBlock, entryBlock[uid] as EntryModularBlocksDataType);
       }
     }
