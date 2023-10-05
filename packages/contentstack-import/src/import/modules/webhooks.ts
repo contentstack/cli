@@ -1,8 +1,7 @@
 import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 
-import config from '../../config';
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, WebhookConfig } from '../../types';
@@ -21,7 +20,7 @@ export default class ImportWebhooks extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.webhooksConfig = config.modules.webhooks;
+    this.webhooksConfig = importConfig.modules.webhooks;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'webhooks');
     this.webhooksFolderPath = join(this.importConfig.backupDir, this.webhooksConfig.dirName);
     this.webhookUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
@@ -70,7 +69,7 @@ export default class ImportWebhooks extends BaseClass {
   async importWebhooks() {
     if (this.webhooks === undefined || isEmpty(this.webhooks)) {
       log(this.importConfig, 'No Webhook Found', 'info');
-      return resolve();
+      return;
     }
 
     const apiContent = values(this.webhooks);
@@ -104,7 +103,7 @@ export default class ImportWebhooks extends BaseClass {
           entity: 'create-webhooks',
           includeParamOnCompletion: true,
         },
-        concurrencyLimit: config.fetchConcurrency || 1,
+        concurrencyLimit: this.importConfig.fetchConcurrency || 1,
       },
       undefined,
       false,
