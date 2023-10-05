@@ -376,20 +376,20 @@ function exitProgram() {
   process.exit();
 }
 
-function sanitizeEntries(flatEntry) {
+function sanitizeData(flatData) {
   // sanitize against CSV Injections
-  const CSVRegex = /^[\\+\\=@\\-]/
-  for (key in flatEntry) {
-    if (typeof flatEntry[key] === 'string' && flatEntry[key].match(CSVRegex)) {
-      flatEntry[key] = flatEntry[key].replace(/\"/g, "\"\"");
-      flatEntry[key] = `"'${flatEntry[key]}"`
-    } else if (typeof flatEntry[key] === 'object') {
+  const CSVRegex = /^[\\+\\=@\\-]/;
+  for (key in flatData) {
+    if (typeof flatData[key] === 'string' && flatData[key].match(CSVRegex)) {
+      flatData[key] = flatData[key].replace(/\"/g, '""');
+      flatData[key] = `"'${flatData[key]}"`;
+    } else if (typeof flatData[key] === 'object') {
       // convert any objects or arrays to string
       // to store this data correctly in csv
-      flatEntry[key] = JSON.stringify(flatEntry[key]);
+      flatData[key] = JSON.stringify(flatData[key]);
     }
   }
-  return flatEntry;
+  return flatData;
 }
 
 function cleanEntries(entries, language, environments, contentTypeUid) {
@@ -414,7 +414,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
       }
     }
     entry = flatten(entry);
-    entry = sanitizeEntries(entry);
+    entry = sanitizeData(entry);
     entry['publish_details'] = envArr;
     entry['_workflow'] = workflow;
     entry['ACL'] = JSON.stringify({}); // setting ACL to empty obj
@@ -685,15 +685,15 @@ function wait(time) {
 
 /**
  * fetch all taxonomies in the provided stack
- * @param {object} payload 
- * @param {number} skip 
- * @param {number} limit 
- * @param {array} taxonomies 
- * @returns 
+ * @param {object} payload
+ * @param {number} skip
+ * @param {number} limit
+ * @param {array} taxonomies
+ * @returns
  */
 async function getAllTaxonomies(payload, skip = 0, limit = 100, taxonomies = []) {
   const response = await apiRequestHandler(payload, skip, limit);
-  if(response){
+  if (response) {
     skip += config.limit || 100;
     taxonomies = [...taxonomies, ...response.taxonomies];
     if (skip >= response?.count) {
@@ -707,15 +707,15 @@ async function getAllTaxonomies(payload, skip = 0, limit = 100, taxonomies = [])
 
 /**
  * fetch terms of related taxonomy
- * @param {object} payload 
- * @param {number} skip 
- * @param {number} limit 
- * @param {array} terms 
- * @returns 
+ * @param {object} payload
+ * @param {number} skip
+ * @param {number} limit
+ * @param {array} terms
+ * @returns
  */
 async function getAllTermsOfTaxonomy(payload, skip = 0, limit = 100, terms = []) {
   const response = await apiRequestHandler(payload, skip, limit);
-  if(response){
+  if (response) {
     skip += config.limit || 100;
     terms = [...terms, ...response.terms];
     if (skip >= response?.count) {
@@ -729,9 +729,9 @@ async function getAllTermsOfTaxonomy(payload, skip = 0, limit = 100, terms = [])
 
 /**
  * Verify the existence of a taxonomy. Obtain its details if it exists and return
- * @param {object} payload 
- * @param {string} taxonomyUID 
- * @returns 
+ * @param {object} payload
+ * @param {string} taxonomyUID
+ * @returns
  */
 async function getTaxonomy(payload, taxonomyUID) {
   payload['url'] = `${payload.baseUrl}/${taxonomyUID}`;
@@ -769,7 +769,7 @@ async function apiRequestHandler(payload, skip, limit) {
         let errorMsg;
         if ([500, 503, 502].includes(status)) errorMsg = data?.message || data;
         else errorMsg = data?.error_message;
-        if(errorMsg === undefined){
+        if (errorMsg === undefined) {
           errorMsg = Object.values(data?.errors) && flat(Object.values(data.errors));
         }
         cliux.print(`Error: ${errorMsg}`, { color: 'red' });
@@ -781,17 +781,19 @@ async function apiRequestHandler(payload, skip, limit) {
 
 /**
  * Change taxonomies data in required CSV headers format
- * @param {array} taxonomies 
- * @returns 
+ * @param {array} taxonomies
+ * @returns
  */
 function formatTaxonomiesData(taxonomies) {
-  if(taxonomies?.length){
+  if (taxonomies?.length) {
     const formattedTaxonomies = taxonomies.map((taxonomy) => {
-      return {
+      let obj = {
         'Taxonomy UID': taxonomy.uid,
         Name: taxonomy.name,
         Description: taxonomy.description,
       };
+      obj = sanitizeData(obj);
+      return obj;
     });
     return formattedTaxonomies;
   }
@@ -799,19 +801,21 @@ function formatTaxonomiesData(taxonomies) {
 
 /**
  * Modify the linked taxonomy data's terms in required CSV headers format
- * @param {array} terms 
- * @param {string} taxonomyUID 
- * @returns 
+ * @param {array} terms
+ * @param {string} taxonomyUID
+ * @returns
  */
 function formatTermsOfTaxonomyData(terms, taxonomyUID) {
-  if(terms?.length){
+  if (terms?.length) {
     const formattedTerms = terms.map((term) => {
-      return {
+      let obj = {
         'Taxonomy UID': taxonomyUID,
         UID: term.uid,
         Name: term.name,
         'Parent UID': term.parent_uid,
-      };
+      }
+      obj = sanitizeData(obj);
+      return obj;
     });
     return formattedTerms;
   }
