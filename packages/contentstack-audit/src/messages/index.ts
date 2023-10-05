@@ -22,7 +22,7 @@ const auditMsg = {
 };
 
 const auditFixMsg = {
-  BACKUP_DATA: 'Create backup from original data',
+  COPY_DATA: 'Create backup from original data',
   BKP_PATH: 'Provided path to backup original data',
   FIXED_CONTENT_PATH_MAG: 'You can locate the fixed content at {path}',
 };
