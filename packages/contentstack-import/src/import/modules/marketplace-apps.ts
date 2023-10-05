@@ -20,7 +20,6 @@ import {
   ContentstackClient,
 } from '@contentstack/cli-utilities';
 
-import config from '../../config';
 import BaseClass from './base-class';
 import { askEncryptionKey } from '../../utils/interactive';
 import { ModuleClassParams, MarketplaceAppsConfig } from '../../types';
@@ -56,11 +55,11 @@ export default class ImportMarketplaceApps extends BaseClass {
   public developerHubBaseUrl: string;
   public sdkClient: ContentstackClient;
   public nodeCrypto: NodeCrypto;
-
+  public appSdkAxiosInstance: any
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
 
-    this.marketPlaceAppConfig = config.modules.marketplace_apps;
+    this.marketPlaceAppConfig = importConfig.modules.marketplace_apps;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'marketplace_apps');
     this.marketPlaceFolderPath = join(this.importConfig.backupDir, this.marketPlaceAppConfig.dirName);
     this.marketPlaceUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
@@ -101,6 +100,9 @@ export default class ImportMarketplaceApps extends BaseClass {
     await fsUtil.makeDirectory(this.mapperDirPath);
     this.developerHubBaseUrl = this.importConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.importConfig));
     this.sdkClient = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
+    this.appSdkAxiosInstance = await managementSDKClient({
+      host: this.developerHubBaseUrl.split('://').pop()
+    });
     this.importConfig.org_uid = await getOrgUid(this.importConfig);
     await this.setHttpClient();
     await this.startInstallation();
@@ -404,15 +406,19 @@ export default class ImportMarketplaceApps extends BaseClass {
 
     // TODO migrate this HTTP API call into SDK
     // NOTE Use updateAppConfig(this.sdkClient, this.importConfig, app, payload) utility when migrating to SDK call;
-    return this.httpClient
-      .put(`${this.developerHubBaseUrl}/installations/${uid}`, payload)
-      .then(({ data }) => {
-        if (data.message) {
+    return this.appSdkAxiosInstance.axiosInstance
+      .put(`${this.developerHubBaseUrl}/installations/${uid}`, payload, {
+        headers: {
+          organization_uid: this.importConfig.org_uid,
+        },
+      })
+      .then(({data}:any) => {
+        if (data?.message) {
           log(this.importConfig, formatError(data.message), 'success');
         } else {
           log(this.importConfig, `${app.manifest.name} app config updated successfully.!`, 'success');
         }
       })
-      .catch((error) => log(this.importConfig, formatError(error), 'error'));
+      .catch((error:any) => log(this.importConfig, formatError(error), 'error'));
   }
 }
