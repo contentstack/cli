@@ -11,7 +11,7 @@ const commonMsg = {
 const auditMsg = {
   REPORT_PATH: 'Path to store the audit reports.',
   MODULES: 'Provide the list of modules to be audited.',
-  AUDIT_START_SPINNER: 'Starting {module} scanning...',
+  AUDIT_START_SPINNER: '{module} scanning...',
   PREPARING_ENTRY_METADATA: 'Creating entry metadata...',
   REFERENCE_ONLY: 'Checks only for missing references.',
   NOT_VALID_PATH: "Provided path '{path}' is not valid.",
