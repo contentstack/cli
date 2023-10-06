@@ -1,6 +1,6 @@
-import { resolve } from 'path';
+import { join, resolve } from 'path';
 import find from 'lodash/find';
-import { existsSync } from 'fs';
+import { existsSync, writeFileSync } from 'fs';
 
 import {
   LogFn,
@@ -18,11 +18,13 @@ import {
 } from '../types';
 import auditConfig from '../config';
 import { $t, auditMsg } from '../messages';
+import { ux } from '@oclif/core';
 
 /* The `ContentType` class is responsible for scanning content types, looking for references, and
 generating a report in JSON and CSV formats. */
 export default class ContentType {
   public log: LogFn;
+  private fix: boolean;
   public fileName: string;
   public config: ConfigType;
   public folderPath: string;
@@ -34,8 +36,9 @@ export default class ContentType {
   protected missingRefs: Record<string, any> = {};
   public moduleName: keyof typeof auditConfig.moduleConfig = 'content-types';
 
-  constructor({ log, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
+  constructor({ log, fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
     this.log = log;
+    this.fix = fix || false;
     this.config = config;
     this.ctSchema = ctSchema;
     this.gfSchema = gfSchema;
@@ -69,6 +72,8 @@ export default class ContentType {
       );
     }
 
+    await this.writeFixContent();
+
     for (let propName in this.missingRefs) {
       if (!this.missingRefs[propName].length) {
         delete this.missingRefs[propName];
@@ -76,6 +81,25 @@ export default class ContentType {
     }
 
     return this.missingRefs;
+  }
+
+  /**
+   * The function checks if it can write the fix content to a file and if so, it writes the content as
+   * JSON to the specified file path.
+   */
+  async writeFixContent() {
+    let canWrite = true;
+
+    if (this.fix && !this.config.flags['copy-dir']) {
+      canWrite = this.config.flags.yes || (await ux.confirm('Would you like to overwrite existing file.?'));
+    }
+
+    if (canWrite) {
+      writeFileSync(
+        join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName),
+        JSON.stringify(this.schema),
+      );
+    }
   }
 
   /**
@@ -161,17 +185,28 @@ export default class ContentType {
    */
   async validateGlobalField(tree: Record<string, unknown>[], field: GlobalFieldDataType): Promise<void> {
     // NOTE Any GlobalField related logic can be added here
+    let fixStatus;
     const missingRefs = [];
     const { reference_to, display_name, data_type } = field;
 
     if (!find(this.gfSchema, { uid: reference_to })) {
       missingRefs.push(reference_to);
+
+      if (this.fix) {
+        try {
+          delete field.reference_to;
+          fixStatus = 'Fixed';
+        } catch (_error) {
+          fixStatus = 'Not Fixed';
+        }
+      }
     }
 
     if (missingRefs.length) {
       this.missingRefs[this.currentUid].push({
         tree,
         data_type,
+        fixStatus,
         missingRefs,
         display_name,
         ct_uid: this.currentUid,
@@ -247,8 +282,9 @@ export default class ContentType {
     tree: Record<string, unknown>[],
     field: ReferenceFieldDataType | JsonRTEFieldDataType,
   ): RefErrorReturnType[] {
-    const missingRefs = [];
-    const { reference_to, display_name, data_type } = field;
+    let fixStatus;
+    const missingRefs: string[] = [];
+    let { reference_to, display_name, data_type } = field;
 
     for (const reference of reference_to ?? []) {
       // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
@@ -261,16 +297,31 @@ export default class ContentType {
       }
     }
 
+    if (this.fix) {
+      try {
+        field.reference_to = field.reference_to?.filter((ref) => !missingRefs.includes(ref));
+        fixStatus = 'Fixed';
+      } catch (_error) {
+        if (this.fix) {
+          fixStatus = 'Not Fixed';
+        }
+      }
+    }
+
     return missingRefs.length
       ? [
           {
             tree,
             data_type,
+            fixStatus,
             missingRefs,
             display_name,
             ct_uid: this.currentUid,
             name: this.currentTitle,
-            treeStr: tree.map(({ name }) => name).join(' ➜ '),
+            treeStr: tree
+              .map(({ name }) => name)
+              .filter((val) => val)
+              .join(' ➜ '),
           },
         ]
       : [];
