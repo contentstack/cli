@@ -138,26 +138,18 @@ export default class Audit extends BaseCommand<typeof Audit> {
    * `gfSchema`. The values of these properties are the parsed JSON data from two different files.
    */
   getCtAndGfSchema() {
-    let ctSchema = JSON.parse(
-      readFileSync(
-        join(
-          this.sharedConfig.basePath,
-          this.sharedConfig.moduleConfig['content-types'].dirName,
-          this.sharedConfig.moduleConfig['content-types'].fileName,
-        ),
-        'utf-8',
-      ),
-    ) as ContentTypeStruct[];
-    let gfSchema = JSON.parse(
-      readFileSync(
-        join(
-          this.sharedConfig.basePath,
-          this.sharedConfig.moduleConfig['global-fields'].dirName,
-          this.sharedConfig.moduleConfig['global-fields'].fileName,
-        ),
-        'utf-8',
-      ),
-    ) as ContentTypeStruct[];
+    const ctPath = join(
+      this.sharedConfig.basePath,
+      this.sharedConfig.moduleConfig['content-types'].dirName,
+      this.sharedConfig.moduleConfig['content-types'].fileName,
+    );
+    const gfPath = join(
+      this.sharedConfig.basePath,
+      this.sharedConfig.moduleConfig['global-fields'].dirName,
+      this.sharedConfig.moduleConfig['global-fields'].fileName,
+    );
+    let ctSchema = existsSync(ctPath) ? (JSON.parse(readFileSync(ctPath, 'utf-8')) as ContentTypeStruct[]) : [];
+    let gfSchema = existsSync(gfPath) ? (JSON.parse(readFileSync(gfPath, 'utf-8')) as ContentTypeStruct[]) : [];
 
     return { ctSchema, gfSchema };
   }
