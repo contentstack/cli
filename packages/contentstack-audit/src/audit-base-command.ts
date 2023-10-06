@@ -155,13 +155,13 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
     if (modules.includes('content-types')) {
       if (!existsSync(ctPath)) {
-        throw new Error(this.$t(auditMsg.NOT_VALID_PATH, { path: ctPath }));
+        this.log(this.$t(auditMsg.NOT_VALID_PATH, { path: ctPath }), 'error');
       }
     }
 
     if (modules.includes('global-fields')) {
       if (!existsSync(gfPath)) {
-        throw new Error(this.$t(auditMsg.NOT_VALID_PATH, { path: ctPath }));
+        this.log(this.$t(auditMsg.NOT_VALID_PATH, { path: ctPath }), 'error');
       }
     }
 
