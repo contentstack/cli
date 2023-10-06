@@ -39,10 +39,10 @@ export default class ContentType {
     this.config = config;
     this.ctSchema = ctSchema;
     this.gfSchema = gfSchema;
+    this.moduleName = moduleName ?? 'content-types';
     this.fileName = config.moduleConfig[this.moduleName].fileName;
     this.folderPath = resolve(config.basePath, config.moduleConfig[this.moduleName].dirName);
 
-    if (moduleName) this.moduleName = moduleName;
   }
 
   /**
