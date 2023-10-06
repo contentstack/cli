@@ -60,11 +60,11 @@ export default class ExportTaxonomies extends BaseClass {
     //fetch all taxonomies and write into taxonomies folder
     await this.getAllTaxonomies(this.taxonomyPayload);
     if (this.taxonomies === undefined || isEmpty(this.taxonomies)) {
-      log(this.exportConfig, 'No taxonomies found', 'info');
+      log(this.exportConfig, 'No taxonomies found!', 'info');
       return;
     } else {
       fsUtil.writeFile(pResolve(this.taxonomiesFolderPath, this.taxonomiesConfig.fileName), this.taxonomies);
-      log(this.exportConfig, 'All the taxonomies have been exported successfully!', 'success');
+      log(this.exportConfig, 'All taxonomies exported successfully!', 'success');
     }
 
     //fetch all terms of respective and write into taxonomies/terms folder
@@ -101,7 +101,7 @@ export default class ExportTaxonomies extends BaseClass {
       const taxonomyUID = taxonomies[index].uid;
       const taxonomyName = taxonomies[index]?.name;
       this.taxonomies[taxonomyUID] = omit(taxonomies[index], this.taxonomiesConfig.invalidKeys);
-      log(this.exportConfig, `'${taxonomyName}' taxonomy was exported successfully`, 'success');
+      log(this.exportConfig, `'${taxonomyName}' taxonomy exported successfully!`, 'success');
     }
   }
 
@@ -117,13 +117,13 @@ export default class ExportTaxonomies extends BaseClass {
       await this.fetchTermsOfTaxonomy(this.taxonomyPayload);
 
       if (this.terms === undefined || isEmpty(this.terms)) {
-        log(this.exportConfig, `No terms found for taxonomy - '${taxonomyUID}'`, 'info');
+        log(this.exportConfig, `No terms found for taxonomy - '${taxonomyUID}'!`, 'info');
       } else {
         fsUtil.writeFile(pResolve(this.termsFolderPath, `${taxonomyUID}-${this.termsConfig.fileName}`), this.terms);
-        log(this.exportConfig, `Terms from taxonomy '${taxonomyUID}' were exported successfully.`, 'success');
+        log(this.exportConfig, `Terms from taxonomy '${taxonomyUID}' exported successfully!`, 'success');
       }
     }
-    log(this.exportConfig, `All the terms have been exported successfully!`, 'success');
+    log(this.exportConfig, `All the terms exported successfully!`, 'success');
   }
 
   /**
@@ -205,7 +205,7 @@ export default class ExportTaxonomies extends BaseClass {
     } else if (err?.message) {
       cliux.print(`Error: ${err.message}`, { color: 'red' });
     } else {
-      cliux.print(`Error: Something went wrong. Please try again.`, { color: 'red' });
+      cliux.print(`Error: Something went wrong! Please try again.`, { color: 'red' });
     }
   }
 }
