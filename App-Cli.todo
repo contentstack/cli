@@ -1,0 +1,35 @@
+✔ As a developer, I should be able to create a sample boilerplate using questionary, so that I can start my app development: @done(23-05-31 12:29)
+  ☐ Is there an existing API available to retrieve the boilerplate?
+    ☐ If yes, where can we find the API to explore its functionality?
+    ☐ If not, how should the boilerplate be structured?
+✔ As a developer, I should be able to create a sample app using pre defined boilerplate's, so that I can start my app development: @done(23-05-31 12:30)
+  ☐ Are we discussing the creation of a private app in DeveloperHub?
+✔ As a developer, I should be able to run app from newly created boilerplate using cs cli: @done(23-05-31 12:39)
+  ☐ More clarification and details are needed.
+As a developer, I should be able to install org app in any organization i am admin of/As a developer, I should be able to install stack app in any stack i am admin of:
+  ✔ Assuming the prerequisites are as follows: @done(23-05-31 12:40)
+    ☐ The user should be logged in.
+    ☐ The role must be Org/stack Owner or Admin.
+As a developer, I should be able to install stack app in all stacks at once in which i am admin: @good-to-have
+  ☐ Is there an existing API that can handle this and accept multiple targets? Alternatively, should the CLI iterate and install the app into all stacks?
+As a developer, I should be able to uninstall org app in any organization i am admin of/As a developer, I should be able to uninstall stack app in any stack i am admin of.:
+  ☐ Assuming that the app uninstall endpoint will help remove the app.
+As a developer, I should be able to uninstall stack app in any stack i am admin of:
+  ☐ Assuming that the app uninstall endpoint will help remove the app.?
+☐ As a developer, I should be able to uninstall stack app in all stacks at once in which i am admin: @good-to-have
+  ☐ Assuming that the app uninstall endpoint will help remove the app.?
+  ☐ Is there an existing API that can handle this and accept multiple targets to uninstall?
+✔ As a developer, I should be able to delete the current app from developer hub: @done(23-05-31 12:46)
+  ☐ Assuming this operation is valid only if the app is not installed in any of the stacks.
+    ☐ What if the app is already installed and being used in any of the stacks, and the admin tries to delete it?
+    ☐ In such a case, we need to handle the error appropriately and display the correct message.
+  ☐ What if the app is installed in a stack, and that stack is deleted without uninstalling the app? In this scenario, we may not be able to remove the app, unless this issue has already been fixed.
+As a developer, I should be able to register a current app code, so that I can start my app development:
+  ☐ More clarification and details are needed.
+As a developer, I should be able to deploy stack/org app via app hosting:
+  ☐ More clarification and details are needed.
+As a developer, I should be able to tunnel api to local app via tunneling:
+  ☐ More clarification and details are needed.
+
+1) Boilerplate - keep as of now static
+2) Clone register and run in developer-hub
