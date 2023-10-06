@@ -44,7 +44,7 @@ const verifyAndRemoveTaxonomy = function (
 
     if (taxonomies === undefined || !taxonomies.hasOwnProperty(taxonomyData?.taxonomy_uid)) {
       // remove taxonomy from taxonomies field data with warning if respective taxonomy doesn't exists
-      cliux.print(`Taxonomy '${taxonomyData?.taxonomy_uid}' does not exist. Removing the data from taxonomies field`, {
+      cliux.print(`Taxonomy '${taxonomyData?.taxonomy_uid}' does not exist. Removing the data from the taxonomies field`, {
         color: 'yellow',
       });
       taxonomyFieldData.splice(index, 1);
