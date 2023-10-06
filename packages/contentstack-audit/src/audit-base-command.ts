@@ -17,6 +17,18 @@ import { ContentTypeStruct, OutputColumn, RefErrorReturnType } from './types';
 export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseCommand> {
   private currentCommand!: string;
 
+  get fixStatus() {
+    return {
+      fixStatus: {
+        minWidth: 7,
+        header: 'Fix Status',
+        get: (row: any) => {
+          return row.fixStatus === 'Fixed' ? chalk.greenBright(row.fixStatus) : chalk.redBright(row.fixStatus);
+        },
+      },
+    };
+  }
+
   /**
    * The `start` function performs an audit on content types, global fields, and entries, and displays
    * any missing references.
@@ -57,40 +69,26 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       ux.action.start(this.$t(this.messages.AUDIT_START_SPINNER, { module }));
 
+      const constructorParam = {
+        ctSchema,
+        gfSchema,
+        log: this.log,
+        moduleName: module,
+        config: this.sharedConfig,
+        fix: this.currentCommand === 'cm:stacks:audit:fix',
+      };
+
       switch (module) {
         case 'content-types':
-          missingCtRefs = await new ContentType({
-            ctSchema,
-            gfSchema,
-            log: this.log,
-            moduleName: module,
-            config: this.sharedConfig,
-            fix: this.currentCommand === 'cm:stacks:audit:fix',
-          }).run();
-
+          missingCtRefs = await new ContentType(constructorParam).run();
           await this.prepareReport(module, missingCtRefs);
           break;
         case 'global-fields':
-          missingGfRefs = await new GlobalField({
-            ctSchema,
-            gfSchema,
-            log: this.log,
-            moduleName: module,
-            config: this.sharedConfig,
-            fix: this.currentCommand === 'cm:stacks:audit:fix',
-          }).run();
-
+          missingGfRefs = await new GlobalField(constructorParam).run();
           await this.prepareReport(module, missingGfRefs);
           break;
         case 'entries':
-          missingEntryRefs = await new Entries({
-            ctSchema,
-            gfSchema,
-            log: this.log,
-            moduleName: module,
-            config: this.sharedConfig,
-            fix: this.currentCommand === 'cm:stacks:audit:fix',
-          }).run();
+          missingEntryRefs = await new Entries(constructorParam).run();
           await this.prepareReport(module, missingEntryRefs);
           break;
       }
@@ -197,17 +195,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
               message: ` ${module}`,
             },
           ]);
-          let fixColumn: Record<string, any> = {};
-
-          if (this.currentCommand === 'cm:stacks:audit:fix') {
-            fixColumn['fixStatus'] = {
-              minWidth: 7,
-              header: 'Fix Status',
-              get: (row: any) => {
-                return row.fixStatus === 'Fixed' ? chalk.greenBright(row.fixStatus) : chalk.redBright(row.fixStatus);
-              },
-            };
-          }
 
           ux.table(
             Object.values(missingRefs).flat(),
@@ -233,7 +220,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
                   );
                 },
               },
-              ...fixColumn,
+              ...this.fixStatus,
               treeStr: {
                 minWidth: 7,
                 header: 'Path',
