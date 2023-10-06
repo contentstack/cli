@@ -34,18 +34,17 @@ export default class ContentType {
   public ctSchema: ContentTypeStruct[];
   protected schema: ContentTypeStruct[] = [];
   protected missingRefs: Record<string, any> = {};
-  public moduleName: keyof typeof auditConfig.moduleConfig = 'content-types';
+  public moduleName: keyof typeof auditConfig.moduleConfig;
 
   constructor({ log, fix, config, moduleName, ctSchema, gfSchema }: ModuleConstructorParam & CtConstructorParam) {
     this.log = log;
-    this.fix = fix || false;
     this.config = config;
+    this.fix = fix ?? false;
     this.ctSchema = ctSchema;
     this.gfSchema = gfSchema;
+    this.moduleName = moduleName ?? 'content-types';
     this.fileName = config.moduleConfig[this.moduleName].fileName;
     this.folderPath = resolve(config.basePath, config.moduleConfig[this.moduleName].dirName);
-
-    if (moduleName) this.moduleName = moduleName;
   }
 
   /**
