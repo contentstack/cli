@@ -17,6 +17,7 @@ type ContentTypeStruct = {
 
 type ModuleConstructorParam = {
   log: LogFn;
+  fix?: boolean
   config: ConfigType;
   moduleName?: keyof typeof config.moduleConfig;
 };
@@ -42,6 +43,7 @@ type RefErrorReturnType = {
   ct_uid: string;
   treeStr: string;
   data_type: string;
+  fixStatus?: string
   missingRefs: string[];
   display_name: string;
   tree: Record<string, unknown>[];
@@ -54,12 +56,15 @@ type ReferenceFieldDataType = CommonDataTypeStruct & {
 
 // NOTE Type 2
 type GlobalFieldDataType = CommonDataTypeStruct & {
-  reference_to: string;
+  reference_to?: string;
   schema: GlobalFieldSchemaTypes[];
 };
 
 // NOTE Type 3
-type CustomFieldDataType = CommonDataTypeStruct & {};
+type CustomFieldDataType = CommonDataTypeStruct & {
+  reference_to: string[];
+  extension_uid: string;
+};
 
 // NOTE Type 4
 type JsonRTEFieldDataType = CommonDataTypeStruct & {
@@ -100,7 +105,7 @@ enum OutputColumn {
   'Field name' = 'display_name',
   'Field type' = 'data_type',
   'Missing references' = 'missingRefs',
-  Path = 'treeStr',
+  Path = 'treeStr'
 }
 
 export {
