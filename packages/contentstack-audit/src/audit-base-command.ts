@@ -150,8 +150,16 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    */
   getCtAndGfSchema() {
     const modules = this.sharedConfig.flags.modules || this.sharedConfig.modules;
-    const ctPath = join(this.sharedConfig.basePath, this.sharedConfig.moduleConfig['content-types'].dirName);
-    const gfPath = join(this.sharedConfig.basePath, this.sharedConfig.moduleConfig['global-fields'].dirName);
+    const ctPath = join(
+      this.sharedConfig.basePath,
+      this.sharedConfig.moduleConfig['content-types'].dirName,
+      this.sharedConfig.moduleConfig['content-types'].fileName,
+    );
+    const gfPath = join(
+      this.sharedConfig.basePath,
+      this.sharedConfig.moduleConfig['global-fields'].dirName,
+      this.sharedConfig.moduleConfig['global-fields'].fileName,
+    );
 
     if (modules.includes('content-types')) {
       if (!existsSync(ctPath)) {
@@ -165,16 +173,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       }
     }
 
-    let gfSchema = existsSync(gfPath)
-      ? (JSON.parse(
-          readFileSync(join(gfPath, this.sharedConfig.moduleConfig['global-fields'].fileName), 'utf-8'),
-        ) as ContentTypeStruct[])
-      : [];
-    let ctSchema = existsSync(ctPath)
-      ? (JSON.parse(
-          readFileSync(join(ctPath, this.sharedConfig.moduleConfig['content-types'].fileName), 'utf-8'),
-        ) as ContentTypeStruct[])
-      : [];
+    let gfSchema = existsSync(gfPath) ? (JSON.parse(readFileSync(gfPath, 'utf-8')) as ContentTypeStruct[]) : [];
+    let ctSchema = existsSync(ctPath) ? (JSON.parse(readFileSync(ctPath, 'utf-8')) as ContentTypeStruct[]) : [];
 
     return { ctSchema, gfSchema };
   }

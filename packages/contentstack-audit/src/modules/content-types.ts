@@ -192,11 +192,11 @@ export default class ContentType {
     if (!find(this.gfSchema, { uid: reference_to })) {
       missingRefs.push(reference_to);
 
-      try {
-        delete field.reference_to;
-        fixStatus = 'Fixed';
-      } catch (_error) {
-        if (this.fix) {
+      if (this.fix) {
+        try {
+          delete field.reference_to;
+          fixStatus = 'Fixed';
+        } catch (_error) {
           fixStatus = 'Not Fixed';
         }
       }
@@ -297,12 +297,14 @@ export default class ContentType {
       }
     }
 
-    try {
-      field.reference_to = field.reference_to?.filter((ref) => !missingRefs.includes(ref));
-      fixStatus = 'Fixed';
-    } catch (_error) {
-      if (this.fix) {
-        fixStatus = 'Not Fixed';
+    if (this.fix) {
+      try {
+        field.reference_to = field.reference_to?.filter((ref) => !missingRefs.includes(ref));
+        fixStatus = 'Fixed';
+      } catch (_error) {
+        if (this.fix) {
+          fixStatus = 'Not Fixed';
+        }
       }
     }
 
