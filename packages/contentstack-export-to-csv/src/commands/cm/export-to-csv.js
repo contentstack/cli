@@ -60,7 +60,7 @@ class ExportToCsvCommand extends Command {
       required: false,
     }),
     'taxonomy-uid': flags.string({
-      description: 'Provide taxonomy UID for which terms need to be exported',
+      description: 'Provide the taxonomy UID of the related terms you want to export',
     }),
   };
 
@@ -382,7 +382,7 @@ class ExportToCsvCommand extends Command {
       const fileName = `${stackName ? stackName : stack.name}_taxonomies.csv`;
       util.write(this, formattedTaxonomiesData, fileName, 'taxonomies');
     } else {
-      cliux.print('info: No taxonomies found. Please provide a valid stack!', { color: 'blue' });
+      cliux.print('info: No taxonomies found! Please provide a valid stack.', { color: 'blue' });
     }
 
     for (let index = 0; index < taxonomies?.length; index++) {
@@ -397,7 +397,7 @@ class ExportToCsvCommand extends Command {
         if (formattedTermsData?.length) {
           util.write(this, formattedTermsData, termFileName, 'terms');
         } else {
-          cliux.print(`info: No terms found for the taxonomy UID - '${taxonomyUID}'`, { color: 'blue' });
+          cliux.print(`info: No terms found for the taxonomy UID - '${taxonomyUID}'!`, { color: 'blue' });
         }
       }
     }
@@ -420,9 +420,9 @@ ExportToCsvCommand.examples = [
   '',
   'Exporting organization users to csv with organization name provided',
   'csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>',
-  'Exporting taxonomies and related terms to csv with taxonomy uid provided',
+  'Exporting taxonomies and related terms to a .CSV file with the provided taxonomy UID',
   'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --taxonomy-uid <taxonomy-uid>',
-  'Exporting taxonomies and respective terms to csv',
+  'Exporting taxonomies and respective terms to a .CSV file',
   'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias>',
 ];
 
