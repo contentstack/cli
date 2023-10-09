@@ -214,7 +214,6 @@ class ExportToCsvCommand extends Command {
         case 'taxonomies': {
           let stack;
           let stackAPIClient;
-          let taxUID;
           if (managementTokenAlias) {
             const { stackDetails, apiClient } = await this.getAliasDetails(managementTokenAlias, stackName);
             managementAPIClient = apiClient;
@@ -224,7 +223,7 @@ class ExportToCsvCommand extends Command {
           }
 
           stackAPIClient = this.getStackClient(managementAPIClient, stack);
-          await this.createTaxonomyAndTermCsvFile(stackName, stack, taxonomyUID);
+          await this.createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxonomyUID);
           break;
         }
       }
@@ -242,8 +241,8 @@ class ExportToCsvCommand extends Command {
   getStackClient(managementAPIClient, stack) {
     const stackInit = {
       api_key: stack.apiKey,
-      branch_uid: stack.branch_uid,
     };
+    if(stack?.branch_uid) stackInit['branch_uid'] = stack.branch_uid;
     if (stack.token) {
       return managementAPIClient.stack({
         ...stackInit,
@@ -360,8 +359,7 @@ class ExportToCsvCommand extends Command {
    * @param {object} stack
    * @param {string} taxUID
    */
-  async createTaxonomyAndTermCsvFile(stackName, stack, taxUID) {
-    const { cma } = configHandler.get('region') || {};
+  async createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxUID) {
     const payload = {
       stackAPIClient,
       type: '',
@@ -370,10 +368,10 @@ class ExportToCsvCommand extends Command {
     //check whether the taxonomy is valid or not
     let taxonomies = [];
     if (taxUID) {
-      const taxonomy = await util.getTaxonomy(payload, taxUID);
+      payload['taxonomyUID'] = taxUID;
+      const taxonomy = await util.getTaxonomy(payload);
       taxonomies.push(taxonomy);
     } else {
-      payload['url'] = payload.baseUrl;
       taxonomies = await util.getAllTaxonomies(payload);
     }
 
@@ -389,7 +387,7 @@ class ExportToCsvCommand extends Command {
       const taxonomy = taxonomies[index];
       const taxonomyUID = taxonomy?.uid;
       if (taxonomyUID) {
-        payload['url'] = `${payload.baseUrl}/${taxonomyUID}/terms`;
+        payload['taxonomyUID'] = taxonomyUID;
         const terms = await util.getAllTermsOfTaxonomy(payload);
         const formattedTermsData = util.formatTermsOfTaxonomyData(terms, taxonomyUID);
         const taxonomyName = taxonomy?.name ? taxonomy.name : '';

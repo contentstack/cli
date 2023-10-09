@@ -9,7 +9,14 @@ const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 
 const config = require('./config.js');
-const { cliux, configHandler, HttpClient, messageHandler } = require('@contentstack/cli-utilities');
+const {
+  cliux,
+  configHandler,
+  HttpClient,
+  messageHandler,
+  managementSDKClient,
+  ContentstackClient,
+} = require('@contentstack/cli-utilities');
 
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
@@ -687,7 +694,6 @@ function wait(time) {
  * fetch all taxonomies in the provided stack
  * @param {object} payload
  * @param {number} skip
- * @param {number} limit
  * @param {array} taxonomies
  * @returns
  */
@@ -701,14 +707,14 @@ async function getAllTaxonomies(payload, skip = 0, taxonomies = []) {
     if (skip >= response?.count) {
       return taxonomies;
     } else {
-      return getAllTaxonomies(payload, skip, limit, taxonomies);
+      return getAllTaxonomies(payload, skip, taxonomies);
     }
   }
   return taxonomies;
 }
 
 /**
- * fetch terms of related taxonomy
+ * fetch taxonomy related terms
  * @param {object} payload
  * @param {number} skip
  * @param {number} limit
@@ -724,7 +730,7 @@ async function getAllTermsOfTaxonomy(payload, skip = 0, terms = []) {
     if (skip >= count) {
       return terms;
     } else {
-      return getAllTermsOfTaxonomy(payload, skip, limit, terms);
+      return getAllTermsOfTaxonomy(payload, skip, terms);
     }
   }
   return terms;
@@ -828,7 +834,8 @@ function handleErrorMsg(err) {
   if (err?.errorMessage) {
     cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
   } else if (err?.message) {
-    cliux.print(`Error: ${err.message}`, { color: 'red' });
+    const errorMsg = err?.errors?.taxonomy || err?.errors?.term || err?.message;
+    cliux.print(`Error: ${errorMsg}`, { color: 'red' });
   } else {
     console.log(err);
     cliux.print(`Error: ${messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' });
