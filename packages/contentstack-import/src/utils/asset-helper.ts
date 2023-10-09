@@ -2,7 +2,7 @@ import Bluebird from 'bluebird';
 import * as url from 'url';
 import * as path from 'path';
 import { ContentstackClient, managementSDKClient } from '@contentstack/cli-utilities';
-import { ImportConfig } from 'src/types';
+import { ImportConfig } from '../types';
 const debug = require('debug')('util:requests');
 let _ = require('lodash');
 let { marked } = require('marked');
