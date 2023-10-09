@@ -21,7 +21,7 @@ import config from '../../config';
 import { GraphqlApiClient, Logger } from '../../util';
 import { ConfigType, LogFn, Providers } from '../../types';
 import Functions from './functions';
-import { logger } from '@contentstack/cli-utilities';
+// import { logger } from '@contentstack/cli-utilities';
 import { cliux } from '@contentstack/cli-utilities';
 
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<(typeof BaseCommand)['baseFlags'] & T['flags']>;

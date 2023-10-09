@@ -136,7 +136,7 @@ export default class ImportGlobalFields extends BaseClass {
     return new Promise(async (resolve, reject) => {
       lookupExtension(this.config, globalField.schema, this.config.preserveStackVersion, this.installedExtensions);
       let flag = { supressed: false };
-      await removeReferenceFields(globalField.schema, flag, this.stackAPIClient);
+      await removeReferenceFields(globalField.schema, flag, this.stack);
       if (flag.supressed) {
         this.pendingGFs.push(globalField.uid);
       }
