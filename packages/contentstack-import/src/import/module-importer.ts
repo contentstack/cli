@@ -30,7 +30,7 @@ class ModuleImporter {
       headers: { api_key: this.importConfig.apiKey, authorization: this.importConfig.management_token },
     });
 
-    const { data } = await httpClient.post('https://api.contentstack.io/v3/locales', {
+    const { data } = await httpClient.post(`https://${this.importConfig.host}/v3/locales`, {
       locale: {
         name: 'English',
         code: 'en-us',
