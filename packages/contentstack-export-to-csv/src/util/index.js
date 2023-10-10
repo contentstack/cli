@@ -780,7 +780,6 @@ async function taxonomySDKHandler(payload, skip) {
         .then((data) => data)
         .catch((err) => handleErrorMsg(err));
     case 'terms':
-      console.log("taxonomyUID---",taxonomyUID)
       queryParams['depth'] = 0;
       return await stackAPIClient
         .taxonomy(taxonomyUID)
