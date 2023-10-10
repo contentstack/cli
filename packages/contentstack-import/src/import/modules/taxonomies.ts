@@ -3,11 +3,21 @@ import pick from 'lodash/pick';
 import { join } from 'node:path';
 import values from 'lodash/values';
 import isEmpty from 'lodash/isEmpty';
+import flatten from 'lodash/flatten';
+import { configHandler } from '@contentstack/cli-utilities';
 
 import BaseClass, { ApiOptions } from './base-class';
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import { ModuleClassParams, TaxonomiesConfig, TermsConfig } from '../../types';
 
+//NOTE: Temp types need to remove once sdk available
+type TaxonomyPayload = {
+  baseUrl: string;
+  url: string;
+  mgToken?: string;
+  reqPayload: Record<string, unknown>;
+  headers: Record<string, unknown>;
+};
 
 export default class ImportTaxonomies extends BaseClass {
   private taxonomiesMapperDirPath: string;
@@ -21,6 +31,7 @@ export default class ImportTaxonomies extends BaseClass {
   private termsConfig: TermsConfig;
   private termsSuccessPath: string;
   private termsFailsPath: string;
+  private taxonomyPayload: TaxonomyPayload;
   public taxonomiesSuccess: Record<string, unknown> = {};
   public taxonomiesFailed: Record<string, unknown> = {};
   public termsSuccess: Record<string, Record<string, unknown>> = {};
@@ -40,6 +51,16 @@ export default class ImportTaxonomies extends BaseClass {
     this.taxFailsPath = join(this.taxonomiesMapperDirPath, 'fails.json');
     this.termsSuccessPath = join(this.termsMapperDirPath, 'success.json');
     this.termsFailsPath = join(this.termsMapperDirPath, 'fails.json');
+    this.taxonomyPayload = {
+      baseUrl: '',
+      url: '',
+      mgToken: importConfig.management_token,
+      reqPayload: {},
+      headers: {
+        'Content-Type': 'application/json',
+        api_key: importConfig.target_stack,
+      },
+    };
   }
 
   /**
@@ -59,6 +80,13 @@ export default class ImportTaxonomies extends BaseClass {
       log(this.importConfig, `No such file or directory - '${this.taxonomiesFolderPath}'`, 'error');
       return;
     }
+
+    //NOTE - Temp code for api request
+    const { cma } = configHandler.get('region') || {};
+    this.taxonomyPayload.baseUrl = `${cma}/v3/taxonomies`;
+    this.taxonomyPayload.url = this.taxonomyPayload.baseUrl;
+    if (this.taxonomyPayload?.mgToken) this.taxonomyPayload.headers['authorization'] = this.taxonomyPayload.mgToken;
+    else this.taxonomyPayload.headers['authtoken'] = configHandler.get('authtoken');
 
     //Step 2 create taxonomies & terms mapper directory
     await fsUtil.makeDirectory(this.taxonomiesMapperDirPath);
@@ -91,28 +119,39 @@ export default class ImportTaxonomies extends BaseClass {
       return;
     }
 
-    const apiContent = values(this.taxonomies) as Record<string, any>[];
+    const apiContent = values(this.taxonomies) as Record<string, any>[];;
     this.taxonomyUIDs = keys(this.taxonomies);
 
-    const onSuccess = ({ response }: any) => {
-      const { uid, name } = response;
-      this.taxonomiesSuccess[uid] = pick(response, ['name', 'description']);
-      log(this.importConfig, `Taxonomy '${name}' imported successfully!`, 'success');
+    const onSuccess = ({
+      response: { data, status } = { data: null, status: null },
+      apiData: { uid, name } = { uid: null, name: '' },
+    }: any) => {
+      //NOTE - Temp code to handle error thru API. Will remove this once sdk is ready
+      if ([200, 201, 202].includes(status)) {
+        const { taxonomy } = data;
+        this.taxonomiesSuccess[taxonomy.uid] = pick(taxonomy, ['name', 'description']);
+        log(this.importConfig, `Taxonomy '${name}' imported successfully!`, 'success');
+      } else {
+        let errorMsg:any;
+        if ([500, 503, 502].includes(status)) errorMsg = data?.message || data;
+        else errorMsg = data?.error_message;
+        if (errorMsg === undefined) {
+          errorMsg = Object.values(data?.errors) && flatten(Object.values(data.errors));
+        }
+        this.taxonomiesFailed[uid] = `Taxonomy '${name}' failed to be import! ${JSON.stringify(errorMsg)}`;
+        log(this.importConfig, `Taxonomy '${name}' failed to be import! ${JSON.stringify(errorMsg)}`, 'error');
+      }
     };
 
     const onReject = ({ error, apiData }: any) => {
       const err = error?.message ? JSON.parse(error.message) : error;
       const { name } = apiData;
-      if (err?.errors?.taxonomy) {
-        if (err?.errorCode === 0) {
-          log(this.importConfig, `Taxonomy '${name}' already exists!`, 'info');
-        } else {
-          this.taxonomiesFailed[apiData.uid] = apiData;
-          log(this.importConfig, `Taxonomy '${name}' failed to be import! ${err.errors.taxonomy}`, 'error');
-        }
+      if (err?.errors?.name) {
+        log(this.importConfig, `Taxonomy '${name}' already exists!`, 'info');
       } else {
         this.taxonomiesFailed[apiData.uid] = apiData;
         log(this.importConfig, `Taxonomy '${name}' failed to be import! ${formatError(error)}`, 'error');
+        log(this.importConfig, error, 'error');
       }
     };
 
@@ -125,7 +164,8 @@ export default class ImportTaxonomies extends BaseClass {
           reject: onReject,
           resolve: onSuccess,
           entity: 'create-taxonomies',
-          includeParamOnCompletion: true
+          includeParamOnCompletion: true,
+          additionalInfo: this.taxonomyPayload,
         },
         concurrencyLimit: this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1,
       },
@@ -141,6 +181,12 @@ export default class ImportTaxonomies extends BaseClass {
    */
   serializeTaxonomy(apiOptions: ApiOptions): ApiOptions {
     const { apiData: taxonomy } = apiOptions;
+    if (this.taxonomiesSuccess.hasOwnProperty(taxonomy.uid)) {
+      log(this.importConfig, `Taxonomy '${taxonomy.name}' already exists. Skipping it to avoid duplicates!`, 'info');
+      apiOptions.entity = undefined;
+    } else {
+      apiOptions.apiData = taxonomy;
+    }
     apiOptions.apiData = taxonomy;
     return apiOptions;
   }
@@ -170,28 +216,39 @@ export default class ImportTaxonomies extends BaseClass {
       return;
     }
 
-    const onSuccess = ({ response, apiData: { taxonomy_uid } = { taxonomy_uid: null } }: any) => {
-      const { uid, name } = response;
-      if (!this.termsSuccess[taxonomy_uid]) this.termsSuccess[taxonomy_uid] = {};
-      this.termsSuccess[taxonomy_uid][uid] = pick(response, ['name']);
-      log(this.importConfig, `Term '${name}' imported successfully!`, 'success');
+    const onSuccess = ({
+      response: { data, status } = { data: null, status: null },
+      apiData: { uid, name, taxonomy_uid } = { uid: null, name: '', taxonomy_uid: null },
+    }: any) => {
+      //NOTE - Temp code to handle error thru API. Will remove this once sdk is ready
+      if ([200, 201, 202].includes(status)) {
+        if (!this.termsSuccess[taxonomy_uid]) this.termsSuccess[taxonomy_uid] = {};
+        const { term } = data;
+        this.termsSuccess[taxonomy_uid][term.uid] = pick(term, ['name']);
+        log(this.importConfig, `Term '${name}' imported successfully!`, 'success');
+      } else {
+        if (!this.termsFailed[taxonomy_uid]) this.termsFailed[taxonomy_uid] = {};
+        let errorMsg;
+        if ([500, 503, 502].includes(status)) errorMsg = data?.message || data;
+        else errorMsg = data?.error_message;
+        if (errorMsg === undefined) {
+          errorMsg = Object.values(data?.errors) && flatten(Object.values(data.errors));
+        }
+        this.termsFailed[taxonomy_uid][uid] = `Terms '${name}' failed to be import! ${JSON.stringify(errorMsg)}`;
+        log(this.importConfig, `Terms '${name}' failed to be import! ${JSON.stringify(errorMsg)}`, 'error');
+      }
     };
 
     const onReject = ({ error, apiData }: any) => {
-      const { taxonomy_uid, name } = apiData;
+      const { uid, taxonomy_uid, name } = apiData;
       if (!this.termsFailed[taxonomy_uid]) this.termsFailed[taxonomy_uid] = {};
       const err = error?.message ? JSON.parse(error.message) : error;
-
-      if (err?.errors?.term) {
-        if (err?.errorCode === 0) {
-          log(this.importConfig, `Term '${name}' already exists!`, 'info');
-        } else {
-          this.termsFailed[taxonomy_uid][apiData.uid] = apiData;
-          log(this.importConfig, `Term '${name}' failed to be import! ${err.errors.term}`, 'error');
-        }
+      if (err?.errors?.name) {
+        log(this.importConfig, `Term '${name}' already exists!`, 'info');
       } else {
         this.termsFailed[taxonomy_uid][apiData.uid] = apiData;
         log(this.importConfig, `Term '${name}' failed to be import! ${formatError(error)}`, 'error');
+        log(this.importConfig, error, 'error');
       }
     };
 
@@ -213,7 +270,8 @@ export default class ImportTaxonomies extends BaseClass {
               reject: onReject,
               resolve: onSuccess,
               entity: 'create-terms',
-              includeParamOnCompletion: true
+              includeParamOnCompletion: true,
+              additionalInfo: this.taxonomyPayload,
             },
             concurrencyLimit: this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1,
           },
