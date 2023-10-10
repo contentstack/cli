@@ -9,14 +9,7 @@ const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 
 const config = require('./config.js');
-const {
-  cliux,
-  configHandler,
-  HttpClient,
-  messageHandler,
-  managementSDKClient,
-  ContentstackClient,
-} = require('@contentstack/cli-utilities');
+const { cliux, configHandler, HttpClient, messageHandler } = require('@contentstack/cli-utilities');
 
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
@@ -694,43 +687,41 @@ function wait(time) {
  * fetch all taxonomies in the provided stack
  * @param {object} payload
  * @param {number} skip
+ * @param {number} limit
  * @param {array} taxonomies
  * @returns
  */
-async function getAllTaxonomies(payload, skip=0, taxonomies = []) {
-  payload['type'] = 'taxonomies';
-  const response = await taxonomySDKHandler(payload);
+async function getAllTaxonomies(payload, skip = 0, limit = 100, taxonomies = []) {
+  const response = await apiRequestHandler(payload, skip, limit);
   if (response) {
     skip += config.limit || 100;
-    //TODO - replace reponse.taxonomies with items
     taxonomies = [...taxonomies, ...response.taxonomies];
     if (skip >= response?.count) {
       return taxonomies;
     } else {
-      return getAllTaxonomies(payload, skip, taxonomies);
+      return getAllTaxonomies(payload, skip, limit, taxonomies);
     }
   }
   return taxonomies;
 }
 
 /**
- * fetch taxonomy related terms
+ * fetch terms of related taxonomy
  * @param {object} payload
  * @param {number} skip
  * @param {number} limit
  * @param {array} terms
  * @returns
  */
-async function getAllTermsOfTaxonomy(payload, skip=0, terms = []) {
-  payload['type'] = 'terms';
-  const {items, count} = await taxonomySDKHandler(payload);
-  if (items) {
+async function getAllTermsOfTaxonomy(payload, skip = 0, limit = 100, terms = []) {
+  const response = await apiRequestHandler(payload, skip, limit);
+  if (response) {
     skip += config.limit || 100;
-    terms = [...terms, ...items];
-    if (skip >= count) {
+    terms = [...terms, ...response.terms];
+    if (skip >= response?.count) {
       return terms;
     } else {
-      return getAllTermsOfTaxonomy(payload, skip, terms);
+      return getAllTermsOfTaxonomy(payload, skip, limit, terms);
     }
   }
   return terms;
@@ -742,56 +733,50 @@ async function getAllTermsOfTaxonomy(payload, skip=0, terms = []) {
  * @param {string} taxonomyUID
  * @returns
  */
-async function getTaxonomy(payload) {
-  payload['type'] = 'taxonomy';
-  const resp = await taxonomySDKHandler(payload);
-  return resp;
+async function getTaxonomy(payload, taxonomyUID) {
+  payload['url'] = `${payload.baseUrl}/${taxonomyUID}`;
+  const resp = await apiRequestHandler(payload);
+  return resp?.taxonomy || '';
 }
 
-/**
- * taxonomy & term sdk handler
- * @async
- * @method
- * @param payload
- * @param skip
- * @param limit
- * @returns  {*} Promise<any>
- */
-async function taxonomySDKHandler(payload, skip) {
-  const { stackAPIClient,taxonomyUID, type } = payload;
+async function apiRequestHandler(payload, skip, limit) {
+  const headers = {
+    api_key: payload.apiKey,
+    'Content-Type': 'application/json',
+  };
 
-  const queryParams = { include_count: true };
-  queryParams['limit'] = config.limit || 100;
-  if (skip >= 0) queryParams['skip'] = skip;
+  if (payload?.mgToken) headers['authorization'] = payload.mgToken;
+  else headers['authToken'] = configHandler.get('authtoken');
 
-  switch (type) {
-    case 'taxonomies':
-      //TODO - replace count with find
-      return await stackAPIClient
-        .taxonomy()
-        .query(queryParams)
-        .count()
-        .then((data) => data)
-        .catch((err) => handleErrorMsg(err));
-    case 'taxonomy':
-      return await stackAPIClient
-        .taxonomy(taxonomyUID)
-        .fetch()
-        .then((data) => data)
-        .catch((err) => handleErrorMsg(err));
-    case 'terms':
-      console.log("taxonomyUID---",taxonomyUID)
-      queryParams['depth'] = 0;
-      return await stackAPIClient
-        .taxonomy(taxonomyUID)
-        .terms()
-        .query(queryParams)
-        .find()
-        .then((data) => data)
-        .catch((err) => handleErrorMsg(err));
-    default:
-      handleErrorMsg({ errorMessage: 'Invalid module!' });
-  }
+  const params = {
+    include_count: true,
+    skip: 0,
+    limit: 30,
+  };
+
+  if (skip >= 0) params['skip'] = skip;
+  if (limit >= 0) params['limit'] = limit;
+
+  return await new HttpClient()
+    .headers(headers)
+    .queryParams(params)
+    .get(payload.url)
+    .then((res) => {
+      //NOTE - temporary code for handling api errors response
+      const { status, data } = res;
+      if ([200, 201, 202].includes(status)) return data;
+      else {
+        let errorMsg;
+        if ([500, 503, 502].includes(status)) errorMsg = data?.message || data;
+        else errorMsg = data?.error_message;
+        if (errorMsg === undefined) {
+          errorMsg = Object.values(data?.errors) && flat(Object.values(data.errors));
+        }
+        cliux.print(`Error: ${errorMsg}`, { color: 'red' });
+        process.exit(1);
+      }
+    })
+    .catch((err) => handleErrorMsg(err));
 }
 
 /**
@@ -836,8 +821,7 @@ function handleErrorMsg(err) {
   if (err?.errorMessage) {
     cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
   } else if (err?.message) {
-    const errorMsg = err?.errors?.taxonomy || err?.errors?.term || err?.message;
-    cliux.print(`Error: ${errorMsg}`, { color: 'red' });
+    cliux.print(`Error: ${err.message}`, { color: 'red' });
   } else {
     console.log(err);
     cliux.print(`Error: ${messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' });
