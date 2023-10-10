@@ -36,7 +36,7 @@ export async function createNodeCryptoInstance(config: ExportConfig): Promise<No
       type: 'input',
       name: 'name',
       default: config.marketplaceAppEncryptionKey,
-      validate: (url) => {
+      validate: (url: any) => {
         if (!url) return "Encryption key can't be empty.";
 
         return true;
@@ -50,13 +50,12 @@ export async function createNodeCryptoInstance(config: ExportConfig): Promise<No
 
 export const getStackSpecificApps = async (params: {
   developerHubBaseUrl: string;
-  httpClient: HttpClient;
   config: ExportConfig;
   skip: number;
 }) => {
-  const { developerHubBaseUrl, httpClient, config, skip } = params;
+  const { developerHubBaseUrl, config, skip } = params;
   const appSdkAxiosInstance = await managementSDKClient({
-    host: developerHubBaseUrl.split('://').pop()
+    endpoint: developerHubBaseUrl,
   });
   return appSdkAxiosInstance.axiosInstance
     .get(`${developerHubBaseUrl}/installations?target_uids=${config.source_stack}&skip=${skip}`, {
