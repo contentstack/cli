@@ -84,14 +84,13 @@ export default class ExportMarketplaceApps extends BaseClass {
   async getAllStackSpecificApps(skip = 0): Promise<any> {
     const data = await getStackSpecificApps({
       developerHubBaseUrl: this.developerHubBaseUrl,
-      httpClient: this.httpClient as HttpClient,
       config: this.exportConfig,
       skip,
     });
 
     const { data: apps, count } = data;
 
-    if (!this.nodeCrypto && find(apps, (app) => isEmpty(app.configuration))) {
+    if (!this.nodeCrypto && find(apps, (app) => !isEmpty(app.configuration))) {
       this.nodeCrypto = await createNodeCryptoInstance(this.exportConfig);
     }
 
