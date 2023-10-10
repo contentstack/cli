@@ -39,6 +39,7 @@ export default class AuditFix extends AuditBaseCommand {
     }),
     yes: Flags.boolean({
       char: 'y',
+      hidden: true,
       description: 'Use this flag to skip confirmation',
     }),
     ...ux.table.flags({
