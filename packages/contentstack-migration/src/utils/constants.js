@@ -21,6 +21,8 @@ exports.unique = 'unique';
 exports.display_name = 'display_name';
 exports.reference_to = 'reference_to';
 exports.field_metadata = 'field_metadata';
+exports.taxonomies = 'taxonomies';
+exports.multiple = 'multiple';
 
 exports.actions = {
   CUSTOM_TASK: 'CUSTOM_TASK',
