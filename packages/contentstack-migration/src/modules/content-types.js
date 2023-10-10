@@ -40,8 +40,8 @@ class ContentType extends Base {
    * @example
    * module.exports = ({migration}) => {
    *  const blog = migration
-   *    .createContentType(blogUID)
-   *    .title(blogTitle)
+   *    .createContentType('blog')
+   *    .title('blog title')
    *    .description('blog 1')
    *  blog.createField('title').display_name('Title').data_type('text').mandatory(true);
    * }
