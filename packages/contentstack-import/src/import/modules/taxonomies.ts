@@ -104,12 +104,8 @@ export default class ImportTaxonomies extends BaseClass {
       const err = error?.message ? JSON.parse(error.message) : error;
       const { name } = apiData;
       if (err?.errors?.taxonomy) {
-        if (err?.errorCode === 0) {
-          log(this.importConfig, `Taxonomy '${name}' already exists!`, 'info');
-        } else {
-          this.taxonomiesFailed[apiData.uid] = apiData;
-          log(this.importConfig, `Taxonomy '${name}' failed to be import! ${err.errors.taxonomy}`, 'error');
-        }
+        this.taxonomiesFailed[apiData.uid] = apiData;
+        log(this.importConfig, `Taxonomy '${name}' failed to be import! ${err.errors.taxonomy}`, 'error');
       } else {
         this.taxonomiesFailed[apiData.uid] = apiData;
         log(this.importConfig, `Taxonomy '${name}' failed to be import! ${formatError(error)}`, 'error');
@@ -183,12 +179,8 @@ export default class ImportTaxonomies extends BaseClass {
       const err = error?.message ? JSON.parse(error.message) : error;
 
       if (err?.errors?.term) {
-        if (err?.errorCode === 0) {
-          log(this.importConfig, `Term '${name}' already exists!`, 'info');
-        } else {
-          this.termsFailed[taxonomy_uid][apiData.uid] = apiData;
-          log(this.importConfig, `Term '${name}' failed to be import! ${err.errors.term}`, 'error');
-        }
+        this.termsFailed[taxonomy_uid][apiData.uid] = apiData;
+        log(this.importConfig, `Term '${name}' failed to be import! ${err.errors.term}`, 'error');
       } else {
         this.termsFailed[taxonomy_uid][apiData.uid] = apiData;
         log(this.importConfig, `Term '${name}' failed to be import! ${formatError(error)}`, 'error');
