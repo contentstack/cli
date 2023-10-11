@@ -333,14 +333,24 @@ export default class EntriesImport extends BaseClass {
     const onReject = ({ error, apiData: entry, additionalInfo }: any) => {
       const { title, uid } = entry;
       //Note: write existing entries into files to handler later
-      if (error?.errors?.title) {
-        if (this.importConfig.replaceExisting) {
-          entry.entryOldUid = uid;
-          entry.sourceEntryFilePath = path.join(basePath, additionalInfo.entryFileName); // stores source file path temporarily
-          existingEntriesFileHelper.writeIntoFile({ [uid]: entry } as any, { mapKeyVal: true });
-        }
-        if (!this.importConfig.skipExisting) {
-          log(this.importConfig, `Entry '${title}' already exists`, 'info');
+      if (error.errorCode === 119) {
+        if (error?.errors?.title || error?.errors?.uid) {
+          if (this.importConfig.replaceExisting) {
+            entry.entryOldUid = uid;
+            entry.sourceEntryFilePath = path.join(basePath, additionalInfo.entryFileName); // stores source file path temporarily
+            existingEntriesFileHelper.writeIntoFile({ [uid]: entry } as any, { mapKeyVal: true });
+          }
+          if (!this.importConfig.skipExisting) {
+            log(this.importConfig, `Entry '${title}' already exists`, 'info');
+          }
+        } else {
+          log(
+            this.importConfig,
+            `${title} entry of content type ${cTUid} in locale ${locale} failed to create`,
+            'error',
+          );
+          log(this.importConfig, formatError(error), 'error');
+          this.failedEntries.push({ content_type: cTUid, locale, entry: { uid, title } });
         }
       } else {
         log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to create`, 'error');
@@ -518,18 +528,19 @@ export default class EntriesImport extends BaseClass {
   }) {
     const { additionalInfo: { cTUid, locale } = {} } = apiParams;
     return new Promise(async (resolve, reject) => {
-      const { items: [entryInStack] = [] }: any = await this.stack
-        .contentType(cTUid)
-        .entry()
-        .query({ query: { title: entry.title, locale } })
-        .findOne()
-        .catch((error: Error) => {
-          apiParams.reject({
-            error,
-            apiData: entry,
-          });
-          reject(true);
-        });
+      const { items: [entryInStack] = [] }: any =
+        (await this.stack
+          .contentType(cTUid)
+          .entry()
+          .query({ query: { title: entry.title, locale } })
+          .findOne()
+          .catch((error: Error) => {
+            apiParams.reject({
+              error,
+              apiData: entry,
+            });
+            reject(true);
+          })) || {};
       if (entryInStack) {
         const entryPayload = this.stack.contentType(cTUid).entry(entryInStack.uid);
         Object.assign(entryPayload, entryInStack, cloneDeep(entry), {
@@ -539,7 +550,7 @@ export default class EntriesImport extends BaseClass {
           _version: entryInStack._version,
         });
         return entryPayload
-          .update()
+          .update({ locale })
           .then((response: any) => {
             apiParams.resolve({
               response,
@@ -556,7 +567,7 @@ export default class EntriesImport extends BaseClass {
           });
       } else {
         apiParams.reject({
-          error: new Error(`Extension with title ${entry.title} not found in the stack`),
+          error: new Error(`Entry with title ${entry.title} not found in the stack`),
           apiData: entry,
         });
         reject(true);
