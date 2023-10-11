@@ -45,7 +45,7 @@ module.exports = class ExportMarketplaceApps {
 
     this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
     this.appSdkAxiosInstance = await managementSDKClient({
-      host: this.developerHubBaseUrl.split('://').pop()
+      endpoint: this.developerHubBaseUrl,
     });
     await this.getOrgUid();
 
@@ -82,7 +82,7 @@ module.exports = class ExportMarketplaceApps {
         console.log(error);
       });
 
-    if (tempStackData && tempStackData.org_uid) {
+    if (tempStackData?.org_uid) {
       this.config.org_uid = tempStackData.org_uid;
     }
   }
@@ -96,10 +96,7 @@ module.exports = class ExportMarketplaceApps {
         await this.getAppConfigurations(client, installedApps, [+index, app]);
       }
 
-      await fileHelper.writeFileSync(
-        path.join(this.marketplaceAppPath, this.marketplaceAppConfig.fileName),
-        installedApps,
-      );
+      fileHelper.writeFileSync(path.join(this.marketplaceAppPath, this.marketplaceAppConfig.fileName), installedApps);
 
       log(this.config, chalk.green('All the marketplace apps have been exported successfully'), 'success');
     } else {
