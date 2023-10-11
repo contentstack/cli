@@ -104,22 +104,11 @@ export const sanitizeStack = (importConfig: ImportConfig) => {
 };
 
 export const masterLocalDetails = (stackAPIClient: any): Promise<{ code: string }> => {
-  return new Promise((resolve, reject) => {
-    const result = stackAPIClient.locale().query();
-    result
-      .find()
-      .then((response: any) => {
-        const masterLocalObj = response.items.filter((obj: any) => {
-          if (obj.fallback_locale === null) {
-            return obj;
-          }
-        });
-        return resolve(masterLocalObj[0]);
-      })
-      .catch((error: Error) => {
-        return reject(error);
-      });
-  });
+  return stackAPIClient
+    .locale()
+    .query({ query: { fallback_locale: null } })
+    .find()
+    .then(({ items }: Record<string, any>) => items[0]);
 };
 
 export const field_rules_update = (importConfig: ImportConfig, ctPath: string) => {
