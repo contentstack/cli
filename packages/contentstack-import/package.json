@@ -7,7 +7,7 @@
   "dependencies": {
     "@contentstack/cli-command": "~1.2.13",
     "@contentstack/cli-utilities": "~1.5.3",
-    "@contentstack/management": "~1.11.0",
+    "@contentstack/management": "~1.10.2",
     "@oclif/core": "^2.9.3",
     "big-json": "^3.2.0",
     "bluebird": "^3.7.2",
