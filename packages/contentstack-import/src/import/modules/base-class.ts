@@ -18,6 +18,7 @@ import { LabelData } from '@contentstack/management/types/stack/label';
 import { WebhookData } from '@contentstack/management/types/stack/webhook';
 import { WorkflowData } from '@contentstack/management/types/stack/workflow';
 import { RoleData } from '@contentstack/management/types/stack/role';
+import { HttpClient } from '@contentstack/cli-utilities';
 
 import { log } from '../../utils';
 import { ImportConfig, ModuleClassParams } from '../../types';
@@ -384,16 +385,18 @@ export default abstract class BaseClass {
           .then(onSuccess)
           .catch(onReject);
       case 'create-taxonomies':
-        return this.stack.taxonomy().create({ taxonomy: apiData }).then(onSuccess).catch(onReject);
+        return new HttpClient()
+          .headers(additionalInfo.headers)
+          .post(additionalInfo.url, { taxonomy: apiData })
+          .then(onSuccess)
+          .catch(onReject);
       case 'create-terms':
-        if (apiData?.taxonomy_uid) {
-          return this.stack
-            .taxonomy(apiData.taxonomy_uid)
-            .terms()
-            .create({ term: apiData })
-            .then(onSuccess)
-            .catch(onReject);
-        }
+        const url = `${additionalInfo.baseUrl}/${apiData.taxonomy_uid}/terms`;
+        return new HttpClient()
+          .headers(additionalInfo.headers)
+          .post(url, { term: apiData })
+          .then(onSuccess)
+          .catch(onReject);
       default:
         return Promise.resolve();
     }
