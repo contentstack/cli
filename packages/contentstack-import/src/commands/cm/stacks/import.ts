@@ -8,9 +8,9 @@ import {
   FlagInput,
   ContentstackClient,
 } from '@contentstack/cli-utilities';
+import { ImportConfig } from '../../../types';
 import { ModuleImporter } from '../../../import';
 import { setupImportConfig, formatError, log } from '../../../utils';
-import { ImportConfig } from '../../../types';
 
 export default class ImportCommand extends Command {
   static description = messageHandler.parse('Import content from a stack');
@@ -102,14 +102,12 @@ export default class ImportCommand extends Command {
     // setup import config
     // initialize the importer
     // start import
-    let contentDir: string;
     let backupDir: string;
     try {
       const { flags } = await this.parse(ImportCommand);
       let importConfig = await setupImportConfig(flags);
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
-      contentDir = importConfig.contentDir;
       backupDir = importConfig.backupDir;
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
