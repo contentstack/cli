@@ -173,10 +173,12 @@ export default class ExportTaxonomies extends BaseClass {
 
   handleErrorMsg(err: any) {
     if (err?.errorMessage) {
-      log(this.exportConfig, `Failed to export. ${err.errorMessage}`, 'error');
+      log(this.exportConfig, `Failed to export! ${err.errorMessage}`, 'error');
     } else if (err?.message) {
       const errorMsg = err?.errors?.taxonomy || err?.errors?.term || err?.message;
-      log(this.exportConfig, `Failed to export. ${errorMsg}`, 'error');
+      log(this.exportConfig, `Failed to export! ${errorMsg}`, 'error');
+    }else{
+      log(this.exportConfig, `Failed to export! ${err}`, 'error');
     }
   }
 }
