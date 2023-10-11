@@ -362,7 +362,8 @@ class ExportToCsvCommand extends Command {
   async createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxUID) {
     const payload = {
       stackAPIClient,
-      type: ''
+      type: '',
+      limit: config.limit || 100
     };
     //check whether the taxonomy is valid or not
     let taxonomies = [];
