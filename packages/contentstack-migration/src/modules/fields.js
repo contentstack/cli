@@ -16,6 +16,8 @@ const {
   field_metadata,
   reference_to,
   actions: _actions,
+  taxonomies,
+  multiple,
 } = constants;
 
 // Base class
@@ -52,9 +54,22 @@ class Field extends Base {
    * module.exports =({ migration })=> {
    *  const blog = migration.editContentType('blog');
    *
-   *  blog.createField('author');
+   *  blog.createField('author')
    *   .display_name('Author')
    *   .data_type('text')
+   *   .mandatory(false);
+   * };
+   * 
+   * Create a taxonomy field
+   * 
+   *  module.exports =({ migration })=> {
+   *  const blog = migration.editContentType('blog');
+   *
+   *  blog.createField('taxonomies')
+   *   .display_name('Taxonomy1')
+   *   .data_type('taxonomy')
+   *   .taxonomies([{ "taxonomy_uid": "test_taxonomy1", "max_terms": 2, "mandatory": false}])
+   *   .multiple(true)
    *   .mandatory(false);
    * };
    */
@@ -224,6 +239,26 @@ class Field extends Base {
    */
   ref_multiple(value) {
     this.buildSchema(field_metadata, this.field, { ref_multiple: value, ref_multiple_content_types: true });
+    return this;
+  }
+
+  /**
+   * The 'taxonomies' property should contain at least one taxonomy object
+   * @param {string | string[]} value list of taxonomies.
+   * @returns {Field} current instance of field object to chain further methods.
+   */
+  taxonomies(value) {
+    this.buildSchema(taxonomies, this.field, value);
+    return this;
+  }
+
+  /**
+   *
+   * @param {boolean} value set true if field is multiple
+   * @returns {Field} current instance of field object to chain further methods.
+   */
+  multiple(value) {
+    this.buildSchema(multiple, this.field, value);
     return this;
   }
 
