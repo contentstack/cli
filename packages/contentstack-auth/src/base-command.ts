@@ -9,8 +9,6 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   protected args!: Args<T>;
   protected flags!: Flags<T>;
 
-  // NOTE define flags that can be inherited by any command that extends BaseCommand
-  static baseFlags: FlagInput = {};
 
   /**
    * The `init` function initializes the command by parsing arguments and flags, registering search
@@ -18,15 +16,6 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
    */
   public async init(): Promise<void> {
     await super.init();
-    const { args, flags } = await this.parse({
-      flags: this.ctor.flags,
-      baseFlags: (super.ctor as typeof BaseCommand).baseFlags,
-      args: this.ctor.args,
-      strict: this.ctor.strict,
-    });
-    this.flags = flags as Flags<T>;
-    this.args = args as Args<T>;
-
     // Init logger
     this.logger = new LoggerService(process.cwd(), 'cli-log');
   }

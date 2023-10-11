@@ -206,7 +206,8 @@ export default class EntriesImport extends BaseClass {
    * @returns {ApiOptions} ApiOptions
    */
   serializeUpdateCTs(apiOptions: ApiOptions): ApiOptions {
-    const { apiData: contentType } = apiOptions;
+    const { apiData } = apiOptions;
+    const contentType = cloneDeep(apiData);
     if (contentType.field_rules) {
       delete contentType.field_rules;
     }
@@ -292,7 +293,11 @@ export default class EntriesImport extends BaseClass {
     const onSuccess = ({ response, apiData: entry, additionalInfo }: any) => {
       if (additionalInfo[entry.uid]?.isLocalized) {
         let oldUid = additionalInfo[entry.uid].entryOldUid;
-        log(this.importConfig, `Localized entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`, 'info');
+        log(
+          this.importConfig,
+          `Localized entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`,
+          'info',
+        );
         entry.uid = oldUid;
         entry.entryOldUid = oldUid;
         entry.sourceEntryFilePath = path.join(basePath, additionalInfo.entryFileName); // stores source file path temporarily
@@ -387,7 +392,7 @@ export default class EntriesImport extends BaseClass {
         apiOptions.apiData = entryResponse;
         apiOptions.additionalInfo[entryResponse.uid] = {
           isLocalized: true,
-          entryOldUid: entry.uid
+          entryOldUid: entry.uid,
         };
         return apiOptions;
       }
@@ -552,7 +557,8 @@ export default class EntriesImport extends BaseClass {
    * @returns {ApiOptions} ApiOptions
    */
   serializeUpdateCTsWithRef(apiOptions: ApiOptions): ApiOptions {
-    const { apiData: contentType } = apiOptions;
+    const { apiData } = apiOptions;
+    const contentType = cloneDeep(apiData);
     if (contentType.field_rules) {
       delete contentType.field_rules;
     }
