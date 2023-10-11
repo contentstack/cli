@@ -697,12 +697,12 @@ function wait(time) {
  * @param {array} taxonomies
  * @returns
  */
-async function getAllTaxonomies(payload, skip=0, taxonomies = []) {
+async function getAllTaxonomies(payload, skip = 0, taxonomies = []) {
   payload['type'] = 'taxonomies';
-  const response = await taxonomySDKHandler(payload);
+  const response = await taxonomySDKHandler(payload, skip);
   if (response) {
-    skip += config.limit || 100;
-    //TODO - replace reponse.taxonomies with items
+    skip += payload.limit;
+    //TODO - replace response.taxonomies with items
     taxonomies = [...taxonomies, ...response.taxonomies];
     if (skip >= response?.count) {
       return taxonomies;
@@ -721,11 +721,11 @@ async function getAllTaxonomies(payload, skip=0, taxonomies = []) {
  * @param {array} terms
  * @returns
  */
-async function getAllTermsOfTaxonomy(payload, skip=0, terms = []) {
+async function getAllTermsOfTaxonomy(payload, skip = 0, terms = []) {
   payload['type'] = 'terms';
-  const {items, count} = await taxonomySDKHandler(payload);
+  const { items, count } = await taxonomySDKHandler(payload, skip);
   if (items) {
-    skip += config.limit || 100;
+    skip += payload.limit;
     terms = [...terms, ...items];
     if (skip >= count) {
       return terms;
@@ -758,11 +758,10 @@ async function getTaxonomy(payload) {
  * @returns  {*} Promise<any>
  */
 async function taxonomySDKHandler(payload, skip) {
-  const { stackAPIClient,taxonomyUID, type } = payload;
+  const { stackAPIClient, taxonomyUID, type } = payload;
 
-  const queryParams = { include_count: true };
-  queryParams['limit'] = config.limit || 100;
-  if (skip >= 0) queryParams['skip'] = skip;
+  const queryParams = { include_count: true, limit: payload.limit };
+  if (skip >= 0) queryParams['skip'] = skip || 0;
 
   switch (type) {
     case 'taxonomies':
@@ -875,5 +874,5 @@ module.exports = {
   formatTaxonomiesData,
   formatTermsOfTaxonomyData,
   getTaxonomy,
-  getStacks,
+  getStacks
 };

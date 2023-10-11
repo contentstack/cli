@@ -25,13 +25,13 @@ describe('export-to-csv with action taxonomies', () => {
       })
       .nock(cma, (api) => {
         api
-          .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}?include_count=true&skip=0&limit=30`)
+          .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}`)
           .reply(200, { taxonomy: mockData.taxonomiesResp.taxonomies[0] });
       })
       .nock(cma, (api) => {
         api
-          .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/terms?include_count=true&skip=0&limit=100`)
-          .reply(200, { terms: mockData.termsResp.terms, count: mockData.termsResp.count });
+          .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/terms?include_count=true&limit=100&skip=0&depth=0`)
+          .reply(200, mockData.termsResp);
       })
       .command([
         'cm:export-to-csv',
@@ -60,17 +60,17 @@ describe('export-to-csv with action taxonomies', () => {
       })
       .nock(cma, (api) => {
         api
-          .get('/v3/taxonomies?include_count=true&skip=0&limit=100')
-          .reply(200, { taxonomies: mockData.taxonomiesResp.taxonomies, count: mockData.taxonomiesResp.count });
+          .get('/v3/taxonomies?include_count=true&limit=100&skip=0&count=true')
+          .reply(200, mockData.taxonomiesResp);
       })
       .nock(cma, (api) => {
         api
-          .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/terms?include_count=true&skip=0&limit=100`)
-          .reply(200, { terms: mockData.termsResp.terms, count: mockData.termsResp.count });
+          .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/terms?include_count=true&limit=100&skip=0&depth=0`)
+          .reply(200, mockData.termsResp);
       })
       .nock(cma, (api) => {
         api
-          .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[1].uid}/terms?include_count=true&skip=0&limit=100`)
+          .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[1].uid}/terms?include_count=true&limit=100&skip=0&depth=0`)
           .reply(200, { terms: [], count: 0 });
       })
       .command([
@@ -109,13 +109,13 @@ describe('export-to-csv with action taxonomies', () => {
       })
       .nock(cma, (api) => {
         api
-          .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}?include_count=true&skip=0&limit=30`)
+          .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}`)
           .reply(200, { taxonomy: mockData.taxonomiesResp.taxonomies[0] });
       })
       .nock(cma, (api) => {
         api
-          .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/terms?include_count=true&skip=0&limit=100`)
-          .reply(200, { terms: mockData.termsResp.terms, count: mockData.termsResp.count });
+          .get(`/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/terms?include_count=true&limit=100&skip=0&depth=0`)
+          .reply(200, mockData.termsResp);
       })
       .command(['cm:export-to-csv', '--taxonomy-uid', 'taxonomy_uid_1'])
       .it('CSV file should be created');
