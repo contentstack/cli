@@ -600,21 +600,31 @@ export default class Entries {
   fixJsonRteMissingReferences(
     tree: Record<string, unknown>[],
     field: ReferenceFieldDataType | JsonRTEFieldDataType,
-    entry: EntryJsonRTEFieldDataType,
+    entry: EntryJsonRTEFieldDataType | EntryJsonRTEFieldDataType[],
   ) {
-    entry.children = entry.children
-      .map((child) => {
-        const refExist = this.jsonRefCheck(tree, field, child);
+    if (Array.isArray(entry)) {
+      entry = entry.map((child: any, index) => {
+        return this.fixJsonRteMissingReferences(
+          [...tree, { index, type: (child as any)?.type, uid: child?.uid }],
+          field,
+          child,
+        );
+      }) as EntryJsonRTEFieldDataType[];
+    } else {
+      entry.children = entry.children
+        .map((child) => {
+          const refExist = this.jsonRefCheck(tree, field, child);
 
-        if (!refExist) return null;
+          if (!refExist) return null;
 
-        if (isEmpty(child.children)) {
-          child = this.fixJsonRteMissingReferences(tree, field, child);
-        }
+          if (isEmpty(child.children)) {
+            child = this.fixJsonRteMissingReferences(tree, field, child) as EntryJsonRTEFieldDataType;
+          }
 
-        return child;
-      })
-      .filter((val) => val) as EntryJsonRTEFieldDataType[];
+          return child;
+        })
+        .filter((val) => val) as EntryJsonRTEFieldDataType[];
+    }
 
     return entry;
   }
