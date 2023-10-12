@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.9.1 darwin-arm64 node-v20.8.0
+@contentstack/cli/1.9.2 darwin-arm64 node-v20.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -157,14 +157,13 @@ Audit and fix possible errors in the exported data
 ```
 USAGE
   $ csdx audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--backup-dir <value> --copy-dir] [-y] [--columns <value> | ] [--sort <value>]
+    content-types|global-fields|entries] [--backup-dir <value> --copy-dir] [--columns <value> | ] [--sort <value>]
     [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   -c, --config=<value>    Path of the external config.
   -d, --data-dir=<value>  Path where the data is stored.
-  -y, --yes               Use this flag to skip confirmation
-  --backup-dir=<value>    Provided path to backup original data
+  --backup-dir=<value>    Provide the path to backup the copied data.
   --columns=<value>       only show provided columns (comma-separated)
   --copy-dir              Create backup from original data
   --csv                   output is csv format [alias: --output=csv]
@@ -2344,14 +2343,13 @@ Audit and fix possible errors in the exported data
 ```
 USAGE
   $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--backup-dir <value> --copy-dir] [-y] [--columns <value> | ] [--sort <value>]
+    content-types|global-fields|entries] [--backup-dir <value> --copy-dir] [--columns <value> | ] [--sort <value>]
     [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   -c, --config=<value>    Path of the external config.
   -d, --data-dir=<value>  Path where the data is stored.
-  -y, --yes               Use this flag to skip confirmation
-  --backup-dir=<value>    Provided path to backup original data
+  --backup-dir=<value>    Provide the path to backup the copied data.
   --columns=<value>       only show provided columns (comma-separated)
   --copy-dir              Create backup from original data
   --csv                   output is csv format [alias: --output=csv]
@@ -2985,7 +2983,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.20/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.14/src/commands/help.ts)_
 
 ## `csdx launch`
 

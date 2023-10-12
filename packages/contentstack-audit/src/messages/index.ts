@@ -6,6 +6,7 @@ const commonMsg = {
   CONFIG: 'Path of the external config.',
   CURRENT_WORKING_DIR: 'Current working directory.',
   DATA_DIR: 'Path where the data is stored.',
+  FIX_CONFIRMATION: 'Would you like to overwrite existing file.?',
 };
 
 const auditMsg = {
@@ -19,12 +20,14 @@ const auditMsg = {
   FINAL_REPORT_PATH: "Reports ready. Please find the reports at '{path}'.",
   SCAN_CT_SUCCESS_MSG: "Successfully completed the scanning of {module} '{title}'.",
   SCAN_ENTRY_SUCCESS_MSG: "Successfully completed the scanning of {module} ({local}) '{title}'.",
+  AUDIT_CMD_DESCRIPTION: 'Perform audits and find possible errors in the exported Contentstack data',
 };
 
 const auditFixMsg = {
-  COPY_DATA: 'Create backup from original data',
+  COPY_DATA: 'Create backup from the original data.',
   BKP_PATH: 'Provide the path to backup the copied data.',
-  FIXED_CONTENT_PATH_MAG: 'You can locate the fixed content at {path}',
+  FIXED_CONTENT_PATH_MAG: 'You can locate the fixed content at {path}.',
+  AUDIT_FIX_CMD_DESCRIPTION: 'Perform audits and fix possible errors in the exported Contentstack data.',
 };
 
 const messages: typeof errors & typeof commonMsg & typeof auditMsg & typeof auditFixMsg = {
