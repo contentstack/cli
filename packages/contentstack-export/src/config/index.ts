@@ -163,12 +163,12 @@ const config: DefaultConfig = {
     taxonomies: {
       dirName: 'taxonomies',
       fileName: 'taxonomies.json',
-      invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by'],
+      invalidKeys: ['updated_at', 'created_by', 'updated_by'],
     },
     terms: {
       dirName: 'terms',
       fileName: 'terms.json',
-      invalidKeys: ['created_at', 'updated_at', 'created_by', 'updated_by'],
+      invalidKeys: ['updated_at', 'created_by', 'updated_by'],
     },
   },
   languagesCode: [
