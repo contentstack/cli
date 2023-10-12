@@ -24,10 +24,10 @@ const auditMsg = {
 };
 
 const auditFixMsg = {
-  COPY_DATA: 'Create backup from original data',
+  COPY_DATA: 'Create backup from the original data.',
   BKP_PATH: 'Provide the path to backup the copied data.',
-  FIXED_CONTENT_PATH_MAG: 'You can locate the fixed content at {path}',
-  AUDIT_FIX_CMD_DESCRIPTION: 'Audit and fix possible errors in the exported data',
+  FIXED_CONTENT_PATH_MAG: 'You can locate the fixed content at {path}.',
+  AUDIT_FIX_CMD_DESCRIPTION: 'Perform audits and fix possible errors in the exported Contentstack data.',
 };
 
 const messages: typeof errors & typeof commonMsg & typeof auditMsg & typeof auditFixMsg = {
