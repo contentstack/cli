@@ -94,20 +94,20 @@ export default class ImportTaxonomies extends BaseClass {
     this.taxonomyUIDs = keys(this.taxonomies);
 
     const onSuccess = ({ response }: any) => {
-      const { uid, name } = response;
+      const { uid } = response;
       this.taxonomiesSuccess[uid] = pick(response, ['name', 'description']);
-      log(this.importConfig, `Taxonomy '${name}' imported successfully!`, 'success');
+      log(this.importConfig, `Taxonomy '${uid}' imported successfully!`, 'success');
     };
 
     const onReject = ({ error, apiData }: any) => {
       const err = error?.message ? JSON.parse(error.message) : error;
-      const { name } = apiData;
+      const { uid } = apiData;
       if (err?.errors?.taxonomy) {
-        this.taxonomiesFailed[apiData.uid] = apiData;
-        log(this.importConfig, `Taxonomy '${name}' failed to be import! ${err.errors.taxonomy}`, 'error');
+        this.taxonomiesFailed[uid] = apiData;
+        log(this.importConfig, `Taxonomy '${uid}' failed to be import! ${err.errors.taxonomy}`, 'error');
       } else {
         this.taxonomiesFailed[apiData.uid] = apiData;
-        log(this.importConfig, `Taxonomy '${name}' failed to be import! ${formatError(error)}`, 'error');
+        log(this.importConfig, `Taxonomy '${uid}' failed to be import! ${formatError(error)}`, 'error');
       }
     };
 
@@ -166,23 +166,23 @@ export default class ImportTaxonomies extends BaseClass {
     }
 
     const onSuccess = ({ response, apiData: { taxonomy_uid } = { taxonomy_uid: null } }: any) => {
-      const { uid, name } = response;
+      const { uid } = response;
       if (!this.termsSuccess[taxonomy_uid]) this.termsSuccess[taxonomy_uid] = {};
       this.termsSuccess[taxonomy_uid][uid] = pick(response, ['name']);
-      log(this.importConfig, `Term '${name}' imported successfully!`, 'success');
+      log(this.importConfig, `Term '${uid}' imported successfully!`, 'success');
     };
 
     const onReject = ({ error, apiData }: any) => {
-      const { taxonomy_uid, name } = apiData;
+      const { taxonomy_uid, uid } = apiData;
       if (!this.termsFailed[taxonomy_uid]) this.termsFailed[taxonomy_uid] = {};
       const err = error?.message ? JSON.parse(error.message) : error;
 
       if (err?.errors?.term) {
-        this.termsFailed[taxonomy_uid][apiData.uid] = apiData;
-        log(this.importConfig, `Term '${name}' failed to be import! ${err.errors.term}`, 'error');
+        this.termsFailed[taxonomy_uid][uid] = apiData;
+        log(this.importConfig, `Term '${uid}' failed to be import! ${err.errors.term}`, 'error');
       } else {
-        this.termsFailed[taxonomy_uid][apiData.uid] = apiData;
-        log(this.importConfig, `Term '${name}' failed to be import! ${formatError(error)}`, 'error');
+        this.termsFailed[taxonomy_uid][uid] = apiData;
+        log(this.importConfig, `Term '${uid}' failed to be import! ${formatError(error)}`, 'error');
       }
     };
 
