@@ -12,8 +12,6 @@ $ csdx plugins:install @contentstack/cli-audit
 
 ## How to use this plugin
 
-This plugin requires you to be authenticated using [csdx auth:login](https://www.contentstack.com/docs/developers/cli/authenticate-with-the-cli/).
-
 <!-- usage -->
 ```sh-session
 $ npm install -g @contentstack/cli-audit
@@ -30,20 +28,24 @@ USAGE
 
 # Commands
 <!-- commands -->
-* [`csdx audit`](#csdx-audit)
-* [`csdx audit:fix`](#csdx-auditfix)
-* [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
-* [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
-* [`csdx help [COMMANDS]`](#csdx-help-commands)
-* [`csdx plugins`](#csdx-plugins)
-* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
-* [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
-* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin-1)
-* [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-1)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-2)
-* [`csdx plugins:update`](#csdx-pluginsupdate)
+- [@contentstack/cli-audit](#contentstackcli-audit)
+  - [How to install this plugin](#how-to-install-this-plugin)
+  - [How to use this plugin](#how-to-use-this-plugin)
+- [Commands](#commands)
+  - [`csdx audit`](#csdx-audit)
+  - [`csdx audit:fix`](#csdx-auditfix)
+  - [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
+  - [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
+  - [`csdx help [COMMANDS]`](#csdx-help-commands)
+  - [`csdx plugins`](#csdx-plugins)
+  - [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
+  - [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
+  - [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin-1)
+  - [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
+  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
+  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-1)
+  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-2)
+  - [`csdx plugins:update`](#csdx-pluginsupdate)
 
 ## `csdx audit`
 
@@ -93,14 +95,13 @@ Audit and fix possible errors in the exported data
 ```
 USAGE
   $ csdx audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--backup-dir <value> --copy-dir] [-y] [--columns <value> | ] [--sort <value>]
+    content-types|global-fields|entries] [--backup-dir <value> --copy-dir] [--columns <value> | ] [--sort <value>]
     [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   -c, --config=<value>    Path of the external config.
   -d, --data-dir=<value>  Path where the data is stored.
-  -y, --yes               Use this flag to skip confirmation
-  --backup-dir=<value>    Provided path to backup original data
+  --backup-dir=<value>    Provide the path to backup the copied data.
   --columns=<value>       only show provided columns (comma-separated)
   --copy-dir              Create backup from original data
   --csv                   output is csv format [alias: --output=csv]
@@ -180,14 +181,13 @@ Audit and fix possible errors in the exported data
 ```
 USAGE
   $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--backup-dir <value> --copy-dir] [-y] [--columns <value> | ] [--sort <value>]
+    content-types|global-fields|entries] [--backup-dir <value> --copy-dir] [--columns <value> | ] [--sort <value>]
     [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   -c, --config=<value>    Path of the external config.
   -d, --data-dir=<value>  Path where the data is stored.
-  -y, --yes               Use this flag to skip confirmation
-  --backup-dir=<value>    Provided path to backup original data
+  --backup-dir=<value>    Provide the path to backup the copied data.
   --columns=<value>       only show provided columns (comma-separated)
   --copy-dir              Create backup from original data
   --csv                   output is csv format [alias: --output=csv]
