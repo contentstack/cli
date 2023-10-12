@@ -97,9 +97,8 @@ export default class ExportTaxonomies extends BaseClass {
   sanitizeTaxonomiesAttribs(taxonomies: Record<string, string>[]) {
     for (let index = 0; index < taxonomies?.length; index++) {
       const taxonomyUID = taxonomies[index].uid;
-      const taxonomyName = taxonomies[index]?.name;
       this.taxonomies[taxonomyUID] = omit(taxonomies[index], this.taxonomiesConfig.invalidKeys);
-      log(this.exportConfig, `'${taxonomyName}' taxonomy exported successfully!`, 'success');
+      log(this.exportConfig, `'${taxonomyUID}' taxonomy exported successfully!`, 'success');
     }
   }
 
