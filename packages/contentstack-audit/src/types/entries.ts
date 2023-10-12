@@ -41,8 +41,10 @@ type EntryJsonRTEFieldDataType = {
 };
 
 // NOTE Type 5
+type GroupFieldType = EntryReferenceFieldDataType[] | EntryGlobalFieldDataType | EntryJsonRTEFieldDataType;
+
 type EntryGroupFieldDataType = {
-  [key: string]: EntryReferenceFieldDataType[] | EntryGlobalFieldDataType | EntryJsonRTEFieldDataType;
+  [key: string]: GroupFieldType;
 };
 
 // NOTE Type 6
@@ -63,14 +65,18 @@ type EntryRefErrorReturnType = {
   uid: string;
   treeStr: string;
   data_type: string;
-  missingRefs: string[] | Record<string, unknown>[];
+  fixStatus?: string;
   display_name: string;
   tree: Record<string, unknown>[];
+  missingRefs: string[] | Record<string, unknown>[];
 };
+
+type EntryFieldType = EntryStruct | EntryGlobalFieldDataType | EntryModularBlocksDataType | EntryGroupFieldDataType;
 
 export {
   Locale,
   EntryStruct,
+  EntryFieldType,
   EntryGlobalFieldDataType,
   EntryCustomFieldDataType,
   EntryJsonRTEFieldDataType,
@@ -78,4 +84,6 @@ export {
   EntryModularBlocksDataType,
   EntryReferenceFieldDataType,
   EntryRefErrorReturnType,
+  GroupFieldType,
+  EntryModularBlockType,
 };

@@ -4,6 +4,7 @@ import { copy } from 'fs-extra';
 import { v4 as uuid } from 'uuid';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
+import cloneDeep from 'lodash/cloneDeep';
 import { cliux, ux } from '@contentstack/cli-utilities';
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 
@@ -80,15 +81,15 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
       switch (module) {
         case 'content-types':
-          missingCtRefs = await new ContentType(constructorParam).run();
+          missingCtRefs = await new ContentType(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingCtRefs);
           break;
         case 'global-fields':
-          missingGfRefs = await new GlobalField(constructorParam).run();
+          missingGfRefs = await new GlobalField(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingGfRefs);
           break;
         case 'entries':
-          missingEntryRefs = await new Entries(constructorParam).run();
+          missingEntryRefs = await new Entries(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingEntryRefs);
           break;
       }
@@ -195,9 +196,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
               message: ` ${module}`,
             },
           ]);
+          const tableValues = Object.values(missingRefs).flat();
 
           ux.table(
-            Object.values(missingRefs).flat(),
+            tableValues,
             {
               name: {
                 minWidth: 7,
@@ -220,7 +222,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
                   );
                 },
               },
-              ...this.fixStatus,
+              ...(tableValues[0]?.fixStatus ? this.fixStatus : {}),
               treeStr: {
                 minWidth: 7,
                 header: 'Path',
