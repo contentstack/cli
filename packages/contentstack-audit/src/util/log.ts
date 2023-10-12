@@ -131,7 +131,7 @@ export default class Logger {
 
     const replaceCredentials = (item: any) => {
       try {
-        return JSON.stringify(item).replace(/authtoken":"blt................/g, 'authtoken":"blt....');
+        return JSON.stringify(item).replace(/authtoken":"abc................/g, 'authtoken":"abc....');
       } catch (error) {}
 
       return item;
