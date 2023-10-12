@@ -1,18 +1,19 @@
 import config from '../config';
 import { ConfigType, LogFn } from './utils';
 
+type ContentTypeSchemaType =
+  | ReferenceFieldDataType
+  | GlobalFieldDataType
+  | CustomFieldDataType
+  | JsonRTEFieldDataType
+  | GroupFieldDataType
+  | ModularBlocksDataType;
+
 type ContentTypeStruct = {
   uid: string;
   title: string;
   description: string;
-  schema?: (
-    | ReferenceFieldDataType
-    | GlobalFieldDataType
-    | CustomFieldDataType
-    | JsonRTEFieldDataType
-    | GroupFieldDataType
-    | ModularBlocksDataType
-  )[];
+  schema?: ContentTypeSchemaType[];
 };
 
 type ModuleConstructorParam = {
@@ -80,6 +81,7 @@ type GroupFieldDataType = CommonDataTypeStruct & {
 type ModularBlockType = {
   uid: string;
   title: string;
+  reference_to?: string;
   schema: (
     | JsonRTEFieldDataType
     | ModularBlocksDataType
@@ -122,4 +124,5 @@ export {
   ModularBlocksSchemaTypes,
   ModularBlockType,
   OutputColumn,
+  ContentTypeSchemaType,
 };
