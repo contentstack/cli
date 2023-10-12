@@ -344,10 +344,10 @@ export default class ContentType {
       })
       .filter((val: any) => {
         if (val?.schema && isEmpty(val.schema)) return false;
+        if (val?.reference_to && isEmpty(val.reference_to)) return false;
 
         return !!val;
       }) as ContentTypeSchemaType[];
-    // (val.schema ? !isEmpty(val.schema) : true)
   }
 
   /**
@@ -466,7 +466,7 @@ export default class ContentType {
       }
     }
 
-    if (!isEmpty(missingRefs)) {
+    if (this.fix && !isEmpty(missingRefs)) {
       try {
         field.reference_to = field.reference_to.filter((ref) => !missingRefs.includes(ref));
         fixStatus = 'Fixed';
