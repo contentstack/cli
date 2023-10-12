@@ -8,7 +8,6 @@ import BaseClass, { ApiOptions } from './base-class';
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import { ModuleClassParams, TaxonomiesConfig, TermsConfig } from '../../types';
 
-
 export default class ImportTaxonomies extends BaseClass {
   private taxonomiesMapperDirPath: string;
   private taxonomiesFolderPath: string;
@@ -121,7 +120,7 @@ export default class ImportTaxonomies extends BaseClass {
           reject: onReject,
           resolve: onSuccess,
           entity: 'create-taxonomies',
-          includeParamOnCompletion: true
+          includeParamOnCompletion: true,
         },
         concurrencyLimit: this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1,
       },
@@ -205,7 +204,7 @@ export default class ImportTaxonomies extends BaseClass {
               reject: onReject,
               resolve: onSuccess,
               entity: 'create-terms',
-              includeParamOnCompletion: true
+              includeParamOnCompletion: true,
             },
             concurrencyLimit: this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1,
           },
@@ -223,7 +222,23 @@ export default class ImportTaxonomies extends BaseClass {
    */
   serializeTerms(apiOptions: ApiOptions): ApiOptions {
     const { apiData: term } = apiOptions;
-    apiOptions.apiData = term;
+    const {parent_uid, taxonomy_uid} = term;
+    
+    //check whether parent term exists or not in taxonomy
+    if (parent_uid !== null) {
+      if (!this.termsSuccess[taxonomy_uid][parent_uid]) {
+        log(
+          this.importConfig,
+          `Parent term '${term?.parent_uid}' doesn't exist! Skipping '${term.name}' to avoid buggy term.`,
+          'info',
+        );
+        apiOptions.apiData = undefined;
+      } else {
+        apiOptions.apiData = term;
+      }
+    } else {
+      apiOptions.apiData = term;
+    }
     return apiOptions;
   }
 
