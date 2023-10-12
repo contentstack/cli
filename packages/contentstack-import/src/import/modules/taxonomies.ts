@@ -229,7 +229,7 @@ export default class ImportTaxonomies extends BaseClass {
       if (!this.termsSuccess[taxonomy_uid][parent_uid]) {
         log(
           this.importConfig,
-          `Parent term '${term?.parent_uid}' doesn't exist! Skipping '${term.name}' to avoid buggy term.`,
+          `Parent term '${term?.parent_uid}' does not exist! Skipping '${term.uid}' creation to avoid further issues.`,
           'info',
         );
         apiOptions.apiData = undefined;
