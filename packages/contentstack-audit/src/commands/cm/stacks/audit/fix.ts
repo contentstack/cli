@@ -7,7 +7,7 @@ import { AuditBaseCommand } from '../../../../audit-base-command';
 export default class AuditFix extends AuditBaseCommand {
   static aliases: string[] = ['audit:fix', 'cm:stacks:audit:fix'];
 
-  static description = 'Audit and fix possible errors in the exported data';
+  static description = auditFixMsg.AUDIT_FIX_CMD_DESCRIPTION;
 
   static examples = [
     '$ <%= config.bin %> <%= command.id %> --copy-dir',
