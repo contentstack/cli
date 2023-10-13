@@ -1,7 +1,8 @@
 import winston from 'winston';
+import path, { resolve } from 'path';
 import messageHandler from './message-handler';
 
-class LoggerService {
+export class LoggerService {
   name: string;
   data: object | null;
   logger: winston.Logger;
@@ -9,15 +10,14 @@ class LoggerService {
   static dateFormat(): string {
     return new Date(Date.now()).toUTCString();
   }
-  constructor(name: string) {
+  constructor(pathToLog: string, name: string) {
     this.data = null;
     this.name = null;
-
     const logger = winston.createLogger({
       transports: [
         // new winston.transports.Console(),
         new winston.transports.File({
-          filename: `./logs/${name}.log`,
+          filename: path.resolve(process.env.CS_CLI_LOG_PATH || `${pathToLog}/logs`, `${name}.log`),
         }),
       ],
       format: winston.format.combine(
@@ -31,15 +31,15 @@ class LoggerService {
           }
           // parse message
           info.message = messageHandler.parse(info.message);
-          let message = `${LoggerService.dateFormat()}:${name}:${info.level}:${info.message}`;
+          let message = `${LoggerService.dateFormat()} : ${name}: ${info.level} : ${info.message}`;
           message = info.obj ? message + `:${stringifiedParam}` : message;
           message = this.data ? message + `:${JSON.stringify(this.data)}` : message;
           return message;
         }),
       ),
-      // level: (config.get('logger.level') as string) || 'error',
-      level: 'error',
-      silent: true
+      // // level: (config.get('logger.level') as string) || 'error',
+      // level: 'error',
+      // silent: true
       // silent: config.get('logger.enabled') && process.env.CLI_ENV !== 'TEST' ? false : false,
     });
     this.logger = logger;
@@ -97,5 +97,3 @@ class LoggerService {
     }
   }
 }
-
-export default new LoggerService('cli');
