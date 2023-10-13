@@ -99,7 +99,7 @@ FLAGS
   -d, --data-dir=<value>  Path where the data is stored.
   --columns=<value>       only show provided columns (comma-separated)
   --copy-dir              Create backup from the original data.
-  --copy-path=<value>     Provide the path to backup the copied data.
+  --copy-path=<value>     Provide the path to store the copied data.
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
   --modules=<option>...   Provide the list of modules to be audited.
@@ -187,7 +187,7 @@ FLAGS
   --backup-dir=<value>    Provided path to backup original data
   --columns=<value>       only show provided columns (comma-separated)
   --copy-dir              Create backup from the original data.
-  --copy-path=<value>     Provide the path to backup the copied data.
+  --copy-path=<value>     Provide the path to store the copied data.
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
   --modules=<option>...   Provide list of modules to be audited
