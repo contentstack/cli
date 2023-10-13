@@ -152,20 +152,20 @@ EXAMPLES
 
 ## `csdx audit:fix`
 
-Audit and fix possible errors in the exported data
+Perform audits and fix possible errors in the exported Contentstack data.
 
 ```
 USAGE
   $ csdx audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--backup-dir <value> --copy-dir] [--columns <value> | ] [--sort <value>]
+    content-types|global-fields|entries] [--copy-path <value> --copy-dir] [--columns <value> | ] [--sort <value>]
     [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   -c, --config=<value>    Path of the external config.
   -d, --data-dir=<value>  Path where the data is stored.
-  --backup-dir=<value>    Provide the path to backup the copied data.
   --columns=<value>       only show provided columns (comma-separated)
-  --copy-dir              Create backup from original data
+  --copy-dir              Create backup from the original data.
+  --copy-path=<value>     Provide the path to backup the copied data.
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
   --modules=<option>...   Provide the list of modules to be audited.
@@ -175,7 +175,7 @@ FLAGS
   --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
-  Audit and fix possible errors in the exported data
+  Perform audits and fix possible errors in the exported Contentstack data.
 
 ALIASES
   $ csdx audit:fix
@@ -190,7 +190,7 @@ EXAMPLES
 
   $ csdx audit:fix --report-path=<path> --filter="name=<filter-value>"
 
-  $ csdx audit:fix --report-path=<path> --modules=content-types --filter="name="<filter-value>" --copy-dir --backup-dir=<path>
+  $ csdx audit:fix --report-path=<path> --modules=content-types --filter="name="<filter-value>" --copy-dir --copy-path=<path>
 ```
 
 ## `csdx auth:login`
@@ -2338,20 +2338,20 @@ _See code: [@contentstack/cli-audit](https://github.com/contentstack/audit/blob/
 
 ## `csdx cm:stacks:audit:fix`
 
-Audit and fix possible errors in the exported data
+Perform audits and fix possible errors in the exported Contentstack data.
 
 ```
 USAGE
   $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--backup-dir <value> --copy-dir] [--columns <value> | ] [--sort <value>]
+    content-types|global-fields|entries] [--copy-path <value> --copy-dir] [--columns <value> | ] [--sort <value>]
     [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
   -c, --config=<value>    Path of the external config.
   -d, --data-dir=<value>  Path where the data is stored.
-  --backup-dir=<value>    Provide the path to backup the copied data.
   --columns=<value>       only show provided columns (comma-separated)
-  --copy-dir              Create backup from original data
+  --copy-dir              Create backup from the original data.
+  --copy-path=<value>     Provide the path to backup the copied data.
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
   --modules=<option>...   Provide the list of modules to be audited.
@@ -2361,7 +2361,7 @@ FLAGS
   --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
-  Audit and fix possible errors in the exported data
+  Perform audits and fix possible errors in the exported Contentstack data.
 
 ALIASES
   $ csdx audit:fix
@@ -2376,7 +2376,7 @@ EXAMPLES
 
   $ csdx cm:stacks:audit:fix --report-path=<path> --filter="name=<filter-value>"
 
-  $ csdx cm:stacks:audit:fix --report-path=<path> --modules=content-types --filter="name="<filter-value>" --copy-dir --backup-dir=<path>
+  $ csdx cm:stacks:audit:fix --report-path=<path> --modules=content-types --filter="name="<filter-value>" --copy-dir --copy-path=<path>
 ```
 
 _See code: [@contentstack/cli-audit](https://github.com/contentstack/audit/blob/main/packages/contentstack-audit/src/commands/cm/stacks/audit/fix.ts)_
