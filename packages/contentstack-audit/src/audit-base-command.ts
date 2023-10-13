@@ -126,7 +126,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       }
 
       // NOTE create bkp directory
-      const backupDirPath = `${(this.flags['backup-dir'] || this.flags['data-dir']).replace(
+      const backupDirPath = `${(this.flags['copy-path'] || this.flags['data-dir']).replace(
         /\/+$/,
         '',
       )}_backup_${uuid()}`;
