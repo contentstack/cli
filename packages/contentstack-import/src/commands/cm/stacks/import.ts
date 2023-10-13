@@ -66,6 +66,7 @@ export default class ImportCommand extends Command {
       parse: printFlagDeprecation(['-A', '--auth-token']),
     }),
     module: flags.string({
+      required: false,
       char: 'm',
       description: '[optional] specific module name',
       parse: printFlagDeprecation(['-m'], ['--module']),
@@ -93,7 +94,6 @@ export default class ImportCommand extends Command {
     }),
     'replace-existing': flags.boolean({
       required: false,
-      default: false,
       description: '[optional] replace existing modules',
       dependsOn: ['module'],
     }),
