@@ -1,14 +1,39 @@
+import { existsSync, readFileSync } from 'fs';
 import { Command } from '@contentstack/cli-command';
-import { FlagInput, Flags, Interfaces, LoggerService } from '@contentstack/cli-utilities';
+import { Flags, FlagInput, Interfaces, cliux as ux } from '@contentstack/cli-utilities';
+
+import config from './config';
+import { Logger } from './util';
+import { ConfigType, LogFn } from './types';
+import messages, { $t, commonMsg } from './messages';
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<(typeof BaseCommand)['baseFlags'] & T['flags']>;
 
 export abstract class BaseCommand<T extends typeof Command> extends Command {
-  public logger!: LoggerService;
+  public log!: LogFn;
+  public logger!: Logger;
+  public readonly $t = $t;
+  protected sharedConfig: ConfigType = {
+    ...config,
+    basePath: process.cwd(),
+  };
+  readonly messages: typeof messages = messages;
+
   protected args!: Args<T>;
   protected flags!: Flags<T>;
 
+  // NOTE define flags that can be inherited by any command that extends BaseCommand
+  static baseFlags: FlagInput = {
+    config: Flags.string({
+      char: 'c',
+      description: commonMsg.CONFIG,
+    }),
+    'data-dir': Flags.string({
+      char: 'd',
+      description: commonMsg.DATA_DIR,
+    }),
+  };
 
   /**
    * The `init` function initializes the command by parsing arguments and flags, registering search
@@ -16,8 +41,23 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
    */
   public async init(): Promise<void> {
     await super.init();
+    const { args, flags } = await this.parse({
+      flags: this.ctor.flags,
+      baseFlags: (super.ctor as typeof BaseCommand).baseFlags,
+      args: this.ctor.args,
+      strict: this.ctor.strict,
+    });
+    this.flags = flags as Flags<T>;
+    this.args = args as Args<T>;
+
+    this.sharedConfig = Object.assign(this.sharedConfig, { flags: this.flags });
+
+    ux.registerSearchPlugin();
+    this.registerConfig();
+
     // Init logger
-    this.logger = new LoggerService(process.cwd(), 'cli-log');
+    const logger = new Logger(this.sharedConfig);
+    this.log = logger.log.bind(logger);
   }
 
   /**
@@ -44,5 +84,18 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   protected async finally(_: Error | undefined): Promise<any> {
     // called after run and catch regardless of whether or not the command errored
     return super.finally(_);
+  }
+
+  /**
+   * The function checks if a configuration file exists and if so, reads and parses it as JSON.
+   */
+  registerConfig() {
+    if (this.flags.config && existsSync(this.flags.config)) {
+      try {
+        this.sharedConfig = JSON.parse(readFileSync(this.flags.config, { encoding: 'utf-8' }));
+      } catch (error) {
+        this.log(error, 'error');
+      }
+    }
   }
 }
