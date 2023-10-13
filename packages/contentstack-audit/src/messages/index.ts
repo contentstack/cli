@@ -25,7 +25,7 @@ const auditMsg = {
 
 const auditFixMsg = {
   COPY_DATA: 'Create backup from the original data.',
-  BKP_PATH: 'Provide the path to backup the copied data.',
+  BKP_PATH: 'Provide the path to store the copied data.',
   FIXED_CONTENT_PATH_MAG: 'You can locate the fixed content at {path}.',
   AUDIT_FIX_CMD_DESCRIPTION: 'Perform audits and fix possible errors in the exported Contentstack data.',
 };
