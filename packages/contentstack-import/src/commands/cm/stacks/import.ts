@@ -95,6 +95,7 @@ export default class ImportCommand extends Command {
       required: false,
       default: false,
       description: '[optional] replace existing modules',
+      dependsOn: ['module'],
     }),
     'skip-existing': flags.boolean({
       required: false,
