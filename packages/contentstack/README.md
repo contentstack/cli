@@ -29,81 +29,87 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`csdx auth:login`](#csdx-authlogin)
-* [`csdx auth:logout`](#csdx-authlogout)
-* [`csdx auth:tokens`](#csdx-authtokens)
-* [`csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`](#csdx-authtokensadd--a-value---delivery---management--e-value--k-value--y---token-value)
-* [`csdx auth:tokens:remove`](#csdx-authtokensremove)
-* [`csdx auth:whoami`](#csdx-authwhoami)
-* [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value)
-* [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
-* [`csdx cm:bootstrap`](#csdx-cmbootstrap)
-* [`csdx cm:branches`](#csdx-cmbranches)
-* [`csdx cm:branches:create`](#csdx-cmbranchescreate)
-* [`csdx cm:branches:delete [-uid <value>] [-k <value>]`](#csdx-cmbranchesdelete--uid-value--k-value)
-* [`csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]`](#csdx-cmbranchesdiff---base-branch-value---compare-branch-value--k-value--module-value)
-* [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
-* [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
-* [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
-* [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value-1)
-* [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
-* [`csdx cm:bulk-publish:configure`](#csdx-cmbulk-publishconfigure)
-* [`csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`](#csdx-cmbulk-publishcross-publish--a-value---retry-failed-value---bulk-publish-value---content-type-value---locales-value---source-env-value---environments-value---delivery-token-value--c-value--y---branch-value---onlyassets---onlyentries)
-* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value)
-* [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
-* [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value)
-* [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
-* [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries)
-* [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
-* [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
-* [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value-1)
-* [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value-1)
-* [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value-1)
-* [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value-1)
-* [`csdx cm:entries:unpublish`](#csdx-cmentriesunpublish)
-* [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value-1)
-* [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets)
-* [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
-* [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
-* [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
-* [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
-* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value)
-* [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent)
-* [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent-1)
-* [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets-1)
-* [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent-1)
-* [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple-1)
-* [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
-* [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
-* [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
-* [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
-* [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value-1)
-* [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries-1)
-* [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
-* [`csdx config:get:region`](#csdx-configgetregion)
-* [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
-* [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
-* [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
-* [`csdx help [COMMANDS]`](#csdx-help-commands)
-* [`csdx launch`](#csdx-launch)
-* [`csdx launch:deployments`](#csdx-launchdeployments)
-* [`csdx launch:environments`](#csdx-launchenvironments)
-* [`csdx launch:functions`](#csdx-launchfunctions)
-* [`csdx launch:logs`](#csdx-launchlogs)
-* [`csdx launch:open`](#csdx-launchopen)
-* [`csdx login`](#csdx-login)
-* [`csdx logout`](#csdx-logout)
-* [`csdx plugins`](#csdx-plugins)
-* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
-* [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
-* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin-1)
-* [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-1)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-2)
-* [`csdx plugins:update`](#csdx-pluginsupdate)
-* [`csdx tokens`](#csdx-tokens)
-* [`csdx whoami`](#csdx-whoami)
+- [@contentstack/cli](#contentstackcli)
+- [Usage](#usage)
+- [Commands](#commands)
+  - [`csdx auth:login`](#csdx-authlogin)
+  - [`csdx auth:logout`](#csdx-authlogout)
+  - [`csdx auth:tokens`](#csdx-authtokens)
+  - [`csdx auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]`](#csdx-authtokensadd--a-value---delivery---management--e-value--k-value--y---token-value)
+  - [`csdx auth:tokens:remove`](#csdx-authtokensremove)
+  - [`csdx auth:whoami`](#csdx-authwhoami)
+  - [`csdx cm::stacks:audit:fix`](#csdx-cmstacksauditfix)
+  - [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value)
+  - [`csdx cm:assets:unpublish`](#csdx-cmassetsunpublish)
+  - [`csdx cm:bootstrap`](#csdx-cmbootstrap)
+  - [`csdx cm:branches`](#csdx-cmbranches)
+  - [`csdx cm:branches:create`](#csdx-cmbranchescreate)
+  - [`csdx cm:branches:delete [-uid <value>] [-k <value>]`](#csdx-cmbranchesdelete--uid-value--k-value)
+  - [`csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]`](#csdx-cmbranchesdiff---base-branch-value---compare-branch-value--k-value--module-value)
+  - [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
+  - [`csdx cm:bulk-publish`](#csdx-cmbulk-publish)
+  - [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value)
+  - [`csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmassetspublish--a-value---retry-failed-value--e-value---folder-uid-value---bulk-publish-value--c-value--y---locales-value---branch-value---delivery-token-value---source-env-value-1)
+  - [`csdx cm:bulk-publish:clear`](#csdx-cmbulk-publishclear)
+  - [`csdx cm:bulk-publish:configure`](#csdx-cmbulk-publishconfigure)
+  - [`csdx cm:bulk-publish:cross-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-type <value>] [--locales <value>] [--source-env <value>] [--environments <value>] [--delivery-token <value>] [-c <value>] [-y] [--branch <value>] [--onlyAssets] [--onlyEntries]`](#csdx-cmbulk-publishcross-publish--a-value---retry-failed-value---bulk-publish-value---content-type-value---locales-value---source-env-value---environments-value---delivery-token-value--c-value--y---branch-value---onlyassets---onlyentries)
+  - [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value)
+  - [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
+  - [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value)
+  - [`csdx cm:bulk-publish:revert`](#csdx-cmbulk-publishrevert)
+  - [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries)
+  - [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value)
+  - [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
+  - [`csdx cm:entries:publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--publish-all-content-types] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`](#csdx-cmentriespublish--a-value---retry-failed-value---bulk-publish-value---publish-all-content-types---content-types-value---locales-value--e-value--c-value--y---branch-value---delivery-token-value---source-env-value-1)
+  - [`csdx cm:entries:publish-modified [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-modified--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value-1)
+  - [`csdx cm:entries:publish-non-localized-fields [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-non-localized-fields--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value--e-value--c-value--y---branch-value-1)
+  - [`csdx cm:entries:publish-only-unpublished [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--source-env <value>] [--content-types <value>] [--locales <value>] [-e <value>] [-c <value>] [-y] [--branch <value>]`](#csdx-cmentriespublish-only-unpublished--a-value---retry-failed-value---bulk-publish-value---source-env-value---content-types-value---locales-value--e-value--c-value--y---branch-value-1)
+  - [`csdx cm:entries:unpublish`](#csdx-cmentriesunpublish)
+  - [`csdx cm:entries:update-and-publish [-a <value>] [--retry-failed <value>] [--bulk-publish <value>] [--content-types <value>] [-t <value>] [-e <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>]`](#csdx-cmentriesupdate-and-publish--a-value---retry-failed-value---bulk-publish-value---content-types-value--t-value--e-value--c-value--y---locales-value---branch-value-1)
+  - [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets)
+  - [`csdx cm:export-to-csv`](#csdx-cmexport-to-csv)
+  - [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent)
+  - [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
+  - [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple)
+  - [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value)
+  - [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent)
+  - [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
+  - [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix-1)
+  - [`csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksclone---source-branch-value---target-branch-value---source-management-token-alias-value---destination-management-token-alias-value--n-value---type-ab---source-stack-api-key-value---destination-stack-api-key-value---import-webhook-status-disablecurrent-1)
+  - [`csdx cm:stacks:export [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--content-types <value>] [--branch <value>] [--secured-assets]`](#csdx-cmstacksexport--c-value--k-value--d-value--a-value---module-value---content-types-value---branch-value---secured-assets-1)
+  - [`csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`](#csdx-cmstacksimport--c-value--k-value--d-value--a-value---module-value---backup-dir-value---branch-value---import-webhook-status-disablecurrent-1)
+  - [`csdx cm:stacks:migration [-k <value>] [-a <value>] [--file-path <value>] [--branch <value>] [--config-file <value>] [--config <value>] [--multiple]`](#csdx-cmstacksmigration--k-value--a-value---file-path-value---branch-value---config-file-value---config-value---multiple-1)
+  - [`csdx cm:stacks:publish`](#csdx-cmstackspublish)
+  - [`csdx cm:stacks:publish-clear-logs`](#csdx-cmstackspublish-clear-logs)
+  - [`csdx cm:stacks:publish-configure`](#csdx-cmstackspublish-configure)
+  - [`csdx cm:stacks:publish-revert`](#csdx-cmstackspublish-revert)
+  - [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value-1)
+  - [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries-1)
+  - [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
+  - [`csdx config:get:region`](#csdx-configgetregion)
+  - [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
+  - [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
+  - [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
+  - [`csdx help [COMMANDS]`](#csdx-help-commands)
+  - [`csdx launch`](#csdx-launch)
+  - [`csdx launch:deployments`](#csdx-launchdeployments)
+  - [`csdx launch:environments`](#csdx-launchenvironments)
+  - [`csdx launch:functions`](#csdx-launchfunctions)
+  - [`csdx launch:logs`](#csdx-launchlogs)
+  - [`csdx launch:open`](#csdx-launchopen)
+  - [`csdx login`](#csdx-login)
+  - [`csdx logout`](#csdx-logout)
+  - [`csdx plugins`](#csdx-plugins)
+  - [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
+  - [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
+  - [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin-1)
+  - [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
+  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
+  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-1)
+  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-2)
+  - [`csdx plugins:update`](#csdx-pluginsupdate)
+  - [`csdx tokens`](#csdx-tokens)
+  - [`csdx whoami`](#csdx-whoami)
 
 ## `csdx auth:login`
 
@@ -285,6 +291,30 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-auth](https://github.com/contentstack/cli/blob/main/packages/contentstack-auth/src/commands/auth/whoami.ts)_
+
+## `csdx cm::stacks:audit:fix`
+
+Audit fix command
+
+```
+USAGE
+  $ csdx cm::stacks:audit:fix [-c <value>] [-d <value>]
+
+FLAGS
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path and location where data is stored
+
+DESCRIPTION
+  Audit fix command
+
+ALIASES
+  $ csdx cm::stacks:audit:fix
+
+EXAMPLES
+  $ csdx cm::stacks:audit:fix
+```
+
+_See code: [@contentstack/cli-audit](https://github.com/contentstack/audit/blob/main/packages/contentstack-audit/src/commands/cm/stacks/audit/fix.ts)_
 
 ## `csdx cm:assets:publish [-a <value>] [--retry-failed <value>] [-e <value>] [--folder-uid <value>] [--bulk-publish <value>] [-c <value>] [-y] [--locales <value>] [--branch <value>] [--delivery-token <value>] [--source-env <value>]`
 
@@ -2204,6 +2234,72 @@ EXAMPLES
 
   $ csdx cm:stacks:clone --source-branch --target-branch --source-management-token-alias <management token alias> --destination-management-token-alias <management token alias> --type <value a or b>
 ```
+
+## `csdx cm:stacks:audit`
+
+Audit and find possible errors in the exported data
+
+```
+USAGE
+  $ csdx cm:stacks:audit [-c <value>] [-d <value>] [--report-path <value>] [--modules
+    content-types|global-fields|entries] [--columns <value> | ] [--sort <value>] [--filter <value>] [--csv |
+    --no-truncate]
+
+FLAGS
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path and location where data is stored
+  --columns=<value>       only show provided columns (comma-separated)
+  --csv                   output is csv format [alias: --output=csv]
+  --filter=<value>        filter property by partial string matching, ex: name=foo
+  --modules=<option>...   Provide list of modules to be audited
+                          <options: content-types|global-fields|entries>
+  --no-truncate           do not truncate output to fit screen
+  --report-path=<value>   Path to store the audit reports
+  --sort=<value>          property to sort by (prepend '-' for descending)
+
+DESCRIPTION
+  Audit and find possible errors in the exported data
+
+ALIASES
+  $ csdx cm:stacks:audit
+
+EXAMPLES
+  $ csdx cm:stacks:audit
+
+  $ csdx cm:stacks:audit --report-path=<path>
+
+  $ csdx cm:stacks:audit --report-path=<path> --csv
+
+  $ csdx cm:stacks:audit --report-path=<path> --filter="name=<filter-value>"
+
+  $ csdx cm:stacks:audit --report-path=<path> --modules=content-types --filter="name="<filter-value>"
+```
+
+_See code: [@contentstack/cli-audit](https://github.com/contentstack/audit/blob/main/packages/contentstack-audit/src/commands/cm/stacks/audit/index.ts)_
+
+## `csdx cm:stacks:audit:fix`
+
+Audit fix command
+
+```
+USAGE
+  $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>]
+
+FLAGS
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path and location where data is stored
+
+DESCRIPTION
+  Audit fix command
+
+ALIASES
+  $ csdx cm::stacks:audit:fix
+
+EXAMPLES
+  $ csdx cm:stacks:audit:fix
+```
+
+_See code: [@contentstack/cli-audit](https://github.com/contentstack/audit/blob/main/packages/contentstack-audit/src/commands/cm/stacks/audit/fix.ts)_
 
 ## `csdx cm:stacks:clone [--source-branch <value>] [--target-branch <value>] [--source-management-token-alias <value>] [--destination-management-token-alias <value>] [-n <value>] [--type a|b] [--source-stack-api-key <value>] [--destination-stack-api-key <value>] [--import-webhook-status disable|current]`
 
