@@ -14,7 +14,7 @@ export default class AuditFix extends AuditBaseCommand {
     '$ <%= config.bin %> <%= command.id %> --report-path=<path> --copy-dir',
     '$ <%= config.bin %> <%= command.id %> --report-path=<path> --copy-dir --csv',
     '$ <%= config.bin %> <%= command.id %> --report-path=<path> --filter="name=<filter-value>"',
-    '$ <%= config.bin %> <%= command.id %> --report-path=<path> --modules=content-types --filter="name="<filter-value>" --copy-dir --backup-dir=<path>',
+    '$ <%= config.bin %> <%= command.id %> --report-path=<path> --modules=content-types --filter="name="<filter-value>" --copy-dir --copy-path=<path>',
   ];
 
   static flags: FlagInput = {
@@ -33,7 +33,7 @@ export default class AuditFix extends AuditBaseCommand {
     'copy-dir': Flags.boolean({
       description: auditFixMsg.COPY_DATA,
     }),
-    'backup-dir': Flags.string({
+    'copy-path': Flags.string({
       dependsOn: ['copy-dir'],
       description: auditFixMsg.BKP_PATH,
     }),
