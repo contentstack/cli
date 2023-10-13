@@ -86,6 +86,14 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   config.replaceExisting = importCmdFlags['replace-existing'];
   config.skipExisting = importCmdFlags['skip-existing'];
 
+  if (config.replaceExisting && !includes(config.overwriteSupportedModules, config.moduleName)) {
+    throw new Error(
+      `${config.moduleName} cannot be replaced, currently replace supports ${config.overwriteSupportedModules.join(
+        ',',
+      )} modules`,
+    );
+  }
+
   return config;
 };
 
