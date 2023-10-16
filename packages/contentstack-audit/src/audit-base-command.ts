@@ -51,7 +51,11 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     ]);
 
     if (!isEmpty(missingCtRefs) || !isEmpty(missingGfRefs) || !isEmpty(missingEntryRefs)) {
-      this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
+      if (this.currentCommand === 'cm:stacks:audit') {
+        this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
+      } else {
+        this.log(this.$t(this.messages.FIXED_CONTENT_PATH_MAG, { path: this.sharedConfig.basePath }), 'warn');
+      }
     } else {
       this.log(this.messages.NO_MISSING_REF_FOUND, 'info');
       this.log('');

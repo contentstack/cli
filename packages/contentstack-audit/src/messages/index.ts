@@ -1,10 +1,7 @@
-const errors = {
-  NOT_EMPTY: '{value} cannot be empty.',
-};
+const errors = {};
 
 const commonMsg = {
   CONFIG: 'Path of the external config.',
-  CURRENT_WORKING_DIR: 'Current working directory.',
   DATA_DIR: 'Path where the data is stored.',
   FIX_CONFIRMATION: 'Would you like to overwrite existing file.?',
 };
@@ -28,6 +25,7 @@ const auditFixMsg = {
   BKP_PATH: 'Provide the path to store the copied data.',
   FIXED_CONTENT_PATH_MAG: 'You can locate the fixed content at {path}.',
   AUDIT_FIX_CMD_DESCRIPTION: 'Perform audits and fix possible errors in the exported Contentstack data.',
+  EMPTY_FIX_MSG: 'Empty schema found at {path}. So removing the field/block from schema.',
 };
 
 const messages: typeof errors & typeof commonMsg & typeof auditMsg & typeof auditFixMsg = {
