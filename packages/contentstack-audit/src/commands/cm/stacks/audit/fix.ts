@@ -54,7 +54,6 @@ export default class AuditFix extends AuditBaseCommand {
   async run(): Promise<void> {
     try {
       await this.start('cm:stacks:audit:fix');
-      this.log(this.$t(this.messages.FIXED_CONTENT_PATH_MAG, { path: this.sharedConfig.basePath }), 'warn');
     } catch (error) {
       this.log(error instanceof Error ? error.message : error, 'error');
       console.trace(error);
