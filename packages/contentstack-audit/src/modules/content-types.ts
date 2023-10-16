@@ -20,7 +20,7 @@ import {
   ContentTypeSchemaType,
 } from '../types';
 import auditConfig from '../config';
-import { $t, auditMsg, commonMsg } from '../messages';
+import { $t, auditFixMsg, auditMsg, commonMsg } from '../messages';
 
 /* The `ContentType` class is responsible for scanning content types, looking for references, and
 generating a report in JSON and CSV formats. */
@@ -433,6 +433,8 @@ export default class ContentType {
             treeStr: tree.map(({ name }) => name).join(' ➜ '),
           });
 
+          this.log($t(auditFixMsg.EMPTY_FIX_MSG, { path: tree.map(({ name }) => name).join(' ➜ ') }), 'info');
+
           return null;
         }
 
@@ -512,6 +514,7 @@ export default class ContentType {
         missingRefs: 'Empty schema found',
         treeStr: tree.map(({ name }) => name).join(' ➜ '),
       });
+      this.log($t(auditFixMsg.EMPTY_FIX_MSG, { path: tree.map(({ name }) => name).join(' ➜ ') }), 'info');
 
       return null;
     }
