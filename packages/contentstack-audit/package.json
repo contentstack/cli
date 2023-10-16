@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-audit",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Contentstack audit plugin",
   "author": "Contentstack CLI",
   "homepage": "https://github.com/contentstack/cli",
@@ -61,14 +61,6 @@
     "additionalVersionFlags": [
       "-v"
     ],
-    "topics": {
-      "cm:stacks:audit": {
-        "description": "Perform audits and find possible errors in the exported Contentstack data"
-      },
-      "cm:stacks:audit:fix": {
-        "description": "Perform audits and fix possible errors in the exported Contentstack data."
-      }
-    },
     "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-audit/<%- commandPath %>"
   },
   "scripts": {
