@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-audit
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli-audit/0.0.0-alpha darwin-arm64 node-v20.8.0
+@contentstack/cli-audit/1.2.0 darwin-arm64 node-v20.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -28,20 +28,24 @@ USAGE
 
 # Commands
 <!-- commands -->
-* [`csdx audit`](#csdx-audit)
-* [`csdx audit:fix`](#csdx-auditfix)
-* [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
-* [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
-* [`csdx help [COMMANDS]`](#csdx-help-commands)
-* [`csdx plugins`](#csdx-plugins)
-* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
-* [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
-* [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin-1)
-* [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-1)
-* [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-2)
-* [`csdx plugins:update`](#csdx-pluginsupdate)
+- [@contentstack/cli-audit](#contentstackcli-audit)
+  - [How to install this plugin](#how-to-install-this-plugin)
+  - [How to use this plugin](#how-to-use-this-plugin)
+- [Commands](#commands)
+  - [`csdx audit`](#csdx-audit)
+  - [`csdx audit:fix`](#csdx-auditfix)
+  - [`csdx cm:stacks:audit`](#csdx-cmstacksaudit)
+  - [`csdx cm:stacks:audit:fix`](#csdx-cmstacksauditfix)
+  - [`csdx help [COMMANDS]`](#csdx-help-commands)
+  - [`csdx plugins`](#csdx-plugins)
+  - [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin)
+  - [`csdx plugins:inspect PLUGIN...`](#csdx-pluginsinspect-plugin)
+  - [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin-1)
+  - [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
+  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
+  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-1)
+  - [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-2)
+  - [`csdx plugins:update`](#csdx-pluginsupdate)
 
 ## `csdx audit`
 
