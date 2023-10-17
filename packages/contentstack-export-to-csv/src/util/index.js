@@ -8,7 +8,7 @@ const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 
 const config = require('./config.js');
-const { cliux, configHandler } = require('@contentstack/cli-utilities');
+const { cliux, configHandler, HttpClient } = require('@contentstack/cli-utilities');
 
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
@@ -20,7 +20,7 @@ function chooseOrganization(managementAPIClient, action) {
   return new Promise(async (resolve, reject) => {
     try {
       let organizations;
-      if (action === config.exportUsers) {
+      if (action === config.exportUsers || action === 'teams') {
         organizations = await getOrganizationsWhereUserIsAdmin(managementAPIClient);
       } else {
         organizations = await getOrganizations(managementAPIClient);
@@ -678,6 +678,35 @@ function wait(time) {
   });
 }
 
+async function apiRequestHandler(payload, queryParam={}) {
+  const headers = payload.headers;
+  console.log(headers);
+  return await new HttpClient().headers(headers).queryParams(queryParam).get(`${payload.url}/organizations/${payload.orgUid}/teams`).then((data)=>{
+    return data.data
+  }).catch((error)=>{
+    console.log(error);
+    console.log(error.error_message);
+  })
+}
+
+async function exportOrgTeams(managementAPIClient,org) {
+  payload = {}
+  console.log(configHandler.get('region'));
+  payload.url = configHandler.get('region').cma;
+  payload.orgUid = org.uid;
+  payload.headers = {
+    authtoken: configHandler.get('authtoken'),
+    organization_uid: org.uid,
+    'Content-Type': 'application/json',
+  }
+  let teamsObject = []
+  const data = await apiRequestHandler(payload,{});
+  console.log(data);
+}
+
+function getTeamDetails(){
+
+}
 module.exports = {
   chooseOrganization: chooseOrganization,
   chooseStack: chooseStack,
@@ -704,4 +733,5 @@ module.exports = {
   chooseInMemContentTypes: chooseInMemContentTypes,
   getEntriesCount: getEntriesCount,
   formatError: formatError,
+  exportOrgTeams: exportOrgTeams
 };
