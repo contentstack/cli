@@ -680,7 +680,7 @@ function wait(time) {
 
 async function apiRequestHandler(payload, queryParam={}) {
   const headers = payload.headers;
-  console.log(headers);
+  // console.log(headers);
   return await new HttpClient().headers(headers).queryParams(queryParam).get(`${payload.url}/organizations/${payload.orgUid}/teams`).then((data)=>{
     return data?.data
   }).catch((error)=>{
@@ -691,7 +691,7 @@ async function apiRequestHandler(payload, queryParam={}) {
 
 async function exportOrgTeams(managementAPIClient,org) {
   payload = {}
-  console.log(configHandler.get('region'));
+  // console.log(configHandler.get('region'));
   payload.url = configHandler.get('region').cma;
   payload.orgUid = org.uid;
   payload.headers = {
@@ -703,20 +703,45 @@ async function exportOrgTeams(managementAPIClient,org) {
   const maxLimit = 500 // Max teams per org
   let skip = 0;
   let limit = 100;
+  const fieldToBeDeleted = ["_id","createdAt", "createdBy","updatedAt","updatedBy","__v","createdByUserName", "updatedByUserName"]
+  let roleMap = {} // for org level there are two roles only admin and member
+
+  // SDK call to get the role uids
+  managementAPIClient.organization(org.uid).roles()
+  .then((roles) => {
+    roles.items.forEach((item)=>{
+      if(item.name==='member' || item.name==='admin'){
+        roleMap.name = item.uid
+      }
+    })
+  })
+
+  // Limit of 500 was hard coded 
   while(limit!==500) {
-    const data = await apiRequestHandler(payload,{skip:500,limit:limit});
+    const data = await apiRequestHandler(payload,{skip:skip,limit:limit});
     skip = limit;
     limit += 100;
     if(data.length!==0){
       data.forEach((t)=>{
+        fieldToBeDeleted.forEach((fields)=>{
+          delete t[fields]
+        });
+        if(!t.hasOwnProperty('description')){
+          t.description = ''
+        }
+        if(t.organizationRole===roleMap['member']){
+          t.organizationRole = 'member';
+        } else {
+          t.organizationRole = 'admin';
+        }
+        t.users = t.users.length;
         teamsObject.push(t);
       })
     } else {
       break;
     }
   }
-  console.log(teamsObject);
-  
+  return teamsObject;
 }
 
 function getTeamDetails(){
