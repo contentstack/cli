@@ -110,7 +110,9 @@ export default class ExportCommand extends Command {
       const managementAPIClient: ContentstackClient = await managementSDKClient(exportConfig);
       const moduleExporter = new ModuleExporter(managementAPIClient, exportConfig);
       await moduleExporter.start();
-      writeExportMetaFile(exportConfig);
+      if (!exportConfig.branches?.length) {
+        writeExportMetaFile(exportConfig);
+      }
       log(exportConfig, `The content of the stack ${exportConfig.apiKey} has been exported successfully!`, 'success');
       log(exportConfig, `The log has been stored at '${path.join(exportDir, 'logs', 'export')}'`, 'success');
     } catch (error) {
