@@ -15,8 +15,8 @@ class ExportToCsvCommand extends Command {
     action: flags.string({
       required: false,
       multiple: false,
-      options: ['entries', 'users'],
-      description: `Option to export data (entries, users)`,
+      options: ['entries', 'users', 'teams'],
+      description: `Option to export data (entries, users, teams)`,
     }),
     alias: flags.string({
       char: 'a',
@@ -258,6 +258,34 @@ class ExportToCsvCommand extends Command {
           }
           break;
         }
+        case config.exportTeams:
+        case 'teams': {
+          try{
+            if (!isAuthenticated()) {
+              this.error(config.CLI_EXPORT_CSV_LOGIN_FAILED, {
+                exit: 2,
+                suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
+              });
+            }
+            let organization;
+
+            if (org) {
+              organization = { uid: org, name: orgName || org };
+            } else {
+              organization = await util.chooseOrganization(managementAPIClient, action); // prompt for organization
+            }
+            
+            // getTeams
+            // getTeam
+            // geStackRoleMapping
+            await util.exportOrgTeams(managementAPIClient, organization);
+          } catch (error) {
+            if (error.message || error.errorMessage) {
+              cliux.error(util.formatError(error));
+            }
+          }
+        }
+        break;
       }
     } catch (error) {
       if (error.message || error.errorMessage) {
@@ -310,6 +338,9 @@ ExportToCsvCommand.examples = [
   '',
   'Exporting organization users to csv with organization name provided',
   'csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>',
+  '',
+  'Exporting Organizations Teams to CSV',
+  'csdx cm:export-to-csv --action <teams> --org <org-uid>',
 ];
 
 module.exports = ExportToCsvCommand;
