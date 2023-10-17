@@ -94,13 +94,13 @@ export default class ImportCommand extends Command {
     }),
     'replace-existing': flags.boolean({
       required: false,
-      description: '[optional] replace existing modules',
+      description: 'Replaces the existing module in the target stack.',
       dependsOn: ['module'],
     }),
     'skip-existing': flags.boolean({
       required: false,
       default: false,
-      description: '[optional] removes the module exist warning messages',
+      description: 'Skips the module exists warning messages.',
     }),
   };
 
