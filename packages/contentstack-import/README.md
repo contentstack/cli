@@ -2,7 +2,7 @@
 
 It is Contentstack’s CLI plugin to import content in the stack. To learn how to export and import content in Contentstack, refer to the [Migration guide](https://www.contentstack.com/docs/developers/cli/migration/).
 
-[![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
+[![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)it -m 
 
 <!-- toc -->
 * [Usage](#usage)
@@ -81,8 +81,8 @@ FLAGS
   -y, --yes                         [optional] Override marketplace prompts
   --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                     <options: disable|current>
-  --replace-existing                [optional] replace existing modules
-  --skip-existing                   [optional] removes the module exist warning messages
+  --replace-existing                Replaces the existing module in the target stack.
+  --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
   Import content from a stack
@@ -128,8 +128,8 @@ FLAGS
   -y, --yes                         [optional] Override marketplace prompts
   --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                     <options: disable|current>
-  --replace-existing                [optional] replace existing modules
-  --skip-existing                   [optional] removes the module exist warning messages
+  --replace-existing                Replaces the existing module in the target stack.
+  --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
   Import content from a stack

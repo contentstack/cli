@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { ContentstackClient } from '@contentstack/cli-utilities';
-import { setupBranches, setupExportDir, log, formatError } from '../utils';
+import { setupBranches, setupExportDir, log, formatError, writeExportMetaFile } from '../utils';
 import startModuleExport from './modules';
 import startJSModuleExport from './modules-js';
 import { ExportConfig, Modules } from '../types';
@@ -38,6 +38,7 @@ class ModuleExporter {
         this.exportConfig.branchName = branch.uid;
         this.exportConfig.branchDir = path.join(this.exportConfig.exportDir, branch.uid);
         log(this.exportConfig, `Exporting content from branch ${branch.uid}`, 'success');
+        writeExportMetaFile(this.exportConfig, this.exportConfig.branchDir);
         await this.export();
         log(this.exportConfig, `The content of branch ${branch.uid} has been exported successfully!`, 'success');
       } catch (error) {
