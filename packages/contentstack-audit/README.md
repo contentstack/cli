@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-audit
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli-audit/0.0.0-alpha darwin-arm64 node-v20.8.0
+@contentstack/cli-audit/1.2.0 darwin-arm64 node-v20.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -55,11 +55,11 @@ USAGE
 
 FLAGS
   -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path and location where data is stored
+  -d, --data-dir=<value>  Path where the data is stored
   --columns=<value>       only show provided columns (comma-separated)
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide list of modules to be audited
+  --modules=<option>...   Provide the list of modules to be audited
                           <options: content-types|global-fields|entries>
   --no-truncate           do not truncate output to fit screen
   --report-path=<value>   Path to store the audit reports
@@ -95,17 +95,17 @@ USAGE
     [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
-  -c, --config=<value>    Path of the external config.
-  -d, --data-dir=<value>  Path where the data is stored.
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path where the data is stored
   --columns=<value>       only show provided columns (comma-separated)
   --copy-dir              Create backup from the original data.
-  --copy-path=<value>     Provide the path to store the copied data.
+  --copy-path=<value>     Provide the path to backup the copied data
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide the list of modules to be audited.
+  --modules=<option>...   Provide the list of modules to be audited
                           <options: content-types|global-fields|entries>
   --no-truncate           do not truncate output to fit screen
-  --report-path=<value>   Path to store the audit reports.
+  --report-path=<value>   Path to store the audit reports
   --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
@@ -138,15 +138,15 @@ USAGE
     --no-truncate]
 
 FLAGS
-  -c, --config=<value>    Path of the external config.
-  -d, --data-dir=<value>  Path where the data is stored.
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path where the data is stored
   --columns=<value>       only show provided columns (comma-separated)
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide the list of modules to be audited.
+  --modules=<option>...   Provide the list of modules to be audited
                           <options: content-types|global-fields|entries>
   --no-truncate           do not truncate output to fit screen
-  --report-path=<value>   Path to store the audit reports.
+  --report-path=<value>   Path to store the audit reports
   --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
@@ -182,15 +182,13 @@ USAGE
 
 FLAGS
   -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path and location where data is stored
-  -y, --yes               Use this flag to skip confirmation
-  --backup-dir=<value>    Provided path to backup original data
+  -d, --data-dir=<value>  Path where the data is stored
   --columns=<value>       only show provided columns (comma-separated)
   --copy-dir              Create backup from the original data.
-  --copy-path=<value>     Provide the path to store the copied data.
+  --copy-path=<value>     Provide the path to backup the copied data
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide list of modules to be audited
+  --modules=<option>...   Provide the list of modules to be audited
                           <options: content-types|global-fields|entries>
   --no-truncate           do not truncate output to fit screen
   --report-path=<value>   Path to store the audit reports
