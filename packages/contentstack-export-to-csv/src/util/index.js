@@ -682,7 +682,7 @@ async function apiRequestHandler(payload, queryParam={}) {
   const headers = payload.headers;
   console.log(headers);
   return await new HttpClient().headers(headers).queryParams(queryParam).get(`${payload.url}/organizations/${payload.orgUid}/teams`).then((data)=>{
-    return data.data
+    return data?.data
   }).catch((error)=>{
     console.log(error);
     console.log(error.error_message);
@@ -700,8 +700,23 @@ async function exportOrgTeams(managementAPIClient,org) {
     'Content-Type': 'application/json',
   }
   let teamsObject = []
-  const data = await apiRequestHandler(payload,{});
-  console.log(data);
+  const maxLimit = 500 // Max teams per org
+  let skip = 0;
+  let limit = 100;
+  while(limit!==500) {
+    const data = await apiRequestHandler(payload,{skip:500,limit:limit});
+    skip = limit;
+    limit += 100;
+    if(data.length!==0){
+      data.forEach((t)=>{
+        teamsObject.push(t);
+      })
+    } else {
+      break;
+    }
+  }
+  console.log(teamsObject);
+  
 }
 
 function getTeamDetails(){
