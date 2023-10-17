@@ -209,7 +209,8 @@ export default class EntriesImport extends BaseClass {
    * @returns {ApiOptions} ApiOptions
    */
   serializeUpdateCTs(apiOptions: ApiOptions): ApiOptions {
-    const { apiData: contentType } = apiOptions;
+    const { apiData } = apiOptions;
+    const contentType = cloneDeep(apiData);
     if (contentType.field_rules) {
       delete contentType.field_rules;
     }
@@ -724,7 +725,8 @@ export default class EntriesImport extends BaseClass {
    * @returns {ApiOptions} ApiOptions
    */
   serializeUpdateCTsWithRef(apiOptions: ApiOptions): ApiOptions {
-    const { apiData: contentType } = apiOptions;
+    const { apiData } = apiOptions;
+    const contentType = cloneDeep(apiData);
     if (contentType.field_rules) {
       delete contentType.field_rules;
     }
