@@ -6,7 +6,6 @@ const fastcsv = require('fast-csv');
 const inquirer = require('inquirer');
 const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
-
 const config = require('./config.js');
 const { cliux, configHandler, HttpClient } = require('@contentstack/cli-utilities');
 
@@ -105,7 +104,7 @@ async function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
       organizations.forEach((org) => {
         result[org.name] = org.uid;
       });
-  }
+    }
 
     return result;
   } catch (error) {
@@ -321,7 +320,13 @@ function getEntries(stackAPIClient, contentType, language, skip, limit) {
     stackAPIClient
       .contentType(contentType)
       .entry()
-      .query({ include_publish_details: true, locale: language, skip: skip * 100, limit: limit, include_workflow: true })
+      .query({
+        include_publish_details: true,
+        locale: language,
+        skip: skip * 100,
+        limit: limit,
+        include_workflow: true,
+      })
       .find()
       .then((entries) => resolve(entries))
       .catch((error) => reject(error));
@@ -373,11 +378,11 @@ function exitProgram() {
 
 function sanitizeEntries(flatEntry) {
   // sanitize against CSV Injections
-  const CSVRegex = /^[\\+\\=@\\-]/
+  const CSVRegex = /^[\\+\\=@\\-]/;
   for (key in flatEntry) {
     if (typeof flatEntry[key] === 'string' && flatEntry[key].match(CSVRegex)) {
       flatEntry[key] = flatEntry[key].replace(/\"/g, "\"\"");
-      flatEntry[key] = `"'${flatEntry[key]}"`
+      flatEntry[key] = `"'${flatEntry[key]}"`;
     } else if (typeof flatEntry[key] === 'object') {
       // convert any objects or arrays to string
       // to store this data correctly in csv
@@ -394,7 +399,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
   return filteredEntries.map((entry) => {
     let workflow = '';
     const envArr = [];
-    if(entry.publish_details.length) {
+    if (entry.publish_details.length) {
       entry.publish_details.forEach((env) => {
         envArr.push(JSON.stringify([environments[env['environment']], env['locale'], env['time']]));
       });
@@ -403,10 +408,10 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
     delete entry.publish_details;
     delete entry.setWorkflowStage;
     if ('_workflow' in entry) {
-        if(entry._workflow?.name) {
-          workflow = entry['_workflow']['name'];
-          delete entry['_workflow'];
-        }
+      if (entry._workflow?.name) {
+        workflow = entry['_workflow']['name'];
+        delete entry['_workflow'];
+      }
     }
     entry = flatten(entry);
     entry = sanitizeEntries(entry);
@@ -678,86 +683,130 @@ function wait(time) {
   });
 }
 
-async function apiRequestHandler(payload, queryParam={}) {
-  const headers = payload.headers;
-  // console.log(headers);
-  return await new HttpClient().headers(headers).queryParams(queryParam).get(`${payload.url}/organizations/${payload.orgUid}/teams`).then((data)=>{
-    return data?.data
-  }).catch((error)=>{
-    console.log(error);
-    console.log(error.error_message);
-  })
+function handleErrorMsg(err) {
+  if (err?.errorMessage) {
+    cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
+  } else if (err?.message) {
+    cliux.print(`Error: ${err.message}`, { color: 'red' });
+  } else {
+    console.log(err);
+    cliux.print(`Error: ${messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' });
+  }
+  process.exit(1);
 }
-
-async function exportOrgTeams(managementAPIClient,org) {
-  payload = {}
-  payload.url = configHandler.get('region').cma;
-  payload.orgUid = org.uid;
-  payload.headers = {
+async function apiRequestHandler(org, queryParam = {}) {
+  const headers = {
     authtoken: configHandler.get('authtoken'),
     organization_uid: org.uid,
     'Content-Type': 'application/json',
-    api_version: 1.1
-  }
-  let teamsObject = [];
-  let userObject = [];
-  let stackRoleMapObject = [];
-  const maxLimit = 500 // Max teams per org
+    api_version: 1.1,
+  };
+  
+  return await new HttpClient()
+    .headers(headers)
+    .queryParams(queryParam)
+    .get(`${configHandler.get('region')?.cma}/organizations/${org.uid}/teams`)
+    .then((res) => {
+      const {status, data} = res;
+      if(data.hasOwnProperty('error_code')) {
+        cliux.print(`${data.error_message}`,{color:'red'});
+        process.exit(1);
+      } 
+      return data;
+    })
+    .catch((error) => {
+      handleErrorMsg(error);
+    });
+}
+
+async function exportOrgTeams(managementAPIClient, org) {
+  let teamsObjectArray = [];
   let skip = 0;
   let limit = 100;
-  const fieldToBeDeleted = ["_id","createdAt", "createdBy","updatedAt","updatedBy","__v","createdByUserName", "updatedByUserName","organizationUid"]
-  let roleMap = {} // for org level there are two roles only admin and member
+  do {
+    const data = await apiRequestHandler(org,{ skip: skip, limit: limit, includeUserDetails: true });
+    skip += limit;
+    teamsObjectArray = [...teamsObjectArray,...data?.teams]
+    if(skip>data?.count) break;
+  } while (1);
+  teamsObjectArray = await cleanTeamsData(teamsObjectArray,managementAPIClient,org);
+  return teamsObjectArray;
+}
+
+async function getOrgRoles(managementAPIClient, org) {
+  let roleMap = {}; // for org level there are two roles only admin and member
 
   // SDK call to get the role uids
-  managementAPIClient.organization(org.uid).roles()
-  .then((roles) => {
-    roles.items.forEach((item)=>{
-      if(item.name==='member' || item.name==='admin'){
-        roleMap.name = item.uid;
+  managementAPIClient
+    .organization(org.uid)
+    .roles()
+    .then((roles) => {
+      roles.items.forEach((item) => {
+        if (item.name === 'member' || item.name === 'admin') {
+          roleMap.name = item.uid;
+        }
+      });
+    });
+
+    return roleMap;
+}
+
+async function cleanTeamsData(data,managementAPIClient,org) {
+  const roleMap = await getOrgRoles(managementAPIClient,org)
+  const fieldToBeDeleted = [
+    '_id',
+    'createdAt',
+    'createdBy',
+    'updatedAt',
+    'updatedBy',
+    '__v',
+    'createdByUserName',
+    'updatedByUserName',
+    'organizationUid',
+  ];
+  if (data.length !== 0) {
+    data.forEach((team) => {
+      fieldToBeDeleted.forEach((fields) => {
+        delete team[fields];
+      });
+      if (!team.hasOwnProperty('description')) {
+        team.description = '';
       }
-    })
-  })
-
-  // Limit of 500 was hard coded 
-  while(limit!==500) {
-    const data = await apiRequestHandler(payload,{skip:skip,limit:limit,includeUserDetails:true});
-    skip = limit;
-    limit += 100;
-    if(data.teams.length!==0){
-      data.teams.forEach((t)=>{
-        fieldToBeDeleted.forEach((fields)=>{
-          delete t[fields]
-        });
-        if(!t.hasOwnProperty('description')){
-          t.description = ''
-        }
-        if(t.organizationRole===roleMap['member']){
-          t.organizationRole = 'member';
-        } else {
-          t.organizationRole = 'admin';
-        }
-        t.Total_Members = t.users.length;
-        userObject.push(t.users);
-        stackRoleMapObject.push(t.stackRoleMapping);
-        delete t['stackRoleMapping'];
-        delete t['users']
-        teamsObject.push(t);
-      })
-    } else {
-      break;
-    }
+      if (team.organizationRole === roleMap['member']) {
+        team.organizationRole = 'member';
+      } else {
+        team.organizationRole = 'admin';
+      }
+      team.Total_Members = team.users.length;
+    });
+  } else {
+    cliux.print(`There are no teams in the given org`);
   }
-  let teamsData ={};
-  teamsData['teams'] = teamsObject;
-  teamsData['users'] = userObject;
-  teamsData['stackRoleMapping'] = stackRoleMapObject;
-  return teamsData;
+  return data
 }
 
-function getTeamDetails(){
-
+async function exportTeams(managementAPIClient, organization) {
+  const allTeamsData = await exportOrgTeams(managementAPIClient, organization);
+  if (allTeamsData.length === 0) {
+    this.log(`There are not teams in the organization named ${organization?.name}`);
+  } else {
+    const modifiedTeam = [];
+    allTeamsData.forEach((team)=>{
+      modifiedTeam.push(Object.assign({}, team));
+    })
+    modifiedTeam.forEach((team)=>{
+      delete team['users']
+      delete team['stackRoleMapping']
+    })
+    const fileName = `${kebabize(
+      (organization.name).replace(config.organizationNameRegex, ''),
+    )}_teams_export.csv`;
+    write(this, modifiedTeam, fileName, 'organization Team details');
+  }
 }
- 
+
+function getTeamDetails() {}
+
 module.exports = {
   chooseOrganization: chooseOrganization,
   chooseStack: chooseStack,
@@ -784,5 +833,6 @@ module.exports = {
   chooseInMemContentTypes: chooseInMemContentTypes,
   getEntriesCount: getEntriesCount,
   formatError: formatError,
-  exportOrgTeams: exportOrgTeams
+  exportOrgTeams: exportOrgTeams,
+  exportTeams: exportTeams,
 };
