@@ -1,5 +1,6 @@
 import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
+import cloneDeep from 'lodash/cloneDeep';
 import { join } from 'node:path';
 
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
@@ -17,6 +18,7 @@ export default class ImportExtensions extends BaseClass {
   private extUidMapper: Record<string, unknown>;
   private extSuccess: Record<string, unknown>[];
   private extFailed: Record<string, unknown>[];
+  private existingExtensions: Record<string, unknown>[];
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -28,6 +30,7 @@ export default class ImportExtensions extends BaseClass {
     this.extFailsPath = join(this.mapperDirPath, 'fails.json');
     this.extFailed = [];
     this.extSuccess = [];
+    this.existingExtensions = [];
     this.extUidMapper = {};
   }
 
@@ -40,7 +43,10 @@ export default class ImportExtensions extends BaseClass {
 
     //Step1 check folder exists or not
     if (fileHelper.fileExistsSync(this.extensionsFolderPath)) {
-      this.extensions = fsUtil.readFile(join(this.extensionsFolderPath, 'extensions.json'), true) as Record<string,unknown>;
+      this.extensions = fsUtil.readFile(join(this.extensionsFolderPath, 'extensions.json'), true) as Record<
+        string,
+        unknown
+      >;
     } else {
       log(this.importConfig, `No such file or directory - '${this.extensionsFolderPath}'`, 'error');
       return;
@@ -52,6 +58,13 @@ export default class ImportExtensions extends BaseClass {
       : {};
 
     await this.importExtensions();
+
+    // Note: if any extensions present, then update it
+    if (this.importConfig.replaceExisting && this.existingExtensions.length > 0) {
+      await this.replaceExtensions().catch((error: Error) => {
+        log(this.importConfig, `Error while replacing extensions ${formatError(error)}`, 'error');
+      });
+    }
 
     if (this.extSuccess?.length) {
       fsUtil.writeFile(this.extSuccessPath, this.extSuccess);
@@ -80,10 +93,14 @@ export default class ImportExtensions extends BaseClass {
     };
 
     const onReject = ({ error, apiData }: any) => {
-      const err = error?.message ? JSON.parse(error.message) : error;
       const { title } = apiData;
-      if (err?.errors?.title) {
-        log(this.importConfig, `Extension '${title}' already exists`, 'info');
+      if (error?.errors?.title) {
+        if (this.importConfig.replaceExisting) {
+          this.existingExtensions.push(apiData);
+        }
+        if (!this.importConfig.skipExisting) {
+          log(this.importConfig, `Extension '${title}' already exists`, 'info');
+        }
       } else {
         this.extFailed.push(apiData);
         log(this.importConfig, `Extension '${title}' failed to be import ${formatError(error)}`, 'error');
@@ -96,7 +113,6 @@ export default class ImportExtensions extends BaseClass {
         apiContent,
         processName: 'import extensions',
         apiParams: {
-          serializeData: this.serializeExtensions.bind(this),
           reject: onReject.bind(this),
           resolve: onSuccess.bind(this),
           entity: 'create-extensions',
@@ -109,19 +125,88 @@ export default class ImportExtensions extends BaseClass {
     );
   }
 
-  /**
-   * @method serializeExtensions
-   * @param {ApiOptions} apiOptions ApiOptions
-   * @returns {ApiOptions} ApiOptions
-   */
-  serializeExtensions(apiOptions: ApiOptions): ApiOptions {
-    const { apiData: extension } = apiOptions;
-    if (this.extUidMapper.hasOwnProperty(extension.uid)) {
-      log(this.importConfig, `Extension '${extension.title}' already exists. Skipping it to avoid duplicates!`, 'info');
-      apiOptions.entity = undefined;
-    } else {
-      apiOptions.apiData = extension;
-    }
-    return apiOptions;
+  async replaceExtensions(): Promise<any> {
+    const onSuccess = ({ response, apiData: { uid, title } = { uid: null, title: '' } }: any) => {
+      this.extSuccess.push(response);
+      this.extUidMapper[uid] = response.uid;
+      log(this.importConfig, `Extension '${title}' replaced successfully`, 'success');
+      fsUtil.writeFile(this.extUidMapperPath, this.extUidMapper);
+    };
+
+    const onReject = ({ error, apiData }: any) => {
+      this.extFailed.push(apiData);
+      log(this.importConfig, `Extension '${apiData.title}' failed to replace ${formatError(error)}`, 'error');
+      log(this.importConfig, error, 'error');
+    };
+
+    await this.makeConcurrentCall(
+      {
+        apiContent: this.existingExtensions,
+        processName: 'Replace extensions',
+        apiParams: {
+          reject: onReject.bind(this),
+          resolve: onSuccess.bind(this),
+          entity: 'update-extensions',
+          includeParamOnCompletion: true,
+        },
+        concurrencyLimit: this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1,
+      },
+      this.replaceExtensionHandler.bind(this),
+    );
+  }
+
+  async replaceExtensionHandler({
+    apiParams,
+    element: extension,
+    isLastRequest,
+  }: {
+    apiParams: ApiOptions;
+    element: Record<string, string>;
+    isLastRequest: boolean;
+  }) {
+    return new Promise(async (resolve, reject) => {
+      const { items: [extensionsInStack] = [] }: any = await this.stack
+        .extension()
+        .query({ query: { title: extension.title } })
+        .findOne()
+        .catch((error) => {
+          apiParams.reject({
+            error,
+            apiData: extension,
+          });
+          reject(true);
+        });
+      if (extensionsInStack) {
+        const extensionPayload = this.stack.extension(extension.uid);
+        Object.assign(extensionPayload, extensionsInStack, cloneDeep(extension), {
+          uid: extensionsInStack.uid,
+          urlPath: extensionsInStack.urlPath,
+          _version: extensionsInStack._version,
+          stackHeaders: extensionsInStack.stackHeaders,
+        });
+        return extensionPayload
+          .update()
+          .then((response) => {
+            apiParams.resolve({
+              response,
+              apiData: extension,
+            });
+            resolve(true);
+          })
+          .catch((error) => {
+            apiParams.reject({
+              error,
+              apiData: extension,
+            });
+            reject(true);
+          });
+      } else {
+        apiParams.reject({
+          error: new Error(`Extension with title ${extension.title} not found in the stack`),
+          apiData: extension,
+        });
+        reject(true);
+      }
+    });
   }
 }
