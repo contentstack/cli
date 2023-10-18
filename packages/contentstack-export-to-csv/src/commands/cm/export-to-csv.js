@@ -278,7 +278,16 @@ class ExportToCsvCommand extends Command {
             // getTeams
             // getTeam
             // geStackRoleMapping
-            await util.exportOrgTeams(managementAPIClient, organization);
+            const allTeamsData = await util.exportOrgTeams(managementAPIClient, organization);
+            if(allTeamsData.teams.length===0){
+              this.log(`There are not teams in the organization named ${organization.name}`);
+            } else {
+              const fileName = `${util.kebabize(
+                (orgName ? orgName : organization.name).replace(config.organizationNameRegex, ''),
+              )}_teams_export.csv`;
+              util.write(this, allTeamsData.teams, fileName, 'organization Team details');
+            }
+            
           } catch (error) {
             if (error.message || error.errorMessage) {
               cliux.error(util.formatError(error));
