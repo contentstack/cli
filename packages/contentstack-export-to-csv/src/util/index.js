@@ -702,7 +702,7 @@ async function getAllTaxonomies(payload, skip = 0, taxonomies = []) {
   const { items, count } = await taxonomySDKHandler(payload, skip);
   if (items) {
     skip += payload.limit;
-    taxonomies = [...taxonomies, ...items];
+    taxonomies.push(...items);
     if (skip >= count) {
       return taxonomies;
     } else {
@@ -725,7 +725,7 @@ async function getAllTermsOfTaxonomy(payload, skip = 0, terms = []) {
   const { items, count } = await taxonomySDKHandler(payload, skip);
   if (items) {
     skip += payload.limit;
-    terms = [...terms, ...items];
+    terms.push(...items);
     if (skip >= count) {
       return terms;
     } else {
