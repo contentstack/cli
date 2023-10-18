@@ -1,14 +1,16 @@
-const errors = {};
+const errors = {
+  NOT_EMPTY: '{value} cannot be empty.',
+};
 
 const commonMsg = {
-  CONFIG: 'Path of the external config',
-  DATA_DIR: 'Path where the data is stored',
-  FIX_CONFIRMATION: 'Would you like to overwrite existing file.?',
+  CONFIG: 'Path of the external config.',
+  CURRENT_WORKING_DIR: 'Current working directory.',
+  DATA_DIR: 'Path where the data is stored.',
 };
 
 const auditMsg = {
-  REPORT_PATH: 'Path to store the audit reports',
-  MODULES: 'Provide the list of modules to be audited',
+  REPORT_PATH: 'Path to store the audit reports.',
+  MODULES: 'Provide the list of modules to be audited.',
   AUDIT_START_SPINNER: '{module} scanning...',
   PREPARING_ENTRY_METADATA: 'Creating entry metadata...',
   REFERENCE_ONLY: 'Checks only for missing references.',
@@ -17,22 +19,12 @@ const auditMsg = {
   FINAL_REPORT_PATH: "Reports ready. Please find the reports at '{path}'.",
   SCAN_CT_SUCCESS_MSG: "Successfully completed the scanning of {module} '{title}'.",
   SCAN_ENTRY_SUCCESS_MSG: "Successfully completed the scanning of {module} ({local}) '{title}'.",
-  AUDIT_CMD_DESCRIPTION: 'Perform audits and find possible errors in the exported Contentstack data',
 };
 
-const auditFixMsg = {
-  COPY_DATA: 'Create backup from the original data.',
-  BKP_PATH: 'Provide the path to backup the copied data',
-  FIXED_CONTENT_PATH_MAG: 'You can locate the fixed content at {path}.',
-  EMPTY_FIX_MSG: 'Successfully removed the empty field/block found at {path} from the schema.',
-  AUDIT_FIX_CMD_DESCRIPTION: 'Perform audits and fix possible errors in the exported Contentstack data.',
-};
-
-const messages: typeof errors & typeof commonMsg & typeof auditMsg & typeof auditFixMsg = {
+const messages: typeof errors & typeof commonMsg & typeof auditMsg = {
   ...errors,
   ...commonMsg,
   ...auditMsg,
-  ...auditFixMsg,
 };
 
 /**
@@ -55,4 +47,4 @@ function $t(msg: string, args: Record<string, string>): string {
 }
 
 export default messages;
-export { $t, errors, commonMsg, auditMsg, auditFixMsg };
+export { $t, errors, commonMsg, auditMsg };

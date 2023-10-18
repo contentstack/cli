@@ -94,7 +94,7 @@
     },
     "shortCommandName": {
       "cm:stacks:export": "EXPRT",
-      "cm:export": "O-EXPRT"
+      "cm:export": "EXPRT"
     }
   },
   "repository": "https://github.com/contentstack/cli"

@@ -92,7 +92,7 @@
     },
     "shortCommandName": {
       "cm:stacks:import": "IMPRT",
-      "cm:import": "O-IMPRT"
+      "cm:import": "IMPRT"
     }
   },
   "repository": "https://github.com/contentstack/cli"
