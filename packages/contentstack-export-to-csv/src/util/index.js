@@ -698,6 +698,7 @@ async function exportOrgTeams(managementAPIClient,org) {
     authtoken: configHandler.get('authtoken'),
     organization_uid: org.uid,
     'Content-Type': 'application/json',
+    api_version: 1.1
   }
   let teamsObject = []
   const maxLimit = 500 // Max teams per org
@@ -711,18 +712,18 @@ async function exportOrgTeams(managementAPIClient,org) {
   .then((roles) => {
     roles.items.forEach((item)=>{
       if(item.name==='member' || item.name==='admin'){
-        roleMap.name = item.uid
+        roleMap.name = item.uid;
       }
     })
   })
 
   // Limit of 500 was hard coded 
   while(limit!==500) {
-    const data = await apiRequestHandler(payload,{skip:skip,limit:limit});
+    const data = await apiRequestHandler(payload,{skip:skip,limit:limit,includeUserDetails:true});
     skip = limit;
     limit += 100;
-    if(data.length!==0){
-      data.forEach((t)=>{
+    if(data.teams.length!==0){
+      data.teams.forEach((t)=>{
         fieldToBeDeleted.forEach((fields)=>{
           delete t[fields]
         });
@@ -734,13 +735,14 @@ async function exportOrgTeams(managementAPIClient,org) {
         } else {
           t.organizationRole = 'admin';
         }
-        t.users = t.users.length;
+        t.Number_of_Members = t.users.length;
         teamsObject.push(t);
       })
     } else {
       break;
     }
   }
+  console.log(teamsObject)
   return teamsObject;
 }
 
