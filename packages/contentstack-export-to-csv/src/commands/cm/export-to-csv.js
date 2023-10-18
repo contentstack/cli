@@ -15,8 +15,8 @@ class ExportToCsvCommand extends Command {
     action: flags.string({
       required: false,
       multiple: false,
-      options: ['entries', 'users'],
-      description: `Option to export data (entries, users)`,
+      options: ['entries', 'users','teams'],
+      description: `Option to export data (entries, users,teams)`,
     }),
     alias: flags.string({
       char: 'a',
@@ -59,6 +59,12 @@ class ExportToCsvCommand extends Command {
       multiple: false,
       required: false,
     }),
+
+    "team-uid": flags.string({
+      description: 'Uid of the team whose user data and stack roles are required',
+      multiple: false,
+      required: false,
+    }),
   };
 
   async run() {
@@ -75,6 +81,7 @@ class ExportToCsvCommand extends Command {
           'content-type': contentTypesFlag,
           alias: managementTokenAlias,
           branch: branchUid,
+          "team-uid": teamUid
         },
       } = await this.parse(ExportToCsvCommand);
 
@@ -258,6 +265,63 @@ class ExportToCsvCommand extends Command {
           }
           break;
         }
+        case config.exportTeams:
+        case 'teams': {
+          try{
+            if (!isAuthenticated()) {
+              this.error(config.CLI_EXPORT_CSV_LOGIN_FAILED, {
+                exit: 2,
+                suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
+              });
+            }
+            let organization;
+
+            if (org) {
+              organization = { uid: org, name: orgName || org };
+            } else {
+              organization = await util.chooseOrganization(managementAPIClient, action); // prompt for organization
+            }
+            
+            // getTeams
+            // getTeam
+            // geStackRoleMapping
+            const allTeamsData = await util.exportOrgTeams(managementAPIClient, organization);
+            if(allTeamsData.teams.length===0){
+              this.log(`There are not teams in the organization named ${organization.name}`);
+            } else {
+              const fileName = `${util.kebabize(
+                (orgName ? orgName : organization.name).replace(config.organizationNameRegex, ''),
+              )}_teams_export.csv`;
+              util.write(this, allTeamsData.teams, fileName, 'organization Team details');
+
+              if(!teamUid) {
+                const userData = await util.getTeamDetails(allTeamsData.teams);
+                const fileName = `${util.kebabize(
+                  (orgName ? orgName : organization.name).replace(config.organizationNameRegex, ''),
+                )}_team_User_Details_export.csv`;
+                util.write(this, userData, fileName, 'Team User details');
+              } else {
+                const team = allTeamsData.teams.filter((team)=>team.uid===teamUid)[0]
+                team.users.forEach((user)=>{
+                  user['team-name'] = team.name;
+                  user['team-uid'] = team.uid;
+                  delete user['active'];
+                  delete user['orgInvitationStatus'];
+                })
+                const fileName = `${util.kebabize(
+                  (orgName ? orgName : organization.name).replace(config.organizationNameRegex, ''),
+                )}_team_${teamUid}_User_Details_export.csv`;
+                util.write(this, team.users, fileName, 'Team User details');
+              }
+            }
+            
+          } catch (error) {
+            if (error.message || error.errorMessage) {
+              cliux.error(util.formatError(error));
+            }
+          }
+        }
+        break;
       }
     } catch (error) {
       if (error.message || error.errorMessage) {
