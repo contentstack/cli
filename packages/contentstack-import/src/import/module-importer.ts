@@ -26,19 +26,21 @@ class ModuleImporter {
     // Temporarily adding this api call to verify management token has read and write permissions
     // TODO: CS-40354 - CLI | import rewrite | Migrate HTTP call to SDK call once fix is ready from SDK side
 
-    const httpClient = new HttpClient({
-      headers: { api_key: this.importConfig.apiKey, authorization: this.importConfig.management_token },
-    });
-
-    const { data } = await httpClient.post(`https://${this.importConfig.host}/v3/locales`, {
-      locale: {
-        name: 'English',
-        code: 'en-us',
-      },
-    });
-
-    if ([161, 105].includes(data.error_code)) {
-      throw new Error(data.error_code === 105 ? 'Sorry but you don\'t have access to this stack' : data.error_message);
+    if (this.importConfig.management_token) {
+      const httpClient = new HttpClient({
+        headers: { api_key: this.importConfig.apiKey, authorization: this.importConfig.management_token },
+      });
+  
+      const { data } = await httpClient.post(`https://${this.importConfig.host}/v3/locales`, {
+        locale: {
+          name: 'English',
+          code: 'en-us',
+        },
+      });
+  
+      if ([161, 105].includes(data.error_code)) {
+        throw new Error(data.error_code === 105 ? 'Sorry but you don\'t have access to this stack' : data.error_message);
+      }
     }
 
     if (!this.importConfig.master_locale) {
