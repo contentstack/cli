@@ -168,7 +168,7 @@ const config: DefaultConfig = {
     terms: {
       dirName: 'terms',
       fileName: 'terms.json',
-      invalidKeys: ['updated_at', 'created_by', 'updated_by'],
+      invalidKeys: ['updated_at', 'created_by', 'updated_by', 'stackHeaders', 'urlPath'],
     },
   },
   languagesCode: [
