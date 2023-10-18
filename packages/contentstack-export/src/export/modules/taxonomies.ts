@@ -66,17 +66,16 @@ export default class ExportTaxonomies extends BaseClass {
     if (skip) {
       this.qs.skip = skip;
     }
-    //TODO - replace count with find
     await this.stack
       .taxonomy()
       .query(this.qs)
-      .count()
+      .find()
       .then(async (data: any) => {
-        const { taxonomies, count } = data;
-        const taxonomiesCount = count !== undefined ? count : taxonomies?.length;
+        const { items, count } = data;
+        const taxonomiesCount = count !== undefined ? count : items?.length;
 
-        if (taxonomies?.length) {
-          this.sanitizeTaxonomiesAttribs(taxonomies);
+        if (items?.length) {
+          this.sanitizeTaxonomiesAttribs(items);
           skip += this.taxonomiesConfig.limit || 100;
           if (skip >= taxonomiesCount) {
             return;
