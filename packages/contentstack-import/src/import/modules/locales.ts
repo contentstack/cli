@@ -139,12 +139,11 @@ export default class ImportLocales extends BaseClass {
     const onReject = ({ error, apiData: { uid, code } = undefined }: any) => {
       if (error?.errorCode === 247) {
         log(this.importConfig, formatError(error), 'info');
-        this.failedLocales.push({ uid, code });
       } else {
         log(this.importConfig, `Language '${code}' failed to import`, 'error');
         log(this.importConfig, formatError(error), 'error');
-        this.failedLocales.push({ uid, code });
       }
+      this.failedLocales.push({ uid, code });
     };
     return await this.makeConcurrentCall({
       processName: 'Import locales',
