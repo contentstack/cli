@@ -8,7 +8,7 @@ const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 
 const config = require('./config.js');
-const { cliux, configHandler } = require('@contentstack/cli-utilities');
+const { cliux, configHandler, HttpClient } = require('@contentstack/cli-utilities');
 
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
@@ -678,6 +678,92 @@ function wait(time) {
   });
 }
 
+async function apiRequestHandler(payload, queryParam={}) {
+  const headers = payload.headers;
+  // console.log(headers);
+  return await new HttpClient().headers(headers).queryParams(queryParam).get(`${payload.url}/organizations/${payload.orgUid}/teams`).then((data)=>{
+    return data?.data
+  }).catch((error)=>{
+    console.log(error);
+    console.log(error.error_message);
+  })
+}
+
+async function exportOrgTeams(managementAPIClient,org) {
+  payload = {}
+  payload.url = configHandler.get('region').cma;
+  payload.orgUid = org.uid;
+  payload.headers = {
+    authtoken: configHandler.get('authtoken'),
+    organization_uid: org.uid,
+    'Content-Type': 'application/json',
+    api_version: 1.1
+  }
+  let teamsObject = [];
+  let userObject = [];
+  let stackRoleMapObject = [];
+  const maxLimit = 500 // Max teams per org
+  let skip = 0;
+  let limit = 100;
+  const fieldToBeDeleted = ["_id","createdAt", "createdBy","updatedAt","updatedBy","__v","createdByUserName", "updatedByUserName","organizationUid"]
+  let roleMap = {} // for org level there are two roles only admin and member
+
+  // SDK call to get the role uids
+  managementAPIClient.organization(org.uid).roles()
+  .then((roles) => {
+    roles.items.forEach((item)=>{
+      if(item.name==='member' || item.name==='admin'){
+        roleMap.name = item.uid;
+      }
+    })
+  })
+
+  // Limit of 500 was hard coded 
+  while(limit!==500) {
+    const data = await apiRequestHandler(payload,{skip:skip,limit:limit,includeUserDetails:true});
+    skip = limit;
+    limit += 100;
+    if(data.teams.length!==0){
+      data.teams.forEach((t)=>{
+        fieldToBeDeleted.forEach((fields)=>{
+          delete t[fields]
+        });
+        if(!t.hasOwnProperty('description')){
+          t.description = ''
+        }
+        if(t.organizationRole===roleMap['member']){
+          t.organizationRole = 'member';
+        } else {
+          t.organizationRole = 'admin';
+        }
+        t.Total_Members = t.users.length;
+        teamsObject.push(t);
+      })
+    } else {
+      return []
+    }
+  }
+  let teamsData ={};
+  teamsData['teams'] = teamsObject;
+  return teamsData;
+}
+
+async function getTeamDetails(teamsObject){
+  const allTeamUsers = [];
+  teamsObject.forEach((team)=>{
+    if(team.users.length){
+      team.users.forEach((user)=>{
+        user['team-name'] = team.name;
+        user['team-uid'] = team.uid;
+        delete user['active'];
+        delete user['orgInvitationStatus']
+        allTeamUsers.push(user);
+      })
+    }
+  })
+  return allTeamUsers;
+}
+ 
 module.exports = {
   chooseOrganization: chooseOrganization,
   chooseStack: chooseStack,
@@ -704,4 +790,6 @@ module.exports = {
   chooseInMemContentTypes: chooseInMemContentTypes,
   getEntriesCount: getEntriesCount,
   formatError: formatError,
+  exportOrgTeams: exportOrgTeams,
+  getTeamDetails: getTeamDetails
 };
