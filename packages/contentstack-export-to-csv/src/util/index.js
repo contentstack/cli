@@ -691,7 +691,6 @@ async function apiRequestHandler(payload, queryParam={}) {
 
 async function exportOrgTeams(managementAPIClient,org) {
   payload = {}
-  // console.log(configHandler.get('region'));
   payload.url = configHandler.get('region').cma;
   payload.orgUid = org.uid;
   payload.headers = {
@@ -700,11 +699,13 @@ async function exportOrgTeams(managementAPIClient,org) {
     'Content-Type': 'application/json',
     api_version: 1.1
   }
-  let teamsObject = []
+  let teamsObject = [];
+  let userObject = [];
+  let stackRoleMapObject = [];
   const maxLimit = 500 // Max teams per org
   let skip = 0;
   let limit = 100;
-  const fieldToBeDeleted = ["_id","createdAt", "createdBy","updatedAt","updatedBy","__v","createdByUserName", "updatedByUserName"]
+  const fieldToBeDeleted = ["_id","createdAt", "createdBy","updatedAt","updatedBy","__v","createdByUserName", "updatedByUserName","organizationUid"]
   let roleMap = {} // for org level there are two roles only admin and member
 
   // SDK call to get the role uids
@@ -735,20 +736,28 @@ async function exportOrgTeams(managementAPIClient,org) {
         } else {
           t.organizationRole = 'admin';
         }
-        t.Number_of_Members = t.users.length;
+        t.Total_Members = t.users.length;
+        userObject.push(t.users);
+        stackRoleMapObject.push(t.stackRoleMapping);
+        delete t['stackRoleMapping'];
+        delete t['users']
         teamsObject.push(t);
       })
     } else {
       break;
     }
   }
-  console.log(teamsObject)
-  return teamsObject;
+  let teamsData ={};
+  teamsData['teams'] = teamsObject;
+  teamsData['users'] = userObject;
+  teamsData['stackRoleMapping'] = stackRoleMapObject;
+  return teamsData;
 }
 
 function getTeamDetails(){
 
 }
+ 
 module.exports = {
   chooseOrganization: chooseOrganization,
   chooseStack: chooseStack,
