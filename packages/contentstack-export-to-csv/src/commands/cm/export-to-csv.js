@@ -15,8 +15,8 @@ class ExportToCsvCommand extends Command {
     action: flags.string({
       required: false,
       multiple: false,
-      options: ['entries', 'users','teams'],
-      description: `Option to export data (entries, users,teams)`,
+      options: ['entries', 'users', 'teams'],
+      description: `Option to export data (entries, users, teams)`,
     }),
     alias: flags.string({
       char: 'a',
@@ -282,39 +282,8 @@ class ExportToCsvCommand extends Command {
               organization = await util.chooseOrganization(managementAPIClient, action); // prompt for organization
             }
             
-            // getTeams
-            // getTeam
-            // geStackRoleMapping
-            const allTeamsData = await util.exportOrgTeams(managementAPIClient, organization);
-            if(allTeamsData.teams.length===0){
-              this.log(`There are not teams in the organization named ${organization.name}`);
-            } else {
-              const fileName = `${util.kebabize(
-                (orgName ? orgName : organization.name).replace(config.organizationNameRegex, ''),
-              )}_teams_export.csv`;
-              util.write(this, allTeamsData.teams, fileName, 'organization Team details');
+            await util.exportTeams(managementAPIClient,organization);
 
-              if(!teamUid) {
-                const userData = await util.getTeamDetails(allTeamsData.teams);
-                const fileName = `${util.kebabize(
-                  (orgName ? orgName : organization.name).replace(config.organizationNameRegex, ''),
-                )}_team_User_Details_export.csv`;
-                util.write(this, userData, fileName, 'Team User details');
-              } else {
-                const team = allTeamsData.teams.filter((team)=>team.uid===teamUid)[0]
-                team.users.forEach((user)=>{
-                  user['team-name'] = team.name;
-                  user['team-uid'] = team.uid;
-                  delete user['active'];
-                  delete user['orgInvitationStatus'];
-                })
-                const fileName = `${util.kebabize(
-                  (orgName ? orgName : organization.name).replace(config.organizationNameRegex, ''),
-                )}_team_${teamUid}_User_Details_export.csv`;
-                util.write(this, team.users, fileName, 'Team User details');
-              }
-            }
-            
           } catch (error) {
             if (error.message || error.errorMessage) {
               cliux.error(util.formatError(error));
@@ -374,6 +343,9 @@ ExportToCsvCommand.examples = [
   '',
   'Exporting organization users to csv with organization name provided',
   'csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>',
+  '',
+  'Exporting Organizations Teams to CSV',
+  'csdx cm:export-to-csv --action <teams> --org <org-uid>',
 ];
 
 module.exports = ExportToCsvCommand;
