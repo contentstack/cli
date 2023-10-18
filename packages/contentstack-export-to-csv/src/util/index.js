@@ -699,12 +699,11 @@ function wait(time) {
  */
 async function getAllTaxonomies(payload, skip = 0, taxonomies = []) {
   payload['type'] = 'taxonomies';
-  const response = await taxonomySDKHandler(payload, skip);
-  if (response) {
+  const { items, count } = await taxonomySDKHandler(payload, skip);
+  if (items) {
     skip += payload.limit;
-    //TODO - replace response.taxonomies with items
-    taxonomies = [...taxonomies, ...response.taxonomies];
-    if (skip >= response?.count) {
+    taxonomies.push(...items);
+    if (skip >= count) {
       return taxonomies;
     } else {
       return getAllTaxonomies(payload, skip, taxonomies);
@@ -726,7 +725,7 @@ async function getAllTermsOfTaxonomy(payload, skip = 0, terms = []) {
   const { items, count } = await taxonomySDKHandler(payload, skip);
   if (items) {
     skip += payload.limit;
-    terms = [...terms, ...items];
+    terms.push(...items);
     if (skip >= count) {
       return terms;
     } else {
@@ -765,11 +764,10 @@ async function taxonomySDKHandler(payload, skip) {
 
   switch (type) {
     case 'taxonomies':
-      //TODO - replace count with find
       return await stackAPIClient
         .taxonomy()
         .query(queryParams)
-        .count()
+        .find()
         .then((data) => data)
         .catch((err) => handleErrorMsg(err));
     case 'taxonomy':
@@ -824,6 +822,7 @@ function formatTermsOfTaxonomyData(terms, taxonomyUID) {
         UID: term.uid,
         Name: term.name,
         'Parent UID': term.parent_uid,
+        Depth: term.depth
       });
     });
     return formattedTerms;
