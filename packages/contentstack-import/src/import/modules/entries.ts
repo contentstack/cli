@@ -372,7 +372,7 @@ export default class EntriesImport extends BaseClass {
         entry = removeEntryRefsFromJSONRTE(entry, contentType.schema);
       }
       //will remove term if term doesn't exists in taxonomy
-      lookUpTerms(contentType?.schema, entry, this.taxonomies);
+      lookUpTerms(contentType?.schema, entry, this.taxonomies, this.importConfig);
       // will replace all old asset uid/urls with new ones
       entry = lookupAssets(
         {
