@@ -1,22 +1,24 @@
 import config from '../config';
 import { ConfigType, LogFn } from './utils';
 
+type ContentTypeSchemaType =
+  | ReferenceFieldDataType
+  | GlobalFieldDataType
+  | CustomFieldDataType
+  | JsonRTEFieldDataType
+  | GroupFieldDataType
+  | ModularBlocksDataType;
+
 type ContentTypeStruct = {
   uid: string;
   title: string;
   description: string;
-  schema?: (
-    | ReferenceFieldDataType
-    | GlobalFieldDataType
-    | CustomFieldDataType
-    | JsonRTEFieldDataType
-    | GroupFieldDataType
-    | ModularBlocksDataType
-  )[];
+  schema?: ContentTypeSchemaType[];
 };
 
 type ModuleConstructorParam = {
   log: LogFn;
+  fix?: boolean
   config: ConfigType;
   moduleName?: keyof typeof config.moduleConfig;
 };
@@ -42,6 +44,7 @@ type RefErrorReturnType = {
   ct_uid: string;
   treeStr: string;
   data_type: string;
+  fixStatus?: string
   missingRefs: string[];
   display_name: string;
   tree: Record<string, unknown>[];
@@ -54,12 +57,15 @@ type ReferenceFieldDataType = CommonDataTypeStruct & {
 
 // NOTE Type 2
 type GlobalFieldDataType = CommonDataTypeStruct & {
-  reference_to: string;
+  reference_to?: string;
   schema: GlobalFieldSchemaTypes[];
 };
 
 // NOTE Type 3
-type CustomFieldDataType = CommonDataTypeStruct & {};
+type CustomFieldDataType = CommonDataTypeStruct & {
+  reference_to: string[];
+  extension_uid: string;
+};
 
 // NOTE Type 4
 type JsonRTEFieldDataType = CommonDataTypeStruct & {
@@ -75,6 +81,7 @@ type GroupFieldDataType = CommonDataTypeStruct & {
 type ModularBlockType = {
   uid: string;
   title: string;
+  reference_to?: string;
   schema: (
     | JsonRTEFieldDataType
     | ModularBlocksDataType
@@ -100,7 +107,7 @@ enum OutputColumn {
   'Field name' = 'display_name',
   'Field type' = 'data_type',
   'Missing references' = 'missingRefs',
-  Path = 'treeStr',
+  Path = 'treeStr'
 }
 
 export {
@@ -117,4 +124,5 @@ export {
   ModularBlocksSchemaTypes,
   ModularBlockType,
   OutputColumn,
+  ContentTypeSchemaType,
 };
