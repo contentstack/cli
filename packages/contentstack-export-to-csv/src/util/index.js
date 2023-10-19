@@ -708,11 +708,12 @@ async function apiRequestHandler(org, queryParam = {}) {
     .get(`${configHandler.get('region')?.cma}/organizations/${org.uid}/teams`)
     .then((res) => {
       const { status, data } = res;
-      if (data.hasOwnProperty('error_code')) {
-        cliux.print(`${data.error_message}`, { color: 'red' });
+      if(status===200) {
+        return data;
+      } else {
+        cliux.print(`${data.error_message || data.message || data.errorMessage}`, { color: 'red' });
         process.exit(1);
       }
-      return data;
     })
     .catch((error) => {
       handleErrorMsg(error);
@@ -806,23 +807,31 @@ async function exportTeams(managementAPIClient, organization, teamUid) {
 
 async function getTeamsDetail(allTeamsData, organization ,teamUid) {
   if (!teamUid) {
+
     const userData = await getTeamsUserDetails(allTeamsData);
     const fileName = `${kebabize(
       organization.name.replace(config.organizationNameRegex, ''),
     )}_team_User_Details_export.csv`;
+
     write(this, userData, fileName, 'Team User details');
+  
   } else {
+
     const team = allTeamsData.filter((team) => team.uid === teamUid)[0];
+    
     team.users.forEach((user) => {
       user['team-name'] = team.name;
       user['team-uid'] = team.uid;
       delete user['active'];
       delete user['orgInvitationStatus'];
     });
+
     const fileName = `${kebabize(
       organization.name.replace(config.organizationNameRegex, ''),
     )}_team_${teamUid}_User_Details_export.csv`;
+    
     write(this, team.users, fileName, 'Team User details');
+  
   }
 }
 
