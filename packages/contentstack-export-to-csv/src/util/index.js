@@ -701,17 +701,17 @@ async function apiRequestHandler(org, queryParam = {}) {
     'Content-Type': 'application/json',
     api_version: 1.1,
   };
-  
+
   return await new HttpClient()
     .headers(headers)
     .queryParams(queryParam)
     .get(`${configHandler.get('region')?.cma}/organizations/${org.uid}/teams`)
     .then((res) => {
-      const {status, data} = res;
-      if(data.hasOwnProperty('error_code')) {
-        cliux.print(`${data.error_message}`,{color:'red'});
+      const { status, data } = res;
+      if (data.hasOwnProperty('error_code')) {
+        cliux.print(`${data.error_message}`, { color: 'red' });
         process.exit(1);
-      } 
+      }
       return data;
     })
     .catch((error) => {
@@ -724,12 +724,12 @@ async function exportOrgTeams(managementAPIClient, org) {
   let skip = 0;
   let limit = config.limit || 100;
   do {
-    const data = await apiRequestHandler(org,{ skip: skip, limit: limit, includeUserDetails: true });
+    const data = await apiRequestHandler(org, { skip: skip, limit: limit, includeUserDetails: true });
     skip += limit;
-    teamsObjectArray = [...teamsObjectArray,...data?.teams]
-    if(skip>data?.count) break;
+    teamsObjectArray = [...teamsObjectArray, ...data?.teams];
+    if (skip > data?.count) break;
   } while (1);
-  teamsObjectArray = await cleanTeamsData(teamsObjectArray,managementAPIClient,org);
+  teamsObjectArray = await cleanTeamsData(teamsObjectArray, managementAPIClient, org);
   return teamsObjectArray;
 }
 
@@ -747,14 +747,14 @@ async function getOrgRoles(managementAPIClient, org) {
         }
       });
     })
-    .catch((err)=>{
+    .catch((err) => {
       handleErrorMsg(err);
-    })
-    return roleMap;
+    });
+  return roleMap;
 }
 
-async function cleanTeamsData(data,managementAPIClient,org) {
-  const roleMap = await getOrgRoles(managementAPIClient,org)
+async function cleanTeamsData(data, managementAPIClient, org) {
+  const roleMap = await getOrgRoles(managementAPIClient, org);
   const fieldToBeDeleted = [
     '_id',
     'createdAt',
@@ -784,58 +784,61 @@ async function cleanTeamsData(data,managementAPIClient,org) {
   } else {
     cliux.print(`info: There are no teams in the given org`);
   }
-  return data
+  return data;
 }
 
-async function exportTeams(managementAPIClient, organization,teamUid) {
+async function exportTeams(managementAPIClient, organization, teamUid) {
   const allTeamsData = await exportOrgTeams(managementAPIClient, organization);
   if (allTeamsData.length === 0) {
     this.log(`There are not teams in the organization named ${organization?.name}`);
   } else {
     const modifiedTeam = _.cloneDeep(allTeamsData);
-    modifiedTeam.forEach((team)=>{
-      delete team['users']
-      delete team['stackRoleMapping']
-    })
-    const fileName = `${kebabize(
-      (organization.name).replace(config.organizationNameRegex, ''),
-    )}_teams_export.csv`;
+    modifiedTeam.forEach((team) => {
+      delete team['users'];
+      delete team['stackRoleMapping'];
+    });
+    const fileName = `${kebabize(organization.name.replace(config.organizationNameRegex, ''))}_teams_export.csv`;
     write(this, modifiedTeam, fileName, 'organization Team details');
-    if(!teamUid) {
-      const userData = await getTeamDetails(allTeamsData);
-      const fileName = `${kebabize(
-        (organization.name).replace(config.organizationNameRegex, ''),
-      )}_team_User_Details_export.csv`;
-      write(this, userData, fileName, 'Team User details');
-    } else {
-      const team = allTeamsData.filter((team)=>team.uid===teamUid)[0]
-      team.users.forEach((user)=>{
+    // exporting teams user data or a single team user data
+    await getTeamsDetail(allTeamsData,organization,teamUid);
+  }
+}
+
+async function getTeamsDetail(allTeamsData, organization ,teamUid) {
+  if (!teamUid) {
+    const userData = await getTeamsUserDetails(allTeamsData);
+    const fileName = `${kebabize(
+      organization.name.replace(config.organizationNameRegex, ''),
+    )}_team_User_Details_export.csv`;
+    write(this, userData, fileName, 'Team User details');
+  } else {
+    const team = allTeamsData.filter((team) => team.uid === teamUid)[0];
+    team.users.forEach((user) => {
+      user['team-name'] = team.name;
+      user['team-uid'] = team.uid;
+      delete user['active'];
+      delete user['orgInvitationStatus'];
+    });
+    const fileName = `${kebabize(
+      organization.name.replace(config.organizationNameRegex, ''),
+    )}_team_${teamUid}_User_Details_export.csv`;
+    write(this, team.users, fileName, 'Team User details');
+  }
+}
+
+async function getTeamsUserDetails(teamsObject) {
+  const allTeamUsers = [];
+  teamsObject.forEach((team) => {
+    if (team.users.length) {
+      team.users.forEach((user) => {
         user['team-name'] = team.name;
         user['team-uid'] = team.uid;
         delete user['active'];
         delete user['orgInvitationStatus'];
-      })
-      const fileName = `${kebabize(
-        (organization.name).replace(config.organizationNameRegex, ''),
-      )}_team_${teamUid}_User_Details_export.csv`;
-      write(this, team.users, fileName, 'Team User details');
-    }
-  }
-}
-
-async function getTeamDetails(teamsObject) {
-  const allTeamUsers = [];
-  teamsObject.forEach((team)=>{
-    if(team.users.length){
-      team.users.forEach((user)=>{
-        user['team-name'] = team.name;
-        user['team-uid'] = team.uid;
-        delete user['active'];
-        delete user['orgInvitationStatus']
         allTeamUsers.push(user);
-      })
+      });
     }
-  })
+  });
   return allTeamUsers;
 }
 
