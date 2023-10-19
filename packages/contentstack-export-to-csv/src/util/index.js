@@ -8,7 +8,7 @@ const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 const config = require('./config.js');
 const { cliux, configHandler, HttpClient } = require('@contentstack/cli-utilities');
-
+const _ = require('lodash');
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
 
@@ -722,7 +722,7 @@ async function apiRequestHandler(org, queryParam = {}) {
 async function exportOrgTeams(managementAPIClient, org) {
   let teamsObjectArray = [];
   let skip = 0;
-  let limit = 100;
+  let limit = config.limit || 100;
   do {
     const data = await apiRequestHandler(org,{ skip: skip, limit: limit, includeUserDetails: true });
     skip += limit;
@@ -746,8 +746,10 @@ async function getOrgRoles(managementAPIClient, org) {
           roleMap.name = item.uid;
         }
       });
-    });
-
+    })
+    .catch((err)=>{
+      handleErrorMsg(err);
+    })
     return roleMap;
 }
 
@@ -764,7 +766,7 @@ async function cleanTeamsData(data,managementAPIClient,org) {
     'updatedByUserName',
     'organizationUid',
   ];
-  if (data.length !== 0) {
+  if (data?.length !== 0) {
     data.forEach((team) => {
       fieldToBeDeleted.forEach((fields) => {
         delete team[fields];
@@ -777,23 +779,20 @@ async function cleanTeamsData(data,managementAPIClient,org) {
       } else {
         team.organizationRole = 'admin';
       }
-      team.Total_Members = team.users.length;
+      team.Total_Members = team?.users?.length || 0;
     });
   } else {
-    cliux.print(`There are no teams in the given org`);
+    cliux.print(`info: There are no teams in the given org`);
   }
   return data
 }
 
-async function exportTeams(managementAPIClient, organization) {
+async function exportTeams(managementAPIClient, organization,teamUid) {
   const allTeamsData = await exportOrgTeams(managementAPIClient, organization);
   if (allTeamsData.length === 0) {
     this.log(`There are not teams in the organization named ${organization?.name}`);
   } else {
-    const modifiedTeam = [];
-    allTeamsData.forEach((team)=>{
-      modifiedTeam.push(Object.assign({}, team));
-    })
+    const modifiedTeam = _.cloneDeep(allTeamsData);
     modifiedTeam.forEach((team)=>{
       delete team['users']
       delete team['stackRoleMapping']
@@ -802,10 +801,43 @@ async function exportTeams(managementAPIClient, organization) {
       (organization.name).replace(config.organizationNameRegex, ''),
     )}_teams_export.csv`;
     write(this, modifiedTeam, fileName, 'organization Team details');
+    if(!teamUid) {
+      const userData = await getTeamDetails(allTeamsData);
+      const fileName = `${kebabize(
+        (organization.name).replace(config.organizationNameRegex, ''),
+      )}_team_User_Details_export.csv`;
+      write(this, userData, fileName, 'Team User details');
+    } else {
+      const team = allTeamsData.filter((team)=>team.uid===teamUid)[0]
+      team.users.forEach((user)=>{
+        user['team-name'] = team.name;
+        user['team-uid'] = team.uid;
+        delete user['active'];
+        delete user['orgInvitationStatus'];
+      })
+      const fileName = `${kebabize(
+        (organization.name).replace(config.organizationNameRegex, ''),
+      )}_team_${teamUid}_User_Details_export.csv`;
+      write(this, team.users, fileName, 'Team User details');
+    }
   }
 }
 
-function getTeamDetails() {}
+async function getTeamDetails(teamsObject) {
+  const allTeamUsers = [];
+  teamsObject.forEach((team)=>{
+    if(team.users.length){
+      team.users.forEach((user)=>{
+        user['team-name'] = team.name;
+        user['team-uid'] = team.uid;
+        delete user['active'];
+        delete user['orgInvitationStatus']
+        allTeamUsers.push(user);
+      })
+    }
+  })
+  return allTeamUsers;
+}
 
 module.exports = {
   chooseOrganization: chooseOrganization,
