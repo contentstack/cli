@@ -7,5 +7,5 @@ module.exports = {
   organizationNameRegex: /\'/,
   CLI_EXPORT_CSV_LOGIN_FAILED: "You need to login to execute this command. See: auth:login --help",
   CLI_EXPORT_CSV_ENTRIES_ERROR: "You need to either login or provide a management token to execute this command",
-  CLI_EXPORT_CSV_API_FAILED: 'Something went wrong. Please try again'
+  CLI_EXPORT_CSV_API_FAILED: 'Something went wrong. Please try again!'
 };
