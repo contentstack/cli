@@ -8,9 +8,9 @@ import {
   FlagInput,
   ContentstackClient,
 } from '@contentstack/cli-utilities';
+import { ImportConfig } from '../../../types';
 import { ModuleImporter } from '../../../import';
 import { setupImportConfig, formatError, log } from '../../../utils';
-import { ImportConfig } from '../../../types';
 
 export default class ImportCommand extends Command {
   static description = messageHandler.parse('Import content from a stack');
@@ -66,6 +66,7 @@ export default class ImportCommand extends Command {
       parse: printFlagDeprecation(['-A', '--auth-token']),
     }),
     module: flags.string({
+      required: false,
       char: 'm',
       description: '[optional] specific module name',
       parse: printFlagDeprecation(['-m'], ['--module']),
@@ -91,6 +92,16 @@ export default class ImportCommand extends Command {
       required: false,
       description: '[optional] Override marketplace prompts',
     }),
+    'replace-existing': flags.boolean({
+      required: false,
+      description: 'Replaces the existing module in the target stack.',
+      dependsOn: ['module'],
+    }),
+    'skip-existing': flags.boolean({
+      required: false,
+      default: false,
+      description: 'Skips the module exists warning messages.',
+    }),
   };
 
   static aliases: string[] = ['cm:import'];
@@ -102,20 +113,22 @@ export default class ImportCommand extends Command {
     // setup import config
     // initialize the importer
     // start import
-    let contentDir: string;
     let backupDir: string;
     try {
       const { flags } = await this.parse(ImportCommand);
       let importConfig = await setupImportConfig(flags);
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
-      contentDir = importConfig.contentDir;
       backupDir = importConfig.backupDir;
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       await moduleImporter.start();
       log(importConfig, `The content has been imported to the stack ${importConfig.apiKey} successfully!`, 'success');
-      log(importConfig, `The log has been stored at '${path.join(importConfig.backupDir, 'logs', 'import')}'`, 'success');
+      log(
+        importConfig,
+        `The log has been stored at '${path.join(importConfig.backupDir, 'logs', 'import')}'`,
+        'success',
+      );
     } catch (error) {
       log({ data: backupDir } as ImportConfig, `Failed to import stack content - ${formatError(error)}`, 'error');
       log(
