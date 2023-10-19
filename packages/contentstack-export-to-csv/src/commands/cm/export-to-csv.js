@@ -59,6 +59,11 @@ class ExportToCsvCommand extends Command {
       multiple: false,
       required: false,
     }),
+    "team-uid": flags.string({
+      description: 'Uid of the team whose user data and stack roles are required',
+      multiple: false,
+      required: false,
+    })
   };
 
   async run() {
@@ -75,6 +80,7 @@ class ExportToCsvCommand extends Command {
           'content-type': contentTypesFlag,
           alias: managementTokenAlias,
           branch: branchUid,
+          "team-uid": teamUid
         },
       } = await this.parse(ExportToCsvCommand);
 
@@ -275,7 +281,7 @@ class ExportToCsvCommand extends Command {
               organization = await util.chooseOrganization(managementAPIClient, action); // prompt for organization
             }
             
-            await util.exportTeams(managementAPIClient,organization);
+            await util.exportTeams(managementAPIClient,organization,teamUid);
 
           } catch (error) {
             if (error.message || error.errorMessage) {
