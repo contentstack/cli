@@ -11,21 +11,21 @@ importers:
   packages/contentstack:
     specifiers:
       '@contentstack/cli-audit': ~1.2.0
-      '@contentstack/cli-auth': ~1.3.14
-      '@contentstack/cli-cm-bootstrap': ~1.5.1
-      '@contentstack/cli-cm-branches': ~1.0.14
-      '@contentstack/cli-cm-bulk-publish': ~1.3.12
-      '@contentstack/cli-cm-clone': ~1.5.1
+      '@contentstack/cli-auth': ~1.3.15
+      '@contentstack/cli-cm-bootstrap': ~1.6.0
+      '@contentstack/cli-cm-branches': ~1.0.15
+      '@contentstack/cli-cm-bulk-publish': ~1.3.13
+      '@contentstack/cli-cm-clone': ~1.6.0
       '@contentstack/cli-cm-export': ~1.9.2
-      '@contentstack/cli-cm-export-to-csv': ~1.4.3
-      '@contentstack/cli-cm-import': ~1.9.2
-      '@contentstack/cli-cm-migrate-rte': ~1.4.12
-      '@contentstack/cli-cm-seed': ~1.5.1
-      '@contentstack/cli-command': ~1.2.13
-      '@contentstack/cli-config': ~1.4.12
-      '@contentstack/cli-launch': ~1.0.12
-      '@contentstack/cli-migration': ~1.3.13
-      '@contentstack/cli-utilities': ~1.5.3
+      '@contentstack/cli-cm-export-to-csv': ~1.4.4
+      '@contentstack/cli-cm-import': ~1.10.0
+      '@contentstack/cli-cm-migrate-rte': ~1.4.13
+      '@contentstack/cli-cm-seed': ~1.6.0
+      '@contentstack/cli-command': ~1.2.14
+      '@contentstack/cli-config': ~1.4.13
+      '@contentstack/cli-launch': ~1.0.13
+      '@contentstack/cli-migration': ~1.3.14
+      '@contentstack/cli-utilities': ~1.5.4
       '@contentstack/management': ~1.12.0
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5
@@ -121,8 +121,8 @@ importers:
 
   packages/contentstack-audit:
     specifiers:
-      '@contentstack/cli-command': ~1.2.11
-      '@contentstack/cli-utilities': ~1.5.1
+      '@contentstack/cli-command': ~1.2.14
+      '@contentstack/cli-utilities': ~1.5.4
       '@oclif/plugin-help': ^5
       '@oclif/plugin-plugins': ^3.8.4
       '@oclif/test': ^2.0.3
@@ -179,7 +179,7 @@ importers:
   packages/contentstack-auth:
     specifiers:
       '@contentstack/cli-command': ~1.2.13
-      '@contentstack/cli-utilities': ~1.5.3
+      '@contentstack/cli-utilities': ~1.5.4
       '@fancy-test/nock': ^0.1.1
       '@oclif/plugin-help': ^5.1.19
       '@oclif/test': ^2.2.10
@@ -241,9 +241,9 @@ importers:
 
   packages/contentstack-bootstrap:
     specifiers:
-      '@contentstack/cli-cm-seed': ~1.5.0
-      '@contentstack/cli-command': ~1.2.13
-      '@contentstack/cli-utilities': ~1.5.3
+      '@contentstack/cli-cm-seed': ~1.6.0
+      '@contentstack/cli-command': ~1.2.14
+      '@contentstack/cli-utilities': ~1.5.4
       '@oclif/test': ^2.2.10
       '@types/inquirer': ^9.0.3
       '@types/mkdirp': ^1.0.1
@@ -371,8 +371,8 @@ importers:
 
   packages/contentstack-bulk-publish:
     specifiers:
-      '@contentstack/cli-command': ~1.2.13
-      '@contentstack/cli-utilities': ~1.5.3
+      '@contentstack/cli-command': ~1.2.14
+      '@contentstack/cli-utilities': ~1.5.4
       '@oclif/test': ^1.2.6
       bluebird: ^3.7.2
       chai: ^4.2.0
@@ -416,9 +416,9 @@ importers:
     specifiers:
       '@colors/colors': ^1.5.0
       '@contentstack/cli-cm-export': ~1.9.0
-      '@contentstack/cli-cm-import': ~1.9.0
-      '@contentstack/cli-command': ~1.2.13
-      '@contentstack/cli-utilities': ~1.5.3
+      '@contentstack/cli-cm-import': ~1.10.0
+      '@contentstack/cli-command': ~1.2.14
+      '@contentstack/cli-utilities': ~1.5.4
       '@oclif/test': ^1.2.7
       async: ^3.2.4
       chai: ^4.2.0
@@ -467,7 +467,7 @@ importers:
 
   packages/contentstack-command:
     specifiers:
-      '@contentstack/cli-utilities': ~1.5.3
+      '@contentstack/cli-utilities': ~1.5.4
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.2.18
       '@types/mkdirp': ^1.0.1
@@ -508,8 +508,8 @@ importers:
 
   packages/contentstack-config:
     specifiers:
-      '@contentstack/cli-command': ~1.2.13
-      '@contentstack/cli-utilities': ~1.5.3
+      '@contentstack/cli-command': ~1.2.14
+      '@contentstack/cli-utilities': ~1.5.4
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.2.18
       '@types/inquirer': ^9.0.3
@@ -593,10 +593,10 @@ importers:
   packages/contentstack-export:
     specifiers:
       '@contentstack/cli-auth': ~1.3.14
-      '@contentstack/cli-command': ~1.2.13
+      '@contentstack/cli-command': ~1.2.14
       '@contentstack/cli-config': ~1.4.11
       '@contentstack/cli-dev-dependencies': ~1.2.3
-      '@contentstack/cli-utilities': ~1.5.3
+      '@contentstack/cli-utilities': ~1.5.4
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5.1.19
       '@oclif/test': ^1.2.6
@@ -673,8 +673,8 @@ importers:
 
   packages/contentstack-export-to-csv:
     specifiers:
-      '@contentstack/cli-command': ~1.2.13
-      '@contentstack/cli-utilities': ~1.5.3
+      '@contentstack/cli-command': ~1.2.14
+      '@contentstack/cli-utilities': ~1.5.4
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.3.6
       '@types/mocha': ^10.0.1
@@ -716,8 +716,8 @@ importers:
 
   packages/contentstack-import:
     specifiers:
-      '@contentstack/cli-command': ~1.2.13
-      '@contentstack/cli-utilities': ~1.5.3
+      '@contentstack/cli-command': ~1.2.14
+      '@contentstack/cli-utilities': ~1.5.4
       '@contentstack/management': ~1.12.0
       '@oclif/core': ^2.9.3
       '@oclif/test': ^1.2.6
@@ -800,8 +800,8 @@ importers:
   packages/contentstack-launch:
     specifiers:
       '@apollo/client': ^3.7.9
-      '@contentstack/cli-command': ~1.2.13
-      '@contentstack/cli-utilities': ~1.5.3
+      '@contentstack/cli-command': ~1.2.14
+      '@contentstack/cli-utilities': ~1.5.4
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5
       '@oclif/plugin-plugins': ^3.3.0
@@ -828,7 +828,7 @@ importers:
       graphql: ^16.8.1
       ini: ^3.0.1
       lodash: ^4.17.21
-      oclif: ^3
+      oclif: ^3.11.3
       open: ^8.4.2
       shx: ^0.3.3
       ts-node: ^10.9.1
@@ -868,7 +868,7 @@ importers:
       eslint: 7.32.0
       eslint-config-oclif: 4.0.0_eslint@7.32.0
       eslint-config-oclif-typescript: 1.0.3_jofidmxrjzhj7l6vknpw5ecvfe
-      oclif: 3.9.1_npeoqfxwgl5njwqojmpesqhar4
+      oclif: 3.17.1_npeoqfxwgl5njwqojmpesqhar4
       shx: 0.3.4
       ts-node: 10.9.1_npeoqfxwgl5njwqojmpesqhar4
       tslib: 2.6.0
@@ -876,8 +876,8 @@ importers:
 
   packages/contentstack-migrate-rte:
     specifiers:
-      '@contentstack/cli-command': ~1.2.13
-      '@contentstack/cli-utilities': ~1.5.3
+      '@contentstack/cli-command': ~1.2.14
+      '@contentstack/cli-utilities': ~1.5.4
       '@contentstack/json-rte-serializer': ~2.0.2
       '@oclif/test': ^2.2.10
       chai: ^4.3.4
@@ -892,7 +892,7 @@ importers:
       mocha: ^10.0.0
       nock: ^13.1.0
       nyc: ^15.1.0
-      oclif: ^3.8.1
+      oclif: ^3.11.3
       omit-deep-lodash: ^1.1.5
       sinon: ^15.0.1
       tslib: ^1.13.0
@@ -918,13 +918,13 @@ importers:
       globby: 10.0.2
       mocha: 10.1.0
       nyc: 15.1.0
-      oclif: 3.9.1
+      oclif: 3.17.1
       tslib: 1.14.1
 
   packages/contentstack-migration:
     specifiers:
-      '@contentstack/cli-command': ~1.2.13
-      '@contentstack/cli-utilities': ~1.5.3
+      '@contentstack/cli-command': ~1.2.14
+      '@contentstack/cli-utilities': ~1.5.4
       '@oclif/test': ^2.2.10
       async: ^3.2.4
       callsites: ^3.1.0
@@ -942,7 +942,7 @@ importers:
       mkdirp: ^1.0.4
       nock: ^13.1.1
       nyc: ^15.1.0
-      oclif: ^3.8.1
+      oclif: ^3.11.3
       winston: ^3.7.2
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
@@ -966,13 +966,13 @@ importers:
       mkdirp: 1.0.4
       nock: 13.3.2
       nyc: 15.1.0
-      oclif: 3.9.1
+      oclif: 3.17.1
 
   packages/contentstack-seed:
     specifiers:
-      '@contentstack/cli-cm-import': ~1.9.0
-      '@contentstack/cli-command': ~1.2.13
-      '@contentstack/cli-utilities': ~1.5.3
+      '@contentstack/cli-cm-import': ~1.10.0
+      '@contentstack/cli-command': ~1.2.14
+      '@contentstack/cli-utilities': ~1.5.4
       '@oclif/plugin-help': ^5.1.19
       '@types/inquirer': ^9.0.3
       '@types/jest': ^26.0.15
@@ -2740,12 +2740,25 @@ packages:
       - '@swc/wasm'
       - '@types/node'
       - typescript
+    dev: false
 
   /@oclif/plugin-help/5.2.14_typescript@4.9.5:
     resolution: {integrity: sha512-7hMLc6zqxeRfG4nvHHQPpbaBj60efM3ULFkCpHZkdLms/ezIkNo40F661QuraIjMP/NN+U6VSfBCGuPkRyxVkA==}
     engines: {node: '>=12.0.0'}
     dependencies:
       '@oclif/core': 2.15.0_typescript@4.9.5
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - typescript
+    dev: true
+
+  /@oclif/plugin-help/5.2.20:
+    resolution: {integrity: sha512-u+GXX/KAGL9S10LxAwNUaWdzbEBARJ92ogmM7g3gDVud2HioCmvWQCDohNRVZ9GYV9oKwZ/M8xwd6a1d95rEKQ==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@oclif/core': 2.15.0
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -2763,6 +2776,18 @@ packages:
       - '@swc/wasm'
       - '@types/node'
       - typescript
+
+  /@oclif/plugin-help/5.2.20_npeoqfxwgl5njwqojmpesqhar4:
+    resolution: {integrity: sha512-u+GXX/KAGL9S10LxAwNUaWdzbEBARJ92ogmM7g3gDVud2HioCmvWQCDohNRVZ9GYV9oKwZ/M8xwd6a1d95rEKQ==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@oclif/core': 2.15.0_npeoqfxwgl5njwqojmpesqhar4
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - typescript
+    dev: true
 
   /@oclif/plugin-not-found/2.4.0:
     resolution: {integrity: sha512-EOoesBEgyj4TMdHUpnCqN7qqH0f1NHh7buTdWfhwlSjbfrL9rAuodiART5/zgtsj5b8uao3aXdcx1gPxWOogEw==}
@@ -10261,6 +10286,41 @@ packages:
     resolution: {integrity: sha512-EFVjAYfzWqWsBMRHPMAXLCDIJnpMhdWAqR7xG6M6a2cs6PMFpl/+Z20w9zDW4vkxOFfddegBKq9Rehd0bxWE7A==}
     engines: {node: '>= 10'}
 
+  /oclif/3.17.1:
+    resolution: {integrity: sha512-qwop0W9s5nJJ9tTdLsYXxxvGSNc9xKjXccEAGCXM+x8NmGtZ4P89FwqDY4PIG7IeV9VNpYhZKQArpZNwPGn0CQ==}
+    engines: {node: '>=12.0.0'}
+    hasBin: true
+    dependencies:
+      '@oclif/core': 2.15.0
+      '@oclif/plugin-help': 5.2.20
+      '@oclif/plugin-not-found': 2.4.0
+      '@oclif/plugin-warn-if-update-available': 2.0.44
+      async-retry: 1.3.3
+      aws-sdk: 2.1418.0
+      concurrently: 7.6.0
+      debug: 4.3.4
+      find-yarn-workspace-root: 2.0.0
+      fs-extra: 8.1.0
+      github-slugger: 1.5.0
+      got: 11.8.6
+      lodash: 4.17.21
+      normalize-package-data: 3.0.3
+      semver: 7.5.4
+      shelljs: 0.8.5
+      tslib: 2.6.2
+      yeoman-environment: 3.19.3
+      yeoman-generator: 5.9.0_yeoman-environment@3.19.3
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - bluebird
+      - encoding
+      - mem-fs
+      - supports-color
+      - typescript
+    dev: true
+
   /oclif/3.17.1_eyayto62fyd4eo5o5fvolpu7d4:
     resolution: {integrity: sha512-qwop0W9s5nJJ9tTdLsYXxxvGSNc9xKjXccEAGCXM+x8NmGtZ4P89FwqDY4PIG7IeV9VNpYhZKQArpZNwPGn0CQ==}
     engines: {node: '>=12.0.0'}
@@ -10270,6 +10330,41 @@ packages:
       '@oclif/plugin-help': 5.2.20_eyayto62fyd4eo5o5fvolpu7d4
       '@oclif/plugin-not-found': 2.4.0_eyayto62fyd4eo5o5fvolpu7d4
       '@oclif/plugin-warn-if-update-available': 2.0.44_eyayto62fyd4eo5o5fvolpu7d4
+      async-retry: 1.3.3
+      aws-sdk: 2.1418.0
+      concurrently: 7.6.0
+      debug: 4.3.4
+      find-yarn-workspace-root: 2.0.0
+      fs-extra: 8.1.0
+      github-slugger: 1.5.0
+      got: 11.8.6
+      lodash: 4.17.21
+      normalize-package-data: 3.0.3
+      semver: 7.5.4
+      shelljs: 0.8.5
+      tslib: 2.6.2
+      yeoman-environment: 3.19.3
+      yeoman-generator: 5.9.0_yeoman-environment@3.19.3
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - bluebird
+      - encoding
+      - mem-fs
+      - supports-color
+      - typescript
+    dev: true
+
+  /oclif/3.17.1_npeoqfxwgl5njwqojmpesqhar4:
+    resolution: {integrity: sha512-qwop0W9s5nJJ9tTdLsYXxxvGSNc9xKjXccEAGCXM+x8NmGtZ4P89FwqDY4PIG7IeV9VNpYhZKQArpZNwPGn0CQ==}
+    engines: {node: '>=12.0.0'}
+    hasBin: true
+    dependencies:
+      '@oclif/core': 2.15.0_npeoqfxwgl5njwqojmpesqhar4
+      '@oclif/plugin-help': 5.2.20_npeoqfxwgl5njwqojmpesqhar4
+      '@oclif/plugin-not-found': 2.4.0_npeoqfxwgl5njwqojmpesqhar4
+      '@oclif/plugin-warn-if-update-available': 2.0.44_npeoqfxwgl5njwqojmpesqhar4
       async-retry: 1.3.3
       aws-sdk: 2.1418.0
       concurrently: 7.6.0
@@ -10424,41 +10519,6 @@ packages:
       tslib: 2.6.0
       yeoman-environment: 3.19.3_bluebird@3.7.2
       yeoman-generator: 5.9.0_nqs3lknjmcjhmksixfhcryndrq
-      yosay: 2.0.2
-    transitivePeerDependencies:
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/node'
-      - bluebird
-      - encoding
-      - mem-fs
-      - supports-color
-      - typescript
-    dev: true
-
-  /oclif/3.9.1_npeoqfxwgl5njwqojmpesqhar4:
-    resolution: {integrity: sha512-gJ8gJrohFY8qEeVBOw7wgAFdwPt2CTTkEFXDTkfUeXap6URIy6ngP7g/E1A2zFt2I0wH/qQHwcfuTpfBbj1+Uw==}
-    engines: {node: '>=12.0.0'}
-    hasBin: true
-    dependencies:
-      '@oclif/core': 2.15.0_npeoqfxwgl5njwqojmpesqhar4
-      '@oclif/plugin-help': 5.2.14_npeoqfxwgl5njwqojmpesqhar4
-      '@oclif/plugin-not-found': 2.4.0_npeoqfxwgl5njwqojmpesqhar4
-      '@oclif/plugin-warn-if-update-available': 2.0.44_npeoqfxwgl5njwqojmpesqhar4
-      aws-sdk: 2.1418.0
-      concurrently: 7.6.0
-      debug: 4.3.4
-      find-yarn-workspace-root: 2.0.0
-      fs-extra: 8.1.0
-      github-slugger: 1.5.0
-      got: 11.8.6
-      lodash: 4.17.21
-      normalize-package-data: 3.0.3
-      semver: 7.5.4
-      shelljs: 0.8.5
-      tslib: 2.6.0
-      yeoman-environment: 3.19.3
-      yeoman-generator: 5.9.0_yeoman-environment@3.19.3
       yosay: 2.0.2
     transitivePeerDependencies:
       - '@swc/core'
