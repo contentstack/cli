@@ -684,16 +684,10 @@ function wait(time) {
 }
 
 function handleErrorMsg(err) {
-  if (err?.errorMessage) {
-    cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
-  } else if (err?.message) {
-    cliux.print(`Error: ${err.message}`, { color: 'red' });
-  } else {
-    console.log(err);
-    cliux.print(`Error: ${messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' });
-  }
+  cliux.print(`Error: ${err?.errorMessage ? err?.message: messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' });
   process.exit(1);
 }
+
 async function apiRequestHandler(org, queryParam = {}) {
   const headers = {
     authtoken: configHandler.get('authtoken'),
