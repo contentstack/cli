@@ -342,7 +342,16 @@ ExportToCsvCommand.examples = [
   'csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>',
   '',
   'Exporting Organizations Teams to CSV',
+  'csdx cm:export-to-csv --action <teams>',
+  '',
+  'Exporting Organizations Teams to CSV with org-uid',
   'csdx cm:export-to-csv --action <teams> --org <org-uid>',
+  '',
+  'Exporting Organizations Teams to CSV with team uid',
+  'csdx cm:export-to-csv --action <teams> --team-uid <team-uid>',
+  '',
+  'Exporting Organizations Teams to CSV with org-uid and team uid',
+  'csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid>',
 ];
 
 module.exports = ExportToCsvCommand;
