@@ -2,13 +2,13 @@ const os = require('os');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const find = require('lodash/find');
+const cloneDeep = require('lodash/cloneDeep');
 const fastcsv = require('fast-csv');
 const inquirer = require('inquirer');
 const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 const config = require('./config.js');
 const { cliux, configHandler, HttpClient } = require('@contentstack/cli-utilities');
-const {cloneDeep} = require('lodash');
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
 
@@ -728,7 +728,7 @@ async function exportOrgTeams(managementAPIClient, org) {
     const data = await apiRequestHandler(org, { skip: skip, limit: limit, includeUserDetails: true });
     skip += limit;
     teamsObjectArray.push(...data?.teams);
-    if (skip > data?.count) break;
+    if (skip >= data?.count) break;
   } while (1);
   teamsObjectArray = await cleanTeamsData(teamsObjectArray, managementAPIClient, org);
   return teamsObjectArray;
