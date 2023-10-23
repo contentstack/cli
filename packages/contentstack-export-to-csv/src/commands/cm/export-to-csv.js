@@ -60,9 +60,7 @@ class ExportToCsvCommand extends Command {
       required: false,
     }),
     "team-uid": flags.string({
-      description: 'Uid of the team whose user data and stack roles are required',
-      multiple: false,
-      required: false,
+      description: 'Uid of the team whose user data and stack roles are required'
     })
   };
 
