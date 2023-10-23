@@ -782,17 +782,16 @@ async function cleanTeamsData(data, managementAPIClient, org) {
       }
       team.Total_Members = team?.users?.length || 0;
     });
+    return data;
   } else {
-    cliux.print(`info: There are no teams in the given Organisation`);
     return [];
   }
-  return data;
 }
 
 async function exportTeams(managementAPIClient, organization, teamUid) {
   const allTeamsData = await exportOrgTeams(managementAPIClient, organization);
   if (!allTeamsData?.length) {
-    console.log(`There are not teams in the organization named ${organization?.name}`);
+    cliux.print(`info: There are not teams in the organization named ${organization?.name}`);
   } else {
     const modifiedTeam = cloneDeep(allTeamsData);
     modifiedTeam.forEach((team) => {
@@ -840,7 +839,7 @@ async function getTeamsUserDetails(teamsObject) {
   const allTeamUsers = [];
   teamsObject.forEach((team) => {
     if (team?.users?.length) {
-      team?.users?.forEach((user) => {
+      team.users.forEach((user) => {
         user['team-name'] = team.name;
         user['team-uid'] = team.uid;
         delete user['active'];
