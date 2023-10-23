@@ -84,6 +84,12 @@ class ExportToCsvCommand extends Command {
 
       if (!managementTokenAlias) {
         managementAPIClient = await managementSDKClient({ host: this.cmaHost });
+        if (!isAuthenticated()) {
+          this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
+            exit: 2,
+            suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
+          });
+        }
       }
 
       if (actionFlag) {
@@ -117,14 +123,6 @@ class ExportToCsvCommand extends Command {
               this.error('Provided management token alias not found in your config.!');
             } else {
               let organization;
-
-              if (!isAuthenticated()) {
-                this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
-                  exit: 2,
-                  suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-                });
-              }
-
               if (org) {
                 organization = { uid: org };
               } else {
@@ -231,12 +229,6 @@ class ExportToCsvCommand extends Command {
         case config.exportUsers:
         case 'users': {
           try {
-            if (!isAuthenticated()) {
-              this.error(config.CLI_EXPORT_CSV_LOGIN_FAILED, {
-                exit: 2,
-                suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-              });
-            }
             let organization;
 
             if (org) {
@@ -265,12 +257,7 @@ class ExportToCsvCommand extends Command {
         case config.exportTeams:
         case 'teams': {
           try{
-            if (!isAuthenticated()) {
-              this.error(config.CLI_EXPORT_CSV_LOGIN_FAILED, {
-                exit: 2,
-                suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-              });
-            }
+            
             let organization;
 
             if (org) {
