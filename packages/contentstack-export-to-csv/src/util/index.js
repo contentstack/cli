@@ -2,13 +2,13 @@ const os = require('os');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const find = require('lodash/find');
+const cloneDeep = require('lodash/cloneDeep');
 const fastcsv = require('fast-csv');
 const inquirer = require('inquirer');
 const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 const config = require('./config.js');
 const { cliux, configHandler, HttpClient } = require('@contentstack/cli-utilities');
-const _ = require('lodash');
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
 
@@ -684,16 +684,10 @@ function wait(time) {
 }
 
 function handleErrorMsg(err) {
-  if (err?.errorMessage) {
-    cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
-  } else if (err?.message) {
-    cliux.print(`Error: ${err.message}`, { color: 'red' });
-  } else {
-    console.log(err);
-    cliux.print(`Error: ${messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' });
-  }
+  cliux.print(`Error: ${err?.errorMessage ? err?.message: messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' });
   process.exit(1);
 }
+
 async function apiRequestHandler(org, queryParam = {}) {
   const headers = {
     authtoken: configHandler.get('authtoken'),
@@ -727,8 +721,8 @@ async function exportOrgTeams(managementAPIClient, org) {
   do {
     const data = await apiRequestHandler(org, { skip: skip, limit: limit, includeUserDetails: true });
     skip += limit;
-    teamsObjectArray = [...teamsObjectArray, ...data?.teams];
-    if (skip > data?.count) break;
+    teamsObjectArray.push(...data?.teams);
+    if (skip >= data?.count) break;
   } while (1);
   teamsObjectArray = await cleanTeamsData(teamsObjectArray, managementAPIClient, org);
   return teamsObjectArray;
@@ -767,7 +761,7 @@ async function cleanTeamsData(data, managementAPIClient, org) {
     'updatedByUserName',
     'organizationUid',
   ];
-  if (data?.length !== 0) {
+  if (data?.length) {
     data.forEach((team) => {
       fieldToBeDeleted.forEach((fields) => {
         delete team[fields];
@@ -782,24 +776,24 @@ async function cleanTeamsData(data, managementAPIClient, org) {
       }
       team.Total_Members = team?.users?.length || 0;
     });
+    return data;
   } else {
-    cliux.print(`info: There are no teams in the given org`);
+    return [];
   }
-  return data;
 }
 
 async function exportTeams(managementAPIClient, organization, teamUid) {
   const allTeamsData = await exportOrgTeams(managementAPIClient, organization);
-  if (allTeamsData.length === 0) {
-    this.log(`There are not teams in the organization named ${organization?.name}`);
+  if (!allTeamsData?.length) {
+    cliux.print(`info: There are not teams in the organization named ${organization?.name}`);
   } else {
-    const modifiedTeam = _.cloneDeep(allTeamsData);
+    const modifiedTeam = cloneDeep(allTeamsData);
     modifiedTeam.forEach((team) => {
       delete team['users'];
       delete team['stackRoleMapping'];
     });
     const fileName = `${kebabize(organization.name.replace(config.organizationNameRegex, ''))}_teams_export.csv`;
-    write(this, modifiedTeam, fileName, 'organization Team details');
+    write(this, modifiedTeam, fileName, ' organization Team details');
     // exporting teams user data or a single team user data
     await getTeamsDetail(allTeamsData,organization,teamUid);
     await exportRoleMappings(managementAPIClient, allTeamsData, teamUid);
@@ -886,7 +880,7 @@ async function getStackData(managementAPIClient, stackApiKey) {
 async function getTeamsUserDetails(teamsObject) {
   const allTeamUsers = [];
   teamsObject.forEach((team) => {
-    if (team.users.length) {
+    if (team?.users?.length) {
       team.users.forEach((user) => {
         user['team-name'] = team.name;
         user['team-uid'] = team.uid;
