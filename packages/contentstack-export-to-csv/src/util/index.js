@@ -699,13 +699,13 @@ async function apiRequestHandler(org, queryParam = {}) {
   return await new HttpClient()
     .headers(headers)
     .queryParams(queryParam)
-    .get(`${configHandler.get('region')?.cma}/organizations/${org.uid}/teams`)
+    .get(`${configHandler.get('region')?.cma}/organizations/${org?.uid}/teams`)
     .then((res) => {
       const { status, data } = res;
       if (status === 200) {
         return data;
       } else {
-        cliux.print(`${data.error_message || data.message || data.errorMessage}`, { color: 'red' });
+        cliux.print(`${data?.error_message || data?.message || data?.errorMessage}`, { color: 'red' });
         process.exit(1);
       }
     })
@@ -717,7 +717,7 @@ async function apiRequestHandler(org, queryParam = {}) {
 async function exportOrgTeams(managementAPIClient, org) {
   let teamsObjectArray = [];
   let skip = 0;
-  let limit = config.limit || 100;
+  let limit = config?.limit || 100;
   do {
     const data = await apiRequestHandler(org, { skip: skip, limit: limit, includeUserDetails: true });
     skip += limit;
@@ -796,6 +796,7 @@ async function exportTeams(managementAPIClient, organization, teamUid) {
     write(this, modifiedTeam, fileName, ' organization Team details');
     // exporting teams user data or a single team user data
     await getTeamsDetail(allTeamsData,organization,teamUid);
+    // Exporting the stack Role data for all the teams or exporting stack role data for a single team
     await exportRoleMappings(managementAPIClient, allTeamsData, teamUid);
   }
 }
@@ -843,8 +844,8 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
     }
   }
   const fileName = `${kebabize(
-    "All_Teams_Role_Mapping".replace(config.organizationNameRegex, ''),
-  )}.csv`;
+    "Stack_Role_Mapping".replace(config.organizationNameRegex, ''),
+  )}${teamUid?teamUid:""}.csv`;
 
   write(this, stackRoleWithTeamData, fileName, 'Team Stack Role details');
 }
@@ -853,7 +854,7 @@ async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName,
   const Stack = await getStackData(managementAPIClient, stackRoleMapping.stackApiKey);
   const stackRole = {};
   const roles = await Stack.role().fetchAll()
-  roles?.items?.forEach((role) => {
+  roles?.items.forEach((role) => {
     if(!stackRole.hasOwnProperty(role?.uid)){
       stackRole[role?.uid] = role?.name;
     }
@@ -868,15 +869,15 @@ async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName,
     stackRoleMap['Role Name'] = stackRole[role]
     stackRoleMap['Role Uid'] = role;
     stackRoleMapOfTeam.push(stackRoleMap);
-  })
+  });
 
-  // console.log(stackRole);
   return stackRoleMapOfTeam;
 }
 
 async function getStackData(managementAPIClient, stackApiKey) {
   return await managementAPIClient.stack({ api_key: stackApiKey }).fetch();
 }
+
 async function getTeamsUserDetails(teamsObject) {
   const allTeamUsers = [];
   teamsObject.forEach((team) => {
