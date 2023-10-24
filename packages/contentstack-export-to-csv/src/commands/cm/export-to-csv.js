@@ -60,9 +60,7 @@ class ExportToCsvCommand extends Command {
       required: false,
     }),
     "team-uid": flags.string({
-      description: 'Uid of the team whose user data and stack roles are required',
-      multiple: false,
-      required: false,
+      description: 'Uid of the team whose user data and stack roles are required'
     })
   };
 
@@ -86,6 +84,12 @@ class ExportToCsvCommand extends Command {
 
       if (!managementTokenAlias) {
         managementAPIClient = await managementSDKClient({ host: this.cmaHost });
+        if (!isAuthenticated()) {
+          this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
+            exit: 2,
+            suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
+          });
+        }
       }
 
       if (actionFlag) {
@@ -119,14 +123,6 @@ class ExportToCsvCommand extends Command {
               this.error('Provided management token alias not found in your config.!');
             } else {
               let organization;
-
-              if (!isAuthenticated()) {
-                this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
-                  exit: 2,
-                  suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-                });
-              }
-
               if (org) {
                 organization = { uid: org };
               } else {
@@ -233,12 +229,6 @@ class ExportToCsvCommand extends Command {
         case config.exportUsers:
         case 'users': {
           try {
-            if (!isAuthenticated()) {
-              this.error(config.CLI_EXPORT_CSV_LOGIN_FAILED, {
-                exit: 2,
-                suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-              });
-            }
             let organization;
 
             if (org) {
@@ -267,12 +257,7 @@ class ExportToCsvCommand extends Command {
         case config.exportTeams:
         case 'teams': {
           try{
-            if (!isAuthenticated()) {
-              this.error(config.CLI_EXPORT_CSV_LOGIN_FAILED, {
-                exit: 2,
-                suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-              });
-            }
+            
             let organization;
 
             if (org) {
@@ -344,7 +329,16 @@ ExportToCsvCommand.examples = [
   'csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>',
   '',
   'Exporting Organizations Teams to CSV',
+  'csdx cm:export-to-csv --action <teams>',
+  '',
+  'Exporting Organizations Teams to CSV with org-uid',
   'csdx cm:export-to-csv --action <teams> --org <org-uid>',
+  '',
+  'Exporting Organizations Teams to CSV with team uid',
+  'csdx cm:export-to-csv --action <teams> --team-uid <team-uid>',
+  '',
+  'Exporting Organizations Teams to CSV with org-uid and team uid',
+  'csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid>',
 ];
 
 module.exports = ExportToCsvCommand;
