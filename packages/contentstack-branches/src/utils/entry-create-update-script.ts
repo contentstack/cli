@@ -463,8 +463,10 @@ export function entryCreateUpdateScript(contentType) {
           const references = await findReference(contentType.schema, '', flag);
   
           async function updateEntry(entry, entryDetails) {
-            Object.assign(entry, { ...entryDetails });
-            await entry.update();
+            if (entry) {
+              Object.assign(entry, { ...entryDetails });
+              await entry.update();
+            }
           }
 
           async function updateReferences(entryDetails, baseEntry, references) {
