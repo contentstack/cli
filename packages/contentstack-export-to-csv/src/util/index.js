@@ -783,6 +783,7 @@ async function cleanTeamsData(data, managementAPIClient, org) {
 }
 
 async function exportTeams(managementAPIClient, organization, teamUid) {
+  cliux.print(`info: Exporting the ${teamUid && organization?.name? `team with uid ${teamUid} in Organisation ${organization?.name} `:`teams of Organisation `+organization?.name}`, {color: "green"});
   const allTeamsData = await exportOrgTeams(managementAPIClient, organization);
   if (!allTeamsData?.length) {
     cliux.print(`info: There are not teams in the organization named ${organization?.name}`);
@@ -795,7 +796,9 @@ async function exportTeams(managementAPIClient, organization, teamUid) {
     const fileName = `${kebabize(organization.name.replace(config.organizationNameRegex, ''))}_teams_export.csv`;
     write(this, modifiedTeam, fileName, ' organization Team details');
     // exporting teams user data or a single team user data
+    cliux.print(`info: Exporting the teams user data for ${teamUid?`Team `+teamUid:`Organisation `+organization?.name}`, {color: "green"});
     await getTeamsDetail(allTeamsData,organization,teamUid);
+    cliux.print(`info: Exporting the Stack Role Details for  ${teamUid?`Team `+teamUid:`Organisation `+organization?.name}`,{color: "green"});
     // Exporting the stack Role data for all the teams or exporting stack role data for a single team
     await exportRoleMappings(managementAPIClient, allTeamsData, teamUid);
   }
