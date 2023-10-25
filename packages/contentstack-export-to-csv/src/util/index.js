@@ -684,7 +684,7 @@ function wait(time) {
 }
 
 function handleErrorMsg(err) {
-  cliux.print(`Error: ${err?.errorMessage ? err?.message: messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' });
+  cliux.print(`Error: ${(err?.errorMessage || err?.message) ? err?.errorMessage || err?.message : messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' })
   process.exit(1);
 }
 
@@ -783,7 +783,14 @@ async function cleanTeamsData(data, managementAPIClient, org) {
 }
 
 async function exportTeams(managementAPIClient, organization, teamUid) {
-  cliux.print(`info: Exporting the ${teamUid && organization?.name? `team with uid ${teamUid} in Organisation ${organization?.name} `:`teams of Organisation `+organization?.name}`, {color: "green"});
+  cliux.print(
+    `info: Exporting the ${
+      teamUid && organization?.name
+        ? `team with uid ${teamUid} in Organisation ${organization?.name} `
+        : `teams of Organisation ` + organization?.name
+    }`,
+    { color: 'blue' },
+  );
   const allTeamsData = await exportOrgTeams(managementAPIClient, organization);
   if (!allTeamsData?.length) {
     cliux.print(`info: There are not teams in the organization named ${organization?.name}`);
@@ -796,9 +803,17 @@ async function exportTeams(managementAPIClient, organization, teamUid) {
     const fileName = `${kebabize(organization.name.replace(config.organizationNameRegex, ''))}_teams_export.csv`;
     write(this, modifiedTeam, fileName, ' organization Team details');
     // exporting teams user data or a single team user data
-    cliux.print(`info: Exporting the teams user data for ${teamUid?`Team `+teamUid:`Organisation `+organization?.name}`, {color: "green"});
-    await getTeamsDetail(allTeamsData,organization,teamUid);
-    cliux.print(`info: Exporting the Stack Role Details for  ${teamUid?`Team `+teamUid:`Organisation `+organization?.name}`,{color: "green"});
+    cliux.print(
+      `info: Exporting the teams user data for ${teamUid ? `Team ` + teamUid : `Organisation ` + organization?.name}`,
+      { color: 'blue' },
+    );
+    await getTeamsDetail(allTeamsData, organization, teamUid);
+    cliux.print(
+      `info: Exporting the Stack Role Details for  ${
+        teamUid ? `Team ` + teamUid : `Organisation ` + organization?.name
+      }`,
+      { color: 'blue' },
+    );
     // Exporting the stack Role data for all the teams or exporting stack role data for a single team
     await exportRoleMappings(managementAPIClient, allTeamsData, teamUid);
   }
@@ -832,7 +847,7 @@ async function getTeamsDetail(allTeamsData, organization, teamUid) {
 
 async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
   let stackRoleWithTeamData = [];
-  if(teamUid) {
+  if (teamUid) {
     const team = allTeamsData.filter((team) => team?.uid === teamUid)[0];
     for (const stack of team?.stackRoleMapping) {
       const roleData = await mapRoleWithTeams(managementAPIClient, stack, team?.name, team?.uid);
@@ -846,9 +861,9 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
       }
     }
   }
-  const fileName = `${kebabize(
-    "Stack_Role_Mapping".replace(config.organizationNameRegex, ''),
-  )}${teamUid?teamUid:""}.csv`;
+  const fileName = `${kebabize('Stack_Role_Mapping'.replace(config.organizationNameRegex, ''))}${
+    teamUid ? teamUid : ''
+  }.csv`;
 
   write(this, stackRoleWithTeamData, fileName, 'Team Stack Role details');
 }
@@ -856,22 +871,21 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
 async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName, teamUid) {
   const Stack = await getStackData(managementAPIClient, stackRoleMapping.stackApiKey);
   const stackRole = {};
-  const roles = await Stack.role().fetchAll()
+  const roles = await Stack.role().fetchAll();
   roles?.items.forEach((role) => {
-    if(!stackRole.hasOwnProperty(role?.uid)){
+    if (!stackRole.hasOwnProperty(role?.uid)) {
       stackRole[role?.uid] = role?.name;
     }
   });
-  let stackRoleMapOfTeam = [];
-  stackRoleMapping?.roles.forEach((role)=>{
-    let stackRoleMap = {};
-    stackRoleMap['Team Name'] = teamName;
-    stackRoleMap['Team Uid'] = teamUid;
-    stackRoleMap['Stack Name'] = Stack?.name;
-    stackRoleMap['Stack Uid'] = Stack?.uid;
-    stackRoleMap['Role Name'] = stackRole[role]
-    stackRoleMap['Role Uid'] = role;
-    stackRoleMapOfTeam.push(stackRoleMap);
+  const stackRoleMapOfTeam = stackRoleMapping?.roles.map((role) => {
+    return {
+      'Team Name': teamName,
+      'Team Uid': teamUid,
+      'Stack Name': Stack?.name,
+      'Stack Uid': Stack?.uid,
+      'Role Name': stackRole[role],
+      'Role Uid': role,
+    };
   });
 
   return stackRoleMapOfTeam;
