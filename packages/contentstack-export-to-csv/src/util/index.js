@@ -684,7 +684,7 @@ function wait(time) {
 }
 
 function handleErrorMsg(err) {
-  cliux.print(`Error: ${err?.errorMessage ? err?.message: messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' });
+  cliux.print(`Error: ${(err?.errorMessage || err?.message) ? err?.errorMessage || err?.message : messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' })
   process.exit(1);
 }
 
