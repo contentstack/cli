@@ -848,14 +848,14 @@ async function getTeamsDetail(allTeamsData, organization, teamUid) {
 async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
   let stackRoleWithTeamData = [];
   if (teamUid) {
-    const team = allTeamsData.filter((team) => team?.uid === teamUid)[0];
+    const team = find(allTeamsData,function(teamObject) { return teamObject?.uid===teamUid });
     for (const stack of team?.stackRoleMapping) {
       const roleData = await mapRoleWithTeams(managementAPIClient, stack, team?.name, team?.uid);
       stackRoleWithTeamData.push(...roleData);
     }
   } else {
-    for (const team of allTeamsData) {
-      for (const stack of team?.stackRoleMapping) {
+    for (const team of allTeamsData || []) {
+      for (const stack of team?.stackRoleMapping || []) {
         const roleData = await mapRoleWithTeams(managementAPIClient, stack, team?.name, team?.uid);
         stackRoleWithTeamData.push(...roleData);
       }
