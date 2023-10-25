@@ -854,8 +854,8 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
       stackRoleWithTeamData.push(...roleData);
     }
   } else {
-    for (const team of allTeamsData || []) {
-      for (const stack of team?.stackRoleMapping || []) {
+    for (const team of allTeamsData ?? []) {
+      for (const stack of team?.stackRoleMapping ?? []) {
         const roleData = await mapRoleWithTeams(managementAPIClient, stack, team?.name, team?.uid);
         stackRoleWithTeamData.push(...roleData);
       }
