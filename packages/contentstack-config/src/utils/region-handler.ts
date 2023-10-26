@@ -2,7 +2,7 @@ import { configHandler } from '@contentstack/cli-utilities';
 
 function validURL(str) {
   const pattern = new RegExp(
-    '^(https:\\/\\/)?(localhost(\\:\\d+)?|[a-zA-Z0-9.-]+)' + // protocol (https) and domain
+    '^(https:\\/\\/)?[a-zA-Z0-9.-]+' + // protocol (https) and domain
       '(\\.[a-zA-Z]{2,6})' + // top-level domain (TLD)
       '(\\:\\d+)?' + // port
       '(\\/[a-zA-Z0-9_.~+-]*)*' + // path
@@ -11,7 +11,7 @@ function validURL(str) {
     'i',
   );
 
-  return Boolean(pattern.test(str));
+  return pattern.test(str);
 }
 
 // Available region list
