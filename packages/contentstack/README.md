@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.10.0 darwin-arm64 node-v20.8.0
+@contentstack/cli/1.11.0 darwin-arm64 node-v20.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -2014,27 +2014,28 @@ EXAMPLES
 
 ## `csdx cm:export-to-csv`
 
-Export entries or organization users to csv using this command
+Export entries, taxonomies, terms or organization users to csv using this command
 
 ```
 USAGE
-  $ csdx cm:export-to-csv [--action entries|users] [-a <value>] [--org <value>] [-n <value>] [-k <value>] [--org-name
-    <value>] [--locale <value>] [--content-type <value>] [--branch <value>]
+  $ csdx cm:export-to-csv [--action entries|users|taxonomies] [-a <value>] [--org <value>] [-n <value>] [-k <value>]
+    [--org-name <value>] [--locale <value>] [--content-type <value>] [--branch <value>] [--taxonomy-uid <value>]
 
 FLAGS
   -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  API key of the source stack
   -n, --stack-name=<value>     Name of the stack that needs to be created as csv filename.
   --action=<option>            Option to export data (entries, users)
-                               <options: entries|users>
+                               <options: entries|users|taxonomies>
   --branch=<value>             Branch from which entries need to be exported
   --content-type=<value>       Content type for which entries needs to be exported
   --locale=<value>             Locale for which entries need to be exported
   --org=<value>                Provide organization UID to clone org users
   --org-name=<value>           Name of the organization that needs to be created as csv filename.
+  --taxonomy-uid=<value>       Provide the taxonomy UID of the related terms you want to export
 
 DESCRIPTION
-  Export entries or organization users to csv using this command
+  Export entries, taxonomies, terms or organization users to csv using this command
 
 EXAMPLES
   $ csdx cm:export-to-csv
@@ -2062,6 +2063,14 @@ EXAMPLES
   Exporting organization users to csv with organization name provided
 
   $ csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>
+
+  Exporting taxonomies and related terms to a .CSV file with the provided taxonomy UID
+
+  $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --taxonomy-uid <taxonomy-uid>
+
+  Exporting taxonomies and respective terms to a .CSV file
+
+  $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias>
 ```
 
 _See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/main/packages/contentstack-export-to-csv/src/commands/cm/export-to-csv.js)_
@@ -3285,7 +3294,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -3350,7 +3359,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -3390,7 +3399,7 @@ EXAMPLES
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
@@ -3419,7 +3428,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -3467,7 +3476,7 @@ ALIASES
   $ csdx plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -3508,7 +3517,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
