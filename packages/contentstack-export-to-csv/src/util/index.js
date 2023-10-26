@@ -3,6 +3,7 @@ const fs = require('fs');
 const mkdirp = require('mkdirp');
 const find = require('lodash/find');
 const cloneDeep = require('lodash/cloneDeep');
+const omit = require('lodash/omit');
 const fastcsv = require('fast-csv');
 const inquirer = require('inquirer');
 const debug = require('debug')('export-to-csv');
@@ -762,21 +763,18 @@ async function cleanTeamsData(data, managementAPIClient, org) {
     'organizationUid',
   ];
   if (data?.length) {
-    data.forEach((team) => {
-      fieldToBeDeleted.forEach((fields) => {
-        delete team[fields];
-      });
-      if (!team.hasOwnProperty('description')) {
-        team.description = '';
-      }
-      if (team.organizationRole === roleMap['member']) {
-        team.organizationRole = 'member';
-      } else {
-        team.organizationRole = 'admin';
+    return data.map((team) => {
+      team = omit(team, fieldToBeDeleted);
+    
+      team.organizationRole = team.organizationRole === roleMap["member"] ? "member" : "admin";
+    
+      if (!team.hasOwnProperty("description")) {
+        team.description = "";
       }
       team.Total_Members = team?.users?.length || 0;
+    
+      return team;
     });
-    return data;
   } else {
     return [];
   }
