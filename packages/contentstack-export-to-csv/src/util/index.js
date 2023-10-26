@@ -464,7 +464,7 @@ function startupQuestions() {
         type: 'list',
         name: 'action',
         message: 'Choose Action',
-        choices: [config.exportEntries, config.exportUsers, 'Exit'],
+        choices: [config.exportEntries, config.exportUsers, config.exportTeams, 'Exit'],
       },
     ];
     inquirer
