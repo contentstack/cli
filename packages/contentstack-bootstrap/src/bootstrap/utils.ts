@@ -130,6 +130,7 @@ const envFileHandler = async (
     customHost = region.cma && region.cma.substring('8');
   }
   const production = environmentVariables.environment === 'production' ? true : false;
+  // Note: clonedDirectory is already sanitised.
   switch (appConfigKey) {
     case 'reactjs':
     case 'reactjs-starter':
