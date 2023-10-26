@@ -869,20 +869,20 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
 }
 
 async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName, teamUid) {
-  const Stack = await getStackData(managementAPIClient, stackRoleMapping.stackApiKey);
+  const roles = await getRoleData(managementAPIClient, stackRoleMapping.stackApiKey);
   const stackRole = {};
-  const roles = await Stack.role().fetchAll();
   roles?.items.forEach((role) => {
     if (!stackRole.hasOwnProperty(role?.uid)) {
       stackRole[role?.uid] = role?.name;
+      stackRole[role?.stack?.api_key] = {name: role?.stack?.name, uid: role?.stack?.uid }
     }
   });
   const stackRoleMapOfTeam = stackRoleMapping?.roles.map((role) => {
     return {
       'Team Name': teamName,
       'Team Uid': teamUid,
-      'Stack Name': Stack?.name,
-      'Stack Uid': Stack?.uid,
+      'Stack Name': stackRole[stackRoleMapping?.stackApiKey]?.name,
+      'Stack Uid': stackRole[stackRoleMapping?.stackApiKey]?.uid,
       'Role Name': stackRole[role],
       'Role Uid': role,
     };
@@ -891,8 +891,8 @@ async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName,
   return stackRoleMapOfTeam;
 }
 
-async function getStackData(managementAPIClient, stackApiKey) {
-  return await managementAPIClient.stack({ api_key: stackApiKey }).fetch();
+async function getRoleData(managementAPIClient, stackApiKey) {
+  return await managementAPIClient.stack({ api_key: stackApiKey }).role().fetchAll();
 }
 
 async function getTeamsUserDetails(teamsObject) {
