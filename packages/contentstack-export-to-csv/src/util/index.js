@@ -465,7 +465,7 @@ function startupQuestions() {
         type: 'list',
         name: 'action',
         message: 'Choose Action',
-        choices: [config.exportEntries, config.exportUsers, 'Exit'],
+        choices: [config.exportEntries, config.exportUsers, config.exportTeams, 'Exit'],
       },
     ];
     inquirer
@@ -700,13 +700,13 @@ async function apiRequestHandler(org, queryParam = {}) {
   return await new HttpClient()
     .headers(headers)
     .queryParams(queryParam)
-    .get(`${configHandler.get('region')?.cma}/organizations/${org.uid}/teams`)
+    .get(`${configHandler.get('region')?.cma}/organizations/${org?.uid}/teams`)
     .then((res) => {
       const { status, data } = res;
-      if(status===200) {
+      if (status === 200) {
         return data;
       } else {
-        cliux.print(`${data.error_message || data.message || data.errorMessage}`, { color: 'red' });
+        cliux.print(`${data?.error_message || data?.message || data?.errorMessage}`, { color: 'red' });
         process.exit(1);
       }
     })
@@ -718,7 +718,7 @@ async function apiRequestHandler(org, queryParam = {}) {
 async function exportOrgTeams(managementAPIClient, org) {
   let teamsObjectArray = [];
   let skip = 0;
-  let limit = config.limit || 100;
+  let limit = config?.limit || 100;
   do {
     const data = await apiRequestHandler(org, { skip: skip, limit: limit, includeUserDetails: true });
     skip += limit;
@@ -781,6 +781,14 @@ async function cleanTeamsData(data, managementAPIClient, org) {
 }
 
 async function exportTeams(managementAPIClient, organization, teamUid) {
+  cliux.print(
+    `info: Exporting the ${
+      teamUid && organization?.name
+        ? `team with uid ${teamUid} in Organisation ${organization?.name} `
+        : `teams of Organisation ` + organization?.name
+    }`,
+    { color: 'blue' },
+  );
   const allTeamsData = await exportOrgTeams(managementAPIClient, organization);
   if (!allTeamsData?.length) {
     cliux.print(`info: There are not teams in the organization named ${organization?.name}`);
@@ -793,24 +801,33 @@ async function exportTeams(managementAPIClient, organization, teamUid) {
     const fileName = `${kebabize(organization.name.replace(config.organizationNameRegex, ''))}_teams_export.csv`;
     write(this, modifiedTeam, fileName, ' organization Team details');
     // exporting teams user data or a single team user data
-    await getTeamsDetail(allTeamsData,organization,teamUid);
+    cliux.print(
+      `info: Exporting the teams user data for ${teamUid ? `Team ` + teamUid : `Organisation ` + organization?.name}`,
+      { color: 'blue' },
+    );
+    await getTeamsDetail(allTeamsData, organization, teamUid);
+    cliux.print(
+      `info: Exporting the Stack Role Details for  ${
+        teamUid ? `Team ` + teamUid : `Organisation ` + organization?.name
+      }`,
+      { color: 'blue' },
+    );
+    // Exporting the stack Role data for all the teams or exporting stack role data for a single team
+    await exportRoleMappings(managementAPIClient, allTeamsData, teamUid);
   }
 }
 
-async function getTeamsDetail(allTeamsData, organization ,teamUid) {
+async function getTeamsDetail(allTeamsData, organization, teamUid) {
   if (!teamUid) {
-
     const userData = await getTeamsUserDetails(allTeamsData);
     const fileName = `${kebabize(
       organization.name.replace(config.organizationNameRegex, ''),
     )}_team_User_Details_export.csv`;
 
     write(this, userData, fileName, 'Team User details');
-  
   } else {
-
     const team = allTeamsData.filter((team) => team.uid === teamUid)[0];
-    
+
     team.users.forEach((user) => {
       user['team-name'] = team.name;
       user['team-uid'] = team.uid;
@@ -821,10 +838,59 @@ async function getTeamsDetail(allTeamsData, organization ,teamUid) {
     const fileName = `${kebabize(
       organization.name.replace(config.organizationNameRegex, ''),
     )}_team_${teamUid}_User_Details_export.csv`;
-    
+
     write(this, team.users, fileName, 'Team User details');
-  
   }
+}
+
+async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
+  let stackRoleWithTeamData = [];
+  if (teamUid) {
+    const team = find(allTeamsData,function(teamObject) { return teamObject?.uid===teamUid });
+    for (const stack of team?.stackRoleMapping) {
+      const roleData = await mapRoleWithTeams(managementAPIClient, stack, team?.name, team?.uid);
+      stackRoleWithTeamData.push(...roleData);
+    }
+  } else {
+    for (const team of allTeamsData ?? []) {
+      for (const stack of team?.stackRoleMapping ?? []) {
+        const roleData = await mapRoleWithTeams(managementAPIClient, stack, team?.name, team?.uid);
+        stackRoleWithTeamData.push(...roleData);
+      }
+    }
+  }
+  const fileName = `${kebabize('Stack_Role_Mapping'.replace(config.organizationNameRegex, ''))}${
+    teamUid ? teamUid : ''
+  }.csv`;
+
+  write(this, stackRoleWithTeamData, fileName, 'Team Stack Role details');
+}
+
+async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName, teamUid) {
+  const roles = await getRoleData(managementAPIClient, stackRoleMapping.stackApiKey);
+  const stackRole = {};
+  roles?.items.forEach((role) => {
+    if (!stackRole.hasOwnProperty(role?.uid)) {
+      stackRole[role?.uid] = role?.name;
+      stackRole[role?.stack?.api_key] = {name: role?.stack?.name, uid: role?.stack?.uid }
+    }
+  });
+  const stackRoleMapOfTeam = stackRoleMapping?.roles.map((role) => {
+    return {
+      'Team Name': teamName,
+      'Team Uid': teamUid,
+      'Stack Name': stackRole[stackRoleMapping?.stackApiKey]?.name,
+      'Stack Uid': stackRole[stackRoleMapping?.stackApiKey]?.uid,
+      'Role Name': stackRole[role],
+      'Role Uid': role,
+    };
+  });
+
+  return stackRoleMapOfTeam;
+}
+
+async function getRoleData(managementAPIClient, stackApiKey) {
+  return await managementAPIClient.stack({ api_key: stackApiKey }).role().fetchAll();
 }
 
 async function getTeamsUserDetails(teamsObject) {
