@@ -257,17 +257,14 @@ class ExportToCsvCommand extends Command {
         case config.exportTeams:
         case 'teams': {
           try{
-            
             let organization;
-
             if (org) {
               organization = { uid: org, name: orgName || org };
             } else {
               organization = await util.chooseOrganization(managementAPIClient, action); // prompt for organization
             }
-            
+          
             await util.exportTeams(managementAPIClient,organization,teamUid);
-
           } catch (error) {
             if (error.message || error.errorMessage) {
               cliux.error(util.formatError(error));
