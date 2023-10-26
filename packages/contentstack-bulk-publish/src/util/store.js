@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const config = require('../config/index.js');
 const chalk = require('chalk');
+const { pathValidator } = require('@contentstack/cli-utilities');
 
 function save(key, data) {
   let bulkPublish = config ? config : {};
@@ -49,6 +50,7 @@ function get(key, filePath) {
 
 function updateMissing(key, flags) {
   let savedConfig;
+  pathValidator.validatePath(flags.config);
   savedConfig = get(key, path.resolve(flags.config));
   Object.keys(savedConfig).forEach((element) => {
     if (flags[element] === undefined) {
