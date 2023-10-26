@@ -4,6 +4,7 @@ export { default as CLIError } from './cli-error';
 export { default as messageHandler } from './message-handler';
 export { default as authHandler } from './auth-handler';
 export { default as configHandler } from './config-handler';
+export { default as pathValidator } from './path-validator';
 export {
   default as managementSDKClient,
   managementSDKInitiator,
