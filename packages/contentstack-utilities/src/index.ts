@@ -1,3 +1,4 @@
+import Logger from './logger'
 export { LoggerService } from './logger';
 export { default as cliux } from './cli-ux';
 export { default as CLIError } from './cli-error';
@@ -52,3 +53,5 @@ export {
 export { FlagInput, ArgInput } from '@oclif/core/lib/interfaces/parser';
 
 export { default as TablePrompt } from './inquirer-table-prompt';
+
+export { Logger };
