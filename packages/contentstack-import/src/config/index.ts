@@ -389,6 +389,7 @@ const config: DefaultConfig = {
   getEncryptionKeyMaxRetry: 3,
   // useBackedupDir: '',
   // backupConcurrency: 10,
+  onlyTSModules: ['taxonomies']
 };
 
 export default config;
