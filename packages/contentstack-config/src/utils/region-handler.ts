@@ -2,10 +2,11 @@ import { configHandler } from '@contentstack/cli-utilities';
 
 function validURL(str) {
   const pattern = new RegExp(
-    '^(https:\\/\\/)?[a-zA-Z0-9.-]+' + // protocol (https) and domain
-      '(\\.[a-zA-Z]{2,6})' + // top-level domain (TLD)
-      '(\\:\\d+)?' + // port
-      '(\\/[a-zA-Z0-9_.~+-]*)*' + // path
+    '^(https?:\\/\\/)?' + // protocol (http or https)
+      '([a-zA-Z0-9.-]+|' + // domain name
+      '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))' + // IP address
+      '(:\\d+)?' + // port
+      '(/[-a-zA-Z0-9_.~+-]*)*' + // path
       '(\\?[;&a-zA-Z0-9_.~+=-]*)?' + // query string
       '(\\#[-a-zA-Z0-9_]*)?$', // fragment
     'i',
