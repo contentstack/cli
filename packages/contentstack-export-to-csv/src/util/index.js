@@ -2,13 +2,21 @@ const os = require('os');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const find = require('lodash/find');
+const flat = require('lodash/flatten');
 const fastcsv = require('fast-csv');
 const inquirer = require('inquirer');
 const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 
 const config = require('./config.js');
-const { cliux, configHandler } = require('@contentstack/cli-utilities');
+const {
+  cliux,
+  configHandler,
+  HttpClient,
+  messageHandler,
+  managementSDKClient,
+  ContentstackClient,
+} = require('@contentstack/cli-utilities');
 
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
@@ -105,7 +113,7 @@ async function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
       organizations.forEach((org) => {
         result[org.name] = org.uid;
       });
-  }
+    }
 
     return result;
   } catch (error) {
@@ -155,9 +163,7 @@ function chooseStack(managementAPIClient, orgUid, stackApiKey) {
 
 async function chooseBranch(branchList) {
   try {
-    const branches = await branchList;
-
-    const branchesArray = branches.map((branch) => branch.uid);
+    const branchesArray = branchList.map((branch) => branch.uid);
 
     let _chooseBranch = [
       {
@@ -321,7 +327,13 @@ function getEntries(stackAPIClient, contentType, language, skip, limit) {
     stackAPIClient
       .contentType(contentType)
       .entry()
-      .query({ include_publish_details: true, locale: language, skip: skip * 100, limit: limit, include_workflow: true })
+      .query({
+        include_publish_details: true,
+        locale: language,
+        skip: skip * 100,
+        limit: limit,
+        include_workflow: true,
+      })
       .find()
       .then((entries) => resolve(entries))
       .catch((error) => reject(error));
@@ -371,20 +383,20 @@ function exitProgram() {
   process.exit();
 }
 
-function sanitizeEntries(flatEntry) {
+function sanitizeData(flatData) {
   // sanitize against CSV Injections
-  const CSVRegex = /^[\\+\\=@\\-]/
-  for (key in flatEntry) {
-    if (typeof flatEntry[key] === 'string' && flatEntry[key].match(CSVRegex)) {
-      flatEntry[key] = flatEntry[key].replace(/\"/g, "\"\"");
-      flatEntry[key] = `"'${flatEntry[key]}"`
-    } else if (typeof flatEntry[key] === 'object') {
+  const CSVRegex = /^[\\+\\=@\\-]/;
+  for (key in flatData) {
+    if (typeof flatData[key] === 'string' && flatData[key].match(CSVRegex)) {
+      flatData[key] = flatData[key].replace(/\"/g, '""');
+      flatData[key] = `"'${flatData[key]}"`;
+    } else if (typeof flatData[key] === 'object') {
       // convert any objects or arrays to string
       // to store this data correctly in csv
-      flatEntry[key] = JSON.stringify(flatEntry[key]);
+      flatData[key] = JSON.stringify(flatData[key]);
     }
   }
-  return flatEntry;
+  return flatData;
 }
 
 function cleanEntries(entries, language, environments, contentTypeUid) {
@@ -394,7 +406,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
   return filteredEntries.map((entry) => {
     let workflow = '';
     const envArr = [];
-    if(entry.publish_details.length) {
+    if (entry?.publish_details?.length) {
       entry.publish_details.forEach((env) => {
         envArr.push(JSON.stringify([environments[env['environment']], env['locale'], env['time']]));
       });
@@ -403,13 +415,13 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
     delete entry.publish_details;
     delete entry.setWorkflowStage;
     if ('_workflow' in entry) {
-        if(entry._workflow?.name) {
-          workflow = entry['_workflow']['name'];
-          delete entry['_workflow'];
-        }
+      if (entry._workflow?.name) {
+        workflow = entry['_workflow']['name'];
+        delete entry['_workflow'];
+      }
     }
     entry = flatten(entry);
-    entry = sanitizeEntries(entry);
+    entry = sanitizeData(entry);
     entry['publish_details'] = envArr;
     entry['_workflow'] = workflow;
     entry['ACL'] = JSON.stringify({}); // setting ACL to empty obj
@@ -459,7 +471,7 @@ function startupQuestions() {
         type: 'list',
         name: 'action',
         message: 'Choose Action',
-        choices: [config.exportEntries, config.exportUsers, 'Exit'],
+        choices: [config.exportEntries, config.exportUsers, config.exportTaxonomies, 'Exit'],
       },
     ];
     inquirer
@@ -678,6 +690,158 @@ function wait(time) {
   });
 }
 
+/**
+ * fetch all taxonomies in the provided stack
+ * @param {object} payload
+ * @param {number} skip
+ * @param {array} taxonomies
+ * @returns
+ */
+async function getAllTaxonomies(payload, skip = 0, taxonomies = []) {
+  payload['type'] = 'taxonomies';
+  const { items, count } = await taxonomySDKHandler(payload, skip);
+  if (items) {
+    skip += payload.limit;
+    taxonomies.push(...items);
+    if (skip >= count) {
+      return taxonomies;
+    } else {
+      return getAllTaxonomies(payload, skip, taxonomies);
+    }
+  }
+  return taxonomies;
+}
+
+/**
+ * fetch taxonomy related terms
+ * @param {object} payload
+ * @param {number} skip
+ * @param {number} limit
+ * @param {array} terms
+ * @returns
+ */
+async function getAllTermsOfTaxonomy(payload, skip = 0, terms = []) {
+  payload['type'] = 'terms';
+  const { items, count } = await taxonomySDKHandler(payload, skip);
+  if (items) {
+    skip += payload.limit;
+    terms.push(...items);
+    if (skip >= count) {
+      return terms;
+    } else {
+      return getAllTermsOfTaxonomy(payload, skip, terms);
+    }
+  }
+  return terms;
+}
+
+/**
+ * Verify the existence of a taxonomy. Obtain its details if it exists and return
+ * @param {object} payload
+ * @param {string} taxonomyUID
+ * @returns
+ */
+async function getTaxonomy(payload) {
+  payload['type'] = 'taxonomy';
+  const resp = await taxonomySDKHandler(payload);
+  return resp;
+}
+
+/**
+ * taxonomy & term sdk handler
+ * @async
+ * @method
+ * @param payload
+ * @param skip
+ * @param limit
+ * @returns  {*} Promise<any>
+ */
+async function taxonomySDKHandler(payload, skip) {
+  const { stackAPIClient, taxonomyUID, type } = payload;
+
+  const queryParams = { include_count: true, limit: payload.limit };
+  if (skip >= 0) queryParams['skip'] = skip || 0;
+
+  switch (type) {
+    case 'taxonomies':
+      return await stackAPIClient
+        .taxonomy()
+        .query(queryParams)
+        .find()
+        .then((data) => data)
+        .catch((err) => handleErrorMsg(err));
+    case 'taxonomy':
+      return await stackAPIClient
+        .taxonomy(taxonomyUID)
+        .fetch()
+        .then((data) => data)
+        .catch((err) => handleErrorMsg(err));
+    case 'terms':
+      queryParams['depth'] = 0;
+      return await stackAPIClient
+        .taxonomy(taxonomyUID)
+        .terms()
+        .query(queryParams)
+        .find()
+        .then((data) => data)
+        .catch((err) => handleErrorMsg(err));
+    default:
+      handleErrorMsg({ errorMessage: 'Invalid module!' });
+  }
+}
+
+/**
+ * Change taxonomies data in required CSV headers format
+ * @param {array} taxonomies
+ * @returns
+ */
+function formatTaxonomiesData(taxonomies) {
+  if (taxonomies?.length) {
+    const formattedTaxonomies = taxonomies.map((taxonomy) => {
+      return sanitizeData({
+        'Taxonomy UID': taxonomy.uid,
+        Name: taxonomy.name,
+        Description: taxonomy.description,
+      });
+    });
+    return formattedTaxonomies;
+  }
+}
+
+/**
+ * Modify the linked taxonomy data's terms in required CSV headers format
+ * @param {array} terms
+ * @param {string} taxonomyUID
+ * @returns
+ */
+function formatTermsOfTaxonomyData(terms, taxonomyUID) {
+  if (terms?.length) {
+    const formattedTerms = terms.map((term) => {
+      return sanitizeData({
+        'Taxonomy UID': taxonomyUID,
+        UID: term.uid,
+        Name: term.name,
+        'Parent UID': term.parent_uid,
+        Depth: term.depth
+      });
+    });
+    return formattedTerms;
+  }
+}
+
+function handleErrorMsg(err) {
+  if (err?.errorMessage) {
+    cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
+  } else if (err?.message) {
+    const errorMsg = err?.errors?.taxonomy || err?.errors?.term || err?.message;
+    cliux.print(`Error: ${errorMsg}`, { color: 'red' });
+  } else {
+    console.log(err);
+    cliux.print(`Error: ${messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' });
+  }
+  process.exit(1);
+}
+
 module.exports = {
   chooseOrganization: chooseOrganization,
   chooseStack: chooseStack,
@@ -704,4 +868,10 @@ module.exports = {
   chooseInMemContentTypes: chooseInMemContentTypes,
   getEntriesCount: getEntriesCount,
   formatError: formatError,
+  getAllTaxonomies,
+  getAllTermsOfTaxonomy,
+  formatTaxonomiesData,
+  formatTermsOfTaxonomyData,
+  getTaxonomy,
+  getStacks
 };
