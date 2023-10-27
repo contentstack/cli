@@ -40,7 +40,8 @@ export type Modules =
   | 'custom-roles'
   | 'workflows'
   | 'labels'
-  | 'marketplace-apps';
+  | 'marketplace-apps'
+  | 'taxonomies';
 
 export type ModuleClassParams = {
   stackAPIClient: ReturnType<ContentstackClient['stack']>;
@@ -119,6 +120,22 @@ export interface StackConfig{
     fileName: string;
     dependencies?: Modules[];
     limit?: number;
+}
+
+export interface TaxonomiesConfig{
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
+  dependencies?: Modules[];
+  limit?: number;
+}
+
+export interface TermsConfig{
+  dirName: string;
+  fileName: string;
+  invalidKeys: string[];
+  dependencies?: Modules[];
+  limit?: number;
 }
 
 export { default as DefaultConfig } from './default-config';
