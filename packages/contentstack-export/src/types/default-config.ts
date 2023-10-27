@@ -177,4 +177,5 @@ export default interface DefaultConfig {
   writeConcurrency: number;
   developerHubBaseUrl: string;
   marketplaceAppEncryptionKey: string;
+  onlyTSModules: string[];
 }
