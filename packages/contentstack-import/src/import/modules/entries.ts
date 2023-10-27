@@ -20,6 +20,7 @@ import {
   lookupEntries,
   lookupAssets,
   fileHelper,
+  lookUpTerms,
 } from '../../utils';
 import { ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
@@ -53,6 +54,8 @@ export default class EntriesImport extends BaseClass {
   private entriesUidMapper: Record<string, any>;
   private envs: Record<string, any>;
   private autoCreatedEntries: Record<string, any>[];
+  private taxonomiesPath: string;
+  public taxonomies: Record<string, unknown>;
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -64,6 +67,7 @@ export default class EntriesImport extends BaseClass {
     this.uniqueUidMapperPath = path.join(this.entriesMapperPath, 'unique-mapping.json');
     this.modifiedCTsPath = path.join(this.entriesMapperPath, 'modified-schemas.json');
     this.marketplaceAppMapperPath = path.join(this.importConfig.data, 'mapper', 'marketplace_apps', 'uid-mapping.json');
+    this.taxonomiesPath = path.join(this.importConfig.data, 'mapper', 'taxonomies', 'terms', 'success.json');
     this.entriesConfig = importConfig.modules.entries;
     this.entriesPath = path.resolve(importConfig.data, this.entriesConfig.dirName);
     this.cTsPath = path.resolve(importConfig.data, importConfig.modules['content-types'].dirName);
@@ -96,6 +100,8 @@ export default class EntriesImport extends BaseClass {
 
       this.assetUidMapper = (fsUtil.readFile(this.assetUidMapperPath) as Record<string, any>) || {};
       this.assetUrlMapper = (fsUtil.readFile(this.assetUrlMapperPath) as Record<string, any>) || {};
+      
+      this.taxonomies = (fsUtil.readFile(this.taxonomiesPath) as Record<string, any>);
 
       fsUtil.makeDirectory(this.entriesMapperPath);
       await this.disableMandatoryCTReferences();
@@ -412,6 +418,8 @@ export default class EntriesImport extends BaseClass {
       if (this.jsonRteCTsWithRef.indexOf(cTUid) > -1) {
         entry = removeEntryRefsFromJSONRTE(entry, contentType.schema);
       }
+      //will remove term if term doesn't exists in taxonomy
+      lookUpTerms(contentType?.schema, entry, this.taxonomies, this.importConfig);
       // will replace all old asset uid/urls with new ones
       entry = lookupAssets(
         {
