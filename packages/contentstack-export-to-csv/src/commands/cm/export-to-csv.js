@@ -390,8 +390,8 @@ class ExportToCsvCommand extends Command {
         payload['taxonomyUID'] = taxonomyUID;
         const terms = await util.getAllTermsOfTaxonomy(payload);
         const formattedTermsData = util.formatTermsOfTaxonomyData(terms, taxonomyUID);
-        const taxonomyName = taxonomy?.name ? taxonomy.name : '';
-        const termFileName = `${stackName ? stackName : stack.name}_${taxonomyName}_${taxonomyUID}_terms.csv`;
+        const taxonomyName = taxonomy?.name ?? '';
+        const termFileName = `${stackName ?? stack.name}_${taxonomyName}_${taxonomyUID}_terms.csv`;
         if (formattedTermsData?.length) {
           util.write(this, formattedTermsData, termFileName, 'terms');
         } else {
