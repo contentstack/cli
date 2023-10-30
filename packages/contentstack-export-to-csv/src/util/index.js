@@ -869,7 +869,7 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
 async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName, teamUid) {
   const roles = await getRoleData(managementAPIClient, stackRoleMapping.stackApiKey);
   const stackRole = {};
-  roles?.items.forEach((role) => {
+  roles?.items?.forEach((role) => {
     if (!stackRole.hasOwnProperty(role?.uid)) {
       stackRole[role?.uid] = role?.name;
       stackRole[role?.stack?.api_key] = {name: role?.stack?.name, uid: role?.stack?.uid }
