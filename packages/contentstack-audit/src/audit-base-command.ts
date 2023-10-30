@@ -176,8 +176,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       }
     }
 
-    let gfSchema = existsSync(gfPath) ? (JSON.parse(readFileSync(gfPath, 'utf-8')) as ContentTypeStruct[]) : [];
-    let ctSchema = existsSync(ctPath) ? (JSON.parse(readFileSync(ctPath, 'utf-8')) as ContentTypeStruct[]) : [];
+    const gfSchema = existsSync(gfPath) ? (JSON.parse(readFileSync(gfPath, 'utf8')) as ContentTypeStruct[]) : [];
+    const ctSchema = existsSync(ctPath) ? (JSON.parse(readFileSync(ctPath, 'utf8')) as ContentTypeStruct[]) : [];
 
     return { ctSchema, gfSchema };
   }
