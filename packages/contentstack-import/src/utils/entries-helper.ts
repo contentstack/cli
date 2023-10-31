@@ -195,7 +195,8 @@ export const lookupEntries = function (
   let entry = JSON.stringify(data.entry);
   uids.forEach(function (uid: any) {
     if (mappedUids.hasOwnProperty(uid)) {
-      entry = entry.replace(new RegExp(uid, 'img'), mappedUids[uid]);
+      const escapedUid = uid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      entry = entry.replace(new RegExp(escapedUid, 'img'), mappedUids[uid]);
       mapped.push(uid);
     } else {
       unmapped.push(uid);
