@@ -140,5 +140,4 @@ export default interface DefaultConfig {
   marketplaceAppEncryptionKey: string;
   getEncryptionKeyMaxRetry: number;
   createBackupDir?: string;
-  overwriteSupportedModules: string[];
 }
