@@ -10,14 +10,19 @@ export const doesBranchExist = async (stack, branchName) => {
     });
 };
 
-export const isManagementTokenValid =async (stackAPIKey, managementToken) => {
+export const isManagementTokenValid = async (stackAPIKey, managementToken) => {
   const httpClient = new HttpClient({ headers: { api_key: stackAPIKey, authorization: managementToken } });
+  try {
+    const response = (await httpClient.get(`${configHandler.get('region').cma}/v3/environments?limit=1`))?.data;
 
-  const response = (await httpClient.get(`${configHandler.get('region').cma}/v3/environments?limit=1`)).data;
-  
-  if (response?.error_code === 105 || "error_code" in response) {
-    cliux.print(`error: Management Token or Stack API key is Not Valid. ${response.error_message || response.errorMessage}`,{color:"red"});
-    return false
+    if (response?.environments) {
+      return { valid: true, message: `valid token and stack api key` }
+    } else if(response?.error_code) {
+      return { valid: false, message: response.error_message };
+    } else {
+      throw typeof response === "string"? response : "";
+    }
+  } catch (error) {
+    return { valid: false, message: error };
   }
-  return true
 }
