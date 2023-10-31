@@ -29,7 +29,7 @@ export default class ImportAssets extends BaseClass {
   private assetsUidMap: Record<string, unknown> = {};
   private assetsUrlMap: Record<string, unknown> = {};
   private assetsFolderMap: Record<string, unknown> = {};
-  private rootFolder: { uid: any; name: any; parent_uid: unknown; created_at: any };
+  private rootFolder: { uid: string; name: string; parent_uid: string; created_at: string };
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
