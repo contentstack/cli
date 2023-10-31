@@ -6,6 +6,7 @@ const {
   isAuthenticated,
   cliux,
   doesBranchExist,
+  isManagementTokenValid
 } = require('@contentstack/cli-utilities');
 const util = require('../../util');
 const config = require('../../util/config');
@@ -117,6 +118,11 @@ class ExportToCsvCommand extends Command {
             let contentTypes = [];
 
             if (managementTokenAlias) {
+              const valid = await isManagementTokenValid(stackAPIKey,listOfTokens[managementTokenAlias].token);
+              if(!valid) {
+                cliux.print("error: Exiting the command as the management token or stack api key is invalid", {color: "red"});
+                process.exit(1);
+              }
               const { stackDetails, apiClient } = await this.getAliasDetails(managementTokenAlias, stackName);
               managementAPIClient = apiClient;
               stack = stackDetails;
