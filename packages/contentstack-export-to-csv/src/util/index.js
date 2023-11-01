@@ -20,7 +20,7 @@ function chooseOrganization(managementAPIClient, action) {
   return new Promise(async (resolve, reject) => {
     try {
       let organizations;
-      if (action === config.exportUsers || action === 'teams') {
+      if (action === config.exportUsers || action === config.exportTeams || action === 'teams') {
         organizations = await getOrganizationsWhereUserIsAdmin(managementAPIClient);
       } else {
         organizations = await getOrganizations(managementAPIClient);
@@ -860,7 +860,7 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
     }
   }
   const fileName = `${kebabize('Stack_Role_Mapping'.replace(config.organizationNameRegex, ''))}${
-    teamUid ? teamUid : ''
+    teamUid ? `_${teamUid}` : ''
   }.csv`;
 
   write(this, stackRoleWithTeamData, fileName, 'Team Stack Role details');
