@@ -10,6 +10,7 @@ const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 const config = require('./config.js');
 const { cliux, configHandler, HttpClient } = require('@contentstack/cli-utilities');
+const { error } = require('console');
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
 
@@ -845,6 +846,7 @@ async function getTeamsDetail(allTeamsData, organization, teamUid) {
 
 async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
   let stackRoleWithTeamData = [];
+  let flag = false;
   if (teamUid) {
     const team = find(allTeamsData,function(teamObject) { return teamObject?.uid===teamUid });
     for (const stack of team?.stackRoleMapping) {
@@ -859,6 +861,36 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
       }
     }
   }
+
+  stackRoleWithTeamData?.forEach((team)=>{
+    if(team['Stack Name']==='') {
+      flag = true;
+    }
+  })
+
+  if(flag) {
+    let export_stack_role = [
+      {
+        type: 'list',
+        name: 'chooseExport',
+        message: `You don't have access to view the roles in the above stacks. Would you still like to export { Stack Name, Stack Uid, Role Name } field will be empty`,
+        choices: ['yes', 'no'],
+        loop: false,
+      }]
+      const exportStackRole = await inquirer
+      .prompt(export_stack_role)
+      .then(( chosenOrg ) => {
+        return chosenOrg
+      })
+      .catch((error) => {
+        cliux.print(error, {color:'red'});
+        process.exit(1);
+      });
+      if(exportStackRole.chooseExport === 'no') {
+        process.exit(1);
+      } 
+  }
+
   const fileName = `${kebabize('Stack_Role_Mapping'.replace(config.organizationNameRegex, ''))}${
     teamUid ? `_${teamUid}` : ''
   }.csv`;
@@ -888,7 +920,6 @@ async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName,
       'Role Uid': role || '',
     };
   });
-
   return stackRoleMapOfTeam;
 }
 
