@@ -869,7 +869,10 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
 async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName, teamUid) {
   const roles = await getRoleData(managementAPIClient, stackRoleMapping.stackApiKey);
   const stackRole = {};
-  roles?.items.forEach((role) => {
+  if(!roles.hasOwnProperty('items')) {
+    cliux.print(`warning: You don't have admin access to stack with API Key ${stackRoleMapping.stackApiKey} to access the stack role data`,{color:"yellow"});
+  }
+  roles?.items?.forEach((role) => {
     if (!stackRole.hasOwnProperty(role?.uid)) {
       stackRole[role?.uid] = role?.name;
       stackRole[role?.stack?.api_key] = {name: role?.stack?.name, uid: role?.stack?.uid }
@@ -879,10 +882,10 @@ async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName,
     return {
       'Team Name': teamName,
       'Team Uid': teamUid,
-      'Stack Name': stackRole[stackRoleMapping?.stackApiKey]?.name,
-      'Stack Uid': stackRole[stackRoleMapping?.stackApiKey]?.uid,
-      'Role Name': stackRole[role],
-      'Role Uid': role,
+      'Stack Name': stackRole[stackRoleMapping?.stackApiKey]?.name || '',
+      'Stack Uid': stackRole[stackRoleMapping?.stackApiKey]?.uid || '',
+      'Role Name': stackRole[role] || '',
+      'Role Uid': role || '',
     };
   });
 
@@ -890,7 +893,11 @@ async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName,
 }
 
 async function getRoleData(managementAPIClient, stackApiKey) {
-  return await managementAPIClient.stack({ api_key: stackApiKey }).role().fetchAll();
+  try {
+    return await managementAPIClient.stack({ api_key: stackApiKey }).role().fetchAll();
+  } catch (error) {
+    return {}
+  }
 }
 
 async function getTeamsUserDetails(teamsObject) {
