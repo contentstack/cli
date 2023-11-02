@@ -792,7 +792,7 @@ async function exportTeams(managementAPIClient, organization, teamUid) {
   );
   const allTeamsData = await exportOrgTeams(managementAPIClient, organization);
   if (!allTeamsData?.length) {
-    cliux.print(`info: There are not teams in the organization named ${organization?.name}`);
+    cliux.print(`info: The organization ${organization?.name} does not have any teams associated with it. Please verify and provide the correct organization name.`);
   } else {
     const modifiedTeam = cloneDeep(allTeamsData);
     modifiedTeam.forEach((team) => {
@@ -803,13 +803,13 @@ async function exportTeams(managementAPIClient, organization, teamUid) {
     write(this, modifiedTeam, fileName, ' organization Team details');
     // exporting teams user data or a single team user data
     cliux.print(
-      `info: Exporting the teams user data for ${teamUid ? `Team ` + teamUid : `Organisation ` + organization?.name}`,
+      `info: Exporting the teams user data for ${teamUid ? `team ` + teamUid : `organisation ` + organization?.name}`,
       { color: 'blue' },
     );
     await getTeamsDetail(allTeamsData, organization, teamUid);
     cliux.print(
-      `info: Exporting the Stack Role Details for  ${
-        teamUid ? `Team ` + teamUid : `Organisation ` + organization?.name
+      `info: Exporting the stack role details for  ${
+        teamUid ? `team ` + teamUid : `organisation ` + organization?.name
       }`,
       { color: 'blue' },
     );
@@ -871,7 +871,7 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
     }
   }
   if(stackNotAdmin?.length) {
-    cliux.print(`warning: You don't have admin access to the following stack with API Keys to access stack role data `,{color:"yellow"});
+    cliux.print(`warning: Admin access denied to the following stacks using the provided API keys. Please get in touch with the stack owner to request access.`,{color:"yellow"});
     cliux.print(`${stackNotAdmin.join(' , ')}`,{color:"yellow"});
   }
   if(flag) {
@@ -879,7 +879,7 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
       {
         type: 'list',
         name: 'chooseExport',
-        message: `You don't have access to view the roles in the above stacks. Would you still like to export { Stack Name, Stack Uid, Role Name } field will be empty`,
+        message: `Access denied: Please confirm if you still want to continue exporting the data without the { Stack Name, Stack Uid, Role Name } fields.`,
         choices: ['yes', 'no'],
         loop: false,
       }]
