@@ -10,7 +10,6 @@ const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 const config = require('./config.js');
 const { cliux, configHandler, HttpClient } = require('@contentstack/cli-utilities');
-const { error } = require('console');
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
 
