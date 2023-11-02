@@ -734,13 +734,13 @@ async function getOrgRoles(managementAPIClient, org) {
   let roleMap = {}; // for org level there are two roles only admin and member
 
   // SDK call to get the role uids
-  managementAPIClient
+  await managementAPIClient
     .organization(org.uid)
     .roles()
     .then((roles) => {
       roles.items.forEach((item) => {
         if (item.name === 'member' || item.name === 'admin') {
-          roleMap.name = item.uid;
+          roleMap[item.name] = item.uid;
         }
       });
     })
@@ -767,7 +767,7 @@ async function cleanTeamsData(data, managementAPIClient, org) {
     return data.map((team) => {
       team = omit(team, fieldToBeDeleted);
     
-      team.organizationRole = team.organizationRole === roleMap["member"] ? "member" : "admin";
+      team.organizationRole = (team.organizationRole === roleMap["member"]) ? "member" : "admin";
     
       if (!team.hasOwnProperty("description")) {
         team.description = "";
@@ -847,27 +847,33 @@ async function getTeamsDetail(allTeamsData, organization, teamUid) {
 async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
   let stackRoleWithTeamData = [];
   let flag = false;
+  const stackNotAdmin = [];
   if (teamUid) {
     const team = find(allTeamsData,function(teamObject) { return teamObject?.uid===teamUid });
     for (const stack of team?.stackRoleMapping) {
       const roleData = await mapRoleWithTeams(managementAPIClient, stack, team?.name, team?.uid);
       stackRoleWithTeamData.push(...roleData);
+      if(roleData[0]['Stack Name']==='') {
+        flag = true;
+        stackNotAdmin.push(stack.stackApiKey);
+      }
     }
   } else {
     for (const team of allTeamsData ?? []) {
       for (const stack of team?.stackRoleMapping ?? []) {
         const roleData = await mapRoleWithTeams(managementAPIClient, stack, team?.name, team?.uid);
         stackRoleWithTeamData.push(...roleData);
+        if(roleData[0]['Stack Name']==='') {
+          flag = true;
+          stackNotAdmin.push(stack.stackApiKey);
+        }
       }
     }
   }
-
-  stackRoleWithTeamData?.forEach((team)=>{
-    if(team['Stack Name']==='') {
-      flag = true;
-    }
-  })
-
+  if(stackNotAdmin?.length) {
+    cliux.print(`warning: You don't have admin access to the following stack with API Keys to access stack role data `,{color:"yellow"});
+    cliux.print(`${stackNotAdmin.join(' , ')}`,{color:"yellow"});
+  }
   if(flag) {
     let export_stack_role = [
       {
@@ -901,9 +907,6 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
 async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName, teamUid) {
   const roles = await getRoleData(managementAPIClient, stackRoleMapping.stackApiKey);
   const stackRole = {};
-  if(!roles.hasOwnProperty('items')) {
-    cliux.print(`warning: You don't have admin access to stack with API Key ${stackRoleMapping.stackApiKey} to access the stack role data`,{color:"yellow"});
-  }
   roles?.items?.forEach((role) => {
     if (!stackRole.hasOwnProperty(role?.uid)) {
       stackRole[role?.uid] = role?.name;
