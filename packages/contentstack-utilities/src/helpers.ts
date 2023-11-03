@@ -23,6 +23,7 @@ export const isManagementTokenValid = async (stackAPIKey, managementToken) => {
       throw typeof response === "string"? response : "";
     }
   } catch (error) {
-    return { valid: false, message: error };
+    cliux.print(`Failed to check the validity of the Management token. ${error}`, {color:"red"});
+    process.exit(1)
   }
 }
