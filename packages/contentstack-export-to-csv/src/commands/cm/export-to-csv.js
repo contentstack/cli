@@ -15,8 +15,8 @@ class ExportToCsvCommand extends Command {
     action: flags.string({
       required: false,
       multiple: false,
-      options: ['entries', 'users'],
-      description: `Option to export data (entries, users)`,
+      options: ['entries', 'users', 'teams'],
+      description: `Option to export data (entries, users, teams)`,
     }),
     alias: flags.string({
       char: 'a',
@@ -59,6 +59,9 @@ class ExportToCsvCommand extends Command {
       multiple: false,
       required: false,
     }),
+    "team-uid": flags.string({
+      description: 'Uid of the team whose user data and stack roles are required'
+    })
   };
 
   async run() {
@@ -75,11 +78,18 @@ class ExportToCsvCommand extends Command {
           'content-type': contentTypesFlag,
           alias: managementTokenAlias,
           branch: branchUid,
+          "team-uid": teamUid
         },
       } = await this.parse(ExportToCsvCommand);
 
       if (!managementTokenAlias) {
         managementAPIClient = await managementSDKClient({ host: this.cmaHost });
+        if (!isAuthenticated()) {
+          this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
+            exit: 2,
+            suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
+          });
+        }
       }
 
       if (actionFlag) {
@@ -113,14 +123,6 @@ class ExportToCsvCommand extends Command {
               this.error('Provided management token alias not found in your config.!');
             } else {
               let organization;
-
-              if (!isAuthenticated()) {
-                this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
-                  exit: 2,
-                  suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-                });
-              }
-
               if (org) {
                 organization = { uid: org };
               } else {
@@ -227,12 +229,6 @@ class ExportToCsvCommand extends Command {
         case config.exportUsers:
         case 'users': {
           try {
-            if (!isAuthenticated()) {
-              this.error(config.CLI_EXPORT_CSV_LOGIN_FAILED, {
-                exit: 2,
-                suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-              });
-            }
             let organization;
 
             if (org) {
@@ -258,6 +254,24 @@ class ExportToCsvCommand extends Command {
           }
           break;
         }
+        case config.exportTeams:
+        case 'teams': {
+          try{
+            let organization;
+            if (org) {
+              organization = { uid: org, name: orgName || org };
+            } else {
+              organization = await util.chooseOrganization(managementAPIClient, action); // prompt for organization
+            }
+          
+            await util.exportTeams(managementAPIClient,organization,teamUid);
+          } catch (error) {
+            if (error.message || error.errorMessage) {
+              cliux.error(util.formatError(error));
+            }
+          }
+        }
+        break;
       }
     } catch (error) {
       if (error.message || error.errorMessage) {
@@ -310,6 +324,21 @@ ExportToCsvCommand.examples = [
   '',
   'Exporting organization users to csv with organization name provided',
   'csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>',
+  '',
+  'Exporting Organizations Teams to CSV',
+  'csdx cm:export-to-csv --action <teams>',
+  '',
+  'Exporting Organizations Teams to CSV with org-uid',
+  'csdx cm:export-to-csv --action <teams> --org <org-uid>',
+  '',
+  'Exporting Organizations Teams to CSV with team uid',
+  'csdx cm:export-to-csv --action <teams> --team-uid <team-uid>',
+  '',
+  'Exporting Organizations Teams to CSV with org-uid and team uid',
+  'csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid>',
+  '',
+  'Exporting Organizations Teams to CSV with org-uid and team uid',
+  'csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid> --org-name <org-name>',
 ];
 
 module.exports = ExportToCsvCommand;
