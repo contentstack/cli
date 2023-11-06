@@ -1,6 +1,5 @@
 import map from 'lodash/map';
 import winston from 'winston';
-import { existsSync } from 'fs';
 import chalk, { Chalk } from 'chalk';
 import replace from 'lodash/replace';
 import isObject from 'lodash/isObject';
@@ -61,36 +60,27 @@ export default class Logger {
       consoleOptions.level = logType;
     }
 
-    if (existsSync(this.config.basePath)) {
-      const filename = normalize(resolve(this.config.basePath, 'logs', `${logType}.log`)).replace(
-        /^(\.\.(\/|\\|$))+/,
-        '',
-      );
-      const loggerOptions: winston.LoggerOptions = {
-        transports: [
-          new winston.transports.File({
-            ...this.loggerOptions,
-            level: logType,
-            filename,
-          }),
-          new winston.transports.Console(consoleOptions),
-        ],
-        levels: customLevels.levels,
-      };
+    const filename = normalize(resolve(this.config.basePath, 'logs', `${logType}.log`)).replace(
+      /^(\.\.(\/|\\|$))+/,
+      '',
+    );
+    const loggerOptions: winston.LoggerOptions = {
+      transports: [
+        new winston.transports.File({
+          ...this.loggerOptions,
+          level: logType,
+          filename,
+        }),
+        new winston.transports.Console(consoleOptions),
+      ],
+      levels: customLevels.levels,
+    };
 
-      if (logType === 'error') {
-        loggerOptions.levels = { error: 0 };
-      }
-
-      return winston.createLogger(loggerOptions);
+    if (logType === 'error') {
+      loggerOptions.levels = { error: 0 };
     }
 
-    winston
-      .createLogger({
-        transports: [new winston.transports.Console(consoleOptions)],
-      })
-      .error('Provided base path is not valid');
-    throw new Error('Provided base path is not valid');
+    return winston.createLogger(loggerOptions);
   }
 
   /**
@@ -131,7 +121,7 @@ export default class Logger {
 
     const replaceCredentials = (item: any) => {
       try {
-        return JSON.stringify(item).replace(/authtoken":"abc................/g, 'authtoken":"abc....');
+        return JSON.stringify(item).replace(/"authtoken":\s*".*?"/, '"authtoken": "..."');
       } catch (error) {}
 
       return item;
