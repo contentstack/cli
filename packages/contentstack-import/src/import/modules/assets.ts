@@ -339,7 +339,7 @@ export default class ImportAssets extends BaseClass {
       // 3. Replace matched assets
       this.rootFolder = {
         uid: uuid(),
-        name: `Assets-${formatDate()}`,
+        name: `Import-${formatDate()}`,
         parent_uid: null,
         created_at: null,
       };
