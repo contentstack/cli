@@ -4,8 +4,8 @@
   "author": "@contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "~1.2.14",
-    "@contentstack/cli-utilities": "~1.5.4",
+    "@contentstack/cli-command": "~1.2.15",
+    "@contentstack/cli-utilities": "~1.5.5",
     "async": "^3.2.4",
     "callsites": "^3.1.0",
     "cardinal": "^2.1.1",
