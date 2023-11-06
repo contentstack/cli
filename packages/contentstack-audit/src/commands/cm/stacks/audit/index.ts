@@ -44,7 +44,6 @@ export default class Audit extends AuditBaseCommand {
       await this.start('cm:stacks:audit');
     } catch (error) {
       this.log(error instanceof Error ? error.message : error, 'error');
-      console.trace(error);
       ux.action.stop('Process failed.!');
       this.exit(1);
     }

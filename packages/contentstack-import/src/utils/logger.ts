@@ -23,7 +23,7 @@ function returnString(args: any[]) {
       .map(function (item) {
         if (item && typeof item === 'object') {
           try {
-            return JSON.stringify(item).replace(/authtoken\":\d"blt................/g, 'authtoken":"blt....');
+            return JSON.stringify(item).replace(/authtoken\":\d".................../g, 'authtoken":"blt....');
           } catch (error) {}
           return item;
         }
