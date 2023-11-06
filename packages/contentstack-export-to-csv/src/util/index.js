@@ -729,7 +729,7 @@ async function exportOrgTeams(managementAPIClient, org) {
   return teamsObjectArray;
 }
 
-async function getOrgRoles(managementAPIClient, org) {
+async function getOrgRolesForTeams(managementAPIClient, org) {
   let roleMap = {}; // for org level there are two roles only admin and member
 
   // SDK call to get the role uids
@@ -750,7 +750,7 @@ async function getOrgRoles(managementAPIClient, org) {
 }
 
 async function cleanTeamsData(data, managementAPIClient, org) {
-  const roleMap = await getOrgRoles(managementAPIClient, org);
+  const roleMap = await getOrgRolesForTeams(managementAPIClient, org);
   const fieldToBeDeleted = [
     '_id',
     'createdAt',
