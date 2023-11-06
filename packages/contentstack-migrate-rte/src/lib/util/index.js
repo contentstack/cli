@@ -15,7 +15,6 @@ const {
   isPlainObject,
 } = require('lodash');
 const Validator = require('jsonschema').Validator;
-const { pathValidator } = require('@contentstack/cli-utilities');
 const configSchema = require('./config_schema.json');
 const { JSDOM } = require('jsdom');
 const collapseWithSpace = require('collapse-whitespace');
@@ -89,7 +88,6 @@ async function getConfig(flags) {
     let config;
     if (flags['config-path']) {
       const configPath = flags['config-path'];
-      pathValidator.validatePath(configPath);
       config = require(nodePath.resolve(configPath));
     } else {
       config = {
