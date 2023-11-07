@@ -7,11 +7,12 @@ import isEmpty from 'lodash/isEmpty';
 import uniq from 'lodash/uniq';
 import { existsSync } from 'node:fs';
 import includes from 'lodash/includes';
+import { v4 as uuid } from 'uuid';
 import { resolve as pResolve, join } from 'node:path';
 import { FsUtility } from '@contentstack/cli-utilities';
 
 import config from '../../config';
-import { log, formatError } from '../../utils';
+import { log, formatError, formatDate } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams } from '../../types';
 
@@ -28,6 +29,7 @@ export default class ImportAssets extends BaseClass {
   private assetsUidMap: Record<string, unknown> = {};
   private assetsUrlMap: Record<string, unknown> = {};
   private assetsFolderMap: Record<string, unknown> = {};
+  private rootFolder: { uid: string; name: string; parent_uid: string; created_at: string };
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -227,6 +229,9 @@ export default class ImportAssets extends BaseClass {
 
     if (asset.parent_uid) {
       asset.parent_uid = this.assetsFolderMap[asset.parent_uid];
+    } else if (this.importConfig.replaceExisting) {
+      // adds the root folder as parent for all assets in the root level
+      asset.parent_uid = this.assetsFolderMap[this.rootFolder.uid];
     }
 
     apiOptions.apiData = asset;
@@ -304,16 +309,17 @@ export default class ImportAssets extends BaseClass {
    * @returns {Array<Record<string, any>>} Array<Record<string, any>>
    */
   constructFolderImportOrder(folders: any): Array<Record<string, any>> {
-    let parentUid: unknown[] = [];
+    let parentUIds: unknown[] = [];
+
     // NOTE: Read root folder
     const importOrder = filter(folders, { parent_uid: null }).map(({ uid, name, parent_uid, created_at }) => {
-      parentUid.push(uid);
+      parentUIds.push(uid);
       return { uid, name, parent_uid, created_at };
     });
 
-    while (!isEmpty(parentUid)) {
+    while (!isEmpty(parentUIds)) {
       // NOTE: Read nested folders every iteration until we find empty folders
-      parentUid = filter(folders, ({ parent_uid }) => includes(parentUid, parent_uid)).map(
+      parentUIds = filter(folders, ({ parent_uid }) => includes(parentUIds, parent_uid)).map(
         ({ uid, name, parent_uid, created_at }) => {
           importOrder.push({ uid, name, parent_uid, created_at });
           return uid;
@@ -321,6 +327,30 @@ export default class ImportAssets extends BaseClass {
       );
     }
 
+    if (this.importConfig.replaceExisting) {
+      // Note: adds a root folder to distinguish latest asset uploads
+      // Todo: This temporary approach should be updated with asset and folder overwrite strategy, which follows
+      // folder overwrite
+      // 1. Create folder trees, 2. Export all target stack folders, 3.Match the source to target folders and create a list of existing folders
+      // 4. Replace existing folders
+      // Asset overwrite
+      // 1. Search asset with title + filename + type
+      // 2. if there are multiple assets fetched with same query, then check the parent uid against mapper created while importing folders
+      // 3. Replace matched assets
+      this.rootFolder = {
+        uid: uuid(),
+        name: `Import-${formatDate()}`,
+        parent_uid: null,
+        created_at: null,
+      };
+      filter(importOrder, (folder, index) => {
+        if (!folder.parent_uid) {
+          importOrder.splice(index, 1, { ...folder, parent_uid: this.rootFolder.uid });
+        }
+      });
+      // NOTE: Adds root folder
+      importOrder.unshift(this.rootFolder);
+    }
     return importOrder;
   }
 }
