@@ -272,7 +272,6 @@ describe('AuditBaseCommand class', () => {
       .it('should apply filter on output', async () => {
         class CMD extends AuditBaseCommand {
           async run() {
-            // this.currentCommand = 'cm:stacks:audit:fix';
             this.sharedConfig.reportPath = resolve(__dirname, 'mock', 'contents');
             this.sharedConfig.flags.columns = 'Path';
             this.sharedConfig.flags.filter = 'Title=T1';
@@ -309,7 +308,6 @@ describe('AuditBaseCommand class', () => {
           } as FileTransportInstance,
       )
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
-      // .stub(fs, 'createWriteStream', () => new PassThrough())
       .it('should fail with error', async () => {
         class CMD extends AuditBaseCommand {
           async run() {
@@ -323,7 +321,6 @@ describe('AuditBaseCommand class', () => {
         try {
           await CMD.run([]);
         } catch (error: any) {
-          // ENOENT: no such file or directory, open '/Users/antony.raj/Documents/code/cli/packages/contentstack-audit/test/unit/mock/contents-1/content-types.csv'
           expect(error.message).to.be.include(
             `ENOENT: no such file or directory, open '${resolve(__dirname, 'mock', 'contents-1')}/content-types.csv'`,
           );
