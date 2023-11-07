@@ -107,7 +107,7 @@ export default class EntriesImport extends BaseClass {
       for (let entryRequestOption of entryRequestOptions) {
         await this.createEntries(entryRequestOption);
       }
-      if (this.importConfig.replaceExisting && indexOf(this.importConfig.overwriteSupportedModules, 'entries') !== -1) {
+      if (this.importConfig.replaceExisting) {
         // Note: Instead of using entryRequestOptions, we can prepare request options for replace, to avoid unnecessary operations
         for (let entryRequestOption of entryRequestOptions) {
           await this.replaceEntries(entryRequestOption).catch((error) => {
@@ -336,10 +336,7 @@ export default class EntriesImport extends BaseClass {
       //Note: write existing entries into files to handler later
       if (error.errorCode === 119) {
         if (error?.errors?.title || error?.errors?.uid) {
-          if (
-            this.importConfig.replaceExisting &&
-            indexOf(this.importConfig.overwriteSupportedModules, 'entries') !== -1
-          ) {
+          if (this.importConfig.replaceExisting) {
             entry.entryOldUid = uid;
             entry.sourceEntryFilePath = path.join(basePath, additionalInfo.entryFileName); // stores source file path temporarily
             existingEntriesFileHelper.writeIntoFile({ [uid]: entry } as any, { mapKeyVal: true });
