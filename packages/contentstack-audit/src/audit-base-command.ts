@@ -280,11 +280,9 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     const csvStream = csv.format({ headers: true });
     const csvPath = join(this.sharedConfig.reportPath, `${moduleName}.csv`);
     const assetFileStream = createWriteStream(csvPath);
-    assetFileStream.on('error', (error) => {
-      throw error;
-    });
-
+    
     return new Promise<void>((resolve, reject) => {
+      assetFileStream.on('error', reject);
       csvStream.pipe(assetFileStream).on('close', resolve).on('error', reject);
       const defaultColumns = Object.keys(OutputColumn);
       const userDefinedColumns = this.sharedConfig.flags.columns ? this.sharedConfig.flags.columns.split(',') : null;
@@ -310,10 +308,11 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           row['Fix status'] = row.fixStatus;
         }
 
-        csvStream.write(row);
+        csvStream.write(row, 'utf8');
       }
 
       csvStream.end();
+      assetFileStream.destroy()
     });
   }
 }
