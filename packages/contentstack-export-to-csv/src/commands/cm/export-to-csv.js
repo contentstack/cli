@@ -242,7 +242,7 @@ class ExportToCsvCommand extends Command {
     const stackInit = {
       api_key: stack.apiKey,
     };
-    if(stack?.branch_uid) stackInit['branch_uid'] = stack.branch_uid;
+    if (stack?.branch_uid) stackInit['branch_uid'] = stack.branch_uid;
     if (stack.token) {
       return managementAPIClient.stack({
         ...stackInit,
@@ -360,10 +360,12 @@ class ExportToCsvCommand extends Command {
    * @param {string} taxUID
    */
   async createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxUID) {
+    //TODO: Temp variable to export taxonomies in importable format will replaced with flag once decided
+    const importableCSV = true;
     const payload = {
       stackAPIClient,
       type: '',
-      limit: config.limit || 100
+      limit: config.limit || 100,
     };
     //check whether the taxonomy is valid or not
     let taxonomies = [];
@@ -375,28 +377,36 @@ class ExportToCsvCommand extends Command {
       taxonomies = await util.getAllTaxonomies(payload);
     }
 
-    const formattedTaxonomiesData = util.formatTaxonomiesData(taxonomies);
-    if (formattedTaxonomiesData?.length) {
-      const fileName = `${stackName ? stackName : stack.name}_taxonomies.csv`;
-      util.write(this, formattedTaxonomiesData, fileName, 'taxonomies');
-    } else {
-      cliux.print('info: No taxonomies found! Please provide a valid stack.', { color: 'blue' });
-    }
+    if (!importableCSV) {
+      const formattedTaxonomiesData = util.formatTaxonomiesData(taxonomies);
+      if (formattedTaxonomiesData?.length) {
+        const fileName = `${stackName ? stackName : stack.name}_taxonomies.csv`;
+        util.write(this, formattedTaxonomiesData, fileName, 'taxonomies');
+      } else {
+        cliux.print('info: No taxonomies found! Please provide a valid stack.', { color: 'blue' });
+      }
 
-    for (let index = 0; index < taxonomies?.length; index++) {
-      const taxonomy = taxonomies[index];
-      const taxonomyUID = taxonomy?.uid;
-      if (taxonomyUID) {
-        payload['taxonomyUID'] = taxonomyUID;
-        const terms = await util.getAllTermsOfTaxonomy(payload);
-        const formattedTermsData = util.formatTermsOfTaxonomyData(terms, taxonomyUID);
-        const taxonomyName = taxonomy?.name ?? '';
-        const termFileName = `${stackName ?? stack.name}_${taxonomyName}_${taxonomyUID}_terms.csv`;
-        if (formattedTermsData?.length) {
-          util.write(this, formattedTermsData, termFileName, 'terms');
-        } else {
-          cliux.print(`info: No terms found for the taxonomy UID - '${taxonomyUID}'!`, { color: 'blue' });
+      for (let index = 0; index < taxonomies?.length; index++) {
+        const taxonomy = taxonomies[index];
+        const taxonomyUID = taxonomy?.uid;
+        if (taxonomyUID) {
+          payload['taxonomyUID'] = taxonomyUID;
+          const terms = await util.getAllTermsOfTaxonomy(payload);
+          const formattedTermsData = util.formatTermsOfTaxonomyData(terms, taxonomyUID);
+          const taxonomyName = taxonomy?.name ?? '';
+          const termFileName = `${stackName ?? stack.name}_${taxonomyName}_${taxonomyUID}_terms.csv`;
+          if (formattedTermsData?.length) {
+            util.write(this, formattedTermsData, termFileName, 'terms');
+          } else {
+            cliux.print(`info: No terms found for the taxonomy UID - '${taxonomyUID}'!`, { color: 'blue' });
+          }
         }
+      }
+    } else {
+      const fileName = `${stackName ?? stack.name}_taxonomies.csv`;
+      const { taxonomiesData, headers } = await util.createImportableCSV(payload, taxonomies);
+      if (taxonomiesData?.length) {
+        util.write(this, taxonomiesData, fileName, 'taxonomies', headers);
       }
     }
   }
