@@ -8,7 +8,6 @@ const Listr = require('listr');
 const { resolve, extname } = require('path');
 const { Command } = require('@contentstack/cli-command');
 const { waterfall } = require('async');
-const { pathValidator } = require('@contentstack/cli-utilities');
 const { Parser } = require('../../../modules');
 const { ActionList } = require('../../../actions');
 const fs = require('fs');
@@ -130,14 +129,14 @@ class MigrationCommand extends Command {
   }
 
   async execSingleFile(filePath, mapInstance) {
-    try {
-      pathValidator.validatePath(filePath);
-      // Resolved absolute path
-      const resolvedMigrationPath = resolve(filePath);
-      // User provided migration function
-      const migrationFunc = require(resolvedMigrationPath);
+    // Resolved absolute path
+    const resolvedMigrationPath = resolve(filePath);
+    // User provided migration function
+    const migrationFunc = require(resolvedMigrationPath);
 
-      const parser = new Parser();
+    const parser = new Parser();
+
+    try {
       const migrationParser = await parser.getMigrationParser(migrationFunc);
       if (migrationParser.hasErrors) {
         errorHelper(migrationParser.hasErrors);
