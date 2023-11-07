@@ -9,7 +9,7 @@ import { TaxonomiesConfig, TermsConfig, ModuleClassParams } from '../../types';
 
 export default class ExportTaxonomies extends BaseClass {
   private taxonomies: Record<string, Record<string, string>>;
-  private terms: Record<string, Record<string, string>>;
+  private terms: Record<string, unknown>[];
   private taxonomiesConfig: TaxonomiesConfig;
   private termsConfig: TermsConfig;
   private qs: {
@@ -24,7 +24,7 @@ export default class ExportTaxonomies extends BaseClass {
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
     this.taxonomies = {};
-    this.terms = {};
+    this.terms = [];
     this.taxonomiesConfig = exportConfig.modules.taxonomies;
     this.termsConfig = exportConfig.modules.terms;
     this.qs = { include_count: true, skip: 0, asc: 'created_at' };
@@ -111,9 +111,9 @@ export default class ExportTaxonomies extends BaseClass {
 
     for (let index = 0; index < taxonomiesUID?.length; index++) {
       const taxonomyUID = taxonomiesUID[index];
-      this.terms = {};
+      this.terms = [];
       await this.fetchTermsOfTaxonomy(taxonomyUID);
-      if (this.terms === undefined || isEmpty(this.terms)) {
+      if (!this.terms?.length) {
         log(this.exportConfig, `No terms found for taxonomy - '${taxonomyUID}'!`, 'info');
       } else {
         fsUtil.writeFile(pResolve(this.termsFolderPath, `${taxonomyUID}-${this.termsConfig.fileName}`), this.terms);
@@ -164,8 +164,8 @@ export default class ExportTaxonomies extends BaseClass {
    */
   sanitizeTermsAttribs(terms: Record<string, string>[]) {
     for (let index = 0; index < terms?.length; index++) {
-      const termUID = terms[index]?.uid;
-      this.terms[termUID] = omit(terms[index], this.termsConfig.invalidKeys);
+      const term = omit(terms[index], this.termsConfig.invalidKeys);
+      this.terms.push(term)
     }
   }
 
