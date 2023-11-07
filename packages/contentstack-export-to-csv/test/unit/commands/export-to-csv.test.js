@@ -60,7 +60,7 @@ describe('export-to-csv with action taxonomies', () => {
       })
       .nock(cma, (api) => {
         api
-          .get('/v3/taxonomies?include_count=true&limit=100&skip=0&count=true')
+          .get('/v3/taxonomies?include_count=true&limit=100&skip=0')
           .reply(200, mockData.taxonomiesResp);
       })
       .nock(cma, (api) => {
