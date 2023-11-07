@@ -876,10 +876,10 @@ async function createImportableCSV(payload, taxonomies) {
 
 /**
  * Get the parent and child terms, then arrange them hierarchically in a CSV file.
- * @param {*} parentTerms list of parent terms(either parent_uid equal to null or match)
+ * @param {*} parentTerms list of parent terms
  * @param {*} terms respective terms of taxonomies
- * @param {*} taxonomiesData csv data
- * @param {*} headers list of headers including dynamically generated level
+ * @param {*} headers list of csv headers include taxonomy and terms column
+ * @param {*} termsData parent and child terms
  */
 function getParentAndChildTerms(parentTerms, terms, headers, termsData=[]) {
   for (let i = 0; i < parentTerms?.length; i++) {
