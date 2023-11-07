@@ -1,3 +1,4 @@
+import merge from 'lodash/merge';
 import { existsSync, readFileSync } from 'fs';
 import { Command } from '@contentstack/cli-command';
 import { Flags, FlagInput, Interfaces, cliux as ux } from '@contentstack/cli-utilities';
@@ -92,7 +93,10 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   registerConfig() {
     if (this.flags.config && existsSync(this.flags.config)) {
       try {
-        this.sharedConfig = JSON.parse(readFileSync(this.flags.config, { encoding: 'utf-8' }));
+        this.sharedConfig = merge(
+          this.sharedConfig,
+          JSON.parse(readFileSync(this.flags.config, { encoding: 'utf-8' })),
+        );
       } catch (error) {
         this.log(error, 'error');
       }
