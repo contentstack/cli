@@ -120,8 +120,7 @@ class ExportToCsvCommand extends Command {
             if (managementTokenAlias) {
               const checkManagementTokenValidity = await isManagementTokenValid(stackAPIKey,listOfTokens[managementTokenAlias].token);
               if(!checkManagementTokenValidity?.valid) {
-                cliux.print(`error: Management token or stack API key is invalid. ${checkManagementTokenValidity?.message||""}`, {color: "red"});
-                process.exit(1);
+                throw checkManagementTokenValidity.hasOwnProperty('valid')?(`error: Management token or stack API key is invalid. ${checkManagementTokenValidity?.message||""}`):checkManagementTokenValidity?.message||"";
               }
               const { stackDetails, apiClient } = await this.getAliasDetails(managementTokenAlias, stackName);
               managementAPIClient = apiClient;
