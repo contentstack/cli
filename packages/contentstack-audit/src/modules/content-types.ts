@@ -101,7 +101,7 @@ export default class ContentType {
       canWrite = this.config.flags.yes ?? (await ux.confirm(commonMsg.FIX_CONFIRMATION));
     }
 
-    if (canWrite) {
+    if (this.fix && canWrite) {
       writeFileSync(
         join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName),
         JSON.stringify(this.schema),
