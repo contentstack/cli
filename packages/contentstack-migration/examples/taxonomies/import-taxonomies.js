@@ -4,6 +4,7 @@ const find = require('lodash/find');
 
 module.exports = ({ migration, stackSDKInstance, managementAPIClient, config }) => {
   const dataDir = config['data-dir'];
+  const delimiter = config['delimiter'] ?? ','; // default comma
   //parent and child term pointer
   let parentDetails = { taxonomy_uid: '' };
   let stack;
@@ -71,7 +72,7 @@ module.exports = ({ migration, stackSDKInstance, managementAPIClient, config }) 
           if (!fs.existsSync(dataDir)) {
             throw new Error(`No such file or directory - ${dataDir}`);
           }
-          const taxonomies = await readCsv(dataDir, { headers: true });
+          const taxonomies = await readCsv(dataDir, { headers: true, delimiter });
 
           if (!taxonomies?.length) {
             throw new Error('No Taxonomies found!');
