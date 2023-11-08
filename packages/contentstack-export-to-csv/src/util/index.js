@@ -449,7 +449,7 @@ function getDateTime() {
   return dateTime.join('_');
 }
 
-function write(command, entries, fileName, message) {
+function write(command, entries, fileName, message, headers) {
   // eslint-disable-next-line no-undef
   if (process.cwd().split(delimeter).pop() !== 'data' && !fs.existsSync(directory)) {
     mkdirp.sync(directory);
@@ -461,7 +461,8 @@ function write(command, entries, fileName, message) {
   }
   // eslint-disable-next-line no-undef
   cliux.print(`Writing ${message} to file: ${process.cwd()}${delimeter}${fileName}`);
-  fastcsv.writeToPath(fileName, entries, { headers: true });
+  if (headers?.length) fastcsv.writeToPath(fileName, entries, { headers });
+  else fastcsv.writeToPath(fileName, entries, { headers: true });
 }
 
 function startupQuestions() {
@@ -822,7 +823,7 @@ function formatTermsOfTaxonomyData(terms, taxonomyUID) {
         UID: term.uid,
         Name: term.name,
         'Parent UID': term.parent_uid,
-        Depth: term.depth
+        Depth: term.depth,
       });
     });
     return formattedTerms;
@@ -840,6 +841,62 @@ function handleErrorMsg(err) {
     cliux.print(`Error: ${messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' });
   }
   process.exit(1);
+}
+
+/**
+ * create an importable CSV file, to utilize with the migration script.
+ * @param {*} payload api request payload
+ * @param {*} taxonomies taxonomies data
+ * @returns
+ */
+async function createImportableCSV(payload, taxonomies) {
+  let taxonomiesData = [];
+  let headers = ['Taxonomy Name','Taxonomy UID','Taxonomy Description'];
+  for (let index = 0; index < taxonomies?.length; index++) {
+    const taxonomy = taxonomies[index];
+    const taxonomyUID = taxonomy?.uid;
+    if (taxonomyUID) {
+      const sanitizedTaxonomy = sanitizeData({
+        'Taxonomy Name': taxonomy?.name,
+        'Taxonomy UID': taxonomyUID,
+        'Taxonomy Description': taxonomy?.description,
+      });
+      taxonomiesData.push(sanitizedTaxonomy);
+      payload['taxonomyUID'] = taxonomyUID;
+      const terms = await getAllTermsOfTaxonomy(payload);
+      //fetch all parent terms
+      const parentTerms = terms.filter((term) => term?.parent_uid === null);
+      const termsData = getParentAndChildTerms(parentTerms, terms, headers);
+      taxonomiesData.push(...termsData)
+    }
+  }
+
+  return {taxonomiesData, headers};
+}
+
+/**
+ * Get the parent and child terms, then arrange them hierarchically in a CSV file.
+ * @param {*} parentTerms list of parent terms
+ * @param {*} terms respective terms of taxonomies
+ * @param {*} headers list of csv headers include taxonomy and terms column
+ * @param {*} termsData parent and child terms
+ */
+function getParentAndChildTerms(parentTerms, terms, headers, termsData=[]) {
+  for (let i = 0; i < parentTerms?.length; i++) {
+    const parentTerm = parentTerms[i];
+    const levelUID = `Term Level${parentTerm.depth} UID`;
+    const levelName = `Term Level${parentTerm.depth} Name`;
+    if (headers.indexOf(levelName) === -1) headers.push(levelName);
+    if (headers.indexOf(levelUID) === -1) headers.push(levelUID);
+    const sanitizedTermData = sanitizeData({ [levelName]: parentTerm.name, [levelUID]: parentTerm.uid });
+    termsData.push(sanitizedTermData);
+    //fetch all sibling terms
+    const newParents = terms.filter((term) => term.parent_uid === parentTerm.uid);
+    if (newParents?.length) {
+      getParentAndChildTerms(newParents, terms, headers, termsData);
+    }
+  }
+  return termsData;
 }
 
 module.exports = {
@@ -873,5 +930,6 @@ module.exports = {
   formatTaxonomiesData,
   formatTermsOfTaxonomyData,
   getTaxonomy,
-  getStacks
+  getStacks,
+  createImportableCSV,
 };
