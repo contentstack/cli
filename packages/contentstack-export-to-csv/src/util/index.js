@@ -449,7 +449,7 @@ function getDateTime() {
   return dateTime.join('_');
 }
 
-function write(command, entries, fileName, message, headers) {
+function write(command, entries, fileName, message, delimiter, headers) {
   // eslint-disable-next-line no-undef
   if (process.cwd().split(delimeter).pop() !== 'data' && !fs.existsSync(directory)) {
     mkdirp.sync(directory);
@@ -461,8 +461,8 @@ function write(command, entries, fileName, message, headers) {
   }
   // eslint-disable-next-line no-undef
   cliux.print(`Writing ${message} to file: ${process.cwd()}${delimeter}${fileName}`);
-  if (headers?.length) fastcsv.writeToPath(fileName, entries, { headers });
-  else fastcsv.writeToPath(fileName, entries, { headers: true });
+  if (headers?.length) fastcsv.writeToPath(fileName, entries, { headers, delimiter });
+  else fastcsv.writeToPath(fileName, entries, { headers: true, delimiter });
 }
 
 function startupQuestions() {
