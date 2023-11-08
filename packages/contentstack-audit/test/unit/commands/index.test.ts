@@ -1,14 +1,9 @@
-import sinon from 'sinon';
 import winston from 'winston';
 import { expect, test } from '@oclif/test';
 import { FileTransportInstance } from 'winston/lib/winston/transports';
 import { AuditBaseCommand } from '../../../src/audit-base-command';
 
 describe('Audit command', () => {
-  afterEach(() => {
-    sinon.restore();
-  });
-
   describe('Audit run method', () => {
     test
       .stdout({ print: process.env.PRINT === 'true' || false })
@@ -17,7 +12,7 @@ describe('Audit command', () => {
         'File',
         () =>
           class FsTransport {
-            constructor() {}
+            name!: string;
           } as FileTransportInstance,
       )
       .stub(winston, 'createLogger', () => ({ log: () => {}, error: () => {} }))
@@ -35,7 +30,7 @@ describe('Audit command', () => {
         'File',
         () =>
           class FsTransport {
-            constructor() {}
+            name!: string;
           } as FileTransportInstance,
       )
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
@@ -52,7 +47,7 @@ describe('Audit command', () => {
         'File',
         () =>
           class FsTransport {
-            constructor() {}
+            name!: string;
           } as FileTransportInstance,
       )
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
