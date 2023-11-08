@@ -2,7 +2,7 @@ const fs = require('fs');
 const fastcsv = require('fast-csv');
 const find = require('lodash/find');
 
-module.exports = async ({ migration, stackSDKInstance, managementAPIClient, config }) => {
+module.exports = ({ migration, stackSDKInstance, managementAPIClient, config }) => {
   const dataDir = config['data-dir'];
   //parent and child term pointer
   let parentDetails = { taxonomy_uid: '' };
