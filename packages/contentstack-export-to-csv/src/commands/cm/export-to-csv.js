@@ -62,6 +62,10 @@ class ExportToCsvCommand extends Command {
     'taxonomy-uid': flags.string({
       description: 'Provide the taxonomy UID of the related terms you want to export',
     }),
+    delimiter: flags.string({
+      description: 'Provide delimiter for csv file',
+      default: ',',
+    }),
   };
 
   async run() {
@@ -79,6 +83,7 @@ class ExportToCsvCommand extends Command {
           alias: managementTokenAlias,
           branch: branchUid,
           'taxonomy-uid': taxonomyUID,
+          delimiter
         },
       } = await this.parse(ExportToCsvCommand);
 
@@ -169,7 +174,7 @@ class ExportToCsvCommand extends Command {
                 flatEntries = flatEntries.concat(flatEntriesResult);
               }
               let fileName = `${stackName ? stackName : stack.name}_${contentType}_${language.code}_entries_export.csv`;
-              util.write(this, flatEntries, fileName, 'entries'); // write to file
+              util.write(this, flatEntries, fileName, 'entries', delimiter); // write to file
             }
           } catch (error) {
             cliux.error(util.formatError(error));
@@ -202,7 +207,7 @@ class ExportToCsvCommand extends Command {
               (orgName ? orgName : organization.name).replace(config.organizationNameRegex, ''),
             )}_users_export.csv`;
 
-            util.write(this, listOfUsers, fileName, 'organization details');
+            util.write(this, listOfUsers, fileName, 'organization details', delimiter);
           } catch (error) {
             if (error.message || error.errorMessage) {
               cliux.error(util.formatError(error));
@@ -223,7 +228,7 @@ class ExportToCsvCommand extends Command {
           }
 
           stackAPIClient = this.getStackClient(managementAPIClient, stack);
-          await this.createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxonomyUID);
+          await this.createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxonomyUID, delimiter);
           break;
         }
       }
@@ -359,7 +364,7 @@ class ExportToCsvCommand extends Command {
    * @param {object} stack
    * @param {string} taxUID
    */
-  async createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxUID) {
+  async createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxUID, delimiter) {
     //TODO: Temp variable to export taxonomies in importable format will replaced with flag once decided
     const importableCSV = true;
     const payload = {
@@ -381,7 +386,7 @@ class ExportToCsvCommand extends Command {
       const formattedTaxonomiesData = util.formatTaxonomiesData(taxonomies);
       if (formattedTaxonomiesData?.length) {
         const fileName = `${stackName ? stackName : stack.name}_taxonomies.csv`;
-        util.write(this, formattedTaxonomiesData, fileName, 'taxonomies');
+        util.write(this, formattedTaxonomiesData, fileName, 'taxonomies', delimiter);
       } else {
         cliux.print('info: No taxonomies found! Please provide a valid stack.', { color: 'blue' });
       }
@@ -396,7 +401,7 @@ class ExportToCsvCommand extends Command {
           const taxonomyName = taxonomy?.name ?? '';
           const termFileName = `${stackName ?? stack.name}_${taxonomyName}_${taxonomyUID}_terms.csv`;
           if (formattedTermsData?.length) {
-            util.write(this, formattedTermsData, termFileName, 'terms');
+            util.write(this, formattedTermsData, termFileName, 'terms', delimiter);
           } else {
             cliux.print(`info: No terms found for the taxonomy UID - '${taxonomyUID}'!`, { color: 'blue' });
           }
@@ -406,7 +411,7 @@ class ExportToCsvCommand extends Command {
       const fileName = `${stackName ?? stack.name}_taxonomies.csv`;
       const { taxonomiesData, headers } = await util.createImportableCSV(payload, taxonomies);
       if (taxonomiesData?.length) {
-        util.write(this, taxonomiesData, fileName, 'taxonomies', headers);
+        util.write(this, taxonomiesData, fileName, 'taxonomies',delimiter, headers);
       }
     }
   }
@@ -432,6 +437,8 @@ ExportToCsvCommand.examples = [
   'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --taxonomy-uid <taxonomy-uid>',
   'Exporting taxonomies and respective terms to a .CSV file',
   'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias>',
+  'Exporting taxonomies and respective terms to a .CSV file with the delimiter',
+  'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --delimiter <delimiter>',
 ];
 
 module.exports = ExportToCsvCommand;
