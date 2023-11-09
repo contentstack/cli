@@ -129,11 +129,12 @@ describe('Content types', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(fs, 'writeFileSync', () => {})
+      .stub(ux, 'confirm', async () => true)
       .it('should not write the file', async () => {
-        const ctInstance = new ContentType(constructorParam);
-        const logSpy = sinon.spy(fs, 'writeFileSync');
+        const ctInstance = new ContentType({ ...constructorParam, fix: true });
+        const fsSpy = sinon.spy(fs, 'writeFileSync');
         await ctInstance.writeFixContent();
-        expect(logSpy.callCount).to.be.equals(1);
+        expect(fsSpy.callCount).to.be.equals(1);
       });
 
     fancy

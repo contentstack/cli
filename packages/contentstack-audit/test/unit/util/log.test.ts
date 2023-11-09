@@ -9,6 +9,10 @@ import { FileTransportInstance } from 'winston/lib/winston/transports';
 import { Logger, print } from '../../../src/util';
 
 describe('Log utility', () => {
+  const fsTransport = class FsTransport {
+    filename!: string;
+  } as FileTransportInstance;
+
   afterEach(() => {
     sinon.restore();
   });
@@ -16,19 +20,14 @@ describe('Log utility', () => {
   describe('Stubbing winston createLogger', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            constructor() {}
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .it('should create logger instance', () => {
         sinon.replace(winston, 'createLogger', () => ({} as unknown as winston.Logger));
         const logSpy = sinon.spy(winston, 'createLogger');
-        new Logger({ basePath: resolve(__dirname, '..', 'mock') });
+        const logger = new Logger({ basePath: resolve(__dirname, '..', 'mock') });
+
         expect(logSpy.callCount).to.be.equals(2);
+        expect(Object.getPrototypeOf(logger)).has.ownProperty('log');
       });
   });
 
@@ -36,12 +35,7 @@ describe('Log utility', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(ux, 'print', () => {})
-      .stub(
-        winston.transports,
-        'File',
-        () => (class FsTransport {
-          constructor() {}
-        }) as FileTransportInstance)
+      .stub(winston.transports, 'File', () => fsTransport)
       .it('should log message', () => {
         const logSpy = sinon.spy();
         sinon.stub(winston, 'createLogger').returns({ log: logSpy, error: logSpy } as unknown as winston.Logger);
@@ -56,14 +50,7 @@ describe('Log utility', () => {
   describe('Replace sensitive data before log', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            constructor() {}
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(ux, 'print', () => {})
       .stub(winston, 'createLogger', () => {})
       .it('should remove any credentials before log message', () => {
@@ -73,7 +60,7 @@ describe('Log utility', () => {
           () =>
             ({
               log: logSpy,
-              error: logSpy
+              error: logSpy,
             } as unknown as winston.Logger),
         );
         const logger = new Logger({ basePath: resolve(__dirname, '..', 'mock') });
