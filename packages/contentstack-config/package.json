@@ -25,10 +25,10 @@
     "@contentstack/cli-utilities": "~1.5.5",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
-    "mkdirp": "^1.0.4",
     "inquirer": "8.2.4",
-    "winston": "^3.7.2",
-    "lodash": "^4.17.20"
+    "lodash": "^4.17.20",
+    "mkdirp": "^1.0.4",
+    "winston": "^3.7.2"
   },
   "devDependencies": {
     "@oclif/test": "^2.2.10",
