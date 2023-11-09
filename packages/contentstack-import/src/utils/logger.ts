@@ -58,10 +58,7 @@ let errorTransport;
 
 function init(_logPath: string) {
   if (!logger || !errorLogger) {
-    var logsDir = path.resolve(_logPath, 'logs', 'import');
-    // Create dir if doesn't already exist
-    mkdirp.sync(logsDir);
-
+    const logsDir = path.resolve(_logPath, 'logs', 'import');
     successTransport = {
       filename: path.join(logsDir, 'success.log'),
       maxFiles: 20,
