@@ -17,7 +17,7 @@ type TestWitSpyType = FancyTypes.Base<
   }
 >;
 
-export function spy<T extends Record<string, unknown>>(object: T, path: string, prefix?: string) {
+export function spy<T, K extends keyof T>(object: T, path: K, prefix?: string) {
   if (object === undefined || path === undefined) throw new Error('should not be undefined');
 
   return {
@@ -26,15 +26,16 @@ export function spy<T extends Record<string, unknown>>(object: T, path: string, 
         ctx.spy = {};
       }
 
-      ctx.spy[prefix ? `${prefix}${upperFirst(path)}` : path] = sinon.spy(object, path);
+      ctx.spy[(prefix && typeof path === 'string' ? `${prefix}${upperFirst(path)}` : path) as string] = sinon.spy(
+        object,
+        path,
+      );
     },
     finally() {
       sinon.restore();
     },
   };
 }
-
-test.register('spy', spy);
 
 export const fancy = test.register('spy', spy) as unknown as TestWitSpyType;
 
