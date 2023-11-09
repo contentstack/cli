@@ -9,36 +9,26 @@ import { BaseCommand } from '../../src/base-command';
 describe('BaseCommand class', () => {
   class Command extends BaseCommand<typeof Command> {
     async run() {
-      this.parse();
+      // this.parse();
       this.log('Test log');
     }
   }
 
+  const fsTransport = class FsTransport {
+    filename!: string;
+  } as FileTransportInstance;
+
   describe('command', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            constructor() {}
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: () => {}, error: () => {} }))
       .do(() => Command.run([]))
       .do((output) => expect(output.stdout).to.equal('Test log\n'))
       .it('logs to stdout');
 
     fancy
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            constructor() {}
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: () => {}, error: () => {} }))
       .do(() => {
         class CMD extends BaseCommand<typeof CMD> {
@@ -56,14 +46,7 @@ describe('BaseCommand class', () => {
   describe('validate config file', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            constructor() {}
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: console.log }))
       .it('should log error', async (ctx) => {
         class CMD extends BaseCommand<typeof Command> {
