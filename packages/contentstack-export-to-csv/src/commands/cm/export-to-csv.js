@@ -66,7 +66,7 @@ class ExportToCsvCommand extends Command {
       description: 'Provide the taxonomy UID of the related terms you want to export',
     }),
     delimiter: flags.string({
-      description: 'Provide delimiter for csv file',
+      description: '[optional] Provide a delimiter to separate individual data fields within the CSV file.',
       default: ',',
     }),
   };
@@ -477,7 +477,7 @@ ExportToCsvCommand.examples = [
   'Exporting taxonomies and respective terms to a .CSV file',
   'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias>',
   '',
-  'Exporting taxonomies and respective terms to a .CSV file with the delimiter',
+  'Exporting taxonomies and respective terms to a .CSV file with a delimiter',
   'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --delimiter <delimiter>',
 ];
 
