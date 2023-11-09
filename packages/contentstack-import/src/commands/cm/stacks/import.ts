@@ -8,6 +8,8 @@ import {
   FlagInput,
   ContentstackClient,
 } from '@contentstack/cli-utilities';
+
+import { trace } from '../../../utils/log';
 import { ImportConfig } from '../../../types';
 import { ModuleImporter } from '../../../import';
 import { setupImportConfig, formatError, log } from '../../../utils';
@@ -120,6 +122,7 @@ export default class ImportCommand extends Command {
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
       backupDir = importConfig.backupDir;
+
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       await moduleImporter.start();
@@ -130,6 +133,7 @@ export default class ImportCommand extends Command {
         'success',
       );
     } catch (error) {
+      trace(error, 'error', true);
       log({ data: backupDir } as ImportConfig, `Failed to import stack content - ${formatError(error)}`, 'error');
       log(
         { data: backupDir } as ImportConfig,

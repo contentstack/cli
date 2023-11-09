@@ -7,8 +7,8 @@
   "dependencies": {
     "@contentstack/cli-cm-export": "~1.10.0",
     "@contentstack/cli-cm-import": "~1.11.0",
-    "@contentstack/cli-command": "~1.2.14",
-    "@contentstack/cli-utilities": "~1.5.4",
+    "@contentstack/cli-command": "~1.2.15",
+    "@contentstack/cli-utilities": "~1.5.5",
     "@colors/colors": "^1.5.0",
     "async": "^3.2.4",
     "chalk": "^4.1.0",
