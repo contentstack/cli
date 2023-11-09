@@ -1,8 +1,9 @@
 import { ContentstackClient, HttpClient } from '@contentstack/cli-utilities';
-import { ImportConfig, Modules } from '../types';
-import { backupHandler, log, validateBranch, masterLocalDetails, sanitizeStack } from '../utils';
+
 import startModuleImport from './modules';
 import startJSModuleImport from './modules-js';
+import { ImportConfig, Modules } from '../types';
+import { backupHandler, log, validateBranch, masterLocalDetails, sanitizeStack, initLogger } from '../utils';
 
 class ModuleImporter {
   private managementAPIClient: ContentstackClient;
@@ -25,7 +26,6 @@ class ModuleImporter {
 
     // Temporarily adding this api call to verify management token has read and write permissions
     // TODO: CS-40354 - CLI | import rewrite | Migrate HTTP call to SDK call once fix is ready from SDK side
-
     const httpClient = new HttpClient({
       headers: { api_key: this.importConfig.apiKey, authorization: this.importConfig.management_token },
     });
@@ -53,6 +53,9 @@ class ModuleImporter {
       this.importConfig.data = backupDir;
     }
 
+    // NOTE init log
+    initLogger(this.importConfig);
+
     await sanitizeStack(this.stackAPIClient);
 
     return this.import();
@@ -72,7 +75,7 @@ class ModuleImporter {
     log(this.importConfig, `Starting import of ${moduleName} module`, 'info');
     // import the modules by name
     // calls the module runner which inturn calls the module itself
-    // Todo: Implement a mechanism to determine whether module is new or old
+    // NOTE: Implement a mechanism to determine whether module is new or old
     if (this.importConfig.contentVersion === 2) {
       return startModuleImport({
         stackAPIClient: this.stackAPIClient,
