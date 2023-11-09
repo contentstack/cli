@@ -6,17 +6,14 @@ import { FileTransportInstance } from 'winston/lib/winston/transports';
 import { AuditBaseCommand } from '../../../src/audit-base-command';
 
 describe('AuditFix command', () => {
+  const fsTransport = class FsTransport {
+    filename!: string;
+  } as FileTransportInstance;
+
   describe('AuditFix run method', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            name!: string;
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: () => {}, error: () => {} }))
       .stub(AuditBaseCommand.prototype, 'start', () => {})
       .spy(AuditBaseCommand.prototype, 'start')

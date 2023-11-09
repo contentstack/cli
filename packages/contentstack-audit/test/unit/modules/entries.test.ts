@@ -64,6 +64,7 @@ describe('Entries module', () => {
           }
         })();
         const missingRefs = await ctInstance.run();
+
         expect(missingRefs).not.to.be.empty;
         expect(missingRefs).deep.contain({ 'test-entry-id': [{ uid: 'test', treeStr: 'gf_0' }] });
       });
@@ -82,6 +83,7 @@ describe('Entries module', () => {
       .it('should call prepareEntryMetaData & fixPrerequisiteData methods', async ({ spy }) => {
         const ctInstance = new Entries({ ...constructorParam, fix: true });
         const missingRefs = await ctInstance.run();
+
         expect(missingRefs).to.be.empty;
         expect(spy.writeFixContent.callCount).to.be.equals(1);
         expect(spy.lookForReference.callCount).to.be.equals(1);
@@ -100,6 +102,7 @@ describe('Entries module', () => {
       .it('should call content type and global fields fix functionality', async ({ spy }) => {
         const ctInstance = new Entries(constructorParam);
         await ctInstance.fixPrerequisiteData();
+
         expect(spy.ctRun.callCount).to.be.equals(1);
         expect(spy.gfRun.callCount).to.be.equals(1);
         expect(ctInstance.ctSchema).deep.contain({ ct1: [{}] });
@@ -116,19 +119,23 @@ describe('Entries module', () => {
       .it('should ask confirmation adn write content in given path', async ({ spy }) => {
         const ctInstance = new Entries({ ...constructorParam, fix: true });
         await ctInstance.writeFixContent(resolve(__dirname, '..', 'mock', 'contents'), {});
+
         expect(spy.writeFileSync.callCount).to.be.equals(1);
       });
 
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(fs, 'writeFileSync', () => {})
-      .stub(ux, 'confirm', async () => true)
       .spy(fs, 'writeFileSync')
       .it("should skip confirmation if 'yes' flag passed", async ({ spy }) => {
         const ctInstance = new Entries({ ...constructorParam, fix: true });
         ctInstance.config.flags.yes = true;
         await ctInstance.writeFixContent(resolve(__dirname, '..', 'mock', 'contents'), {});
+
         expect(spy.writeFileSync.callCount).to.be.equals(1);
+        expect(
+          spy.writeFileSync.calledWithExactly(resolve(__dirname, '..', 'mock', 'contents'), JSON.stringify({})),
+        ).to.be.true;
       });
   });
 
@@ -156,6 +163,7 @@ describe('Entries module', () => {
           }
         })();
         await ctInstance.lookForReference([], { schema } as any, {});
+
         expect(spy.runFixOnSchema.callCount).to.be.equals(1);
         expect(spy.validateReferenceField.callCount).to.be.equals(1);
         expect(spy.validateGlobalField.callCount).to.be.equals(1);
@@ -183,6 +191,7 @@ describe('Entries module', () => {
       .it('should call validateReferenceField method', async ({ spy }) => {
         const ctInstance = new Class();
         await ctInstance.validateReferenceField([], ctInstance.ctSchema[3].schema as any, ctInstance.entries as any);
+
         expect(spy.validateReferenceValues.callCount).to.be.equals(1);
         expect(spy.validateReferenceValues.alwaysCalledWith([], ctInstance.ctSchema[3].schema, ctInstance.entries)).to
           .be.true;
@@ -195,6 +204,7 @@ describe('Entries module', () => {
         ctInstance.ctSchema[3].schema as any,
         ctInstance.entries['reference'] as any,
       );
+
       expect(missingRefs).deep.equal([
         {
           tree: [
@@ -231,8 +241,8 @@ describe('Entries module', () => {
             require('../mock/contents/entries/page_1/en-us/e7f6e3cc-64ca-4226-afb3-7794242ae5f5-entries.json') as any
           )['blt9946d3cca9edec1a'];
         })(constructorParam);
-
         await ctInstance.validateGlobalField([], ctInstance.ctSchema as any, ctInstance.entries as any);
+
         expect(spy.lookForReference.callCount).to.be.equals(1);
         expect(spy.lookForReference.alwaysCalledWith([], ctInstance.ctSchema, ctInstance.entries)).to.be.true;
       });
@@ -266,6 +276,7 @@ describe('Entries module', () => {
         async ({ spy }) => {
           const ctInstance = new Entries(constructorParam);
           await ctInstance.validateModularBlocksField([], ctBlock as any, entryBlock as any);
+
           expect(spy.modularBlockRefCheck.callCount).to.be.equals(3);
           expect(spy.lookForReference.callCount).to.be.equals(5);
           expect(spy.modularBlockRefCheck.calledWithExactly([], ctBlock.blocks, entryBlock[0], 0)).to.be.true;
@@ -301,6 +312,7 @@ describe('Entries module', () => {
         async ({ spy }) => {
           const ctInstance = new Entries(constructorParam);
           await ctInstance.validateGroupField([], ctGroupField as any, [entryGroupField, entryGroupField] as any);
+
           expect(spy.lookForReference.callCount).to.be.equals(2);
           expect(
             spy.lookForReference.calledWithExactly(
@@ -312,17 +324,4 @@ describe('Entries module', () => {
         },
       );
   });
-
-  // describe('modularBlockRefCheck method', () => {
-  //   fancy
-  //     .stdout({ print: process.env.PRINT === 'true' || false })
-  //     .stub(Entries.prototype, 'lookForReference', () => {})
-  //     .spy(Entries.prototype, 'lookForReference')
-  //     .it('should call lookForReference method to iterate GroupField schema', async ({ spy }) => {
-  //       const ctInstance = new Entries(constructorParam);
-  //       await ctInstance.validateGroupField([], ctGroupField as any, entryGroupField as any);
-  //       expect(spy.lookForReference.callCount).to.be.equals(1);
-  //       expect(spy.lookForReference.calledWithExactly([], ctGroupField, entryGroupField)).to.be.true;
-  //     });
-  // });
 });
