@@ -4,17 +4,14 @@ import { FileTransportInstance } from 'winston/lib/winston/transports';
 import { AuditBaseCommand } from '../../../src/audit-base-command';
 
 describe('Audit command', () => {
+  const fsTransport = class FsTransport {
+    filename!: string;
+  } as FileTransportInstance;
+
   describe('Audit run method', () => {
     test
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            name!: string;
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: () => {}, error: () => {} }))
       .stub(AuditBaseCommand.prototype, 'start', () => {})
       .command(['cm:stacks:audit'])
@@ -25,14 +22,7 @@ describe('Audit command', () => {
     test
       .stderr({ print: false })
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            name!: string;
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
       .stub(AuditBaseCommand.prototype, 'start', () => Promise.reject('process failed'))
       .command(['cm:stacks:audit'])
@@ -42,14 +32,7 @@ describe('Audit command', () => {
     test
       .stderr({ print: false })
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            name!: string;
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
       .stub(AuditBaseCommand.prototype, 'start', () => {
         throw Error('process failed');
