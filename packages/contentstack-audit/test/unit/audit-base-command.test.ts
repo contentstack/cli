@@ -24,17 +24,14 @@ describe('AuditBaseCommand class', () => {
     }
   }
 
+  const fsTransport = class FsTransport {
+    filename!: string;
+  } as FileTransportInstance;
+
   describe('Audit command flow', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            constructor() {}
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
       .stub(fs, 'mkdirSync', () => {})
       .stub(fs, 'writeFileSync', () => {})
@@ -52,14 +49,7 @@ describe('AuditBaseCommand class', () => {
 
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            constructor() {}
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
       .stub(fs, 'mkdirSync', () => {})
       .stub(fs, 'writeFileSync', () => {})
@@ -81,14 +71,7 @@ describe('AuditBaseCommand class', () => {
   describe('Audit fix command flow', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            constructor() {}
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
       .stub(fs, 'mkdirSync', () => {})
       .stub(fs, 'writeFileSync', () => {})
@@ -118,14 +101,7 @@ describe('AuditBaseCommand class', () => {
 
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            constructor() {}
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: () => {}, error: () => {} }))
       .it('return the status column object ', async () => {
         class FixCMD extends AuditBaseCommand {
@@ -145,14 +121,7 @@ describe('AuditBaseCommand class', () => {
   describe('createBackUp method', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            constructor() {}
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
       .stub(AuditBaseCommand.prototype, 'promptQueue', async () => {})
       .stub(AuditBaseCommand.prototype, 'scanAndFix', async () => ({}))
@@ -179,14 +148,7 @@ describe('AuditBaseCommand class', () => {
 
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            constructor() {}
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
       .stub(AuditBaseCommand.prototype, 'promptQueue', async () => {})
       .stub(AuditBaseCommand.prototype, 'scanAndFix', async () => ({}))
@@ -221,14 +183,7 @@ describe('AuditBaseCommand class', () => {
   describe('prepareCSV method', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            constructor() {}
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .it('should print missing ref and fix status on table formate', async () => {
@@ -259,14 +214,7 @@ describe('AuditBaseCommand class', () => {
 
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            constructor() {}
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .it('should apply filter on output', async () => {
@@ -299,14 +247,7 @@ describe('AuditBaseCommand class', () => {
 
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            constructor() {}
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: console.log, error: console.error }))
       .it('should fail with error', async () => {
         class CMD extends AuditBaseCommand {
@@ -331,14 +272,7 @@ describe('AuditBaseCommand class', () => {
   describe('getCtAndGfSchema method', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
-      .stub(
-        winston.transports,
-        'File',
-        () =>
-          class FsTransport {
-            constructor() {}
-          } as FileTransportInstance,
-      )
+      .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: () => {}, error: () => {} }))
       .stub(fs, 'createWriteStream', () => new PassThrough())
       .it('should log error and return empty array', async () => {
