@@ -55,6 +55,10 @@
     {
       "uid": "test-uid-2",
       "name": "test org 2"
+    },
+    {
+        "uid": "org_uid_1_teams",
+        "name": "Teams Org"
     }
   ],
   "stacks": [
@@ -102,6 +106,25 @@
     {
       "uid": "test-uid-2",
       "name": "test org 2"
+    },
+    {
+      "organizations": [
+        {
+          "uid": "org_uid_1_teams",
+          "name": "Teams Org",
+          "org_roles": [
+            {
+              "uid": "role1",
+              "name": "Admin",
+              "description": "Admin Role",
+              "org_uid": "test-uid-1",
+              "admin": true,
+              "default": true
+            }
+          ]
+        }
+        ]
+      
     }
   ],
   "roles": [
