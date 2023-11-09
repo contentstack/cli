@@ -5,10 +5,11 @@ import includes from 'lodash/includes';
 import chalk from 'chalk';
 import { cliux, configHandler, HttpClient, ContentstackClient, managementSDKClient } from '@contentstack/cli-utilities';
 
-import { ImportConfig } from '../types';
 import { log } from './logger';
-import { askDeveloperHubUrl } from './interactive';
+import { trace } from '../utils/log';
+import { ImportConfig } from '../types';
 import { formatError } from '../utils';
+import { askDeveloperHubUrl } from './interactive';
 import { getAppName, askAppName, selectConfiguration } from '../utils/interactive';
 
 export const getAllStackSpecificApps = async (
@@ -17,7 +18,7 @@ export const getAllStackSpecificApps = async (
   config: ImportConfig,
 ) => {
   const appSdkAxiosInstance = await managementSDKClient({
-    host: developerHubBaseUrl.split('://').pop()
+    host: developerHubBaseUrl.split('://').pop(),
   });
   return await appSdkAxiosInstance.axiosInstance
     .get(`${developerHubBaseUrl}/installations?target_uids=${config.target_stack}`, {
@@ -25,8 +26,11 @@ export const getAllStackSpecificApps = async (
         organization_uid: config.org_uid,
       },
     })
-    .then(( {data}:any) => data.data)
-    .catch((error:any) => log(config, `Failed to export marketplace-apps ${formatError(error)}`, 'error'));
+    .then(({ data }: any) => data.data)
+    .catch((error: any) => {
+      trace(error, 'error', true);
+      log(config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
+    });
 };
 
 export const getDeveloperHubUrl = async (config: ImportConfig): Promise<string> => {
@@ -46,6 +50,7 @@ export const getOrgUid = async (config: ImportConfig): Promise<string> => {
     .stack({ api_key: config.target_stack })
     .fetch()
     .catch((error: any) => {
+      trace(error, 'error', true);
       log(config, formatError(error), 'error');
     });
 
@@ -124,6 +129,7 @@ export const makeRedirectUrlCall = async (response: any, appName: string, config
       .get(response.redirect_url)
       .then(async ({ response }: any) => {
         if (includes([501, 403], response.status)) {
+          trace(response, 'error', true);
           log(config, `${appName} - ${response.statusText}, OAuth api call failed.!`, 'error');
           log(config, formatError(response), 'error');
           await confirmToCloseProcess(response.data, config);
@@ -132,6 +138,8 @@ export const makeRedirectUrlCall = async (response: any, appName: string, config
         }
       })
       .catch((error) => {
+        trace(error, 'error', true);
+
         if (includes([501, 403], error.status)) {
           log(config, formatError(error), 'error');
         }
@@ -196,5 +204,8 @@ export const updateAppConfig = async (
     .then((data: any) => {
       log(config, `${app?.manifest?.name} app config updated successfully.!`, 'success');
     })
-    .catch((error: any) => log(config, `Failed to update app config.${formatError(error)}`, 'error'));
+    .catch((error: any) => {
+      trace(error, 'error', true);
+      log(config, `Failed to update app config.${formatError(error)}`, 'error');
+    });
 };
