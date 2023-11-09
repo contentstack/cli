@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-utilities",
-  "version": "1.5.4",
+  "version": "1.5.6",
   "description": "Utilities for contentstack projects",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -32,7 +32,7 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
-    "@contentstack/management": "~1.10.2",
+    "@contentstack/management": "~1.11.0",
     "@oclif/core": "^2.9.3",
     "axios": "^1.6.0",
     "chalk": "^4.0.0",
