@@ -1,6 +1,7 @@
 import winston from 'winston';
 import { expect, test } from '@oclif/test';
 import { FileTransportInstance } from 'winston/lib/winston/transports';
+
 import { AuditBaseCommand } from '../../../src/audit-base-command';
 
 describe('Audit command', () => {

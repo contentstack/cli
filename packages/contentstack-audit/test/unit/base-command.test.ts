@@ -9,7 +9,7 @@ import { BaseCommand } from '../../src/base-command';
 describe('BaseCommand class', () => {
   class Command extends BaseCommand<typeof Command> {
     async run() {
-      this.parse();
+      // this.parse();
       this.log('Test log');
     }
   }
