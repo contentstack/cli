@@ -206,13 +206,6 @@ describe('Content types', () => {
       const [, , , page1Ct] = ctInstance.ctSchema as CtType[];
       const [, , , , refField] = page1Ct.schema ?? [];
 
-      const res = await ctInstance.validateReferenceField(
-        [{ uid: refField.uid, name: refField.display_name }],
-        refField as ReferenceFieldDataType,
-      );
-
-      console.log(res, constructorParam);
-
       expect(
         JSON.stringify(
           await ctInstance.validateReferenceField(
