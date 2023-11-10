@@ -6,7 +6,7 @@
  */
 
 import * as path from 'path';
-import { values, isEmpty, filter, pick } from 'lodash';
+import { isEmpty, cloneDeep } from 'lodash';
 import { cliux } from '@contentstack/cli-utilities';
 import { GlobalFieldData } from '@contentstack/management/types/stack/globalField';
 import { fsUtil, log, formatError, fileHelper, lookupExtension, removeReferenceFields } from '../../utils';
@@ -30,6 +30,7 @@ export default class ImportGlobalFields extends BaseClass {
   private marketplaceAppMapperPath: string;
   private reqConcurrency: number;
   private installedExtensions: Record<string, unknown>;
+  private existingGFs: Record<string, any>[];
   private gFsConfig: {
     dirName: string;
     fileName: string;
@@ -47,6 +48,7 @@ export default class ImportGlobalFields extends BaseClass {
     this.createdGFs = [];
     this.failedGFs = [];
     this.pendingGFs = [];
+    this.existingGFs = [];
     this.reqConcurrency = this.gFsConfig.writeConcurrency || this.config.writeConcurrency;
     this.gFsMapperPath = path.resolve(this.config.data, 'mapper', 'global_fields');
     this.gFsFolderPath = path.resolve(this.config.data, this.gFsConfig.dirName);
@@ -73,6 +75,13 @@ export default class ImportGlobalFields extends BaseClass {
 
     await this.importGFs();
     fsUtil.writeFile(this.gFsPendingPath, this.pendingGFs);
+
+    if (this.importConfig.replaceExisting && this.existingGFs.length > 0) {
+      await this.replaceGFs().catch((error: Error) => {
+        log(this.importConfig, `Error while replacing global fields ${formatError(error)}`, 'error');
+      });
+    }
+
     log(this.config, 'Global fields import has been completed!', 'info');
   }
 
@@ -83,10 +92,20 @@ export default class ImportGlobalFields extends BaseClass {
       fsUtil.writeFile(this.gFsUidMapperPath, this.gFsUidMapper);
       log(this.config, 'Global field ' + uid + ' created successfully', 'success');
     };
-    const onReject = ({ error, apiData: { uid } = undefined }: any) => {
-      log(this.importConfig, `Global fields '${uid}' failed to import`, 'error');
-      log(this.importConfig, formatError(error), 'error');
-      this.failedGFs.push({ uid });
+    const onReject = ({ error, apiData: globalField = undefined }: any) => {
+      const uid = globalField.uid;
+      if (error?.errors?.title) {
+        if (this.importConfig.replaceExisting) {
+          this.existingGFs.push(globalField);
+        }
+        if (!this.importConfig.skipExisting) {
+          log(this.importConfig, `Global fields '${uid}' already exist`, 'info');
+        }
+      } else {
+        log(this.importConfig, `Global fields '${uid}' failed to import`, 'error');
+        log(this.importConfig, formatError(error), 'error');
+        this.failedGFs.push({ uid });
+      }
     };
 
     return await this.makeConcurrentCall(
@@ -139,5 +158,52 @@ export default class ImportGlobalFields extends BaseClass {
           reject(true);
         });
     });
+  }
+
+  async replaceGFs(): Promise<any> {
+    const onSuccess = ({ response: globalField, apiData: { uid } = { uid: null } }: any) => {
+      this.createdGFs.push(globalField);
+      this.gFsUidMapper[uid] = globalField;
+      fsUtil.writeFile(this.gFsUidMapperPath, this.gFsUidMapper);
+      log(this.config, 'Global field ' + uid + ' replaced successfully', 'success');
+    };
+
+    const onReject = ({ error, apiData: { uid } }: any) => {
+      log(this.importConfig, `Global fields '${uid}' failed to replace`, 'error');
+      log(this.importConfig, formatError(error), 'error');
+      this.failedGFs.push({ uid });
+    };
+
+    await this.makeConcurrentCall(
+      {
+        apiContent: this.existingGFs,
+        processName: 'Replace global fields',
+        apiParams: {
+          serializeData: this.serializeReplaceGFs.bind(this),
+          reject: onReject.bind(this),
+          resolve: onSuccess.bind(this),
+          entity: 'update-gfs',
+          includeParamOnCompletion: true,
+        },
+        concurrencyLimit: this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1,
+      },
+      undefined,
+      false,
+    );
+  }
+
+  /**
+   * @method serializeUpdateGFs
+   * @param {ApiOptions} apiOptions ApiOptions
+   * @returns {ApiOptions} ApiOptions
+   */
+  serializeReplaceGFs(apiOptions: ApiOptions): ApiOptions {
+    const { apiData: globalField } = apiOptions;
+    const globalFieldPayload = this.stack.globalField(globalField.uid);
+    Object.assign(globalFieldPayload, cloneDeep(globalField), {
+      stackHeaders: globalFieldPayload.stackHeaders,
+    });
+    apiOptions.apiData = globalFieldPayload;
+    return apiOptions;
   }
 }
