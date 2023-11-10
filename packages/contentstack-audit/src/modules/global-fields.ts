@@ -7,9 +7,9 @@ export default class GlobalField extends ContentType {
    * references.
    * @returns the value of the variable `missingRefs`.
    */
-  async run() {
+  async run(returnFixSchema = false) {
     // NOTE add any validation if required
-    const missingRefs = await super.run();
+    const missingRefs = await super.run(returnFixSchema);
 
     return missingRefs;
   }
