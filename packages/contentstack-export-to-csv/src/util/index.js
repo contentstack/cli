@@ -2,14 +2,14 @@ const os = require('os');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const find = require('lodash/find');
+const cloneDeep = require('lodash/cloneDeep');
+const omit = require('lodash/omit');
 const fastcsv = require('fast-csv');
 const inquirer = require('inquirer');
 const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
-
 const config = require('./config.js');
-const { cliux, configHandler } = require('@contentstack/cli-utilities');
-
+const { cliux, configHandler, HttpClient } = require('@contentstack/cli-utilities');
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
 
@@ -20,7 +20,7 @@ function chooseOrganization(managementAPIClient, action) {
   return new Promise(async (resolve, reject) => {
     try {
       let organizations;
-      if (action === config.exportUsers) {
+      if (action === config.exportUsers || action === config.exportTeams || action === 'teams') {
         organizations = await getOrganizationsWhereUserIsAdmin(managementAPIClient);
       } else {
         organizations = await getOrganizations(managementAPIClient);
@@ -105,7 +105,7 @@ async function getOrganizationsWhereUserIsAdmin(managementAPIClient) {
       organizations.forEach((org) => {
         result[org.name] = org.uid;
       });
-  }
+    }
 
     return result;
   } catch (error) {
@@ -321,7 +321,13 @@ function getEntries(stackAPIClient, contentType, language, skip, limit) {
     stackAPIClient
       .contentType(contentType)
       .entry()
-      .query({ include_publish_details: true, locale: language, skip: skip * 100, limit: limit, include_workflow: true })
+      .query({
+        include_publish_details: true,
+        locale: language,
+        skip: skip * 100,
+        limit: limit,
+        include_workflow: true,
+      })
       .find()
       .then((entries) => resolve(entries))
       .catch((error) => reject(error));
@@ -373,11 +379,11 @@ function exitProgram() {
 
 function sanitizeEntries(flatEntry) {
   // sanitize against CSV Injections
-  const CSVRegex = /^[\\+\\=@\\-]/
+  const CSVRegex = /^[\\+\\=@\\-]/;
   for (key in flatEntry) {
     if (typeof flatEntry[key] === 'string' && flatEntry[key].match(CSVRegex)) {
       flatEntry[key] = flatEntry[key].replace(/\"/g, "\"\"");
-      flatEntry[key] = `"'${flatEntry[key]}"`
+      flatEntry[key] = `"'${flatEntry[key]}"`;
     } else if (typeof flatEntry[key] === 'object') {
       // convert any objects or arrays to string
       // to store this data correctly in csv
@@ -394,7 +400,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
   return filteredEntries.map((entry) => {
     let workflow = '';
     const envArr = [];
-    if(entry.publish_details.length) {
+    if (entry.publish_details.length) {
       entry.publish_details.forEach((env) => {
         envArr.push(JSON.stringify([environments[env['environment']], env['locale'], env['time']]));
       });
@@ -403,10 +409,10 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
     delete entry.publish_details;
     delete entry.setWorkflowStage;
     if ('_workflow' in entry) {
-        if(entry._workflow?.name) {
-          workflow = entry['_workflow']['name'];
-          delete entry['_workflow'];
-        }
+      if (entry._workflow?.name) {
+        workflow = entry['_workflow']['name'];
+        delete entry['_workflow'];
+      }
     }
     entry = flatten(entry);
     entry = sanitizeEntries(entry);
@@ -459,7 +465,7 @@ function startupQuestions() {
         type: 'list',
         name: 'action',
         message: 'Choose Action',
-        choices: [config.exportEntries, config.exportUsers, 'Exit'],
+        choices: [config.exportEntries, config.exportUsers, config.exportTeams, 'Exit'],
       },
     ];
     inquirer
@@ -678,6 +684,271 @@ function wait(time) {
   });
 }
 
+function handleErrorMsg(err) {
+  cliux.print(`Error: ${(err?.errorMessage || err?.message) ? err?.errorMessage || err?.message : messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' })
+  process.exit(1);
+}
+
+async function apiRequestHandler(org, queryParam = {}) {
+  const headers = {
+    authtoken: configHandler.get('authtoken'),
+    organization_uid: org.uid,
+    'Content-Type': 'application/json',
+    api_version: 1.1,
+  };
+
+  return await new HttpClient()
+    .headers(headers)
+    .queryParams(queryParam)
+    .get(`${configHandler.get('region')?.cma}/organizations/${org?.uid}/teams`)
+    .then((res) => {
+      const { status, data } = res;
+      if (status === 200) {
+        return data;
+      } else {
+        cliux.print(`${data?.error_message || data?.message || data?.errorMessage}`, { color: 'red' });
+        process.exit(1);
+      }
+    })
+    .catch((error) => {
+      handleErrorMsg(error);
+    });
+}
+
+async function exportOrgTeams(managementAPIClient, org) {
+  let teamsObjectArray = [];
+  let skip = 0;
+  let limit = config?.limit || 100;
+  do {
+    const data = await apiRequestHandler(org, { skip: skip, limit: limit, includeUserDetails: true });
+    skip += limit;
+    teamsObjectArray.push(...data?.teams);
+    if (skip >= data?.count) break;
+  } while (1);
+  teamsObjectArray = await cleanTeamsData(teamsObjectArray, managementAPIClient, org);
+  return teamsObjectArray;
+}
+
+async function getOrgRolesForTeams(managementAPIClient, org) {
+  let roleMap = {}; // for org level there are two roles only admin and member
+
+  // SDK call to get the role uids
+  await managementAPIClient
+    .organization(org.uid)
+    .roles()
+    .then((roles) => {
+      roles.items.forEach((item) => {
+        if (item.name === 'member' || item.name === 'admin') {
+          roleMap[item.name] = item.uid;
+        }
+      });
+    })
+    .catch((err) => {
+      handleErrorMsg(err);
+    });
+  return roleMap;
+}
+
+async function cleanTeamsData(data, managementAPIClient, org) {
+  const roleMap = await getOrgRolesForTeams(managementAPIClient, org);
+  const fieldToBeDeleted = [
+    '_id',
+    'createdAt',
+    'createdBy',
+    'updatedAt',
+    'updatedBy',
+    '__v',
+    'createdByUserName',
+    'updatedByUserName',
+    'organizationUid',
+  ];
+  if (data?.length) {
+    return data.map((team) => {
+      team = omit(team, fieldToBeDeleted);
+    
+      team.organizationRole = (team.organizationRole === roleMap["member"]) ? "member" : "admin";
+    
+      if (!team.hasOwnProperty("description")) {
+        team.description = "";
+      }
+      team.Total_Members = team?.users?.length || 0;
+    
+      return team;
+    });
+  } else {
+    return [];
+  }
+}
+
+async function exportTeams(managementAPIClient, organization, teamUid) {
+  cliux.print(
+    `info: Exporting the ${
+      teamUid && organization?.name
+        ? `team with uid ${teamUid} in Organisation ${organization?.name} `
+        : `teams of Organisation ` + organization?.name
+    }`,
+    { color: 'blue' },
+  );
+  const allTeamsData = await exportOrgTeams(managementAPIClient, organization);
+  if (!allTeamsData?.length) {
+    cliux.print(`info: The organization ${organization?.name} does not have any teams associated with it. Please verify and provide the correct organization name.`);
+  } else {
+    const modifiedTeam = cloneDeep(allTeamsData);
+    modifiedTeam.forEach((team) => {
+      delete team['users'];
+      delete team['stackRoleMapping'];
+    });
+    const fileName = `${kebabize(organization.name.replace(config.organizationNameRegex, ''))}_teams_export.csv`;
+    write(this, modifiedTeam, fileName, ' organization Team details');
+    // exporting teams user data or a single team user data
+    cliux.print(
+      `info: Exporting the teams user data for ${teamUid ? `team ` + teamUid : `organisation ` + organization?.name}`,
+      { color: 'blue' },
+    );
+    await getTeamsDetail(allTeamsData, organization, teamUid);
+    cliux.print(
+      `info: Exporting the stack role details for  ${
+        teamUid ? `team ` + teamUid : `organisation ` + organization?.name
+      }`,
+      { color: 'blue' },
+    );
+    // Exporting the stack Role data for all the teams or exporting stack role data for a single team
+    await exportRoleMappings(managementAPIClient, allTeamsData, teamUid);
+  }
+}
+
+async function getTeamsDetail(allTeamsData, organization, teamUid) {
+  if (!teamUid) {
+    const userData = await getTeamsUserDetails(allTeamsData);
+    const fileName = `${kebabize(
+      organization.name.replace(config.organizationNameRegex, ''),
+    )}_team_User_Details_export.csv`;
+
+    write(this, userData, fileName, 'Team User details');
+  } else {
+    const team = allTeamsData.filter((team) => team.uid === teamUid)[0];
+
+    team.users.forEach((user) => {
+      user['team-name'] = team.name;
+      user['team-uid'] = team.uid;
+      delete user['active'];
+      delete user['orgInvitationStatus'];
+    });
+
+    const fileName = `${kebabize(
+      organization.name.replace(config.organizationNameRegex, ''),
+    )}_team_${teamUid}_User_Details_export.csv`;
+
+    write(this, team.users, fileName, 'Team User details');
+  }
+}
+
+async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
+  let stackRoleWithTeamData = [];
+  let flag = false;
+  const stackNotAdmin = [];
+  if (teamUid) {
+    const team = find(allTeamsData,function(teamObject) { return teamObject?.uid===teamUid });
+    for (const stack of team?.stackRoleMapping) {
+      const roleData = await mapRoleWithTeams(managementAPIClient, stack, team?.name, team?.uid);
+      stackRoleWithTeamData.push(...roleData);
+      if(roleData[0]['Stack Name']==='') {
+        flag = true;
+        stackNotAdmin.push(stack.stackApiKey);
+      }
+    }
+  } else {
+    for (const team of allTeamsData ?? []) {
+      for (const stack of team?.stackRoleMapping ?? []) {
+        const roleData = await mapRoleWithTeams(managementAPIClient, stack, team?.name, team?.uid);
+        stackRoleWithTeamData.push(...roleData);
+        if(roleData[0]['Stack Name']==='') {
+          flag = true;
+          stackNotAdmin.push(stack.stackApiKey);
+        }
+      }
+    }
+  }
+  if(stackNotAdmin?.length) {
+    cliux.print(`warning: Admin access denied to the following stacks using the provided API keys. Please get in touch with the stack owner to request access.`,{color:"yellow"});
+    cliux.print(`${stackNotAdmin.join(' , ')}`,{color:"yellow"});
+  }
+  if(flag) {
+    let export_stack_role = [
+      {
+        type: 'list',
+        name: 'chooseExport',
+        message: `Access denied: Please confirm if you still want to continue exporting the data without the { Stack Name, Stack Uid, Role Name } fields.`,
+        choices: ['yes', 'no'],
+        loop: false,
+      }]
+      const exportStackRole = await inquirer
+      .prompt(export_stack_role)
+      .then(( chosenOrg ) => {
+        return chosenOrg
+      })
+      .catch((error) => {
+        cliux.print(error, {color:'red'});
+        process.exit(1);
+      });
+      if(exportStackRole.chooseExport === 'no') {
+        process.exit(1);
+      } 
+  }
+
+  const fileName = `${kebabize('Stack_Role_Mapping'.replace(config.organizationNameRegex, ''))}${
+    teamUid ? `_${teamUid}` : ''
+  }.csv`;
+
+  write(this, stackRoleWithTeamData, fileName, 'Team Stack Role details');
+}
+
+async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName, teamUid) {
+  const roles = await getRoleData(managementAPIClient, stackRoleMapping.stackApiKey);
+  const stackRole = {};
+  roles?.items?.forEach((role) => {
+    if (!stackRole.hasOwnProperty(role?.uid)) {
+      stackRole[role?.uid] = role?.name;
+      stackRole[role?.stack?.api_key] = {name: role?.stack?.name, uid: role?.stack?.uid }
+    }
+  });
+  const stackRoleMapOfTeam = stackRoleMapping?.roles.map((role) => {
+    return {
+      'Team Name': teamName,
+      'Team Uid': teamUid,
+      'Stack Name': stackRole[stackRoleMapping?.stackApiKey]?.name || '',
+      'Stack Uid': stackRole[stackRoleMapping?.stackApiKey]?.uid || '',
+      'Role Name': stackRole[role] || '',
+      'Role Uid': role || '',
+    };
+  });
+  return stackRoleMapOfTeam;
+}
+
+async function getRoleData(managementAPIClient, stackApiKey) {
+  try {
+    return await managementAPIClient.stack({ api_key: stackApiKey }).role().fetchAll();
+  } catch (error) {
+    return {}
+  }
+}
+
+async function getTeamsUserDetails(teamsObject) {
+  const allTeamUsers = [];
+  teamsObject.forEach((team) => {
+    if (team?.users?.length) {
+      team.users.forEach((user) => {
+        user['team-name'] = team.name;
+        user['team-uid'] = team.uid;
+        delete user['active'];
+        delete user['orgInvitationStatus'];
+        allTeamUsers.push(user);
+      });
+    }
+  });
+  return allTeamUsers;
+}
+
 module.exports = {
   chooseOrganization: chooseOrganization,
   chooseStack: chooseStack,
@@ -704,4 +975,6 @@ module.exports = {
   chooseInMemContentTypes: chooseInMemContentTypes,
   getEntriesCount: getEntriesCount,
   formatError: formatError,
+  exportOrgTeams: exportOrgTeams,
+  exportTeams: exportTeams,
 };
