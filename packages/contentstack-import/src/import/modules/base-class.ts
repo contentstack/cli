@@ -32,6 +32,7 @@ export type ApiModuleType =
   | 'publish-assets'
   | 'create-assets-folder'
   | 'create-extensions'
+  | 'update-extensions'
   | 'create-locale'
   | 'update-locale'
   | 'create-gfs'
