@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { cliux } from '@contentstack/cli-utilities';
+import { cliux, formatTime, formatDate } from '@contentstack/cli-utilities';
 import { entryCreateScript } from './entry-create-script';
 import { entryUpdateScript } from './entry-update-script';
 import { entryCreateUpdateScript } from './entry-create-update-script';
@@ -74,9 +74,7 @@ export function getContentTypeMergeStatus(status) {
 export function createMergeScripts(contentType: CreateMergeScriptsProps, mergeJobUID: string, content?: any) {
   const date = new Date();
   const rootFolder = 'merge_scripts';
-  const fileCreatedAt = `${date.getFullYear()}${
-    date.getMonth().toString.length === 1 ? `0${date.getMonth() + 1}` : date.getMonth() + 1
-  }${date.getUTCDate()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+  const fileCreatedAt = `${formatDate(date)}${formatTime(date)}`;
   const mergeScriptsSlug = `merge_scripts_${mergeJobUID}_${fileCreatedAt}`;
 
   const fullPath = `${rootFolder}/${mergeScriptsSlug}`;
