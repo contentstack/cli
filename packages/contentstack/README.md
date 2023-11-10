@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.9.2 darwin-arm64 node-v20.8.0
+@contentstack/cli/1.11.0 darwin-arm64 node-v20.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -120,15 +120,15 @@ USAGE
     --no-truncate]
 
 FLAGS
-  -c, --config=<value>    Path of the external config.
-  -d, --data-dir=<value>  Path where the data is stored.
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path where the data is stored
   --columns=<value>       only show provided columns (comma-separated)
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide the list of modules to be audited.
+  --modules=<option>...   Provide the list of modules to be audited
                           <options: content-types|global-fields|entries>
   --no-truncate           do not truncate output to fit screen
-  --report-path=<value>   Path to store the audit reports.
+  --report-path=<value>   Path to store the audit reports
   --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
@@ -161,17 +161,17 @@ USAGE
     [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
-  -c, --config=<value>    Path of the external config.
-  -d, --data-dir=<value>  Path where the data is stored.
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path where the data is stored
   --columns=<value>       only show provided columns (comma-separated)
   --copy-dir              Create backup from the original data.
-  --copy-path=<value>     Provide the path to store the copied data.
+  --copy-path=<value>     Provide the path to backup the copied data
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide the list of modules to be audited.
+  --modules=<option>...   Provide the list of modules to be audited
                           <options: content-types|global-fields|entries>
   --no-truncate           do not truncate output to fit screen
-  --report-path=<value>   Path to store the audit reports.
+  --report-path=<value>   Path to store the audit reports
   --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
@@ -2018,20 +2018,21 @@ Export entries or organization users to csv using this command
 
 ```
 USAGE
-  $ csdx cm:export-to-csv [--action entries|users] [-a <value>] [--org <value>] [-n <value>] [-k <value>] [--org-name
-    <value>] [--locale <value>] [--content-type <value>] [--branch <value>]
+  $ csdx cm:export-to-csv [--action entries|users|teams] [-a <value>] [--org <value>] [-n <value>] [-k <value>]
+    [--org-name <value>] [--locale <value>] [--content-type <value>] [--branch <value>] [--team-uid <value>]
 
 FLAGS
   -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  API key of the source stack
   -n, --stack-name=<value>     Name of the stack that needs to be created as csv filename.
-  --action=<option>            Option to export data (entries, users)
-                               <options: entries|users>
+  --action=<option>            Option to export data (entries, users, teams)
+                               <options: entries|users|teams>
   --branch=<value>             Branch from which entries need to be exported
   --content-type=<value>       Content type for which entries needs to be exported
   --locale=<value>             Locale for which entries need to be exported
   --org=<value>                Provide organization UID to clone org users
   --org-name=<value>           Name of the organization that needs to be created as csv filename.
+  --team-uid=<value>           Uid of the team whose user data and stack roles are required
 
 DESCRIPTION
   Export entries or organization users to csv using this command
@@ -2062,6 +2063,36 @@ EXAMPLES
   Exporting organization users to csv with organization name provided
 
   $ csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>
+
+
+
+  Exporting Organizations Teams to CSV
+
+  $ csdx cm:export-to-csv --action <teams>
+
+
+
+  Exporting Organizations Teams to CSV with org-uid
+
+  $ csdx cm:export-to-csv --action <teams> --org <org-uid>
+
+
+
+  Exporting Organizations Teams to CSV with team uid
+
+  $ csdx cm:export-to-csv --action <teams> --team-uid <team-uid>
+
+
+
+  Exporting Organizations Teams to CSV with org-uid and team uid
+
+  $ csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid>
+
+
+
+  Exporting Organizations Teams to CSV with org-uid and team uid
+
+  $ csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid> --org-name <org-name>
 ```
 
 _See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/main/packages/contentstack-export-to-csv/src/commands/cm/export-to-csv.js)_
@@ -2086,6 +2117,8 @@ FLAGS
   -y, --yes                         [optional] Override marketplace prompts
   --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                     <options: disable|current>
+  --replace-existing                Replaces the existing module in the target stack.
+  --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
   Import content from a stack
@@ -2304,15 +2337,15 @@ USAGE
     --no-truncate]
 
 FLAGS
-  -c, --config=<value>    Path of the external config.
-  -d, --data-dir=<value>  Path where the data is stored.
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path where the data is stored
   --columns=<value>       only show provided columns (comma-separated)
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide the list of modules to be audited.
+  --modules=<option>...   Provide the list of modules to be audited
                           <options: content-types|global-fields|entries>
   --no-truncate           do not truncate output to fit screen
-  --report-path=<value>   Path to store the audit reports.
+  --report-path=<value>   Path to store the audit reports
   --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
@@ -2347,17 +2380,17 @@ USAGE
     [--filter <value>] [--csv | --no-truncate]
 
 FLAGS
-  -c, --config=<value>    Path of the external config.
-  -d, --data-dir=<value>  Path where the data is stored.
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path where the data is stored
   --columns=<value>       only show provided columns (comma-separated)
   --copy-dir              Create backup from the original data.
-  --copy-path=<value>     Provide the path to store the copied data.
+  --copy-path=<value>     Provide the path to backup the copied data
   --csv                   output is csv format [alias: --output=csv]
   --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide the list of modules to be audited.
+  --modules=<option>...   Provide the list of modules to be audited
                           <options: content-types|global-fields|entries>
   --no-truncate           do not truncate output to fit screen
-  --report-path=<value>   Path to store the audit reports.
+  --report-path=<value>   Path to store the audit reports
   --sort=<value>          property to sort by (prepend '-' for descending)
 
 DESCRIPTION
@@ -2496,6 +2529,8 @@ FLAGS
   -y, --yes                         [optional] Override marketplace prompts
   --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                     <options: disable|current>
+  --replace-existing                Replaces the existing module in the target stack.
+  --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
   Import content from a stack
@@ -2983,7 +3018,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.14/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.20/src/commands/help.ts)_
 
 ## `csdx launch`
 
@@ -3281,7 +3316,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -3346,7 +3381,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -3386,7 +3421,7 @@ EXAMPLES
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
@@ -3415,7 +3450,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -3463,7 +3498,7 @@ ALIASES
   $ csdx plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -3504,7 +3539,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
