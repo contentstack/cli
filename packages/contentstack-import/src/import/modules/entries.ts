@@ -107,6 +107,15 @@ export default class EntriesImport extends BaseClass {
       for (let entryRequestOption of entryRequestOptions) {
         await this.createEntries(entryRequestOption);
       }
+      if (this.importConfig.replaceExisting) {
+        // Note: Instead of using entryRequestOptions, we can prepare request options for replace, to avoid unnecessary operations
+        for (let entryRequestOption of entryRequestOptions) {
+          await this.replaceEntries(entryRequestOption).catch((error) => {
+            log(this.importConfig, `Error while replacing the existing entries ${formatError(error)}`, 'error');
+          });
+        }
+      }
+
       await fileHelper.writeLargeFile(path.join(this.entriesMapperPath, 'uid-mapping.json'), this.entriesUidMapper); // TBD: manages mapper in one file, should find an alternative
       fsUtil.writeFile(path.join(this.entriesMapperPath, 'failed-entries.json'), this.failedEntries);
 
@@ -282,6 +291,17 @@ export default class EntriesImport extends BaseClass {
       keepMetadata: false,
       omitKeys: this.entriesConfig.invalidKeys,
     });
+
+    // create file instance for existing entries
+    const existingEntriesFileHelper = new FsUtility({
+      moduleName: 'entries',
+      indexFileName: 'index.json',
+      basePath: path.join(this.entriesMapperPath, cTUid, locale, 'existing'),
+      chunkFileSize: this.entriesConfig.chunkFileSize,
+      keepMetadata: false,
+      omitKeys: this.entriesConfig.invalidKeys,
+    });
+
     const contentType = find(this.cTs, { uid: cTUid });
 
     const onSuccess = ({ response, apiData: entry, additionalInfo }: any) => {
@@ -311,10 +331,33 @@ export default class EntriesImport extends BaseClass {
         entriesCreateFileHelper.writeIntoFile({ [entry.uid]: entry } as any, { mapKeyVal: true });
       }
     };
-    const onReject = ({ error, apiData: { uid, title } }: any) => {
-      log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to create`, 'error');
-      log(this.importConfig, formatError(error), 'error');
-      this.failedEntries.push({ content_type: cTUid, locale, entry: { uid, title } });
+    const onReject = ({ error, apiData: entry, additionalInfo }: any) => {
+      const { title, uid } = entry;
+      //Note: write existing entries into files to handler later
+      if (error.errorCode === 119) {
+        if (error?.errors?.title || error?.errors?.uid) {
+          if (this.importConfig.replaceExisting) {
+            entry.entryOldUid = uid;
+            entry.sourceEntryFilePath = path.join(basePath, additionalInfo.entryFileName); // stores source file path temporarily
+            existingEntriesFileHelper.writeIntoFile({ [uid]: entry } as any, { mapKeyVal: true });
+          }
+          if (!this.importConfig.skipExisting) {
+            log(this.importConfig, `Entry '${title}' already exists`, 'info');
+          }
+        } else {
+          log(
+            this.importConfig,
+            `${title} entry of content type ${cTUid} in locale ${locale} failed to create`,
+            'error',
+          );
+          log(this.importConfig, formatError(error), 'error');
+          this.failedEntries.push({ content_type: cTUid, locale, entry: { uid, title } });
+        }
+      } else {
+        log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to create`, 'error');
+        log(this.importConfig, formatError(error), 'error');
+        this.failedEntries.push({ content_type: cTUid, locale, entry: { uid, title } });
+      }
     };
 
     for (const index in indexer) {
@@ -340,6 +383,7 @@ export default class EntriesImport extends BaseClass {
           concurrencyLimit: this.importConcurrency,
         }).then(() => {
           entriesCreateFileHelper?.completeFile(true);
+          existingEntriesFileHelper?.completeFile(true);
           log(this.importConfig, `Created entries for content type ${cTUid} in locale ${locale}`, 'success');
         });
       }
@@ -402,6 +446,135 @@ export default class EntriesImport extends BaseClass {
     return apiOptions;
   }
 
+  async replaceEntries({ cTUid, locale }: { cTUid: string; locale: string }): Promise<void> {
+    const processName = 'Replace existing Entries';
+    const indexFileName = 'index.json';
+    const basePath = path.join(this.entriesMapperPath, cTUid, locale, 'existing');
+    const fs = new FsUtility({ basePath, indexFileName });
+    const indexer = fs.indexFileContent;
+    const indexerCount = values(indexer).length;
+    if (indexerCount === 0) {
+      return Promise.resolve();
+    }
+
+    // Write updated entries
+    const entriesReplaceFileHelper = new FsUtility({
+      moduleName: 'entries',
+      indexFileName: 'index.json',
+      basePath: path.join(this.entriesMapperPath, cTUid, locale),
+      chunkFileSize: this.entriesConfig.chunkFileSize,
+      keepMetadata: false,
+      useIndexer: true,
+      omitKeys: this.entriesConfig.invalidKeys,
+    });
+    // log(this.importConfig, `Starting to update entries with references for ${cTUid} in locale ${locale}`, 'info');
+
+    const contentType = find(this.cTs, { uid: cTUid });
+
+    const onSuccess = ({ response, apiData: entry, additionalInfo }: any) => {
+      log(this.importConfig, `Replaced entry: '${entry.title}' of content type ${cTUid} in locale ${locale}`, 'info');
+      this.entriesUidMapper[entry.uid] = response.uid;
+      entriesReplaceFileHelper.writeIntoFile({ [entry.uid]: entry } as any, { mapKeyVal: true });
+    };
+    const onReject = ({ error, apiData: { uid, title } }: any) => {
+      log(this.importConfig, `${title} entry of content type ${cTUid} in locale ${locale} failed to replace`, 'error');
+      log(this.importConfig, formatError(error), 'error');
+      this.failedEntries.push({
+        content_type: cTUid,
+        locale,
+        entry: { uid: this.entriesUidMapper[uid], title },
+        entryId: uid,
+      });
+    };
+
+    for (const index in indexer) {
+      const chunk = await fs.readChunkFiles.next().catch((error) => {
+        log(this.importConfig, formatError(error), 'error');
+      });
+
+      if (chunk) {
+        let apiContent = values(chunk as Record<string, any>[]);
+        await this.makeConcurrentCall(
+          {
+            apiContent,
+            processName,
+            indexerCount,
+            currentIndexer: +index,
+            apiParams: {
+              reject: onReject,
+              resolve: onSuccess,
+              entity: 'update-entries',
+              includeParamOnCompletion: true,
+              additionalInfo: { contentType, locale, cTUid },
+            },
+            concurrencyLimit: this.importConcurrency,
+          },
+          this.replaceEntriesHandler.bind(this),
+        ).then(() => {
+          entriesReplaceFileHelper?.completeFile(true);
+          log(this.importConfig, `Replaced entries for content type ${cTUid} in locale ${locale}`, 'success');
+        });
+      }
+    }
+  }
+
+  async replaceEntriesHandler({
+    apiParams,
+    element: entry,
+    isLastRequest,
+  }: {
+    apiParams: ApiOptions;
+    element: Record<string, string>;
+    isLastRequest: boolean;
+  }) {
+    const { additionalInfo: { cTUid, locale } = {} } = apiParams;
+    return new Promise(async (resolve, reject) => {
+      const { items: [entryInStack] = [] }: any =
+        (await this.stack
+          .contentType(cTUid)
+          .entry()
+          .query({ query: { title: entry.title, locale } })
+          .findOne()
+          .catch((error: Error) => {
+            apiParams.reject({
+              error,
+              apiData: entry,
+            });
+            reject(true);
+          })) || {};
+      if (entryInStack) {
+        const entryPayload = this.stack.contentType(cTUid).entry(entryInStack.uid);
+        Object.assign(entryPayload, entryInStack, cloneDeep(entry), {
+          uid: entryInStack.uid,
+          urlPath: entryInStack.urlPath,
+          stackHeaders: entryInStack.stackHeaders,
+          _version: entryInStack._version,
+        });
+        return entryPayload
+          .update({ locale })
+          .then((response: any) => {
+            apiParams.resolve({
+              response,
+              apiData: entry,
+            });
+            resolve(true);
+          })
+          .catch((error: Error) => {
+            apiParams.reject({
+              error,
+              apiData: entry,
+            });
+            reject(true);
+          });
+      } else {
+        apiParams.reject({
+          error: new Error(`Entry with title ${entry.title} not found in the stack`),
+          apiData: entry,
+        });
+        reject(true);
+      }
+    });
+  }
   populateEntryUpdatePayload(): { cTUid: string; locale: string }[] {
     const requestOptions: { cTUid: string; locale: string }[] = [];
     for (let locale of this.locales) {

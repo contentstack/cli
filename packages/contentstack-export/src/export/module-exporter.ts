@@ -37,6 +37,7 @@ class ModuleExporter {
       try {
         this.exportConfig.branchName = branch.uid;
         this.exportConfig.branchDir = path.join(this.exportConfig.exportDir, branch.uid);
+        log(this.exportConfig, `Exporting content from branch ${branch.uid}`, 'success');
         writeExportMetaFile(this.exportConfig, this.exportConfig.branchDir);
         await this.export();
         log(this.exportConfig, `The content of branch ${branch.uid} has been exported successfully!`, 'success');

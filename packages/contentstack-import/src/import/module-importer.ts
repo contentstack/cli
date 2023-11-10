@@ -1,8 +1,9 @@
 import { ContentstackClient, HttpClient } from '@contentstack/cli-utilities';
-import { ImportConfig, Modules } from '../types';
-import { backupHandler, log, validateBranch, masterLocalDetails, sanitizeStack } from '../utils';
+
 import startModuleImport from './modules';
 import startJSModuleImport from './modules-js';
+import { ImportConfig, Modules } from '../types';
+import { backupHandler, log, validateBranch, masterLocalDetails, sanitizeStack, initLogger } from '../utils';
 
 class ModuleImporter {
   private managementAPIClient: ContentstackClient;
@@ -55,6 +56,9 @@ class ModuleImporter {
       this.importConfig.data = backupDir;
     }
 
+    // NOTE init log
+    initLogger(this.importConfig);
+
     await sanitizeStack(this.stackAPIClient);
 
     return this.import();
@@ -74,7 +78,7 @@ class ModuleImporter {
     log(this.importConfig, `Starting import of ${moduleName} module`, 'info');
     // import the modules by name
     // calls the module runner which inturn calls the module itself
-    // Todo: Implement a mechanism to determine whether module is new or old
+    // NOTE: Implement a mechanism to determine whether module is new or old
     if (this.importConfig.contentVersion === 2) {
       return startModuleImport({
         stackAPIClient: this.stackAPIClient,
