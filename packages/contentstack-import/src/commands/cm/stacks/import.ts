@@ -8,6 +8,8 @@ import {
   FlagInput,
   ContentstackClient,
 } from '@contentstack/cli-utilities';
+
+import { trace } from '../../../utils/log';
 import { ImportConfig } from '../../../types';
 import { ModuleImporter } from '../../../import';
 import { setupImportConfig, formatError, log } from '../../../utils';
@@ -66,6 +68,7 @@ export default class ImportCommand extends Command {
       parse: printFlagDeprecation(['-A', '--auth-token']),
     }),
     module: flags.string({
+      required: false,
       char: 'm',
       description: '[optional] specific module name',
       parse: printFlagDeprecation(['-m'], ['--module']),
@@ -91,6 +94,15 @@ export default class ImportCommand extends Command {
       required: false,
       description: '[optional] Override marketplace prompts',
     }),
+    'replace-existing': flags.boolean({
+      required: false,
+      description: 'Replaces the existing module in the target stack.',
+    }),
+    'skip-existing': flags.boolean({
+      required: false,
+      default: false,
+      description: 'Skips the module exists warning messages.',
+    }),
   };
 
   static aliases: string[] = ['cm:import'];
@@ -109,12 +121,18 @@ export default class ImportCommand extends Command {
       // Note setting host to create cma client
       importConfig.host = this.cmaHost;
       backupDir = importConfig.backupDir;
+
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
       await moduleImporter.start();
       log(importConfig, `The content has been imported to the stack ${importConfig.apiKey} successfully!`, 'success');
-      log(importConfig, `The log has been stored at '${path.join(importConfig.backupDir, 'logs', 'import')}'`, 'success');
+      log(
+        importConfig,
+        `The log has been stored at '${path.join(importConfig.backupDir, 'logs', 'import')}'`,
+        'success',
+      );
     } catch (error) {
+      trace(error, 'error', true);
       log({ data: backupDir } as ImportConfig, `Failed to import stack content - ${formatError(error)}`, 'error');
       log(
         { data: backupDir } as ImportConfig,

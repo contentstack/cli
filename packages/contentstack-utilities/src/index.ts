@@ -1,3 +1,4 @@
+import Logger from './logger'
 export { LoggerService } from './logger';
 export { default as cliux } from './cli-ux';
 export { default as CLIError } from './cli-error';
@@ -17,6 +18,7 @@ export { default as NodeCrypto } from './encrypter';
 export { Args as args, Flags as flags, Command } from './cli-ux';
 export * from './helpers';
 export * from './interfaces';
+export * from './date-time';
 
 // NOTE Exporting all @oclif/core modules: So that all the module can be acessed through cli-utility
 export {
@@ -51,3 +53,5 @@ export {
 export { FlagInput, ArgInput } from '@oclif/core/lib/interfaces/parser';
 
 export { default as TablePrompt } from './inquirer-table-prompt';
+
+export { Logger };
