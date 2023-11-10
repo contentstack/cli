@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-launch",
-  "version": "1.0.12",
+  "version": "1.0.14",
   "description": "Launch related operations",
   "author": "Contentstack CLI",
   "bin": {
@@ -18,8 +18,8 @@
   ],
   "dependencies": {
     "@apollo/client": "^3.7.9",
-    "@contentstack/cli-command": "~1.2.13",
-    "@contentstack/cli-utilities": "~1.5.3",
+    "@contentstack/cli-command": "~1.2.15",
+    "@contentstack/cli-utilities": "~1.5.5",
     "@oclif/core": "^2.9.3",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^3.3.0",
@@ -50,7 +50,7 @@
     "eslint": "^7.32.0",
     "eslint-config-oclif": "^4",
     "eslint-config-oclif-typescript": "^1.0.3",
-    "oclif": "^3",
+    "oclif": "^3.11.3",
     "shx": "^0.3.3",
     "ts-node": "^10.9.1",
     "tslib": "^2.5.0",

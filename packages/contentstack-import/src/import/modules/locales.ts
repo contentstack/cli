@@ -137,8 +137,12 @@ export default class ImportLocales extends BaseClass {
       fsUtil.writeFile(this.langUidMapperPath, this.langUidMapper);
     };
     const onReject = ({ error, apiData: { uid, code } = undefined }: any) => {
-      log(this.importConfig, `Language '${code}' failed to import`, 'error');
-      log(this.importConfig, formatError(error), 'error');
+      if (error?.errorCode === 247) {
+        log(this.importConfig, formatError(error), 'info');
+      } else {
+        log(this.importConfig, `Language '${code}' failed to import`, 'error');
+        log(this.importConfig, formatError(error), 'error');
+      }
       this.failedLocales.push({ uid, code });
     };
     return await this.makeConcurrentCall({

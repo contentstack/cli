@@ -1,8 +1,8 @@
 import find from 'lodash/find';
-import { ux } from '@oclif/core';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import { existsSync, writeFileSync } from 'fs';
+import { ux } from '@contentstack/cli-utilities';
 
 import {
   LogFn,
@@ -98,10 +98,10 @@ export default class ContentType {
     let canWrite = true;
 
     if (this.fix && !this.config.flags['copy-dir']) {
-      canWrite = this.config.flags.yes || (await ux.confirm(commonMsg.FIX_CONFIRMATION));
+      canWrite = this.config.flags.yes ?? (await ux.confirm(commonMsg.FIX_CONFIRMATION));
     }
 
-    if (canWrite) {
+    if (this.fix && canWrite) {
       writeFileSync(
         join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName),
         JSON.stringify(this.schema),
