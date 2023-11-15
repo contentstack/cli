@@ -18,6 +18,7 @@ import {
   ModuleConstructorParam,
   ReferenceFieldDataType,
   ContentTypeSchemaType,
+  GlobalFieldSchemaTypes,
 } from '../types';
 import auditConfig from '../config';
 import { $t, auditFixMsg, auditMsg, commonMsg } from '../messages';
@@ -32,6 +33,7 @@ export default class ContentType {
   public folderPath: string;
   public currentUid!: string;
   public currentTitle!: string;
+  public inMemoryFix: boolean = false;
   public gfSchema: ContentTypeStruct[];
   public ctSchema: ContentTypeStruct[];
   protected schema: ContentTypeStruct[] = [];
@@ -55,6 +57,8 @@ export default class ContentType {
    * @returns the `missingRefs` object.
    */
   async run(returnFixSchema = false) {
+    this.inMemoryFix = returnFixSchema;
+
     if (!existsSync(this.folderPath)) {
       throw new Error($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }));
     }
@@ -97,15 +101,17 @@ export default class ContentType {
   async writeFixContent() {
     let canWrite = true;
 
-    if (this.fix && !this.config.flags['copy-dir']) {
-      canWrite = this.config.flags.yes ?? (await ux.confirm(commonMsg.FIX_CONFIRMATION));
-    }
+    if (!this.inMemoryFix && this.fix) {
+      if (!this.config.flags['copy-dir']) {
+        canWrite = this.config.flags.yes ?? (await ux.confirm(commonMsg.FIX_CONFIRMATION));
+      }
 
-    if (this.fix && canWrite) {
-      writeFileSync(
-        join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName),
-        JSON.stringify(this.schema),
-      );
+      if (canWrite) {
+        writeFileSync(
+          join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName),
+          JSON.stringify(this.schema),
+        );
+      }
     }
   }
 
@@ -124,11 +130,15 @@ export default class ContentType {
     tree: Record<string, unknown>[],
     field: ContentTypeStruct | GlobalFieldDataType | ModularBlockType | GroupFieldDataType,
   ): Promise<void> {
+    const fixTypes = this.config.flags['fix-only'] ?? this.config['fix-fields'];
+
     if (this.fix) {
       field.schema = this.runFixOnSchema(tree, field.schema as ContentTypeSchemaType[]);
     }
 
     for (let child of field.schema ?? []) {
+      if (!fixTypes.includes(child.data_type) && child.data_type !== 'json') continue;
+
       switch (child.data_type) {
         case 'reference':
           this.missingRefs[this.currentUid].push(
@@ -146,8 +156,10 @@ export default class ContentType {
           break;
         case 'json':
           if (child.field_metadata.extension) {
+            if (!fixTypes.includes('json:custom-field')) continue;
             // NOTE Custom field type
           } else if (child.field_metadata.allow_json_rte) {
+            if (!fixTypes.includes('json:rte')) continue;
             // NOTE JSON RTE field type
             this.missingRefs[this.currentUid].push(
               ...this.validateJsonRTEFields(
@@ -196,6 +208,20 @@ export default class ContentType {
    */
   async validateGlobalField(tree: Record<string, unknown>[], field: GlobalFieldDataType): Promise<void> {
     // NOTE Any GlobalField related logic can be added here
+    if (!field.schema && !this.fix) {
+      this.missingRefs[this.currentUid].push({
+        tree,
+        ct_uid: this.currentUid,
+        name: this.currentTitle,
+        data_type: field.data_type,
+        display_name: field.display_name,
+        missingRefs: 'Empty schema found',
+        treeStr: tree.map(({ name }) => name).join(' ➜ '),
+      });
+
+      if (!field.schema) return;
+    }
+
     await this.lookForReference(tree, field);
   }
 
@@ -312,6 +338,10 @@ export default class ContentType {
     return schema
       .map((field) => {
         const { data_type } = field;
+        const fixTypes = this.config.flags['fix-only'] ?? this.config['fix-fields'];
+
+        if (!fixTypes.includes(data_type) && data_type !== 'json') return field;
+
         switch (data_type) {
           case 'global_field':
             return this.fixGlobalFieldReferences(tree, field as GlobalFieldDataType);
@@ -320,8 +350,14 @@ export default class ContentType {
             if (data_type === 'json') {
               if (field.field_metadata.extension) {
                 // NOTE Custom field type
+                if (!fixTypes.includes('json:custom-field')) return field;
+
+                // NOTE Fix logic
+
                 return field;
               } else if (field.field_metadata.allow_json_rte) {
+                if (!fixTypes.includes('json:rte')) return field;
+
                 return this.fixMissingReferences(tree, field as JsonRTEFieldDataType);
               }
             }
@@ -371,11 +407,28 @@ export default class ContentType {
           data_type,
           display_name,
           fixStatus: 'Fixed',
-          missingRefs: [reference_to],
           ct_uid: this.currentUid,
           name: this.currentTitle,
+          missingRefs: [reference_to],
           treeStr: tree.map(({ name }) => name).join(' ➜ '),
         });
+      } else if (!field.schema) {
+        const gfSchema = find(this.gfSchema, { uid: field.reference_to })?.schema;
+
+        if (gfSchema) {
+          field.schema = gfSchema as GlobalFieldSchemaTypes[];
+
+          this.missingRefs[this.currentUid].push({
+            tree,
+            data_type,
+            display_name,
+            fixStatus: 'Fixed',
+            ct_uid: this.currentUid,
+            name: this.currentTitle,
+            missingRefs: 'Empty schema found',
+            treeStr: tree.map(({ name }) => name).join(' ➜ '),
+          });
+        }
       }
 
       return refExist ? field : null;
