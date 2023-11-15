@@ -6,17 +6,17 @@ import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
 import cloneDeep from 'lodash/cloneDeep';
 import { cliux, ux } from '@contentstack/cli-utilities';
-import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'fs';
 
 import config from './config';
 import { print } from './util/log';
 import { auditMsg } from './messages';
 import { BaseCommand } from './base-command';
 import { Entries, GlobalField, ContentType } from './modules';
-import { ContentTypeStruct, OutputColumn, RefErrorReturnType } from './types';
+import { CommandNames, ContentTypeStruct, OutputColumn, RefErrorReturnType } from './types';
 
 export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseCommand> {
-  private currentCommand!: string;
+  private currentCommand!: CommandNames;
 
   get fixStatus() {
     return {
@@ -36,7 +36,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * @param {string} command - The `command` parameter is a string that represents the current command
    * being executed.
    */
-  async start(command: string): Promise<void> {
+  async start(command: CommandNames): Promise<void> {
     this.currentCommand = command;
     await this.promptQueue();
     await this.createBackUp();
@@ -59,6 +59,11 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     } else {
       this.log(this.messages.NO_MISSING_REF_FOUND, 'info');
       this.log('');
+
+      if (this.currentCommand === 'cm:stacks:audit:fix' && existsSync(this.sharedConfig.basePath)) {
+        // NOTE Clean up the backup dir if no issue found while audit the content
+        rmSync(this.sharedConfig.basePath, { recursive: true });
+      }
     }
   }
 
@@ -280,7 +285,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     const csvStream = csv.format({ headers: true });
     const csvPath = join(this.sharedConfig.reportPath, `${moduleName}.csv`);
     const assetFileStream = createWriteStream(csvPath);
-    
+
     return new Promise<void>((resolve, reject) => {
       assetFileStream.on('error', reject);
       csvStream.pipe(assetFileStream).on('close', resolve).on('error', reject);
@@ -312,7 +317,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       }
 
       csvStream.end();
-      assetFileStream.destroy()
+      assetFileStream.destroy();
     });
   }
 }

@@ -145,7 +145,7 @@ export default class Entries {
       moduleName: 'global-fields',
       ctSchema: this.ctSchema,
       gfSchema: this.gfSchema,
-    }).run()) as ContentTypeStruct[];
+    }).run(true)) as ContentTypeStruct[];
   }
 
   /**
@@ -155,12 +155,14 @@ export default class Entries {
   async writeFixContent(filePath: string, schema: Record<string, EntryStruct>) {
     let canWrite = true;
 
-    if (this.fix && !this.config.flags['copy-dir']) {
-      canWrite = this.config.flags.yes || (await ux.confirm(commonMsg.FIX_CONFIRMATION));
-    }
+    if (this.fix) {
+      if (!this.config.flags['copy-dir']) {
+        canWrite = this.config.flags.yes || (await ux.confirm(commonMsg.FIX_CONFIRMATION));
+      }
 
-    if (this.fix && canWrite) {
-      writeFileSync(filePath, JSON.stringify(schema));
+      if (canWrite) {
+        writeFileSync(filePath, JSON.stringify(schema));
+      }
     }
   }
 
