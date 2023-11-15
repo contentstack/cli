@@ -122,6 +122,7 @@ importers:
   packages/contentstack-audit:
     specifiers:
       '@contentstack/cli-command': ~1.2.15
+      '@contentstack/cli-dev-dependencies': ^1.2.3
       '@contentstack/cli-utilities': ~1.5.5
       '@oclif/plugin-help': ^5
       '@oclif/plugin-plugins': ^3.8.4
@@ -140,7 +141,7 @@ importers:
       lodash: ^4.17.21
       mocha: ^10.2.0
       nyc: ^15.1.0
-      oclif: ^3.10.0
+      oclif: ^3
       shx: ^0.3.4
       sinon: ^17.0.0
       ts-jest: ^29.1.1
@@ -161,6 +162,7 @@ importers:
       uuid: 9.0.1
       winston: 3.10.0
     devDependencies:
+      '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
       '@oclif/test': 2.3.31_eyayto62fyd4eo5o5fvolpu7d4
       '@types/chai': 4.3.5
       '@types/fs-extra': 11.0.2
