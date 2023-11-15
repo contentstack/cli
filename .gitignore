@@ -17,3 +17,5 @@ packages/**/package-lock.json
 .dccache
 yarn.lock
 contents-*
+*.http
+*.todo
