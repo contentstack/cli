@@ -18,7 +18,6 @@ const config: DefaultConfig = {
     'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
     'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
     'https://azure-eu-api.contentstack.com': 'https://azure-eu-developerhub-api.contentstack.com',
-    'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com',
   },
   modules: {
     apiConcurrency: 5,
@@ -145,11 +144,11 @@ const config: DefaultConfig = {
     },
     taxonomies: {
       dirName: 'taxonomies',
-      fileName: 'taxonomies.json'
+      fileName: 'taxonomies.json',
     },
     terms: {
       dirName: 'terms',
-      fileName: 'terms.json'
+      fileName: 'terms.json',
     },
   },
   languagesCode: [
@@ -389,7 +388,7 @@ const config: DefaultConfig = {
   getEncryptionKeyMaxRetry: 3,
   // useBackedupDir: '',
   // backupConcurrency: 10,
-  onlyTSModules: ['taxonomies']
+  onlyTSModules: ['taxonomies'],
 };
 
 export default config;
