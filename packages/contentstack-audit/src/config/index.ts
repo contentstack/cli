@@ -2,6 +2,7 @@ const config = {
   showTerminalOutput: true,
   skipRefs: ['sys_assets'],
   modules: ['content-types', 'global-fields', 'entries'],
+  'fix-fields': ['reference', 'global_field', 'json:rte', 'json:custom-field', 'blocks', 'group'],
   moduleConfig: {
     'content-types': {
       name: 'content type',

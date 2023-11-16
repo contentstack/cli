@@ -24,6 +24,24 @@ describe('Content types', () => {
 
   let constructorParam: ModuleConstructorParam & CtConstructorParam;
 
+  class AuditTempClass extends ContentType {
+    constructor(public missingRefs: Record<string, any> = {}) {
+      super(constructorParam);
+      this.currentUid = 'audit';
+      this.currentTitle = 'Audit';
+      this.missingRefs['audit'] = [];
+    }
+  }
+
+  class AuditFixTempClass extends ContentType {
+    constructor(public missingRefs: Record<string, any> = {}) {
+      super({ ...constructorParam, fix: true, moduleName: undefined });
+      this.currentUid = 'audit-fix';
+      this.currentTitle = 'Audit fix';
+      this.missingRefs['audit-fix'] = [];
+    }
+  }
+
   beforeEach(() => {
     constructorParam = {
       log: () => {},
@@ -93,13 +111,7 @@ describe('Content types', () => {
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(ContentType.prototype, 'writeFixContent', async () => {})
       .it('perform audit operation on the given CT schema', async () => {
-        const ctInstance = new (class TempClass extends ContentType {
-          constructor(public missingRefs: Record<string, any> = {}) {
-            super(constructorParam);
-            this.currentUid = 'gf';
-            this.missingRefs['gf'] = [];
-          }
-        })();
+        const ctInstance = new AuditFixTempClass();
 
         await ctInstance.run();
 
@@ -111,13 +123,7 @@ describe('Content types', () => {
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(ContentType.prototype, 'writeFixContent', async () => {})
       .it('perform audit and fix operation on the given CT schema', async () => {
-        const ctInstance = new (class TempClass extends ContentType {
-          constructor(public missingRefs: Record<string, any> = {}) {
-            super({ ...constructorParam, fix: true, moduleName: undefined });
-            this.currentUid = 'gf';
-            this.missingRefs['gf'] = [];
-          }
-        })();
+        const ctInstance = new AuditFixTempClass();
 
         expect(JSON.stringify(await ctInstance.run(true))).includes(
           '"display_name":"Reference","reference_to":["page_4","page_3","page_2","page_1"]',
@@ -153,7 +159,7 @@ describe('Content types', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(ContentType.prototype, 'validateReferenceField', () => [])
-      .stub(ContentType.prototype, 'validateGlobalField', () => [])
+      .stub(ContentType.prototype, 'validateGlobalField', () => {})
       .stub(ContentType.prototype, 'validateJsonRTEFields', () => [])
       .stub(ContentType.prototype, 'validateGroupField', () => [])
       .stub(ContentType.prototype, 'validateModularBlocksField', () => [])
@@ -222,13 +228,7 @@ describe('Content types', () => {
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(ContentType.prototype, 'runFixOnSchema', () => {})
       .it('should call lookForReference method', async () => {
-        const ctInstance = new (class TempClass extends ContentType {
-          constructor(public missingRefs: Record<string, any> = {}) {
-            super(constructorParam);
-            this.currentUid = 'gf';
-            this.missingRefs['gf'] = [];
-          }
-        })();
+        const ctInstance = new AuditTempClass();
 
         const lookForReferenceSpy = sinon.spy(ctInstance, 'lookForReference');
         const [, , , page1Ct] = ctInstance.ctSchema as CtType[];
@@ -237,6 +237,79 @@ describe('Content types', () => {
 
         expect(lookForReferenceSpy.called).to.be.true;
         expect(JSON.stringify(ctInstance.missingRefs)).to.be.include('"missingRefs":["page_0"]');
+      });
+
+    fancy
+      .stdout({ print: process.env.PRINT === 'true' || false })
+      .stub(ContentType.prototype, 'runFixOnSchema', () => {})
+      .it('should identify missing schema on global field', async () => {
+        const ctInstance = new AuditTempClass();
+        const field = {
+          data_type: 'global_field',
+          display_name: 'Global',
+          reference_to: 'gf_0',
+          uid: 'global_field',
+        } as GlobalFieldDataType;
+
+        await ctInstance.validateGlobalField([{ uid: field.uid, name: field.display_name }], field);
+
+        const expected = {
+          audit: [
+            {
+              name: 'Audit',
+              ct_uid: 'audit',
+              data_type: field.data_type,
+              display_name: field.display_name,
+              missingRefs: 'Empty schema found',
+              tree: [{ uid: field.uid, name: field.display_name }],
+              treeStr: [{ uid: field.uid, name: field.display_name }].map(({ name }) => name).join(' ➜ '),
+            },
+          ],
+        };
+        const actual = ctInstance.missingRefs;
+        expect(actual).to.deep.equals(expected);
+      });
+  });
+
+  describe('fixGlobalFieldReferences method', () => {
+    fancy
+      .stdout({ print: process.env.PRINT === 'true' || false })
+      .stub(ContentType.prototype, 'runFixOnSchema', () => {})
+      .stub(ContentType.prototype, 'lookForReference', () => {})
+      .it('should identify missing global-field schema and attach with content-type schema', async () => {
+        // Mock/Stub
+        const ctInstance = new AuditFixTempClass();
+        const field = {
+          data_type: 'global_field',
+          display_name: 'Global',
+          reference_to: 'gf_1',
+          uid: 'global_field',
+        } as GlobalFieldDataType;
+
+        // Execution
+        const fixField = await ctInstance.fixGlobalFieldReferences([], field);
+
+        // Assertion
+        const actual = ctInstance.missingRefs;
+        const expected = {
+          'audit-fix': [
+            {
+              name: 'Audit fix',
+              ct_uid: 'audit-fix',
+              fixStatus: 'Fixed',
+              data_type: field.data_type,
+              display_name: field.display_name,
+              missingRefs: 'Empty schema found',
+              tree: [{ uid: field.uid, name: field.display_name, data_type: field.data_type }],
+              treeStr: [{ uid: field.uid, name: field.display_name, data_type: field.data_type }]
+                .map(({ name }) => name)
+                .join(' ➜ '),
+            },
+          ],
+        };
+        expect(actual).to.deep.equals(expected);
+        expect(fixField?.schema).is.not.empty;
+        expect(fixField?.schema.length).to.be.equal(2);
       });
   });
 });
