@@ -125,4 +125,5 @@ export {
   ModularBlockType,
   OutputColumn,
   ContentTypeSchemaType,
+  GlobalFieldSchemaTypes,
 };
