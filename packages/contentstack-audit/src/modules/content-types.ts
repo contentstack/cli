@@ -219,7 +219,7 @@ export default class ContentType {
         treeStr: tree.map(({ name }) => name).join(' ➜ '),
       });
 
-      if (!field.schema) return;
+      return void 0;
     }
 
     await this.lookForReference(tree, field);
