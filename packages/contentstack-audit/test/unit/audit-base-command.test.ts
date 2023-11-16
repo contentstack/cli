@@ -155,7 +155,7 @@ describe('AuditBaseCommand class', () => {
       .stub(AuditBaseCommand.prototype, 'showOutputOnScreen', () => {})
       .stub(fs, 'mkdirSync', () => {})
       .stub(require('fs-extra'), 'copy', () => {})
-      .it('should create backup dir', async () => {
+      .it('should throw error if not valid path provided to create backup dir', async () => {
         class CMD extends AuditBaseCommand {
           async run() {
             this.sharedConfig.flags.modules = [];
