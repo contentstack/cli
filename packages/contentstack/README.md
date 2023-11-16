@@ -120,16 +120,20 @@ USAGE
     --no-truncate]
 
 FLAGS
+  --modules=<option>...  Provide the list of modules to be audited
+                         <options: content-types|global-fields|entries>
+  --report-path=<value>  Path to store the audit reports
+
+COMMON FLAGS
   -c, --config=<value>    Path of the external config
   -d, --data-dir=<value>  Path where the data is stored
-  --columns=<value>       only show provided columns (comma-separated)
-  --csv                   output is csv format [alias: --output=csv]
-  --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries>
-  --no-truncate           do not truncate output to fit screen
-  --report-path=<value>   Path to store the audit reports
-  --sort=<value>          property to sort by (prepend '-' for descending)
+
+TABLE FLAGS
+  --columns=<value>  do not truncate output to fit screen
+  --csv              output is csv format [alias: --output=csv]
+  --filter=<value>   filter property by partial string matching, ex: name=foo
+  --no-truncate      do not truncate output to fit screen
+  --sort=<value>     property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and find possible errors in the exported Contentstack data
@@ -157,22 +161,29 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--copy-path <value> --copy-dir] [--columns <value> | ] [--sort <value>]
-    [--filter <value>] [--csv | --no-truncate]
+    content-types|global-fields|entries] [--copy-path <value> --copy-dir] [--fix-only
+    reference|global_field|json:rte|json:custom-field|blocks|group] [--columns <value> | ] [--sort <value>] [--filter
+    <value>] [--csv | --no-truncate]
 
 FLAGS
-  -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path where the data is stored
-  --columns=<value>       only show provided columns (comma-separated)
   --copy-dir              Create backup from the original data.
   --copy-path=<value>     Provide the path to backup the copied data
-  --csv                   output is csv format [alias: --output=csv]
-  --filter=<value>        filter property by partial string matching, ex: name=foo
+  --fix-only=<option>...  Provide the list of fix options
+                          <options: reference|global_field|json:rte|json:custom-field|blocks|group>
   --modules=<option>...   Provide the list of modules to be audited
                           <options: content-types|global-fields|entries>
-  --no-truncate           do not truncate output to fit screen
   --report-path=<value>   Path to store the audit reports
-  --sort=<value>          property to sort by (prepend '-' for descending)
+
+COMMON FLAGS
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path where the data is stored
+
+TABLE FLAGS
+  --columns=<value>  do not truncate output to fit screen
+  --csv              output is csv format [alias: --output=csv]
+  --filter=<value>   filter property by partial string matching, ex: name=foo
+  --no-truncate      do not truncate output to fit screen
+  --sort=<value>     property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and fix possible errors in the exported Contentstack data.
@@ -187,6 +198,8 @@ EXAMPLES
   $ csdx audit:fix --report-path=<path> --copy-dir
 
   $ csdx audit:fix --report-path=<path> --copy-dir --csv
+
+  $ csdx audit:fix --fix-only=reference,global_field --copy-dir
 
   $ csdx audit:fix --report-path=<path> --filter="name=<filter-value>"
 
@@ -2337,16 +2350,20 @@ USAGE
     --no-truncate]
 
 FLAGS
+  --modules=<option>...  Provide the list of modules to be audited
+                         <options: content-types|global-fields|entries>
+  --report-path=<value>  Path to store the audit reports
+
+COMMON FLAGS
   -c, --config=<value>    Path of the external config
   -d, --data-dir=<value>  Path where the data is stored
-  --columns=<value>       only show provided columns (comma-separated)
-  --csv                   output is csv format [alias: --output=csv]
-  --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries>
-  --no-truncate           do not truncate output to fit screen
-  --report-path=<value>   Path to store the audit reports
-  --sort=<value>          property to sort by (prepend '-' for descending)
+
+TABLE FLAGS
+  --columns=<value>  do not truncate output to fit screen
+  --csv              output is csv format [alias: --output=csv]
+  --filter=<value>   filter property by partial string matching, ex: name=foo
+  --no-truncate      do not truncate output to fit screen
+  --sort=<value>     property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and find possible errors in the exported Contentstack data
@@ -2376,22 +2393,29 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--copy-path <value> --copy-dir] [--columns <value> | ] [--sort <value>]
-    [--filter <value>] [--csv | --no-truncate]
+    content-types|global-fields|entries] [--copy-path <value> --copy-dir] [--fix-only
+    reference|global_field|json:rte|json:custom-field|blocks|group] [--columns <value> | ] [--sort <value>] [--filter
+    <value>] [--csv | --no-truncate]
 
 FLAGS
-  -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path where the data is stored
-  --columns=<value>       only show provided columns (comma-separated)
   --copy-dir              Create backup from the original data.
   --copy-path=<value>     Provide the path to backup the copied data
-  --csv                   output is csv format [alias: --output=csv]
-  --filter=<value>        filter property by partial string matching, ex: name=foo
+  --fix-only=<option>...  Provide the list of fix options
+                          <options: reference|global_field|json:rte|json:custom-field|blocks|group>
   --modules=<option>...   Provide the list of modules to be audited
                           <options: content-types|global-fields|entries>
-  --no-truncate           do not truncate output to fit screen
   --report-path=<value>   Path to store the audit reports
-  --sort=<value>          property to sort by (prepend '-' for descending)
+
+COMMON FLAGS
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path where the data is stored
+
+TABLE FLAGS
+  --columns=<value>  do not truncate output to fit screen
+  --csv              output is csv format [alias: --output=csv]
+  --filter=<value>   filter property by partial string matching, ex: name=foo
+  --no-truncate      do not truncate output to fit screen
+  --sort=<value>     property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and fix possible errors in the exported Contentstack data.
@@ -2406,6 +2430,8 @@ EXAMPLES
   $ csdx cm:stacks:audit:fix --report-path=<path> --copy-dir
 
   $ csdx cm:stacks:audit:fix --report-path=<path> --copy-dir --csv
+
+  $ csdx cm:stacks:audit:fix --fix-only=reference,global_field --copy-dir
 
   $ csdx cm:stacks:audit:fix --report-path=<path> --filter="name=<filter-value>"
 
@@ -3018,7 +3044,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.20/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.14/src/commands/help.ts)_
 
 ## `csdx launch`
 
