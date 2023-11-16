@@ -129,11 +129,11 @@ COMMON FLAGS
   -d, --data-dir=<value>  Path where the data is stored
 
 TABLE FLAGS
-  --columns=<value>  do not truncate output to fit screen
-  --csv              output is csv format [alias: --output=csv]
-  --filter=<value>   filter property by partial string matching, ex: name=foo
-  --no-truncate      do not truncate output to fit screen
-  --sort=<value>     property to sort by (prepend '-' for descending)
+  --columns=<value>  Show only the specified columns (comma-separated)
+  --csv              The output is in the CSV format [alias: --output=csv]
+  --filter=<value>   Filter property by partial string matching. For example: name=foo
+  --no-truncate      The output is not truncated to fit the screen
+  --sort=<value>     Property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and find possible errors in the exported Contentstack data
@@ -179,11 +179,11 @@ COMMON FLAGS
   -d, --data-dir=<value>  Path where the data is stored
 
 TABLE FLAGS
-  --columns=<value>  do not truncate output to fit screen
-  --csv              output is csv format [alias: --output=csv]
-  --filter=<value>   filter property by partial string matching, ex: name=foo
-  --no-truncate      do not truncate output to fit screen
-  --sort=<value>     property to sort by (prepend '-' for descending)
+  --columns=<value>  Show only the specified columns (comma-separated)
+  --csv              The output is in the CSV format [alias: --output=csv]
+  --filter=<value>   Filter property by partial string matching. For example: name=foo
+  --no-truncate      The output is not truncated to fit the screen
+  --sort=<value>     Property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and fix possible errors in the exported Contentstack data.
@@ -2359,11 +2359,11 @@ COMMON FLAGS
   -d, --data-dir=<value>  Path where the data is stored
 
 TABLE FLAGS
-  --columns=<value>  do not truncate output to fit screen
-  --csv              output is csv format [alias: --output=csv]
-  --filter=<value>   filter property by partial string matching, ex: name=foo
-  --no-truncate      do not truncate output to fit screen
-  --sort=<value>     property to sort by (prepend '-' for descending)
+  --columns=<value>  Show only the specified columns (comma-separated)
+  --csv              The output is in the CSV format [alias: --output=csv]
+  --filter=<value>   Filter property by partial string matching. For example: name=foo
+  --no-truncate      The output is not truncated to fit the screen
+  --sort=<value>     Property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and find possible errors in the exported Contentstack data
@@ -2411,11 +2411,11 @@ COMMON FLAGS
   -d, --data-dir=<value>  Path where the data is stored
 
 TABLE FLAGS
-  --columns=<value>  do not truncate output to fit screen
-  --csv              output is csv format [alias: --output=csv]
-  --filter=<value>   filter property by partial string matching, ex: name=foo
-  --no-truncate      do not truncate output to fit screen
-  --sort=<value>     property to sort by (prepend '-' for descending)
+  --columns=<value>  Show only the specified columns (comma-separated)
+  --csv              The output is in the CSV format [alias: --output=csv]
+  --filter=<value>   Filter property by partial string matching. For example: name=foo
+  --no-truncate      The output is not truncated to fit the screen
+  --sort=<value>     Property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and fix possible errors in the exported Contentstack data.
@@ -3342,7 +3342,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -3407,7 +3407,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -3447,7 +3447,7 @@ EXAMPLES
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
@@ -3476,7 +3476,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -3524,7 +3524,7 @@ ALIASES
   $ csdx plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -3565,7 +3565,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
