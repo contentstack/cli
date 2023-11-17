@@ -65,11 +65,11 @@ COMMON FLAGS
   -d, --data-dir=<value>  Path where the data is stored
 
 TABLE FLAGS
-  --columns=<value>  do not truncate output to fit screen
-  --csv              output is csv format [alias: --output=csv]
-  --filter=<value>   filter property by partial string matching, ex: name=foo
-  --no-truncate      do not truncate output to fit screen
-  --sort=<value>     property to sort by (prepend '-' for descending)
+  --columns=<value>  Show only the specified columns (comma-separated)
+  --csv              The output is in the CSV format [alias: --output=csv]
+  --filter=<value>   Filter property by partial string matching. For example: name=foo
+  --no-truncate      The output is not truncated to fit the screen
+  --sort=<value>     Property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and find possible errors in the exported Contentstack data
@@ -115,11 +115,11 @@ COMMON FLAGS
   -d, --data-dir=<value>  Path where the data is stored
 
 TABLE FLAGS
-  --columns=<value>  do not truncate output to fit screen
-  --csv              output is csv format [alias: --output=csv]
-  --filter=<value>   filter property by partial string matching, ex: name=foo
-  --no-truncate      do not truncate output to fit screen
-  --sort=<value>     property to sort by (prepend '-' for descending)
+  --columns=<value>  Show only the specified columns (comma-separated)
+  --csv              The output is in the CSV format [alias: --output=csv]
+  --filter=<value>   Filter property by partial string matching. For example: name=foo
+  --no-truncate      The output is not truncated to fit the screen
+  --sort=<value>     Property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and fix possible errors in the exported Contentstack data.
@@ -162,11 +162,11 @@ COMMON FLAGS
   -d, --data-dir=<value>  Path where the data is stored
 
 TABLE FLAGS
-  --columns=<value>  do not truncate output to fit screen
-  --csv              output is csv format [alias: --output=csv]
-  --filter=<value>   filter property by partial string matching, ex: name=foo
-  --no-truncate      do not truncate output to fit screen
-  --sort=<value>     property to sort by (prepend '-' for descending)
+  --columns=<value>  Show only the specified columns (comma-separated)
+  --csv              The output is in the CSV format [alias: --output=csv]
+  --filter=<value>   Filter property by partial string matching. For example: name=foo
+  --no-truncate      The output is not truncated to fit the screen
+  --sort=<value>     Property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and find possible errors in the exported Contentstack data
@@ -214,11 +214,11 @@ COMMON FLAGS
   -d, --data-dir=<value>  Path where the data is stored
 
 TABLE FLAGS
-  --columns=<value>  do not truncate output to fit screen
-  --csv              output is csv format [alias: --output=csv]
-  --filter=<value>   filter property by partial string matching, ex: name=foo
-  --no-truncate      do not truncate output to fit screen
-  --sort=<value>     property to sort by (prepend '-' for descending)
+  --columns=<value>  Show only the specified columns (comma-separated)
+  --csv              The output is in the CSV format [alias: --output=csv]
+  --filter=<value>   Filter property by partial string matching. For example: name=foo
+  --no-truncate      The output is not truncated to fit the screen
+  --sort=<value>     Property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and fix possible errors in the exported Contentstack data.

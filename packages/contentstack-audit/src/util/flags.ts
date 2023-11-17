@@ -22,7 +22,7 @@ function getTableFlags(
     flags[element].helpGroup = 'TABLE';
 
     const descriptionKey = `TABLE_${element.toUpperCase()}` as keyof typeof tableColumnDescriptions;
-    flags.columns.description = tableColumnDescriptions[descriptionKey] ?? flags.columns.description;
+    flags[element].description = tableColumnDescriptions[descriptionKey] ?? flags[element].description;
   });
 
   return flags;
