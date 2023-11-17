@@ -6,7 +6,11 @@ module.exports = async (filename, queue, Type) => {
   if (logs.file.length > 0) {
     logs.file.forEach(async (log) => {
       const stackOptions = {host: log.message.host };
-      log.message.alias?stackOptions["alias"] = log.message.alias:stackOptions["stackApiKey"] = log.message.api_key;
+      if(log.message.alias) {
+        stackOptions["alias"] = log.message.alias
+      } else {
+        stackOptions["stackApiKey"] = log.message.api_key
+      }
       if (Type === 'bulk') {        
         log.message.options.stack = await getStack(stackOptions);
         queue.Enqueue(log.message.options);
