@@ -1,11 +1,11 @@
 const errors = {};
 
 const tableColumnDescriptions = {
-  TABLE_COLUMN: 'only show provided columns (comma-separated)',
-  TABLE_SORT: "property to sort by (prepend '-' for descending)",
-  TABLE_CSV: 'output is csv format [alias: --output=csv]',
-  TABLE_FILTER: 'filter property by partial string matching, ex: name=foo',
-  'TABLE_NO-TRUNCATE': 'do not truncate output to fit screen',
+  TABLE_COLUMNS: 'Show only the specified columns (comma-separated)',
+  TABLE_SORT: "Property to sort by (prepend '-' for descending)",
+  TABLE_CSV: 'The output is in the CSV format [alias: --output=csv]',
+  TABLE_FILTER: 'Filter property by partial string matching. For example: name=foo',
+  'TABLE_NO-TRUNCATE': 'The output is not truncated to fit the screen',
 };
 
 const commonMsg = {
