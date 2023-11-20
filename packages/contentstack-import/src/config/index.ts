@@ -375,6 +375,7 @@ const config: DefaultConfig = {
     stacks: '/stacks/',
     labels: '/labels/',
   },
+  overwriteSupportedModules: ['extensions', 'global-fields', 'content-types'],
   rateLimit: 5,
   preserveStackVersion: false,
   entriesPublish: true,
