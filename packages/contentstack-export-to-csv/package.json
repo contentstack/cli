@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-export-to-csv",
   "description": "Export entities to csv",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "author": "Abhinav Gupta @abhinav-from-contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
@@ -15,12 +15,15 @@
   },
   "devDependencies": {
     "@oclif/test": "^2.2.10",
-    "chai": "^4.2.0",
+    "@types/chai": "^4.3.6",
+    "@types/mocha": "^10.0.1",
+    "chai": "^4.3.8",
     "debug": "^4.3.1",
+    "dotenv": "^16.3.1",
     "eslint": "^7.32.0",
     "eslint-config-oclif": "^4.0.0",
     "globby": "^10.0.2",
-    "mocha": "^10.0.0",
+    "mocha": "^10.2.0",
     "nyc": "^15.1.0",
     "oclif": "^3.8.1"
   },
@@ -44,7 +47,8 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif manifest && oclif readme",
     "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
-    "test:unit": "nyc mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.js\"",
+    "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.js\" \"test/util/common-utils.test.js\"",
+    "test:unit:report": "nyc --extension .js mocha --forbid-only \"test/unit/**/*.test.js\" \"test/util/common-utils.test.js\"",
     "version": "oclif readme && git add README.md",
     "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
   },

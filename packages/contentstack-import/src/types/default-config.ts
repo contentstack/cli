@@ -113,6 +113,16 @@ export default interface DefaultConfig {
       fileName: string;
       requiredKeys: string[];
     };
+    taxonomies: {
+      dirName: string;
+      fileName: string;
+      dependencies?: Modules[];
+    };
+    terms: {
+      dirName: string;
+      fileName: string;
+      dependencies?: Modules[];
+    };
   };
   languagesCode: string[];
   apis: {
@@ -141,4 +151,5 @@ export default interface DefaultConfig {
   getEncryptionKeyMaxRetry: number;
   createBackupDir?: string;
   overwriteSupportedModules: string[];
+  onlyTSModules: string[];
 }
