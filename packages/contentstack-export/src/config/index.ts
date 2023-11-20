@@ -10,7 +10,6 @@ const config: DefaultConfig = {
     'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
     'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
     'https://azure-eu-api.contentstack.com': 'https://azure-eu-developerhub-api.contentstack.com',
-    'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com',
   },
   // use below hosts for eu region
   // host:'https://eu-api.contentstack.com/v3',
@@ -163,7 +162,7 @@ const config: DefaultConfig = {
     taxonomies: {
       dirName: 'taxonomies',
       fileName: 'taxonomies.json',
-      invalidKeys: ['updated_at', 'created_by', 'updated_by'],
+      invalidKeys: ['updated_at', 'created_by', 'updated_by', 'stackHeaders', 'urlPath'],
     },
     terms: {
       dirName: 'terms',
@@ -400,6 +399,7 @@ const config: DefaultConfig = {
   writeConcurrency: 5,
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
+  onlyTSModules: ['taxonomies'],
 };
 
 export default config;

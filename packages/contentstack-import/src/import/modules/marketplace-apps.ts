@@ -19,8 +19,8 @@ import {
   NodeCrypto,
   ContentstackClient,
 } from '@contentstack/cli-utilities';
-
 import BaseClass from './base-class';
+import { trace } from '../../utils/log';
 import { askEncryptionKey } from '../../utils/interactive';
 import { ModuleClassParams, MarketplaceAppsConfig } from '../../types';
 import {
@@ -55,7 +55,7 @@ export default class ImportMarketplaceApps extends BaseClass {
   public developerHubBaseUrl: string;
   public sdkClient: ContentstackClient;
   public nodeCrypto: NodeCrypto;
-  public appSdkAxiosInstance: any
+  public appSdkAxiosInstance: any;
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
 
@@ -101,7 +101,7 @@ export default class ImportMarketplaceApps extends BaseClass {
     this.developerHubBaseUrl = this.importConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.importConfig));
     this.sdkClient = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
     this.appSdkAxiosInstance = await managementSDKClient({
-      host: this.developerHubBaseUrl.split('://').pop()
+      host: this.developerHubBaseUrl.split('://').pop(),
     });
     this.importConfig.org_uid = await getOrgUid(this.importConfig);
     await this.setHttpClient();
@@ -313,6 +313,7 @@ export default class ImportMarketplaceApps extends BaseClass {
         const updatedApp = await handleNameConflict(app, appSuffix, this.importConfig);
         return this.createPrivateApps(updatedApp, true, appSuffix + 1);
       } else {
+        trace(response, 'error', true);
         log(this.importConfig, formatError(message), 'error');
 
         if (this.importConfig.forceStopMarketplaceAppsPrompt) return Promise.resolve();
@@ -412,13 +413,17 @@ export default class ImportMarketplaceApps extends BaseClass {
           organization_uid: this.importConfig.org_uid,
         },
       })
-      .then(({data}:any) => {
+      .then(({ data }: any) => {
         if (data?.message) {
+          trace(data, 'error', true);
           log(this.importConfig, formatError(data.message), 'success');
         } else {
           log(this.importConfig, `${app.manifest.name} app config updated successfully.!`, 'success');
         }
       })
-      .catch((error:any) => log(this.importConfig, formatError(error), 'error'));
+      .catch((error: any) => {
+        trace(error, 'error', true);
+        log(this.importConfig, formatError(error), 'error');
+      });
   }
 }

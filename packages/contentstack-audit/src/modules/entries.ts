@@ -72,23 +72,7 @@ export default class Entries {
     }
 
     await this.prepareEntryMetaData();
-
-    this.ctSchema = (await new ContentType({
-      fix: true,
-      log: () => {},
-      config: this.config,
-      moduleName: 'content-types',
-      ctSchema: this.ctSchema,
-      gfSchema: this.gfSchema,
-    }).run(true)) as ContentTypeStruct[];
-    this.gfSchema = (await new ContentType({
-      fix: true,
-      log: () => {},
-      config: this.config,
-      moduleName: 'entries',
-      ctSchema: this.ctSchema,
-      gfSchema: this.gfSchema,
-    }).run(true)) as ContentTypeStruct[];
+    await this.fixPrerequisiteData();
 
     for (const { code } of this.locales) {
       for (const ctSchema of this.ctSchema) {
@@ -125,13 +109,43 @@ export default class Entries {
     }
     this.log('', 'info'); // Adding empty line
 
+    this.removeEmptyVal();
+
+    return this.missingRefs;
+  }
+
+  /**
+   * The function removes any properties from the `missingRefs` object that have an empty array value.
+   */
+  removeEmptyVal() {
     for (let propName in this.missingRefs) {
       if (!this.missingRefs[propName].length) {
         delete this.missingRefs[propName];
       }
     }
+  }
 
-    return this.missingRefs;
+  /**
+   * The function `fixPrerequisiteData` fixes the prerequisite data by updating the `ctSchema` and
+   * `gfSchema` properties using the `ContentType` class.
+   */
+  async fixPrerequisiteData() {
+    this.ctSchema = (await new ContentType({
+      fix: true,
+      log: () => {},
+      config: this.config,
+      moduleName: 'content-types',
+      ctSchema: this.ctSchema,
+      gfSchema: this.gfSchema,
+    }).run(true)) as ContentTypeStruct[];
+    this.gfSchema = (await new ContentType({
+      fix: true,
+      log: () => {},
+      config: this.config,
+      moduleName: 'entries',
+      ctSchema: this.ctSchema,
+      gfSchema: this.gfSchema,
+    }).run(true)) as ContentTypeStruct[];
   }
 
   /**
@@ -449,13 +463,14 @@ export default class Entries {
           if (data_type === 'json') {
             if (field.field_metadata.extension) {
               // NOTE Custom field type
-              return field;
+              break;
             } else if (field.field_metadata.allow_json_rte) {
-              return this.fixJsonRteMissingReferences(
+              this.fixJsonRteMissingReferences(
                 [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
                 field as JsonRTEFieldDataType,
                 entry[uid] as EntryJsonRTEFieldDataType,
               );
+              break;
             }
           }
 
@@ -464,7 +479,7 @@ export default class Entries {
             [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
             field as ReferenceFieldDataType,
             entry[uid] as EntryReferenceFieldDataType[],
-          ) as EntryReferenceFieldDataType[];
+          );
           break;
         case 'blocks':
           entry[uid] = this.fixModularBlocksReferences(
@@ -541,7 +556,7 @@ export default class Entries {
 
           return eBlock;
         })
-        .filter((val) => !isEmpty(val)) as EntryModularBlocksDataType[];
+        .filter((val) => !isEmpty(val));
     });
 
     return entry;
@@ -604,11 +619,7 @@ export default class Entries {
   ) {
     if (Array.isArray(entry)) {
       entry = entry.map((child: any, index) => {
-        return this.fixJsonRteMissingReferences(
-          [...tree, { index, type: (child as any)?.type, uid: child?.uid }],
-          field,
-          child,
-        );
+        return this.fixJsonRteMissingReferences([...tree, { index, type: child?.type, uid: child?.uid }], field, child);
       }) as EntryJsonRTEFieldDataType[];
     } else {
       entry.children = entry.children
@@ -669,7 +680,7 @@ export default class Entries {
         data_type: field.data_type,
         display_name: field.display_name,
         treeStr: tree
-          .map(({ name, index }) => (index || index === 0 ? `[${index}].${name}` : name))
+          .map(({ name, index }) => (index || index === 0 ? `[${+index}].${name}` : name))
           .filter((val) => val)
           .join(' ➜ '),
         missingRefs,
@@ -697,7 +708,7 @@ export default class Entries {
     tree: Record<string, unknown>[],
     blocks: ModularBlockType[],
     entryBlock: EntryModularBlocksDataType,
-    index: Number,
+    index: number,
   ) {
     const validBlockUid = blocks.map((block) => block.uid);
     const invalidKeys = Object.keys(entryBlock).filter((key) => !validBlockUid.includes(key));
@@ -715,7 +726,7 @@ export default class Entries {
         fixStatus: this.fix ? 'Fixed' : undefined,
         tree: [...tree, { index, uid: key, name: key }],
         treeStr: [...tree, { index, uid: key, name: key }]
-          .map(({ name, index }) => (index || index === 0 ? `[${index}].${name}` : name))
+          .map(({ name, index }) => (index || index === 0 ? `[${+index}].${name}` : name))
           .filter((val) => val)
           .join(' ➜ '),
         missingRefs: [key],
@@ -775,8 +786,8 @@ export default class Entries {
     const localesFolderPath = resolve(this.config.basePath, this.config.moduleConfig.locales.dirName);
     const localesPath = join(localesFolderPath, this.config.moduleConfig.locales.fileName);
     const masterLocalesPath = join(localesFolderPath, 'master-locale.json');
-    this.locales = values(JSON.parse(readFileSync(masterLocalesPath, 'utf-8')));
-    this.locales.push(...values(JSON.parse(readFileSync(localesPath, 'utf-8'))));
+    this.locales = values(JSON.parse(readFileSync(masterLocalesPath, 'utf8')));
+    this.locales.push(...values(JSON.parse(readFileSync(localesPath, 'utf8'))));
 
     for (const { code } of this.locales) {
       for (const { uid } of this.ctSchema) {

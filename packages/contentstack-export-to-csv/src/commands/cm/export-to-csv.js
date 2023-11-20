@@ -15,8 +15,8 @@ class ExportToCsvCommand extends Command {
     action: flags.string({
       required: false,
       multiple: false,
-      options: ['entries', 'users', 'taxonomies'],
-      description: `Option to export data (entries, users)`,
+      options: ['entries', 'users', 'teams', 'taxonomies'],
+      description: `Option to export data (entries, users, teams, taxonomies)`,
     }),
     alias: flags.string({
       char: 'a',
@@ -59,8 +59,15 @@ class ExportToCsvCommand extends Command {
       multiple: false,
       required: false,
     }),
+    "team-uid": flags.string({
+      description: 'Uid of the team whose user data and stack roles are required'
+    }),
     'taxonomy-uid': flags.string({
       description: 'Provide the taxonomy UID of the related terms you want to export',
+    }),
+    delimiter: flags.string({
+      description: '[optional] Provide a delimiter to separate individual data fields within the CSV file.',
+      default: ',',
     }),
   };
 
@@ -78,12 +85,20 @@ class ExportToCsvCommand extends Command {
           'content-type': contentTypesFlag,
           alias: managementTokenAlias,
           branch: branchUid,
+          "team-uid": teamUid,
           'taxonomy-uid': taxonomyUID,
+          delimiter
         },
       } = await this.parse(ExportToCsvCommand);
 
       if (!managementTokenAlias) {
         managementAPIClient = await managementSDKClient({ host: this.cmaHost });
+        if (!isAuthenticated()) {
+          this.error(config.CLI_EXPORT_CSV_ENTRIES_ERROR, {
+            exit: 2,
+            suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
+          });
+        }
       }
 
       if (actionFlag) {
@@ -169,7 +184,7 @@ class ExportToCsvCommand extends Command {
                 flatEntries = flatEntries.concat(flatEntriesResult);
               }
               let fileName = `${stackName ? stackName : stack.name}_${contentType}_${language.code}_entries_export.csv`;
-              util.write(this, flatEntries, fileName, 'entries'); // write to file
+              util.write(this, flatEntries, fileName, 'entries', delimiter); // write to file
             }
           } catch (error) {
             cliux.error(util.formatError(error));
@@ -179,12 +194,6 @@ class ExportToCsvCommand extends Command {
         case config.exportUsers:
         case 'users': {
           try {
-            if (!isAuthenticated()) {
-              this.error(config.CLI_EXPORT_CSV_LOGIN_FAILED, {
-                exit: 2,
-                suggestions: ['https://www.contentstack.com/docs/developers/cli/authentication/'],
-              });
-            }
             let organization;
 
             if (org) {
@@ -202,7 +211,25 @@ class ExportToCsvCommand extends Command {
               (orgName ? orgName : organization.name).replace(config.organizationNameRegex, ''),
             )}_users_export.csv`;
 
-            util.write(this, listOfUsers, fileName, 'organization details');
+            util.write(this, listOfUsers, fileName, 'organization details', delimiter);
+          } catch (error) {
+            if (error.message || error.errorMessage) {
+              cliux.error(util.formatError(error));
+            }
+          }
+          break;
+        }
+        case config.exportTeams:
+        case 'teams': {
+          try{
+            let organization;
+            if (org) {
+              organization = { uid: org, name: orgName || org };
+            } else {
+              organization = await util.chooseOrganization(managementAPIClient, action); // prompt for organization
+            }
+          
+            await util.exportTeams(managementAPIClient,organization,teamUid, delimiter);
           } catch (error) {
             if (error.message || error.errorMessage) {
               cliux.error(util.formatError(error));
@@ -223,7 +250,7 @@ class ExportToCsvCommand extends Command {
           }
 
           stackAPIClient = this.getStackClient(managementAPIClient, stack);
-          await this.createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxonomyUID);
+          await this.createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxonomyUID, delimiter);
           break;
         }
       }
@@ -242,7 +269,7 @@ class ExportToCsvCommand extends Command {
     const stackInit = {
       api_key: stack.apiKey,
     };
-    if(stack?.branch_uid) stackInit['branch_uid'] = stack.branch_uid;
+    if (stack?.branch_uid) stackInit['branch_uid'] = stack.branch_uid;
     if (stack.token) {
       return managementAPIClient.stack({
         ...stackInit,
@@ -359,11 +386,13 @@ class ExportToCsvCommand extends Command {
    * @param {object} stack
    * @param {string} taxUID
    */
-  async createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxUID) {
+  async createTaxonomyAndTermCsvFile(stackAPIClient, stackName, stack, taxUID, delimiter) {
+    //TODO: Temp variable to export taxonomies in importable format will replaced with flag once decided
+    const importableCSV = true;
     const payload = {
       stackAPIClient,
       type: '',
-      limit: config.limit || 100
+      limit: config.limit || 100,
     };
     //check whether the taxonomy is valid or not
     let taxonomies = [];
@@ -375,28 +404,36 @@ class ExportToCsvCommand extends Command {
       taxonomies = await util.getAllTaxonomies(payload);
     }
 
-    const formattedTaxonomiesData = util.formatTaxonomiesData(taxonomies);
-    if (formattedTaxonomiesData?.length) {
-      const fileName = `${stackName ? stackName : stack.name}_taxonomies.csv`;
-      util.write(this, formattedTaxonomiesData, fileName, 'taxonomies');
-    } else {
-      cliux.print('info: No taxonomies found! Please provide a valid stack.', { color: 'blue' });
-    }
+    if (!importableCSV) {
+      const formattedTaxonomiesData = util.formatTaxonomiesData(taxonomies);
+      if (formattedTaxonomiesData?.length) {
+        const fileName = `${stackName ? stackName : stack.name}_taxonomies.csv`;
+        util.write(this, formattedTaxonomiesData, fileName, 'taxonomies', delimiter);
+      } else {
+        cliux.print('info: No taxonomies found! Please provide a valid stack.', { color: 'blue' });
+      }
 
-    for (let index = 0; index < taxonomies?.length; index++) {
-      const taxonomy = taxonomies[index];
-      const taxonomyUID = taxonomy?.uid;
-      if (taxonomyUID) {
-        payload['taxonomyUID'] = taxonomyUID;
-        const terms = await util.getAllTermsOfTaxonomy(payload);
-        const formattedTermsData = util.formatTermsOfTaxonomyData(terms, taxonomyUID);
-        const taxonomyName = taxonomy?.name ?? '';
-        const termFileName = `${stackName ?? stack.name}_${taxonomyName}_${taxonomyUID}_terms.csv`;
-        if (formattedTermsData?.length) {
-          util.write(this, formattedTermsData, termFileName, 'terms');
-        } else {
-          cliux.print(`info: No terms found for the taxonomy UID - '${taxonomyUID}'!`, { color: 'blue' });
+      for (let index = 0; index < taxonomies?.length; index++) {
+        const taxonomy = taxonomies[index];
+        const taxonomyUID = taxonomy?.uid;
+        if (taxonomyUID) {
+          payload['taxonomyUID'] = taxonomyUID;
+          const terms = await util.getAllTermsOfTaxonomy(payload);
+          const formattedTermsData = util.formatTermsOfTaxonomyData(terms, taxonomyUID);
+          const taxonomyName = taxonomy?.name ?? '';
+          const termFileName = `${stackName ?? stack.name}_${taxonomyName}_${taxonomyUID}_terms.csv`;
+          if (formattedTermsData?.length) {
+            util.write(this, formattedTermsData, termFileName, 'terms', delimiter);
+          } else {
+            cliux.print(`info: No terms found for the taxonomy UID - '${taxonomyUID}'!`, { color: 'blue' });
+          }
         }
+      }
+    } else {
+      const fileName = `${stackName ?? stack.name}_taxonomies.csv`;
+      const { taxonomiesData, headers } = await util.createImportableCSV(payload, taxonomies);
+      if (taxonomiesData?.length) {
+        util.write(this, taxonomiesData, fileName, 'taxonomies',delimiter, headers);
       }
     }
   }
@@ -418,10 +455,30 @@ ExportToCsvCommand.examples = [
   '',
   'Exporting organization users to csv with organization name provided',
   'csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>',
+  '',
+  'Exporting Organizations Teams to CSV',
+  'csdx cm:export-to-csv --action <teams>',
+  '',
+  'Exporting Organizations Teams to CSV with org-uid',
+  'csdx cm:export-to-csv --action <teams> --org <org-uid>',
+  '',
+  'Exporting Organizations Teams to CSV with team uid',
+  'csdx cm:export-to-csv --action <teams> --team-uid <team-uid>',
+  '',
+  'Exporting Organizations Teams to CSV with org-uid and team uid',
+  'csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid>',
+  '',
+  'Exporting Organizations Teams to CSV with org-uid and team uid',
+  'csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid> --org-name <org-name>',
+  '',
   'Exporting taxonomies and related terms to a .CSV file with the provided taxonomy UID',
   'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --taxonomy-uid <taxonomy-uid>',
+  '',
   'Exporting taxonomies and respective terms to a .CSV file',
   'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias>',
+  '',
+  'Exporting taxonomies and respective terms to a .CSV file with a delimiter',
+  'csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --delimiter <delimiter>',
 ];
 
 module.exports = ExportToCsvCommand;

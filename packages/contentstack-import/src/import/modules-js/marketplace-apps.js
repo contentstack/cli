@@ -17,13 +17,16 @@ const {
   HttpClientDecorator,
   OauthDecorator,
 } = require('@contentstack/cli-utilities');
+
 const {
   log,
-  fileHelper: { readFileSync, writeFile },
   formatError,
+  fileHelper: { readFileSync, writeFile },
 } = require('../../utils');
-let { default: config } = require('../../config');
+const { trace } = require('../../utils/log');
+const { default: config } = require('../../config');
 const { getDeveloperHubUrl, getAllStackSpecificApps } = require('../../utils/marketplace-app-helper');
+
 module.exports = class ImportMarketplaceApps {
   client;
   httpClient;
@@ -409,6 +412,7 @@ module.exports = class ImportMarketplaceApps {
         this.installationUidMapping[app.uid] = installation.installation_uid;
         updateParam = { manifest: app.manifest, ...installation, configuration, server_configuration };
       } else if (installation.message) {
+        trace(installation, 'error', true);
         log(this.config, formatError(installation.message), 'success');
         await this.confirmToCloseProcess(installation);
       }
@@ -434,6 +438,7 @@ module.exports = class ImportMarketplaceApps {
         .get(response.redirect_url)
         .then(async ({ response }) => {
           if (_.includes([501, 403], response.status)) {
+            trace(response, 'error', true); // NOTE Log complete stack and hide on UI
             log(this.config, `${appName} - ${response.statusText}, OAuth api call failed.!`, 'error');
             log(this.config, formatError(response), 'error');
             await this.confirmToCloseProcess({ message: response.data });
@@ -442,6 +447,7 @@ module.exports = class ImportMarketplaceApps {
           }
         })
         .catch((error) => {
+          trace(error, 'error', true);
           if (_.includes([501, 403], error.status)) {
             log(this.config, formatError(error), 'error');
           }
@@ -529,12 +535,16 @@ module.exports = class ImportMarketplaceApps {
       })
       .then(({ data }) => {
         if (data.message) {
+          trace(data, 'error', true);
           log(this.config, formatError(data.message), 'success');
         } else {
           log(this.config, `${app.manifest.name} app config updated successfully.!`, 'success');
         }
       })
-      .catch((error) => log(this.config, formatError(error), 'error'));
+      .catch((error) => {
+        trace(data, 'error', true);
+        log(this.config, formatError(error), 'error')
+      });
   }
 
   validateAppName(name) {

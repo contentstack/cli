@@ -27,4 +27,5 @@ export {
   restoreJsonRteEntryRefs,
 } from './entries-helper';
 export * from './common-helper';
+export * from './log';
 export { lookUpTaxonomy, lookUpTerms } from './taxonomies-helper';
