@@ -18,7 +18,6 @@ const config: DefaultConfig = {
     'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
     'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
     'https://azure-eu-api.contentstack.com': 'https://azure-eu-developerhub-api.contentstack.com',
-    'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com',
   },
   modules: {
     apiConcurrency: 5,
@@ -26,6 +25,7 @@ const config: DefaultConfig = {
       'locales',
       'environments',
       'assets',
+      'taxonomies',
       'extensions',
       'marketplace-apps',
       'global-fields',
@@ -141,6 +141,14 @@ const config: DefaultConfig = {
     marketplace_apps: {
       dirName: 'marketplace_apps',
       fileName: 'marketplace_apps.json',
+    },
+    taxonomies: {
+      dirName: 'taxonomies',
+      fileName: 'taxonomies.json',
+    },
+    terms: {
+      dirName: 'terms',
+      fileName: 'terms.json',
     },
   },
   languagesCode: [
@@ -380,6 +388,7 @@ const config: DefaultConfig = {
   getEncryptionKeyMaxRetry: 3,
   // useBackedupDir: '',
   // backupConcurrency: 10,
+  onlyTSModules: ['taxonomies'],
 };
 
 export default config;
