@@ -55,6 +55,10 @@
     {
       "uid": "test-uid-2",
       "name": "test org 2"
+    },
+    {
+        "uid": "org_uid_1_teams",
+        "name": "Teams Org"
     }
   ],
   "stacks": [
@@ -102,6 +106,25 @@
     {
       "uid": "test-uid-2",
       "name": "test org 2"
+    },
+    {
+      "organizations": [
+        {
+          "uid": "org_uid_1_teams",
+          "name": "Teams Org",
+          "org_roles": [
+            {
+              "uid": "role1",
+              "name": "Admin",
+              "description": "Admin Role",
+              "org_uid": "test-uid-1",
+              "admin": true,
+              "default": true
+            }
+          ]
+        }
+        ]
+      
     }
   ],
   "roles": [
@@ -239,5 +262,138 @@
       "ACL": [],
       "_version": 1
     }
-  ]
+  ],
+  "Teams": {
+    "emptyTeam": [],
+    "allTeams": {
+      "count": 1,
+      "teams": [
+        {
+          "_id": "team_1_uid",
+          "name": "Test_Team_1",
+
+          "organizationUid": "org_uid_1_teams",
+          "users": [],
+          "stackRoleMapping": [
+            {
+              "stackApiKey": "stack_api_key",
+              "roles": ["role_uid_1"]
+            }
+          ],
+          "organizationRole": "org_role_uid_1",
+
+          "uid": "team_1_uid",
+          "createdByUserName": "team_creator",
+          "updatedByUserName": "team_creator"
+        }
+      ]
+    }
+  },
+  "roless": {
+    "roles": [
+      {
+        "name": "Developer",
+        "description": "Developer can perform all Content Manager's actions, view audit logs, create roles, invite users, manage content types, languages, and environments.",
+        "uid": "stack_role_uid_3",
+        "users": [],
+        "owner": "ownerEmail@domain.com",
+        "stack": {
+          "uid": "stack_uid",
+          "name": "CLI Test",
+          "org_uid": "org_uid_1_teams",
+          "api_key": "stack_api_key",
+          "master_locale": "en-us",
+
+          "owner_uid": "team_owner_uid",
+          "user_uids": ["team_owner_uid"]
+        },
+        "SYS_ACL": {}
+      },
+      {
+        "name": "Content Manager",
+        "description": "Content Managers can view all content types, manage entries and assets. They cannot edit content types or access stack settings.",
+        "uid": "stack_role_uid_1",
+
+        "updated_by": "team_owner_uid",
+
+        "owner": "ownerEmail@domain.com",
+        "stack": {
+          "uid": "stack_uid",
+          "name": "CLI Test",
+          "org_uid": "org_uid_1_teams",
+          "api_key": "stack_api_key",
+          "master_locale": "en-us",
+
+          "owner_uid": "team_owner_uid",
+          "user_uids": ["team_owner_uid"]
+        },
+        "SYS_ACL": {}
+      },
+      {
+        "name": "Admin",
+        "description": "Admin can perform all actions and manage all settings of the stack, except the ability to delete or transfer ownership of the stack.",
+        "uid": "role_uid_1",
+
+        "updated_at": "2023-10-26T04:44:51.529Z",
+        "users": [],
+        "owner": "ownerEmail@domain.com",
+        "stack": {
+          "uid": "stack_uid",
+          "name": "CLI Test",
+          "org_uid": "org_uid_1_teams",
+          "api_key": "stack_api_key",
+          "master_locale": "en-us",
+
+          "owner_uid": "team_owner_uid",
+          "user_uids": ["team_owner_uid"]
+        },
+        "SYS_ACL": {}
+      },
+      {
+        "name": "Custom_Role_1",
+        "description": "",
+        "users": [],
+        "uid": "stack_role_uid_2",
+
+        "updated_by": "team_owner_uid",
+
+        "owner": "ownerEmail@domain.com",
+        "stack": {
+          "uid": "stack_uid",
+          "name": "CLI Test",
+          "org_uid": "org_uid_1_teams",
+          "api_key": "stack_api_key",
+          "master_locale": "en-us",
+
+          "owner_uid": "team_owner_uid",
+          "user_uids": ["team_owner_uid"]
+        },
+        "SYS_ACL": {}
+      }
+    ]
+  },
+  "org_roles": {
+    "roles": [
+      {
+        "uid": "org_role_uid_1",
+        "name": "admin",
+        "description": "The Admin role has rights to add/remove users from an organization, and has access to stacks created by self or shared by others.",
+        "org_uid": "org_uid_1_teams",
+        "owner_uid": "org_owner_uid",
+        "admin": true,
+        "default": true,
+        "users": ["user_1_uid", "org_owner_uid", "user_2_uid"]
+      },
+      {
+        "uid": "org_role_uid_2",
+        "name": "member",
+        "description": "The Member role has access only to the stacks created by or shared with him/her, and does not have access to organization settings.",
+        "org_uid": "org_uid_1_teams",
+        "owner_uid": "org_owner_uid",
+        "admin": false,
+        "default": true,
+        "users": ["user_1_uid_member", "user_2_uid_member", "user_3_uid_member", "user_4_uid_member"]
+      }
+    ]
+  }
 }
