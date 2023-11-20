@@ -48,7 +48,9 @@ export type ApiModuleType =
   | 'create-entries'
   | 'update-entries'
   | 'publish-entries'
-  | 'delete-entries';
+  | 'delete-entries'
+  | 'create-taxonomies'
+  | 'create-terms';
 
 export type ApiOptions = {
   uid?: string;
@@ -382,6 +384,17 @@ export default abstract class BaseClass {
           .delete({ locale: additionalInfo.locale })
           .then(onSuccess)
           .catch(onReject);
+      case 'create-taxonomies':
+        return this.stack.taxonomy().create({ taxonomy: apiData }).then(onSuccess).catch(onReject);
+      case 'create-terms':
+        if (apiData?.taxonomy_uid) {
+          return this.stack
+            .taxonomy(apiData.taxonomy_uid)
+            .terms()
+            .create({ term: apiData })
+            .then(onSuccess)
+            .catch(onReject);
+        }
       default:
         return Promise.resolve();
     }
