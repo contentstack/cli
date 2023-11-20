@@ -2018,21 +2018,24 @@ Export entries, taxonomies, terms or organization users to csv using this comman
 
 ```
 USAGE
-  $ csdx cm:export-to-csv [--action entries|users|taxonomies] [-a <value>] [--org <value>] [-n <value>] [-k <value>]
-    [--org-name <value>] [--locale <value>] [--content-type <value>] [--branch <value>] [--taxonomy-uid <value>]
+  $ csdx cm:export-to-csv [--action entries|users|teams|taxonomies] [-a <value>] [--org <value>] [-n <value>] [-k
+    <value>] [--org-name <value>] [--locale <value>] [--content-type <value>] [--branch <value>] [--team-uid <value>]
+    [--taxonomy-uid <value>] [--delimiter <value>]
 
 FLAGS
   -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  API key of the source stack
   -n, --stack-name=<value>     Name of the stack that needs to be created as csv filename.
-  --action=<option>            Option to export data (entries, users)
-                               <options: entries|users|taxonomies>
+  --action=<option>            Option to export data (entries, users, teams, taxonomies)
+                               <options: entries|users|teams|taxonomies>
   --branch=<value>             Branch from which entries need to be exported
   --content-type=<value>       Content type for which entries needs to be exported
+  --delimiter=<value>          [default: ,] Provide delimiter for csv file
   --locale=<value>             Locale for which entries need to be exported
   --org=<value>                Provide organization UID to clone org users
   --org-name=<value>           Name of the organization that needs to be created as csv filename.
   --taxonomy-uid=<value>       Provide the taxonomy UID of the related terms you want to export
+  --team-uid=<value>           Uid of the team whose user data and stack roles are required
 
 DESCRIPTION
   Export entries, taxonomies, terms or organization users to csv using this command
@@ -2064,13 +2067,53 @@ EXAMPLES
 
   $ csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>
 
+
+
+  Exporting Organizations Teams to CSV
+
+  $ csdx cm:export-to-csv --action <teams>
+
+
+
+  Exporting Organizations Teams to CSV with org-uid
+
+  $ csdx cm:export-to-csv --action <teams> --org <org-uid>
+
+
+
+  Exporting Organizations Teams to CSV with team uid
+
+  $ csdx cm:export-to-csv --action <teams> --team-uid <team-uid>
+
+
+
+  Exporting Organizations Teams to CSV with org-uid and team uid
+
+  $ csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid>
+
+
+
+  Exporting Organizations Teams to CSV with org-uid and team uid
+
+  $ csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid> --org-name <org-name>
+
+
+
   Exporting taxonomies and related terms to a .CSV file with the provided taxonomy UID
 
   $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --taxonomy-uid <taxonomy-uid>
 
+
+
   Exporting taxonomies and respective terms to a .CSV file
 
   $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias>
+
+
+
+  Exporting taxonomies and respective terms to a .CSV file with the delimiter
+
+  $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --delimiter <delimiter>
 ```
 
 _See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/main/packages/contentstack-export-to-csv/src/commands/cm/export-to-csv.js)_
