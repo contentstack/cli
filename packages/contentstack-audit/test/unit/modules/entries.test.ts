@@ -177,7 +177,7 @@ describe('Entries module', () => {
     class Class extends Entries {
       public entries: Record<string, EntryStruct> = (
         require('../mock/contents/entries/page_1/en-us/e7f6e3cc-64ca-4226-afb3-7794242ae5f5-entries.json') as any
-      )['blt9946d3cca9edec1a'];
+      )['test-uid-2'];
 
       constructor() {
         super(constructorParam);
@@ -217,7 +217,7 @@ describe('Entries module', () => {
           data_type: undefined,
           missingRefs: [
             {
-              uid: 'blt7de1517c79624a3e',
+              uid: 'test-uid-1',
               _content_type_uid: 'page_0',
             },
           ],
@@ -239,7 +239,7 @@ describe('Entries module', () => {
         const ctInstance = new (class Class extends Entries {
           public entries: Record<string, EntryStruct> = (
             require('../mock/contents/entries/page_1/en-us/e7f6e3cc-64ca-4226-afb3-7794242ae5f5-entries.json') as any
-          )['blt9946d3cca9edec1a'];
+          )['test-uid-2'];
         })(constructorParam);
         await ctInstance.validateGlobalField([], ctInstance.ctSchema as any, ctInstance.entries as any);
 
