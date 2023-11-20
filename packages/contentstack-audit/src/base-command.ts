@@ -28,10 +28,12 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   static baseFlags: FlagInput = {
     config: Flags.string({
       char: 'c',
+      helpGroup: 'COMMON',
       description: commonMsg.CONFIG,
     }),
     'data-dir': Flags.string({
       char: 'd',
+      helpGroup: 'COMMON',
       description: commonMsg.DATA_DIR,
     }),
   };

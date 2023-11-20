@@ -42,7 +42,7 @@
     "eslint-config-oclif-typescript": "^1.0.3",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
-    "oclif": "^3.10.0",
+    "oclif": "^3",
     "shx": "^0.3.4",
     "sinon": "^17.0.0",
     "ts-jest": "^29.1.1",
