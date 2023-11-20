@@ -24,7 +24,7 @@ export default class ImportTaxonomies extends BaseClass {
   public taxonomiesFailed: Record<string, unknown> = {};
   public termsSuccess: Record<string, Record<string, unknown>> = {};
   public termsFailed: Record<string, Record<string, unknown>> = {};
-  public terms: Record<string, unknown> = {};
+  public terms: Record<string, any> = [];
   public taxonomyUIDs: string[] = [];
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
@@ -167,14 +167,14 @@ export default class ImportTaxonomies extends BaseClass {
 
     const onSuccess = ({ response, apiData: { taxonomy_uid } = { taxonomy_uid: null } }: any) => {
       const { uid } = response;
-      if (!this.termsSuccess[taxonomy_uid]) this.termsSuccess[taxonomy_uid] = {};
+      if (!this.termsSuccess?.[taxonomy_uid]) this.termsSuccess[taxonomy_uid] = {};
       this.termsSuccess[taxonomy_uid][uid] = pick(response, ['name']);
       log(this.importConfig, `Term '${uid}' imported successfully!`, 'success');
     };
 
     const onReject = ({ error, apiData }: any) => {
       const { taxonomy_uid, uid } = apiData;
-      if (!this.termsFailed[taxonomy_uid]) this.termsFailed[taxonomy_uid] = {};
+      if (!this.termsFailed?.[taxonomy_uid]) this.termsFailed[taxonomy_uid] = {};
       const err = error?.message ? JSON.parse(error.message) : error;
 
       if (err?.errors?.term) {
@@ -191,10 +191,10 @@ export default class ImportTaxonomies extends BaseClass {
       this.terms = fsUtil.readFile(
         join(this.termsFolderPath, `${taxUID}-${this.termsConfig.fileName}`),
         true,
-      ) as Record<string, unknown>;
+      ) as Record<string, any>;
 
-      if (this.terms !== undefined && !isEmpty(this.terms)) {
-        const apiContent = values(this.terms) as Record<string, any>[];
+      if (this.terms?.length) {
+        const apiContent = this.terms as Record<string, any>[];
         await this.makeConcurrentCall(
           {
             apiContent,
@@ -226,7 +226,7 @@ export default class ImportTaxonomies extends BaseClass {
     
     //check whether parent term exists or not in taxonomy
     if (parent_uid !== null) {
-      if (!this.termsSuccess[taxonomy_uid][parent_uid]) {
+      if (!this.termsSuccess?.[taxonomy_uid]?.[parent_uid]) {
         log(
           this.importConfig,
           `Parent term '${term?.parent_uid}' does not exist! Skipping '${term.uid}' creation to avoid further issues.`,
