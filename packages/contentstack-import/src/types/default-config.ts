@@ -151,4 +151,5 @@ export default interface DefaultConfig {
   getEncryptionKeyMaxRetry: number;
   createBackupDir?: string;
   overwriteSupportedModules: string[];
+  onlyTSModules: string[];
 }
