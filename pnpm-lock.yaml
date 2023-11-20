@@ -16,10 +16,10 @@ importers:
       '@contentstack/cli-cm-branches': ~1.0.17
       '@contentstack/cli-cm-bulk-publish': ~1.3.14
       '@contentstack/cli-cm-clone': ~1.7.0
-      '@contentstack/cli-cm-export': ~1.9.3
+      '@contentstack/cli-cm-export': ~1.9.4
       '@contentstack/cli-cm-export-to-csv': ~1.5.0
       '@contentstack/cli-cm-import': ~1.11.0
-      '@contentstack/cli-cm-migrate-rte': ~1.4.14
+      '@contentstack/cli-cm-migrate-rte': ~1.4.15
       '@contentstack/cli-cm-seed': ~1.7.0
       '@contentstack/cli-command': ~1.2.15
       '@contentstack/cli-config': ~1.4.14
@@ -882,7 +882,7 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.2.15
       '@contentstack/cli-utilities': ~1.5.5
-      '@contentstack/json-rte-serializer': ~2.0.2
+      '@contentstack/json-rte-serializer': ~2.0.4
       '@oclif/test': ^2.2.10
       chai: ^4.3.4
       chalk: ^4.1.2
@@ -904,7 +904,7 @@ importers:
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/json-rte-serializer': 2.0.2
+      '@contentstack/json-rte-serializer': 2.0.4
       chalk: 4.1.2
       collapse-whitespace: 1.1.7
       jsdom: 20.0.3
@@ -1555,14 +1555,14 @@ packages:
     engines: {node: '>=0.1.90'}
     dev: false
 
-  /@contentstack/json-rte-serializer/2.0.2:
-    resolution: {integrity: sha512-mGRuXXYY4Ao0MTWUV/1aNwk5DCcNtbJA2uOA1v7t/IzSqSF4jKuz+RFZLYtSPz8vqBtPT2AgKwfs5mVB4cnYRA==}
+  /@contentstack/json-rte-serializer/2.0.4:
+    resolution: {integrity: sha512-x79OHHHsBSD4eKxkhfnoJLAFLF4sRQzJ8kvVDJtgHzlDNOEp9+A3chCpGxvzARpQlrD29w6sYn6wx4CG4vo9Ig==}
     dependencies:
       array-flat-polyfill: 1.0.1
       lodash: 4.17.21
       slate: 0.72.8
       slate-hyperscript: 0.62.0_slate@0.72.8
-      tslib: 2.6.0
+      tslib: 2.6.2
       uuid: 8.3.2
     dev: false
 
