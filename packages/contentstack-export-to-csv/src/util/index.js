@@ -685,34 +685,29 @@ function wait(time) {
 }
 
 function handleErrorMsg(err) {
-  cliux.print(`Error: ${(err?.errorMessage || err?.message) ? err?.errorMessage || err?.message : messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' })
+  cliux.print(
+    `Error: ${
+      err?.errorMessage || err?.message
+        ? err?.errorMessage || err?.message
+        : messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')
+    }`,
+    { color: 'red' },
+  );
   process.exit(1);
 }
 
-async function apiRequestHandler(org, queryParam = {}) {
-  const headers = {
-    authtoken: configHandler.get('authtoken'),
-    organization_uid: org.uid,
-    'Content-Type': 'application/json',
-    api_version: 1.1,
-  };
-
-  return await new HttpClient()
-    .headers(headers)
-    .queryParams(queryParam)
-    .get(`${configHandler.get('region')?.cma}/organizations/${org?.uid}/teams`)
-    .then((res) => {
-      const { status, data } = res;
-      if (status === 200) {
-        return data;
-      } else {
-        cliux.print(`${data?.error_message || data?.message || data?.errorMessage}`, { color: 'red' });
-        process.exit(1);
-      }
+async function getAllTeamsUsingSDK(managementAPIClient, org, queryParam = {}) {
+  const teamsData = await managementAPIClient
+    .organization(org.uid)
+    .teams()
+    .fetchAll(queryParam)
+    .then((data) => {
+      return data;
     })
     .catch((error) => {
       handleErrorMsg(error);
     });
+  return teamsData;
 }
 
 async function exportOrgTeams(managementAPIClient, org) {
@@ -720,9 +715,13 @@ async function exportOrgTeams(managementAPIClient, org) {
   let skip = 0;
   let limit = config?.limit || 100;
   do {
-    const data = await apiRequestHandler(org, { skip: skip, limit: limit, includeUserDetails: true });
+    const data = await getAllTeamsUsingSDK(managementAPIClient, org, {
+      skip: skip,
+      limit: limit,
+      includeUserDetails: true,
+    });
     skip += limit;
-    teamsObjectArray.push(...data?.teams);
+    teamsObjectArray.push(...data?.items);
     if (skip >= data?.count) break;
   } while (1);
   teamsObjectArray = await cleanTeamsData(teamsObjectArray, managementAPIClient, org);
@@ -732,7 +731,7 @@ async function exportOrgTeams(managementAPIClient, org) {
 async function getOrgRolesForTeams(managementAPIClient, org) {
   let roleMap = {}; // for org level there are two roles only admin and member
 
-  // SDK call to get the role uids
+  // SDK call to get the role UIDs
   await managementAPIClient
     .organization(org.uid)
     .roles()
@@ -761,18 +760,23 @@ async function cleanTeamsData(data, managementAPIClient, org) {
     'createdByUserName',
     'updatedByUserName',
     'organizationUid',
+    'urlPath',
+    'update',
+    'delete',
+    'fetch',
+    'stackRoleMappings',
   ];
   if (data?.length) {
     return data.map((team) => {
       team = omit(team, fieldToBeDeleted);
-    
-      team.organizationRole = (team.organizationRole === roleMap["member"]) ? "member" : "admin";
-    
-      if (!team.hasOwnProperty("description")) {
-        team.description = "";
+
+      team.organizationRole = team.organizationRole === roleMap['member'] ? 'member' : 'admin';
+
+      if (!team.hasOwnProperty('description')) {
+        team.description = '';
       }
       team.Total_Members = team?.users?.length || 0;
-    
+
       return team;
     });
   } else {
@@ -791,7 +795,9 @@ async function exportTeams(managementAPIClient, organization, teamUid) {
   );
   const allTeamsData = await exportOrgTeams(managementAPIClient, organization);
   if (!allTeamsData?.length) {
-    cliux.print(`info: The organization ${organization?.name} does not have any teams associated with it. Please verify and provide the correct organization name.`);
+    cliux.print(
+      `info: The organization ${organization?.name} does not have any teams associated with it. Please verify and provide the correct organization name.`,
+    );
   } else {
     const modifiedTeam = cloneDeep(allTeamsData);
     modifiedTeam.forEach((team) => {
@@ -827,8 +833,9 @@ async function getTeamsDetail(allTeamsData, organization, teamUid) {
     write(this, userData, fileName, 'Team User details');
   } else {
     const team = allTeamsData.filter((team) => team.uid === teamUid)[0];
-
-    team.users.forEach((user) => {
+    team.users = await team.users().fetchAll().then((data)=>data.items);
+    team.users.forEach((u)=>delete u.remove)
+    await team.users.forEach((user) => {
       user['team-name'] = team.name;
       user['team-uid'] = team.uid;
       delete user['active'];
@@ -848,11 +855,13 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
   let flag = false;
   const stackNotAdmin = [];
   if (teamUid) {
-    const team = find(allTeamsData,function(teamObject) { return teamObject?.uid===teamUid });
+    const team = find(allTeamsData, function (teamObject) {
+      return teamObject?.uid === teamUid;
+    });
     for (const stack of team?.stackRoleMapping) {
       const roleData = await mapRoleWithTeams(managementAPIClient, stack, team?.name, team?.uid);
       stackRoleWithTeamData.push(...roleData);
-      if(roleData[0]['Stack Name']==='') {
+      if (roleData[0]['Stack Name'] === '') {
         flag = true;
         stackNotAdmin.push(stack.stackApiKey);
       }
@@ -862,18 +871,21 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
       for (const stack of team?.stackRoleMapping ?? []) {
         const roleData = await mapRoleWithTeams(managementAPIClient, stack, team?.name, team?.uid);
         stackRoleWithTeamData.push(...roleData);
-        if(roleData[0]['Stack Name']==='') {
+        if (roleData[0]['Stack Name'] === '') {
           flag = true;
           stackNotAdmin.push(stack.stackApiKey);
         }
       }
     }
   }
-  if(stackNotAdmin?.length) {
-    cliux.print(`warning: Admin access denied to the following stacks using the provided API keys. Please get in touch with the stack owner to request access.`,{color:"yellow"});
-    cliux.print(`${stackNotAdmin.join(' , ')}`,{color:"yellow"});
+  if (stackNotAdmin?.length) {
+    cliux.print(
+      `warning: Admin access denied to the following stacks using the provided API keys. Please get in touch with the stack owner to request access.`,
+      { color: 'yellow' },
+    );
+    cliux.print(`${stackNotAdmin.join(' , ')}`, { color: 'yellow' });
   }
-  if(flag) {
+  if (flag) {
     let export_stack_role = [
       {
         type: 'list',
@@ -881,19 +893,20 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
         message: `Access denied: Please confirm if you still want to continue exporting the data without the { Stack Name, Stack Uid, Role Name } fields.`,
         choices: ['yes', 'no'],
         loop: false,
-      }]
-      const exportStackRole = await inquirer
+      },
+    ];
+    const exportStackRole = await inquirer
       .prompt(export_stack_role)
-      .then(( chosenOrg ) => {
-        return chosenOrg
+      .then((chosenOrg) => {
+        return chosenOrg;
       })
       .catch((error) => {
-        cliux.print(error, {color:'red'});
+        cliux.print(error, { color: 'red' });
         process.exit(1);
       });
-      if(exportStackRole.chooseExport === 'no') {
-        process.exit(1);
-      } 
+    if (exportStackRole.chooseExport === 'no') {
+      process.exit(1);
+    }
   }
 
   const fileName = `${kebabize('Stack_Role_Mapping'.replace(config.organizationNameRegex, ''))}${
@@ -909,7 +922,7 @@ async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName,
   roles?.items?.forEach((role) => {
     if (!stackRole.hasOwnProperty(role?.uid)) {
       stackRole[role?.uid] = role?.name;
-      stackRole[role?.stack?.api_key] = {name: role?.stack?.name, uid: role?.stack?.uid }
+      stackRole[role?.stack?.api_key] = { name: role?.stack?.name, uid: role?.stack?.uid };
     }
   });
   const stackRoleMapOfTeam = stackRoleMapping?.roles.map((role) => {
@@ -929,7 +942,7 @@ async function getRoleData(managementAPIClient, stackApiKey) {
   try {
     return await managementAPIClient.stack({ api_key: stackApiKey }).role().fetchAll();
   } catch (error) {
-    return {}
+    return {};
   }
 }
 
