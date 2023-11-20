@@ -144,6 +144,18 @@ export default interface DefaultConfig {
       fileName: string;
       requiredKeys: string[];
     };
+    taxonomies: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
+    terms: {
+      dirName: string;
+      fileName: string;
+      invalidKeys: string[];
+      dependencies?: Modules[];
+    };
   };
   languagesCode: string[];
   apis: {
@@ -165,4 +177,5 @@ export default interface DefaultConfig {
   writeConcurrency: number;
   developerHubBaseUrl: string;
   marketplaceAppEncryptionKey: string;
+  onlyTSModules: string[];
 }
