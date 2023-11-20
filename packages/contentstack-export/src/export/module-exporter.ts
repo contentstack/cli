@@ -70,11 +70,14 @@ class ModuleExporter {
         moduleName,
       });
     } else {
-      exportedModuleResponse = await startJSModuleExport({
-        stackAPIClient: this.stackAPIClient,
-        exportConfig: this.exportConfig,
-        moduleName,
-      });
+      //NOTE - new modules support only ts
+      if (this.exportConfig.onlyTSModules.indexOf(moduleName) === -1) {
+        exportedModuleResponse = await startJSModuleExport({
+          stackAPIClient: this.stackAPIClient,
+          exportConfig: this.exportConfig,
+          moduleName,
+        });
+      }
     }
 
     // set master locale to config
