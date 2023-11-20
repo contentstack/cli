@@ -2,12 +2,13 @@ const os = require('os');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const find = require('lodash/find');
+const cloneDeep = require('lodash/cloneDeep');
+const omit = require('lodash/omit');
 const flat = require('lodash/flatten');
 const fastcsv = require('fast-csv');
 const inquirer = require('inquirer');
 const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
-
 const config = require('./config.js');
 const {
   cliux,
@@ -28,7 +29,7 @@ function chooseOrganization(managementAPIClient, action) {
   return new Promise(async (resolve, reject) => {
     try {
       let organizations;
-      if (action === config.exportUsers) {
+      if (action === config.exportUsers || action === config.exportTeams || action === 'teams') {
         organizations = await getOrganizationsWhereUserIsAdmin(managementAPIClient);
       } else {
         organizations = await getOrganizations(managementAPIClient);
@@ -388,7 +389,7 @@ function sanitizeData(flatData) {
   const CSVRegex = /^[\\+\\=@\\-]/;
   for (key in flatData) {
     if (typeof flatData[key] === 'string' && flatData[key].match(CSVRegex)) {
-      flatData[key] = flatData[key].replace(/\"/g, '""');
+      flatData[key] = flatData[key].replace(/\"/g, "\"\"");
       flatData[key] = `"'${flatData[key]}"`;
     } else if (typeof flatData[key] === 'object') {
       // convert any objects or arrays to string
@@ -449,7 +450,7 @@ function getDateTime() {
   return dateTime.join('_');
 }
 
-function write(command, entries, fileName, message) {
+function write(command, entries, fileName, message, delimiter, headers) {
   // eslint-disable-next-line no-undef
   if (process.cwd().split(delimeter).pop() !== 'data' && !fs.existsSync(directory)) {
     mkdirp.sync(directory);
@@ -461,7 +462,8 @@ function write(command, entries, fileName, message) {
   }
   // eslint-disable-next-line no-undef
   cliux.print(`Writing ${message} to file: ${process.cwd()}${delimeter}${fileName}`);
-  fastcsv.writeToPath(fileName, entries, { headers: true });
+  if (headers?.length) fastcsv.writeToPath(fileName, entries, { headers, delimiter });
+  else fastcsv.writeToPath(fileName, entries, { headers: true, delimiter });
 }
 
 function startupQuestions() {
@@ -471,7 +473,7 @@ function startupQuestions() {
         type: 'list',
         name: 'action',
         message: 'Choose Action',
-        choices: [config.exportEntries, config.exportUsers, config.exportTaxonomies, 'Exit'],
+        choices: [config.exportEntries, config.exportUsers, config.exportTeams, config.exportTaxonomies, 'Exit'],
       },
     ];
     inquirer
@@ -690,6 +692,271 @@ function wait(time) {
   });
 }
 
+function handleErrorMsg(err) {
+  cliux.print(`Error: ${(err?.errorMessage || err?.message) ? err?.errorMessage || err?.message : messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' })
+  process.exit(1);
+}
+
+async function apiRequestHandler(org, queryParam = {}) {
+  const headers = {
+    authtoken: configHandler.get('authtoken'),
+    organization_uid: org.uid,
+    'Content-Type': 'application/json',
+    api_version: 1.1,
+  };
+
+  return await new HttpClient()
+    .headers(headers)
+    .queryParams(queryParam)
+    .get(`${configHandler.get('region')?.cma}/organizations/${org?.uid}/teams`)
+    .then((res) => {
+      const { status, data } = res;
+      if (status === 200) {
+        return data;
+      } else {
+        cliux.print(`${data?.error_message || data?.message || data?.errorMessage}`, { color: 'red' });
+        process.exit(1);
+      }
+    })
+    .catch((error) => {
+      handleErrorMsg(error);
+    });
+}
+
+async function exportOrgTeams(managementAPIClient, org) {
+  let teamsObjectArray = [];
+  let skip = 0;
+  let limit = config?.limit || 100;
+  do {
+    const data = await apiRequestHandler(org, { skip: skip, limit: limit, includeUserDetails: true });
+    skip += limit;
+    teamsObjectArray.push(...data?.teams);
+    if (skip >= data?.count) break;
+  } while (1);
+  teamsObjectArray = await cleanTeamsData(teamsObjectArray, managementAPIClient, org);
+  return teamsObjectArray;
+}
+
+async function getOrgRolesForTeams(managementAPIClient, org) {
+  let roleMap = {}; // for org level there are two roles only admin and member
+
+  // SDK call to get the role uids
+  await managementAPIClient
+    .organization(org.uid)
+    .roles()
+    .then((roles) => {
+      roles.items.forEach((item) => {
+        if (item.name === 'member' || item.name === 'admin') {
+          roleMap[item.name] = item.uid;
+        }
+      });
+    })
+    .catch((err) => {
+      handleErrorMsg(err);
+    });
+  return roleMap;
+}
+
+async function cleanTeamsData(data, managementAPIClient, org) {
+  const roleMap = await getOrgRolesForTeams(managementAPIClient, org);
+  const fieldToBeDeleted = [
+    '_id',
+    'createdAt',
+    'createdBy',
+    'updatedAt',
+    'updatedBy',
+    '__v',
+    'createdByUserName',
+    'updatedByUserName',
+    'organizationUid',
+  ];
+  if (data?.length) {
+    return data.map((team) => {
+      team = omit(team, fieldToBeDeleted);
+    
+      team.organizationRole = (team.organizationRole === roleMap["member"]) ? "member" : "admin";
+    
+      if (!team.hasOwnProperty("description")) {
+        team.description = "";
+      }
+      team.Total_Members = team?.users?.length || 0;
+    
+      return team;
+    });
+  } else {
+    return [];
+  }
+}
+
+async function exportTeams(managementAPIClient, organization, teamUid, delimiter) {
+  cliux.print(
+    `info: Exporting the ${
+      teamUid && organization?.name
+        ? `team with uid ${teamUid} in Organisation ${organization?.name} `
+        : `teams of Organisation ` + organization?.name
+    }`,
+    { color: 'blue' },
+  );
+  const allTeamsData = await exportOrgTeams(managementAPIClient, organization);
+  if (!allTeamsData?.length) {
+    cliux.print(`info: The organization ${organization?.name} does not have any teams associated with it. Please verify and provide the correct organization name.`);
+  } else {
+    const modifiedTeam = cloneDeep(allTeamsData);
+    modifiedTeam.forEach((team) => {
+      delete team['users'];
+      delete team['stackRoleMapping'];
+    });
+    const fileName = `${kebabize(organization.name.replace(config.organizationNameRegex, ''))}_teams_export.csv`;
+    write(this, modifiedTeam, fileName, ' organization Team details', delimiter);
+    // exporting teams user data or a single team user data
+    cliux.print(
+      `info: Exporting the teams user data for ${teamUid ? `team ` + teamUid : `organisation ` + organization?.name}`,
+      { color: 'blue' },
+    );
+    await getTeamsDetail(allTeamsData, organization, teamUid, delimiter);
+    cliux.print(
+      `info: Exporting the stack role details for  ${
+        teamUid ? `team ` + teamUid : `organisation ` + organization?.name
+      }`,
+      { color: 'blue' },
+    );
+    // Exporting the stack Role data for all the teams or exporting stack role data for a single team
+    await exportRoleMappings(managementAPIClient, allTeamsData, teamUid, delimiter);
+  }
+}
+
+async function getTeamsDetail(allTeamsData, organization, teamUid, delimiter) {
+  if (!teamUid) {
+    const userData = await getTeamsUserDetails(allTeamsData);
+    const fileName = `${kebabize(
+      organization.name.replace(config.organizationNameRegex, ''),
+    )}_team_User_Details_export.csv`;
+
+    write(this, userData, fileName, 'Team User details', delimiter);
+  } else {
+    const team = allTeamsData.filter((team) => team.uid === teamUid)[0];
+
+    team.users.forEach((user) => {
+      user['team-name'] = team.name;
+      user['team-uid'] = team.uid;
+      delete user['active'];
+      delete user['orgInvitationStatus'];
+    });
+
+    const fileName = `${kebabize(
+      organization.name.replace(config.organizationNameRegex, ''),
+    )}_team_${teamUid}_User_Details_export.csv`;
+
+    write(this, team.users, fileName, 'Team User details', delimiter);
+  }
+}
+
+async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid, delimiter) {
+  let stackRoleWithTeamData = [];
+  let flag = false;
+  const stackNotAdmin = [];
+  if (teamUid) {
+    const team = find(allTeamsData,function(teamObject) { return teamObject?.uid===teamUid });
+    for (const stack of team?.stackRoleMapping) {
+      const roleData = await mapRoleWithTeams(managementAPIClient, stack, team?.name, team?.uid);
+      stackRoleWithTeamData.push(...roleData);
+      if(roleData[0]['Stack Name']==='') {
+        flag = true;
+        stackNotAdmin.push(stack.stackApiKey);
+      }
+    }
+  } else {
+    for (const team of allTeamsData ?? []) {
+      for (const stack of team?.stackRoleMapping ?? []) {
+        const roleData = await mapRoleWithTeams(managementAPIClient, stack, team?.name, team?.uid);
+        stackRoleWithTeamData.push(...roleData);
+        if(roleData[0]['Stack Name']==='') {
+          flag = true;
+          stackNotAdmin.push(stack.stackApiKey);
+        }
+      }
+    }
+  }
+  if(stackNotAdmin?.length) {
+    cliux.print(`warning: Admin access denied to the following stacks using the provided API keys. Please get in touch with the stack owner to request access.`,{color:"yellow"});
+    cliux.print(`${stackNotAdmin.join(' , ')}`,{color:"yellow"});
+  }
+  if(flag) {
+    let export_stack_role = [
+      {
+        type: 'list',
+        name: 'chooseExport',
+        message: `Access denied: Please confirm if you still want to continue exporting the data without the { Stack Name, Stack Uid, Role Name } fields.`,
+        choices: ['yes', 'no'],
+        loop: false,
+      }]
+      const exportStackRole = await inquirer
+      .prompt(export_stack_role)
+      .then(( chosenOrg ) => {
+        return chosenOrg
+      })
+      .catch((error) => {
+        cliux.print(error, {color:'red'});
+        process.exit(1);
+      });
+      if(exportStackRole.chooseExport === 'no') {
+        process.exit(1);
+      } 
+  }
+
+  const fileName = `${kebabize('Stack_Role_Mapping'.replace(config.organizationNameRegex, ''))}${
+    teamUid ? `_${teamUid}` : ''
+  }.csv`;
+
+  write(this, stackRoleWithTeamData, fileName, 'Team Stack Role details', delimiter);
+}
+
+async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName, teamUid) {
+  const roles = await getRoleData(managementAPIClient, stackRoleMapping.stackApiKey);
+  const stackRole = {};
+  roles?.items?.forEach((role) => {
+    if (!stackRole.hasOwnProperty(role?.uid)) {
+      stackRole[role?.uid] = role?.name;
+      stackRole[role?.stack?.api_key] = {name: role?.stack?.name, uid: role?.stack?.uid }
+    }
+  });
+  const stackRoleMapOfTeam = stackRoleMapping?.roles.map((role) => {
+    return {
+      'Team Name': teamName,
+      'Team Uid': teamUid,
+      'Stack Name': stackRole[stackRoleMapping?.stackApiKey]?.name || '',
+      'Stack Uid': stackRole[stackRoleMapping?.stackApiKey]?.uid || '',
+      'Role Name': stackRole[role] || '',
+      'Role Uid': role || '',
+    };
+  });
+  return stackRoleMapOfTeam;
+}
+
+async function getRoleData(managementAPIClient, stackApiKey) {
+  try {
+    return await managementAPIClient.stack({ api_key: stackApiKey }).role().fetchAll();
+  } catch (error) {
+    return {}
+  }
+}
+
+async function getTeamsUserDetails(teamsObject) {
+  const allTeamUsers = [];
+  teamsObject.forEach((team) => {
+    if (team?.users?.length) {
+      team.users.forEach((user) => {
+        user['team-name'] = team.name;
+        user['team-uid'] = team.uid;
+        delete user['active'];
+        delete user['orgInvitationStatus'];
+        allTeamUsers.push(user);
+      });
+    }
+  });
+  return allTeamUsers;
+}
+
 /**
  * fetch all taxonomies in the provided stack
  * @param {object} payload
@@ -822,7 +1089,7 @@ function formatTermsOfTaxonomyData(terms, taxonomyUID) {
         UID: term.uid,
         Name: term.name,
         'Parent UID': term.parent_uid,
-        Depth: term.depth
+        Depth: term.depth,
       });
     });
     return formattedTerms;
@@ -840,6 +1107,62 @@ function handleErrorMsg(err) {
     cliux.print(`Error: ${messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' });
   }
   process.exit(1);
+}
+
+/**
+ * create an importable CSV file, to utilize with the migration script.
+ * @param {*} payload api request payload
+ * @param {*} taxonomies taxonomies data
+ * @returns
+ */
+async function createImportableCSV(payload, taxonomies) {
+  let taxonomiesData = [];
+  let headers = ['Taxonomy Name','Taxonomy UID','Taxonomy Description'];
+  for (let index = 0; index < taxonomies?.length; index++) {
+    const taxonomy = taxonomies[index];
+    const taxonomyUID = taxonomy?.uid;
+    if (taxonomyUID) {
+      const sanitizedTaxonomy = sanitizeData({
+        'Taxonomy Name': taxonomy?.name,
+        'Taxonomy UID': taxonomyUID,
+        'Taxonomy Description': taxonomy?.description,
+      });
+      taxonomiesData.push(sanitizedTaxonomy);
+      payload['taxonomyUID'] = taxonomyUID;
+      const terms = await getAllTermsOfTaxonomy(payload);
+      //fetch all parent terms
+      const parentTerms = terms.filter((term) => term?.parent_uid === null);
+      const termsData = getParentAndChildTerms(parentTerms, terms, headers);
+      taxonomiesData.push(...termsData)
+    }
+  }
+
+  return {taxonomiesData, headers};
+}
+
+/**
+ * Get the parent and child terms, then arrange them hierarchically in a CSV file.
+ * @param {*} parentTerms list of parent terms
+ * @param {*} terms respective terms of taxonomies
+ * @param {*} headers list of csv headers include taxonomy and terms column
+ * @param {*} termsData parent and child terms
+ */
+function getParentAndChildTerms(parentTerms, terms, headers, termsData=[]) {
+  for (let i = 0; i < parentTerms?.length; i++) {
+    const parentTerm = parentTerms[i];
+    const levelUID = `Term Level${parentTerm.depth} UID`;
+    const levelName = `Term Level${parentTerm.depth} Name`;
+    if (headers.indexOf(levelName) === -1) headers.push(levelName);
+    if (headers.indexOf(levelUID) === -1) headers.push(levelUID);
+    const sanitizedTermData = sanitizeData({ [levelName]: parentTerm.name, [levelUID]: parentTerm.uid });
+    termsData.push(sanitizedTermData);
+    //fetch all sibling terms
+    const newParents = terms.filter((term) => term.parent_uid === parentTerm.uid);
+    if (newParents?.length) {
+      getParentAndChildTerms(newParents, terms, headers, termsData);
+    }
+  }
+  return termsData;
 }
 
 module.exports = {
@@ -868,10 +1191,13 @@ module.exports = {
   chooseInMemContentTypes: chooseInMemContentTypes,
   getEntriesCount: getEntriesCount,
   formatError: formatError,
+  exportOrgTeams: exportOrgTeams,
+  exportTeams: exportTeams,
   getAllTaxonomies,
   getAllTermsOfTaxonomy,
   formatTaxonomiesData,
   formatTermsOfTaxonomyData,
   getTaxonomy,
-  getStacks
+  getStacks,
+  createImportableCSV,
 };
