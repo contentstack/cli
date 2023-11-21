@@ -53,10 +53,12 @@ Creates content type by passing content type name and options
 
 **Example**  
 ```js
-module.exports = {migrations} => {
- const blog = migrations.createContentType('blog', {
-   title: 'blog'
- })
+module.exports = ({migration}) => {
+ const blog = migration
+   .createContentType('blog')
+   .title('blog title')
+   .description('blog 1')
+ blog.createField('title').display_name('Title').data_type('text').mandatory(true);
 }
 ```
 <a name="ContentType+singleton"></a>
@@ -98,10 +100,8 @@ Edits content type by passing content type name and options
 
 **Example**  
 ```js
-module.exports = {migrations} => {
- const blog = migrations.editContentType('blog', {
-   title: 'blog'
- });
+module.exports = ({migration}) => {
+ const blog = migration.editContentType('blog');
  blog.description('Changed description');
 }
 ```
@@ -177,6 +177,8 @@ Chained function takes boolean value for force while deleting content type
     * [.unique(value)](#Field+unique) ⇒ [<code>Field</code>](#Field)
     * [.reference_to(value)](#Field+reference_to) ⇒ [<code>Field</code>](#Field)
     * [.ref_multiple(value)](#Field+ref_multiple) ⇒ [<code>Field</code>](#Field)
+    * [.taxonomies(value)](#Field+taxonomies) ⇒ [<code>Field</code>](#Field)
+    * [.multiple(value)](#Field+multiple) ⇒ [<code>Field</code>](#Field)
     * [.ref_multipleContentType(value)](#Field+ref_multipleContentType) ⇒ [<code>Field</code>](#Field)
     * [.getTaskDefinition()](#Field+getTaskDefinition) ⇒ [<code>Task</code>](#Task)
 
@@ -203,9 +205,22 @@ Creates a field with provided uid.
 module.exports =({ migration })=> {
  const blog = migration.editContentType('blog');
 
- blog.createField('author');
+ blog.createField('author')
   .display_name('Author')
   .data_type('text')
+  .mandatory(false);
+};
+
+Create a taxonomy field
+
+ module.exports =({ migration })=> {
+ const blog = migration.editContentType('blog');
+
+ blog.createField('taxonomies')
+  .display_name('Taxonomy1')
+  .data_type('taxonomy')
+  .taxonomies([{ "taxonomy_uid": "test_taxonomy1", "max_terms": 2, "mandatory": false}])
+  .multiple(true)
   .mandatory(false);
 };
 ```
@@ -355,6 +370,28 @@ module.exports = ({migration}) => {
 | Param | Type | Description |
 | --- | --- | --- |
 | value | <code>string</code> | set true if accepts multiple entries as reference |
+
+<a name="Field+taxonomies"></a>
+
+### field.taxonomies(value) ⇒ [<code>Field</code>](#Field)
+The 'taxonomies' property should contain at least one taxonomy object
+
+**Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Field</code>](#Field) - current instance of field object to chain further methods.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| value | <code>string</code> \| <code>Array.&lt;string&gt;</code> | list of taxonomies. |
+
+<a name="Field+multiple"></a>
+
+### field.multiple(value) ⇒ [<code>Field</code>](#Field)
+**Kind**: instance method of [<code>Field</code>](#Field)  
+**Returns**: [<code>Field</code>](#Field) - current instance of field object to chain further methods.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| value | <code>boolean</code> | set true if field is multiple |
 
 <a name="Field+ref_multipleContentType"></a>
 
