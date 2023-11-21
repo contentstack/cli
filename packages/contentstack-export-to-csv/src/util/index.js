@@ -693,29 +693,19 @@ function wait(time) {
 }
 
 function handleErrorMsg(err) {
-  cliux.print(
-    `Error: ${
-      err?.errorMessage || err?.message
-        ? err?.errorMessage || err?.message
-        : messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')
-    }`,
-    { color: 'red' },
-  );
+  cliux.print(`Error: ${(err?.errorMessage || err?.message) ?? messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, {
+    color: 'red',
+  });
   process.exit(1);
 }
 
 async function getAllTeamsUsingSDK(managementAPIClient, org, queryParam = {}) {
-  const teamsData = await managementAPIClient
-    .organization(org.uid)
-    .teams()
-    .fetchAll(queryParam)
-    .then((data) => {
-      return data;
-    })
-    .catch((error) => {
-      handleErrorMsg(error);
-    });
-  return teamsData;
+  try {
+    const teamsData = await managementAPIClient.organization(org.uid).teams().fetchAll(queryParam);
+    return teamsData;
+  } catch (error) {
+    handleErrorMsg(error);
+  }
 }
 
 async function exportOrgTeams(managementAPIClient, org) {
@@ -729,7 +719,7 @@ async function exportOrgTeams(managementAPIClient, org) {
       includeUserDetails: true,
     });
     skip += limit;
-    teamsObjectArray.push(...data?.items);
+    teamsObjectArray.push(...data.items);
     if (skip >= data?.count) break;
   } while (1);
   teamsObjectArray = await cleanTeamsData(teamsObjectArray, managementAPIClient, org);
@@ -901,16 +891,13 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid, de
         loop: false,
       },
     ];
-    const exportStackRole = await inquirer
-      .prompt(export_stack_role)
-      .then((chosenOrg) => {
-        return chosenOrg;
-      })
-      .catch((error) => {
-        cliux.print(error, { color: 'red' });
+    try {
+      const exportStackRole = await inquirer.prompt(export_stack_role);
+      if(exportStackRole.chooseExport==='no') {
         process.exit(1);
-      });
-    if (exportStackRole.chooseExport === 'no') {
+      }
+    } catch (error) {
+      cliux.print(error, { color: 'red' });
       process.exit(1);
     }
   }
@@ -1128,7 +1115,7 @@ function handleErrorMsg(err) {
  */
 async function createImportableCSV(payload, taxonomies) {
   let taxonomiesData = [];
-  let headers = ['Taxonomy Name','Taxonomy UID','Taxonomy Description'];
+  let headers = ['Taxonomy Name', 'Taxonomy UID', 'Taxonomy Description'];
   for (let index = 0; index < taxonomies?.length; index++) {
     const taxonomy = taxonomies[index];
     const taxonomyUID = taxonomy?.uid;
@@ -1144,11 +1131,11 @@ async function createImportableCSV(payload, taxonomies) {
       //fetch all parent terms
       const parentTerms = terms.filter((term) => term?.parent_uid === null);
       const termsData = getParentAndChildTerms(parentTerms, terms, headers);
-      taxonomiesData.push(...termsData)
+      taxonomiesData.push(...termsData);
     }
   }
 
-  return {taxonomiesData, headers};
+  return { taxonomiesData, headers };
 }
 
 /**
@@ -1158,7 +1145,7 @@ async function createImportableCSV(payload, taxonomies) {
  * @param {*} headers list of csv headers include taxonomy and terms column
  * @param {*} termsData parent and child terms
  */
-function getParentAndChildTerms(parentTerms, terms, headers, termsData=[]) {
+function getParentAndChildTerms(parentTerms, terms, headers, termsData = []) {
   for (let i = 0; i < parentTerms?.length; i++) {
     const parentTerm = parentTerms[i];
     const levelUID = `Term Level${parentTerm.depth} UID`;
