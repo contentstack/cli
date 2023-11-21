@@ -120,16 +120,20 @@ USAGE
     --no-truncate]
 
 FLAGS
+  --modules=<option>...  Provide the list of modules to be audited
+                         <options: content-types|global-fields|entries>
+  --report-path=<value>  Path to store the audit reports
+
+COMMON FLAGS
   -c, --config=<value>    Path of the external config
   -d, --data-dir=<value>  Path where the data is stored
-  --columns=<value>       only show provided columns (comma-separated)
-  --csv                   output is csv format [alias: --output=csv]
-  --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries>
-  --no-truncate           do not truncate output to fit screen
-  --report-path=<value>   Path to store the audit reports
-  --sort=<value>          property to sort by (prepend '-' for descending)
+
+TABLE FLAGS
+  --columns=<value>  Show only the specified columns (comma-separated)
+  --csv              The output is in the CSV format [alias: --output=csv]
+  --filter=<value>   Filter property by partial string matching. For example: name=foo
+  --no-truncate      The output is not truncated to fit the screen
+  --sort=<value>     Property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and find possible errors in the exported Contentstack data
@@ -157,22 +161,29 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--copy-path <value> --copy-dir] [--columns <value> | ] [--sort <value>]
-    [--filter <value>] [--csv | --no-truncate]
+    content-types|global-fields|entries] [--copy-path <value> --copy-dir] [--fix-only
+    reference|global_field|json:rte|json:custom-field|blocks|group] [--columns <value> | ] [--sort <value>] [--filter
+    <value>] [--csv | --no-truncate]
 
 FLAGS
-  -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path where the data is stored
-  --columns=<value>       only show provided columns (comma-separated)
   --copy-dir              Create backup from the original data.
   --copy-path=<value>     Provide the path to backup the copied data
-  --csv                   output is csv format [alias: --output=csv]
-  --filter=<value>        filter property by partial string matching, ex: name=foo
+  --fix-only=<option>...  Provide the list of fix options
+                          <options: reference|global_field|json:rte|json:custom-field|blocks|group>
   --modules=<option>...   Provide the list of modules to be audited
                           <options: content-types|global-fields|entries>
-  --no-truncate           do not truncate output to fit screen
   --report-path=<value>   Path to store the audit reports
-  --sort=<value>          property to sort by (prepend '-' for descending)
+
+COMMON FLAGS
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path where the data is stored
+
+TABLE FLAGS
+  --columns=<value>  Show only the specified columns (comma-separated)
+  --csv              The output is in the CSV format [alias: --output=csv]
+  --filter=<value>   Filter property by partial string matching. For example: name=foo
+  --no-truncate      The output is not truncated to fit the screen
+  --sort=<value>     Property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and fix possible errors in the exported Contentstack data.
@@ -187,6 +198,8 @@ EXAMPLES
   $ csdx audit:fix --report-path=<path> --copy-dir
 
   $ csdx audit:fix --report-path=<path> --copy-dir --csv
+
+  $ csdx audit:fix --fix-only=reference,global_field --copy-dir
 
   $ csdx audit:fix --report-path=<path> --filter="name=<filter-value>"
 
@@ -2014,28 +2027,31 @@ EXAMPLES
 
 ## `csdx cm:export-to-csv`
 
-Export entries or organization users to csv using this command
+Export entries, taxonomies, terms or organization users to csv using this command
 
 ```
 USAGE
-  $ csdx cm:export-to-csv [--action entries|users|teams] [-a <value>] [--org <value>] [-n <value>] [-k <value>]
-    [--org-name <value>] [--locale <value>] [--content-type <value>] [--branch <value>] [--team-uid <value>]
+  $ csdx cm:export-to-csv [--action entries|users|teams|taxonomies] [-a <value>] [--org <value>] [-n <value>] [-k
+    <value>] [--org-name <value>] [--locale <value>] [--content-type <value>] [--branch <value>] [--team-uid <value>]
+    [--taxonomy-uid <value>] [--delimiter <value>]
 
 FLAGS
   -a, --alias=<value>          Alias of the management token
   -k, --stack-api-key=<value>  API key of the source stack
   -n, --stack-name=<value>     Name of the stack that needs to be created as csv filename.
-  --action=<option>            Option to export data (entries, users, teams)
-                               <options: entries|users|teams>
+  --action=<option>            Option to export data (entries, users, teams, taxonomies)
+                               <options: entries|users|teams|taxonomies>
   --branch=<value>             Branch from which entries need to be exported
   --content-type=<value>       Content type for which entries needs to be exported
+  --delimiter=<value>          [default: ,] Provide delimiter for csv file
   --locale=<value>             Locale for which entries need to be exported
   --org=<value>                Provide organization UID to clone org users
   --org-name=<value>           Name of the organization that needs to be created as csv filename.
+  --taxonomy-uid=<value>       Provide the taxonomy UID of the related terms you want to export
   --team-uid=<value>           Uid of the team whose user data and stack roles are required
 
 DESCRIPTION
-  Export entries or organization users to csv using this command
+  Export entries, taxonomies, terms or organization users to csv using this command
 
 EXAMPLES
   $ csdx cm:export-to-csv
@@ -2093,6 +2109,24 @@ EXAMPLES
   Exporting Organizations Teams to CSV with org-uid and team uid
 
   $ csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid> --org-name <org-name>
+
+
+
+  Exporting taxonomies and related terms to a .CSV file with the provided taxonomy UID
+
+  $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --taxonomy-uid <taxonomy-uid>
+
+
+
+  Exporting taxonomies and respective terms to a .CSV file
+
+  $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias>
+
+
+
+  Exporting taxonomies and respective terms to a .CSV file with the delimiter
+
+  $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --delimiter <delimiter>
 ```
 
 _See code: [@contentstack/cli-cm-export-to-csv](https://github.com/contentstack/cli/blob/main/packages/contentstack-export-to-csv/src/commands/cm/export-to-csv.js)_
@@ -2337,16 +2371,20 @@ USAGE
     --no-truncate]
 
 FLAGS
+  --modules=<option>...  Provide the list of modules to be audited
+                         <options: content-types|global-fields|entries>
+  --report-path=<value>  Path to store the audit reports
+
+COMMON FLAGS
   -c, --config=<value>    Path of the external config
   -d, --data-dir=<value>  Path where the data is stored
-  --columns=<value>       only show provided columns (comma-separated)
-  --csv                   output is csv format [alias: --output=csv]
-  --filter=<value>        filter property by partial string matching, ex: name=foo
-  --modules=<option>...   Provide the list of modules to be audited
-                          <options: content-types|global-fields|entries>
-  --no-truncate           do not truncate output to fit screen
-  --report-path=<value>   Path to store the audit reports
-  --sort=<value>          property to sort by (prepend '-' for descending)
+
+TABLE FLAGS
+  --columns=<value>  Show only the specified columns (comma-separated)
+  --csv              The output is in the CSV format [alias: --output=csv]
+  --filter=<value>   Filter property by partial string matching. For example: name=foo
+  --no-truncate      The output is not truncated to fit the screen
+  --sort=<value>     Property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and find possible errors in the exported Contentstack data
@@ -2376,22 +2414,29 @@ Perform audits and fix possible errors in the exported Contentstack data.
 ```
 USAGE
   $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
-    content-types|global-fields|entries] [--copy-path <value> --copy-dir] [--columns <value> | ] [--sort <value>]
-    [--filter <value>] [--csv | --no-truncate]
+    content-types|global-fields|entries] [--copy-path <value> --copy-dir] [--fix-only
+    reference|global_field|json:rte|json:custom-field|blocks|group] [--columns <value> | ] [--sort <value>] [--filter
+    <value>] [--csv | --no-truncate]
 
 FLAGS
-  -c, --config=<value>    Path of the external config
-  -d, --data-dir=<value>  Path where the data is stored
-  --columns=<value>       only show provided columns (comma-separated)
   --copy-dir              Create backup from the original data.
   --copy-path=<value>     Provide the path to backup the copied data
-  --csv                   output is csv format [alias: --output=csv]
-  --filter=<value>        filter property by partial string matching, ex: name=foo
+  --fix-only=<option>...  Provide the list of fix options
+                          <options: reference|global_field|json:rte|json:custom-field|blocks|group>
   --modules=<option>...   Provide the list of modules to be audited
                           <options: content-types|global-fields|entries>
-  --no-truncate           do not truncate output to fit screen
   --report-path=<value>   Path to store the audit reports
-  --sort=<value>          property to sort by (prepend '-' for descending)
+
+COMMON FLAGS
+  -c, --config=<value>    Path of the external config
+  -d, --data-dir=<value>  Path where the data is stored
+
+TABLE FLAGS
+  --columns=<value>  Show only the specified columns (comma-separated)
+  --csv              The output is in the CSV format [alias: --output=csv]
+  --filter=<value>   Filter property by partial string matching. For example: name=foo
+  --no-truncate      The output is not truncated to fit the screen
+  --sort=<value>     Property to sort by (prepend '-' for descending)
 
 DESCRIPTION
   Perform audits and fix possible errors in the exported Contentstack data.
@@ -2406,6 +2451,8 @@ EXAMPLES
   $ csdx cm:stacks:audit:fix --report-path=<path> --copy-dir
 
   $ csdx cm:stacks:audit:fix --report-path=<path> --copy-dir --csv
+
+  $ csdx cm:stacks:audit:fix --fix-only=reference,global_field --copy-dir
 
   $ csdx cm:stacks:audit:fix --report-path=<path> --filter="name=<filter-value>"
 
@@ -3018,7 +3065,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.20/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.14/src/commands/help.ts)_
 
 ## `csdx launch`
 
@@ -3316,7 +3363,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -3381,7 +3428,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -3421,7 +3468,7 @@ EXAMPLES
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
@@ -3450,7 +3497,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -3498,7 +3545,7 @@ ALIASES
   $ csdx plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -3539,7 +3586,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
