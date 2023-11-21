@@ -17,7 +17,7 @@ importers:
       '@contentstack/cli-cm-bulk-publish': ~1.3.14
       '@contentstack/cli-cm-clone': ~1.7.0
       '@contentstack/cli-cm-export': ~1.10.0
-      '@contentstack/cli-cm-export-to-csv': ~1.5.0
+      '@contentstack/cli-cm-export-to-csv': ~1.6.1
       '@contentstack/cli-cm-import': ~1.11.0
       '@contentstack/cli-cm-migrate-rte': ~1.4.14
       '@contentstack/cli-cm-seed': ~1.7.0
@@ -71,7 +71,7 @@ importers:
       '@contentstack/cli-cm-bulk-publish': link:../contentstack-bulk-publish
       '@contentstack/cli-cm-clone': link:../contentstack-clone
       '@contentstack/cli-cm-export': link:../contentstack-export
-      '@contentstack/cli-cm-export-to-csv': 1.5.0_4qcp7qp4jxxdgb4qbxgwox4hwq
+      '@contentstack/cli-cm-export-to-csv': link:../contentstack-export-to-csv
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-cm-migrate-rte': link:../contentstack-migrate-rte
       '@contentstack/cli-cm-seed': link:../contentstack-seed
@@ -1561,31 +1561,11 @@ packages:
     engines: {node: '>=0.1.90'}
     dev: false
 
-  /@contentstack/cli-cm-export-to-csv/1.5.0_4qcp7qp4jxxdgb4qbxgwox4hwq:
-    resolution: {integrity: sha512-16v9WG7CeFpf+4q3OK2ImJZOXlL9pQQLfoSo1Zz5D1NYUSHjWlZNHzgUm8osB0iK776i2tZrZ81pKQb/cRsPkw==}
-    engines: {node: '>=14.0.0'}
-    dependencies:
-      '@contentstack/cli-command': 1.2.15_4qcp7qp4jxxdgb4qbxgwox4hwq
-      '@contentstack/cli-utilities': 1.5.5_4qcp7qp4jxxdgb4qbxgwox4hwq
-      chalk: 4.1.2
-      fast-csv: 4.3.6
-      inquirer: 8.2.4
-      inquirer-checkbox-plus-prompt: 1.0.1
-      mkdirp: 3.0.1
-    transitivePeerDependencies:
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/node'
-      - encoding
-      - supports-color
-      - typescript
-    dev: false
-
   /@contentstack/cli-command/1.2.15_4qcp7qp4jxxdgb4qbxgwox4hwq:
     resolution: {integrity: sha512-4HZ2fRrXlFgf1DX7aEVzIbKKdRK3JOT4qbjVYSdK+bM9x9A5INV44SBZ+DILKjCPnN07Yc88SL82Isylvr7kyg==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@contentstack/cli-utilities': 1.5.5_4qcp7qp4jxxdgb4qbxgwox4hwq
+      '@contentstack/cli-utilities': 1.5.6_4qcp7qp4jxxdgb4qbxgwox4hwq
       contentstack: 3.17.1
     transitivePeerDependencies:
       - '@swc/core'
@@ -1601,7 +1581,7 @@ packages:
     engines: {node: '>=8.3.0'}
     dependencies:
       '@contentstack/cli-command': 1.2.15_4qcp7qp4jxxdgb4qbxgwox4hwq
-      '@contentstack/cli-utilities': 1.5.5_4qcp7qp4jxxdgb4qbxgwox4hwq
+      '@contentstack/cli-utilities': 1.5.6_4qcp7qp4jxxdgb4qbxgwox4hwq
       async: 3.2.4
       callsites: 3.1.0
       cardinal: 2.1.1
@@ -1621,10 +1601,10 @@ packages:
       - zenObservable
     dev: false
 
-  /@contentstack/cli-utilities/1.5.5_4qcp7qp4jxxdgb4qbxgwox4hwq:
-    resolution: {integrity: sha512-LUWB5vd60V2xxlQJCwmR5Xr09zm6k13jGYSgcgC8wWofc8JUfjTVLMI58xmPrm1pq1uL9uq+mC//cUEHZvHvDQ==}
+  /@contentstack/cli-utilities/1.5.6_4qcp7qp4jxxdgb4qbxgwox4hwq:
+    resolution: {integrity: sha512-Ey/KetB5P0PHnZbteYx+9D48p/0k0wzRWHA4X+ak1Ml2u/mdMb6BY0gcnON4Xnms2zREDerRwrV07D0VE1gAKg==}
     dependencies:
-      '@contentstack/management': 1.11.0_debug@4.3.4
+      '@contentstack/management': 1.12.0_debug@4.3.4
       '@oclif/core': 2.15.0_4qcp7qp4jxxdgb4qbxgwox4hwq
       axios: 1.6.0_debug@4.3.4
       chalk: 4.1.2
@@ -13929,19 +13909,4 @@ packages:
 
   /zen-observable/0.8.15:
     resolution: {integrity: sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==}
-    dev: false
-
-  file:../../../Downloads/contentstack-management-1.13.0_sure_final.tgz_debug@4.3.4:
-    resolution: {integrity: sha512-CorW/qOJ2gnji6hf2XIPYw2kaJWgNOkI6/6p44hoNElkkwPasN6bdH+XuBq8YryIX8AN8iE/yi8ba6XAjNgkEA==, tarball: file:../../../Downloads/contentstack-management-1.13.0_sure_final.tgz}
-    id: file:../../../Downloads/contentstack-management-1.13.0_sure_final.tgz
-    name: '@contentstack/management'
-    version: 1.13.0
-    engines: {node: '>=8.0.0'}
-    dependencies:
-      axios: 1.6.0_debug@4.3.4
-      form-data: 3.0.1
-      lodash: 4.17.21
-      qs: 6.11.2
-    transitivePeerDependencies:
-      - debug
     dev: false
