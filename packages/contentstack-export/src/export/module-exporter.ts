@@ -36,6 +36,7 @@ class ModuleExporter {
     for (const branch of this.exportConfig.branches) {
       try {
         this.exportConfig.branchName = branch.uid;
+        this.stackAPIClient.stackHeaders.branch = branch.uid;
         this.exportConfig.branchDir = path.join(this.exportConfig.exportDir, branch.uid);
         log(this.exportConfig, `Exporting content from branch ${branch.uid}`, 'success');
         writeExportMetaFile(this.exportConfig, this.exportConfig.branchDir);
@@ -69,11 +70,14 @@ class ModuleExporter {
         moduleName,
       });
     } else {
-      exportedModuleResponse = await startJSModuleExport({
-        stackAPIClient: this.stackAPIClient,
-        exportConfig: this.exportConfig,
-        moduleName,
-      });
+      //NOTE - new modules support only ts
+      if (this.exportConfig.onlyTSModules.indexOf(moduleName) === -1) {
+        exportedModuleResponse = await startJSModuleExport({
+          stackAPIClient: this.stackAPIClient,
+          exportConfig: this.exportConfig,
+          moduleName,
+        });
+      }
     }
 
     // set master locale to config

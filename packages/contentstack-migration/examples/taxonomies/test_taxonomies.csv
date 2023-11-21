@@ -1,0 +1,22 @@
+Taxonomy Name,Taxonomy UID,Taxonomy Description,Term Level1 Name,Term Level1 UID,Term Level2 Name,Term Level2 UID,Term Level3 Name,Term Level3 UID,Term Level4 Name,Term Level4 UID
+name taxonomy,name_taxonomy,,,,,,,,,
+,,,term 2,term_2,,,,,,
+,,,,,term 8,term_8,,,,
+,,,,,,,term 9,term_9,,
+,,,,,,,,,term 10,term_10
+,,,term 1,term_1,,,,,,
+,,,,,term 4,term_4,,,,
+,,,,,,,term 5,term_5,,
+,,,,,,,,,term 7,term_7
+,,,,,term 3,term_3,,,,
+,,,,,,,term 6,term_6,,
+taxonomy1,taxonomy1,,,,,,,,,
+,,,May,may,,,,,,
+,,,,,Summer 2023,summer_2023,,,,
+,,,December,december,,,,,,
+,,,,,Winter 2022,winter_2022,,,,
+clothes,clothes,clothes taxonomy,,,,,,,,
+,,,fdshfgadf,fdshfgadf,,,,,,
+,,,jeans,jeans,,,,,,
+,,,shirt,shirt,,,,,,
+,,,,,dfgdshfga,dfgdshfga,,,,
