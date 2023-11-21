@@ -765,6 +765,7 @@ async function cleanTeamsData(data, managementAPIClient, org) {
     'delete',
     'fetch',
     'stackRoleMappings',
+    'teamUsers'
   ];
   if (data?.length) {
     return data.map((team) => {
