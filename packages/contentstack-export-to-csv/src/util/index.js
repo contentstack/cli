@@ -833,15 +833,12 @@ async function getTeamsDetail(allTeamsData, organization, teamUid) {
     write(this, userData, fileName, 'Team User details');
   } else {
     const team = allTeamsData.filter((team) => team.uid === teamUid)[0];
-    team.users = await team.users().fetchAll().then((data)=>data.items);
-    team.users.forEach((u)=>delete u.remove)
     await team.users.forEach((user) => {
       user['team-name'] = team.name;
       user['team-uid'] = team.uid;
       delete user['active'];
       delete user['orgInvitationStatus'];
     });
-
     const fileName = `${kebabize(
       organization.name.replace(config.organizationNameRegex, ''),
     )}_team_${teamUid}_User_Details_export.csv`;
