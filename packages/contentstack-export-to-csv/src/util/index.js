@@ -4,12 +4,21 @@ const mkdirp = require('mkdirp');
 const find = require('lodash/find');
 const cloneDeep = require('lodash/cloneDeep');
 const omit = require('lodash/omit');
+const flat = require('lodash/flatten');
 const fastcsv = require('fast-csv');
 const inquirer = require('inquirer');
 const debug = require('debug')('export-to-csv');
 const checkboxPlus = require('inquirer-checkbox-plus-prompt');
 const config = require('./config.js');
-const { cliux, configHandler, HttpClient } = require('@contentstack/cli-utilities');
+const {
+  cliux,
+  configHandler,
+  HttpClient,
+  messageHandler,
+  managementSDKClient,
+  ContentstackClient,
+} = require('@contentstack/cli-utilities');
+
 const directory = './data';
 const delimeter = os.platform() === 'win32' ? '\\' : '/';
 
@@ -155,9 +164,7 @@ function chooseStack(managementAPIClient, orgUid, stackApiKey) {
 
 async function chooseBranch(branchList) {
   try {
-    const branches = await branchList;
-
-    const branchesArray = branches.map((branch) => branch.uid);
+    const branchesArray = branchList.map((branch) => branch.uid);
 
     let _chooseBranch = [
       {
@@ -377,20 +384,20 @@ function exitProgram() {
   process.exit();
 }
 
-function sanitizeEntries(flatEntry) {
+function sanitizeData(flatData) {
   // sanitize against CSV Injections
   const CSVRegex = /^[\\+\\=@\\-]/;
-  for (key in flatEntry) {
-    if (typeof flatEntry[key] === 'string' && flatEntry[key].match(CSVRegex)) {
-      flatEntry[key] = flatEntry[key].replace(/\"/g, "\"\"");
-      flatEntry[key] = `"'${flatEntry[key]}"`;
-    } else if (typeof flatEntry[key] === 'object') {
+  for (key in flatData) {
+    if (typeof flatData[key] === 'string' && flatData[key].match(CSVRegex)) {
+      flatData[key] = flatData[key].replace(/\"/g, "\"\"");
+      flatData[key] = `"'${flatData[key]}"`;
+    } else if (typeof flatData[key] === 'object') {
       // convert any objects or arrays to string
       // to store this data correctly in csv
-      flatEntry[key] = JSON.stringify(flatEntry[key]);
+      flatData[key] = JSON.stringify(flatData[key]);
     }
   }
-  return flatEntry;
+  return flatData;
 }
 
 function cleanEntries(entries, language, environments, contentTypeUid) {
@@ -400,7 +407,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
   return filteredEntries.map((entry) => {
     let workflow = '';
     const envArr = [];
-    if (entry.publish_details.length) {
+    if (entry?.publish_details?.length) {
       entry.publish_details.forEach((env) => {
         envArr.push(JSON.stringify([environments[env['environment']], env['locale'], env['time']]));
       });
@@ -415,7 +422,7 @@ function cleanEntries(entries, language, environments, contentTypeUid) {
       }
     }
     entry = flatten(entry);
-    entry = sanitizeEntries(entry);
+    entry = sanitizeData(entry);
     entry['publish_details'] = envArr;
     entry['_workflow'] = workflow;
     entry['ACL'] = JSON.stringify({}); // setting ACL to empty obj
@@ -443,7 +450,7 @@ function getDateTime() {
   return dateTime.join('_');
 }
 
-function write(command, entries, fileName, message) {
+function write(command, entries, fileName, message, delimiter, headers) {
   // eslint-disable-next-line no-undef
   if (process.cwd().split(delimeter).pop() !== 'data' && !fs.existsSync(directory)) {
     mkdirp.sync(directory);
@@ -455,7 +462,8 @@ function write(command, entries, fileName, message) {
   }
   // eslint-disable-next-line no-undef
   cliux.print(`Writing ${message} to file: ${process.cwd()}${delimeter}${fileName}`);
-  fastcsv.writeToPath(fileName, entries, { headers: true });
+  if (headers?.length) fastcsv.writeToPath(fileName, entries, { headers, delimiter });
+  else fastcsv.writeToPath(fileName, entries, { headers: true, delimiter });
 }
 
 function startupQuestions() {
@@ -465,7 +473,7 @@ function startupQuestions() {
         type: 'list',
         name: 'action',
         message: 'Choose Action',
-        choices: [config.exportEntries, config.exportUsers, config.exportTeams, 'Exit'],
+        choices: [config.exportEntries, config.exportUsers, config.exportTeams, config.exportTaxonomies, 'Exit'],
       },
     ];
     inquirer
@@ -780,7 +788,7 @@ async function cleanTeamsData(data, managementAPIClient, org) {
   }
 }
 
-async function exportTeams(managementAPIClient, organization, teamUid) {
+async function exportTeams(managementAPIClient, organization, teamUid, delimiter) {
   cliux.print(
     `info: Exporting the ${
       teamUid && organization?.name
@@ -799,13 +807,13 @@ async function exportTeams(managementAPIClient, organization, teamUid) {
       delete team['stackRoleMapping'];
     });
     const fileName = `${kebabize(organization.name.replace(config.organizationNameRegex, ''))}_teams_export.csv`;
-    write(this, modifiedTeam, fileName, ' organization Team details');
+    write(this, modifiedTeam, fileName, ' organization Team details', delimiter);
     // exporting teams user data or a single team user data
     cliux.print(
       `info: Exporting the teams user data for ${teamUid ? `team ` + teamUid : `organisation ` + organization?.name}`,
       { color: 'blue' },
     );
-    await getTeamsDetail(allTeamsData, organization, teamUid);
+    await getTeamsDetail(allTeamsData, organization, teamUid, delimiter);
     cliux.print(
       `info: Exporting the stack role details for  ${
         teamUid ? `team ` + teamUid : `organisation ` + organization?.name
@@ -813,18 +821,18 @@ async function exportTeams(managementAPIClient, organization, teamUid) {
       { color: 'blue' },
     );
     // Exporting the stack Role data for all the teams or exporting stack role data for a single team
-    await exportRoleMappings(managementAPIClient, allTeamsData, teamUid);
+    await exportRoleMappings(managementAPIClient, allTeamsData, teamUid, delimiter);
   }
 }
 
-async function getTeamsDetail(allTeamsData, organization, teamUid) {
+async function getTeamsDetail(allTeamsData, organization, teamUid, delimiter) {
   if (!teamUid) {
     const userData = await getTeamsUserDetails(allTeamsData);
     const fileName = `${kebabize(
       organization.name.replace(config.organizationNameRegex, ''),
     )}_team_User_Details_export.csv`;
 
-    write(this, userData, fileName, 'Team User details');
+    write(this, userData, fileName, 'Team User details', delimiter);
   } else {
     const team = allTeamsData.filter((team) => team.uid === teamUid)[0];
 
@@ -839,11 +847,11 @@ async function getTeamsDetail(allTeamsData, organization, teamUid) {
       organization.name.replace(config.organizationNameRegex, ''),
     )}_team_${teamUid}_User_Details_export.csv`;
 
-    write(this, team.users, fileName, 'Team User details');
+    write(this, team.users, fileName, 'Team User details', delimiter);
   }
 }
 
-async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
+async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid, delimiter) {
   let stackRoleWithTeamData = [];
   let flag = false;
   const stackNotAdmin = [];
@@ -900,7 +908,7 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid) {
     teamUid ? `_${teamUid}` : ''
   }.csv`;
 
-  write(this, stackRoleWithTeamData, fileName, 'Team Stack Role details');
+  write(this, stackRoleWithTeamData, fileName, 'Team Stack Role details', delimiter);
 }
 
 async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName, teamUid) {
@@ -949,6 +957,214 @@ async function getTeamsUserDetails(teamsObject) {
   return allTeamUsers;
 }
 
+/**
+ * fetch all taxonomies in the provided stack
+ * @param {object} payload
+ * @param {number} skip
+ * @param {array} taxonomies
+ * @returns
+ */
+async function getAllTaxonomies(payload, skip = 0, taxonomies = []) {
+  payload['type'] = 'taxonomies';
+  const { items, count } = await taxonomySDKHandler(payload, skip);
+  if (items) {
+    skip += payload.limit;
+    taxonomies.push(...items);
+    if (skip >= count) {
+      return taxonomies;
+    } else {
+      return getAllTaxonomies(payload, skip, taxonomies);
+    }
+  }
+  return taxonomies;
+}
+
+/**
+ * fetch taxonomy related terms
+ * @param {object} payload
+ * @param {number} skip
+ * @param {number} limit
+ * @param {array} terms
+ * @returns
+ */
+async function getAllTermsOfTaxonomy(payload, skip = 0, terms = []) {
+  payload['type'] = 'terms';
+  const { items, count } = await taxonomySDKHandler(payload, skip);
+  if (items) {
+    skip += payload.limit;
+    terms.push(...items);
+    if (skip >= count) {
+      return terms;
+    } else {
+      return getAllTermsOfTaxonomy(payload, skip, terms);
+    }
+  }
+  return terms;
+}
+
+/**
+ * Verify the existence of a taxonomy. Obtain its details if it exists and return
+ * @param {object} payload
+ * @param {string} taxonomyUID
+ * @returns
+ */
+async function getTaxonomy(payload) {
+  payload['type'] = 'taxonomy';
+  const resp = await taxonomySDKHandler(payload);
+  return resp;
+}
+
+/**
+ * taxonomy & term sdk handler
+ * @async
+ * @method
+ * @param payload
+ * @param skip
+ * @param limit
+ * @returns  {*} Promise<any>
+ */
+async function taxonomySDKHandler(payload, skip) {
+  const { stackAPIClient, taxonomyUID, type } = payload;
+
+  const queryParams = { include_count: true, limit: payload.limit };
+  if (skip >= 0) queryParams['skip'] = skip || 0;
+
+  switch (type) {
+    case 'taxonomies':
+      return await stackAPIClient
+        .taxonomy()
+        .query(queryParams)
+        .find()
+        .then((data) => data)
+        .catch((err) => handleErrorMsg(err));
+    case 'taxonomy':
+      return await stackAPIClient
+        .taxonomy(taxonomyUID)
+        .fetch()
+        .then((data) => data)
+        .catch((err) => handleErrorMsg(err));
+    case 'terms':
+      queryParams['depth'] = 0;
+      return await stackAPIClient
+        .taxonomy(taxonomyUID)
+        .terms()
+        .query(queryParams)
+        .find()
+        .then((data) => data)
+        .catch((err) => handleErrorMsg(err));
+    default:
+      handleErrorMsg({ errorMessage: 'Invalid module!' });
+  }
+}
+
+/**
+ * Change taxonomies data in required CSV headers format
+ * @param {array} taxonomies
+ * @returns
+ */
+function formatTaxonomiesData(taxonomies) {
+  if (taxonomies?.length) {
+    const formattedTaxonomies = taxonomies.map((taxonomy) => {
+      return sanitizeData({
+        'Taxonomy UID': taxonomy.uid,
+        Name: taxonomy.name,
+        Description: taxonomy.description,
+      });
+    });
+    return formattedTaxonomies;
+  }
+}
+
+/**
+ * Modify the linked taxonomy data's terms in required CSV headers format
+ * @param {array} terms
+ * @param {string} taxonomyUID
+ * @returns
+ */
+function formatTermsOfTaxonomyData(terms, taxonomyUID) {
+  if (terms?.length) {
+    const formattedTerms = terms.map((term) => {
+      return sanitizeData({
+        'Taxonomy UID': taxonomyUID,
+        UID: term.uid,
+        Name: term.name,
+        'Parent UID': term.parent_uid,
+        Depth: term.depth,
+      });
+    });
+    return formattedTerms;
+  }
+}
+
+function handleErrorMsg(err) {
+  if (err?.errorMessage) {
+    cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
+  } else if (err?.message) {
+    const errorMsg = err?.errors?.taxonomy || err?.errors?.term || err?.message;
+    cliux.print(`Error: ${errorMsg}`, { color: 'red' });
+  } else {
+    console.log(err);
+    cliux.print(`Error: ${messageHandler.parse('CLI_EXPORT_CSV_API_FAILED')}`, { color: 'red' });
+  }
+  process.exit(1);
+}
+
+/**
+ * create an importable CSV file, to utilize with the migration script.
+ * @param {*} payload api request payload
+ * @param {*} taxonomies taxonomies data
+ * @returns
+ */
+async function createImportableCSV(payload, taxonomies) {
+  let taxonomiesData = [];
+  let headers = ['Taxonomy Name','Taxonomy UID','Taxonomy Description'];
+  for (let index = 0; index < taxonomies?.length; index++) {
+    const taxonomy = taxonomies[index];
+    const taxonomyUID = taxonomy?.uid;
+    if (taxonomyUID) {
+      const sanitizedTaxonomy = sanitizeData({
+        'Taxonomy Name': taxonomy?.name,
+        'Taxonomy UID': taxonomyUID,
+        'Taxonomy Description': taxonomy?.description,
+      });
+      taxonomiesData.push(sanitizedTaxonomy);
+      payload['taxonomyUID'] = taxonomyUID;
+      const terms = await getAllTermsOfTaxonomy(payload);
+      //fetch all parent terms
+      const parentTerms = terms.filter((term) => term?.parent_uid === null);
+      const termsData = getParentAndChildTerms(parentTerms, terms, headers);
+      taxonomiesData.push(...termsData)
+    }
+  }
+
+  return {taxonomiesData, headers};
+}
+
+/**
+ * Get the parent and child terms, then arrange them hierarchically in a CSV file.
+ * @param {*} parentTerms list of parent terms
+ * @param {*} terms respective terms of taxonomies
+ * @param {*} headers list of csv headers include taxonomy and terms column
+ * @param {*} termsData parent and child terms
+ */
+function getParentAndChildTerms(parentTerms, terms, headers, termsData=[]) {
+  for (let i = 0; i < parentTerms?.length; i++) {
+    const parentTerm = parentTerms[i];
+    const levelUID = `Term Level${parentTerm.depth} UID`;
+    const levelName = `Term Level${parentTerm.depth} Name`;
+    if (headers.indexOf(levelName) === -1) headers.push(levelName);
+    if (headers.indexOf(levelUID) === -1) headers.push(levelUID);
+    const sanitizedTermData = sanitizeData({ [levelName]: parentTerm.name, [levelUID]: parentTerm.uid });
+    termsData.push(sanitizedTermData);
+    //fetch all sibling terms
+    const newParents = terms.filter((term) => term.parent_uid === parentTerm.uid);
+    if (newParents?.length) {
+      getParentAndChildTerms(newParents, terms, headers, termsData);
+    }
+  }
+  return termsData;
+}
+
 module.exports = {
   chooseOrganization: chooseOrganization,
   chooseStack: chooseStack,
@@ -977,4 +1193,11 @@ module.exports = {
   formatError: formatError,
   exportOrgTeams: exportOrgTeams,
   exportTeams: exportTeams,
+  getAllTaxonomies,
+  getAllTermsOfTaxonomy,
+  formatTaxonomiesData,
+  formatTermsOfTaxonomyData,
+  getTaxonomy,
+  getStacks,
+  createImportableCSV,
 };
