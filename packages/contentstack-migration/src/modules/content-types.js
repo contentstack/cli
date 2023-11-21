@@ -38,10 +38,12 @@ class ContentType extends Base {
    * @param {Object} opts Optional: Content type fields definition
    * @returns {Field} instance of Field
    * @example
-   * module.exports = {migrations} => {
-   *  const blog = migrations.createContentType('blog', {
-   *    title: 'blog'
-   *  })
+   * module.exports = ({migration}) => {
+   *  const blog = migration
+   *    .createContentType('blog')
+   *    .title('blog title')
+   *    .description('blog 1')
+   *  blog.createField('title').display_name('Title').data_type('text').mandatory(true);
    * }
    */
   createContentType(id, opts = {}) {
@@ -114,10 +116,8 @@ class ContentType extends Base {
    * @param {Object} opts Optional: Content type fields definition
    * @returns {Field} instance of Field
    * @example
-   * module.exports = {migrations} => {
-   *  const blog = migrations.editContentType('blog', {
-   *    title: 'blog'
-   *  });
+   * module.exports = ({migration}) => {
+   *  const blog = migration.editContentType('blog');
    *  blog.description('Changed description');
    * }
    */
