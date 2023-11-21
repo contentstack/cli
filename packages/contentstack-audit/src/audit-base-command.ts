@@ -282,13 +282,11 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * @returns The function `prepareCSV` returns a Promise that resolves to `void`.
    */
   prepareCSV(moduleName: keyof typeof config.moduleConfig, listOfMissingRefs: Record<string, any>): Promise<void> {
-    const csvStream = csv.format({ headers: true });
     const csvPath = join(this.sharedConfig.reportPath, `${moduleName}.csv`);
-    const assetFileStream = createWriteStream(csvPath);
 
     return new Promise<void>((resolve, reject) => {
-      assetFileStream.on('error', reject);
-      csvStream.pipe(assetFileStream).on('close', resolve).on('error', reject);
+      // file deepcode ignore MissingClose: Will auto close once csv stream end
+      const ws = createWriteStream(csvPath).on('error', reject);
       const defaultColumns = Object.keys(OutputColumn);
       const userDefinedColumns = this.sharedConfig.flags.columns ? this.sharedConfig.flags.columns.split(',') : null;
       let missingRefs: RefErrorReturnType[] = Object.values(listOfMissingRefs).flat();
@@ -300,6 +298,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         const [column, value]: [keyof typeof OutputColumn, string] = this.sharedConfig.flags.filter.split('=');
         missingRefs = missingRefs.filter((row: RefErrorReturnType) => row[OutputColumn[column]] === value);
       }
+
+      const rowData: Record<string, string | string[]>[] = [];
 
       for (const issue of missingRefs) {
         let row: Record<string, string | string[]> = {};
@@ -313,11 +313,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           row['Fix status'] = row.fixStatus;
         }
 
-        csvStream.write(row, 'utf8');
+        rowData.push(row);
       }
 
-      csvStream.end();
-      assetFileStream.destroy();
+      csv.write(rowData, { headers: true }).pipe(ws).on('error', reject).on('finish', resolve);
     });
   }
 }
