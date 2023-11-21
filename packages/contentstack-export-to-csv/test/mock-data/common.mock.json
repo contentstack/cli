@@ -108,34 +108,24 @@
       "name": "test org 2"
     },
     {
-        "uid": "uid2",
-        "email": "test@gmail.abc",
-        "user_uid": "user2",
-        "org_uid": "test-uid-2",
-        "invited_by": "user3",
-        "invited_at": "2023-08-21T11:08:41.038Z",
-        "status": "accepted",
-        "acceptance_token": "thor",
-        "created_at": "2023-08-21T11:08:41.036Z",
-        "updated_at": "2023-08-21T11:09:11.342Z",
-        "urlPath": "/user",
-        "organizations": [
-          {
-            "uid": "org_uid_1_teams",
-            "name": "Teams Org",
-            "org_roles": [
-              {
-                "uid": "role1",
-                "name": "Admin",
-                "description": "Admin Role",
-                "org_uid": "test-uid-1",
-                "admin": true,
-                "default": true
-              }
-            ]
-          }
+      "organizations": [
+        {
+          "uid": "org_uid_1_teams",
+          "name": "Teams Org",
+          "org_roles": [
+            {
+              "uid": "role1",
+              "name": "Admin",
+              "description": "Admin Role",
+              "org_uid": "test-uid-1",
+              "admin": true,
+              "default": true
+            }
+          ]
+        }
         ]
-      }
+      
+    }
   ],
   "roles": [
     {
@@ -281,10 +271,7 @@
         {
           "_id": "team_1_uid",
           "name": "Test_Team_1",
-          
-         
-          
-          
+
           "organizationUid": "org_uid_1_teams",
           "users": [],
           "stackRoleMapping": [
@@ -294,7 +281,7 @@
             }
           ],
           "organizationRole": "org_role_uid_1",
-          
+
           "uid": "team_1_uid",
           "createdByUserName": "team_creator",
           "updatedByUserName": "team_creator"
@@ -303,98 +290,88 @@
     }
   },
   "roless": {
-    "roles": [{
-      "name": "Developer",
-      "description": "Developer can perform all Content Manager's actions, view audit logs, create roles, invite users, manage content types, languages, and environments.",
-      "uid": "stack_role_uid_3",
-      "users": [],
-      "owner": "ownerEmail@domain.com",
-      "stack": {
-       
-        
-        "uid": "stack_uid",
-        "name": "CLI Test",
-        "org_uid": "org_uid_1_teams",
-        "api_key": "stack_api_key",
-        "master_locale": "en-us",
-       
-        "owner_uid": "team_owner_uid",
-        "user_uids": ["team_owner_uid"]
+    "roles": [
+      {
+        "name": "Developer",
+        "description": "Developer can perform all Content Manager's actions, view audit logs, create roles, invite users, manage content types, languages, and environments.",
+        "uid": "stack_role_uid_3",
+        "users": [],
+        "owner": "ownerEmail@domain.com",
+        "stack": {
+          "uid": "stack_uid",
+          "name": "CLI Test",
+          "org_uid": "org_uid_1_teams",
+          "api_key": "stack_api_key",
+          "master_locale": "en-us",
+
+          "owner_uid": "team_owner_uid",
+          "user_uids": ["team_owner_uid"]
+        },
+        "SYS_ACL": {}
       },
-      "SYS_ACL": {}
-    },
-    {
-      "name": "Content Manager",
-      "description": "Content Managers can view all content types, manage entries and assets. They cannot edit content types or access stack settings.",
-      "uid": "stack_role_uid_1",
-      
-      "updated_by": "team_owner_uid",
-      
-      
-      "owner": "ownerEmail@domain.com",
-      "stack": {
-       
-        
-        "uid": "stack_uid",
-        "name": "CLI Test",
-        "org_uid": "org_uid_1_teams",
-        "api_key": "stack_api_key",
-        "master_locale": "en-us",
-       
-        "owner_uid": "team_owner_uid",
-        "user_uids": ["team_owner_uid"]
+      {
+        "name": "Content Manager",
+        "description": "Content Managers can view all content types, manage entries and assets. They cannot edit content types or access stack settings.",
+        "uid": "stack_role_uid_1",
+
+        "updated_by": "team_owner_uid",
+
+        "owner": "ownerEmail@domain.com",
+        "stack": {
+          "uid": "stack_uid",
+          "name": "CLI Test",
+          "org_uid": "org_uid_1_teams",
+          "api_key": "stack_api_key",
+          "master_locale": "en-us",
+
+          "owner_uid": "team_owner_uid",
+          "user_uids": ["team_owner_uid"]
+        },
+        "SYS_ACL": {}
       },
-      "SYS_ACL": {}
-    },
-    {
-      "name": "Admin",
-      "description": "Admin can perform all actions and manage all settings of the stack, except the ability to delete or transfer ownership of the stack.",
-      "uid": "role_uid_1",
-      
-      
-      
-      "updated_at": "2023-10-26T04:44:51.529Z",
-      "users": [],
-      "owner": "ownerEmail@domain.com",
-      "stack": {
-       
-        
-        "uid": "stack_uid",
-        "name": "CLI Test",
-        "org_uid": "org_uid_1_teams",
-        "api_key": "stack_api_key",
-        "master_locale": "en-us",
-       
-        "owner_uid": "team_owner_uid",
-        "user_uids": ["team_owner_uid"]
+      {
+        "name": "Admin",
+        "description": "Admin can perform all actions and manage all settings of the stack, except the ability to delete or transfer ownership of the stack.",
+        "uid": "role_uid_1",
+
+        "updated_at": "2023-10-26T04:44:51.529Z",
+        "users": [],
+        "owner": "ownerEmail@domain.com",
+        "stack": {
+          "uid": "stack_uid",
+          "name": "CLI Test",
+          "org_uid": "org_uid_1_teams",
+          "api_key": "stack_api_key",
+          "master_locale": "en-us",
+
+          "owner_uid": "team_owner_uid",
+          "user_uids": ["team_owner_uid"]
+        },
+        "SYS_ACL": {}
       },
-      "SYS_ACL": {}
-    },
-    {
-      "name": "Custom_Role_1",
-      "description": "",
-      "users": [],
-      "uid": "stack_role_uid_2",
-      
-      "updated_by": "team_owner_uid",
-     
-     
-      "owner": "ownerEmail@domain.com",
-      "stack": {
-       
-        
-        "uid": "stack_uid",
-        "name": "CLI Test",
-        "org_uid": "org_uid_1_teams",
-        "api_key": "stack_api_key",
-        "master_locale": "en-us",
-       
-        "owner_uid": "team_owner_uid",
-        "user_uids": ["team_owner_uid"]
-      },
-      "SYS_ACL": {}
-    }
-]},
+      {
+        "name": "Custom_Role_1",
+        "description": "",
+        "users": [],
+        "uid": "stack_role_uid_2",
+
+        "updated_by": "team_owner_uid",
+
+        "owner": "ownerEmail@domain.com",
+        "stack": {
+          "uid": "stack_uid",
+          "name": "CLI Test",
+          "org_uid": "org_uid_1_teams",
+          "api_key": "stack_api_key",
+          "master_locale": "en-us",
+
+          "owner_uid": "team_owner_uid",
+          "user_uids": ["team_owner_uid"]
+        },
+        "SYS_ACL": {}
+      }
+    ]
+  },
   "org_roles": {
     "roles": [
       {
