@@ -118,11 +118,6 @@ class ExportToCsvCommand extends Command {
             let contentTypes = [];
 
             if (managementTokenAlias) {
-              const listOfTokens = configHandler.get('tokens');
-              const checkManagementTokenValidity = await isManagementTokenValid((stackAPIKey || listOfTokens[managementTokenAlias].apiKey) ,listOfTokens[managementTokenAlias].token);
-              if(!checkManagementTokenValidity?.valid) {
-                throw checkManagementTokenValidity.hasOwnProperty('valid')?(`error: Management token or stack API key is invalid. ${checkManagementTokenValidity?.message||""}`):checkManagementTokenValidity?.message||"";
-              }
               const { stackDetails, apiClient } = await this.getAliasDetails(managementTokenAlias, stackName);
               managementAPIClient = apiClient;
               stack = stackDetails;
@@ -338,6 +333,10 @@ class ExportToCsvCommand extends Command {
     let apiClient, stackDetails;
     const listOfTokens = configHandler.get('tokens');
     if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
+      const checkManagementTokenValidity = await isManagementTokenValid((listOfTokens[managementTokenAlias].apiKey) ,listOfTokens[managementTokenAlias].token);
+      if(!checkManagementTokenValidity?.valid) {
+        throw checkManagementTokenValidity.hasOwnProperty('valid')?(`error: Management token or stack API key is invalid. ${checkManagementTokenValidity?.message||""}`):checkManagementTokenValidity?.message||"";
+      }
       apiClient = await managementSDKClient({
         host: this.cmaHost,
         management_token: listOfTokens[managementTokenAlias].token,
