@@ -108,6 +108,7 @@ describe('Content types', () => {
       });
 
     fancy
+      .stub(fs, 'rmSync', () => {})
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(ContentType.prototype, 'writeFixContent', async () => {})
       .it('perform audit operation on the given CT schema', async () => {
@@ -120,6 +121,7 @@ describe('Content types', () => {
       });
 
     fancy
+      .stub(fs, 'rmSync', () => {})
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(ContentType.prototype, 'writeFixContent', async () => {})
       .it('perform audit and fix operation on the given CT schema', async () => {
@@ -274,6 +276,7 @@ describe('Content types', () => {
   describe('fixGlobalFieldReferences method', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
+      .stub(fs, 'rmSync', () => {})
       .stub(ContentType.prototype, 'runFixOnSchema', () => {})
       .stub(ContentType.prototype, 'lookForReference', () => {})
       .it('should identify missing global-field schema and attach with content-type schema', async () => {
