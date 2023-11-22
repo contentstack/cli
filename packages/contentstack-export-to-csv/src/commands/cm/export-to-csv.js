@@ -119,7 +119,7 @@ class ExportToCsvCommand extends Command {
 
             if (managementTokenAlias) {
               const listOfTokens = configHandler.get('tokens');
-              const checkManagementTokenValidity = await isManagementTokenValid(stackAPIKey,listOfTokens[managementTokenAlias].token);
+              const checkManagementTokenValidity = await isManagementTokenValid((stackAPIKey || listOfTokens[managementTokenAlias].apiKey) ,listOfTokens[managementTokenAlias].token);
               if(!checkManagementTokenValidity?.valid) {
                 throw checkManagementTokenValidity.hasOwnProperty('valid')?(`error: Management token or stack API key is invalid. ${checkManagementTokenValidity?.message||""}`):checkManagementTokenValidity?.message||"";
               }
