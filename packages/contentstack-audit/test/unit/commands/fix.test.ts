@@ -1,3 +1,4 @@
+import fs from 'fs';
 import winston from 'winston';
 import { expect } from '@oclif/test';
 import { fancy } from '@contentstack/cli-dev-dependencies';
@@ -13,6 +14,7 @@ describe('AuditFix command', () => {
   describe('AuditFix run method', () => {
     fancy
       .stdout({ print: process.env.PRINT === 'true' || false })
+      .stub(fs, 'rmSync', () => {})
       .stub(winston.transports, 'File', () => fsTransport)
       .stub(winston, 'createLogger', () => ({ log: () => {}, error: () => {} }))
       .stub(AuditBaseCommand.prototype, 'start', () => {})
