@@ -6,6 +6,7 @@ const {
   isAuthenticated,
   cliux,
   doesBranchExist,
+  isManagementTokenValid
 } = require('@contentstack/cli-utilities');
 const util = require('../../util');
 const config = require('../../util/config');
@@ -332,6 +333,10 @@ class ExportToCsvCommand extends Command {
     let apiClient, stackDetails;
     const listOfTokens = configHandler.get('tokens');
     if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
+      const checkManagementTokenValidity = await isManagementTokenValid((listOfTokens[managementTokenAlias].apiKey) ,listOfTokens[managementTokenAlias].token);
+      if(!checkManagementTokenValidity?.valid) {
+        throw checkManagementTokenValidity.hasOwnProperty('valid')?(`error: Management token or stack API key is invalid. ${checkManagementTokenValidity?.message||""}`):checkManagementTokenValidity?.message||"";
+      }
       apiClient = await managementSDKClient({
         host: this.cmaHost,
         management_token: listOfTokens[managementTokenAlias].token,
