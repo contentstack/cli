@@ -1,0 +1,135 @@
+[
+  {
+    "title": "GF - 1",
+    "uid": "gf_1",
+    "schema": [
+      {
+        "data_type": "reference",
+        "display_name": "Reference",
+        "reference_to": ["page_4", "page_3", "page_2", "page_1", "page_0"],
+        "field_metadata": { "ref_multiple": false, "ref_multiple_content_types": true },
+        "uid": "reference",
+        "mandatory": false,
+        "multiple": false,
+        "non_localizable": false,
+        "unique": false
+      },
+      {
+        "data_type": "blocks",
+        "display_name": "Modular Blocks",
+        "blocks": [
+          {
+            "title": "Group",
+            "uid": "group",
+            "schema": [
+              {
+                "data_type": "group",
+                "display_name": "Group",
+                "field_metadata": { "description": "", "instruction": "" },
+                "schema": [
+                  {
+                    "data_type": "json",
+                    "display_name": "JSON Rich Text Editor",
+                    "uid": "json_rte",
+                    "field_metadata": {
+                      "allow_json_rte": true,
+                      "embed_entry": true,
+                      "description": "",
+                      "default_value": "",
+                      "multiline": false,
+                      "rich_text_type": "advanced",
+                      "options": [],
+                      "ref_multiple_content_types": true
+                    },
+                    "format": "",
+                    "error_messages": { "format": "" },
+                    "reference_to": ["sys_assets", "page_4", "page_3", "page_2", "page_1", "page_0"],
+                    "multiple": false,
+                    "non_localizable": false,
+                    "unique": false,
+                    "mandatory": false
+                  },
+                  {
+                    "data_type": "group",
+                    "display_name": "Group",
+                    "field_metadata": { "description": "", "instruction": "" },
+                    "schema": [
+                      {
+                        "data_type": "reference",
+                        "display_name": "Reference",
+                        "reference_to": ["page_4", "page_3", "page_2", "page_1", "page_0"],
+                        "field_metadata": { "ref_multiple": false, "ref_multiple_content_types": true },
+                        "uid": "reference",
+                        "mandatory": false,
+                        "multiple": false,
+                        "non_localizable": false,
+                        "unique": false
+                      }
+                    ],
+                    "uid": "group",
+                    "mandatory": false,
+                    "multiple": false,
+                    "non_localizable": false,
+                    "unique": false
+                  },
+                  {
+                    "data_type": "text",
+                    "display_name": "Rich Text Editor",
+                    "uid": "rich_text_editor",
+                    "field_metadata": {
+                      "allow_rich_text": true,
+                      "description": "",
+                      "multiline": false,
+                      "rich_text_type": "advanced",
+                      "options": [],
+                      "version": 3
+                    },
+                    "mandatory": false,
+                    "multiple": false,
+                    "non_localizable": false,
+                    "unique": false
+                  }
+                ],
+                "uid": "group",
+                "mandatory": false,
+                "multiple": false,
+                "non_localizable": false,
+                "unique": false
+              },
+              {
+                "data_type": "group",
+                "display_name": "Group -1",
+                "field_metadata": { "description": "", "instruction": "" },
+                "schema": [
+                  {
+                    "data_type": "reference",
+                    "display_name": "Reference",
+                    "reference_to": ["page_4", "page_3", "page_2", "page_1", "page_0"],
+                    "field_metadata": { "ref_multiple": false, "ref_multiple_content_types": true },
+                    "uid": "reference",
+                    "mandatory": false,
+                    "multiple": false,
+                    "non_localizable": false,
+                    "unique": false
+                  }
+                ],
+                "uid": "group_1",
+                "mandatory": false,
+                "multiple": false,
+                "non_localizable": false,
+                "unique": false
+              }
+            ]
+          }
+        ],
+        "multiple": true,
+        "uid": "modular_blocks",
+        "field_metadata": { "instruction": "", "description": "" },
+        "mandatory": false,
+        "non_localizable": false,
+        "unique": false
+      }
+    ],
+    "description": ""
+  }
+]

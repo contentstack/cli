@@ -1,6 +1,7 @@
 import { FlagInput, Flags, ux } from '@contentstack/cli-utilities';
 
 import config from '../../../../config';
+import { getTableFlags } from '../../../../util';
 import { auditFixMsg, auditMsg } from '../../../../messages';
 import { AuditBaseCommand } from '../../../../audit-base-command';
 
@@ -13,6 +14,7 @@ export default class AuditFix extends AuditBaseCommand {
     '$ <%= config.bin %> <%= command.id %> --copy-dir',
     '$ <%= config.bin %> <%= command.id %> --report-path=<path> --copy-dir',
     '$ <%= config.bin %> <%= command.id %> --report-path=<path> --copy-dir --csv',
+    '$ <%= config.bin %> <%= command.id %> --fix-only=reference,global_field --copy-dir',
     '$ <%= config.bin %> <%= command.id %> --report-path=<path> --filter="name=<filter-value>"',
     '$ <%= config.bin %> <%= command.id %> --report-path=<path> --modules=content-types --filter="name="<filter-value>" --copy-dir --copy-path=<path>',
   ];
@@ -37,14 +39,17 @@ export default class AuditFix extends AuditBaseCommand {
       dependsOn: ['copy-dir'],
       description: auditFixMsg.BKP_PATH,
     }),
+    'fix-only': Flags.string({
+      multiple: true,
+      options: config['fix-fields'],
+      description: auditFixMsg.FIX_OPTIONS,
+    }),
     yes: Flags.boolean({
       char: 'y',
       hidden: true,
       description: 'Use this flag to skip confirmation',
     }),
-    ...ux.table.flags({
-      only: ['columns', 'sort', 'filter', 'csv', 'no-truncate'],
-    }),
+    ...getTableFlags(),
   };
 
   /**

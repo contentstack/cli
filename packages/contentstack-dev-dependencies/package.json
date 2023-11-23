@@ -1,11 +1,11 @@
 {
   "name": "@contentstack/cli-dev-dependencies",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Customized dev dependencies for ContentStack projects",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "prepack": "pnpm compile",
+    "prepack": "npm run clean && npm run compile",
     "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "lint": "eslint src/**/*.ts",
