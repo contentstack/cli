@@ -36,6 +36,7 @@ class ModuleExporter {
     for (const branch of this.exportConfig.branches) {
       try {
         this.exportConfig.branchName = branch.uid;
+        this.stackAPIClient.stackHeaders.branch = branch.uid;
         this.exportConfig.branchDir = path.join(this.exportConfig.exportDir, branch.uid);
         log(this.exportConfig, `Exporting content from branch ${branch.uid}`, 'success');
         writeExportMetaFile(this.exportConfig, this.exportConfig.branchDir);
