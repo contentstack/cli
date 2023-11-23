@@ -1,12 +1,12 @@
 {
   "name": "@contentstack/cli-cm-clone",
   "description": "Contentstack stack clone plugin",
-  "version": "1.7.2",
+  "version": "1.8.0",
   "author": "Contentstack",
   "bugs": "https://github.com/rohitmishra209/cli-cm-clone/issues",
   "dependencies": {
     "@contentstack/cli-cm-export": "~1.10.2",
-    "@contentstack/cli-cm-import": "~1.11.2",
+    "@contentstack/cli-cm-import": "~1.12.0",
     "@contentstack/cli-command": "~1.2.17",
     "@contentstack/cli-utilities": "~1.5.8",
     "@colors/colors": "^1.5.0",
