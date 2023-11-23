@@ -576,6 +576,7 @@ importers:
   packages/contentstack-dev-dependencies:
     specifiers:
       '@oclif/core': ^2.9.3
+      '@oclif/test': ^2.0.3
       '@types/node': ^14.14.32
       eslint: ^7.32.0
       fancy-test: ^2.0.0
@@ -586,11 +587,12 @@ importers:
       typescript: ^4.9.3
     dependencies:
       '@oclif/core': 2.9.4_4qcp7qp4jxxdgb4qbxgwox4hwq
+      '@oclif/test': 2.3.31_4qcp7qp4jxxdgb4qbxgwox4hwq
+      fancy-test: 2.0.31
       lodash: 4.17.21
     devDependencies:
       '@types/node': 14.18.53
       eslint: 7.32.0
-      fancy-test: 2.0.31
       mocha: 10.1.0
       ts-node: 10.9.1_4qcp7qp4jxxdgb4qbxgwox4hwq
       tslib: 2.6.0
@@ -3157,7 +3159,6 @@ packages:
       - '@types/node'
       - supports-color
       - typescript
-    dev: true
 
   /@oclif/test/2.3.31_eyayto62fyd4eo5o5fvolpu7d4:
     resolution: {integrity: sha512-dTWCni+Zv9aSuzyamS95+GJaIub6EAI+CT+pA1MP10RZF54mF7CKaas7t8dvNvDp1Y194hi64cqe+cNwZlR5ng==}
@@ -6808,7 +6809,6 @@ packages:
       stdout-stderr: 0.1.13
     transitivePeerDependencies:
       - supports-color
-    dev: true
 
   /fast-csv/4.3.6:
     resolution: {integrity: sha512-2RNSpuwwsJGP0frGsOmTb9oUF+VkFSM4SyLTDgwf2ciHWTarN0lQTC+F2f/t5J9QjW+c65VFIAAu85GsvMIusw==}
