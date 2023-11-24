@@ -72,12 +72,16 @@ class ModuleImporter {
         importConfig: this.importConfig,
         moduleName,
       });
+    } else {
+      //NOTE - new modules support only ts
+      if (this.importConfig.onlyTSModules.indexOf(moduleName) === -1) {
+        return startJSModuleImport({
+          stackAPIClient: this.stackAPIClient,
+          importConfig: this.importConfig,
+          moduleName,
+        });
+      }
     }
-    return startJSModuleImport({
-      stackAPIClient: this.stackAPIClient,
-      importConfig: this.importConfig,
-      moduleName,
-    });
   }
 
   async importAllModules(): Promise<any> {
