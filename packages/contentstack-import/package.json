@@ -21,7 +21,8 @@
     "mkdirp": "^1.0.4",
     "promise-limit": "^2.7.0",
     "tslib": "^2.4.1",
-    "winston": "^3.7.2"
+    "winston": "^3.7.2",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@oclif/test": "^1.2.6",
