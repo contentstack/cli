@@ -6,7 +6,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "prepack": "npm run clean && npm run compile",
-    "clean": "rm -rf ./lib ./node_modules tsconfig.build.tsbuildinfo",
+    "clean": "rm -rf ./lib tsconfig.build.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix"
