@@ -3,6 +3,7 @@ import { FlagInput, Flags, ux } from '@contentstack/cli-utilities';
 import config from '../../../../config';
 import { auditMsg } from '../../../../messages';
 import { AuditBaseCommand } from '../../../../audit-base-command';
+import { getTableFlags } from '../../../../util';
 
 export default class Audit extends AuditBaseCommand {
   static aliases: string[] = ['audit', 'cm:stacks:audit'];
@@ -30,9 +31,7 @@ export default class Audit extends AuditBaseCommand {
       options: config.modules,
       description: auditMsg.MODULES,
     }),
-    ...ux.table.flags({
-      only: ['columns', 'sort', 'filter', 'csv', 'no-truncate'],
-    }),
+    ...getTableFlags(),
   };
 
   /**
@@ -44,7 +43,6 @@ export default class Audit extends AuditBaseCommand {
       await this.start('cm:stacks:audit');
     } catch (error) {
       this.log(error instanceof Error ? error.message : error, 'error');
-      console.trace(error);
       ux.action.stop('Process failed.!');
       this.exit(1);
     }
