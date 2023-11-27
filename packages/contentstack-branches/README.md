@@ -37,7 +37,7 @@ $ npm install -g @contentstack/cli-cm-branches
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-branches/1.0.17 darwin-arm64 node-v20.8.0
+@contentstack/cli-cm-branches/1.0.18 darwin-arm64 node-v20.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
