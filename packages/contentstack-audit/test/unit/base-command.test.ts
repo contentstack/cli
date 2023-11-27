@@ -59,7 +59,7 @@ describe('BaseCommand class', () => {
         const configPath = resolve(__dirname, 'mock', 'invalid-config.json');
 
         await CMD.run([`--config=${configPath}`]);
-        expect(ctx.stdout).to.include('not valid JSON');
+        expect(ctx.stdout).to.include('Unexpected token');
       });
   });
 });
