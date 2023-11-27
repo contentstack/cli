@@ -2043,7 +2043,8 @@ FLAGS
                                <options: entries|users|teams|taxonomies>
   --branch=<value>             Branch from which entries need to be exported
   --content-type=<value>       Content type for which entries needs to be exported
-  --delimiter=<value>          [default: ,] Provide delimiter for csv file
+  --delimiter=<value>          [default: ,] [optional] Provide a delimiter to separate individual data fields within the
+                               CSV file.
   --locale=<value>             Locale for which entries need to be exported
   --org=<value>                Provide organization UID to clone org users
   --org-name=<value>           Name of the organization that needs to be created as csv filename.
@@ -2124,7 +2125,7 @@ EXAMPLES
 
 
 
-  Exporting taxonomies and respective terms to a .CSV file with the delimiter
+  Exporting taxonomies and respective terms to a .CSV file with a delimiter
 
   $ csdx cm:export-to-csv --action <taxonomies> --alias <management-token-alias> --delimiter <delimiter>
 ```
