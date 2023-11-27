@@ -86,16 +86,6 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   config.replaceExisting = importCmdFlags['replace-existing'];
   config.skipExisting = importCmdFlags['skip-existing'];
 
-  if (config.replaceExisting && !includes(config.overwriteSupportedModules, config.moduleName)) {
-    throw new Error(
-      `Failed to overwrite ${
-        config.moduleName
-      } module! Currently, with the import command, you can overwrite the following modules: ${config.overwriteSupportedModules.join(
-        ',',
-      )}`,
-    );
-  }
-
   return config;
 };
 
