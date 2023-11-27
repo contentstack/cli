@@ -97,7 +97,6 @@ export default class ImportCommand extends Command {
     'replace-existing': flags.boolean({
       required: false,
       description: 'Replaces the existing module in the target stack.',
-      dependsOn: ['module'],
     }),
     'skip-existing': flags.boolean({
       required: false,
