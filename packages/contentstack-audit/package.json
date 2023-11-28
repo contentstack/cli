@@ -18,7 +18,7 @@
     "/oclif.manifest.json"
   ],
   "dependencies": {
-    "@contentstack/cli-command": "~1.2.17",
+    "@contentstack/cli-command": "~1.2.16",
     "@contentstack/cli-utilities": "~1.5.8",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^3.8.4",
