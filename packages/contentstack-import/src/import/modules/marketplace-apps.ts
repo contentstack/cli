@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import map from 'lodash/map';
 import find from 'lodash/find';
-import omit from 'lodash/omit';
 import pick from 'lodash/pick';
 import first from 'lodash/first';
 import split from 'lodash/split';
@@ -10,34 +9,35 @@ import filter from 'lodash/filter';
 import isEmpty from 'lodash/isEmpty';
 import toLower from 'lodash/toLower';
 import {
-  isAuthenticated,
   cliux,
   HttpClient,
+  NodeCrypto,
   OauthDecorator,
+  isAuthenticated,
+  ContentstackClient,
   HttpClientDecorator,
   managementSDKClient,
-  NodeCrypto,
-  ContentstackClient,
 } from '@contentstack/cli-utilities';
+
 import BaseClass from './base-class';
 import { trace } from '../../utils/log';
 import { askEncryptionKey } from '../../utils/interactive';
 import { ModuleClassParams, MarketplaceAppsConfig } from '../../types';
 import {
   log,
-  formatError,
-  getDeveloperHubUrl,
+  fsUtil,
   getOrgUid,
-  createPrivateApp,
-  handleNameConflict,
+  fileHelper,
   installApp,
+  formatError,
+  createPrivateApp,
+  ifAppAlreadyExist,
+  getDeveloperHubUrl,
+  handleNameConflict,
   makeRedirectUrlCall,
   confirmToCloseProcess,
   getAllStackSpecificApps,
-  ifAppAlreadyExist,
   getConfirmationToCreateApps,
-  fsUtil,
-  fileHelper,
 } from '../../utils';
 
 export default class ImportMarketplaceApps extends BaseClass {
@@ -173,11 +173,8 @@ export default class ImportMarketplaceApps extends BaseClass {
     for (const app of this.installedApps) {
       listOfNewMeta.push(...map(app?.ui_location?.locations, 'meta').flat());
     }
-    for (const { extension_uid, name, path, uid, data_type } of filter(listOfOldMeta, 'name')) {
-      const meta =
-        find(listOfNewMeta, { name, path }) ||
-        find(listOfNewMeta, { name: this.appNameMapping[name], path }) ||
-        find(listOfNewMeta, { name, uid, data_type });
+    for (const { extension_uid, uid } of filter(listOfOldMeta, 'name')) {
+      const meta = find(listOfNewMeta, { uid });
 
       if (meta) {
         extensionUidMap[extension_uid] = meta.extension_uid;
@@ -240,69 +237,61 @@ export default class ImportMarketplaceApps extends BaseClass {
 
     for (let app of privateApps) {
       // NOTE keys can be passed to install new app in the developer hub
-      app.manifest = pick(app.manifest, ['uid', 'name', 'description', 'icon', 'target_type', 'webhook', 'oauth']);
-      this.appOriginalName = app.manifest.name;
-      const obj = {
-        oauth: app.oauth,
-        webhook: app.webhook,
-        ui_location: app.ui_location,
-      };
-      await this.createPrivateApps({
-        ...obj,
-        ...app.manifest,
-      });
+      const validKeys = [
+        'uid',
+        'name',
+        'icon',
+        'oauth',
+        'webhook',
+        'visibility',
+        'target_type',
+        'description',
+        'ui_location',
+        'framework_version',
+      ];
+      const manifest = pick(app.manifest, validKeys);
+      this.appOriginalName = manifest.name;
+      await this.createPrivateApps(manifest);
     }
 
     this.appOriginalName = undefined;
   }
 
-  async createPrivateApps(app: any, uidCleaned = false, appSuffix = 1) {
+  async createPrivateApps(app: any, appSuffix = 1) {
     let locations = app?.ui_location?.locations;
 
-    if (!uidCleaned && !isEmpty(locations)) {
-      app.ui_location.locations = await this.updateManifestUILocations(locations, 'uid');
-    } else if (uidCleaned && !isEmpty(locations)) {
-      app.ui_location.locations = await this.updateManifestUILocations(locations, 'name', appSuffix);
+    if (!isEmpty(locations)) {
+      app.ui_location.locations = this.updateManifestUILocations(locations, appSuffix);
     }
 
     if (app.name > 20) {
       app.name = app.name.slice(0, 20);
     }
+
     const response = await createPrivateApp(this.sdkClient, this.importConfig, app);
     return this.appCreationCallback(app, response, appSuffix);
   }
 
-  async updateManifestUILocations(locations: any, type = 'uid', appSuffix = 1) {
-    switch (type) {
-      case 'uid':
-        return map(locations, (location) => {
-          if (location.meta) {
-            location.meta = map(location.meta, (meta) => omit(meta, ['uid']));
+  updateManifestUILocations(locations: any, appSuffix = 1) {
+    return map(locations, (location) => {
+      if (location.meta) {
+        location.meta = map(location.meta, (meta) => {
+          if (meta.name) {
+            const name = `${first(split(meta.name, '◈'))}◈${appSuffix}`;
+
+            if (!this.appNameMapping[this.appOriginalName]) {
+              this.appNameMapping[this.appOriginalName] = name;
+            }
+
+            meta.name = name;
           }
 
-          return location;
+          return meta;
         });
-      case 'name':
-        return map(locations, (location) => {
-          if (location.meta) {
-            location.meta = map(location.meta, (meta) => {
-              if (meta.name) {
-                const name = `${first(split(meta.name, '◈'))}◈${appSuffix}`;
+      }
 
-                if (!this.appNameMapping[this.appOriginalName]) {
-                  this.appNameMapping[this.appOriginalName] = name;
-                }
-
-                meta.name = name;
-              }
-
-              return meta;
-            });
-          }
-
-          return location;
-        });
-    }
+      return location;
+    });
   }
 
   async appCreationCallback(app: any, response: any, appSuffix: number): Promise<any> {
@@ -311,7 +300,7 @@ export default class ImportMarketplaceApps extends BaseClass {
     if (message) {
       if (toLower(statusText) === 'conflict') {
         const updatedApp = await handleNameConflict(app, appSuffix, this.importConfig);
-        return this.createPrivateApps(updatedApp, true, appSuffix + 1);
+        return this.createPrivateApps(updatedApp, appSuffix + 1);
       } else {
         trace(response, 'error', true);
         log(this.importConfig, formatError(message), 'error');
