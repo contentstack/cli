@@ -14,15 +14,14 @@ export const isManagementTokenValid = async (stackAPIKey, managementToken) => {
   const httpClient = new HttpClient({ headers: { api_key: stackAPIKey, authorization: managementToken } });
   try {
     const response = (await httpClient.get(`${configHandler.get('region').cma}/v3/environments?limit=1`))?.data;
-
     if (response?.environments) {
-      return { valid: true, message: `valid token and stack api key` }
+      return { valid: true }
     } else if(response?.error_code) {
       return { valid: false, message: response.error_message };
     } else {
       throw typeof response === "string"? response : "";
     }
   } catch (error) {
-    return { message:`Failed to check the validity of the Management token. ${error}`};
+    return { valid: 'failedToCheck',message:`Failed to check the validity of the Management token. ${error}`};
   }
 }
