@@ -6,9 +6,9 @@
   "bugs": "https://github.com/rohitmishra209/cli-cm-clone/issues",
   "dependencies": {
     "@contentstack/cli-cm-export": "~1.10.2",
-    "@contentstack/cli-cm-import": "~1.12.0",
+    "@contentstack/cli-cm-import": "~1.12.1",
     "@contentstack/cli-command": "~1.2.16",
-    "@contentstack/cli-utilities": "~1.5.8",
+    "@contentstack/cli-utilities": "~1.5.9",
     "@colors/colors": "^1.5.0",
     "async": "^3.2.4",
     "chalk": "^4.1.0",
