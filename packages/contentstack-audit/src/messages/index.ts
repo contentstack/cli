@@ -1,5 +1,13 @@
 const errors = {};
 
+const tableColumnDescriptions = {
+  TABLE_COLUMNS: 'Show only the specified columns (comma-separated)',
+  TABLE_SORT: "Property to sort by (prepend '-' for descending)",
+  TABLE_CSV: 'The output is in the CSV format [alias: --output=csv]',
+  TABLE_FILTER: 'Filter property by partial string matching. For example: name=foo',
+  'TABLE_NO-TRUNCATE': 'The output is not truncated to fit the screen',
+};
+
 const commonMsg = {
   CONFIG: 'Path of the external config',
   DATA_DIR: 'Path where the data is stored',
@@ -23,16 +31,22 @@ const auditMsg = {
 const auditFixMsg = {
   COPY_DATA: 'Create backup from the original data.',
   BKP_PATH: 'Provide the path to backup the copied data',
+  FIX_OPTIONS: 'Provide the list of fix options',
   FIXED_CONTENT_PATH_MAG: 'You can locate the fixed content at {path}.',
   EMPTY_FIX_MSG: 'Successfully removed the empty field/block found at {path} from the schema.',
   AUDIT_FIX_CMD_DESCRIPTION: 'Perform audits and fix possible errors in the exported Contentstack data.',
 };
 
-const messages: typeof errors & typeof commonMsg & typeof auditMsg & typeof auditFixMsg = {
+const messages: typeof errors &
+  typeof commonMsg &
+  typeof auditMsg &
+  typeof auditFixMsg &
+  typeof tableColumnDescriptions = {
   ...errors,
   ...commonMsg,
   ...auditMsg,
   ...auditFixMsg,
+  ...tableColumnDescriptions,
 };
 
 /**
@@ -56,4 +70,4 @@ function $t(msg: string, args: Record<string, string>): string {
 }
 
 export default messages;
-export { $t, errors, commonMsg, auditMsg, auditFixMsg };
+export { $t, errors, commonMsg, auditMsg, auditFixMsg, tableColumnDescriptions };
