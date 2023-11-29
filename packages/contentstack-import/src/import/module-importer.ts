@@ -1,4 +1,4 @@
-import { ContentstackClient, HttpClient } from '@contentstack/cli-utilities';
+import { addLocale, ContentstackClient } from '@contentstack/cli-utilities';
 
 import startModuleImport from './modules';
 import startJSModuleImport from './modules-js';
@@ -26,19 +26,9 @@ class ModuleImporter {
 
     // Temporarily adding this api call to verify management token has read and write permissions
     // TODO: CS-40354 - CLI | import rewrite | Migrate HTTP call to SDK call once fix is ready from SDK side
-    const httpClient = new HttpClient({
-      headers: { api_key: this.importConfig.apiKey, authorization: this.importConfig.management_token },
-    });
 
-    const { data } = await httpClient.post(`https://${this.importConfig.host}/v3/locales`, {
-      locale: {
-        name: 'English',
-        code: 'en-us',
-      },
-    });
-
-    if (data.error_code === 161) {
-      throw new Error(data.error_message);
+    if (this.importConfig.management_token) {
+      await addLocale(this.importConfig.apiKey, this.importConfig.management_token, this.importConfig.host);
     }
 
     if (!this.importConfig.master_locale) {
@@ -82,12 +72,16 @@ class ModuleImporter {
         importConfig: this.importConfig,
         moduleName,
       });
+    } else {
+      //NOTE - new modules support only ts
+      if (this.importConfig.onlyTSModules.indexOf(moduleName) === -1) {
+        return startJSModuleImport({
+          stackAPIClient: this.stackAPIClient,
+          importConfig: this.importConfig,
+          moduleName,
+        });
+      }
     }
-    return startJSModuleImport({
-      stackAPIClient: this.stackAPIClient,
-      importConfig: this.importConfig,
-      moduleName,
-    });
   }
 
   async importAllModules(): Promise<any> {
