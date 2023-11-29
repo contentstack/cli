@@ -5,8 +5,14 @@ module.exports = async (filename, queue, Type) => {
   const logs = await getAllLogs(filename);
   if (logs.file.length > 0) {
     logs.file.forEach(async (log) => {
-      if (Type === 'bulk') {
-        log.message.options.stack = await getStack({ alias: log.message.alias, host: log.message.host });
+      const stackOptions = {host: log.message.host };
+      if(log.message.alias) {
+        stackOptions["alias"] = log.message.alias
+      } else {
+        stackOptions["stackApiKey"] = log.message.api_key
+      }
+      if (Type === 'bulk') {        
+        log.message.options.stack = await getStack(stackOptions);
         queue.Enqueue(log.message.options);
       }
       if (Type === 'publish') {
@@ -18,7 +24,7 @@ module.exports = async (filename, queue, Type) => {
             entryUid: log.message.options.entryUid,
             locale: log.message.options.locale,
             Type: 'entry',
-            stack: await getStack({ alias: log.message.alias, host: log.message.host }),
+            stack: await getStack(stackOptions),
           });
         } else {
           queue.assetQueue.Enqueue({
@@ -26,7 +32,7 @@ module.exports = async (filename, queue, Type) => {
             publish_details: log.message.options.publish_assets,
             environments: log.message.options.environments,
             Type: 'asset',
-            stack: await getStack({ alias: log.message.alias, host: log.message.host }),
+            stack: await getStack(stackOptions),
           });
         }
       }

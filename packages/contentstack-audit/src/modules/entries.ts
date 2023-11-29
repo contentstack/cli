@@ -1,9 +1,8 @@
 import find from 'lodash/find';
-import { ux } from '@oclif/core';
 import values from 'lodash/values';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
-import { FsUtility } from '@contentstack/cli-utilities';
+import { ux, FsUtility } from '@contentstack/cli-utilities';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 
 import auditConfig from '../config';
@@ -33,10 +32,11 @@ import {
   EntryModularBlocksDataType,
   EntryReferenceFieldDataType,
 } from '../types';
+import GlobalField from './global-fields';
 
 export default class Entries {
   public log: LogFn;
-  private fix: boolean;
+  protected fix: boolean;
   public fileName: string;
   public locales!: Locale[];
   public config: ConfigType;
@@ -45,7 +45,7 @@ export default class Entries {
   public currentTitle!: string;
   public gfSchema: ContentTypeStruct[];
   public ctSchema: ContentTypeStruct[];
-  private entries!: Record<string, EntryStruct>;
+  protected entries!: Record<string, EntryStruct>;
   protected missingRefs: Record<string, any> = {};
   public entryMetaData: Record<string, any>[] = [];
   public moduleName: keyof typeof auditConfig.moduleConfig = 'entries';
@@ -77,7 +77,7 @@ export default class Entries {
     for (const { code } of this.locales) {
       for (const ctSchema of this.ctSchema) {
         const basePath = join(this.folderPath, ctSchema.uid, code);
-        const fsUtility = new FsUtility({ basePath, indexFileName: 'index.json' });
+        const fsUtility = new FsUtility({ basePath, indexFileName: 'index.json', createDirIfNotExist: false });
         const indexer = fsUtility.indexFileContent;
 
         for (const fileIndex in indexer) {
@@ -138,11 +138,11 @@ export default class Entries {
       ctSchema: this.ctSchema,
       gfSchema: this.gfSchema,
     }).run(true)) as ContentTypeStruct[];
-    this.gfSchema = (await new ContentType({
+    this.gfSchema = (await new GlobalField({
       fix: true,
       log: () => {},
       config: this.config,
-      moduleName: 'entries',
+      moduleName: 'global-fields',
       ctSchema: this.ctSchema,
       gfSchema: this.gfSchema,
     }).run(true)) as ContentTypeStruct[];
@@ -155,12 +155,14 @@ export default class Entries {
   async writeFixContent(filePath: string, schema: Record<string, EntryStruct>) {
     let canWrite = true;
 
-    if (this.fix && !this.config.flags['copy-dir']) {
-      canWrite = this.config.flags.yes || (await ux.confirm(commonMsg.FIX_CONFIRMATION));
-    }
+    if (this.fix) {
+      if (!this.config.flags['copy-dir']) {
+        canWrite = this.config.flags.yes || (await ux.confirm(commonMsg.FIX_CONFIRMATION));
+      }
 
-    if (canWrite) {
-      writeFileSync(filePath, JSON.stringify(schema));
+      if (canWrite) {
+        writeFileSync(filePath, JSON.stringify(schema));
+      }
     }
   }
 
@@ -188,7 +190,7 @@ export default class Entries {
     for (const child of field.schema ?? []) {
       const { uid } = child;
 
-      if (!entry?.[uid]) return;
+      if (!entry?.[uid]) continue;
 
       switch (child.data_type) {
         case 'reference':
@@ -296,7 +298,6 @@ export default class Entries {
     fieldStructure: JsonRTEFieldDataType,
     field: EntryJsonRTEFieldDataType,
   ) {
-    // const missingRefIndex = []
     // NOTE Other possible reference logic will be added related to JSON RTE (Ex missing assets, extensions etc.,)
     for (const index in field?.children ?? []) {
       const child = field.children[index];
