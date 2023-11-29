@@ -58,6 +58,7 @@
     "xdg-basedir": "^4.0.0"
   },
   "devDependencies": {
+    "@contentstack/cli-dev-dependencies": "^1.2.4",
     "@oclif/test": "^2.2.10",
     "@types/chai": "^4.2.18",
     "@types/inquirer": "^9.0.3",
