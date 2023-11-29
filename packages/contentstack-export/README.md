@@ -48,7 +48,7 @@ $ npm install -g @contentstack/cli-cm-export
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-export/1.9.3 darwin-arm64 node-v20.8.0
+@contentstack/cli-cm-export/1.10.2 darwin-arm64 node-v20.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
