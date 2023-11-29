@@ -1,4 +1,6 @@
-import Logger from './logger'
+import Logger from './logger';
+import marketplaceSDKClient, { MarketplaceSDKInitiator, marketplaceSDKInitiator } from './contentstack-marketplace-sdk';
+
 export { LoggerService } from './logger';
 export { default as cliux } from './cli-ux';
 export { default as CLIError } from './cli-error';
@@ -20,6 +22,9 @@ export * from './helpers';
 export * from './interfaces';
 export * from './date-time';
 export * from './add-locale';
+
+// Marketplace SDK export
+export { marketplaceSDKClient, MarketplaceSDKInitiator, marketplaceSDKInitiator };
 
 // NOTE Exporting all @oclif/core modules: So that all the module can be acessed through cli-utility
 export {
