@@ -1,1 +1,2 @@
-export { default as Logger } from "./log";
+export * from './flags'
+export { default as Logger, print } from './log';
