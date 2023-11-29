@@ -699,33 +699,49 @@ function handleErrorMsg(err) {
   process.exit(1);
 }
 
-async function getAllTeamsUsingSDK(managementAPIClient, org, queryParam = {}) {
+/**
+ * This function does the sdk calls to get all the teams in org
+ * @param {object} managementAPIClient 
+ * @param {object} org 
+ * @param {object} queryParam 
+ * @returns 
+ */
+async function getAllTeams(managementAPIClient, org, queryParam = {}) {
   try {
-    const teamsData = await managementAPIClient.organization(org.uid).teams().fetchAll(queryParam);
-    return teamsData;
+    return await managementAPIClient.organization(org.uid).teams().fetchAll(queryParam);
   } catch (error) {
     handleErrorMsg(error);
   }
 }
 
+/**
+ * This function is used to handle the pagination and call the sdk
+ * @param {object} managementAPIClient 
+ * @param {object} org 
+ */
 async function exportOrgTeams(managementAPIClient, org) {
-  let teamsObjectArray = [];
+  let allTeamsInOrg = [];
   let skip = 0;
   let limit = config?.limit || 100;
   do {
-    const data = await getAllTeamsUsingSDK(managementAPIClient, org, {
+    const data = await getAllTeams(managementAPIClient, org, {
       skip: skip,
       limit: limit,
       includeUserDetails: true,
     });
     skip += limit;
-    teamsObjectArray.push(...data.items);
+    allTeamsInOrg.push(...data.items);
     if (skip >= data?.count) break;
   } while (1);
-  teamsObjectArray = await cleanTeamsData(teamsObjectArray, managementAPIClient, org);
-  return teamsObjectArray;
+  allTeamsInOrg = await cleanTeamsData(allTeamsInOrg, managementAPIClient, org);
+  return allTeamsInOrg;
 }
 
+/**
+ * This function will get all the org level roles 
+ * @param {object} managementAPIClient 
+ * @param {object} org  
+ */
 async function getOrgRolesForTeams(managementAPIClient, org) {
   let roleMap = {}; // for org level there are two roles only admin and member
 
@@ -746,6 +762,12 @@ async function getOrgRolesForTeams(managementAPIClient, org) {
   return roleMap;
 }
 
+/**
+ * Removes the unnecessary fields from the objects in the data and assign org level roles to the team based on role uid
+ * @param {array} data 
+ * @param {object} managementAPIClient 
+ * @param {object} org 
+ */
 async function cleanTeamsData(data, managementAPIClient, org) {
   const roleMap = await getOrgRolesForTeams(managementAPIClient, org);
   const fieldToBeDeleted = [
@@ -783,6 +805,13 @@ async function cleanTeamsData(data, managementAPIClient, org) {
   }
 }
 
+/**
+ * This function is used to call all the other teams function to export the required files
+ * @param {object} managementAPIClient 
+ * @param {object} organization 
+ * @param {string} teamUid 
+ * @param {character} delimiter 
+ */
 async function exportTeams(managementAPIClient, organization, teamUid, delimiter) {
   cliux.print(
     `info: Exporting the ${
@@ -822,6 +851,13 @@ async function exportTeams(managementAPIClient, organization, teamUid, delimiter
   }
 }
 
+/**
+ * This function is used to get individual team user details and write to file
+ * @param {array} allTeamsData 
+ * @param {object} organization 
+ * @param {string} teamUid  optional
+ * @param {character} delimiter 
+ */
 async function getTeamsDetail(allTeamsData, organization, teamUid, delimiter) {
   if (!teamUid) {
     const userData = await getTeamsUserDetails(allTeamsData);
@@ -832,7 +868,7 @@ async function getTeamsDetail(allTeamsData, organization, teamUid, delimiter) {
     write(this, userData, fileName, 'Team User details', delimiter);
   } else {
     const team = allTeamsData.filter((team) => team.uid === teamUid)[0];
-    await team.users.forEach((user) => {
+    team.users.forEach((user) => {
       user['team-name'] = team.name;
       user['team-uid'] = team.uid;
       delete user['active'];
@@ -846,6 +882,13 @@ async function getTeamsDetail(allTeamsData, organization, teamUid, delimiter) {
   }
 }
 
+/**
+ * This will export the role mappings of the team, for which stack the team has which role
+ * @param {object} managementAPIClient 
+ * @param {array} allTeamsData Data for all the teams in the stack 
+ * @param {string} teamUid for a particular team who's data we want
+ * @param {character} delimiter 
+ */
 async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid, delimiter) {
   let stackRoleWithTeamData = [];
   let flag = false;
@@ -909,6 +952,13 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid, de
   write(this, stackRoleWithTeamData, fileName, 'Team Stack Role details', delimiter);
 }
 
+/**
+ * Mapping the team stacks with the stack role and returning and array of object
+ * @param {object} managementAPIClient 
+ * @param {array} stackRoleMapping 
+ * @param {string} teamName 
+ * @param {string} teamUid 
+ */
 async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName, teamUid) {
   const roles = await getRoleData(managementAPIClient, stackRoleMapping.stackApiKey);
   const stackRole = {};
@@ -931,6 +981,11 @@ async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName,
   return stackRoleMapOfTeam;
 }
 
+/**
+ * Making sdk call to get all the roles in the given stack
+ * @param {object} managementAPIClient 
+ * @param {string} stackApiKey 
+ */
 async function getRoleData(managementAPIClient, stackApiKey) {
   try {
     return await managementAPIClient.stack({ api_key: stackApiKey }).role().fetchAll();
@@ -939,9 +994,13 @@ async function getRoleData(managementAPIClient, stackApiKey) {
   }
 }
 
-async function getTeamsUserDetails(teamsObject) {
+/**
+ * Here in the users array we are adding the team-name and team-uid to individual users and returning an array of object of user details only
+ * @param {array} teams 
+ */
+async function getTeamsUserDetails(teams) {
   const allTeamUsers = [];
-  teamsObject.forEach((team) => {
+  teams.forEach((team) => {
     if (team?.users?.length) {
       team.users.forEach((user) => {
         user['team-name'] = team.name;
