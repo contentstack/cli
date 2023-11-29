@@ -61,6 +61,7 @@ const config: Configuration = {
     'nextjs-starter': {
       source: 'contentstack/contentstack-nextjs-starter-app',
       stack: 'contentstack/stack-starter-app',
+      branch: 'master',
     },
     'gatsby-starter': {
       source: 'contentstack/contentstack-gatsby-starter-app',
