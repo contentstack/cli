@@ -9,6 +9,7 @@ import filter from 'lodash/filter';
 import isEmpty from 'lodash/isEmpty';
 import toLower from 'lodash/toLower';
 import {
+  App,
   cliux,
   HttpClient,
   NodeCrypto,
@@ -17,12 +18,13 @@ import {
   ContentstackClient,
   HttpClientDecorator,
   managementSDKClient,
+  marketplaceSDKClient,
+  ContentstackMarketplaceClient,
 } from '@contentstack/cli-utilities';
 
-import BaseClass from './base-class';
 import { trace } from '../../utils/log';
 import { askEncryptionKey } from '../../utils/interactive';
-import { ModuleClassParams, MarketplaceAppsConfig } from '../../types';
+import { ModuleClassParams, MarketplaceAppsConfig, ImportConfig } from '../../types';
 import {
   log,
   fsUtil,
@@ -40,12 +42,13 @@ import {
   getConfirmationToCreateApps,
 } from '../../utils';
 
-export default class ImportMarketplaceApps extends BaseClass {
+export default class ImportMarketplaceApps {
+  public importConfig: ImportConfig;
   private mapperDirPath: string;
   private marketPlaceFolderPath: string;
   private marketPlaceUidMapperPath: string;
   private marketPlaceAppConfig: MarketplaceAppsConfig;
-  private marketplaceApps: Record<string, any>[];
+  private marketplaceApps: App[];
   private httpClient: HttpClient | OauthDecorator | HttpClientDecorator;
   private appNameMapping: Record<string, unknown>;
   private appUidMapping: Record<string, unknown>;
@@ -56,9 +59,9 @@ export default class ImportMarketplaceApps extends BaseClass {
   public sdkClient: ContentstackClient;
   public nodeCrypto: NodeCrypto;
   public appSdkAxiosInstance: any;
-  constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
-    super({ importConfig, stackAPIClient });
+  public appSdk: ContentstackMarketplaceClient;
 
+  constructor({ importConfig }: ModuleClassParams) {
     this.marketPlaceAppConfig = importConfig.modules.marketplace_apps;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'marketplace_apps');
     this.marketPlaceFolderPath = join(this.importConfig.backupDir, this.marketPlaceAppConfig.dirName);
@@ -82,7 +85,7 @@ export default class ImportMarketplaceApps extends BaseClass {
       this.marketplaceApps = fsUtil.readFile(
         join(this.marketPlaceFolderPath, this.marketPlaceAppConfig.fileName),
         true,
-      ) as Record<string, unknown>[];
+      ) as App[];
     } else {
       log(this.importConfig, `No such file or directory - '${this.marketPlaceFolderPath}'`, 'error');
       return;
@@ -99,6 +102,11 @@ export default class ImportMarketplaceApps extends BaseClass {
     }
     await fsUtil.makeDirectory(this.mapperDirPath);
     this.developerHubBaseUrl = this.importConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.importConfig));
+
+    // NOTE init marketplace app sdk
+    const host = this.developerHubBaseUrl.split('://').pop();
+    this.appSdk = await marketplaceSDKClient({ host });
+
     this.sdkClient = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
     this.appSdkAxiosInstance = await managementSDKClient({
       host: this.developerHubBaseUrl.split('://').pop(),
@@ -236,6 +244,12 @@ export default class ImportMarketplaceApps extends BaseClass {
     log(this.importConfig, 'Starting developer hub private apps re-creation', 'success');
 
     for (let app of privateApps) {
+      if (this.importConfig.skipPrivateAppRecreationIfExist && (await this.isPrivateAppExistInDeveloperHub(app))) {
+        // NOTE Found app already exist in the same org
+        this.appUidMapping[app.uid] = app.uid;
+        continue;
+      }
+
       // NOTE keys can be passed to install new app in the developer hub
       const validKeys = [
         'uid',
@@ -251,10 +265,28 @@ export default class ImportMarketplaceApps extends BaseClass {
       ];
       const manifest = pick(app.manifest, validKeys);
       this.appOriginalName = manifest.name;
+
       await this.createPrivateApps(manifest);
     }
 
     this.appOriginalName = undefined;
+  }
+
+  /**
+   * The function checks if a private app exists in the developer hub.
+   * @param {App} app - The `app` parameter is an object representing an application. It likely has
+   * properties such as `uid` which is a unique identifier for the app.
+   * @returns a boolean value. It returns true if the installation object is not empty, and false if
+   * the installation object is empty.
+   */
+  async isPrivateAppExistInDeveloperHub(app: App) {
+    const installation = await this.appSdk
+      .marketplace(this.importConfig.org_uid)
+      .installation(app.uid)
+      .fetch()
+      .catch((_) => {}); // NOTE Keeping this to avoid Unhandled exception
+
+    return !isEmpty(installation);
   }
 
   async createPrivateApps(app: any, appSuffix = 1) {
