@@ -248,6 +248,7 @@ export default class ImportMarketplaceApps {
       if (this.importConfig.skipPrivateAppRecreationIfExist && (await this.isPrivateAppExistInDeveloperHub(app))) {
         // NOTE Found app already exist in the same org
         this.appUidMapping[app.uid] = app.uid;
+        cliux.print(`App '${app.manifest.name}' already exist. skipping app recreation.!`, { color: 'yellow' });
         continue;
       }
 
@@ -290,11 +291,9 @@ export default class ImportMarketplaceApps {
     return !isEmpty(installation);
   }
 
-  async createPrivateApps(app: any, appSuffix = 1) {
-    let locations = app?.ui_location?.locations;
-
-    if (!isEmpty(locations)) {
-      app.ui_location.locations = this.updateManifestUILocations(locations, appSuffix);
+  async createPrivateApps(app: any, appSuffix = 1, updateUiLocation = false) {
+    if (updateUiLocation && !isEmpty(app?.ui_location?.locations)) {
+      app.ui_location.locations = this.updateManifestUILocations(app?.ui_location?.locations, appSuffix);
     }
 
     if (app.name > 20) {
@@ -309,8 +308,7 @@ export default class ImportMarketplaceApps {
     return map(locations, (location) => {
       if (location.meta) {
         location.meta = map(location.meta, (meta) => {
-          if (meta.name) {
-            // TODO: re-visit the logic
+          if (meta.name && this.appOriginalName == meta.name) {
             const name = `${first(split(meta.name, '◈'))}◈${appSuffix}`;
 
             if (!this.appNameMapping[this.appOriginalName]) {
@@ -334,7 +332,7 @@ export default class ImportMarketplaceApps {
     if (message) {
       if (toLower(statusText) === 'conflict') {
         const updatedApp = await handleNameConflict(app, appSuffix, this.importConfig);
-        return this.createPrivateApps(updatedApp, appSuffix + 1);
+        return this.createPrivateApps(updatedApp, appSuffix + 1, true);
       } else {
         trace(response, 'error', true);
         log(this.importConfig, formatError(message), 'error');
