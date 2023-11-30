@@ -299,7 +299,7 @@ describe('Testing the teams support in cli export-to-csv', () => {
       .stub(process, 'chdir', () => {})
       .nock(cma, (api) => {
         api
-          .get(`/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
+          .get(`/v3/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
           .reply(200, mockData.Teams.allTeams);
       })
       .nock(cma, (api) => {
@@ -320,7 +320,7 @@ describe('Testing the teams support in cli export-to-csv', () => {
       .stub(process, 'chdir', () => {})
       .nock(cma, (api) => {
         api
-          .get(`/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
+          .get(`/v3/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
           .reply(200, mockData.Teams.allTeams);
       })
       .nock(cma, (api) => {
@@ -341,7 +341,7 @@ describe('Testing the teams support in cli export-to-csv', () => {
       .stub(process, 'chdir', () => {})
       .nock(cma, (api) => {
         api
-          .get(`/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
+          .get(`/v3/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
           .reply(200, mockData.Teams.allTeams);
       })
       .nock(cma, (api) => {
@@ -369,7 +369,7 @@ describe('Testing the teams support in cli export-to-csv', () => {
       })
       .nock(cma, (api) => {
         api
-          .get(`/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
+          .get(`/v3/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
           .reply(200, mockData.Teams.allTeams);
       })
       .nock(cma, (api) => {
@@ -397,7 +397,7 @@ describe('Testing the teams support in cli export-to-csv', () => {
       })
       .nock(cma, (api) => {
         api
-          .get(`/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
+          .get(`/v3/organizations/org_uid_1_teams/teams?skip=0&limit=100&includeUserDetails=true`)
           .reply(200, mockData.Teams.allTeams);
       })
       .nock(cma, (api) => {
