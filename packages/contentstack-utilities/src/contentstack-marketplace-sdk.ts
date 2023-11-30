@@ -1,4 +1,5 @@
 import { Agent } from 'node:https';
+import { App } from '@contentstack/marketplace-sdk/types/marketplace/app';
 import { client, ContentstackConfig, ContentstackClient, ContentstackToken } from '@contentstack/marketplace-sdk';
 
 import authHandler from './auth-handler';
@@ -8,6 +9,8 @@ type ConfigType = Pick<ContentstackConfig, 'host' | 'endpoint' | 'retryDelay' | 
   management_token?: string;
   skipTokenValidity?: string;
 };
+type ContentstackMarketplaceConfig = ContentstackConfig;
+type ContentstackMarketplaceClient = ContentstackClient;
 
 class MarketplaceSDKInitiator {
   private analyticsInfo: string;
@@ -34,13 +37,10 @@ class MarketplaceSDKInitiator {
       retryDelay: Math.floor(Math.random() * (8000 - 3000 + 1) + 3000),
       retryCondition: (error: any): boolean => {
         if (error?.response?.status) {
-          switch (error.response.status) {
-            case 401:
-            case 429:
-            case 408:
-              return true;
-            default:
-              return false;
+          if ([408].includes(error.response.status)) {
+            return true;
+          } else {
+            return false;
           }
         }
       },
@@ -133,6 +133,6 @@ class MarketplaceSDKInitiator {
 export const marketplaceSDKInitiator = new MarketplaceSDKInitiator();
 const marketplaceSDKClient: typeof marketplaceSDKInitiator.createAppSDKClient =
   marketplaceSDKInitiator.createAppSDKClient.bind(marketplaceSDKInitiator);
-export { MarketplaceSDKInitiator, ContentstackConfig, ContentstackClient };
+export { App, MarketplaceSDKInitiator, ContentstackMarketplaceConfig, ContentstackMarketplaceClient };
 
 export default marketplaceSDKClient;
