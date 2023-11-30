@@ -62,6 +62,7 @@ export default class ImportMarketplaceApps {
   public appSdk: ContentstackMarketplaceClient;
 
   constructor({ importConfig }: ModuleClassParams) {
+    this.importConfig = importConfig;
     this.marketPlaceAppConfig = importConfig.modules.marketplace_apps;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'marketplace_apps');
     this.marketPlaceFolderPath = join(this.importConfig.backupDir, this.marketPlaceAppConfig.dirName);
@@ -309,6 +310,7 @@ export default class ImportMarketplaceApps {
       if (location.meta) {
         location.meta = map(location.meta, (meta) => {
           if (meta.name) {
+            // TODO: re-visit the logic
             const name = `${first(split(meta.name, '◈'))}◈${appSuffix}`;
 
             if (!this.appNameMapping[this.appOriginalName]) {
