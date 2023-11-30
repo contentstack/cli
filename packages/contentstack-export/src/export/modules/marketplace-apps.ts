@@ -5,43 +5,42 @@ import entries from 'lodash/entries';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
 import {
-  managementSDKClient,
-  isAuthenticated,
+  App,
   cliux,
   NodeCrypto,
-  HttpClientDecorator,
-  OauthDecorator,
   HttpClient,
-  ContentstackClient,
+  OauthDecorator,
+  isAuthenticated,
+  HttpClientDecorator,
+  marketplaceSDKClient,
+  ContentstackMarketplaceClient,
 } from '@contentstack/cli-utilities';
 
 import {
   log,
-  getDeveloperHubUrl,
-  getOrgUid,
-  createNodeCryptoInstance,
-  formatError,
-  getStackSpecificApps,
   fsUtil,
+  getOrgUid,
+  formatError,
+  getDeveloperHubUrl,
+  getStackSpecificApps,
+  createNodeCryptoInstance,
 } from '../../utils';
-import BaseClass from './base-class';
-import { ModuleClassParams, MarketplaceAppsConfig } from '../../types';
+import { ModuleClassParams, MarketplaceAppsConfig, ExportConfig } from '../../types';
 
-export default class ExportMarketplaceApps extends BaseClass {
-  private httpClient: OauthDecorator | HttpClientDecorator | HttpClient;
-  private marketplaceAppConfig: MarketplaceAppsConfig;
-  private listOfApps: Record<string, unknown>[];
-  private installedApps: Record<string, unknown>[];
+export default class ExportMarketplaceApps {
+  protected httpClient: OauthDecorator | HttpClientDecorator | HttpClient;
+  protected marketplaceAppConfig: MarketplaceAppsConfig;
+  protected installedApps: App[] = [];
   public developerHubBaseUrl: string;
   public marketplaceAppPath: string;
   public nodeCrypto: NodeCrypto;
+  public appSdk: ContentstackMarketplaceClient;
+  public exportConfig: ExportConfig;
 
-  constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
-    super({ exportConfig, stackAPIClient });
+  constructor({ exportConfig }: Omit<ModuleClassParams, 'stackAPIClient' | 'moduleName'>) {
+    this.exportConfig = exportConfig;
     this.httpClient = new HttpClient();
     this.marketplaceAppConfig = exportConfig.modules.marketplace_apps;
-    this.listOfApps = [];
-    this.installedApps = [];
   }
 
   async start(): Promise<void> {
@@ -64,9 +63,12 @@ export default class ExportMarketplaceApps extends BaseClass {
     this.developerHubBaseUrl = this.exportConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.exportConfig));
     this.exportConfig.org_uid = await getOrgUid(this.exportConfig);
 
+    // NOTE init marketplace app sdk
+    const host = this.developerHubBaseUrl.split('://').pop();
+    this.appSdk = await marketplaceSDKClient({ host });
+
     await this.setHttpClient();
     await this.getAllStackSpecificApps();
-    this.installedApps = this.listOfApps;
     await this.exportInstalledExtensions();
   }
 
@@ -101,7 +103,7 @@ export default class ExportMarketplaceApps extends BaseClass {
       return app;
     });
 
-    this.listOfApps = [...this.listOfApps, ...stackApps];
+    this.installedApps = this.installedApps.concat(stackApps);
 
     if (count - (skip + 50) > 0) {
       return await this.getAllStackSpecificApps(skip + 50);
@@ -113,6 +115,12 @@ export default class ExportMarketplaceApps extends BaseClass {
       log(this.exportConfig, 'No marketplace apps found', 'info');
     } else {
       for (const [index, app] of entries(this.installedApps)) {
+        if (app.manifest.visibility === 'private') {
+          await this.getPrivateAppsManifest(+index, app);
+        }
+      }
+
+      for (const [index, app] of entries(this.installedApps)) {
         await this.getAppConfigurations(+index, app);
       }
 
@@ -122,17 +130,34 @@ export default class ExportMarketplaceApps extends BaseClass {
     }
   }
 
+  /**
+   * The function `getPrivateAppsManifest` fetches the manifest of a private app and assigns it to the
+   * `manifest` property of the corresponding installed app.
+   * @param {number} index - The `index` parameter is a number that represents the position of the app
+   * in an array or list. It is used to identify the specific app in the `installedApps` array.
+   * @param {App} appInstallation - The `appInstallation` parameter is an object that represents the
+   * installation details of an app. It contains information such as the UID (unique identifier) of the
+   * app's manifest.
+   */
+  async getPrivateAppsManifest(index: number, appInstallation: App) {
+    const manifest = await this.appSdk
+      .marketplace(this.exportConfig.org_uid)
+      .app(appInstallation.manifest.uid)
+      .fetch({ include_oauth: true })
+      .catch((error) => {
+        log(this.exportConfig, error, 'error');
+      });
+
+    this.installedApps[index].manifest = manifest;
+  }
+
   async getAppConfigurations(index: number, appInstallation: any) {
-    const sdkClient: ContentstackClient = await managementSDKClient({
-      host: this.developerHubBaseUrl.split('://').pop(),
-    });
     const appName = appInstallation?.manifest?.name;
     log(this.exportConfig, `Exporting ${appName} app and it's config.`, 'info');
 
-    await sdkClient
-      .organization(this.exportConfig.org_uid)
-      .app(appInstallation?.manifest?.uid)
-      .installation(appInstallation?.uid)
+    await this.appSdk
+      .marketplace(this.exportConfig.org_uid)
+      .installation(appInstallation.uid)
       .installationData()
       .then(async (result: any) => {
         const { data, error } = result;
