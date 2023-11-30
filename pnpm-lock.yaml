@@ -17,16 +17,16 @@ importers:
       '@contentstack/cli-cm-bulk-publish': ~1.3.15
       '@contentstack/cli-cm-clone': ~1.8.0
       '@contentstack/cli-cm-export': ~1.10.2
-      '@contentstack/cli-cm-export-to-csv': ~1.6.1
-      '@contentstack/cli-cm-import': ~1.12.0
+      '@contentstack/cli-cm-export-to-csv': ~1.6.2
+      '@contentstack/cli-cm-import': ~1.12.1
       '@contentstack/cli-cm-migrate-rte': ~1.4.15
       '@contentstack/cli-cm-seed': ~1.7.0
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-config': ~1.4.15
       '@contentstack/cli-launch': ~1.0.15
       '@contentstack/cli-migration': ~1.4.1
-      '@contentstack/cli-utilities': ~1.5.8
-      '@contentstack/management': ~1.12.0
+      '@contentstack/cli-utilities': ~1.5.9
+      '@contentstack/management': ~1.13.0
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5
       '@oclif/plugin-not-found': ^2.4.0
@@ -80,7 +80,7 @@ importers:
       '@contentstack/cli-launch': link:../contentstack-launch
       '@contentstack/cli-migration': link:../contentstack-migration
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/management': 1.12.0_debug@4.3.4
+      '@contentstack/management': 1.13.0_debug@4.3.4
       '@oclif/core': 2.15.0_4qcp7qp4jxxdgb4qbxgwox4hwq
       '@oclif/plugin-help': 5.2.14_4qcp7qp4jxxdgb4qbxgwox4hwq
       '@oclif/plugin-not-found': 2.4.0_4qcp7qp4jxxdgb4qbxgwox4hwq
@@ -123,7 +123,7 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-dev-dependencies': ^1.2.4
-      '@contentstack/cli-utilities': ~1.5.8
+      '@contentstack/cli-utilities': ~1.5.9
       '@oclif/plugin-help': ^5
       '@oclif/plugin-plugins': ^3.8.4
       '@oclif/test': ^2.0.3
@@ -185,7 +185,7 @@ importers:
   packages/contentstack-auth:
     specifiers:
       '@contentstack/cli-command': ~1.2.16
-      '@contentstack/cli-utilities': ~1.5.8
+      '@contentstack/cli-utilities': ~1.5.9
       '@fancy-test/nock': ^0.1.1
       '@oclif/plugin-help': ^5.1.19
       '@oclif/test': ^2.2.10
@@ -249,7 +249,7 @@ importers:
     specifiers:
       '@contentstack/cli-cm-seed': ~1.7.0
       '@contentstack/cli-command': ~1.2.16
-      '@contentstack/cli-utilities': ~1.5.8
+      '@contentstack/cli-utilities': ~1.5.9
       '@oclif/test': ^2.2.10
       '@types/inquirer': ^9.0.3
       '@types/mkdirp': ^1.0.1
@@ -302,7 +302,7 @@ importers:
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-config': ~1.4.15
       '@contentstack/cli-dev-dependencies': ~1.2.4
-      '@contentstack/cli-utilities': ~1.5.8
+      '@contentstack/cli-utilities': ~1.5.9
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5.1.19
       '@oclif/test': ^1.2.6
@@ -378,7 +378,7 @@ importers:
   packages/contentstack-bulk-publish:
     specifiers:
       '@contentstack/cli-command': ~1.2.16
-      '@contentstack/cli-utilities': ~1.5.8
+      '@contentstack/cli-utilities': ~1.5.9
       '@oclif/test': ^1.2.6
       bluebird: ^3.7.2
       chai: ^4.2.0
@@ -422,9 +422,9 @@ importers:
     specifiers:
       '@colors/colors': ^1.5.0
       '@contentstack/cli-cm-export': ~1.10.2
-      '@contentstack/cli-cm-import': ~1.12.0
+      '@contentstack/cli-cm-import': ~1.12.1
       '@contentstack/cli-command': ~1.2.16
-      '@contentstack/cli-utilities': ~1.5.8
+      '@contentstack/cli-utilities': ~1.5.9
       '@oclif/test': ^1.2.7
       async: ^3.2.4
       chai: ^4.2.0
@@ -473,7 +473,7 @@ importers:
 
   packages/contentstack-command:
     specifiers:
-      '@contentstack/cli-utilities': ~1.5.8
+      '@contentstack/cli-utilities': ~1.5.9
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.2.18
       '@types/mkdirp': ^1.0.1
@@ -515,7 +515,7 @@ importers:
   packages/contentstack-config:
     specifiers:
       '@contentstack/cli-command': ~1.2.16
-      '@contentstack/cli-utilities': ~1.5.8
+      '@contentstack/cli-utilities': ~1.5.9
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.2.18
       '@types/inquirer': ^9.0.3
@@ -604,10 +604,10 @@ importers:
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-config': ~1.4.15
       '@contentstack/cli-dev-dependencies': ~1.2.4
-      '@contentstack/cli-utilities': ~1.5.8
+      '@contentstack/cli-utilities': ~1.5.9
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5.1.19
-      '@oclif/test': ^1.2.6
+      '@oclif/test': ^2.5.6
       '@types/big-json': ^3.2.0
       '@types/mkdirp': ^1.0.2
       '@types/progress-stream': ^2.0.2
@@ -661,7 +661,7 @@ importers:
       '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
       '@oclif/plugin-help': 5.2.14_typescript@4.9.5
-      '@oclif/test': 1.2.9
+      '@oclif/test': 2.5.6_typescript@4.9.5
       '@types/big-json': 3.2.0
       '@types/mkdirp': 1.0.2
       '@types/progress-stream': 2.0.2
@@ -682,7 +682,7 @@ importers:
   packages/contentstack-export-to-csv:
     specifiers:
       '@contentstack/cli-command': ~1.2.16
-      '@contentstack/cli-utilities': ~1.5.8
+      '@contentstack/cli-utilities': ~1.5.9
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.3.6
       '@types/mocha': ^10.0.1
@@ -725,8 +725,8 @@ importers:
   packages/contentstack-import:
     specifiers:
       '@contentstack/cli-command': ~1.2.16
-      '@contentstack/cli-utilities': ~1.5.8
-      '@contentstack/management': ~1.12.0
+      '@contentstack/cli-utilities': ~1.5.9
+      '@contentstack/management': ~1.13.0
       '@oclif/core': ^2.9.3
       '@oclif/test': ^1.2.6
       '@types/big-json': ^3.2.0
@@ -768,7 +768,7 @@ importers:
     dependencies:
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/management': 1.12.0_debug@4.3.4
+      '@contentstack/management': 1.13.0_debug@4.3.4
       '@oclif/core': 2.9.4_4qcp7qp4jxxdgb4qbxgwox4hwq
       axios: 1.6.0_debug@4.3.4
       big-json: 3.2.0
@@ -813,7 +813,7 @@ importers:
     specifiers:
       '@apollo/client': ^3.7.9
       '@contentstack/cli-command': ~1.2.16
-      '@contentstack/cli-utilities': ~1.5.8
+      '@contentstack/cli-utilities': ~1.5.9
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5
       '@oclif/plugin-plugins': ^3.3.0
@@ -889,7 +889,7 @@ importers:
   packages/contentstack-migrate-rte:
     specifiers:
       '@contentstack/cli-command': ~1.2.16
-      '@contentstack/cli-utilities': ~1.5.8
+      '@contentstack/cli-utilities': ~1.5.9
       '@contentstack/json-rte-serializer': ~2.0.4
       '@oclif/test': ^2.2.10
       chai: ^4.3.4
@@ -936,7 +936,7 @@ importers:
   packages/contentstack-migration:
     specifiers:
       '@contentstack/cli-command': ~1.2.16
-      '@contentstack/cli-utilities': ~1.5.8
+      '@contentstack/cli-utilities': ~1.5.9
       '@oclif/test': ^2.2.10
       async: ^3.2.4
       callsites: ^3.1.0
@@ -982,9 +982,9 @@ importers:
 
   packages/contentstack-seed:
     specifiers:
-      '@contentstack/cli-cm-import': ~1.12.0
+      '@contentstack/cli-cm-import': ~1.12.1
       '@contentstack/cli-command': ~1.2.16
-      '@contentstack/cli-utilities': ~1.5.8
+      '@contentstack/cli-utilities': ~1.5.9
       '@oclif/plugin-help': ^5.1.19
       '@types/inquirer': ^9.0.3
       '@types/jest': ^26.0.15
@@ -1037,7 +1037,8 @@ importers:
 
   packages/contentstack-utilities:
     specifiers:
-      '@contentstack/management': ~1.12.0
+      '@contentstack/cli-dev-dependencies': ^1.2.4
+      '@contentstack/management': ~1.13.0
       '@contentstack/marketplace-sdk': ^1.0.0
       '@oclif/core': ^2.9.3
       '@oclif/test': ^2.2.10
@@ -1085,7 +1086,7 @@ importers:
       winston: ^3.7.2
       xdg-basedir: ^4.0.0
     dependencies:
-      '@contentstack/management': 1.12.0_debug@4.3.4
+      '@contentstack/management': 1.13.0_debug@4.3.4
       '@contentstack/marketplace-sdk': 1.0.0_debug@4.3.4
       '@oclif/core': 2.9.4_4qcp7qp4jxxdgb4qbxgwox4hwq
       axios: 1.6.0_debug@4.3.4
@@ -1110,6 +1111,7 @@ importers:
       winston: 3.10.0
       xdg-basedir: 4.0.0
     devDependencies:
+      '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
       '@oclif/test': 2.3.31_4qcp7qp4jxxdgb4qbxgwox4hwq
       '@types/chai': 4.3.5
       '@types/inquirer': 9.0.3
@@ -1576,8 +1578,8 @@ packages:
       uuid: 8.3.2
     dev: false
 
-  /@contentstack/management/1.12.0_debug@4.3.4:
-    resolution: {integrity: sha512-+L+WVhSYEtfdG9v794TjLT8Fd6fCB8meqoho666mg1kNufzXcsqr7hjubX5cSL7GcZFdKntkDpZ2RaOnTHReJg==}
+  /@contentstack/management/1.13.0_debug@4.3.4:
+    resolution: {integrity: sha512-zVApJ9dpZTq6yBvSTdwrTjPxe20PiXy9x5CGU49by2n1V7hWhsKtSpcIK+Fx9jylYfYU4SEM/HQIKq/i0roMew==}
     engines: {node: '>=8.0.0'}
     dependencies:
       axios: 1.6.0_debug@4.3.4
@@ -3202,6 +3204,20 @@ packages:
     dependencies:
       '@oclif/core': 2.15.0_npeoqfxwgl5njwqojmpesqhar4
       fancy-test: 2.0.31
+    transitivePeerDependencies:
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - supports-color
+      - typescript
+    dev: true
+
+  /@oclif/test/2.5.6_typescript@4.9.5:
+    resolution: {integrity: sha512-AcusFApdU6/akXaofhBDrY4IM9uYzlOD9bYCCM0NwUXOv1m6320hSp2DT/wkj9H1gsvKbJXZHqgtXsNGZTWLFg==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@oclif/core': 2.15.0_typescript@4.9.5
+      fancy-test: 2.0.42
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -7327,6 +7343,22 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
+  /fancy-test/2.0.42:
+    resolution: {integrity: sha512-TX8YTALYAmExny+f+G24MFxWry3Pk09+9uykwRjfwjibRxJ9ZjJzrnHYVBZK46XQdyli7d+rQc5U/KK7V6uLsw==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      '@types/chai': 4.3.6
+      '@types/lodash': 4.14.195
+      '@types/node': 20.6.5
+      '@types/sinon': 10.0.15
+      lodash: 4.17.21
+      mock-stdin: 1.0.0
+      nock: 13.4.0
+      stdout-stderr: 0.1.13
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
   /fast-csv/4.3.6:
     resolution: {integrity: sha512-2RNSpuwwsJGP0frGsOmTb9oUF+VkFSM4SyLTDgwf2ciHWTarN0lQTC+F2f/t5J9QjW+c65VFIAAu85GsvMIusw==}
     engines: {node: '>=10.0.0'}
@@ -10657,6 +10689,17 @@ packages:
       propagate: 2.0.1
     transitivePeerDependencies:
       - supports-color
+
+  /nock/13.4.0:
+    resolution: {integrity: sha512-W8NVHjO/LCTNA64yxAPHV/K47LpGYcVzgKd3Q0n6owhwvD0Dgoterc25R4rnZbckJEb6Loxz1f5QMuJpJnbSyQ==}
+    engines: {node: '>= 10.13'}
+    dependencies:
+      debug: 4.3.4
+      json-stringify-safe: 5.0.1
+      propagate: 2.0.1
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
 
   /node-fetch/2.6.12:
     resolution: {integrity: sha512-C/fGU2E8ToujUivIO0H+tpQ6HWo4eEmchoPIoXtxCrVghxdKq+QOHqEZW7tuP3KlV3bC8FRMO5nMCC7Zm1VP6g==}

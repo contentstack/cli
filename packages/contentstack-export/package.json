@@ -6,7 +6,7 @@
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "~1.2.16",
-    "@contentstack/cli-utilities": "~1.5.8",
+    "@contentstack/cli-utilities": "~1.5.9",
     "@oclif/core": "^2.9.3",
     "async": "^3.2.4",
     "big-json": "^3.2.0",
@@ -28,7 +28,7 @@
     "@contentstack/cli-config": "~1.4.15",
     "@contentstack/cli-dev-dependencies": "~1.2.4",
     "@oclif/plugin-help": "^5.1.19",
-    "@oclif/test": "^1.2.6",
+    "@oclif/test": "^2.5.6",
     "@types/big-json": "^3.2.0",
     "@types/mkdirp": "^1.0.2",
     "@types/progress-stream": "^2.0.2",
