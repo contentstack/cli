@@ -16,6 +16,7 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   management_token?: string;
   apiKey: string;
   forceStopMarketplaceAppsPrompt: boolean;
+  skipPrivateAppRecreationIfExist: boolean;
   auth_token?: string;
   branchName?: string;
   securedAssets?: boolean;
