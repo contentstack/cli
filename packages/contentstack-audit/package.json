@@ -19,7 +19,7 @@
   ],
   "dependencies": {
     "@contentstack/cli-command": "~1.2.16",
-    "@contentstack/cli-utilities": "~1.5.8",
+    "@contentstack/cli-utilities": "~1.5.9",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^3.8.4",
     "chalk": "^4.1.2",
