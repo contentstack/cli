@@ -738,6 +738,7 @@ importers:
       '@types/node': ^14.14.32
       '@types/sinon': ^10.0.2
       '@types/tar': ^4.0.3
+      '@types/uuid': ^9.0.7
       '@typescript-eslint/eslint-plugin': ^5.48.2
       axios: ^1.6.0
       big-json: ^3.2.0
@@ -795,6 +796,7 @@ importers:
       '@types/node': 14.18.53
       '@types/sinon': 10.0.15
       '@types/tar': 4.0.5
+      '@types/uuid': 9.0.7
       '@typescript-eslint/eslint-plugin': 5.62.0_mhvizudgavq6jzvqzwcqcv4nnm
       chai: 4.3.7
       eslint: 8.45.0
@@ -3806,6 +3808,10 @@ packages:
 
   /@types/uuid/9.0.4:
     resolution: {integrity: sha512-zAuJWQflfx6dYJM62vna+Sn5aeSWhh3OB+wfUEACNcqUSc0AGc5JKl+ycL1vrH7frGTXhJchYjE1Hak8L819dA==}
+    dev: true
+
+  /@types/uuid/9.0.7:
+    resolution: {integrity: sha512-WUtIVRUZ9i5dYXefDEAI7sh9/O7jGvHg7Df/5O/gtH3Yabe5odI3UWopVR1qbPXQtvOxWu3mM4XxlYeZtMWF4g==}
     dev: true
 
   /@types/vinyl/2.0.7:
