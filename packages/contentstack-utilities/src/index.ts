@@ -18,6 +18,8 @@ export { default as NodeCrypto } from './encrypter';
 export { Args as args, Flags as flags, Command } from './cli-ux';
 export * from './helpers';
 export * from './interfaces';
+export * from './date-time';
+export * from './add-locale';
 
 // NOTE Exporting all @oclif/core modules: So that all the module can be acessed through cli-utility
 export {
