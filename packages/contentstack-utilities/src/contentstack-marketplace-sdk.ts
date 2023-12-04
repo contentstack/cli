@@ -1,5 +1,5 @@
 import { Agent } from 'node:https';
-import { App } from '@contentstack/marketplace-sdk/types/marketplace/app';
+import { App, AppData } from '@contentstack/marketplace-sdk/types/marketplace/app';
 import { client, ContentstackConfig, ContentstackClient, ContentstackToken } from '@contentstack/marketplace-sdk';
 
 import authHandler from './auth-handler';
@@ -130,6 +130,13 @@ class MarketplaceSDKInitiator {
 export const marketplaceSDKInitiator = new MarketplaceSDKInitiator();
 const marketplaceSDKClient: typeof marketplaceSDKInitiator.createAppSDKClient =
   marketplaceSDKInitiator.createAppSDKClient.bind(marketplaceSDKInitiator);
-export { App, Installation, MarketplaceSDKInitiator, ContentstackMarketplaceConfig, ContentstackMarketplaceClient };
+export {
+  App,
+  AppData,
+  Installation,
+  MarketplaceSDKInitiator,
+  ContentstackMarketplaceConfig,
+  ContentstackMarketplaceClient,
+};
 
 export default marketplaceSDKClient;
