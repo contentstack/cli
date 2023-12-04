@@ -1,0 +1,36 @@
+{
+  "name": "contentstack-nextjs-starter-app",
+  "description": "A starter app for Contentstack and Nextjs",
+  "version": "2.0.0",
+  "private": true,
+  "author": "Contentstack",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint pages/**/*.jsx"
+  },
+  "dependencies": {
+    "@contentstack/live-preview-utils": "^1.0.1",
+    "@contentstack/utils": "^1.1.1",
+    "contentstack": "^3.15.0",
+    "html-react-parser": "^1.4.6",
+    "moment": "^2.29.2",
+    "next": "12.1.6",
+    "next-pwa": "^5.5.0",
+    "nprogress": "^0.2.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-json-view": "^1.21.3",
+    "react-loading-skeleton": "^3.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "17.0.33",
+    "@types/nprogress": "^0.2.0",
+    "@types/react": "18.0.9",
+    "@types/react-dom": "18.0.4",
+    "eslint": "8.15.0",
+    "eslint-config-next": "12.1.6",
+    "typescript": "4.6.4"
+  }
+}
