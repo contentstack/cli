@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import map from 'lodash/map';
+import omit from 'lodash/omit';
 import find from 'lodash/find';
 import pick from 'lodash/pick';
 import first from 'lodash/first';
@@ -9,30 +10,23 @@ import filter from 'lodash/filter';
 import isEmpty from 'lodash/isEmpty';
 import toLower from 'lodash/toLower';
 import {
-  App,
   cliux,
-  HttpClient,
+  AppData,
   NodeCrypto,
-  OauthDecorator,
   isAuthenticated,
-  ContentstackClient,
-  HttpClientDecorator,
-  managementSDKClient,
   marketplaceSDKClient,
   ContentstackMarketplaceClient,
 } from '@contentstack/cli-utilities';
 
 import { trace } from '../../utils/log';
-import { askEncryptionKey } from '../../utils/interactive';
-import { ModuleClassParams, MarketplaceAppsConfig, ImportConfig } from '../../types';
+import { askEncryptionKey, getAppName } from '../../utils/interactive';
+import { ModuleClassParams, MarketplaceAppsConfig, ImportConfig, Installation, Manifest } from '../../types';
 import {
   log,
   fsUtil,
   getOrgUid,
   fileHelper,
-  installApp,
   formatError,
-  createPrivateApp,
   ifAppAlreadyExist,
   getDeveloperHubUrl,
   handleNameConflict,
@@ -48,17 +42,14 @@ export default class ImportMarketplaceApps {
   private marketPlaceFolderPath: string;
   private marketPlaceUidMapperPath: string;
   private marketPlaceAppConfig: MarketplaceAppsConfig;
-  private marketplaceApps: App[];
-  private httpClient: HttpClient | OauthDecorator | HttpClientDecorator;
+  private marketplaceApps: Installation[];
   private appNameMapping: Record<string, unknown>;
   private appUidMapping: Record<string, unknown>;
   private installationUidMapping: Record<string, unknown>;
-  private installedApps: Record<string, any>[];
+  private installedApps: Installation[];
   private appOriginalName: string;
   public developerHubBaseUrl: string;
-  public sdkClient: ContentstackClient;
   public nodeCrypto: NodeCrypto;
-  public appSdkAxiosInstance: any;
   public appSdk: ContentstackMarketplaceClient;
 
   constructor({ importConfig }: ModuleClassParams) {
@@ -67,7 +58,6 @@ export default class ImportMarketplaceApps {
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'marketplace_apps');
     this.marketPlaceFolderPath = join(this.importConfig.backupDir, this.marketPlaceAppConfig.dirName);
     this.marketPlaceUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
-    this.httpClient = new HttpClient();
     this.appNameMapping = {};
     this.appUidMapping = {};
     this.appOriginalName = undefined;
@@ -76,8 +66,8 @@ export default class ImportMarketplaceApps {
   }
 
   /**
-   * @method start
-   * @returns {Promise<void>} Promise<void>
+   * This function starts the process of importing marketplace apps.
+   * @returns The function `start()` returns a `Promise<void>`.
    */
   async start(): Promise<void> {
     log(this.importConfig, 'Migrating marketplace apps', 'info');
@@ -86,7 +76,7 @@ export default class ImportMarketplaceApps {
       this.marketplaceApps = fsUtil.readFile(
         join(this.marketPlaceFolderPath, this.marketPlaceAppConfig.fileName),
         true,
-      ) as App[];
+      ) as Installation[];
     } else {
       log(this.importConfig, `No such file or directory - '${this.marketPlaceFolderPath}'`, 'error');
       return;
@@ -103,45 +93,28 @@ export default class ImportMarketplaceApps {
     }
     await fsUtil.makeDirectory(this.mapperDirPath);
     this.developerHubBaseUrl = this.importConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.importConfig));
+    this.importConfig.developerHubBaseUrl = this.developerHubBaseUrl;
 
     // NOTE init marketplace app sdk
     const host = this.developerHubBaseUrl.split('://').pop();
     this.appSdk = await marketplaceSDKClient({ host });
-
-    this.sdkClient = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
-    this.appSdkAxiosInstance = await managementSDKClient({
-      host: this.developerHubBaseUrl.split('://').pop(),
-    });
     this.importConfig.org_uid = await getOrgUid(this.importConfig);
-    await this.setHttpClient();
-    await this.startInstallation();
+
+    // NOTE start the marketplace import process
+    await this.importMarketplaceApps();
 
     log(this.importConfig, 'Marketplace apps have been imported successfully!', 'success');
   }
 
-  async setHttpClient(): Promise<void> {
-    if (!this.importConfig.auth_token) {
-      this.httpClient = new OauthDecorator(this.httpClient);
-      const headers = await this.httpClient.preHeadersCheck(this.importConfig);
-      this.httpClient = this.httpClient.headers(headers);
-    } else {
-      this.httpClient = new HttpClientDecorator(this.httpClient);
-      this.httpClient.headers(this.importConfig);
-    }
-  }
-
   /**
-   * @method startInstallation
-   * @returns {Promise<void>}
+   * The function `importMarketplaceApps` installs marketplace apps, handles private app creation,
+   * validates app installation, and generates a UID mapper.
    */
-  async startInstallation(): Promise<void> {
-    const cryptoArgs = { encryptionKey: '' };
-    if (this.importConfig.marketplaceAppEncryptionKey) {
-      cryptoArgs['encryptionKey'] = this.importConfig.marketplaceAppEncryptionKey;
-    }
+  async importMarketplaceApps(): Promise<void> {
+    // NOTE set default encryptionKey
+    const cryptoArgs = { encryptionKey: this.importConfig.marketplaceAppEncryptionKey };
 
     if (this.importConfig.forceStopMarketplaceAppsPrompt) {
-      cryptoArgs['encryptionKey'] = this.importConfig.marketplaceAppEncryptionKey;
       this.nodeCrypto = new NodeCrypto(cryptoArgs);
     } else {
       await this.getAndValidateEncryptionKey(this.importConfig.marketplaceAppEncryptionKey);
@@ -149,11 +122,8 @@ export default class ImportMarketplaceApps {
 
     // NOTE install all private apps which is not available for stack.
     await this.handleAllPrivateAppsCreationProcess();
-    this.installedApps = await getAllStackSpecificApps(
-      this.developerHubBaseUrl,
-      this.httpClient as HttpClient,
-      this.importConfig,
-    );
+    // NOTE getting all apps to validate if it's already installed in the stack to manage conflict
+    this.installedApps = await getAllStackSpecificApps(this.importConfig);
 
     log(this.importConfig, 'Starting marketplace app installation', 'success');
 
@@ -169,12 +139,18 @@ export default class ImportMarketplaceApps {
     });
   }
 
+  /**
+   * The function `generateUidMapper` generates a mapping of extension UIDs from old metadata to new
+   * metadata based on the installed and marketplace apps.
+   * @returns The function `generateUidMapper` returns a Promise that resolves to a `Record<string,
+   * unknown>`.
+   */
   async generateUidMapper(): Promise<Record<string, unknown>> {
     const listOfNewMeta = [];
     const listOfOldMeta = [];
     const extensionUidMap: Record<string, unknown> = {};
-    this.installedApps =
-      (await getAllStackSpecificApps(this.developerHubBaseUrl, this.httpClient as HttpClient, this.importConfig)) || [];
+    // NOTE After installation getting all apps to create mapper.
+    this.installedApps = (await getAllStackSpecificApps(this.importConfig)) || [];
 
     for (const app of this.marketplaceApps) {
       listOfOldMeta.push(...map(app?.ui_location?.locations, 'meta').flat());
@@ -193,6 +169,19 @@ export default class ImportMarketplaceApps {
     return extensionUidMap;
   }
 
+  /**
+   * The function `getAndValidateEncryptionKey` retrieves and validates an encryption key, with the
+   * option to retry a specified number of times.
+   * @param {string} defaultValue - The defaultValue parameter is a string that represents the default
+   * encryption key value to use if no valid encryption key is found in the marketplaceApps
+   * configuration.
+   * @param [retry=1] - The `retry` parameter is an optional parameter that specifies the number of
+   * times the function should retry getting and validating the encryption key if it fails. The default
+   * value is 1, meaning that if the function fails to get and validate the encryption key on the first
+   * attempt, it will not retry.
+   * @returns The function `getAndValidateEncryptionKey` returns a Promise that resolves to the
+   * encryption key.
+   */
   async getAndValidateEncryptionKey(defaultValue: string, retry = 1): Promise<any> {
     let appConfig = find(
       this.marketplaceApps,
@@ -230,8 +219,10 @@ export default class ImportMarketplaceApps {
   }
 
   /**
-   * @method handleAllPrivateAppsCreationProcess
-   * @returns {Promise<void>}
+   * The function `handleAllPrivateAppsCreationProcess` handles the creation process for all private
+   * apps in a developer hub, including checking for existing apps, getting confirmation from the user,
+   * and creating the apps if necessary.
+   * @returns a Promise that resolves to void.
    */
   async handleAllPrivateAppsCreationProcess(): Promise<void> {
     const privateApps = filter(this.marketplaceApps, { manifest: { visibility: 'private' } });
@@ -265,10 +256,10 @@ export default class ImportMarketplaceApps {
         'ui_location',
         'framework_version',
       ];
-      const manifest = pick(app.manifest, validKeys);
+      const manifest = pick(app.manifest, validKeys) as Manifest;
       this.appOriginalName = manifest.name;
 
-      await this.createPrivateApps(manifest);
+      await this.createPrivateApp(manifest);
     }
 
     this.appOriginalName = undefined;
@@ -281,41 +272,86 @@ export default class ImportMarketplaceApps {
    * @returns a boolean value. It returns true if the installation object is not empty, and false if
    * the installation object is empty.
    */
-  async isPrivateAppExistInDeveloperHub(app: App) {
+  async isPrivateAppExistInDeveloperHub(app: Installation) {
     const installation = await this.appSdk
       .marketplace(this.importConfig.org_uid)
       .installation(app.uid)
       .fetch()
-      .catch((_) => {}); // NOTE Keeping this to avoid Unhandled exception
+      .catch(() => {}); // NOTE Keeping this to avoid Unhandled exception
 
     return !isEmpty(installation);
   }
 
-  async createPrivateApps(app: any, appSuffix = 1, updateUiLocation = false) {
+  /**
+   * The function creates a private app in a marketplace, with an optional suffix for the app name and
+   * an option to update the UI location.
+   * @param {Manifest} app - The `app` parameter is an object that represents the manifest of the app
+   * being created. It contains various properties such as `name`, `ui_location`, and `uid`.
+   * @param [appSuffix=1] - The appSuffix parameter is an optional parameter that specifies a suffix to
+   * be added to the app's UI location. It is used when updating the UI location of the app.
+   * @param [updateUiLocation=false] - A boolean value indicating whether to update the UI location of
+   * the app.
+   * @returns the result of the `appCreationCallback` function, which takes in the `app`, `response`,
+   * and `appSuffix` as arguments.
+   */
+  async createPrivateApp(app: Manifest, appSuffix = 1, updateUiLocation = false) {
     if (updateUiLocation && !isEmpty(app?.ui_location?.locations)) {
       app.ui_location.locations = this.updateManifestUILocations(app?.ui_location?.locations, appSuffix);
     }
 
-    if (app.name > 20) {
+    if (app.name.length > 20) {
       app.name = app.name.slice(0, 20);
     }
 
-    const response = await createPrivateApp(this.sdkClient, this.importConfig, app);
+    const response = await this.appSdk
+      .marketplace(this.importConfig.org_uid)
+      .app()
+      .create(omit(app, ['uid']) as AppData)
+      .catch((error: any) => error);
+
     return this.appCreationCallback(app, response, appSuffix);
   }
 
+  /**
+   * The function installs an app from a marketplace onto a target stack.
+   * @param {ImportConfig} config - The `config` parameter is an object that contains the configuration
+   * for the installation. It likely includes information such as the target stack UID and other
+   * relevant details.
+   * @param {string} [appManifestUid] - The `appManifestUid` parameter is the unique identifier of the
+   * app manifest. It is used to specify which app to install from the marketplace.
+   * @returns a Promise that resolves to an object.
+   */
+  async installApp(config: ImportConfig, appManifestUid?: string): Promise<any> {
+    return await this.appSdk
+      .marketplace(this.importConfig.org_uid)
+      .app(appManifestUid)
+      .install({ targetUid: config.target_stack, targetType: 'stack' })
+      .catch((error: any) => error);
+  }
+
+  /**
+   * The function updates the names of locations in a manifest UI based on a given app suffix.
+   * @param {any} locations - An array of objects representing different locations in a manifest file.
+   * Each object has a "meta" property which is an array of objects representing metadata for that
+   * location.
+   * @param [appSuffix=1] - The `appSuffix` parameter is an optional parameter that specifies a suffix
+   * to be added to the app name. It is set to 1 by default.
+   * @returns The function `updateManifestUILocations` returns an updated array of `locations`.
+   */
   updateManifestUILocations(locations: any, appSuffix = 1) {
-    return map(locations, (location) => {
+    return map(locations, (location, index) => {
       if (location.meta) {
         location.meta = map(location.meta, (meta) => {
           if (meta.name && this.appOriginalName == meta.name) {
-            const name = `${first(split(meta.name, '◈'))}◈${appSuffix}`;
+            const name = getAppName(first(split(meta.name, '◈')), appSuffix);
 
             if (!this.appNameMapping[this.appOriginalName]) {
               this.appNameMapping[this.appOriginalName] = name;
             }
 
             meta.name = name;
+          } else if (meta.name) {
+            meta.name = getAppName(first(split(meta.name, '◈')), appSuffix + (+index + 1));
           }
 
           return meta;
@@ -326,13 +362,26 @@ export default class ImportMarketplaceApps {
     });
   }
 
+  /**
+   * The function `appCreationCallback` handles the creation of a new app and handles any conflicts or
+   * errors that may occur during the process.
+   * @param {any} app - The `app` parameter is an object representing the app that is being created. It
+   * contains various properties such as `uid` (unique identifier), `name`, and other app-specific
+   * details.
+   * @param {any} response - The `response` parameter is an object that contains the response received
+   * from an API call. It may have properties such as `statusText` and `message`.
+   * @param {number} appSuffix - The `appSuffix` parameter is a number that is used to generate a
+   * unique suffix for the app name in case of a name conflict. It is incremented each time a name
+   * conflict occurs to ensure that the new app name is unique.
+   * @returns a Promise.
+   */
   async appCreationCallback(app: any, response: any, appSuffix: number): Promise<any> {
     const { statusText, message } = response || {};
 
     if (message) {
       if (toLower(statusText) === 'conflict') {
         const updatedApp = await handleNameConflict(app, appSuffix, this.importConfig);
-        return this.createPrivateApps(updatedApp, appSuffix + 1, true);
+        return this.createPrivateApp(updatedApp, appSuffix + 1, true);
       } else {
         trace(response, 'error', true);
         log(this.importConfig, formatError(message), 'error');
@@ -373,15 +422,16 @@ export default class ImportMarketplaceApps {
 
     if (!currentStackApp) {
       // NOTE install new app
-      const mappedUid = this.appUidMapping[app?.manifest?.uid] as string;
-      const installation = await installApp(this.sdkClient, this.importConfig, app?.manifest?.uid, mappedUid);
+      const installation = await this.installApp(
+        this.importConfig,
+        // NOTE if it's private app it should get uid from mapper else will use manifest uid
+        this.appUidMapping[app.manifest.uid] || app.manifest.uid,
+      );
 
       if (installation.installation_uid) {
-        const appManifestName = app?.manifest?.name;
-        const appName = this.appNameMapping[appManifestName] ? this.appNameMapping[appManifestName] : appManifestName;
-
+        const appName = this.appNameMapping[app.manifest.name] ?? app.manifest.name;
         log(this.importConfig, `${appName} app installed successfully.!`, 'success');
-        await makeRedirectUrlCall(installation, appManifestName, this.importConfig);
+        await makeRedirectUrlCall(installation, app.manifest.name, this.importConfig);
         this.installationUidMapping[app.uid] = installation.installation_uid;
         updateParam = { manifest: app.manifest, ...installation, configuration, server_configuration };
       } else if (installation.message) {
@@ -404,47 +454,50 @@ export default class ImportMarketplaceApps {
   }
 
   /**
-   * @method updateAppsConfig
-   * @returns {Promise<void>}
+   * The `updateAppsConfig` function updates the configuration and server configuration of an app in a
+   * marketplace.
+   * @param {Installation} app - The `app` parameter is an object that represents an installation of an
+   * app. It contains the following properties:
    */
-  async updateAppsConfig(app: any): Promise<void> {
-    type payloadConfig = {
-      configuration: Record<string, unknown>;
-      server_configuration: Record<string, unknown>;
-    };
-    const payload: payloadConfig = { configuration: {}, server_configuration: {} };
+  async updateAppsConfig(app: Installation): Promise<void> {
     const { uid, configuration, server_configuration } = app;
 
     if (!isEmpty(configuration)) {
-      payload['configuration'] = this.nodeCrypto.decrypt(configuration);
+      await this.appSdk
+        .marketplace(this.importConfig.org_uid)
+        .installation(uid)
+        .setConfiguration(this.nodeCrypto.decrypt(configuration))
+        .then(({ data }: any) => {
+          if (data?.message) {
+            trace(data, 'error', true);
+            log(this.importConfig, formatError(data.message), 'success');
+          } else {
+            log(this.importConfig, `${app.manifest.name} app config updated successfully.!`, 'success');
+          }
+        })
+        .catch((error: any) => {
+          trace(error, 'error', true);
+          log(this.importConfig, formatError(error), 'error');
+        });
     }
+
     if (!isEmpty(server_configuration)) {
-      payload['server_configuration'] = this.nodeCrypto.decrypt(server_configuration);
+      await this.appSdk
+        .marketplace(this.importConfig.org_uid)
+        .installation(uid)
+        .setServerConfig(this.nodeCrypto.decrypt(server_configuration))
+        .then(({ data }: any) => {
+          if (data?.message) {
+            trace(data, 'error', true);
+            log(this.importConfig, formatError(data.message), 'error');
+          } else {
+            log(this.importConfig, `${app.manifest.name} app server config updated successfully.!`, 'info');
+          }
+        })
+        .catch((error: any) => {
+          trace(error, 'error', true);
+          log(this.importConfig, formatError(error), 'error');
+        });
     }
-
-    if (isEmpty(app) || isEmpty(payload) || !uid) {
-      return Promise.resolve();
-    }
-
-    // TODO migrate this HTTP API call into SDK
-    // NOTE Use updateAppConfig(this.sdkClient, this.importConfig, app, payload) utility when migrating to SDK call;
-    return this.appSdkAxiosInstance.axiosInstance
-      .put(`${this.developerHubBaseUrl}/installations/${uid}`, payload, {
-        headers: {
-          organization_uid: this.importConfig.org_uid,
-        },
-      })
-      .then(({ data }: any) => {
-        if (data?.message) {
-          trace(data, 'error', true);
-          log(this.importConfig, formatError(data.message), 'success');
-        } else {
-          log(this.importConfig, `${app.manifest.name} app config updated successfully.!`, 'success');
-        }
-      })
-      .catch((error: any) => {
-        trace(error, 'error', true);
-        log(this.importConfig, formatError(error), 'error');
-      });
   }
 }
