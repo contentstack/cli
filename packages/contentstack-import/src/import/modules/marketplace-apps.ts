@@ -460,12 +460,12 @@ export default class ImportMarketplaceApps {
    * app. It contains the following properties:
    */
   async updateAppsConfig(app: Installation): Promise<void> {
-    const { uid, configuration, server_configuration } = app;
+    const { installation_uid, configuration, server_configuration } = app;
 
     if (!isEmpty(configuration)) {
       await this.appSdk
         .marketplace(this.importConfig.org_uid)
-        .installation(uid)
+        .installation(installation_uid)
         .setConfiguration(this.nodeCrypto.decrypt(configuration))
         .then(({ data }: any) => {
           if (data?.message) {
@@ -484,7 +484,7 @@ export default class ImportMarketplaceApps {
     if (!isEmpty(server_configuration)) {
       await this.appSdk
         .marketplace(this.importConfig.org_uid)
-        .installation(uid)
+        .installation(installation_uid)
         .setServerConfig(this.nodeCrypto.decrypt(server_configuration))
         .then(({ data }: any) => {
           if (data?.message) {
