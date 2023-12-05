@@ -1,36 +1,24 @@
 import map from 'lodash/map';
 import has from 'lodash/has';
 import find from 'lodash/find';
+import omitBy from 'lodash/omitBy';
 import entries from 'lodash/entries';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
 import {
-  App,
   cliux,
   NodeCrypto,
-  HttpClient,
-  OauthDecorator,
   isAuthenticated,
-  HttpClientDecorator,
   marketplaceSDKClient,
   ContentstackMarketplaceClient,
 } from '@contentstack/cli-utilities';
 
-import {
-  log,
-  fsUtil,
-  getOrgUid,
-  formatError,
-  getDeveloperHubUrl,
-  getStackSpecificApps,
-  createNodeCryptoInstance,
-} from '../../utils';
-import { ModuleClassParams, MarketplaceAppsConfig, ExportConfig } from '../../types';
+import { ModuleClassParams, MarketplaceAppsConfig, ExportConfig, Installation, Manifest } from '../../types';
+import { log, fsUtil, getOrgUid, formatError, getDeveloperHubUrl, createNodeCryptoInstance } from '../../utils';
 
 export default class ExportMarketplaceApps {
-  protected httpClient: OauthDecorator | HttpClientDecorator | HttpClient;
   protected marketplaceAppConfig: MarketplaceAppsConfig;
-  protected installedApps: App[] = [];
+  protected installedApps: Installation[] = [];
   public developerHubBaseUrl: string;
   public marketplaceAppPath: string;
   public nodeCrypto: NodeCrypto;
@@ -39,7 +27,6 @@ export default class ExportMarketplaceApps {
 
   constructor({ exportConfig }: Omit<ModuleClassParams, 'stackAPIClient' | 'moduleName'>) {
     this.exportConfig = exportConfig;
-    this.httpClient = new HttpClient();
     this.marketplaceAppConfig = exportConfig.modules.marketplace_apps;
   }
 
@@ -67,50 +54,34 @@ export default class ExportMarketplaceApps {
     const host = this.developerHubBaseUrl.split('://').pop();
     this.appSdk = await marketplaceSDKClient({ host });
 
-    await this.setHttpClient();
-    await this.getAllStackSpecificApps();
-    await this.exportInstalledExtensions();
+    await this.exportApps();
   }
 
-  async setHttpClient(): Promise<void> {
-    if (!this.exportConfig.auth_token) {
-      this.httpClient = new OauthDecorator(this.httpClient);
-      const headers = await this.httpClient.preHeadersCheck(this.exportConfig);
-      this.httpClient = this.httpClient.headers(headers);
-    } else {
-      this.httpClient = new HttpClientDecorator(this.httpClient);
-      this.httpClient.headers(this.exportConfig);
-    }
-  }
+  /**
+   * The function `exportApps` encrypts the configuration of installed apps using a Node.js crypto
+   * library if it is available.
+   */
+  async exportApps(): Promise<any> {
+    await this.getStackSpecificApps();
+    await this.getAppManifestAndAppConfig();
 
-  async getAllStackSpecificApps(skip = 0): Promise<any> {
-    const data = await getStackSpecificApps({
-      developerHubBaseUrl: this.developerHubBaseUrl,
-      config: this.exportConfig,
-      skip,
-    });
-
-    const { data: apps, count } = data;
-
-    if (!this.nodeCrypto && find(apps, (app) => !isEmpty(app.configuration))) {
+    if (!this.nodeCrypto && find(this.installedApps, (app) => !isEmpty(app.configuration))) {
       this.nodeCrypto = await createNodeCryptoInstance(this.exportConfig);
     }
 
-    const stackApps = map(apps, (app) => {
+    this.installedApps = map(this.installedApps, (app) => {
       if (has(app, 'configuration')) {
         app['configuration'] = this.nodeCrypto.encrypt(app.configuration);
       }
       return app;
     });
-
-    this.installedApps = this.installedApps.concat(stackApps);
-
-    if (count - (skip + 50) > 0) {
-      return await this.getAllStackSpecificApps(skip + 50);
-    }
   }
 
-  async exportInstalledExtensions(): Promise<void> {
+  /**
+   * The function `getAppManifestAndAppConfig` exports the manifest and configurations of installed
+   * marketplace apps.
+   */
+  async getAppManifestAndAppConfig(): Promise<void> {
     if (isEmpty(this.installedApps)) {
       log(this.exportConfig, 'No marketplace apps found', 'info');
     } else {
@@ -139,7 +110,7 @@ export default class ExportMarketplaceApps {
    * installation details of an app. It contains information such as the UID (unique identifier) of the
    * app's manifest.
    */
-  async getPrivateAppsManifest(index: number, appInstallation: App) {
+  async getPrivateAppsManifest(index: number, appInstallation: Installation) {
     const manifest = await this.appSdk
       .marketplace(this.exportConfig.org_uid)
       .app(appInstallation.manifest.uid)
@@ -148,9 +119,21 @@ export default class ExportMarketplaceApps {
         log(this.exportConfig, error, 'error');
       });
 
-    this.installedApps[index].manifest = manifest;
+    if (manifest) {
+      this.installedApps[index].manifest = manifest as unknown as Manifest;
+    }
   }
 
+  /**
+   * The function `getAppConfigurations` exports the configuration of an app installation and encrypts
+   * the server configuration if it exists.
+   * @param {number} index - The `index` parameter is a number that represents the index of the app
+   * installation in an array or list. It is used to identify the specific app installation that needs
+   * to be processed or accessed.
+   * @param {any} appInstallation - The `appInstallation` parameter is an object that represents the
+   * installation details of an app. It contains information such as the app's manifest, unique
+   * identifier (uid), and other installation data.
+   */
   async getAppConfigurations(index: number, appInstallation: any) {
     const appName = appInstallation?.manifest?.name;
     log(this.exportConfig, `Exporting ${appName} app and it's config.`, 'info');
@@ -181,5 +164,39 @@ export default class ExportMarketplaceApps {
         log(this.exportConfig, `Failed to export ${appName} app config ${formatError(error)}`, 'error');
         log(this.exportConfig, error, 'error');
       });
+  }
+
+  /**
+   * The function `getStackSpecificApps` retrieves a collection of marketplace apps specific to a stack
+   * and stores them in the `installedApps` array.
+   * @param [skip=0] - The `skip` parameter is used to determine the number of items to skip in the API
+   * response. It is used for pagination purposes, allowing you to fetch a specific range of items from
+   * the API. In this code, it is initially set to 0, indicating that no items should be skipped in
+   */
+  async getStackSpecificApps(skip = 0) {
+    const collection = await this.appSdk
+      .marketplace(this.exportConfig.org_uid)
+      .installation()
+      .fetchAll({ target_uids: this.exportConfig.source_stack, skip })
+      .catch((error) => {
+        log(this.exportConfig, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
+        log(this.exportConfig, error, 'error');
+      });
+
+    if (collection) {
+      const { items: apps, count } = collection;
+      // NOTE Remove all the chain functions
+      const installation = map(apps, (app) =>
+        omitBy(app, (val, _key) => {
+          if (val instanceof Function) return true;
+          return false;
+        }),
+      ) as unknown as Installation[];
+      this.installedApps = this.installedApps.concat(installation);
+
+      if (count - (skip + 50) > 0) {
+        await this.getStackSpecificApps(skip + 50);
+      }
+    }
   }
 }

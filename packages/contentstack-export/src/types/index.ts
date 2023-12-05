@@ -140,3 +140,4 @@ export interface TermsConfig{
 
 export { default as DefaultConfig } from './default-config';
 export { default as ExportConfig } from './export-config';
+export * from './marketplace-app'
