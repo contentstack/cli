@@ -112,6 +112,16 @@ export default class Bootstrap {
       } else {
         throw new Error(messageHandler.parse('CLI_BOOTSTRAP_NO_API_KEY_FOUND'));
       }
+
+      if (this.options.livePreviewEnabled) {
+        cliux.print(
+          'Important: set management token and app host in the environment file before running the application',
+          {
+            color: 'yellow',
+          },
+        );
+      }
+
       cliux.print(messageHandler.parse('CLI_BOOTSTRAP_SUCCESS'));
     } catch (error) {
       cliux.error(messageHandler.parse('CLI_BOOTSTRAP_STACK_CREATION_FAILED', this.appConfig.stack));

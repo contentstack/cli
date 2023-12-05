@@ -33,7 +33,7 @@ class ManagementSDKInitiator {
       retryCondition: (error: any): boolean => {
         // LINK https://github.com/contentstack/contentstack-javascript/blob/72fee8ad75ba7d1d5bab8489ebbbbbbaefb1c880/src/core/stack.js#L49
         if (error.response && error.response.status) {
-          switch (error.status) {
+          switch (error.response.status) {
             case 401:
             case 429:
             case 408:
