@@ -30,9 +30,15 @@ USAGE
 
 <!-- commands -->
 * [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
+* [`csdx config:get:ea-header`](#csdx-configgetea-header)
+* [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
+* [`csdx config:remove:ea-header`](#csdx-configremoveea-header)
+* [`csdx config:remove:early-access-header`](#csdx-configremoveearly-access-header)
 * [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
+* [`csdx config:set:ea-header`](#csdx-configsetea-header)
+* [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 
 ## `csdx config:get:base-branch`
@@ -51,6 +57,44 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/get/base-branch.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/base-branch.ts)_
+
+## `csdx config:get:ea-header`
+
+Display early access headers
+
+```
+USAGE
+  $ csdx config:get:ea-header
+
+DESCRIPTION
+  Display early access headers
+
+ALIASES
+  $ csdx config:get:ea-header
+
+EXAMPLES
+  $ csdx config:get:ea-header
+```
+
+## `csdx config:get:early-access-header`
+
+Display early access headers
+
+```
+USAGE
+  $ csdx config:get:early-access-header
+
+DESCRIPTION
+  Display early access headers
+
+ALIASES
+  $ csdx config:get:ea-header
+
+EXAMPLES
+  $ csdx config:get:early-access-header
+```
+
+_See code: [src/commands/config/get/early-access-header.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/early-access-header.ts)_
 
 ## `csdx config:get:region`
 
@@ -92,6 +136,56 @@ EXAMPLES
 
 _See code: [src/commands/config/remove/base-branch.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/base-branch.ts)_
 
+## `csdx config:remove:ea-header`
+
+Remove early access header
+
+```
+USAGE
+  $ csdx config:remove:ea-header [--header-alias <value>] [-y]
+
+FLAGS
+  -y, --yes               Force Remove
+  --header-alias=<value>  Early access header alias
+
+DESCRIPTION
+  Remove early access header
+
+ALIASES
+  $ csdx config:remove:ea-header
+
+EXAMPLES
+  $ csdx config:remove:ea-header
+
+  $ csdx config:remove:ea-header --header-alias <value>
+```
+
+## `csdx config:remove:early-access-header`
+
+Remove early access header
+
+```
+USAGE
+  $ csdx config:remove:early-access-header [--header-alias <value>] [-y]
+
+FLAGS
+  -y, --yes               Force Remove
+  --header-alias=<value>  Early access header alias
+
+DESCRIPTION
+  Remove early access header
+
+ALIASES
+  $ csdx config:remove:ea-header
+
+EXAMPLES
+  $ csdx config:remove:early-access-header
+
+  $ csdx config:remove:early-access-header --header-alias <value>
+```
+
+_See code: [src/commands/config/remove/early-access-header.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/early-access-header.ts)_
+
 ## `csdx config:set:base-branch`
 
 Set branch for CLI
@@ -114,6 +208,56 @@ EXAMPLES
 ```
 
 _See code: [src/commands/config/set/base-branch.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/base-branch.ts)_
+
+## `csdx config:set:ea-header`
+
+Set early access header
+
+```
+USAGE
+  $ csdx config:set:ea-header [--header-alias <value>] [--header <value>]
+
+FLAGS
+  --header=<value>        Early access header value
+  --header-alias=<value>  Alias for the header
+
+DESCRIPTION
+  Set early access header
+
+ALIASES
+  $ csdx config:set:ea-header
+
+EXAMPLES
+  $ csdx config:set:ea-header
+
+  $ csdx config:set:ea-header --header <value> --header-alias <value>
+```
+
+## `csdx config:set:early-access-header`
+
+Set early access header
+
+```
+USAGE
+  $ csdx config:set:early-access-header [--header-alias <value>] [--header <value>]
+
+FLAGS
+  --header=<value>        Early access header value
+  --header-alias=<value>  Alias for the header
+
+DESCRIPTION
+  Set early access header
+
+ALIASES
+  $ csdx config:set:ea-header
+
+EXAMPLES
+  $ csdx config:set:early-access-header
+
+  $ csdx config:set:early-access-header --header <value> --header-alias <value>
+```
+
+_See code: [src/commands/config/set/early-access-header.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/early-access-header.ts)_
 
 ## `csdx config:set:region [REGION]`
 
