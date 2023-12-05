@@ -334,8 +334,8 @@ class ExportToCsvCommand extends Command {
     const listOfTokens = configHandler.get('tokens');
     if (managementTokenAlias && listOfTokens[managementTokenAlias]) {
       const checkManagementTokenValidity = await isManagementTokenValid((listOfTokens[managementTokenAlias].apiKey) ,listOfTokens[managementTokenAlias].token);
-      if(!checkManagementTokenValidity?.valid) {
-        throw checkManagementTokenValidity.hasOwnProperty('valid')?(`error: Management token or stack API key is invalid. ${checkManagementTokenValidity?.message||""}`):checkManagementTokenValidity?.message||"";
+      if(checkManagementTokenValidity.hasOwnProperty('message')) {
+        throw checkManagementTokenValidity.valid==='failedToCheck'?checkManagementTokenValidity.message:(`error: Management token or stack API key is invalid. ${checkManagementTokenValidity.message}`);
       }
       apiClient = await managementSDKClient({
         host: this.cmaHost,
@@ -449,31 +449,31 @@ ExportToCsvCommand.description = `Export entries, taxonomies, terms or organizat
 ExportToCsvCommand.examples = [
   'csdx cm:export-to-csv',
   '',
-  'Exporting entries to csv',
+  'Exporting entries to CSV',
   'csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type>',
   '',
-  'Exporting entries to csv with stack name provided and branch name provided',
+  'Exporting entries to CSV with stack name provided and branch name provided',
   'csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type> --stack-name <stack-name> --branch <branch-name>',
   '',
-  'Exporting organization users to csv',
+  'Exporting organization users to CSV',
   'csdx cm:export-to-csv --action <users> --org <org-uid>',
   '',
-  'Exporting organization users to csv with organization name provided',
+  'Exporting organization users to CSV with organization name provided',
   'csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>',
   '',
-  'Exporting Organizations Teams to CSV',
+  'Exporting organization teams to CSV',
   'csdx cm:export-to-csv --action <teams>',
   '',
-  'Exporting Organizations Teams to CSV with org-uid',
+  'Exporting organization teams to CSV with org UID',
   'csdx cm:export-to-csv --action <teams> --org <org-uid>',
   '',
-  'Exporting Organizations Teams to CSV with team uid',
+  'Exporting organization teams to CSV with team UID',
   'csdx cm:export-to-csv --action <teams> --team-uid <team-uid>',
   '',
-  'Exporting Organizations Teams to CSV with org-uid and team uid',
+  'Exporting organization teams to CSV with org UID and team UID',
   'csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid>',
   '',
-  'Exporting Organizations Teams to CSV with org-uid and team uid',
+  'Exporting organization teams to CSV with org UID and team UID',
   'csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid> --org-name <org-name>',
   '',
   'Exporting taxonomies and related terms to a .CSV file with the provided taxonomy UID',
