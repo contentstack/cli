@@ -77,3 +77,21 @@ export function inquireRequireFieldValidation(input: any): string | boolean {
   }
   return true;
 }
+
+export async function askEarlyAccessHeaderValue(): Promise<string> {
+  return await cliux.inquire<string>({
+    type: 'input',
+    message: 'CLI_CONFIG_INQUIRE_EARLY_ACCESS_HEADER_VALUE',
+    name: 'header-value',
+    validate: inquireRequireFieldValidation,
+  });
+}
+
+export async function askEarlyAccessHeaderAlias(): Promise<string> {
+  return await cliux.inquire<string>({
+    type: 'input',
+    message: 'CLI_CONFIG_INQUIRE_EARLY_ACCESS_HEADER_ALIAS',
+    name: 'header-alias',
+    validate: inquireRequireFieldValidation,
+  });
+}
