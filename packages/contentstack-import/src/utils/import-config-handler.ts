@@ -66,6 +66,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
 
   config.importWebhookStatus = importCmdFlags['import-webhook-status'];
   config.forceStopMarketplaceAppsPrompt = importCmdFlags.yes;
+  config.skipPrivateAppRecreationIfExist = importCmdFlags['skip-app-recreation'];
 
   if (importCmdFlags['branch']) {
     config.branchName = importCmdFlags['branch'];
