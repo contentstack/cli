@@ -105,7 +105,7 @@ class ManagementSDKInitiator {
     }
 
     const earlyAccessHeaders = configStore.get(`earlyAccessHeaders`);
-    if (Object.keys(earlyAccessHeaders).length > 0) {
+    if (earlyAccessHeaders && Object.keys(earlyAccessHeaders).length > 0) {
       option.early_access = Object.values(earlyAccessHeaders);
     }
 
