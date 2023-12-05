@@ -84,9 +84,12 @@ USAGE
 * [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value-1)
 * [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries-1)
 * [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
+* [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
+* [`csdx config:remove:early-access-header`](#csdx-configremoveearly-access-header)
 * [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
+* [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMANDS]`](#csdx-help-commands)
 * [`csdx launch`](#csdx-launch)
@@ -2947,6 +2950,23 @@ EXAMPLES
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/base-branch.ts)_
 
+## `csdx config:get:early-access-header`
+
+Display early access headers
+
+```
+USAGE
+  $ csdx config:get:early-access-header
+
+DESCRIPTION
+  Display early access headers
+
+EXAMPLES
+  $ csdx config:get:early-access-header
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/early-access-header.ts)_
+
 ## `csdx config:get:region`
 
 Get current region set for CLI
@@ -2987,6 +3007,29 @@ EXAMPLES
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/base-branch.ts)_
 
+## `csdx config:remove:early-access-header`
+
+Remove early access header
+
+```
+USAGE
+  $ csdx config:remove:early-access-header [--header-alias <value>] [-y]
+
+FLAGS
+  -y, --yes               Force Remove
+  --header-alias=<value>  Early access header alias
+
+DESCRIPTION
+  Remove early access header
+
+EXAMPLES
+  $ csdx config:remove:early-access-header
+
+  $ csdx config:remove:early-access-header --header-alias <value>
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/early-access-header.ts)_
+
 ## `csdx config:set:base-branch`
 
 Set branch for CLI
@@ -3009,6 +3052,29 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/base-branch.ts)_
+
+## `csdx config:set:early-access-header`
+
+Set early access header
+
+```
+USAGE
+  $ csdx config:set:early-access-header [--header-alias <value>] [--header <value>]
+
+FLAGS
+  --header=<value>        Early access header value
+  --header-alias=<value>  Alias for the header
+
+DESCRIPTION
+  Set early access header
+
+EXAMPLES
+  $ csdx config:set:early-access-header
+
+  $ csdx config:set:early-access-header --header <value> --header-alias <value>
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/early-access-header.ts)_
 
 ## `csdx config:set:region [REGION]`
 
@@ -3364,7 +3430,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -3429,7 +3495,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -3469,7 +3535,7 @@ EXAMPLES
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
@@ -3498,7 +3564,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -3546,7 +3612,7 @@ ALIASES
   $ csdx plugins:remove
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -3587,7 +3653,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.8.4/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
