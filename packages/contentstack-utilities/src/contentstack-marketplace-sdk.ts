@@ -4,9 +4,9 @@ import { client, ContentstackConfig, ContentstackClient, ContentstackToken } fro
 
 import authHandler from './auth-handler';
 import configStore from './config-handler';
+import { Installation } from '@contentstack/marketplace-sdk/types/marketplace/installation';
 
 type ConfigType = Pick<ContentstackConfig, 'host' | 'endpoint' | 'retryDelay' | 'retryLimit'> & {
-  management_token?: string;
   skipTokenValidity?: string;
 };
 type ContentstackMarketplaceConfig = ContentstackConfig;
@@ -25,6 +25,8 @@ class MarketplaceSDKInitiator {
       retryLimit: 3,
       timeout: 60000,
       maxRequests: 10,
+      authtoken: '',
+      authorization: '',
       // host: 'api.contentstack.io',
       maxContentLength: 100000000,
       maxBodyLength: 1000000000,
@@ -112,17 +114,12 @@ class MarketplaceSDKInitiator {
       option.headers['X-CS-CLI'] = this.analyticsInfo;
     }
 
-    if (!config.management_token) {
-      option.authtoken = '';
-      option.authorization = '';
-
-      if (authorizationType === 'BASIC') {
-        option.authtoken = configStore.get('authtoken');
-      } else if (authorizationType === 'OAUTH') {
-        if (!config.skipTokenValidity) {
-          await authHandler.compareOAuthExpiry();
-          option.authorization = `Bearer ${configStore.get('oauthAccessToken')}`;
-        }
+    if (authorizationType === 'BASIC') {
+      option.authtoken = configStore.get('authtoken');
+    } else if (authorizationType === 'OAUTH') {
+      if (!config.skipTokenValidity) {
+        await authHandler.compareOAuthExpiry();
+        option.authorization = `Bearer ${configStore.get('oauthAccessToken')}`;
       }
     }
 
@@ -133,6 +130,6 @@ class MarketplaceSDKInitiator {
 export const marketplaceSDKInitiator = new MarketplaceSDKInitiator();
 const marketplaceSDKClient: typeof marketplaceSDKInitiator.createAppSDKClient =
   marketplaceSDKInitiator.createAppSDKClient.bind(marketplaceSDKInitiator);
-export { App, MarketplaceSDKInitiator, ContentstackMarketplaceConfig, ContentstackMarketplaceClient };
+export { App, Installation, MarketplaceSDKInitiator, ContentstackMarketplaceConfig, ContentstackMarketplaceClient };
 
 export default marketplaceSDKClient;
