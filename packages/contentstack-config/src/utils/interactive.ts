@@ -71,8 +71,8 @@ export async function askConfirmation(): Promise<boolean> {
   });
 }
 
-export function inquireRequireFieldValidation(input: any): string | boolean {
-  if (isEmpty(input)) {
+export function inquireRequireFieldValidation(input: string): string | boolean {
+  if (!input || input.trim() === '') {
     return messageHandler.parse('CLI_BRANCH_REQUIRED_FIELD');
   }
   return true;
