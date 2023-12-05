@@ -1,8 +1,9 @@
-import { cliux, configHandler, NodeCrypto, HttpClient, managementSDKClient } from '@contentstack/cli-utilities';
+import { cliux, configHandler, NodeCrypto, managementSDKClient } from '@contentstack/cli-utilities';
 
 import { formatError, log } from '../utils';
 import { ExportConfig } from '../types';
 import { askDeveloperHub } from './interactive';
+
 export const getDeveloperHubUrl = async (exportConfig: ExportConfig) => {
   const { cma, name } = configHandler.get('region') || {};
   let developerHubBaseUrl = exportConfig?.developerHubUrls[cma];
