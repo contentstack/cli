@@ -4,6 +4,7 @@
     "declaration": true,
     "importHelpers": true,
     "module": "commonjs",
+    "rootDir": "src",
     "outDir": "lib",
     "strict": false,
     "target": "es2017",
@@ -13,8 +14,8 @@
     "esModuleInterop": true,
     "noImplicitAny": false,
     "lib": [
-      "es2019",
-      "es2020.promise",
+      "ES2019",
+      "es2020.promise"
     ],
     "strictPropertyInitialization": false,
     "forceConsistentCasingInFileNames": true

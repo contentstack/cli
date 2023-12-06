@@ -3,7 +3,6 @@ import { cliux, configHandler, NodeCrypto, HttpClient, managementSDKClient } fro
 import { formatError, log } from '../utils';
 import { ExportConfig } from '../types';
 import { askDeveloperHub } from './interactive';
-
 export const getDeveloperHubUrl = async (exportConfig: ExportConfig) => {
   const { cma, name } = configHandler.get('region') || {};
   let developerHubBaseUrl = exportConfig?.developerHubUrls[cma];
@@ -21,7 +20,7 @@ export async function getOrgUid(config: ExportConfig): Promise<string> {
     .stack({ api_key: config.source_stack })
     .fetch()
     .catch((error: any) => {
-      log(this.config, formatError(error), 'error');
+      log(config, formatError(error), 'error');
     });
 
   return tempStackData?.org_uid;
@@ -37,7 +36,7 @@ export async function createNodeCryptoInstance(config: ExportConfig): Promise<No
       type: 'input',
       name: 'name',
       default: config.marketplaceAppEncryptionKey,
-      validate: (url) => {
+      validate: (url: any) => {
         if (!url) return "Encryption key can't be empty.";
 
         return true;
@@ -51,13 +50,19 @@ export async function createNodeCryptoInstance(config: ExportConfig): Promise<No
 
 export const getStackSpecificApps = async (params: {
   developerHubBaseUrl: string;
-  httpClient: HttpClient;
   config: ExportConfig;
   skip: number;
 }) => {
-  const { developerHubBaseUrl, httpClient, config, skip } = params;
-  return httpClient
-    .get(`${developerHubBaseUrl}/installations?target_uids=${config.source_stack}&skip=${skip}`)
+  const { developerHubBaseUrl, config, skip } = params;
+  const appSdkAxiosInstance = await managementSDKClient({
+    endpoint: developerHubBaseUrl,
+  });
+  return appSdkAxiosInstance.axiosInstance
+    .get(`${developerHubBaseUrl}/installations?target_uids=${config.source_stack}&skip=${skip}`, {
+      headers: {
+        organization_uid: config.org_uid,
+      },
+    })
     .then((data: any) => data.data)
     .catch((error: any) => log(config, `Failed to export marketplace-apps ${formatError(error)}`, 'error'));
 };
