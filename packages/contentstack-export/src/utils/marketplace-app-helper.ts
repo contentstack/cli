@@ -48,22 +48,3 @@ export async function createNodeCryptoInstance(config: ExportConfig): Promise<No
 
   return new NodeCrypto(cryptoArgs);
 }
-
-export const getStackSpecificApps = async (params: {
-  developerHubBaseUrl: string;
-  config: ExportConfig;
-  skip: number;
-}) => {
-  const { developerHubBaseUrl, config, skip } = params;
-  const appSdkAxiosInstance = await managementSDKClient({
-    endpoint: developerHubBaseUrl,
-  });
-  return appSdkAxiosInstance.axiosInstance
-    .get(`${developerHubBaseUrl}/installations?target_uids=${config.source_stack}&skip=${skip}`, {
-      headers: {
-        organization_uid: config.org_uid,
-      },
-    })
-    .then((data: any) => data.data)
-    .catch((error: any) => log(config, `Failed to export marketplace-apps ${formatError(error)}`, 'error'));
-};
