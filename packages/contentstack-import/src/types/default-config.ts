@@ -113,6 +113,16 @@ export default interface DefaultConfig {
       fileName: string;
       requiredKeys: string[];
     };
+    taxonomies: {
+      dirName: string;
+      fileName: string;
+      dependencies?: Modules[];
+    };
+    terms: {
+      dirName: string;
+      fileName: string;
+      dependencies?: Modules[];
+    };
   };
   languagesCode: string[];
   apis: {
@@ -129,7 +139,6 @@ export default interface DefaultConfig {
     stacks: string;
     labels: string;
   };
-  updatedModules: string[];
   rateLimit: number;
   preserveStackVersion: boolean;
   entriesPublish: boolean;
@@ -140,5 +149,7 @@ export default interface DefaultConfig {
   developerHubBaseUrl: string;
   marketplaceAppEncryptionKey: string;
   getEncryptionKeyMaxRetry: number;
-  useNewModuleStructure: boolean;
+  createBackupDir?: string;
+  overwriteSupportedModules: string[];
+  onlyTSModules: string[];
 }

@@ -13,7 +13,7 @@ import { FolderData } from '@contentstack/management/types/stack/asset/folder';
 import { ExtensionData } from '@contentstack/management/types/stack/extension';
 import { GlobalFieldData } from '@contentstack/management/types/stack/globalField';
 import { ContentTypeData } from '@contentstack/management/types/stack/contentType';
-// import { EnvironmentData } from '@contentstack/management/types/stack/environment';
+import { EnvironmentData } from '@contentstack/management/types/stack/environment';
 import { LabelData } from '@contentstack/management/types/stack/label';
 import { WebhookData } from '@contentstack/management/types/stack/webhook';
 import { WorkflowData } from '@contentstack/management/types/stack/workflow';
@@ -32,6 +32,7 @@ export type ApiModuleType =
   | 'publish-assets'
   | 'create-assets-folder'
   | 'create-extensions'
+  | 'update-extensions'
   | 'create-locale'
   | 'update-locale'
   | 'create-gfs'
@@ -43,15 +44,21 @@ export type ApiModuleType =
   | 'update-labels'
   | 'create-webhooks'
   | 'create-workflows'
-  | 'create-custom-role';
+  | 'create-custom-role'
+  | 'create-entries'
+  | 'update-entries'
+  | 'publish-entries'
+  | 'delete-entries'
+  | 'create-taxonomies'
+  | 'create-terms';
 
 export type ApiOptions = {
   uid?: string;
   url?: string;
   entity: ApiModuleType;
   apiData?: Record<any, any> | any;
-  resolve: (value: any) => void;
-  reject: (error: any) => void;
+  resolve: (value: any) => Promise<void> | void;
+  reject: (error: any) => Promise<void> | void;
   additionalInfo?: Record<any, any>;
   includeParamOnCompletion?: boolean;
   serializeData?: (input: ApiOptions) => any;
@@ -202,11 +209,7 @@ export default abstract class BaseClass {
       // info: Batch No. 20 of import assets is complete
       if (currentIndexer) batchMsg += `Current chunk processing is (${currentIndexer}/${indexerCount})`;
 
-      log(
-        this.importConfig,
-        `Batch No. (${batchNo}/${totelBatches}) of ${processName} is complete. ${batchMsg}`,
-        'success',
-      );
+      log(this.importConfig, `Batch No. (${batchNo}/${totelBatches}) of ${processName} is complete`, 'success');
     }
 
     if (this.importConfig.modules.assets.displayExecutionTime) {
@@ -231,7 +234,7 @@ export default abstract class BaseClass {
       apiOptions = apiOptions.serializeData(apiOptions);
     }
 
-    const { uid, entity, reject, resolve, apiData, additionalInfo, includeParamOnCompletion } = apiOptions;
+    const { uid, entity, reject, resolve, apiData, additionalInfo = {}, includeParamOnCompletion } = apiOptions;
 
     const onSuccess = (response: any) =>
       resolve({
@@ -295,15 +298,21 @@ export default abstract class BaseClass {
       case 'create-cts':
         return this.stack.contentType().create(apiData).then(onSuccess).catch(onReject);
       case 'update-cts':
+        if (!apiData) {
+          return Promise.resolve();
+        }
         return apiData.update().then(onSuccess).catch(onReject);
       case 'update-gfs':
+        if (!apiData) {
+          return Promise.resolve();
+        }
         return apiData.update().then(onSuccess).catch(onReject);
       case 'create-environments':
-        // return this.stack
-        //   .environment()
-        //   .create({ environment: omit(apiData, ['uid']) as EnvironmentData })
-        //   .then(onSuccess)
-        //   .catch(onReject);
+        return this.stack
+          .environment()
+          .create({ environment: omit(apiData, ['uid']) as EnvironmentData })
+          .then(onSuccess)
+          .catch(onReject);
       case 'create-labels':
         return this.stack
           .label()
@@ -337,7 +346,55 @@ export default abstract class BaseClass {
           .create({ role: apiData as RoleData })
           .then(onSuccess)
           .catch(onReject);
-
+      case 'create-entries':
+        if (!apiData) {
+          return Promise.resolve();
+        }
+        if (additionalInfo[apiData?.uid]?.isLocalized) {
+          return apiData.update({ locale: additionalInfo.locale }).then(onSuccess).catch(onReject);
+        }
+        return this.stack
+          .contentType(additionalInfo.cTUid)
+          .entry()
+          .create({ entry: apiData }, { locale: additionalInfo.locale })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'update-entries':
+        if (!apiData) {
+          return Promise.resolve();
+        }
+        return apiData.update({ locale: additionalInfo.locale }).then(onSuccess).catch(onReject);
+      case 'publish-entries':
+        if (!apiData || !apiData.entryUid) {
+          return Promise.resolve();
+        }
+        return this.stack
+          .contentType(additionalInfo.cTUid)
+          .entry(apiData.entryUid)
+          .publish({
+            publishDetails: { environments: apiData.environments, locales: apiData.locales },
+            locale: additionalInfo.locale,
+          })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'delete-entries':
+        return this.stack
+          .contentType(apiData.cTUid)
+          .entry(apiData.entryUid)
+          .delete({ locale: additionalInfo.locale })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'create-taxonomies':
+        return this.stack.taxonomy().create({ taxonomy: apiData }).then(onSuccess).catch(onReject);
+      case 'create-terms':
+        if (apiData?.taxonomy_uid) {
+          return this.stack
+            .taxonomy(apiData.taxonomy_uid)
+            .terms()
+            .create({ term: apiData })
+            .then(onSuccess)
+            .catch(onReject);
+        }
       default:
         return Promise.resolve();
     }
