@@ -30,6 +30,7 @@ export type EnvType = {
 export type CustomPromiseHandlerInput = {
   index: number;
   batchIndex: number;
+  element?: Record<string, any>;
   apiParams?: ApiOptions;
   isLastRequest: boolean;
 };
@@ -45,6 +46,7 @@ export type ApiModuleType =
   | 'content-type'
   | 'content-types'
   | 'stacks'
+  | 'versioned-entries'
   | 'download-asset';
 
 export default abstract class BaseClass {
@@ -98,6 +100,7 @@ export default abstract class BaseClass {
           if (promisifyHandler instanceof Function) {
             promise = promisifyHandler({
               apiParams,
+              element,
               isLastRequest,
               index: Number(index),
               batchIndex: Number(batchIndex),
