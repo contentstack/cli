@@ -1,4 +1,5 @@
 {
+  "contentVersion": 2,
   "master_locale": {
     "name": "English - United States",
     "code": "en-us"
@@ -8,10 +9,6 @@
   "moduleName": "content-types",
   "fetchConcurrency": 5,
   "writeConcurrency": 5,
-  "updatedModules": [
-    "assets",
-    "locales"
-  ],
-  "useNewModuleStructure": true,
-  "securedAssets": false
+  "securedAssets": false,
+  "createBackupDir": "./temp"
 }

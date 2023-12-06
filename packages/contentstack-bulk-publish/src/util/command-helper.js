@@ -16,7 +16,7 @@ const getSelectedCommand = async () => {
     name: 'selectedOption',
     loop: false,
   }];
-  const { selectedOption } = await inquirer.prompt(inquirerOptions);
+  const selectedOption = await inquirer.prompt(inquirerOptions);
   return COMMAND_CODE_MAP[selectedOption];
 };
 

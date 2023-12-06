@@ -1,8 +1,7 @@
 import isEmpty from 'lodash/isEmpty';
 import values from 'lodash/values';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 
-import config from '../../config';
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
 import { ModuleClassParams, CustomRoleConfig } from '../../types';
@@ -30,7 +29,7 @@ export default class ImportCustomRoles extends BaseClass {
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
-    this.customRolesConfig = config.modules.customRoles;
+    this.customRolesConfig = importConfig.modules.customRoles;
     this.customRolesMapperPath = join(this.importConfig.backupDir, 'mapper', 'custom-roles');
     this.customRolesFolderPath = join(this.importConfig.backupDir, this.customRolesConfig.dirName);
     this.customRolesUidMapperPath = join(this.customRolesMapperPath, 'uid-mapping.json');
@@ -119,7 +118,7 @@ export default class ImportCustomRoles extends BaseClass {
   async importCustomRoles() {
     if (this.customRoles === undefined || isEmpty(this.customRoles)) {
       log(this.importConfig, 'No custom-roles found', 'info');
-      return resolve();
+      return;
     }
 
     const apiContent = values(this.customRoles);
@@ -155,7 +154,7 @@ export default class ImportCustomRoles extends BaseClass {
           entity: 'create-custom-role',
           includeParamOnCompletion: true,
         },
-        concurrencyLimit: config.fetchConcurrency || 1,
+        concurrencyLimit: this.importConfig.fetchConcurrency || 1,
       },
       undefined,
       false,
@@ -198,11 +197,17 @@ export default class ImportCustomRoles extends BaseClass {
 
   getTransformUidsFactory = (rule: Record<string, any>) => {
     if (rule.module === 'environment') {
-      rule.environments = map(rule.environments, (env: any) => this.environmentsUidMap[env]);
+      if(!isEmpty(this.environmentsUidMap)){
+        rule.environments = map(rule.environments, (env: any) => this.environmentsUidMap[env]);
+      }
     } else if (rule.module === 'locale') {
-      rule.locales = map(rule.locales, (locale: any) => this.localesUidMap[locale]);
+      if(!isEmpty(this.localesUidMap)){
+        rule.locales = map(rule.locales, (locale: any) => this.localesUidMap[locale]);
+      }
     } else if (rule.module === 'entry') {
-      rule.entries = map(rule.entries, (entry: any) => this.entriesUidMap[entry]);
+      if(!isEmpty(this.entriesUidMap)){
+        rule.entries = map(rule.entries, (entry: any) => this.entriesUidMap[entry]);
+      }
     }
     return rule;
   };

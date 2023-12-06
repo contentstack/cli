@@ -82,11 +82,7 @@ module.exports = class ImportEnvironments {
               });
           } else {
             // the environment has already been created
-            log(
-              config,
-              `The environment ${env.name} already exists. Skipping it to avoid duplicates!`,
-              'success',
-            );
+            log(config, `The environment '${env.name}' already exists. Skipping it to avoid duplicates!`, 'success');
           }
         },
         { concurrency: self.fetchConcurrency },

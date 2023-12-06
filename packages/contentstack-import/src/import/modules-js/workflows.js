@@ -4,12 +4,13 @@
  * MIT Licensed
  */
 
-const mkdirp = require('mkdirp');
 const fs = require('fs');
 const path = require('path');
-const Promise = require('bluebird');
 const chalk = require('chalk');
-const { isEmpty, merge } = require('lodash');
+const mkdirp = require('mkdirp');
+const Promise = require('bluebird');
+const { isEmpty, merge, filter, map, cloneDeep, find } = require('lodash');
+
 let { default: config } = require('../../config');
 const { fileHelper, log, formatError } = require('../../utils');
 
@@ -58,6 +59,7 @@ module.exports = class importWorkflows {
           if (!self.workflowUidMapper.hasOwnProperty(workflowUid)) {
             const roleNameMap = {};
             const workflowStages = workflow.workflow_stages;
+            const oldWorkflowStages = cloneDeep(workflow.workflow_stages);
             const roles = await self.stackAPIClient.role().fetchAll();
 
             for (const role of roles.items) {
@@ -65,6 +67,12 @@ module.exports = class importWorkflows {
             }
 
             for (const stage of workflowStages) {
+              delete stage.uid;
+
+              if (!isEmpty(stage.next_available_stages)) {
+                stage.next_available_stages = ['$all'];
+              }
+
               if (stage.SYS_ACL.users.uids.length && stage.SYS_ACL.users.uids[0] !== '$all') {
                 stage.SYS_ACL.users.uids = ['$all'];
               }
@@ -110,14 +118,27 @@ module.exports = class importWorkflows {
             return self.stackAPIClient
               .workflow()
               .create({ workflow })
-              .then(function (response) {
+              .then(async function (response) {
+                if (
+                  !isEmpty(filter(oldWorkflowStages, ({ next_available_stages }) => !isEmpty(next_available_stages)))
+                ) {
+                  let updateRresponse = await self
+                    .updateNextAvailableStagesUid(response, response.workflow_stages, oldWorkflowStages)
+                    .catch((error) => {
+                      log(self.config, `Workflow '${workflow.name}' update failed.`, 'error');
+                      log(self.config, error, 'error');
+                    });
+
+                  if (updateRresponse) response = updateRresponse;
+                }
+
                 self.workflowUidMapper[workflowUid] = response;
                 fileHelper.writeFileSync(workflowUidMapperPath, self.workflowUidMapper);
               })
               .catch(function (error) {
                 self.fails.push(workflow);
                 if (error.errors.name) {
-                  log(self.config, `workflow ${workflow.name} already exist`, 'error');
+                  log(self.config, `workflow '${workflow.name}' already exist`, 'error');
                 } else if (error.errors['workflow_stages.0.users']) {
                   log(
                     self.config,
@@ -125,14 +146,14 @@ module.exports = class importWorkflows {
                     'error',
                   );
                 } else {
-                  log(self.config, `workflow ${workflow.name} failed.`, 'error');
+                  log(self.config, `Workflow '${workflow.name}' failed.`, 'error');
                 }
               });
           } else {
             // the workflow has already been created
             log(
               self.config,
-              chalk.white( `The Workflows ${workflow.name} already exists. Skipping it to avoid duplicates!`),
+              chalk.white(`The Workflows ${workflow.name} already exists. Skipping it to avoid duplicates!`),
               'success',
             );
           }
@@ -151,5 +172,28 @@ module.exports = class importWorkflows {
           return reject(error);
         });
     });
+  }
+
+  updateNextAvailableStagesUid(workflow, newWorkflowStages, oldWorkflowStages) {
+    newWorkflowStages = map(newWorkflowStages, (newStage, index) => {
+      const oldStage = oldWorkflowStages[index];
+      if (!isEmpty(oldStage.next_available_stages)) {
+        newStage.next_available_stages = map(oldStage.next_available_stages, (stageUid) => {
+          if (stageUid === '$all') return stageUid;
+          const stageName = find(oldWorkflowStages, { uid: stageUid })?.name;
+          return find(newWorkflowStages, { name: stageName })?.uid;
+        }).filter((val) => val);
+      }
+
+      return newStage;
+    });
+
+    const updateWorkflow = this.stackAPIClient.workflow(workflow.uid);
+    Object.assign(updateWorkflow, {
+      name: workflow.name,
+      branches: workflow.branches,
+      workflow_stages: newWorkflowStages,
+    });
+    return updateWorkflow.update();
   }
 };

@@ -81,7 +81,8 @@ export default class LocaleExport extends BaseClass {
           delete locale[key];
         }
       }
-      if (locale.code === this.exportConfig.master_locale.code) {
+
+      if (locale?.code === this.exportConfig?.master_locale?.code) {
         this.masterLocale[locale.uid] = locale;
       } else {
         this.locales[locale.uid] = locale;

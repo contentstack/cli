@@ -1,29 +1,57 @@
 import fs from 'fs';
+import { cliux, formatTime, formatDate } from '@contentstack/cli-utilities';
 import { entryCreateScript } from './entry-create-script';
 import { entryUpdateScript } from './entry-update-script';
+import { entryCreateUpdateScript } from './entry-create-update-script';
+import { assetFolderCreateScript } from './asset-folder-create-script';
 
 type CreateMergeScriptsProps = {
   uid: string;
-  status: string;
+  entry_merge_strategy: string;
+  type?: string;
 };
 
 export function generateMergeScripts(mergeSummary, mergeJobUID) {
   try {
     let scriptFolderPath;
 
-    if (mergeSummary.content_types.modified && mergeSummary.content_types.modified?.length !== 0) {
-      mergeSummary.content_types.modified.map((contentType) => {
-        let data = entryUpdateScript(contentType.uid);
-        scriptFolderPath = createMergeScripts(contentType, data, mergeJobUID);
-      });
-    }
+    const processContentType = (contentType, scriptFunction) => {
+      let data: any;
+      if (contentType.uid) {
+        data = scriptFunction(contentType.uid);
+      } else {
+        data = scriptFunction();
+      }
+      scriptFolderPath = createMergeScripts(contentType, mergeJobUID, data);
+    };
 
-    if (mergeSummary.content_types.added && mergeSummary.content_types.added?.length !== 0) {
-      mergeSummary.content_types.added?.map((contentType) => {
-        let data = entryCreateScript(contentType.uid);
-        scriptFolderPath = createMergeScripts(contentType, data, mergeJobUID);
-      });
-    }
+    const mergeStrategies = {
+      asset_create_folder: assetFolderCreateScript,
+      merge_existing_new: entryCreateUpdateScript,
+      merge_existing: entryUpdateScript,
+      merge_new: entryCreateScript,
+      ignore: entryCreateUpdateScript,
+    };
+
+    const processContentTypes = (contentTypes, messageType) => {
+      if (contentTypes && contentTypes.length > 0) {
+        processContentType(
+          { type: 'assets', uid: '', entry_merge_strategy: '' },
+          mergeStrategies['asset_create_folder'],
+        );
+        contentTypes.forEach((contentType) => {
+          const mergeStrategy = contentType.entry_merge_strategy;
+          if (mergeStrategies.hasOwnProperty(mergeStrategy)) {
+            processContentType(contentType, mergeStrategies[mergeStrategy]);
+          }
+        });
+      } else {
+        cliux.print(`No ${messageType} entries selected for merge`, { color: 'yellow' });
+      }
+    };
+
+    processContentTypes(mergeSummary.modified, 'Modified');
+    processContentTypes(mergeSummary.added, 'New');
 
     return scriptFolderPath;
   } catch (error) {
@@ -31,22 +59,22 @@ export function generateMergeScripts(mergeSummary, mergeJobUID) {
   }
 }
 
-export function getContentypeMergeStatus(status) {
-  if (status === 'modified') {
+export function getContentTypeMergeStatus(status) {
+  if (status === 'merge_existing') {
     return 'updated';
-  } else if (status === 'compare_only') {
+  } else if (status === 'merge_new') {
     return 'created';
+  } else if (status === 'merge_existing_new') {
+    return 'created_updated';
   } else {
     return '';
   }
 }
 
-export function createMergeScripts(contentType: CreateMergeScriptsProps, content, mergeJobUID) {
+export function createMergeScripts(contentType: CreateMergeScriptsProps, mergeJobUID: string, content?: any) {
   const date = new Date();
   const rootFolder = 'merge_scripts';
-  const fileCreatedAt = `${date.getFullYear()}${
-    date.getMonth().toString.length === 1 ? `0${date.getMonth() + 1}` : date.getMonth() + 1
-  }${date.getUTCDate()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+  const fileCreatedAt = `${formatDate(date)}${formatTime(date)}`;
   const mergeScriptsSlug = `merge_scripts_${mergeJobUID}_${fileCreatedAt}`;
 
   const fullPath = `${rootFolder}/${mergeScriptsSlug}`;
@@ -63,11 +91,15 @@ export function createMergeScripts(contentType: CreateMergeScriptsProps, content
       if (!fs.existsSync(fullPath)) {
         fs.mkdirSync(fullPath);
       }
-      fs.writeFileSync(
-        `${fullPath}/${fileCreatedAt}_${getContentypeMergeStatus(contentType.status)}_${contentType.uid}.js`,
-        content,
-        'utf-8',
-      );
+      let filePath: string;
+      if (contentType.type === 'assets') {
+        filePath = `${fullPath}/${fileCreatedAt}_create_assets_folder.js`;
+      } else {
+        filePath = `${fullPath}/${fileCreatedAt}_${getContentTypeMergeStatus(contentType.entry_merge_strategy)}_${
+          contentType.uid
+        }.js`;
+      }
+      fs.writeFileSync(filePath, content, 'utf-8');
     }
     return fullPath;
   } catch (error) {

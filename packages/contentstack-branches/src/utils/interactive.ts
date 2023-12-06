@@ -134,6 +134,8 @@ export async function selectMergeExecution(): Promise<string> {
       choices: [
         { name: 'Execute Merge', value: 'both' },
         { name: 'Export Merge Summary', value: 'export' },
+        { name: 'Execute Merge and Generate Content Migration Scripts', value: 'merge_n_scripts' },
+        { name: 'Export Summary and Generate Content Migration Scripts', value: 'summary_n_scripts' },
         { name: 'Go Back', value: 'previous' },
         { name: 'Start Over', value: 'restart' },
       ],
@@ -142,6 +144,28 @@ export async function selectMergeExecution(): Promise<string> {
     .then((name) => name as string)
     .catch((err) => {
       cliux.error('Exiting the merge process...');
+      process.exit(1);
+    });
+
+  return strategy;
+}
+
+export async function selectContentMergePreference(): Promise<string> {
+  const strategy = await cliux
+    .inquire({
+      type: 'list',
+      name: 'module',
+      choices: [
+        { name: 'Both existing and new', value: 'existing_new' },
+        { name: 'New only', value: 'new' },
+        { name: 'Existing only', value: 'existing' },
+        { name: 'Ask for preference', value: 'ask_preference' },
+      ],
+      message: 'What content entries do you want to migrate?',
+    })
+    .then((name) => name as string)
+    .catch((err) => {
+      cliux.error('Failed to collect the preference');
       process.exit(1);
     });
 
@@ -246,4 +270,67 @@ export async function askBranchNameConfirmation(): Promise<string> {
     name: 'branch_name',
     validate: inquireRequireFieldValidation,
   });
+}
+
+export async function selectContentMergeCustomPreferences(payload) {
+  // parse rows
+  const tableRows = [];
+  if (payload.modified?.length || payload.added?.length) {
+    forEach(payload.added, (item: BranchDiffRes) => {
+      const row: any = {};
+      row.name = `+ ${item.title}`;
+      row.status = 'added';
+      row.value = item;
+      tableRows.push(row);
+    });
+
+    forEach(payload.modified, (item: BranchDiffRes) => {
+      const row: any = {};
+      row.name = `± ${item.title}`;
+      row.status = 'modified';
+      row.value = item;
+      tableRows.push(row);
+    });
+  } else {
+    return;
+  }
+
+  const selectedStrategies = await cliux.inquire<any>({
+    type: 'table',
+    message: `Select the Content Entry changes for merge`,
+    name: 'mergeContentEntriesPreferences',
+    selectAll: true,
+    pageSize: 10,
+    columns: [
+      {
+        name: 'Merge New Only',
+        value: 'merge_new',
+      },
+      {
+        name: 'Merge Modified Only',
+        value: 'merge_existing',
+      },
+      {
+        name: 'Merge Both',
+        value: 'merge_existing_new',
+      },
+      {
+        name: 'Ignore',
+        value: 'ignore',
+      },
+    ],
+    rows: tableRows,
+  });
+
+  let updatedArray = [];
+  forEach(selectedStrategies, (strategy: string, index: number) => {
+    const selectedItem = tableRows[index];
+
+    if (strategy && selectedItem) {
+      selectedItem.value.entry_merge_strategy = strategy;
+      updatedArray.push(selectedItem);
+    }
+  });
+
+  return updatedArray; // selected items
 }

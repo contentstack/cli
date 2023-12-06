@@ -2,7 +2,7 @@ import Bluebird from 'bluebird';
 import * as url from 'url';
 import * as path from 'path';
 import { ContentstackClient, managementSDKClient } from '@contentstack/cli-utilities';
-import { ImportConfig } from 'src/types';
+import { ImportConfig } from '../types';
 const debug = require('debug')('util:requests');
 let _ = require('lodash');
 let { marked } = require('marked');
@@ -53,11 +53,11 @@ export const uploadAssetHelper = function (config: ImportConfig, req: any, fsPat
 
 // get assets object
 export const lookupAssets = function (
-  data: any,
-  mappedAssetUids: string[],
-  mappedAssetUrls: string[],
-  assetUidMapperPath: string[],
-  installedExtensions: string[],
+  data: Record<string, any>,
+  mappedAssetUids: Record<string, any>,
+  mappedAssetUrls: Record<string, any>,
+  assetUidMapperPath: string,
+  installedExtensions: Record<string, any>[],
 ) {
   if (
     !_.has(data, 'entry') ||
@@ -85,7 +85,9 @@ export const lookupAssets = function (
       ) {
         parent.push(schema[i].uid);
         findFileUrls(schema[i], entryToFind, assetUrls);
-        // findAssetIdsFromHtmlRte(schema[i], entryToFind);
+        if (schema[i].field_metadata.rich_text_type) {
+          findAssetIdsFromHtmlRte(entryToFind, schema[i]);
+        }
         parent.pop();
       }
       if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
@@ -146,6 +148,15 @@ export const lookupAssets = function (
     });
   }
 
+  function findAssetIdsFromHtmlRte(entryObj: any, ctSchema: any) {
+    const regex = /<img asset_uid=\\"([^"]+)\\"/g;
+    let match;
+    const entry = JSON.stringify(entryObj);
+    while ((match = regex.exec(entry)) !== null) {
+      assetUids.push(match[1]);
+    }
+  }
+
   function findAssetIdsFromJsonRte(entryObj: any, ctSchema: any) {
     for (const element of ctSchema) {
       switch (element.data_type) {
@@ -194,8 +205,7 @@ export const lookupAssets = function (
     jsonRteData.children.forEach((element: any) => {
       if (element.type) {
         switch (element.type) {
-          case 'a':
-          case 'p': {
+          default: {
             if (element.children && element.children.length > 0) {
               gatherJsonRteAssetIds(element);
             }

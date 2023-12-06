@@ -1,11 +1,11 @@
-import { logger, messageHandler, cliux, managementSDKInitiator } from '@contentstack/cli-utilities';
+import { messageHandler, cliux, managementSDKInitiator } from '@contentstack/cli-utilities';
 
 /**
- * Initialize the utilities
+ * Initialize the utilities 
  */
 export default function (_opts): void {
   const { context } = this.config;
-  logger.init(context);
+  // logger.init(context);
   messageHandler.init(context);
   cliux.init(context);
   managementSDKInitiator.init(context);

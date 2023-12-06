@@ -5,9 +5,10 @@
  */
 
 import promiseLimit from 'promise-limit';
+import * as path from 'path';
 import { isAuthenticated } from '@contentstack/cli-utilities';
-
-import { ExternalConfig } from '../types';
+import { ExternalConfig, ExportConfig } from '../types';
+import { fsUtil } from './file-helper';
 
 export const validateConfig = function (config: ExternalConfig) {
   if (!config.host || !config.cdn) {
@@ -76,4 +77,13 @@ export const executeTask = function (
       return limit(() => handler(task));
     }),
   );
+};
+
+// Note: we can add more useful details in meta file
+export const writeExportMetaFile = (exportConfig: ExportConfig, metaFilePath?: string) => {
+  const exportMeta = {
+    contentVersion: exportConfig.contentVersion,
+    logsPath: path.join(exportConfig.exportDir, 'logs', 'export'),
+  };
+  fsUtil.writeFile(path.join(metaFilePath || exportConfig.exportDir, 'export-info.json'), exportMeta);
 };

@@ -1,0 +1,87 @@
+{
+  "name": "@contentstack/cli-audit",
+  "version": "1.3.0",
+  "description": "Contentstack audit plugin",
+  "author": "Contentstack CLI",
+  "homepage": "https://github.com/contentstack/cli",
+  "license": "MIT",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "bin": {
+    "audit": "./bin/run"
+  },
+  "repository": "contentstack/audit",
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "dependencies": {
+    "@contentstack/cli-command": "~1.2.16",
+    "@contentstack/cli-utilities": "~1.5.8",
+    "@oclif/plugin-help": "^5",
+    "@oclif/plugin-plugins": "^3.8.4",
+    "chalk": "^4.1.2",
+    "fast-csv": "^4.3.6",
+    "fs-extra": "^11.1.1",
+    "lodash": "^4.17.21",
+    "uuid": "^9.0.1",
+    "winston": "^3.10.0"
+  },
+  "devDependencies": {
+    "@contentstack/cli-dev-dependencies": "^1.2.4",
+    "@oclif/test": "^2.0.3",
+    "@types/chai": "^4.3.5",
+    "@types/fs-extra": "^11.0.2",
+    "@types/node": "^20.3.1",
+    "@types/uuid": "^9.0.4",
+    "chai": "^4.3.7",
+    "eslint": "^8.43.0",
+    "eslint-config-oclif": "^4.0.0",
+    "eslint-config-oclif-typescript": "^1.0.3",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
+    "oclif": "^3",
+    "shx": "^0.3.4",
+    "sinon": "^17.0.0",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.5.3",
+    "typescript": "^5.1.3"
+  },
+  "oclif": {
+    "bin": "csdx",
+    "commands": "./lib/commands",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-plugins"
+    ],
+    "topicSeparator": ":",
+    "additionalHelpFlags": [
+      "-h"
+    ],
+    "additionalVersionFlags": [
+      "-v"
+    ],
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-audit/<%- commandPath %>"
+  },
+  "scripts": {
+    "build": "npm run clean && shx rm -rf lib && tsc -b",
+    "lint": "eslint . --ext .ts --config .eslintrc",
+    "postpack": "shx rm -f oclif.manifest.json",
+    "posttest": "npm run lint",
+    "prepack": "npm run build && oclif manifest && oclif readme",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif readme && git add README.md",
+    "clean": "rm -rf ./lib ./node_modules tsconfig.tsbuildinfo oclif.manifest.json",
+    "test:unit:report": "nyc --extension .ts mocha --forbid-only \"test/unit/**/*.test.ts\""
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "bugs": "https://github.com/contentstack/cli/issues",
+  "keywords": [
+    "oclif"
+  ]
+}

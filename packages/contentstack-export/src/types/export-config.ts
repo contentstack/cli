@@ -27,6 +27,7 @@ export default interface ExportConfig extends DefaultConfig {
   access_token?: string;
   org_uid?: string;
   source_stack?: string;
+  sourceStackName?:string;
 }
 
 type branch = {

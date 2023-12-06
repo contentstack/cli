@@ -1,11 +1,12 @@
 import cliux from './cli-ux';
-import logger from './logger';
 import HttpClient from './http-client';
 import configHandler from './config-handler';
 import * as ContentstackManagementSDK from '@contentstack/management';
+import messageHandler from './message-handler';
 const http = require('http');
 const url = require('url');
 import open from 'open';
+import {LoggerService} from './logger';
 const crypto = require('crypto');
 
 /**
@@ -32,7 +33,7 @@ class AuthHandler {
   private authorisationTypeOAUTHValue: string;
   private authorisationTypeAUTHValue: string;
   private allAuthConfigItems: any;
-
+  private logger:any;
   set host(contentStackHost) {
     this._host = contentStackHost;
   }
@@ -73,7 +74,9 @@ class AuthHandler {
       ],
     };
   }
-
+  initLog() {
+    this.logger = new LoggerService(process.cwd(), 'cli-log');
+  }
   async setOAuthBaseURL() {
     if (configHandler.get('region')['uiHost']) {
       this.OAuthBaseURL = configHandler.get('region')['uiHost'] || '';
@@ -91,6 +94,7 @@ class AuthHandler {
    */
   async oauth(): Promise<object> {
     return new Promise((resolve, reject) => {
+      this.initLog();
       this.createHTTPServer()
         .then(() => {
           this.openOAuthURL()
@@ -99,12 +103,12 @@ class AuthHandler {
               resolve({});
             })
             .catch((error) => {
-              logger.error('OAuth login failed', error.message);
+              this.logger.error('OAuth login failed', error.message);
               reject(error);
             });
         })
         .catch((error) => {
-          logger.error('OAuth login failed', error.message);
+          this.logger.error('OAuth login failed', error.message);
           reject(error);
         });
     });
@@ -407,6 +411,57 @@ class AuthHandler {
         reject('Invalid/Empty access token');
       }
     });
+  }
+
+  async oauthLogout(): Promise<object> {
+    const authorization: string = await this.getOauthAppAuthorization() || "";
+    const response: {} = await this.revokeOauthAppAuthorization(authorization)
+    return response || {}
+  }
+
+  /**
+   * Fetches all authorizations for the Oauth App, returns authorizationUid for current user.
+   * @returns authorizationUid for the current user
+   */
+  async getOauthAppAuthorization(): Promise<string | undefined> {
+    const headers = {
+      authorization: `Bearer ${configHandler.get(this.oauthAccessTokenKeyName)}`,
+      organization_uid: configHandler.get(this.oauthOrgUidKeyName),
+      'Content-type': 'application/json'
+    }
+    const httpClient = new HttpClient().headers(headers)
+    await this.setOAuthBaseURL();
+    return httpClient
+      .get(`${this.OAuthBaseURL}/apps-api/manifests/${this.OAuthAppId}/authorizations`)
+      .then(({data}) => {
+        if (data?.data?.length > 0) {
+          const userUid = configHandler.get(this.oauthUserUidKeyName)
+          const currentUserAuthorization = data?.data?.filter(element => element.user.uid === userUid) || [];
+          if (currentUserAuthorization.length === 0) {
+            throw new Error(messageHandler.parse("CLI_AUTH_LOGOUT_NO_AUTHORIZATIONS_USER"))
+          }
+          return currentUserAuthorization[0].authorization_uid  // filter authorizations by current logged in user
+        } else {
+          throw new Error(messageHandler.parse("CLI_AUTH_LOGOUT_NO_AUTHORIZATIONS"))
+        }
+      })
+  }
+
+  async revokeOauthAppAuthorization(authorizationId): Promise<object> {
+    if (authorizationId.length > 1) {
+      const headers = {
+        authorization: `Bearer ${configHandler.get(this.oauthAccessTokenKeyName)}`,
+        organization_uid: configHandler.get(this.oauthOrgUidKeyName),
+        'Content-type': 'application/json'
+      }
+      const httpClient = new HttpClient().headers(headers)
+      await this.setOAuthBaseURL();
+      return httpClient
+        .delete(`${this.OAuthBaseURL}/apps-api/manifests/${this.OAuthAppId}/authorizations/${authorizationId}`)
+        .then(({data}) => {
+          return data
+        })
+    }
   }
 
   isAuthenticated(): boolean {
