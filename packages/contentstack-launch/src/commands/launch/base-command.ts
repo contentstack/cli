@@ -11,18 +11,15 @@ import {
   Interfaces,
   cliux as ux,
   configHandler,
+  isAuthenticated,
   ContentstackClient,
   managementSDKClient,
   managementSDKInitiator,
-  isAuthenticated,
 } from '@contentstack/cli-utilities';
 
 import config from '../../config';
 import { GraphqlApiClient, Logger } from '../../util';
 import { ConfigType, LogFn, Providers } from '../../types';
-import Functions from './functions';
-import { logger } from '@contentstack/cli-utilities';
-import { cliux } from '@contentstack/cli-utilities';
 
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<(typeof BaseCommand)['baseFlags'] & T['flags']>;
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
@@ -83,8 +80,8 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     }
     const _isAuthenticated = isAuthenticated();
     if (!_isAuthenticated) {
-      cliux.print('CLI_AUTH_WHOAMI_FAILED', { color: 'yellow' });
-      cliux.print('You are not logged in. Please login to execute this command, csdx auth:login', { color: 'red' });
+      ux.print('CLI_AUTH_WHOAMI_FAILED', { color: 'yellow' });
+      ux.print('You are not logged in. Please login to execute this command, csdx auth:login', { color: 'red' });
       this.exit(1);
     }
   }
@@ -156,7 +153,10 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
             choices: configKeys,
             message: 'Choose a branch',
           })
-          .then((val: any) => config[val]);
+          .then((val: any) => config[val])
+          .catch((err) => {
+            this.log(err, 'error');
+          });
       } else {
         this.sharedConfig.currentConfig = config[configKeys[0]];
       }
