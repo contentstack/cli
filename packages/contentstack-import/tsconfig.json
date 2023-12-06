@@ -12,7 +12,7 @@
     "skipLibCheck": true,
     "sourceMap": false,
     "esModuleInterop": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "lib": [
       "ES2019",
       "es2020.promise"
