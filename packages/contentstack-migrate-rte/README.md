@@ -3,16 +3,14 @@
 It is Contentstack’s CLI plugin to migrate rte. Using this command, you can copy existing value of HTML RTE into JSON RTE.
 
 <!-- toc -->
-
-- [@contentstack/cli-cm-migrate-rte](#contentstackcli-cm-migrate-rte)
-- [Usage](#usage)
-- [Commands](#commands)
+* [@contentstack/cli-cm-migrate-rte](#contentstackcli-cm-migrate-rte)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli-cm-migrate-rte
 $ csdx COMMAND
@@ -24,15 +22,13 @@ USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
-- [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
+* [`csdx cm:entries:migrate-html-rte`](#csdx-cmentriesmigrate-html-rte)
+* [`csdx cm:migrate-rte`](#csdx-cmmigrate-rte)
 
 ## `csdx cm:entries:migrate-html-rte`
 
@@ -153,5 +149,4 @@ EXAMPLES
 
   $ csdx cm:entries:migrate-html-rte --alias alias --content-type global_field_uid --global-field --html-path html-path --json-path json-path
 ```
-
 <!-- commandsstop -->
