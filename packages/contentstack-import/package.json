@@ -1,38 +1,41 @@
 {
   "name": "@contentstack/cli-cm-import",
   "description": "Contentstack CLI plugin to import content into stack",
-  "version": "1.7.1",
+  "version": "1.12.0",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "^1.2.11",
-    "@contentstack/cli-utilities": "^1.5.1",
-    "@contentstack/management": "~1.10.0",
-    "@oclif/config": "^1.18.3",
+    "@contentstack/cli-command": "~1.2.16",
+    "@contentstack/cli-utilities": "~1.5.8",
+    "@contentstack/management": "~1.12.0",
     "@oclif/core": "^2.9.3",
+    "axios": "^1.6.0",
     "big-json": "^3.2.0",
     "bluebird": "^3.7.2",
     "chalk": "^4.1.2",
     "debug": "^4.1.0",
+    "fs-extra": "^11.1.1",
     "lodash": "^4.17.20",
     "marked": "^4.0.17",
     "merge": "^2.1.1",
     "mkdirp": "^1.0.4",
-    "ncp": "^2.0.0",
     "promise-limit": "^2.7.0",
     "tslib": "^2.4.1",
+    "uuid": "^9.0.0",
     "winston": "^3.7.2"
   },
   "devDependencies": {
     "@oclif/test": "^1.2.6",
+    "@types/big-json": "^3.2.0",
     "@types/bluebird": "^3.5.38",
     "@types/chai": "^4.2.18",
+    "@types/fs-extra": "^11.0.1",
     "@types/mkdirp": "^1.0.2",
     "@types/mocha": "^8.2.2",
-    "@types/ncp": "^2.0.5",
     "@types/node": "^14.14.32",
     "@types/sinon": "^10.0.2",
     "@types/tar": "^4.0.3",
+    "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^5.48.2",
     "chai": "^4.2.0",
     "eslint": "^8.18.0",
@@ -92,7 +95,7 @@
     },
     "shortCommandName": {
       "cm:stacks:import": "IMPRT",
-      "cm:import": "IMPRT"
+      "cm:import": "O-IMPRT"
     }
   },
   "repository": "https://github.com/contentstack/cli"
