@@ -1,10 +1,6 @@
-type FileType = "json" | "txt";
+type FileType = 'json' | 'txt';
 
-type Chunk =
-  | Record<string, unknown>[]
-  | Record<string, unknown>
-  | Array<unknown>
-  | string;
+type Chunk = Record<string, unknown>[] | Record<string, unknown> | Array<unknown> | string;
 
 type PageInfo = {
   after: number;
@@ -72,6 +68,8 @@ type FsConstructorOptions = {
   metaPickKeys?: Array<string>;
 
   keepMetadata?: boolean;
+
+  useIndexer?: boolean;
 
   metaHandler?: (array: any) => any;
 };

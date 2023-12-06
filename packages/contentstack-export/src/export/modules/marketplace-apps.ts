@@ -15,7 +15,6 @@ import {
   ContentstackClient,
 } from '@contentstack/cli-utilities';
 
-import config from '../../config';
 import {
   log,
   getDeveloperHubUrl,
@@ -40,7 +39,7 @@ export default class ExportMarketplaceApps extends BaseClass {
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
     this.httpClient = new HttpClient();
-    this.marketplaceAppConfig = config.modules.marketplace_apps;
+    this.marketplaceAppConfig = exportConfig.modules.marketplace_apps;
     this.listOfApps = [];
     this.installedApps = [];
   }
@@ -85,14 +84,13 @@ export default class ExportMarketplaceApps extends BaseClass {
   async getAllStackSpecificApps(skip = 0): Promise<any> {
     const data = await getStackSpecificApps({
       developerHubBaseUrl: this.developerHubBaseUrl,
-      httpClient: this.httpClient as HttpClient,
       config: this.exportConfig,
       skip,
     });
 
     const { data: apps, count } = data;
 
-    if (!this.nodeCrypto && find(apps, (app) => isEmpty(app.configuration))) {
+    if (!this.nodeCrypto && find(apps, (app) => !isEmpty(app.configuration))) {
       this.nodeCrypto = await createNodeCryptoInstance(this.exportConfig);
     }
 
