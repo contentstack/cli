@@ -431,7 +431,7 @@ export default class ImportMarketplaceApps {
       if (installation.installation_uid) {
         const appName = this.appNameMapping[app.manifest.name] ?? app.manifest.name;
         log(this.importConfig, `${appName} app installed successfully.!`, 'success');
-        await makeRedirectUrlCall(installation, app.manifest.name, this.importConfig);
+        await makeRedirectUrlCall(installation, appName, this.importConfig);
         this.installationUidMapping[app.uid] = installation.installation_uid;
         updateParam = { manifest: app.manifest, ...installation, configuration, server_configuration };
       } else if (installation.message) {
