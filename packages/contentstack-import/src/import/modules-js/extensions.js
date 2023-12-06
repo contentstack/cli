@@ -67,7 +67,7 @@ module.exports = class ImportExtensions {
                 if (error.errors.title) {
                   log(self.config, `Extension '${ext.title}' already exists`, 'error');
                 } else {
-                  log(self.config, "Extension: '" + ext.title + "' failed to be import" + formatError(error), 'error');
+                  log(self.config, "Extension: '" + ext.title + "' failed to import" + formatError(error), 'error');
                 }
               });
           }

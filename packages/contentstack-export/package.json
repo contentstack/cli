@@ -1,14 +1,12 @@
 {
   "name": "@contentstack/cli-cm-export",
   "description": "Contentstack CLI plugin to export content from stack",
-  "version": "1.7.0",
+  "version": "1.10.2",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-command": "^1.2.11",
-    "@contentstack/cli-utilities": "^1.5.1",
-    "@oclif/command": "^1.8.16",
-    "@oclif/config": "^1.18.3",
+    "@contentstack/cli-command": "~1.2.16",
+    "@contentstack/cli-utilities": "~1.5.8",
     "@oclif/core": "^2.9.3",
     "async": "^3.2.4",
     "big-json": "^3.2.0",
@@ -26,14 +24,14 @@
     "winston": "^3.7.2"
   },
   "devDependencies": {
-    "@contentstack/cli-auth": "^1.3.11",
-    "@contentstack/cli-config": "^1.4.9",
-    "@contentstack/cli-dev-dependencies": "^1.2.3",
+    "@contentstack/cli-auth": "~1.3.17",
+    "@contentstack/cli-config": "~1.4.15",
+    "@contentstack/cli-dev-dependencies": "~1.2.4",
     "@oclif/plugin-help": "^5.1.19",
     "@oclif/test": "^1.2.6",
+    "@types/big-json": "^3.2.0",
     "@types/mkdirp": "^1.0.2",
     "@types/progress-stream": "^2.0.2",
-    "@types/mkdirp": "^1.0.2",
     "assert": "^2.0.0",
     "chai": "^4.2.0",
     "dotenv": "^16.0.1",
@@ -62,6 +60,7 @@
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
     "test:integration": "INTEGRATION_TEST=true mocha --config ./test/.mocharc.js --forbid-only \"test/run.test.js\"",
+    "test:integration:report": "INTEGRATION_TEST=true nyc --extension .js mocha --forbid-only \"test/run.test.js\"",
     "test:unit": "mocha --forbid-only \"test/unit/*.test.ts\""
   },
   "engines": {
@@ -95,7 +94,7 @@
     },
     "shortCommandName": {
       "cm:stacks:export": "EXPRT",
-      "cm:export": "EXPRT"
+      "cm:export": "O-EXPRT"
     }
   },
   "repository": "https://github.com/contentstack/cli"
