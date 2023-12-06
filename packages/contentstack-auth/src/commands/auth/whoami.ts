@@ -1,7 +1,8 @@
 import { Command } from '@contentstack/cli-command';
-import { logger, cliux } from '@contentstack/cli-utilities';
+import { cliux } from '@contentstack/cli-utilities';
+import { BaseCommand } from '../../base-command';
 
-export default class WhoamiCommand extends Command {
+export default class WhoamiCommand extends BaseCommand<typeof WhoamiCommand> {
   static description = 'Display current users email address';
 
   static examples = ['$ csdx auth:whoami'];
@@ -13,12 +14,12 @@ export default class WhoamiCommand extends Command {
       if (this.email) {
         cliux.print('CLI_AUTH_WHOAMI_LOGGED_IN_AS', { color: 'white' });
         cliux.print(this.email, { color: 'green' });
-        logger.info('Currently logged in user', this.email);
+        this.logger.info('Currently logged in user', this.email);
       } else {
         cliux.error('CLI_AUTH_WHOAMI_FAILED');
       }
     } catch (error) {
-      logger.error('whoami error', error.message);
+      this.logger.error('whoami error', error.message);
       cliux.print('CLI_AUTH_WHOAMI_FAILED', { color: 'yellow' });
       cliux.print(error.message, { color: 'red' });
     }

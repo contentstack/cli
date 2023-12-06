@@ -38,7 +38,7 @@ module.exports = class ImportEntries {
   ctPath;
   lPath;
   importConcurrency;
-  skipFiles = ['__master.json', '__priority.json', 'schema.json'];
+  skipFiles = ['__master.json', '__priority.json', 'schema.json','.DS_Store'];
 
   constructor(importConfig, stackAPIClient) {
     this.config = _.merge(config, importConfig);
@@ -396,7 +396,7 @@ module.exports = class ImportEntries {
                           }
                         })
                         .catch((error) => {
-                          if (error.hasOwnProperty('error_code') && error.error_code === 119) {
+                          if (error.hasOwnProperty('errorCode') && error.errorCode === 119) {
                             if (error.errors.title) {
                               log(
                                 this.config,
@@ -404,7 +404,13 @@ module.exports = class ImportEntries {
                                 'error',
                               );
                             } else {
-                              log(this.config, `Failed to create an entry ${eUid} ${formatError(error)}`, 'error');
+                              log(
+                                this.config,
+                                `Failed to create an entry '${eUid}' ${formatError(
+                                  error,
+                                )} Title of the failed entry: '${entries[eUid].title}'`,
+                                'error',
+                              );
                             }
                             self.createdEntriesWOUid.push({
                               content_type: ctUid,
@@ -417,7 +423,13 @@ module.exports = class ImportEntries {
                           }
                           // TODO: if status code: 422, check the reason
                           // 429 for rate limit
-                          log(this.config, `Failed to create an entry ${eUid} ${formatError(error)}`, 'error');
+                          log(
+                            this.config,
+                            `Failed to create an entry '${eUid}' ${formatError(error)}. Title of the failed entry: '${
+                              entries[eUid].title
+                            }'`,
+                            'error',
+                          );
                           self.fails.push({
                             content_type: ctUid,
                             locale: lang,
@@ -486,7 +498,18 @@ module.exports = class ImportEntries {
           return resolve();
         })
         .catch((error) => {
-          addlogs(this.config, chalk.red("Failed to create entries in '" + lang + "' language"), 'error');
+          let title = JSON.parse(error?.request?.data || '{}').entry?.title;
+          addlogs(
+            this.config,
+            chalk.red(
+              "Failed to create entries in '" +
+                lang +
+                "' language. " +
+                'Title of the failed entry: ' +
+                `'${title || ''}'`,
+            ),
+            'error',
+          );
           return reject(error);
         });
     });
@@ -584,7 +607,7 @@ module.exports = class ImportEntries {
             } catch (error) {
               addlogs(
                 this.config,
-                `Failed to update the entry ${uid} references while reposting ${formatError(error)}`,
+                `Failed to update the entry '${uid}' references while reposting ${formatError(error)}`,
                 'error',
               );
             }
@@ -681,7 +704,7 @@ module.exports = class ImportEntries {
             })
             .catch((error) => {
               // error while updating entries with references
-              addlogs(this.config, `Failed re-post entries of content type ${ctUid} locale ${lang}`, 'error');
+              addlogs(this.config, `Failed re-post entries of content type '${ctUid}' locale '${lang}'`, 'error');
               addlogs(this.config, formatError(error), 'error');
               // throw error;
             });
@@ -773,7 +796,7 @@ module.exports = class ImportEntries {
             })
             .catch((_error) => {
               addlogs(this.config, formatError(_error), 'error');
-              reject(`Failed suppress content type ${schema.uid} reference fields`);
+              reject(`Failed suppress content type '${schema.uid}' reference fields`);
             });
           // update 5 content types at a time
         },
@@ -968,9 +991,9 @@ module.exports = class ImportEntries {
       if (schema.field_rules) {
         let fieldRuleLength = schema.field_rules.length;
         const fieldDatatypeMap = {};
-        for (let i = 0; i < schema.schema.length ; i++) {
+        for (let i = 0; i < schema.schema.length; i++) {
           const field = schema.schema[i].uid;
-          fieldDatatypeMap[field] = schema.schema[i].data_type; 
+          fieldDatatypeMap[field] = schema.schema[i].data_type;
         }
         for (let k = 0; k < fieldRuleLength; k++) {
           let fieldRuleConditionLength = schema.field_rules[k].conditions.length;
@@ -1195,6 +1218,7 @@ module.exports = class ImportEntries {
           break;
         }
         case 'json': {
+          const structuredPTag = '{"type":"p","attrs":{},"children":[{"text":""}]}';
           if (entry[element.uid] && element.field_metadata.rich_text_type) {
             if (element.multiple) {
               entry[element.uid] = entry[element.uid].map((jsonRteData) => {
@@ -1202,6 +1226,9 @@ module.exports = class ImportEntries {
                 let entryReferences = jsonRteData.children.filter((e) => this.doEntryReferencesExist(e));
                 if (entryReferences.length > 0) {
                   jsonRteData.children = jsonRteData.children.filter((e) => !this.doEntryReferencesExist(e));
+                  if (jsonRteData.children.length === 0) {
+                    jsonRteData.children.push(JSON.parse(structuredPTag)); 
+                  }
                   return jsonRteData; // return jsonRteData without entry references
                 } else {
                   return jsonRteData; // return jsonRteData as it is, because there are no entry references
@@ -1213,6 +1240,9 @@ module.exports = class ImportEntries {
                 entry[element.uid].children = entry[element.uid].children.filter(
                   (e) => !this.doEntryReferencesExist(e),
                 );
+                if (entry[element.uid].children.length === 0) {
+                  entry[element.uid].children.push(JSON.parse(structuredPTag)); 
+                }
               }
             }
           }
@@ -1228,7 +1258,7 @@ module.exports = class ImportEntries {
 
     if (element.length) {
       for (const item of element) {
-        if ((item.type === 'p' || item.type === 'a') && item.children && item.children.length > 0) {
+        if ((item.type === 'p' || item.type === 'a' || item.type === 'span') && item.children && item.children.length > 0) {
           return this.doEntryReferencesExist(item.children);
         } else if (this.isEntryRef(item)) {
           return true;
@@ -1239,7 +1269,7 @@ module.exports = class ImportEntries {
         return true;
       }
 
-      if ((element.type === 'p' || element.type === 'a') && element.children && element.children.length > 0) {
+      if ((element.type === 'p' || element.type === 'a' || element.type ==='span') && element.children && element.children.length > 0) {
         return this.doEntryReferencesExist(element.children);
       }
     }

@@ -2,7 +2,6 @@ import { resolve as pResolve } from 'node:path';
 import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 
-import config from '../../config';
 import BaseClass from './base-class';
 import { log, formatError, fsUtil } from '../../utils';
 import { EnvironmentConfig, ModuleClassParams } from '../../types';
@@ -19,7 +18,7 @@ export default class ExportEnvironments extends BaseClass {
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
     this.environments = {};
-    this.environmentConfig = config.modules.environments;
+    this.environmentConfig = exportConfig.modules.environments;
     this.qs = { include_count: true };
   }
 

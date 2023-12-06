@@ -18,7 +18,6 @@ const config: DefaultConfig = {
     'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
     'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
     'https://azure-eu-api.contentstack.com': 'https://azure-eu-developerhub-api.contentstack.com',
-    'https://stag-api.csnonprod.com': 'https://stag-developerhub-api.csnonprod.com',
   },
   modules: {
     apiConcurrency: 5,
@@ -26,6 +25,7 @@ const config: DefaultConfig = {
       'locales',
       'environments',
       'assets',
+      'taxonomies',
       'extensions',
       'marketplace-apps',
       'global-fields',
@@ -84,9 +84,9 @@ const config: DefaultConfig = {
       publishAssets: true,
       fileName: 'assets.json',
       importSameStructure: true,
-      uploadAssetsConcurrency: 10,
+      uploadAssetsConcurrency: 2,
       displayExecutionTime: false,
-      importFoldersConcurrency: 10,
+      importFoldersConcurrency: 1,
       includeVersionedAssets: false,
       host: 'https://api.contentstack.io',
       folderValidKeys: ['name', 'parent_uid'],
@@ -141,6 +141,14 @@ const config: DefaultConfig = {
     marketplace_apps: {
       dirName: 'marketplace_apps',
       fileName: 'marketplace_apps.json',
+    },
+    taxonomies: {
+      dirName: 'taxonomies',
+      fileName: 'taxonomies.json',
+    },
+    terms: {
+      dirName: 'terms',
+      fileName: 'terms.json',
     },
   },
   languagesCode: [
@@ -367,17 +375,7 @@ const config: DefaultConfig = {
     stacks: '/stacks/',
     labels: '/labels/',
   },
-  updatedModules: [
-    'assets',
-    'extensions',
-    'locales',
-    'marketplace-apps',
-    'labels',
-    'global-fields',
-    'content-types',
-    'webhooks',
-    'custom-roles',
-  ],
+  overwriteSupportedModules: ['extensions', 'global-fields', 'content-types'],
   rateLimit: 5,
   preserveStackVersion: false,
   entriesPublish: true,
@@ -388,9 +386,9 @@ const config: DefaultConfig = {
   developerHubBaseUrl: '',
   marketplaceAppEncryptionKey: 'nF2ejRQcTv',
   getEncryptionKeyMaxRetry: 3,
-  useNewModuleStructure: false,
   // useBackedupDir: '',
   // backupConcurrency: 10,
+  onlyTSModules: ['taxonomies'],
 };
 
 export default config;
