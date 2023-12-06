@@ -4,10 +4,9 @@ It is Contentstack’s CLI plugin to compare and merge content.
 [![License](https://img.shields.io/npm/l/@contentstack/cli)](https://github.com/contentstack/cli/blob/main/LICENSE)
 
 <!-- toc -->
-
-- [@contentstack/cli-cm-branches](#contentstackcli-cm-branches)
-- [Usage](#usage)
-- [Commands](#commands)
+* [@contentstack/cli-cm-branches](#contentstackcli-cm-branches)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 For switching to EU region update the hosts at config/default.js
@@ -33,7 +32,6 @@ For switching to AZURE-NA region update the hosts at config/default.js
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g @contentstack/cli-cm-branches
 $ csdx COMMAND
@@ -45,18 +43,16 @@ USAGE
   $ csdx COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`csdx cm:branches`](#csdx-cmbranches)
-- [`csdx cm:branches:create`](#csdx-cmbranchescreate)
-- [`csdx cm:branches:delete [-uid <value>] [-k <value>]`](#csdx-cmbranchesdelete--uid-value--k-value)
-- [`csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]`](#csdx-cmbranchesdiff---base-branch-value---compare-branch-value--k-value--module-value)
-- [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
+* [`csdx cm:branches`](#csdx-cmbranches)
+* [`csdx cm:branches:create`](#csdx-cmbranchescreate)
+* [`csdx cm:branches:delete [-uid <value>] [-k <value>]`](#csdx-cmbranchesdelete--uid-value--k-value)
+* [`csdx cm:branches:diff [--base-branch <value>] [--compare-branch <value>] [-k <value>][--module <value>]`](#csdx-cmbranchesdiff---base-branch-value---compare-branch-value--k-value--module-value)
+* [`csdx cm:branches:merge [-k <value>][--compare-branch <value>] [--no-revert] [--export-summary-path <value>] [--use-merge-summary <value>] [--comment <value>] [--base-branch <value>]`](#csdx-cmbranchesmerge--k-value--compare-branch-value---no-revert---export-summary-path-value---use-merge-summary-value---comment-value---base-branch-value)
 
 ## `csdx cm:branches`
 
@@ -226,5 +222,4 @@ EXAMPLES
 ```
 
 _See code: [src/commands/cm/branches/merge.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-export/src/commands/cm/branches/merge.ts)_
-
 <!-- commandsstop -->
