@@ -103,6 +103,7 @@ USAGE
 * [`csdx plugins:install PLUGIN...`](#csdx-pluginsinstall-plugin-1)
 * [`csdx plugins:link PLUGIN`](#csdx-pluginslink-plugin)
 * [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin)
+* [`csdx plugins:reset`](#csdx-pluginsreset)
 * [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-1)
 * [`csdx plugins:uninstall PLUGIN...`](#csdx-pluginsuninstall-plugin-2)
 * [`csdx plugins:update`](#csdx-pluginsupdate)
@@ -3364,7 +3365,7 @@ EXAMPLES
   $ csdx plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v4.1.10/src/commands/plugins/index.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -3380,7 +3381,11 @@ ARGUMENTS
 FLAGS
   -f, --force    Run yarn install with force flag.
   -h, --help     Show CLI help.
-  -v, --verbose
+  -s, --silent   Silences yarn output.
+  -v, --verbose  Show verbose yarn output.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
   Installs a plugin into the CLI.
@@ -3397,11 +3402,11 @@ ALIASES
   $ csdx plugins:add
 
 EXAMPLES
-  $ csdx plugins:install myplugin 
+  $ csdx plugins:add myplugin 
 
-  $ csdx plugins:install https://github.com/someuser/someplugin
+  $ csdx plugins:add https://github.com/someuser/someplugin
 
-  $ csdx plugins:install someuser/someplugin
+  $ csdx plugins:add someuser/someplugin
 ```
 
 ## `csdx plugins:inspect PLUGIN...`
@@ -3429,7 +3434,7 @@ EXAMPLES
   $ csdx plugins:inspect myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/inspect.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v4.1.10/src/commands/plugins/inspect.ts)_
 
 ## `csdx plugins:install PLUGIN...`
 
@@ -3445,7 +3450,11 @@ ARGUMENTS
 FLAGS
   -f, --force    Run yarn install with force flag.
   -h, --help     Show CLI help.
-  -v, --verbose
+  -s, --silent   Silences yarn output.
+  -v, --verbose  Show verbose yarn output.
+
+GLOBAL FLAGS
+  --json  Format output as json.
 
 DESCRIPTION
   Installs a plugin into the CLI.
@@ -3469,7 +3478,7 @@ EXAMPLES
   $ csdx plugins:install someuser/someplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/install.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v4.1.10/src/commands/plugins/install.ts)_
 
 ## `csdx plugins:link PLUGIN`
 
@@ -3483,8 +3492,9 @@ ARGUMENTS
   PATH  [default: .] path to plugin
 
 FLAGS
-  -h, --help     Show CLI help.
+  -h, --help      Show CLI help.
   -v, --verbose
+  --[no-]install  Install dependencies after linking the plugin.
 
 DESCRIPTION
   Links a plugin into the CLI for development.
@@ -3498,7 +3508,7 @@ EXAMPLES
   $ csdx plugins:link myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/link.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v4.1.10/src/commands/plugins/link.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -3521,7 +3531,21 @@ DESCRIPTION
 ALIASES
   $ csdx plugins:unlink
   $ csdx plugins:remove
+
+EXAMPLES
+  $ csdx plugins:remove myplugin
 ```
+
+## `csdx plugins:reset`
+
+Remove all user-installed and linked plugins.
+
+```
+USAGE
+  $ csdx plugins:reset
+```
+
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v4.1.10/src/commands/plugins/reset.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -3544,9 +3568,12 @@ DESCRIPTION
 ALIASES
   $ csdx plugins:unlink
   $ csdx plugins:remove
+
+EXAMPLES
+  $ csdx plugins:uninstall myplugin
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/uninstall.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v4.1.10/src/commands/plugins/uninstall.ts)_
 
 ## `csdx plugins:uninstall PLUGIN...`
 
@@ -3569,6 +3596,9 @@ DESCRIPTION
 ALIASES
   $ csdx plugins:unlink
   $ csdx plugins:remove
+
+EXAMPLES
+  $ csdx plugins:unlink myplugin
 ```
 
 ## `csdx plugins:update`
@@ -3587,7 +3617,7 @@ DESCRIPTION
   Update installed plugins.
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v3.3.2/src/commands/plugins/update.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v4.1.10/src/commands/plugins/update.ts)_
 
 ## `csdx tokens`
 
