@@ -58,10 +58,7 @@ let errorTransport;
 
 function init(_logPath: string) {
   if (!logger || !errorLogger) {
-    var logsDir = path.resolve(_logPath, 'logs', 'export');
-    // Create dir if doesn't already exist
-    mkdirp.sync(logsDir);
-
+    const logsDir = path.resolve(_logPath, 'logs', 'import');
     successTransport = {
       filename: path.join(logsDir, 'success.log'),
       maxFiles: 20,
@@ -81,7 +78,12 @@ function init(_logPath: string) {
     logger = winston.createLogger({
       transports: [
         new winston.transports.File(successTransport),
-        new winston.transports.Console({ format: winston.format.simple() }),
+        new winston.transports.Console({
+          format: winston.format.combine(
+            winston.format.simple(),
+            winston.format.colorize({ all: true, colors: { warn: 'yellow', info: 'white' } }),
+          ),
+        }),
       ],
       levels: myCustomLevels.levels,
     });
@@ -109,7 +111,7 @@ function init(_logPath: string) {
         logger.log('info', logString);
       }
     },
-    warn: function () {
+    warn: function (message: any) {
       let args = slice.call(arguments);
       let logString = returnString(args);
       if (logString) {
@@ -138,7 +140,8 @@ export const log = async (config: ImportConfig, message: any, type: string) => {
   // ignoring the type argument, as we are not using it to create a logfile anymore
   if (type !== 'error') {
     // removed type argument from init method
-    init(config.data).log(message);
+    if (type === 'warn') init(config.data).warn(message); //logged warning message in log file
+    else init(config.data).log(message);
   } else {
     init(config.data).error(message);
   }

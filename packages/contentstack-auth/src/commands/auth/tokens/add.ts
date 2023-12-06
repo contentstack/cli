@@ -1,6 +1,5 @@
 import { Command } from '@contentstack/cli-command';
 import {
-  logger,
   cliux,
   configHandler,
   printFlagDeprecation,
@@ -8,9 +7,11 @@ import {
   FlagInput,
   HttpClient,
   messageHandler,
+  Flags,
 } from '@contentstack/cli-utilities';
 import { askTokenType } from '../../../utils/interactive';
-export default class TokensAddCommand extends Command {
+import { BaseCommand } from '../../../base-command';
+export default class TokensAddCommand extends BaseCommand<typeof TokensAddCommand> {
   static description = 'Adds management/delivery tokens to your session to use it with other CLI commands';
 
   static examples = [
@@ -28,7 +29,7 @@ export default class TokensAddCommand extends Command {
   ];
 
   static flags: FlagInput = {
-    alias: flags.string({ char: 'a', description: 'Name of the token alias' }),
+    alias: Flags.string({ char: 'a', description: 'Name of the token alias' }),
     delivery: flags.boolean({
       char: 'd',
       description: 'Set this flag to save delivery token',
@@ -79,7 +80,6 @@ export default class TokensAddCommand extends Command {
     'auth:tokens:add [-a <value>] [--delivery] [--management] [-e <value>] [-k <value>] [-y] [--token <value>]';
 
   async run(): Promise<any> {
-    // @ts-ignore
     const { flags: addTokenFlags } = await this.parse(TokensAddCommand);
     let isAliasExist = false;
     const skipAliasReplaceConfirmation = addTokenFlags.force || addTokenFlags.yes;
@@ -89,7 +89,6 @@ export default class TokensAddCommand extends Command {
     let isDelivery = addTokenFlags.delivery;
     let isManagement = addTokenFlags.management;
     let environment = addTokenFlags.environment;
-    let branch = addTokenFlags.branch;
     const configKeyTokens = 'tokens';
 
     if (!isDelivery && !isManagement && !Boolean(environment)) {
@@ -100,7 +99,7 @@ export default class TokensAddCommand extends Command {
 
     const type = isDelivery || Boolean(environment) ? 'delivery' : 'management';
 
-    logger.info(`adding ${type} token`);
+    this.logger.info(`adding ${type} token`);
 
     try {
       if (!alias) {
@@ -114,7 +113,7 @@ export default class TokensAddCommand extends Command {
           name: 'confirm',
         });
         if (!shouldAliasReplace) {
-          logger.info('Exiting from the process of replacing the token');
+          this.logger.info('Exiting from the process of replacing the token');
           cliux.print('CLI_AUTH_EXIT_PROCESS');
           return;
         }
@@ -160,7 +159,7 @@ export default class TokensAddCommand extends Command {
         cliux.success('CLI_AUTH_TOKENS_ADD_SUCCESS');
       }
     } catch (error) {
-      logger.error('token add error', error.message);
+      this.logger.error('token add error', error.message);
       cliux.print('CLI_AUTH_TOKENS_ADD_FAILED', { color: 'yellow' });
       cliux.error(error.message.message ? error.message.message : error.message);
     }

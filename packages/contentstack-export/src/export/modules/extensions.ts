@@ -2,7 +2,6 @@ import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
 
-import config from '../../config';
 import BaseClass from './base-class';
 import { log, formatError, fsUtil } from '../../utils';
 import { ExtensionsConfig, ModuleClassParams } from '../../types';
@@ -19,7 +18,7 @@ export default class ExportExtensions extends BaseClass {
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
     this.extensions = {};
-    this.extensionConfig = config.modules.extensions;
+    this.extensionConfig = exportConfig.modules.extensions;
     this.qs = { include_count: true };
   }
 

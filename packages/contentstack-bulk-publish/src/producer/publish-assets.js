@@ -51,7 +51,7 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, apiVe
                   environments: environments,
                   locale,
                   stack: stack,
-                  apiVersion
+                  apiVersion,
                 });
                 bulkPublishSet = [];
               }
@@ -63,7 +63,7 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, apiVe
                   environments: environments,
                   locale,
                   stack: stack,
-                  apiVersion
+                  apiVersion,
                 });
                 bulkPublishSet = [];
               }
@@ -83,6 +83,8 @@ async function getAssets(stack, folder, bulkPublish, environments, locale, apiVe
           }
           await getAssets(stack, folder, bulkPublish, environments, locale, apiVersion, skip);
           return resolve();
+        } else {
+          resolve();
         }
       })
       .catch((error) => {

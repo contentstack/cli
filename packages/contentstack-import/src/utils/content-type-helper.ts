@@ -90,7 +90,7 @@ export const removeReferenceFields = async function (
       for (var block in schema[i].blocks) {
         await removeReferenceFields(schema[i].blocks[block].schema, flag, stackAPIClient);
       }
-    } else if (schema[i].data_type === 'reference' || schema[i].reference_to) {
+    } else if (schema[i].data_type === 'reference') {
       flag.supressed = true;
       // Check if content-type exists
       // If exists, then no change should be required.
@@ -128,7 +128,15 @@ export const removeReferenceFields = async function (
           });
         }
       }
-      return true;
+    } else if (
+      // handling entry references in json rte
+      schema[i].data_type === 'json' &&
+      schema[i].field_metadata.allow_json_rte &&
+      schema[i].field_metadata.embed_entry &&
+      schema[i].reference_to.length > 1
+    ) {
+      flag.supressed = true;
+      schema[i].reference_to = ['sys_assets'];
     } else if (
       // handling entry references in json rte
       schema[i].data_type === 'json' &&
@@ -138,7 +146,31 @@ export const removeReferenceFields = async function (
     ) {
       flag.supressed = true;
       schema[i].reference_to = ['sys_assets'];
-      return true;
     }
   }
 };
+
+export const updateFieldRules = function (contentType: any) {
+  const fieldDataTypeMap: { [key: string]: string } = {};
+  for (let i = 0; i < contentType.schema.length; i++) {
+    const field = contentType.schema[i];
+    fieldDataTypeMap[field.uid] = field.data_type;
+  }
+  const fieldRules = [...contentType.field_rules];
+  let len = fieldRules.length;
+  // Looping backwards as we need to delete elements as we move.
+  for (let i = len - 1; i >= 0; i--) {
+    const conditions = fieldRules[i].conditions;
+    let isReference = false;
+    for (let j = 0; j < conditions.length; j++) {
+      const field = conditions[j].operand_field;
+      if (fieldDataTypeMap[field] === 'reference') {
+        isReference = true;
+      }
+    }
+    if (isReference) {
+      fieldRules.splice(i, 1);
+    }
+  }
+  return fieldRules;
+}
