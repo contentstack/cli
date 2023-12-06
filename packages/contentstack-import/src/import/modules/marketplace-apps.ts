@@ -1,13 +1,14 @@
-import isEmpty from 'lodash/isEmpty';
-import find from 'lodash/find';
+import chalk from 'chalk';
 import map from 'lodash/map';
+import find from 'lodash/find';
 import omit from 'lodash/omit';
+import pick from 'lodash/pick';
 import first from 'lodash/first';
 import split from 'lodash/split';
-import toLower from 'lodash/toLower';
+import { join } from 'node:path';
 import filter from 'lodash/filter';
-import pick from 'lodash/pick';
-import { join, resolve } from 'node:path';
+import isEmpty from 'lodash/isEmpty';
+import toLower from 'lodash/toLower';
 import {
   isAuthenticated,
   cliux,
@@ -16,11 +17,12 @@ import {
   HttpClientDecorator,
   managementSDKClient,
   NodeCrypto,
-  ContentstackClient
+  ContentstackClient,
 } from '@contentstack/cli-utilities';
-import chalk from 'chalk';
-
-import config from '../../config';
+import BaseClass from './base-class';
+import { trace } from '../../utils/log';
+import { askEncryptionKey } from '../../utils/interactive';
+import { ModuleClassParams, MarketplaceAppsConfig } from '../../types';
 import {
   log,
   formatError,
@@ -37,9 +39,6 @@ import {
   fsUtil,
   fileHelper,
 } from '../../utils';
-import BaseClass, { ApiOptions } from './base-class';
-import { ModuleClassParams, MarketplaceAppsConfig } from '../../types';
-import { askEncryptionKey } from '../../utils/interactive';
 
 export default class ImportMarketplaceApps extends BaseClass {
   private mapperDirPath: string;
@@ -52,22 +51,22 @@ export default class ImportMarketplaceApps extends BaseClass {
   private appUidMapping: Record<string, unknown>;
   private installationUidMapping: Record<string, unknown>;
   private installedApps: Record<string, any>[];
-  private appOrginalName: string;
+  private appOriginalName: string;
   public developerHubBaseUrl: string;
   public sdkClient: ContentstackClient;
   public nodeCrypto: NodeCrypto;
-
+  public appSdkAxiosInstance: any;
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
 
-    this.marketPlaceAppConfig = config.modules.marketplace_apps;
+    this.marketPlaceAppConfig = importConfig.modules.marketplace_apps;
     this.mapperDirPath = join(this.importConfig.backupDir, 'mapper', 'marketplace_apps');
     this.marketPlaceFolderPath = join(this.importConfig.backupDir, this.marketPlaceAppConfig.dirName);
     this.marketPlaceUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
     this.httpClient = new HttpClient();
     this.appNameMapping = {};
     this.appUidMapping = {};
-    this.appOrginalName = undefined;
+    this.appOriginalName = undefined;
     this.installedApps = [];
     this.installationUidMapping = {};
   }
@@ -101,6 +100,9 @@ export default class ImportMarketplaceApps extends BaseClass {
     await fsUtil.makeDirectory(this.mapperDirPath);
     this.developerHubBaseUrl = this.importConfig.developerHubBaseUrl || (await getDeveloperHubUrl(this.importConfig));
     this.sdkClient = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
+    this.appSdkAxiosInstance = await managementSDKClient({
+      host: this.developerHubBaseUrl.split('://').pop(),
+    });
     this.importConfig.org_uid = await getOrgUid(this.importConfig);
     await this.setHttpClient();
     await this.startInstallation();
@@ -162,11 +164,8 @@ export default class ImportMarketplaceApps extends BaseClass {
     const listOfNewMeta = [];
     const listOfOldMeta = [];
     const extensionUidMap: Record<string, unknown> = {};
-    this.installedApps = await getAllStackSpecificApps(
-      this.developerHubBaseUrl,
-      this.httpClient as HttpClient,
-      this.importConfig,
-    );
+    this.installedApps =
+      (await getAllStackSpecificApps(this.developerHubBaseUrl, this.httpClient as HttpClient, this.importConfig)) || [];
 
     for (const app of this.marketplaceApps) {
       listOfOldMeta.push(...map(app?.ui_location?.locations, 'meta').flat());
@@ -242,7 +241,7 @@ export default class ImportMarketplaceApps extends BaseClass {
     for (let app of privateApps) {
       // NOTE keys can be passed to install new app in the developer hub
       app.manifest = pick(app.manifest, ['uid', 'name', 'description', 'icon', 'target_type', 'webhook', 'oauth']);
-      this.appOrginalName = app.manifest.name;
+      this.appOriginalName = app.manifest.name;
       const obj = {
         oauth: app.oauth,
         webhook: app.webhook,
@@ -254,11 +253,11 @@ export default class ImportMarketplaceApps extends BaseClass {
       });
     }
 
-    this.appOrginalName = undefined;
+    this.appOriginalName = undefined;
   }
 
   async createPrivateApps(app: any, uidCleaned = false, appSuffix = 1) {
-    let locations = app.ui_location && app.ui_location.locations;
+    let locations = app?.ui_location?.locations;
 
     if (!uidCleaned && !isEmpty(locations)) {
       app.ui_location.locations = await this.updateManifestUILocations(locations, 'uid');
@@ -290,8 +289,8 @@ export default class ImportMarketplaceApps extends BaseClass {
               if (meta.name) {
                 const name = `${first(split(meta.name, '◈'))}◈${appSuffix}`;
 
-                if (!this.appNameMapping[this.appOrginalName]) {
-                  this.appNameMapping[this.appOrginalName] = name;
+                if (!this.appNameMapping[this.appOriginalName]) {
+                  this.appNameMapping[this.appOriginalName] = name;
                 }
 
                 meta.name = name;
@@ -314,6 +313,7 @@ export default class ImportMarketplaceApps extends BaseClass {
         const updatedApp = await handleNameConflict(app, appSuffix, this.importConfig);
         return this.createPrivateApps(updatedApp, true, appSuffix + 1);
       } else {
+        trace(response, 'error', true);
         log(this.importConfig, formatError(message), 'error');
 
         if (this.importConfig.forceStopMarketplaceAppsPrompt) return Promise.resolve();
@@ -334,13 +334,16 @@ export default class ImportMarketplaceApps extends BaseClass {
       // NOTE new app installation
       log(this.importConfig, `${response.name} app created successfully.!`, 'success');
       this.appUidMapping[app.uid] = response.uid;
-      this.appNameMapping[this.appOrginalName] = response.name;
+      this.appNameMapping[this.appOriginalName] = response.name;
     }
   }
 
   /**
    * @method installApps
-   * @returns {Void}
+   *
+   * @param {Record<string, any>} app
+   * @param {Record<string, any>[]} installedApps
+   * @returns {Promise<void>}
    */
   async installApps(app: any): Promise<void> {
     let updateParam;
@@ -404,15 +407,23 @@ export default class ImportMarketplaceApps extends BaseClass {
 
     // TODO migrate this HTTP API call into SDK
     // NOTE Use updateAppConfig(this.sdkClient, this.importConfig, app, payload) utility when migrating to SDK call;
-    return this.httpClient
-      .put(`${this.developerHubBaseUrl}/installations/${uid}`, payload)
-      .then(({ data }) => {
-        if (data.message) {
+    return this.appSdkAxiosInstance.axiosInstance
+      .put(`${this.developerHubBaseUrl}/installations/${uid}`, payload, {
+        headers: {
+          organization_uid: this.importConfig.org_uid,
+        },
+      })
+      .then(({ data }: any) => {
+        if (data?.message) {
+          trace(data, 'error', true);
           log(this.importConfig, formatError(data.message), 'success');
         } else {
           log(this.importConfig, `${app.manifest.name} app config updated successfully.!`, 'success');
         }
       })
-      .catch((error) => log(this.importConfig, formatError(error), 'error'));
+      .catch((error: any) => {
+        trace(error, 'error', true);
+        log(this.importConfig, formatError(error), 'error');
+      });
   }
 }

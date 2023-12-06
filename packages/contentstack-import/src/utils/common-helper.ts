@@ -104,22 +104,11 @@ export const sanitizeStack = (importConfig: ImportConfig) => {
 };
 
 export const masterLocalDetails = (stackAPIClient: any): Promise<{ code: string }> => {
-  return new Promise((resolve, reject) => {
-    const result = stackAPIClient.locale().query();
-    result
-      .find()
-      .then((response: any) => {
-        const masterLocalObj = response.items.filter((obj: any) => {
-          if (obj.fallback_locale === null) {
-            return obj;
-          }
-        });
-        return resolve(masterLocalObj[0]);
-      })
-      .catch((error: Error) => {
-        return reject(error);
-      });
-  });
+  return stackAPIClient
+    .locale()
+    .query({ query: { fallback_locale: null } })
+    .find()
+    .then(({ items }: Record<string, any>) => items[0]);
 };
 
 export const field_rules_update = (importConfig: ImportConfig, ctPath: string) => {
@@ -243,4 +232,20 @@ export const validateBranch = async (stackAPIClient: any, config: ImportConfig, 
       reject({ message: 'No branch found with the name ' + branch, error });
     }
   });
+};
+
+export const formatDate = (date: Date = new Date()) => {
+  // Format the date manually
+  const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date
+    .getDate()
+    .toString()
+    .padStart(2, '0')}T${date.getHours().toString().padStart(2, '0')}-${date
+    .getMinutes()
+    .toString()
+    .padStart(2, '0')}-${date.getSeconds().toString().padStart(2, '0')}-${date
+    .getMilliseconds()
+    .toString()
+    .padStart(3, '0')}Z`;
+
+  return formattedDate;
 };
