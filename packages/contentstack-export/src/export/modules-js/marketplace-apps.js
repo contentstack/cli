@@ -44,7 +44,9 @@ module.exports = class ExportMarketplaceApps {
     }
 
     this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
-
+    this.appSdkAxiosInstance = await managementSDKClient({
+      endpoint: this.developerHubBaseUrl,
+    });
     await this.getOrgUid();
 
     const httpClient = new HttpClient();
@@ -65,7 +67,7 @@ module.exports = class ExportMarketplaceApps {
     );
     mkdirp.sync(this.marketplaceAppPath);
 
-    this.nodeCrypto= await createNodeCryptoInstance(config);
+    this.nodeCrypto = await createNodeCryptoInstance(config);
 
     return this.exportInstalledExtensions();
   }
@@ -80,7 +82,7 @@ module.exports = class ExportMarketplaceApps {
         console.log(error);
       });
 
-    if (tempStackData && tempStackData.org_uid) {
+    if (tempStackData?.org_uid) {
       this.config.org_uid = tempStackData.org_uid;
     }
   }
@@ -94,10 +96,7 @@ module.exports = class ExportMarketplaceApps {
         await this.getAppConfigurations(client, installedApps, [+index, app]);
       }
 
-      await fileHelper.writeFileSync(
-        path.join(this.marketplaceAppPath, this.marketplaceAppConfig.fileName),
-        installedApps,
-      );
+      fileHelper.writeFileSync(path.join(this.marketplaceAppPath, this.marketplaceAppConfig.fileName), installedApps);
 
       log(this.config, chalk.green('All the marketplace apps have been exported successfully'), 'success');
     } else {
@@ -106,8 +105,12 @@ module.exports = class ExportMarketplaceApps {
   }
 
   getAllStackSpecificApps(listOfApps = [], skip = 0) {
-    return this.httpClient
-      .get(`${this.developerHubBaseUrl}/installations?target_uids=${this.config.source_stack}&skip=${skip}`)
+    return this.appSdkAxiosInstance.axiosInstance
+      .get(`/installations?target_uids=${this.config.source_stack}&skip=${skip}`, {
+        headers: {
+          organization_uid: this.config.org_uid
+        },
+      })
       .then(async ({ data }) => {
         const { data: apps, count } = data;
 
@@ -161,9 +164,9 @@ module.exports = class ExportMarketplaceApps {
         } else if (error) {
           log(this.config, `Error on exporting ${appName} app and it's config.`, 'error');
         }
-    })
-    .catch(err => {
-      log(this.config, `Failed to export ${appName} app config ${formatError(err)}`, 'error');
-    })
+      })
+      .catch((err) => {
+        log(this.config, `Failed to export ${appName} app config ${formatError(err)}`, 'error');
+      });
   }
 };

@@ -10,7 +10,11 @@
     "allowJs": true,
     "sourceMap": false,
     "skipLibCheck": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "lib": [
+      "ES2019",
+      "es2020.promise"
+    ],
   },
   "include": [
     "src/**/*"
