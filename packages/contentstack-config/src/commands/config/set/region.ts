@@ -1,18 +1,18 @@
 import { Command } from '@contentstack/cli-command';
 import {
   cliux,
-  logger,
   printFlagDeprecation,
-  args as _args,
   flags as _flags,
   authHandler,
   FlagInput,
   ArgInput,
+  args,
 } from '@contentstack/cli-utilities';
 import { Region } from '../../../interfaces';
 import { regionHandler, interactive } from '../../../utils';
+import { Args, BaseCommand } from '../../../base-command';
 
-export default class RegionSetCommand extends Command {
+export default class RegionSetCommand extends BaseCommand<typeof RegionSetCommand> {
   config: any;
   static description = 'Set region for CLI';
   static flags: FlagInput = {
@@ -50,7 +50,7 @@ export default class RegionSetCommand extends Command {
   ];
 
   static args: ArgInput = {
-    region: _args.string({ description: 'Name for the region' }),
+    region: args.string({ description: 'Name for the region' }),
   };
 
   async run() {
@@ -85,7 +85,7 @@ export default class RegionSetCommand extends Command {
         cliux.success(`CDA HOST: ${customRegion.cda}`);
         cliux.success(`UI HOST: ${customRegion.uiHost}`);
       } catch (error) {
-        logger.error('failed to set the region', error);
+        this.logger.error('failed to set the region', error);
         cliux.error(`Failed to set region due to: ${error.message}`);
       }
     } else if (['NA', 'EU', 'AZURE-NA', 'AZURE-EU'].includes(selectedRegion)) {

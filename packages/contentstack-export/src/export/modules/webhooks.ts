@@ -2,7 +2,6 @@ import omit from 'lodash/omit';
 import isEmpty from 'lodash/isEmpty';
 import { resolve as pResolve } from 'node:path';
 
-import config from '../../config';
 import BaseClass from './base-class';
 import { log, formatError, fsUtil } from '../../utils';
 import { WebhookConfig, ModuleClassParams } from '../../types';
@@ -20,7 +19,7 @@ export default class ExportWebhooks extends BaseClass {
   constructor({ exportConfig, stackAPIClient }: ModuleClassParams) {
     super({ exportConfig, stackAPIClient });
     this.webhooks = {};
-    this.webhookConfig = config.modules.webhooks;
+    this.webhookConfig = exportConfig.modules.webhooks;
     this.qs = { include_count: true, asc: 'updated_at' };
   }
 
@@ -62,7 +61,7 @@ export default class ExportWebhooks extends BaseClass {
           return await this.getWebhooks(skip);
         }
       })
-      .catch(({ error }: any) => {
+      .catch((error: any) => {
         log(this.exportConfig, `Failed to export webhooks.${formatError(error)}`, 'error');
         log(this.exportConfig, error, 'error');
       });
