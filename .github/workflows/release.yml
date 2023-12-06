@@ -8,8 +8,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2
+      - uses: actions/checkout@v3.5.3
+      - uses: pnpm/action-setup@v2.2.4
         with:
           version: 7
       - uses: actions/setup-node@v1
@@ -32,7 +32,7 @@ jobs:
         working-directory: ./packages/contentstack-dev-dependencies
         run: npm run prepack
       - name: Publishing dev dependencies
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.dev-dependencies-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -47,7 +47,7 @@ jobs:
         working-directory: ./packages/contentstack-utilities
         run: npm run prepack
       - name: Publishing utilities
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.utilities-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -62,7 +62,7 @@ jobs:
         working-directory: ./packages/contentstack-command
         run: npm run prepack
       - name: Publishing command
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.command-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -77,7 +77,7 @@ jobs:
         working-directory: ./packages/contentstack-config
         run: npm run prepack
       - name: Publishing config
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.config-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -92,7 +92,7 @@ jobs:
         working-directory: ./packages/contentstack-auth
         run: npm run prepack
       - name: Publishing auth
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.auth-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -102,8 +102,12 @@ jobs:
         if: ${{ env.release_releaseAll == 'true' || env.release_plugins_export == 'true'}}
         working-directory: ./packages/contentstack-export
         run: npm install
+      - name: Compiling export
+        if: ${{ steps.export-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-export
+        run: npm run prepack
       - name: Publishing export
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.export-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -113,8 +117,12 @@ jobs:
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_import == 'true'}}
         working-directory: ./packages/contentstack-import
         run: npm install
+      - name: Compiling import
+        if: ${{ steps.import-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-import
+        run: npm run prepack
       - name: Publishing import
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.import-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -125,7 +133,7 @@ jobs:
         working-directory: ./packages/contentstack-clone
         run: npm install
       - name: Publishing clone
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.clone-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -136,7 +144,7 @@ jobs:
         working-directory: ./packages/contentstack-export-to-csv
         run: npm install
       - name: Publishing export to csv
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.export-to-csv-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -147,7 +155,7 @@ jobs:
         working-directory: ./packages/contentstack-migrate-rte
         run: npm install
       - name: Publishing migrate rte
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.migrate-rte-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -158,7 +166,7 @@ jobs:
         working-directory: ./packages/contentstack-migration
         run: npm install
       - name: Publishing migration
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.migration-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -173,7 +181,7 @@ jobs:
         working-directory: ./packages/contentstack-seed
         run: npm run prepack
       - name: Publishing seed
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.seed-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -188,7 +196,7 @@ jobs:
         working-directory: ./packages/contentstack-bootstrap
         run: npm run prepack
       - name: Publishing bootstrap
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.bootstrap-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -199,7 +207,7 @@ jobs:
         working-directory: ./packages/contentstack-bulk-publish
         run: npm install
       - name: Publishing bulk publish
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.bulk-publish-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -214,7 +222,7 @@ jobs:
         working-directory: ./packages/contentstack-launch
         run: npm run prepack
       - name: Publishing launch
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.launch-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -230,7 +238,7 @@ jobs:
         working-directory: ./packages/contentstack-branches
         run: npm run prepack
       - name: Publishing branches
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.branches-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -241,14 +249,34 @@ jobs:
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
         working-directory: ./packages/contentstack
         run: npm install
+      - name: Installing dependencies of audit
+        id: audit-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_audit == 'true'}}
+        working-directory: ./packages/contentstack-audit
+        run: npm install
+      - name: Compiling audit
+        if: ${{ steps.audit-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-audit
+        run: npm run prepack
+      - name: Publishing audit
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.audit-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-audit/package.json
+          access: public
+      - name: Compiling core
+        if: ${{ steps.core-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack
+        run: npm run prepack
       - name: Publishing core
         id: publish-core
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         if: ${{ steps.core-installation.conclusion == 'success'  }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack/package.json
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.5.3
         with:
           ref: 'prod-qa-pipeline'
       - run: echo ${{ steps.publish-core.outputs.version  }} > version.md
@@ -256,12 +284,7 @@ jobs:
         with:
           message: 'Released version'
       - name: Create Release
-        uses: actions/create-release@v1
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ steps.publish-core.outputs.version }}
-          release_name: Release ${{ steps.publish-core.outputs.version }}
-          draft: false # Default value, but nice to set explicitly
-          prerelease: false # Default value, but nice to set explicitly
+        run: gh release create v${{ steps.publish-core.outputs.version }} --title "Release ${{ steps.publish-core.outputs.version }}" --generate-notes

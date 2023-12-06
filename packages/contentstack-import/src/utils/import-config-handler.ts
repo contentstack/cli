@@ -3,7 +3,7 @@ import * as path from 'path';
 import { omit, filter, includes, isArray } from 'lodash';
 import { configHandler, isAuthenticated } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
-import { readFile } from './file-helper';
+import { readFile, fileExistsSync } from './file-helper';
 import { askContentDir, askAPIKey } from './interactive';
 import login from './login-handler';
 import { ImportConfig } from '../types';
@@ -19,10 +19,18 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
     }
     config = merge.recursive(config, externalConfig);
   }
+
   config.contentDir = importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir());
   config.contentDir = path.resolve(config.contentDir);
   //Note to support the old key
   config.data = config.contentDir;
+
+  if (fileExistsSync(path.join(config.contentDir, 'export-info.json'))) {
+    config.contentVersion =
+      ((await readFile(path.join(config.contentDir, 'export-info.json'))) || {}).contentVersion || 2;
+  } else {
+    config.contentVersion = 1;
+  }
 
   const managementTokenAlias = importCmdFlags['management-token-alias'] || importCmdFlags['alias'];
 
@@ -56,7 +64,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   //Note to support the old key
   config.source_stack = config.apiKey;
 
-  config.importWebhookStatus = importCmdFlags.importWebhookStatus;
+  config.importWebhookStatus = importCmdFlags['import-webhook-status'];
   config.forceStopMarketplaceAppsPrompt = importCmdFlags.yes;
 
   if (importCmdFlags['branch']) {
@@ -74,6 +82,9 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
 
   // Note to support old modules
   config.target_stack = config.apiKey;
+
+  config.replaceExisting = importCmdFlags['replace-existing'];
+  config.skipExisting = importCmdFlags['skip-existing'];
 
   return config;
 };
