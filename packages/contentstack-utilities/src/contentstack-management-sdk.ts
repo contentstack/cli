@@ -73,6 +73,7 @@ class ManagementSDKInitiator {
         });
       },
     };
+
     if (config.endpoint) {
       option.endpoint = config.endpoint;
     }
@@ -80,12 +81,10 @@ class ManagementSDKInitiator {
       if (!option.headers) option.headers = {};
       option.headers.branch = config.branchName;
     }
-
     if (this.analyticsInfo) {
       if (!option.headers) option.headers = {};
       option.headers['X-CS-CLI'] = this.analyticsInfo;
     }
-
     if (!config.management_token) {
       const authorisationType = configStore.get('authorisationType');
       if (authorisationType === 'BASIC') {
@@ -103,6 +102,11 @@ class ManagementSDKInitiator {
         option.authtoken = '';
         option.authorization = '';
       }
+    }
+
+    const earlyAccessHeaders = configStore.get(`earlyAccessHeaders`);
+    if (earlyAccessHeaders && Object.keys(earlyAccessHeaders).length > 0) {
+      option.early_access = Object.values(earlyAccessHeaders);
     }
 
     return client(option);
