@@ -39,7 +39,7 @@ export const readLargeFile = function (filePath: string, options: { type?: strin
   if (fs.existsSync(filePath)) {
     return new Promise((resolve, reject) => {
       const readStream = fs.createReadStream(filePath, { encoding: 'utf-8' });
-      const parseStream = bigJSON.createParseStream();
+      const parseStream: any = bigJSON.createParseStream();
       parseStream.on('data', function (data: unknown) {
         if (options.type === 'array') {
           return resolve(Object.values(data));
@@ -81,7 +81,7 @@ export const writeLargeFile = function (filePath: string, data: any): Promise<an
     const stringifyStream = bigJSON.createStringifyStream({
       body: data,
     });
-    var writeStream = fs.createWriteStream(filePath, 'utf-8');
+    let writeStream = fs.createWriteStream(filePath, 'utf-8');
     stringifyStream.pipe(writeStream);
     writeStream.on('finish', () => {
       resolve('');
