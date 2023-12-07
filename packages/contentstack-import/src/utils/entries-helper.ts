@@ -464,7 +464,7 @@ export const restoreJsonRteEntryRefs = (
   entry: Record<string, any>,
   sourceStackEntry: any,
   ctSchema: any = [],
-  { mappedAssetUids, mappedAssetUrls }: any,
+  { uidMapper, mappedAssetUids, mappedAssetUrls }: any,
 ) => {
   // let mappedAssetUids = fileHelper.readFileSync(this.mappedAssetUidPath) || {};
   // let mappedAssetUrls = fileHelper.readFileSync(this.mappedAssetUrlPath) || {};
@@ -509,58 +509,21 @@ export const restoreJsonRteEntryRefs = (
       case 'json': {
         if (entry[element.uid] && element.field_metadata.rich_text_type) {
           if (element.multiple && Array.isArray(entry[element.uid])) {
-            entry[element.uid] = entry[element.uid].map((field: any, index: number) => {
-              // i am facing a Maximum call stack exceeded issue,
-              // probably because of this loop operation
-
-              let entryRefs = sourceStackEntry[element.uid][index].children
-                .map((e: any, i: number) => {
-                  return { index: i, value: e };
-                })
-                .filter((e: any) => doEntryReferencesExist(e.value))
-                .map((e: any) => {
-                  // commenting the line below resolved the maximum call stack exceeded issue
-                  // e.value = this.setDirtyTrue(e.value)
-                  setDirtyTrue(e.value);
-                  return e;
-                })
-                .map((e: any) => {
-                  // commenting the line below resolved the maximum call stack exceeded issue
-                  // e.value = this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls)
-                  resolveAssetRefsInEntryRefsForJsonRte(e.value, mappedAssetUids, mappedAssetUrls);
-                  return e;
-                });
-
-              if (entryRefs?.length > 0) {
-                entryRefs.forEach((entryRef: any) => {
-                  field.children.splice(entryRef.index, 0, entryRef.value);
-                });
-              }
-              return field;
+            entry[element.uid] = sourceStackEntry[element.uid].map((field: any) => {
+              field = restoreReferenceInJsonRTE(field, uidMapper);
+              field.children = field.children.map((child: any) => {
+                setDirtyTrue(child);
+                resolveAssetRefsInEntryRefsForJsonRte(child, mappedAssetUids, mappedAssetUrls);
+                return child;
+              });
             });
           } else {
-            let entryRefs = sourceStackEntry[element.uid].children
-              .map((e: any, index: number) => {
-                return { index: index, value: e };
-              })
-              // FIXME the current logic/commented code is not capable enough to find all the nested reference in the json RTE so removing it for time being
-              // .filter((e: any) => doEntryReferencesExist(e.value))
-              .map((e: any) => {
-                setDirtyTrue(e.value);
-                return e;
-              })
-              .map((e: any) => {
-                resolveAssetRefsInEntryRefsForJsonRte(e.value, mappedAssetUids, mappedAssetUrls);
-                return e;
-              });
-
-            if (entryRefs.length > 0) {
-              entryRefs.forEach((entryRef: any) => {
-                if (!_.isEmpty(entry[element.uid]) && entry[element.uid].children) {
-                  entry[element.uid].children.splice(entryRef.index, 0, entryRef.value);
-                }
-              });
-            }
+            entry[element.uid] = restoreReferenceInJsonRTE(sourceStackEntry[element.uid], uidMapper);
+            entry[element.uid].children = entry[element.uid].children.map((child: any) => {
+              setDirtyTrue(child);
+              resolveAssetRefsInEntryRefsForJsonRte(child, mappedAssetUids, mappedAssetUrls);
+              return child;
+            });
           }
         }
         break;
@@ -649,4 +612,35 @@ function removeReferenceInJsonRTE(jsonRTE: EntryJsonRTEFieldDataType): EntryJson
   }
 
   return jsonRTE;
+}
+
+function restoreReferenceInJsonRTE(
+  jsonRTE: EntryJsonRTEFieldDataType,
+  uidMapper: Record<string, string>,
+): EntryJsonRTEFieldDataType {
+  try {
+    if (jsonRTE?.children && Array.isArray(jsonRTE.children)) {
+      jsonRTE.children = jsonRTE?.children?.map((child, index) => {
+        const { children, attrs, type } = child;
+
+        if (type === 'reference' && attrs?.['entry-uid']) {
+          jsonRTE.children[index] = child;
+          jsonRTE.children[index].attrs['entry-uid'] = uidMapper[child.attrs['entry-uid']];
+        }
+
+        if (!jsonRTE.children?.[index]) {
+          console.log(jsonRTE.children, child, index);
+        }
+        if (!_.isEmpty(children)) {
+          return restoreReferenceInJsonRTE(child, uidMapper);
+        }
+
+        return child;
+      });
+    }
+
+    return jsonRTE;
+  } catch (error) {
+    console.log(error);
+  }
 }
