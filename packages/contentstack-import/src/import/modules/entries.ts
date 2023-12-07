@@ -671,6 +671,7 @@ export default class EntriesImport extends BaseClass {
       if (this.jsonRteCTs.indexOf(cTUid) > -1) {
         // the entries stored in eSuccessFilePath, have the same uids as the entries from source data
         entry = restoreJsonRteEntryRefs(entry, sourceEntry, contentType.schema, {
+          uidMapper: this.entriesUidMapper,
           mappedAssetUids: this.assetUidMapper,
           mappedAssetUrls: this.assetUrlMapper,
         });
