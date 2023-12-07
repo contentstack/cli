@@ -83,7 +83,12 @@ export default class ImportExtensions extends BaseClass {
       return;
     }
 
-    const apiContent = values(this.extensions);
+    const apiContent = [];
+
+    for (const [uid, content] of Object.entries(this.extensions)) {
+      (content as Record<string, any>).uid = uid;
+      apiContent.push(content);
+    }
 
     const onSuccess = ({ response, apiData: { uid, title } = { uid: null, title: '' } }: any) => {
       this.extSuccess.push(response);
