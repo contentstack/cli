@@ -22,7 +22,7 @@
     "@contentstack/cli-utilities": "~1.5.8",
     "@oclif/core": "^2.9.3",
     "@oclif/plugin-help": "^5",
-    "@oclif/plugin-plugins": "^3.3.0",
+    "@oclif/plugin-plugins": "^4.1.9",
     "@types/express": "^4.17.17",
     "@types/express-serve-static-core": "^4.17.34",
     "adm-zip": "^0.5.10",
