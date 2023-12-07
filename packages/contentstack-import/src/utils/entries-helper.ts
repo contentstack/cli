@@ -425,9 +425,16 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
 };
 
 function doEntryReferencesExist(element: Record<string, any>[] | any): boolean {
+  // checks if the children of p element contain any references
+  // only checking one level deep, not recursive
+
   if (element?.length) {
     for (const item of element) {
-      if ((item.type === 'p' || item.type === 'a' || item.type === 'span') && item.children && item.children.length > 0) {
+      if (
+        (item.type === 'p' || item.type === 'a' || item.type === 'span') &&
+        item.children &&
+        item.children.length > 0
+      ) {
         return doEntryReferencesExist(item.children);
       } else if (isEntryRef(item)) {
         return true;
@@ -438,7 +445,11 @@ function doEntryReferencesExist(element: Record<string, any>[] | any): boolean {
       return true;
     }
 
-    if ((element.type === 'p' || element.type === 'a' || element.type === 'span') && element.children && element.children.length > 0) {
+    if (
+      (element.type === 'p' || element.type === 'a' || element.type === 'span') &&
+      element.children &&
+      element.children.length > 0
+    ) {
       return doEntryReferencesExist(element.children);
     }
   }
@@ -532,7 +543,8 @@ export const restoreJsonRteEntryRefs = (
               .map((e: any, index: number) => {
                 return { index: index, value: e };
               })
-              .filter((e: any) => doEntryReferencesExist(e.value))
+              // FIXME the current logic/commented code is not capable enough to find all the nested reference in the json RTE so removing it for time being
+              // .filter((e: any) => doEntryReferencesExist(e.value))
               .map((e: any) => {
                 setDirtyTrue(e.value);
                 return e;
