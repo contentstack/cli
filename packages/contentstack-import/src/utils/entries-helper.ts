@@ -38,7 +38,7 @@ export const lookupEntries = function (
             break;
           }
           case 'reference': {
-            if (Object.keys(element.attrs)?.length > 0 && element.attrs.type === 'entry') {
+            if (Object.keys(element.attrs)?.length > 0 && element.attrs?.type === 'entry') {
               if (uids.indexOf(element.attrs['entry-uid']) === -1) {
                 uids.push(element.attrs['entry-uid']);
               }
@@ -457,7 +457,7 @@ function doEntryReferencesExist(element: Record<string, any>[] | any): boolean {
 }
 
 function isEntryRef(element: any) {
-  return element.type === 'reference' && element.attrs.type === 'entry';
+  return element.type === 'reference' && element.attrs?.type === 'entry';
 }
 
 export const restoreJsonRteEntryRefs = (
@@ -557,7 +557,7 @@ function setDirtyTrue(jsonRteChild: any) {
 
 function resolveAssetRefsInEntryRefsForJsonRte(jsonRteChild: any, mappedAssetUids: any, mappedAssetUrls: any) {
   if (jsonRteChild.type) {
-    if (jsonRteChild.attrs.type === 'asset') {
+    if (jsonRteChild.attrs?.type === 'asset') {
       let assetUrl;
       if (mappedAssetUids[jsonRteChild.attrs['asset-uid']]) {
         jsonRteChild.attrs['asset-uid'] = mappedAssetUids[jsonRteChild.attrs['asset-uid']];
