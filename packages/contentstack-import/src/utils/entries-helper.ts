@@ -624,9 +624,6 @@ function restoreReferenceInJsonRTE(
   jsonRTE: EntryJsonRTEFieldDataType,
   uidMapper: Record<string, string>,
 ): EntryJsonRTEFieldDataType {
-  if (!uidMapper) {
-    console.log('test')
-  }
   if (jsonRTE?.children && Array.isArray(jsonRTE.children)) {
     jsonRTE.children = jsonRTE?.children?.map((child, index) => {
       const { children, attrs, type } = child;
