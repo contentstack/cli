@@ -516,8 +516,8 @@ export const restoreJsonRteEntryRefs = (
             entry[element.uid] = sourceStackEntry[element.uid].map((jsonRTE: any) => {
               jsonRTE = restoreReferenceInJsonRTE(jsonRTE, uidMapper);
               jsonRTE.children = jsonRTE.children.map((child: any) => {
-                setDirtyTrue(child);
-                resolveAssetRefsInEntryRefsForJsonRte(child, mappedAssetUids, mappedAssetUrls);
+                child = setDirtyTrue(child);
+                child = resolveAssetRefsInEntryRefsForJsonRte(child, mappedAssetUids, mappedAssetUrls);
                 return child;
               });
 
@@ -526,8 +526,8 @@ export const restoreJsonRteEntryRefs = (
           } else {
             entry[element.uid] = restoreReferenceInJsonRTE(sourceStackEntry[element.uid], uidMapper);
             entry[element.uid].children = entry[element.uid].children.map((child: any) => {
-              setDirtyTrue(child);
-              resolveAssetRefsInEntryRefsForJsonRte(child, mappedAssetUids, mappedAssetUrls);
+              child = setDirtyTrue(child);
+              child = resolveAssetRefsInEntryRefsForJsonRte(child, mappedAssetUids, mappedAssetUrls);
               return child;
             });
           }
@@ -551,6 +551,7 @@ function setDirtyTrue(jsonRteChild: any) {
       jsonRteChild.children = jsonRteChild.children.map((subElement: any) => setDirtyTrue(subElement));
     }
   }
+
   return jsonRteChild;
 }
 
@@ -620,6 +621,19 @@ function removeReferenceInJsonRTE(jsonRTE: EntryJsonRTEFieldDataType): EntryJson
   return jsonRTE;
 }
 
+/**
+ * The function `restoreReferenceInJsonRTE` takes a JSON object `jsonRTE` and a mapping object
+ * `uidMapper`, and recursively replaces the `entry-uid` attribute values in any `reference` type
+ * elements with their corresponding values from the `uidMapper` object.
+ * @param {EntryJsonRTEFieldDataType} jsonRTE - The `jsonRTE` parameter is an object that represents a
+ * JSON structure. It contains a `children` property which is an array of objects. Each object
+ * represents a child element in the JSON structure and can have properties like `children`, `attrs`,
+ * and `type`.
+ * @param uidMapper - The `uidMapper` parameter is an object that maps entry UIDs to their
+ * corresponding restored UIDs. It is used to replace the `entry-uid` attribute in the JSON RTE with
+ * the restored UID.
+ * @returns the updated `jsonRTE` object with the restored references.
+ */
 function restoreReferenceInJsonRTE(
   jsonRTE: EntryJsonRTEFieldDataType,
   uidMapper: Record<string, string>,
