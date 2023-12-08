@@ -466,8 +466,6 @@ export const restoreJsonRteEntryRefs = (
   ctSchema: any = [],
   { uidMapper, mappedAssetUids, mappedAssetUrls }: any,
 ) => {
-  // let mappedAssetUids = fileHelper.readFileSync(this.mappedAssetUidPath) || {};
-  // let mappedAssetUrls = fileHelper.readFileSync(this.mappedAssetUrlPath) || {};
   for (const element of ctSchema) {
     switch (element.data_type) {
       case 'blocks': {
@@ -478,6 +476,7 @@ export const restoreJsonRteEntryRefs = (
               let subBlock = element.blocks?.filter((block: any) => block.uid === key).pop();
               let sourceStackElement = sourceStackEntry[element.uid][eIndex][key];
               e[key] = restoreJsonRteEntryRefs(e[key], sourceStackElement, subBlock.schema, {
+                uidMapper,
                 mappedAssetUids,
                 mappedAssetUrls,
               });
@@ -493,12 +492,17 @@ export const restoreJsonRteEntryRefs = (
           if (element.multiple && Array.isArray(entry[element.uid])) {
             entry[element.uid] = entry[element.uid].map((e: any, eIndex: number) => {
               let sourceStackElement = sourceStackEntry[element.uid][eIndex];
-              e = restoreJsonRteEntryRefs(e, sourceStackElement, element.schema, { mappedAssetUids, mappedAssetUrls });
+              e = restoreJsonRteEntryRefs(e, sourceStackElement, element.schema, {
+                uidMapper,
+                mappedAssetUids,
+                mappedAssetUrls,
+              });
               return e;
             });
           } else {
             let sourceStackElement = sourceStackEntry[element.uid];
             entry[element.uid] = restoreJsonRteEntryRefs(entry[element.uid], sourceStackElement, element.schema, {
+              uidMapper,
               mappedAssetUids,
               mappedAssetUrls,
             });
@@ -509,13 +513,15 @@ export const restoreJsonRteEntryRefs = (
       case 'json': {
         if (entry[element.uid] && element.field_metadata.rich_text_type) {
           if (element.multiple && Array.isArray(entry[element.uid])) {
-            entry[element.uid] = sourceStackEntry[element.uid].map((field: any) => {
-              field = restoreReferenceInJsonRTE(field, uidMapper);
-              field.children = field.children.map((child: any) => {
+            entry[element.uid] = sourceStackEntry[element.uid].map((jsonRTE: any) => {
+              jsonRTE = restoreReferenceInJsonRTE(jsonRTE, uidMapper);
+              jsonRTE.children = jsonRTE.children.map((child: any) => {
                 setDirtyTrue(child);
                 resolveAssetRefsInEntryRefsForJsonRte(child, mappedAssetUids, mappedAssetUrls);
                 return child;
               });
+
+              return jsonRTE;
             });
           } else {
             entry[element.uid] = restoreReferenceInJsonRTE(sourceStackEntry[element.uid], uidMapper);
@@ -618,29 +624,25 @@ function restoreReferenceInJsonRTE(
   jsonRTE: EntryJsonRTEFieldDataType,
   uidMapper: Record<string, string>,
 ): EntryJsonRTEFieldDataType {
-  try {
-    if (jsonRTE?.children && Array.isArray(jsonRTE.children)) {
-      jsonRTE.children = jsonRTE?.children?.map((child, index) => {
-        const { children, attrs, type } = child;
-
-        if (type === 'reference' && attrs?.['entry-uid']) {
-          jsonRTE.children[index] = child;
-          jsonRTE.children[index].attrs['entry-uid'] = uidMapper[child.attrs['entry-uid']];
-        }
-
-        if (!jsonRTE.children?.[index]) {
-          console.log(jsonRTE.children, child, index);
-        }
-        if (!_.isEmpty(children)) {
-          return restoreReferenceInJsonRTE(child, uidMapper);
-        }
-
-        return child;
-      });
-    }
-
-    return jsonRTE;
-  } catch (error) {
-    console.log(error);
+  if (!uidMapper) {
+    console.log('test')
   }
+  if (jsonRTE?.children && Array.isArray(jsonRTE.children)) {
+    jsonRTE.children = jsonRTE?.children?.map((child, index) => {
+      const { children, attrs, type } = child;
+
+      if (type === 'reference' && attrs?.['entry-uid']) {
+        jsonRTE.children[index] = child;
+        jsonRTE.children[index].attrs['entry-uid'] = uidMapper[child.attrs['entry-uid']];
+      }
+
+      if (!_.isEmpty(children)) {
+        return restoreReferenceInJsonRTE(child, uidMapper);
+      }
+
+      return child;
+    });
+  }
+
+  return jsonRTE;
 }
