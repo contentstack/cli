@@ -1,36 +1,57 @@
-import isEmpty from 'lodash/isEmpty';
-import map from 'lodash/map';
-import omit from 'lodash/omit';
-import includes from 'lodash/includes';
 import chalk from 'chalk';
-import { cliux, configHandler, HttpClient, ContentstackClient, managementSDKClient } from '@contentstack/cli-utilities';
+import map from 'lodash/map';
+import omitBy from 'lodash/omitBy';
+import isEmpty from 'lodash/isEmpty';
+import includes from 'lodash/includes';
+import {
+  cliux,
+  HttpClient,
+  configHandler,
+  managementSDKClient,
+  marketplaceSDKClient,
+} from '@contentstack/cli-utilities';
 
 import { log } from './logger';
 import { trace } from '../utils/log';
-import { ImportConfig } from '../types';
+import { ImportConfig, Installation } from '../types';
 import { formatError } from '../utils';
 import { askDeveloperHubUrl } from './interactive';
 import { getAppName, askAppName, selectConfiguration } from '../utils/interactive';
 
 export const getAllStackSpecificApps = async (
-  developerHubBaseUrl: string,
-  httpClient: HttpClient,
   config: ImportConfig,
-) => {
-  const appSdkAxiosInstance = await managementSDKClient({
-    host: developerHubBaseUrl.split('://').pop(),
+  skip = 0,
+  listOfApps: Installation[] = [],
+): Promise<Installation[]> => {
+  const appSdk = await marketplaceSDKClient({
+    host: config.developerHubBaseUrl.split('://').pop(),
   });
-  return await appSdkAxiosInstance.axiosInstance
-    .get(`${developerHubBaseUrl}/installations?target_uids=${config.target_stack}`, {
-      headers: {
-        organization_uid: config.org_uid,
-      },
-    })
-    .then(({ data }: any) => data.data)
-    .catch((error: any) => {
+  const collection = await appSdk
+    .marketplace(config.org_uid)
+    .installation()
+    .fetchAll({ target_uids: config.target_stack, skip })
+    .catch((error) => {
       trace(error, 'error', true);
       log(config, `Failed to export marketplace-apps ${formatError(error)}`, 'error');
     });
+
+  if (collection) {
+    const { items: apps, count } = collection;
+    // NOTE Remove all the chain functions
+    const installation = map(apps, (app) =>
+      omitBy(app, (val, _key) => {
+        if (val instanceof Function) return true;
+        return false;
+      }),
+    ) as unknown as Installation[];
+    listOfApps = listOfApps.concat(installation);
+
+    if (count - (skip + 50) > 0) {
+      return await getAllStackSpecificApps(config, skip + 50, listOfApps);
+    }
+  }
+
+  return listOfApps;
 };
 
 export const getDeveloperHubUrl = async (config: ImportConfig): Promise<string> => {
@@ -88,29 +109,6 @@ export const getConfirmationToCreateApps = async (privateApps: any, config: Impo
       }
     }
   }
-};
-
-export const createPrivateApp = async (client: ContentstackClient, config: ImportConfig, app: any): Promise<any> => {
-  const privateApp = omit(app, ['uid']) as any;
-  return await client
-    .organization(config.org_uid)
-    .app()
-    .create(privateApp)
-    .catch((error: any) => error);
-};
-
-export const installApp = async (
-  client: ContentstackClient,
-  config: ImportConfig,
-  appManifestUid?: string,
-  mappedUid?: string,
-): Promise<any> => {
-  const appUid = mappedUid || appManifestUid;
-  return await client
-    .organization(config.org_uid)
-    .app(appUid)
-    .install({ targetUid: config.target_stack, targetType: 'stack' })
-    .catch((error: any) => error);
 };
 
 export const handleNameConflict = async (app: any, appSuffix: number, config: ImportConfig) => {
@@ -188,24 +186,4 @@ export const ifAppAlreadyExist = async (app: any, currentStackApp: any, config: 
   }
 
   return updateParam;
-};
-
-export const updateAppConfig = async (
-  client: ContentstackClient,
-  config: ImportConfig,
-  app: any,
-  payload: { configuration: Record<string, unknown>; server_configuration: Record<string, unknown> },
-): Promise<any> => {
-  let installation = client.organization(config.org_uid).app(app?.manifest?.uid).installation(app?.uid);
-
-  installation = Object.assign(installation, payload);
-  return await installation
-    .update()
-    .then((data: any) => {
-      log(config, `${app?.manifest?.name} app config updated successfully.!`, 'success');
-    })
-    .catch((error: any) => {
-      trace(error, 'error', true);
-      log(config, `Failed to update app config.${formatError(error)}`, 'error');
-    });
 };
