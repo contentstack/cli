@@ -1,11 +1,14 @@
 /**
  * Entries lookup
  */
+// FIXME refactor the complete file/code after discussed with the team
 
 import * as path from 'path';
 import * as _ from 'lodash';
 import config from '../config';
 import * as fileHelper from './file-helper';
+
+import { EntryJsonRTEFieldDataType } from '../types/entries';
 
 // update references in entry object
 export const lookupEntries = function (
@@ -25,7 +28,7 @@ export const lookupEntries = function (
   let preserveStackVersion = config.preserveStackVersion;
 
   function gatherJsonRteEntryIds(jsonRteData: any) {
-    jsonRteData.children.forEach((element: any) => {
+    jsonRteData.children?.forEach((element: any) => {
       if (element.type) {
         switch (element.type) {
           default: {
@@ -35,7 +38,7 @@ export const lookupEntries = function (
             break;
           }
           case 'reference': {
-            if (Object.keys(element.attrs).length > 0 && element.attrs.type === 'entry') {
+            if (Object.keys(element.attrs)?.length > 0 && element.attrs?.type === 'entry') {
               if (uids.indexOf(element.attrs['entry-uid']) === -1) {
                 uids.push(element.attrs['entry-uid']);
               }
@@ -52,13 +55,13 @@ export const lookupEntries = function (
 
   const update = function (_parent: any, form_id: string, updateEntry: any) {
     let _entry = updateEntry;
-    let len = _parent.length;
+    let len = _parent?.length;
 
     for (let j = 0; j < len; j++) {
       if (_entry && _parent[j]) {
         if (j === len - 1 && _entry[_parent[j]]) {
           if (form_id !== '_assets') {
-            if (_entry[_parent[j]].length) {
+            if (_entry[_parent[j]]?.length) {
               _entry[_parent[j]].forEach((item: any, idx: any) => {
                 if (typeof item.uid === 'string' && item._content_type_uid) {
                   uids.push(item.uid);
@@ -75,18 +78,18 @@ export const lookupEntries = function (
             }
           } else if (Array.isArray(_entry[_parent[j]])) {
             for (const element of _entry[_parent[j]]) {
-              if (element.uid.length) {
+              if (element.uid?.length) {
                 uids.push(element.uid);
               }
             }
-          } else if (_entry[_parent[j]].uid.length) {
+          } else if (_entry[_parent[j]].uid?.length) {
             uids.push(_entry[_parent[j]].uid);
           }
         } else {
           _entry = _entry[_parent[j]];
           let _keys = _.clone(_parent).splice(j + 1, len);
           if (Array.isArray(_entry)) {
-            for (let i = 0, _i = _entry.length; i < _i; i++) {
+            for (let i = 0, _i = _entry?.length; i < _i; i++) {
               update(_keys, form_id, _entry[i]);
             }
           } else if (!(_entry instanceof Object)) {
@@ -96,6 +99,7 @@ export const lookupEntries = function (
       }
     }
   };
+
   const find = function (schema: any = [], _entry: any) {
     for (let i = 0, _i = schema?.length; i < _i; i++) {
       switch (schema[i].data_type) {
@@ -120,7 +124,7 @@ export const lookupEntries = function (
           parent.pop();
           break;
         case 'blocks':
-          for (let j = 0, _j = schema[i].blocks.length; j < _j; j++) {
+          for (let j = 0, _j = schema[i].blocks?.length; j < _j; j++) {
             parent.push(schema[i].uid);
             parent.push(schema[i].blocks[j].uid);
             find(schema[i].blocks[j].schema, _entry);
@@ -143,7 +147,7 @@ export const lookupEntries = function (
         case 'blocks': {
           if (entry[element.uid]) {
             if (element.multiple) {
-              entry[element.uid].forEach((e: any) => {
+              entry[element.uid]?.forEach((e: any) => {
                 let key = Object.keys(e).pop();
                 let subBlock = element.blocks.filter((e: any) => e.uid === key).pop();
                 findEntryIdsFromJsonRte(e[key], subBlock.schema);
@@ -156,7 +160,7 @@ export const lookupEntries = function (
         case 'group': {
           if (entry[element.uid]) {
             if (element.multiple) {
-              entry[element.uid].forEach((e: any) => {
+              entry[element.uid]?.forEach((e: any) => {
                 findEntryIdsFromJsonRte(e, element.schema);
               });
             } else {
@@ -168,7 +172,7 @@ export const lookupEntries = function (
         case 'json': {
           if (entry[element.uid] && element.field_metadata.rich_text_type) {
             if (element.multiple) {
-              entry[element.uid].forEach((jsonRteData: any) => {
+              entry[element.uid]?.forEach((jsonRteData: any) => {
                 gatherJsonRteEntryIds(jsonRteData);
               });
             } else {
@@ -263,7 +267,7 @@ export const removeUidsFromJsonRteFields = (
           if (element.multiple) {
             entry[element.uid] = entry[element.uid].map((e: any) => {
               let key = Object.keys(e).pop();
-              let subBlock = element.blocks.filter((block: any) => block.uid === key).pop();
+              let subBlock = element.blocks?.filter((block: any) => block.uid === key).pop();
               e[key] = removeUidsFromJsonRteFields(e[key], subBlock.schema);
               return e;
             });
@@ -321,7 +325,7 @@ export const removeUidsFromJsonRteFields = (
 };
 
 function removeUidsFromChildren(children: Record<string, any>[] | any) {
-  if (children.length && children.length > 0) {
+  if (children?.length && children.length > 0) {
     return children.map((child: any) => {
       if (child.type && child.type.length > 0) {
         delete child.uid; // remove uid
@@ -357,7 +361,7 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
           if (element.multiple) {
             entry[element.uid] = entry[element.uid].map((e: any) => {
               let key = Object.keys(e).pop();
-              let subBlock = element.blocks.filter((block: any) => block.uid === key).pop();
+              let subBlock = element.blocks?.filter((block: any) => block.uid === key).pop();
               e[key] = removeEntryRefsFromJSONRTE(e[key], subBlock.schema);
               return e;
             });
@@ -383,10 +387,12 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
         const structuredPTag = '{"type":"p","attrs":{},"children":[{"text":""}]}';
         if (entry[element.uid] && element.field_metadata.rich_text_type) {
           if (element.multiple) {
+            entry[element.uid] = entry[element.uid].map(removeReferenceInJsonRTE);
+
             entry[element.uid] = entry[element.uid].map((jsonRteData: any) => {
               // repeated code from else block, will abstract later
-              let entryReferences = jsonRteData.children.filter((e: any) => doEntryReferencesExist(e));
-              if (entryReferences.length > 0) {
+              let entryReferences = jsonRteData.children?.filter((e: any) => doEntryReferencesExist(e));
+              if (entryReferences?.length > 0) {
                 jsonRteData.children = jsonRteData.children.filter((e: any) => !doEntryReferencesExist(e));
                 if (jsonRteData.children.length === 0) {
                   // empty children array are no longer acceptable by the API, a default structure must be there
@@ -398,10 +404,12 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
               }
             });
           } else {
-            let entryReferences = entry[element.uid].children.filter((e: any) => doEntryReferencesExist(e));
-            if (entryReferences.length > 0) {
+            // NOTE Clean up all the reference
+            entry[element.uid] = removeReferenceInJsonRTE(entry[element.uid]);
+            let entryReferences = entry[element.uid].children?.filter((e: any) => doEntryReferencesExist(e));
+            if (entryReferences?.length > 0) {
               entry[element.uid].children = entry[element.uid].children.filter((e: any) => !doEntryReferencesExist(e));
-              if (entry[element.uid].children.length === 0) {
+              if (entry[element.uid].children?.length === 0) {
                 entry[element.uid].children.push(JSON.parse(structuredPTag));
               }
             }
@@ -418,9 +426,13 @@ function doEntryReferencesExist(element: Record<string, any>[] | any): boolean {
   // checks if the children of p element contain any references
   // only checking one level deep, not recursive
 
-  if (element.length) {
+  if (element?.length) {
     for (const item of element) {
-      if ((item.type === 'p' || item.type === 'a' || item.type === 'span') && item.children && item.children.length > 0) {
+      if (
+        (item.type === 'p' || item.type === 'a' || item.type === 'span') &&
+        item.children &&
+        item.children.length > 0
+      ) {
         return doEntryReferencesExist(item.children);
       } else if (isEntryRef(item)) {
         return true;
@@ -431,7 +443,11 @@ function doEntryReferencesExist(element: Record<string, any>[] | any): boolean {
       return true;
     }
 
-    if ((element.type === 'p' || element.type === 'a' || element.type === 'span') && element.children && element.children.length > 0) {
+    if (
+      (element.type === 'p' || element.type === 'a' || element.type === 'span') &&
+      element.children &&
+      element.children.length > 0
+    ) {
       return doEntryReferencesExist(element.children);
     }
   }
@@ -439,17 +455,15 @@ function doEntryReferencesExist(element: Record<string, any>[] | any): boolean {
 }
 
 function isEntryRef(element: any) {
-  return element.type === 'reference' && element.attrs.type === 'entry';
+  return element.type === 'reference' && element.attrs?.type === 'entry';
 }
 
 export const restoreJsonRteEntryRefs = (
   entry: Record<string, any>,
   sourceStackEntry: any,
   ctSchema: any = [],
-  { mappedAssetUids, mappedAssetUrls }: any,
+  { uidMapper, mappedAssetUids, mappedAssetUrls }: any,
 ) => {
-  // let mappedAssetUids = fileHelper.readFileSync(this.mappedAssetUidPath) || {};
-  // let mappedAssetUrls = fileHelper.readFileSync(this.mappedAssetUrlPath) || {};
   for (const element of ctSchema) {
     switch (element.data_type) {
       case 'blocks': {
@@ -457,9 +471,10 @@ export const restoreJsonRteEntryRefs = (
           if (element.multiple && Array.isArray(entry[element.uid])) {
             entry[element.uid] = entry[element.uid].map((e: any, eIndex: number) => {
               let key = Object.keys(e).pop();
-              let subBlock = element.blocks.filter((block: any) => block.uid === key).pop();
+              let subBlock = element.blocks?.filter((block: any) => block.uid === key).pop();
               let sourceStackElement = sourceStackEntry[element.uid][eIndex][key];
               e[key] = restoreJsonRteEntryRefs(e[key], sourceStackElement, subBlock.schema, {
+                uidMapper,
                 mappedAssetUids,
                 mappedAssetUrls,
               });
@@ -475,12 +490,17 @@ export const restoreJsonRteEntryRefs = (
           if (element.multiple && Array.isArray(entry[element.uid])) {
             entry[element.uid] = entry[element.uid].map((e: any, eIndex: number) => {
               let sourceStackElement = sourceStackEntry[element.uid][eIndex];
-              e = restoreJsonRteEntryRefs(e, sourceStackElement, element.schema, { mappedAssetUids, mappedAssetUrls });
+              e = restoreJsonRteEntryRefs(e, sourceStackElement, element.schema, {
+                uidMapper,
+                mappedAssetUids,
+                mappedAssetUrls,
+              });
               return e;
             });
           } else {
             let sourceStackElement = sourceStackEntry[element.uid];
             entry[element.uid] = restoreJsonRteEntryRefs(entry[element.uid], sourceStackElement, element.schema, {
+              uidMapper,
               mappedAssetUids,
               mappedAssetUrls,
             });
@@ -491,57 +511,23 @@ export const restoreJsonRteEntryRefs = (
       case 'json': {
         if (entry[element.uid] && element.field_metadata.rich_text_type) {
           if (element.multiple && Array.isArray(entry[element.uid])) {
-            entry[element.uid] = entry[element.uid].map((field: any, index: number) => {
-              // i am facing a Maximum call stack exceeded issue,
-              // probably because of this loop operation
+            entry[element.uid] = sourceStackEntry[element.uid].map((jsonRTE: any) => {
+              jsonRTE = restoreReferenceInJsonRTE(jsonRTE, uidMapper);
+              jsonRTE.children = jsonRTE.children.map((child: any) => {
+                child = setDirtyTrue(child);
+                child = resolveAssetRefsInEntryRefsForJsonRte(child, mappedAssetUids, mappedAssetUrls);
+                return child;
+              });
 
-              let entryRefs = sourceStackEntry[element.uid][index].children
-                .map((e: any, i: number) => {
-                  return { index: i, value: e };
-                })
-                .filter((e: any) => doEntryReferencesExist(e.value))
-                .map((e: any) => {
-                  // commenting the line below resolved the maximum call stack exceeded issue
-                  // e.value = this.setDirtyTrue(e.value)
-                  setDirtyTrue(e.value);
-                  return e;
-                })
-                .map((e: any) => {
-                  // commenting the line below resolved the maximum call stack exceeded issue
-                  // e.value = this.resolveAssetRefsInEntryRefsForJsonRte(e, mappedAssetUids, mappedAssetUrls)
-                  resolveAssetRefsInEntryRefsForJsonRte(e.value, mappedAssetUids, mappedAssetUrls);
-                  return e;
-                });
-
-              if (entryRefs.length > 0) {
-                entryRefs.forEach((entryRef: any) => {
-                  field.children.splice(entryRef.index, 0, entryRef.value);
-                });
-              }
-              return field;
+              return jsonRTE;
             });
           } else {
-            let entryRefs = sourceStackEntry[element.uid].children
-              .map((e: any, index: number) => {
-                return { index: index, value: e };
-              })
-              .filter((e: any) => doEntryReferencesExist(e.value))
-              .map((e: any) => {
-                setDirtyTrue(e.value);
-                return e;
-              })
-              .map((e: any) => {
-                resolveAssetRefsInEntryRefsForJsonRte(e.value, mappedAssetUids, mappedAssetUrls);
-                return e;
-              });
-
-            if (entryRefs.length > 0) {
-              entryRefs.forEach((entryRef: any) => {
-                if (!_.isEmpty(entry[element.uid]) && entry[element.uid].children) {
-                  entry[element.uid].children.splice(entryRef.index, 0, entryRef.value);
-                }
-              });
-            }
+            entry[element.uid] = restoreReferenceInJsonRTE(sourceStackEntry[element.uid], uidMapper);
+            entry[element.uid].children = entry[element.uid].children.map((child: any) => {
+              child = setDirtyTrue(child);
+              child = resolveAssetRefsInEntryRefsForJsonRte(child, mappedAssetUids, mappedAssetUrls);
+              return child;
+            });
           }
         }
         break;
@@ -563,12 +549,13 @@ function setDirtyTrue(jsonRteChild: any) {
       jsonRteChild.children = jsonRteChild.children.map((subElement: any) => setDirtyTrue(subElement));
     }
   }
+
   return jsonRteChild;
 }
 
 function resolveAssetRefsInEntryRefsForJsonRte(jsonRteChild: any, mappedAssetUids: any, mappedAssetUrls: any) {
   if (jsonRteChild.type) {
-    if (jsonRteChild.attrs.type === 'asset') {
+    if (jsonRteChild.attrs?.type === 'asset') {
       let assetUrl;
       if (mappedAssetUids[jsonRteChild.attrs['asset-uid']]) {
         jsonRteChild.attrs['asset-uid'] = mappedAssetUids[jsonRteChild.attrs['asset-uid']];
@@ -597,4 +584,74 @@ function resolveAssetRefsInEntryRefsForJsonRte(jsonRteChild: any, mappedAssetUid
   }
 
   return jsonRteChild;
+}
+
+/**
+ * The function removes references from a JSON RTE (Rich Text Editor) object.
+ * @param {EntryJsonRTEFieldDataType} jsonRTE - The parameter `jsonRTE` is of type
+ * `EntryJsonRTEFieldDataType`. It represents a JSON object that contains rich text content. The
+ * function `removeReferenceInJsonRTE` takes this JSON object as input and removes any references
+ * present in the content. It recursively traverses the JSON
+ * @returns the modified `jsonRTE` object after removing any references in the JSON RTE.
+ */
+function removeReferenceInJsonRTE(jsonRTE: EntryJsonRTEFieldDataType): EntryJsonRTEFieldDataType {
+  // NOTE Other possible reference logic will be added related to JSON RTE (Ex missing assets, extensions etc.,)
+  if (jsonRTE?.children && Array.isArray(jsonRTE.children)) {
+    jsonRTE.children = jsonRTE?.children?.map((child) => {
+      const { children, attrs, type } = child;
+
+      if (type === 'reference' && attrs?.['entry-uid']) {
+        child = {
+          type: 'p',
+          attrs: {},
+          children: [{ text: '' }],
+        };
+      }
+
+      if (!_.isEmpty(children)) {
+        return removeReferenceInJsonRTE(child);
+      }
+
+      return child;
+    });
+  }
+
+  return jsonRTE;
+}
+
+/**
+ * The function `restoreReferenceInJsonRTE` takes a JSON object `jsonRTE` and a mapping object
+ * `uidMapper`, and recursively replaces the `entry-uid` attribute values in any `reference` type
+ * elements with their corresponding values from the `uidMapper` object.
+ * @param {EntryJsonRTEFieldDataType} jsonRTE - The `jsonRTE` parameter is an object that represents a
+ * JSON structure. It contains a `children` property which is an array of objects. Each object
+ * represents a child element in the JSON structure and can have properties like `children`, `attrs`,
+ * and `type`.
+ * @param uidMapper - The `uidMapper` parameter is an object that maps entry UIDs to their
+ * corresponding restored UIDs. It is used to replace the `entry-uid` attribute in the JSON RTE with
+ * the restored UID.
+ * @returns the updated `jsonRTE` object with the restored references.
+ */
+function restoreReferenceInJsonRTE(
+  jsonRTE: EntryJsonRTEFieldDataType,
+  uidMapper: Record<string, string>,
+): EntryJsonRTEFieldDataType {
+  if (jsonRTE?.children && Array.isArray(jsonRTE.children)) {
+    jsonRTE.children = jsonRTE?.children?.map((child, index) => {
+      const { children, attrs, type } = child;
+
+      if (type === 'reference' && attrs?.['entry-uid']) {
+        jsonRTE.children[index] = child;
+        jsonRTE.children[index].attrs['entry-uid'] = uidMapper[child.attrs['entry-uid']];
+      }
+
+      if (!_.isEmpty(children)) {
+        return restoreReferenceInJsonRTE(child, uidMapper);
+      }
+
+      return child;
+    });
+  }
+
+  return jsonRTE;
 }
