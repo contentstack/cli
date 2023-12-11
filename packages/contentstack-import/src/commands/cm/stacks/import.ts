@@ -135,7 +135,6 @@ export default class ImportCommand extends Command {
         'success',
       );
     } catch (error) {
-      trace(error, 'error', true);
       log({ data: backupDir } as ImportConfig, `Failed to import stack content - ${formatError(error)}`, 'error');
       log(
         { data: backupDir } as ImportConfig,
