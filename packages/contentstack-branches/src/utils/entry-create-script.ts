@@ -475,15 +475,17 @@ export function entryCreateScript(contentType) {
           try {
             compareFilteredProperties.length !== 0 &&
               compareFilteredProperties.forEach(async (entryDetails) => {
-                entryDetails = updateAssetDetailsInEntries(entryDetails);
-                let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails }).catch(error => {
-                  throw error;
-                });
-                if(createdEntry){
-                  if (flag.references) {
-                    await updateReferences(entryDetails, createdEntry, references);
+                if(entryDetails !== undefined){
+                  entryDetails = updateAssetDetailsInEntries(entryDetails);
+                  let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails }).catch(error => {
+                    throw error;
+                  });
+                  if(createdEntry){
+                    if (flag.references) {
+                      await updateReferences(entryDetails, createdEntry, references);
+                    }
+                    await updateEntry(createdEntry, entryDetails);
                   }
-                  await updateEntry(createdEntry, entryDetails);
                 }
               });
           } catch (error) {
