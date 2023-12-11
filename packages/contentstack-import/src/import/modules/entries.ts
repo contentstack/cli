@@ -7,7 +7,7 @@
 
 import * as path from 'path';
 import { isEmpty, values, cloneDeep, find, indexOf, forEach } from 'lodash';
-import { ContentType, FsUtility } from '@contentstack/cli-utilities';
+import { FsUtility } from '@contentstack/cli-utilities';
 import {
   fsUtil,
   log,
@@ -125,7 +125,7 @@ export default class EntriesImport extends BaseClass {
       await fileHelper.writeLargeFile(path.join(this.entriesMapperPath, 'uid-mapping.json'), this.entriesUidMapper); // TBD: manages mapper in one file, should find an alternative
       fsUtil.writeFile(path.join(this.entriesMapperPath, 'failed-entries.json'), this.failedEntries);
 
-      if (this.autoCreatedEntries.length > 0) {
+      if (this.autoCreatedEntries?.length > 0) {
         log(this.importConfig, 'Removing entries from master language which got created by default', 'info');
         await this.removeAutoCreatedEntries().catch((error) => {
           log(
@@ -528,8 +528,7 @@ export default class EntriesImport extends BaseClass {
 
   async replaceEntriesHandler({
     apiParams,
-    element: entry,
-    isLastRequest,
+    element: entry
   }: {
     apiParams: ApiOptions;
     element: Record<string, string>;
@@ -672,6 +671,7 @@ export default class EntriesImport extends BaseClass {
       if (this.jsonRteCTs.indexOf(cTUid) > -1) {
         // the entries stored in eSuccessFilePath, have the same uids as the entries from source data
         entry = restoreJsonRteEntryRefs(entry, sourceEntry, contentType.schema, {
+          uidMapper: this.entriesUidMapper,
           mappedAssetUids: this.assetUidMapper,
           mappedAssetUrls: this.assetUrlMapper,
         });
@@ -785,13 +785,13 @@ export default class EntriesImport extends BaseClass {
       const contentType: any = find(cTs, { uid: cTUid });
       if (contentType.field_rules) {
         const fieldDatatypeMap: { [key: string]: string } = {};
-        for (let i = 0; i < contentType.schema.length; i++) {
+        for (let i = 0; i < contentType.schema?.length; i++) {
           const field = contentType.schema[i].uid;
           fieldDatatypeMap[field] = contentType.schema[i].data_type;
         }
-        let fieldRuleLength = contentType.field_rules.length;
+        let fieldRuleLength = contentType.field_rules?.length;
         for (let k = 0; k < fieldRuleLength; k++) {
-          let fieldRuleConditionLength = contentType.field_rules[k].conditions.length;
+          let fieldRuleConditionLength = contentType.field_rules[k].conditions?.length;
           for (let i = 0; i < fieldRuleConditionLength; i++) {
             if (fieldDatatypeMap[contentType.field_rules[k].conditions[i].operand_field] === 'reference') {
               let fieldRulesValue = contentType.field_rules[k].conditions[i].value;
@@ -905,7 +905,7 @@ export default class EntriesImport extends BaseClass {
       locales: [],
       entryUid: this.entriesUidMapper[entry.uid],
     };
-    if (entry.publish_details && entry.publish_details.length > 0) {
+    if (entry.publish_details && entry.publish_details?.length > 0) {
       forEach(entry.publish_details, (pubObject) => {
         if (
           this.envs.hasOwnProperty(pubObject.environment) &&
