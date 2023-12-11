@@ -104,4 +104,6 @@ export interface TermsConfig{
 
 export { default as DefaultConfig } from './default-config';
 export { default as ImportConfig } from './import-config';
+
+export * from './entries'
 export * from './marketplace-app'
