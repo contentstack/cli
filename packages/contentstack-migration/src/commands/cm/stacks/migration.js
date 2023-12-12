@@ -75,8 +75,10 @@ class MigrationCommand extends Command {
 
     if (Array.isArray(config) && config.length > 0) {
       let configObj = config.reduce((a, v) => {
-        let objArr = v.split(':');
-        return { ...a, [objArr[0]]: objArr[1] };
+        //NOTE: Temp code to handle only one spilt(Window absolute path issue).Need to replace with hardcoded config key
+        let [key, ...value] = v.split(':');
+        value = value?.length > 1 ? value?.join(':') : value?.join( );
+        return { ...a, [key]: value };
       }, {});
       set('config', mapInstance, configObj);
     }
