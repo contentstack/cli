@@ -1041,7 +1041,7 @@ importers:
     specifiers:
       '@contentstack/cli-dev-dependencies': ^1.2.4
       '@contentstack/management': ~1.13.0
-      '@contentstack/marketplace-sdk': ^1.0.0
+      '@contentstack/marketplace-sdk': ^1.0.1
       '@oclif/core': ^2.9.3
       '@oclif/test': ^2.2.10
       '@types/chai': ^4.2.18
@@ -1089,7 +1089,7 @@ importers:
       xdg-basedir: ^4.0.0
     dependencies:
       '@contentstack/management': 1.13.0_debug@4.3.4
-      '@contentstack/marketplace-sdk': 1.0.0_debug@4.3.4
+      '@contentstack/marketplace-sdk': 1.0.1_debug@4.3.4
       '@oclif/core': 2.9.4_4qcp7qp4jxxdgb4qbxgwox4hwq
       axios: 1.6.0_debug@4.3.4
       chalk: 4.1.2
@@ -1673,8 +1673,8 @@ packages:
       - debug
     dev: false
 
-  /@contentstack/marketplace-sdk/1.0.0_debug@4.3.4:
-    resolution: {integrity: sha512-bBdlGlt86Sce0DfmomvXoKRkOWivVKFKlRqyfKwxClJlYS8d8DDPV+r7fzT9hIvD2njNnyl+j30oE294soHMeQ==}
+  /@contentstack/marketplace-sdk/1.0.1_debug@4.3.4:
+    resolution: {integrity: sha512-E9amU6qwp4i1AzXiMX4UKYJSZ8wyhncGPx5MGpwGoM2WUfJqGMwH9o1bXLAzOSBu1a8yhOMOkz/ehLwYeq6Ufg==}
     dependencies:
       axios: 1.6.0_debug@4.3.4
     transitivePeerDependencies:
