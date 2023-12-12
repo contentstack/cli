@@ -24,7 +24,7 @@ importers:
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-config': ~1.5.0
       '@contentstack/cli-launch': ~1.0.15
-      '@contentstack/cli-migration': ~1.4.1
+      '@contentstack/cli-migration': ~1.4.2
       '@contentstack/cli-utilities': ~1.5.9
       '@contentstack/management': ~1.13.0
       '@oclif/core': ^2.9.3
