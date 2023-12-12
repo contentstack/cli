@@ -491,56 +491,70 @@ export function entryUpdateScript(contentType) {
           }
 
           try {
-            if (contentType.options.singleton) {
-              compareBranchEntries.items.map(async (el) => {
+            if (contentType?.options?.singleton) {
+              compareBranchEntries?.items?.map(async (el) => {
                 let entryDetails = deleteUnwantedKeysFromObject(el, keysToRemove);
-                entryDetails = updateAssetDetailsInEntries(entryDetails);
-  
-                if (baseBranchEntries && baseBranchEntries.items.length) {
-                  let baseEntryUid = baseBranchEntries.items[0].uid;
-                  let entry = await stackSDKInstance.contentType('${contentType}').entry(baseEntryUid);
+                if(entryDetails !== undefined){
+                  entryDetails = updateAssetDetailsInEntries(entryDetails);
+                  if (baseBranchEntries && baseBranchEntries.items.length) {
+                    let baseEntryUid = baseBranchEntries.items[0].uid;
+                    let entry = await stackSDKInstance.contentType('${contentType}').entry(baseEntryUid);
+                    
+                    if (flag.references) {
+                      await updateReferences(entryDetails, baseBranchEntries.items[0], references);
+                    }
+    
+                    await updateEntry(entry, entryDetails);
+                  } else {
+                    let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails });
                   
-                  if (flag.references) {
-                    await updateReferences(entryDetails, baseBranchEntries.items[0], references);
+                    if (flag.references) {
+                      await updateReferences(entryDetails, createdEntry, references);
+                    }
+    
+                    await updateEntry(createdEntry, entryDetails);
                   }
-  
-                  await updateEntry(entry, entryDetails);
-                } else {
-                  let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails });
-                
-                  if (flag.references) {
-                    await updateReferences(entryDetails, createdEntry, references);
-                  }
-  
-                  await updateEntry(createdEntry, entryDetails);
                 }
               });
             } else {
               let compareMap = new Map(converter(compareBranchEntries.items));
               let baseMap = new Map(converter(baseBranchEntries.items));
-  
+
+              //NOTE: Filter distinct entries from the base and compare branches according to their titles.
+              //TODO: Need to discuss this approach and replace it with uid approach
               let arr = uniquelyConcatenateArrays(Array.from(compareMap.keys()), Array.from(baseMap.keys()));
   
               arr.map(async (el) => {
                 let entryDetails = deleteUnwantedKeysFromObject(compareMap.get(el), keysToRemove);
-                entryDetails = updateAssetDetailsInEntries(entryDetails);
-                if (compareMap.get(el) && !baseMap.get(el)) {
-                  let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails });
-                
-                  if (flag.references) {
-                    await updateReferences(entryDetails, createdEntry, references);
-                  }
-  
-                  await updateEntry(createdEntry, entryDetails);
-                } else if (compareMap.get(el) && baseMap.get(el)) {
-                  let baseEntry = baseMap.get(el);
-                  let entry = await stackSDKInstance.contentType('${contentType}').entry(baseEntry.uid);
+                //NOTE: In the compare branch, entry must exist. Condition of deleted entry not handled
+                if(entryDetails !== undefined){
+                  entryDetails = updateAssetDetailsInEntries(entryDetails);
+                  if (compareMap.get(el) && !baseMap.get(el)) {
+                    let createdEntry = await stackSDKInstance
+                    .contentType('${contentType}')
+                    .entry()
+                    .create({ entry: entryDetails })
+                    .catch(err => {
+                      (err?.errorMessage || err?.message) ? err?.errorMessage || err?.message : 'Something went wrong!'
+                    })
                   
-                  if (flag.references) {
-                    await updateReferences(entryDetails, baseEntry, references);
+                    if(createdEntry){
+                      if (flag.references) {
+                        await updateReferences(entryDetails, createdEntry, references);
+                      }
+      
+                      await updateEntry(createdEntry, entryDetails);
+                    }
+                  } else if (compareMap.get(el) && baseMap.get(el)) {
+                    let baseEntry = baseMap.get(el);
+                    let entry = await stackSDKInstance.contentType('${contentType}').entry(baseEntry.uid);
+                    
+                    if (flag.references) {
+                      await updateReferences(entryDetails, baseEntry, references);
+                    }
+  
+                    await updateEntry(entry, entryDetails);
                   }
-
-                  await updateEntry(entry, entryDetails);
                 }
               });
             }
