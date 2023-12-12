@@ -63,6 +63,7 @@ module.exports = class ImportMarketplaceApps {
     }
 
     this.developerHubBaseUrl = this.config.developerHubBaseUrl || (await getDeveloperHubUrl(this.config));
+    this.config.developerHubBaseUrl = this.developerHubBaseUrl;
     this.client = await managementSDKClient({ endpoint: this.developerHubBaseUrl });
     this.appSdkAxiosInstance = await managementSDKClient({
       host: this.developerHubBaseUrl.split('://').pop()
@@ -166,7 +167,7 @@ module.exports = class ImportMarketplaceApps {
 
     // NOTE install all private apps which is not available for stack.
     await this.handleAllPrivateAppsCreationProcess();
-    const installedApps = await getAllStackSpecificApps(this.developerHubBaseUrl, this.httpClient, this.config);
+    const installedApps = await getAllStackSpecificApps(this.config);
 
     log(this.config, 'Starting marketplace app installation', 'success');
 
@@ -186,8 +187,7 @@ module.exports = class ImportMarketplaceApps {
     const listOfNewMeta = [];
     const listOfOldMeta = [];
     const extensionUidMap = {};
-    const allInstalledApps =
-      (await getAllStackSpecificApps(this.developerHubBaseUrl, this.httpClient, this.config)) || [];
+    const allInstalledApps = (await getAllStackSpecificApps(this.config)) || [];
 
     for (const app of this.marketplaceApps) {
       listOfOldMeta.push(..._.map(app?.ui_location?.locations, 'meta').flat());

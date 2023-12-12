@@ -1,6 +1,8 @@
 import Logger from './logger';
 import marketplaceSDKClient, {
   App,
+  AppData,
+  Installation,
   MarketplaceSDKInitiator,
   marketplaceSDKInitiator,
   ContentstackMarketplaceClient,
@@ -32,6 +34,8 @@ export * from './add-locale';
 // Marketplace SDK export
 export {
   App,
+  AppData,
+  Installation,
   marketplaceSDKClient,
   MarketplaceSDKInitiator,
   marketplaceSDKInitiator,
