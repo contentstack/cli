@@ -249,7 +249,8 @@ export const lookupAssets = function (
   assetUrls.forEach(function (assetUrl: any) {
     let mappedAssetUrl = mappedAssetUrls[assetUrl];
     if (typeof mappedAssetUrl !== 'undefined') {
-      entry = entry.replace(new RegExp(assetUrl, 'img'), mappedAssetUrl);
+      const escapedAssetUrl = assetUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      entry = entry.replace(new RegExp(escapedAssetUrl, 'img'), mappedAssetUrl);
       matchedUrls.push(mappedAssetUrl);
     } else {
       unmatchedUrls.push(assetUrl);
@@ -259,7 +260,8 @@ export const lookupAssets = function (
   assetUids.forEach(function (assetUid: any) {
     let uid = mappedAssetUids[assetUid];
     if (typeof uid !== 'undefined') {
-      entry = entry.replace(new RegExp(assetUid, 'img'), uid);
+      const escapedAssetUid = assetUid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      entry = entry.replace(new RegExp(escapedAssetUid, 'img'), uid);
       matchedUids.push(assetUid);
     } else {
       unmatchedUids.push(assetUid);
