@@ -199,10 +199,8 @@ export const lookupEntries = function (
   let entry = JSON.stringify(data.entry);
   uids.forEach(function (uid: any) {
     if (mappedUids.hasOwnProperty(uid)) {
-      // NOTE g: matches the pattern multiple times
-      // NOTE i: makes the regex case insensitive
-      // NOTE m: enables multi-line mode. Where ^ and $ match the start and end of the entire string. Without this, multi-line strings match the beginning and end of each line.
-      entry = entry.replace(new RegExp(uid, 'img'), mappedUids[uid]);
+      const escapedUid = uid.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      entry = entry.replace(new RegExp(escapedUid, 'img'), mappedUids[uid]);
       mapped.push(uid);
     } else {
       unmapped.push(uid);

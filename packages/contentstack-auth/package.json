@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@contentstack/cli-command": "~1.2.16",
-    "@contentstack/cli-utilities": "~1.5.8",
+    "@contentstack/cli-utilities": "~1.5.9",
     "chalk": "^4.0.0",
     "debug": "^4.1.1",
     "inquirer": "8.2.4",
@@ -43,7 +43,7 @@
     "dotenv": "^16.0.3",
     "eslint": "^8.18.0",
     "eslint-config-oclif": "^4.0.0",
-    "eslint-config-oclif-typescript": "^0.1.0",
+    "eslint-config-oclif-typescript": "^3.0.8",
     "globby": "^10.0.2",
     "mocha": "10.1.0",
     "nyc": "^15.1.0",
