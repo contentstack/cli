@@ -144,9 +144,14 @@ export default class ExportMarketplaceApps {
       .installationData()
       .then(async (result: any) => {
         const { data, error } = result;
-        if (has(data, 'server_configuration')) {
-          if (!this.nodeCrypto && has(data, 'server_configuration')) {
+
+        if (has(data, 'server_configuration') || has(data, 'configuration')) {
+          if (!this.nodeCrypto && (has(data, 'server_configuration') || has(data, 'configuration'))) {
             this.nodeCrypto = await createNodeCryptoInstance(this.exportConfig);
+          }
+
+          if (!isEmpty(data?.configuration)) {
+            this.installedApps[index]['configuration'] = this.nodeCrypto.encrypt(data.configuration);
           }
 
           if (!isEmpty(data?.server_configuration)) {
