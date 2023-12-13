@@ -47,7 +47,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import/1.12.1 darwin-arm64 node-v21.2.0
+@contentstack/cli-cm-import/1.12.2 darwin-arm64 node-v20.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -82,6 +82,7 @@ FLAGS
   --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                     <options: disable|current>
   --replace-existing                Replaces the existing module in the target stack.
+  --skip-app-recreation             [optional] Skip private apps recreation if already exist
   --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
@@ -129,6 +130,7 @@ FLAGS
   --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                     <options: disable|current>
   --replace-existing                Replaces the existing module in the target stack.
+  --skip-app-recreation             [optional] Skip private apps recreation if already exist
   --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
