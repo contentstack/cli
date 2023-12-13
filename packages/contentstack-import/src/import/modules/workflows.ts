@@ -189,8 +189,9 @@ export default class ImportWorkflows extends BaseClass {
       name: workflow.name,
       branches: workflow.branches,
       workflow_stages: newWorkflowStages,
+      content_types: workflow.content_types
     });
-
+    
     return updateWorkflow.update();
   }
 
