@@ -2,7 +2,7 @@ import { cliux, configHandler } from '@contentstack/cli-utilities';
 import { Command } from '@contentstack/cli-command';
 
 export default class GetEarlyAccessHeaderCommand extends Command {
-  static description = 'Display early access headers';
+  static description = 'Display Early Access Program headers';
   static aliases: string[] = ['config:get:ea-header'];
   static examples = ['$ <%= config.bin %> <%= command.id %>'];
 
@@ -29,10 +29,10 @@ export default class GetEarlyAccessHeaderCommand extends Command {
           },
         );
       } else {
-        cliux.print(`No early access header found`, { color: 'red' });
+        cliux.print(`No Early Access Program header found!`, { color: 'red' });
       }
     } catch (error) {
-      this.log('Failed to get the early access header config', error instanceof Error ? error.message : error);
+      this.log('Unable to retrieve the Early Access Program header config', error instanceof Error ? error.message : error);
     }
   }
 }
