@@ -10,6 +10,7 @@ interface EnviornmentVariables {
   deliveryToken: string;
   environment: string;
   livePreviewEnabled?: boolean;
+  preview_token: string
 }
 
 /**
@@ -56,13 +57,14 @@ export const setupEnvironments = async (
         };
         if (!managementToken) {
           try {
-            const tokenResult = await managementAPIClient.stack({ api_key }).deliveryToken().create(body);
+            const tokenResult = await managementAPIClient.stack({ api_key }).deliveryToken().create(body,{"create_with_preview_token":true});
             if (tokenResult.token) {
               const environmentVariables: EnviornmentVariables = {
                 api_key,
                 deliveryToken: tokenResult.token,
                 environment: environment.name,
                 livePreviewEnabled,
+                preview_token: tokenResult.preview_token
               };
               await envFileHandler(
                 appConfig.appConfigKey || '',
@@ -139,7 +141,7 @@ const envFileHandler = async (
         environmentVariables.api_key
       }\nREACT_APP_CONTENTSTACK_DELIVERY_TOKEN=${
         environmentVariables.deliveryToken
-      }\nREACT_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${
+      }\nREACT_APP_CONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token}\nREACT_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${
         customHost ? '\nREACT_APP_CONTENTSTACK_API_HOST=' + customHost : ''
       }${
         !isUSRegion && !customHost ? '\nREACT_APP_CONTENTSTACK_REGION=' + region.name : ''
@@ -152,7 +154,7 @@ const envFileHandler = async (
       filePath = path.join(clonedDirectory, fileName);
       content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${
         environmentVariables.deliveryToken
-      }\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_API_HOST=${
+      }\nCONTENTSTACK_LIVE_PREVIEW=${environmentVariables.preview_token}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_API_HOST=${
         customHost ? customHost : managementAPIHost
       }${
         !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
@@ -163,7 +165,7 @@ const envFileHandler = async (
     case 'gatsby-starter':
       fileName = `.env.${environmentVariables.environment}`;
       filePath = path.join(clonedDirectory, fileName);
-      content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_API_HOST=${managementAPIHost}\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`;
+      content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${environmentVariables.deliveryToken}\nCONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_API_HOST=${managementAPIHost}\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`;
       result = await writeEnvFile(content, filePath);
       break;
     case 'angular':
@@ -171,7 +173,7 @@ const envFileHandler = async (
         environmentVariables.environment === 'production' ? true : false
       }, \n\tconfig : { \n\t\tapi_key: '${environmentVariables.api_key}', \n\t\tdelivery_token: '${
         environmentVariables.deliveryToken
-      }', \n\t\tenvironment: '${environmentVariables.environment}'${
+      }',\npreview_token:'${environmentVariables.preview_token}', \n\t\tenvironment: '${environmentVariables.environment}'${
         !isUSRegion && !customHost ? `,\n\t\tregion: '${region.name}'` : ''
       } \n\t } \n };`;
       fileName = `environment${environmentVariables.environment === 'production' ? '.prod.' : '.'}ts`;
@@ -181,7 +183,7 @@ const envFileHandler = async (
     case 'angular-starter':
       content = `export const environment = { \n\tproduction: true \n}; \nexport const Config = { \n\tapi_key: '${
         environmentVariables.api_key
-      }', \n\tdelivery_token: '${environmentVariables.deliveryToken}', \n\tenvironment: '${
+      }', \n\tdelivery_token: '${environmentVariables.deliveryToken}',\n\tpreview_token: '${environmentVariables.preview_token}',\n\tenvironment: '${
         environmentVariables.environment
       }'${!isUSRegion && !customHost ? `,\n\tregion: '${region.name}'` : ''},\n\tapi_host: '${
         customHost ? customHost : managementAPIHost
