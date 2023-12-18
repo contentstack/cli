@@ -33,7 +33,7 @@ class ManagementSDKInitiator {
       retryCondition: (error: any): boolean => {
         // LINK ***REMOVED***vascript/blob/72fee8ad75ba7d1d5bab8489ebbbbbbaefb1c880/src/core/stack.js#L49
         if (error.response && error.response.status) {
-          switch (error.status) {
+          switch (error.response.status) {
             case 401:
             case 429:
             case 408:
@@ -73,6 +73,7 @@ class ManagementSDKInitiator {
         });
       },
     };
+
     if (config.endpoint) {
       option.endpoint = config.endpoint;
     }
@@ -80,12 +81,10 @@ class ManagementSDKInitiator {
       if (!option.headers) option.headers = {};
       option.headers.branch = config.branchName;
     }
-
     if (this.analyticsInfo) {
       if (!option.headers) option.headers = {};
       option.headers['X-CS-CLI'] = this.analyticsInfo;
     }
-
     if (!config.management_token) {
       const authorisationType = configStore.get('authorisationType');
       if (authorisationType === 'BASIC') {
@@ -103,6 +102,11 @@ class ManagementSDKInitiator {
         option.authtoken = '';
         option.authorization = '';
       }
+    }
+
+    const earlyAccessHeaders = configStore.get(`earlyAccessHeaders`);
+    if (earlyAccessHeaders && Object.keys(earlyAccessHeaders).length > 0) {
+      option.early_access = Object.values(earlyAccessHeaders);
     }
 
     return client(option);
