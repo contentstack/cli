@@ -1,8 +1,9 @@
-import { cliux, configHandler, NodeCrypto, HttpClient, managementSDKClient } from '@contentstack/cli-utilities';
+import { cliux, configHandler, NodeCrypto, managementSDKClient } from '@contentstack/cli-utilities';
 
 import { formatError, log } from '../utils';
 import { ExportConfig } from '../types';
 import { askDeveloperHub } from './interactive';
+
 export const getDeveloperHubUrl = async (exportConfig: ExportConfig) => {
   const { cma, name } = configHandler.get('region') || {};
   let developerHubBaseUrl = exportConfig?.developerHubUrls[cma];
@@ -47,22 +48,3 @@ export async function createNodeCryptoInstance(config: ExportConfig): Promise<No
 
   return new NodeCrypto(cryptoArgs);
 }
-
-export const getStackSpecificApps = async (params: {
-  developerHubBaseUrl: string;
-  config: ExportConfig;
-  skip: number;
-}) => {
-  const { developerHubBaseUrl, config, skip } = params;
-  const appSdkAxiosInstance = await managementSDKClient({
-    endpoint: developerHubBaseUrl,
-  });
-  return appSdkAxiosInstance.axiosInstance
-    .get(`${developerHubBaseUrl}/installations?target_uids=${config.source_stack}&skip=${skip}`, {
-      headers: {
-        organization_uid: config.org_uid,
-      },
-    })
-    .then((data: any) => data.data)
-    .catch((error: any) => log(config, `Failed to export marketplace-apps ${formatError(error)}`, 'error'));
-};
