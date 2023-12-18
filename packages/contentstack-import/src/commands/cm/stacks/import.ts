@@ -94,6 +94,9 @@ export default class ImportCommand extends Command {
       required: false,
       description: '[optional] Override marketplace prompts',
     }),
+    'skip-app-recreation': flags.boolean({
+      description: '[optional] Skip private apps recreation if already exist',
+    }),
     'replace-existing': flags.boolean({
       required: false,
       description: 'Replaces the existing module in the target stack.',
