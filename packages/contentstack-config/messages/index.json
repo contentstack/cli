@@ -12,5 +12,8 @@
   "CLI_CONFIG_SELECT_REGION": "Please select a region",
   "CLI_CONFIG_INQUIRE_API_KEY": "Enter stack api key",
   "CLI_CONFIG_INQUIRE_BASE_BRANCH": "Enter base branch",
-  "CLI_CONFIG_BRANCH_LIST_NO_BRANCHES": "No branches are added. Use config:set:base-branch command to add base branch."
+  "CLI_CONFIG_BRANCH_LIST_NO_BRANCHES": "No branches are added. Use config:set:base-branch command to add base branch.",
+  "CLI_CONFIG_INQUIRE_EARLY_ACCESS_HEADER_VALUE": "Please enter Early Access Program header value",
+  "CLI_CONFIG_INQUIRE_EARLY_ACCESS_HEADER_ALIAS": "Please enter Early Access Program header alias",
+  "CLI_BRANCH_REQUIRED_FIELD": "Please enter the required field details"
 }
