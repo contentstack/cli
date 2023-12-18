@@ -55,16 +55,15 @@ export const setupEnvironments = async (
             ],
           },
         };
-        if (!managementToken) {
           try {
-            const tokenResult = await managementAPIClient.stack({ api_key }).deliveryToken().create(body,{"create_with_preview_token":true});
+            const tokenResult = !managementToken? await managementAPIClient.stack({ api_key }).deliveryToken().create(body,livePreviewEnabled?{"create_with_preview_token":true}:{}) :{};
             if (tokenResult.token) {
               const environmentVariables: EnviornmentVariables = {
                 api_key,
-                deliveryToken: tokenResult.token,
+                deliveryToken: tokenResult.token??'',
                 environment: environment.name,
                 livePreviewEnabled,
-                preview_token: tokenResult.preview_token
+                preview_token: tokenResult.preview_token??''
               };
               await envFileHandler(
                 appConfig.appConfigKey || '',
@@ -80,7 +79,6 @@ export const setupEnvironments = async (
             console.log('error', error);
             cliux.print(messageHandler.parse('CLI_BOOTSTRAP_APP_FAILED_TO_CREATE_ENV_FILE_FOR_ENV', environment.name));
           }
-        }
       } else {
         cliux.print('No environments name found for the environment');
       }
@@ -125,11 +123,13 @@ const envFileHandler = async (
   let filePath;
   let fileName;
   let customHost;
+  let previewHost:string;
   const regionName = region && region.name && region.name.toLowerCase();
-  const managementAPIHost = region.cma && region.cma.substring('8');
+  previewHost = region.cda().replace('cdn','rest-preview');
   const isUSRegion = regionName === 'us' || regionName === 'na';
   if (regionName !== 'eu' && !isUSRegion) {
-    customHost = region.cma && region.cma.substring('8');
+    customHost = region.cda && region.cda.substring('8');
+    customHost = customHost.replace('cdn','rest-preview')
   }
   const production = environmentVariables.environment === 'production' ? true : false;
   switch (appConfigKey) {
@@ -141,9 +141,7 @@ const envFileHandler = async (
         environmentVariables.api_key
       }\nREACT_APP_CONTENTSTACK_DELIVERY_TOKEN=${
         environmentVariables.deliveryToken
-      }\nREACT_APP_CONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token}\nREACT_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${
-        customHost ? '\nREACT_APP_CONTENTSTACK_API_HOST=' + customHost : ''
-      }${
+      }\n${livePreviewEnabled?`\nREACT_APP_CONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token}\nREACT_APP_CONTENTSTACK_PREVIEW_HOST=${customHost??previewHost}\n`:''}\nREACT_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${
         !isUSRegion && !customHost ? '\nREACT_APP_CONTENTSTACK_REGION=' + region.name : ''
       }\nSKIP_PREFLIGHT_CHECK=true\nREACT_APP_CONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`;
       result = await writeEnvFile(content, filePath);
