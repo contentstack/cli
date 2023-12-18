@@ -66,7 +66,9 @@ class CLIInterface {
     columns: Table.table.Columns<Record<string, unknown>>,
     options?: Table.table.Options,
   ): void {
+    cliux.log('\n');
     cliux.table(data, columns, options);
+    cliux.log('\n');
   }
 
   async inquire<T>(inquirePayload: InquirePayload | Array<InquirePayload>): Promise<T> {
