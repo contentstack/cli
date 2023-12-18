@@ -1,4 +1,10 @@
 {
-  "extends": "../tsconfig.json",
-  "include": ["./unit/**/*"]
+  "extends": "../tsconfig",
+  "compilerOptions": {
+    "noEmit": true,
+    "resolveJsonModule": true
+  },
+  "references": [
+    {"path": ".."}
+  ]
 }

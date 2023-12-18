@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.11.3 darwin-arm64 node-v20.8.0
+@contentstack/cli/1.12.0 darwin-arm64 node-v20.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -84,9 +84,15 @@ USAGE
 * [`csdx cm:stacks:seed [--repo <value>] [--org <value>] [-k <value>] [-n <value>] [-y <value>] [-s <value>]`](#csdx-cmstacksseed---repo-value---org-value--k-value--n-value--y-value--s-value-1)
 * [`csdx csdx cm:stacks:unpublish [-a <value>] [-e <value>] [-c <value>] [-y] [--locale <value>] [--branch <value>] [--retry-failed <value>] [--bulk-unpublish <value>] [--content-type <value>] [--delivery-token <value>] [--only-assets] [--only-entries]`](#csdx-csdx-cmstacksunpublish--a-value--e-value--c-value--y---locale-value---branch-value---retry-failed-value---bulk-unpublish-value---content-type-value---delivery-token-value---only-assets---only-entries-1)
 * [`csdx config:get:base-branch`](#csdx-configgetbase-branch)
+* [`csdx config:get:ea-header`](#csdx-configgetea-header)
+* [`csdx config:get:early-access-header`](#csdx-configgetearly-access-header)
 * [`csdx config:get:region`](#csdx-configgetregion)
 * [`csdx config:remove:base-branch`](#csdx-configremovebase-branch)
+* [`csdx config:remove:ea-header`](#csdx-configremoveea-header)
+* [`csdx config:remove:early-access-header`](#csdx-configremoveearly-access-header)
 * [`csdx config:set:base-branch`](#csdx-configsetbase-branch)
+* [`csdx config:set:ea-header`](#csdx-configsetea-header)
+* [`csdx config:set:early-access-header`](#csdx-configsetearly-access-header)
 * [`csdx config:set:region [REGION]`](#csdx-configsetregion-region)
 * [`csdx help [COMMANDS]`](#csdx-help-commands)
 * [`csdx launch`](#csdx-launch)
@@ -2060,55 +2066,55 @@ EXAMPLES
 
 
 
-  Exporting entries to csv
+  Exporting entries to CSV
 
   $ csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type>
 
 
 
-  Exporting entries to csv with stack name provided and branch name provided
+  Exporting entries to CSV with stack name provided and branch name provided
 
   $ csdx cm:export-to-csv --action <entries> --locale <locale> --alias <management-token-alias> --content-type <content-type> --stack-name <stack-name> --branch <branch-name>
 
 
 
-  Exporting organization users to csv
+  Exporting organization users to CSV
 
   $ csdx cm:export-to-csv --action <users> --org <org-uid>
 
 
 
-  Exporting organization users to csv with organization name provided
+  Exporting organization users to CSV with organization name provided
 
   $ csdx cm:export-to-csv --action <users> --org <org-uid> --org-name <org-name>
 
 
 
-  Exporting Organizations Teams to CSV
+  Exporting organization teams to CSV
 
   $ csdx cm:export-to-csv --action <teams>
 
 
 
-  Exporting Organizations Teams to CSV with org-uid
+  Exporting organization teams to CSV with org UID
 
   $ csdx cm:export-to-csv --action <teams> --org <org-uid>
 
 
 
-  Exporting Organizations Teams to CSV with team uid
+  Exporting organization teams to CSV with team UID
 
   $ csdx cm:export-to-csv --action <teams> --team-uid <team-uid>
 
 
 
-  Exporting Organizations Teams to CSV with org-uid and team uid
+  Exporting organization teams to CSV with org UID and team UID
 
   $ csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid>
 
 
 
-  Exporting Organizations Teams to CSV with org-uid and team uid
+  Exporting organization teams to CSV with org UID and team UID
 
   $ csdx cm:export-to-csv --action <teams> --org <org-uid> --team-uid <team-uid> --org-name <org-name>
 
@@ -2154,6 +2160,7 @@ FLAGS
   --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                     <options: disable|current>
   --replace-existing                Replaces the existing module in the target stack.
+  --skip-app-recreation             [optional] Skip private apps recreation if already exist
   --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
@@ -2579,6 +2586,7 @@ FLAGS
   --import-webhook-status=<option>  [default: disable] [optional] Webhook state
                                     <options: disable|current>
   --replace-existing                Replaces the existing module in the target stack.
+  --skip-app-recreation             [optional] Skip private apps recreation if already exist
   --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
@@ -2948,6 +2956,44 @@ EXAMPLES
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/base-branch.ts)_
 
+## `csdx config:get:ea-header`
+
+Display early access headers
+
+```
+USAGE
+  $ csdx config:get:ea-header
+
+DESCRIPTION
+  Display early access headers
+
+ALIASES
+  $ csdx config:get:ea-header
+
+EXAMPLES
+  $ csdx config:get:ea-header
+```
+
+## `csdx config:get:early-access-header`
+
+Display early access headers
+
+```
+USAGE
+  $ csdx config:get:early-access-header
+
+DESCRIPTION
+  Display early access headers
+
+ALIASES
+  $ csdx config:get:ea-header
+
+EXAMPLES
+  $ csdx config:get:early-access-header
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/get/early-access-header.ts)_
+
 ## `csdx config:get:region`
 
 Get current region set for CLI
@@ -2988,6 +3034,56 @@ EXAMPLES
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/base-branch.ts)_
 
+## `csdx config:remove:ea-header`
+
+Remove early access header
+
+```
+USAGE
+  $ csdx config:remove:ea-header [--header-alias <value>] [-y]
+
+FLAGS
+  -y, --yes               Force Remove
+  --header-alias=<value>  Early access header alias
+
+DESCRIPTION
+  Remove early access header
+
+ALIASES
+  $ csdx config:remove:ea-header
+
+EXAMPLES
+  $ csdx config:remove:ea-header
+
+  $ csdx config:remove:ea-header --header-alias <value>
+```
+
+## `csdx config:remove:early-access-header`
+
+Remove early access header
+
+```
+USAGE
+  $ csdx config:remove:early-access-header [--header-alias <value>] [-y]
+
+FLAGS
+  -y, --yes               Force Remove
+  --header-alias=<value>  Early access header alias
+
+DESCRIPTION
+  Remove early access header
+
+ALIASES
+  $ csdx config:remove:ea-header
+
+EXAMPLES
+  $ csdx config:remove:early-access-header
+
+  $ csdx config:remove:early-access-header --header-alias <value>
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/remove/early-access-header.ts)_
+
 ## `csdx config:set:base-branch`
 
 Set branch for CLI
@@ -3010,6 +3106,56 @@ EXAMPLES
 ```
 
 _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/base-branch.ts)_
+
+## `csdx config:set:ea-header`
+
+Set early access header
+
+```
+USAGE
+  $ csdx config:set:ea-header [--header-alias <value>] [--header <value>]
+
+FLAGS
+  --header=<value>        Early access header value
+  --header-alias=<value>  Alias for the header
+
+DESCRIPTION
+  Set early access header
+
+ALIASES
+  $ csdx config:set:ea-header
+
+EXAMPLES
+  $ csdx config:set:ea-header
+
+  $ csdx config:set:ea-header --header <value> --header-alias <value>
+```
+
+## `csdx config:set:early-access-header`
+
+Set early access header
+
+```
+USAGE
+  $ csdx config:set:early-access-header [--header-alias <value>] [--header <value>]
+
+FLAGS
+  --header=<value>        Early access header value
+  --header-alias=<value>  Alias for the header
+
+DESCRIPTION
+  Set early access header
+
+ALIASES
+  $ csdx config:set:ea-header
+
+EXAMPLES
+  $ csdx config:set:early-access-header
+
+  $ csdx config:set:early-access-header --header <value> --header-alias <value>
+```
+
+_See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/main/packages/contentstack-config/src/commands/config/set/early-access-header.ts)_
 
 ## `csdx config:set:region [REGION]`
 
@@ -3067,7 +3213,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.14/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.20/src/commands/help.ts)_
 
 ## `csdx launch`
 
