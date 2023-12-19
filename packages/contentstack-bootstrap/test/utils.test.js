@@ -33,17 +33,66 @@ function getFileContent(_path) {
 
 describe('Utils', () => {
   describe('#setupEnvironments', () => {
-    it('Create env file for a stack', async () => {
+    it('Create env file for a stack with live preview enabled', async () => {
       const environments = { items: [{ name: 'production' }, { name: 'development' }] };
       const token = 'mock-delivery-token';
       const api_key = 'mock-api-key';
       const appConfig = {
         appConfigKey: 'reactjs',
       };
+      const livePreviewEnabled= true;
       const clonedDirectory = await getDirectory();
       const region = {
         name: 'NA',
-        cda: 'https://app.contentstack.com',
+        cda: 'https://cdn.contentstack.com',
+        cma: 'https://app.contentstack.com',
+      };
+      const managementAPIClient = {
+        stack: () => {
+          return {
+            environment: () => {
+              return {
+                query: () => {
+                  return {
+                    find: () => Promise.resolve(environments),
+                  };
+                },
+              };
+            },
+            deliveryToken: () => {
+              return {
+                create: () => Promise.resolve({ token, preview_token: "mock_preview_token" }),
+              };
+            },
+          };
+        },
+      };
+      await setupEnvironments(managementAPIClient, api_key, appConfig,clonedDirectory, region,livePreviewEnabled);
+      const files = await getDirFiles(clonedDirectory);
+      expect(files).to.have.length(2);
+      let devEnvFile = await getFileContent(path.join(clonedDirectory, '.env.development.local'));
+      devEnvFile = devEnvFile.replace(/\n/g, ',');
+      expect(devEnvFile).equal(
+        'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,REACT_APP_CONTENTSTACK_PREVIEW_TOKEN=mock_preview_token,REACT_APP_CONTENTSTACK_PREVIEW_HOST=https://rest-preview.contentstack.com,REACT_APP_CONTENTSTACK_ENVIRONMENT=development,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=true',
+      );
+      let prodEnvFile = await getFileContent(path.join(clonedDirectory, '.env.production.local'));
+      prodEnvFile = prodEnvFile.replace(/\n/g, ',');
+      expect(prodEnvFile).equal(
+        'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,REACT_APP_CONTENTSTACK_PREVIEW_TOKEN=mock_preview_token,REACT_APP_CONTENTSTACK_PREVIEW_HOST=https://rest-preview.contentstack.com,REACT_APP_CONTENTSTACK_ENVIRONMENT=production,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=true',
+      );
+    });
+    it('Create env file for a stack with live preview disabled', async () => {
+      const environments = { items: [{ name: 'production' }, { name: 'development' }] };
+      const token = 'mock-delivery-token';
+      const api_key = 'mock-api-key';
+      const appConfig = {
+        appConfigKey: 'reactjs',
+      };
+      const livePreviewEnabled= false;
+      const clonedDirectory = await getDirectory();
+      const region = {
+        name: 'NA',
+        cda: 'https://cdn.contentstack.com',
         cma: 'https://app.contentstack.com',
       };
       const managementAPIClient = {
@@ -66,19 +115,18 @@ describe('Utils', () => {
           };
         },
       };
-
-      await setupEnvironments(managementAPIClient, api_key, appConfig, clonedDirectory, region);
+      await setupEnvironments(managementAPIClient, api_key, appConfig,clonedDirectory, region,livePreviewEnabled);
       const files = await getDirFiles(clonedDirectory);
       expect(files).to.have.length(2);
       let devEnvFile = await getFileContent(path.join(clonedDirectory, '.env.development.local'));
       devEnvFile = devEnvFile.replace(/\n/g, ',');
       expect(devEnvFile).equal(
-        'REACT_APP_APIKEY=mock-api-key,REACT_APP_DELIVERY_TOKEN=mock-delivery-token,REACT_APP_ENVIRONMENT=development,REACT_APP_REGION=NA',
+      'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,REACT_APP_CONTENTSTACK_ENVIRONMENT=development,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=false'
       );
       let prodEnvFile = await getFileContent(path.join(clonedDirectory, '.env.production.local'));
       prodEnvFile = prodEnvFile.replace(/\n/g, ',');
       expect(prodEnvFile).equal(
-        'REACT_APP_APIKEY=mock-api-key,REACT_APP_DELIVERY_TOKEN=mock-delivery-token,REACT_APP_ENVIRONMENT=production,REACT_APP_REGION=NA',
+      'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,REACT_APP_CONTENTSTACK_ENVIRONMENT=production,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=false'
       );
     });
     it('Create env with invalid environments, should throw an error', async () => {
