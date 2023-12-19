@@ -3,10 +3,10 @@ import { interactive } from '../../../utils';
 import { Command } from '@contentstack/cli-command';
 
 export default class SetEarlyAccessHeaderCommand extends Command {
-  static description = 'Set early access header';
+  static description = 'Set Early Access Program header';
   static aliases: string[] = ['config:set:ea-header'];
   static flags: FlagInput = {
-    'header-alias': flags.string({ description: 'Alias for the header' }),
+    'header-alias': flags.string({ description: 'Early access header alias' }),
     header: flags.string({ description: 'Early access header value' }),
   };
   static examples: string[] = [
@@ -27,10 +27,10 @@ export default class SetEarlyAccessHeaderCommand extends Command {
       }
       configHandler.set(`earlyAccessHeaders.${earlyAccessHeaderAlias}`, earlyAccessHeader);
       cliux.success(
-        `Early access header '${earlyAccessHeader}' with alias '${earlyAccessHeaderAlias}' is set successfully`,
+        `Early access header '${earlyAccessHeader}' with alias '${earlyAccessHeaderAlias}' has been successfully set `,
       );
     } catch (error) {
-      this.log('Failed to set the early access header config', error instanceof Error ? error.message : error);
+      this.log('Unable to set the Early Access Program header config', error instanceof Error ? error.message : error);
     }
   }
 }
