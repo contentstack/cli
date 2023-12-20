@@ -141,7 +141,7 @@ const envFileHandler = async (
         environmentVariables.api_key
       }\nREACT_APP_CONTENTSTACK_DELIVERY_TOKEN=${
         environmentVariables.deliveryToken
-      }\n${livePreviewEnabled?`\nREACT_APP_CONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token}\nREACT_APP_CONTENTSTACK_PREVIEW_HOST=${customHost??previewHost}\n`:'\n'}\nREACT_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${
+      }${livePreviewEnabled?`\nREACT_APP_CONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token}\nREACT_APP_CONTENTSTACK_PREVIEW_HOST=${customHost??previewHost}\n`:'\n'}REACT_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${
         !isUSRegion && !customHost ? '\nREACT_APP_CONTENTSTACK_REGION=' + region.name : ''
       }\nSKIP_PREFLIGHT_CHECK=true\nREACT_APP_CONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`;
       result = await writeEnvFile(content, filePath);
@@ -152,7 +152,7 @@ const envFileHandler = async (
       filePath = path.join(clonedDirectory, fileName);
       content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${
         environmentVariables.deliveryToken
-      }\n${livePreviewEnabled?`\nCONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token}\nCONTENTSTACK_PREVIEW_HOST=${customHost??previewHost}\n`:'\n'}\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\n${
+      }\n${livePreviewEnabled?`\nCONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token}\nCONTENTSTACK_PREVIEW_HOST=${customHost??previewHost}\n`:'\n'}CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\n${
         !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
       }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_MANAGEMENT_TOKEN=''\nCONTENTSTACK_APP_HOST=''\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
       result = await writeEnvFile(content, filePath);
