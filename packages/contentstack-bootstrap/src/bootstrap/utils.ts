@@ -125,7 +125,7 @@ const envFileHandler = async (
   let customHost;
   let previewHost:string;
   const regionName = region && region.name && region.name.toLowerCase();
-  previewHost = region.cda.replace('cdn','rest-preview');
+  previewHost = region.cda?.replace('cdn','rest-preview');
   const isUSRegion = regionName === 'us' || regionName === 'na';
   if (regionName !== 'eu' && !isUSRegion) {
     customHost = region.cda && region.cda.substring('8');
