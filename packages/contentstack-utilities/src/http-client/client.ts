@@ -4,6 +4,9 @@ import { HttpResponse } from './http-response';
 import configStore from '../config-handler';
 import authHandler from '../auth-handler';
 
+type HttpClientOptions = {
+  disableEarlyAccessHeaders?: boolean;
+};
 export class HttpClient implements IHttpClient {
   /**
    * The request configuration.
@@ -15,6 +18,8 @@ export class HttpClient implements IHttpClient {
    */
   private readonly axiosInstance: AxiosInstance;
 
+  private disableEarlyAccessHeaders: boolean;
+
   /**
    * The payload format for a JSON or form-url-encoded request.
    */
@@ -23,9 +28,10 @@ export class HttpClient implements IHttpClient {
   /**
    * Createa new pending HTTP request instance.
    */
-  constructor(request: AxiosRequestConfig = {}) {
+  constructor(request: AxiosRequestConfig = {}, options: HttpClientOptions = {}) {
     this.request = request;
     this.axiosInstance = Axios.create();
+    this.disableEarlyAccessHeaders = options.disableEarlyAccessHeaders || false;
 
     // Sets payload format as json by default
     this.asJson();
@@ -351,24 +357,53 @@ export class HttpClient implements IHttpClient {
    */
   async createAndSendRequest(method: HttpMethod, url: string): Promise<AxiosResponse> {
     let counter = 0;
-    this.axiosInstance.interceptors.response.use(null, async error => {
+    this.axiosInstance.interceptors.response.use(null, async (error) => {
       const { message, response } = error;
       if (response?.data?.error_message?.includes('access token is invalid or expired')) {
         const token = await this.refreshToken();
         this.headers({ ...this.request.headers, authorization: token.authorization });
-        return await this.axiosInstance({ url, method, withCredentials: true, ...this.request, data: this.prepareRequestPayload(), })
+        return await this.axiosInstance({
+          url,
+          method,
+          withCredentials: true,
+          ...this.request,
+          data: this.prepareRequestPayload(),
+        });
       }
       // Retry while Network timeout or Network Error
-      if (!(message.includes('timeout') || message.includes('Network Error') || message.includes('getaddrinfo ENOTFOUND'))) {
+      if (
+        !(message.includes('timeout') || message.includes('Network Error') || message.includes('getaddrinfo ENOTFOUND'))
+      ) {
         return Promise.reject(error);
       }
       if (counter < 1) {
         counter++;
-        return await this.axiosInstance({ url, method, withCredentials: true, ...this.request, data: this.prepareRequestPayload(), })
+        return await this.axiosInstance({
+          url,
+          method,
+          withCredentials: true,
+          ...this.request,
+          data: this.prepareRequestPayload(),
+        });
       }
       return Promise.reject(error);
     });
-    return await this.axiosInstance({ url, method, withCredentials: true, ...this.request, data: this.prepareRequestPayload(), })
+
+    if (!this.disableEarlyAccessHeaders) {
+      // Add early access header by default
+      const earlyAccessHeaders = configStore.get(`earlyAccessHeaders`);
+      if (earlyAccessHeaders && Object.keys(earlyAccessHeaders).length > 0) {
+        this.headers({ 'x-header-ea': Object.values(earlyAccessHeaders).join(',') });
+      }
+    }
+
+    return await this.axiosInstance({
+      url,
+      method,
+      withCredentials: true,
+      ...this.request,
+      data: this.prepareRequestPayload(),
+    });
   }
 
   /**
@@ -383,8 +418,9 @@ export class HttpClient implements IHttpClient {
     if (authorisationType === 'BASIC') {
       return Promise.reject('Your session is timed out, please login to proceed');
     } else if (authorisationType === 'OAUTH') {
-      return authHandler.compareOAuthExpiry(true)
-        .then(() => Promise.resolve({ authorization: `Bearer ${configStore.get('oauthAccessToken')}`, }))
+      return authHandler
+        .compareOAuthExpiry(true)
+        .then(() => Promise.resolve({ authorization: `Bearer ${configStore.get('oauthAccessToken')}` }))
         .catch((error) => Promise.reject(error));
     } else {
       return Promise.reject('You do not have permissions to perform this action, please login to proceed');
