@@ -20,10 +20,10 @@ export default class SetEarlyAccessHeaderCommand extends Command {
         flags: { header: earlyAccessHeader, 'header-alias': earlyAccessHeaderAlias },
       } = await this.parse(SetEarlyAccessHeaderCommand);
       if (!earlyAccessHeaderAlias) {
-        earlyAccessHeaderAlias = await interactive.askEarlyAccessHeaderAlias();
+        earlyAccessHeaderAlias = (await interactive.askEarlyAccessHeaderAlias())?.trim();
       }
       if (!earlyAccessHeader) {
-        earlyAccessHeader = await interactive.askEarlyAccessHeaderValue();
+        earlyAccessHeader = (await interactive.askEarlyAccessHeaderValue())?.trim();
       }
       configHandler.set(`earlyAccessHeaders.${earlyAccessHeaderAlias}`, earlyAccessHeader);
       cliux.success(
