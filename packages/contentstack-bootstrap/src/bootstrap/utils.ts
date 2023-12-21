@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { cliux } from '@contentstack/cli-utilities';
-
+import { cliux,  } from '@contentstack/cli-utilities';
+import { continueBootstrapCommand } from '../bootstrap/interactive';
 import { AppConfig } from '../config';
 import messageHandler from '../messages';
 
@@ -57,6 +57,12 @@ export const setupEnvironments = async (
         };
           try {
             const tokenResult = !managementToken? await managementAPIClient.stack({ api_key }).deliveryToken().create(body,livePreviewEnabled?{"create_with_preview_token":true}:{}) :{};
+            if(!tokenResult.preview_token && !managementToken) {
+              cliux.print(`warning: Live Preview using the Preview token is not available in your plan please contact the admin.`);
+              if(await continueBootstrapCommand() ==='no') {
+                return;
+              }
+            }
             if (tokenResult.token) {
               const environmentVariables: EnviornmentVariables = {
                 api_key,
