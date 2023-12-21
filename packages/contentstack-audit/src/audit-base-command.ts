@@ -60,7 +60,11 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       this.log(this.messages.NO_MISSING_REF_FOUND, 'info');
       this.log('');
 
-      if (this.currentCommand === 'cm:stacks:audit:fix' && existsSync(this.sharedConfig.basePath)) {
+      if (
+        this.flags['copy-dir'] &&
+        this.currentCommand === 'cm:stacks:audit:fix' &&
+        existsSync(this.sharedConfig.basePath)
+      ) {
         // NOTE Clean up the backup dir if no issue found while audit the content
         rmSync(this.sharedConfig.basePath, { recursive: true });
       }
@@ -135,10 +139,11 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       }
 
       // NOTE create bkp directory
-      const backupDirPath = `${(this.flags['copy-path'] || this.flags['data-dir']).replace(
-        /\/+$/,
-        '',
-      )}_backup_${uuid()}`;
+      const backupDirPath = `${(
+        this.flags['copy-path'] ||
+        this.flags['data-dir'] ||
+        this.sharedConfig.basePath
+      ).replace(/\/+$/, '')}_backup_${uuid()}`;
 
       if (!existsSync(backupDirPath)) {
         mkdirSync(backupDirPath, { recursive: true });
