@@ -1,12 +1,7 @@
 import { FlagDefinition, Flags, ux } from '@contentstack/cli-utilities';
 
-import { IFlags, IncludeFlags } from '../types';
+import { IFlags, IncludeFlags, JSONFlagOptions } from '../types';
 import { tableColumnDescriptions } from '../messages';
-
-type JSONFlagOptions = {
-  hidden?: boolean;
-  description?: string;
-};
 
 const defaultJSONOptions = { description: 'Provide JSON input' };
 
