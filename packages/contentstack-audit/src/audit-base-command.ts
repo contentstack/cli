@@ -199,7 +199,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * objects, where each object has two properties:
    */
   showOutputOnScreen(allMissingRefs: { module: string; missingRefs?: Record<string, any> }[]) {
-    if (this.sharedConfig.showTerminalOutput) {
+    if (this.sharedConfig.showTerminalOutput && !this.flags['external-config']?.noTerminalOutput) {
       this.log(''); // NOTE adding new line
       for (const { module, missingRefs } of allMissingRefs) {
         if (!isEmpty(missingRefs)) {
