@@ -158,7 +158,6 @@ function getGlobalField(stack, globalFieldUid) {
     });
 }
 function throwConfigError(error) {
-  // console.log(error)
   const { name, path, argument } = error;
   let fieldName = path.join('.');
   if (fieldName === '') {
@@ -295,7 +294,6 @@ async function updateSingleContentTypeEntriesWithGlobalField(contentType, config
 async function updateSingleEntry(entry, contentType, config) {
   let schema = contentType.schema;
   let paths = config.paths;
-  // console.log("before entry update", entry)
   let entryUploadPath = uploadPaths(schema);
   entryUploadPath = Object.keys(entryUploadPath);
   for (const path of paths) {
@@ -317,7 +315,6 @@ async function updateSingleEntry(entry, contentType, config) {
     console.error(`Error while unsetting resolved upload data: ${error.message}`);
   }
   await handleEntryUpdate(entry, config, 0);
-  // console.log("updated entry", entry)
 }
 async function handleEntryUpdate(entry, config, retry = 0) {
   try {
@@ -380,7 +377,6 @@ function traverseSchemaForField(schema, path, field_uid) {
   return {};
 }
 function isPathValid(schema, path) {
-  // console.log("path", path)
   let pathFrom = path.from.split('.');
   let htmlParentPath = pathFrom.slice(0, pathFrom.length - 1).join('.');
   const rteUid = pathFrom[pathFrom.length - 1];
@@ -434,10 +430,8 @@ function setEntryData(path, entry, schema, fieldMetaData) {
     if (field) {
       if (field.data_type === 'group' || field.data_type === 'global_field') {
         paths.shift();
-        // console.log("paths", paths)
 
         let sub_entry_data = get(entry, field.uid);
-        // console.log("sub_Entry",sub_entry_data)
         if (isArray(sub_entry_data)) {
           for (const sub_data of sub_entry_data) {
             setEntryData(paths.join('.'), sub_data, field.schema, fieldMetaData);
@@ -450,13 +444,10 @@ function setEntryData(path, entry, schema, fieldMetaData) {
           let ModularBlockUid = paths.shift();
           let blockUid = paths.shift();
           let blockField = find(field.blocks, { uid: blockUid });
-          // console.log("blockUid",blockUid)
           if (blockField) {
             let modularBlockDetails = get(entry, ModularBlockUid) || [];
-            // console.log("modularBlockDetails",modularBlockDetails)
             for (const blocks of modularBlockDetails) {
               let blockdata = get(blocks, blockUid);
-              // console.log("blockData",blockdata)
               if (blockdata) {
                 setEntryData(paths.join('.'), blockdata, blockField.schema, fieldMetaData);
               }
@@ -497,10 +488,8 @@ function unsetResolvedUploadData(path, entry, schema, fieldMetaData) {
     if (field) {
       if (field.data_type === 'group' || field.data_type === 'global_field') {
         paths.shift();
-        // console.log("paths", paths)
 
         let sub_entry_data = get(entry, field.uid);
-        // console.log("sub_Entry",sub_entry_data)
         if (isArray(sub_entry_data)) {
           for (const sub_data of sub_entry_data) {
             unsetResolvedUploadData(paths.join('.'), sub_data, field.schema, fieldMetaData);
@@ -513,13 +502,10 @@ function unsetResolvedUploadData(path, entry, schema, fieldMetaData) {
           let ModularBlockUid = paths.shift();
           let blockUid = paths.shift();
           let blockField = find(field.blocks, { uid: blockUid });
-          // console.log("blockUid",blockUid)
           if (blockField) {
             let modularBlockDetails = get(entry, ModularBlockUid) || [];
-            // console.log("modularBlockDetails",modularBlockDetails)
             for (const blocks of modularBlockDetails) {
               let blockdata = get(blocks, blockUid);
-              // console.log("blockData",blockdata)
               if (blockdata) {
                 unsetResolvedUploadData(paths.join('.'), blockdata, blockField.schema, fieldMetaData);
               }
@@ -560,7 +546,6 @@ function convertHtmlToJson(html) {
     doc = htmlToJson(htmlDoc);
     applyDirtyAttributesToBlock(doc);
   } catch (error) {
-    // console.log("err", err)
     throw new Error('Error while converting html '.concat(error.message));
   }
   return doc;
@@ -604,12 +589,10 @@ async function updateContentTypeForGlobalField(stack, global_field, config) {
   } else {
     throw new Error(`${globalField.uid} Global field is not referred in any content type.`);
   }
-  // console.log("globolfield", globalField)
 }
 function updateMigrationPath(globalFieldPaths, config) {
   const newPath = [];
   for (const path of config.paths) {
-    // console.log("path", path)
     for (const globalFieldPath of globalFieldPaths) {
       newPath.push({ from: globalFieldPath + '.' + path.from, to: globalFieldPath + '.' + path.to });
     }
