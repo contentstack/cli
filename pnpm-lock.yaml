@@ -21,7 +21,7 @@ importers:
       '@contentstack/cli-cm-import': ~1.12.2
       '@contentstack/cli-cm-migrate-rte': ~1.4.15
       '@contentstack/cli-cm-seed': ~1.7.0
-      '@contentstack/cli-command': ~1.2.16
+      '@contentstack/cli-command': ~1.2.17
       '@contentstack/cli-config': ~1.5.1
       '@contentstack/cli-launch': ~1.0.15
       '@contentstack/cli-migration': ~1.4.2
