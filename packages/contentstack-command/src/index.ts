@@ -34,7 +34,14 @@ abstract class ContentstackCommand extends Command {
     if (!this._region) this._region = configHandler.get('region');
 
     if (!this._region) {
-      cliux.print('Error: Region not configured. Please set the region.', { color: 'red' });
+      //NOTE: this.log suggestion not working
+      cliux.print('Error: Region not configured. Please set the region with command $ csdx config:set:region', {
+        color: 'red',
+      });
+      cliux.print(
+        `Suggestions: To set the region https://www.contentstack.com/docs/developers/cli/configure-regions-in-the-cli`,
+        { color: 'yellow' },
+      );
       process.exit(1);
     }
 
