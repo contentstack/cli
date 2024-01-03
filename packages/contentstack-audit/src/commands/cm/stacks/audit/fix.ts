@@ -1,9 +1,12 @@
 import { FlagInput, Flags, ux } from '@contentstack/cli-utilities';
 
 import config from '../../../../config';
-import { getTableFlags } from '../../../../util';
+import { ConfigType } from '../../../../types';
 import { auditFixMsg, auditMsg } from '../../../../messages';
 import { AuditBaseCommand } from '../../../../audit-base-command';
+import { getJsonInputFlags, getTableFlags } from '../../../../util';
+
+const jsonFlag = getJsonInputFlags({ hidden: true });
 
 export default class AuditFix extends AuditBaseCommand {
   static aliases: string[] = ['audit:fix', 'cm:stacks:audit:fix'];
@@ -49,6 +52,7 @@ export default class AuditFix extends AuditBaseCommand {
       hidden: true,
       description: 'Use this flag to skip confirmation',
     }),
+    'external-config': jsonFlag(),
     ...getTableFlags(),
   };
 
@@ -56,9 +60,13 @@ export default class AuditFix extends AuditBaseCommand {
    * The `run` function is an asynchronous function that performs an audit on different modules
    * (content-types, global-fields, entries) and generates a report.
    */
-  async run(): Promise<void> {
+  async run(): Promise<void | ConfigType> {
     try {
       await this.start('cm:stacks:audit:fix');
+
+      if (this.flags['external-config']?.returnConfig) {
+        return this.sharedConfig;
+      }
     } catch (error) {
       this.log(error instanceof Error ? error.message : error, 'error');
       console.trace(error);
