@@ -472,9 +472,9 @@ export default class ContentType {
 
           if (!refExist) {
             this.missingRefs[this.currentUid].push(refErrorObj);
-          }
 
-          return refExist;
+            return block;
+          }
         }
 
         block.schema = this.runFixOnSchema(tree, block.schema as ContentTypeSchemaType[]);
