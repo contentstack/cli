@@ -141,10 +141,10 @@ const envFileHandler = async (
   let customHost;
   let previewHost: string;
   const regionName = region && region.name && region.name.toLowerCase();
-  previewHost = region.cda?.substring('8').replace('cdn', 'rest-preview');
+  previewHost = region.cda?.substring(8).replace('cdn', 'rest-preview');
   const isUSRegion = regionName === 'us' || regionName === 'na';
   if (regionName !== 'eu' && !isUSRegion) {
-    customHost = region.cda && region.cda.substring('8');
+    customHost = region.cda && region.cda.substring(8);
     customHost = customHost.replace('cdn', 'rest-preview');
   }
   const production = environmentVariables.environment === 'production' ? true : false;
@@ -195,7 +195,9 @@ const envFileHandler = async (
               customHost ?? previewHost
             }\n`
           : '\n'
-      }CONTENTSTACK_APP_HOST=''\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`;
+      }CONTENTSTACK_APP_HOST=''\nCONTENTSTACK_ENVIRONMENT=${
+        environmentVariables.environment
+      }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`;
       result = await writeEnvFile(content, filePath);
       break;
     case 'angular':
