@@ -10,7 +10,6 @@
     "@contentstack/cli-utilities": "~1.5.10",
     "@contentstack/management": "~1.13.0",
     "@oclif/core": "^2.9.3",
-    "axios": "^1.6.3",
     "big-json": "^3.2.0",
     "bluebird": "^3.7.2",
     "chalk": "^4.1.2",
