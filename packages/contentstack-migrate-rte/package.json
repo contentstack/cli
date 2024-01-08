@@ -6,7 +6,7 @@
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "~1.2.16",
-    "@contentstack/cli-utilities": "~1.5.10",
+    "@contentstack/cli-utilities": "~1.5.11",
     "@contentstack/json-rte-serializer": "~2.0.4",
     "collapse-whitespace": "^1.1.7",
     "chalk": "^4.1.2",
