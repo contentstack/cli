@@ -30,7 +30,6 @@ export function generateMergeScripts(mergeSummary, mergeJobUID) {
       merge_existing_new: entryCreateUpdateScript,
       merge_existing: entryUpdateScript,
       merge_new: entryCreateScript,
-      ignore: entryCreateUpdateScript,
     };
 
     const processContentTypes = (contentTypes, messageType) => {
@@ -66,6 +65,8 @@ export function getContentTypeMergeStatus(status) {
     return 'created';
   } else if (status === 'merge_existing_new') {
     return 'created_updated';
+  } else if (status === 'ignore') {
+    return;
   } else {
     return '';
   }

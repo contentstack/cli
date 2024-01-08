@@ -2,6 +2,14 @@ export function entryCreateScript(contentType) {
   return `
   const fs = require('fs');
   const path = require('path');
+  const { marked } = require('marked');
+  const has = require('lodash/has');
+  const isArray = require('lodash/isArray');
+  const isObject = require('lodash/isObject');
+  const omit = require('lodash/omit');
+  const compact = require('lodash/compact')
+  const isPlainObject = require('lodash/isPlainObject');
+  const {cliux, LoggerService} = require('@contentstack/cli-utilities')
   module.exports = async ({ migration, stackSDKInstance, managementAPIClient, config, branch, apiKey }) => {
     const keysToRemove = [
       'content_type_uid',
@@ -31,20 +39,18 @@ export function entryCreateScript(contentType) {
     let assetUIDMapper = {};
     let assetUrlMapper = {};
     let assetRefPath = {};
-    let isAssetDownload = false;
+    let downloadedAssets = [];
+    let parent=[];
+    let logger;
 
     function getValueByPath(obj, path) {
       return path.split('[').reduce((o, key) => o && o[key.replace(/\]$/, '')], obj);
     }
   
-    function updateValueByPath(obj, path, newValue, type, fileIndex) {
+    function updateValueByPath(obj, path, newValue) {
       path.split('[').reduce((o, key, index, arr) => {
         if (index === arr.length - 1) {
-          if (type === 'file') {
-            o[key.replace(/]$/, '')][fileIndex] = newValue;
-          } else {
             o[key.replace(/]$/, '')][0].uid = newValue;
-          }
         } else {
           return o[key.replace(/\]$/, '')];
         }
@@ -77,35 +83,52 @@ export function entryCreateScript(contentType) {
       return references;
     };
 
-    const findAssets = function (schema, entry, refPath, path) {
+    const findAssets = function (schema, entry) {
       for (const i in schema) {
-        const currentPath = path ? path + '[' + schema[i].uid : schema[i].uid;
         if (schema[i].data_type === 'group' || schema[i].data_type === 'global_field') {
-          findAssets(schema[i].schema, entry, refPath, currentPath + '[0]');
-        } else if (schema[i].data_type === 'blocks') {
-          for (const block in schema[i].blocks) {
+          parent.push(schema[i].uid);
+          findAssets(schema[i].schema, entry);
+          parent.pop();
+        }
+        if (schema[i].data_type === 'blocks') {
+          for (const j = 0; j < schema[i].blocks; j++) {
             {
-              if (schema[i].blocks[block].schema) {
-                findAssets(
-                  schema[i].blocks[block].schema,
-                  entry,
-                  refPath,
-                  currentPath + '[' + block + '][' + schema[i].blocks[block].uid + ']',
-                );
+              if (schema[i].blocks[j].schema) {
+                parent.push(schema[i].uid);
+                parent.push(j);
+                parent.push(schema[i].blocks[j].uid);
+                findAssets(schema[i].blocks[j].schema, entry);
+                parent.pop();
+                parent.pop();
+                parent.pop();
               }
             }
           }
-        } else if (schema[i].data_type === 'json' && schema[i].field_metadata.rich_text_type) {
-          findAssetIdsFromJsonRte(entry, schema, refPath, path);
-        } else if (
+        }
+        if (schema[i].data_type === 'json' && schema[i].field_metadata.rich_text_type) {
+          parent.push(schema[i].uid);
+          findAssetIdsFromJsonRte(entry, schema);
+          parent.pop();
+        }
+        if (
           schema[i].data_type === 'text' &&
           schema[i].field_metadata &&
           (schema[i].field_metadata.markdown || schema[i].field_metadata.rich_text_type)
         ) {
+          parent.push(schema[i].uid);
           findFileUrls(schema[i], entry);
-        } else if (schema[i].data_type === 'file') {
-          refPath.push(currentPath)
-          const imgDetails = getValueByPath(entry, currentPath);
+          if (schema[i].field_metadata.rich_text_type) {
+            findAssetIdsFromHtmlRte(entry, schema[i]);
+          }
+          parent.pop();
+        }
+        if (schema[i].data_type === 'file') {
+          parent.push(schema[i].uid);
+          let updatedEntry = entry;
+          for (let i = 0; i < parent.length; i++) {
+            updatedEntry = updatedEntry[parent[i]];
+          }
+          const imgDetails = updatedEntry;
           if (schema[i].multiple) {
             if (imgDetails && imgDetails.length) {
               imgDetails.forEach((img) => {
@@ -133,9 +156,20 @@ export function entryCreateScript(contentType) {
               cAssetDetails.push(obj);
             }
           }
+          parent.pop();
         }
       }
     };
+  
+    function findAssetIdsFromHtmlRte(entryObj, ctSchema) {
+      const regex = /<img asset_uid=\\"([^"]+)\\"/g;
+      let match;
+      const entry = JSON.stringify(entryObj);
+      while ((match = regex.exec(entry)) !== null) {
+        //insert into asset details
+        cAssetDetails.push({uid: match[1]});
+      }
+    }
   
     function findFileUrls(schema, _entry) {
       let markdownRegEx;
@@ -256,31 +290,8 @@ export function entryCreateScript(contentType) {
     }
   
     const updateAssetDetailsInEntries = function (entry) {
-      assetRefPath[entry.uid].forEach((refPath) => {
-        let imgDetails = entry[refPath];
-        if (imgDetails !== undefined) {
-          if (imgDetails && !Array.isArray(imgDetails)) {
-            entry[refPath] = assetUIDMapper[imgDetails.uid];
-          } else if (imgDetails && Array.isArray(imgDetails)) {
-            for (let i = 0; i < imgDetails.length; i++) {
-              const img = imgDetails[i];
-              entry[refPath][i] = assetUIDMapper[img.uid];
-            }
-          }
-        } else {
-          imgDetails = getValueByPath(entry, refPath);
-          if (imgDetails && !Array.isArray(imgDetails)) {
-            const imgUID = imgDetails?.uid;
-            updateValueByPath(entry, refPath, assetUIDMapper[imgUID], 'file', 0);
-          } else if (imgDetails && Array.isArray(imgDetails)) {
-            for (let i = 0; i < imgDetails.length; i++) {
-              const img = imgDetails[i];
-              const imgUID = img?.uid;
-              updateValueByPath(entry, refPath, assetUIDMapper[imgUID], 'file', i);
-            }
-          }
-        }
-      });
+      let updatedEntry = Object.assign({},entry);
+      entry = updateFileFields(updatedEntry, entry, null)
       entry = JSON.stringify(entry);
       const assetUrls = cAssetDetails.map((asset) => asset.url);
       const assetUIDs = cAssetDetails.map((asset) => asset.uid);
@@ -299,6 +310,65 @@ export function entryCreateScript(contentType) {
       });
       return JSON.parse(entry);
     };
+
+    function updateFileFields(
+      object,
+      parent,
+      pos
+    ) {
+      if (isPlainObject(object) && has(object, 'filename') && has(object, 'uid')) {
+        if (typeof pos !== 'undefined') {
+          if (typeof pos === 'number' || typeof pos === 'string') {
+            const replacer = () => {
+              if (assetUIDMapper.hasOwnProperty(object.uid)) {
+                parent[pos] = assetUIDMapper[object.uid];
+              } else {
+                parent[pos] = '';
+              }
+            };
+    
+            if (parent.uid && assetUIDMapper[parent.uid]) {
+              parent.uid = assetUIDMapper[parent.uid];
+            }
+    
+            if (
+              object &&
+              isObject(parent[pos]) &&
+              parent[pos].uid &&
+              parent[pos].url &&
+              has(parent, 'asset') &&
+              has(parent, '_content_type_uid') &&
+              parent._content_type_uid === 'sys_assets'
+            ) {
+              if (
+                has(parent, 'asset') &&
+                has(parent, '_content_type_uid') &&
+                parent._content_type_uid === 'sys_assets'
+              ) {
+                parent = omit(parent, ['asset']);
+              }
+    
+              if (object.uid && assetUIDMapper[object.uid]) {
+                object.uid = assetUIDMapper[object.uid];
+              }
+              if (object.url && assetUrlMapper[object.url]) {
+                object.url = assetUrlMapper[object.url];
+              }
+            } else {
+              replacer();
+            }
+          }
+        }
+      } else if (isPlainObject(object)) {
+        for (let key in object) updateFileFields(object[key], object, key);
+      } else if (isArray(object) && object.length) {
+        for (let i = 0; i <= object.length; i++){
+          updateFileFields(object[i], object, i);
+        }    
+        parent[pos] = compact(object);
+      }
+      return object;
+    }
   
     const checkAndDownloadAsset = async function (cAsset) {
       const assetUID = cAsset?.uid;
@@ -315,7 +385,6 @@ export function entryCreateScript(contentType) {
             return false;
         }
         else {
-          isAssetDownload = true;
           const cAssetDetail = await managementAPIClient
             .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
             .asset(assetUID)
@@ -357,8 +426,8 @@ export function entryCreateScript(contentType) {
     const uploadAssets = async function () {
       const assetFolderMap = JSON.parse(fs.readFileSync(path.resolve(filePath, 'folder-mapper.json'), 'utf8'));
       const stackAPIClient = managementAPIClient.stack({ api_key: stackSDKInstance.api_key, branch_uid: branch });
-      for (let i = 0; i < cAssetDetails?.length; i++) {
-        const asset = cAssetDetails[i];
+      for (let i = 0; i < downloadedAssets?.length; i++) {
+        const asset = downloadedAssets[i];
         let requestOption = {};
   
         requestOption.parent_uid = assetFolderMap[asset.parent_uid] || asset.parent_uid;
@@ -401,6 +470,11 @@ export function entryCreateScript(contentType) {
         successTitle: 'Entries Created Successfully',
         failedTitle: 'Failed to create entries',
         task: async () => {
+          //logger file
+          if(!fs.existsSync(path.join(filePath, 'entry-migration'))){
+            log = new LoggerService(filePath, 'entry-migration');
+          }
+
           const compareBranchEntries = await managementAPIClient
             .stack({ api_key: stackSDKInstance.api_key, branch_uid: compareBranch })
             .contentType('${contentType}')
@@ -432,9 +506,10 @@ export function entryCreateScript(contentType) {
               const updatedCAsset = await checkAndDownloadAsset(asset);
               if (updatedCAsset) {
                 cAssetDetails[i] = updatedCAsset;
+                downloadedAssets.push(updatedCAsset)
               }
             }
-            if (isAssetDownload) await uploadAssets();
+            if (downloadedAssets?.length) await uploadAssets();
           }
 
           let flag = {
@@ -445,7 +520,17 @@ export function entryCreateScript(contentType) {
 
           async function updateEntry(entry, entryDetails) {
             Object.assign(entry, { ...entryDetails });
-            await entry.update();
+            await entry.update().catch(err => {
+              let errorMsg = 'Entry update failed for uid: ' + entry?.uid + ', title: ' + entry?.title + '. ';
+              if(err?.errors?.title){
+                errorMsg +=  'title'+ err?.errors?.title;
+              }else if(err?.errors?.entry){
+                errorMsg +=  err?.errors?.entry;
+              }else{
+                errorMsg +=  (err?.entry?.errorMessage || err?.errorMessage || err?.message) ?? 'Something went wrong!';
+              }
+              log.error(errorMsg)
+            });
           }
 
           async function updateReferences(entryDetails, baseEntry, references) {
@@ -477,8 +562,16 @@ export function entryCreateScript(contentType) {
               compareFilteredProperties.forEach(async (entryDetails) => {
                 if(entryDetails !== undefined){
                   entryDetails = updateAssetDetailsInEntries(entryDetails);
-                  let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails }).catch(error => {
-                    throw error;
+                  let createdEntry = await stackSDKInstance.contentType('${contentType}').entry().create({ entry: entryDetails }).catch(err => {
+                    let errorMsg = 'Entry creation failed for contentType: ' + contentType + ', title: ' + entryDetails?.title + '. ';
+                    if(err?.errors?.title){
+                      errorMsg +=  err?.errors?.title;
+                    }else if(err?.errors?.entry){
+                      errorMsg +=  err?.errors?.entry;
+                    }else{
+                      errorMsg +=  (err?.entry?.errorMessage || err?.errorMessage || err?.message) ?? 'Something went wrong!';
+                    }
+                    log.error(errorMsg)
                   });
                   if(createdEntry){
                     if (flag.references) {
