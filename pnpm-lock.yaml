@@ -741,7 +741,6 @@ importers:
       '@types/tar': ^4.0.3
       '@types/uuid': ^9.0.7
       '@typescript-eslint/eslint-plugin': ^5.48.2
-      axios: ^1.6.3
       big-json: ^3.2.0
       bluebird: ^3.7.2
       chai: ^4.2.0
@@ -773,7 +772,6 @@ importers:
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/management': 1.13.0_debug@4.3.4
       '@oclif/core': 2.15.0_ogreqof3k35xezedraj6pnd45y
-      axios: 1.6.3_debug@4.3.4
       big-json: 3.2.0
       bluebird: 3.7.2
       chalk: 4.1.2
@@ -996,7 +994,7 @@ importers:
       '@types/node': ^14.14.32
       '@types/tar': ^6.1.3
       '@types/tmp': ^0.2.0
-      axios: ^1.6.3
+      axios: ^1.6.4
       eslint: ^8.18.0
       eslint-config-oclif: ^4.0.0
       eslint-config-oclif-typescript: ^3.0.8
@@ -1028,7 +1026,7 @@ importers:
       '@types/node': 14.18.63
       '@types/tar': 6.1.10
       '@types/tmp': 0.2.6
-      axios: 1.6.3
+      axios: 1.6.5
       eslint: 8.55.0
       eslint-config-oclif: 4.0.0_eslint@8.55.0
       eslint-config-oclif-typescript: 3.0.26_sjjl3gun7puonkp27uqtyjm5b4
@@ -1053,7 +1051,7 @@ importers:
       '@types/node': ^14.14.32
       '@types/sinon': ^10.0.2
       '@types/traverse': ^0.6.34
-      axios: ^1.6.3
+      axios: ^1.6.4
       chai: ^4.3.4
       chalk: ^4.0.0
       cli-cursor: ^3.1.0
@@ -1093,7 +1091,7 @@ importers:
       '@contentstack/management': 1.13.0_debug@4.3.4
       '@contentstack/marketplace-sdk': 1.0.1_debug@4.3.4
       '@oclif/core': 2.15.0_ogreqof3k35xezedraj6pnd45y
-      axios: 1.6.3_debug@4.3.4
+      axios: 1.6.5_debug@4.3.4
       chalk: 4.1.2
       cli-cursor: 3.1.0
       cli-table: 0.3.11
@@ -1609,7 +1607,7 @@ packages:
       '@contentstack/management': 1.13.0_debug@4.3.4
       '@contentstack/marketplace-sdk': 1.0.1_debug@4.3.4
       '@oclif/core': 2.15.0_typescript@4.9.5
-      axios: 1.6.3_debug@4.3.4
+      axios: 1.6.5_debug@4.3.4
       chalk: 4.1.2
       cli-cursor: 3.1.0
       cli-table: 0.3.11
@@ -1663,7 +1661,7 @@ packages:
   /@contentstack/marketplace-sdk/1.0.1_debug@4.3.4:
     resolution: {integrity: sha512-E9amU6qwp4i1AzXiMX4UKYJSZ8wyhncGPx5MGpwGoM2WUfJqGMwH9o1bXLAzOSBu1a8yhOMOkz/ehLwYeq6Ufg==}
     dependencies:
-      axios: 1.6.3_debug@4.3.4
+      axios: 1.6.5_debug@4.3.4
     transitivePeerDependencies:
       - debug
 
@@ -4760,20 +4758,20 @@ packages:
     transitivePeerDependencies:
       - debug
 
-  /axios/1.6.3:
-    resolution: {integrity: sha512-fWyNdeawGam70jXSVlKl+SUNVcL6j6W79CuSIPfi6HnDUmSCH6gyUys/HrqHeA/wU0Az41rRgean494d0Jb+ww==}
+  /axios/1.6.5:
+    resolution: {integrity: sha512-Ii012v05KEVuUoFWmMW/UQv9aRIc3ZwkWDcM+h5Il8izZCtRVpDUfwpoFf7eOtajT3QiGR4yDUx7lPqHJULgbg==}
     dependencies:
-      follow-redirects: 1.15.3
+      follow-redirects: 1.15.4
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
     dev: true
 
-  /axios/1.6.3_debug@4.3.4:
-    resolution: {integrity: sha512-fWyNdeawGam70jXSVlKl+SUNVcL6j6W79CuSIPfi6HnDUmSCH6gyUys/HrqHeA/wU0Az41rRgean494d0Jb+ww==}
+  /axios/1.6.5_debug@4.3.4:
+    resolution: {integrity: sha512-Ii012v05KEVuUoFWmMW/UQv9aRIc3ZwkWDcM+h5Il8izZCtRVpDUfwpoFf7eOtajT3QiGR4yDUx7lPqHJULgbg==}
     dependencies:
-      follow-redirects: 1.15.3_debug@4.3.4
+      follow-redirects: 1.15.4_debug@4.3.4
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -7500,8 +7498,19 @@ packages:
   /fn.name/1.1.0:
     resolution: {integrity: sha512-GRnmB5gPyJpAhTQdSZTSp9uaPSvl09KoYcMQtsB9rQoOmzs9dH6ffeccH+Z+cv6P68Hu5bC6JjRh4Ah/mHSNRw==}
 
-  /follow-redirects/1.15.3:
+  /follow-redirects/1.15.3_debug@4.3.4:
     resolution: {integrity: sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dependencies:
+      debug: 4.3.4
+
+  /follow-redirects/1.15.4:
+    resolution: {integrity: sha512-Cr4D/5wlrb0z9dgERpUL3LrmPKVDsETIJhaCMeDfuFYcqa5bldGV6wBsAN6X/vxlXQtFBMrXdXxdL8CbDTGniw==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -7510,8 +7519,8 @@ packages:
         optional: true
     dev: true
 
-  /follow-redirects/1.15.3_debug@4.3.4:
-    resolution: {integrity: sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==}
+  /follow-redirects/1.15.4_debug@4.3.4:
+    resolution: {integrity: sha512-Cr4D/5wlrb0z9dgERpUL3LrmPKVDsETIJhaCMeDfuFYcqa5bldGV6wBsAN6X/vxlXQtFBMrXdXxdL8CbDTGniw==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
