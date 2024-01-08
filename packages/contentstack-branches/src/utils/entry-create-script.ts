@@ -472,7 +472,7 @@ export function entryCreateScript(contentType) {
         task: async () => {
           //logger file
           if(!fs.existsSync(path.join(filePath, 'entry-migration'))){
-            log = new LoggerService(filePath, 'entry-migration');
+            logger = new LoggerService(filePath, 'entry-migration');
           }
 
           const compareBranchEntries = await managementAPIClient
@@ -529,7 +529,7 @@ export function entryCreateScript(contentType) {
               }else{
                 errorMsg +=  (err?.entry?.errorMessage || err?.errorMessage || err?.message) ?? 'Something went wrong!';
               }
-              log.error(errorMsg)
+              logger.error(errorMsg)
             });
           }
 
@@ -571,7 +571,7 @@ export function entryCreateScript(contentType) {
                     }else{
                       errorMsg +=  (err?.entry?.errorMessage || err?.errorMessage || err?.message) ?? 'Something went wrong!';
                     }
-                    log.error(errorMsg)
+                    logger.error(errorMsg)
                   });
                   if(createdEntry){
                     if (flag.references) {
