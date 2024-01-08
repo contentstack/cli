@@ -1,6 +1,7 @@
 import { resolve } from 'path';
 import { AuditFix } from '@contentstack/cli-audit';
-import { addLocale, cliux, ContentstackClient } from '@contentstack/cli-utilities';
+import messages, { $t } from '@contentstack/cli-audit/lib/messages';
+import { addLocale, cliux, ContentstackClient, Logger } from '@contentstack/cli-utilities';
 
 import startModuleImport from './modules';
 import startJSModuleImport from './modules-js';
@@ -38,7 +39,7 @@ class ModuleImporter {
     }
 
     // NOTE init log
-    initLogger(this.importConfig);
+    const logger = initLogger(this.importConfig);
 
     // NOTE audit and fix the import content.
     if (
@@ -46,8 +47,8 @@ class ModuleImporter {
       (!this.importConfig.moduleName ||
         ['content-types', 'global-fields', 'entries'].includes(this.importConfig.moduleName))
     ) {
-      if (!(await this.auditImportData())) {
-        return;
+      if (!(await this.auditImportData(logger))) {
+        return { noSuccessMsg: true };
       }
     }
 
@@ -108,7 +109,7 @@ class ModuleImporter {
    * @returns The function `auditImportData()` returns a boolean value. It returns `true` if there is a
    * fix available and the user confirms to proceed with the fix, otherwise it returns `false`.
    */
-  async auditImportData() {
+  async auditImportData(logger: Logger) {
     const basePath = resolve(this.importConfig.backupDir, 'logs', 'audit');
     const auditConfig = {
       noLog: false, // Skip logs printing on terminal
@@ -133,18 +134,20 @@ class ModuleImporter {
 
       log(this.importConfig, 'Starting audit process', 'info');
       const result = await AuditFix.run(args);
-      log(this.importConfig, 'Starting audit process completed', 'info');
+      log(this.importConfig, 'Audit process completed', 'info');
 
       if (result) {
-        const { hasFix } = result;
+        const { hasFix, config } = result;
 
         if (hasFix) {
+          logger.log($t(messages.FINAL_REPORT_PATH, { path: config.reportPath }), 'warn');
+
           if (
             this.importConfig.forceStopMarketplaceAppsPrompt ||
             (await cliux.inquire({
               type: 'confirm',
-              message: 'Can you check the fix on the given path and confirm if you would like to proceed with the fix?',
               name: 'confirmation',
+              message: 'Can you check the fix on the given path and confirm if you would like to proceed with the fix?',
             }))
           ) {
             return true;
@@ -153,6 +156,8 @@ class ModuleImporter {
           return false;
         }
       }
+
+      return true;
     } catch (error) {
       trace(error);
       log(this.importConfig, `Audit failed with following error. ${error}`, 'error');
