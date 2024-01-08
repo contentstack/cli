@@ -129,8 +129,12 @@ export default class ImportCommand extends Command {
 
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
-      await moduleImporter.start();
-      log(importConfig, `The content has been imported to the stack ${importConfig.apiKey} successfully!`, 'success');
+      const result = await moduleImporter.start();
+
+      if (!result?.noSuccessMsg) {
+        log(importConfig, `The content has been imported to the stack ${importConfig.apiKey} successfully!`, 'success');
+      }
+
       log(
         importConfig,
         `The log has been stored at '${path.join(importConfig.backupDir, 'logs', 'import')}'`,
