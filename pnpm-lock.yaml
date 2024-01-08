@@ -740,7 +740,6 @@ importers:
       '@types/tar': ^4.0.3
       '@types/uuid': ^9.0.7
       '@typescript-eslint/eslint-plugin': ^5.48.2
-      axios: ^1.6.4
       big-json: ^3.2.0
       bluebird: ^3.7.2
       chai: ^4.2.0
@@ -771,7 +770,6 @@ importers:
       '@contentstack/cli-utilities': link:../contentstack-utilities
       '@contentstack/management': 1.13.0_debug@4.3.4
       '@oclif/core': 2.15.0_ogreqof3k35xezedraj6pnd45y
-      axios: 1.6.5_debug@4.3.4
       big-json: 3.2.0
       bluebird: 3.7.2
       chalk: 4.1.2
