@@ -133,7 +133,7 @@ class ModuleImporter {
 
       log(this.importConfig, 'Starting audit process', 'info');
       const result = await AuditFix.run(args);
-      log(this.importConfig, 'Starting audit process completed', 'info');
+      log(this.importConfig, 'Audit process completed', 'info');
 
       if (result) {
         const { hasFix } = result;
