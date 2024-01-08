@@ -143,8 +143,8 @@ class ModuleImporter {
             this.importConfig.forceStopMarketplaceAppsPrompt ||
             (await cliux.inquire({
               type: 'confirm',
-              message: 'Can you check the fix on the given path and confirm if you would like to proceed with the fix?',
               name: 'confirmation',
+              message: 'Can you check the fix on the given path and confirm if you would like to proceed with the fix?',
             }))
           ) {
             return true;
@@ -153,6 +153,8 @@ class ModuleImporter {
           return false;
         }
       }
+
+      return true;
     } catch (error) {
       trace(error);
       log(this.importConfig, `Audit failed with following error. ${error}`, 'error');
