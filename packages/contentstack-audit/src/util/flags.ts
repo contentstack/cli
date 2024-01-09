@@ -1,7 +1,9 @@
-import { ux } from '@contentstack/cli-utilities';
+import { FlagDefinition, Flags, ux } from '@contentstack/cli-utilities';
 
-import { IFlags, IncludeFlags } from '../types';
+import { IFlags, IncludeFlags, JSONFlagOptions } from '../types';
 import { tableColumnDescriptions } from '../messages';
+
+const defaultJSONOptions = { description: 'Provide JSON input' };
 
 /**
  * The function `getTableFlags` returns a set of table flags based on the specified columns, with
@@ -28,4 +30,28 @@ function getTableFlags(
   return flags;
 }
 
-export { getTableFlags };
+/**
+ * The function `getJsonInputFlags` returns a flag definition for parsing JSON input.
+ * @param {JSONFlagOptions} options - The `options` parameter is an object that contains the following
+ * properties:
+ * @returns a `FlagDefinition` object.
+ */
+function getJsonInputFlags(
+  options: JSONFlagOptions = defaultJSONOptions,
+): FlagDefinition<Record<string, unknown>, Record<string, unknown>> {
+  const { hidden, description = defaultJSONOptions.description } = options;
+
+  return Flags.custom<Record<string, unknown>, Record<string, unknown>>({
+    hidden,
+    description,
+    parse: async (input, _opts) => {
+      try {
+        return JSON.parse(input);
+      } catch (error) {
+        throw new Error('Invalid JSON');
+      }
+    },
+  });
+}
+
+export { getTableFlags, getJsonInputFlags };
