@@ -89,8 +89,12 @@ export default class Entries {
             const { uid, title } = entry;
             this.currentUid = uid;
             this.currentTitle = title;
-            this.missingRefs[this.currentUid] = [];
-            this.lookForReference([{ uid, name: title }], ctSchema, this.entries[entryUid]);
+
+            if (!this.missingRefs[this.currentUid]) {
+              this.missingRefs[this.currentUid] = [];
+            }
+
+            this.lookForReference([{ locale: code, uid, name: title }], ctSchema, this.entries[entryUid]);
             this.log(
               $t(auditMsg.SCAN_ENTRY_SUCCESS_MSG, {
                 title,
@@ -156,7 +160,7 @@ export default class Entries {
     let canWrite = true;
 
     if (this.fix) {
-      if (!this.config.flags['copy-dir']) {
+      if (!this.config.flags['copy-dir'] && !this.config.flags['external-config']?.skipConfirm) {
         canWrite = this.config.flags.yes || (await ux.confirm(commonMsg.FIX_CONFIRMATION));
       }
 
@@ -451,6 +455,10 @@ export default class Entries {
     schema.forEach((field) => {
       const { uid, data_type } = field;
 
+      if (!Object(entry).hasOwnProperty(uid)) {
+        return;
+      }
+
       switch (data_type) {
         case 'global_field':
           entry[uid] = this.fixGlobalFieldReferences(
@@ -474,7 +482,6 @@ export default class Entries {
               break;
             }
           }
-
           // NOTE Reference field
           entry[uid] = this.fixMissingReferences(
             [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
@@ -623,19 +630,21 @@ export default class Entries {
         return this.fixJsonRteMissingReferences([...tree, { index, type: child?.type, uid: child?.uid }], field, child);
       }) as EntryJsonRTEFieldDataType[];
     } else {
-      entry.children = entry.children
-        .map((child) => {
-          const refExist = this.jsonRefCheck(tree, field, child);
+      if (entry?.children) {
+        entry.children = entry.children
+          .map((child) => {
+            const refExist = this.jsonRefCheck(tree, field, child);
 
-          if (!refExist) return null;
+            if (!refExist) return null;
 
-          if (isEmpty(child.children)) {
-            child = this.fixJsonRteMissingReferences(tree, field, child) as EntryJsonRTEFieldDataType;
-          }
+            if (!isEmpty(child.children)) {
+              child = this.fixJsonRteMissingReferences(tree, field, child) as EntryJsonRTEFieldDataType;
+            }
 
-          return child;
-        })
-        .filter((val) => val) as EntryJsonRTEFieldDataType[];
+            return child;
+          })
+          .filter((val) => val) as EntryJsonRTEFieldDataType[];
+      }
     }
 
     return entry;
