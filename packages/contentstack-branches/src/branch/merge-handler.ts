@@ -294,7 +294,7 @@ export default class MergeHandler {
 
       let migrationCommand: string;
       if(os.platform() === 'win32'){
-        migrationCommand = `csdx cm:stacks:migration --multiple --file-path ./${scriptFolderPath} --config {compare-branch:${mergePayload.compare_branch};file-path:./${scriptFolderPath}} --branch ${mergePayload.base_branch} --stack-api-key ${this.stackAPIKey}`;
+        migrationCommand = `csdx cm:stacks:migration --multiple --file-path ./${scriptFolderPath} --config compare-branch:${mergePayload.compare_branch};file-path:./${scriptFolderPath} --branch ${mergePayload.base_branch} --stack-api-key ${this.stackAPIKey}`;
       }else{
         migrationCommand = `csdx cm:stacks:migration --multiple --file-path ./${scriptFolderPath} --config {compare-branch:${mergePayload.compare_branch},file-path:./${scriptFolderPath}} --branch ${mergePayload.base_branch} --stack-api-key ${this.stackAPIKey}`;
       }
