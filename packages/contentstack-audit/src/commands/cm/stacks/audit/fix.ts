@@ -60,12 +60,12 @@ export default class AuditFix extends AuditBaseCommand {
    * The `run` function is an asynchronous function that performs an audit on different modules
    * (content-types, global-fields, entries) and generates a report.
    */
-  async run(): Promise<void | ConfigType> {
+  async run(): Promise<void | { config: ConfigType; hasFix: boolean }> {
     try {
-      await this.start('cm:stacks:audit:fix');
+      const hasFix = await this.start('cm:stacks:audit:fix');
 
-      if (this.flags['external-config']?.returnConfig) {
-        return this.sharedConfig;
+      if (this.flags['external-config']?.returnResponse) {
+        return { config: this.sharedConfig, hasFix };
       }
     } catch (error) {
       this.log(error instanceof Error ? error.message : error, 'error');
