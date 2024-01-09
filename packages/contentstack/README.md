@@ -2161,6 +2161,7 @@ FLAGS
                                     <options: disable|current>
   --replace-existing                Replaces the existing module in the target stack.
   --skip-app-recreation             [optional] Skip private apps recreation if already exist
+  --skip-audit                      Skips the audit fix.
   --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
@@ -2184,7 +2185,7 @@ EXAMPLES
 
   $ csdx cm:stacks:import --alias <management_token_alias> --config <path/of/config/file>
 
-  $ csdx cm:stacks:import --branch <branch name>  --yes
+  $ csdx cm:stacks:import --branch <branch name>  --yes --skip-audit
 ```
 
 ## `csdx cm:migrate-rte`
@@ -2337,6 +2338,7 @@ FLAGS
   --destination-stack-api-key=<value>           Destination stack API Key
   --import-webhook-status=<option>              [default: disable] [Optional] Webhook state
                                                 <options: disable|current>
+  --skip-audit                                  Skips the audit fix.
   --source-branch=<value>                       Branch of the source stack.
   --source-management-token-alias=<value>       Source API key of the target stack token alias.
   --source-stack-api-key=<value>                Source stack API Key
@@ -2487,6 +2489,7 @@ FLAGS
   --destination-stack-api-key=<value>           Destination stack API Key
   --import-webhook-status=<option>              [default: disable] [Optional] Webhook state
                                                 <options: disable|current>
+  --skip-audit                                  Skips the audit fix.
   --source-branch=<value>                       Branch of the source stack.
   --source-management-token-alias=<value>       Source API key of the target stack token alias.
   --source-stack-api-key=<value>                Source stack API Key
@@ -2587,6 +2590,7 @@ FLAGS
                                     <options: disable|current>
   --replace-existing                Replaces the existing module in the target stack.
   --skip-app-recreation             [optional] Skip private apps recreation if already exist
+  --skip-audit                      Skips the audit fix.
   --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
@@ -2610,7 +2614,7 @@ EXAMPLES
 
   $ csdx cm:stacks:import --alias <management_token_alias> --config <path/of/config/file>
 
-  $ csdx cm:stacks:import --branch <branch name>  --yes
+  $ csdx cm:stacks:import --branch <branch name>  --yes --skip-audit
 ```
 
 _See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.ts)_
@@ -2958,14 +2962,14 @@ _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/m
 
 ## `csdx config:get:ea-header`
 
-Display Early Access Program headers
+Display Early Access headers
 
 ```
 USAGE
   $ csdx config:get:ea-header
 
 DESCRIPTION
-  Display Early Access Program headers
+  Display Early Access headers
 
 ALIASES
   $ csdx config:get:ea-header
@@ -2976,14 +2980,14 @@ EXAMPLES
 
 ## `csdx config:get:early-access-header`
 
-Display Early Access Program headers
+Display Early Access headers
 
 ```
 USAGE
   $ csdx config:get:early-access-header
 
 DESCRIPTION
-  Display Early Access Program headers
+  Display Early Access headers
 
 ALIASES
   $ csdx config:get:ea-header
@@ -3036,7 +3040,7 @@ _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/m
 
 ## `csdx config:remove:ea-header`
 
-Remove Early Access Program header
+Remove Early Access header
 
 ```
 USAGE
@@ -3047,7 +3051,7 @@ FLAGS
   --header-alias=<value>  Early access header alias
 
 DESCRIPTION
-  Remove Early Access Program header
+  Remove Early Access header
 
 ALIASES
   $ csdx config:remove:ea-header
@@ -3060,7 +3064,7 @@ EXAMPLES
 
 ## `csdx config:remove:early-access-header`
 
-Remove Early Access Program header
+Remove Early Access header
 
 ```
 USAGE
@@ -3071,7 +3075,7 @@ FLAGS
   --header-alias=<value>  Early access header alias
 
 DESCRIPTION
-  Remove Early Access Program header
+  Remove Early Access header
 
 ALIASES
   $ csdx config:remove:ea-header
@@ -3109,7 +3113,7 @@ _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/m
 
 ## `csdx config:set:ea-header`
 
-Set Early Access Program header
+Set Early Access header
 
 ```
 USAGE
@@ -3120,7 +3124,7 @@ FLAGS
   --header-alias=<value>  Early access header alias
 
 DESCRIPTION
-  Set Early Access Program header
+  Set Early Access header
 
 ALIASES
   $ csdx config:set:ea-header
@@ -3133,7 +3137,7 @@ EXAMPLES
 
 ## `csdx config:set:early-access-header`
 
-Set Early Access Program header
+Set Early Access header
 
 ```
 USAGE
@@ -3144,7 +3148,7 @@ FLAGS
   --header-alias=<value>  Early access header alias
 
 DESCRIPTION
-  Set Early Access Program header
+  Set Early Access header
 
 ALIASES
   $ csdx config:set:ea-header
