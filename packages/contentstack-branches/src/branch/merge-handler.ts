@@ -300,7 +300,7 @@ export default class MergeHandler {
       }
 
       cliux.print(
-        `\nKindly follow the steps in the guide "https://www.contentstack.com/docs/developers/cli/migrate-branch-entries" to update the migration scripts, and then run the command:\n\n${migrationCommand}`,
+        `\nKindly follow the steps in the guide "https://www.contentstack.com/docs/developers/cli/entry-migration" to update the migration scripts, and then run the command:\n\n${migrationCommand}`,
         { color: 'blue' },
       );
     }
