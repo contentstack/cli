@@ -655,6 +655,8 @@ class CloneHandler {
         cmd.push('--import-webhook-status', config.importWebhookStatus);
       }
 
+      if (config.skipAudit) cmd.push('--skip-audit');
+
       if (config.forceStopMarketplaceAppsPrompt) cmd.push('-y');
 
       fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(config));
