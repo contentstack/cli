@@ -5,7 +5,7 @@
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
-    "@contentstack/cli-cm-import": "~1.13.0",
+    "@contentstack/cli-cm-import": "~1.14.0",
     "@contentstack/cli-command": "~1.2.16",
     "@contentstack/cli-utilities": "~1.5.10",
     "inquirer": "8.2.4",
