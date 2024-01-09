@@ -3,6 +3,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable complexity */
 /* eslint-disable max-params */
+const { configHandler } = require('@contentstack/cli-utilities');
 const { getQueue } = require('../util/queue');
 const defaults = require('../config/defaults.json');
 const { performBulkPublish, publishEntry, publishAsset, initializeLogger } = require('../consumer/publish');
@@ -62,7 +63,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion
             locale: filter.locale,
             environments: destEnv,
             stack: stack,
-            apiVersion
+            apiVersion,
           });
           bulkPublishAssetSet = [];
         }
@@ -74,7 +75,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion
             Type: 'entry',
             environments: destEnv,
             stack: stack,
-            apiVersion
+            apiVersion,
           });
           bulkPublishSet = [];
         }
@@ -86,7 +87,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion
             locale: filter.locale,
             environments: destEnv,
             stack: stack,
-            apiVersion
+            apiVersion,
           });
           bulkPublishAssetSet = [];
         }
@@ -98,7 +99,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion
             Type: 'entry',
             environments: destEnv,
             stack: stack,
-            apiVersion
+            apiVersion,
           });
           bulkPublishSet = [];
         }
@@ -156,13 +157,21 @@ async function getSyncEntries(
         queryParamsObj[decodeURIComponent(split[0])] = decodeURIComponent(split[1]);
       }
 
-      const Stack = new command.deliveryAPIClient.Stack({
+      const deliveryAPIOptions = {
         api_key: tokenDetails.apiKey,
         delivery_token: deliveryToken,
         environment: queryParamsObj.environment,
         branch: config.branch,
-      });
-      Stack.setHost(config.cda)
+      };
+
+      const earlyAccessHeaders = configHandler.get(`earlyAccessHeaders`);
+      if (earlyAccessHeaders && Object.keys(earlyAccessHeaders).length > 0) {
+        deliveryAPIOptions.early_access = Object.values(earlyAccessHeaders);
+      }
+
+      const Stack = new command.deliveryAPIClient.Stack(deliveryAPIOptions);
+
+      Stack.setHost(config.cda);
 
       const syncData = {};
 
@@ -236,7 +245,7 @@ async function start(
     onlyEntries,
     destEnv,
     f_types,
-    apiVersion
+    apiVersion,
   },
   stack,
   config,
