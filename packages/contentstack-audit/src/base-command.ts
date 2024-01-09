@@ -1,4 +1,5 @@
 import merge from 'lodash/merge';
+import isEmpty from 'lodash/isEmpty';
 import { existsSync, readFileSync } from 'fs';
 import { Command } from '@contentstack/cli-command';
 import { Flags, FlagInput, Interfaces, cliux, ux, PrintOptions } from '@contentstack/cli-utilities';
@@ -57,7 +58,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
     this.sharedConfig = Object.assign(this.sharedConfig, { flags: this.flags });
 
-    if (this.flags['external-config']?.config) {
+    if (!isEmpty(this.flags['external-config']?.config)) {
       this.sharedConfig = Object.assign(this.sharedConfig, this.flags['external-config']?.config);
     }
 
