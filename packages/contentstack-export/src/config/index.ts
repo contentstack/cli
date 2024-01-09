@@ -10,6 +10,7 @@ const config: DefaultConfig = {
     'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
     'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
     'https://azure-eu-api.contentstack.com': 'https://azure-eu-developerhub-api.contentstack.com',
+    'https://gcp-na-api.contentstack.com': 'https://gcp-na-developerhub-api.contentstack.com',
   },
   // use below hosts for eu region
   // host:'https://eu-api.contentstack.com/v3',
@@ -17,6 +18,8 @@ const config: DefaultConfig = {
   // host:'https://azure-na-api.contentstack.com/v3',
   // use below hosts for azure-eu region
   // host:'https://azure-eu-api.contentstack.com/v3',
+  // use below hosts for gcp-na region
+  // host: 'https://gcp-na-api.contentstack.com'
   modules: {
     types: [
       'stack',
