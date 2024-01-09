@@ -28,7 +28,7 @@
     "@contentstack/cli-cm-branches": "~1.0.20",
     "@contentstack/cli-cm-bulk-publish": "~1.4.0",
     "@contentstack/cli-cm-clone": "~1.9.0",
-    "@contentstack/cli-cm-export": "~1.10.2",
+    "@contentstack/cli-cm-export": "~1.11.0",
     "@contentstack/cli-cm-export-to-csv": "~1.6.2",
     "@contentstack/cli-cm-import": "~1.13.0",
     "@contentstack/cli-cm-migrate-rte": "~1.4.15",
