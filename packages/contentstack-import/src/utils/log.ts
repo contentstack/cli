@@ -33,4 +33,6 @@ export function initLogger(config?: ImportConfig | undefined) {
   return logger;
 }
 
+export { logger };
+
 export const trace = log;
