@@ -41,6 +41,12 @@ const regions = {
     uiHost: 'https://azure-eu-app.contentstack.com',
     name: 'AZURE-EU',
   },
+  'GCP-NA': {
+    cma: 'https://gcp-na-api.contentstack.com',
+    cda: 'https://gcp-na-cdn.contentstack.com',
+    uiHost: 'https://gcp-na-app.contentstack.com',
+    name: 'GCP-NA',
+  },
 };
 
 class UserConfig {
