@@ -8,6 +8,8 @@ const config: DefaultConfig = {
   // host:'https://azure-na-api.contentstack.com/v3',
   // use below hosts for azure-eu region
   // host:'https://azure-eu-api.contentstack.com/v3',
+  // use below hosts for gcp-na region
+  // host:'https://gcp-na-api.contentstack.com',
   // pass locale, only to migrate entries from that locale
   // not passing `locale` will migrate all the locales present
   // locales: ['fr-fr'],
@@ -18,6 +20,7 @@ const config: DefaultConfig = {
     'https://eu-api.contentstack.com': 'https://eu-developerhub-api.contentstack.com',
     'https://azure-na-api.contentstack.com': 'https://azure-na-developerhub-api.contentstack.com',
     'https://azure-eu-api.contentstack.com': 'https://azure-eu-developerhub-api.contentstack.com',
+    'https://gcp-na-api.contentstack.com': 'https://gcp-na-developerhub-api.contentstack.com',
   },
   modules: {
     apiConcurrency: 5,
