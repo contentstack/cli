@@ -29,6 +29,16 @@ For switching to AZURE-NA region update the hosts at config/default.js
 }
 ```
 
+For switching to GCP-NA region update the hosts at config/default.js
+
+```js
+{
+  host:'https://gcp-na-api.contentstack.com/v3',
+  cdn: 'https://gcp-na-cdn.contentstack.com/v3',
+ ...
+}
+```
+
 # Usage
 
 <!-- usage -->
@@ -37,7 +47,7 @@ $ npm install -g @contentstack/cli-cm-branches
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-branches/1.0.20 darwin-arm64 node-v20.8.0
+@contentstack/cli-cm-branches/1.0.20 darwin-arm64 node-v20.10.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
