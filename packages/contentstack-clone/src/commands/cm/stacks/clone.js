@@ -29,6 +29,7 @@ class StackCloneCommand extends Command {
         const listOfTokens = configHandler.get('tokens');
 
         config.forceStopMarketplaceAppsPrompt = yes;
+        config.skipAudit = cloneCommandFlags['skip-audit'];
 
         if (cloneType) {
           config.cloneType = cloneType;
@@ -244,6 +245,9 @@ b) Structure with content (all modules including entries & assets)
     char: 'y',
     required: false,
     description: '[Optional] Override marketplace prompts',
+  }),
+  'skip-audit': flags.boolean({
+    description: 'Skips the audit fix.',
   }),
 };
 
