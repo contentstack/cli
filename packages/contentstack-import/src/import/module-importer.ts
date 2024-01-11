@@ -147,7 +147,8 @@ class ModuleImporter {
             (await cliux.inquire({
               type: 'confirm',
               name: 'confirmation',
-              message: 'Can you check the fix on the given path and confirm if you would like to proceed with the fix?',
+              message:
+                'Please review and confirm if we can proceed with implementing the fix mentioned in the provided path?',
             }))
           ) {
             return true;
