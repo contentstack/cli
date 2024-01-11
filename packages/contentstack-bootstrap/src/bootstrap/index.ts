@@ -115,7 +115,7 @@ export default class Bootstrap {
 
       if (this.options.livePreviewEnabled) {
         cliux.print(
-          'Important: set management token and app host in the environment file before running the application',
+          'Important: set preview token, preview host and app host in the environment file before running the application',
           {
             color: 'yellow',
           },
