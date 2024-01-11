@@ -36,7 +36,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * @param {string} command - The `command` parameter is a string that represents the current command
    * being executed.
    */
-  async start(command: CommandNames): Promise<void> {
+  async start(command: CommandNames): Promise<boolean> {
     this.currentCommand = command;
     await this.promptQueue();
     await this.createBackUp();
@@ -69,6 +69,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         rmSync(this.sharedConfig.basePath, { recursive: true });
       }
     }
+
+    return !isEmpty(missingCtRefs) || !isEmpty(missingGfRefs) || !isEmpty(missingEntryRefs);
   }
 
   /**
