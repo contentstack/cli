@@ -40,7 +40,7 @@ $ csdx --help
 ```
 
 ## Namespaces
-**auth**: To perform [authentication-related](/packages/auth) activities
+**auth**: To perform [authentication-related](/packages/contentstack-auth) activities
 
 **cm**: To perform content management activities such as [bulk publish](/packages/contentstack-bulk-publish), [import](/packages/contentstack-import), and [export](/packages/contentstack-export), [export-to-csv] (/packages/contentstack-export-to-csv), [seed] (/packages/contentstack-seed)
 
