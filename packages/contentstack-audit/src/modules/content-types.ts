@@ -102,7 +102,7 @@ export default class ContentType {
     let canWrite = true;
 
     if (!this.inMemoryFix && this.fix) {
-      if (!this.config.flags['copy-dir']) {
+      if (!this.config.flags['copy-dir'] && !this.config.flags['external-config']?.skipConfirm) {
         canWrite = this.config.flags.yes ?? (await ux.confirm(commonMsg.FIX_CONFIRMATION));
       }
 
