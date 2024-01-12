@@ -16,7 +16,7 @@ $ npm install -g @contentstack/cli-cm-clone
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-clone/1.8.0 darwin-arm64 node-v20.8.0
+@contentstack/cli-cm-clone/1.9.0 darwin-arm64 node-v20.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -57,6 +57,7 @@ FLAGS
   --destination-stack-api-key=<value>           Destination stack API Key
   --import-webhook-status=<option>              [default: disable] [Optional] Webhook state
                                                 <options: disable|current>
+  --skip-audit                                  Skips the audit fix.
   --source-branch=<value>                       Branch of the source stack.
   --source-management-token-alias=<value>       Source API key of the target stack token alias.
   --source-stack-api-key=<value>                Source stack API Key
@@ -106,6 +107,7 @@ FLAGS
   --destination-stack-api-key=<value>           Destination stack API Key
   --import-webhook-status=<option>              [default: disable] [Optional] Webhook state
                                                 <options: disable|current>
+  --skip-audit                                  Skips the audit fix.
   --source-branch=<value>                       Branch of the source stack.
   --source-management-token-alias=<value>       Source API key of the target stack token alias.
   --source-stack-api-key=<value>                Source stack API Key

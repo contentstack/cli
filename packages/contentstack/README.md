@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.12.0 darwin-arm64 node-v20.8.0
+@contentstack/cli/1.12.1 darwin-arm64 node-v20.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -2161,6 +2161,7 @@ FLAGS
                                     <options: disable|current>
   --replace-existing                Replaces the existing module in the target stack.
   --skip-app-recreation             [optional] Skip private apps recreation if already exist
+  --skip-audit                      Skips the audit fix.
   --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
@@ -2184,7 +2185,7 @@ EXAMPLES
 
   $ csdx cm:stacks:import --alias <management_token_alias> --config <path/of/config/file>
 
-  $ csdx cm:stacks:import --branch <branch name>  --yes
+  $ csdx cm:stacks:import --branch <branch name>  --yes --skip-audit
 ```
 
 ## `csdx cm:migrate-rte`
@@ -2337,6 +2338,7 @@ FLAGS
   --destination-stack-api-key=<value>           Destination stack API Key
   --import-webhook-status=<option>              [default: disable] [Optional] Webhook state
                                                 <options: disable|current>
+  --skip-audit                                  Skips the audit fix.
   --source-branch=<value>                       Branch of the source stack.
   --source-management-token-alias=<value>       Source API key of the target stack token alias.
   --source-stack-api-key=<value>                Source stack API Key
@@ -2487,6 +2489,7 @@ FLAGS
   --destination-stack-api-key=<value>           Destination stack API Key
   --import-webhook-status=<option>              [default: disable] [Optional] Webhook state
                                                 <options: disable|current>
+  --skip-audit                                  Skips the audit fix.
   --source-branch=<value>                       Branch of the source stack.
   --source-management-token-alias=<value>       Source API key of the target stack token alias.
   --source-stack-api-key=<value>                Source stack API Key
@@ -2587,6 +2590,7 @@ FLAGS
                                     <options: disable|current>
   --replace-existing                Replaces the existing module in the target stack.
   --skip-app-recreation             [optional] Skip private apps recreation if already exist
+  --skip-audit                      Skips the audit fix.
   --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
@@ -2610,7 +2614,7 @@ EXAMPLES
 
   $ csdx cm:stacks:import --alias <management_token_alias> --config <path/of/config/file>
 
-  $ csdx cm:stacks:import --branch <branch name>  --yes
+  $ csdx cm:stacks:import --branch <branch name>  --yes --skip-audit
 ```
 
 _See code: [@contentstack/cli-cm-import](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.ts)_
@@ -2958,14 +2962,14 @@ _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/m
 
 ## `csdx config:get:ea-header`
 
-Display early access headers
+Display Early Access headers
 
 ```
 USAGE
   $ csdx config:get:ea-header
 
 DESCRIPTION
-  Display early access headers
+  Display Early Access headers
 
 ALIASES
   $ csdx config:get:ea-header
@@ -2976,14 +2980,14 @@ EXAMPLES
 
 ## `csdx config:get:early-access-header`
 
-Display early access headers
+Display Early Access headers
 
 ```
 USAGE
   $ csdx config:get:early-access-header
 
 DESCRIPTION
-  Display early access headers
+  Display Early Access headers
 
 ALIASES
   $ csdx config:get:ea-header
@@ -3036,7 +3040,7 @@ _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/m
 
 ## `csdx config:remove:ea-header`
 
-Remove early access header
+Remove Early Access header
 
 ```
 USAGE
@@ -3047,7 +3051,7 @@ FLAGS
   --header-alias=<value>  Early access header alias
 
 DESCRIPTION
-  Remove early access header
+  Remove Early Access header
 
 ALIASES
   $ csdx config:remove:ea-header
@@ -3060,7 +3064,7 @@ EXAMPLES
 
 ## `csdx config:remove:early-access-header`
 
-Remove early access header
+Remove Early Access header
 
 ```
 USAGE
@@ -3071,7 +3075,7 @@ FLAGS
   --header-alias=<value>  Early access header alias
 
 DESCRIPTION
-  Remove early access header
+  Remove Early Access header
 
 ALIASES
   $ csdx config:remove:ea-header
@@ -3109,7 +3113,7 @@ _See code: [@contentstack/cli-config](https://github.com/contentstack/cli/blob/m
 
 ## `csdx config:set:ea-header`
 
-Set early access header
+Set Early Access header
 
 ```
 USAGE
@@ -3117,10 +3121,10 @@ USAGE
 
 FLAGS
   --header=<value>        Early access header value
-  --header-alias=<value>  Alias for the header
+  --header-alias=<value>  Early access header alias
 
 DESCRIPTION
-  Set early access header
+  Set Early Access header
 
 ALIASES
   $ csdx config:set:ea-header
@@ -3133,7 +3137,7 @@ EXAMPLES
 
 ## `csdx config:set:early-access-header`
 
-Set early access header
+Set Early Access header
 
 ```
 USAGE
@@ -3141,10 +3145,10 @@ USAGE
 
 FLAGS
   --header=<value>        Early access header value
-  --header-alias=<value>  Alias for the header
+  --header-alias=<value>  Early access header alias
 
 DESCRIPTION
-  Set early access header
+  Set Early Access header
 
 ALIASES
   $ csdx config:set:ea-header
@@ -3213,7 +3217,7 @@ DESCRIPTION
   Display help for csdx.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.20/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.2.14/src/commands/help.ts)_
 
 ## `csdx launch`
 
@@ -3258,7 +3262,7 @@ EXAMPLES
   $ csdx launch --config <path/to/launch/config/file> --type <options: GitHub|FileUpload> --name=<value> --environment=<value> --branch=<value> --build-command=<value> --framework=<option> --org=<value> --out-dir=<value>
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/index.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/index.ts)_
 
 ## `csdx launch:deployments`
 
@@ -3288,7 +3292,7 @@ EXAMPLES
   $ csdx launch:deployments -e "environment number or uid" --org=<org UID> --project=<Project UID>
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/deployments.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/deployments.ts)_
 
 ## `csdx launch:environments`
 
@@ -3317,7 +3321,7 @@ EXAMPLES
   $ csdx launch:environments --org=<org UID> --project=<Project UID>
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/environments.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/environments.ts)_
 
 ## `csdx launch:functions`
 
@@ -3349,7 +3353,7 @@ EXAMPLES
   $ csdx launch:functions --config <path/to/launch/config/file> --port=port
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/functions.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/functions.ts)_
 
 ## `csdx launch:logs`
 
@@ -3398,7 +3402,7 @@ EXAMPLES
   $ csdx launch:logs --environment=environment --config <path/to/launch/config/file> --deployment=deployment
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/logs.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/logs.ts)_
 
 ## `csdx launch:open`
 
@@ -3432,7 +3436,7 @@ EXAMPLES
   $ csdx launch:open --environment=environment --data-dir <path/of/current/working/dir>
 ```
 
-_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/dist/commands/launch/open.ts)_
+_See code: [@contentstack/cli-launch](https://github.com/contentstack/cli/blob/main/packages/contentstack-launch/src/commands/launch/open.ts)_
 
 ## `csdx login`
 
