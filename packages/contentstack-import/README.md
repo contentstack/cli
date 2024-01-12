@@ -47,7 +47,7 @@ $ npm install -g @contentstack/cli-cm-import
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-cm-import/1.12.2 darwin-arm64 node-v20.8.0
+@contentstack/cli-cm-import/1.13.0 darwin-arm64 node-v20.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -83,6 +83,7 @@ FLAGS
                                     <options: disable|current>
   --replace-existing                Replaces the existing module in the target stack.
   --skip-app-recreation             [optional] Skip private apps recreation if already exist
+  --skip-audit                      Skips the audit fix.
   --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
@@ -106,7 +107,7 @@ EXAMPLES
 
   $ csdx cm:stacks:import --alias <management_token_alias> --config <path/of/config/file>
 
-  $ csdx cm:stacks:import --branch <branch name>  --yes
+  $ csdx cm:stacks:import --branch <branch name>  --yes --skip-audit
 ```
 
 ## `csdx cm:stacks:import [-c <value>] [-k <value>] [-d <value>] [-a <value>] [--module <value>] [--backup-dir <value>] [--branch <value>] [--import-webhook-status disable|current]`
@@ -131,6 +132,7 @@ FLAGS
                                     <options: disable|current>
   --replace-existing                Replaces the existing module in the target stack.
   --skip-app-recreation             [optional] Skip private apps recreation if already exist
+  --skip-audit                      Skips the audit fix.
   --skip-existing                   Skips the module exists warning messages.
 
 DESCRIPTION
@@ -154,7 +156,7 @@ EXAMPLES
 
   $ csdx cm:stacks:import --alias <management_token_alias> --config <path/of/config/file>
 
-  $ csdx cm:stacks:import --branch <branch name>  --yes
+  $ csdx cm:stacks:import --branch <branch name>  --yes --skip-audit
 ```
 
 _See code: [src/commands/cm/stacks/import.ts](https://github.com/contentstack/cli/blob/main/packages/contentstack-import/src/commands/cm/stacks/import.ts)_
