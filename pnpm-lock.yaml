@@ -74,9 +74,9 @@ importers:
       '@contentstack/cli-cm-export-to-csv': link:../contentstack-export-to-csv
       '@contentstack/cli-cm-import': link:../contentstack-import
       '@contentstack/cli-cm-migrate-rte': link:../contentstack-migrate-rte
-      '@contentstack/cli-cm-seed': 1.7.1_ogreqof3k35xezedraj6pnd45y
+      '@contentstack/cli-cm-seed': link:../contentstack-seed
       '@contentstack/cli-command': link:../contentstack-command
-      '@contentstack/cli-config': 1.5.1_ogreqof3k35xezedraj6pnd45y
+      '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-launch': link:../contentstack-launch
       '@contentstack/cli-migration': link:../contentstack-migration
       '@contentstack/cli-utilities': link:../contentstack-utilities
@@ -271,7 +271,7 @@ importers:
       ts-node: ^8.10.2
       typescript: ^4.9.3
     dependencies:
-      '@contentstack/cli-cm-seed': 1.7.1_ogreqof3k35xezedraj6pnd45y
+      '@contentstack/cli-cm-seed': link:../contentstack-seed
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
       inquirer: 8.2.4
@@ -1565,11 +1565,11 @@ packages:
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
     engines: {node: '>=0.1.90'}
 
-  /@contentstack/cli-command/1.2.16_typescript@4.9.5:
-    resolution: {integrity: sha512-u8GecSKkRgMPAmsib1xtfcUF8T/+ZbHe4JKAibRLkVc7jIjwuToq36hPgGFMfUAK4HX/UZ09stS+f3dUN1maOA==}
+  /@contentstack/cli-command/1.2.17_typescript@4.9.5:
+    resolution: {integrity: sha512-z5DWK+S+fRAXIZc0eZH1aw/Vb84wqICzYlGi4nKtov56H7QMWHwb+dORmzQvBHCUjbT/5/cZc6wpBZkebAUc7Q==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@contentstack/cli-utilities': 1.5.9_typescript@4.9.5
+      '@contentstack/cli-utilities': 1.5.10_typescript@4.9.5
       contentstack: 3.17.2
     transitivePeerDependencies:
       - '@swc/core'
@@ -1584,8 +1584,8 @@ packages:
     resolution: {integrity: sha512-JMfVLK3846DfaHfZxtvpiy5JZsDsLQjZwZiG9NxQnrN3ZQ1qfz4p8pIppBOf/e25yEF/OZRwuMrdvyB0UY1LXA==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@contentstack/cli-command': 1.2.16_typescript@4.9.5
-      '@contentstack/cli-utilities': 1.5.9_typescript@4.9.5
+      '@contentstack/cli-command': 1.2.17_typescript@4.9.5
+      '@contentstack/cli-utilities': 1.5.10_typescript@4.9.5
       chalk: 4.1.2
       debug: 4.3.4
       inquirer: 8.2.4
@@ -1601,8 +1601,8 @@ packages:
       - typescript
     dev: true
 
-  /@contentstack/cli-utilities/1.5.9_typescript@4.9.5:
-    resolution: {integrity: sha512-VaLmJdn+4HHhcVLPpMOtlwX8Q8sCoF+gHcSAgPd/eUPOZeksHdC8shjl2ka7RTuT2XVHYusqD1OEVFZztdLlMA==}
+  /@contentstack/cli-utilities/1.5.10_typescript@4.9.5:
+    resolution: {integrity: sha512-UMypT6q+XqgeKp3mETcZo6WmSl4IVkz/FDWAqm/agnbHturovSvmbxjFxtSNX/8iLNe9E1bQC3n6KPGmxeWtlQ==}
     dependencies:
       '@contentstack/management': 1.13.0_debug@4.3.4
       '@contentstack/marketplace-sdk': 1.0.1_debug@4.3.4
@@ -4752,7 +4752,7 @@ packages:
   /axios/1.6.2_debug@4.3.4:
     resolution: {integrity: sha512-7i24Ri4pmDRfJTR7LDBhsOTtcm+9kjX5WiY1X3wIisx6G9So3pfMkEiU7emUBe46oceVImccTEM3k6C5dbVW8A==}
     dependencies:
-      follow-redirects: 1.15.3_debug@4.3.4
+      follow-redirects: 1.15.5_debug@4.3.4
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -4761,21 +4761,12 @@ packages:
   /axios/1.6.5:
     resolution: {integrity: sha512-Ii012v05KEVuUoFWmMW/UQv9aRIc3ZwkWDcM+h5Il8izZCtRVpDUfwpoFf7eOtajT3QiGR4yDUx7lPqHJULgbg==}
     dependencies:
-      follow-redirects: 1.15.4
+      follow-redirects: 1.15.5
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
       - debug
     dev: true
-
-  /axios/1.6.5_debug@4.3.4:
-    resolution: {integrity: sha512-Ii012v05KEVuUoFWmMW/UQv9aRIc3ZwkWDcM+h5Il8izZCtRVpDUfwpoFf7eOtajT3QiGR4yDUx7lPqHJULgbg==}
-    dependencies:
-      follow-redirects: 1.15.4_debug@4.3.4
-      form-data: 4.0.0
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
 
   /axios/1.6.5_debug@4.3.4:
     resolution: {integrity: sha512-Ii012v05KEVuUoFWmMW/UQv9aRIc3ZwkWDcM+h5Il8izZCtRVpDUfwpoFf7eOtajT3QiGR4yDUx7lPqHJULgbg==}
@@ -7507,19 +7498,8 @@ packages:
   /fn.name/1.1.0:
     resolution: {integrity: sha512-GRnmB5gPyJpAhTQdSZTSp9uaPSvl09KoYcMQtsB9rQoOmzs9dH6ffeccH+Z+cv6P68Hu5bC6JjRh4Ah/mHSNRw==}
 
-  /follow-redirects/1.15.3_debug@4.3.4:
-    resolution: {integrity: sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      debug: '*'
-    peerDependenciesMeta:
-      debug:
-        optional: true
-    dependencies:
-      debug: 4.3.4
-
-  /follow-redirects/1.15.4:
-    resolution: {integrity: sha512-Cr4D/5wlrb0z9dgERpUL3LrmPKVDsETIJhaCMeDfuFYcqa5bldGV6wBsAN6X/vxlXQtFBMrXdXxdL8CbDTGniw==}
+  /follow-redirects/1.15.5:
+    resolution: {integrity: sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -7527,17 +7507,6 @@ packages:
       debug:
         optional: true
     dev: true
-
-  /follow-redirects/1.15.4_debug@4.3.4:
-    resolution: {integrity: sha512-Cr4D/5wlrb0z9dgERpUL3LrmPKVDsETIJhaCMeDfuFYcqa5bldGV6wBsAN6X/vxlXQtFBMrXdXxdL8CbDTGniw==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      debug: '*'
-    peerDependenciesMeta:
-      debug:
-        optional: true
-    dependencies:
-      debug: 4.3.4
 
   /follow-redirects/1.15.5_debug@4.3.4:
     resolution: {integrity: sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==}
