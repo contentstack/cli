@@ -1,15 +1,18 @@
 import merge from 'lodash/merge';
+import isEmpty from 'lodash/isEmpty';
 import { existsSync, readFileSync } from 'fs';
 import { Command } from '@contentstack/cli-command';
-import { Flags, FlagInput, Interfaces, cliux as ux } from '@contentstack/cli-utilities';
+import { Flags, FlagInput, Interfaces, cliux, ux, PrintOptions } from '@contentstack/cli-utilities';
 
 import config from './config';
 import { Logger } from './util';
-import { ConfigType, LogFn } from './types';
+import { ConfigType, LogFn, LoggerType } from './types';
 import messages, { $t, commonMsg } from './messages';
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>;
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<(typeof BaseCommand)['baseFlags'] & T['flags']>;
+
+const noLog = (_message: string | any, _logType?: LoggerType | PrintOptions | undefined) => {};
 
 export abstract class BaseCommand<T extends typeof Command> extends Command {
   public log!: LogFn;
@@ -55,12 +58,22 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
     this.sharedConfig = Object.assign(this.sharedConfig, { flags: this.flags });
 
-    ux.registerSearchPlugin();
+    if (!isEmpty(this.flags['external-config']?.config)) {
+      this.sharedConfig = Object.assign(this.sharedConfig, this.flags['external-config']?.config);
+    }
+
+    cliux.registerSearchPlugin();
     this.registerConfig();
 
     // Init logger
-    const logger = new Logger(this.sharedConfig);
-    this.log = logger.log.bind(logger);
+    if (this.flags['external-config']?.noLog) {
+      this.log = noLog;
+      ux.action.start = () => {};
+      ux.action.stop = () => {};
+    } else {
+      const logger = new Logger(this.sharedConfig);
+      this.log = logger.log.bind(logger);
+    }
   }
 
   /**
