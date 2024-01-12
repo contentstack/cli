@@ -22,5 +22,5 @@ export async function run(options: ImporterOptions) {
     : ['-k', options.api_key, '-d', importPath];
 
   process.chdir(options.tmpPath);
-  await ImportCommand.run(args);
+  await ImportCommand.run(args.concat('--skip-audit'));
 }
