@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli-config
 $ csdx COMMAND
 running command...
 $ csdx (--version)
-@contentstack/cli-config/1.5.0 darwin-arm64 node-v20.8.0
+@contentstack/cli-config/1.5.1 darwin-arm64 node-v20.8.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -60,14 +60,14 @@ _See code: [src/commands/config/get/base-branch.ts](https://github.com/contentst
 
 ## `csdx config:get:ea-header`
 
-Display early access headers
+Display Early Access headers
 
 ```
 USAGE
   $ csdx config:get:ea-header
 
 DESCRIPTION
-  Display early access headers
+  Display Early Access headers
 
 ALIASES
   $ csdx config:get:ea-header
@@ -78,14 +78,14 @@ EXAMPLES
 
 ## `csdx config:get:early-access-header`
 
-Display early access headers
+Display Early Access headers
 
 ```
 USAGE
   $ csdx config:get:early-access-header
 
 DESCRIPTION
-  Display early access headers
+  Display Early Access headers
 
 ALIASES
   $ csdx config:get:ea-header
@@ -138,7 +138,7 @@ _See code: [src/commands/config/remove/base-branch.ts](https://github.com/conten
 
 ## `csdx config:remove:ea-header`
 
-Remove early access header
+Remove Early Access header
 
 ```
 USAGE
@@ -149,7 +149,7 @@ FLAGS
   --header-alias=<value>  Early access header alias
 
 DESCRIPTION
-  Remove early access header
+  Remove Early Access header
 
 ALIASES
   $ csdx config:remove:ea-header
@@ -162,7 +162,7 @@ EXAMPLES
 
 ## `csdx config:remove:early-access-header`
 
-Remove early access header
+Remove Early Access header
 
 ```
 USAGE
@@ -173,7 +173,7 @@ FLAGS
   --header-alias=<value>  Early access header alias
 
 DESCRIPTION
-  Remove early access header
+  Remove Early Access header
 
 ALIASES
   $ csdx config:remove:ea-header
@@ -211,7 +211,7 @@ _See code: [src/commands/config/set/base-branch.ts](https://github.com/contentst
 
 ## `csdx config:set:ea-header`
 
-Set early access header
+Set Early Access header
 
 ```
 USAGE
@@ -219,10 +219,10 @@ USAGE
 
 FLAGS
   --header=<value>        Early access header value
-  --header-alias=<value>  Alias for the header
+  --header-alias=<value>  Early access header alias
 
 DESCRIPTION
-  Set early access header
+  Set Early Access header
 
 ALIASES
   $ csdx config:set:ea-header
@@ -235,7 +235,7 @@ EXAMPLES
 
 ## `csdx config:set:early-access-header`
 
-Set early access header
+Set Early Access header
 
 ```
 USAGE
@@ -243,10 +243,10 @@ USAGE
 
 FLAGS
   --header=<value>        Early access header value
-  --header-alias=<value>  Alias for the header
+  --header-alias=<value>  Early access header alias
 
 DESCRIPTION
-  Set early access header
+  Set Early Access header
 
 ALIASES
   $ csdx config:set:ea-header

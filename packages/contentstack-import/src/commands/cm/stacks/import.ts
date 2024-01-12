@@ -9,7 +9,6 @@ import {
   ContentstackClient,
 } from '@contentstack/cli-utilities';
 
-import { trace } from '../../../utils/log';
 import { ImportConfig } from '../../../types';
 import { ModuleImporter } from '../../../import';
 import { setupImportConfig, formatError, log } from '../../../utils';
@@ -25,7 +24,7 @@ export default class ImportCommand extends Command {
     `csdx cm:stacks:import --alias <management_token_alias>`,
     `csdx cm:stacks:import --alias <management_token_alias> --data-dir <path/of/export/destination/dir>`,
     `csdx cm:stacks:import --alias <management_token_alias> --config <path/of/config/file>`,
-    `csdx cm:stacks:import --branch <branch name>  --yes`,
+    `csdx cm:stacks:import --branch <branch name>  --yes --skip-audit`,
   ];
 
   static flags: FlagInput = {
@@ -106,6 +105,9 @@ export default class ImportCommand extends Command {
       default: false,
       description: 'Skips the module exists warning messages.',
     }),
+    'skip-audit': flags.boolean({
+      description: 'Skips the audit fix.',
+    }),
   };
 
   static aliases: string[] = ['cm:import'];
@@ -127,8 +129,12 @@ export default class ImportCommand extends Command {
 
       const managementAPIClient: ContentstackClient = await managementSDKClient(importConfig);
       const moduleImporter = new ModuleImporter(managementAPIClient, importConfig);
-      await moduleImporter.start();
-      log(importConfig, `The content has been imported to the stack ${importConfig.apiKey} successfully!`, 'success');
+      const result = await moduleImporter.start();
+
+      if (!result?.noSuccessMsg) {
+        log(importConfig, `The content has been imported to the stack ${importConfig.apiKey} successfully!`, 'success');
+      }
+
       log(
         importConfig,
         `The log has been stored at '${path.join(importConfig.backupDir, 'logs', 'import')}'`,
