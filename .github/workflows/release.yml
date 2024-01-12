@@ -112,6 +112,22 @@ jobs:
         with:
           token: ${{ secrets.NPM_TOKEN }}
           package: ./packages/contentstack-export/package.json
+      - name: Installing dependencies of audit
+        id: audit-installation
+        if: ${{env.release_releaseAll == 'true' || env.release_plugins_audit == 'true'}}
+        working-directory: ./packages/contentstack-audit
+        run: npm install
+      - name: Compiling audit
+        if: ${{ steps.audit-installation.conclusion == 'success'  }}
+        working-directory: ./packages/contentstack-audit
+        run: npm run prepack
+      - name: Publishing audit
+        uses: JS-DevTools/npm-publish@v2.2.1
+        if: ${{ steps.audit-installation.conclusion == 'success'  }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: ./packages/contentstack-audit/package.json
+          access: public
       - name: Installing dependencies of import
         id: import-installation
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_import == 'true'}}
@@ -249,22 +265,6 @@ jobs:
         if: ${{env.release_releaseAll == 'true' || env.release_plugins_core == 'true'}}
         working-directory: ./packages/contentstack
         run: npm install
-      - name: Installing dependencies of audit
-        id: audit-installation
-        if: ${{env.release_releaseAll == 'true' || env.release_plugins_audit == 'true'}}
-        working-directory: ./packages/contentstack-audit
-        run: npm install
-      - name: Compiling audit
-        if: ${{ steps.audit-installation.conclusion == 'success'  }}
-        working-directory: ./packages/contentstack-audit
-        run: npm run prepack
-      - name: Publishing audit
-        uses: JS-DevTools/npm-publish@v2.2.1
-        if: ${{ steps.audit-installation.conclusion == 'success'  }}
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: ./packages/contentstack-audit/package.json
-          access: public
       - name: Compiling core
         if: ${{ steps.core-installation.conclusion == 'success'  }}
         working-directory: ./packages/contentstack
