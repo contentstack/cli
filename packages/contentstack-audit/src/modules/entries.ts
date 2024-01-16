@@ -483,11 +483,14 @@ export default class Entries {
             }
           }
           // NOTE Reference field
-            entry[uid] = this.fixMissingReferences(
-              [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
-              field as ReferenceFieldDataType,
-              entry[uid] as EntryReferenceFieldDataType[],
-            );
+          entry[uid] = this.fixMissingReferences(
+            [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
+            field as ReferenceFieldDataType,
+            entry[uid] as EntryReferenceFieldDataType[],
+          );
+          if (!entry[uid]) {
+            delete entry[uid];
+          }
           break;
         case 'blocks':
           entry[uid] = this.fixModularBlocksReferences(
