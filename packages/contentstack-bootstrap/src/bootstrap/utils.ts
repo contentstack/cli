@@ -64,7 +64,7 @@ export const setupEnvironments = async (
             : {};
           if (livePreviewEnabled && !tokenResult.preview_token && !managementToken) {
             cliux.print(
-              `info: For the Environment ${environment.name}.\nwarning: Live Preview using the Preview token is not available in your plan please contact the admin.`,
+              `Info: Failed to generate a preview token for the ${environment.name} environment.\nNote: Live Preview using a preview token is not available in your plan. Please contact the admin for support.`,
               {
                 color: 'yellow',
               }
