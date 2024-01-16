@@ -670,12 +670,8 @@ export default class Entries {
     field: ReferenceFieldDataType | JsonRTEFieldDataType,
     entry: EntryReferenceFieldDataType[],
   ) {
+
     const missingRefs: Record<string, any>[] = [];
-    // console.log(entry===undefined?'entr':entry);
-    let sentry = typeof entry==='string'?entry:"";
-    if(sentry) {
-      entry = JSON.parse(sentry.replace(/'/g, '"'))
-    }
     entry = entry?.map((reference) => {
         const { uid } = reference;
         const refExist = find(this.entryMetaData, { uid });
