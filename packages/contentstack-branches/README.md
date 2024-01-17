@@ -29,16 +29,6 @@ For switching to AZURE-NA region update the hosts at config/default.js
 }
 ```
 
-For switching to GCP-NA region update the hosts at config/default.js
-
-```js
-{
-  host:'https://gcp-na-api.contentstack.com/v3',
-  cdn: 'https://gcp-na-cdn.contentstack.com/v3',
- ...
-}
-```
-
 # Usage
 
 <!-- usage -->
