@@ -241,7 +241,6 @@ export default class MergeHandler {
   async executeEntryExpFlow(mergeJobUID: string, mergePayload) {
     const { mergeContent } = this.mergeSettings;
     let mergePreference = await selectContentMergePreference();
-    let selectedMergePreference;
 
     const updateEntryMergeStrategy = (items, mergeStrategy) => {
       items &&
@@ -250,25 +249,16 @@ export default class MergeHandler {
         });
     };
 
-    switch (mergePreference) {
-      case 'existing_new':
-        selectedMergePreference = 'merge_existing_new';
-        updateEntryMergeStrategy(mergeContent.content_types.added, selectedMergePreference);
-        updateEntryMergeStrategy(mergeContent.content_types.modified, selectedMergePreference);
-        break;
+    const mergePreferencesMap = {
+      'existing_new': 'merge_existing_new',
+      'new': 'merge_new',
+      'existing': 'merge_existing',
+      'ask_preference': 'custom',
+    };
+    const selectedMergePreference = mergePreferencesMap[mergePreference];
 
-      case 'new':
-        selectedMergePreference = 'merge_new';
-        updateEntryMergeStrategy(mergeContent.content_types.added, selectedMergePreference);
-        break;
-
-      case 'existing':
-        selectedMergePreference = 'merge_existing';
-        updateEntryMergeStrategy(mergeContent.content_types.modified, selectedMergePreference);
-        break;
-
-      case 'ask_preference':
-        selectedMergePreference = 'custom';
+    if (selectedMergePreference) {
+      if (selectedMergePreference === 'custom') {
         const selectedMergeItems = await selectContentMergeCustomPreferences(mergeContent.content_types);
         mergeContent.content_types = {
           added: [],
@@ -279,23 +269,25 @@ export default class MergeHandler {
         selectedMergeItems?.forEach((item) => {
           mergeContent.content_types[item.status].push(item.value);
         });
-        break;
-
-      default:
-        cliux.error(`error: Invalid preference ${mergePreference}`);
-        process.exit(1);
+      } else {
+        updateEntryMergeStrategy(mergeContent.content_types.added, selectedMergePreference);
+        updateEntryMergeStrategy(mergeContent.content_types.modified, selectedMergePreference);
+      }
+    } else {
+      cliux.error(`error: Invalid preference ${mergePreference}`);
+      process.exit(1);
     }
 
     let scriptFolderPath = generateMergeScripts(mergeContent.content_types, mergeJobUID);
 
     if (scriptFolderPath !== undefined) {
       cliux.success(`\nSuccess! We have generated entry migration files in the folder ${scriptFolderPath}`);
-      cliux.print('\nWARNING!!! Migration is not intended to be run more than once. Migrated(entries/assets) will be duplicated if run more than once', {color: 'yellow'});
+      cliux.print('\nWARNING!!! Migration is not intended to be run more than once. Migrated(entries/assets) will be duplicated if run more than once', { color: 'yellow' });
 
       let migrationCommand: string;
-      if(os.platform() === 'win32'){
-        migrationCommand = `csdx cm:stacks:migration --multiple --file-path ./${scriptFolderPath} --config compare-branch:${mergePayload.compare_branch},file-path:./${scriptFolderPath} --branch ${mergePayload.base_branch} --stack-api-key ${this.stackAPIKey}`;
-      }else{
+      if (os.platform() === 'win32') {
+        migrationCommand = `csdx cm:stacks:migration --multiple --file-path ./${scriptFolderPath} --config compare-branch:${mergePayload.compare_branch} file-path:./${scriptFolderPath} --branch ${mergePayload.base_branch} --stack-api-key ${this.stackAPIKey}`;
+      } else {
         migrationCommand = `csdx cm:stacks:migration --multiple --file-path ./${scriptFolderPath} --config {compare-branch:${mergePayload.compare_branch},file-path:./${scriptFolderPath}} --branch ${mergePayload.base_branch} --stack-api-key ${this.stackAPIKey}`;
       }
 
