@@ -34,21 +34,22 @@ export function generateMergeScripts(mergeSummary, mergeJobUID) {
 
     const processContentTypes = (contentTypes, messageType) => {
       if (contentTypes && contentTypes.length > 0) {
-        processContentType(
-          { type: 'assets', uid: '', entry_merge_strategy: '' },
-          mergeStrategies['asset_create_folder'],
-        );
         contentTypes.forEach((contentType) => {
           const mergeStrategy = contentType.entry_merge_strategy;
           if (mergeStrategies.hasOwnProperty(mergeStrategy)) {
             processContentType(contentType, mergeStrategies[mergeStrategy]);
           }
         });
+        cliux.print(`Info: ${messageType} content types' entries selected for merge`, { color: 'blue' });
       } else {
-        cliux.print(`No ${messageType} entries selected for merge`, { color: 'yellow' });
+        cliux.print(`Info: No ${messageType} content types' entries selected for merge`, { color: 'blue' });
       }
     };
-
+    
+    processContentType(
+      { type: 'assets', uid: '', entry_merge_strategy: '' },
+      mergeStrategies['asset_create_folder'],
+    );
     processContentTypes(mergeSummary.modified, 'Modified');
     processContentTypes(mergeSummary.added, 'New');
 
@@ -93,10 +94,11 @@ export function createMergeScripts(contentType: CreateMergeScriptsProps, mergeJo
         fs.mkdirSync(fullPath);
       }
       let filePath: string;
+      let milliSeconds = date.getMilliseconds().toString().padStart(3, '0')
       if (contentType.type === 'assets') {
-        filePath = `${fullPath}/${fileCreatedAt}_create_assets_folder.js`;
+        filePath = `${fullPath}/${fileCreatedAt}${milliSeconds}_create_assets_folder.js`;
       } else {
-        filePath = `${fullPath}/${fileCreatedAt}_${getContentTypeMergeStatus(contentType.entry_merge_strategy)}_${
+        filePath = `${fullPath}/${fileCreatedAt}${milliSeconds}_${getContentTypeMergeStatus(contentType.entry_merge_strategy)}_${
           contentType.uid
         }.js`;
       }
