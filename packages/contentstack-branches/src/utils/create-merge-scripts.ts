@@ -40,9 +40,7 @@ export function generateMergeScripts(mergeSummary, mergeJobUID) {
             processContentType(contentType, mergeStrategies[mergeStrategy]);
           }
         });
-        cliux.print(`Info: ${messageType} content types' entries selected for merge`, { color: 'blue' });
-      } else {
-        cliux.print(`Info: No ${messageType} content types' entries selected for merge`, { color: 'blue' });
+        cliux.print(`Info: Entries of ${messageType} content types selected for the migration`, { color: 'blue' });
       }
     };
     
