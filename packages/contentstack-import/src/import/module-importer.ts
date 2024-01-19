@@ -1,3 +1,4 @@
+import pick from 'lodash/pick';
 import { resolve } from 'path';
 import { AuditFix } from '@contentstack/cli-audit';
 import messages, { $t } from '@contentstack/cli-audit/lib/messages';
@@ -130,6 +131,11 @@ class ModuleImporter {
 
       if (this.importConfig.moduleName) {
         args.push('--modules', this.importConfig.moduleName);
+      } else if (this.importConfig.modules.types.length) {
+        args.push(
+          '--modules',
+          pick(this.importConfig.modules.types, ['global-fields', 'content-types', 'entries']).join(),
+        );
       }
 
       log(this.importConfig, 'Starting audit process', 'info');
