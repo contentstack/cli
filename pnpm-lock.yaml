@@ -10,7 +10,7 @@ importers:
 
   packages/contentstack:
     specifiers:
-      '@contentstack/cli-audit': ~1.3.2
+      '@contentstack/cli-audit': ~1.3.3
       '@contentstack/cli-auth': ~1.3.17
       '@contentstack/cli-cm-bootstrap': ~1.7.1
       '@contentstack/cli-cm-branches': ~1.0.20
@@ -1565,11 +1565,11 @@ packages:
     resolution: {integrity: sha512-Ir+AOibqzrIsL6ajt3Rz3LskB7OiMVHqltZmspbW/TJuTVuyOMirVqAkjfY6JISiLHgyNqicAC8AyHHGzNd/dA==}
     engines: {node: '>=0.1.90'}
 
-  /@contentstack/cli-command/1.2.16_typescript@4.9.5:
-    resolution: {integrity: sha512-u8GecSKkRgMPAmsib1xtfcUF8T/+ZbHe4JKAibRLkVc7jIjwuToq36hPgGFMfUAK4HX/UZ09stS+f3dUN1maOA==}
+  /@contentstack/cli-command/1.2.17_typescript@4.9.5:
+    resolution: {integrity: sha512-z5DWK+S+fRAXIZc0eZH1aw/Vb84wqICzYlGi4nKtov56H7QMWHwb+dORmzQvBHCUjbT/5/cZc6wpBZkebAUc7Q==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@contentstack/cli-utilities': 1.5.9_typescript@4.9.5
+      '@contentstack/cli-utilities': 1.5.10_typescript@4.9.5
       contentstack: 3.17.2
     transitivePeerDependencies:
       - '@swc/core'
@@ -1584,8 +1584,8 @@ packages:
     resolution: {integrity: sha512-JMfVLK3846DfaHfZxtvpiy5JZsDsLQjZwZiG9NxQnrN3ZQ1qfz4p8pIppBOf/e25yEF/OZRwuMrdvyB0UY1LXA==}
     engines: {node: '>=14.0.0'}
     dependencies:
-      '@contentstack/cli-command': 1.2.16_typescript@4.9.5
-      '@contentstack/cli-utilities': 1.5.9_typescript@4.9.5
+      '@contentstack/cli-command': 1.2.17_typescript@4.9.5
+      '@contentstack/cli-utilities': 1.5.10_typescript@4.9.5
       chalk: 4.1.2
       debug: 4.3.4
       inquirer: 8.2.4
@@ -1601,8 +1601,8 @@ packages:
       - typescript
     dev: true
 
-  /@contentstack/cli-utilities/1.5.9_typescript@4.9.5:
-    resolution: {integrity: sha512-VaLmJdn+4HHhcVLPpMOtlwX8Q8sCoF+gHcSAgPd/eUPOZeksHdC8shjl2ka7RTuT2XVHYusqD1OEVFZztdLlMA==}
+  /@contentstack/cli-utilities/1.5.10_typescript@4.9.5:
+    resolution: {integrity: sha512-UMypT6q+XqgeKp3mETcZo6WmSl4IVkz/FDWAqm/agnbHturovSvmbxjFxtSNX/8iLNe9E1bQC3n6KPGmxeWtlQ==}
     dependencies:
       '@contentstack/management': 1.13.0_debug@4.3.4
       '@contentstack/marketplace-sdk': 1.0.1_debug@4.3.4
