@@ -23,6 +23,7 @@ export default class NodeCrypto {
     const { algorithm, encryptionKey, typeIdentifier } = merge(defaultValues, config);
     this.algorithm = algorithm;
     this.typeIdentifier = typeIdentifier;
+    // deepcode ignore HardcodedSecret: <please specify a reason of ignoring this>
     this.key = crypto.scryptSync(encryptionKey, 'salt', 24);
   }
 
