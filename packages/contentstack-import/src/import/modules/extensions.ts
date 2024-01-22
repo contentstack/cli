@@ -19,6 +19,7 @@ export default class ImportExtensions extends BaseClass {
   private extSuccess: Record<string, unknown>[];
   private extFailed: Record<string, unknown>[];
   private existingExtensions: Record<string, unknown>[];
+  private extScopePath: string;
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -28,6 +29,7 @@ export default class ImportExtensions extends BaseClass {
     this.extUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
     this.extSuccessPath = join(this.mapperDirPath, 'success.json');
     this.extFailsPath = join(this.mapperDirPath, 'fails.json');
+    this.extScopePath = join(this.extensionsFolderPath,'scope.json')
     this.extFailed = [];
     this.extSuccess = [];
     this.existingExtensions = [];
@@ -56,7 +58,7 @@ export default class ImportExtensions extends BaseClass {
     this.extUidMapper = fileHelper.fileExistsSync(this.extUidMapperPath)
       ? (fsUtil.readFile(join(this.extUidMapperPath), true) as Record<string, unknown>)
       : {};
-
+    await this.getContentTypesInScope();
     await this.importExtensions();
 
     // Note: if any extensions present, then update it
@@ -208,5 +210,25 @@ export default class ImportExtensions extends BaseClass {
         reject(true);
       }
     });
+  }
+
+  async getContentTypesInScope(){
+    const extension = values(this.extensions);
+    const extensionObject:{string:Record<string,unknown>}[] = []
+    type extType  = {
+      uid: string,
+      scope: Record<string,unknown>
+    }
+    extension.forEach((ext:any)=>{
+      let ct:any = ext?.scope?.content_types || [];
+      if(ct.length===1 && (ct[0]!=='$all')){
+        extensionObject.push(ext)
+        delete this.extensions[ext.uid]
+      } else if(ct?.length>1) {
+        extensionObject.push(ext)
+        delete this.extensions[ext.uid]
+      }
+    })
+    fsUtil.writeFile(this.extScopePath, extensionObject);
   }
 }

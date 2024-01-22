@@ -249,3 +249,49 @@ export const formatDate = (date: Date = new Date()) => {
 
   return formattedDate;
 };
+
+// Get all the content types to validate whether all the content types are present in scope for the given extension
+export const getAllContentTypesFromStack:any = async (stackAPIClient:any) => {
+  try{
+    let contentTypes:any[] = []
+    const contentTypeCount:number = await getContentTypeCount(stackAPIClient);
+    for (let index = 0; index <= contentTypeCount / 100; index++) {
+      const contentTypesMap = await getContentTypes(stackAPIClient, index);
+      contentTypes = contentTypes.concat((Object.keys(contentTypesMap))); // prompt for content Type
+    }
+    return contentTypes
+  } catch (err) {
+    return err;
+  }
+}
+
+function getContentTypeCount(stackAPIClient:any):number|any {
+  return new Promise((resolve, reject) => {
+    stackAPIClient
+      .contentType()
+      .query()
+      .count()
+      .then((contentTypes:any) => resolve(contentTypes.content_types))
+      .catch((error:any) => reject(error));
+  });
+}
+
+
+function getContentTypes(stackAPIClient:any, skip:any) {
+  return new Promise((resolve, reject) => {
+    let result:any = {};
+    stackAPIClient
+      .contentType()
+      .query({ skip: skip * 100, include_branch: true })
+      .find()
+      .then((contentTypes:any) => {
+        contentTypes.items.forEach((contentType:any) => {
+          result[contentType.title] = contentType.uid;
+        });
+        resolve(result);
+      })
+      .catch((error:any) => {
+        reject(error);
+      });
+  });
+}
