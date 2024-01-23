@@ -3,6 +3,7 @@
 /* eslint-disable complexity */
 /* eslint-disable no-console */
 /* eslint-disable camelcase */
+const { configHandler } = require('@contentstack/cli-utilities');
 const { getQueue } = require('../util/queue');
 const defaults = require('../config/defaults.json');
 const { performBulkUnPublish, UnpublishEntry, UnpublishAsset, initializeLogger } = require('../consumer/publish');
@@ -79,7 +80,7 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion
             locale: locale,
             environments: [environment],
             stack: stack,
-            apiVersion
+            apiVersion,
           });
           bulkUnPulishAssetSet = [];
         }
@@ -91,7 +92,7 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion
             Type: 'entry',
             environments: [environment],
             stack: stack,
-            apiVersion
+            apiVersion,
           });
           bulkUnPublishSet = [];
         }
@@ -102,7 +103,7 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion
             locale: locale,
             environments: [environment],
             stack: stack,
-            apiVersion
+            apiVersion,
           });
           bulkUnPulishAssetSet = [];
         }
@@ -114,7 +115,7 @@ function bulkAction(stack, items, bulkUnpublish, environment, locale, apiVersion
             Type: 'entry',
             environments: [environment],
             stack: stack,
-            apiVersion
+            apiVersion,
           });
           bulkUnPublishSet = [];
         }
@@ -171,13 +172,21 @@ async function getSyncEntries(
         queryParamsObj[decodeURIComponent(split[0])] = decodeURIComponent(split[1]);
       }
 
-      const Stack = new command.deliveryAPIClient.Stack({
+      const deliveryAPIOptions = {
         api_key: tokenDetails.apiKey,
         delivery_token: deliveryToken,
         environment: queryParamsObj.environment,
         branch: config.branch,
-      });
-      Stack.setHost(config.cda)
+      };
+
+      const earlyAccessHeaders = configHandler.get(`earlyAccessHeaders`);
+      if (earlyAccessHeaders && Object.keys(earlyAccessHeaders).length > 0) {
+        deliveryAPIOptions.early_access = Object.values(earlyAccessHeaders);
+      }
+
+      const Stack = new command.deliveryAPIClient.Stack(deliveryAPIOptions);
+
+      Stack.setHost(config.cda);
 
       const syncData = {};
 
@@ -203,7 +212,17 @@ async function getSyncEntries(
         return resolve();
       }
       setTimeout(async () => {
-        await getSyncEntries(stack, config, locale, queryParams, bulkUnpublish, environment, deliveryToken, apiVersion, null);
+        await getSyncEntries(
+          stack,
+          config,
+          locale,
+          queryParams,
+          bulkUnpublish,
+          environment,
+          deliveryToken,
+          apiVersion,
+          null,
+        );
       }, 3000);
     } catch (error) {
       reject(error);
@@ -212,7 +231,18 @@ async function getSyncEntries(
 }
 
 async function start(
-  { retryFailed, bulkUnpublish, contentType, locale, environment, deliveryToken, onlyAssets, onlyEntries, f_types, apiVersion },
+  {
+    retryFailed,
+    bulkUnpublish,
+    contentType,
+    locale,
+    environment,
+    deliveryToken,
+    onlyAssets,
+    onlyEntries,
+    f_types,
+    apiVersion,
+  },
   stack,
   config,
 ) {
