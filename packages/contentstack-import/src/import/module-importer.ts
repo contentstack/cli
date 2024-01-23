@@ -1,9 +1,12 @@
-import { addLocale, ContentstackClient } from '@contentstack/cli-utilities';
+import { resolve } from 'path';
+import { AuditFix } from '@contentstack/cli-audit';
+import messages, { $t } from '@contentstack/cli-audit/lib/messages';
+import { addLocale, cliux, ContentstackClient, Logger } from '@contentstack/cli-utilities';
 
 import startModuleImport from './modules';
 import startJSModuleImport from './modules-js';
 import { ImportConfig, Modules } from '../types';
-import { backupHandler, log, validateBranch, masterLocalDetails, sanitizeStack, initLogger } from '../utils';
+import { backupHandler, log, validateBranch, masterLocalDetails, sanitizeStack, initLogger, trace } from '../utils';
 
 class ModuleImporter {
   private managementAPIClient: ContentstackClient;
@@ -24,18 +27,10 @@ class ModuleImporter {
       await validateBranch(this.stackAPIClient, this.importConfig, this.importConfig.branchName);
     }
 
-    // Temporarily adding this api call to verify management token has read and write permissions
-    // TODO: CS-40354 - CLI | import rewrite | Migrate HTTP call to SDK call once fix is ready from SDK side
-
     if (this.importConfig.management_token) {
       await addLocale(this.importConfig.apiKey, this.importConfig.management_token, this.importConfig.host);
     }
 
-    if (!this.importConfig.master_locale) {
-      let masterLocalResponse = await masterLocalDetails(this.stackAPIClient);
-      this.importConfig['master_locale'] = { code: masterLocalResponse.code };
-      this.importConfig.masterLocale = { code: masterLocalResponse.code };
-    }
     const backupDir = await backupHandler(this.importConfig);
     if (backupDir) {
       this.importConfig.backupDir = backupDir;
@@ -44,7 +39,24 @@ class ModuleImporter {
     }
 
     // NOTE init log
-    initLogger(this.importConfig);
+    const logger = initLogger(this.importConfig);
+
+    // NOTE audit and fix the import content.
+    if (
+      !this.importConfig.skipAudit &&
+      (!this.importConfig.moduleName ||
+        ['content-types', 'global-fields', 'entries'].includes(this.importConfig.moduleName))
+    ) {
+      if (!(await this.auditImportData(logger))) {
+        return { noSuccessMsg: true };
+      }
+    }
+
+    if (!this.importConfig.master_locale) {
+      let masterLocalResponse = await masterLocalDetails(this.stackAPIClient);
+      this.importConfig['master_locale'] = { code: masterLocalResponse.code };
+      this.importConfig.masterLocale = { code: masterLocalResponse.code };
+    }
 
     await sanitizeStack(this.stackAPIClient);
 
@@ -88,6 +100,67 @@ class ModuleImporter {
     // use the algorithm to determine the parallel and sequential execution of modules
     for (let moduleName of this.importConfig.modules.types) {
       await this.importByModuleByName(moduleName);
+    }
+  }
+
+  /**
+   * The `auditImportData` function performs an audit process on imported data, using a specified
+   * configuration, and returns a boolean indicating whether a fix is needed.
+   * @returns The function `auditImportData()` returns a boolean value. It returns `true` if there is a
+   * fix available and the user confirms to proceed with the fix, otherwise it returns `false`.
+   */
+  async auditImportData(logger: Logger) {
+    const basePath = resolve(this.importConfig.backupDir, 'logs', 'audit');
+    const auditConfig = {
+      noLog: false, // Skip logs printing on terminal
+      skipConfirm: true, // Skip confirmation if any
+      returnResponse: true, // On process completion should return config used in the command
+      noTerminalOutput: false, // Skip final audit table output on terminal
+      config: { basePath }, // To overwrite any build-in config. This config is equal to --config flag.
+    };
+    try {
+      const args = [
+        '--data-dir',
+        this.importConfig.backupDir,
+        '--external-config',
+        JSON.stringify(auditConfig),
+        '--report-path',
+        basePath,
+      ];
+
+      if (this.importConfig.moduleName) {
+        args.push('--modules', this.importConfig.moduleName);
+      }
+
+      log(this.importConfig, 'Starting audit process', 'info');
+      const result = await AuditFix.run(args);
+      log(this.importConfig, 'Audit process completed', 'info');
+
+      if (result) {
+        const { hasFix, config } = result;
+
+        if (hasFix) {
+          logger.log($t(messages.FINAL_REPORT_PATH, { path: config.reportPath }), 'warn');
+
+          if (
+            this.importConfig.forceStopMarketplaceAppsPrompt ||
+            (await cliux.inquire({
+              type: 'confirm',
+              name: 'confirmation',
+              message: 'Can you check the fix on the given path and confirm if you would like to proceed with the fix?',
+            }))
+          ) {
+            return true;
+          }
+
+          return false;
+        }
+      }
+
+      return true;
+    } catch (error) {
+      trace(error);
+      log(this.importConfig, `Audit failed with following error. ${error}`, 'error');
     }
   }
 }

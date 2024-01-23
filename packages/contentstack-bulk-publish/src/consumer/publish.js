@@ -261,6 +261,8 @@ async function performBulkPublish(data, _config, queue) {
           }
         })
         .catch((error) => {
+          console.log("error", error);
+          console.log("error", error.errors['entries.0'][0]);
           if (error.errorCode === 429 && data.retry < 2) {
             data.retry++;
             queue.Enqueue(data);
