@@ -62,7 +62,6 @@ async function getOrganizations(managementAPIClient) {
   try {
     return await getOrganizationList(managementAPIClient, { skip: 0, page: 1, limit: 100 }, []);
   } catch (error) {
-    console.log(error);
     throw error;
   }
 }
