@@ -379,8 +379,9 @@ export default class ContentType {
         }
       })
       .filter((val: any) => {
-        if (val?.schema && isEmpty(val.schema)) return false;
-        if (val?.reference_to && isEmpty(val.reference_to)) return false;
+        if (this.config.skipFieldTypes.includes(val?.data_type)) return true;
+        if (val?.schema && isEmpty(val?.schema)) return false;
+        if (val?.reference_to && isEmpty(val?.reference_to)) return false;
 
         return !!val;
       }) as ContentTypeSchemaType[];
