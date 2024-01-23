@@ -27,3 +27,8 @@ export type PrintType = {
   bold?: boolean;
   color?: typeof Color;
 };
+
+export type JSONFlagOptions = {
+  hidden?: boolean;
+  description?: string;
+};
