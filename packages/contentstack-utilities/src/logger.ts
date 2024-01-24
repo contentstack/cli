@@ -206,7 +206,7 @@ export default class Logger {
    * the sensitiveKeys array, and false otherwise.
    */
   isSensitiveKey(keyStr: string) {
-    if (keyStr && typeof keyStr !== 'symbol') {
+    if (keyStr && typeof keyStr === 'string') {
       return this.sensitiveKeys.some((regex) => regex.test(keyStr));
     }
   }
