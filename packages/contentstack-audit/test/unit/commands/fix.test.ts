@@ -12,7 +12,8 @@ describe('AuditFix command', () => {
   } as FileTransportInstance;
 
   describe('AuditFix run method', () => {
-    fancy
+    const test = fancy.loadConfig({ root: process.cwd() });
+    test
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(fs, 'rmSync', () => {})
       .stub(winston.transports, 'File', () => fsTransport)
