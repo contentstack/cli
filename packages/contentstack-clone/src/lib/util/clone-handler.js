@@ -619,8 +619,6 @@ class CloneHandler {
       const cmd = ['-k', config.source_stack, '-d', __dirname.split('src')[0] + 'contents'];
       if (config.cloneType === 'a') {
         config.filteredModules = ['stack'].concat(structureList);
-        cmd.push('-c');
-        cmd.push(path.join(__dirname, 'dummyConfig.json'));
       }
 
       if (config.source_alias) {
@@ -631,6 +629,9 @@ class CloneHandler {
       }
 
       if (config.forceStopMarketplaceAppsPrompt) cmd.push('-y');
+
+      cmd.push('-c');
+      cmd.push(path.join(__dirname, 'dummyConfig.json'));
 
       fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(config));
       let exportData = exportCmd.run(cmd);
@@ -661,6 +662,7 @@ class CloneHandler {
 
       fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(config));
       await importCmd.run(cmd);
+      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify({}))
       return resolve();
     });
   }
