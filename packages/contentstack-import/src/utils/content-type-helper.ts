@@ -147,6 +147,16 @@ export const removeReferenceFields = async function (
       flag.supressed = true;
       schema[i].reference_to = ['sys_assets'];
     }
+    else if (
+      // handling entry references in rte
+      schema[i].data_type === 'text' &&
+      schema[i].field_metadata.rich_text_type &&
+      schema[i].field_metadata.embed_entry &&
+      schema[i].reference_to.length >= 1
+    ) {
+      flag.supressed = true;
+      schema[i].reference_to = ['sys_assets'];
+    }
   }
 };
 
