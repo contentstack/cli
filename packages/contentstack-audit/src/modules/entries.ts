@@ -488,6 +488,9 @@ export default class Entries {
             field as ReferenceFieldDataType,
             entry[uid] as EntryReferenceFieldDataType[],
           );
+          if (!entry[uid]) {
+            delete entry[uid];
+          }
           break;
         case 'blocks':
           entry[uid] = this.fixModularBlocksReferences(
@@ -504,6 +507,7 @@ export default class Entries {
           ) as EntryGroupFieldDataType;
           break;
       }
+    
     });
 
     return entry;
@@ -546,12 +550,12 @@ export default class Entries {
     entry: EntryModularBlocksDataType[],
   ) {
     entry = entry
-      .map((block, index) => this.modularBlockRefCheck(tree, blocks, block, index))
+      ?.map((block, index) => this.modularBlockRefCheck(tree, blocks, block, index))
       .filter((val) => !isEmpty(val));
 
     blocks.forEach((block) => {
       entry = entry
-        .map((eBlock) => {
+        ?.map((eBlock) => {
           if (!isEmpty(block.schema)) {
             if (eBlock[block.uid]) {
               eBlock[block.uid] = this.runFixOnSchema(
@@ -666,9 +670,9 @@ export default class Entries {
     field: ReferenceFieldDataType | JsonRTEFieldDataType,
     entry: EntryReferenceFieldDataType[],
   ) {
+
     const missingRefs: Record<string, any>[] = [];
-    entry = entry
-      .map((reference) => {
+    entry = entry?.map((reference) => {
         const { uid } = reference;
         const refExist = find(this.entryMetaData, { uid });
 
@@ -678,8 +682,7 @@ export default class Entries {
         }
 
         return reference;
-      })
-      .filter((val) => val) as EntryReferenceFieldDataType[];
+      }).filter((val) => val) as EntryReferenceFieldDataType[];
 
     if (!isEmpty(missingRefs)) {
       this.missingRefs[this.currentUid].push({
