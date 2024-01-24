@@ -186,7 +186,7 @@ const envFileHandler = async (
         customHost ? customHost : managementAPIHost
       }${
         !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
-      }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_MANAGEMENT_TOKEN=''\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
+      }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
       result = await writeEnvFile(content, filePath);
       break;
     case 'gatsby':
@@ -210,9 +210,9 @@ const envFileHandler = async (
         environmentVariables.deliveryToken
       }',\n${
         livePreviewEnabled
-          ? `\npreivew_token=${
+          ? `\n\tpreivew_token=${
               environmentVariables.preview_token || `''`
-            }\npreview_host=${previewHost}\napp_host=${appHost}\n`
+            }\n\tpreview_host=${previewHost}\n\tapp_host=${appHost}\n`
           : '\n'
       },\n\t\tenvironment: '${environmentVariables.environment}'${
         !isUSRegion && !customHost ? `,\n\t\tregion: '${region.name}'` : ''
@@ -226,14 +226,14 @@ const envFileHandler = async (
         environmentVariables.api_key
       }', \n\tdelivery_token: '${environmentVariables.deliveryToken}',\n\t${
         livePreviewEnabled
-          ? `\npreview_token:'${environmentVariables.preview_token}' || ''},\npreview_host:'${previewHost
+          ? `\npreview_token:'${environmentVariables.preview_token || ''}',\npreview_host:'${previewHost
             }',\napp_host:'${appHost}'`
           : '\n'
       },\n\tenvironment: '${environmentVariables.environment}'${
         !isUSRegion && !customHost ? `,\n\tregion: '${region.name}'` : ''
       },\n\tapi_host: '${
         customHost ? customHost : managementAPIHost
-      }'\n\tmanagement_token: '',\n\tlive_preview: ${livePreviewEnabled}\n};`;
+      }',\n\tlive_preview: ${livePreviewEnabled}\n};`;
       fileName = `environment${environmentVariables.environment === 'production' ? '.prod.' : '.'}ts`;
       filePath = path.join(clonedDirectory, 'src', 'environments', fileName);
       result = await writeEnvFile(content, filePath);
@@ -254,9 +254,9 @@ const envFileHandler = async (
           : '\n'
       }\nCONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${
         !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
-      }\nCONTENTSTACK_API_HOST='${
+      }\nCONTENTSTACK_API_HOST=${
         customHost ? customHost : managementAPIHost
-      }\n'CONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\n\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
+      }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\n\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
       result = await writeEnvFile(content, filePath);
       break;
     case 'vue-starter':
