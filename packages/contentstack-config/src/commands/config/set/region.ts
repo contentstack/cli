@@ -89,7 +89,7 @@ export default class RegionSetCommand extends BaseCommand<typeof RegionSetComman
         this.logger.error('failed to set the region', error);
         cliux.error(`Failed to set region due to: ${error.message}`);
       }
-    } else if (['NA', 'EU', 'AZURE-NA', 'AZURE-EU', 'GCP-NA'].includes(selectedRegion)) {
+    } else if (['NA', 'EU', 'AZURE-NA', 'AZURE-EU'].includes(selectedRegion)) {
       const regionDetails: Region = regionHandler.setRegion(selectedRegion);
       await authHandler.setConfigData('logout'); //Todo: Handle this logout flow well through logout command call
       cliux.success(`Region has been set to ${regionDetails.name}`);
