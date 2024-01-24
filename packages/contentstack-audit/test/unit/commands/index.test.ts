@@ -1,5 +1,5 @@
 import winston from 'winston';
-import { expect, test } from '@oclif/test';
+import { expect, test as fancy } from '@oclif/test';
 import { FileTransportInstance } from 'winston/lib/winston/transports';
 
 import { AuditBaseCommand } from '../../../src/audit-base-command';
@@ -10,6 +10,7 @@ describe('Audit command', () => {
   } as FileTransportInstance;
 
   describe('Audit run method', () => {
+    const test = fancy.loadConfig({ root: process.cwd() });
     test
       .stdout({ print: process.env.PRINT === 'true' || false })
       .stub(winston.transports, 'File', () => fsTransport)

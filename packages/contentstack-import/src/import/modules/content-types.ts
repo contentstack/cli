@@ -11,6 +11,7 @@ import { fsUtil, log, formatError, schemaTemplate, lookupExtension, lookUpTaxono
 import { ImportConfig, ModuleClassParams } from '../../types';
 import BaseClass, { ApiOptions } from './base-class';
 import { updateFieldRules } from '../../utils/content-type-helper';
+import { getAllContentTypesFromStack } from './../../utils/common-helper'
 
 export default class ContentTypesImport extends BaseClass {
   private cTsMapperPath: string;
@@ -51,6 +52,9 @@ export default class ContentTypesImport extends BaseClass {
   };
   private taxonomiesPath: string;
   public taxonomies: Record<string, unknown>;
+  private extScopePath: string;
+  private extUidMapperPath: string;
+  private extSuccessPath: string;
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -78,6 +82,10 @@ export default class ContentTypesImport extends BaseClass {
     this.createdGFs = [];
     this.pendingGFs = [];
     this.taxonomiesPath = path.join(importConfig.data, 'mapper/taxonomies', 'success.json');
+    this.stackAPIClient = stackAPIClient;
+    this.extScopePath = path.join(this.importConfig.backupDir,importConfig.modules.extensions.dirName,'scope.json')
+    this.extUidMapperPath = path.join(this.importConfig.backupDir, 'mapper', 'extensions','uid-mapping.json');
+    this.extSuccessPath = path.join(this.importConfig.backupDir, 'mapper', 'extensions','success.json')
   }
 
   async start(): Promise<any> {
@@ -111,6 +119,8 @@ export default class ContentTypesImport extends BaseClass {
     });
     log(this.importConfig, 'Updated pending global fields with content type with references', 'success');
     log(this.importConfig, 'Content types have been imported successfully!', 'success');
+    const contentTypeTitle =  await getAllContentTypesFromStack(this.stackAPIClient);
+    await this.lookupExtensionScope(contentTypeTitle)
   }
 
   async seedCTs(): Promise<any> {
@@ -249,5 +259,74 @@ export default class ContentTypesImport extends BaseClass {
     Object.assign(globalFieldPayload, cloneDeep(globalField));
     apiOptions.apiData = globalFieldPayload;
     return apiOptions;
+  }
+
+  async lookupExtensionScope(contentTypeTitles:any,) {
+    const extension = await fsUtil.readFile(this.extScopePath);
+    const extensionToBeCreated: any = []
+    if(Array.isArray(extension)){
+      extension.forEach((ext:any)=>{
+        let isAllCtPresent:boolean = true;
+        ext?.scope?.content_types.forEach((ct:string)=>{
+          if(!contentTypeTitles.includes(ct)){
+            isAllCtPresent = false;
+            log(this.importConfig,`For Extension '${ext.title}' content type '${ct}' is not present. Skipping this extension creation`,'error');
+          }
+        })
+        if(isAllCtPresent) {
+          extensionToBeCreated.push(ext);
+        }
+      })
+    }
+    if(extensionToBeCreated.length===0){
+      log(this.importConfig,`No extension found to be dependent on Content types`,'info');
+    } else {
+      const apiContent = extensionToBeCreated
+      const extSuccess:any = fsUtil.readFile(this.extSuccessPath);
+      const extUidMapper:any = fsUtil.readFile(this.extUidMapperPath);
+      const existingExtensions = [];
+      const extFailed = [];
+
+      const onSuccess = ({ response, apiData: { uid, title } = { uid: null, title: '' } }: any) => {
+        extSuccess.push(response);
+        extUidMapper[uid] = response.uid;
+        log(this.importConfig, `Extension '${title}' imported successfully`, 'success');
+        fsUtil.writeFile(this.extUidMapperPath, extUidMapper);
+      };
+
+      const onReject = ({ error, apiData }: any) => {
+        const { title } = apiData;
+        if (error?.errors?.title) {
+          if (this.importConfig.replaceExisting) {
+            existingExtensions.push(apiData);
+          }
+          if (!this.importConfig.skipExisting) {
+            log(this.importConfig, `Extension '${title}' already exists`, 'info');
+          }
+        } else {
+          extFailed.push(apiData);
+          log(this.importConfig, `Extension '${title}' failed to be import ${formatError(error)}`, 'error');
+          log(this.importConfig, error, 'error');
+        }
+      };
+
+      await this.makeConcurrentCall(
+        {
+          apiContent,
+          processName: 'import extensions',
+          apiParams: {
+            reject: onReject.bind(this),
+            resolve: onSuccess.bind(this),
+            entity: 'create-extensions',
+            includeParamOnCompletion: true,
+          },
+          concurrencyLimit: this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1,
+        },
+        undefined,
+        false,
+      );
+      fsUtil.writeFile(this.extSuccessPath, extSuccess);
+    }
+
   }
 }
