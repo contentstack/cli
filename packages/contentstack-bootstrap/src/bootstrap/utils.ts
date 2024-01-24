@@ -226,8 +226,8 @@ const envFileHandler = async (
         environmentVariables.api_key
       }', \n\tdelivery_token: '${environmentVariables.deliveryToken}',\n\t${
         livePreviewEnabled
-          ? `\npreview_token=${environmentVariables.preview_token || `''`}\npreview_host=${previewHost
-            }\napp_host=${appHost}`
+          ? `\npreview_token:'${environmentVariables.preview_token}' || ''},\npreview_host:'${previewHost
+            }',\napp_host:'${appHost}'`
           : '\n'
       },\n\tenvironment: '${environmentVariables.environment}'${
         !isUSRegion && !customHost ? `,\n\tregion: '${region.name}'` : ''
@@ -256,7 +256,7 @@ const envFileHandler = async (
         !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
       }\nCONTENTSTACK_API_HOST='${
         customHost ? customHost : managementAPIHost
-      }'CONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\n\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
+      }\n'CONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\n\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
       result = await writeEnvFile(content, filePath);
       break;
     case 'vue-starter':
