@@ -2332,6 +2332,7 @@ USAGE
     [--destination-stack-api-key <value>] [--import-webhook-status disable|current]
 
 FLAGS
+  -c, --config=<value>                          Path for the external configuration
   -n, --stack-name=<value>                      Name for the new stack to store the cloned content.
   -y, --yes                                     [Optional] Override marketplace prompts
   --destination-management-token-alias=<value>  Source API key of the target stack token alias.
@@ -2483,6 +2484,7 @@ USAGE
     [--destination-stack-api-key <value>] [--import-webhook-status disable|current]
 
 FLAGS
+  -c, --config=<value>                          Path for the external configuration
   -n, --stack-name=<value>                      Name for the new stack to store the cloned content.
   -y, --yes                                     [Optional] Override marketplace prompts
   --destination-management-token-alias=<value>  Source API key of the target stack token alias.
