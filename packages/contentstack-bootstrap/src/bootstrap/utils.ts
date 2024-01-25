@@ -210,9 +210,9 @@ const envFileHandler = async (
         environmentVariables.deliveryToken
       }',\n${
         livePreviewEnabled
-          ? `\n\tpreivew_token=${
+          ? `\n\tpreivew_token:'${
               environmentVariables.preview_token || `''`
-            }\n\tpreview_host=${previewHost}\n\tapp_host=${appHost}\n`
+            }'\n\tpreview_host:'${previewHost}'\n\tapp_host:'${appHost}'\n`
           : '\n'
       },\n\t\tenvironment: '${environmentVariables.environment}'${
         !isUSRegion && !customHost ? `,\n\t\tregion: '${region.name}'` : ''
