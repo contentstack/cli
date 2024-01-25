@@ -45,7 +45,8 @@ describe('Utils', () => {
       const region = {
         name: 'NA',
         cda: 'https://cdn.contentstack.com',
-        cma: 'https://app.contentstack.com',
+        cma: 'https://api.contentstack.com',
+        uiHost: 'https://app.contentstack.com'
       };
       const managementAPIClient = {
         stack: () => {
@@ -73,12 +74,12 @@ describe('Utils', () => {
       let devEnvFile = await getFileContent(path.join(clonedDirectory, '.env.development.local'));
       devEnvFile = devEnvFile.replace(/\n/g, ',');
       expect(devEnvFile).equal(
-        'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,REACT_APP_CONTENTSTACK_PREVIEW_TOKEN=mock_preview_token,REACT_APP_CONTENTSTACK_PREVIEW_HOST=https://rest-preview.contentstack.com,REACT_APP_CONTENTSTACK_ENVIRONMENT=development,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=true',
+        'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,REACT_APP_CONTENTSTACK_PREVIEW_TOKEN=mock_preview_token,REACT_APP_CONTENTSTACK_PREVIEW_HOST=rest-preview.contentstack.com,REACT_APP_CONTENTSTACK_APP_HOST=app.contentstack.com,,REACT_APP_CONTENTSTACK_ENVIRONMENT=development,,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=true',
       );
       let prodEnvFile = await getFileContent(path.join(clonedDirectory, '.env.production.local'));
       prodEnvFile = prodEnvFile.replace(/\n/g, ',');
       expect(prodEnvFile).equal(
-        'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,REACT_APP_CONTENTSTACK_PREVIEW_TOKEN=mock_preview_token,REACT_APP_CONTENTSTACK_PREVIEW_HOST=https://rest-preview.contentstack.com,REACT_APP_CONTENTSTACK_ENVIRONMENT=production,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=true',
+        'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,REACT_APP_CONTENTSTACK_PREVIEW_TOKEN=mock_preview_token,REACT_APP_CONTENTSTACK_PREVIEW_HOST=rest-preview.contentstack.com,REACT_APP_CONTENTSTACK_APP_HOST=app.contentstack.com,,REACT_APP_CONTENTSTACK_ENVIRONMENT=production,,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=true',
       );
     });
     it('Create env file for a stack with live preview disabled', async () => {
@@ -94,6 +95,7 @@ describe('Utils', () => {
         name: 'NA',
         cda: 'https://cdn.contentstack.com',
         cma: 'https://app.contentstack.com',
+        uiHost: 'https://app.contentstack.com'
       };
       const managementAPIClient = {
         stack: () => {
@@ -121,12 +123,12 @@ describe('Utils', () => {
       let devEnvFile = await getFileContent(path.join(clonedDirectory, '.env.development.local'));
       devEnvFile = devEnvFile.replace(/\n/g, ',');
       expect(devEnvFile).equal(
-      'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,REACT_APP_CONTENTSTACK_ENVIRONMENT=development,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=false'
+      'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,,REACT_APP_CONTENTSTACK_ENVIRONMENT=development,,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=false'
       );
       let prodEnvFile = await getFileContent(path.join(clonedDirectory, '.env.production.local'));
       prodEnvFile = prodEnvFile.replace(/\n/g, ',');
       expect(prodEnvFile).equal(
-      'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,REACT_APP_CONTENTSTACK_ENVIRONMENT=production,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=false'
+      'REACT_APP_CONTENTSTACK_API_KEY=mock-api-key,REACT_APP_CONTENTSTACK_DELIVERY_TOKEN=mock-delivery-token,,REACT_APP_CONTENTSTACK_ENVIRONMENT=production,,SKIP_PREFLIGHT_CHECK=true,REACT_APP_CONTENTSTACK_LIVE_PREVIEW=false'
       );
     });
     it('Create env with invalid environments, should throw an error', async () => {
@@ -140,7 +142,7 @@ describe('Utils', () => {
       const region = {
         name: 'NA',
         cda: 'https://app.contentstack.com',
-        cma: 'https://app.contentstack.com',
+        cma: 'https://api.contentstack.com',
       };
       const managementAPIClient = {
         stack: () => ({
