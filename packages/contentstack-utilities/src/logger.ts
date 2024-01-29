@@ -206,7 +206,7 @@ export default class Logger {
    * the sensitiveKeys array, and false otherwise.
    */
   isSensitiveKey(keyStr: string) {
-    if (keyStr) {
+    if (keyStr && typeof keyStr === 'string') {
       return this.sensitiveKeys.some((regex) => regex.test(keyStr));
     }
   }
@@ -235,13 +235,17 @@ export default class Logger {
    * redacted.
    */
   redact(obj: any) {
-    const copy = klona(obj);
-    this.redactObject(copy);
+    try {
+      const copy = klona(obj);
+      this.redactObject(copy);
 
-    const splat = copy[Symbol.for('splat')];
-    this.redactObject(splat);
+      const splat = copy[Symbol.for('splat')];
+      this.redactObject(splat);
 
-    return copy;
+      return copy;
+    } catch (error) {
+      return obj;
+    }
   }
 
   /**
