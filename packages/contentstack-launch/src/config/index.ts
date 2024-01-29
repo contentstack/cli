@@ -28,6 +28,7 @@ const config = {
     'https://azure-na-api.contentstack.com': '',
     'https://azure-eu-api.contentstack.com': '',
   },
+  launchBaseUrl: '',
   supportedAdapters: ['GitHub'],
   deploymentStatus: ['LIVE', 'FAILED', 'SKIPPED', 'DEPLOYED'],
   pollingInterval: 1000,
