@@ -10,6 +10,8 @@ export default interface DefaultConfig {
   // host:'https://eu-api.contentstack.com/v3',
   // use below hosts for azure-na region
   // host:'https://azure-na-api.contentstack.com/v3',
+  // use below hosts for gcp-na region
+  // host: 'https://gcp-na-api.contentstack.com'
   modules: {
     types: Modules[];
     locales: {
