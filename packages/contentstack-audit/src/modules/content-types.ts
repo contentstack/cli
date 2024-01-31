@@ -60,7 +60,8 @@ export default class ContentType {
     this.inMemoryFix = returnFixSchema;
 
     if (!existsSync(this.folderPath)) {
-      this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), 'warn');
+      this.log(`Skipping ${this.moduleName} audit`, 'warn');
+      this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
       return returnFixSchema ? [] : {};
     }
 
