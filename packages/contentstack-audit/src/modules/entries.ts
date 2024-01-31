@@ -802,7 +802,10 @@ export default class Entries {
     const localesPath = join(localesFolderPath, this.config.moduleConfig.locales.fileName);
     const masterLocalesPath = join(localesFolderPath, 'master-locale.json');
     this.locales = existsSync(masterLocalesPath) ? values(JSON.parse(readFileSync(masterLocalesPath, 'utf8'))) : [];
-    this.locales.push(...values(JSON.parse(readFileSync(localesPath, 'utf8'))));
+
+    if (existsSync(localesPath)) {
+      this.locales.push(...values(JSON.parse(readFileSync(localesPath, 'utf8'))));
+    }
 
     for (const { code } of this.locales) {
       for (const { uid } of this.ctSchema) {
