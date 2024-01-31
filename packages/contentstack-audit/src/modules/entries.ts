@@ -800,7 +800,7 @@ export default class Entries {
     const localesFolderPath = resolve(this.config.basePath, this.config.moduleConfig.locales.dirName);
     const localesPath = join(localesFolderPath, this.config.moduleConfig.locales.fileName);
     const masterLocalesPath = join(localesFolderPath, 'master-locale.json');
-    this.locales = values(JSON.parse(readFileSync(masterLocalesPath, 'utf8')));
+    this.locales = existsSync(masterLocalesPath) ? values(JSON.parse(readFileSync(masterLocalesPath, 'utf8'))) : [];
     this.locales.push(...values(JSON.parse(readFileSync(localesPath, 'utf8'))));
 
     for (const { code } of this.locales) {
