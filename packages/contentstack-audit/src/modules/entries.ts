@@ -68,7 +68,8 @@ export default class Entries {
    */
   async run() {
     if (!existsSync(this.folderPath)) {
-      this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), 'warn');
+      this.log(`Skipping ${this.moduleName} audit`, 'warn');
+      this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
       return {};
     }
 
