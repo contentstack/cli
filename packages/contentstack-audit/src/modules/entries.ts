@@ -68,7 +68,8 @@ export default class Entries {
    */
   async run() {
     if (!existsSync(this.folderPath)) {
-      throw new Error($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }));
+      this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), 'warn');
+      return {};
     }
 
     await this.prepareEntryMetaData();
