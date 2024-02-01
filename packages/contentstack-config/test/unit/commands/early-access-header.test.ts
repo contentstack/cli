@@ -81,8 +81,9 @@ describe('Early access header command', function () {
       setEarlyAccessHeaderMockData.flags.headerAlias,
     ];
     await RemoveEarlyAccessHeaderCommand.run(args);
-      expect(confirmationStub.calledOnce).to.be.true;
-      configGetStub.restore();
+    expect(confirmationStub.calledOnce).to.be.true;
+    configGetStub.restore();
+    confirmationStub.restore()
   });
     
   it('Remove early access header: without alias flag should prompt', async function () {
