@@ -10,7 +10,7 @@ importers:
 
   packages/contentstack:
     specifiers:
-      '@contentstack/cli-audit': ~1.3.4
+      '@contentstack/cli-audit': ~1.3.5
       '@contentstack/cli-auth': ~1.3.17
       '@contentstack/cli-cm-bootstrap': ~1.7.1
       '@contentstack/cli-cm-branches': ~1.0.22
@@ -31,7 +31,7 @@ importers:
       '@oclif/plugin-help': ^5
       '@oclif/plugin-not-found': ^2.4.0
       '@oclif/plugin-plugins': ^4.1.9
-      '@oclif/test': ^2.2.10
+      '@oclif/test': ^2.5.6
       '@types/chai': ^4.2.18
       '@types/inquirer': ^9.0.3
       '@types/mkdirp': ^1.0.1
@@ -126,7 +126,7 @@ importers:
       '@contentstack/cli-utilities': ~1.5.11
       '@oclif/plugin-help': ^5
       '@oclif/plugin-plugins': ^4.1.9
-      '@oclif/test': ^2.0.3
+      '@oclif/test': ^2.5.6
       '@types/chai': ^4.3.5
       '@types/fs-extra': ^11.0.2
       '@types/mocha': ^10.0.6
@@ -190,7 +190,7 @@ importers:
       '@contentstack/cli-utilities': ~1.5.11
       '@fancy-test/nock': ^0.1.1
       '@oclif/plugin-help': ^5.1.19
-      '@oclif/test': ^2.2.10
+      '@oclif/test': ^2.5.6
       '@types/chai': ^4.2.18
       '@types/inquirer': ^9.0.3
       '@types/mkdirp': ^1.0.1
@@ -252,7 +252,7 @@ importers:
       '@contentstack/cli-cm-seed': ~1.7.0
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-utilities': ~1.5.11
-      '@oclif/test': ^2.2.10
+      '@oclif/test': ^2.5.6
       '@types/inquirer': ^9.0.3
       '@types/mkdirp': ^1.0.1
       '@types/node': ^14.14.32
@@ -307,7 +307,7 @@ importers:
       '@contentstack/cli-utilities': ~1.5.11
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5.1.19
-      '@oclif/test': ^1.2.6
+      '@oclif/test': ^2.5.6
       '@types/flat': ^5.0.2
       assert: ^2.0.0
       async: ^3.2.4
@@ -361,7 +361,7 @@ importers:
       '@contentstack/cli-config': link:../contentstack-config
       '@contentstack/cli-dev-dependencies': link:../contentstack-dev-dependencies
       '@oclif/plugin-help': 5.2.20_typescript@4.9.5
-      '@oclif/test': 1.2.9
+      '@oclif/test': 2.5.6_typescript@4.9.5
       '@types/flat': 5.0.5
       assert: 2.1.0
       chai: 4.3.10
@@ -381,7 +381,7 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-utilities': ~1.5.11
-      '@oclif/test': ^1.2.6
+      '@oclif/test': ^2.5.6
       bluebird: ^3.7.2
       chai: ^4.2.0
       chalk: ^4.1.2
@@ -410,7 +410,7 @@ importers:
       nock: 13.4.0
       winston: 3.11.0
     devDependencies:
-      '@oclif/test': 1.2.9
+      '@oclif/test': 2.5.6
       chai: 4.3.10
       eslint: 8.55.0
       eslint-config-oclif: 4.0.0_eslint@8.55.0
@@ -427,7 +427,7 @@ importers:
       '@contentstack/cli-cm-import': ~1.13.2
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-utilities': ~1.5.11
-      '@oclif/test': ^1.2.7
+      '@oclif/test': ^2.5.6
       async: ^3.2.4
       chai: ^4.2.0
       chalk: ^4.1.0
@@ -466,7 +466,7 @@ importers:
       rimraf: 3.0.2
       winston: 3.11.0
     devDependencies:
-      '@oclif/test': 1.2.9
+      '@oclif/test': 2.5.6
       chai: 4.3.10
       eslint: 8.55.0
       eslint-config-oclif: 4.0.0_eslint@8.55.0
@@ -480,7 +480,7 @@ importers:
   packages/contentstack-command:
     specifiers:
       '@contentstack/cli-utilities': ~1.5.11
-      '@oclif/test': ^2.2.10
+      '@oclif/test': ^2.5.6
       '@types/chai': ^4.2.18
       '@types/mkdirp': ^1.0.1
       '@types/mocha': ^8.2.2
@@ -522,7 +522,7 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-utilities': ~1.5.11
-      '@oclif/test': ^2.2.10
+      '@oclif/test': ^2.5.6
       '@types/chai': ^4.2.18
       '@types/inquirer': ^9.0.3
       '@types/mkdirp': ^1.0.1
@@ -582,7 +582,7 @@ importers:
   packages/contentstack-dev-dependencies:
     specifiers:
       '@oclif/core': ^2.9.3
-      '@oclif/test': ^2.0.3
+      '@oclif/test': ^2.5.6
       '@types/node': ^14.14.32
       eslint: ^7.32.0
       fancy-test: ^2.0.0
@@ -689,7 +689,7 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-utilities': ~1.5.11
-      '@oclif/test': ^2.2.10
+      '@oclif/test': ^2.5.6
       '@types/chai': ^4.3.6
       '@types/mocha': ^10.0.1
       chai: ^4.3.8
@@ -730,12 +730,12 @@ importers:
 
   packages/contentstack-import:
     specifiers:
-      '@contentstack/cli-audit': ^1.3.3
+      '@contentstack/cli-audit': ^1.3.5
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-utilities': ~1.5.11
       '@contentstack/management': ~1.13.0
       '@oclif/core': ^2.9.3
-      '@oclif/test': ^1.2.6
+      '@oclif/test': ^2.5.6
       '@types/big-json': ^3.2.0
       '@types/bluebird': ^3.5.38
       '@types/chai': ^4.2.18
@@ -792,7 +792,7 @@ importers:
       uuid: 9.0.1
       winston: 3.11.0
     devDependencies:
-      '@oclif/test': 1.2.9
+      '@oclif/test': 2.5.6_ogreqof3k35xezedraj6pnd45y
       '@types/big-json': 3.2.4
       '@types/bluebird': 3.5.42
       '@types/chai': 4.3.11
@@ -825,7 +825,7 @@ importers:
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5
       '@oclif/plugin-plugins': ^4.1.9
-      '@oclif/test': ^2.3.6
+      '@oclif/test': ^2.5.6
       '@types/adm-zip': ^0.5.0
       '@types/chai': ^4
       '@types/esm': ^3.2.0
@@ -899,7 +899,7 @@ importers:
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-utilities': ~1.5.11
       '@contentstack/json-rte-serializer': ~2.0.4
-      '@oclif/test': ^2.2.10
+      '@oclif/test': ^2.5.6
       chai: ^4.3.4
       chalk: ^4.1.2
       collapse-whitespace: ^1.1.7
@@ -945,7 +945,7 @@ importers:
     specifiers:
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-utilities': ~1.5.11
-      '@oclif/test': ^2.2.10
+      '@oclif/test': ^2.5.6
       async: ^3.2.4
       callsites: ^3.1.0
       cardinal: ^2.1.1
@@ -957,7 +957,7 @@ importers:
       globby: ^10.0.2
       husky: ^8.0.3
       jsdoc: ^4.0.0
-      jsdoc-to-markdown: ^7.0.1
+      jsdoc-to-markdown: ^8.0.0
       listr: ^0.14.3
       mkdirp: ^1.0.4
       nock: ^13.1.1
@@ -982,7 +982,7 @@ importers:
       globby: 10.0.2
       husky: 8.0.3
       jsdoc: 4.0.2
-      jsdoc-to-markdown: 7.1.1
+      jsdoc-to-markdown: 8.0.0
       mkdirp: 1.0.4
       nock: 13.4.0
       nyc: 15.1.0
@@ -1049,7 +1049,7 @@ importers:
       '@contentstack/management': ~1.13.0
       '@contentstack/marketplace-sdk': ^1.0.1
       '@oclif/core': ^2.9.3
-      '@oclif/test': ^2.2.10
+      '@oclif/test': ^2.5.6
       '@types/chai': ^4.2.18
       '@types/inquirer': ^9.0.3
       '@types/mkdirp': ^1.0.1
@@ -2971,15 +2971,6 @@ packages:
       - '@types/node'
       - supports-color
       - typescript
-    dev: true
-
-  /@oclif/test/1.2.9:
-    resolution: {integrity: sha512-op+ak0NTyeBKqjLVH1jfPCRGWK5befIoQpCL/xwekjucUEmMfCbUpV1Sa60f9rU8X58HEqrclwWbAH+DtQR6FQ==}
-    engines: {node: '>=8.0.0'}
-    dependencies:
-      fancy-test: 1.4.10
-    transitivePeerDependencies:
-      - supports-color
     dev: true
 
   /@oclif/test/2.5.6:
@@ -7182,6 +7173,7 @@ packages:
       stdout-stderr: 0.1.13
     transitivePeerDependencies:
       - supports-color
+    dev: false
 
   /fancy-test/2.0.42:
     resolution: {integrity: sha512-TX8YTALYAmExny+f+G24MFxWry3Pk09+9uykwRjfwjibRxJ9ZjJzrnHYVBZK46XQdyli7d+rQc5U/KK7V6uLsw==}
@@ -9295,8 +9287,8 @@ packages:
       xmlcreate: 2.0.4
     dev: true
 
-  /jsdoc-api/7.2.0:
-    resolution: {integrity: sha512-93YDnlm/OYTlLOFeNs4qAv0RBCJ0kGj67xQaWy8wrbk97Rw1EySitoOTHsTHXPEs3uyx2IStPKGrbE7LTnZXbA==}
+  /jsdoc-api/8.0.0:
+    resolution: {integrity: sha512-Rnhor0suB1Ds1abjmFkFfKeD+kSMRN9oHMTMZoJVUrmtCGDwXty+sWMA9sa4xbe4UyxuPjhC7tavZ40mDKK6QQ==}
     engines: {node: '>=12.17'}
     dependencies:
       array-back: 6.2.2
@@ -9322,8 +9314,8 @@ packages:
       test-value: 3.0.0
     dev: true
 
-  /jsdoc-to-markdown/7.1.1:
-    resolution: {integrity: sha512-CI86d63xAVNO+ENumWwmJ034lYe5iGU5GwjtTA11EuphP9tpnoi4hrKgR/J8uME0D+o4KUpVfwX1fjZhc8dEtg==}
+  /jsdoc-to-markdown/8.0.0:
+    resolution: {integrity: sha512-2FQvYkg491+FP6s15eFlgSSWs69CvQrpbABGYBtvAvGWy/lWo8IKKToarT283w59rQFrpcjHl3YdhHCa3l7gXg==}
     engines: {node: '>=12.17'}
     hasBin: true
     dependencies:
@@ -9331,7 +9323,7 @@ packages:
       command-line-tool: 0.8.0
       config-master: 3.1.0
       dmd: 6.2.0
-      jsdoc-api: 7.2.0
+      jsdoc-api: 8.0.0
       jsdoc-parse: 6.2.0
       walk-back: 5.1.0
     dev: true
