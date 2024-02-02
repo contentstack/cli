@@ -130,6 +130,12 @@ class ModuleImporter {
 
       if (this.importConfig.moduleName) {
         args.push('--modules', this.importConfig.moduleName);
+      } else if (this.importConfig.modules.types.length) {
+        this.importConfig.modules.types
+          .filter((val) => ['content-types', 'global-fields', 'entries'].includes(val))
+          .forEach((val) => {
+            args.push('--modules', val);
+          });
       }
 
       log(this.importConfig, 'Starting audit process', 'info');
@@ -147,7 +153,7 @@ class ModuleImporter {
             (await cliux.inquire({
               type: 'confirm',
               name: 'confirmation',
-              message: 'Can you check the fix on the given path and confirm if you would like to proceed with the fix?',
+              message: 'Please review and confirm if we can proceed with implementing the fix mentioned in the provided path.?',
             }))
           ) {
             return true;
@@ -159,7 +165,6 @@ class ModuleImporter {
 
       return true;
     } catch (error) {
-      trace(error);
       log(this.importConfig, `Audit failed with following error. ${error}`, 'error');
     }
   }
