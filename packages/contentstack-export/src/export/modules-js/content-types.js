@@ -44,9 +44,6 @@ class ContentTypesExport {
     if (skip) {
       this.qs.skip = skip;
     }
-
-    console.log("QS", this.qs);
-
     const contentTypeSearchResponse = await this.stackAPIClient.contentType().query(this.qs).find();
     if (Array.isArray(contentTypeSearchResponse.items) && contentTypeSearchResponse.items.length > 0) {
       let updatedContentTypes = this.sanitizeAttribs(contentTypeSearchResponse.items);
