@@ -71,14 +71,12 @@ export default class ExportCommand extends Command {
     module: flags.string({
       char: 'm',
       description: '[optional] specific module name',
-      exclusive: ['content-types'],
       parse: printFlagDeprecation(['-m'], ['--module']),
     }),
     'content-types': flags.string({
       char: 't',
       description: '[optional] content type',
       multiple: true,
-      exclusive: ['module'],
       parse: printFlagDeprecation(['-t'], ['--content-types']),
     }),
     branch: flags.string({
