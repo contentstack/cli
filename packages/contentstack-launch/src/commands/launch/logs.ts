@@ -5,13 +5,12 @@ import isArray from 'lodash/isArray';
 import includes from 'lodash/includes';
 import { Flags, FlagInput, cliux as ux } from '@contentstack/cli-utilities';
 
-import { BaseCommand } from './base-command';
+import { BaseCommand } from '../../base-command';
 import { environmentsQuery } from '../../graphql';
 import { Logger, LogPolling, selectOrg, selectProject } from '../../util';
 import { EmitMessage, DeploymentLogResp, ServerLogResp } from '../../types';
 
 export default class Logs extends BaseCommand<typeof Logs> {
-  static hidden = false;
   static description = 'Show deployment or server logs';
 
   static examples = [
