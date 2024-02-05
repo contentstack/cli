@@ -2,16 +2,17 @@ import { cliux, configHandler, NodeCrypto, managementSDKClient } from '@contents
 
 import { formatError, log } from '../utils';
 import { ExportConfig } from '../types';
-import { askDeveloperHub } from './interactive';
 
 export const getDeveloperHubUrl = async (exportConfig: ExportConfig) => {
   const { cma, name } = configHandler.get('region') || {};
   let developerHubBaseUrl = exportConfig?.developerHubUrls[cma];
 
   if (!developerHubBaseUrl) {
-    developerHubBaseUrl = await askDeveloperHub(name);
+    developerHubBaseUrl = exportConfig.host?.replace('api','develperhub-api');
   }
 
+  developerHubBaseUrl = developerHubBaseUrl.startsWith('dev9')?developerHubBaseUrl.replace('dev9','dev'):developerHubBaseUrl
+  
   return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
 };
 
