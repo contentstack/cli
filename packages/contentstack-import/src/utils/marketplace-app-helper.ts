@@ -15,7 +15,6 @@ import { log } from './logger';
 import { trace } from '../utils/log';
 import { ImportConfig, Installation } from '../types';
 import { formatError } from '../utils';
-import { askDeveloperHubUrl } from './interactive';
 import { getAppName, askAppName, selectConfiguration } from '../utils/interactive';
 
 export const getAllStackSpecificApps = async (
@@ -57,10 +56,11 @@ export const getAllStackSpecificApps = async (
 export const getDeveloperHubUrl = async (config: ImportConfig): Promise<string> => {
   const { cma, name } = configHandler.get('region') || {};
   let developerHubBaseUrl = config.developerHubUrls[cma];
-
+  
   if (!developerHubBaseUrl) {
-    developerHubBaseUrl = await askDeveloperHubUrl(name);
+    developerHubBaseUrl = config.host?.replace('api','developerhub-api');
   }
+  developerHubBaseUrl = developerHubBaseUrl.startsWith('dev9')?developerHubBaseUrl.replace('dev9','dev'):developerHubBaseUrl
 
   return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
 };
