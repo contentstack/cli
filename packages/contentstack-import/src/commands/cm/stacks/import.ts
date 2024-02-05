@@ -141,7 +141,7 @@ export default class ImportCommand extends Command {
         'success',
       );
     } catch (error) {
-      log({ data: backupDir } as ImportConfig, `Failed to import stack content - ${formatError(error)}`, 'error');
+      log({ data: backupDir ?? path.join(backupDir || __dirname, 'logs', 'import') } as ImportConfig, `Failed to import stack content - ${formatError(error)}`, 'error');
       log(
         { data: backupDir } as ImportConfig,
         `The log has been stored at ${
