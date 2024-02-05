@@ -12,6 +12,7 @@ describe('Region command', function () {
     name: 'test',
     cma: 'https://api.contentstack.com',
     cda: 'https://cda.contentstack.com',
+    uiHost: '',
   };
   let cliuxPrintStub;
   beforeEach(function () {
