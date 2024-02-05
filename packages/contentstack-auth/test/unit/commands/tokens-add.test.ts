@@ -25,7 +25,7 @@ describe('Tokens Add Command', () => {
   let environmentTokenValidationStub;
   let printStub;
   const validAPIKey = 'adasdfagsf';
-  const validDeliveryToken = '***REMOVED***';
+  const validDeliveryToken = 'cdae3493fkdflklssw';
   const validmanagementToken = 'cmajhsd98939482';
   const validEnvironment = 'textenv';
 
