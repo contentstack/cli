@@ -8,7 +8,7 @@ export const getDeveloperHubUrl = async (exportConfig: ExportConfig) => {
   let developerHubBaseUrl = exportConfig?.developerHubUrls[cma];
 
   if (!developerHubBaseUrl) {
-    developerHubBaseUrl = exportConfig.host?.replace('api','develperhub-api');
+    developerHubBaseUrl = exportConfig.host?.replace('api','developerhub-api');
   }
 
   developerHubBaseUrl = developerHubBaseUrl.startsWith('dev9')?developerHubBaseUrl.replace('dev9','dev'):developerHubBaseUrl
