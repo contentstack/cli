@@ -98,7 +98,7 @@ export default class ExportCommand extends Command {
   static aliases: string[] = ['cm:export'];
 
   async run(): Promise<void> {
-    let exportDir: string;
+    let exportDir: string = path.join(__dirname, 'logs');
     try {
       const { flags } = await this.parse(ExportCommand);
       let exportConfig = await setupExportConfig(flags);
@@ -117,8 +117,7 @@ export default class ExportCommand extends Command {
       log({ data: exportDir } as ExportConfig, `Failed to export stack content - ${formatError(error)}`, 'error');
       log(
         { data: exportDir } as ExportConfig,
-        `The log has been stored at ${
-          exportDir ? path.join(exportDir, 'logs', 'export') : path.join(__dirname, 'logs')
+        `The log has been stored at ${exportDir
         }`,
         'info',
       );
