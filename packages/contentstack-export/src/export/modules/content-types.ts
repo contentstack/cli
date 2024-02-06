@@ -13,6 +13,7 @@ export default class ContentTypesExport extends BaseClass {
     skip?: number;
     limit?: number;
     include_global_field_schema: boolean;
+    uid?: Record<string, string[]>
   };
   private contentTypesConfig: {
     dirName?: string;
@@ -35,6 +36,12 @@ export default class ContentTypesExport extends BaseClass {
       limit: this.contentTypesConfig.limit,
       include_global_field_schema: true,
     };
+
+     // If content type id is provided then use it as part of query
+     if (Array.isArray(this.exportConfig.contentTypes) && this.exportConfig.contentTypes.length > 0) {
+      this.qs.uid = { $in: this.exportConfig.contentTypes };
+     }
+    
     this.contentTypesDirPath = path.resolve(
       exportConfig.data,
       exportConfig.branchName || '',
