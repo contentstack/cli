@@ -9,6 +9,7 @@ import {
   configHandler,
   managementSDKClient,
   marketplaceSDKClient,
+  createDeveloperHubUrl
 } from '@contentstack/cli-utilities';
 
 import { log } from './logger';
@@ -54,15 +55,7 @@ export const getAllStackSpecificApps = async (
 };
 
 export const getDeveloperHubUrl = async (config: ImportConfig): Promise<string> => {
-  const { cma, name } = configHandler.get('region') || {};
-  let developerHubBaseUrl = config.developerHubUrls[cma];
-  
-  if (!developerHubBaseUrl) {
-    developerHubBaseUrl = config.host?.replace('api','developerhub-api');
-  }
-  developerHubBaseUrl = developerHubBaseUrl.startsWith('dev9')?developerHubBaseUrl.replace('dev9','dev'):developerHubBaseUrl
-
-  return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
+  return createDeveloperHubUrl(config.host);
 };
 
 export const getOrgUid = async (config: ImportConfig): Promise<string> => {
