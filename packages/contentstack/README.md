@@ -18,7 +18,7 @@ $ npm install -g @contentstack/cli
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli/1.13.0 darwin-arm64 node-v20.8.0
+@contentstack/cli/1.13.0 darwin-arm64 node-v20.10.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -2332,6 +2332,7 @@ USAGE
     [--destination-stack-api-key <value>] [--import-webhook-status disable|current]
 
 FLAGS
+  -c, --config=<value>                          Path for the external configuration
   -n, --stack-name=<value>                      Name for the new stack to store the cloned content.
   -y, --yes                                     [Optional] Override marketplace prompts
   --destination-management-token-alias=<value>  Source API key of the target stack token alias.
@@ -2483,6 +2484,7 @@ USAGE
     [--destination-stack-api-key <value>] [--import-webhook-status disable|current]
 
 FLAGS
+  -c, --config=<value>                          Path for the external configuration
   -n, --stack-name=<value>                      Name for the new stack to store the cloned content.
   -y, --yes                                     [Optional] Override marketplace prompts
   --destination-management-token-alias=<value>  Source API key of the target stack token alias.
@@ -3226,7 +3228,7 @@ Launch related operations
 ```
 USAGE
   $ csdx launch [-d <value>] [-c <value>] [--type GitHub|FileUpload] [--framework Gatsby|NextJs|Other]
-    [--org <value>] [-n <value>] [-e <value>] [--branch <value>] [--build-command <value>] [--out-dir <value>] [--init]
+    [--org <value>] [-n <value>] [-e <value>] [--branch <value>] [--build-command <value>] [--out-dir <value>]
 
 FLAGS
   -c, --config=<value>       Path to the local '.cs-launch.json' file
@@ -3237,7 +3239,6 @@ FLAGS
   --build-command=<value>    [Optional] Build Command
   --framework=<option>       [Optional] Type of framework
                              <options: Gatsby|NextJs|Other>
-  --init                     [Optional, Hidden] Reinitialize the project if it is an existing launch project.
   --org=<value>              [Optional] Provide the organization UID to create a new project or deployment
   --out-dir=<value>          [Optional] Output Directory
   --type=<option>            [Optional] Choose the type of adapters

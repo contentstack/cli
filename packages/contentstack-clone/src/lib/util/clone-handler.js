@@ -8,6 +8,7 @@ let { default: importCmd } = require('@contentstack/cli-cm-import');
 const { CustomAbortController } = require('./abort-controller');
 const prompt = require('prompt');
 const colors = require('@colors/colors/safe');
+const cloneDeep = require("lodash/cloneDeep")
 
 const {
   HandleOrgCommand,
@@ -616,23 +617,29 @@ class CloneHandler {
 
   async cmdExport() {
     return new Promise((resolve, reject) => {
-      const cmd = ['-k', config.source_stack, '-d', __dirname.split('src')[0] + 'contents'];
-      if (config.cloneType === 'a') {
-        config.filteredModules = ['stack'].concat(structureList);
-        cmd.push('-c');
-        cmd.push(path.join(__dirname, 'dummyConfig.json'));
+      // Creating export specific config by merging external configurations
+      let exportConfig = Object.assign({}, cloneDeep(config), {...config?.export});
+      delete exportConfig.import;
+      delete exportConfig.export;
+
+      const cmd = ['-k', exportConfig.source_stack, '-d', __dirname.split('src')[0] + 'contents'];
+      if (exportConfig.cloneType === 'a') {
+        exportConfig.filteredModules = ['stack'].concat(structureList);
       }
 
-      if (config.source_alias) {
-        cmd.push('-a', config.source_alias);
+      if (exportConfig.source_alias) {
+        cmd.push('-a', exportConfig.source_alias);
       }
-      if (config.sourceStackBranch) {
-        cmd.push('--branch', config.sourceStackBranch);
+      if (exportConfig.sourceStackBranch) {
+        cmd.push('--branch', exportConfig.sourceStackBranch);
       }
 
-      if (config.forceStopMarketplaceAppsPrompt) cmd.push('-y');
+      if (exportConfig.forceStopMarketplaceAppsPrompt) cmd.push('-y');
 
-      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(config));
+      cmd.push('-c');
+      cmd.push(path.join(__dirname, 'dummyConfig.json'));
+
+      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(exportConfig));
       let exportData = exportCmd.run(cmd);
       exportData.then(() => resolve(true)).catch(reject);
     });
@@ -640,27 +647,33 @@ class CloneHandler {
 
   async cmdImport() {
     return new Promise(async (resolve, _reject) => {
+      // Creating export specific config by merging external configurations
+      let importConfig = Object.assign({}, cloneDeep(config), {...config?.import});
+      delete importConfig.import;
+      delete importConfig.export;
+
       const cmd = ['-c', path.join(__dirname, 'dummyConfig.json')];
 
-      if (config.destination_alias) {
-        cmd.push('-a', config.destination_alias);
+      if (importConfig.destination_alias) {
+        cmd.push('-a', importConfig.destination_alias);
       }
-      if (!config.data && config.sourceStackBranch) {
-        cmd.push('-d', path.join(config.pathDir, config.sourceStackBranch));
+      if (!importConfig.data && importConfig.sourceStackBranch) {
+        cmd.push('-d', path.join(importConfig.pathDir, importConfig.sourceStackBranch));
       }
-      if (config.targetStackBranch) {
-        cmd.push('--branch', config.targetStackBranch);
+      if (importConfig.targetStackBranch) {
+        cmd.push('--branch', importConfig.targetStackBranch);
       }
-      if (config.importWebhookStatus) {
-        cmd.push('--import-webhook-status', config.importWebhookStatus);
+      if (importConfig.importWebhookStatus) {
+        cmd.push('--import-webhook-status', importConfig.importWebhookStatus);
       }
 
-      if (config.skipAudit) cmd.push('--skip-audit');
+      if (importConfig.skipAudit) cmd.push('--skip-audit');
 
-      if (config.forceStopMarketplaceAppsPrompt) cmd.push('-y');
+      if (importConfig.forceStopMarketplaceAppsPrompt) cmd.push('-y');
 
-      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(config));
+      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify(importConfig));
       await importCmd.run(cmd);
+      fs.writeFileSync(path.join(__dirname, 'dummyConfig.json'), JSON.stringify({}))
       return resolve();
     });
   }

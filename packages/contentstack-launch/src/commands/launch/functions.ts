@@ -1,10 +1,9 @@
 import { FlagInput, Flags } from '@contentstack/cli-utilities';
 
-import { BaseCommand } from './base-command';
+import { BaseCommand } from '../../base-command';
 import Contentfly from '../../util/cloud-function';
 
 export default class Functions extends BaseCommand<typeof Functions> {
-  static hidden = false;
   static description = 'Serve cloud functions';
 
   static examples = [
