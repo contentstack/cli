@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-cm-bootstrap",
   "description": "Bootstrap contentstack apps",
-  "version": "1.7.1",
+  "version": "1.8.0",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "scripts": {
@@ -25,7 +25,7 @@
     "tar": "^6.1.13"
   },
   "devDependencies": {
-    "@oclif/test": "^2.2.10",
+    "@oclif/test": "^2.5.6",
     "@types/inquirer": "^9.0.3",
     "@types/mkdirp": "^1.0.1",
     "@types/node": "^14.14.32",
