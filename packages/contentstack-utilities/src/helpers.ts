@@ -25,3 +25,9 @@ export const isManagementTokenValid = async (stackAPIKey, managementToken) => {
     return { valid: 'failedToCheck',message:`Failed to check the validity of the Management token. ${error}`};
   }
 }
+
+export const createDeveloperHubUrl = (developerHubBaseUrl:string) : string => {
+  developerHubBaseUrl = developerHubBaseUrl?.replace('api','developerhub-api');
+  developerHubBaseUrl = developerHubBaseUrl.startsWith('dev11')?developerHubBaseUrl.replace('dev11','dev'):developerHubBaseUrl;
+  return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
+}
