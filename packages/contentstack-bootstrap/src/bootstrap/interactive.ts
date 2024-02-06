@@ -99,3 +99,14 @@ export async function inquireLivePreviewSupport() {
   });
   return livePreviewEnabled;
 }
+
+export async function continueBootstrapCommand() {
+  const { shouldContinue } = await inquirer.prompt({
+    type: 'list',
+    name: 'shouldContinue',
+    message: `To continue with the Bootstrap command without Live Preview, please select Yes.`,
+    choices: ['yes', 'no'],
+    loop: false,
+  });
+  return shouldContinue;
+}
