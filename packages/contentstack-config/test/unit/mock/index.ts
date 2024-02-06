@@ -5,6 +5,13 @@ export const setConfigMockData = {
   },
 };
 
+export const setEarlyAccessHeaderMockData = {
+  flags: {
+    headerAlias: 'taxonomy',
+    header: 'taxonomytestorg',
+  },
+};
+
 export const removeConfigMockData = {
   flags: {
     apiKey: 'abcd',
