@@ -4,12 +4,11 @@ import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
 import { FlagInput, Flags, cliux as ux } from '@contentstack/cli-utilities';
 
-import { BaseCommand } from './base-command';
+import { BaseCommand } from '../../base-command';
 import { Logger, selectOrg, selectProject } from '../../util';
 import { environmentsQuery, projectsQuery } from '../../graphql';
 
 export default class Environments extends BaseCommand<typeof Environments> {
-  static hidden = false;
   static description = 'Show list of environments for a project';
 
   static examples = [
