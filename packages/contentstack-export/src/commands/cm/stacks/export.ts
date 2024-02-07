@@ -115,12 +115,7 @@ export default class ExportCommand extends Command {
       log(exportConfig, `The log has been stored at '${path.join(exportDir, 'logs', 'export')}'`, 'success');
     } catch (error) {
       log({ data: exportDir } as ExportConfig, `Failed to export stack content - ${formatError(error)}`, 'error');
-      log(
-        { data: exportDir } as ExportConfig,
-        `The log has been stored at ${exportDir
-        }`,
-        'info',
-      );
+      log({ data: exportDir } as ExportConfig, `The log has been stored at ${exportDir}`, 'info');
     }
   }
 }
