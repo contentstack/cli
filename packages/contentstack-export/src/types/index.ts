@@ -100,7 +100,7 @@ export interface WebhookConfig {
   limit?: number;
 }
 
-export interface WorkflowConfig{
+export interface WorkflowConfig {
   dirName: string;
   fileName: string;
   invalidKeys: string[];
@@ -108,29 +108,21 @@ export interface WorkflowConfig{
   limit?: number;
 }
 
-export interface CustomRoleConfig{
+export interface CustomRoleConfig {
   dirName: string;
   fileName: string;
   customRolesLocalesFileName: string;
   dependencies?: Modules[];
 }
 
-export interface StackConfig{
-    dirName: string;
-    fileName: string;
-    dependencies?: Modules[];
-    limit?: number;
-}
-
-export interface TaxonomiesConfig{
+export interface StackConfig {
   dirName: string;
   fileName: string;
-  invalidKeys: string[];
   dependencies?: Modules[];
   limit?: number;
 }
 
-export interface TermsConfig{
+export interface TaxonomiesConfig {
   dirName: string;
   fileName: string;
   invalidKeys: string[];
@@ -140,4 +132,4 @@ export interface TermsConfig{
 
 export { default as DefaultConfig } from './default-config';
 export { default as ExportConfig } from './export-config';
-export * from './marketplace-app'
+export * from './marketplace-app';
