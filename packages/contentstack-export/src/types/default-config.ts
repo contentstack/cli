@@ -152,12 +152,6 @@ export default interface DefaultConfig {
       invalidKeys: string[];
       dependencies?: Modules[];
     };
-    terms: {
-      dirName: string;
-      fileName: string;
-      invalidKeys: string[];
-      dependencies?: Modules[];
-    };
   };
   languagesCode: string[];
   apis: {
