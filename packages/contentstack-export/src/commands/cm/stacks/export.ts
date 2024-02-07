@@ -98,7 +98,7 @@ export default class ExportCommand extends Command {
   static aliases: string[] = ['cm:export'];
 
   async run(): Promise<void> {
-    let exportDir: string = path.join(__dirname, 'logs');
+    let exportDir: string = path.join(process.cwd(), 'logs');
     try {
       const { flags } = await this.parse(ExportCommand);
       let exportConfig = await setupExportConfig(flags);
