@@ -19,7 +19,7 @@ $ npm install -g @contentstack/cli-audit
 $ csdx COMMAND
 running command...
 $ csdx (--version|-v)
-@contentstack/cli-audit/1.3.5 darwin-arm64 node-v20.8.0
+@contentstack/cli-audit/1.4.0 darwin-arm64 node-v20.10.0
 $ csdx --help [COMMAND]
 USAGE
   $ csdx COMMAND
@@ -99,14 +99,14 @@ Perform audits and fix possible errors in the exported Contentstack data.
 USAGE
   $ csdx audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
     content-types|global-fields|entries] [--copy-path <value> --copy-dir] [--fix-only
-    reference|global_field|json:rte|json:custom-field|blocks|group] [--columns <value> | ] [--sort <value>] [--filter
+    reference|global_field|json:rte|json:extension|blocks|group] [--columns <value> | ] [--sort <value>] [--filter
     <value>] [--csv | --no-truncate]
 
 FLAGS
   --copy-dir              Create backup from the original data.
   --copy-path=<value>     Provide the path to backup the copied data
   --fix-only=<option>...  Provide the list of fix options
-                          <options: reference|global_field|json:rte|json:custom-field|blocks|group>
+                          <options: reference|global_field|json:rte|json:extension|blocks|group>
   --modules=<option>...   Provide the list of modules to be audited
                           <options: content-types|global-fields|entries>
   --report-path=<value>   Path to store the audit reports
@@ -198,14 +198,14 @@ Perform audits and fix possible errors in the exported Contentstack data.
 USAGE
   $ csdx cm:stacks:audit:fix [-c <value>] [-d <value>] [--report-path <value>] [--modules
     content-types|global-fields|entries] [--copy-path <value> --copy-dir] [--fix-only
-    reference|global_field|json:rte|json:custom-field|blocks|group] [--columns <value> | ] [--sort <value>] [--filter
+    reference|global_field|json:rte|json:extension|blocks|group] [--columns <value> | ] [--sort <value>] [--filter
     <value>] [--csv | --no-truncate]
 
 FLAGS
   --copy-dir              Create backup from the original data.
   --copy-path=<value>     Provide the path to backup the copied data
   --fix-only=<option>...  Provide the list of fix options
-                          <options: reference|global_field|json:rte|json:custom-field|blocks|group>
+                          <options: reference|global_field|json:rte|json:extension|blocks|group>
   --modules=<option>...   Provide the list of modules to be audited
                           <options: content-types|global-fields|entries>
   --report-path=<value>   Path to store the audit reports
