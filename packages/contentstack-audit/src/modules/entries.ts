@@ -331,7 +331,7 @@ export default class Entries {
     if (field[uid]) {
       let { metadata: { extension_uid } = { extension_uid: '' } } = field[uid] || {};
 
-      if (!this.extensions.includes(extension_uid)) {
+      if (extension_uid && !this.extensions.includes(extension_uid)) {
         missingRefs.push({ uid, extension_uid, type: 'Extension or Apps' } as any);
       }
     }
