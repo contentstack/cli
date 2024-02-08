@@ -387,11 +387,11 @@ export default abstract class BaseClass {
         return this.stack.taxonomy().create({ taxonomy: apiData }).then(onSuccess).catch(onReject);
       case 'create-terms':
         return this.stack
-        .taxonomy(apiData.taxonomy_uid)
-        .terms()
-        .create({ term: apiData })
-        .then(onSuccess)
-        .catch(onReject);
+          .taxonomy(apiData.taxonomy_uid)
+          .terms()
+          .create({ term: apiData })
+          .then(onSuccess)
+          .catch(onReject);
       case 'import-taxonomy':
         return this.stack.taxonomy(uid).import({ taxonomy: apiData.filePath }).then(onSuccess).catch(onReject);
       default:
