@@ -11,8 +11,6 @@ import { LocaleData } from '@contentstack/management/types/stack/locale';
 import { PublishConfig } from '@contentstack/management/types/utility/publish';
 import { FolderData } from '@contentstack/management/types/stack/asset/folder';
 import { ExtensionData } from '@contentstack/management/types/stack/extension';
-import { GlobalFieldData } from '@contentstack/management/types/stack/globalField';
-import { ContentTypeData } from '@contentstack/management/types/stack/contentType';
 import { EnvironmentData } from '@contentstack/management/types/stack/environment';
 import { LabelData } from '@contentstack/management/types/stack/label';
 import { WebhookData } from '@contentstack/management/types/stack/webhook';
@@ -50,7 +48,8 @@ export type ApiModuleType =
   | 'publish-entries'
   | 'delete-entries'
   | 'create-taxonomies'
-  | 'create-terms';
+  | 'create-terms'
+  | 'import-taxonomy';
 
 export type ApiOptions = {
   uid?: string;
@@ -387,14 +386,14 @@ export default abstract class BaseClass {
       case 'create-taxonomies':
         return this.stack.taxonomy().create({ taxonomy: apiData }).then(onSuccess).catch(onReject);
       case 'create-terms':
-        if (apiData?.taxonomy_uid) {
-          return this.stack
-            .taxonomy(apiData.taxonomy_uid)
-            .terms()
-            .create({ term: apiData })
-            .then(onSuccess)
-            .catch(onReject);
-        }
+        return this.stack
+          .taxonomy(apiData.taxonomy_uid)
+          .terms()
+          .create({ term: apiData })
+          .then(onSuccess)
+          .catch(onReject);
+      case 'import-taxonomy':
+        return this.stack.taxonomy(uid).import({ taxonomy: apiData.filePath }).then(onSuccess).catch(onReject);
       default:
         return Promise.resolve();
     }
