@@ -1,3 +1,4 @@
+import map from 'lodash/map';
 import find from 'lodash/find';
 import values from 'lodash/values';
 import isEmpty from 'lodash/isEmpty';
@@ -31,8 +32,11 @@ import {
   EntryJsonRTEFieldDataType,
   EntryModularBlocksDataType,
   EntryReferenceFieldDataType,
+  ExtensionOrAppFieldDataType,
+  EntryExtensionOrAppFieldDataType,
 } from '../types';
 import GlobalField from './global-fields';
+import { MarketplaceAppsInstallationData } from '../types/extension';
 
 export default class Entries {
   public log: LogFn;
@@ -43,6 +47,7 @@ export default class Entries {
   public folderPath: string;
   public currentUid!: string;
   public currentTitle!: string;
+  public extensions: string[] = [];
   public gfSchema: ContentTypeStruct[];
   public ctSchema: ContentTypeStruct[];
   protected entries!: Record<string, EntryStruct>;
@@ -94,6 +99,10 @@ export default class Entries {
 
             if (!this.missingRefs[this.currentUid]) {
               this.missingRefs[this.currentUid] = [];
+            }
+
+            if (this.fix) {
+              this.removeMissingKeysOnEntry(ctSchema.schema as ContentTypeSchemaType[], this.entries[entryUid]);
             }
 
             this.lookForReference([{ locale: code, uid, name: title }], ctSchema, this.entries[entryUid]);
@@ -152,6 +161,28 @@ export default class Entries {
       ctSchema: this.ctSchema,
       gfSchema: this.gfSchema,
     }).run(true)) as ContentTypeStruct[];
+
+    const extensionPath = resolve(this.config.basePath, 'extensions', 'extensions.json');
+    const marketplacePath = resolve(this.config.basePath, 'marketplace_apps', 'marketplace_apps.json');
+
+    if (existsSync(extensionPath)) {
+      try {
+        this.extensions = Object.keys(JSON.parse(readFileSync(extensionPath, 'utf8')));
+      } catch (error) {}
+    }
+
+    if (existsSync(marketplacePath)) {
+      try {
+        const marketplaceApps: MarketplaceAppsInstallationData[] = JSON.parse(readFileSync(marketplacePath, 'utf8'));
+
+        for (const app of marketplaceApps) {
+          const metaData = map(map(app?.ui_location?.locations, 'meta').flat(), 'extension_uid').filter(
+            (val) => val,
+          ) as string[];
+          this.extensions.push(...metaData);
+        }
+      } catch (error) {}
+    }
   }
 
   /**
@@ -216,9 +247,16 @@ export default class Entries {
           );
           break;
         case 'json':
-          if (child.field_metadata.extension) {
+          if ('extension' in child.field_metadata && child.field_metadata.extension) {
+            this.missingRefs[this.currentUid].push(
+              ...this.validateExtensionAndAppField(
+                [...tree, { uid: child.uid, name: child.display_name, field: uid }],
+                child as ExtensionOrAppFieldDataType,
+                entry as EntryExtensionOrAppFieldDataType,
+              ),
+            );
             // NOTE Custom field type
-          } else if (child.field_metadata.allow_json_rte) {
+          } else if ('allow_json_rte' in child.field_metadata && child.field_metadata.allow_json_rte) {
             // NOTE JSON RTE field type
             this.validateJsonRTEFields(
               [...tree, { uid: child.uid, name: child.display_name, field: uid }],
@@ -264,6 +302,56 @@ export default class Entries {
     field: EntryReferenceFieldDataType[],
   ) {
     return this.validateReferenceValues(tree, fieldStructure, field);
+  }
+
+  /**
+   * The function `validateExtensionAndAppField` checks if a given field has a valid extension
+   * reference and returns any missing references.
+   * @param {Record<string, unknown>[]} tree - An array of objects representing a tree structure.
+   * @param {ExtensionOrAppFieldDataType} fieldStructure - The `fieldStructure` parameter is of type
+   * `ExtensionOrAppFieldDataType` and represents the structure of a field in an extension or app. It
+   * contains properties such as `uid`, `display_name`, and `data_type`.
+   * @param {EntryExtensionOrAppFieldDataType} field - The `field` parameter is of type
+   * `EntryExtensionOrAppFieldDataType`, which is an object containing information about a specific
+   * field in an entry. It has the following properties:
+   * @returns an array containing an object if there are missing references. If there are no missing
+   * references, an empty array is returned.
+   */
+  validateExtensionAndAppField(
+    tree: Record<string, unknown>[],
+    fieldStructure: ExtensionOrAppFieldDataType,
+    field: EntryExtensionOrAppFieldDataType,
+  ) {
+    if (this.fix) return [];
+
+    const missingRefs = [];
+
+    let { uid, display_name, data_type } = fieldStructure || {};
+
+    if (field[uid]) {
+      let { metadata: { extension_uid } = { extension_uid: '' } } = field[uid] || {};
+
+      if (!this.extensions.includes(extension_uid)) {
+        missingRefs.push({ uid, extension_uid, type: 'Extension or Apps' } as any);
+      }
+    }
+
+    return missingRefs.length
+      ? [
+          {
+            tree,
+            data_type,
+            missingRefs,
+            display_name,
+            ct_uid: this.currentUid,
+            name: this.currentTitle,
+            treeStr: tree
+              .map(({ name }) => name)
+              .filter((val) => val)
+              .join(' ➜ '),
+          },
+        ]
+      : [];
   }
 
   /**
@@ -438,6 +526,19 @@ export default class Entries {
       : [];
   }
 
+  removeMissingKeysOnEntry(schema: ContentTypeSchemaType[], entry: EntryFieldType) {
+    // NOTE remove invalid entry keys
+    const ctFields = map(schema, 'uid');
+    const entryFields = Object.keys(entry ?? {});
+
+    entryFields.forEach((eKey) => {
+      // NOTE Key should not be system key and not exist in schema means it's invalid entry key
+      if (!this.config.entries.systemKeys.includes(eKey) && !ctFields.includes(eKey)) {
+        delete entry[eKey];
+      }
+    });
+  }
+
   /**
    * The function `runFixOnSchema` takes in a tree, schema, and entry, and applies fixes to the entry
    * based on the schema.
@@ -472,10 +573,15 @@ export default class Entries {
         case 'json':
         case 'reference':
           if (data_type === 'json') {
-            if (field.field_metadata.extension) {
+            if ('extension' in field.field_metadata && field.field_metadata.extension) {
               // NOTE Custom field type
+              this.fixMissingExtensionOrApp(
+                [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
+                field as ExtensionOrAppFieldDataType,
+                entry as EntryExtensionOrAppFieldDataType,
+              );
               break;
-            } else if (field.field_metadata.allow_json_rte) {
+            } else if ('allow_json_rte' in field.field_metadata && field.field_metadata.allow_json_rte) {
               this.fixJsonRteMissingReferences(
                 [...tree, { uid: field.uid, name: field.display_name, data_type: field.data_type }],
                 field as JsonRTEFieldDataType,
@@ -509,7 +615,6 @@ export default class Entries {
           ) as EntryGroupFieldDataType;
           break;
       }
-    
     });
 
     return entry;
@@ -574,6 +679,54 @@ export default class Entries {
     });
 
     return entry;
+  }
+
+  /**
+   * The function `fixMissingExtensionOrApp` checks if a field in an entry has a valid extension or app
+   * reference, and fixes it if necessary.
+   * @param {Record<string, unknown>[]} tree - An array of objects representing a tree structure.
+   * @param {ExtensionOrAppFieldDataType} field - The `field` parameter is of type
+   * `ExtensionOrAppFieldDataType`, which is an object with properties `uid`, `display_name`, and
+   * `data_type`.
+   * @param {EntryExtensionOrAppFieldDataType} entry - The `entry` parameter is of type
+   * `EntryExtensionOrAppFieldDataType`, which is an object containing the data for a specific entry.
+   * It may have a property with the key specified by the `uid` variable, which represents the field
+   * that contains the extension or app data.
+   * @returns the `field` parameter.
+   */
+  fixMissingExtensionOrApp(
+    tree: Record<string, unknown>[],
+    field: ExtensionOrAppFieldDataType,
+    entry: EntryExtensionOrAppFieldDataType,
+  ) {
+    const missingRefs = [];
+
+    let { uid, display_name, data_type } = field || {};
+
+    if (entry[uid]) {
+      let { metadata: { extension_uid } = { extension_uid: '' } } = entry[uid] || {};
+
+      if (extension_uid && !this.extensions.includes(extension_uid)) {
+        missingRefs.push({ uid, extension_uid, type: 'Extension or Apps' } as any);
+      }
+    }
+
+    if (this.fix && !isEmpty(missingRefs)) {
+      this.missingRefs[this.currentUid].push({
+        tree,
+        data_type,
+        missingRefs,
+        display_name,
+        fixStatus: 'Fixed',
+        ct_uid: this.currentUid,
+        name: this.currentTitle,
+        treeStr: tree.map(({ name }) => name).join(' ➜ '),
+      });
+
+      delete entry[uid];
+    }
+
+    return field;
   }
 
   /**
@@ -672,9 +825,9 @@ export default class Entries {
     field: ReferenceFieldDataType | JsonRTEFieldDataType,
     entry: EntryReferenceFieldDataType[],
   ) {
-
     const missingRefs: Record<string, any>[] = [];
-    entry = entry?.map((reference) => {
+    entry = entry
+      ?.map((reference) => {
         const { uid } = reference;
         const refExist = find(this.entryMetaData, { uid });
 
@@ -684,7 +837,8 @@ export default class Entries {
         }
 
         return reference;
-      }).filter((val) => val) as EntryReferenceFieldDataType[];
+      })
+      .filter((val) => val) as EntryReferenceFieldDataType[];
 
     if (!isEmpty(missingRefs)) {
       this.missingRefs[this.currentUid].push({
