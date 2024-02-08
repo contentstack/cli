@@ -44,7 +44,7 @@ export default class ExportTaxonomies extends BaseClass {
       await this.exportTaxonomies();
     }
 
-    log(this.exportConfig, `Taxonomies exported!`, 'success');
+    log(this.exportConfig, `All taxonomies exported successfully!`, 'success');
   }
 
   /**
