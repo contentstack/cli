@@ -1,6 +1,7 @@
 /**
  * taxonomy lookup
  */
+import find from 'lodash/find';
 import { log } from './';
 import { ImportConfig } from '../types';
 
@@ -63,11 +64,7 @@ const verifyAndRemoveTaxonomy = function (
   }
 
   if (!taxonomyFieldData?.length) {
-    log(
-      importConfig,
-      'Taxonomy does not exist. Removing the field from content type',
-      'warn',
-    );
+    log(importConfig, 'Taxonomy does not exist. Removing the field from content type', 'warn');
     isTaxonomyFieldRemoved = true;
   }
 
@@ -94,7 +91,12 @@ export const lookUpTerms = function (
     if (ctSchema[index].data_type === 'taxonomy') {
       const taxonomyFieldData = entry[ctSchema[index].uid];
       const updatedTaxonomyData = verifyAndRemoveTerms(taxonomyFieldData, taxonomiesAndTermData, importConfig);
-      entry[ctSchema[index].uid] = updatedTaxonomyData;
+      if (updatedTaxonomyData?.length) {
+        entry[ctSchema[index].uid] = updatedTaxonomyData;
+      } else {
+        //Delete taxonomy from entry if taxonomy field removed from CT
+        delete entry[ctSchema[index].uid];
+      }
     }
   }
 };
@@ -115,11 +117,11 @@ const verifyAndRemoveTerms = function (
     const taxonomyData = taxonomyFieldData[index];
     const taxUID = taxonomyData?.taxonomy_uid;
     const termUID = taxonomyData?.term_uid;
-
     if (
       taxonomiesAndTermData === undefined ||
       !taxonomiesAndTermData.hasOwnProperty(taxUID) ||
-      (taxonomiesAndTermData.hasOwnProperty(taxUID) && !taxonomiesAndTermData[taxUID].hasOwnProperty(termUID))
+      (taxonomiesAndTermData.hasOwnProperty(taxUID) &&
+        !find(taxonomiesAndTermData[taxUID], (term: Record<string, string>) => term?.uid === termUID))
     ) {
       // remove term from taxonomies field data with warning if respective term doesn't exists
       log(importConfig, `Term '${termUID}' does not exist. Removing it from taxonomy - '${taxUID}'`, 'warn');
