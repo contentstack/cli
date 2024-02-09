@@ -26,8 +26,13 @@ export const isManagementTokenValid = async (stackAPIKey, managementToken) => {
   }
 }
 
-export const createDeveloperHubUrl = (developerHubBaseUrl:string) : string => {
-  developerHubBaseUrl = developerHubBaseUrl?.replace('api','developerhub-api');
-  developerHubBaseUrl = developerHubBaseUrl.startsWith('dev11')?developerHubBaseUrl.replace('dev11','dev'):developerHubBaseUrl;
+export const createDeveloperHubUrl = (developerHubBaseUrl: string): string => {
+  developerHubBaseUrl = developerHubBaseUrl?.replace('api', 'developerhub-api');
+  developerHubBaseUrl = developerHubBaseUrl.startsWith('dev11')
+    ? developerHubBaseUrl.replace('dev11', 'dev')
+    : developerHubBaseUrl;
+  developerHubBaseUrl = developerHubBaseUrl.endsWith('io')
+    ? developerHubBaseUrl.replace('io', 'com')
+    : developerHubBaseUrl;
   return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
-}
+};
