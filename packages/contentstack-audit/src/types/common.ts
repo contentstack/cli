@@ -5,4 +5,8 @@ type IncludeFlags<T, K extends keyof T> = Pick<T, K>;
 
 type CommandNames = 'cm:stacks:audit' | 'cm:stacks:audit:fix';
 
-export { IFlags, IncludeFlags, CommandNames };
+interface AnyProperty {
+  [propName: string]: any;
+}
+
+export { IFlags, IncludeFlags, CommandNames, AnyProperty };
