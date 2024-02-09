@@ -538,10 +538,10 @@ export default class ContentType {
         const refErrorObj = {
           tree,
           display_name,
-          fixStatus: 'Fixed',
-          missingRefs: [reference_to],
           ct_uid: this.currentUid,
           name: this.currentTitle,
+          missingRefs: [reference_to],
+          fixStatus: this.fix ? 'Fixed' : undefined,
           treeStr: tree.map(({ name }) => name).join(' ➜ '),
         };
 
