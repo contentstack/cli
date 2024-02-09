@@ -4,7 +4,7 @@ import LogoutCommand from '../../../src/commands/auth/logout';
 import { authHandler } from '../../../src/utils';
 import { CLIError, cliux } from '@contentstack/cli-utilities';
 
-const user = { email: '***REMOVED***', authtoken: 'testtoken' };
+const user = { email: 'test@contentstack.com', authtoken: 'testtoken' };
 const validAuthToken = 'bltadjkjdkjfd';
 
 describe('Logout Command', () => {
