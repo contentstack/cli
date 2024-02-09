@@ -1,10 +1,11 @@
 import config from '../config';
+import { AnyProperty } from './common';
 import { ConfigType, LogFn } from './utils';
 
 type ContentTypeSchemaType =
   | ReferenceFieldDataType
   | GlobalFieldDataType
-  | CustomFieldDataType
+  | ExtensionOrAppFieldDataType
   | JsonRTEFieldDataType
   | GroupFieldDataType
   | ModularBlocksDataType;
@@ -18,7 +19,7 @@ type ContentTypeStruct = {
 
 type ModuleConstructorParam = {
   log: LogFn;
-  fix?: boolean
+  fix?: boolean;
   config: ConfigType;
   moduleName?: keyof typeof config.moduleConfig;
 };
@@ -33,10 +34,9 @@ type CommonDataTypeStruct = {
   data_type: string;
   display_name: string;
   field_metadata: {
-    extension: boolean;
     ref_multiple: boolean;
     allow_json_rte: boolean;
-  } & Record<string, unknown>;
+  } & AnyProperty;
 };
 
 type RefErrorReturnType = {
@@ -44,7 +44,7 @@ type RefErrorReturnType = {
   ct_uid: string;
   treeStr: string;
   data_type: string;
-  fixStatus?: string
+  fixStatus?: string;
   missingRefs: string[];
   display_name: string;
   tree: Record<string, unknown>[];
@@ -62,9 +62,9 @@ type GlobalFieldDataType = CommonDataTypeStruct & {
 };
 
 // NOTE Type 3
-type CustomFieldDataType = CommonDataTypeStruct & {
-  reference_to: string[];
+type ExtensionOrAppFieldDataType = Omit<CommonDataTypeStruct, 'field_metadata'> & {
   extension_uid: string;
+  field_metadata: { extension: boolean };
 };
 
 // NOTE Type 4
@@ -86,7 +86,7 @@ type ModularBlockType = {
     | JsonRTEFieldDataType
     | ModularBlocksDataType
     | ReferenceFieldDataType
-    | CustomFieldDataType
+    | ExtensionOrAppFieldDataType
     | GroupFieldDataType
   )[];
 };
@@ -96,9 +96,14 @@ type ModularBlocksDataType = CommonDataTypeStruct & {
 };
 
 // NOTE It can have following field types global, Custom, json/json rte, reference
-type GroupFieldSchemaTypes = GroupFieldDataType | CommonDataTypeStruct | GlobalFieldDataType | ReferenceFieldDataType;
+type GroupFieldSchemaTypes =
+  | GroupFieldDataType
+  | CommonDataTypeStruct
+  | GlobalFieldDataType
+  | ReferenceFieldDataType
+  | ExtensionOrAppFieldDataType;
 
-type GlobalFieldSchemaTypes = ReferenceFieldDataType | GroupFieldDataType | CustomFieldDataType;
+type GlobalFieldSchemaTypes = ReferenceFieldDataType | GroupFieldDataType | ExtensionOrAppFieldDataType;
 
 type ModularBlocksSchemaTypes = ReferenceFieldDataType | JsonRTEFieldDataType;
 
@@ -107,7 +112,7 @@ enum OutputColumn {
   'Field name' = 'display_name',
   'Field type' = 'data_type',
   'Missing references' = 'missingRefs',
-  Path = 'treeStr'
+  Path = 'treeStr',
 }
 
 export {
@@ -116,7 +121,7 @@ export {
   ModuleConstructorParam,
   ReferenceFieldDataType,
   GlobalFieldDataType,
-  CustomFieldDataType,
+  ExtensionOrAppFieldDataType,
   JsonRTEFieldDataType,
   GroupFieldDataType,
   ModularBlocksDataType,
