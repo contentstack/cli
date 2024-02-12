@@ -164,7 +164,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * `gfSchema`. The values of these properties are the parsed JSON data from two different files.
    */
   getCtAndGfSchema() {
-    const modules = this.sharedConfig.flags.modules || this.sharedConfig.modules;
     const ctPath = join(
       this.sharedConfig.basePath,
       this.sharedConfig.moduleConfig['content-types'].dirName,
@@ -175,18 +174,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       this.sharedConfig.moduleConfig['global-fields'].dirName,
       this.sharedConfig.moduleConfig['global-fields'].fileName,
     );
-
-    if (modules.includes('content-types')) {
-      if (!existsSync(ctPath)) {
-        this.log(this.$t(auditMsg.NOT_VALID_PATH, { path: ctPath }), 'error');
-      }
-    }
-
-    if (modules.includes('global-fields')) {
-      if (!existsSync(gfPath)) {
-        this.log(this.$t(auditMsg.NOT_VALID_PATH, { path: ctPath }), 'error');
-      }
-    }
 
     const gfSchema = existsSync(gfPath) ? (JSON.parse(readFileSync(gfPath, 'utf8')) as ContentTypeStruct[]) : [];
     const ctSchema = existsSync(ctPath) ? (JSON.parse(readFileSync(ctPath, 'utf8')) as ContentTypeStruct[]) : [];
