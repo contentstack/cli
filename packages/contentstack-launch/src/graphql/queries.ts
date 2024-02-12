@@ -90,11 +90,15 @@ const projectsQuery: DocumentNode = gql`
           cmsStackApiKey
           organizationUid
           repository {
-            gitProvider
-            gitProviderConnectionUid
             repositoryName
             repositoryUrl
             username
+            gitProviderMetadata {
+              ... on GitHubMetadata {
+                connectionUid
+                gitProvider
+              }
+            }
           }
         }
       }
