@@ -10,7 +10,7 @@ const messageFilePath = path.join(__dirname, '..', '..', '..', 'contentstack-uti
 const crypto = new NodeCrypto({
   typeIdentifier: '◈',
   algorithm: 'aes-192-cbc',
-  encryptionKey: process.env.ENCRYPTION_KEY || '***REMOVED***'
+  encryptionKey: process.env.ENCRYPTION_KEY || 'gjh67567mn'
 });
 const username = process.env.ENCRYPTION_KEY ? crypto.decrypt(process.env.USERNAME) : process.env.USERNAME
 const password = process.env.ENCRYPTION_KEY ? crypto.decrypt(process.env.PASSWORD) : process.env.PASSWORD
