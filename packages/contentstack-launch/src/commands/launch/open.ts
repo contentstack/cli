@@ -4,12 +4,11 @@ import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
 import { FlagInput, Flags, cliux as ux } from '@contentstack/cli-utilities';
 
-import { BaseCommand } from './base-command';
+import { BaseCommand } from '../../base-command';
 import { environmentsQuery } from '../../graphql';
 import { print, Logger, selectOrg, selectProject } from '../../util';
 
 export default class Open extends BaseCommand<typeof Open> {
-  static hidden = false;
   static description = 'Open a website for an environment';
 
   static examples = [

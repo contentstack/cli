@@ -14,7 +14,7 @@ class ContentTypesExport {
       include_global_field_schema: true,
     };
     // If content type id is provided then use it as part of query
-    if (Array.isArray(this.exportConfig.contentTypes) && this.exportConfig.length > 0) {
+    if (Array.isArray(this.exportConfig.contentTypes) && this.exportConfig.contentTypes.length > 0) {
       this.qs.uid = { $in: this.exportConfig.contentTypes };
     }
     this.contentTypesPath = path.resolve(

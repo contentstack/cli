@@ -3,8 +3,9 @@ const { configHandler, flags, isAuthenticated, managementSDKClient } = require('
 const { CloneHandler } = require('../../../lib/util/clone-handler');
 const path = require('path');
 const rimraf = require('rimraf');
+const merge = require("merge")
 let pathdir = path.join(__dirname.split('src')[0], 'contents');
-const { readdirSync } = require('fs');
+const { readdirSync, readFileSync } = require('fs');
 let config = {};
 
 class StackCloneCommand extends Command {
@@ -23,11 +24,17 @@ class StackCloneCommand extends Command {
         'source-management-token-alias': sourceManagementTokenAlias,
         'destination-management-token-alias': destinationManagementTokenAlias,
         'import-webhook-status': importWebhookStatus,
+        'config': externalConfigPath
       } = cloneCommandFlags;
 
       const handleClone = async () => {
         const listOfTokens = configHandler.get('tokens');
 
+        if (externalConfigPath) {
+          let externalConfig = readFileSync(externalConfigPath, 'utf-8')
+          externalConfig = JSON.parse(externalConfig);
+          config = merge.recursive(config, externalConfig);
+        }        
         config.forceStopMarketplaceAppsPrompt = yes;
         config.skipAudit = cloneCommandFlags['skip-audit'];
 
@@ -248,6 +255,11 @@ b) Structure with content (all modules including entries & assets)
   }),
   'skip-audit': flags.boolean({
     description: 'Skips the audit fix.',
+  }),
+  'config': flags.string({
+    char: 'c',
+    required: false,
+    description: 'Path for the external configuration',
   }),
 };
 

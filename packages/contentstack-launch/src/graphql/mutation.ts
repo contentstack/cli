@@ -33,10 +33,7 @@ const createSignedUploadUrlMutation: DocumentNode = gql`
 `;
 
 const importProjectMutation: DocumentNode = gql`
-  mutation importProject(
-    $project: ImportProjectInput!
-    $skipGitData: Boolean = false
-  ) {
+  mutation importProject($project: ImportProjectInput!, $skipGitData: Boolean = false) {
     project: importProject(project: $project) {
       uid
       name
@@ -63,8 +60,12 @@ const importProjectMutation: DocumentNode = gql`
       }
       repository @skip(if: $skipGitData) {
         username
-        gitProvider
         repositoryName
+        gitProviderMetadata {
+          ... on GitHubMetadata {
+            gitProvider
+          }
+        }
       }
     }
   }

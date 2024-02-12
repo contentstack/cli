@@ -51,5 +51,6 @@ describe('base-branch command', function () {
     const branchStub = stub(cliux, 'table').callsFake(() => {});
     await BranchGetCommand.run([]);
     expect(branchStub.calledOnce).to.be.true;
+    branchStub.restore();
   });
 });

@@ -1,7 +1,7 @@
 import { Stream } from 'stream';
 import * as zlib from 'zlib';
 import * as tar from 'tar';
-import * as mkdirp from 'mkdirp';
+const mkdirp = require('mkdirp')
 import { HttpRequestConfig, HttpClient } from '@contentstack/cli-utilities';
 
 import GithubError from './github-error';

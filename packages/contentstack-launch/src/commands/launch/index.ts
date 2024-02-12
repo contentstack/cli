@@ -2,14 +2,12 @@ import map from 'lodash/map';
 import { FlagInput, Flags } from '@contentstack/cli-utilities';
 
 import config from '../../config';
-import { BaseCommand } from './base-command';
+import { BaseCommand } from '../../base-command';
 import { AdapterConstructorInputs } from '../../types';
 import { FileUpload, GitHub, PreCheck } from '../../adapters';
 
 export default class Launch extends BaseCommand<typeof Launch> {
   public preCheck!: PreCheck;
-
-  static hidden = false;
 
   static description = 'Launch related operations';
 
@@ -58,6 +56,7 @@ export default class Launch extends BaseCommand<typeof Launch> {
       description: '[Optional, Hidden] Show variable values on the UI',
     }),
     init: Flags.boolean({
+      hidden: true,
       description: '[Optional, Hidden] Reinitialize the project if it is an existing launch project.',
     }),
   };

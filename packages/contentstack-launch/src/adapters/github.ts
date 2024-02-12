@@ -60,7 +60,6 @@ export default class GitHub extends BaseClass {
   async createNewProject(): Promise<void> {
     const {
       branch,
-      provider,
       framework,
       repository,
       projectName,
@@ -68,8 +67,9 @@ export default class GitHub extends BaseClass {
       selectedStack,
       outputDirectory,
       environmentName,
+      provider: gitProvider,
     } = this.config;
-    const username = split(repository?.fullName, "/")[0];
+    const username = split(repository?.fullName, '/')[0];
 
     await this.apolloClient
       .mutate({
@@ -80,9 +80,9 @@ export default class GitHub extends BaseClass {
             cmsStackApiKey: selectedStack?.api_key || '',
             repository: {
               username,
-              gitProvider: provider,
               repositoryUrl: repository?.url,
               repositoryName: repository?.fullName,
+              gitProviderMetadata: { gitProvider },
             },
             environment: {
               gitBranch: branch,

@@ -68,7 +68,9 @@ export default class Entries {
    */
   async run() {
     if (!existsSync(this.folderPath)) {
-      throw new Error($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }));
+      this.log(`Skipping ${this.moduleName} audit`, 'warn');
+      this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
+      return {};
     }
 
     await this.prepareEntryMetaData();
@@ -799,8 +801,11 @@ export default class Entries {
     const localesFolderPath = resolve(this.config.basePath, this.config.moduleConfig.locales.dirName);
     const localesPath = join(localesFolderPath, this.config.moduleConfig.locales.fileName);
     const masterLocalesPath = join(localesFolderPath, 'master-locale.json');
-    this.locales = values(JSON.parse(readFileSync(masterLocalesPath, 'utf8')));
-    this.locales.push(...values(JSON.parse(readFileSync(localesPath, 'utf8'))));
+    this.locales = existsSync(masterLocalesPath) ? values(JSON.parse(readFileSync(masterLocalesPath, 'utf8'))) : [];
+
+    if (existsSync(localesPath)) {
+      this.locales.push(...values(JSON.parse(readFileSync(localesPath, 'utf8'))));
+    }
 
     for (const { code } of this.locales) {
       for (const { uid } of this.ctSchema) {
