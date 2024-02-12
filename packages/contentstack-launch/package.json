@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-launch",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Launch related operations",
   "author": "Contentstack CLI",
   "bin": {
@@ -39,7 +39,7 @@
     "winston": "^3.8.2"
   },
   "devDependencies": {
-    "@oclif/test": "^2.3.6",
+    "@oclif/test": "^2.5.6",
     "@types/adm-zip": "^0.5.0",
     "@types/chai": "^4",
     "@types/esm": "^3.2.0",
