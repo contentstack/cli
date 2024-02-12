@@ -20,17 +20,6 @@ export const askAPIKey = async (): Promise<string> => {
   });
 };
 
-export const askDeveloperHubUrl = async (regionName: string): Promise<string> => {
-  return await cliux.inquire({
-    type: 'input',
-    name: 'name',
-    validate: (url) => {
-      if (!url) return "Developer-hub URL can't be empty.";
-      return true;
-    },
-    message: `Enter the developer-hub base URL for the ${regionName} region -`,
-  });
-};
 
 export const askEncryptionKey = async(defaultValue: unknown): Promise<string> => {
   return await cliux.inquire({
