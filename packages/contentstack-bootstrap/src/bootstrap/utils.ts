@@ -143,7 +143,7 @@ const envFileHandler = async (
   let appHost: string;
   const managementAPIHost = region?.cma?.substring('8');
   const regionName = region && region.name && region.name.toLowerCase();
-  previewHost = region?.cda?.substring(8)?.replace('cdn', 'rest-preview');
+  previewHost = region?.uiHost?.substring(8)?.replace('app', 'rest-preview');
   appHost = region?.uiHost?.substring(8);
   const isUSRegion = regionName === 'us' || regionName === 'na';
   if (regionName !== 'eu' && !isUSRegion) {
