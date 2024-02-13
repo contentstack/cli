@@ -1,7 +1,9 @@
+import map from 'lodash/map';
 import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
 import { join, resolve } from 'path';
-import { existsSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
+
 import { ux } from '@contentstack/cli-utilities';
 
 import {
@@ -19,9 +21,11 @@ import {
   ReferenceFieldDataType,
   ContentTypeSchemaType,
   GlobalFieldSchemaTypes,
+  ExtensionOrAppFieldDataType,
 } from '../types';
 import auditConfig from '../config';
 import { $t, auditFixMsg, auditMsg, commonMsg } from '../messages';
+import { MarketplaceAppsInstallationData } from '../types/extension';
 
 /* The `ContentType` class is responsible for scanning content types, looking for references, and
 generating a report in JSON and CSV formats. */
@@ -33,6 +37,7 @@ export default class ContentType {
   public folderPath: string;
   public currentUid!: string;
   public currentTitle!: string;
+  public extensions: string[] = [];
   public inMemoryFix: boolean = false;
   public gfSchema: ContentTypeStruct[];
   public ctSchema: ContentTypeStruct[];
@@ -67,6 +72,8 @@ export default class ContentType {
 
     this.schema = this.moduleName === 'content-types' ? this.ctSchema : this.gfSchema;
 
+    await this.prerequisiteData();
+
     for (const schema of this.schema ?? []) {
       this.currentUid = schema.uid;
       this.currentTitle = schema.title;
@@ -94,6 +101,35 @@ export default class ContentType {
     }
 
     return this.missingRefs;
+  }
+
+  /**
+   * @method prerequisiteData
+   * The `prerequisiteData` function reads and parses JSON files to retrieve extension and marketplace
+   * app data, and stores them in the `extensions` array.
+   */
+  async prerequisiteData() {
+    const extensionPath = resolve(this.config.basePath, 'extensions', 'extensions.json');
+    const marketplacePath = resolve(this.config.basePath, 'marketplace_apps', 'marketplace_apps.json');
+
+    if (existsSync(extensionPath)) {
+      try {
+        this.extensions = Object.keys(JSON.parse(readFileSync(extensionPath, 'utf8')));
+      } catch (error) {}
+    }
+
+    if (existsSync(marketplacePath)) {
+      try {
+        const marketplaceApps: MarketplaceAppsInstallationData[] = JSON.parse(readFileSync(marketplacePath, 'utf8'));
+
+        for (const app of marketplaceApps) {
+          const metaData = map(map(app?.ui_location?.locations, 'meta').flat(), 'extension_uid').filter(
+            (val) => val,
+          ) as string[];
+          this.extensions.push(...metaData);
+        }
+      } catch (error) {}
+    }
   }
 
   /**
@@ -157,10 +193,16 @@ export default class ContentType {
           );
           break;
         case 'json':
-          if (child.field_metadata.extension) {
-            if (!fixTypes.includes('json:custom-field')) continue;
+          if ('extension' in child.field_metadata && child.field_metadata.extension) {
+            if (!fixTypes.includes('json:extension')) continue;
             // NOTE Custom field type
-          } else if (child.field_metadata.allow_json_rte) {
+            this.missingRefs[this.currentUid].push(
+              ...this.validateExtensionAndAppField(
+                [...tree, { uid: child.uid, name: child.display_name }],
+                child as ExtensionOrAppFieldDataType,
+              ),
+            );
+          } else if ('allow_json_rte' in child.field_metadata && child.field_metadata.allow_json_rte) {
             if (!fixTypes.includes('json:rte')) continue;
             // NOTE JSON RTE field type
             this.missingRefs[this.currentUid].push(
@@ -197,6 +239,45 @@ export default class ContentType {
    */
   validateReferenceField(tree: Record<string, unknown>[], field: ReferenceFieldDataType): RefErrorReturnType[] {
     return this.validateReferenceToValues(tree, field);
+  }
+
+  /**
+   * The function `validateExtensionAndAppsField` checks if a given field has a valid extension or app
+   * reference and returns any missing references.
+   * @param {Record<string, unknown>[]} tree - An array of objects representing a tree structure.
+   * @param {ExtensionOrAppFieldDataType} field - The `field` parameter is of type `ExtensionOrAppFieldDataType`.
+   * @returns The function `validateExtensionAndAppsField` returns an array of `RefErrorReturnType`
+   * objects.
+   */
+  validateExtensionAndAppField(
+    tree: Record<string, unknown>[],
+    field: ExtensionOrAppFieldDataType,
+  ): RefErrorReturnType[] {
+    if (this.fix) return [];
+
+    const missingRefs = [];
+    let { uid, extension_uid, display_name, data_type } = field;
+
+    if (!this.extensions.includes(extension_uid)) {
+      missingRefs.push({ uid, extension_uid, type: 'Extension or Apps' } as any);
+    }
+
+    return missingRefs.length
+      ? [
+          {
+            tree,
+            data_type,
+            missingRefs,
+            display_name,
+            ct_uid: this.currentUid,
+            name: this.currentTitle,
+            treeStr: tree
+              .map(({ name }) => name)
+              .filter((val) => val)
+              .join(' ➜ '),
+          },
+        ]
+      : [];
   }
 
   /**
@@ -298,7 +379,9 @@ export default class ContentType {
 
     for (const reference of reference_to ?? []) {
       // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
-      if (this.config.skipRefs.includes(reference)) continue;
+      if (this.config.skipRefs.includes(reference)) {
+        continue;
+      }
 
       const refExist = find(this.ctSchema, { uid: reference });
 
@@ -350,14 +433,13 @@ export default class ContentType {
           case 'json':
           case 'reference':
             if (data_type === 'json') {
-              if (field.field_metadata.extension) {
+              if ('extension' in field.field_metadata && field.field_metadata.extension) {
                 // NOTE Custom field type
-                if (!fixTypes.includes('json:custom-field')) return field;
+                if (!fixTypes.includes('json:extension')) return field;
 
                 // NOTE Fix logic
-
-                return field;
-              } else if (field.field_metadata.allow_json_rte) {
+                return this.fixMissingExtensionOrApp(tree, field as ExtensionOrAppFieldDataType);
+              } else if ('allow_json_rte' in field.field_metadata && field.field_metadata.allow_json_rte) {
                 if (!fixTypes.includes('json:rte')) return field;
 
                 return this.fixMissingReferences(tree, field as JsonRTEFieldDataType);
@@ -456,10 +538,10 @@ export default class ContentType {
         const refErrorObj = {
           tree,
           display_name,
-          fixStatus: 'Fixed',
-          missingRefs: [reference_to],
           ct_uid: this.currentUid,
           name: this.currentTitle,
+          missingRefs: [reference_to],
+          fixStatus: this.fix ? 'Fixed' : undefined,
           treeStr: tree.map(({ name }) => name).join(' ➜ '),
         };
 
@@ -500,6 +582,41 @@ export default class ContentType {
   }
 
   /**
+   * The function checks for missing extension or app references in a given tree and fixes them if the
+   * fix flag is enabled.
+   * @param {Record<string, unknown>[]} tree - An array of objects representing a tree structure.
+   * @param {ExtensionOrAppFieldDataType} field - The `field` parameter is of type
+   * `ExtensionOrAppFieldDataType`.
+   * @returns If the `fix` flag is true and there are missing references (`missingRefs` is not empty),
+   * then `null` is returned. Otherwise, the `field` parameter is returned.
+   */
+  fixMissingExtensionOrApp(tree: Record<string, unknown>[], field: ExtensionOrAppFieldDataType) {
+    const missingRefs: string[] = [];
+    const { uid, extension_uid, data_type, display_name } = field;
+
+    if (!this.extensions.includes(extension_uid)) {
+      missingRefs.push({ uid, extension_uid, type: 'Extension or Apps' } as any);
+    }
+
+    if (this.fix && !isEmpty(missingRefs)) {
+      this.missingRefs[this.currentUid].push({
+        tree,
+        data_type,
+        missingRefs,
+        display_name,
+        fixStatus: 'Fixed',
+        ct_uid: this.currentUid,
+        name: this.currentTitle,
+        treeStr: tree.map(({ name }) => name).join(' ➜ '),
+      });
+
+      return null
+    }
+
+    return field;
+  }
+
+  /**
    * The function `fixMissingReferences` checks for missing references in a given tree and field, and
    * attempts to fix them by removing the missing references from the field's `reference_to` array.
    * @param {Record<string, unknown>[]} tree - An array of objects representing a tree structure. Each
@@ -515,7 +632,9 @@ export default class ContentType {
 
     for (const reference of reference_to ?? []) {
       // NOTE Can skip specific references keys (Ex, system defined keys can be skipped)
-      if (this.config.skipRefs.includes(reference)) continue;
+      if (this.config.skipRefs.includes(reference)) {
+        continue;
+      }
 
       const refExist = find(this.ctSchema, { uid: reference });
 
@@ -557,6 +676,7 @@ export default class ContentType {
    */
   fixGroupField(tree: Record<string, unknown>[], field: GroupFieldDataType) {
     const { data_type, display_name } = field;
+
     field.schema = this.runFixOnSchema(tree, field.schema as ContentTypeSchemaType[]);
 
     if (isEmpty(field.schema)) {
