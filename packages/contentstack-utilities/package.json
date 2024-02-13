@@ -32,7 +32,7 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
-    "@contentstack/management": "^1.15.1",
+    "@contentstack/management": "^1.15.2",
     "@contentstack/marketplace-sdk": "^1.0.1",
     "@oclif/core": "^2.9.3",
     "axios": "^1.6.4",
