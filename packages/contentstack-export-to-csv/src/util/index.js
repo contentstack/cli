@@ -460,7 +460,7 @@ function write(command, entries, fileName, message, delimiter, headers) {
     process.chdir(directory);
   }
   // eslint-disable-next-line no-undef
-  cliux.print(`Writing ${message} to file: ${process.cwd()}${delimeter}${fileName}`);
+  cliux.print(`Writing ${message} to file: "${process.cwd()}${delimeter}${fileName}"`);
   if (headers?.length) fastcsv.writeToPath(fileName, entries, { headers, delimiter });
   else fastcsv.writeToPath(fileName, entries, { headers: true, delimiter });
 }
@@ -700,10 +700,10 @@ function handleErrorMsg(err) {
 
 /**
  * This function does the sdk calls to get all the teams in org
- * @param {object} managementAPIClient 
- * @param {object} org 
- * @param {object} queryParam 
- * @returns 
+ * @param {object} managementAPIClient
+ * @param {object} org
+ * @param {object} queryParam
+ * @returns
  */
 async function getAllTeams(managementAPIClient, org, queryParam = {}) {
   try {
@@ -715,8 +715,8 @@ async function getAllTeams(managementAPIClient, org, queryParam = {}) {
 
 /**
  * This function is used to handle the pagination and call the sdk
- * @param {object} managementAPIClient 
- * @param {object} org 
+ * @param {object} managementAPIClient
+ * @param {object} org
  */
 async function exportOrgTeams(managementAPIClient, org) {
   let allTeamsInOrg = [];
@@ -737,9 +737,9 @@ async function exportOrgTeams(managementAPIClient, org) {
 }
 
 /**
- * This function will get all the org level roles 
- * @param {object} managementAPIClient 
- * @param {object} org  
+ * This function will get all the org level roles
+ * @param {object} managementAPIClient
+ * @param {object} org
  */
 async function getOrgRolesForTeams(managementAPIClient, org) {
   let roleMap = {}; // for org level there are two roles only admin and member
@@ -763,9 +763,9 @@ async function getOrgRolesForTeams(managementAPIClient, org) {
 
 /**
  * Removes the unnecessary fields from the objects in the data and assign org level roles to the team based on role uid
- * @param {array} data 
- * @param {object} managementAPIClient 
- * @param {object} org 
+ * @param {array} data
+ * @param {object} managementAPIClient
+ * @param {object} org
  */
 async function cleanTeamsData(data, managementAPIClient, org) {
   const roleMap = await getOrgRolesForTeams(managementAPIClient, org);
@@ -784,7 +784,7 @@ async function cleanTeamsData(data, managementAPIClient, org) {
     'delete',
     'fetch',
     'stackRoleMappings',
-    'teamUsers'
+    'teamUsers',
   ];
   if (data?.length) {
     return data.map((team) => {
@@ -806,10 +806,10 @@ async function cleanTeamsData(data, managementAPIClient, org) {
 
 /**
  * This function is used to call all the other teams function to export the required files
- * @param {object} managementAPIClient 
- * @param {object} organization 
- * @param {string} teamUid 
- * @param {character} delimiter 
+ * @param {object} managementAPIClient
+ * @param {object} organization
+ * @param {string} teamUid
+ * @param {character} delimiter
  */
 async function exportTeams(managementAPIClient, organization, teamUid, delimiter) {
   cliux.print(
@@ -852,10 +852,10 @@ async function exportTeams(managementAPIClient, organization, teamUid, delimiter
 
 /**
  * This function is used to get individual team user details and write to file
- * @param {array} allTeamsData 
- * @param {object} organization 
+ * @param {array} allTeamsData
+ * @param {object} organization
  * @param {string} teamUid  optional
- * @param {character} delimiter 
+ * @param {character} delimiter
  */
 async function getTeamsDetail(allTeamsData, organization, teamUid, delimiter) {
   if (!teamUid) {
@@ -883,10 +883,10 @@ async function getTeamsDetail(allTeamsData, organization, teamUid, delimiter) {
 
 /**
  * This will export the role mappings of the team, for which stack the team has which role
- * @param {object} managementAPIClient 
- * @param {array} allTeamsData Data for all the teams in the stack 
+ * @param {object} managementAPIClient
+ * @param {array} allTeamsData Data for all the teams in the stack
  * @param {string} teamUid for a particular team who's data we want
- * @param {character} delimiter 
+ * @param {character} delimiter
  */
 async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid, delimiter) {
   let stackRoleWithTeamData = [];
@@ -935,7 +935,7 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid, de
     ];
     try {
       const exportStackRole = await inquirer.prompt(export_stack_role);
-      if(exportStackRole.chooseExport==='no') {
+      if (exportStackRole.chooseExport === 'no') {
         process.exit(1);
       }
     } catch (error) {
@@ -953,10 +953,10 @@ async function exportRoleMappings(managementAPIClient, allTeamsData, teamUid, de
 
 /**
  * Mapping the team stacks with the stack role and returning and array of object
- * @param {object} managementAPIClient 
- * @param {array} stackRoleMapping 
- * @param {string} teamName 
- * @param {string} teamUid 
+ * @param {object} managementAPIClient
+ * @param {array} stackRoleMapping
+ * @param {string} teamName
+ * @param {string} teamUid
  */
 async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName, teamUid) {
   const roles = await getRoleData(managementAPIClient, stackRoleMapping.stackApiKey);
@@ -982,8 +982,8 @@ async function mapRoleWithTeams(managementAPIClient, stackRoleMapping, teamName,
 
 /**
  * Making sdk call to get all the roles in the given stack
- * @param {object} managementAPIClient 
- * @param {string} stackApiKey 
+ * @param {object} managementAPIClient
+ * @param {string} stackApiKey
  */
 async function getRoleData(managementAPIClient, stackApiKey) {
   try {
@@ -995,7 +995,7 @@ async function getRoleData(managementAPIClient, stackApiKey) {
 
 /**
  * Here in the users array we are adding the team-name and team-uid to individual users and returning an array of object of user details only
- * @param {array} teams 
+ * @param {array} teams
  */
 async function getTeamsUserDetails(teams) {
   const allTeamUsers = [];
@@ -1080,7 +1080,7 @@ async function getTaxonomy(payload) {
  * @returns  {*} Promise<any>
  */
 async function taxonomySDKHandler(payload, skip) {
-  const { stackAPIClient, taxonomyUID, type } = payload;
+  const { stackAPIClient, taxonomyUID, type, format } = payload;
 
   const queryParams = { include_count: true, limit: payload.limit };
   if (skip >= 0) queryParams['skip'] = skip || 0;
@@ -1092,13 +1092,13 @@ async function taxonomySDKHandler(payload, skip) {
         .query(queryParams)
         .find()
         .then((data) => data)
-        .catch((err) => handleErrorMsg(err));
+        .catch((err) => handleTaxonomyErrorMsg(err));
     case 'taxonomy':
       return await stackAPIClient
         .taxonomy(taxonomyUID)
         .fetch()
         .then((data) => data)
-        .catch((err) => handleErrorMsg(err));
+        .catch((err) => handleTaxonomyErrorMsg(err));
     case 'terms':
       queryParams['depth'] = 0;
       return await stackAPIClient
@@ -1107,9 +1107,15 @@ async function taxonomySDKHandler(payload, skip) {
         .query(queryParams)
         .find()
         .then((data) => data)
-        .catch((err) => handleErrorMsg(err));
+        .catch((err) => handleTaxonomyErrorMsg(err));
+    case 'export-taxonomies':
+      return await stackAPIClient
+        .taxonomy(taxonomyUID)
+        .export({format})
+        .then((data) => data)
+        .catch((err) => handleTaxonomyErrorMsg(err));
     default:
-      handleErrorMsg({ errorMessage: 'Invalid module!' });
+      handleTaxonomyErrorMsg({ errorMessage: 'Invalid module!' });
   }
 }
 
@@ -1152,7 +1158,7 @@ function formatTermsOfTaxonomyData(terms, taxonomyUID) {
   }
 }
 
-function handleErrorMsg(err) {
+function handleTaxonomyErrorMsg(err) {
   if (err?.errorMessage) {
     cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
   } else if (err?.message) {
@@ -1166,60 +1172,57 @@ function handleErrorMsg(err) {
 }
 
 /**
- * create an importable CSV file, to utilize with the migration script.
+ * Generate a CSV file that can be imported for use with the migration script.
  * @param {*} payload api request payload
  * @param {*} taxonomies taxonomies data
  * @returns
  */
 async function createImportableCSV(payload, taxonomies) {
-  let taxonomiesData = [];
-  let headers = ['Taxonomy Name', 'Taxonomy UID', 'Taxonomy Description'];
-  for (let index = 0; index < taxonomies?.length; index++) {
-    const taxonomy = taxonomies[index];
-    const taxonomyUID = taxonomy?.uid;
-    if (taxonomyUID) {
-      const sanitizedTaxonomy = sanitizeData({
-        'Taxonomy Name': taxonomy?.name,
-        'Taxonomy UID': taxonomyUID,
-        'Taxonomy Description': taxonomy?.description,
-      });
-      taxonomiesData.push(sanitizedTaxonomy);
-      payload['taxonomyUID'] = taxonomyUID;
-      const terms = await getAllTermsOfTaxonomy(payload);
-      //fetch all parent terms
-      const parentTerms = terms.filter((term) => term?.parent_uid === null);
-      const termsData = getParentAndChildTerms(parentTerms, terms, headers);
-      taxonomiesData.push(...termsData);
+  try {
+    let taxonomiesData = [];
+    let headers = [];
+    payload['type'] = 'export-taxonomies';
+    payload['format'] = 'csv';
+    for (const taxonomy of taxonomies) {
+      if (taxonomy?.uid) {
+        payload['taxonomyUID'] = taxonomy?.uid;
+        const data = await taxonomySDKHandler(payload);
+        const taxonomies = await csvParse(data, headers);
+        taxonomiesData.push(...taxonomies);
+      }
     }
-  }
 
-  return { taxonomiesData, headers };
+    return { taxonomiesData, headers };
+  } catch (err) {
+    throw err;
+  }
 }
 
 /**
- * Get the parent and child terms, then arrange them hierarchically in a CSV file.
- * @param {*} parentTerms list of parent terms
- * @param {*} terms respective terms of taxonomies
- * @param {*} headers list of csv headers include taxonomy and terms column
- * @param {*} termsData parent and child terms
+ * Parse the CSV data and segregate the headers from the actual data.
+ * @param {*} data taxonomy csv data with headers
+ * @param {*} headers list of csv headers 
+ * @returns taxonomy data without headers
  */
-function getParentAndChildTerms(parentTerms, terms, headers, termsData = []) {
-  for (let i = 0; i < parentTerms?.length; i++) {
-    const parentTerm = parentTerms[i];
-    const levelUID = `Term Level${parentTerm.depth} UID`;
-    const levelName = `Term Level${parentTerm.depth} Name`;
-    if (headers.indexOf(levelName) === -1) headers.push(levelName);
-    if (headers.indexOf(levelUID) === -1) headers.push(levelUID);
-    const sanitizedTermData = sanitizeData({ [levelName]: parentTerm.name, [levelUID]: parentTerm.uid });
-    termsData.push(sanitizedTermData);
-    //fetch all sibling terms
-    const newParents = terms.filter((term) => term.parent_uid === parentTerm.uid);
-    if (newParents?.length) {
-      getParentAndChildTerms(newParents, terms, headers, termsData);
-    }
-  }
-  return termsData;
-}
+const csvParse = (data, headers) => {
+  return new Promise((resolve, reject) => {
+    const taxonomies = [];
+    const stream = fastcsv.parseStream(fastcsv.parse());
+    stream.write(data);
+    stream.end();
+    stream
+      .on('data', (data) => {
+        taxonomies.push(data);
+      })
+      .on('error', (err) => reject(err))
+      .on('end', () => {
+        taxonomies[0]?.forEach((header) => {
+          if (!headers.includes(header)) headers.push(header);
+        });
+        resolve(taxonomies.splice(1));
+      });
+  });
+};
 
 module.exports = {
   chooseOrganization: chooseOrganization,
