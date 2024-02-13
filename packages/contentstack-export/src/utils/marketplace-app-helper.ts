@@ -1,18 +1,10 @@
-import { cliux, configHandler, NodeCrypto, managementSDKClient } from '@contentstack/cli-utilities';
+import { cliux, configHandler, NodeCrypto, managementSDKClient, createDeveloperHubUrl } from '@contentstack/cli-utilities';
 
 import { formatError, log } from '../utils';
 import { ExportConfig } from '../types';
-import { askDeveloperHub } from './interactive';
 
 export const getDeveloperHubUrl = async (exportConfig: ExportConfig) => {
-  const { cma, name } = configHandler.get('region') || {};
-  let developerHubBaseUrl = exportConfig?.developerHubUrls[cma];
-
-  if (!developerHubBaseUrl) {
-    developerHubBaseUrl = await askDeveloperHub(name);
-  }
-
-  return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
+  return createDeveloperHubUrl(exportConfig.host);
 };
 
 export async function getOrgUid(config: ExportConfig): Promise<string> {
