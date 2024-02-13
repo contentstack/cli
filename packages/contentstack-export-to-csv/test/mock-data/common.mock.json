@@ -395,5 +395,6 @@
         "users": ["user_1_uid_member", "user_2_uid_member", "user_3_uid_member", "user_4_uid_member"]
       }
     ]
-  }
+  },
+  "taxonomyCSVData": "`taxonomy1,taxonomy1,,,,,,,\n,,,term1,term1,,,,\n,,,,,term1_2,term1_2,,\n,,,term2,term2,,,,\n,,,,,term2_2,term2_2,,\n,,,,,,,term2_2_1,term2_2_1\n,,,,,term2_1,term2_1,,`"
 }
