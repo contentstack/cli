@@ -1181,13 +1181,11 @@ async function createImportableCSV(payload, taxonomies) {
   try {
     let taxonomiesData = [];
     let headers = [];
-    for (let index = 0; index < taxonomies?.length; index++) {
-      const taxonomy = taxonomies[index];
-      const taxonomyUID = taxonomy?.uid;
-      if (taxonomyUID) {
-        payload['type'] = 'export-taxonomies';
-        payload['format'] = 'csv';
-        payload['taxonomyUID'] = taxonomyUID;
+    payload['type'] = 'export-taxonomies';
+    payload['format'] = 'csv';
+    for (const taxonomy of taxonomies) {
+      if (taxonomy?.uid) {
+        payload['taxonomyUID'] = taxonomy?.uid;
         const data = await taxonomySDKHandler(payload);
         const taxonomies = await csvParse(data, headers);
         taxonomiesData.push(...taxonomies);
