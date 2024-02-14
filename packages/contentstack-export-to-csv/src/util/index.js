@@ -1111,7 +1111,7 @@ async function taxonomySDKHandler(payload, skip) {
     case 'export-taxonomies':
       return await stackAPIClient
         .taxonomy(taxonomyUID)
-        .export({format})
+        .export({ format })
         .then((data) => data)
         .catch((err) => handleTaxonomyErrorMsg(err));
     default:
@@ -1159,10 +1159,8 @@ function formatTermsOfTaxonomyData(terms, taxonomyUID) {
 }
 
 function handleTaxonomyErrorMsg(err) {
-  if (err?.errorMessage) {
-    cliux.print(`Error: ${err.errorMessage}`, { color: 'red' });
-  } else if (err?.message) {
-    const errorMsg = err?.errors?.taxonomy || err?.errors?.term || err?.message;
+  if (err?.errorMessage || err?.message) {
+    const errorMsg = err?.errorMessage || err?.errors?.taxonomy || err?.errors?.term || err?.message;
     cliux.print(`Error: ${errorMsg}`, { color: 'red' });
   } else {
     console.log(err);
@@ -1201,7 +1199,7 @@ async function createImportableCSV(payload, taxonomies) {
 /**
  * Parse the CSV data and segregate the headers from the actual data.
  * @param {*} data taxonomy csv data with headers
- * @param {*} headers list of csv headers 
+ * @param {*} headers list of csv headers
  * @returns taxonomy data without headers
  */
 const csvParse = (data, headers) => {
