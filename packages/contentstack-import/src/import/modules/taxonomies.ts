@@ -84,10 +84,12 @@ export default class ImportTaxonomies extends BaseClass {
     };
 
     const onReject = ({ error, apiData }: any) => {
-      const err = error?.message ? JSON.parse(error.message) : error;
       const taxonomyUID = apiData?.taxonomy?.uid;
-      if (err?.errors?.taxonomy) {
-        log(this.importConfig, `Taxonomy '${taxonomyUID}' failed to be import! ${err.errors.taxonomy}`, 'error');
+      if (error?.errorMessage) {
+        log(this.importConfig, `Taxonomy '${taxonomyUID}' failed to be import! ${error?.errorMessage}`, 'error');
+      } else if (error?.message) {
+        const errorMsg = error?.errors?.taxonomy || error?.errors?.term || error?.message;
+        log(this.importConfig, `Taxonomy '${taxonomyUID}' failed to be import! ${errorMsg}`, 'error');
       } else {
         log(this.importConfig, `Taxonomy '${taxonomyUID}' failed to be import! ${formatError(error)}`, 'error');
       }
