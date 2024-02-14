@@ -30,7 +30,7 @@ module.exports = ({ migration, stackSDKInstance, managementAPIClient, config }) 
   function handleErrorMsg(err) {
     let errMsg;
     if (err?.errorMessage || err?.message) {
-      errMsg = err.errorMessage || err?.errors?.taxonomy || err?.errors?.term || JSON.stringify(err?.errors) || err?.message;
+      errMsg = err?.errorMessage || err?.errors?.taxonomy || err?.errors?.term || JSON.stringify(err?.errors) || err?.message;
     }
     throw errMsg ?? err;
   }
