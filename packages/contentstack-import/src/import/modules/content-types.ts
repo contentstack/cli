@@ -108,6 +108,7 @@ export default class ContentTypesImport extends BaseClass {
     if (this.fieldRules.length > 0) {
       await fsUtil.writeFile(path.join(this.cTsFolderPath, 'field_rules_uid.json'), this.fieldRules);
     }
+    log(this.importConfig, 'Updating the Extensions', 'success');
     await this.createPendingExtensions();
     await this.updatePendingGFs().catch((error) => {
       log(this.importConfig, `Error while updating pending global field ${formatError(error)}`, 'error');
@@ -255,13 +256,14 @@ export default class ContentTypesImport extends BaseClass {
   }
 
   async createPendingExtensions(): Promise<any>{
-    let ext = fsUtil.readFile(this.extPendingPath) as Record<string, any>[];
-    console.log(ext)
-    let apiContent = ext
+    let apiContent = fsUtil.readFile(this.extPendingPath) as Record<string, any>[];
+    if(apiContent.length===0) {
+      log(this.importConfig, `No Extension are present to be updated`, 'success');
+      return;
+    }
     
-    console.log(apiContent)
     const onSuccess = ({ response, apiData: { uid, title } = { uid: null, title: '' } }: any) => {
-      log(this.importConfig, `Extension '${response.title}' imported successfully`, 'success');
+      log(this.importConfig, `Extension '${response.title}' updated successfully`, 'success');
     };
 
     const onReject = ({ error, apiData }: any) => {
@@ -271,8 +273,7 @@ export default class ContentTypesImport extends BaseClass {
           log(this.importConfig, `Extension '${uid}' already exists`, 'info');
         }
       } else {
-        // this.extFailed.push(apiData);
-        log(this.importConfig, `Extension '${uid}' failed to be import ${formatError(error)}`, 'error');
+        log(this.importConfig, `Extension '${uid}' failed to be updated ${formatError(error)}`, 'error');
         log(this.importConfig, error, 'error');
       }
     };
