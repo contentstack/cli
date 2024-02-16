@@ -107,3 +107,9 @@ export { default as ImportConfig } from './import-config';
 
 export * from './entries'
 export * from './marketplace-app'
+
+export type extensionType  = {
+  uid: string,
+  scope: Record<string,unknown>,
+  title: string
+}

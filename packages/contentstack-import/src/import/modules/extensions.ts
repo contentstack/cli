@@ -5,7 +5,7 @@ import { join } from 'node:path';
 
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
-import { ModuleClassParams, Extensions } from '../../types';
+import { ModuleClassParams, Extensions, extensionType } from '../../types';
 
 export default class ImportExtensions extends BaseClass {
   private mapperDirPath: string;
@@ -61,11 +61,14 @@ export default class ImportExtensions extends BaseClass {
       ? (fsUtil.readFile(join(this.extUidMapperPath), true) as Record<string, unknown>)
       : {};
 
-    await this.getContentTypesInScope();
+    // Check whether the scope of an extension contains content-types in scope
+    // Remove the scope and store the scope with uid in pending extensions
+    this.getContentTypesInScope();
 
     await this.importExtensions();
 
-    await this.updateUidExtension();
+    // Update the uid of the extension
+    this.updateUidExtension();
     // Note: if any extensions present, then update it
     if (this.importConfig.replaceExisting && this.existingExtensions.length > 0) {
       await this.replaceExtensions().catch((error: Error) => {
@@ -217,30 +220,21 @@ export default class ImportExtensions extends BaseClass {
     });
   }
 
-  async getContentTypesInScope(){
-    const extension= values(this.extensions);
-
-    type extType  = {
-      uid: string,
-      scope: Record<string,unknown>
-    }
-    extension.forEach((ext:extType)=>{
+  getContentTypesInScope(){
+    const extension = values(this.extensions);
+    extension.forEach((ext:extensionType)=>{
       let ct:any = ext?.scope?.content_types || [];
-      if(ct.length===1 && (ct[0]!=='$all')){
+      if((ct.length===1 && (ct[0]!=='$all')) || (ct?.length>1)){
+        log(this.importConfig, `Removing the Content-types ${ct.join(',')} from Extension ${ext.title}`, 'success');
         const {uid, scope} = ext;
         this.extensionObject.push({uid,scope});
         delete ext.scope;
-        this.extensions[ext.uid] = ext;
-      } else if(ct?.length>1) {
-        const {uid, scope} = ext;
-        this.extensionObject.push({uid,scope}) ;
-        delete ext.scope;       
         this.extensions[ext.uid] = ext;
       }
     });
   }
 
-  async updateUidExtension() {
+  updateUidExtension() {
     for(let i in this.extensionObject) {
       this.extensionObject[i].uid = this.extUidMapper[this.extensionObject[i].uid as string];
     }
