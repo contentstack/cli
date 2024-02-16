@@ -79,7 +79,7 @@ export default class ContentTypesImport extends BaseClass {
     this.createdGFs = [];
     this.pendingGFs = [];
     this.taxonomiesPath = path.join(importConfig.data, 'mapper/taxonomies', 'success.json');
-    this.extPendingPath = path.join(importConfig.data,'mapper','extensions','pending_extensions.js');
+    this.extPendingPath = path.join(importConfig.data, 'mapper', 'extensions', 'pending_extensions.js');
   }
 
   async start(): Promise<any> {
@@ -109,7 +109,7 @@ export default class ContentTypesImport extends BaseClass {
       await fsUtil.writeFile(path.join(this.cTsFolderPath, 'field_rules_uid.json'), this.fieldRules);
     }
     log(this.importConfig, 'Updating the Extensions', 'success');
-    await this.createPendingExtensions();
+    await this.updatePendingExtensions();
     log(this.importConfig, 'Extensions Updated', 'success');
     await this.updatePendingGFs().catch((error) => {
       log(this.importConfig, `Error while updating pending global field ${formatError(error)}`, 'error');
@@ -256,13 +256,13 @@ export default class ContentTypesImport extends BaseClass {
     return apiOptions;
   }
 
-  async createPendingExtensions(): Promise<any>{
+  async updatePendingExtensions(): Promise<any> {
     let apiContent = fsUtil.readFile(this.extPendingPath) as Record<string, any>[];
-    if(apiContent.length===0) {
+    if (apiContent.length === 0) {
       log(this.importConfig, `No Extension are present to be updated`, 'success');
       return;
     }
-    
+
     const onSuccess = ({ response, apiData: { uid, title } = { uid: null, title: '' } }: any) => {
       log(this.importConfig, `Extension '${response.title}' updated successfully`, 'success');
     };
