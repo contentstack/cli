@@ -110,6 +110,7 @@ export default class ContentTypesImport extends BaseClass {
     }
     log(this.importConfig, 'Updating the Extensions', 'success');
     await this.createPendingExtensions();
+    log(this.importConfig, 'Extensions Updated', 'success');
     await this.updatePendingGFs().catch((error) => {
       log(this.importConfig, `Error while updating pending global field ${formatError(error)}`, 'error');
     });
