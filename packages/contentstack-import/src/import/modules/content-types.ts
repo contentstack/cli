@@ -51,6 +51,7 @@ export default class ContentTypesImport extends BaseClass {
   };
   private taxonomiesPath: string;
   public taxonomies: Record<string, unknown>;
+  private extPendingPath: string;
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -78,6 +79,7 @@ export default class ContentTypesImport extends BaseClass {
     this.createdGFs = [];
     this.pendingGFs = [];
     this.taxonomiesPath = path.join(importConfig.data, 'mapper/taxonomies', 'success.json');
+    this.extPendingPath = path.join(importConfig.data,'mapper','extensions','pending_extensions.js');
   }
 
   async start(): Promise<any> {
@@ -106,6 +108,7 @@ export default class ContentTypesImport extends BaseClass {
     if (this.fieldRules.length > 0) {
       await fsUtil.writeFile(path.join(this.cTsFolderPath, 'field_rules_uid.json'), this.fieldRules);
     }
+    await this.createPendingExtensions();
     await this.updatePendingGFs().catch((error) => {
       log(this.importConfig, `Error while updating pending global field ${formatError(error)}`, 'error');
     });
@@ -249,5 +252,45 @@ export default class ContentTypesImport extends BaseClass {
     Object.assign(globalFieldPayload, cloneDeep(globalField));
     apiOptions.apiData = globalFieldPayload;
     return apiOptions;
+  }
+
+  async createPendingExtensions(): Promise<any>{
+    let ext = fsUtil.readFile(this.extPendingPath) as Record<string, any>[];
+    console.log(ext)
+    let apiContent = ext
+    
+    console.log(apiContent)
+    const onSuccess = ({ response, apiData: { uid, title } = { uid: null, title: '' } }: any) => {
+      log(this.importConfig, `Extension '${response.title}' imported successfully`, 'success');
+    };
+
+    const onReject = ({ error, apiData }: any) => {
+      const { uid } = apiData;
+      if (error?.errors?.title) {
+        if (!this.importConfig.skipExisting) {
+          log(this.importConfig, `Extension '${uid}' already exists`, 'info');
+        }
+      } else {
+        // this.extFailed.push(apiData);
+        log(this.importConfig, `Extension '${uid}' failed to be import ${formatError(error)}`, 'error');
+        log(this.importConfig, error, 'error');
+      }
+    };
+
+    return await this.makeConcurrentCall(
+      {
+        apiContent,
+        processName: 'update extensions',
+        apiParams: {
+          reject: onReject.bind(this),
+          resolve: onSuccess.bind(this),
+          entity: 'update-extensions',
+          includeParamOnCompletion: true,
+        },
+        concurrencyLimit: this.importConfig.concurrency || this.importConfig.fetchConcurrency || 1,
+      },
+      undefined,
+      false,
+    );
   }
 }
