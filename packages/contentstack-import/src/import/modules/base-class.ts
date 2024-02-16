@@ -284,11 +284,16 @@ export default abstract class BaseClass {
           .then(onSuccess)
           .catch(onReject);
       case 'update-extensions':
-        if(!apiData.uid)  return Promise.resolve();;
-        return  this.stack.extension(apiData.uid).fetch().then((extension) => {
-          extension.scope = apiData.scope
-          return extension.update()
-         }).then(onSuccess).catch(onReject);
+        if (!apiData.uid) return Promise.resolve();
+        return this.stack
+          .extension(apiData.uid)
+          .fetch()
+          .then((extension) => {
+            extension.scope = apiData.scope;
+            return extension.update();
+          })
+          .then(onSuccess)
+          .catch(onReject);
       case 'create-locale':
         return this.stack
           .locale()
