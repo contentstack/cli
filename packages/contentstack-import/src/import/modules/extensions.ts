@@ -20,7 +20,7 @@ export default class ImportExtensions extends BaseClass {
   private extFailed: Record<string, unknown>[];
   private existingExtensions: Record<string, unknown>[];
   private extPendingPath: string;
-  private extensionObject:Record<string,unknown>[];
+  private extensionObject: Record<string, unknown>[];
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -30,7 +30,7 @@ export default class ImportExtensions extends BaseClass {
     this.extUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
     this.extSuccessPath = join(this.mapperDirPath, 'success.json');
     this.extFailsPath = join(this.mapperDirPath, 'fails.json');
-    this.extPendingPath = join(this.mapperDirPath,'pending_extensions.js');
+    this.extPendingPath = join(this.mapperDirPath, 'pending_extensions.js');
     this.extFailed = [];
     this.extSuccess = [];
     this.existingExtensions = [];
@@ -49,7 +49,7 @@ export default class ImportExtensions extends BaseClass {
     if (fileHelper.fileExistsSync(this.extensionsFolderPath)) {
       this.extensions = fsUtil.readFile(join(this.extensionsFolderPath, 'extensions.json'), true) as Record<
         string,
-        Record<string,unknown>
+        Record<string, unknown>
       >;
     } else {
       log(this.importConfig, `No such file or directory - '${this.extensionsFolderPath}'`, 'error');
@@ -220,14 +220,14 @@ export default class ImportExtensions extends BaseClass {
     });
   }
 
-  getContentTypesInScope(){
+  getContentTypesInScope() {
     const extension = values(this.extensions);
-    extension.forEach((ext:extensionType)=>{
-      let ct:any = ext?.scope?.content_types || [];
-      if((ct.length===1 && (ct[0]!=='$all')) || (ct?.length>1)){
+    extension.forEach((ext: extensionType) => {
+      let ct: any = ext?.scope?.content_types || [];
+      if ((ct.length === 1 && ct[0] !== '$all') || ct?.length > 1) {
         log(this.importConfig, `Removing the Content-types ${ct.join(',')} from Extension ${ext.title}`, 'success');
-        const {uid, scope} = ext;
-        this.extensionObject.push({uid,scope});
+        const { uid, scope } = ext;
+        this.extensionObject.push({ uid, scope });
         delete ext.scope;
         this.extensions[ext.uid] = ext;
       }
@@ -235,7 +235,7 @@ export default class ImportExtensions extends BaseClass {
   }
 
   updateUidExtension() {
-    for(let i in this.extensionObject) {
+    for (let i in this.extensionObject) {
       this.extensionObject[i].uid = this.extUidMapper[this.extensionObject[i].uid as string];
     }
     fsUtil.writeFile(this.extPendingPath, this.extensionObject);
