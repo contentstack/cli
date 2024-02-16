@@ -284,6 +284,7 @@ export default abstract class BaseClass {
           .then(onSuccess)
           .catch(onReject);
       case 'update-extensions':
+        if(!apiData.uid)  return Promise.resolve();;
         return  this.stack.extension(apiData.uid).fetch().then((extension) => {
           extension.scope = apiData.scope
           return extension.update()
