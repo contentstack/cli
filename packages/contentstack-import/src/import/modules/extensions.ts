@@ -19,6 +19,8 @@ export default class ImportExtensions extends BaseClass {
   private extSuccess: Record<string, unknown>[];
   private extFailed: Record<string, unknown>[];
   private existingExtensions: Record<string, unknown>[];
+  private extPendingPath: string;
+  private extensionObject:Record<string,unknown>[];
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -28,10 +30,12 @@ export default class ImportExtensions extends BaseClass {
     this.extUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
     this.extSuccessPath = join(this.mapperDirPath, 'success.json');
     this.extFailsPath = join(this.mapperDirPath, 'fails.json');
+    this.extPendingPath = join(this.mapperDirPath,'pending_extensions.js');
     this.extFailed = [];
     this.extSuccess = [];
     this.existingExtensions = [];
     this.extUidMapper = {};
+    this.extensionObject = [];
   }
 
   /**
@@ -45,7 +49,7 @@ export default class ImportExtensions extends BaseClass {
     if (fileHelper.fileExistsSync(this.extensionsFolderPath)) {
       this.extensions = fsUtil.readFile(join(this.extensionsFolderPath, 'extensions.json'), true) as Record<
         string,
-        unknown
+        Record<string,unknown>
       >;
     } else {
       log(this.importConfig, `No such file or directory - '${this.extensionsFolderPath}'`, 'error');
@@ -57,8 +61,11 @@ export default class ImportExtensions extends BaseClass {
       ? (fsUtil.readFile(join(this.extUidMapperPath), true) as Record<string, unknown>)
       : {};
 
+    await this.getContentTypesInScope();
+
     await this.importExtensions();
 
+    await this.updateUidExtension();
     // Note: if any extensions present, then update it
     if (this.importConfig.replaceExisting && this.existingExtensions.length > 0) {
       await this.replaceExtensions().catch((error: Error) => {
@@ -208,5 +215,35 @@ export default class ImportExtensions extends BaseClass {
         reject(true);
       }
     });
+  }
+
+  async getContentTypesInScope(){
+    const extension= values(this.extensions);
+
+    type extType  = {
+      uid: string,
+      scope: Record<string,unknown>
+    }
+    extension.forEach((ext:extType)=>{
+      let ct:any = ext?.scope?.content_types || [];
+      if(ct.length===1 && (ct[0]!=='$all')){
+        const {uid, scope} = ext;
+        this.extensionObject.push({uid,scope});
+        delete ext.scope;
+        this.extensions[ext.uid] = ext;
+      } else if(ct?.length>1) {
+        const {uid, scope} = ext;
+        this.extensionObject.push({uid,scope}) ;
+        delete ext.scope;       
+        this.extensions[ext.uid] = ext;
+      }
+    });
+  }
+
+  async updateUidExtension() {
+    for(let i in this.extensionObject) {
+      this.extensionObject[i].uid = this.extUidMapper[this.extensionObject[i].uid as string];
+    }
+    fsUtil.writeFile(this.extPendingPath, this.extensionObject);
   }
 }
