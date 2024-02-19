@@ -5,7 +5,7 @@ import { join } from 'node:path';
 
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
-import { ModuleClassParams, Extensions, extensionType } from '../../types';
+import { ModuleClassParams, Extensions, ExtensionType } from '../../types';
 
 export default class ImportExtensions extends BaseClass {
   private mapperDirPath: string;
@@ -222,10 +222,10 @@ export default class ImportExtensions extends BaseClass {
 
   getContentTypesInScope() {
     const extension = values(this.extensions);
-    extension.forEach((ext: extensionType) => {
+    extension.forEach((ext: ExtensionType) => {
       let ct: any = ext?.scope?.content_types || [];
       if ((ct.length === 1 && ct[0] !== '$all') || ct?.length > 1) {
-        log(this.importConfig, `Removing the Content-types ${ct.join(',')} from Extension ${ext.title}`, 'success');
+        log(this.importConfig, `Removing the Content-types ${ct.join(',')} from Extension ${ext.title}`, 'info');
         const { uid, scope } = ext;
         this.extensionObject.push({ uid, scope });
         delete ext.scope;
