@@ -207,7 +207,6 @@ class AuthHandler {
   async openOAuthURL(): Promise<object> {
     return new Promise(async (resolve, reject) => {
       try {
-        console.log(this.codeVerifier)
         const digest = crypto.createHash('sha256').update(this.codeVerifier).digest();
         const codeChallenge = digest.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
         await this.setOAuthBaseURL();
