@@ -26,7 +26,7 @@ importers:
       '@contentstack/cli-launch': ~1.0.16
       '@contentstack/cli-migration': ~1.5.0
       '@contentstack/cli-utilities': ~1.5.12
-      '@contentstack/management': ~1.15.2
+      '@contentstack/management': ~1.15.3
       '@oclif/core': ^2.9.3
       '@oclif/plugin-help': ^5
       '@oclif/plugin-not-found': ^2.4.0
@@ -80,7 +80,7 @@ importers:
       '@contentstack/cli-launch': link:../contentstack-launch
       '@contentstack/cli-migration': link:../contentstack-migration
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/management': 1.15.2_debug@4.3.4
+      '@contentstack/management': 1.15.3_debug@4.3.4
       '@oclif/core': 2.15.0_ogreqof3k35xezedraj6pnd45y
       '@oclif/plugin-help': 5.2.14_ogreqof3k35xezedraj6pnd45y
       '@oclif/plugin-not-found': 2.4.3_ogreqof3k35xezedraj6pnd45y
@@ -733,7 +733,7 @@ importers:
       '@contentstack/cli-audit': ~1.4.0
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-utilities': ~1.5.12
-      '@contentstack/management': ^1.15.2
+      '@contentstack/management': ~1.15.3
       '@oclif/core': ^2.9.3
       '@oclif/test': ^2.5.6
       '@types/big-json': ^3.2.0
@@ -776,7 +776,7 @@ importers:
       '@contentstack/cli-audit': link:../contentstack-audit
       '@contentstack/cli-command': link:../contentstack-command
       '@contentstack/cli-utilities': link:../contentstack-utilities
-      '@contentstack/management': 1.15.2_debug@4.3.4
+      '@contentstack/management': 1.15.3_debug@4.3.4
       '@oclif/core': 2.15.0_ogreqof3k35xezedraj6pnd45y
       big-json: 3.2.0
       bluebird: 3.7.2
@@ -1046,7 +1046,7 @@ importers:
   packages/contentstack-utilities:
     specifiers:
       '@contentstack/cli-dev-dependencies': ^1.2.4
-      '@contentstack/management': ^1.15.2
+      '@contentstack/management': ~1.15.3
       '@contentstack/marketplace-sdk': ^1.0.1
       '@oclif/core': ^2.9.3
       '@oclif/test': ^2.5.6
@@ -1094,7 +1094,7 @@ importers:
       winston: ^3.7.2
       xdg-basedir: ^4.0.0
     dependencies:
-      '@contentstack/management': 1.15.2_debug@4.3.4
+      '@contentstack/management': 1.15.3_debug@4.3.4
       '@contentstack/marketplace-sdk': 1.0.1_debug@4.3.4
       '@oclif/core': 2.15.0_ogreqof3k35xezedraj6pnd45y
       axios: 1.6.5_debug@4.3.4
@@ -1583,8 +1583,8 @@ packages:
       uuid: 8.3.2
     dev: false
 
-  /@contentstack/management/1.15.2_debug@4.3.4:
-    resolution: {integrity: sha512-DAgOuG5k6g6OkkQv44O8f6EhzbTxdfwJJa0NHNkEYGkl/FIEHZYakuNG41aVWDbf35Nv3p59UV6Ph4q5kNYg8Q==}
+  /@contentstack/management/1.15.3_debug@4.3.4:
+    resolution: {integrity: sha512-huI2T8Il+o+lQVQ78DupaIT+R0iE9XdBknh5jcua6nbwL0m9YiyVwGaf1QZGGwCqZNhJLad/Nf8JJgNlzVCCsA==}
     engines: {node: '>=8.0.0'}
     dependencies:
       '@slack/bolt': 3.17.1_debug@4.3.4
