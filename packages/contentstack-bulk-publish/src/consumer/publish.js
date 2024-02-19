@@ -43,6 +43,7 @@ async function publishEntry(data, _config, queue) {
     .publish({
       publishDetails: { environments: entryObj.environments, locales: lang },
       locale: entryObj.locale || 'en-us',
+      version: entryObj.version
     })
     .then((publishEntryResponse) => {
       if (!publishEntryResponse.error_message) {
