@@ -251,6 +251,13 @@ export default abstract class BaseClass {
         apiData: includeParamOnCompletion ? apiData : undefined,
       });
 
+    if (
+      !apiData ||
+      (entity === 'publish-entries' && !apiData.entryUid) ||
+      (entity === 'update-extensions' && !apiData.uid)
+    ) {
+      return Promise.resolve();
+    }
     switch (entity) {
       case 'create-assets-folder':
         return this.stack
@@ -284,7 +291,6 @@ export default abstract class BaseClass {
           .then(onSuccess)
           .catch(onReject);
       case 'update-extensions':
-        if (!apiData.uid) return Promise.resolve();
         return this.stack
           .extension(apiData.uid)
           .fetch()
@@ -309,14 +315,8 @@ export default abstract class BaseClass {
       case 'create-cts':
         return this.stack.contentType().create(apiData).then(onSuccess).catch(onReject);
       case 'update-cts':
-        if (!apiData) {
-          return Promise.resolve();
-        }
         return apiData.update().then(onSuccess).catch(onReject);
       case 'update-gfs':
-        if (!apiData) {
-          return Promise.resolve();
-        }
         return apiData.update().then(onSuccess).catch(onReject);
       case 'create-environments':
         return this.stack
@@ -358,9 +358,6 @@ export default abstract class BaseClass {
           .then(onSuccess)
           .catch(onReject);
       case 'create-entries':
-        if (!apiData) {
-          return Promise.resolve();
-        }
         if (additionalInfo[apiData?.uid]?.isLocalized) {
           return apiData.update({ locale: additionalInfo.locale }).then(onSuccess).catch(onReject);
         }
@@ -371,14 +368,8 @@ export default abstract class BaseClass {
           .then(onSuccess)
           .catch(onReject);
       case 'update-entries':
-        if (!apiData) {
-          return Promise.resolve();
-        }
         return apiData.update({ locale: additionalInfo.locale }).then(onSuccess).catch(onReject);
       case 'publish-entries':
-        if (!apiData || !apiData.entryUid) {
-          return Promise.resolve();
-        }
         return this.stack
           .contentType(additionalInfo.cTUid)
           .entry(apiData.entryUid)
