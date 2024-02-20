@@ -108,9 +108,9 @@ export default class ContentTypesImport extends BaseClass {
     if (this.fieldRules.length > 0) {
       await fsUtil.writeFile(path.join(this.cTsFolderPath, 'field_rules_uid.json'), this.fieldRules);
     }
-    log(this.importConfig, 'Updating the Extensions', 'success');
+    log(this.importConfig, 'Updating the extensions...', 'success');
     await this.updatePendingExtensions();
-    log(this.importConfig, 'Extensions Updated', 'success');
+    log(this.importConfig, 'Successfully updated the extensions.', 'success');
     await this.updatePendingGFs().catch((error) => {
       log(this.importConfig, `Error while updating pending global field ${formatError(error)}`, 'error');
     });
@@ -259,22 +259,22 @@ export default class ContentTypesImport extends BaseClass {
   async updatePendingExtensions(): Promise<any> {
     let apiContent = fsUtil.readFile(this.extPendingPath) as Record<string, any>[];
     if (apiContent.length === 0) {
-      log(this.importConfig, `No Extension are present to be updated`, 'success');
+      log(this.importConfig, `No extensions found to be updated.`, 'success');
       return;
     }
 
     const onSuccess = ({ response, apiData: { uid, title } = { uid: null, title: '' } }: any) => {
-      log(this.importConfig, `Extension '${response.title}' updated successfully`, 'success');
+      log(this.importConfig, `Successfully updated the '${response.title}' extension.`, 'success');
     };
 
     const onReject = ({ error, apiData }: any) => {
       const { uid } = apiData;
       if (error?.errors?.title) {
         if (!this.importConfig.skipExisting) {
-          log(this.importConfig, `Extension '${uid}' already exists`, 'info');
+          log(this.importConfig, `Extension '${uid}' already exists.`, 'info');
         }
       } else {
-        log(this.importConfig, `Extension '${uid}' failed to be updated ${formatError(error)}`, 'error');
+        log(this.importConfig, `Failed to update '${uid}' extension due to ${formatError(error)}.`, 'error');
         log(this.importConfig, error, 'error');
       }
     };

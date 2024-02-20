@@ -225,7 +225,7 @@ export default class ImportExtensions extends BaseClass {
     extension.forEach((ext: ExtensionType) => {
       let ct: any = ext?.scope?.content_types || [];
       if ((ct.length === 1 && ct[0] !== '$all') || ct?.length > 1) {
-        log(this.importConfig, `Removing the Content-types ${ct.join(',')} from Extension ${ext.title}`, 'info');
+        log(this.importConfig, `Removing the content-types ${ct.join(',')} from the extension ${ext.title} ...`, 'info');
         const { uid, scope } = ext;
         this.extensionObject.push({ uid, scope });
         delete ext.scope;
