@@ -132,7 +132,11 @@ export default class ImportCommand extends Command {
       const result = await moduleImporter.start();
 
       if (!result?.noSuccessMsg) {
-        log(importConfig, `Successfully imported the content to the stack named ${importConfig.stackName} with the API key ${importConfig.apiKey} .`, 'success');
+        log(
+          importConfig,
+          `Successfully imported the content to the stack named ${importConfig.stackName} with the API key ${importConfig.apiKey} .`,
+          'success',
+        );
       }
 
       log(
