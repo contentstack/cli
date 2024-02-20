@@ -197,7 +197,10 @@ const envFileHandler = async (
         environmentVariables.deliveryToken
       }\n${
         livePreviewEnabled
-          ? `\nCONTENTSTACK_PREVIEW_TOKEN=${environmentVariables.preview_token || `''`}\nCONTENTSTACK_PREVIEW_HOST=${previewHost}\nCONTENTSTACK_APP_HOST=${appHost}\n`: '\n'
+          ? `\nCONTENTSTACK_PREVIEW_TOKEN=${
+              environmentVariables.preview_token || `''`
+            }\nCONTENTSTACK_PREVIEW_HOST=${previewHost}\nCONTENTSTACK_APP_HOST=${appHost}\n`
+          : '\n'
       }\nCONTENTSTACK_ENVIRONMENT=${
         environmentVariables.environment
       }\nCONTENTSTACK_API_HOST=${managementAPIHost}\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}`;
@@ -217,29 +220,31 @@ const envFileHandler = async (
       },\n\t\tenvironment: '${environmentVariables.environment}'${
         !isUSRegion && !customHost ? `,\n\t\tregion: '${region.name}'` : ''
       } \n\t } \n };`;
-      fileName = `environment${environmentVariables.environment === 'production' ? '.prod.' : '.'}ts`;
+      fileName = `.env${environmentVariables.environment === 'production' ? '.prod' : ''}`;
       filePath = path.join(clonedDirectory, 'src', 'environments', fileName);
       result = await writeEnvFile(content, filePath);
       break;
     case 'angular-starter':
-      content = `export const environment = { \n\tproduction: true \n}; \nexport const Config = { \n\tapi_key: '${
-        environmentVariables.api_key
-      }', \n\tdelivery_token: '${environmentVariables.deliveryToken}',\n\t${
+      content = `CONTENTSTACK_API_KEY=${environmentVariables.api_key}\nCONTENTSTACK_DELIVERY_TOKEN=${
+        environmentVariables.deliveryToken
+      }\n${
         livePreviewEnabled
-          ? `\npreview_token:'${environmentVariables.preview_token || ''}',\npreview_host:'${previewHost
-            }',\napp_host:'${appHost}'`
+          ? `\nCONTENTSTACK_PREVIEW_TOKEN=${
+              environmentVariables.preview_token || `''`
+            }\nCONTENTSTACK_PREVIEW_HOST=${previewHost}\nCONTENTSTACK_APP_HOST=${appHost}\n`
           : '\n'
-      },\n\tenvironment: '${environmentVariables.environment}'${
-        !isUSRegion && !customHost ? `,\n\tregion: '${region.name}'` : ''
-      },\n\tapi_host: '${
+      }CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}\nCONTENTSTACK_API_HOST=${
         customHost ? customHost : managementAPIHost
-      }',\n\tlive_preview: ${livePreviewEnabled}\n};`;
-      fileName = `environment${environmentVariables.environment === 'production' ? '.prod.' : '.'}ts`;
-      filePath = path.join(clonedDirectory, 'src', 'environments', fileName);
+      }${
+        !isUSRegion && !customHost ? '\nCONTENTSTACK_REGION=' + region.name : ''
+      }\nCONTENTSTACK_LIVE_PREVIEW=${livePreviewEnabled}\nCONTENTSTACK_LIVE_EDIT_TAGS=false`;
+      fileName = `.env${environmentVariables.environment === 'production' ? '.prod' : ''}`;
+      filePath = path.join(clonedDirectory, fileName);
       result = await writeEnvFile(content, filePath);
       break;
     case 'nuxtjs':
     case 'nuxt-starter':
+    case 'nuxt3-starter':
     case 'stencil-starter':
       fileName = production ? '.env.production' : '.env';
       filePath = path.join(clonedDirectory, fileName);
@@ -268,8 +273,7 @@ const envFileHandler = async (
         livePreviewEnabled
           ? `\nVUE_APP_CONTENTSTACK_PREVIEW_TOKEN=${
               environmentVariables.preview_token || `''`
-            }\nVUE_APP_CONTENTSTACK_PREVIEW_HOST=${previewHost
-            }\nVUE_APP_CONTENTSTACK_APP_HOST=${appHost}\n`
+            }\nVUE_APP_CONTENTSTACK_PREVIEW_HOST=${previewHost}\nVUE_APP_CONTENTSTACK_APP_HOST=${appHost}\n`
           : '\n'
       }\nVUE_APP_CONTENTSTACK_ENVIRONMENT=${environmentVariables.environment}${
         customHost ? '\nVUE_APP_CONTENTSTACK_API_HOST=' + customHost : ''
