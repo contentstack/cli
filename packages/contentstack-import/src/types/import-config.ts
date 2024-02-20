@@ -48,6 +48,7 @@ export default interface ImportConfig extends DefaultConfig, ExternalConfig {
   replaceExisting?: boolean;
   skipExisting?: boolean;
   skipAudit?: boolean;
+  stack_name: string;
 }
 
 type branch = {
