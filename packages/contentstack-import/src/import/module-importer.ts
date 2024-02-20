@@ -23,7 +23,7 @@ class ModuleImporter {
   }
 
   async start(): Promise<any> {
-    const stackName:Record<string,unknown> = await this.stackAPIClient.fetch();
+    const stackName: Record<string, unknown> = await this.stackAPIClient.fetch();
     this.importConfig.stackName = stackName.name as string;
     if (this.importConfig.branchName) {
       await validateBranch(this.stackAPIClient, this.importConfig, this.importConfig.branchName);
@@ -155,7 +155,8 @@ class ModuleImporter {
             (await cliux.inquire({
               type: 'confirm',
               name: 'confirmation',
-              message: 'Please review and confirm if we can proceed with implementing the fix mentioned in the provided path.?',
+              message:
+                'Please review and confirm if we can proceed with implementing the fix mentioned in the provided path.?',
             }))
           ) {
             return true;
