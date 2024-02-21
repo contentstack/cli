@@ -1176,7 +1176,6 @@ function handleTaxonomyErrorMsg(err) {
  * @returns
  */
 async function createImportableCSV(payload, taxonomies) {
-  try {
     let taxonomiesData = [];
     let headers = [];
     payload['type'] = 'export-taxonomies';
@@ -1191,9 +1190,6 @@ async function createImportableCSV(payload, taxonomies) {
     }
 
     return { taxonomiesData, headers };
-  } catch (err) {
-    throw err;
-  }
 }
 
 /**
