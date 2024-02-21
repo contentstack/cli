@@ -118,11 +118,6 @@ export default interface DefaultConfig {
       fileName: string;
       dependencies?: Modules[];
     };
-    terms: {
-      dirName: string;
-      fileName: string;
-      dependencies?: Modules[];
-    };
   };
   languagesCode: string[];
   apis: {
