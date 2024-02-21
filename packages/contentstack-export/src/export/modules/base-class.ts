@@ -47,7 +47,8 @@ export type ApiModuleType =
   | 'content-types'
   | 'stacks'
   | 'versioned-entries'
-  | 'download-asset';
+  | 'download-asset'
+  | 'export-taxonomy';
 
 export default abstract class BaseClass {
   readonly client: any;
@@ -176,6 +177,12 @@ export default abstract class BaseClass {
           .download({ url, responseType: 'stream' })
           .then((response: any) => resolve({ response, isLastRequest, additionalInfo }))
           .catch((error: any) => reject({ error, isLastRequest, additionalInfo }));
+      case 'export-taxonomy':
+        return this.stack
+          .taxonomy(uid)
+          .export()
+          .then((response: any) => resolve({ response, uid }))
+          .catch((error: any) => reject({ error, uid }));
       default:
         return Promise.resolve();
     }
