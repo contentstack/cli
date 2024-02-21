@@ -25,9 +25,10 @@ const config: Configuration = {
     { displayName: 'Next JS', configKey: 'nextjs-starter' },
     { displayName: 'Gatsby', configKey: 'gatsby-starter' },
     { displayName: 'Angular', configKey: 'angular-starter' },
-    { displayName: 'Nuxt JS', configKey: 'nuxt-starter' },
+    { displayName: 'Nuxt JS (To be Deprecated)', configKey: 'nuxt-starter' },
     { displayName: 'Vue JS', configKey: 'vue-starter' },
     { displayName: 'Stencil', configKey: 'stencil-starter' },
+    { displayName: 'Nuxt3', configKey: 'nuxt3-starter' },
   ],
   appLevelConfig: {
     nextjs: {
@@ -76,6 +77,10 @@ const config: Configuration = {
     },
     'stencil-starter': {
       source: 'contentstack/contentstack-stencil-starter-app',
+      stack: 'contentstack/stack-starter-app',
+    },
+    'nuxt3-starter': {
+      source: 'contentstack/contentstack-nuxt3-starter-app',
       stack: 'contentstack/stack-starter-app',
     },
   },
