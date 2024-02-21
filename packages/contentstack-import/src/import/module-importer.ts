@@ -23,8 +23,10 @@ class ModuleImporter {
   }
 
   async start(): Promise<any> {
-    const stackName: Record<string, unknown> = await this.stackAPIClient.fetch();
-    this.importConfig.stackName = stackName.name as string;
+    if(!this.importConfig.management_token){
+      const stackName: Record<string, unknown> = await this.stackAPIClient.fetch();
+      this.importConfig.stackName = stackName.name as string;
+    }
     if (this.importConfig.branchName) {
       await validateBranch(this.stackAPIClient, this.importConfig, this.importConfig.branchName);
     }
