@@ -36,7 +36,7 @@ export default class Audit extends AuditBaseCommand {
 
   /**
    * The `run` function is an asynchronous function that performs an audit on different modules
-   * (content-types, global-fields, entries) and generates a report.
+   * (content-types, global-fields, entries, workflows) and generates a report.
    */
   async run(): Promise<void> {
     try {
