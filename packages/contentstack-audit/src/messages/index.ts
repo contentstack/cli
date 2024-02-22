@@ -26,6 +26,7 @@ const auditMsg = {
   SCAN_CT_SUCCESS_MSG: "Successfully completed the scanning of {module} '{title}'.",
   SCAN_ENTRY_SUCCESS_MSG: "Successfully completed the scanning of {module} ({local}) '{title}'.",
   AUDIT_CMD_DESCRIPTION: 'Perform audits and find possible errors in the exported Contentstack data',
+  SCAN_WF_SUCCESS_MSG: "Successfully completed the scanning of {module} '{name}'.",
 };
 
 const auditFixMsg = {
