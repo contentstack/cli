@@ -12,6 +12,8 @@ const commonMsg = {
   CONFIG: 'Path of the external config',
   DATA_DIR: 'Path where the data is stored',
   FIX_CONFIRMATION: 'Would you like to overwrite existing file.?',
+  WORKFLOW_FIX_WARN: `Workflow {uid} named '{name}' will be removed.`,
+  WORKFLOW_FIX_CONFIRMATION: 'Would you like to overwrite existing file.?',
 };
 
 const auditMsg = {
@@ -36,6 +38,7 @@ const auditFixMsg = {
   FIXED_CONTENT_PATH_MAG: 'You can locate the fixed content at {path}.',
   EMPTY_FIX_MSG: 'Successfully removed the empty field/block found at {path} from the schema.',
   AUDIT_FIX_CMD_DESCRIPTION: 'Perform audits and fix possible errors in the exported Contentstack data.',
+  WF_FIX_MSG: 'Successfully removed the workflow {uid} named {name}.',
 };
 
 const messages: typeof errors &
