@@ -2,8 +2,8 @@ const { Command } = require('@contentstack/cli-command');
 const { configHandler, flags, isAuthenticated, managementSDKClient } = require('@contentstack/cli-utilities');
 const { CloneHandler } = require('../../../lib/util/clone-handler');
 const path = require('path');
-const rimraf = require('rimraf');
-const merge = require("merge")
+const { rimraf } = require('rimraf');
+const merge = require('merge');
 let pathdir = path.join(__dirname.split('src')[0], 'contents');
 const { readdirSync, readFileSync } = require('fs');
 let config = {};
@@ -24,17 +24,17 @@ class StackCloneCommand extends Command {
         'source-management-token-alias': sourceManagementTokenAlias,
         'destination-management-token-alias': destinationManagementTokenAlias,
         'import-webhook-status': importWebhookStatus,
-        'config': externalConfigPath
+        config: externalConfigPath,
       } = cloneCommandFlags;
 
       const handleClone = async () => {
         const listOfTokens = configHandler.get('tokens');
 
         if (externalConfigPath) {
-          let externalConfig = readFileSync(externalConfigPath, 'utf-8')
+          let externalConfig = readFileSync(externalConfigPath, 'utf-8');
           externalConfig = JSON.parse(externalConfig);
           config = merge.recursive(config, externalConfig);
-        }        
+        }
         config.forceStopMarketplaceAppsPrompt = yes;
         config.skipAudit = cloneCommandFlags['skip-audit'];
 
@@ -131,26 +131,23 @@ class StackCloneCommand extends Command {
     }
   }
 
-  cleanUp(pathDir, message) {
-    return new Promise((resolve) => {
-      rimraf(pathDir, function (err) {
-        if (err) {
-          console.log('\nCleaning up');
-          const skipCodeArr = ['ENOENT', 'EBUSY', 'EPERM', 'EMFILE', 'ENOTEMPTY'];
+  async cleanUp(pathDir, message) {
+    try {
+      await rimraf(pathDir);
+      if (message) {
+        // eslint-disable-next-line no-console
+        console.log(message);
+      }
+    } catch (err) {
+      if (err) {
+        console.log('\nCleaning up');
+        const skipCodeArr = ['ENOENT', 'EBUSY', 'EPERM', 'EMFILE', 'ENOTEMPTY'];
 
-          if (skipCodeArr.includes(err.code)) {
-            process.exit();
-          }
+        if (skipCodeArr.includes(err.code)) {
+          process.exit();
         }
-
-        if (message) {
-          // eslint-disable-next-line no-console
-          console.log(message);
-        }
-
-        resolve();
-      });
-    });
+      }
+    }
   }
 
   registerCleanupOnInterrupt(pathDir) {
@@ -256,7 +253,7 @@ b) Structure with content (all modules including entries & assets)
   'skip-audit': flags.boolean({
     description: 'Skips the audit fix.',
   }),
-  'config': flags.string({
+  config: flags.string({
     char: 'c',
     required: false,
     description: 'Path for the external configuration',
