@@ -8,10 +8,5 @@ export interface Workflow {
   admin_users?: any;
   enabled?: boolean;
   deleted_at?: any;
-}
-
-export interface WorkflowErrorReturnType {
-  name: string;
-  uid: string;
-  content_types: string[];
+  missingRefs?: any;
 }
