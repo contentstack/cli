@@ -113,6 +113,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion
             entryUid: items[index].data.uid,
             version: items[index].data._version,
             locale: items[index].data.locale || 'en-us',
+            version: items[index].data._version,
             Type: 'entry',
             stack: stack,
           });
