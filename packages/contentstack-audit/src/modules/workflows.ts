@@ -52,6 +52,7 @@ export default class Workflows {
     if (!existsSync(this.folderPath)) {
       this.log(`Skipping ${this.moduleName} audit`, 'warn');
       this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
+      return {};
     }
 
     this.workflowPath = join(this.folderPath, this.fileName);
@@ -110,6 +111,7 @@ export default class Workflows {
               name: this.workflowSchema[i].name,
               uid: this.workflowSchema[i].uid,
             }),
+            { color: 'yellow' },
           );
           if (this.config.flags.yes || (await ux.confirm(commonMsg.WORKFLOW_FIX_CONFIRMATION))) {
             delete newWorkflowSchema[this.workflowSchema[i].uid];
