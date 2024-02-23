@@ -13,7 +13,7 @@ import { print } from './util/log';
 import { auditMsg } from './messages';
 import { BaseCommand } from './base-command';
 import { Entries, GlobalField, ContentType, Workflows } from './modules';
-import { CommandNames, ContentTypeStruct, OutputColumn, RefErrorReturnType, WorkflowErrorReturnType } from './types';
+import { CommandNames, ContentTypeStruct, OutputColumn, RefErrorReturnType } from './types';
 
 export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseCommand> {
   private currentCommand!: CommandNames;
@@ -48,8 +48,9 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       { module: 'Content types', missingRefs: missingCtRefs },
       { module: 'Global Fields', missingRefs: missingGfRefs },
       { module: 'Entries', missingRefs: missingEntryRefs },
-      { module: 'Workflows', missingRefs: missingCtRefsInWorkflow },
     ]);
+
+    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Workflows', missingRefs: missingCtRefsInWorkflow }]);
 
     if (
       !isEmpty(missingCtRefs) ||
@@ -119,8 +120,14 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           await this.prepareReport(module, missingEntryRefs);
           break;
         case 'workflows':
-          missingCtRefsInWorkflow = await new Workflows(cloneDeep(constructorParam)).run();
-          await this.prepareReport(module, missingCtRefsInWorkflow, true);
+          missingCtRefsInWorkflow = await new Workflows({
+            ctSchema,
+            log: this.log,
+            moduleName: module,
+            config: this.sharedConfig,
+            fix: this.currentCommand === 'cm:stacks:audit:fix',
+          }).run();
+          await this.prepareReport(module, missingCtRefsInWorkflow);
           break;
       }
 
@@ -256,6 +263,52 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     }
   }
 
+  // Make it generic it takes the column header as param
+  showOutputOnScreenWorkflowsAndExtension(allMissingRefs: { module: string; missingRefs?: Record<string, any> }[]) {
+    if (this.sharedConfig.showTerminalOutput && !this.flags['external-config']?.noTerminalOutput) {
+      this.log(''); // NOTE adding new line
+      for (const { module, missingRefs } of allMissingRefs) {
+        if (!isEmpty(missingRefs)) {
+          print([
+            {
+              bold: true,
+              color: 'cyan',
+              message: ` ${module}`,
+            },
+          ]);
+          const tableValues = Object.values(missingRefs).flat();
+          ux.table(
+            tableValues,
+            {
+              name: {
+                minWidth: 7,
+                header: 'Title',
+              },
+              uid: {
+                minWidth: 12,
+                header: 'Workflow Uid',
+              },
+              content_types: {
+                minWidth: 7,
+                header: 'Missing Content Types',
+                get: (row) => {
+                  return chalk.red(
+                    typeof row.content_types === 'object' ? JSON.stringify(row.content_types) : row.content_types,
+                  );
+                },
+              },
+              ...(tableValues[0]?.fixStatus ? this.fixStatus : {}),
+            },
+            {
+              ...this.flags,
+            },
+          );
+          this.log(''); // NOTE adding new line
+        }
+      }
+    }
+  }
+
   /**
    * The function prepares a report by writing a JSON file and a CSV file with a list of missing
    * references for a given module.
@@ -266,11 +319,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    * reference name and the value represents additional information about the missing reference.
    * @returns The function `prepareReport` returns a Promise that resolves to `void`.
    */
-  prepareReport(
-    moduleName: keyof typeof config.moduleConfig,
-    listOfMissingRefs: Record<string, any>,
-    isWorkflow: boolean = false,
-  ): Promise<void> {
+  prepareReport(moduleName: keyof typeof config.moduleConfig, listOfMissingRefs: Record<string, any>): Promise<void> {
     if (isEmpty(listOfMissingRefs)) return Promise.resolve(void 0);
 
     if (!existsSync(this.sharedConfig.reportPath)) {
@@ -281,9 +330,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     writeFileSync(join(this.sharedConfig.reportPath, `${moduleName}.json`), JSON.stringify(listOfMissingRefs));
 
     // NOTE write into CSV
-    if (isWorkflow) {
-      return this.prepareCSVWorkflow(moduleName, listOfMissingRefs);
-    }
     return this.prepareCSV(moduleName, listOfMissingRefs);
   }
 
@@ -321,8 +367,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         let row: Record<string, string | string[]> = {};
 
         for (const column of columns) {
-          row[column] = issue[OutputColumn[column]];
-          row[column] = typeof row[column] === 'object' ? JSON.stringify(row[column]) : row[column];
+          if (Object.keys(issue).includes(OutputColumn[column])) {
+            row[column] = issue[OutputColumn[column]] as string;
+            row[column] = typeof row[column] === 'object' ? JSON.stringify(row[column]) : row[column];
+          }
         }
 
         if (this.currentCommand === 'cm:stacks:audit:fix') {
@@ -331,50 +379,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
         rowData.push(row);
       }
-      csv.write(rowData, { headers: true }).pipe(ws).on('error', reject).on('finish', resolve);
-    });
-  }
-
-  /**
-   * The function `prepareCSV` takes a module name which will be either extensions or workflows or field rules and a list of missing references, and generates a
-   * CSV file with the specified columns and filtered rows.
-   * @param moduleName - The `moduleName` parameter is a string that represents the name of a module.
-   * It is used to generate the name of the CSV file that will be created.
-   * @param listOfMissingRefs - The `listOfMissingRefs` parameter is a record object that contains
-   * information about missing references. Each key in the record represents a reference, and the
-   * corresponding value is an array of objects that contain details about the missing reference.
-   * @returns The function `prepareCSV` returns a Promise that resolves to `void`.
-   */
-  prepareCSVWorkflow(
-    moduleName: keyof typeof config.moduleConfig,
-    listOfMissingRefs: Record<string, any>,
-  ): Promise<void> {
-    const csvPath = join(this.sharedConfig.reportPath, `${moduleName}.csv`);
-
-    return new Promise<void>((resolve, reject) => {
-      // file deepcode ignore MissingClose: Will auto close once csv stream end
-      const ws = createWriteStream(csvPath).on('error', reject);
-      const defaultColumns = Object.keys(listOfMissingRefs[0]) as (keyof WorkflowErrorReturnType)[];
-      let missingRefs: WorkflowErrorReturnType[] = Object.values(listOfMissingRefs).flat();
-      const columns: (keyof WorkflowErrorReturnType)[] = defaultColumns;
-
-      const rowData: Record<string, string | string[]>[] = [];
-
-      for (const issue of missingRefs) {
-        let row: Record<string, string | string[]> = {};
-
-        for (const column of columns) {
-          row[column] = issue[column];
-          row[column] = typeof row[column] === 'object' ? JSON.stringify(row[column]) : row[column];
-        }
-
-        if (this.currentCommand === 'cm:stacks:audit:fix') {
-          row['Fix status'] = row.fixStatus;
-        }
-
-        rowData.push(row);
-      }
-
       csv.write(rowData, { headers: true }).pipe(ws).on('error', reject).on('finish', resolve);
     });
   }
