@@ -7,7 +7,7 @@ describe('Whoami Command', () => {
   let getEmailStub;
   before(function () {
     getEmailStub = sinon.stub(WhoamiCommand.prototype, 'email').get(function getterFn() {
-      return 'test@contentstack.com';
+      return '***REMOVED***';
     });
   });
 
@@ -17,7 +17,7 @@ describe('Whoami Command', () => {
 
   it('Logged in user, displays the username', async function () {
     const getEmailStub = sinon.stub(WhoamiCommand.prototype, 'email').get(function getterFn() {
-      return 'test@contentstack.com';
+      return '***REMOVED***';
     });
     const successMessageStub = sinon.stub(cliux, 'print').returns();
     await WhoamiCommand.run([]);
