@@ -6,9 +6,9 @@ import { configHandler, cliux } from '@contentstack/cli-utilities';
 
 const config = configHandler;
 
-const user = { email: 'test@contentstack.com', authtoken: 'testtoken' };
-const credentials = { email: 'test@contentstack.com', password: 'testpassword' };
-const invalidCredentials = { email: 'test@contentstack.com', password: 'invalidpassword' };
+const user = { email: '***REMOVED***', authtoken: 'testtoken' };
+const credentials = { email: '***REMOVED***', password: 'testpassword' };
+const invalidCredentials = { email: '***REMOVED***', password: 'invalidpassword' };
 const TFATestToken = '24563992';
 
 describe('Login Command', () => {

@@ -96,14 +96,14 @@ export interface TaxonomiesConfig{
   dependencies?: Modules[];
 }
 
-export interface TermsConfig{
-  dirName: string;
-  fileName: string;
-  dependencies?: Modules[];
-}
-
 export { default as DefaultConfig } from './default-config';
 export { default as ImportConfig } from './import-config';
 
 export * from './entries'
 export * from './marketplace-app'
+
+export type ExtensionType  = {
+  uid: string,
+  scope: Record<string,unknown>,
+  title: string
+}
