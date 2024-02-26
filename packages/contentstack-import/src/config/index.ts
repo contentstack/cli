@@ -148,11 +148,7 @@ const config: DefaultConfig = {
     taxonomies: {
       dirName: 'taxonomies',
       fileName: 'taxonomies.json',
-    },
-    terms: {
-      dirName: 'terms',
-      fileName: 'terms.json',
-    },
+    }
   },
   languagesCode: [
     'af-za',
