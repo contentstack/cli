@@ -60,9 +60,7 @@ export default class Workflows {
     this.workflowSchema = existsSync(this.workflowPath)
       ? values(JSON.parse(readFileSync(this.workflowPath, 'utf8')) as Workflow[])
       : [];
-    this.ctSchema = [];
     this.ctSchema.forEach((ct) => this.ctUidSet.add(ct.uid));
-
     this.workflowSchema.forEach((workflow: Workflow) => {
       let ctNotPresent: string[] = [];
       workflow.content_types.forEach((ct) => {
@@ -119,8 +117,7 @@ export default class Workflows {
         }
       }
     }
-
-    this.writeFixContent(newWorkflowSchema);
+    await this.writeFixContent(newWorkflowSchema);
   }
 
   async writeFixContent(newWorkflowSchema: Record<string, Workflow>) {
