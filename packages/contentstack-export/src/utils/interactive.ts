@@ -45,7 +45,7 @@ export const askUsername = async (): Promise<string> => {
 };
 
 export const askExportDir = async (): Promise<string> => {
-  const result = await cliux.inquire<string>({
+  let result = await cliux.inquire<string>({
     type: 'input',
     message: 'Enter the path for storing the content: (current folder)',
     name: 'dir',
@@ -53,6 +53,7 @@ export const askExportDir = async (): Promise<string> => {
   if (!result) {
     return process.cwd();
   } else {
+    result = result.replace(/"/g, '');
     return path.resolve(result);
   }
 };
