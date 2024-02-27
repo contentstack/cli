@@ -1,12 +1,12 @@
 {
   "name": "@contentstack/cli-cm-bulk-publish",
   "description": "Contentstack CLI plugin for bulk publish actions",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "author": "Contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "~1.2.16",
-    "@contentstack/cli-utilities": "~1.5.13",
+    "@contentstack/cli-utilities": "~1.5.12",
     "bluebird": "^3.7.2",
     "chalk": "^4.1.2",
     "dotenv": "^16.1.4",
