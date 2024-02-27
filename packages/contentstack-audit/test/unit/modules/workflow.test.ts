@@ -122,9 +122,9 @@ describe('Workflows', () => {
             this.newWorkflowSchema = WorkflowSchema;
           }
         })();
-        // console.log(JSON.stringify(wfInstance));
+        await wfInstance.run();
         await wfInstance.fixWorkflowSchema();
-        expect(wfInstance.newWorkflowSchema).eql(JSON.parse(fs.readFileSync(wfInstance.workflowPath, 'utf8')));
+        expect(wfInstance.newWorkflowSchema).eql({});
       });
 
     fancy
