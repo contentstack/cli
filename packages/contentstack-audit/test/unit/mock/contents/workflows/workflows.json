@@ -1,1 +1,47 @@
-{"id":{"name":"wf3","uid":"uid","org_uid":"org1","api_key":"apikey","content_types":["ct2"],"enabled":false,"deleted_at":false}}
+{
+    "wf1": {
+        "name": "wf1",
+        "uid": "wf1",
+        "org_uid": "org1",
+        "api_key": "apiKey",
+        "content_types": [
+            "ct1"
+        ],
+        "enabled": false,
+        "deleted_at": false
+    },
+    "wf3": {
+        "name": "wf3",
+        "uid": "wf3",
+        "org_uid": "org1",
+        "api_key": "apiKey",
+        "content_types": [
+            "ct2"
+        ],
+        "enabled": false,
+        "deleted_at": false
+    },
+    "wf2": {
+        "name": "wf2",
+        "uid": "wf2",
+        "org_uid": "org1",
+        "api_key": "apiKey",
+        "content_types": [
+            "ct5",
+            "ct3"
+        ],
+        "enabled": false,
+        "deleted_at": false
+    },
+    "wf4": {
+        "name": "wf4",
+        "uid": "wf4",
+        "org_uid": "org1",
+        "api_key": "apiKey",
+        "content_types": [
+            "ct4"
+        ],
+        "enabled": false,
+        "deleted_at": false
+    }
+}
