@@ -56,7 +56,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingCtRefs) ||
       !isEmpty(missingGfRefs) ||
       !isEmpty(missingEntryRefs) ||
-      isEmpty(missingCtRefsInWorkflow)
+      !isEmpty(missingCtRefsInWorkflow)
     ) {
       if (this.currentCommand === 'cm:stacks:audit') {
         this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
