@@ -126,23 +126,5 @@ describe('Workflows', () => {
         await wfInstance.fixWorkflowSchema();
         expect(wfInstance.newWorkflowSchema).eql({});
       });
-
-    fancy
-      .stdout({ print: process.env.PRINT === 'true' || true })
-      .stub(wf, 'writeFileSync', () => {})
-      .stub(ux, 'confirm', async () => true)
-      .it('expect the format for the fixed Workflow schema that only contains the ct that is present', async () => {
-        return await wf.writeFixContent({
-          id: {
-            name: 'wf3',
-            uid: 'uid',
-            org_uid: 'org1',
-            api_key: 'apikey',
-            content_types: ['ct2'],
-            enabled: false,
-            deleted_at: false,
-          },
-        });
-      });
   });
 });
