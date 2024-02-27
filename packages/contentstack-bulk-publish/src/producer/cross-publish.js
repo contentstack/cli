@@ -44,6 +44,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion
             uid: items[index].data.uid,
             content_type: items[index].content_type_uid,
             locale: items[index].data.locale || 'en-us',
+            version: items[index].data._version,
             publish_details: [items[index].data.publish_details] || [],
           });
         }
@@ -111,6 +112,7 @@ async function bulkAction(stack, items, bulkPublish, filter, destEnv, apiVersion
             environments: destEnv,
             entryUid: items[index].data.uid,
             locale: items[index].data.locale || 'en-us',
+            version: items[index].data._version,
             Type: 'entry',
             stack: stack,
           });
