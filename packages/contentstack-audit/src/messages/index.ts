@@ -12,6 +12,8 @@ const commonMsg = {
   CONFIG: 'Path of the external config',
   DATA_DIR: 'Path where the data is stored',
   FIX_CONFIRMATION: 'Would you like to overwrite existing file.?',
+  EXTENSION_FIX_WARN: `Extension {uid} named '{title}' will be removed.`,
+  EXTENSION_FIX_CONFIRMATION: `Would you like to overwrite existing file.?`,
 };
 
 const auditMsg = {
@@ -25,6 +27,7 @@ const auditMsg = {
   FINAL_REPORT_PATH: "Reports ready. Please find the reports at '{path}'.",
   SCAN_CT_SUCCESS_MSG: "Successfully completed the scanning of {module} '{title}'.",
   SCAN_ENTRY_SUCCESS_MSG: "Successfully completed the scanning of {module} ({local}) '{title}'.",
+  SCAN_EXT_SUCCESS_MSG: "Successfully completed the scanning of {module} titled '{title}' having uid '{uid}'.",
   AUDIT_CMD_DESCRIPTION: 'Perform audits and find possible errors in the exported Contentstack data',
 };
 
