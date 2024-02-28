@@ -88,8 +88,8 @@ export default class Workflows {
   }
 
   async fixWorkflowSchema() {
-    for (let i in this.workflowSchema) {
-      this.workflowSchema[i].content_types = this.workflowSchema[i].content_types.filter((ct) => {
+    for (let workflow in this.workflowSchema) {
+      this.workflowSchema[workflow].content_types = this.workflowSchema[workflow].content_types.filter((ct) => {
         !this.missingCts.has(ct);
       });
     }
@@ -97,22 +97,22 @@ export default class Workflows {
       ? JSON.parse(readFileSync(this.workflowPath, 'utf8'))
       : {};
     if (Object.keys(newWorkflowSchema).length !== 0) {
-      for (let i in this.workflowSchema) {
-        let fixedCts = this.workflowSchema[i].content_types.filter((ct) => {
+      for (let workflow in this.workflowSchema) {
+        let fixedCts = this.workflowSchema[workflow].content_types.filter((ct) => {
           !this.missingCts.has(ct);
         });
         if (fixedCts.length) {
-          newWorkflowSchema[this.workflowSchema[i].uid].content_types = fixedCts;
+          newWorkflowSchema[this.workflowSchema[workflow].uid].content_types = fixedCts;
         } else {
           this.log(
             $t(commonMsg.WORKFLOW_FIX_WARN, {
-              name: this.workflowSchema[i].name,
-              uid: this.workflowSchema[i].uid,
+              name: this.workflowSchema[workflow].name,
+              uid: this.workflowSchema[workflow].uid,
             }),
             { color: 'yellow' },
           );
           if (this.config.flags.yes || (await ux.confirm(commonMsg.WORKFLOW_FIX_CONFIRMATION))) {
-            delete newWorkflowSchema[this.workflowSchema[i].uid];
+            delete newWorkflowSchema[this.workflowSchema[workflow].uid];
           }
         }
       }
