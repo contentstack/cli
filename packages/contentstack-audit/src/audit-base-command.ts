@@ -12,7 +12,7 @@ import config from './config';
 import { print } from './util/log';
 import { auditMsg } from './messages';
 import { BaseCommand } from './base-command';
-import { Entries, GlobalField, ContentType } from './modules';
+import { Entries, GlobalField, ContentType, Extensions } from './modules';
 import { CommandNames, ContentTypeStruct, OutputColumn, RefErrorReturnType } from './types';
 
 export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseCommand> {
@@ -42,12 +42,13 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     await this.createBackUp();
     this.sharedConfig.reportPath = resolve(this.flags['report-path'] || process.cwd(), 'audit-report');
 
-    const { missingCtRefs, missingGfRefs, missingEntryRefs } = await this.scanAndFix();
+    const { missingCtRefs, missingGfRefs, missingEntryRefs, missingCtRefsInExtensions } = await this.scanAndFix();
 
     this.showOutputOnScreen([
       { module: 'Content types', missingRefs: missingCtRefs },
       { module: 'Global Fields', missingRefs: missingGfRefs },
       { module: 'Entries', missingRefs: missingEntryRefs },
+      { module: 'Extensions', missingRefs: missingCtRefsInExtensions },
     ]);
 
     if (!isEmpty(missingCtRefs) || !isEmpty(missingGfRefs) || !isEmpty(missingEntryRefs)) {
@@ -81,7 +82,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    */
   async scanAndFix() {
     let { ctSchema, gfSchema } = this.getCtAndGfSchema();
-    let missingCtRefs, missingGfRefs, missingEntryRefs;
+    let missingCtRefs, missingGfRefs, missingEntryRefs, missingCtRefsInExtensions;
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       ux.action.start(this.$t(this.messages.AUDIT_START_SPINNER, { module }));
 
@@ -107,12 +108,16 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingEntryRefs = await new Entries(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingEntryRefs);
           break;
+        case 'extensions':
+          missingCtRefsInExtensions = await new Extensions(cloneDeep(constructorParam)).run();
+          await this.prepareReport(module, missingCtRefsInExtensions);
+          break;
       }
 
       ux.action.stop();
     }
 
-    return { missingCtRefs, missingGfRefs, missingEntryRefs };
+    return { missingCtRefs, missingGfRefs, missingEntryRefs, missingCtRefsInExtensions };
   }
 
   /**
