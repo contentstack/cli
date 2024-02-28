@@ -1,5 +1,5 @@
-import Entries from "./entries"
-import GlobalField from "./global-fields"
-import ContentType from "./content-types"
-
-export { Entries, GlobalField, ContentType }
+import Entries from './entries';
+import GlobalField from './global-fields';
+import ContentType from './content-types';
+import Extensions from './extensions';
+export { Entries, GlobalField, ContentType, Extensions };
