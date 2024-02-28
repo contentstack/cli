@@ -21,16 +21,15 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   }
 
   config.contentDir = importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir());
-  config.contentDir = config.contentDir.replace(/['"]/g, '')
+  config.contentDir = config.contentDir.replace(/['"]/g, '');
   const pattern = /[*$%#<>{}!&?]/g;
-  while(pattern.test(config.contentDir)) {
+  while (pattern.test(config.contentDir)) {
     console.log(`Your mentioned directory path contains special characters please add a path without them`);
-    config.contentDir = await askContentDir()
+    config.contentDir = await askContentDir();
   }
   config.contentDir = path.resolve(config.contentDir);
   //Note to support the old key
   config.data = config.contentDir;
-  console.log(config.contentDir)
   if (fileExistsSync(path.join(config.contentDir, 'export-info.json'))) {
     config.contentVersion =
       ((await readFile(path.join(config.contentDir, 'export-info.json'))) || {}).contentVersion || 2;
