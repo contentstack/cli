@@ -9,7 +9,7 @@ export const askContentDir = async (): Promise<string> => {
     message: 'Enter the path for the content',
     name: 'dir',
   });
-  result = result.replace(/"/g, '');
+  result = result.replace(/["']/g, '');
   return path.resolve(result);
 };
 

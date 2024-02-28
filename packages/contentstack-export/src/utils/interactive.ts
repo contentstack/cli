@@ -53,7 +53,7 @@ export const askExportDir = async (): Promise<string> => {
   if (!result) {
     return process.cwd();
   } else {
-    result = result.replace(/"/g, '');
+    result = result.replace(/['"]/g, '');
     return path.resolve(result);
   }
 };

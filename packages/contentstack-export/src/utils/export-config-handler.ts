@@ -16,6 +16,12 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
     config = merge.recursive(config, externalConfig);
   }
   config.exportDir = exportCmdFlags['data'] || exportCmdFlags['data-dir'] || config.data || (await askExportDir());
+  config.exportDir = config.exportDir.replace(/['"]/g, '')
+  const pattern = /[*$%#<>{}!&?]/g;
+  while(pattern.test(config.exportDir)) {
+    console.log(`Your mentioned directory path contains special characters please add a path without them`);
+    config.exportDir = await askExportDir()
+  }
   config.exportDir = path.resolve(config.exportDir);
   //Note to support the old key
   config.data = config.exportDir;
