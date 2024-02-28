@@ -11,7 +11,7 @@
     "inquirer": "8.2.4",
     "mkdirp": "^1.0.4",
     "tar": "^6.1.13",
-    "tmp": "^0.2.1",
+    "tmp": "^0.2.2",
     "tslib": "^2.4.1"
   },
   "devDependencies": {
