@@ -8,7 +8,7 @@ export interface Extension {
   updated_at: string;
   created_by: string;
   updated_by: string;
-  tags: [];
+  tags?: [];
   _version: number;
   title: string;
   config: {};
@@ -19,4 +19,5 @@ export interface Extension {
   scope: {
     content_types: string[];
   };
+  content_types?: string[];
 }

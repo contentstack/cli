@@ -55,47 +55,39 @@ export default class Extensions {
     this.extensionsSchema = existsSync(this.extensionsPath)
       ? values(JSON.parse(readFileSync(this.extensionsPath, 'utf-8')) as Extension[])
       : [];
-    this.ctSchema.forEach((ct) => this.ctUidSet.add(ct.uid));
-
-    this.extensionsSchema.forEach((ext: Extension) => {
+    this.ctSchema.map((ct) => this.ctUidSet.add(ct.uid));
+    for (const ext of this.extensionsSchema) {
       const { title, uid, scope } = ext;
-      let ctNotPresent: string[] = [];
+      const ctNotPresent = scope?.content_types.filter((ct) => !this.ctUidSet.has(ct));
 
-      scope?.content_types.forEach((ct) => {
-        if (!this.ctUidSet.has(ct)) {
-          ctNotPresent.push(ct);
-          this.missingCts.add(ct);
-        }
-      });
-
-      if (ctNotPresent.length && ext.scope) {
+      if (ctNotPresent?.length && ext.scope) {
         ext.scope.content_types = ctNotPresent;
+        ext.content_types = ctNotPresent;
+        ctNotPresent.forEach((ct) => this.missingCts.add(ct));
         this.missingCtInExtensions.push(cloneDeep(ext));
       }
 
       this.log(
         $t(auditMsg.SCAN_EXT_SUCCESS_MSG, {
-          title: title,
+          title,
           module: this.config.moduleConfig[this.moduleName].name,
-          uid: uid,
+          uid,
         }),
         'info',
       );
-    });
+    }
 
     if (this.fix && this.missingCtInExtensions.length) {
       await this.fixExtensionsScope(cloneDeep(this.missingCtInExtensions));
+      return {};
     }
-
     return this.missingCtInExtensions;
   }
 
   async fixExtensionsScope(missingCtInExtensions: Extension[]) {
-    for (let ext in missingCtInExtensions) {
-      if (missingCtInExtensions[ext].scope) {
-        missingCtInExtensions[ext].scope.content_types = missingCtInExtensions[ext].scope.content_types.filter((ct) => {
-          !this.missingCts.has(ct);
-        });
+    for (const ext of missingCtInExtensions) {
+      if (ext.scope) {
+        ext.scope.content_types = ext.scope.content_types.filter((ct) => !this.missingCts.has(ct));
       }
     }
 
@@ -103,43 +95,35 @@ export default class Extensions {
       ? JSON.parse(readFileSync(this.extensionsPath, 'utf8'))
       : {};
 
-    if (Object.keys(newExtensionSchema).length !== 0) {
-      for (let ext in missingCtInExtensions) {
-        let fixedCts = missingCtInExtensions[ext].scope.content_types.filter((ct) => {
-          !this.missingCts.has(ct);
-        });
-        if (fixedCts.length) {
-          newExtensionSchema[missingCtInExtensions[ext].uid].scope.content_types = fixedCts;
-        } else {
-          this.log(
-            $t(commonMsg.EXTENSION_FIX_WARN, {
-              name: missingCtInExtensions[ext].title,
-              uid: missingCtInExtensions[ext].uid,
-            }),
-            { color: 'yellow' },
-          );
-          if (this.config.flags.yes || (await ux.confirm(commonMsg.EXTENSION_FIX_CONFIRMATION))) {
-            delete newExtensionSchema[missingCtInExtensions[ext].uid];
-          }
+    for (const ext of missingCtInExtensions) {
+      const { uid, title } = ext;
+      const fixedCts = ext?.scope?.content_types.filter((ct) => !this.missingCts.has(ct));
+
+      if (fixedCts?.length) {
+        newExtensionSchema[uid].scope.content_types = fixedCts;
+      } else {
+        this.log($t(commonMsg.EXTENSION_FIX_WARN, { title: title, uid }), { color: 'yellow' });
+
+        const shouldDelete = this.config.flags.yes || (await ux.confirm(commonMsg.EXTENSION_FIX_CONFIRMATION));
+        if (shouldDelete) {
+          delete newExtensionSchema[uid];
         }
       }
     }
-    this.writeFixContent(newExtensionSchema);
+    await this.writeFixContent(newExtensionSchema);
   }
 
   async writeFixContent(fixedExtensions: Record<string, Extension>) {
-    let canWrite = true;
-
-    if (this.fix) {
-      if (!this.config.flags['copy-dir'] && !this.config.flags['external-config']?.skipConfirm) {
-        canWrite = this.config.flags.yes ?? (await ux.confirm(commonMsg.FIX_CONFIRMATION));
-      }
-      if (canWrite) {
-        writeFileSync(
-          join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName),
-          JSON.stringify(fixedExtensions),
-        );
-      }
+    if (
+      this.fix &&
+      (this.config.flags['copy-dir'] ||
+        this.config.flags['external-config']?.skipConfirm ||
+        (await ux.confirm(commonMsg.FIX_CONFIRMATION)))
+    ) {
+      writeFileSync(
+        join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName),
+        JSON.stringify(fixedExtensions),
+      );
     }
   }
 }
