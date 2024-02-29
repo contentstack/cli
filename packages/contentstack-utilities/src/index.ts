@@ -30,6 +30,7 @@ export * from './helpers';
 export * from './interfaces';
 export * from './date-time';
 export * from './add-locale';
+export * from './path-validator';
 
 // Marketplace SDK export
 export {
