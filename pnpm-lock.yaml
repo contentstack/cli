@@ -14,7 +14,7 @@ importers:
       '@contentstack/cli-auth': ~1.3.17
       '@contentstack/cli-cm-bootstrap': ~1.9.0
       '@contentstack/cli-cm-branches': ~1.0.22
-      '@contentstack/cli-cm-bulk-publish': ~1.4.1
+      '@contentstack/cli-cm-bulk-publish': ~1.4.2
       '@contentstack/cli-cm-clone': ~1.10.1
       '@contentstack/cli-cm-export': ~1.11.0
       '@contentstack/cli-cm-export-to-csv': ~1.7.0
@@ -57,7 +57,7 @@ importers:
       shelljs: ^0.8.4
       short-uuid: ^4.2.2
       sinon: ^15.0.1
-      tmp: ^0.2.1
+      tmp: ^0.2.2
       ts-node: ^10.9.1
       tslib: ^2.4.1
       typescript: ^4.9.3
@@ -114,7 +114,7 @@ importers:
       rimraf: 2.7.1
       shelljs: 0.8.5
       sinon: 15.2.0
-      tmp: 0.2.1
+      tmp: 0.2.3
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       tslib: 2.6.2
       typescript: 4.9.5
@@ -211,7 +211,7 @@ importers:
       oclif: ^3.8.1
       rimraf: ^2.7.1
       sinon: ^15.0.1
-      tmp: ^0.2.1
+      tmp: ^0.2.2
       ts-node: ^10.9.1
       typescript: ^4.9.3
       winston: ^3.7.2
@@ -243,7 +243,7 @@ importers:
       oclif: 3.17.2_ogreqof3k35xezedraj6pnd45y
       rimraf: 2.7.1
       sinon: 15.2.0
-      tmp: 0.2.1
+      tmp: 0.2.3
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       typescript: 4.9.5
 
@@ -269,7 +269,7 @@ importers:
       oclif: ^3.8.1
       rimraf: ^2.7.1
       tar: ^6.1.13
-      tmp: ^0.2.1
+      tmp: ^0.2.2
       ts-node: ^8.10.2
       typescript: ^4.9.3
     dependencies:
@@ -294,7 +294,7 @@ importers:
       nyc: 15.1.0
       oclif: 3.17.2_ogreqof3k35xezedraj6pnd45y
       rimraf: 2.7.1
-      tmp: 0.2.1
+      tmp: 0.2.3
       ts-node: 8.10.2_typescript@4.9.5
       typescript: 4.9.5
 
@@ -544,7 +544,7 @@ importers:
       oclif: ^3.8.1
       rimraf: ^2.7.1
       sinon: ^15.0.1
-      tmp: ^0.2.1
+      tmp: ^0.2.2
       ts-node: ^10.9.1
       typescript: ^4.9.3
       winston: ^3.7.2
@@ -575,7 +575,7 @@ importers:
       oclif: 3.17.2_ogreqof3k35xezedraj6pnd45y
       rimraf: 2.7.1
       sinon: 15.2.0
-      tmp: 0.2.1
+      tmp: 0.2.3
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       typescript: 4.9.5
 
@@ -766,7 +766,7 @@ importers:
       promise-limit: ^2.7.0
       rimraf: ^2.7.1
       sinon: ^11.1.1
-      tmp: ^0.2.1
+      tmp: ^0.2.2
       ts-node: ^10.9.1
       tslib: ^2.4.1
       typescript: ^4.9.3
@@ -813,7 +813,7 @@ importers:
       oclif: 3.17.2_vk2nahlbg3l2zm6o274jd7fsaa
       rimraf: 2.7.1
       sinon: 11.1.2
-      tmp: 0.2.1
+      tmp: 0.2.3
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       typescript: 4.9.5
 
@@ -1010,7 +1010,7 @@ importers:
       mkdirp: ^1.0.4
       oclif: ^3.8.1
       tar: ^6.1.13
-      tmp: ^0.2.1
+      tmp: ^0.2.2
       ts-jest: ^29.0.5
       ts-node: ^8.10.2
       tslib: ^2.4.1
@@ -1022,7 +1022,7 @@ importers:
       inquirer: 8.2.4
       mkdirp: 1.0.4
       tar: 6.2.0
-      tmp: 0.2.1
+      tmp: 0.2.3
       tslib: 2.6.2
     devDependencies:
       '@oclif/plugin-help': 5.2.20_ogreqof3k35xezedraj6pnd45y
@@ -1084,7 +1084,7 @@ importers:
       rimraf: ^2.7.1
       rxjs: ^6.6.7
       sinon: ^15.0.1
-      tmp: ^0.2.1
+      tmp: ^0.2.2
       traverse: ^0.6.7
       ts-node: ^10.9.1
       tslib: ^1.13.0
@@ -1139,7 +1139,7 @@ importers:
       nyc: 15.1.0
       rimraf: 2.7.1
       sinon: 15.2.0
-      tmp: 0.2.1
+      tmp: 0.2.3
       ts-node: 10.9.2_ogreqof3k35xezedraj6pnd45y
       tslib: 1.14.1
       typescript: 4.9.5
@@ -12429,6 +12429,7 @@ packages:
     hasBin: true
     dependencies:
       glob: 7.2.3
+    dev: true
 
   /rimraf/5.0.5:
     resolution: {integrity: sha512-CqDakW+hMe/Bz202FPEymy68P+G50RfMQK+Qo5YUqc9SPipvbGjCGKd0RSKEelbsfQuw3g5NZDSrlZZAJurH1A==}
@@ -13246,11 +13247,9 @@ packages:
     dependencies:
       os-tmpdir: 1.0.2
 
-  /tmp/0.2.1:
-    resolution: {integrity: sha512-76SUhtfqR2Ijn+xllcI5P1oyannHNHByD80W1q447gU3mp9G9PSpGdWmjUOHRDPiHYacIk66W7ubDTuPF3BEtQ==}
-    engines: {node: '>=8.17.0'}
-    dependencies:
-      rimraf: 3.0.2
+  /tmp/0.2.3:
+    resolution: {integrity: sha512-nZD7m9iCPC5g0pYmcaxogYKggSfLsdxl8of3Q/oIbqCqLLIO9IAF0GWjX1z9NZRHPiXv8Wex4yDCaZsgEw0Y8w==}
+    engines: {node: '>=14.14'}
 
   /tmpl/1.0.5:
     resolution: {integrity: sha512-3f0uOEAQwIqGuWW2MVzYg8fV/QNnc/IpuJNG837rLuczAaLVHslWHZQj4IGiEl5Hs3kkbhwL9Ab7Hrsmuj+Smw==}
