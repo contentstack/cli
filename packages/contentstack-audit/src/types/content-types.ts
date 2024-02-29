@@ -48,6 +48,8 @@ type RefErrorReturnType = {
   missingRefs: string[];
   display_name: string;
   tree: Record<string, unknown>[];
+  uid?: string;
+  content_types?: string[];
 };
 
 // NOTE Type 1
@@ -113,6 +115,9 @@ enum OutputColumn {
   'Field type' = 'data_type',
   'Missing references' = 'missingRefs',
   Path = 'treeStr',
+  content_types = 'content_types',
+  'uid' = 'uid',
+  'missingCts' = 'content_types',
 }
 
 export {
