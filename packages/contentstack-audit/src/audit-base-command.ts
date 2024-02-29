@@ -48,10 +48,15 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       { module: 'Content types', missingRefs: missingCtRefs },
       { module: 'Global Fields', missingRefs: missingGfRefs },
       { module: 'Entries', missingRefs: missingEntryRefs },
-      { module: 'Extensions', missingRefs: missingCtRefsInExtensions },
     ]);
+    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Extensions', missingRefs: missingCtRefsInExtensions }]);
 
-    if (!isEmpty(missingCtRefs) || !isEmpty(missingGfRefs) || !isEmpty(missingEntryRefs)) {
+    if (
+      !isEmpty(missingCtRefs) ||
+      !isEmpty(missingGfRefs) ||
+      !isEmpty(missingEntryRefs) ||
+      !isEmpty(missingCtRefsInExtensions)
+    ) {
       if (this.currentCommand === 'cm:stacks:audit') {
         this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
       } else {
@@ -71,7 +76,12 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       }
     }
 
-    return !isEmpty(missingCtRefs) || !isEmpty(missingGfRefs) || !isEmpty(missingEntryRefs);
+    return (
+      !isEmpty(missingCtRefs) ||
+      !isEmpty(missingGfRefs) ||
+      !isEmpty(missingEntryRefs) ||
+      !isEmpty(missingCtRefsInExtensions)
+    );
   }
 
   /**
@@ -246,6 +256,47 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     }
   }
 
+  // Make it generic it takes the column header as param
+  showOutputOnScreenWorkflowsAndExtension(allMissingRefs: { module: string; missingRefs?: Record<string, any> }[]) {
+    if (!this.sharedConfig.showTerminalOutput || this.flags['external-config']?.noTerminalOutput) {
+      return;
+    }
+
+    this.log(''); // Adding a new line
+
+    for (const { module, missingRefs } of allMissingRefs) {
+      if (isEmpty(missingRefs)) {
+        continue;
+      }
+
+      print([{ bold: true, color: 'cyan', message: ` ${module}` }]);
+
+      const tableValues = Object.values(missingRefs).flat();
+
+      const tableKeys = Object.keys(missingRefs[0]);
+
+      const arrayOfObjects = tableKeys.map((key) => {
+        if (['title', 'name', 'uid', 'content_types'].includes(key)) {
+          return {
+            [key]: {
+              minWidth: 7,
+              header: key,
+              get: (row: Record<string, unknown>) => {
+                return chalk.red(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
+              },
+            },
+          };
+        }
+        return {};
+      });
+
+      const mergedObject = Object.assign({}, ...arrayOfObjects);
+
+      ux.table(tableValues, mergedObject, { ...this.flags });
+      this.log(''); // Adding a new line
+    }
+  }
+
   /**
    * The function prepares a report by writing a JSON file and a CSV file with a list of missing
    * references for a given module.
@@ -304,8 +355,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
         let row: Record<string, string | string[]> = {};
 
         for (const column of columns) {
-          row[column] = issue[OutputColumn[column]];
-          row[column] = typeof row[column] === 'object' ? JSON.stringify(row[column]) : row[column];
+          if (Object.keys(issue).includes(OutputColumn[column])) {
+            row[column] = issue[OutputColumn[column]] as string;
+            row[column] = typeof row[column] === 'object' ? JSON.stringify(row[column]) : row[column];
+          }
         }
 
         if (this.currentCommand === 'cm:stacks:audit:fix') {
