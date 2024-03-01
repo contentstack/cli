@@ -1,4 +1,4 @@
-import { cliux } from '@contentstack/cli-utilities';
+import { cliux, validatePath } from '@contentstack/cli-utilities';
 import * as path from 'path';
 
 export const askPassword = async () => {
@@ -49,6 +49,7 @@ export const askExportDir = async (): Promise<string> => {
     type: 'input',
     message: 'Enter the path for storing the content: (current folder)',
     name: 'dir',
+    validate: validatePath,
   });
   if (!result) {
     return process.cwd();
