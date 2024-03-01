@@ -148,7 +148,7 @@ const config: DefaultConfig = {
     taxonomies: {
       dirName: 'taxonomies',
       fileName: 'taxonomies.json',
-    }
+    },
   },
   languagesCode: [
     'af-za',
@@ -388,6 +388,13 @@ const config: DefaultConfig = {
   // useBackedupDir: '',
   // backupConcurrency: 10,
   onlyTSModules: ['taxonomies'],
+  auditConfig: {
+    noLog: false, // Skip logs printing on terminal
+    skipConfirm: true, // Skip confirmation if any
+    returnResponse: true, // On process completion should return config used in the command
+    noTerminalOutput: false, // Skip final audit table output on terminal
+    config: { basePath: '' }, // To overwrite any build-in config. And this config is equal to --config flag.
+  }
 };
 
 export default config;
