@@ -1,4 +1,3 @@
-import fs from 'fs';
 import { resolve } from 'path';
 import { fancy } from 'fancy-test';
 import { expect } from '@oclif/test';
@@ -8,12 +7,8 @@ import { ux } from '@contentstack/cli-utilities';
 import config from '../../../src/config';
 import { Extensions } from '../../../src/modules';
 import { $t, auditMsg } from '../../../src/messages';
-import { values } from 'lodash';
-// import { spy } from '@contentstack/cli-dev-dependencies';
 import sinon from 'sinon';
-// import extensionsExamples from './../mock/contents/extensions/extensions.json';
 import { Extension } from '../../../src/types';
-// import { join } from 'path';
 
 describe('Extensions scope containing content_types uids', () => {
   describe('run method with invalid path for extensions', () => {
@@ -51,7 +46,7 @@ describe('Extensions scope containing content_types uids', () => {
       .it(
         'should expect missingRefs equal to empty array, expect entire workflow schema and empty missingCts',
         async () => {
-          const missingRefs = await ext.run();
+          await ext.run();
           expect(ext.missingCtInExtensions).eql([
             {
               stackHeaders: {
@@ -162,7 +157,7 @@ describe('Extensions scope containing content_types uids', () => {
       .it(
         'should expect missingRefs equal to empty array, expect entire workflow schema and empty missingCts',
         async () => {
-          const missingRefs = await ext.run();
+          await ext.run();
           expect(ext.missingCtInExtensions).eql([]);
           expect(ext.missingCts).eql(new Set([]));
         },
