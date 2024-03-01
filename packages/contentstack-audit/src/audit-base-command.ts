@@ -274,7 +274,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       const tableValues = Object.values(missingRefs).flat();
 
       const tableKeys = Object.keys(missingRefs[0]);
-
       const arrayOfObjects = tableKeys.map((key) => {
         if (['title', 'name', 'uid', 'content_types'].includes(key)) {
           return {
@@ -350,7 +349,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       }
 
       const rowData: Record<string, string | string[]>[] = [];
-
       for (const issue of missingRefs) {
         let row: Record<string, string | string[]> = {};
 
