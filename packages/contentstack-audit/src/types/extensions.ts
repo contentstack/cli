@@ -20,4 +20,5 @@ export interface Extension {
     content_types: string[];
   };
   content_types?: string[];
+  fixStatus?: string;
 }
