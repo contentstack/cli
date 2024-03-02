@@ -9,8 +9,6 @@ import config from '../../../src/config';
 import { Workflows } from '../../../src/modules';
 import { $t, auditMsg } from '../../../src/messages';
 import { values } from 'lodash';
-import { Workflow } from '../../../src/types';
-import { join } from 'path';
 
 describe('Workflows', () => {
   describe('run method with invalid path for workflows', () => {
@@ -42,17 +40,35 @@ describe('Workflows', () => {
         flags: {},
       }),
     });
-
     fancy
       .stdout({ print: process.env.PRINT === 'true' || true })
       .stub(ux, 'confirm', async () => true)
       .it(
-        'should expect missingRefs equal to empty array, expect entire workflow schema and empty missingCts',
+        'should expect missingRefs equal to workflow which has missing refs, missingCts equal to missing Cts',
         async () => {
           const missingRefs = await wf.run();
           expect(wf.workflowSchema).eql(values(JSON.parse(fs.readFileSync(wf.workflowPath, 'utf8'))));
-          expect(missingRefs).eql([]);
-          expect(wf.missingCts).eql(new Set([]));
+          expect(missingRefs).eql([
+            {
+              name: 'wf1',
+              uid: 'wf1',
+              org_uid: 'org1',
+              api_key: 'apiKey',
+              content_types: ['ct45', 'ct14'],
+              enabled: false,
+              deleted_at: false,
+            },
+            {
+              name: 'wf3',
+              uid: 'wf3',
+              org_uid: 'org1',
+              api_key: 'apiKey',
+              content_types: ['ct6'],
+              enabled: false,
+              deleted_at: false,
+            },
+          ]);
+          expect(wf.missingCts).eql(new Set(['ct45', 'ct14', 'ct6']));
         },
       );
   });
@@ -73,6 +89,7 @@ describe('Workflows', () => {
       .stub(ux, 'confirm', async () => true)
       .it('should expect missingRefs equal to all workflows', async () => {
         const missingRefs = await wf.run();
+        wf.workflowSchema.pop();
         expect(missingRefs).eql(wf.workflowSchema);
       });
   });
@@ -81,7 +98,7 @@ describe('Workflows', () => {
     const wf = new Workflows({
       log: () => {},
       moduleName: 'workflows',
-      ctSchema: [],
+      ctSchema: cloneDeep(require('./../mock/contents/workflows/ctSchema.json')),
       config: Object.assign(config, {
         basePath: resolve(`./test/unit/mock/contents/`),
         flags: {},
@@ -91,40 +108,43 @@ describe('Workflows', () => {
 
     fancy
       .stdout({ print: process.env.PRINT === 'true' || true })
-      .stub(wf, 'fixWorkflowSchema', async () => {})
-      .stub(wf, 'writeFixContent', async () => {})
+      .stub(wf, 'log', async () => {})
       .stub(ux, 'confirm', async () => true)
+      .stub(wf, 'WriteFileSync', () => {})
       .it('the run function should run and flow should go till fixWorkflowSchema', async () => {
-        await wf.run();
-      });
-
-    fancy
-      .stdout({ print: process.env.PRINT === 'true' || true })
-      .stub(wf, 'writeFixContent', () => {})
-      .stub(ux, 'confirm', async () => true)
-      .it('should expect fixWorkflow schema to run', async () => {
-        const wfInstance = new (class Class extends Workflows {
-          public newWorkflowSchema!: Record<string, Workflow>;
-          constructor() {
-            super({
-              log: () => {},
-              moduleName: 'workflows',
-              ctSchema: [],
-              config: Object.assign(config, {
-                basePath: resolve(`./test/unit/mock/contents/`),
-                flags: {},
-              }),
-              fix: true,
-            });
-            this.workflowPath = join(this.folderPath, this.fileName);
-          }
-          async writeFixContent(WorkflowSchema: Record<string, Workflow>) {
-            this.newWorkflowSchema = WorkflowSchema;
-          }
-        })();
-        await wfInstance.run();
-        await wfInstance.fixWorkflowSchema();
-        expect(wfInstance.newWorkflowSchema).eql({});
+        const fixedReference = await wf.run();
+        expect(fixedReference).eql([
+          {
+            name: 'wf1',
+            uid: 'wf1',
+            org_uid: 'org1',
+            api_key: 'apiKey',
+            content_types: ['ct45', 'ct14'],
+            enabled: false,
+            deleted_at: false,
+            fixStatus: 'Fixed',
+          },
+          {
+            name: 'wf3',
+            uid: 'wf3',
+            org_uid: 'org1',
+            api_key: 'apiKey',
+            content_types: ['ct6'],
+            enabled: false,
+            deleted_at: false,
+            fixStatus: 'Fixed',
+          },
+          {
+            api_key: 'apiKey',
+            content_types: ['ct88'],
+            deleted_at: false,
+            enabled: false,
+            fixStatus: 'Fixed',
+            name: 'wf6',
+            org_uid: 'org1',
+            uid: 'wf6',
+          },
+        ]);
       });
   });
 });
