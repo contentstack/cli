@@ -54,85 +54,74 @@ export default class Workflows {
       this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
       return {};
     }
-
+  
     this.workflowPath = join(this.folderPath, this.fileName);
-
-    this.workflowSchema = existsSync(this.workflowPath)
-      ? values(JSON.parse(readFileSync(this.workflowPath, 'utf8')) as Workflow[])
-      : [];
+    this.workflowSchema = existsSync(this.workflowPath) ? values(JSON.parse(readFileSync(this.workflowPath, 'utf8')) as Workflow[]) : [];
+  
     this.ctSchema.forEach((ct) => this.ctUidSet.add(ct.uid));
-    this.workflowSchema.forEach((workflow: Workflow) => {
-      let ctNotPresent: string[] = [];
-      workflow.content_types.forEach((ct) => {
-        if (!this.ctUidSet.has(ct)) {
-          ctNotPresent.push(ct);
-          this.missingCts.add(ct);
-        }
-      });
+  
+    for (const workflow of this.workflowSchema) {
+      const ctNotPresent = workflow.content_types.filter((ct) => !this.ctUidSet.has(ct));
       if (ctNotPresent.length) {
-        workflow.content_types = ctNotPresent;
-        this.missingCtInWorkflows.push(cloneDeep(workflow));
+        const tempwf = cloneDeep(workflow);
+        tempwf.content_types = ctNotPresent;
+        this.missingCtInWorkflows.push(tempwf);
       }
+  
       this.log(
         $t(auditMsg.SCAN_WF_SUCCESS_MSG, {
           name: workflow.name,
           module: this.config.moduleConfig[this.moduleName].name,
         }),
-        'info',
+        'info'
       );
-    });
+    }
+  
     if (this.fix && this.missingCtInWorkflows.length) {
       await this.fixWorkflowSchema();
+      this.missingCtInWorkflows.forEach((wf) => (wf.fixStatus = 'Fixed'));
     }
+  
     return this.missingCtInWorkflows;
   }
 
-  async fixWorkflowSchema() {
-    for (let workflow in this.workflowSchema) {
-      this.workflowSchema[workflow].content_types = this.workflowSchema[workflow].content_types.filter((ct) => {
-        !this.missingCts.has(ct);
-      });
-    }
-    let newWorkflowSchema: Record<string, Workflow> = existsSync(this.workflowPath)
+  async fixWorkflowSchema() {  
+    const newWorkflowSchema: Record<string, Workflow> = existsSync(this.workflowPath)
       ? JSON.parse(readFileSync(this.workflowPath, 'utf8'))
       : {};
+    
     if (Object.keys(newWorkflowSchema).length !== 0) {
-      for (let workflow in this.workflowSchema) {
-        let fixedCts = this.workflowSchema[workflow].content_types.filter((ct) => {
-          !this.missingCts.has(ct);
-        });
+      for (const workflow of this.workflowSchema) {  
+        const fixedCts = workflow.content_types.filter((ct) => !this.missingCts.has(ct));
+    
         if (fixedCts.length) {
-          newWorkflowSchema[this.workflowSchema[workflow].uid].content_types = fixedCts;
+          newWorkflowSchema[workflow.uid].content_types = fixedCts;
         } else {
-          this.log(
-            $t(commonMsg.WORKFLOW_FIX_WARN, {
-              name: this.workflowSchema[workflow].name,
-              uid: this.workflowSchema[workflow].uid,
-            }),
-            { color: 'yellow' },
-          );
+          const { name, uid } = workflow;
+          const warningMessage = $t(commonMsg.WORKFLOW_FIX_WARN, { name, uid });
+  
+          this.log(warningMessage, { color: 'yellow' });
+  
           if (this.config.flags.yes || (await ux.confirm(commonMsg.WORKFLOW_FIX_CONFIRMATION))) {
-            delete newWorkflowSchema[this.workflowSchema[workflow].uid];
+            delete newWorkflowSchema[workflow.uid];
           }
         }
       }
     }
+  
     await this.writeFixContent(newWorkflowSchema);
   }
 
   async writeFixContent(newWorkflowSchema: Record<string, Workflow>) {
-    let canWrite = true;
-
-    if (this.fix) {
-      if (!this.config.flags['copy-dir'] && !this.config.flags['external-config']?.skipConfirm) {
-        canWrite = this.config.flags.yes ?? (await ux.confirm(commonMsg.FIX_CONFIRMATION));
-      }
-      if (canWrite) {
-        writeFileSync(
-          join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName),
-          JSON.stringify(newWorkflowSchema),
-        );
-      }
+    if (
+      this.fix &&
+      !(this.config.flags['copy-dir'] || this.config.flags['external-config']?.skipConfirm) &&
+      (this.config.flags.yes || (await ux.confirm(commonMsg.FIX_CONFIRMATION)))
+    ) {
+      writeFileSync(
+        join(this.folderPath, this.config.moduleConfig[this.moduleName].fileName),
+        JSON.stringify(newWorkflowSchema),
+      );
     }
   }
 }
