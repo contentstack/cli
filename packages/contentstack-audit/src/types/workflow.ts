@@ -9,4 +9,5 @@ export interface Workflow {
   enabled?: boolean;
   deleted_at?: any;
   missingRefs?: any;
+  fixStatus?:string
 }

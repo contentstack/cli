@@ -222,7 +222,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
             },
           ]);
           const tableValues = Object.values(missingRefs).flat();
-
           ux.table(
             tableValues,
             {
@@ -265,47 +264,46 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
   // Make it generic it takes the column header as param
   showOutputOnScreenWorkflowsAndExtension(allMissingRefs: { module: string; missingRefs?: Record<string, any> }[]) {
-    if (this.sharedConfig.showTerminalOutput && !this.flags['external-config']?.noTerminalOutput) {
-      this.log(''); // NOTE adding new line
-      for (const { module, missingRefs } of allMissingRefs) {
-        if (!isEmpty(missingRefs)) {
-          print([
-            {
-              bold: true,
-              color: 'cyan',
-              message: ` ${module}`,
-            },
-          ]);
-          const tableValues = Object.values(missingRefs).flat();
-          ux.table(
-            tableValues,
-            {
-              name: {
-                minWidth: 7,
-                header: 'Title',
-              },
-              uid: {
-                minWidth: 12,
-                header: 'Workflow Uid',
-              },
-              content_types: {
-                minWidth: 7,
-                header: 'Missing Content Types',
-                get: (row) => {
-                  return chalk.red(
-                    typeof row.content_types === 'object' ? JSON.stringify(row.content_types) : row.content_types,
-                  );
-                },
-              },
-              ...(tableValues[0]?.fixStatus ? this.fixStatus : {}),
-            },
-            {
-              ...this.flags,
-            },
-          );
-          this.log(''); // NOTE adding new line
-        }
+    if (!this.sharedConfig.showTerminalOutput || this.flags['external-config']?.noTerminalOutput) {
+      return;
+    }
+    
+    this.log(''); // Adding a new line
+
+    for (const { module, missingRefs } of allMissingRefs) {
+      if (isEmpty(missingRefs)) {
+        continue;
       }
+
+      print([{ bold: true, color: 'cyan', message: ` ${module}` }]);
+
+      const tableValues = Object.values(missingRefs).flat();
+
+      const tableKeys = Object.keys(missingRefs[0]);
+      const arrayOfObjects = tableKeys.map((key) => {
+        if (['title', 'name', 'uid', 'content_types', 'fixStatus'].includes(key)) {
+          return {
+            [key]: {
+              minWidth: 7,
+              header: key,
+              get: (row: Record<string, unknown>) => {
+                if(key==='fixStatus') {
+                  return chalk.green(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
+                } else if(key==='content_types') {
+                  return chalk.red(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
+                } else {
+                  return chalk.white(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
+                }
+              }
+            },
+          };
+        }
+        return {};
+      });
+      const mergedObject = Object.assign({}, ...arrayOfObjects);
+
+      ux.table(tableValues, mergedObject, { ...this.flags });
+      this.log(''); // Adding a new line
     }
   }
 
