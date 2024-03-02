@@ -275,13 +275,19 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
 
       const tableKeys = Object.keys(missingRefs[0]);
       const arrayOfObjects = tableKeys.map((key) => {
-        if (['title', 'name', 'uid', 'content_types'].includes(key)) {
+        if (['title', 'name', 'uid', 'content_types', 'fixStatus'].includes(key)) {
           return {
             [key]: {
               minWidth: 7,
               header: key,
               get: (row: Record<string, unknown>) => {
-                return chalk.red(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
+                if(key==='fixStatus') {
+                  return chalk.green(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
+                } else if(key==='content_types') {
+                  return chalk.red(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
+                } else {
+                  return chalk.white(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
+                }
               },
             },
           };
