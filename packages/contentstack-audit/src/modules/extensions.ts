@@ -61,7 +61,6 @@ export default class Extensions {
       const ctNotPresent = scope?.content_types.filter((ct) => !this.ctUidSet.has(ct));
 
       if (ctNotPresent?.length && ext.scope) {
-        ext.scope.content_types = ctNotPresent;
         ext.content_types = ctNotPresent;
         ctNotPresent.forEach((ct) => this.missingCts.add(ct));
         this.missingCtInExtensions.push(cloneDeep(ext));
@@ -79,26 +78,19 @@ export default class Extensions {
 
     if (this.fix && this.missingCtInExtensions.length) {
       await this.fixExtensionsScope(cloneDeep(this.missingCtInExtensions));
-      return {};
+      this.missingCtInExtensions.forEach((ext) => (ext.fixStatus = 'Fixed'));
+      return this.missingCtInExtensions
     }
     return this.missingCtInExtensions;
   }
 
   async fixExtensionsScope(missingCtInExtensions: Extension[]) {
-    for (const ext of missingCtInExtensions) {
-      if (ext.scope) {
-        ext.scope.content_types = ext.scope.content_types.filter((ct) => !this.missingCts.has(ct));
-      }
-    }
-
     let newExtensionSchema: Record<string, Extension> = existsSync(this.extensionsPath)
       ? JSON.parse(readFileSync(this.extensionsPath, 'utf8'))
       : {};
-
     for (const ext of missingCtInExtensions) {
       const { uid, title } = ext;
       const fixedCts = ext?.scope?.content_types.filter((ct) => !this.missingCts.has(ct));
-
       if (fixedCts?.length) {
         newExtensionSchema[uid].scope.content_types = fixedCts;
       } else {
@@ -115,7 +107,7 @@ export default class Extensions {
 
   async writeFixContent(fixedExtensions: Record<string, Extension>) {
     if (
-      this.fix &&
+      this.fix ||
       (this.config.flags['copy-dir'] ||
         this.config.flags['external-config']?.skipConfirm ||
         (await ux.confirm(commonMsg.FIX_CONFIRMATION)))

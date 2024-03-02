@@ -10,6 +10,77 @@ import { $t, auditMsg } from '../../../src/messages';
 import sinon from 'sinon';
 import { Extension } from '../../../src/types';
 
+const fixedSchema = [
+  {
+    stackHeaders: {
+      api_key: 'apiKey',
+    },
+    urlPath: '/extensions/ext1',
+    uid: 'ext1',
+    created_at: '2024-02-22T09:45:48.681Z',
+    updated_at: '2024-02-22T09:45:48.681Z',
+    created_by: 'u1',
+    updated_by: 'u1',
+    tags: [],
+    _version: 1,
+    title: 'Progress Bar',
+    config: {},
+    type: 'field',
+    data_type: 'number',
+    "fixStatus": "Fixed",
+    content_types: ['ct6'],
+    multiple: false,
+    scope: {
+      content_types: ['ct6'],
+    }
+  },
+  {
+    stackHeaders: {
+      api_key: 'apiKey',
+    },
+    urlPath: '/extensions/ext2',
+    uid: 'ext2',
+    created_at: '2024-02-22T09:45:11.284Z',
+    updated_at: '2024-02-22T09:45:11.284Z',
+    created_by: 'u1',
+    updated_by: 'u1',
+    tags: [],
+    _version: 1,
+    title: 'Color Picker',
+    config: {},
+    type: 'field',
+    data_type: 'text',
+    "fixStatus": "Fixed",
+    multiple: false,
+    content_types: ['ct8'],
+    scope: {
+      content_types: ['ct8'],
+    }
+  },
+  {
+    stackHeaders: {
+      api_key: 'apiKey',
+    },
+    urlPath: '/extensions/ext5',
+    uid: 'ext5',
+    created_at: '2024-02-22T09:44:27.030Z',
+    updated_at: '2024-02-22T09:44:27.030Z',
+    created_by: 'u1',
+    "fixStatus": "Fixed",
+    updated_by: 'u1',
+    tags: [],
+    _version: 1,
+    title: 'Text Intelligence',
+    config: {
+      token: 'your_token_here',
+    },
+    content_types: ['ct6'],
+    type: 'widget',
+    scope: {
+      content_types: ["ct4", "ct3", "ct2", "ct1",'ct6'],
+    },
+  },
+]
 describe('Extensions scope containing content_types uids', () => {
   describe('run method with invalid path for extensions', () => {
     const ext = new Extensions({
@@ -44,7 +115,7 @@ describe('Extensions scope containing content_types uids', () => {
       .stdout({ print: process.env.PRINT === 'true' || true })
       .stub(ux, 'confirm', async () => true)
       .it(
-        'should expect missingRefs equal to empty array, expect entire workflow schema and empty missingCts',
+        'should expect missing Cts to the ones that are not present in the schema, and MissingCts in extension equal to the extensions which has Cts that are not present',
         async () => {
           await ext.run();
           expect(ext.missingCtInExtensions).eql([
@@ -111,7 +182,7 @@ describe('Extensions scope containing content_types uids', () => {
               content_types: ['ct6'],
               type: 'widget',
               scope: {
-                content_types: ['ct6'],
+                content_types: ["ct4", "ct3", "ct2", "ct1", "ct6"],
               },
             },
           ]);
@@ -135,7 +206,6 @@ describe('Extensions scope containing content_types uids', () => {
       .it(
         'should expect missingRefs equal to empty array, expect entire workflow schema and empty missingCts',
         async () => {
-          //   const missingRefs = await ext.run();
           expect(ext.missingCtInExtensions).eql([]);
           expect(ext.missingCts).eql(new Set([]));
         },
@@ -163,7 +233,7 @@ describe('Extensions scope containing content_types uids', () => {
         },
       );
   });
-  describe('fixSchema method with valid path for extensions containing extensions with missing content typessdfsdfdsfdsfdsfds', () => {
+  describe('fixSchema method with valid path for extensions containing extensions with missing content types', () => {
     const ext = new (class Class extends Extensions {
       public fixedExtensions!: Record<string, Extension>;
       constructor() {
@@ -188,120 +258,75 @@ describe('Extensions scope containing content_types uids', () => {
       .stub(ux, 'confirm', async () => true)
       .stub(ext, 'writeFileSync', () => {})
       .it(
-        'should expect missingRefs equal to empty array, expect entire extensions schema and empty missingCts',
+        'missingCts in extension to extensionSchema containing, extensions with fixed scope, missing Cts to the Cts that are not present in Ct Schema, And the fixed extensions that would be overwritten in the file',
         async () => {
           const missingRefs = await ext.run();
-          expect(ext.missingCtInExtensions).eql([
-            {
-              stackHeaders: {
-                api_key: 'apiKey',
-              },
-              urlPath: '/extensions/ext1',
-              uid: 'ext1',
-              created_at: '2024-02-22T09:45:48.681Z',
-              updated_at: '2024-02-22T09:45:48.681Z',
-              created_by: 'u1',
-              updated_by: 'u1',
-              tags: [],
-              _version: 1,
-              title: 'Progress Bar',
-              config: {},
-              type: 'field',
-              data_type: 'number',
-              content_types: ['ct6'],
-              multiple: false,
-              scope: {
-                content_types: ['ct6'],
-              },
-            },
-            {
-              stackHeaders: {
-                api_key: 'apiKey',
-              },
-              urlPath: '/extensions/ext2',
-              uid: 'ext2',
-              created_at: '2024-02-22T09:45:11.284Z',
-              updated_at: '2024-02-22T09:45:11.284Z',
-              created_by: 'u1',
-              updated_by: 'u1',
-              tags: [],
-              _version: 1,
-              title: 'Color Picker',
-              config: {},
-              type: 'field',
-              data_type: 'text',
-              multiple: false,
-              content_types: ['ct8'],
-              scope: {
-                content_types: ['ct8'],
-              },
-            },
-            {
-              stackHeaders: {
-                api_key: 'apiKey',
-              },
-              urlPath: '/extensions/ext5',
-              uid: 'ext5',
-              created_at: '2024-02-22T09:44:27.030Z',
-              updated_at: '2024-02-22T09:44:27.030Z',
-              created_by: 'u1',
-              updated_by: 'u1',
-              tags: [],
-              _version: 1,
-              title: 'Text Intelligence',
-              config: {
-                token: 'your_token_here',
-              },
-              content_types: ['ct6'],
-              type: 'widget',
-              scope: {
-                content_types: ['ct6'],
-              },
-            },
-          ]);
-          expect(missingRefs).eql({});
+          expect(ext.missingCtInExtensions).eql(fixedSchema);
+          expect(missingRefs).eql(fixedSchema);
           expect(ext.missingCts).eql(new Set(['ct6', 'ct8']));
           expect(ext.fixedExtensions).eql({
-            ext6: {
-              stackHeaders: {
-                api_key: 'apiKey',
+            "ext5": {
+              "stackHeaders": {
+                "api_key": "apiKey"
               },
-              urlPath: '/extensions/ext6',
-              uid: 'ext6',
-              created_at: '2024-02-22T09:44:01.784Z',
-              updated_at: '2024-02-22T09:44:01.784Z',
-              created_by: 'u1',
-              updated_by: 'u1',
-              tags: [],
-              _version: 1,
-              title: 'Ace Editor',
-              config: {},
-              type: 'field',
-              data_type: 'reference',
-              multiple: true,
+              "urlPath": "/extensions/ext5",
+              "uid": "ext5",
+              "created_at": "2024-02-22T09:44:27.030Z",
+              "updated_at": "2024-02-22T09:44:27.030Z",
+              "created_by": "u1",
+              "updated_by": "u1",
+              "tags": [],
+              "_version": 1,
+              "title": "Text Intelligence",
+              "config": {
+                "token": "your_token_here"
+              },
+              "type": "widget",
+              "scope": {
+                "content_types": ["ct4", "ct3", "ct2", "ct1"]
+              }
             },
-            ext7: {
-              stackHeaders: {
-                api_key: 'apiKey',
+            "ext6": {
+              "stackHeaders": {
+                "api_key": "apiKey"
               },
-              urlPath: '/extensions/ext7',
-              uid: 'ext7',
-              created_at: '2024-02-22T09:43:35.589Z',
-              updated_at: '2024-02-22T09:43:35.589Z',
-              created_by: 'u1',
-              updated_by: 'u1',
-              tags: [],
-              _version: 1,
-              title: 'Gatsby Preview',
-              config: {
-                siteUrl: 'your_site_url',
-              },
-              type: 'widget',
-              scope: {
-                content_types: ['ct3', 'ct5'],
-              },
+              "urlPath": "/extensions/ext6",
+              "uid": "ext6",
+              "created_at": "2024-02-22T09:44:01.784Z",
+              "updated_at": "2024-02-22T09:44:01.784Z",
+              "created_by": "u1",
+              "updated_by": "u1",
+              "tags": [],
+              "_version": 1,
+              "title": "Ace Editor",
+              "config": {},
+              "type": "field",
+              "data_type": "reference",
+              "multiple": true
             },
-          });
+            "ext7": {
+              "stackHeaders": {
+                "api_key": "apiKey"
+              },
+              "urlPath": "/extensions/ext7",
+              "uid": "ext7",
+              "created_at": "2024-02-22T09:43:35.589Z",
+              "updated_at": "2024-02-22T09:43:35.589Z",
+              "created_by": "u1",
+              "updated_by": "u1",
+              "tags": [],
+              "_version": 1,
+              "title": "Gatsby Preview",
+              "config": {
+                "siteUrl": "your_site_url"
+              },
+              "type": "widget",
+              "scope": {
+                "content_types": ["ct3", "ct5"]
+              }
+            }
+          }
+          );
         },
       );
   });
@@ -322,78 +347,11 @@ describe('Extensions scope containing content_types uids', () => {
       .stub(ext, 'writeFixContent', async () => {})
       .stub(ext, 'writeFileSync', () => {})
       .it(
-        'should expect missingRefs equal to empty array, expect entire extensions schema and empty missingCts',
+        'missingCts in extension to extensionSchema containing, extensions with fixed scope, missing Cts to the Cts that are not present in Ct Schema, Not overwriting to the file',
         async () => {
           const missingRefs = await ext.run();
-          expect(ext.missingCtInExtensions).eql([
-            {
-              stackHeaders: {
-                api_key: 'apiKey',
-              },
-              urlPath: '/extensions/ext1',
-              uid: 'ext1',
-              created_at: '2024-02-22T09:45:48.681Z',
-              updated_at: '2024-02-22T09:45:48.681Z',
-              created_by: 'u1',
-              updated_by: 'u1',
-              tags: [],
-              _version: 1,
-              title: 'Progress Bar',
-              config: {},
-              type: 'field',
-              data_type: 'number',
-              content_types: ['ct6'],
-              multiple: false,
-              scope: {
-                content_types: ['ct6'],
-              },
-            },
-            {
-              stackHeaders: {
-                api_key: 'apiKey',
-              },
-              urlPath: '/extensions/ext2',
-              uid: 'ext2',
-              created_at: '2024-02-22T09:45:11.284Z',
-              updated_at: '2024-02-22T09:45:11.284Z',
-              created_by: 'u1',
-              updated_by: 'u1',
-              tags: [],
-              _version: 1,
-              title: 'Color Picker',
-              config: {},
-              type: 'field',
-              data_type: 'text',
-              multiple: false,
-              content_types: ['ct8'],
-              scope: {
-                content_types: ['ct8'],
-              },
-            },
-            {
-              stackHeaders: {
-                api_key: 'apiKey',
-              },
-              urlPath: '/extensions/ext5',
-              uid: 'ext5',
-              created_at: '2024-02-22T09:44:27.030Z',
-              updated_at: '2024-02-22T09:44:27.030Z',
-              created_by: 'u1',
-              updated_by: 'u1',
-              tags: [],
-              _version: 1,
-              title: 'Text Intelligence',
-              config: {
-                token: 'your_token_here',
-              },
-              content_types: ['ct6'],
-              type: 'widget',
-              scope: {
-                content_types: ['ct6'],
-              },
-            },
-          ]);
-          expect(missingRefs).eql({});
+          expect(ext.missingCtInExtensions).eql(fixedSchema);
+          expect(missingRefs).eql(fixedSchema);
           expect(ext.missingCts).eql(new Set(['ct6', 'ct8']));
         },
       );
