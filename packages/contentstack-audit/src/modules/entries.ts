@@ -35,6 +35,7 @@ import {
   ExtensionOrAppFieldDataType,
   EntryExtensionOrAppFieldDataType,
 } from '../types';
+import { print } from '../util';
 import GlobalField from './global-fields';
 import { MarketplaceAppsInstallationData } from '../types/extension';
 
@@ -106,14 +107,13 @@ export default class Entries {
             }
 
             this.lookForReference([{ locale: code, uid, name: title }], ctSchema, this.entries[entryUid]);
-            this.log(
-              $t(auditMsg.SCAN_ENTRY_SUCCESS_MSG, {
-                title,
-                local: code,
-                module: this.config.moduleConfig.entries.name,
-              }),
-              'info',
-            );
+            const message = $t(auditMsg.SCAN_ENTRY_SUCCESS_MSG, {
+              title,
+              local: code,
+              module: this.config.moduleConfig.entries.name,
+            });
+            this.log(message, 'hidden');
+            print([{ message: `info: ${message}`, color: 'green' }]);
           }
 
           if (this.fix) {
@@ -122,7 +122,7 @@ export default class Entries {
         }
       }
     }
-    this.log('', 'info'); // Adding empty line
+    // this.log('', 'info'); // Adding empty line
 
     this.removeEmptyVal();
 
