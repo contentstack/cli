@@ -1,7 +1,6 @@
 const fs = require('fs');
 const mkdirp = require('mkdirp');
-const { test, expect } = require('@oclif/test');
-const { join } = require('path');
+const { test: fancy } = require('@oclif/test');
 const { PassThrough } = require('stream');
 const inquirer = require('inquirer');
 const mockData = require('../../mock-data/common.mock.json');
@@ -10,6 +9,7 @@ const { configHandler } = require('@contentstack/cli-utilities');
 const { cma } = configHandler.get('region');
 
 describe('export-to-csv with action taxonomies', () => {
+  const test = fancy.loadConfig({ root: process.cwd() });
   describe('Create taxonomies & terms csv file with all flags including taxonomy uid', () => {
     test
       .stdout({ print: process.env.PRINT === 'true' || false })
@@ -29,9 +29,9 @@ describe('export-to-csv with action taxonomies', () => {
       .nock(cma, (api) => {
         api
           .get(
-            `/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/terms?include_count=true&limit=100&skip=0&depth=0`,
+            `/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/export?format=csv`,
           )
-          .reply(200, mockData.termsResp);
+          .reply(200, mockData.taxonomyCSVData);
       })
       .command([
         'cm:export-to-csv',
@@ -64,16 +64,16 @@ describe('export-to-csv with action taxonomies', () => {
       .nock(cma, (api) => {
         api
           .get(
-            `/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/terms?include_count=true&limit=100&skip=0&depth=0`,
+            `/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/export?format=csv`,
           )
-          .reply(200, mockData.termsResp);
+          .reply(200, mockData.taxonomyCSVData);
       })
       .nock(cma, (api) => {
         api
           .get(
-            `/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[1].uid}/terms?include_count=true&limit=100&skip=0&depth=0`,
+            `/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[1].uid}/export?format=csv`,
           )
-          .reply(200, { terms: [], count: 0 });
+          .reply(200, mockData.taxonomyCSVData);
       })
       .command([
         'cm:export-to-csv',
@@ -117,9 +117,9 @@ describe('export-to-csv with action taxonomies', () => {
       .nock(cma, (api) => {
         api
           .get(
-            `/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/terms?include_count=true&limit=100&skip=0&depth=0`,
+            `/v3/taxonomies/${mockData.taxonomiesResp.taxonomies[0].uid}/export?format=csv`,
           )
-          .reply(200, mockData.termsResp);
+          .reply(200, mockData.taxonomyCSVData);
       })
       .command(['cm:export-to-csv', '--taxonomy-uid', 'taxonomy_uid_1'])
       .it('CSV file should be created');
@@ -127,6 +127,7 @@ describe('export-to-csv with action taxonomies', () => {
 });
 
 describe('export-to-csv with action entries', () => {
+  const test = fancy.loadConfig({ root: process.cwd() });
   describe('Create entries csv file with flags', () => {
     test
       .stdout({ print: process.env.PRINT === 'true' || false })
@@ -239,6 +240,7 @@ describe('export-to-csv with action entries', () => {
 });
 
 describe('export-to-csv with action users', () => {
+  const test = fancy.loadConfig({ root: process.cwd() });
   describe('Export users csv file with flags', () => {
     test
       .stdout({ print: process.env.PRINT === 'true' || false })
@@ -290,7 +292,7 @@ describe('export-to-csv with action users', () => {
 });
 
 describe('Testing the teams support in cli export-to-csv', () => {
-
+  const test = fancy.loadConfig({ root: process.cwd() });
   describe('Testing Teams Command with using org flag and team flag', () => {
     test
       .stdout({ print: process.env.PRINT === 'true' || false })

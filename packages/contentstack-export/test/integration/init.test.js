@@ -14,7 +14,7 @@ const { APP_ENV, DELIMITER, KEY_VAL_DELIMITER } = process.env
 const crypto = new NodeCrypto({
   typeIdentifier: '◈',
   algorithm: 'aes-192-cbc',
-  encryptionKey: ENCRYPTION_KEY || 'gjh67567mn'
+  encryptionKey: ENCRYPTION_KEY || '***REMOVED***'
 });
 
 module.exports = (region) => {
