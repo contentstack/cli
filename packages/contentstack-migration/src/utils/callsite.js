@@ -2,9 +2,10 @@
 
 const getCallsites = require('callsites');
 const { parse, resolve } = require('path');
+const { pathValidator } = require('@contentstack/cli-utilities');
 
 function getFileDirectory(path) {
-  const parentPath = resolve(path, '../'); // Assuming that will be 2 folders up
+  const parentPath = pathValidator(resolve(path, '../')); // Assuming that will be 2 folders up
   return parse(parentPath).dir;
 }
 
