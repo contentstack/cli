@@ -3,7 +3,7 @@ const config = {
   skipRefs: ['sys_assets'],
   skipFieldTypes: ['taxonomy'],
   modules: ['content-types', 'global-fields', 'entries'],
-  'fix-fields': ['reference', 'global_field', 'json:rte', 'json:custom-field', 'blocks', 'group'],
+  'fix-fields': ['reference', 'global_field', 'json:rte', 'json:extension', 'blocks', 'group'],
   moduleConfig: {
     'content-types': {
       name: 'content type',
@@ -25,6 +25,24 @@ const config = {
       dirName: 'locales',
       fileName: 'locales.json',
     },
+  },
+  entries: {
+    systemKeys: [
+      'uid',
+      'ACL',
+      'tags',
+      'locale',
+      '_version',
+      '_metadata',
+      'published',
+      'created_at',
+      'updated_at',
+      'created_by',
+      'updated_by',
+      '_in_progress',
+      '_restore_status',
+      'publish_details',
+    ],
   },
 };
 
