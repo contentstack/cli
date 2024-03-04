@@ -1,6 +1,7 @@
 const { highlight } = require('cardinal');
 const { keys } = Object;
 const chalk = require('chalk');
+const isEmpty = require('lodash/isEmpty')
 
 const { readFile } = require('./fs-helper');
 const groupBy = require('./group-by');
@@ -50,10 +51,11 @@ module.exports = (errors) => {
 
     messages.push(`${fileErrorsMessage}${errorMessages}`);
   }
-  // eslint-disable-next-line
-  // console.error(chalk`{red.bold Validation failed}\n\n`);
-  // eslint-disable-next-line
-  console.log(messages.join('\n'));
+  if (isEmpty(messages) && errors !== undefined && isEmpty(errorsByFile)) {
+    console.error('Migration error---', errors);
+  } else {
+    console.log(messages.join('\n'));
+  }
   // eslint-disable-next-line
   console.log(chalk`{bold.red Migration unsuccessful}`);
 };

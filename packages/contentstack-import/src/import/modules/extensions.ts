@@ -5,7 +5,7 @@ import { join } from 'node:path';
 
 import { log, formatError, fsUtil, fileHelper } from '../../utils';
 import BaseClass, { ApiOptions } from './base-class';
-import { ModuleClassParams, Extensions } from '../../types';
+import { ModuleClassParams, Extensions, ExtensionType } from '../../types';
 
 export default class ImportExtensions extends BaseClass {
   private mapperDirPath: string;
@@ -19,6 +19,8 @@ export default class ImportExtensions extends BaseClass {
   private extSuccess: Record<string, unknown>[];
   private extFailed: Record<string, unknown>[];
   private existingExtensions: Record<string, unknown>[];
+  private extPendingPath: string;
+  private extensionObject: Record<string, unknown>[];
 
   constructor({ importConfig, stackAPIClient }: ModuleClassParams) {
     super({ importConfig, stackAPIClient });
@@ -28,10 +30,12 @@ export default class ImportExtensions extends BaseClass {
     this.extUidMapperPath = join(this.mapperDirPath, 'uid-mapping.json');
     this.extSuccessPath = join(this.mapperDirPath, 'success.json');
     this.extFailsPath = join(this.mapperDirPath, 'fails.json');
+    this.extPendingPath = join(this.mapperDirPath, 'pending_extensions.js');
     this.extFailed = [];
     this.extSuccess = [];
     this.existingExtensions = [];
     this.extUidMapper = {};
+    this.extensionObject = [];
   }
 
   /**
@@ -45,7 +49,7 @@ export default class ImportExtensions extends BaseClass {
     if (fileHelper.fileExistsSync(this.extensionsFolderPath)) {
       this.extensions = fsUtil.readFile(join(this.extensionsFolderPath, 'extensions.json'), true) as Record<
         string,
-        unknown
+        Record<string, unknown>
       >;
     } else {
       log(this.importConfig, `No such file or directory - '${this.extensionsFolderPath}'`, 'error');
@@ -57,8 +61,14 @@ export default class ImportExtensions extends BaseClass {
       ? (fsUtil.readFile(join(this.extUidMapperPath), true) as Record<string, unknown>)
       : {};
 
+    // Check whether the scope of an extension contains content-types in scope
+    // Remove the scope and store the scope with uid in pending extensions
+    this.getContentTypesInScope();
+
     await this.importExtensions();
 
+    // Update the uid of the extension
+    this.updateUidExtension();
     // Note: if any extensions present, then update it
     if (this.importConfig.replaceExisting && this.existingExtensions.length > 0) {
       await this.replaceExtensions().catch((error: Error) => {
@@ -208,5 +218,26 @@ export default class ImportExtensions extends BaseClass {
         reject(true);
       }
     });
+  }
+
+  getContentTypesInScope() {
+    const extension = values(this.extensions);
+    extension.forEach((ext: ExtensionType) => {
+      let ct: any = ext?.scope?.content_types || [];
+      if ((ct.length === 1 && ct[0] !== '$all') || ct?.length > 1) {
+        log(this.importConfig, `Removing the content-types ${ct.join(',')} from the extension ${ext.title} ...`, 'info');
+        const { uid, scope } = ext;
+        this.extensionObject.push({ uid, scope });
+        delete ext.scope;
+        this.extensions[ext.uid] = ext;
+      }
+    });
+  }
+
+  updateUidExtension() {
+    for (let i in this.extensionObject) {
+      this.extensionObject[i].uid = this.extUidMapper[this.extensionObject[i].uid as string];
+    }
+    fsUtil.writeFile(this.extPendingPath, this.extensionObject);
   }
 }

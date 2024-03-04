@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/cli-utilities",
-  "version": "1.5.11",
+  "version": "1.5.12",
   "description": "Utilities for contentstack projects",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -32,7 +32,7 @@
   "author": "contentstack",
   "license": "MIT",
   "dependencies": {
-    "@contentstack/management": "~1.13.0",
+    "@contentstack/management": "~1.15.3",
     "@contentstack/marketplace-sdk": "^1.0.1",
     "@oclif/core": "^2.9.3",
     "axios": "^1.6.4",
@@ -78,7 +78,7 @@
     "nyc": "^15.1.0",
     "rimraf": "^2.7.1",
     "sinon": "^15.0.1",
-    "tmp": "^0.2.1",
+    "tmp": "^0.2.2",
     "ts-node": "^10.9.1",
     "tslib": "^1.13.0",
     "typescript": "^4.9.3"

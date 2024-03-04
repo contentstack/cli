@@ -39,7 +39,7 @@ class AuthHandler {
   }
 
   constructor() {
-    this.codeVerifier = crypto.pseudoRandomBytes(32).toString('hex');
+    this.codeVerifier = crypto.randomBytes(32).toString('hex');
     this.OAuthAppId = process.env.OAUTH_APP_ID || '6400aa06db64de001a31c8a9';
     this.OAuthClientId = process.env.OAUTH_CLIENT_ID || 'Ie0FEfTzlfAHL4xM';
     this.OAuthRedirectURL = process.env.OAUTH_APP_REDIRECT_URL || 'http://localhost:8184';
