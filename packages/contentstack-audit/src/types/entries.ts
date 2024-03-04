@@ -1,3 +1,5 @@
+import { AnyProperty } from './common';
+
 type Locale = {
   uid: string;
   code: string;
@@ -29,8 +31,11 @@ type EntryGlobalFieldDataType = {
 };
 
 // NOTE Type 3
-type EntryCustomFieldDataType = {
-  [key: string]: EntryStruct;
+type EntryExtensionOrAppFieldDataType = {
+  [key: string]: {
+    uid: string;
+    metadata: { extension_uid: string } & AnyProperty;
+  };
 };
 
 // NOTE Type 4
@@ -71,14 +76,19 @@ type EntryRefErrorReturnType = {
   missingRefs: string[] | Record<string, unknown>[];
 };
 
-type EntryFieldType = EntryStruct | EntryGlobalFieldDataType | EntryModularBlocksDataType | EntryGroupFieldDataType;
+type EntryFieldType =
+  | EntryStruct
+  | EntryGlobalFieldDataType
+  | EntryModularBlocksDataType
+  | EntryGroupFieldDataType
+  | EntryExtensionOrAppFieldDataType;
 
 export {
   Locale,
   EntryStruct,
   EntryFieldType,
   EntryGlobalFieldDataType,
-  EntryCustomFieldDataType,
+  EntryExtensionOrAppFieldDataType,
   EntryJsonRTEFieldDataType,
   EntryGroupFieldDataType,
   EntryModularBlocksDataType,
