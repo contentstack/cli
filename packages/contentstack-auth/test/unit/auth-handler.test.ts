@@ -4,9 +4,9 @@ import { authHandler, interactive } from '../../src/utils';
 import { CLIError, cliux } from '@contentstack/cli-utilities';
 import { User } from '../../src/interfaces';
 
-const user: User = { email: 'test@contentstack.com', authtoken: 'testtoken' };
-const credentials = { email: 'test@contentstack.com', password: 'testpassword' };
-const invalidCredentials = { email: 'test@contentstack.com', password: 'invalidpassword' };
+const user: User = { email: '***REMOVED***', authtoken: 'testtoken' };
+const credentials = { email: '***REMOVED***', password: 'testpassword' };
+const invalidCredentials = { email: '***REMOVED***', password: 'invalidpassword' };
 let TFAEnabled = false;
 let TFAChannel = 'authy';
 const TFATestToken = '24563992';
