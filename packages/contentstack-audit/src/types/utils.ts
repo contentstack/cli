@@ -5,7 +5,8 @@ import config from "../config";
 
 type LogFn = (
   message: string | any,
-  logType?: LoggerType | PrintOptions | undefined
+  logType?: LoggerType | PrintOptions | undefined,
+  skipCredentialCheck?: boolean,
 ) => void;
 
 type ExitFn = (code?: number | undefined) => void;
@@ -20,7 +21,7 @@ type ConfigType = {
   Record<string, any>;
 
 export { LogFn, ExitFn, Partial, ConfigType };
-export type LoggerType = "info" | "warn" | "error" | "debug";
+export type LoggerType = "info" | "warn" | "error" | "debug" | 'hidden';
 
 export type PrintType = {
   message: string;
