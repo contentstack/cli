@@ -132,7 +132,13 @@ export default class ImportCommand extends Command {
       const result = await moduleImporter.start();
 
       if (!result?.noSuccessMsg) {
-        log(importConfig, `The content has been imported to the stack ${importConfig.apiKey} successfully!`, 'success');
+        log(
+          importConfig,
+          importConfig.stackName
+            ? `Successfully imported the content to the stack named ${importConfig.stackName} with the API key ${importConfig.apiKey} .`
+            : `The content has been imported to the stack ${importConfig.apiKey} successfully!`,
+          'success',
+        );
       }
 
       log(
@@ -141,7 +147,11 @@ export default class ImportCommand extends Command {
         'success',
       );
     } catch (error) {
-      log({ data: backupDir ?? path.join(backupDir || __dirname, 'logs', 'import') } as ImportConfig, `Failed to import stack content - ${formatError(error)}`, 'error');
+      log(
+        { data: backupDir ?? path.join(backupDir || __dirname, 'logs', 'import') } as ImportConfig,
+        `Failed to import stack content - ${formatError(error)}`,
+        'error',
+      );
       log(
         { data: backupDir } as ImportConfig,
         `The log has been stored at ${
