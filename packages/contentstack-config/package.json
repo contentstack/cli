@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/cli-config",
   "description": "Contentstack CLI plugin for configuration",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "author": "Contentstack",
   "scripts": {
     "build": "npm run clean && npm run compile",
@@ -58,7 +58,8 @@
   "files": [
     "/lib",
     "/npm-shrinkwrap.json",
-    "/oclif.manifest.json"
+    "/oclif.manifest.json",
+    "/messages"
   ],
   "homepage": "https://github.com/contentstack/cli",
   "keywords": [
