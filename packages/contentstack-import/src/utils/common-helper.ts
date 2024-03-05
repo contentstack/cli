@@ -151,7 +151,11 @@ export const field_rules_update = (importConfig: ImportConfig, ctPath: string) =
                   management_token: importConfig.management_token,
                 });
                 let ctObj = stackAPIClient.contentType(schema.uid);
-                Object.assign(ctObj, _.cloneDeep(schema));
+                //NOTE:- Remove this code Object.assign(ctObj, _.cloneDeep(schema)); -> security vulnerabilities due to mass assignment
+                const schemaKeys = Object.keys(schema);
+                for (const key of schemaKeys) {
+                  ctObj[key] = _.cloneDeep(schema[key]);
+                }
                 ctObj
                   .update()
                   .then(() => {
