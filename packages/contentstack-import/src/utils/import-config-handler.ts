@@ -1,7 +1,7 @@
 import merge from 'merge';
 import * as path from 'path';
 import { omit, filter, includes, isArray } from 'lodash';
-import { configHandler, isAuthenticated } from '@contentstack/cli-utilities';
+import { configHandler, isAuthenticated, cliux } from '@contentstack/cli-utilities';
 import defaultConfig from '../config';
 import { readFile, fileExistsSync } from './file-helper';
 import { askContentDir, askAPIKey } from './interactive';
@@ -21,10 +21,20 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   }
 
   config.contentDir = importCmdFlags['data'] || importCmdFlags['data-dir'] || config.data || (await askContentDir());
+  const pattern = /[*$%#<>{}!&?]/g;
+  if (pattern.test(config.contentDir)) {
+    cliux.print(
+      `\nYour mentioned directory path contains special characters (*,&,{,},[,],$,%,<,>,?,!) please add a path without them`,
+      {
+        color: 'yellow',
+      },
+    );
+    config.contentDir = await askContentDir();
+  }
+  config.contentDir = config.contentDir.replace(/['"]/g, '');
   config.contentDir = path.resolve(config.contentDir);
   //Note to support the old key
   config.data = config.contentDir;
-
   if (fileExistsSync(path.join(config.contentDir, 'export-info.json'))) {
     config.contentVersion =
       ((await readFile(path.join(config.contentDir, 'export-info.json'))) || {}).contentVersion || 2;
