@@ -16,7 +16,7 @@ importers:
       '@contentstack/cli-cm-branches': ~1.0.23
       '@contentstack/cli-cm-bulk-publish': ~1.4.3
       '@contentstack/cli-cm-clone': ~1.10.1
-      '@contentstack/cli-cm-export': ~1.11.0
+      '@contentstack/cli-cm-export': ~1.11.1
       '@contentstack/cli-cm-export-to-csv': ~1.7.0
       '@contentstack/cli-cm-import': ~1.14.1
       '@contentstack/cli-cm-migrate-rte': ~1.4.15
@@ -423,7 +423,7 @@ importers:
   packages/contentstack-clone:
     specifiers:
       '@colors/colors': ^1.5.0
-      '@contentstack/cli-cm-export': ~1.11.0
+      '@contentstack/cli-cm-export': ~1.11.1
       '@contentstack/cli-cm-import': ~1.14.1
       '@contentstack/cli-command': ~1.2.16
       '@contentstack/cli-utilities': ~1.6.0
