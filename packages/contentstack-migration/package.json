@@ -1,11 +1,11 @@
 {
   "name": "@contentstack/cli-migration",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "author": "@contentstack",
   "bugs": "https://github.com/contentstack/cli/issues",
   "dependencies": {
     "@contentstack/cli-command": "~1.2.16",
-    "@contentstack/cli-utilities": "~1.5.13",
+    "@contentstack/cli-utilities": "~1.6.0",
     "async": "^3.2.4",
     "callsites": "^3.1.0",
     "cardinal": "^2.1.1",

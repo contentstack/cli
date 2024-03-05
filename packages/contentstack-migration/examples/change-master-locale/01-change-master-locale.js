@@ -2,6 +2,7 @@ let fs = require('fs').promises;
 let path = require('path')
 let crypto = require('crypto')
 let supportedLocales = require('./locales.json')
+const { pathValidator } = require('@contentstack/cli-utilities')
 
 module.exports = async ({migration, config}) => {
     let changeMasterLocale = {
@@ -28,7 +29,7 @@ module.exports = async ({migration, config}) => {
         }
 
         async function tailorData () {
-          let locales = await fs.readFile(path.resolve(config.data_dir, 'locales/locales.json'), 'utf-8')
+          let locales = await fs.readFile(pathValidator(path.resolve(config.data_dir, 'locales/locales.json')), 'utf-8')
           locales = JSON.parse(locales)
           let masterLocale = getMasterLocale(locales)
           let id = crypto.randomBytes(8).toString('hex');
@@ -43,17 +44,17 @@ module.exports = async ({migration, config}) => {
           locales[id].fallback_locale = config.target_locale
           
           await handleEntries(masterLocale)
-          await fs.writeFile(path.resolve(config.data_dir, 'locales/locales.json'), JSON.stringify(locales))
+          await fs.writeFile(pathValidator(path.resolve(config.data_dir, 'locales/locales.json')), JSON.stringify(locales))
         }
 
         async function handleEntries(masterLocale) {
-          let contentTypes = await fs.readdir(path.resolve(config.data_dir, 'entries'))
+          let contentTypes = await fs.readdir(pathValidator(path.resolve(config.data_dir, 'entries')))
           let sourceMasterLocaleEntries, targetMasterLocaleEntries
           for (let contentType of contentTypes) {
-            sourceMasterLocaleEntries = await fs.readFile(path.resolve(config.data_dir, `entries/${contentType}/${masterLocale}.json`), {encoding: 'utf8'})
+            sourceMasterLocaleEntries = await fs.readFile(pathValidator(path.resolve(config.data_dir, `entries/${contentType}/${masterLocale}.json`)), {encoding: 'utf8'})
             sourceMasterLocaleEntries = JSON.parse(sourceMasterLocaleEntries)
 
-            targetMasterLocaleEntries = await fs.readFile(path.resolve(config.data_dir, `entries/${contentType}/${config.target_locale}.json`), { encoding: 'utf8', flag: 'a+'})
+            targetMasterLocaleEntries = await fs.readFile(pathValidator(path.resolve(config.data_dir, `entries/${contentType}/${config.target_locale}.json`)), { encoding: 'utf8', flag: 'a+'})
             if (targetMasterLocaleEntries.length === 0) {
               targetMasterLocaleEntries = {}
             } else {
@@ -68,7 +69,7 @@ module.exports = async ({migration, config}) => {
               }
             })
 
-            await fs.writeFile(path.resolve(config.data_dir, `entries/${contentType}/${config.target_locale}.json`), JSON.stringify(targetMasterLocaleEntries))
+            await fs.writeFile(pathValidator(path.resolve(config.data_dir, `entries/${contentType}/${config.target_locale}.json`)), JSON.stringify(targetMasterLocaleEntries))
           }
         }
 
