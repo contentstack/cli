@@ -115,13 +115,9 @@ class ModuleImporter {
    */
   async auditImportData(logger: Logger) {
     const basePath = resolve(this.importConfig.backupDir, 'logs', 'audit');
-    const auditConfig = {
-      noLog: false, // Skip logs printing on terminal
-      skipConfirm: true, // Skip confirmation if any
-      returnResponse: true, // On process completion should return config used in the command
-      noTerminalOutput: false, // Skip final audit table output on terminal
-      config: { basePath }, // To overwrite any build-in config. This config is equal to --config flag.
-    };
+    const auditConfig = this.importConfig.auditConfig
+    auditConfig.config.basePath = basePath;
+
     try {
       const args = [
         '--data-dir',
