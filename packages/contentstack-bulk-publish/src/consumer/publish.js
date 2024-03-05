@@ -43,7 +43,6 @@ async function publishEntry(data, _config, queue) {
     .publish({
       publishDetails: { environments: entryObj.environments, locales: lang },
       locale: entryObj.locale || 'en-us',
-      version: entryObj.version
     })
     .then((publishEntryResponse) => {
       if (!publishEntryResponse.error_message) {
@@ -246,9 +245,10 @@ async function performBulkPublish(data, _config, queue) {
         .publish(payload)
         .then((bulkPublishEntriesResponse) => {
           if (!bulkPublishEntriesResponse.error_message) {
+            const sanitizedData = JSON.stringify(removePublishDetails(bulkPublishObj.entries));
             console.log(
               chalk.green(
-                `Bulk entries sent for publish ${JSON.stringify(removePublishDetails(bulkPublishObj.entries))}`,
+                `Bulk entries sent for publish ${sanitizedData}`,
               ),
               (bulkPublishEntriesResponse.job_id) ? chalk.yellow(`job_id: ${bulkPublishEntriesResponse.job_id}`) : ''
             );
