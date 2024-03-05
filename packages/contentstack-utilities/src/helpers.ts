@@ -37,5 +37,21 @@ export const createDeveloperHubUrl = (developerHubBaseUrl: string): string => {
   return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
 };
 
+
+export const validatePath = (input: string) => {
+  const pattern = /[*$%#<>{}!&?]/g;
+  if (pattern.test(input)) {
+    cliux.print(
+      `\nYour mentioned directory path contains special characters (*,&,{,},[,],$,%,<,>,?,!) please add a path without them`,
+      {
+        color: 'yellow',
+      },
+    );
+    return false;
+  }
+  return true;
+};
+
 // To escape special characters in a string
 export const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
