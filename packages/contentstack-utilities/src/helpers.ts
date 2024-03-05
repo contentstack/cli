@@ -36,3 +36,6 @@ export const createDeveloperHubUrl = (developerHubBaseUrl: string): string => {
     : developerHubBaseUrl;
   return developerHubBaseUrl.startsWith('http') ? developerHubBaseUrl : `https://${developerHubBaseUrl}`;
 };
+
+// To escape special characters in a string
+export const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
