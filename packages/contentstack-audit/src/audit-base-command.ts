@@ -83,7 +83,13 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     let { ctSchema, gfSchema } = this.getCtAndGfSchema();
     let missingCtRefs, missingGfRefs, missingEntryRefs;
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
-      ux.action.start(this.$t(this.messages.AUDIT_START_SPINNER, { module }));
+      print([
+        {
+          bold: true,
+          color: 'whiteBright',
+          message: this.$t(this.messages.AUDIT_START_SPINNER, { module }),
+        },
+      ]);
 
       const constructorParam = {
         ctSchema,
@@ -109,7 +115,18 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           break;
       }
 
-      ux.action.stop();
+      print([
+        {
+          bold: true,
+          color: 'whiteBright',
+          message: this.$t(this.messages.AUDIT_START_SPINNER, { module }),
+        },
+        {
+          bold: true,
+          message: ' done',
+          color: 'whiteBright',
+        },
+      ]);
     }
 
     return { missingCtRefs, missingGfRefs, missingEntryRefs };
