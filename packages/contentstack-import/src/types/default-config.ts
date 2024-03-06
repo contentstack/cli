@@ -147,4 +147,13 @@ export default interface DefaultConfig {
   createBackupDir?: string;
   overwriteSupportedModules: string[];
   onlyTSModules: string[];
+  auditConfig?: {
+    noLog?: boolean; // Skip logs printing on terminal
+    skipConfirm?: boolean; // Skip confirmation if any
+    returnResponse?: boolean; // On process completion should return config used in the command
+    noTerminalOutput?: boolean; // Skip final audit table output on terminal
+    config?: {
+      basePath?: string
+    } & Record<string, any>; // To overwrite any build-in config. And this config is equal to --config flag.
+  };
 }
