@@ -8,3 +8,4 @@ export { log, unlinkFileLogger } from './logger';
 export { default as login } from './basic-login';
 export * from './common-helper';
 export * from './marketplace-app-helper';
+export * from './variant-api-adapter'

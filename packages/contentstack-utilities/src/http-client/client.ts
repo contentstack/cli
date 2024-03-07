@@ -4,9 +4,10 @@ import { HttpResponse } from './http-response';
 import configStore from '../config-handler';
 import authHandler from '../auth-handler';
 
-type HttpClientOptions = {
+export type HttpClientOptions = {
   disableEarlyAccessHeaders?: boolean;
 };
+
 export class HttpClient implements IHttpClient {
   /**
    * The request configuration.
