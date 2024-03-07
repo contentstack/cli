@@ -1,34 +1,13 @@
 import {
   HttpClient,
-  HttpRequestConfig,
   HttpClientOptions,
   ContentstackClient,
   ContentstackConfig,
   managementSDKClient,
 } from '@contentstack/cli-utilities';
 
-type APIConfig = HttpRequestConfig & {
-  restClient: boolean;
-};
+import { APIConfig, VariantOptions, VariantsOption } from '../types';
 
-type VariantsOption = {
-  skip: number;
-  limit: number;
-  locale?: string;
-  entry_uid: string;
-  content_type_uid: string;
-  include_publish_details?: boolean;
-};
-
-type VariantOptions = VariantsOption & {
-  variant_uid: string;
-};
-
-interface Variant {
-  entryVariant(options: VariantOptions): Promise<{ entry: Record<string, any> }>;
-
-  entryVariants(options: VariantsOption): Promise<{ entries?: Record<string, any>[] | unknown[] }>;
-}
 
 class VariantHttpClient implements Variant {
   public baseURL: string;

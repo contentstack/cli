@@ -133,3 +133,4 @@ export interface TaxonomiesConfig {
 export { default as DefaultConfig } from './default-config';
 export { default as ExportConfig } from './export-config';
 export * from './marketplace-app';
+export * from './variant-api-adapter'
