@@ -92,8 +92,8 @@ class Variant {
   constructor(config: APIConfig, options?: HttpClientOptions) {
     let variantInstance: VariantHttpClient | VariantManagementSDK;
 
-    if (config.restClient) {
-      delete config.restClient;
+    if (config.httpClient) {
+      delete config.httpClient;
       variantInstance = new VariantHttpClient(config, options);
     } else {
       variantInstance = new VariantManagementSDK(config);

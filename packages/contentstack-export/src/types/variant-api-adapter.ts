@@ -3,7 +3,7 @@ import {
 } from '@contentstack/cli-utilities';
 
 export type APIConfig = HttpRequestConfig & {
-  restClient: boolean;
+  httpClient: boolean;
 };
 
 export type VariantsOption = {
