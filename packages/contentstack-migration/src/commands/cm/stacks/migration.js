@@ -12,7 +12,13 @@ const { Parser } = require('../../../modules');
 const { ActionList } = require('../../../actions');
 const fs = require('fs');
 const chalk = require('chalk');
-const { printFlagDeprecation, managementSDKClient, flags, isAuthenticated } = require('@contentstack/cli-utilities');
+const {
+  printFlagDeprecation,
+  managementSDKClient,
+  flags,
+  isAuthenticated,
+  pathValidator,
+} = require('@contentstack/cli-utilities');
 
 const { ApiError, SchemaValidator, MigrationError, FieldValidator } = require('../../../validators');
 
@@ -77,7 +83,7 @@ class MigrationCommand extends Command {
       let configObj = config.reduce((a, v) => {
         //NOTE: Temp code to handle only one spilt(Window absolute path issue).Need to replace with hardcoded config key
         let [key, ...value] = v.split(':');
-        value = value?.length > 1 ? value?.join(':') : value?.join( );
+        value = value?.length > 1 ? value?.join(':') : value?.join();
         return { ...a, [key]: value };
       }, {});
       set('config', mapInstance, configObj);
@@ -132,7 +138,7 @@ class MigrationCommand extends Command {
 
   async execSingleFile(filePath, mapInstance) {
     // Resolved absolute path
-    const resolvedMigrationPath = resolve(filePath);
+    const resolvedMigrationPath = pathValidator(filePath);
     // User provided migration function
     const migrationFunc = require(resolvedMigrationPath);
 
@@ -166,15 +172,15 @@ class MigrationCommand extends Command {
         this.log(error.message);
       } else if (error.errorMessage) {
         this.log(error.errorMessage);
-      }else{
-        this.log(error)
+      } else {
+        this.log(error);
       }
     }
   }
 
   async execMultiFiles(filePath, mapInstance) {
     // Resolved absolute path
-    const resolvedMigrationPath = resolve(filePath);
+    const resolvedMigrationPath = pathValidator(filePath);
     try {
       const files = fs.readdirSync(resolvedMigrationPath);
       for (const element of files) {
@@ -182,7 +188,7 @@ class MigrationCommand extends Command {
         if (extname(file) === '.js') {
           success(chalk`{white Executing file:} {grey {bold ${file}}}`);
           // eslint-disable-next-line no-await-in-loop
-          await this.execSingleFile(resolve(filePath, file), mapInstance);
+          await this.execSingleFile(pathValidator(resolve(filePath, file)), mapInstance);
         }
       }
     } catch (error) {
