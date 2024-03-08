@@ -91,11 +91,10 @@ export default class Extensions {
     for (const ext of missingCtInExtensions) {
       const { uid, title } = ext;
       const fixedCts = ext?.scope?.content_types.filter((ct) => !this.missingCts.has(ct));
-      if (fixedCts?.length) {
+      if (fixedCts?.length && newExtensionSchema[uid]?.scope) {
         newExtensionSchema[uid].scope.content_types = fixedCts;
       } else {
         this.log($t(commonMsg.EXTENSION_FIX_WARN, { title: title, uid }), { color: 'yellow' });
-
         const shouldDelete = this.config.flags.yes || (await ux.confirm(commonMsg.EXTENSION_FIX_CONFIRMATION));
         if (shouldDelete) {
           delete newExtensionSchema[uid];
