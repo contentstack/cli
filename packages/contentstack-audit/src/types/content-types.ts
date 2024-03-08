@@ -50,6 +50,7 @@ type RefErrorReturnType = {
   tree: Record<string, unknown>[];
   uid?: string;
   content_types?: string[];
+  title?: string;
 };
 
 // NOTE Type 1
@@ -115,6 +116,7 @@ enum OutputColumn {
   'Field type' = 'data_type',
   'Missing references' = 'missingRefs',
   Path = 'treeStr',
+  title = 'title',
   'uid' = 'uid',
   'missingCts' = 'content_types',
 }
