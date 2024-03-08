@@ -2,6 +2,7 @@
 
 const { existsSync, mkdirSync, readFileSync, readFile } = require('fs');
 const path = require('path');
+const { pathValidator } = require('@contentstack/cli-utilities');
 
 exports.makeDir = (dirname) => {
   !this.existsSync(dirname) && mkdirSync(dirname);
@@ -16,7 +17,7 @@ exports.readFile = (filePath) => {
 
 exports.readJSONFile = (filePath) => {
   return new Promise((resolve, reject) => {
-    filePath = path.resolve(filePath);
+    filePath = pathValidator(filePath);
     readFile(filePath, 'utf-8', (error, data) => {
       if (error) {
         reject(error);
