@@ -27,6 +27,7 @@ export default class Logger {
   private infoLogger!: winston.Logger;
   private errorLogger!: winston.Logger;
   private config!: Record<string, any>;
+  private hiddenInfoLogger!: winston.Logger;
 
   get loggerOptions(): winston.transports.FileTransportOptions {
     return {
@@ -41,6 +42,7 @@ export default class Logger {
     this.config = config;
     this.infoLogger = this.getLoggerInstance('info');
     this.errorLogger = this.getLoggerInstance('error');
+    this.hiddenInfoLogger = this.getLoggerInstance('hidden');
   }
 
   /**
@@ -55,24 +57,30 @@ export default class Logger {
     const consoleOptions: winston.transports.ConsoleTransportOptions = {
       format: winston.format.combine(winston.format.simple(), winston.format.colorize({ all: true })),
     };
+    const isHidden = logType === 'hidden';
+    logType = logType === 'hidden' ? 'info' : logType;
 
     if (logType === 'error') {
       consoleOptions.level = logType;
     }
 
-    const filename = normalize(resolve(this.config.basePath, 'logs', `${logType}.log`)).replace(
-      /^(\.\.(\/|\\|$))+/,
-      '',
-    );
+    const filename = normalize(
+      resolve(this.config.basePath, 'logs', `${logType}.log`),
+    ).replace(/^(\.\.(\/|\\|$))+/, '');
+    const transports: winston.transport[] = [
+      new winston.transports.File({
+        ...this.loggerOptions,
+        level: logType,
+        filename,
+      }),
+    ];
+
+    if (!isHidden) {
+      transports.push(new winston.transports.Console(consoleOptions));
+    }
+
     const loggerOptions: winston.LoggerOptions = {
-      transports: [
-        new winston.transports.File({
-          ...this.loggerOptions,
-          level: logType,
-          filename,
-        }),
-        new winston.transports.Console(consoleOptions),
-      ],
+      transports,
       levels: customLevels.levels,
     };
 
@@ -91,8 +99,12 @@ export default class Logger {
    * @param {LoggerType | PrintOptions | undefined} [logType] - The `logType` parameter is an optional
    * parameter that specifies the type of log. It can be one of the following values:
    */
-  log(message: string | any, logType?: LoggerType | PrintOptions | undefined): void {
-    const logString = this.returnString(message);
+  log(
+    message: string | any,
+    logType?: LoggerType | PrintOptions | undefined,
+    skipCredentialCheck: boolean = false,
+  ): void {
+    const logString = skipCredentialCheck ? message : this.returnString(message);
 
     switch (logType) {
       case 'info':
@@ -102,6 +114,9 @@ export default class Logger {
         break;
       case 'error':
         this.errorLogger.error(logString);
+        break;
+      case 'hidden':
+        this.hiddenInfoLogger.log('info', logString);
         break;
       default:
         ux.print(logString, logType || {});
