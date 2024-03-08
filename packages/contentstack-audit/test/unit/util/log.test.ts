@@ -26,7 +26,7 @@ describe('Log utility', () => {
         const logSpy = sinon.spy(winston, 'createLogger');
         const logger = new Logger({ basePath: resolve(__dirname, '..', 'mock') });
 
-        expect(logSpy.callCount).to.be.equals(2);
+        expect(logSpy.callCount).to.be.equals(3);
         expect(Object.getPrototypeOf(logger)).has.ownProperty('log');
       });
   });
