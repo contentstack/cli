@@ -42,7 +42,7 @@ export const validatePath = (input: string) => {
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(input)) {
     cliux.print(
-      `\nYour mentioned directory path contains special characters (*,&,{,},[,],$,%,<,>,?,!) please add a path without them`,
+      `\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`,
       {
         color: 'yellow',
       },
