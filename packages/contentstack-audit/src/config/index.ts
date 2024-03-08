@@ -2,7 +2,7 @@ const config = {
   showTerminalOutput: true,
   skipRefs: ['sys_assets'],
   skipFieldTypes: ['taxonomy', 'group'],
-  modules: ['content-types', 'global-fields', 'entries'],
+  modules: ['content-types', 'global-fields', 'entries', 'extensions'],
   'fix-fields': ['reference', 'global_field', 'json:rte', 'json:extension', 'blocks', 'group'],
   moduleConfig: {
     'content-types': {
@@ -24,6 +24,11 @@ const config = {
       name: 'locales',
       dirName: 'locales',
       fileName: 'locales.json',
+    },
+    extensions: {
+      name: 'extensions',
+      dirName: 'extensions',
+      fileName: 'extensions.json',
     },
   },
   entries: {
