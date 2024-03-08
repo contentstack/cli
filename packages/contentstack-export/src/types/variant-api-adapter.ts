@@ -12,8 +12,8 @@ export type VariantsOption = {
   locale?: string;
   entry_uid: string;
   content_type_uid: string;
-  include_publish_details?: boolean;
-};
+  include_variant?: boolean;
+} & Record<string, any>;
 
 export type VariantOptions = VariantsOption & {
   variant_uid: string;

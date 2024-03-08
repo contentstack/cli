@@ -1,3 +1,4 @@
+import omit from 'lodash/omit';
 import {
   HttpClient,
   HttpClientOptions,
@@ -6,8 +7,8 @@ import {
   managementSDKClient,
 } from '@contentstack/cli-utilities';
 
+import config from '../config';
 import { APIConfig, VariantOptions, VariantsOption } from '../types';
-
 
 class VariantHttpClient implements Variant {
   public baseURL: string;
@@ -24,22 +25,30 @@ class VariantHttpClient implements Variant {
   }
 
   /**
-   * This TypeScript function retrieves entry variants based on specified options and concatenates them
-   * into an array until all variants are fetched.
-   * @param {VariantsOption} options - The `options` parameter in the `entryVariants` function contains
-   * the following properties:
+   * This TypeScript function retrieves entry variants based on the provided options and updates the
+   * entries array accordingly.
+   * @param {VariantsOption} options - The `options` parameter in the `entryVariants` function is an
+   * object that contains the following properties:
    * @param {Record<string, any>[]} [entries] - The `entries` parameter in the `entryVariants` function
-   * is an optional array of records. It is used to store the entries retrieved from the API response
-   * and is passed recursively to fetch all variants of an entry. If `entries` is provided initially,
-   * the retrieved entries will be concatenated to this
-   * @returns The function `entryVariants` returns a Promise that resolves to an object containing an
-   * array of entries.
+   * is an optional array of objects. It is used to store the entries retrieved from the API response
+   * and is passed recursively to fetch all variants of a particular entry. If `entries` is not
+   * provided initially, an empty array will be used
+   * @returns The function `entryVariants` returns a Promise that resolves to an object containing the
+   * `entries` property, which is an array of Record<string, any> objects or unknown[] array.
    */
   async entryVariants(
     options: VariantsOption,
     entries?: Record<string, any>[],
   ): Promise<{ entries?: Record<string, any>[] | unknown[] }> {
-    const { content_type_uid, entry_uid, locale = 'en-us', include_publish_details, skip = 0, limit = 100 } = options;
+    const vaiantConfig = config.modules.entryVariant;
+    const {
+      entry_uid,
+      content_type_uid,
+      skip = vaiantConfig.query.skip || 0,
+      limit = vaiantConfig.query.limit || 100,
+      locale = vaiantConfig.query.locale || 'en-us',
+      include_variant = vaiantConfig.query.include_variant || true,
+    } = options;
     let endpoint = `${this.baseURL}/content_types/${content_type_uid}/entries/${entry_uid}/variants?locale=${locale}`;
 
     if (skip) {
@@ -50,8 +59,14 @@ class VariantHttpClient implements Variant {
       endpoint = endpoint.concat(`&limit=${limit}`);
     }
 
-    if (include_publish_details) {
-      endpoint.concat('&include_publish_details');
+    if (include_variant) {
+      endpoint.concat('&include_variant');
+    }
+
+    const query = this.constructQuery(omit(vaiantConfig.query, ['skip', 'limit', 'locale', 'include_variant']));
+
+    if (query) {
+      endpoint = endpoint.concat(query);
     }
 
     // FIXME once API is ready addjest the responce accordingly
@@ -60,10 +75,44 @@ class VariantHttpClient implements Variant {
     entries = entries.concat(response.entries);
 
     if (entries.length < response.count) {
+      options.skip += 100;
       return await this.entryVariants(options, entries);
     }
 
     return { entries };
+  }
+
+  /**
+   * The function constructs a query string from a given object by encoding its key-value pairs.
+   * @param query - It looks like you have a function `constructQuery` that takes a query object as a
+   * parameter. The function loops through the keys in the query object and constructs a query string
+   * based on the key-value pairs.
+   * @returns The `constructQuery` function returns a string that represents the query parameters
+   * constructed from the input `query` object. If the `query` object is empty (has no keys), the
+   * function does not return anything (void).
+   */
+  constructQuery(query: Record<string, any>): string | void {
+    if (Object.keys(query).length) {
+      let queryParam = '';
+
+      for (const key in query) {
+        if (Object.prototype.hasOwnProperty.call(query, key)) {
+          const element = query[key];
+
+          switch (typeof element) {
+            case 'boolean':
+              queryParam = queryParam.concat(key);
+              break;
+
+            default:
+              queryParam = queryParam.concat(`&${key}=${encodeURIComponent(element)}`);
+              break;
+          }
+        }
+      }
+
+      return queryParam;
+    }
   }
 }
 

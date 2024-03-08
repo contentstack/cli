@@ -118,6 +118,16 @@ export default interface DefaultConfig {
       dependencies?: Modules[];
       exportVersions: boolean;
     };
+    entryVariant: {
+      dirName: string;
+      fileName: string;
+      query: {
+        skip: number;
+        limit: number;
+        locale: string;
+        include_variant: boolean;
+      };
+    };
     extensions: {
       dirName: string;
       fileName: string;
