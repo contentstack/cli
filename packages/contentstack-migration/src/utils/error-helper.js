@@ -51,7 +51,7 @@ module.exports = (errors) => {
 
     messages.push(`${fileErrorsMessage}${errorMessages}`);
   }
-  if (isEmpty(messages) && errors?.length) {
+  if (isEmpty(messages) && errors !== undefined && isEmpty(errorsByFile)) {
     console.error('Migration error---', errors);
   } else {
     console.log(messages.join('\n'));
