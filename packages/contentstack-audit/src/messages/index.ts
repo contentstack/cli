@@ -17,6 +17,8 @@ const commonMsg = {
   FIX_CONFIRMATION: 'Would you like to overwrite existing file.?',
   WORKFLOW_FIX_WARN: `The workflow associated with UID {uid} and name {name} will be removed.`,
   WORKFLOW_FIX_CONFIRMATION: 'Would you like to overwrite existing file?',
+  EXTENSION_FIX_WARN: `The extension associated with UID {uid} and title '{title}' will be removed.`,
+  EXTENSION_FIX_CONFIRMATION: `Would you like to overwrite existing file?`,
 };
 
 const auditMsg = {
@@ -30,8 +32,9 @@ const auditMsg = {
   FINAL_REPORT_PATH: "Reports ready. Please find the reports at '{path}'.",
   SCAN_CT_SUCCESS_MSG: "Successfully completed the scanning of {module} '{title}'.",
   SCAN_ENTRY_SUCCESS_MSG: "Successfully completed the scanning of {module} ({local}) '{title}'.",
+  SCAN_EXT_SUCCESS_MSG: "Successfully completed scanning the {module} titled '{title}' with UID '{uid}'",
   AUDIT_CMD_DESCRIPTION: 'Perform audits and find possible errors in the exported Contentstack data',
-  SCAN_WF_SUCCESS_MSG: "Successfully removed the workflow with UID {uid} and name {name}.",
+  SCAN_WF_SUCCESS_MSG: 'Successfully removed the workflow with UID {uid} and name {name}.',
 };
 
 const auditFixMsg = {

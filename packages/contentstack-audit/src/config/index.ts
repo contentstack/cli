@@ -1,8 +1,8 @@
 const config = {
   showTerminalOutput: true,
   skipRefs: ['sys_assets'],
-  skipFieldTypes: ['taxonomy','group'],
-  modules: ['content-types', 'global-fields', 'entries', 'workflows'],
+  skipFieldTypes: ['taxonomy', 'group'],
+  modules: ['content-types', 'global-fields', 'entries', 'extensions', 'workflows'],
   'fix-fields': ['reference', 'global_field', 'json:rte', 'json:extension', 'blocks', 'group', 'content_types'],
   moduleConfig: {
     'content-types': {
@@ -29,6 +29,11 @@ const config = {
       name: 'workflows',
       dirName: 'workflows',
       fileName: 'workflows.json',
+    },
+    extensions: {
+      name: 'extensions',
+      dirName: 'extensions',
+      fileName: 'extensions.json',
     },
   },
   entries: {
