@@ -24,7 +24,7 @@ const setupConfig = async (importCmdFlags: any): Promise<ImportConfig> => {
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.contentDir)) {
     cliux.print(
-      `\nYour mentioned directory path contains special characters (*,&,{,},[,],$,%,<,>,?,!) please add a path without them`,
+      `\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`,
       {
         color: 'yellow',
       },
