@@ -2,6 +2,10 @@ import {
   HttpRequestConfig
 } from '@contentstack/cli-utilities';
 
+export interface AnyProperty {
+  [propName: string]: any;
+}
+
 export type APIConfig = HttpRequestConfig & {
   httpClient: boolean;
 };
@@ -13,7 +17,7 @@ export type VariantsOption = {
   entry_uid: string;
   content_type_uid: string;
   include_variant?: boolean;
-} & Record<string, any>;
+} & AnyProperty;
 
 export type VariantOptions = VariantsOption & {
   variant_uid: string;
