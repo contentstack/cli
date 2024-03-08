@@ -23,7 +23,7 @@ class ModuleImporter {
   }
 
   async start(): Promise<any> {
-    if(!this.importConfig.management_token){
+    if (!this.importConfig.management_token) {
       const stackName: Record<string, unknown> = await this.stackAPIClient.fetch();
       this.importConfig.stackName = stackName.name as string;
     }
@@ -115,7 +115,7 @@ class ModuleImporter {
    */
   async auditImportData(logger: Logger) {
     const basePath = resolve(this.importConfig.backupDir, 'logs', 'audit');
-    const auditConfig = this.importConfig.auditConfig
+    const auditConfig = this.importConfig.auditConfig;
     auditConfig.config.basePath = basePath;
 
     try {
@@ -132,7 +132,7 @@ class ModuleImporter {
         args.push('--modules', this.importConfig.moduleName);
       } else if (this.importConfig.modules.types.length) {
         this.importConfig.modules.types
-          .filter((val) => ['content-types', 'global-fields', 'entries', 'extensions'].includes(val))
+          .filter((val) => ['content-types', 'global-fields', 'entries', 'extensions', 'workflows'].includes(val))
           .forEach((val) => {
             args.push('--modules', val);
           });
