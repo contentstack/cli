@@ -43,7 +43,6 @@ async function publishEntry(data, _config, queue) {
     .publish({
       publishDetails: { environments: entryObj.environments, locales: lang },
       locale: entryObj.locale || 'en-us',
-      version: entryObj.version
     })
     .then((publishEntryResponse) => {
       if (!publishEntryResponse.error_message) {
@@ -232,6 +231,7 @@ async function performBulkPublish(data, _config, queue) {
       if (bulkPublishObj.apiVersion) {
         if (!isNaN(bulkPublishObj.apiVersion) && bulkPublishObj.apiVersion === apiVersionForNRP) {
           payload['api_version'] = bulkPublishObj.apiVersion
+          payload.details.publish_with_reference = true;
         } else {
           if (bulkPublishObj.apiVersion !== '3') { // because 3 is the default value for api-version, and it exists for the purpose of display only
             console.log(
@@ -245,9 +245,10 @@ async function performBulkPublish(data, _config, queue) {
         .publish(payload)
         .then((bulkPublishEntriesResponse) => {
           if (!bulkPublishEntriesResponse.error_message) {
+            const sanitizedData = JSON.stringify(removePublishDetails(bulkPublishObj.entries));
             console.log(
               chalk.green(
-                `Bulk entries sent for publish ${JSON.stringify(removePublishDetails(bulkPublishObj.entries))}`,
+                `Bulk entries sent for publish ${sanitizedData}`,
               ),
               (bulkPublishEntriesResponse.job_id) ? chalk.yellow(`job_id: ${bulkPublishEntriesResponse.job_id}`) : ''
             );
