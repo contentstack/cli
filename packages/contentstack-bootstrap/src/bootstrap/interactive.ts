@@ -1,6 +1,6 @@
 import * as path from 'path';
 const inquirer = require('inquirer');
-import { cliux } from '@contentstack/cli-utilities';
+import { cliux, pathValidator } from '@contentstack/cli-utilities';
 
 import messageHandler from '../messages';
 
@@ -58,7 +58,7 @@ export async function inquireCloneDirectory(): Promise<string> {
       message: messageHandler.parse('CLI_BOOTSTRAP_APP_COPY_SOURCE_CODE_DESTINATION_ENQUIRY'),
     },
   ]);
-  selectedCustomPath = path.resolve(selectedCustomPath.path);
+  selectedCustomPath = pathValidator(selectedCustomPath.path);
   return selectedCustomPath;
 }
 

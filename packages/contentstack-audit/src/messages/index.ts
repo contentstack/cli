@@ -1,4 +1,5 @@
 import memoize from 'lodash/memoize';
+import { escapeRegExp } from '@contentstack/cli-utilities';
 
 const errors = {};
 
@@ -14,6 +15,10 @@ const commonMsg = {
   CONFIG: 'Path of the external config',
   DATA_DIR: 'Path where the data is stored',
   FIX_CONFIRMATION: 'Would you like to overwrite existing file.?',
+  WORKFLOW_FIX_WARN: `The workflow associated with UID {uid} and name {name} will be removed.`,
+  WORKFLOW_FIX_CONFIRMATION: 'Would you like to overwrite existing file?',
+  EXTENSION_FIX_WARN: `The extension associated with UID {uid} and title '{title}' will be removed.`,
+  EXTENSION_FIX_CONFIRMATION: `Would you like to overwrite existing file?`,
 };
 
 const auditMsg = {
@@ -27,7 +32,9 @@ const auditMsg = {
   FINAL_REPORT_PATH: "Reports ready. Please find the reports at '{path}'.",
   SCAN_CT_SUCCESS_MSG: "Successfully completed the scanning of {module} '{title}'.",
   SCAN_ENTRY_SUCCESS_MSG: "Successfully completed the scanning of {module} ({local}) '{title}'.",
+  SCAN_EXT_SUCCESS_MSG: "Successfully completed scanning the {module} titled '{title}' with UID '{uid}'",
   AUDIT_CMD_DESCRIPTION: 'Perform audits and find possible errors in the exported Contentstack data',
+  SCAN_WF_SUCCESS_MSG: 'Successfully removed the workflow with UID {uid} and name {name}.',
 };
 
 const auditFixMsg = {
@@ -37,6 +44,7 @@ const auditFixMsg = {
   FIXED_CONTENT_PATH_MAG: 'You can locate the fixed content at {path}.',
   EMPTY_FIX_MSG: 'Successfully removed the empty field/block found at {path} from the schema.',
   AUDIT_FIX_CMD_DESCRIPTION: 'Perform audits and fix possible errors in the exported Contentstack data.',
+  WF_FIX_MSG: 'Successfully removed the workflow {uid} named {name}.',
 };
 
 const messages: typeof errors &
@@ -65,8 +73,8 @@ function $t(msg: string, args: Record<string, string>): string {
     if (!msg) return '';
 
     for (const key of Object.keys(args)) {
-      const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      msg = msg.replace(new RegExp(`{${escapedKey}}`, 'g'), args[key] || escapedKey);
+      const escapedKey = escapeRegExp(key);
+      msg = msg.replace(new RegExp(`{${escapedKey}}`, 'g'), escapeRegExp(args[key]) || escapedKey);
     }
 
     return msg;

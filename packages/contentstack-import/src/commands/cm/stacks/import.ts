@@ -7,6 +7,7 @@ import {
   flags,
   FlagInput,
   ContentstackClient,
+  pathValidator
 } from '@contentstack/cli-utilities';
 
 import { ImportConfig } from '../../../types';
@@ -143,19 +144,19 @@ export default class ImportCommand extends Command {
 
       log(
         importConfig,
-        `The log has been stored at '${path.join(importConfig.backupDir, 'logs', 'import')}'`,
+        `The log has been stored at '${pathValidator(path.join(importConfig.backupDir, 'logs', 'import'))}'`,
         'success',
       );
     } catch (error) {
       log(
-        { data: backupDir ?? path.join(backupDir || __dirname, 'logs', 'import') } as ImportConfig,
+        { data: backupDir ?? pathValidator(path.join(backupDir || __dirname, 'logs', 'import')) } as ImportConfig,
         `Failed to import stack content - ${formatError(error)}`,
         'error',
       );
       log(
         { data: backupDir } as ImportConfig,
         `The log has been stored at ${
-          { data: backupDir } ? path.join(backupDir || __dirname, 'logs', 'import') : path.join(__dirname, 'logs')
+          { data: backupDir } ? pathValidator(path.join(backupDir || __dirname, 'logs', 'import')) : pathValidator(path.join(__dirname, 'logs'))
         }`,
         'info',
       );
