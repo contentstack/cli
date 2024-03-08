@@ -132,7 +132,7 @@ class ModuleImporter {
         args.push('--modules', this.importConfig.moduleName);
       } else if (this.importConfig.modules.types.length) {
         this.importConfig.modules.types
-          .filter((val) => ['content-types', 'global-fields', 'entries'].includes(val))
+          .filter((val) => ['content-types', 'global-fields', 'entries', 'workflows'].includes(val))
           .forEach((val) => {
             args.push('--modules', val);
           });
