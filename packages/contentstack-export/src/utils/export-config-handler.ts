@@ -20,7 +20,7 @@ const setupConfig = async (exportCmdFlags: any): Promise<ExportConfig> => {
   const pattern = /[*$%#<>{}!&?]/g;
   if (pattern.test(config.exportDir)) {
     cliux.print(
-      `\nYour mentioned directory path contains special characters (*,&,{,},[,],$,%,<,>,?,!) please add a path without them`,
+      `\nPlease add a directory path without any of the special characters: (*,&,{,},[,],$,%,<,>,?,!)`,
       {
         color: 'yellow',
       },
