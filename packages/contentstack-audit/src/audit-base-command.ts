@@ -12,7 +12,7 @@ import config from './config';
 import { print } from './util/log';
 import { auditMsg } from './messages';
 import { BaseCommand } from './base-command';
-import { Entries, GlobalField, ContentType, Workflows } from './modules';
+import { Entries, GlobalField, ContentType, Extensions, Workflows } from './modules';
 import { CommandNames, ContentTypeStruct, OutputColumn, RefErrorReturnType } from './types';
 
 export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseCommand> {
@@ -42,21 +42,22 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     await this.createBackUp();
     this.sharedConfig.reportPath = resolve(this.flags['report-path'] || process.cwd(), 'audit-report');
 
-    const { missingCtRefs, missingGfRefs, missingEntryRefs, missingCtRefsInWorkflow } = await this.scanAndFix();
+    const { missingCtRefs, missingGfRefs, missingEntryRefs, missingCtRefsInExtensions, missingCtRefsInWorkflow } =
+      await this.scanAndFix();
 
     this.showOutputOnScreen([
       { module: 'Content types', missingRefs: missingCtRefs },
       { module: 'Global Fields', missingRefs: missingGfRefs },
       { module: 'Entries', missingRefs: missingEntryRefs },
     ]);
-
+    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Extensions', missingRefs: missingCtRefsInExtensions }]);
     this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Workflows', missingRefs: missingCtRefsInWorkflow }]);
-
     if (
       !isEmpty(missingCtRefs) ||
       !isEmpty(missingGfRefs) ||
       !isEmpty(missingEntryRefs) ||
-      !isEmpty(missingCtRefsInWorkflow)
+      !isEmpty(missingCtRefsInWorkflow) ||
+      !isEmpty(missingCtRefsInExtensions)
     ) {
       if (this.currentCommand === 'cm:stacks:audit') {
         this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
@@ -81,7 +82,8 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       !isEmpty(missingCtRefs) ||
       !isEmpty(missingGfRefs) ||
       !isEmpty(missingEntryRefs) ||
-      !isEmpty(missingCtRefsInWorkflow)
+      !isEmpty(missingCtRefsInWorkflow) ||
+      !isEmpty(missingCtRefsInExtensions)
     );
   }
 
@@ -93,7 +95,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    */
   async scanAndFix() {
     let { ctSchema, gfSchema } = this.getCtAndGfSchema();
-    let missingCtRefs, missingGfRefs, missingEntryRefs, missingCtRefsInWorkflow;
+    let missingCtRefs, missingGfRefs, missingEntryRefs, missingCtRefsInExtensions, missingCtRefsInWorkflow;
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       print([
         {
@@ -135,6 +137,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           }).run();
           await this.prepareReport(module, missingCtRefsInWorkflow);
           break;
+        case 'extensions':
+          missingCtRefsInExtensions = await new Extensions(cloneDeep(constructorParam)).run();
+          await this.prepareReport(module, missingCtRefsInExtensions);
+          break;
       }
 
       print([
@@ -151,7 +157,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       ]);
     }
 
-    return { missingCtRefs, missingGfRefs, missingEntryRefs, missingCtRefsInWorkflow };
+    return { missingCtRefs, missingGfRefs, missingEntryRefs, missingCtRefsInExtensions, missingCtRefsInWorkflow };
   }
 
   /**
@@ -284,7 +290,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     if (!this.sharedConfig.showTerminalOutput || this.flags['external-config']?.noTerminalOutput) {
       return;
     }
-    
     this.log(''); // Adding a new line
 
     for (const { module, missingRefs } of allMissingRefs) {
@@ -304,14 +309,14 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
               minWidth: 7,
               header: key,
               get: (row: Record<string, unknown>) => {
-                if(key==='fixStatus') {
+                if (key === 'fixStatus') {
                   return chalk.green(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
-                } else if(key==='content_types') {
+                } else if (key === 'content_types') {
                   return chalk.red(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
                 } else {
                   return chalk.white(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
                 }
-              }
+              },
             },
           };
         }
@@ -377,7 +382,6 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       }
 
       const rowData: Record<string, string | string[]>[] = [];
-
       for (const issue of missingRefs) {
         let row: Record<string, string | string[]> = {};
 
