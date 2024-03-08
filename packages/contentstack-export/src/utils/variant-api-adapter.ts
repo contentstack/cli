@@ -40,14 +40,14 @@ class VariantHttpClient implements Variant {
     options: VariantsOption,
     entries?: Record<string, any>[],
   ): Promise<{ entries?: Record<string, any>[] | unknown[] }> {
-    const vaiantConfig = config.modules.entryVariant;
+    const variantConfig = config.modules.entryVariant;
     const {
       entry_uid,
       content_type_uid,
-      skip = vaiantConfig.query.skip || 0,
-      limit = vaiantConfig.query.limit || 100,
-      locale = vaiantConfig.query.locale || 'en-us',
-      include_variant = vaiantConfig.query.include_variant || true,
+      skip = variantConfig.query.skip || 0,
+      limit = variantConfig.query.limit || 100,
+      locale = variantConfig.query.locale || 'en-us',
+      include_variant = variantConfig.query.include_variant || true,
     } = options;
     let endpoint = `${this.baseURL}/content_types/${content_type_uid}/entries/${entry_uid}/variants?locale=${locale}`;
 
@@ -63,7 +63,7 @@ class VariantHttpClient implements Variant {
       endpoint.concat('&include_variant');
     }
 
-    const query = this.constructQuery(omit(vaiantConfig.query, ['skip', 'limit', 'locale', 'include_variant']));
+    const query = this.constructQuery(omit(variantConfig.query, ['skip', 'limit', 'locale', 'include_variant']));
 
     if (query) {
       endpoint = endpoint.concat(query);
