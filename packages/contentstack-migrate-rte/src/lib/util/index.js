@@ -20,7 +20,13 @@ const { JSDOM } = require('jsdom');
 const collapseWithSpace = require('collapse-whitespace');
 const { htmlToJson } = require('@contentstack/json-rte-serializer');
 const nodePath = require('path');
-const { cliux, managementSDKClient, isAuthenticated, doesBranchExist } = require('@contentstack/cli-utilities');
+const {
+  cliux,
+  managementSDKClient,
+  isAuthenticated,
+  doesBranchExist,
+  pathValidator,
+} = require('@contentstack/cli-utilities');
 const packageValue = require('../../../package.json');
 const isBlank = (variable) => {
   return isNil(variable) || isEmpty(variable);
@@ -36,12 +42,14 @@ async function getStack(data) {
   if (data.token) {
     const tokenDetails = data.token;
     stackOptions['api_key'] = tokenDetails.apiKey;
-    options['management_token'] = tokenDetails.token // need to pass management token so that the sdk doesn't get configured with authtoken (throws error in case of oauth, if the provided stack doesn't belong to the org selected while logging in with oauth)
+    options['management_token'] = tokenDetails.token; // need to pass management token so that the sdk doesn't get configured with authtoken (throws error in case of oauth, if the provided stack doesn't belong to the org selected while logging in with oauth)
     stackOptions['management_token'] = tokenDetails.token;
   }
   if (data.stackApiKey) {
     if (!isAuthenticated()) {
-      throw new Error('Please login to proceed further. Or use `--alias` instead of `--stack-api-key` to proceed without logging in.')
+      throw new Error(
+        'Please login to proceed further. Or use `--alias` instead of `--stack-api-key` to proceed without logging in.',
+      );
     }
     stackOptions['api_key'] = data.stackApiKey;
   }
@@ -53,11 +61,11 @@ async function getStack(data) {
   if (data.branch) {
     let branchData = await doesBranchExist(stack, data.branch);
     if (branchData && branchData.errorCode) {
-      throw new Error(branchData.errorMessage)
+      throw new Error(branchData.errorMessage);
     }
   }
   return stack;
-};
+}
 
 const deprecatedFields = {
   configPath: 'config-path',
@@ -88,7 +96,7 @@ async function getConfig(flags) {
     let config;
     if (flags['config-path']) {
       const configPath = flags['config-path'];
-      config = require(nodePath.resolve(configPath));
+      config = require(pathValidator(configPath));
     } else {
       config = {
         'content-type': flags['content-type'],
@@ -109,10 +117,10 @@ async function getConfig(flags) {
         config.branch = flags['branch'];
       }
       if (flags.alias) {
-        config.alias = flags.alias
+        config.alias = flags.alias;
       }
       if (flags['stack-api-key']) {
-        config['stack-api-key'] = flags['stack-api-key']
+        config['stack-api-key'] = flags['stack-api-key'];
       }
     }
     if (checkConfig(config)) {
@@ -173,7 +181,7 @@ function throwConfigError(error) {
 }
 function checkConfig(config) {
   let v = new Validator();
-  let res = v.validate(config, configSchema, {throwError: true, nestedErrors: true});
+  let res = v.validate(config, configSchema, { throwError: true, nestedErrors: true });
   return res.valid;
 }
 function prettyPrint(data) {
