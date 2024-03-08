@@ -1,0 +1,248 @@
+{
+  "missingCts": {
+    "ext1": {
+      "stackHeaders": {
+        "api_key": "apiKey"
+      },
+      "urlPath": "/extensions/ext1",
+      "uid": "ext1",
+      "created_at": "2024-02-22T09:45:48.681Z",
+      "updated_at": "2024-02-22T09:45:48.681Z",
+      "created_by": "u1",
+      "updated_by": "u1",
+      "tags": [],
+      "_version": 1,
+      "title": "Progress Bar",
+      "config": {},
+      "type": "field",
+      "data_type": "number",
+      "multiple": false,
+      "scope": {
+        "content_types": ["ct6"]
+      }
+    },
+    "ext2": {
+      "stackHeaders": {
+        "api_key": "apiKey"
+      },
+      "urlPath": "/extensions/ext2",
+      "uid": "ext2",
+      "created_at": "2024-02-22T09:45:11.284Z",
+      "updated_at": "2024-02-22T09:45:11.284Z",
+      "created_by": "u1",
+      "updated_by": "u1",
+      "tags": [],
+      "_version": 1,
+      "title": "Color Picker",
+      "config": {},
+      "type": "field",
+      "data_type": "text",
+      "multiple": false,
+      "scope": {
+        "content_types": ["ct8"]
+      }
+    },
+    "ext5": {
+      "stackHeaders": {
+        "api_key": "apiKey"
+      },
+      "urlPath": "/extensions/ext5",
+      "uid": "ext5",
+      "created_at": "2024-02-22T09:44:27.030Z",
+      "updated_at": "2024-02-22T09:44:27.030Z",
+      "created_by": "u1",
+      "updated_by": "u1",
+      "tags": [],
+      "_version": 1,
+      "title": "Text Intelligence",
+      "config": {
+        "token": "your_token_here"
+      },
+      "type": "widget",
+      "scope": {
+        "content_types": ["ct4", "ct3", "ct2", "ct1"]
+      }
+    },
+    "ext6": {
+      "stackHeaders": {
+        "api_key": "apiKey"
+      },
+      "urlPath": "/extensions/ext6",
+      "uid": "ext6",
+      "created_at": "2024-02-22T09:44:01.784Z",
+      "updated_at": "2024-02-22T09:44:01.784Z",
+      "created_by": "u1",
+      "updated_by": "u1",
+      "tags": [],
+      "_version": 1,
+      "title": "Ace Editor",
+      "config": {},
+      "type": "field",
+      "data_type": "reference",
+      "multiple": true
+    },
+    "ext7": {
+      "stackHeaders": {
+        "api_key": "apiKey"
+      },
+      "urlPath": "/extensions/ext7",
+      "uid": "ext7",
+      "created_at": "2024-02-22T09:43:35.589Z",
+      "updated_at": "2024-02-22T09:43:35.589Z",
+      "created_by": "u1",
+      "updated_by": "u1",
+      "tags": [],
+      "_version": 1,
+      "title": "Gatsby Preview",
+      "config": {
+        "siteUrl": "your_site_url"
+      },
+      "type": "widget",
+      "scope": {
+        "content_types": ["ct3", "ct5"]
+      }
+    }
+  },
+  "allCts": {
+    "ext1": {
+      "stackHeaders": {
+        "api_key": "apiKey"
+      },
+      "urlPath": "/extensions/ext1",
+      "uid": "ext1",
+      "created_at": "2024-02-22T09:45:48.681Z",
+      "updated_at": "2024-02-22T09:45:48.681Z",
+      "created_by": "u1",
+      "updated_by": "u1",
+      "tags": [],
+      "_version": 1,
+      "title": "Progress Bar",
+      "config": {},
+      "type": "field",
+      "data_type": "number",
+      "multiple": false,
+      "scope": {
+        "content_types": ["$all"]
+      }
+    },
+    "ext2": {
+      "stackHeaders": {
+        "api_key": "apiKey"
+      },
+      "urlPath": "/extensions/ext2",
+      "uid": "ext2",
+      "created_at": "2024-02-22T09:45:11.284Z",
+      "updated_at": "2024-02-22T09:45:11.284Z",
+      "created_by": "u1",
+      "updated_by": "u1",
+      "tags": [],
+      "_version": 1,
+      "title": "Color Picker",
+      "config": {},
+      "type": "field",
+      "data_type": "text",
+      "multiple": false,
+      "scope": {
+        "content_types": ["$all"]
+      }
+    }
+  },
+  "noMissingCts": {
+    "ext1": {
+      "stackHeaders": {
+        "api_key": "apiKey"
+      },
+      "urlPath": "/extensions/ext1",
+      "uid": "ext1",
+      "created_at": "2024-02-22T09:45:48.681Z",
+      "updated_at": "2024-02-22T09:45:48.681Z",
+      "created_by": "u1",
+      "updated_by": "u1",
+      "tags": [],
+      "_version": 1,
+      "title": "Progress Bar",
+      "config": {},
+      "type": "field",
+      "data_type": "number",
+      "multiple": false
+    },
+    "ext2": {
+      "stackHeaders": {
+        "api_key": "apiKey"
+      },
+      "urlPath": "/extensions/ext2",
+      "uid": "ext2",
+      "created_at": "2024-02-22T09:45:11.284Z",
+      "updated_at": "2024-02-22T09:45:11.284Z",
+      "created_by": "u1",
+      "updated_by": "u1",
+      "tags": [],
+      "_version": 1,
+      "title": "Color Picker",
+      "config": {},
+      "type": "field",
+      "data_type": "text",
+      "multiple": false
+    },
+    "ext5": {
+      "stackHeaders": {
+        "api_key": "apiKey"
+      },
+      "urlPath": "/extensions/ext5",
+      "uid": "ext5",
+      "created_at": "2024-02-22T09:44:27.030Z",
+      "updated_at": "2024-02-22T09:44:27.030Z",
+      "created_by": "u1",
+      "updated_by": "u1",
+      "tags": [],
+      "_version": 1,
+      "title": "Text Intelligence",
+      "config": {
+        "token": "your_token_here"
+      },
+      "type": "widget",
+      "scope": {
+        "content_types": ["ct4", "ct3", "ct2", "ct1"]
+      }
+    },
+    "ext6": {
+      "stackHeaders": {
+        "api_key": "apiKey"
+      },
+      "urlPath": "/extensions/ext6",
+      "uid": "ext6",
+      "created_at": "2024-02-22T09:44:01.784Z",
+      "updated_at": "2024-02-22T09:44:01.784Z",
+      "created_by": "u1",
+      "updated_by": "u1",
+      "tags": [],
+      "_version": 1,
+      "title": "Ace Editor",
+      "config": {},
+      "type": "field",
+      "data_type": "reference",
+      "multiple": true
+    },
+    "ext7": {
+      "stackHeaders": {
+        "api_key": "apiKey"
+      },
+      "urlPath": "/extensions/ext7",
+      "uid": "ext7",
+      "created_at": "2024-02-22T09:43:35.589Z",
+      "updated_at": "2024-02-22T09:43:35.589Z",
+      "created_by": "u1",
+      "updated_by": "u1",
+      "tags": [],
+      "_version": 1,
+      "title": "Gatsby Preview",
+      "config": {
+        "siteUrl": "your_site_url"
+      },
+      "type": "widget",
+      "scope": {
+        "content_types": ["ct3", "ct5"]
+      }
+    }
+  }
+}
