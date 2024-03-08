@@ -12,7 +12,7 @@ import config from './config';
 import { print } from './util/log';
 import { auditMsg } from './messages';
 import { BaseCommand } from './base-command';
-import { Entries, GlobalField, ContentType } from './modules';
+import { Entries, GlobalField, ContentType, Extensions } from './modules';
 import { CommandNames, ContentTypeStruct, OutputColumn, RefErrorReturnType } from './types';
 
 export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseCommand> {
@@ -42,15 +42,21 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     await this.createBackUp();
     this.sharedConfig.reportPath = resolve(this.flags['report-path'] || process.cwd(), 'audit-report');
 
-    const { missingCtRefs, missingGfRefs, missingEntryRefs } = await this.scanAndFix();
+    const { missingCtRefs, missingGfRefs, missingEntryRefs, missingCtRefsInExtensions } = await this.scanAndFix();
 
     this.showOutputOnScreen([
       { module: 'Content types', missingRefs: missingCtRefs },
       { module: 'Global Fields', missingRefs: missingGfRefs },
       { module: 'Entries', missingRefs: missingEntryRefs },
     ]);
+    this.showOutputOnScreenWorkflowsAndExtension([{ module: 'Extensions', missingRefs: missingCtRefsInExtensions }]);
 
-    if (!isEmpty(missingCtRefs) || !isEmpty(missingGfRefs) || !isEmpty(missingEntryRefs)) {
+    if (
+      !isEmpty(missingCtRefs) ||
+      !isEmpty(missingGfRefs) ||
+      !isEmpty(missingEntryRefs) ||
+      !isEmpty(missingCtRefsInExtensions)
+    ) {
       if (this.currentCommand === 'cm:stacks:audit') {
         this.log(this.$t(auditMsg.FINAL_REPORT_PATH, { path: this.sharedConfig.reportPath }), 'warn');
       } else {
@@ -70,7 +76,12 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       }
     }
 
-    return !isEmpty(missingCtRefs) || !isEmpty(missingGfRefs) || !isEmpty(missingEntryRefs);
+    return (
+      !isEmpty(missingCtRefs) ||
+      !isEmpty(missingGfRefs) ||
+      !isEmpty(missingEntryRefs) ||
+      !isEmpty(missingCtRefsInExtensions)
+    );
   }
 
   /**
@@ -81,7 +92,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
    */
   async scanAndFix() {
     let { ctSchema, gfSchema } = this.getCtAndGfSchema();
-    let missingCtRefs, missingGfRefs, missingEntryRefs;
+    let missingCtRefs, missingGfRefs, missingEntryRefs, missingCtRefsInExtensions;
     for (const module of this.sharedConfig.flags.modules || this.sharedConfig.modules) {
       print([
         {
@@ -113,6 +124,10 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
           missingEntryRefs = await new Entries(cloneDeep(constructorParam)).run();
           await this.prepareReport(module, missingEntryRefs);
           break;
+        case 'extensions':
+          missingCtRefsInExtensions = await new Extensions(cloneDeep(constructorParam)).run();
+          await this.prepareReport(module, missingCtRefsInExtensions);
+          break;
       }
 
       print([
@@ -129,7 +144,7 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       ]);
     }
 
-    return { missingCtRefs, missingGfRefs, missingEntryRefs };
+    return { missingCtRefs, missingGfRefs, missingEntryRefs, missingCtRefsInExtensions };
   }
 
   /**
@@ -258,6 +273,52 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
     }
   }
 
+  // Make it generic it takes the column header as param
+  showOutputOnScreenWorkflowsAndExtension(allMissingRefs: { module: string; missingRefs?: Record<string, any> }[]) {
+    if (!this.sharedConfig.showTerminalOutput || this.flags['external-config']?.noTerminalOutput) {
+      return;
+    }
+
+    this.log(''); // Adding a new line
+
+    for (const { module, missingRefs } of allMissingRefs) {
+      if (isEmpty(missingRefs)) {
+        continue;
+      }
+
+      print([{ bold: true, color: 'cyan', message: ` ${module}` }]);
+
+      const tableValues = Object.values(missingRefs).flat();
+
+      const tableKeys = Object.keys(missingRefs[0]);
+      const arrayOfObjects = tableKeys.map((key) => {
+        if (['title', 'name', 'uid', 'content_types', 'fixStatus'].includes(key)) {
+          return {
+            [key]: {
+              minWidth: 7,
+              header: key,
+              get: (row: Record<string, unknown>) => {
+                if(key==='fixStatus') {
+                  return chalk.green(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
+                } else if(key==='content_types') {
+                  return chalk.red(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
+                } else {
+                  return chalk.white(typeof row[key] === 'object' ? JSON.stringify(row[key]) : row[key]);
+                }
+              },
+            },
+          };
+        }
+        return {};
+      });
+
+      const mergedObject = Object.assign({}, ...arrayOfObjects);
+
+      ux.table(tableValues, mergedObject, { ...this.flags });
+      this.log(''); // Adding a new line
+    }
+  }
+
   /**
    * The function prepares a report by writing a JSON file and a CSV file with a list of missing
    * references for a given module.
@@ -311,13 +372,14 @@ export abstract class AuditBaseCommand extends BaseCommand<typeof AuditBaseComma
       }
 
       const rowData: Record<string, string | string[]>[] = [];
-
       for (const issue of missingRefs) {
         let row: Record<string, string | string[]> = {};
 
         for (const column of columns) {
-          row[column] = issue[OutputColumn[column]];
-          row[column] = typeof row[column] === 'object' ? JSON.stringify(row[column]) : row[column];
+          if (Object.keys(issue).includes(OutputColumn[column])) {
+            row[column] = issue[OutputColumn[column]] as string;
+            row[column] = typeof row[column] === 'object' ? JSON.stringify(row[column]) : row[column];
+          }
         }
 
         if (this.currentCommand === 'cm:stacks:audit:fix') {
