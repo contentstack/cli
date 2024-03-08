@@ -258,7 +258,7 @@ export default class ContentTypesImport extends BaseClass {
 
   async updatePendingExtensions(): Promise<any> {
     let apiContent = fsUtil.readFile(this.extPendingPath) as Record<string, any>[];
-    if (apiContent.length === 0) {
+    if (apiContent?.length === 0) {
       log(this.importConfig, `No extensions found to be updated.`, 'success');
       return;
     }

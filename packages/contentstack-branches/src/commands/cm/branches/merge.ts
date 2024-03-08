@@ -1,6 +1,6 @@
 import { Command } from '@contentstack/cli-command';
 import { cliux, flags, isAuthenticated } from '@contentstack/cli-utilities';
-import { setupMergeInputs, displayBranchStatus, handleErrorMsg } from '../../../utils';
+import { setupMergeInputs, displayBranchStatus, handleErrorMsg, validateCompareData } from '../../../utils';
 import { MergeHandler } from '../../../branch';
 export default class BranchMergeCommand extends Command {
   static description: string = 'Merge changes from a branch'; //TBD update the description
@@ -77,22 +77,27 @@ export default class BranchMergeCommand extends Command {
         host: this.cmaHost,
         format: 'compact-text',
       });
-      await new MergeHandler({
-        stackAPIKey: branchMergeFlags['stack-api-key'],
-        compareBranch: branchMergeFlags['compare-branch'],
-        strategy: branchMergeFlags.strategy,
-        strategySubOption: branchMergeFlags['strategy-sub-options'],
-        baseBranch: branchMergeFlags['base-branch'],
-        branchCompareData: branchCompareData,
-        mergeComment: branchMergeFlags.comment,
-        executeOption: branchMergeFlags['merge-action'],
-        noRevert: branchMergeFlags['no-revert'],
-        format: 'compact-text',
-        exportSummaryPath: branchMergeFlags['export-summary-path'],
-        mergeSummary: branchMergeFlags.mergeSummary,
-        host: this.cmaHost,
-        enableEntryExp: false,
-      }).start();
+      const isCompareDataValid = validateCompareData(branchCompareData);
+      if(isCompareDataValid) {
+        await new MergeHandler({
+          stackAPIKey: branchMergeFlags['stack-api-key'],
+          compareBranch: branchMergeFlags['compare-branch'],
+          strategy: branchMergeFlags.strategy,
+          strategySubOption: branchMergeFlags['strategy-sub-options'],
+          baseBranch: branchMergeFlags['base-branch'],
+          branchCompareData: branchCompareData,
+          mergeComment: branchMergeFlags.comment,
+          executeOption: branchMergeFlags['merge-action'],
+          noRevert: branchMergeFlags['no-revert'],
+          format: 'compact-text',
+          exportSummaryPath: branchMergeFlags['export-summary-path'],
+          mergeSummary: branchMergeFlags.mergeSummary,
+          host: this.cmaHost,
+          enableEntryExp: false,
+        }).start(); 
+      } else {
+        cliux.print("No changes found to merge.");
+      }
     } catch (error) {
       console.log('Error in Merge operations', error);
     }
