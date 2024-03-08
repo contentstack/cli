@@ -65,6 +65,7 @@ export default class Workflows {
       if (ctNotPresent.length) {
         const tempwf = cloneDeep(workflow);
         tempwf.content_types = ctNotPresent;
+        ctNotPresent.forEach((ct) => this.missingCts.add(ct));
         this.missingCtInWorkflows.push(tempwf);
       }
   
@@ -93,7 +94,6 @@ export default class Workflows {
     if (Object.keys(newWorkflowSchema).length !== 0) {
       for (const workflow of this.workflowSchema) {  
         const fixedCts = workflow.content_types.filter((ct) => !this.missingCts.has(ct));
-    
         if (fixedCts.length) {
           newWorkflowSchema[workflow.uid].content_types = fixedCts;
         } else {
@@ -114,7 +114,7 @@ export default class Workflows {
 
   async writeFixContent(newWorkflowSchema: Record<string, Workflow>) {
     if (
-      this.fix &&
+      this.fix ||
       !(this.config.flags['copy-dir'] || this.config.flags['external-config']?.skipConfirm) &&
       (this.config.flags.yes || (await ux.confirm(commonMsg.FIX_CONFIRMATION)))
     ) {
