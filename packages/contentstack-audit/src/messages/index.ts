@@ -15,8 +15,8 @@ const commonMsg = {
   CONFIG: 'Path of the external config',
   DATA_DIR: 'Path where the data is stored',
   FIX_CONFIRMATION: 'Would you like to overwrite existing file.?',
-  WORKFLOW_FIX_WARN: `Workflow {uid} named '{name}' will be removed.`,
-  WORKFLOW_FIX_CONFIRMATION: 'Would you like to overwrite existing file.?',
+  WORKFLOW_FIX_WARN: `The workflow associated with UID {uid} and name {name} will be removed.`,
+  WORKFLOW_FIX_CONFIRMATION: 'Would you like to overwrite existing file?',
 };
 
 const auditMsg = {
@@ -31,7 +31,7 @@ const auditMsg = {
   SCAN_CT_SUCCESS_MSG: "Successfully completed the scanning of {module} '{title}'.",
   SCAN_ENTRY_SUCCESS_MSG: "Successfully completed the scanning of {module} ({local}) '{title}'.",
   AUDIT_CMD_DESCRIPTION: 'Perform audits and find possible errors in the exported Contentstack data',
-  SCAN_WF_SUCCESS_MSG: "Successfully completed the scanning of {module} '{name}'.",
+  SCAN_WF_SUCCESS_MSG: "Successfully removed the workflow with UID {uid} and name {name}.",
 };
 
 const auditFixMsg = {
