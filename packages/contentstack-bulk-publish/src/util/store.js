@@ -2,10 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const config = require('../config/index.js');
 const chalk = require('chalk');
+const {pathValidator} = require('@contentstack/cli-utilities')
 
 function save(key, data) {
   let bulkPublish = config ? config : {};
-  let filePath = path.join(process.cwd(), config.json);
+  let filePath = pathValidator(config.json);
   bulkPublish[key] = data;
   fs.writeFile(filePath, JSON.stringify(bulkPublish), (error) => {
     if (error) {
@@ -49,7 +50,7 @@ function get(key, filePath) {
 
 function updateMissing(key, flags) {
   let savedConfig;
-  savedConfig = get(key, path.resolve(flags.config));
+  savedConfig = get(key, pathValidator(flags.config));
   Object.keys(savedConfig).forEach((element) => {
     if (flags[element] === undefined) {
       console.log(`Using ${element} from config file`);
