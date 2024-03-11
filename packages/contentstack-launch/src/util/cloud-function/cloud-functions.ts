@@ -77,7 +77,8 @@ export class CloudFunctions {
         const handler = loadAsESM(
           `${cloudFunctionResource.cloudFunctionFilePath}`
         ).default;
-
+        app.use(express.json());
+        app.use(express.urlencoded({ extended: true }));
         app.all(
           cloudFunctionResource.apiResourceURI,
           async (request: Request, response: Response) => {
