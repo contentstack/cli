@@ -419,6 +419,22 @@ export const removeEntryRefsFromJSONRTE = (entry: Record<string, any>, ctSchema:
         }
         break;
       }
+      case 'text': {
+        if (entry[element.uid] && element.field_metadata.rich_text_type) {
+          if (element.multiple) {
+            let rteContent = [];
+            for (let i = 0; i < entry[element.uid].length; i++) {
+              rteContent.push('<p></p>');
+            }
+            entry[element.uid] = rteContent;
+            return entry;
+          } else {
+            entry[element.uid] = '<p></p>';
+            return entry;
+          }
+        }
+        break;
+      }
     }
   }
   return entry;
@@ -530,6 +546,35 @@ export const restoreJsonRteEntryRefs = (
               child = resolveAssetRefsInEntryRefsForJsonRte(child, mappedAssetUids, mappedAssetUrls);
               return child;
             });
+          }
+        }
+        break;
+      }
+      case 'text': {
+        if (entry[element.uid] && element.field_metadata.rich_text_type) {
+          entry[element.uid] = sourceStackEntry[element.uid];
+          const matches: string[] = [];
+          Object.keys(uidMapper).forEach((uid) => {
+            if (sourceStackEntry[element.uid].indexOf(uid) !== -1) {
+              matches.push(uid);
+            }
+          });
+
+          if (element.multiple && Array.isArray(entry[element.uid])) {
+            for (let i = 0; i < matches.length; i++) {
+              entry[element.uid] = entry[element.uid].map((el: string) => {
+                while (el.indexOf(matches[i]) !== -1) {
+                  el = el.replace(matches[i], uidMapper[matches[i]]);
+                }
+                return el;
+              });
+            }
+          } else {
+            for (let i = 0; i < matches.length; i++) {
+              while (entry[element.uid].indexOf(matches[i]) !== -1) {
+                entry[element.uid] = entry[element.uid].replace(matches[i], uidMapper[matches[i]]);
+              }
+            }
           }
         }
         break;
