@@ -562,18 +562,11 @@ export const restoreJsonRteEntryRefs = (
 
           if (element.multiple && Array.isArray(entry[element.uid])) {
             for (let i = 0; i < matches.length; i++) {
-              entry[element.uid] = entry[element.uid].map((el: string) => {
-                while (el.indexOf(matches[i]) !== -1) {
-                  el = el.replace(matches[i], uidMapper[matches[i]]);
-                }
-                return el;
-              });
+              entry[element.uid] = entry[element.uid].map((el:string) => updateUids(el,matches[i],uidMapper));
             }
           } else {
             for (let i = 0; i < matches.length; i++) {
-              while (entry[element.uid].indexOf(matches[i]) !== -1) {
-                entry[element.uid] = entry[element.uid].replace(matches[i], uidMapper[matches[i]]);
-              }
+              entry[element.uid] = updateUids(entry[element.uid],matches[i],uidMapper);
             }
           }
         }
@@ -583,6 +576,10 @@ export const restoreJsonRteEntryRefs = (
   }
   return entry;
 };
+
+function updateUids(str:string,match:string,uidMapper:Record<string, string>) {
+  return str.replace(new RegExp(match, 'g'), (match:string) => uidMapper[match])
+}
 
 function setDirtyTrue(jsonRteChild: any) {
   // also removing uids in this function
