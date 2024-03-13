@@ -54,12 +54,14 @@ export default class Workflows {
       this.log($t(auditMsg.NOT_VALID_PATH, { path: this.folderPath }), { color: 'yellow' });
       return {};
     }
-  
+
     this.workflowPath = join(this.folderPath, this.fileName);
-    this.workflowSchema = existsSync(this.workflowPath) ? values(JSON.parse(readFileSync(this.workflowPath, 'utf8')) as Workflow[]) : [];
-  
+    this.workflowSchema = existsSync(this.workflowPath)
+      ? values(JSON.parse(readFileSync(this.workflowPath, 'utf8')) as Workflow[])
+      : [];
+
     this.ctSchema.forEach((ct) => this.ctUidSet.add(ct.uid));
-  
+
     for (const workflow of this.workflowSchema) {
       const ctNotPresent = workflow.content_types.filter((ct) => !this.ctUidSet.has(ct));
       if (ctNotPresent.length) {
@@ -68,53 +70,53 @@ export default class Workflows {
         ctNotPresent.forEach((ct) => this.missingCts.add(ct));
         this.missingCtInWorkflows.push(tempwf);
       }
-  
+
       this.log(
         $t(auditMsg.SCAN_WF_SUCCESS_MSG, {
           name: workflow.name,
-          module: this.config.moduleConfig[this.moduleName].name,
+          uid: workflow.uid,
         }),
-        'info'
+        'info',
       );
     }
-  
+
     if (this.fix && this.missingCtInWorkflows.length) {
       await this.fixWorkflowSchema();
       this.missingCtInWorkflows.forEach((wf) => (wf.fixStatus = 'Fixed'));
     }
-  
+
     return this.missingCtInWorkflows;
   }
 
-  async fixWorkflowSchema() {  
+  async fixWorkflowSchema() {
     const newWorkflowSchema: Record<string, Workflow> = existsSync(this.workflowPath)
       ? JSON.parse(readFileSync(this.workflowPath, 'utf8'))
       : {};
-    
+
     if (Object.keys(newWorkflowSchema).length !== 0) {
-      for (const workflow of this.workflowSchema) {  
+      for (const workflow of this.workflowSchema) {
         const fixedCts = workflow.content_types.filter((ct) => !this.missingCts.has(ct));
         if (fixedCts.length) {
           newWorkflowSchema[workflow.uid].content_types = fixedCts;
         } else {
           const { name, uid } = workflow;
           const warningMessage = $t(commonMsg.WORKFLOW_FIX_WARN, { name, uid });
-  
+
           this.log(warningMessage, { color: 'yellow' });
-  
+
           if (this.config.flags.yes || (await ux.confirm(commonMsg.WORKFLOW_FIX_CONFIRMATION))) {
             delete newWorkflowSchema[workflow.uid];
           }
         }
       }
     }
-  
+
     await this.writeFixContent(newWorkflowSchema);
   }
 
   async writeFixContent(newWorkflowSchema: Record<string, Workflow>) {
     if (
-      this.fix ||
+      this.fix &&
       !(this.config.flags['copy-dir'] || this.config.flags['external-config']?.skipConfirm) &&
       (this.config.flags.yes || (await ux.confirm(commonMsg.FIX_CONFIRMATION)))
     ) {
