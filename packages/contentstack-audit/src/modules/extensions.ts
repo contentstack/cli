@@ -79,7 +79,7 @@ export default class Extensions {
     if (this.fix && this.missingCtInExtensions.length) {
       await this.fixExtensionsScope(cloneDeep(this.missingCtInExtensions));
       this.missingCtInExtensions.forEach((ext) => (ext.fixStatus = 'Fixed'));
-      return this.missingCtInExtensions
+      return this.missingCtInExtensions;
     }
     return this.missingCtInExtensions;
   }
@@ -106,7 +106,7 @@ export default class Extensions {
 
   async writeFixContent(fixedExtensions: Record<string, Extension>) {
     if (
-      this.fix ||
+      this.fix &&
       (this.config.flags['copy-dir'] ||
         this.config.flags['external-config']?.skipConfirm ||
         (await ux.confirm(commonMsg.FIX_CONFIRMATION)))
