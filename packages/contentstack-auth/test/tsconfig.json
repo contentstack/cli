@@ -1,0 +1,12 @@
+{
+  "declaration": false,
+  "extends": "../tsconfig",
+  "compilerOptions": {
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "../src/**/*"
+  ]
+}

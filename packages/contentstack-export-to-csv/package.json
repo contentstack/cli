@@ -1,0 +1,68 @@
+{
+  "name": "@contentstack/cli-cm-export-to-csv",
+  "description": "Export entities to csv",
+  "version": "1.7.0",
+  "author": "Abhinav Gupta @abhinav-from-contentstack",
+  "bugs": "https://github.com/contentstack/cli/issues",
+  "dependencies": {
+    "@contentstack/cli-command": "~1.2.16",
+    "@contentstack/cli-utilities": "~1.5.12",
+    "chalk": "^4.1.0",
+    "fast-csv": "^4.3.6",
+    "inquirer": "8.2.4",
+    "inquirer-checkbox-plus-prompt": "1.0.1",
+    "mkdirp": "^3.0.1"
+  },
+  "devDependencies": {
+    "@oclif/test": "^2.5.6",
+    "@types/chai": "^4.3.6",
+    "@types/mocha": "^10.0.1",
+    "chai": "^4.3.8",
+    "debug": "^4.3.1",
+    "dotenv": "^16.3.1",
+    "eslint": "^7.32.0",
+    "eslint-config-oclif": "^4.0.0",
+    "globby": "^10.0.2",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
+    "oclif": "^3.8.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json",
+    "/src",
+    "/yarn.lock"
+  ],
+  "homepage": "https://github.com/contentstack/cli",
+  "keywords": [
+    "contentstack",
+    "cli",
+    "plugin"
+  ],
+  "scripts": {
+    "pack": "npm pack && mv *.tgz ../../build",
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "oclif manifest && oclif readme",
+    "test": "nyc mocha --forbid-only \"test/**/*.test.js\"",
+    "test:unit": "mocha --timeout 10000 --forbid-only \"test/unit/**/*.test.js\" \"test/util/common-utils.test.js\"",
+    "test:unit:report": "nyc --extension .js mocha --forbid-only \"test/unit/**/*.test.js\" \"test/util/common-utils.test.js\"",
+    "version": "oclif readme && git add README.md",
+    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
+  },
+  "main": "./src/commands/cm/export-to-csv.js",
+  "license": "MIT",
+  "oclif": {
+    "commands": "./src/commands",
+    "bin": "csdx",
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-export-to-csv/<%- commandPath %>"
+  },
+  "csdxConfig": {
+    "shortCommandName": {
+      "cm:export-to-csv": "EXPRTCSV"
+    }
+  },
+  "repository": "https://github.com/contentstack/cli"
+}
