@@ -1,0 +1,12 @@
+{
+  "alias": "test1",
+  "content-type": "globalfieldformigration",
+  "global-field": true,
+  "paths": [
+    {
+      "from": "rich_text_editor",
+      "to": "supercharged_rte"
+    }
+  ],
+  "delay": 50
+}

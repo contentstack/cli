@@ -1,0 +1,222 @@
+{
+  "schema": [
+    { "data_type": "reference", "uid": "reference", "display_name": "Ref" },
+    { "data_type": "reference", "uid": "reference_2", "display_name": "Ref" },
+    { "data_type": "global_field", "uid": "global_field" },
+    { "data_type": "json", "uid": "json", "field_metadata": { "allow_json_rte": true } },
+    { "data_type": "blocks", "uid": "blocks" },
+    { "data_type": "group", "uid": "group" }
+  ],
+  "emptyEntries": {
+    "reference": [],
+    "global_field": {},
+    "json": {},
+    "blocks": {},
+    "group": {}
+  },
+  "ctBlock": {
+    "data_type": "blocks",
+    "display_name": "Block 1",
+    "blocks": [
+      { "title": "GF 1", "uid": "gf_1", "reference_to": "gf_0" },
+      { "title": "GF 1", "uid": "gf_1", "reference_to": "gf_0", "schema": [] },
+      {
+        "title": "Group",
+        "uid": "group",
+        "schema": [
+          {
+            "data_type": "group",
+            "display_name": "Group",
+            "field_metadata": { "description": "", "instruction": "" },
+            "schema": [
+              {
+                "data_type": "reference",
+                "display_name": "Reference",
+                "reference_to": ["page_4", "page_3", "page_2", "page_1", "page_0"],
+                "field_metadata": { "ref_multiple": false, "ref_multiple_content_types": true },
+                "uid": "reference",
+                "mandatory": false,
+                "multiple": false,
+                "non_localizable": false,
+                "unique": false
+              },
+              {
+                "data_type": "json",
+                "display_name": "JSON Rich Text Editor",
+                "uid": "json_rte",
+                "field_metadata": {
+                  "allow_json_rte": true,
+                  "embed_entry": true,
+                  "description": "",
+                  "default_value": "",
+                  "multiline": false,
+                  "rich_text_type": "advanced",
+                  "options": [],
+                  "ref_multiple_content_types": true
+                },
+                "format": "",
+                "error_messages": { "format": "" },
+                "reference_to": ["sys_assets", "page_4", "page_3", "page_2", "page_1", "page_0"],
+                "multiple": false,
+                "non_localizable": false,
+                "unique": false,
+                "mandatory": false
+              }
+            ],
+            "uid": "group",
+            "mandatory": false,
+            "multiple": false,
+            "non_localizable": false,
+            "unique": false
+          }
+        ]
+      },
+      {
+        "schema": []
+      }
+    ],
+    "multiple": true,
+    "uid": "block_1",
+    "field_metadata": { "instruction": "", "description": "" },
+    "mandatory": false,
+    "non_localizable": false,
+    "unique": false
+  },
+  "entryBlock": [
+    {
+      "gf_1": {
+        "reference": [{ "uid": "test-uid-1", "_content_type_uid": "page_0" }],
+        "json_rte": { "uid": "test-uid-3", "__v": 2 },
+        "group": { "group": { "reference": [], "group_1": { "reference": [] } } },
+        "_metadata": { "uid": "test-uid-4" }
+      }
+    },
+    {
+      "gf_1": {
+        "reference": [],
+        "json_rte": { "uid": "test-uid-5", "__v": 2 },
+        "group": { "group": { "reference": [], "group_1": { "reference": [] } } },
+        "_metadata": { "uid": "test-uid-6" }
+      }
+    },
+    {
+      "group": {
+        "group": {
+          "reference": [{ "uid": "test-uid-1", "_content_type_uid": "page_0" }],
+          "json_rte": {
+            "type": "doc",
+            "attrs": {},
+            "uid": "test-uid-7",
+            "children": [
+              {
+                "type": "p",
+                "attrs": { "style": {}, "redactor-attributes": {}, "dir": "ltr" },
+                "uid": "test-uid-8",
+                "children": [{ "text": "" }]
+              },
+              {
+                "uid": "test-uid-9",
+                "type": "reference",
+                "attrs": {
+                  "display-type": "block",
+                  "type": "entry",
+                  "class-name": "embedded-entry redactor-component block-entry",
+                  "entry-uid": "test-uid-1",
+                  "locale": "en-us",
+                  "content-type-uid": "page_0"
+                },
+                "children": [{ "text": "" }]
+              }
+            ],
+            "_version": 1
+          }
+        },
+        "_metadata": { "uid": "test-uid-13" }
+      }
+    }
+  ],
+  "ctJsonRTE": {
+    "data_type": "json",
+    "display_name": "JSON Rich Text Editor",
+    "uid": "json_rte",
+    "field_metadata": {
+      "allow_json_rte": true,
+      "embed_entry": true,
+      "description": "",
+      "default_value": "",
+      "multiline": false,
+      "rich_text_type": "advanced",
+      "options": [],
+      "ref_multiple_content_types": true
+    },
+    "format": "",
+    "error_messages": { "format": "" },
+    "reference_to": ["sys_assets", "page_4", "page_3", "page_2", "page_1", "page_0"],
+    "multiple": false,
+    "non_localizable": false,
+    "unique": false,
+    "mandatory": false
+  },
+  "entryJsonRTE": {
+    "type": "doc",
+    "attrs": {},
+    "uid": "test-uid-10",
+    "children": [
+      {
+        "type": "p",
+        "attrs": { "style": {}, "redactor-attributes": {}, "dir": "ltr" },
+        "uid": "test-uid-11",
+        "children": [{ "text": "" }]
+      },
+      {
+        "uid": "test-uid-12",
+        "type": "reference",
+        "attrs": {
+          "display-type": "block",
+          "type": "entry",
+          "class-name": "embedded-entry redactor-component block-entry",
+          "entry-uid": "test-uid-1",
+          "locale": "en-us",
+          "content-type-uid": "page_0"
+        },
+        "children": [{ "text": "" }]
+      }
+    ],
+    "_version": 1
+  },
+  "ctGroupField": {
+    "data_type": "group",
+    "display_name": "Group 1",
+    "field_metadata": { "description": "", "instruction": "" },
+    "schema": [
+      {
+        "data_type": "reference",
+        "display_name": "Reference",
+        "reference_to": ["page_4", "page_3", "page_2", "page_1", "page_0"],
+        "field_metadata": { "ref_multiple": false, "ref_multiple_content_types": true },
+        "uid": "reference",
+        "mandatory": false,
+        "multiple": false,
+        "non_localizable": false,
+        "unique": false
+      },
+      {
+        "data_type": "global_field",
+        "display_name": "Global",
+        "reference_to": "gf_0",
+        "field_metadata": { "description": "" },
+        "uid": "global_field",
+        "mandatory": false,
+        "multiple": false,
+        "non_localizable": false,
+        "unique": false
+      }
+    ],
+    "uid": "group_1",
+    "mandatory": false,
+    "multiple": false,
+    "non_localizable": false,
+    "unique": false
+  },
+  "entryGroupField": { "reference": [{ "uid": "test-uid-1", "_content_type_uid": "page_0" }] }
+}
