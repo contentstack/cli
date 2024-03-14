@@ -1,0 +1,102 @@
+{
+  "name": "@contentstack/cli-cm-bulk-publish",
+  "description": "Contentstack CLI plugin for bulk publish actions",
+  "version": "1.4.2",
+  "author": "Contentstack",
+  "bugs": "https://github.com/contentstack/cli/issues",
+  "dependencies": {
+    "@contentstack/cli-command": "~1.2.16",
+    "@contentstack/cli-utilities": "~1.5.12",
+    "bluebird": "^3.7.2",
+    "chalk": "^4.1.2",
+    "dotenv": "^16.1.4",
+    "inquirer": "8.2.4",
+    "lodash": "^4.17.15",
+    "mkdirp": "^1.0.4",
+    "nock": "^13.0.2",
+    "winston": "^3.7.2"
+  },
+  "devDependencies": {
+    "@oclif/test": "^2.5.6",
+    "chai": "^4.2.0",
+    "eslint": "^8.18.0",
+    "eslint-config-oclif": "^4.0.0",
+    "globby": "^10.0.2",
+    "mocha": "^10.0.0",
+    "nyc": "^15.1.0",
+    "oclif": "^3.8.1",
+    "tslib": "^1.13.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json",
+    "/src",
+    "/yarn.lock"
+  ],
+  "homepage": "https://github.com/contentstack/cli",
+  "keywords": [
+    "contentstack",
+    "cli",
+    "plugin"
+  ],
+  "license": "MIT",
+  "oclif": {
+    "commands": "./src/commands",
+    "bin": "csdx",
+    "hooks": {
+      "validateConfig": "./src/hooks/config.js"
+    },
+    "repositoryPrefix": "<%- repo %>/blob/main/packages/contentstack-bulk-publish/<%- commandPath %>"
+  },
+  "csdxConfig": {
+    "expiredCommands": {
+      "cm:bulk-publish:configure": "csdx cm:stacks:publish-configure",
+      "cm:bulk-publish:clear": "csdx cm:stacks:publish-clear-logs",
+      "cm:bulk-publish:revert": "csdx cm:stacks:publish-revert",
+      "cm:bulk-publish:assets": "csdx cm:assets:publish",
+      "cm:bulk-publish:add-fields": "csdx cm:entries:update-and-publish",
+      "cm:bulk-publish:unpublished-entries": "csdx cm:entries:publish-only-unpublished",
+      "cm:bulk-publish:entries": "csdx cm:entries:publish",
+      "cm:bulk-publish:nonlocalized-field-changes": "csdx cm:entries:publish-non-localized-fields",
+      "cm:bulk-publish:unpublish": "csdx cm:stacks:unpublish or cm:entries:unpublish or cm:assets:unpublish",
+      "cm:bulk-publish:cross-publish": "csdx cm:entries:publish or csdx cm:assets:publish with source-env flag",
+      "cm:bulk-publish:entry-edits": "csdx cm:entries:publish-modified"
+    },
+    "shortCommandName": {
+      "cm:assets:publish": "PB-A",
+      "cm:assets:unpublish": "UNPB-A",
+      "cm:entries:publish-modified": "PB-MF-E",
+      "cm:entries:publish-non-localized-fields": "PB-NLCF-E",
+      "cm:entries:publish-only-unpublished": "PB-UNPB-E",
+      "cm:entries:publish": "PB-E",
+      "cm:entries:unpublish": "UNPB-E",
+      "cm:entries:update-and-publish": "PB-UPD-E",
+      "cm:stacks:publish-clear-logs": "PB-CLRLG-S",
+      "cm:stacks:publish-configure": "PB-CNF-S",
+      "cm:stacks:publish-revert": "PB-RVT-S",
+      "cm:bulk-publish:unpublish": "O-BP-UNPB",
+      "cm:bulk-publish:entry-edits": "O-BP-EE",
+      "cm:bulk-publish:nonlocalized-field-changes": "O-BP-NLCF",
+      "cm:bulk-publish:clear": "O-BP-CLR",
+      "cm:bulk-publish:assets": "O-BP-A",
+      "cm:bulk-publish:cross-publish": "O-BP-CRS",
+      "cm:bulk-publish:entries": "O-BP-E",
+      "cm:bulk-publish:unpublished-entries": "O-BP-UNPB-E",
+      "cm:bulk-publish:add-fields": "O-BP-ADFLD",
+      "cm:bulk-publish:revert": "O-BP-RVT",
+      "cm:bulk-publish:configure": "O-BP-CNF"
+    }
+  },
+  "repository": "https://github.com/contentstack/cli",
+  "scripts": {
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "oclif manifest && oclif readme",
+    "test:unit": "nyc mocha --forbid-only \"test/unit/**/*.test.js\"",
+    "posttest": "eslint .",
+    "version": "oclif readme && git add README.md",
+    "clean": "rm -rf ./node_modules tsconfig.build.tsbuildinfo"
+  }
+}
